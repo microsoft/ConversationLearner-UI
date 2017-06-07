@@ -3,18 +3,18 @@ import { fetchAllActions, fetchAllEntities, fetchApplications, fetchTrainDialogs
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 class TrainingGround extends Component {
-  render() {
-    return (
-      <div>
-        TrainingGround
-      </div>
-    );
-  }
+    render() {
+        return (
+            <div>
+                TrainingGround
+            </div>
+        );
+    }
 }
 const mapDispatchToProps = (dispatch) => {
-  return bindActionCreators({
-    fetchApplications: fetchApplications,
-  }, dispatch);
+    return bindActionCreators({
+        fetchApplications: fetchApplications,
+    }, dispatch);
 }
 const mapStateToProps = (state) => {
     return {
