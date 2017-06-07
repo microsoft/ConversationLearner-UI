@@ -1,18 +1,18 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-class ActionsHome extends Component {
+class TrainDialogsHomepage extends Component {
     render() {
         return (
             <div>
-                ActionsHome
+                TrainDialogsHomepage
             </div>
         );
     }
 }
 const mapStateToProps = (state) => {
     return {
-        actions: state.actions
+        trainDialogs: state.trainDialogs
     }
 }
-export default connect(mapStateToProps, null)(ActionsHome);
+export default connect(mapStateToProps, null)(TrainDialogsHomepage);

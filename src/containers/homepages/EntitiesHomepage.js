@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-class EntitiesHome extends Component {
+class EntitiesHomepage extends Component {
     render() {
         return (
             <div>
-                EntitiesHome
+                EntitiesHomepage
             </div>
         );
     }
@@ -15,4 +15,4 @@ const mapStateToProps = (state) => {
         entities: state.entities
     }
 }
-export default connect(mapStateToProps, null)(EntitiesHome);
+export default connect(mapStateToProps, null)(EntitiesHomepage);
