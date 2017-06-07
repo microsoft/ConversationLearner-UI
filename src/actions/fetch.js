@@ -6,24 +6,24 @@ export const FETCH_TRAIN_DIALOGS = 'FETCH_TRAIN_DIALOGS';
 export const fetchApplications = () => { 
     return {
         type: FETCH_APPLICATIONS,
-        payload: request
+        payload: {}
     }
 }
 export const fetchAllEntities = () => { 
     return {
         type: FETCH_ENTITIES,
-        payload: request
+        payload: {}
     }
 }
 export const fetchAllActions = () => { 
     return {
         type: FETCH_ACTIONS,
-        payload: request
+        payload: {}
     }
 }
 export const fetchTrainDialogs = () => { 
     return {
         type: FETCH_TRAIN_DIALOGS,
-        payload: request
+        payload: {}
     }
 }

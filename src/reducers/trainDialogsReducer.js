@@ -1,3 +1,5 @@
+import { CREATE_TRAIN_DIALOG } from '../actions/create';
+import { FETCH_TRAIN_DIALOGS } from '../actions/fetch';
 const initialState = {
     all: []
 };
