@@ -28,9 +28,4 @@ const mapDispatchToProps = (dispatch) => {
     fetchTrainDialogs: fetchTrainDialogs
   }, dispatch);
 }
-const mapStateToProps = (state) => {
-    return {
-        blisApps: state.apps
-    }
-}
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+export default connect(null, mapDispatchToProps)(App);

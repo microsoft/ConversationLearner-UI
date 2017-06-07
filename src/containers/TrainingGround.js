@@ -1,14 +1,24 @@
-import React from 'react';
-
-export default class TrainingGround extends React.Component{
-    constructor(p){
-        super(p)
-    }
-    render(){
-        return (
-            <div>
-                <h3>TrainingGround</h3>
-            </div>
-        )
+import React, { Component } from 'react';
+import { fetchAllActions, fetchAllEntities, fetchApplications, fetchTrainDialogs } from '../actions/fetch';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+class TrainingGround extends Component {
+  render() {
+    return (
+      <div>
+        TrainingGround
+      </div>
+    );
+  }
+}
+const mapDispatchToProps = (dispatch) => {
+  return bindActionCreators({
+    fetchApplications: fetchApplications,
+  }, dispatch);
+}
+const mapStateToProps = (state) => {
+    return {
+        blisApps: state.apps
     }
 }
+export default connect(mapStateToProps, mapDispatchToProps)(TrainingGround);
