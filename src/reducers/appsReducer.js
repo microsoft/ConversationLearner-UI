@@ -7,10 +7,12 @@ const initialState = {
 export default (state = initialState, action) => {
     switch(action.type) {
         case FETCH_APPLICATIONS:
+        console.log(action.payload)
             return {...state, all: action.payload};
         case CREATE_BLIS_APPLICATION:
             return {...state, current: action.payload};
         default:
             return state;
     }
+    return state;
 }

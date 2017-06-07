@@ -1,12 +1,12 @@
-const EntityTypes = {
+export const EntityTypes = {
     local: 'LOCAL',
     luis: 'LUIS'
 }
-const ActionTypes = {
+export const ActionTypes = {
     text: 'TEXT',
     api: 'API'
 }
-const APITypes = {
+export const APITypes = {
     azure: 'AZURE',
     local: 'LOCAL',
     intent: 'INTENT'
