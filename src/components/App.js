@@ -4,8 +4,18 @@ import TrainingGround from '../containers/TrainingGround';
 import { fetchAllActions, fetchAllEntities, fetchApplications, fetchTrainDialogs } from '../actions/fetch';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import Header from './Header';
+import Docs from './Docs';
+import About from './About';
+import Support from './Support';
+import {
+  BrowserRouter as Router,
+  Route,
+  Link
+} from 'react-router-dom'
+
 class App extends Component {
-  componentDidMount(){
+  componentDidMount() {
     this.props.fetchAllActions();
     this.props.fetchAllEntities();
     this.props.fetchApplications();
@@ -13,9 +23,17 @@ class App extends Component {
   }
   render() {
     return (
-      <div className="app">
-        <TrainingGround />
-      </div>
+      <Router>
+        <div className="app">
+          <Header />
+          <hr />
+          <Route exact path="/" component={TrainingGround} />
+          <Route path="/myApps" component={TrainingGround} />
+          <Route path="/about" component={About} />
+          <Route path="/support" component={Support} />
+          <Route path="/docs" component={Docs} />
+        </div>
+      </Router>
     );
   }
 }
