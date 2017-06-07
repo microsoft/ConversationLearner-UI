@@ -1,18 +1,18 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-class HomeBLISApps extends Component {
+class EntitiesHome extends Component {
     render() {
         return (
             <div>
-                BLIS Apps
+                EntitiesHome
             </div>
         );
     }
 }
 const mapStateToProps = (state) => {
     return {
-        apps: state.apps
+        entities: state.entities
     }
 }
-export default connect(mapStateToProps, null)(HomeBLISApps);
+export default connect(mapStateToProps, null)(EntitiesHome);
