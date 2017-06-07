@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import './App.css';
-import TrainingGround from './TrainingGround';
+import '../assets/App.css';
+import TrainingGround from '../containers/TrainingGround';
 class App extends Component {
   render() {
     return (
