@@ -4,9 +4,9 @@ const initialState = [];
 export default (state = initialState, action) => {
     switch(action.type) {
         case FETCH_ACTIONS:
-            return state;
+            return [...state, ...action.payload];
         case CREATE_ACTION:
-            return state;
+            return [...state, action.payload];
         default:
             return state;
     }
