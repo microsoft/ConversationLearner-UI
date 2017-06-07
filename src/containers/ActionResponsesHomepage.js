@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-class ActionsHomepage extends Component {
+class ActionResponsesHomepage extends Component {
     render() {
         return (
             <div>
@@ -15,4 +15,4 @@ const mapStateToProps = (state) => {
         actions: state.actions
     }
 }
-export default connect(mapStateToProps, null)(ActionsHomepage);
+export default connect(mapStateToProps, null)(ActionResponsesHomepage);
