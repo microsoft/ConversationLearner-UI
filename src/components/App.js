@@ -26,7 +26,6 @@ class App extends Component {
       <Router>
         <div className="app">
           <Header />
-          <hr />
           <Route exact path="/" component={TrainingGround} />
           <Route path="/myApps" component={TrainingGround} />
           <Route path="/about" component={About} />

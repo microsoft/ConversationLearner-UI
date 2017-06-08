@@ -6,14 +6,16 @@ export default class Header extends React.Component {
     }
     render() {
         return (
-            <div>
-                <ul>
-                    <li><Link to="/">BLIS</Link></li>
-                    <li><Link to="/myApps">My Apps</Link></li>
-                    <li><Link to="/about">About </Link></li>
-                    <li><Link to="/support">Support</Link></li>
-                    <li><Link to="/docs">Docs</Link></li>
-                </ul>
+            <div className='header'>
+                <div className='headerTitleDiv'>
+                    <span className="ms-font-xxl ms-fontColor-themePrimary"><Link className='headerLink' to="/">BLIS</Link></span>
+                </div>
+                <div className='headerListDiv'>
+                    <span className="ms-font-xxl ms-fontColor-themePrimary"><Link className='headerLink' to="/myApps">MyApps</Link></span>
+                    <span className="ms-font-xxl ms-fontColor-themePrimary"><Link className='headerLink' to="/docs">Docs</Link></span>
+                    <span className="ms-font-xxl ms-fontColor-themePrimary"><Link className='headerLink' to="/about">About</Link></span>
+                    <span className="ms-font-xxl ms-fontColor-themePrimary"><Link className='headerLink' to="/support">Support</Link></span>
+                </div>
             </div>
         )
     }

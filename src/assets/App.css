@@ -1,8 +1,28 @@
 .app{
   display: inline-block;
-  text-align: center;
   width: 100%;
   height: 100%;
   color: white;
   background-color: #212121;
 }
+.header{
+   height: 8%;
+   width: 100%;
+   background-color: gray
+}
+.headerTitleDiv{
+  padding-top: 1em;
+  height: 100%;
+  width: 55%;
+  display: inline-block;
+}
+.headerListDiv{
+  padding-top: 1em;
+  height: 100%;
+  width: 44%;
+  display: inline-block;
+}
+.headerLink{
+  margin-left: 2.5em;
+}
+
