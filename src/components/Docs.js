@@ -1,12 +1,14 @@
 import React from 'react';
 
-export default class Docs extends React.Component{
-    constructor(p){
+export default class Docs extends React.Component {
+    constructor(p) {
         super(p)
     }
-    render(){
+    render() {
         return (
-            <div>Docs</div>
+            <div className='dummyContent'>
+                <span className="ms-font-su dummyText">DOCS</span>
+            </div>
         )
     }
 }

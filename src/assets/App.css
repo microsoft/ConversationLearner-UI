@@ -6,23 +6,60 @@
 .header{
    height: 8%;
    width: 100%;
-   background-color: #1565C0;
+   background-color: #004b50;
 }
 .headerTitleDiv{
-  padding-top: 1em;
   height: 100%;
   width: 55%;
   display: inline-block;
 }
 .headerListDiv{
-  padding-top: 1em;
   height: 100%;
   width: 44%;
   display: inline-block;
 }
 .headerLink{
-  margin-left: 2.5em;
   text-decoration: none;
-  color: white
+  color: white;
+  position: relative;
+  float: left;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.dummyContent {
+  height: 90%;
+}
+.dummyContent *{
+  position: relative;
+  float: left;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #004b50;
+}
+.headerElementDiv{
+  height: 100%;
+  display: inline-block;
+  text-align: center;
+  vertical-align: middle;
+  width:16%;
+}
+.headerTitle{
+  height: 100%;
+  display: inline-block;
+  text-align: center;
+  vertical-align: middle;
+  width: 13%;
+  margin-left: 20%;
+}
+.headerElementDiv:hover, .headerTitle:hover{ 
+    background-color: #ffb900;
+}
+.headerElementDiv:hover *{ 
+    color: black;
+}
+.headerTitle:hover *{ 
+    color: black;
 }
 

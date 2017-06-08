@@ -6,7 +6,9 @@ export default class Support extends React.Component{
     }
     render(){
         return (
-            <div>Support</div>
+            <div className='dummyContent'>
+                <span className="ms-font-su dummyText">SUPPORT</span>
+            </div>
         )
     }
 }

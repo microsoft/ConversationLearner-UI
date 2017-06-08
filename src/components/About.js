@@ -6,7 +6,9 @@ export default class About extends React.Component{
     }
     render(){
         return (
-            <div>About</div>
+            <div className='dummyContent'>
+                <span className="ms-font-su dummyText">ABOUT</span>
+            </div>
         )
     }
 }
