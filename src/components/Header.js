@@ -7,11 +7,6 @@ export default class Header extends React.Component {
     render() {
         return (
             <div className='header'>
-                <div className='headerTitleDiv'>
-                    <div className='headerTitle'>
-                        <span className="ms-font-xl ms-fontColor-themePrimary"><Link className='headerLink' to="/">BLIS</Link></span>
-                    </div>
-                </div>
                 <div className='headerListDiv'>
                     <div className='headerElementDiv'>
                         <span className="ms-font-m-plus ms-fontColor-themePrimary"><Link className='headerLink' to="/myApps">My Apps</Link></span>
@@ -24,6 +19,11 @@ export default class Header extends React.Component {
                     </div>
                     <div className='headerElementDiv'>
                         <span className="ms-font-m-plus ms-fontColor-themePrimary"><Link className='headerLink' to="/support">Support</Link></span>
+                    </div>
+                </div>
+                <div className='headerTitleDiv'>
+                    <div className='headerTitle'>
+                        <span className="ms-font-xl ms-fontColor-themePrimary"><Link className='headerLink' to="/">BLIS</Link></span>
                     </div>
                 </div>
             </div>

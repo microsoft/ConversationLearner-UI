@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
 import '../assets/App.css';
-import MyApps from '../containers/myApps';
+import BLISAppsHomepage from '../containers/BLISAppsHomepage';
 import Header from './Header';
 import Docs from './Docs';
 import About from './About';
@@ -13,8 +13,8 @@ class App extends Component {
       <Router>
         <div className="app">
           <Header />
-          <Route exact path="/" component={MyApps} />
-          <Route path="/myApps" component={MyApps} />
+          <Route exact path="/" component={BLISAppsHomepage} />
+          <Route path="/myApps" component={BLISAppsHomepage} />
           <Route path="/about" component={About} />
           <Route path="/support" component={Support} />
           <Route path="/docs" component={Docs} />
