@@ -28,17 +28,6 @@
   left: 50%;
   transform: translate(-50%, -50%);
 }
-.dummyContent {
-  height: 90%;
-}
-.dummyContent *{
-  position: relative;
-  float: left;
-  top: 30%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  color: #004b50;
-}
 .headerElementDiv{
   height: 100%;
   display: inline-block;
@@ -62,6 +51,17 @@
 }
 .headerTitle:hover *{ 
     color: black;
+}
+.dummyContent {
+  height: 90%;
+}
+.dummyContent *{
+  position: relative;
+  float: left;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #004b50;
 }
 .trainingGroundNavigationArea{
   width: 20%;

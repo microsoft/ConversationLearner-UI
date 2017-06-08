@@ -4,10 +4,10 @@ import { setCurrentBLISApp } from '../actions/update';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import TrainingGround from './TrainingGround';
-import { DetailsList, CommandButton } from 'office-ui-fabric-react';
+import { DetailsList, CommandButton, Link } from 'office-ui-fabric-react';
 let columns = [
     {
-        key: 'column1',
+        key: 'appName',
         name: 'App Name',
         fieldName: 'appName',
         minWidth: 100,
@@ -15,7 +15,7 @@ let columns = [
         isResizable: true
     },
     {
-        key: 'column2',
+        key: 'modelID',
         name: 'Model ID',
         fieldName: 'modelID',
         minWidth: 100,
@@ -23,7 +23,7 @@ let columns = [
         isResizable: true
     },
     {
-        key: 'column3',
+        key: 'actions',
         name: 'Actions',
         fieldName: 'actions',
         minWidth: 100,
@@ -32,14 +32,32 @@ let columns = [
     },
 ];
 class BLISAppsHomepage extends Component {
+    constructor(p){
+        super(p);
+        this.renderItemColumn = this.renderItemColumn.bind(this);
+        this.BLISAppSelected = this.BLISAppSelected.bind(this)
+    }
     componentDidMount() {
         this.props.fetchAllActions();
         this.props.fetchAllEntities();
         this.props.fetchApplications();
         this.props.fetchTrainDialogs();
     }
-    BLISAppSelected() {
-        this.props.setCurrentBLISApp(this.props.blisApps.all[1])
+    BLISAppSelected(appName) {
+        let appSelected = this.props.blisApps.all.find(app => app.appName == appName);
+        this.props.setCurrentBLISApp(appSelected)
+    }
+    renderItemColumn(item, index, column) {
+        let fieldContent = item[column.fieldName];
+        switch (column.key) {
+            case 'appName':
+                return <Link href='#' onClick={() => this.BLISAppSelected(fieldContent)}>{fieldContent}</Link>;
+            case 'color':
+                return <span data-selection-disabled={true} style={{ color: fieldContent }}>{fieldContent}</span>;
+
+            default:
+                return <span>{fieldContent}</span>;
+        }
     }
     render() {
         let allApps = this.props.blisApps.all;
@@ -60,6 +78,7 @@ class BLISAppsHomepage extends Component {
                     className="ms-font-m-plus"
                     items={allApps}
                     columns={columns}
+                    onRenderItemColumn={this.renderItemColumn}
                 />
             </div>
         );
