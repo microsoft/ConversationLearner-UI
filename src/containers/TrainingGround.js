@@ -14,17 +14,21 @@ import { Nav } from 'office-ui-fabric-react';
 class TrainingGround extends Component {
     render() {
         return (
-            <div>
-                <Nav
-                    groups={[{
-                        links: [
-                            { name: 'Home', key: 'Home' },
-                            { name: 'Activity', key: 'Activity', url: '' },
-                            { name: 'News', key: 'News', url: '' },
-                            { name: 'Documents', key: 'Documents', url: '' },
-                        ]
-                    }]}
-                />
+            <div className="trainingGrounds">
+                <div className='trainingGroundNavigationArea'>
+                    <Nav
+                        groups={[{
+                            links: [
+                                { name: 'Home', key: 'Home' },
+                                { name: 'Activity', key: 'Activity', url: '' },
+                                { name: 'News', key: 'News', url: '' },
+                                { name: 'Documents', key: 'Documents', url: '' },
+                            ]
+                        }]}
+                    />
+                </div>
+                <div className='trainingGroundArena'>
+                </div>
 
             </div>
         );
