@@ -1,5 +1,6 @@
 import { CREATE_BLIS_APPLICATION } from '../actions/create';
 import { FETCH_APPLICATIONS } from '../actions/fetch';
+import { SET_CURRENT_BLIS_APP } from '../actions/update';
 const initialState = {
     all: [], 
     current: {},
@@ -9,6 +10,8 @@ export default (state = initialState, action) => {
         case FETCH_APPLICATIONS:
             return {...state, all: action.payload};
         case CREATE_BLIS_APPLICATION:
+            return {...state, current: action.payload};
+        case SET_CURRENT_BLIS_APP:
             return {...state, current: action.payload};
         default:
             return state;
