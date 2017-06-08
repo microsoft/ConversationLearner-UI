@@ -44,7 +44,7 @@ class BLISAppsHomepage extends Component {
     render() {
         let allApps = this.props.blisApps.all;
         return (
-            <div className='cont'>
+            <div className='content'>
                 <span className="ms-font-su myAppsContentBlock">My Apps</span>
                 <span className="ms-font-m-plus myAppsContentBlock">Create and Manage your BLIS applications...</span>
                 <div className="myAppsContentBlock myAppsButtonsDiv">
@@ -54,20 +54,20 @@ class BLISAppsHomepage extends Component {
                         className='goldButton'
                         ariaDescription='Create a New Application'
                         text='New App'
-                        />
-                </div>
-                    <DetailsList
-                        className="ms-font-m-plus"
-                        items={allApps}
-                        columns={columns}
                     />
                 </div>
-                );
+                <DetailsList
+                    className="ms-font-m-plus"
+                    items={allApps}
+                    columns={columns}
+                />
+            </div>
+        );
     }
 }
 const mapDispatchToProps = (dispatch) => {
     return bindActionCreators({
-                    fetchApplications: fetchApplications,
+        fetchApplications: fetchApplications,
         fetchAllActions: fetchAllActions,
         fetchAllEntities: fetchAllEntities,
         fetchTrainDialogs: fetchTrainDialogs,
@@ -76,7 +76,7 @@ const mapDispatchToProps = (dispatch) => {
 }
 const mapStateToProps = (state) => {
     return {
-                    blisApps: state.apps
+        blisApps: state.apps
     }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(BLISAppsHomepage);

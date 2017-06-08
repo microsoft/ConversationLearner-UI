@@ -4,19 +4,19 @@
   height: 100%;
 }
 .header{
-   height: 8%;
+   height: 6.5%;
    width: 100%;
    background-color: #004b50;
 }
 .headerTitleDiv{
   height: 100%;
-  width: 50%;
+  width: 47%;
   display: inline-block;
 }
 .headerListDiv{
   height: 100%;
   width: 44%;
-  margin-left: 5%;
+  margin-left: 8%;
   display: inline-block;
 }
 .headerLink{
@@ -44,7 +44,7 @@
   display: inline-block;
   text-align: center;
   vertical-align: middle;
-  width:16%;
+  width:12%;
 }
 .headerTitle{
   height: 100%;
@@ -79,14 +79,15 @@
 }
 .trainingGrounds{
   width: 100%;
-  height: 91%;
+  height: 93%;
 }
-.cont{
-  padding: 2em 5em;
+.content{
+  margin-left: 8%;
+  margin-top: 2%;
 }
 .myAppsContentBlock{
   display: block;
-  margin-bottom: 2%;
+  margin-bottom: 1%;
 }
 .goldButton:hover {
   border: 1px solid #004b50;
