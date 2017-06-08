@@ -84,4 +84,15 @@
 .cont{
   padding: 2em 5em;
 }
-
+.myAppsContentBlock{
+  display: block;
+  margin-bottom: 2%;
+}
+.goldButton:hover {
+  border: 1px solid #004b50;
+}
+.goldButton{
+  background-color: #ffb900 !important;
+  color:black !important;
+  padding: 0em 2em !important;
+}
