@@ -4,7 +4,7 @@ import { setCurrentBLISApp } from '../actions/update';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import TrainingGround from './TrainingGround';
-import { DetailsList, CommandButton, Link } from 'office-ui-fabric-react';
+import { DetailsList, CommandButton, Link, CheckboxVisibility } from 'office-ui-fabric-react';
 let columns = [
     {
         key: 'appName',
@@ -37,12 +37,6 @@ class BLISAppsHomepage extends Component {
         this.renderItemColumn = this.renderItemColumn.bind(this);
         this.BLISAppSelected = this.BLISAppSelected.bind(this)
     }
-    componentDidMount() {
-        this.props.fetchAllActions();
-        this.props.fetchAllEntities();
-        this.props.fetchApplications();
-        this.props.fetchTrainDialogs();
-    }
     BLISAppSelected(appName) {
         let appSelected = this.props.blisApps.all.find(app => app.appName == appName);
         this.props.setCurrentBLISApp(appSelected)
@@ -51,12 +45,11 @@ class BLISAppsHomepage extends Component {
         let fieldContent = item[column.fieldName];
         switch (column.key) {
             case 'appName':
-                return <Link href='#' onClick={() => this.BLISAppSelected(fieldContent)}>{fieldContent}</Link>;
+                return <span className='ms-font-m-plus'><Link href='#' onClick={() => this.BLISAppSelected(fieldContent)}>{fieldContent}</Link></span>;
             case 'color':
                 return <span data-selection-disabled={true} style={{ color: fieldContent }}>{fieldContent}</span>;
-
             default:
-                return <span>{fieldContent}</span>;
+                return <span className='ms-font-m-plus'>{fieldContent}</span>;
         }
     }
     render() {
@@ -78,6 +71,7 @@ class BLISAppsHomepage extends Component {
                     className="ms-font-m-plus"
                     items={allApps}
                     columns={columns}
+                    checkboxVisibility={CheckboxVisibility.hidden}
                     onRenderItemColumn={this.renderItemColumn}
                 />
             </div>
