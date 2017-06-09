@@ -1,33 +1,27 @@
 import React, { Component } from 'react';
 import TrainingGround from './TrainingGround';
 import BLISAppsList from './BLISAppsList';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 
 class BLISAppsHomepage extends Component {
-    constructor(p){
+    constructor(p) {
         super(p);
-        this.state = {
-            display: "Home"
-        }
-    }
-    displayList(){
-        this.setState({
-            display: "Home"
-        });
-    }
-    displayTrainingGround(){
-        this.setState({
-            display: "Training Ground"
-        });
     }
     render() {
         return (
             <div>
-                {this.state.display == 'Home' ?
-                    <BLISAppsList displayTrainingGround={this.displayTrainingGround.bind(this)}/>
-                : <TrainingGround displayList={this.displayList.bind(this)}/>
+                {this.props.blisApps.pageToDisplay == 'Home' ?
+                    <BLISAppsList  />
+                    : <TrainingGround />
                 }
             </div>
         );
     }
 }
-export default BLISAppsHomepage
+const mapStateToProps = (state) => {
+    return {
+        blisApps: state.apps
+    }
+}
+export default connect(mapStateToProps, null)(BLISAppsHomepage);

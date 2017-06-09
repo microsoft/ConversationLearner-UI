@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
 import '../assets/App.css';
 import BLISAppsHomepage from '../containers/BLISAppsHomepage';
 import { fetchApplications } from '../actions/fetch'
+import { setBLISAppDisplay } from '../actions/update'
 import Header from './Header';
 import Docs from './Docs';
 import About from './About';
@@ -18,7 +19,7 @@ class App extends Component {
     return (
       <Router>
         <div className="app">
-          <Header />
+          <Header setDisplay={this.props.setBLISAppDisplay}/>
           <Route exact path="/" component={BLISAppsHomepage} />
           <Route path="/myApps" component={BLISAppsHomepage} />
           <Route path="/about" component={About} />
@@ -33,6 +34,7 @@ class App extends Component {
 const mapDispatchToProps = (dispatch) => {
     return bindActionCreators({
         fetchApplications: fetchApplications,
+        setBLISAppDisplay: setBLISAppDisplay
     }, dispatch);
 }
 export default connect(null, mapDispatchToProps)(App);

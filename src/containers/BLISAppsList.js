@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { fetchAllActions, fetchAllEntities, fetchApplications, fetchTrainDialogs } from '../actions/fetch';
-import { setCurrentBLISApp } from '../actions/update';
+import { setCurrentBLISApp, setBLISAppDisplay } from '../actions/update';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import TrainingGround from './TrainingGround';
@@ -36,14 +36,14 @@ class BLISAppsList extends Component {
         super(p);
         this.renderItemColumn = this.renderItemColumn.bind(this);
         this.BLISAppSelected = this.BLISAppSelected.bind(this);
-        this.state = {
-            displayHomepage: true
-        }
     }
     BLISAppSelected(appName) {
         let appSelected = this.props.blisApps.all.find(app => app.appName == appName);
         this.props.setCurrentBLISApp(appSelected);
-        this.props.displayTrainingGround();
+        this.props.fetchAllActions(appSelected.modelID);
+        this.props.fetchAllEntities(appSelected.modelID);
+        this.props.fetchTrainDialogs(appSelected.modelID);
+        this.props.setBLISAppDisplay("TrainingGround");
     }
     renderItemColumn(item, index, column) {
         let fieldContent = item[column.fieldName];
@@ -88,7 +88,8 @@ const mapDispatchToProps = (dispatch) => {
         fetchAllActions: fetchAllActions,
         fetchAllEntities: fetchAllEntities,
         fetchTrainDialogs: fetchTrainDialogs,
-        setCurrentBLISApp: setCurrentBLISApp
+        setCurrentBLISApp: setCurrentBLISApp,
+        setBLISAppDisplay: setBLISAppDisplay
     }, dispatch);
 }
 const mapStateToProps = (state) => {

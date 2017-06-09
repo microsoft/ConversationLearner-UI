@@ -21,7 +21,7 @@ let azureCallMeta = new ActionMetadata(false, APITypes.azure)
 let intentCallMeta = new ActionMetadata(false, APITypes.intent)
 let textResponseMeta = new ActionMetadata(true, null)
 let hiAction = new Action('16f61108-d73c-4c09-8e39-0b86ccca958d', ActionTypes.text, 'Hi there', [], [nameEntity], false, textResponseMeta, '58bdb485-3dd6-4451-b1cf-940dbf89e920')
-let getSizeAction = new Action('d10ffd29-a8f4-4c3b-83ca-3481ae2727d8', ActionTypes.text, 'What size would you like?', [sizeEntity], [], false, textResponseMeta, '58bdb485-3dd6-4451-b1cf-940dbf89e920')
+let getSizeAction = new Action('d10ffd29-a8f4-4c3b-83ca-3481ae2727d8', ActionTypes.text, 'What size would you like?', [sizeEntity], [], false, textResponseMeta, '11tdb485-3dd6-1051-b1cf-040d3d4ae920')
 let getNameAction = new Action('c8891a93-73f5-4f3c-8f48-72276d31b93f', ActionTypes.text, 'What is your name?', [nameEntity], [], false, textResponseMeta, '58bdb485-3dd6-4451-b1cf-940dbf89e920')
 
 let APPS = [firstApp, secondApp];
@@ -41,19 +41,21 @@ export const fetchApplications = () => {
         payload: APPS
     }
 }
-export const fetchAllEntities = () => { 
+export const fetchAllEntities = (blisAppID) => { 
+    let entities = ENTITIES.filter(ent => ent.appID == blisAppID);
     return {
         type: FETCH_ENTITIES,
-        payload: ENTITIES
+        payload: entities
     }
 }
-export const fetchAllActions = () => { 
+export const fetchAllActions = (blisAppID) => { 
+    let actions = ACTIONS.filter(ent => ent.appID == blisAppID);
     return {
         type: FETCH_ACTIONS,
-        payload: ACTIONS
+        payload: actions
     }
 }
-export const fetchTrainDialogs = () => { 
+export const fetchTrainDialogs = (blisAppID) => { 
     return {
         type: FETCH_TRAIN_DIALOGS,
         payload: {}

@@ -1,15 +1,15 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 export default class Header extends React.Component {
-    constructor(p) {
-        super(p)
+    constructor(props) {
+        super(props)
     }
     render() {
         return (
             <div className='header'>
                 <div className='headerListDiv'>
                     <div className='headerElementDiv'>
-                        <span className="ms-font-m-plus ms-fontColor-themePrimary"><Link className='headerLink' to="/myApps">My Apps</Link></span>
+                        <span className="ms-font-m-plus ms-fontColor-themePrimary"><Link onClick={() => this.props.setDisplay("Home")} className='headerLink' to="/myApps">My Apps</Link></span>
                     </div>
                     <div className='headerElementDiv'>
                         <span className="ms-font-m-plus ms-fontColor-themePrimary"><Link className='headerLink' to="/docs">Docs</Link></span>

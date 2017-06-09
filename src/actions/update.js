@@ -5,3 +5,10 @@ export const setCurrentBLISApp = (app) => {
         payload: app
     }
 }
+export const SET_BLIS_APP_DISPLAY = 'SET_BLIS_APP_DISPLAY';
+export const setBLISAppDisplay = (text) => { 
+    return {
+        type: SET_BLIS_APP_DISPLAY,
+        payload: text
+    }
+}
