@@ -4,19 +4,19 @@
   height: 100%;
 }
 .header{
-   height: 6.5%;
+   height: 8%;
    width: 100%;
    background-color: #004b50;
 }
 .headerTitleDiv{
   height: 100%;
-  width: 47%;
+  width: 50%;
   display: inline-block;
 }
 .headerListDiv{
   height: 100%;
   width: 44%;
-  margin-left: 8%;
+  margin-left: 5%;
   display: inline-block;
 }
 .headerLink{
@@ -33,7 +33,7 @@
   display: inline-block;
   text-align: center;
   vertical-align: middle;
-  width:12%;
+  width:17%;
 }
 .headerTitle{
   height: 100%;
@@ -63,29 +63,11 @@
   transform: translate(-50%, -50%);
   color: #004b50;
 }
-.trainingGroundNavigationArea{
-  width: 20%;
-  border: 1px solid gray;
-  height:100%;
-  display: inline-block;
-  vertical-align: top;
-}
-.trainingGroundArena{
-  width: 79%;
-  height:100%;
-  border: 1px solid red;
-  display: inline-block;
-  vertical-align: top;
-}
-.trainingGrounds{
-  width: 100%;
-  height: 93%;
-}
 .content{
-  margin-left: 9%;
+  margin-left: 5%;
   margin-top: 2%;
 }
-.myAppsContentBlock{
+.myAppsHeaderContentBlock{
   display: block;
   margin-bottom: 1%;
 }
@@ -96,4 +78,20 @@
   background-color: #ffb900 !important;
   color:black !important;
   padding: 0em 2em !important;
+}
+.trainingGroundArena{
+  width: 79%;
+  height:100%;
+  display: inline-block;
+  vertical-align: top;
+}
+.trainingGrounds{
+  width: 100%;
+}
+.trainingGroundNavigationArea{
+  width: 20%;
+  border: 1px solid gray;
+  height:100%;
+  display: inline-block;
+  vertical-align: top;
 }

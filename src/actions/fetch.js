@@ -55,7 +55,7 @@ export const fetchAllActions = (blisAppID) => {
         payload: actions
     }
 }
-export const fetchTrainDialogs = (blisAppID) => { 
+export const fetchAllTrainDialogs = (blisAppID) => { 
     return {
         type: FETCH_TRAIN_DIALOGS,
         payload: {}

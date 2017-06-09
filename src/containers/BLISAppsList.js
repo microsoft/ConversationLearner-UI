@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { fetchAllActions, fetchAllEntities, fetchApplications, fetchTrainDialogs } from '../actions/fetch';
+import { fetchAllActions, fetchAllEntities, fetchApplications, fetchAllTrainDialogs } from '../actions/fetch';
 import { setCurrentBLISApp, setBLISAppDisplay } from '../actions/update';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -42,7 +42,7 @@ class BLISAppsList extends Component {
         this.props.setCurrentBLISApp(appSelected);
         this.props.fetchAllActions(appSelected.modelID);
         this.props.fetchAllEntities(appSelected.modelID);
-        this.props.fetchTrainDialogs(appSelected.modelID);
+        this.props.fetchAllTrainDialogs(appSelected.modelID);
         this.props.setBLISAppDisplay("TrainingGround");
     }
     renderItemColumn(item, index, column) {
@@ -60,9 +60,9 @@ class BLISAppsList extends Component {
         let allApps = this.props.blisApps.all;
         return (
             <div className='content'>
-                <span className="ms-font-su myAppsContentBlock">My Apps</span>
-                <span className="ms-font-m-plus myAppsContentBlock">Create and Manage your BLIS applications...</span>
-                <div className="myAppsContentBlock myAppsButtonsDiv">
+                <span className="ms-font-su myAppsHeaderContentBlock">My Apps</span>
+                <span className="ms-font-m-plus myAppsHeaderContentBlock">Create and Manage your BLIS applications...</span>
+                <div className="myAppsHeaderContentBlock myAppsButtonsDiv">
                     <CommandButton
                         data-automation-id='randomID'
                         disabled={false}
@@ -87,7 +87,7 @@ const mapDispatchToProps = (dispatch) => {
         fetchApplications: fetchApplications,
         fetchAllActions: fetchAllActions,
         fetchAllEntities: fetchAllEntities,
-        fetchTrainDialogs: fetchTrainDialogs,
+        fetchAllTrainDialogs: fetchAllTrainDialogs,
         setCurrentBLISApp: setCurrentBLISApp,
         setBLISAppDisplay: setBLISAppDisplay
     }, dispatch);

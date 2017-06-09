@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { fetchAllActions, fetchAllEntities, fetchApplications, fetchTrainDialogs } from '../actions/fetch';
+import { fetchAllActions, fetchAllEntities, fetchApplications, fetchAllTrainDialogs } from '../actions/fetch';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import EntitiesHomepage from './EntitiesHomepage';
