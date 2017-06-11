@@ -23,7 +23,7 @@ export default class Header extends React.Component {
                 </div>
                 <div className='headerTitleDiv'>
                     <div className='headerTitle'>
-                        <span className="ms-font-xl ms-fontColor-themePrimary"><Link className='headerLink' to="/">BLIS</Link></span>
+                        <span className="ms-font-xl ms-fontColor-themePrimary"><Link onClick={() => this.props.setDisplay("Home")} className='headerLink' to="/">BLIS</Link></span>
                     </div>
                 </div>
             </div>
