@@ -9,6 +9,7 @@ import BLISAppsHomepage from './BLISAppsHomepage';
 import { Nav } from 'office-ui-fabric-react';
 class TrainingGround extends Component {
     render() {
+        console.log(this.props)
         return (
             <div className="trainingGrounds">
                 <div className='trainingGroundNavigationArea'>
@@ -37,7 +38,10 @@ const mapDispatchToProps = (dispatch) => {
 }
 const mapStateToProps = (state) => {
     return {
-        blisApps: state.apps
+        blisApps: state.apps,
+        entities: state.entities,
+        actions: state.actions,
+        trainDialogs: state.trainDialogs
     }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(TrainingGround);

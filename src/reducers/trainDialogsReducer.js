@@ -4,7 +4,7 @@ const initialState = [];
 export default (state = initialState, action) => {
     switch(action.type) {
         case FETCH_TRAIN_DIALOGS:
-            return [...state, ...action.payload];
+            return action.payload;
         case CREATE_TRAIN_DIALOG:
             return [...state, action.payload];
         default:

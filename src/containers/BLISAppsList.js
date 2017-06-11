@@ -32,10 +32,13 @@ let columns = [
     },
 ];
 class BLISAppsList extends Component {
-    constructor(p){
+    constructor(p) {
         super(p);
         this.renderItemColumn = this.renderItemColumn.bind(this);
         this.BLISAppSelected = this.BLISAppSelected.bind(this);
+        this.state = {
+            open: false
+        }
     }
     BLISAppSelected(appName) {
         let appSelected = this.props.blisApps.all.find(app => app.appName == appName);
@@ -56,6 +59,11 @@ class BLISAppsList extends Component {
                 return <span className='ms-font-m-plus'>{fieldContent}</span>;
         }
     }
+    handleOpen(){
+        this.setState({
+            open: true
+        })
+    }
     render() {
         let allApps = this.props.blisApps.all;
         return (
@@ -66,6 +74,7 @@ class BLISAppsList extends Component {
                     <CommandButton
                         data-automation-id='randomID'
                         disabled={false}
+                        onClick={this.handleOpen.bind(this)}
                         className='goldButton'
                         ariaDescription='Create a New Application'
                         text='New App'

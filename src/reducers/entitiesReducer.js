@@ -4,7 +4,7 @@ const initialState = [];
 export default (state = initialState, action) => {
     switch(action.type) {
         case FETCH_ENTITIES:
-            return [...state, ...action.payload];
+            return action.payload;
         case CREATE_ENTITY:
             return [...state, action.payload];
         default:
