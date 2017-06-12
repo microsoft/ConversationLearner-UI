@@ -96,6 +96,14 @@
   color:black !important;
   padding: 0em 2em !important;
 }
+.grayButton:hover {
+  border: 1px solid #004b50;
+}
+.grayButton{
+  background-color: lightgrey !important;
+  color:black !important;
+  padding: 0em 2em !important;
+}
 .trainingGroundArena{
   width: 80%;
   margin-left: 5%;
@@ -153,10 +161,24 @@
 .createAppModal{
   border: 2px solid #004b50;
   width: 40%;
-  height: 70%;
+  height: 50%;
+  padding: 1em;
+  position: relative
 }
 .appModalHeader{
   display: block;
   text-align: center;
   padding: 1em;
+}
+.appModalFooter{
+  display: block;
+  height: 20%;
+  bottom: 0;
+  position: absolute;
+}
+.appModalFooter *{
+  margin:auto;
+}
+.appModalContentTextField{
+  margin-top: 2em !important;
 }
