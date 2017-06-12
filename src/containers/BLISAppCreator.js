@@ -4,6 +4,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { CommandButton, Dialog, DialogFooter, DialogType, ChoiceGroup, TextField, DefaultButton } from 'office-ui-fabric-react';
+import { setBLISAppDisplay } from '../actions/update'
 import { BLISApplication } from '../models/Application'
 class BLISAppCreator extends Component {
     constructor(p) {
@@ -36,11 +37,21 @@ class BLISAppCreator extends Component {
             appDescVal: text
         })
     }
-    guid(){
-
+    generateGUID() {
+        let d = new Date().getTime();
+        let guid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (char) => {
+            let r = (d + Math.random() * 16) % 16 | 0;
+            d = Math.floor(d / 16);
+            return (char == 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+        });
+        return guid;
     }
-    createApplication(){
-        
+    createApplication() {
+        let randomGUID = this.generateGUID();
+        let appToAdd = new BLISApplication(randomGUID, this.state.appNameVal);
+        this.props.createBLISApplication(appToAdd);
+        this.handleClose();
+        this.props.setBLISAppDisplay("TrainingGround");
     }
     render() {
         return (
@@ -71,7 +82,7 @@ class BLISAppCreator extends Component {
                             data-automation-id='randomID2'
                             disabled={false}
                             onClick={this.createApplication.bind(this)}
-                            className='goldButtons'
+                            className='goldButton'
                             ariaDescription='Create'
                             text='Create'
                         />
@@ -92,6 +103,7 @@ class BLISAppCreator extends Component {
 const mapDispatchToProps = (dispatch) => {
     return bindActionCreators({
         createBLISApplication: createBLISApplication,
+        setBLISAppDisplay: setBLISAppDisplay
     }, dispatch);
 }
 const mapStateToProps = (state) => {

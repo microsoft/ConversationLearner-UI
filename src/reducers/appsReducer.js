@@ -11,7 +11,7 @@ export default (state = initialState, action) => {
         case FETCH_APPLICATIONS:
             return {...state, all: action.payload};
         case CREATE_BLIS_APPLICATION:
-            return {...state, current: action.payload};
+            return {...state, current: action.payload, all: [...state.all, action.payload]};
         case SET_CURRENT_BLIS_APP:
             return {...state, current: action.payload};
         case SET_BLIS_APP_DISPLAY:

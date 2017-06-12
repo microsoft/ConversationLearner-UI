@@ -3,10 +3,10 @@ export const CREATE_ENTITY = 'CREATE_ENTITY';
 export const CREATE_ACTION = 'CREATE_ACTION';
 export const CREATE_TRAIN_DIALOG = 'CREATE_TRAIN_DIALOG';
 
-export const createBLISApplication = () => { 
+export const createBLISApplication = (application) => { 
     return {
         type: CREATE_BLIS_APPLICATION,
-        payload: {}
+        payload: application
     }
 }
 export const createEntity = () => { 
