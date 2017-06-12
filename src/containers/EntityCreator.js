@@ -5,8 +5,8 @@ import { connect } from 'react-redux';
 class EntityCreator extends Component {
     render() {
         return (
-            <div>
-                Entity Creator
+            <div className='arenaText'>
+                <span className="ms-font-su">EntityCreator</span>
             </div>
         );
     }

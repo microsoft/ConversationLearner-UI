@@ -4,8 +4,8 @@ import { connect } from 'react-redux';
 class AppDashboard extends Component {
     render() {
         return (
-            <div>
-                AppDashboard
+            <div className='arenaText'>
+                <span className="ms-font-su">AppDashboard</span>
             </div>
         );
     }

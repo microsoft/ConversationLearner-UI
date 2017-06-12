@@ -5,8 +5,8 @@ import { connect } from 'react-redux';
 class ActionResponseCreator extends Component {
     render() {
         return (
-            <div>
-                ActionResponseCreator
+            <div className='arenaText'>
+                <span className="ms-font-su">ActionResponseCreator</span>
             </div>
         );
     }

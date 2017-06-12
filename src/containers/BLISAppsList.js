@@ -3,6 +3,7 @@ import { fetchAllActions, fetchAllEntities, fetchApplications, fetchAllTrainDial
 import { setCurrentBLISApp, setBLISAppDisplay } from '../actions/update';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import BLISAppCreator from './BLISAppCreator'
 import TrainingGround from './TrainingGround';
 import { DetailsList, CommandButton, Link, CheckboxVisibility } from 'office-ui-fabric-react';
 let columns = [
@@ -36,9 +37,6 @@ class BLISAppsList extends Component {
         super(p);
         this.renderItemColumn = this.renderItemColumn.bind(this);
         this.BLISAppSelected = this.BLISAppSelected.bind(this);
-        this.state = {
-            open: false
-        }
     }
     BLISAppSelected(appName) {
         let appSelected = this.props.blisApps.all.find(app => app.appName == appName);
@@ -53,16 +51,9 @@ class BLISAppsList extends Component {
         switch (column.key) {
             case 'appName':
                 return <span className='ms-font-m-plus'><Link href='#' onClick={() => this.BLISAppSelected(fieldContent)}>{fieldContent}</Link></span>;
-            case 'color':
-                return <span data-selection-disabled={true} style={{ color: fieldContent }}>{fieldContent}</span>;
             default:
                 return <span className='ms-font-m-plus'>{fieldContent}</span>;
         }
-    }
-    handleOpen(){
-        this.setState({
-            open: true
-        })
     }
     render() {
         let allApps = this.props.blisApps.all;
@@ -71,14 +62,7 @@ class BLISAppsList extends Component {
                 <span className="ms-font-su myAppsHeaderContentBlock">My Apps</span>
                 <span className="ms-font-m-plus myAppsHeaderContentBlock">Create and Manage your BLIS applications...</span>
                 <div className="myAppsHeaderContentBlock myAppsButtonsDiv">
-                    <CommandButton
-                        data-automation-id='randomID'
-                        disabled={false}
-                        onClick={this.handleOpen.bind(this)}
-                        className='goldButton'
-                        ariaDescription='Create a New Application'
-                        text='New App'
-                    />
+                    <BLISAppCreator />
                 </div>
                 <DetailsList
                     className="ms-font-m-plus"

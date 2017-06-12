@@ -4,8 +4,8 @@ import { connect } from 'react-redux';
 class EntitiesHomepage extends Component {
     render() {
         return (
-            <div>
-                EntitiesHomepage
+            <div className='arenaText'>
+                <span className="ms-font-su">EntitiesHomepage</span>
             </div>
         );
     }

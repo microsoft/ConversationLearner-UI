@@ -6,6 +6,7 @@
 .header{
    height: 8%;
    width: 100%;
+   margin-top:4em;
    background-color: #004b50;
 }
 .headerTitleDiv{
@@ -124,4 +125,12 @@
 .tgbackToAppsDiv *:hover, .tgSettingsDiv *:hover {
   color: lightgrey !important;
   cursor: pointer !important;
+}
+.arenaText *{
+  position: relative;
+  float: left;
+  margin-top:20%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }

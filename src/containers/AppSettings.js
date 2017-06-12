@@ -5,8 +5,8 @@ import { connect } from 'react-redux';
 class AppSettings extends Component {
     render() {
         return (
-            <div>
-                AppSettings
+            <div className='arenaText'>
+                <span className="ms-font-su">AppSettings</span>
             </div>
         );
     }

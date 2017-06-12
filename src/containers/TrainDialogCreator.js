@@ -5,8 +5,8 @@ import { connect } from 'react-redux';
 class TrainDialogCreator extends Component {
     render() {
         return (
-            <div>
-                TrainDialogCreator
+            <div className='arenaText'>
+                <span className="ms-font-su">TrainDialogCreator</span>
             </div>
         );
     }
