@@ -3,13 +3,18 @@ import { createEntity } from '../actions/create';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
-import { CommandButton, Dialog, DialogFooter, DialogType, ChoiceGroup, TextField, DefaultButton } from 'office-ui-fabric-react';
-import { Entity } from '../models/Entity'
+import { CommandButton, Dialog, DialogFooter, DialogType, ChoiceGroup, TextField, DefaultButton, Dropdown } from 'office-ui-fabric-react';
+import { Entity } from '../models/Entity';
+import { EntityTypes } from '../models/Constants'
 class EntityCreator extends Component {
     constructor(p) {
         super(p);
         this.state = {
             open: false,
+            entityNameVal: '',
+            entityTypeVal: '',
+            isBucketableVal: false,
+            isNegatableVal: false,
         }
     }
     handleOpen() {
@@ -36,7 +41,22 @@ class EntityCreator extends Component {
         // this.props.createEntity(appToAdd);
         this.handleClose();
     }
+    nameChanged(text){
+
+    }
+    typeChanged(obj){
+        this.setState({
+            entityTypeVal: obj.text
+        })
+    }
     render() {
+        let vals = Object.values(EntityTypes);
+        let options = vals.map(v => {
+            return {
+                key: v,
+                text: v
+            }
+        })
         return (
             <div className='entityCreator'>
                 <CommandButton
@@ -57,7 +77,19 @@ class EntityCreator extends Component {
                         <span className='ms-font-xxl ms-fontWeight-semilight'>Create an Entity</span>
                     </div>
                     <div className='appModalContent'>
-                        
+                        <TextField className="appModalContentTextField" 
+                            onChanged={this.nameChanged.bind(this)} 
+                            label="Name" 
+                            required={true} 
+                            placeholder="Entity Name..." 
+                            value={this.state.entityNameVal} />
+                        <Dropdown
+                            label='Entity Type:'
+                            defaultSelectedKey='LOCAL'
+                            options={options}
+                            onChanged={this.typeChanged.bind(this)}
+                            selectedKey={this.state.entityTypeVal}
+                            />
                     </div>
                     <div className='appModalFooter'>
                         <CommandButton
