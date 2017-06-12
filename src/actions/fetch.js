@@ -12,9 +12,10 @@ let secondApp = new BLISApplication('11tdb485-3dd6-1051-b1cf-040d3d4ae920', 'Sto
 let bucketableMeta = new EntityMetadata(true, false, false, false)
 let noMeta = new EntityMetadata(false, false, false, false)
 let positiveMeta = new EntityMetadata(false, false, true, false)
+
 let nameEntity = new Entity('11002431b-cb6a-42df-9a54-da167bedc23f', EntityTypes.local, null, 'name', noMeta, '58bdb485-3dd6-4451-b1cf-940dbf89e920')
 let toppingsEntity = new Entity('3f7663a8-1a12-45a1-a531-d56401c469a4', EntityTypes.local, null, 'toppings', bucketableMeta, '58bdb485-3dd6-4451-b1cf-940dbf89e920')
-let sizeEntity = new Entity('ede8946e-6a19-46c3-950f-c7661ea8faf0', EntityTypes.local, null, 'size', noMeta, '58bdb485-3dd6-4451-b1cf-940dbf89e920');
+let sizeEntity = new Entity('ede8946e-6a19-46c3-950f-c7661ea8faf0', EntityTypes.luis, null, 'size', noMeta, '58bdb485-3dd6-4451-b1cf-940dbf89e920');
 let companyEntity = new Entity('a463f832-0402-45df-a209-9dcf0e106a62', EntityTypes.local, null, 'company', noMeta, '11tdb485-3dd6-1051-b1cf-040d3d4ae920');
 let localAPICallMeta = new ActionMetadata(false, APITypes.local)
 let azureCallMeta = new ActionMetadata(false, APITypes.azure)

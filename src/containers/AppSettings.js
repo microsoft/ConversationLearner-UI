@@ -2,11 +2,12 @@ import React, { Component } from 'react';
 import { createBLISApplication } from '../actions/create';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader'
 class AppSettings extends Component {
     render() {
         return (
-            <div className='arenaText'>
-                <span className="ms-font-su">AppSettings</span>
+            <div>
+                <TrainingGroundArenaHeader title="Settings" description="Control your application versions, who has access to it and whether it is public or private...."/>
             </div>
         );
     }

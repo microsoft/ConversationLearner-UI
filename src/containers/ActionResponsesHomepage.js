@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader'
 class ActionResponsesHomepage extends Component {
     render() {
         return (
-            <div className='arenaText'>
-                <span className="ms-font-su">ActionResponsesHomepage</span>
+            <div>
+                <TrainingGroundArenaHeader title="Actions" description="Manage a list of actions that your application can take given it's state and user input.."/>
             </div>
         );
     }

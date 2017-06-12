@@ -178,3 +178,7 @@
   display:block;
   margin-bottom: .5em;
 }
+.trainingGroundArenaHeader, .entityCreator{
+  display: block;
+  margin-bottom: 1em;
+}
