@@ -24,7 +24,7 @@ let columns = [
     {
         key: 'isBucketable',
         name: 'Bucketable',
-        fieldName: 'isBucketable',
+        fieldName: 'metadata',
         minWidth: 100,
         maxWidth: 200,
         isResizable: true
@@ -32,7 +32,7 @@ let columns = [
     {
         key: 'isNegatable',
         name: 'Negatable',
-        fieldName: 'isNegatable',
+        fieldName: 'metadata',
         minWidth: 100,
         maxWidth: 200,
         isResizable: true
@@ -45,8 +45,18 @@ class EntitiesHomepage extends Component {
     renderItemColumn(item, index, column) {
         let fieldContent = item[column.fieldName];
         switch (column.key) {
-            case 'appName':
-                return <span className='ms-font-m-plus'><Link href='#' onClick={() => this.BLISAppSelected(fieldContent)}>{fieldContent}</Link></span>;
+            case 'isBucketable':
+                if(fieldContent.bucket == true){
+                    return <span className="ms-Icon ms-Icon--CheckMark checkIcon" aria-hidden="true"></span>;
+                } else {
+                    return <span className="ms-Icon ms-Icon--Remove notFoundIcon" aria-hidden="true"></span>;
+                }
+            case 'isNegatable':
+                if(fieldContent.negative == true){
+                    return <span className="ms-Icon ms-Icon--CheckMark checkIcon" aria-hidden="true"></span>;
+                } else {
+                    return <span className="ms-Icon ms-Icon--Remove notFoundIcon" aria-hidden="true"></span>;
+                }
             default:
                 return <span className='ms-font-m-plus'>{fieldContent}</span>;
         }

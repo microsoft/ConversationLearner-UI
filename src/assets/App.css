@@ -182,3 +182,11 @@
   display: block;
   margin-bottom: 1em;
 }
+.checkIcon{
+  color: green;
+  font-size: 20px;
+}
+.notFoundIcon{
+  color: lightgrey;
+  font-size: 18px
+}
