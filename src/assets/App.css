@@ -121,3 +121,7 @@
   color:gray;
   font-size: 14px;
 }
+.tgbackToAppsDiv *:hover, .tgSettingsDiv *:hover {
+  color: lightgrey !important;
+  cursor: pointer !important;
+}
