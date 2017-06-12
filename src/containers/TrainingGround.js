@@ -6,25 +6,74 @@ import EntitiesHomepage from './EntitiesHomepage';
 import TrainDialogsHomepage from './TrainDialogsHomepage';
 import ActionResponsesHomepage from './ActionResponsesHomepage';
 import BLISAppsHomepage from './BLISAppsHomepage';
+import AppDashboard from './AppDashboard';
+import AppSettings from './AppSettings';
 import { Nav } from 'office-ui-fabric-react';
+import { Link } from 'react-router-dom';
 class TrainingGround extends Component {
+    constructor(p){
+        super(p);
+        this.state = {
+            display: 'Dash',
+            selectedKey: 'Dash'
+        }
+        this.setArenaDisplay = this.setArenaDisplay.bind(this);
+    }
+    renderChosenNavLink(){
+        switch(this.state.display){
+            case "Settings":
+                return (
+                    <AppSettings />
+                )
+            case "Dash":
+                return (
+                    <AppDashboard />
+                )
+            case "Entities":
+                return (
+                    <EntitiesHomepage />
+                )
+            case "Actions":
+                return (
+                    <ActionResponsesHomepage />
+                )   
+            case "TrainDialogs":
+                return (
+                    <TrainDialogsHomepage />
+                )
+        }
+    }
+    setArenaDisplay(page){
+        this.setState({
+            display: page,
+            selectedKey: page
+        })
+    }
     render() {
-        console.log(this.props)
         return (
-            <div className="trainingGrounds">
+            <div className="content">
                 <div className='trainingGroundNavigationArea'>
+                <span className="ms-font-xxl">{this.props.blisApps.current.appName}</span>
                     <Nav
+                        className="ms-font-m-plus trainingGroundNav"
+                        initialSelectedKey="Dash"
+                        selectedKey={this.state.selectedKey}
                         groups={[{
                             links: [
-                                { name: 'Home', key: 'Home' },
-                                { name: 'Activity', key: 'Activity', url: '' },
-                                { name: 'News', key: 'News', url: '' },
-                                { name: 'Documents', key: 'Documents', url: '' },
+                                { name: 'Settings', key: 'Settings', onClick:() => this.setArenaDisplay('Settings') },
+                                { name: 'Dashboard', key: 'Dash',  onClick:() => this.setArenaDisplay('Dash') },
+                                { name: 'Entities', key: 'Entities',  onClick:() => this.setArenaDisplay('Entities') },
+                                { name: 'Actions', key: 'Actions',  onClick:() => this.setArenaDisplay('Actions')},
+                                { name: 'Train Dialogs', key: 'TrainDialogs',  onClick:() => this.setArenaDisplay('TrainDialogs') }
                             ]
                         }]}
                     />
+                    <Link className="backToApps" onClick={() => this.props.setDisplay("Home")} to="/"><span className="ms-Icon ms-Icon--Back backToApps backToAppsIcon" aria-hidden="true"></span>&nbsp;&nbsp;</Link>
+                    <span className="ms-font-m-plus backToApps"><Link className="backToApps" onClick={() => this.props.setDisplay("Home")} to="/">Back to App List</Link></span>
                 </div>
+                
                 <div className='trainingGroundArena'>
+                    {this.renderChosenNavLink()}
                 </div>
 
             </div>

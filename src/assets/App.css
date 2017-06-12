@@ -80,18 +80,40 @@
   padding: 0em 2em !important;
 }
 .trainingGroundArena{
-  width: 79%;
-  height:100%;
+  width: 80%;
+  margin-left: 5%;
   display: inline-block;
   vertical-align: top;
 }
 .trainingGrounds{
   width: 100%;
+  height: 100%;
 }
 .trainingGroundNavigationArea{
-  width: 20%;
-  border: 1px solid gray;
-  height:100%;
+  width: 14%;
   display: inline-block;
   vertical-align: top;
+}
+.trainingGroundNav *{
+  color: gray !important;
+  margin-left: -.1em !important;
+}
+.trainingGroundNav {
+  margin: 1em 0em;
+  border-top: 1px solid lightgrey;
+  border-bottom: 1px solid lightgrey;
+  padding: 0px !important;
+}
+.backToApps{
+  color: gray;
+  text-decoration: none;
+  margin-top: 1.2em;
+}
+.backToAppsIcon{
+  text-decoration: none;
+  color:gray;
+  font-size: 14px;
+}
+.trainingGroundNav *:hover{
+  color: lightgrey;
 }
