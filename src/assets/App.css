@@ -36,6 +36,17 @@
   vertical-align: middle;
   width:17%;
 }
+.selectedHeaderElementDiv{
+  height: 100%;
+  display: inline-block;
+  text-align: center;
+  vertical-align: middle;
+  width:17%;
+  background-color: #ffb900 !important;
+}
+.selectedHeaderElementDiv *{
+  color:black !important;
+}
 .headerTitle{
   height: 100%;
   display: inline-block;
