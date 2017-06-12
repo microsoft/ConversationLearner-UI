@@ -87,22 +87,29 @@
 }
 .trainingGrounds{
   width: 100%;
-  height: 100%;
 }
 .trainingGroundNavigationArea{
   width: 14%;
   display: inline-block;
   vertical-align: top;
 }
+.tgNavDiv{
+  border-top: 1px solid lightgrey;
+  border-bottom: 1px solid lightgrey;
+  height: 11em;
+}
 .trainingGroundNav *{
   color: gray !important;
   margin-left: -.1em !important;
 }
-.trainingGroundNav {
-  margin: 1em 0em;
+.trainingGroundNav *:hover{
+  color: lightgrey !important;
+}
+.tgSettingsDiv{
   border-top: 1px solid lightgrey;
-  border-bottom: 1px solid lightgrey;
-  padding: 0px !important;
+  margin-top: 1em;
+  color: gray;
+  padding: .7em 0em;
 }
 .backToApps{
   color: gray;
@@ -113,7 +120,4 @@
   text-decoration: none;
   color:gray;
   font-size: 14px;
-}
-.trainingGroundNav *:hover{
-  color: lightgrey;
 }
