@@ -12,7 +12,7 @@ class EntityCreator extends Component {
         this.state = {
             open: false,
             entityNameVal: '',
-            entityTypeVal: '',
+            entityTypeVal: 'LOCAL',
             isBucketableVal: false,
             isNegatableVal: false,
         }
@@ -42,7 +42,9 @@ class EntityCreator extends Component {
         this.handleClose();
     }
     nameChanged(text){
-
+        this.setState({
+            entityNameVal: text
+        })
     }
     typeChanged(obj){
         this.setState({
