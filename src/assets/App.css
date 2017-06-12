@@ -150,14 +150,6 @@
   color: lightgrey !important;
   cursor: pointer !important;
 }
-.arenaText *{
-  position: relative;
-  float: left;
-  margin-top:20%;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
 .createAppModal{
   border: 2px solid #004b50;
   width: 40%;
@@ -181,4 +173,8 @@
 }
 .appModalContentTextField{
   margin-top: 2em !important;
+}
+.trainingGroundHeaderContent{
+  display:block;
+  margin-bottom: .5em;
 }
