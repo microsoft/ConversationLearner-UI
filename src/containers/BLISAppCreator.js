@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { CommandButton, Dialog, DialogFooter, DialogType, ChoiceGroup, TextField, DefaultButton } from 'office-ui-fabric-react';
 import { setBLISAppDisplay } from '../actions/update'
+import { fetchAllActions, fetchAllEntities, fetchAllTrainDialogs } from '../actions/fetch'
 import { BLISApplication } from '../models/Application'
 class BLISAppCreator extends Component {
     constructor(p) {
@@ -50,6 +51,9 @@ class BLISAppCreator extends Component {
         let randomGUID = this.generateGUID();
         let appToAdd = new BLISApplication(randomGUID, this.state.appNameVal);
         this.props.createBLISApplication(appToAdd);
+        this.props.fetchAllActions(randomGUID);
+        this.props.fetchAllEntities(randomGUID);
+        this.props.fetchAllTrainDialogs(randomGUID);
         this.handleClose();
         this.props.setBLISAppDisplay("TrainingGround");
     }
@@ -73,7 +77,7 @@ class BLISAppCreator extends Component {
                     <div className='modalHeader'>
                         <span className='ms-font-xxl ms-fontWeight-semilight'>Create a BLIS App</span>
                     </div>
-                    <div className='appModalContent'>
+                    <div>
                         <TextField onChanged={this.nameChanged.bind(this)} label="Name" required={true} placeholder="Application Name..." value={this.state.appNameVal} />
                         <TextField multiline inputClassName="ms-font-m-plus" autoAdjustHeight onChanged={this.descriptionChanged.bind(this)} label="Description" required={true} placeholder="Application Description..." value={this.state.appDescVal} />
                     </div>
@@ -103,6 +107,9 @@ class BLISAppCreator extends Component {
 const mapDispatchToProps = (dispatch) => {
     return bindActionCreators({
         createBLISApplication: createBLISApplication,
+        fetchAllActions: fetchAllActions,
+        fetchAllEntities: fetchAllEntities,
+        fetchAllTrainDialogs: fetchAllTrainDialogs,
         setBLISAppDisplay: setBLISAppDisplay
     }, dispatch);
 }

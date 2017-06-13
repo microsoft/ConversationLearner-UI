@@ -62,7 +62,7 @@ class EntitiesHomepage extends Component {
         }
     }
     render() {
-        let entities = this.props.entities
+        let entities = this.props.entities;
         return (
             <div>
                 <TrainingGroundArenaHeader title="Entities" description="Manage a list of entities in your application and track and control their instances within actions..."/>

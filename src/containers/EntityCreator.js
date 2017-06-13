@@ -114,8 +114,8 @@ class EntityCreator extends Component {
                     <div className='modalHeader'>
                         <span className='ms-font-xxl ms-fontWeight-semilight'>Create an Entity</span>
                     </div>
-                    <div className='entityModalContent'>
-                        <TextField className="entityModalContentTextField"
+                    <div>
+                        <TextField
                             onChanged={this.nameChanged.bind(this)}
                             label="Name"
                             required={true}
