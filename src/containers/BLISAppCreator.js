@@ -74,10 +74,10 @@ class BLISAppCreator extends Component {
                         <span className='ms-font-xxl ms-fontWeight-semilight'>Create a BLIS App</span>
                     </div>
                     <div className='appModalContent'>
-                        <TextField className="appModalContentTextField" onChanged={this.nameChanged.bind(this)} label="Name" required={true} placeholder="Application Name..." value={this.state.appNameVal} />
-                        <TextField className="appModalContentTextField" multiline inputClassName="ms-font-m-plus" autoAdjustHeight onChanged={this.descriptionChanged.bind(this)} label="Description" required={true} placeholder="Application Description..." value={this.state.appDescVal} />
+                        <TextField onChanged={this.nameChanged.bind(this)} label="Name" required={true} placeholder="Application Name..." value={this.state.appNameVal} />
+                        <TextField multiline inputClassName="ms-font-m-plus" autoAdjustHeight onChanged={this.descriptionChanged.bind(this)} label="Description" required={true} placeholder="Application Description..." value={this.state.appDescVal} />
                     </div>
-                    <div className='appModalFooter'>
+                    <div className='modalFooter'>
                         <CommandButton
                             data-automation-id='randomID2'
                             disabled={false}

@@ -150,27 +150,6 @@
   color: lightgrey !important;
   cursor: pointer !important;
 }
-.createAppModal{
-  border: 2px solid #004b50;
-  width: 40%;
-  height: 50%;
-  padding: 1em;
-  position: relative
-}
-.modalHeader{
-  display: block;
-  text-align: center;
-  padding: 1em;
-}
-.appModalFooter{
-  display: block;
-  height: 20%;
-  bottom: 0;
-  position: absolute;
-}
-.appModalContentTextField{
-  margin-top: 1em !important;
-}
 .trainingGroundHeaderContent{
   display:block;
   margin-bottom: .5em;
@@ -187,19 +166,28 @@
   color: lightgrey;
   font-size: 18px
 }
-.createEntityModal{
+.modalHeader{
+  display: block;
+  text-align: center;
+  padding: 1em;
+}
+.modalFooter{
+  display: block;
+  bottom: 0;
+  position: absolute;
+  margin-bottom: 1em;
+}
+.createAppModal{
   border: 2px solid #004b50;
   width: 40%;
-  height: 70%;
+  height: 40%;
   padding: 1em;
   position: relative
 }
-.entityModalFooter{
-  display: block;
-  height: 20%;
-  bottom: 0;
-  position: absolute;
-}
-.entityModalContentTextField{
-  margin-top: 2em !important;
+.createEntityModal{
+  border: 2px solid #004b50;
+  width: 40%;
+  height: 58%;
+  padding: 1em;
+  position: relative
 }
