@@ -3,7 +3,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader';
 import ActionResponseCreator from './ActionResponseCreator';
-import { DetailsList, CommandButton, Link, CheckboxVisibility } from 'office-ui-fabric-react';
+import { DetailsList, CommandButton, Link, CheckboxVisibility, List } from 'office-ui-fabric-react';
 let columns = [
     {
         key: 'actionType',
@@ -73,6 +73,32 @@ class ActionResponsesHomepage extends Component {
                 } else {
                     return <span className="ms-Icon ms-Icon--Remove notFoundIcon" aria-hidden="true"></span>;
                 }
+            case 'positiveEntities':
+                if (fieldContent.length > 0) {
+                    return (
+                        <List
+                            items={fieldContent}
+                            onRenderCell={(item, index) => (
+                                <EntityTile item={item} />
+                            )}
+                        />
+                    )
+                } else {
+                    return <span className="ms-Icon ms-Icon--Remove notFoundIcon" aria-hidden="true"></span>;
+                }
+            case 'negativeEntities':
+                if (fieldContent.length > 0) {
+                    return (
+                        <List
+                            items={fieldContent}
+                            onRenderCell={(item, index) => (
+                                <EntityTile item={item} />
+                            )}
+                        />
+                    )
+                } else {
+                    return <span className="ms-Icon ms-Icon--Remove notFoundIcon" aria-hidden="true"></span>;
+                }
             default:
                 return <span className='ms-font-m-plus'>{fieldContent}</span>;
         }
@@ -101,3 +127,14 @@ const mapStateToProps = (state) => {
     }
 }
 export default connect(mapStateToProps, null)(ActionResponsesHomepage);
+
+export class EntityTile extends React.Component {
+    render() {
+        let { item } = this.props;
+        return (
+            <div className='ms-ListItem is-selectable'>
+                <span className='ms-ListItem-primaryText'>{item.name}</span>
+            </div>
+        );
+    }
+}
