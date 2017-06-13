@@ -255,7 +255,7 @@ class ActionResponseCreator extends Component {
                             selectedKey={this.state.waitKey}
                         />
                     </div>
-                    <div>
+                    <div className='modalFooter'>
                         <CommandButton
                             data-automation-id='randomID6'
                             disabled={false}

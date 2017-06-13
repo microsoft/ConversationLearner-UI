@@ -81,7 +81,7 @@ class BLISAppCreator extends Component {
                         <TextField onChanged={this.nameChanged.bind(this)} label="Name" required={true} placeholder="Application Name..." value={this.state.appNameVal} />
                         <TextField multiline inputClassName="ms-font-m-plus" autoAdjustHeight onChanged={this.descriptionChanged.bind(this)} label="Description" required={true} placeholder="Application Description..." value={this.state.appDescVal} />
                     </div>
-                    <div>
+                    <div className='modalFooter'>
                         <CommandButton
                             data-automation-id='randomID2'
                             disabled={false}

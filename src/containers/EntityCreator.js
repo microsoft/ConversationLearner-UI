@@ -160,7 +160,7 @@ class EntityCreator extends Component {
                             selectedKey={this.state.negatableKey}
                         />
                     </div>
-                    <div>
+                    <div className='modalFooter'>
                         <CommandButton
                             data-automation-id='randomID2'
                             disabled={false}

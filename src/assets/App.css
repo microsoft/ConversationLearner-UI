@@ -171,6 +171,9 @@
   text-align: center;
   padding: 1em;
 }
+.modalFooter{
+  margin-top: 1em;
+}
 .createModal{
   border: 2px solid #004b50;
   width: 40%;
