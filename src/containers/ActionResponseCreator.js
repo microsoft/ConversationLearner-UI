@@ -11,6 +11,13 @@ class ActionResponseCreator extends Component {
         super(p);
         this.state = {
             open: false,
+            actionTypeVal: 'TEXT',
+            apiTypeVal: null,
+            contentVal: '',
+            reqEntitiesVal: [],
+            negEntitiesVal: [],
+            waitVal: false,
+            waitKey: 'waitFalse'
         }
     }
     handleOpen() {
@@ -72,6 +79,7 @@ class ActionResponseCreator extends Component {
                         <span className='ms-font-xxl ms-fontWeight-semilight'>Create an Action</span>
                     </div>
                     <div>
+                        
                     </div>
                     <div className='modalFooter'>
                         <CommandButton
