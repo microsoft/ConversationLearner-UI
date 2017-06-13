@@ -43,8 +43,35 @@ class ActionResponseCreator extends Component {
         let randomGUID = this.generateGUID();
         this.handleClose();
     }
+    waitChanged(event, option) {
+        if (option.text == 'False') {
+            this.setState({
+                waitVal: false,
+                waitKey: 'waitFalse'
+            })
+        } else {
+            this.setState({
+                waitVal: true,
+                waitKey: 'waitTrue'
+            })
+        }
+    }
+    actionTypeChanged(obj) {
+        this.setState({
+            actionTypeVal: obj.text
+        })
+    }
+    apiTypeChanged(obj) {
+        this.setState({
+            apiTypeVal: obj.text
+        })
+    }
+    contentChanged(text) {
+        this.setState({
+            contentVal: text
+        })
+    }
     render() {
-        console.log(this.props.actions)
         let actionTypeVals = Object.values(ActionTypes);
         let apiTypeVals = Object.values(APITypes);
         let actionTypeOptions = actionTypeVals.map(v => {
@@ -79,39 +106,73 @@ class ActionResponseCreator extends Component {
                         <span className='ms-font-xxl ms-fontWeight-semilight'>Create an Action</span>
                     </div>
                     <div>
+                        <Dropdown
+                            label='Action Type'
+                            options={actionTypeOptions}
+                            onChanged={this.actionTypeChanged.bind(this)}
+                            selectedKey={this.state.actionTypeVal}
+                        />
+                        <Dropdown
+                            label='API Type'
+                            options={apiTypeOptions}
+                            onChanged={this.apiTypeChanged.bind(this)}
+                            selectedKey={this.state.apiTypeVal}
+                        />
+                        <TextField
+                            onChanged={this.contentChanged.bind(this)}
+                            label="Content"
+                            required={true}
+                            placeholder="Content..."
+                            value={this.state.contentVal} />
+                        <ChoiceGroup
+                            defaultSelectedKey='waitFalse'
+                            options={[
+                                {
+                                    key: 'waitTrue',
+                                    text: 'True'
+                                },
+                                {
+                                    key: 'waitFalse',
+                                    text: 'False',
+                                }
+                            ]}
+                            label='WAIT'
+                            onChange={this.waitChanged.bind(this)}
+                            selectedKey={this.state.waitKey}
+                        />
                         
                     </div>
                     <div className='modalFooter'>
-                        <CommandButton
-                            data-automation-id='randomID6'
-                            disabled={false}
-                            onClick={this.createAction.bind(this)}
-                            className='goldButton'
-                            ariaDescription='Create'
-                            text='Create'
-                        />
-                        <CommandButton
-                            data-automation-id='randomID7'
-                            className="grayButton"
-                            disabled={false}
-                            onClick={this.handleClose.bind(this)}
-                            ariaDescription='Cancel'
-                            text='Cancel'
-                        />
-                    </div>
+                            <CommandButton
+                                data-automation-id='randomID6'
+                                disabled={false}
+                                onClick={this.createAction.bind(this)}
+                                className='goldButton'
+                                ariaDescription='Create'
+                                text='Create'
+                            />
+                            <CommandButton
+                                data-automation-id='randomID7'
+                                className="grayButton"
+                                disabled={false}
+                                onClick={this.handleClose.bind(this)}
+                                ariaDescription='Cancel'
+                                text='Cancel'
+                            />
+                        </div>
                 </Modal>
             </div>
-        );
+                );
     }
 }
 const mapDispatchToProps = (dispatch) => {
     return bindActionCreators({
-        createAction: createAction
+                    createAction: createAction
     }, dispatch);
 }
 const mapStateToProps = (state) => {
     return {
-        actions: state.actions,
+                    actions: state.actions,
         blisApps: state.apps
     }
 }
