@@ -3,9 +3,9 @@ import { createAction } from '../actions/create';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
-import { CommandButton, Dialog, DialogFooter, DialogType, ChoiceGroup, TextField, DefaultButton, Dropdown } from 'office-ui-fabric-react';
+import { CommandButton, Dialog, DialogFooter, DialogType, ChoiceGroup, TextField, DefaultButton, Dropdown, TagPicker, Label } from 'office-ui-fabric-react';
 import { Action, ActionMetadata } from '../models/Action';
-import { ActionTypes, APITypes } from '../models/Constants'
+import { ActionTypes, APITypes } from '../models/Constants';
 class ActionResponseCreator extends Component {
     constructor(p) {
         super(p);
@@ -18,7 +18,33 @@ class ActionResponseCreator extends Component {
             negEntitiesVal: [],
             waitVal: false,
             waitKey: 'waitFalse',
-            apiTypeDisabled: true
+            apiTypeDisabled: true,
+            availableRequiredEntities: [],
+            availableNegativeEntities: []
+        }
+    }
+    componentWillUpdate() {
+        if (this.state.availableRequiredEntities.length != this.props.entities.length) {
+            let entities = this.props.entities.map(e => {
+                return {
+                    key: e.name,
+                    name: e.name
+                }
+            })
+            this.setState({
+                availableRequiredEntities: entities
+            })
+        }
+        if (this.state.availableNegativeEntities.length != this.props.entities.length) {
+            let entities = this.props.entities.map(e => {
+                return {
+                    key: e.name,
+                    name: e.name
+                }
+            })
+            this.setState({
+                availableNegativeEntities: entities
+            })
         }
     }
     handleOpen() {
@@ -29,6 +55,16 @@ class ActionResponseCreator extends Component {
     handleClose() {
         this.setState({
             open: false,
+            actionTypeVal: 'TEXT',
+            apiTypeVal: null,
+            contentVal: '',
+            reqEntitiesVal: [],
+            negEntitiesVal: [],
+            waitVal: false,
+            waitKey: 'waitFalse',
+            apiTypeDisabled: true,
+            availableRequiredEntities: [],
+            availableNegativeEntities: []
         })
     }
     generateGUID() {
@@ -42,6 +78,16 @@ class ActionResponseCreator extends Component {
     }
     createAction() {
         let randomGUID = this.generateGUID();
+        let requiredEntities = this.state.reqEntitiesVal.map(req => {
+            return this.props.entities.find(e => e.name == req.key);
+        })
+        let negativeEntities = this.state.negEntitiesVal.map(neg => {
+            return this.props.entities.find(e => e.name == neg.key);
+        })
+        let internal = this.state.actionTypeVal == 'TEXT' ? true : false;
+        let meta = new ActionMetadata(internal, this.state.apiTypeVal)
+        let actionToAdd = new Action(randomGUID, this.state.actionTypeVal, this.state.contentVal, negativeEntities, requiredEntities, this.state.waitVal, meta, this.props.blisApps.current.modelID);
+        this.props.createAction(actionToAdd);
         this.handleClose();
     }
     waitChanged(event, option) {
@@ -80,6 +126,38 @@ class ActionResponseCreator extends Component {
     contentChanged(text) {
         this.setState({
             contentVal: text
+        })
+    }
+    onFilterChanged(filterText, tagList) {
+        let entList = filterText ? this.state.availableRequiredEntities.filter(ent => ent.name.toLowerCase().indexOf(filterText.toLowerCase()) === 0).filter(item => !this.listContainsDocument(item, tagList)) : [];
+        return entList;
+    }
+
+    listContainsDocument(tag, tagList) {
+        if (!tagList || !tagList.length || tagList.length === 0) {
+            return false;
+        }
+        return tagList.filter(compareTag => compareTag.key === tag.key).length > 0;
+    }
+    onFilterChangedNegative(filterText, tagList) {
+        let entList = filterText ? this.state.availableNegativeEntities.filter(ent => ent.name.toLowerCase().indexOf(filterText.toLowerCase()) === 0).filter(item => !this.listContainsDocumentNegative(item, tagList)) : [];
+        return entList;
+    }
+
+    listContainsDocumentNegative(tag, tagList) {
+        if (!tagList || !tagList.length || tagList.length === 0) {
+            return false;
+        }
+        return tagList.filter(compareTag => compareTag.key === tag.key).length > 0;
+    }
+    handleChangeRequiredEntities(items) {
+        this.setState({
+            reqEntitiesVal: items
+        })
+    }
+    handleChangeNegativeEntities(items) {
+        this.setState({
+            negEntitiesVal: items
         })
     }
     render() {
@@ -136,6 +214,30 @@ class ActionResponseCreator extends Component {
                             required={true}
                             placeholder="Content..."
                             value={this.state.contentVal} />
+                        <Label>Required Entities</Label>
+                        <TagPicker
+                            onResolveSuggestions={this.onFilterChanged.bind(this)}
+                            getTextFromItem={(item) => { return item.name; }}
+                            onChange={this.handleChangeRequiredEntities.bind(this)}
+                            pickerSuggestionsProps={
+                                {
+                                    suggestionsHeaderText: 'Entities',
+                                    noResultsFoundText: 'No Entities Found'
+                                }
+                            }
+                        />
+                        <Label>Negative Entities</Label>
+                        <TagPicker
+                            onResolveSuggestions={this.onFilterChangedNegative.bind(this)}
+                            getTextFromItem={(item) => { return item.name; }}
+                            onChange={this.handleChangeNegativeEntities.bind(this)}
+                            pickerSuggestionsProps={
+                                {
+                                    suggestionsHeaderText: 'Entities',
+                                    noResultsFoundText: 'No Entities Found'
+                                }
+                            }
+                        />
                         <ChoiceGroup
                             defaultSelectedKey='waitFalse'
                             options={[
@@ -152,7 +254,6 @@ class ActionResponseCreator extends Component {
                             onChange={this.waitChanged.bind(this)}
                             selectedKey={this.state.waitKey}
                         />
-
                     </div>
                     <div className='modalFooter'>
                         <CommandButton
@@ -185,7 +286,8 @@ const mapDispatchToProps = (dispatch) => {
 const mapStateToProps = (state) => {
     return {
         actions: state.actions,
-        blisApps: state.apps
+        blisApps: state.apps,
+        entities: state.entities
     }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(ActionResponseCreator);

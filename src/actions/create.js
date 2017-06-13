@@ -17,11 +17,11 @@ export const createEntity = (entity) => {
         payload: entity
     }
 }
-export const createAction = () => { 
+export const createAction = (action) => { 
     //will need to make a call to BLIS to add this action for its application
     return {
         type: CREATE_ACTION,
-        payload: {}
+        payload: action
     }
 }
 export const createTrainDialog = () => { 
