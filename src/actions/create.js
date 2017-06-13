@@ -9,10 +9,11 @@ export const createBLISApplication = (application) => {
         payload: application
     }
 }
-export const createEntity = () => { 
+export const createEntity = (entity) => { 
+    //these will need to be sent directly to BLIS as well as to the reducers
     return {
         type: CREATE_ENTITY,
-        payload: {}
+        payload: entity
     }
 }
 export const createAction = () => { 

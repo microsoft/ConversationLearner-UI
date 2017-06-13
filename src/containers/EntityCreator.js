@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { CommandButton, Dialog, DialogFooter, DialogType, ChoiceGroup, TextField, DefaultButton, Dropdown } from 'office-ui-fabric-react';
-import { Entity } from '../models/Entity';
+import { Entity, EntityMetadata } from '../models/Entity';
 import { EntityTypes } from '../models/Constants'
 class EntityCreator extends Component {
     constructor(p) {
@@ -15,6 +15,8 @@ class EntityCreator extends Component {
             entityTypeVal: 'LOCAL',
             isBucketableVal: false,
             isNegatableVal: false,
+            bucketableKey: 'bucketableFalse',
+            negatableKey: 'negatableFalse'
         }
     }
     handleOpen() {
@@ -25,6 +27,12 @@ class EntityCreator extends Component {
     handleClose() {
         this.setState({
             open: false,
+            entityNameVal: '',
+            entityTypeVal: 'LOCAL',
+            isBucketableVal: false,
+            isNegatableVal: false,
+            bucketableKey: 'bucketableFalse',
+            negatableKey: 'negatableFalse'
         })
     }
     generateGUID() {
@@ -38,18 +46,46 @@ class EntityCreator extends Component {
     }
     createEntity() {
         let randomGUID = this.generateGUID();
-        // this.props.createEntity(appToAdd);
+        let meta = new EntityMetadata(this.state.isBucketableVal, this.state.isNegatableVal, false, false);
+        let entityToAdd = new Entity(randomGUID, this.state.entityTypeVal, null, this.state.entityNameVal, meta, this.props.blisApps.current.modelID);
+        this.props.createEntity(entityToAdd);
         this.handleClose();
     }
-    nameChanged(text){
+    nameChanged(text) {
         this.setState({
             entityNameVal: text
         })
     }
-    typeChanged(obj){
+    typeChanged(obj) {
         this.setState({
             entityTypeVal: obj.text
         })
+    }
+    bucketableChanged(event, option) {
+        if (option.text == 'False') {
+            this.setState({
+                isBucketableVal: false,
+                bucketableKey: 'bucketableFalse'
+            })
+        } else {
+            this.setState({
+                isBucketableVal: true,
+                bucketableKey: 'bucketableTrue'
+            })
+        }
+    }
+    negatableChanged(event, option) {
+        if (option.text == 'False') {
+            this.setState({
+                isNegatableVal: false,
+                negatableKey: 'negatableFalse'
+            })
+        } else {
+            this.setState({
+                isNegatableVal: true,
+                negatableKey: 'negatableTrue'
+            })
+        }
     }
     render() {
         let vals = Object.values(EntityTypes);
@@ -73,27 +109,58 @@ class EntityCreator extends Component {
                     isOpen={this.state.open}
                     onDismiss={this.handleClose.bind(this)}
                     isBlocking={false}
-                    containerClassName='createAppModal'
+                    containerClassName='createEntityModal'
                 >
-                    <div className='appModalHeader'>
+                    <div className='modalHeader'>
                         <span className='ms-font-xxl ms-fontWeight-semilight'>Create an Entity</span>
                     </div>
-                    <div className='appModalContent'>
-                        <TextField className="appModalContentTextField" 
-                            onChanged={this.nameChanged.bind(this)} 
-                            label="Name" 
-                            required={true} 
-                            placeholder="Entity Name..." 
+                    <div className='entityModalContent'>
+                        <TextField className="entityModalContentTextField"
+                            onChanged={this.nameChanged.bind(this)}
+                            label="Name"
+                            required={true}
+                            placeholder="Entity Name..."
                             value={this.state.entityNameVal} />
                         <Dropdown
-                            label='Entity Type:'
+                            label='Entity Type'
                             defaultSelectedKey='LOCAL'
                             options={options}
                             onChanged={this.typeChanged.bind(this)}
                             selectedKey={this.state.entityTypeVal}
-                            />
+                        />
+                        <ChoiceGroup
+                            options={[
+                                {
+                                    key: 'bucketableTrue',
+                                    text: 'True'
+                                },
+                                {
+                                    key: 'bucketableFalse',
+                                    text: 'False',
+                                }
+                            ]}
+                            label='Bucketable'
+                            onChange={this.bucketableChanged.bind(this)}
+                            selectedKey={this.state.bucketableKey}
+                        />
+                        <ChoiceGroup
+                            defaultSelectedKey='negatableFalse'
+                            options={[
+                                {
+                                    key: 'negatableTrue',
+                                    text: 'True'
+                                },
+                                {
+                                    key: 'negatableFalse',
+                                    text: 'False',
+                                }
+                            ]}
+                            label='Negatable'
+                            onChange={this.negatableChanged.bind(this)}
+                            selectedKey={this.state.negatableKey}
+                        />
                     </div>
-                    <div className='appModalFooter'>
+                    <div className='entityModalFooter'>
                         <CommandButton
                             data-automation-id='randomID2'
                             disabled={false}
@@ -123,7 +190,8 @@ const mapDispatchToProps = (dispatch) => {
 }
 const mapStateToProps = (state) => {
     return {
-        entities: state.entities
+        entities: state.entities,
+        blisApps: state.apps
     }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(EntityCreator);

@@ -70,7 +70,7 @@ class BLISAppCreator extends Component {
                     isBlocking={false}
                     containerClassName='createAppModal'
                 >
-                    <div className='appModalHeader'>
+                    <div className='modalHeader'>
                         <span className='ms-font-xxl ms-fontWeight-semilight'>Create a BLIS App</span>
                     </div>
                     <div className='appModalContent'>

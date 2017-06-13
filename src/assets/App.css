@@ -157,7 +157,7 @@
   padding: 1em;
   position: relative
 }
-.appModalHeader{
+.modalHeader{
   display: block;
   text-align: center;
   padding: 1em;
@@ -168,11 +168,8 @@
   bottom: 0;
   position: absolute;
 }
-.appModalFooter *{
-  margin:auto;
-}
 .appModalContentTextField{
-  margin-top: 2em !important;
+  margin-top: 1em !important;
 }
 .trainingGroundHeaderContent{
   display:block;
@@ -189,4 +186,20 @@
 .notFoundIcon{
   color: lightgrey;
   font-size: 18px
+}
+.createEntityModal{
+  border: 2px solid #004b50;
+  width: 40%;
+  height: 70%;
+  padding: 1em;
+  position: relative
+}
+.entityModalFooter{
+  display: block;
+  height: 20%;
+  bottom: 0;
+  position: absolute;
+}
+.entityModalContentTextField{
+  margin-top: 2em !important;
 }
