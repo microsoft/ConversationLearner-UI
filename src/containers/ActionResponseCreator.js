@@ -17,7 +17,8 @@ class ActionResponseCreator extends Component {
             reqEntitiesVal: [],
             negEntitiesVal: [],
             waitVal: false,
-            waitKey: 'waitFalse'
+            waitKey: 'waitFalse',
+            apiTypeDisabled: true
         }
     }
     handleOpen() {
@@ -57,9 +58,19 @@ class ActionResponseCreator extends Component {
         }
     }
     actionTypeChanged(obj) {
-        this.setState({
-            actionTypeVal: obj.text
-        })
+        if (obj.text == 'TEXT') {
+            this.setState({
+                actionTypeVal: obj.text,
+                apiTypeDisabled: true,
+                apiTypeVal: null
+            })
+        } else {
+            this.setState({
+                actionTypeVal: obj.text,
+                apiTypeDisabled: false,
+                apiTypeVal: 'LOCAL'
+            })
+        }
     }
     apiTypeChanged(obj) {
         this.setState({
@@ -114,6 +125,7 @@ class ActionResponseCreator extends Component {
                         />
                         <Dropdown
                             label='API Type'
+                            disabled={this.state.apiTypeDisabled}
                             options={apiTypeOptions}
                             onChanged={this.apiTypeChanged.bind(this)}
                             selectedKey={this.state.apiTypeVal}
@@ -140,39 +152,39 @@ class ActionResponseCreator extends Component {
                             onChange={this.waitChanged.bind(this)}
                             selectedKey={this.state.waitKey}
                         />
-                        
+
                     </div>
                     <div className='modalFooter'>
-                            <CommandButton
-                                data-automation-id='randomID6'
-                                disabled={false}
-                                onClick={this.createAction.bind(this)}
-                                className='goldButton'
-                                ariaDescription='Create'
-                                text='Create'
-                            />
-                            <CommandButton
-                                data-automation-id='randomID7'
-                                className="grayButton"
-                                disabled={false}
-                                onClick={this.handleClose.bind(this)}
-                                ariaDescription='Cancel'
-                                text='Cancel'
-                            />
-                        </div>
+                        <CommandButton
+                            data-automation-id='randomID6'
+                            disabled={false}
+                            onClick={this.createAction.bind(this)}
+                            className='goldButton'
+                            ariaDescription='Create'
+                            text='Create'
+                        />
+                        <CommandButton
+                            data-automation-id='randomID7'
+                            className="grayButton"
+                            disabled={false}
+                            onClick={this.handleClose.bind(this)}
+                            ariaDescription='Cancel'
+                            text='Cancel'
+                        />
+                    </div>
                 </Modal>
             </div>
-                );
+        );
     }
 }
 const mapDispatchToProps = (dispatch) => {
     return bindActionCreators({
-                    createAction: createAction
+        createAction: createAction
     }, dispatch);
 }
 const mapStateToProps = (state) => {
     return {
-                    actions: state.actions,
+        actions: state.actions,
         blisApps: state.apps
     }
 }
