@@ -171,23 +171,9 @@
   text-align: center;
   padding: 1em;
 }
-.modalFooter{
-  display: block;
-  bottom: 0;
-  position: absolute;
-  margin-bottom: 1em;
-}
-.createAppModal{
+.createModal{
   border: 2px solid #004b50;
   width: 40%;
-  height: 40%;
-  padding: 1em;
-  position: relative
-}
-.createEntityModal{
-  border: 2px solid #004b50;
-  width: 40%;
-  height: 58%;
   padding: 1em;
   position: relative
 }

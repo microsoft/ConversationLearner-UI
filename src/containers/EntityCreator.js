@@ -109,7 +109,7 @@ class EntityCreator extends Component {
                     isOpen={this.state.open}
                     onDismiss={this.handleClose.bind(this)}
                     isBlocking={false}
-                    containerClassName='createEntityModal'
+                    containerClassName='createModal'
                 >
                     <div className='modalHeader'>
                         <span className='ms-font-xxl ms-fontWeight-semilight'>Create an Entity</span>
@@ -160,7 +160,7 @@ class EntityCreator extends Component {
                             selectedKey={this.state.negatableKey}
                         />
                     </div>
-                    <div className='modalFooter'>
+                    <div>
                         <CommandButton
                             data-automation-id='randomID2'
                             disabled={false}

@@ -189,7 +189,7 @@ class ActionResponseCreator extends Component {
                     isOpen={this.state.open}
                     onDismiss={this.handleClose.bind(this)}
                     isBlocking={false}
-                    containerClassName='createEntityModal'
+                    containerClassName='createModal'
                 >
                     <div className='modalHeader'>
                         <span className='ms-font-xxl ms-fontWeight-semilight'>Create an Action</span>
@@ -255,7 +255,7 @@ class ActionResponseCreator extends Component {
                             selectedKey={this.state.waitKey}
                         />
                     </div>
-                    <div className='modalFooter'>
+                    <div>
                         <CommandButton
                             data-automation-id='randomID6'
                             disabled={false}
