@@ -154,7 +154,7 @@
   display:block;
   margin-bottom: .5em;
 }
-.trainingGroundArenaHeader, .entityCreator{
+.trainingGroundArenaHeader, .entityCreator, .actionResponseCreator{
   display: block;
   margin-bottom: 1em;
 }
