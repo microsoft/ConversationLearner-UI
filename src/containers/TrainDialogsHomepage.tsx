@@ -2,20 +2,18 @@ import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader'
-class AppDashboard extends Component {
+class TrainDialogsHomepage extends React.Component<any, any> {
     render() {
         return (
             <div>
-                <TrainingGroundArenaHeader title="Overview" description="Facts & statistics about the app's data at any period of time..."/>
+                <TrainingGroundArenaHeader title="Train Dialogs" description="Use this tool to test the current and published versions of your application, to check if you are progressing on the right track ..."/>
             </div>
         );
     }
 }
 const mapStateToProps = (state) => {
     return {
-        entities: state.entities,
-        actions: state.actions,
         trainDialogs: state.trainDialogs
     }
 }
-export default connect(mapStateToProps, null)(AppDashboard);
+export default connect(mapStateToProps, null)(TrainDialogsHomepage);

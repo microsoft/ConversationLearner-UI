@@ -3,7 +3,7 @@ import { createBLISApplication } from '../actions/create';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader'
-class AppSettings extends Component {
+class AppSettings extends React.Component<any, any> {
     render() {
         return (
             <div>

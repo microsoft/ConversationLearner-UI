@@ -10,8 +10,8 @@ import AppDashboard from './AppDashboard';
 import AppSettings from './AppSettings';
 import { Nav } from 'office-ui-fabric-react';
 import { Link } from 'react-router-dom';
-class TrainingGround extends Component {
-    constructor(p){
+class TrainingGround extends React.Component<any, any> {
+    constructor(p: any){
         super(p);
         this.state = {
             display: 'Dash',
@@ -43,7 +43,7 @@ class TrainingGround extends Component {
                 )
         }
     }
-    setArenaDisplay(page){
+    setArenaDisplay(page: string){
         this.setState({
             display: page,
             selectedKey: page

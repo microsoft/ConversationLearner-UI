@@ -1,0 +1,19 @@
+{
+    "compilerOptions": {
+        "declaration": true,
+        "importHelpers": true,
+        "jsx": "react",
+        "lib": [
+            "dom",
+            "es2017"
+        ],
+        "module": "commonjs",
+        "noImplicitAny": true,
+        "outDir": "./dist/",
+        "target": "es5",
+        "sourceMap": true
+    },
+    "files": [
+        "src/index.tsx"
+    ]
+}

@@ -6,8 +6,8 @@ import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { CommandButton, Dialog, DialogFooter, DialogType, ChoiceGroup, TextField, DefaultButton, Dropdown } from 'office-ui-fabric-react';
 import { Entity, EntityMetadata } from '../models/Entity';
 import { EntityTypes } from '../models/Constants'
-class EntityCreator extends Component {
-    constructor(p) {
+class EntityCreator extends React.Component<any, any> {
+    constructor(p: any) {
         super(p);
         this.state = {
             open: false,
@@ -35,7 +35,7 @@ class EntityCreator extends Component {
             negatableKey: 'negatableFalse'
         })
     }
-    generateGUID() {
+    generateGUID() : string {
         let d = new Date().getTime();
         let guid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (char) => {
             let r = (d + Math.random() * 16) % 16 | 0;
@@ -51,17 +51,17 @@ class EntityCreator extends Component {
         this.props.createEntity(entityToAdd);
         this.handleClose();
     }
-    nameChanged(text) {
+    nameChanged(text: string) {
         this.setState({
             entityNameVal: text
         })
     }
-    typeChanged(obj) {
+    typeChanged(obj: {text: string}) {
         this.setState({
             entityTypeVal: obj.text
         })
     }
-    bucketableChanged(event, option) {
+    bucketableChanged(event: any, option: {text: string}) {
         if (option.text == 'False') {
             this.setState({
                 isBucketableVal: false,
@@ -74,7 +74,7 @@ class EntityCreator extends Component {
             })
         }
     }
-    negatableChanged(event, option) {
+    negatableChanged(event: any, option: {text: string}) {
         if (option.text == 'False') {
             this.setState({
                 isNegatableVal: false,

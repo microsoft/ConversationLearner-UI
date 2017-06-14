@@ -3,8 +3,8 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader';
 import ActionResponseCreator from './ActionResponseCreator';
-import { DetailsList, CommandButton, Link, CheckboxVisibility, List } from 'office-ui-fabric-react';
-let columns = [
+import { DetailsList, CommandButton, Link, CheckboxVisibility, List, IColumn } from 'office-ui-fabric-react';
+let columns : IColumn[] = [
     {
         key: 'actionType',
         name: 'Action Type',
@@ -54,11 +54,11 @@ let columns = [
         isResizable: true
     },
 ];
-class ActionResponsesHomepage extends Component {
-    constructor(props) {
-        super(props)
+class ActionResponsesHomepage extends React.Component<any, any> {
+    constructor(p: any) {
+        super(p)
     }
-    renderItemColumn(item, index, column) {
+    renderItemColumn(item?: any, index?: number, column?: IColumn) {
         let fieldContent = item[column.fieldName];
         switch (column.key) {
             case 'apiType':
@@ -128,7 +128,7 @@ const mapStateToProps = (state) => {
 }
 export default connect(mapStateToProps, null)(ActionResponsesHomepage);
 
-export class EntityTile extends React.Component {
+export class EntityTile extends React.Component<any, any> {
     render() {
         let { item } = this.props;
         return (

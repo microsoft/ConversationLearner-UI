@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { createTrainDialog } from '../actions/create';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-class TrainDialogCreator extends Component {
+class TrainDialogCreator extends React.Component<any, any> {
     render() {
         return (
             <div className='arenaText'>

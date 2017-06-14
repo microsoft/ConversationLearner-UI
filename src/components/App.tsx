@@ -11,7 +11,7 @@ import Support from './Support';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
-class App extends Component {
+class App extends React.Component<any, any> {
   componentWillMount(){
     this.props.fetchApplications();
   }

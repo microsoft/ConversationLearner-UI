@@ -6,8 +6,8 @@ import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { CommandButton, Dialog, DialogFooter, DialogType, ChoiceGroup, TextField, DefaultButton, Dropdown, TagPicker, Label } from 'office-ui-fabric-react';
 import { Action, ActionMetadata } from '../models/Action';
 import { ActionTypes, APITypes } from '../models/Constants';
-class ActionResponseCreator extends Component {
-    constructor(p) {
+class ActionResponseCreator extends React.Component<any, any> {
+    constructor(p: any) {
         super(p);
         this.state = {
             open: false,
@@ -47,12 +47,12 @@ class ActionResponseCreator extends Component {
             })
         }
     }
-    handleOpen() {
+    handleOpen(){
         this.setState({
             open: true
         })
     }
-    handleClose() {
+    handleClose(){
         this.setState({
             open: false,
             actionTypeVal: 'TEXT',
@@ -67,16 +67,16 @@ class ActionResponseCreator extends Component {
             availableNegativeEntities: []
         })
     }
-    generateGUID() {
+    generateGUID() : string {
         let d = new Date().getTime();
-        let guid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (char) => {
+        let guid : string = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (char) => {
             let r = (d + Math.random() * 16) % 16 | 0;
             d = Math.floor(d / 16);
             return (char == 'x' ? r : (r & 0x3 | 0x8)).toString(16);
         });
         return guid;
     }
-    createAction() {
+    createAction(){
         let randomGUID = this.generateGUID();
         let requiredEntities = this.state.reqEntitiesVal.map(req => {
             return this.props.entities.find(e => e.name == req.key);
@@ -90,7 +90,7 @@ class ActionResponseCreator extends Component {
         this.props.createAction(actionToAdd);
         this.handleClose();
     }
-    waitChanged(event, option) {
+    waitChanged(event : any, option : {text: string}) {
         if (option.text == 'False') {
             this.setState({
                 waitVal: false,
@@ -103,7 +103,7 @@ class ActionResponseCreator extends Component {
             })
         }
     }
-    actionTypeChanged(obj) {
+    actionTypeChanged(obj: {text: string}){
         if (obj.text == 'TEXT') {
             this.setState({
                 actionTypeVal: obj.text,
@@ -118,44 +118,44 @@ class ActionResponseCreator extends Component {
             })
         }
     }
-    apiTypeChanged(obj) {
+    apiTypeChanged(obj: {text: string}){
         this.setState({
             apiTypeVal: obj.text
         })
     }
-    contentChanged(text) {
+    contentChanged(text: string) {
         this.setState({
             contentVal: text
         })
     }
-    onFilterChanged(filterText, tagList) {
+    onFilterChanged(filterText: string, tagList: { key: string, name: string }[]) {
         let entList = filterText ? this.state.availableRequiredEntities.filter(ent => ent.name.toLowerCase().indexOf(filterText.toLowerCase()) === 0).filter(item => !this.listContainsDocument(item, tagList)) : [];
         return entList;
     }
 
-    listContainsDocument(tag, tagList) {
+    listContainsDocument(tag: { key: string, name: string }, tagList: { key: string, name: string }[]) {
         if (!tagList || !tagList.length || tagList.length === 0) {
             return false;
         }
         return tagList.filter(compareTag => compareTag.key === tag.key).length > 0;
     }
-    onFilterChangedNegative(filterText, tagList) {
+    onFilterChangedNegative(filterText: string, tagList: { key: string, name: string }[]) {
         let entList = filterText ? this.state.availableNegativeEntities.filter(ent => ent.name.toLowerCase().indexOf(filterText.toLowerCase()) === 0).filter(item => !this.listContainsDocumentNegative(item, tagList)) : [];
         return entList;
     }
 
-    listContainsDocumentNegative(tag, tagList) {
+    listContainsDocumentNegative(tag: { key: string, name: string }, tagList: { key: string, name: string }[]){
         if (!tagList || !tagList.length || tagList.length === 0) {
             return false;
         }
         return tagList.filter(compareTag => compareTag.key === tag.key).length > 0;
     }
-    handleChangeRequiredEntities(items) {
+    handleChangeRequiredEntities(items: { key: string, name: string }[]) {
         this.setState({
             reqEntitiesVal: items
         })
     }
-    handleChangeNegativeEntities(items) {
+    handleChangeNegativeEntities(items: { key: string, name: string }[]) {
         this.setState({
             negEntitiesVal: items
         })

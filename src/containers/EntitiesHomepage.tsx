@@ -3,8 +3,8 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader';
 import EntityCreator from './EntityCreator';
-import { DetailsList, CommandButton, Link, CheckboxVisibility } from 'office-ui-fabric-react';
-let columns = [
+import { DetailsList, CommandButton, Link, CheckboxVisibility, IColumn } from 'office-ui-fabric-react';
+let columns : IColumn[] = [
     {
         key: 'name',
         name: 'Name',
@@ -38,11 +38,11 @@ let columns = [
         isResizable: true
     },
 ];
-class EntitiesHomepage extends Component {
-    constructor(props){
-        super(props)
+class EntitiesHomepage extends React.Component<any, any> {
+    constructor(p: any){
+        super(p)
     }
-    renderItemColumn(item, index, column) {
+    renderItemColumn(item?: any, index?: number, column?: IColumn) {
         let fieldContent = item[column.fieldName];
         switch (column.key) {
             case 'isBucketable':

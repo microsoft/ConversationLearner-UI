@@ -7,8 +7,8 @@ import { CommandButton, Dialog, DialogFooter, DialogType, ChoiceGroup, TextField
 import { setBLISAppDisplay } from '../actions/update'
 import { fetchAllActions, fetchAllEntities, fetchAllTrainDialogs } from '../actions/fetch'
 import { BLISApplication } from '../models/Application'
-class BLISAppCreator extends Component {
-    constructor(p) {
+class BLISAppCreator extends React.Component<any, any> {
+    constructor(p: any) {
         super(p);
         this.state = {
             open: false,
@@ -28,17 +28,17 @@ class BLISAppCreator extends Component {
             appDescVal: ''
         })
     }
-    nameChanged(text) {
+    nameChanged(text: string) {
         this.setState({
             appNameVal: text
         })
     }
-    descriptionChanged(text) {
+    descriptionChanged(text: string) {
         this.setState({
             appDescVal: text
         })
     }
-    generateGUID() {
+    generateGUID() : string {
         let d = new Date().getTime();
         let guid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (char) => {
             let r = (d + Math.random() * 16) % 16 | 0;

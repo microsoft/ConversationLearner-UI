@@ -1,8 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-export default class Header extends React.Component {
-    constructor(props) {
-        super(props);
+export default class Header extends React.Component<any, any> {
+    constructor(p: any) {
+        super(p);
         this.state = {
             myAppsClass: 'selectedHeaderElementDiv',
             docsClass: 'headerElementDiv',
@@ -11,7 +11,7 @@ export default class Header extends React.Component {
         }
         this.tabSelected = this.tabSelected.bind(this)
     }
-    tabSelected(tab){
+    tabSelected(tab: string) {
         switch(tab){
             case "myApps":
                 this.setState({

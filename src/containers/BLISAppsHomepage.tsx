@@ -4,8 +4,8 @@ import BLISAppsList from './BLISAppsList';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
-class BLISAppsHomepage extends Component {
-    constructor(p) {
+class BLISAppsHomepage extends React.Component<any, any> {
+    constructor(p: any) {
         super(p);
     }
     render() {

@@ -5,8 +5,8 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import BLISAppCreator from './BLISAppCreator'
 import TrainingGround from './TrainingGround';
-import { DetailsList, CommandButton, Link, CheckboxVisibility } from 'office-ui-fabric-react';
-let columns = [
+import { DetailsList, CommandButton, Link, CheckboxVisibility, IColumn } from 'office-ui-fabric-react';
+let columns : IColumn[] = [
     {
         key: 'appName',
         name: 'App Name',
@@ -32,13 +32,13 @@ let columns = [
         isResizable: true
     },
 ];
-class BLISAppsList extends Component {
-    constructor(p) {
+class BLISAppsList extends React.Component<any, any> {
+    constructor(p: any) {
         super(p);
         this.renderItemColumn = this.renderItemColumn.bind(this);
         this.BLISAppSelected = this.BLISAppSelected.bind(this);
     }
-    BLISAppSelected(appName) {
+    BLISAppSelected(appName: string) {
         let appSelected = this.props.blisApps.all.find(app => app.appName == appName);
         this.props.setCurrentBLISApp(appSelected);
         this.props.fetchAllActions(appSelected.modelID);
@@ -46,7 +46,7 @@ class BLISAppsList extends Component {
         this.props.fetchAllTrainDialogs(appSelected.modelID);
         this.props.setBLISAppDisplay("TrainingGround");
     }
-    renderItemColumn(item, index, column) {
+    renderItemColumn(item?: any, index?: number, column?: IColumn) {
         let fieldContent = item[column.fieldName];
         switch (column.key) {
             case 'appName':
