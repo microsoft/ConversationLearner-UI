@@ -1,6 +1,4 @@
 export class BLISApplication {
-    constructor(modelID, appName){
-        this.modelID = modelID;
-        this.appName = appName;
+    constructor(public modelID : string, public appName : string){
     }
 }

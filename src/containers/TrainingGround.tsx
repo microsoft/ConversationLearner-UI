@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import * as React from 'react';
 import { fetchAllActions, fetchAllEntities, fetchApplications, fetchAllTrainDialogs } from '../actions/fetch';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -11,7 +11,7 @@ import AppSettings from './AppSettings';
 import { Nav } from 'office-ui-fabric-react';
 import { Link } from 'react-router-dom';
 class TrainingGround extends React.Component<any, any> {
-    constructor(p: any){
+    constructor(p: any) {
         super(p);
         this.state = {
             display: 'Dash',
@@ -19,8 +19,8 @@ class TrainingGround extends React.Component<any, any> {
         }
         this.setArenaDisplay = this.setArenaDisplay.bind(this);
     }
-    renderChosenNavLink(){
-        switch(this.state.display){
+    renderChosenNavLink() {
+        switch (this.state.display) {
             case "Settings":
                 return (
                     <AppSettings />
@@ -36,14 +36,14 @@ class TrainingGround extends React.Component<any, any> {
             case "Actions":
                 return (
                     <ActionResponsesHomepage />
-                )   
+                )
             case "TrainDialogs":
                 return (
                     <TrainDialogsHomepage />
                 )
         }
     }
-    setArenaDisplay(page: string){
+    setArenaDisplay(page: string) {
         this.setState({
             display: page,
             selectedKey: page
@@ -53,7 +53,7 @@ class TrainingGround extends React.Component<any, any> {
         return (
             <div className="content">
                 <div className='trainingGroundNavigationArea'>
-                <span className="ms-font-xxl">{this.props.blisApps.current.appName}</span>
+                    <span className="ms-font-xxl">{this.props.blisApps.current.appName}</span>
                     <div className="tgSettingsDiv">
                         <a onClick={() => this.setArenaDisplay('Settings')}><span className="ms-Icon ms-Icon--Settings" aria-hidden="true"></span>&nbsp;&nbsp;</a>
                         <span className="ms-font-m-plus"><a onClick={() => this.setArenaDisplay('Settings')}>Settings</a></span>
@@ -65,10 +65,10 @@ class TrainingGround extends React.Component<any, any> {
                             selectedKey={this.state.selectedKey}
                             groups={[{
                                 links: [
-                                    { name: 'Dashboard', key: 'Dash',  onClick:() => this.setArenaDisplay('Dash') },
-                                    { name: 'Entities', key: 'Entities',  onClick:() => this.setArenaDisplay('Entities') },
-                                    { name: 'Actions', key: 'Actions',  onClick:() => this.setArenaDisplay('Actions')},
-                                    { name: 'Train Dialogs', key: 'TrainDialogs',  onClick:() => this.setArenaDisplay('TrainDialogs') }
+                                    { name: 'Dashboard', key: 'Dash', onClick: () => this.setArenaDisplay('Dash') },
+                                    { name: 'Entities', key: 'Entities', onClick: () => this.setArenaDisplay('Entities') },
+                                    { name: 'Actions', key: 'Actions', onClick: () => this.setArenaDisplay('Actions') },
+                                    { name: 'Train Dialogs', key: 'TrainDialogs', onClick: () => this.setArenaDisplay('TrainDialogs') }
                                 ]
                             }]}
                         />
@@ -78,7 +78,7 @@ class TrainingGround extends React.Component<any, any> {
                         <span className="ms-font-m-plus backToApps"><Link className="backToApps" onClick={() => this.props.setDisplay("Home")} to="/myApps">Back to App List</Link></span>
                     </div>
                 </div>
-                
+
                 <div className='trainingGroundArena'>
                     {this.renderChosenNavLink()}
                 </div>
@@ -87,12 +87,12 @@ class TrainingGround extends React.Component<any, any> {
         );
     }
 }
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         fetchApplications: fetchApplications,
     }, dispatch);
 }
-const mapStateToProps = (state) => {
+const mapStateToProps = (state: any) => {
     return {
         blisApps: state.apps,
         entities: state.entities,

@@ -1,18 +1,9 @@
+import { Entity } from './Entity';
 export class Action {
-    constructor(id, actionType, content, negativeEntities, positiveEntities, waitAction, metadata, appID){
-        this.id = id;
-        this.actionType = actionType;
-        this.content = content;
-        this.negativeEntities = negativeEntities;
-        this.positiveEntities = positiveEntities;
-        this.waitAction = waitAction;
-        this.appID = appID;
-        this.metadata = metadata
+    constructor(public id: string, public actionType: string, public content: string, public negativeEntities: Entity[], public positiveEntities: Entity[], public waitAction: boolean, public metadata: ActionMetadata, public appID: string){
     }
 }
 export class ActionMetadata {
-    constructor(internal, type){
-        this.internal = internal;
-        this.type = type;
+    constructor(public internal: boolean, public type: string){
     }
 }

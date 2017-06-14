@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import * as React from 'react';
 import { createEntity } from '../actions/create';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -183,12 +183,12 @@ class EntityCreator extends React.Component<any, any> {
         );
     }
 }
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         createEntity: createEntity
     }, dispatch);
 }
-const mapStateToProps = (state) => {
+const mapStateToProps = (state: any) => {
     return {
         entities: state.entities,
         blisApps: state.apps

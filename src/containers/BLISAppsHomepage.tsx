@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import * as React from 'react';
 import TrainingGround from './TrainingGround';
 import BLISAppsList from './BLISAppsList';
 import { bindActionCreators } from 'redux';
@@ -19,7 +19,7 @@ class BLISAppsHomepage extends React.Component<any, any> {
         );
     }
 }
-const mapStateToProps = (state) => {
+const mapStateToProps = (state: any) => {
     return {
         blisApps: state.apps
     }

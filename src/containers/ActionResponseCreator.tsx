@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import * as React from 'react';
 import { createAction } from '../actions/create';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -6,6 +6,11 @@ import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { CommandButton, Dialog, DialogFooter, DialogType, ChoiceGroup, TextField, DefaultButton, Dropdown, TagPicker, Label } from 'office-ui-fabric-react';
 import { Action, ActionMetadata } from '../models/Action';
 import { ActionTypes, APITypes } from '../models/Constants';
+import { Entity } from '../models/Entity';
+interface EntityPickerObject {
+    key: string
+    name: string
+}
 class ActionResponseCreator extends React.Component<any, any> {
     constructor(p: any) {
         super(p);
@@ -25,7 +30,7 @@ class ActionResponseCreator extends React.Component<any, any> {
     }
     componentWillUpdate() {
         if (this.state.availableRequiredEntities.length != this.props.entities.length) {
-            let entities = this.props.entities.map(e => {
+            let entities = this.props.entities.map((e: Entity) => {
                 return {
                     key: e.name,
                     name: e.name
@@ -36,7 +41,7 @@ class ActionResponseCreator extends React.Component<any, any> {
             })
         }
         if (this.state.availableNegativeEntities.length != this.props.entities.length) {
-            let entities = this.props.entities.map(e => {
+            let entities = this.props.entities.map((e: Entity) => {
                 return {
                     key: e.name,
                     name: e.name
@@ -47,12 +52,12 @@ class ActionResponseCreator extends React.Component<any, any> {
             })
         }
     }
-    handleOpen(){
+    handleOpen() {
         this.setState({
             open: true
         })
     }
-    handleClose(){
+    handleClose() {
         this.setState({
             open: false,
             actionTypeVal: 'TEXT',
@@ -67,22 +72,22 @@ class ActionResponseCreator extends React.Component<any, any> {
             availableNegativeEntities: []
         })
     }
-    generateGUID() : string {
+    generateGUID(): string {
         let d = new Date().getTime();
-        let guid : string = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (char) => {
+        let guid: string = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (char) => {
             let r = (d + Math.random() * 16) % 16 | 0;
             d = Math.floor(d / 16);
             return (char == 'x' ? r : (r & 0x3 | 0x8)).toString(16);
         });
         return guid;
     }
-    createAction(){
+    createAction() {
         let randomGUID = this.generateGUID();
-        let requiredEntities = this.state.reqEntitiesVal.map(req => {
-            return this.props.entities.find(e => e.name == req.key);
+        let requiredEntities = this.state.reqEntitiesVal.map((req: EntityPickerObject) => {
+            return this.props.entities.find((e: Entity) => e.name == req.key);
         })
-        let negativeEntities = this.state.negEntitiesVal.map(neg => {
-            return this.props.entities.find(e => e.name == neg.key);
+        let negativeEntities = this.state.negEntitiesVal.map((neg: EntityPickerObject)  => {
+            return this.props.entities.find((e: Entity) => e.name == neg.key);
         })
         let internal = this.state.actionTypeVal == 'TEXT' ? true : false;
         let meta = new ActionMetadata(internal, this.state.apiTypeVal)
@@ -90,7 +95,7 @@ class ActionResponseCreator extends React.Component<any, any> {
         this.props.createAction(actionToAdd);
         this.handleClose();
     }
-    waitChanged(event : any, option : {text: string}) {
+    waitChanged(event: any, option: { text: string }) {
         if (option.text == 'False') {
             this.setState({
                 waitVal: false,
@@ -103,7 +108,7 @@ class ActionResponseCreator extends React.Component<any, any> {
             })
         }
     }
-    actionTypeChanged(obj: {text: string}){
+    actionTypeChanged(obj: { text: string }) {
         if (obj.text == 'TEXT') {
             this.setState({
                 actionTypeVal: obj.text,
@@ -118,7 +123,7 @@ class ActionResponseCreator extends React.Component<any, any> {
             })
         }
     }
-    apiTypeChanged(obj: {text: string}){
+    apiTypeChanged(obj: { text: string }) {
         this.setState({
             apiTypeVal: obj.text
         })
@@ -128,34 +133,34 @@ class ActionResponseCreator extends React.Component<any, any> {
             contentVal: text
         })
     }
-    onFilterChanged(filterText: string, tagList: { key: string, name: string }[]) {
-        let entList = filterText ? this.state.availableRequiredEntities.filter(ent => ent.name.toLowerCase().indexOf(filterText.toLowerCase()) === 0).filter(item => !this.listContainsDocument(item, tagList)) : [];
+    onFilterChanged(filterText: string, tagList: EntityPickerObject[]) {
+        let entList = filterText ? this.state.availableRequiredEntities.filter((ent: EntityPickerObject)  => ent.name.toLowerCase().indexOf(filterText.toLowerCase()) === 0).filter((item: EntityPickerObject)  => !this.listContainsDocument(item, tagList)) : [];
         return entList;
     }
 
-    listContainsDocument(tag: { key: string, name: string }, tagList: { key: string, name: string }[]) {
+    listContainsDocument(tag: EntityPickerObject, tagList: EntityPickerObject[]) {
         if (!tagList || !tagList.length || tagList.length === 0) {
             return false;
         }
         return tagList.filter(compareTag => compareTag.key === tag.key).length > 0;
     }
-    onFilterChangedNegative(filterText: string, tagList: { key: string, name: string }[]) {
-        let entList = filterText ? this.state.availableNegativeEntities.filter(ent => ent.name.toLowerCase().indexOf(filterText.toLowerCase()) === 0).filter(item => !this.listContainsDocumentNegative(item, tagList)) : [];
+    onFilterChangedNegative(filterText: string, tagList: EntityPickerObject[]) {
+        let entList = filterText ? this.state.availableNegativeEntities.filter((ent: EntityPickerObject)  => ent.name.toLowerCase().indexOf(filterText.toLowerCase()) === 0).filter((item: EntityPickerObject)  => !this.listContainsDocumentNegative(item, tagList)) : [];
         return entList;
     }
 
-    listContainsDocumentNegative(tag: { key: string, name: string }, tagList: { key: string, name: string }[]){
+    listContainsDocumentNegative(tag: EntityPickerObject, tagList: EntityPickerObject[]) {
         if (!tagList || !tagList.length || tagList.length === 0) {
             return false;
         }
         return tagList.filter(compareTag => compareTag.key === tag.key).length > 0;
     }
-    handleChangeRequiredEntities(items: { key: string, name: string }[]) {
+    handleChangeRequiredEntities(items: EntityPickerObject[]) {
         this.setState({
             reqEntitiesVal: items
         })
     }
-    handleChangeNegativeEntities(items: { key: string, name: string }[]) {
+    handleChangeNegativeEntities(items: EntityPickerObject[]) {
         this.setState({
             negEntitiesVal: items
         })
@@ -278,12 +283,12 @@ class ActionResponseCreator extends React.Component<any, any> {
         );
     }
 }
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         createAction: createAction
     }, dispatch);
 }
-const mapStateToProps = (state) => {
+const mapStateToProps = (state: any) => {
     return {
         actions: state.actions,
         blisApps: state.apps,

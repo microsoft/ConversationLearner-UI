@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import * as React from 'react';
 import { createTrainDialog } from '../actions/create';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -11,12 +11,12 @@ class TrainDialogCreator extends React.Component<any, any> {
         );
     }
 }
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         createTrainDialog: createTrainDialog,
     }, dispatch);
 }
-const mapStateToProps = (state) => {
+const mapStateToProps = (state: any) => {
     return {
         blisApps: state.apps
     }

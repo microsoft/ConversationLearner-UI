@@ -1,10 +1,11 @@
-import React, { Component } from 'react';
+import * as React from 'react';
 import { fetchAllActions, fetchAllEntities, fetchApplications, fetchAllTrainDialogs } from '../actions/fetch';
 import { setCurrentBLISApp, setBLISAppDisplay } from '../actions/update';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import BLISAppCreator from './BLISAppCreator'
 import TrainingGround from './TrainingGround';
+import { BLISApplication } from '../models/Application';
 import { DetailsList, CommandButton, Link, CheckboxVisibility, IColumn } from 'office-ui-fabric-react';
 let columns : IColumn[] = [
     {
@@ -39,7 +40,7 @@ class BLISAppsList extends React.Component<any, any> {
         this.BLISAppSelected = this.BLISAppSelected.bind(this);
     }
     BLISAppSelected(appName: string) {
-        let appSelected = this.props.blisApps.all.find(app => app.appName == appName);
+        let appSelected = this.props.blisApps.all.find((app: BLISApplication) => app.appName == appName);
         this.props.setCurrentBLISApp(appSelected);
         this.props.fetchAllActions(appSelected.modelID);
         this.props.fetchAllEntities(appSelected.modelID);
@@ -75,7 +76,7 @@ class BLISAppsList extends React.Component<any, any> {
         );
     }
 }
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         fetchApplications: fetchApplications,
         fetchAllActions: fetchAllActions,
@@ -85,7 +86,7 @@ const mapDispatchToProps = (dispatch) => {
         setBLISAppDisplay: setBLISAppDisplay
     }, dispatch);
 }
-const mapStateToProps = (state) => {
+const mapStateToProps = (state: any) => {
     return {
         blisApps: state.apps
     }

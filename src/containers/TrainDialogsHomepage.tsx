@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import * as React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader'
@@ -11,7 +11,7 @@ class TrainDialogsHomepage extends React.Component<any, any> {
         );
     }
 }
-const mapStateToProps = (state) => {
+const mapStateToProps = (state: any) => {
     return {
         trainDialogs: state.trainDialogs
     }

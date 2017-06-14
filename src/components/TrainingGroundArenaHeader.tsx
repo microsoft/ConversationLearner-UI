@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 export default class TrainingGroundArenaHeader extends React.Component<any, any> {
     constructor(p: any) {
         super(p)

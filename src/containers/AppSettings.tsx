@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import * as React from 'react';
 import { createBLISApplication } from '../actions/create';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -12,12 +12,12 @@ class AppSettings extends React.Component<any, any> {
         );
     }
 }
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         createBLISApplication: createBLISApplication,
     }, dispatch);
 }
-const mapStateToProps = (state) => {
+const mapStateToProps = (state: any) => {
     return {
         blisApps: state.apps
     }

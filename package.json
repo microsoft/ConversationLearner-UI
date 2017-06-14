@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@types/react-router": "^4.0.11",
+    "@types/react-router-dom": "^4.0.4",
     "botframework-webchat": "^0.10.6",
     "office-ui-fabric-react": "^4.4.0",
     "react": "^15.5.4",

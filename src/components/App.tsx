@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import * as React from 'react';
 import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
 import '../assets/App.css';
 import BLISAppsHomepage from '../containers/BLISAppsHomepage';
@@ -31,7 +31,7 @@ class App extends React.Component<any, any> {
   }
 }
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         fetchApplications: fetchApplications,
         setBLISAppDisplay: setBLISAppDisplay

@@ -1,23 +1,24 @@
+import { Entity } from './Entity';
 export class TrainDialog {
-    constructor(id, dialog){
+    constructor(public id: string, public dialog: Dialog){
         this.id = id;
         this.dialog = dialog;
     }
 }
 export class Dialog {
-    constructor(turns){
+    constructor(public turns: Turn[]){
         this.turns = turns;
     }
 }
 export class Turn {
-    constructor(input, output){
+    constructor(public input: Input, public output: any){
         this.input = input;
         this.output = output;
         //output is an action's id
     }
 }
 export class Input {
-    constructor(context, entityIDs, maskedActionIDs, text, textAlts, textEntities){
+    constructor(public context: any, public entityIDs: number[], public maskedActionIDs: number[], public text: string, public textAlts: string[], public textEntities: Entity[]){
         this.context = context;
         this.entityIDs = entityIDs;
         this.maskedActionIDs = maskedActionIDs;

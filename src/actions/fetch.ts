@@ -1,11 +1,13 @@
-//=========================================================
-//=================== DUMMY DATA ==========================
 
 import { BLISApplication } from '../models/Application';
 import { Action, ActionMetadata } from '../models/Action';
 import { Entity, EntityMetadata } from '../models/Entity';
 import { TrainDialog, Dialog, Turn, Input } from '../models/TrainDialog';
 import { ActionTypes, APITypes, EntityTypes } from '../models/Constants'; 
+import ActionObject from './ActionObject'
+
+//=========================================================
+//=================== DUMMY DATA ==========================
 
 let firstApp = new BLISApplication('58bdb485-3dd6-4451-b1cf-940dbf89e920', 'PizzaBot');
 let secondApp = new BLISApplication('11tdb485-3dd6-1051-b1cf-040d3d4ae920', 'StockBot');
@@ -37,14 +39,14 @@ export const FETCH_APPLICATIONS = 'FETCH_APPS';
 export const FETCH_ENTITIES = 'FETCH_ENTITIES';
 export const FETCH_ACTIONS = 'FETCH_ACTIONS';
 export const FETCH_TRAIN_DIALOGS = 'FETCH_TRAIN_DIALOGS';
-export const fetchApplications = () => { 
+export const fetchApplications = () : ActionObject<BLISApplication[]> => { 
     //will need to make a call to BLIS to get all apps for this user
     return {
         type: FETCH_APPLICATIONS,
         payload: APPS
     }
 }
-export const fetchAllEntities = (blisAppID) => { 
+export const fetchAllEntities = (blisAppID: string) : ActionObject<Entity[]> => { 
     //will need to make a call to BLIS to get all entities for this app
     let entities = ENTITIES.filter(ent => ent.appID == blisAppID);
     return {
@@ -52,7 +54,7 @@ export const fetchAllEntities = (blisAppID) => {
         payload: entities
     }
 }
-export const fetchAllActions = (blisAppID) => { 
+export const fetchAllActions = (blisAppID: string) : ActionObject<Action[]> => { 
     //will need to make a call to BLIS to get all actions for this app
     let actions = ACTIONS.filter(ent => ent.appID == blisAppID);
     return {
@@ -60,7 +62,7 @@ export const fetchAllActions = (blisAppID) => {
         payload: actions
     }
 }
-export const fetchAllTrainDialogs = (blisAppID) => { 
+export const fetchAllTrainDialogs = (blisAppID: string) : ActionObject<any> => { 
     //will need to make a call to BLIS to get all train dialogs for this app
     return {
         type: FETCH_TRAIN_DIALOGS,
