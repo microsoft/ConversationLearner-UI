@@ -1,12 +1,19 @@
 import { CREATE_BLIS_APPLICATION } from '../actions/create';
 import { FETCH_APPLICATIONS } from '../actions/fetch';
 import { SET_CURRENT_BLIS_APP, SET_BLIS_APP_DISPLAY } from '../actions/update';
-const initialState = {
+import ActionObject from '../actions/ActionObject'
+import { BLISApplication } from '../models/Application';
+export interface appReducerState {
+    all: BLISApplication[],
+    current: any,
+    pageToDisplay: string
+}
+const initialState: appReducerState = {
     all: [], 
     current: {},
     pageToDisplay: "Home"
 };
-export default (state = initialState, action) => {
+export default (state = initialState, action: ActionObject<any>) => {
     switch(action.type) {
         case FETCH_APPLICATIONS:
             return {...state, all: action.payload};
@@ -19,5 +26,4 @@ export default (state = initialState, action) => {
         default:
             return state;
     }
-    return state;
 }

@@ -1,7 +1,9 @@
 import { CREATE_TRAIN_DIALOG } from '../actions/create';
 import { FETCH_TRAIN_DIALOGS } from '../actions/fetch';
-const initialState = [];
-export default (state = initialState, action) => {
+import ActionObject from '../actions/ActionObject';
+import { TrainDialog } from '../models/TrainDialog'
+const initialState: TrainDialog[] = [];
+export default (state = initialState, action: ActionObject<any>) => {
     switch(action.type) {
         case FETCH_TRAIN_DIALOGS:
             return action.payload;
@@ -10,5 +12,4 @@ export default (state = initialState, action) => {
         default:
             return state;
     }
-    return state;
 }

@@ -1,7 +1,9 @@
 import { CREATE_ACTION } from '../actions/create';
 import { FETCH_ACTIONS } from '../actions/fetch';
-const initialState = [];
-export default (state = initialState, action) => {
+import ActionObject from '../actions/ActionObject'
+import { Action } from '../models/Action'
+const initialState: Action[] = [];
+export default (state = initialState, action: ActionObject<any>) => {
     switch(action.type) {
         case FETCH_ACTIONS:
             return action.payload;
@@ -10,5 +12,4 @@ export default (state = initialState, action) => {
         default:
             return state;
     }
-    return state;
 }

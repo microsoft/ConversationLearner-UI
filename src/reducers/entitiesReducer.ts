@@ -1,7 +1,9 @@
 import { CREATE_ENTITY } from '../actions/create';
 import { FETCH_ENTITIES } from '../actions/fetch';
-const initialState = [];
-export default (state = initialState, action) => {
+import ActionObject from '../actions/ActionObject';
+import { Entity } from '../models/Entity'
+const initialState: Entity[] = [];
+export default (state = initialState, action: ActionObject<any>) => {
     switch(action.type) {
         case FETCH_ENTITIES:
             return action.payload;
@@ -10,5 +12,4 @@ export default (state = initialState, action) => {
         default:
             return state;
     }
-    return state;
 }
