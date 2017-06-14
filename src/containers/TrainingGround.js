@@ -74,8 +74,8 @@ class TrainingGround extends Component {
                         />
                     </div>
                     <div className="tgbackToAppsDiv">
-                        <Link className="backToApps" onClick={() => this.props.setDisplay("Home")} to="/"><span className="ms-Icon ms-Icon--Back backToApps backToAppsIcon" aria-hidden="true"></span>&nbsp;&nbsp;</Link>
-                        <span className="ms-font-m-plus backToApps"><Link className="backToApps" onClick={() => this.props.setDisplay("Home")} to="/">Back to App List</Link></span>
+                        <Link className="backToApps" onClick={() => this.props.setDisplay("Home")} to="/myApps"><span className="ms-Icon ms-Icon--Back backToApps backToAppsIcon" aria-hidden="true"></span>&nbsp;&nbsp;</Link>
+                        <span className="ms-font-m-plus backToApps"><Link className="backToApps" onClick={() => this.props.setDisplay("Home")} to="/myApps">Back to App List</Link></span>
                     </div>
                 </div>
                 

@@ -243,7 +243,7 @@ class ActionResponseCreator extends Component {
                             options={[
                                 {
                                     key: 'waitTrue',
-                                    text: 'True'
+                                    text: 'True',
                                 },
                                 {
                                     key: 'waitFalse',
