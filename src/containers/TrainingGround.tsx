@@ -8,7 +8,7 @@ import ActionResponsesHomepage from './ActionResponsesHomepage';
 import BLISAppsHomepage from './BLISAppsHomepage';
 import AppDashboard from './AppDashboard';
 import AppSettings from './AppSettings';
-import { Nav } from 'office-ui-fabric-react';
+import { Nav, INavLink, INavLinkGroup } from 'office-ui-fabric-react';
 import { Link } from 'react-router-dom';
 class TrainingGround extends React.Component<any, any> {
     constructor(p: any) {

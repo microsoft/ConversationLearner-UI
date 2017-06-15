@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
-import '../assets/App.css';
 import BLISAppsHomepage from '../containers/BLISAppsHomepage';
 import { fetchApplications } from '../actions/fetch'
 import { setBLISAppDisplay } from '../actions/update'
