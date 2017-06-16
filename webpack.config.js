@@ -5,7 +5,7 @@ module.exports = {
     output: {
         libraryTarget: "umd",
         library: "BLISTrainerProto",
-        filename: "./bundle.js",
+        filename: "./public/bundle.js",
     },
 
     devtool: "source-map",
