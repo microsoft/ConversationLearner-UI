@@ -49,6 +49,12 @@ class TrainingGround extends React.Component<any, any> {
             selectedKey: page
         })
     }
+    renderWithoutEmulator(){
+        
+    }
+    renderWithEmulator(){
+
+    }
     render() {
         return (
             <div className="content">

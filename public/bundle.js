@@ -21297,7 +21297,7 @@ var TrainingGround = (function (_super) {
             selectedKey: page
         });
     };
-    TrainingGround.prototype.render = function () {
+    TrainingGround.prototype.renderWithoutEmulator = function () {
         var _this = this;
         return (React.createElement("div", { className: "content" },
             React.createElement("div", { className: 'trainingGroundNavigationArea' },
@@ -21324,6 +21324,11 @@ var TrainingGround = (function (_super) {
                     React.createElement("span", { className: "ms-font-m-plus backToApps" },
                         React.createElement(react_router_dom_1.Link, { className: "backToApps", onClick: function () { return _this.props.setDisplay("Home"); }, to: "/myApps" }, "Back to App List")))),
             React.createElement("div", { className: 'trainingGroundArena' }, this.renderChosenNavLink())));
+    };
+    TrainingGround.prototype.renderWithEmulator = function () {
+    };
+    TrainingGround.prototype.render = function () {
+        this.renderWithoutEmulator();
     };
     return TrainingGround;
 }(React.Component));

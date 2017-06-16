@@ -14,7 +14,7 @@ app.listen(port, () => {
 
 /*Running the App, Steps:
 
-1) npm run build (converts all typescript files in the src folder to javascript files in the dist folder)
+1) tsc (converts all typescript files in the src folder to javascript files in the dist folder)
 2) webpack (bundles everything from the dist folder into bundle.js in the public folder)
 3) node server.js (serves the index.html file which references bundle.js and the .css files to render the React into the DOM)
 
