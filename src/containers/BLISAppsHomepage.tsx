@@ -10,7 +10,7 @@ class BLISAppsHomepage extends React.Component<any, any> {
     }
     render() {
         return (
-            <div>
+            <div className="fluidCont">
                 {this.props.blisApps.pageToDisplay == 'Home' ?
                     <BLISAppsList  />
                     : <TrainingGround />

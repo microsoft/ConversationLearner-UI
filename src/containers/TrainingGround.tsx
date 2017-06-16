@@ -68,7 +68,7 @@ class TrainingGround extends React.Component<any, any> {
     }
     renderWithoutEmulator() {
         return (
-            <div>
+            <div className="content">
                 <div className='trainingGroundNavigationArea'>
                     <span className="ms-font-xxl">{this.props.blisApps.current.appName}</span>
                     <div className="tgSettingsDiv">
@@ -105,7 +105,7 @@ class TrainingGround extends React.Component<any, any> {
     }
     renderWithEmulator() {
         return (
-            <div>
+            <div className="container">
                 <div className="emulatorDisplay">
                     <Emulator />
                 </div>
@@ -147,7 +147,7 @@ class TrainingGround extends React.Component<any, any> {
     }
     render() {
         return (
-            <div className="content">
+            <div className="container">
                 {this.state.displayEmulator == true ?
                     this.renderWithEmulator()
                     : this.renderWithoutEmulator()

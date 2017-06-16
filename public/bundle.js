@@ -20198,7 +20198,7 @@ var Emulator = (function (_super) {
     }
     Emulator.prototype.render = function () {
         return (React.createElement("div", { className: 'dummyContent' },
-            React.createElement("span", { className: "ms-font-su dummyText" }, "WEBCHAT EMULATOR")));
+            React.createElement("span", { className: "ms-font-su" }, "WEBCHAT EMULATOR")));
     };
     return Emulator;
 }(React.Component));
@@ -20882,7 +20882,7 @@ var BLISAppsHomepage = (function (_super) {
         return _super.call(this, p) || this;
     }
     BLISAppsHomepage.prototype.render = function () {
-        return (React.createElement("div", null, this.props.blisApps.pageToDisplay == 'Home' ?
+        return (React.createElement("div", { className: "fluidCont" }, this.props.blisApps.pageToDisplay == 'Home' ?
             React.createElement(BLISAppsList_1.default, null)
             : React.createElement(TrainingGround_1.default, null)));
     };
@@ -21339,7 +21339,7 @@ var TrainingGround = (function (_super) {
     };
     TrainingGround.prototype.renderWithoutEmulator = function () {
         var _this = this;
-        return (React.createElement("div", null,
+        return (React.createElement("div", { className: "content" },
             React.createElement("div", { className: 'trainingGroundNavigationArea' },
                 React.createElement("span", { className: "ms-font-xxl" }, this.props.blisApps.current.appName),
                 React.createElement("div", { className: "tgSettingsDiv" },
@@ -21367,7 +21367,7 @@ var TrainingGround = (function (_super) {
     };
     TrainingGround.prototype.renderWithEmulator = function () {
         var _this = this;
-        return (React.createElement("div", null,
+        return (React.createElement("div", { className: "container" },
             React.createElement("div", { className: "emulatorDisplay" },
                 React.createElement(Emulator_1.default, null)),
             React.createElement("div", { className: "trainingGroundDisplayWithEmulator" },
@@ -21397,7 +21397,7 @@ var TrainingGround = (function (_super) {
                 React.createElement("div", { className: 'trainingGroundArena' }, this.renderChosenNavLink()))));
     };
     TrainingGround.prototype.render = function () {
-        return (React.createElement("div", { className: "content" }, this.state.displayEmulator == true ?
+        return (React.createElement("div", { className: "container" }, this.state.displayEmulator == true ?
             this.renderWithEmulator()
             : this.renderWithoutEmulator()));
     };

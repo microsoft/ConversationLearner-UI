@@ -7,7 +7,7 @@ export default class Emulator extends React.Component<any, any> {
     render() {
         return (
             <div className='dummyContent'>
-                <span className="ms-font-su dummyText">WEBCHAT EMULATOR</span>
+                <span className="ms-font-su">WEBCHAT EMULATOR</span>
             </div>
         )
     }
