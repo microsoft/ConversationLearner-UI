@@ -110,9 +110,6 @@
   display: inline-block;
   vertical-align: top;
 }
-.trainingGrounds{
-  width: 100%;
-}
 .trainingGroundNavigationArea{
   width: 14%;
   display: inline-block;
@@ -180,4 +177,24 @@
   padding: 1em;
   position: relative
 }
-/*sample comment
+.emulatorDisplay{
+  width: 35%;
+  display: inline-block;
+  vertical-align: top;
+  height: 100%;
+  background: black;
+}
+.trainingGroundDisplayWithEmulator{
+  width: 65%;
+  vertical-align: top;
+  display: inline-block
+}
+
+.emulatorDisplay *{
+  position: relative;
+  float: left;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+}

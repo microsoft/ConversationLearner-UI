@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-export default class Docs extends React.Component<any, any> {
+export default class Emulator extends React.Component<any, any> {
     constructor(p: any) {
         super(p)
     }
