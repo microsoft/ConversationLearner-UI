@@ -183,9 +183,8 @@
   vertical-align: top;
   background: #323232;
   border: 2px solid #ffb900;
-  height: 100%;
+  height: 99.5%;
 }
-
 .emulatorDisplay *{ 
   color: #ffb900
 }
