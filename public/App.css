@@ -1,0 +1,203 @@
+/*
+  PRIMARY: #004b50
+  SECONDARY: #ffb900
+  TERTIARY: #
+*/
+
+.app{
+  display: inline-block;
+  width: 100%;
+  height: 100%;
+}
+.header{
+   height: 8%;
+   width: 100%;
+   background-color: #004b50;
+}
+.headerTitleDiv{
+  height: 100%;
+  width: 50%;
+  display: inline-block;
+}
+.headerListDiv{
+  height: 100%;
+  width: 44%;
+  margin-left: 5%;
+  display: inline-block;
+}
+.headerLink{
+  text-decoration: none;
+  color: white;
+  position: relative;
+  float: left;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.headerElementDiv{
+  height: 100%;
+  display: inline-block;
+  text-align: center;
+  vertical-align: middle;
+  width:17%;
+}
+.selectedHeaderElementDiv{
+  height: 100%;
+  display: inline-block;
+  text-align: center;
+  vertical-align: middle;
+  width:17%;
+  background-color: #ffb900 !important;
+}
+.selectedHeaderElementDiv *{
+  color:black !important;
+}
+.headerTitle{
+  height: 100%;
+  display: inline-block;
+  text-align: center;
+  vertical-align: middle;
+  width: 13%;
+  margin-left: 60%;
+}
+.headerElementDiv:hover, .headerTitle:hover{ 
+    background-color: #ffb900;
+}
+.headerElementDiv:hover *{ 
+    color: black;
+}
+.headerTitle:hover *{ 
+    color: black;
+}
+.dummyContent {
+  height: 90%;
+}
+.dummyContent *{
+  position: relative;
+  float: left;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #004b50;
+}
+.content{
+  margin-left: 5%;
+  margin-top: 2%;
+}
+.myAppsHeaderContentBlock{
+  display: block;
+  margin-bottom: 1%;
+}
+.goldButton:hover {
+  border: 1px solid #004b50;
+}
+.goldButton{
+  background-color: #ffb900 !important;
+  color:black !important;
+  padding: 0em 2em !important;
+}
+.grayButton:hover {
+  border: 1px solid #004b50;
+}
+.grayButton{
+  background-color: lightgrey !important;
+  color:black !important;
+  padding: 0em 2em !important;
+}
+.trainingGroundArena{
+  width: 80%;
+  margin-left: 5%;
+  display: inline-block;
+  vertical-align: top;
+}
+.trainingGroundNavigationArea{
+  width: 14%;
+  display: inline-block;
+  vertical-align: top;
+}
+.tgNavDiv{
+  border-top: 1px solid lightgrey;
+  border-bottom: 1px solid lightgrey;
+  height: 11em;
+}
+.trainingGroundNav *{
+  color: gray !important;
+  margin-left: -.1em !important;
+}
+.trainingGroundNav *:hover{
+  color: lightgrey !important;
+}
+.tgSettingsDiv{
+  border-top: 1px solid lightgrey;
+  margin-top: 1em;
+  color: gray;
+  padding: .5em 0em;
+}
+.backToApps{
+  color: gray;
+  text-decoration: none;
+  margin-top: 1.2em;
+}
+.backToAppsIcon{
+  text-decoration: none;
+  color:gray;
+  font-size: 14px;
+}
+.tgbackToAppsDiv *:hover, .tgSettingsDiv *:hover {
+  color: lightgrey !important;
+  cursor: pointer !important;
+}
+.trainingGroundHeaderContent{
+  display:block;
+  margin-bottom: .5em;
+}
+.trainingGroundArenaHeader, .entityCreator, .actionResponseCreator{
+  display: block;
+  margin-bottom: 1em;
+}
+.checkIcon{
+  color: green;
+  font-size: 20px;
+}
+.notFoundIcon{
+  color: lightgrey;
+  font-size: 18px
+}
+.modalHeader{
+  display: block;
+  text-align: center;
+  padding: 1em;
+}
+.modalFooter{
+  margin-top: 1em;
+}
+.createModal{
+  border: 2px solid #004b50;
+  width: 40%;
+  padding: 1em;
+  position: relative
+}
+.emulatorDisplay{
+  width: 32%;
+  display: inline-block;
+  vertical-align: top;
+  background: #323232;
+  border: 2px solid #ffb900;
+  height: 99.5%;
+}
+.emulatorDisplay *{ 
+  color: #ffb900
+}
+.trainingGroundDisplayWithEmulator{
+  margin-top: 2%;
+  margin-left: 2%;
+  width: 65%;
+  vertical-align: top;
+  display: inline-block;
+}
+.container{
+  height: 100%;
+}
+.fluidCont{
+  height: 92%
+}
