@@ -50,10 +50,12 @@ let columns : IColumn[] = [
 class EntitiesHomepage extends React.Component<any, any> {
     constructor(p: any){
         super(p);
-        this.deleteSelectedEntity = this.deleteSelectedEntity.bind(this)
+        this.deleteSelectedEntity = this.deleteSelectedEntity.bind(this);
+        this.editSelectedEntity = this.editSelectedEntity.bind(this)
+        this.renderItemColumn = this.renderItemColumn.bind(this)
     }
     deleteSelectedEntity(GUID: string) {
-        //do something
+        this.props.deleteEntity(GUID)
     }
     editSelectedEntity(GUID: string) {
         //do something
@@ -86,7 +88,6 @@ class EntitiesHomepage extends React.Component<any, any> {
         }
     }
     render() {
-        console.log('rendering', this)
         let entities = this.props.entities;
         return (
             <div>

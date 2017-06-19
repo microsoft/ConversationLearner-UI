@@ -12,7 +12,7 @@ export default (state = initialState, action: any) => {
         case CREATE_ENTITY:
             return [...state, action.entity];
         case DELETE_ENTITY:
-            // return [...state, action.payload];
+            return state.filter(ent => ent.id !== action.entityGUID);
         case EDIT_ENTITY:
             // return [...state, action.payload];
         default:

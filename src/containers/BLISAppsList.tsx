@@ -47,6 +47,8 @@ class BLISAppsList extends React.Component<any, any> {
         super(p);
         this.renderItemColumn = this.renderItemColumn.bind(this);
         this.BLISAppSelected = this.BLISAppSelected.bind(this);
+        this.deleteApp = this.deleteApp.bind(this);
+        this.editApp = this.editApp.bind(this)
     }
     deleteApp(GUID: string) {
         this.props.deleteBLISApplication(GUID)

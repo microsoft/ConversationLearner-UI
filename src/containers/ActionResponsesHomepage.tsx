@@ -58,9 +58,12 @@ let columns : IColumn[] = [
 class ActionResponsesHomepage extends React.Component<any, any> {
     constructor(p: any) {
         super(p);
+        this.deleteSelectedAction = this.deleteSelectedAction.bind(this);
+        this.editSelectedAction = this.editSelectedAction.bind(this)
+        this.renderItemColumn = this.renderItemColumn.bind(this)
     }
     deleteSelectedAction(GUID: string) {
-        //do something
+        this.props.deleteAction(GUID)
     }
     editSelectedAction(GUID: string) {
         //do something

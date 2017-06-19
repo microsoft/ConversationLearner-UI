@@ -21,7 +21,7 @@ export default (state = initialState, action: any) => {
         case CREATE_BLIS_APPLICATION:
             return {...state, current: action.blisApp, all: [...state.all, action.blisApp]};
         case SET_CURRENT_BLIS_APP:
-            return {...state, currentBLISApp: action.currentBLISApp};
+            return {...state, current: action.currentBLISApp};
         case SET_BLIS_APP_DISPLAY:
             return {...state, pageToDisplay: action.setDisplay};
         case DELETE_BLIS_APPLICATION:
