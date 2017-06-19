@@ -96,7 +96,7 @@ class BLISAppCreator extends React.Component<any, any> {
                         <TextField onChanged={this.luisKeyChanged.bind(this)} label="LUIS Key" placeholder="Key..." value={this.state.luisKeyVal} />
                         <Dropdown
                             label='Locale'
-                            defaultSelectedKey='LOCAL'
+                            defaultSelectedKey='East-US'
                             options={options}
                             onChanged={this.localeChanged.bind(this)}
                             selectedKey={this.state.localeVal}

@@ -20811,7 +20811,7 @@ var BLISAppCreator = (function (_super) {
                 React.createElement("div", null,
                     React.createElement(office_ui_fabric_react_1.TextField, { onChanged: this.nameChanged.bind(this), label: "Name", placeholder: "Application Name...", value: this.state.appNameVal }),
                     React.createElement(office_ui_fabric_react_1.TextField, { onChanged: this.luisKeyChanged.bind(this), label: "LUIS Key", placeholder: "Key...", value: this.state.luisKeyVal }),
-                    React.createElement(office_ui_fabric_react_1.Dropdown, { label: 'Locale', defaultSelectedKey: 'LOCAL', options: options, onChanged: this.localeChanged.bind(this), selectedKey: this.state.localeVal })),
+                    React.createElement(office_ui_fabric_react_1.Dropdown, { label: 'Locale', defaultSelectedKey: 'East-US', options: options, onChanged: this.localeChanged.bind(this), selectedKey: this.state.localeVal })),
                 React.createElement("div", { className: 'modalFooter' },
                     React.createElement(office_ui_fabric_react_1.CommandButton, { "data-automation-id": 'randomID2', disabled: false, onClick: this.createApplication.bind(this), className: 'goldButton', ariaDescription: 'Create', text: 'Create' }),
                     React.createElement(office_ui_fabric_react_1.CommandButton, { "data-automation-id": 'randomID3', className: "grayButton", disabled: false, onClick: this.handleClose.bind(this), ariaDescription: 'Cancel', text: 'Cancel' })))));
