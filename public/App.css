@@ -201,3 +201,6 @@
 .fluidCont{
   height: 92%
 }
+.ms-Icon--Delete:hover, .ms-Icon--Edit:hover{
+  cursor: pointer;
+}
