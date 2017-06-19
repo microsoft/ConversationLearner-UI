@@ -8,7 +8,7 @@ const initialState: TrainDialog[] = [];
 export default (state = initialState, action: any) => {
     switch(action.type) {
         case FETCH_TRAIN_DIALOGS:
-            return action.trainDialogs;
+            return action.allTrainDialogs;
         case CREATE_TRAIN_DIALOG:
             return [...state, action.trainDialog];
         case DELETE_TRAIN_DIALOG:

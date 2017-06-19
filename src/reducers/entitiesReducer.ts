@@ -8,7 +8,7 @@ const initialState: Entity[] = [];
 export default (state = initialState, action: any) => {
     switch(action.type) {
         case FETCH_ENTITIES:
-            return action.entities;
+            return action.allEntities;
         case CREATE_ENTITY:
             return [...state, action.entity];
         case DELETE_ENTITY:

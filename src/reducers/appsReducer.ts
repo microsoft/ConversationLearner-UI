@@ -17,7 +17,7 @@ const initialState: appReducerState = {
 export default (state = initialState, action: any) => {
     switch(action.type) {
         case FETCH_APPLICATIONS:
-            return {...state, all: action.blisApps};
+            return {...state, all: action.allBlisApps};
         case CREATE_BLIS_APPLICATION:
             return {...state, current: action.blisApp, all: [...state.all, action.blisApp]};
         case SET_CURRENT_BLIS_APP:

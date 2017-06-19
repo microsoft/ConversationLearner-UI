@@ -44,7 +44,7 @@ export const fetchApplications = () : FetchAction => {
     //will need to make a call to BLIS to get all apps for this user
     return {
         type: FETCH_APPLICATIONS,
-        blisApps: APPS
+        allBlisApps: APPS
     }
 }
 export const fetchAllEntities = (blisAppID: string) : FetchAction => { 
@@ -52,7 +52,7 @@ export const fetchAllEntities = (blisAppID: string) : FetchAction => {
     let entities = ENTITIES.filter(ent => ent.appID == blisAppID);
     return {
         type: FETCH_ENTITIES,
-        entities: entities
+        allEntities: entities
     }
 }
 export const fetchAllActions = (blisAppID: string) : FetchAction => { 
@@ -60,7 +60,7 @@ export const fetchAllActions = (blisAppID: string) : FetchAction => {
     let actions = ACTIONS.filter(ent => ent.appID == blisAppID);
     return {
         type: FETCH_ACTIONS,
-        actions: actions
+        allActions: actions
     }
 }
 export const fetchAllTrainDialogs = (blisAppID: string) : FetchAction => { 
@@ -68,6 +68,6 @@ export const fetchAllTrainDialogs = (blisAppID: string) : FetchAction => {
     let trainDialogs = TRAINDIALOGS.filter(td => td.appID == blisAppID);
     return {
         type: FETCH_TRAIN_DIALOGS,
-        trainDialogs: trainDialogs
+        allTrainDialogs: trainDialogs
     }
 }
