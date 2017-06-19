@@ -3,7 +3,7 @@ import { createBLISApplication } from '../actions/create';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
-import { CommandButton, Dialog, DialogFooter, DialogType, ChoiceGroup, TextField, DefaultButton } from 'office-ui-fabric-react';
+import { CommandButton, Dialog, DialogFooter, DialogType, ChoiceGroup, TextField, DefaultButton, Dropdown } from 'office-ui-fabric-react';
 import { setBLISAppDisplay } from '../actions/update'
 import { fetchAllActions, fetchAllEntities, fetchAllTrainDialogs } from '../actions/fetch'
 import { BLISApplication } from '../models/Application'
@@ -13,7 +13,8 @@ class BLISAppCreator extends React.Component<any, any> {
         this.state = {
             open: false,
             appNameVal: '',
-            appDescVal: ''
+            localeVal: 'East-US',
+            luisKeyVal: ''
         }
     }
     handleOpen() {
@@ -25,7 +26,8 @@ class BLISAppCreator extends React.Component<any, any> {
         this.setState({
             open: false,
             appNameVal: '',
-            appDescVal: ''
+            localeVal: null,
+            luisKeyVal: ''
         })
     }
     nameChanged(text: string) {
@@ -33,12 +35,17 @@ class BLISAppCreator extends React.Component<any, any> {
             appNameVal: text
         })
     }
-    descriptionChanged(text: string) {
+    localeChanged(obj: {text: string}) {
         this.setState({
-            appDescVal: text
+            localeVal: obj.text
         })
     }
-    generateGUID() : string {
+    luisKeyChanged(text: string) {
+        this.setState({
+            luisKeyVal: text
+        })
+    }
+    generateGUID(): string {
         let d = new Date().getTime();
         let guid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (char) => {
             let r = (d + Math.random() * 16) % 16 | 0;
@@ -49,7 +56,8 @@ class BLISAppCreator extends React.Component<any, any> {
     }
     createApplication() {
         let randomGUID = this.generateGUID();
-        let appToAdd = new BLISApplication(randomGUID, this.state.appNameVal);
+        let appToAdd = new BLISApplication(randomGUID, this.state.appNameVal, this.state.luisKeyVal, this.state.localeVal);
+        console.log(appToAdd)
         this.props.createBLISApplication(appToAdd);
         this.props.fetchAllActions(randomGUID);
         this.props.fetchAllEntities(randomGUID);
@@ -58,6 +66,13 @@ class BLISAppCreator extends React.Component<any, any> {
         this.props.setBLISAppDisplay("TrainingGround");
     }
     render() {
+        let localeOptions = ['East-US', 'West-US']
+        let options = localeOptions.map(v => {
+            return {
+                key: v,
+                text: v
+            }
+        })
         return (
             <div>
                 <CommandButton
@@ -78,8 +93,15 @@ class BLISAppCreator extends React.Component<any, any> {
                         <span className='ms-font-xxl ms-fontWeight-semilight'>Create a BLIS App</span>
                     </div>
                     <div>
-                        <TextField onChanged={this.nameChanged.bind(this)} label="Name" required={true} placeholder="Application Name..." value={this.state.appNameVal} />
-                        <TextField multiline inputClassName="ms-font-m-plus" autoAdjustHeight onChanged={this.descriptionChanged.bind(this)} label="Description" required={true} placeholder="Application Description..." value={this.state.appDescVal} />
+                        <TextField onChanged={this.nameChanged.bind(this)} label="Name" placeholder="Application Name..." value={this.state.appNameVal} />
+                        <TextField onChanged={this.luisKeyChanged.bind(this)} label="LUIS Key" placeholder="Key..." value={this.state.luisKeyVal} />
+                        <Dropdown
+                            label='Locale'
+                            defaultSelectedKey='LOCAL'
+                            options={options}
+                            onChanged={this.localeChanged.bind(this)}
+                            selectedKey={this.state.localeVal}
+                        />
                     </div>
                     <div className='modalFooter'>
                         <CommandButton

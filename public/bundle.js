@@ -10878,9 +10878,11 @@ exports.ActionMetadata = ActionMetadata;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 var BLISApplication = (function () {
-    function BLISApplication(modelID, appName) {
+    function BLISApplication(modelID, appName, luisKey, locale) {
         this.modelID = modelID;
         this.appName = appName;
+        this.luisKey = luisKey;
+        this.locale = locale;
     }
     return BLISApplication;
 }());
@@ -20488,7 +20490,7 @@ var ActionResponseCreator = (function (_super) {
                     React.createElement("span", { className: 'ms-font-xxl ms-fontWeight-semilight' }, "Create an Action")),
                 React.createElement("div", null,
                     React.createElement(office_ui_fabric_react_1.Dropdown, { label: 'Action Type', options: actionTypeOptions, onChanged: this.actionTypeChanged.bind(this), selectedKey: this.state.actionTypeVal }),
-                    React.createElement(office_ui_fabric_react_1.TextField, { onChanged: this.contentChanged.bind(this), label: "Content", required: true, placeholder: "Content...", value: this.state.contentVal }),
+                    React.createElement(office_ui_fabric_react_1.TextField, { onChanged: this.contentChanged.bind(this), label: "Content", placeholder: "Content...", value: this.state.contentVal }),
                     React.createElement(office_ui_fabric_react_1.Label, null, "Required Entities"),
                     React.createElement(office_ui_fabric_react_1.TagPicker, { onResolveSuggestions: this.onFilterChanged.bind(this), getTextFromItem: function (item) { return item.name; }, onChange: this.handleChangeRequiredEntities.bind(this), pickerSuggestionsProps: {
                             suggestionsHeaderText: 'Entities',
@@ -20508,7 +20510,7 @@ var ActionResponseCreator = (function (_super) {
                                 key: 'waitFalse',
                                 text: 'False',
                             }
-                        ], label: 'WAIT', onChange: this.waitChanged.bind(this), selectedKey: this.state.waitKey })),
+                        ], label: 'Wait For Response?', onChange: this.waitChanged.bind(this), selectedKey: this.state.waitKey })),
                 React.createElement("div", { className: 'modalFooter' },
                     React.createElement(office_ui_fabric_react_1.CommandButton, { "data-automation-id": 'randomID6', disabled: false, onClick: this.createAction.bind(this), className: 'goldButton', ariaDescription: 'Create', text: 'Create' }),
                     React.createElement(office_ui_fabric_react_1.CommandButton, { "data-automation-id": 'randomID7', className: "grayButton", disabled: false, onClick: this.handleClose.bind(this), ariaDescription: 'Cancel', text: 'Cancel' })))));
@@ -20741,7 +20743,8 @@ var BLISAppCreator = (function (_super) {
         _this.state = {
             open: false,
             appNameVal: '',
-            appDescVal: ''
+            localeVal: 'East-US',
+            luisKeyVal: ''
         };
         return _this;
     }
@@ -20754,7 +20757,8 @@ var BLISAppCreator = (function (_super) {
         this.setState({
             open: false,
             appNameVal: '',
-            appDescVal: ''
+            localeVal: null,
+            luisKeyVal: ''
         });
     };
     BLISAppCreator.prototype.nameChanged = function (text) {
@@ -20762,9 +20766,14 @@ var BLISAppCreator = (function (_super) {
             appNameVal: text
         });
     };
-    BLISAppCreator.prototype.descriptionChanged = function (text) {
+    BLISAppCreator.prototype.localeChanged = function (obj) {
         this.setState({
-            appDescVal: text
+            localeVal: obj.text
+        });
+    };
+    BLISAppCreator.prototype.luisKeyChanged = function (text) {
+        this.setState({
+            luisKeyVal: text
         });
     };
     BLISAppCreator.prototype.generateGUID = function () {
@@ -20778,7 +20787,8 @@ var BLISAppCreator = (function (_super) {
     };
     BLISAppCreator.prototype.createApplication = function () {
         var randomGUID = this.generateGUID();
-        var appToAdd = new Application_1.BLISApplication(randomGUID, this.state.appNameVal);
+        var appToAdd = new Application_1.BLISApplication(randomGUID, this.state.appNameVal, this.state.luisKeyVal, this.state.localeVal);
+        console.log(appToAdd);
         this.props.createBLISApplication(appToAdd);
         this.props.fetchAllActions(randomGUID);
         this.props.fetchAllEntities(randomGUID);
@@ -20787,14 +20797,22 @@ var BLISAppCreator = (function (_super) {
         this.props.setBLISAppDisplay("TrainingGround");
     };
     BLISAppCreator.prototype.render = function () {
+        var localeOptions = ['East-US', 'West-US'];
+        var options = localeOptions.map(function (v) {
+            return {
+                key: v,
+                text: v
+            };
+        });
         return (React.createElement("div", null,
             React.createElement(office_ui_fabric_react_1.CommandButton, { "data-automation-id": 'randomID', disabled: false, onClick: this.handleOpen.bind(this), className: 'goldButton', ariaDescription: 'Create a New Application', text: 'New App' }),
             React.createElement(Modal_1.Modal, { isOpen: this.state.open, onDismiss: this.handleClose.bind(this), isBlocking: false, containerClassName: 'createModal' },
                 React.createElement("div", { className: 'modalHeader' },
                     React.createElement("span", { className: 'ms-font-xxl ms-fontWeight-semilight' }, "Create a BLIS App")),
                 React.createElement("div", null,
-                    React.createElement(office_ui_fabric_react_1.TextField, { onChanged: this.nameChanged.bind(this), label: "Name", required: true, placeholder: "Application Name...", value: this.state.appNameVal }),
-                    React.createElement(office_ui_fabric_react_1.TextField, { multiline: true, inputClassName: "ms-font-m-plus", autoAdjustHeight: true, onChanged: this.descriptionChanged.bind(this), label: "Description", required: true, placeholder: "Application Description...", value: this.state.appDescVal })),
+                    React.createElement(office_ui_fabric_react_1.TextField, { onChanged: this.nameChanged.bind(this), label: "Name", placeholder: "Application Name...", value: this.state.appNameVal }),
+                    React.createElement(office_ui_fabric_react_1.TextField, { onChanged: this.luisKeyChanged.bind(this), label: "LUIS Key", placeholder: "Key...", value: this.state.luisKeyVal }),
+                    React.createElement(office_ui_fabric_react_1.Dropdown, { label: 'Locale', defaultSelectedKey: 'LOCAL', options: options, onChanged: this.localeChanged.bind(this), selectedKey: this.state.localeVal })),
                 React.createElement("div", { className: 'modalFooter' },
                     React.createElement(office_ui_fabric_react_1.CommandButton, { "data-automation-id": 'randomID2', disabled: false, onClick: this.createApplication.bind(this), className: 'goldButton', ariaDescription: 'Create', text: 'Create' }),
                     React.createElement(office_ui_fabric_react_1.CommandButton, { "data-automation-id": 'randomID3', className: "grayButton", disabled: false, onClick: this.handleClose.bind(this), ariaDescription: 'Cancel', text: 'Cancel' })))));
@@ -21152,7 +21170,7 @@ var EntityCreator = (function (_super) {
                 React.createElement("div", { className: 'modalHeader' },
                     React.createElement("span", { className: 'ms-font-xxl ms-fontWeight-semilight' }, "Create an Entity")),
                 React.createElement("div", null,
-                    React.createElement(office_ui_fabric_react_1.TextField, { onChanged: this.nameChanged.bind(this), label: "Name", required: true, placeholder: "Entity Name...", value: this.state.entityNameVal }),
+                    React.createElement(office_ui_fabric_react_1.TextField, { onChanged: this.nameChanged.bind(this), label: "Name", placeholder: "Entity Name...", value: this.state.entityNameVal }),
                     React.createElement(office_ui_fabric_react_1.Dropdown, { label: 'Entity Type', defaultSelectedKey: 'LOCAL', options: options, onChanged: this.typeChanged.bind(this), selectedKey: this.state.entityTypeVal }),
                     React.createElement(office_ui_fabric_react_1.ChoiceGroup, { options: [
                             {

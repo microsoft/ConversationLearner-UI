@@ -118,7 +118,6 @@ class EntityCreator extends React.Component<any, any> {
                         <TextField
                             onChanged={this.nameChanged.bind(this)}
                             label="Name"
-                            required={true}
                             placeholder="Entity Name..."
                             value={this.state.entityNameVal} />
                         <Dropdown

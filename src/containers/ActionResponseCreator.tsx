@@ -183,7 +183,6 @@ class ActionResponseCreator extends React.Component<any, any> {
                         <TextField
                             onChanged={this.contentChanged.bind(this)}
                             label="Content"
-                            required={true}
                             placeholder="Content..."
                             value={this.state.contentVal} />
                         <Label>Required Entities</Label>
@@ -222,7 +221,7 @@ class ActionResponseCreator extends React.Component<any, any> {
                                     text: 'False',
                                 }
                             ]}
-                            label='WAIT'
+                            label='Wait For Response?'
                             onChange={this.waitChanged.bind(this)}
                             selectedKey={this.state.waitKey}
                         />
