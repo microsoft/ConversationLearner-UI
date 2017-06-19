@@ -4,11 +4,8 @@ export const EntityTypes = {
 }
 export const ActionTypes = {
     text: 'TEXT',
-    api: 'API',
-}
-export const APITypes = {
-    azure: 'AZURE',
-    local: 'LOCAL',
+    azure: 'AZURE FUNCTION',
+    local: 'LOCAL API CALL',
     intent: 'INTENT',
-    template: 'TEMPLATE'
+    template: 'ADAPTIVE CARD'
 }

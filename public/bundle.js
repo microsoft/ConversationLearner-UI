@@ -2548,14 +2548,14 @@ var nameEntity = new Entity_1.Entity('11002431b-cb6a-42df-9a54-da167bedc23f', Co
 var toppingsEntity = new Entity_1.Entity('3f7663a8-1a12-45a1-a531-d56401c469a4', Constants_1.EntityTypes.local, null, 'toppings', bucketableMeta, '58bdb485-3dd6-4451-b1cf-940dbf89e920');
 var sizeEntity = new Entity_1.Entity('ede8946e-6a19-46c3-950f-c7661ea8faf0', Constants_1.EntityTypes.luis, null, 'size', noMeta, '58bdb485-3dd6-4451-b1cf-940dbf89e920');
 var companyEntity = new Entity_1.Entity('a463f832-0402-45df-a209-9dcf0e106a62', Constants_1.EntityTypes.local, null, 'company', noMeta, '11tdb485-3dd6-1051-b1cf-040d3d4ae920');
-var localAPICallMeta = new Action_1.ActionMetadata(false, Constants_1.APITypes.local);
-var azureCallMeta = new Action_1.ActionMetadata(false, Constants_1.APITypes.azure);
-var intentCallMeta = new Action_1.ActionMetadata(false, Constants_1.APITypes.intent);
+var localAPICallMeta = new Action_1.ActionMetadata(false, null);
+var azureCallMeta = new Action_1.ActionMetadata(false, null);
+var intentCallMeta = new Action_1.ActionMetadata(false, null);
 var textResponseMeta = new Action_1.ActionMetadata(true, null);
 var hiAction = new Action_1.Action('16f61108-d73c-4c09-8e39-0b86ccca958d', Constants_1.ActionTypes.text, 'Hi there', [], [nameEntity], false, textResponseMeta, '58bdb485-3dd6-4451-b1cf-940dbf89e920');
-var getSizeAction = new Action_1.Action('d10ffd29-a8f4-4c3b-83ca-3481ae2727d8', Constants_1.ActionTypes.api, 'What size would you like?', [sizeEntity], [], false, azureCallMeta, '58bdb485-3dd6-4451-b1cf-940dbf89e920');
-var getNameAction = new Action_1.Action('c8891a93-73f5-4f3c-8f48-72276d31b93f', Constants_1.ActionTypes.text, 'What is your name?', [nameEntity], [], false, textResponseMeta, '58bdb485-3dd6-4451-b1cf-940dbf89e920');
-var getCompanyAction = new Action_1.Action('d10ffa29-a8f4-4c3b-83ca-3481ae2727d8', Constants_1.ActionTypes.api, 'What company do you need info for? ', [companyEntity], [], false, localAPICallMeta, '11tdb485-3dd6-1051-b1cf-040d3d4ae920');
+var getSizeAction = new Action_1.Action('d10ffd29-a8f4-4c3b-83ca-3481ae2727d8', Constants_1.ActionTypes.local, 'What size would you like?', [sizeEntity], [], false, azureCallMeta, '58bdb485-3dd6-4451-b1cf-940dbf89e920');
+var getNameAction = new Action_1.Action('c8891a93-73f5-4f3c-8f48-72276d31b93f', Constants_1.ActionTypes.intent, 'What is your name?', [nameEntity], [], false, textResponseMeta, '58bdb485-3dd6-4451-b1cf-940dbf89e920');
+var getCompanyAction = new Action_1.Action('d10ffa29-a8f4-4c3b-83ca-3481ae2727d8', Constants_1.ActionTypes.azure, 'What company do you need info for? ', [companyEntity], [], false, localAPICallMeta, '11tdb485-3dd6-1051-b1cf-040d3d4ae920');
 var APPS = [firstApp, secondApp];
 var ENTITIES = [nameEntity, sizeEntity, toppingsEntity, companyEntity];
 var ACTIONS = [hiAction, getNameAction, getSizeAction, getCompanyAction];
@@ -6868,13 +6868,10 @@ exports.EntityTypes = {
 };
 exports.ActionTypes = {
     text: 'TEXT',
-    api: 'API',
-};
-exports.APITypes = {
-    azure: 'AZURE',
-    local: 'LOCAL',
+    azure: 'AZURE FUNCTION',
+    local: 'LOCAL API CALL',
     intent: 'INTENT',
-    template: 'TEMPLATE'
+    template: 'ADAPTIVE CARD'
 };
 
 
@@ -20344,13 +20341,11 @@ var ActionResponseCreator = (function (_super) {
         _this.state = {
             open: false,
             actionTypeVal: 'TEXT',
-            apiTypeVal: null,
             contentVal: '',
             reqEntitiesVal: [],
             negEntitiesVal: [],
             waitVal: false,
             waitKey: 'waitFalse',
-            apiTypeDisabled: true,
             availableRequiredEntities: [],
             availableNegativeEntities: []
         };
@@ -20389,13 +20384,11 @@ var ActionResponseCreator = (function (_super) {
         this.setState({
             open: false,
             actionTypeVal: 'TEXT',
-            apiTypeVal: null,
             contentVal: '',
             reqEntitiesVal: [],
             negEntitiesVal: [],
             waitVal: false,
             waitKey: 'waitFalse',
-            apiTypeDisabled: true,
             availableRequiredEntities: [],
             availableNegativeEntities: []
         });
@@ -20419,7 +20412,7 @@ var ActionResponseCreator = (function (_super) {
             return _this.props.entities.find(function (e) { return e.name == neg.key; });
         });
         var internal = this.state.actionTypeVal == 'TEXT' ? true : false;
-        var meta = new Action_1.ActionMetadata(internal, this.state.apiTypeVal);
+        var meta = new Action_1.ActionMetadata(internal, null);
         var actionToAdd = new Action_1.Action(randomGUID, this.state.actionTypeVal, this.state.contentVal, negativeEntities, requiredEntities, this.state.waitVal, meta, this.props.blisApps.current.modelID);
         this.props.createAction(actionToAdd);
         this.handleClose();
@@ -20439,24 +20432,8 @@ var ActionResponseCreator = (function (_super) {
         }
     };
     ActionResponseCreator.prototype.actionTypeChanged = function (obj) {
-        if (obj.text == 'TEXT') {
-            this.setState({
-                actionTypeVal: obj.text,
-                apiTypeDisabled: true,
-                apiTypeVal: null
-            });
-        }
-        else {
-            this.setState({
-                actionTypeVal: obj.text,
-                apiTypeDisabled: false,
-                apiTypeVal: 'LOCAL'
-            });
-        }
-    };
-    ActionResponseCreator.prototype.apiTypeChanged = function (obj) {
         this.setState({
-            apiTypeVal: obj.text
+            actionTypeVal: obj.text,
         });
     };
     ActionResponseCreator.prototype.contentChanged = function (text) {
@@ -20498,14 +20475,7 @@ var ActionResponseCreator = (function (_super) {
     };
     ActionResponseCreator.prototype.render = function () {
         var actionTypeVals = Object.values(Constants_1.ActionTypes);
-        var apiTypeVals = Object.values(Constants_1.APITypes);
         var actionTypeOptions = actionTypeVals.map(function (v) {
-            return {
-                key: v,
-                text: v
-            };
-        });
-        var apiTypeOptions = apiTypeVals.map(function (v) {
             return {
                 key: v,
                 text: v
@@ -20518,7 +20488,6 @@ var ActionResponseCreator = (function (_super) {
                     React.createElement("span", { className: 'ms-font-xxl ms-fontWeight-semilight' }, "Create an Action")),
                 React.createElement("div", null,
                     React.createElement(office_ui_fabric_react_1.Dropdown, { label: 'Action Type', options: actionTypeOptions, onChanged: this.actionTypeChanged.bind(this), selectedKey: this.state.actionTypeVal }),
-                    React.createElement(office_ui_fabric_react_1.Dropdown, { label: 'API Type', disabled: this.state.apiTypeDisabled, options: apiTypeOptions, onChanged: this.apiTypeChanged.bind(this), selectedKey: this.state.apiTypeVal }),
                     React.createElement(office_ui_fabric_react_1.TextField, { onChanged: this.contentChanged.bind(this), label: "Content", required: true, placeholder: "Content...", value: this.state.contentVal }),
                     React.createElement(office_ui_fabric_react_1.Label, null, "Required Entities"),
                     React.createElement(office_ui_fabric_react_1.TagPicker, { onResolveSuggestions: this.onFilterChanged.bind(this), getTextFromItem: function (item) { return item.name; }, onChange: this.handleChangeRequiredEntities.bind(this), pickerSuggestionsProps: {
@@ -20584,14 +20553,6 @@ var columns = [
         isResizable: true
     },
     {
-        key: 'apiType',
-        name: 'API Type',
-        fieldName: 'metadata',
-        minWidth: 100,
-        maxWidth: 200,
-        isResizable: true
-    },
-    {
         key: 'content',
         name: 'Content',
         fieldName: 'content',
@@ -20632,13 +20593,6 @@ var ActionResponsesHomepage = (function (_super) {
     ActionResponsesHomepage.prototype.renderItemColumn = function (item, index, column) {
         var fieldContent = item[column.fieldName];
         switch (column.key) {
-            case 'apiType':
-                if (fieldContent.type != null) {
-                    return React.createElement("span", { className: 'ms-font-m-plus' }, fieldContent.type);
-                }
-                else {
-                    return React.createElement("span", { className: "ms-Icon ms-Icon--Remove notFoundIcon", "aria-hidden": "true" });
-                }
             case 'wait':
                 if (fieldContent == true) {
                     return React.createElement("span", { className: "ms-Icon ms-Icon--CheckMark checkIcon", "aria-hidden": "true" });

@@ -14,14 +14,6 @@ let columns : IColumn[] = [
         isResizable: true
     },
     {
-        key: 'apiType',
-        name: 'API Type',
-        fieldName: 'metadata',
-        minWidth: 100,
-        maxWidth: 200,
-        isResizable: true
-    },
-    {
         key: 'content',
         name: 'Content',
         fieldName: 'content',
@@ -61,12 +53,6 @@ class ActionResponsesHomepage extends React.Component<any, any> {
     renderItemColumn(item?: any, index?: number, column?: IColumn) {
         let fieldContent = item[column.fieldName];
         switch (column.key) {
-            case 'apiType':
-                if (fieldContent.type != null) {
-                    return <span className='ms-font-m-plus'>{fieldContent.type}</span>;
-                } else {
-                    return <span className="ms-Icon ms-Icon--Remove notFoundIcon" aria-hidden="true"></span>;
-                }
             case 'wait':
                 if (fieldContent == true) {
                     return <span className="ms-Icon ms-Icon--CheckMark checkIcon" aria-hidden="true"></span>;

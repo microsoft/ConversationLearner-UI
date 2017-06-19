@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { CommandButton, Dialog, DialogFooter, DialogType, ChoiceGroup, TextField, DefaultButton, Dropdown, TagPicker, Label } from 'office-ui-fabric-react';
 import { Action, ActionMetadata } from '../models/Action';
-import { ActionTypes, APITypes } from '../models/Constants';
+import { ActionTypes } from '../models/Constants';
 import { Entity } from '../models/Entity';
 interface EntityPickerObject {
     key: string
@@ -17,13 +17,11 @@ class ActionResponseCreator extends React.Component<any, any> {
         this.state = {
             open: false,
             actionTypeVal: 'TEXT',
-            apiTypeVal: null,
             contentVal: '',
             reqEntitiesVal: [],
             negEntitiesVal: [],
             waitVal: false,
             waitKey: 'waitFalse',
-            apiTypeDisabled: true,
             availableRequiredEntities: [],
             availableNegativeEntities: []
         }
@@ -61,13 +59,11 @@ class ActionResponseCreator extends React.Component<any, any> {
         this.setState({
             open: false,
             actionTypeVal: 'TEXT',
-            apiTypeVal: null,
             contentVal: '',
             reqEntitiesVal: [],
             negEntitiesVal: [],
             waitVal: false,
             waitKey: 'waitFalse',
-            apiTypeDisabled: true,
             availableRequiredEntities: [],
             availableNegativeEntities: []
         })
@@ -90,7 +86,7 @@ class ActionResponseCreator extends React.Component<any, any> {
             return this.props.entities.find((e: Entity) => e.name == neg.key);
         })
         let internal = this.state.actionTypeVal == 'TEXT' ? true : false;
-        let meta = new ActionMetadata(internal, this.state.apiTypeVal)
+        let meta = new ActionMetadata(internal, null)
         let actionToAdd = new Action(randomGUID, this.state.actionTypeVal, this.state.contentVal, negativeEntities, requiredEntities, this.state.waitVal, meta, this.props.blisApps.current.modelID);
         this.props.createAction(actionToAdd);
         this.handleClose();
@@ -109,23 +105,8 @@ class ActionResponseCreator extends React.Component<any, any> {
         }
     }
     actionTypeChanged(obj: { text: string }) {
-        if (obj.text == 'TEXT') {
-            this.setState({
-                actionTypeVal: obj.text,
-                apiTypeDisabled: true,
-                apiTypeVal: null
-            })
-        } else {
-            this.setState({
-                actionTypeVal: obj.text,
-                apiTypeDisabled: false,
-                apiTypeVal: 'LOCAL'
-            })
-        }
-    }
-    apiTypeChanged(obj: { text: string }) {
         this.setState({
-            apiTypeVal: obj.text
+            actionTypeVal: obj.text,
         })
     }
     contentChanged(text: string) {
@@ -167,14 +148,7 @@ class ActionResponseCreator extends React.Component<any, any> {
     }
     render() {
         let actionTypeVals = Object.values(ActionTypes);
-        let apiTypeVals = Object.values(APITypes);
         let actionTypeOptions = actionTypeVals.map(v => {
-            return {
-                key: v,
-                text: v
-            }
-        })
-        let apiTypeOptions = apiTypeVals.map(v => {
             return {
                 key: v,
                 text: v
@@ -205,13 +179,6 @@ class ActionResponseCreator extends React.Component<any, any> {
                             options={actionTypeOptions}
                             onChanged={this.actionTypeChanged.bind(this)}
                             selectedKey={this.state.actionTypeVal}
-                        />
-                        <Dropdown
-                            label='API Type'
-                            disabled={this.state.apiTypeDisabled}
-                            options={apiTypeOptions}
-                            onChanged={this.apiTypeChanged.bind(this)}
-                            selectedKey={this.state.apiTypeVal}
                         />
                         <TextField
                             onChanged={this.contentChanged.bind(this)}
