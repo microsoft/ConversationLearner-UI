@@ -3,6 +3,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader';
 import ActionResponseCreator from './ActionResponseCreator';
+import { deleteAction } from '../actions/delete'
 import { DetailsList, CommandButton, Link, CheckboxVisibility, List, IColumn } from 'office-ui-fabric-react';
 let columns : IColumn[] = [
     {
@@ -45,10 +46,24 @@ let columns : IColumn[] = [
         maxWidth: 200,
         isResizable: true
     },
+    {
+        key: 'actions',
+        name: 'Actions',
+        fieldName: 'id',
+        minWidth: 100,
+        maxWidth: 200,
+        isResizable: true
+    },
 ];
 class ActionResponsesHomepage extends React.Component<any, any> {
     constructor(p: any) {
-        super(p)
+        super(p);
+    }
+    deleteSelectedAction(GUID: string) {
+        //do something
+    }
+    editSelectedAction(GUID: string) {
+        //do something
     }
     renderItemColumn(item?: any, index?: number, column?: IColumn) {
         let fieldContent = item[column.fieldName];
@@ -85,6 +100,13 @@ class ActionResponsesHomepage extends React.Component<any, any> {
                 } else {
                     return <span className="ms-Icon ms-Icon--Remove notFoundIcon" aria-hidden="true"></span>;
                 }
+            case 'actions':
+                return (
+                    <div>
+                        <a onClick={() => this.deleteSelectedAction(fieldContent)}><span className="ms-Icon ms-Icon--Delete"></span>&nbsp;&nbsp;</a>
+                        <a onClick={() => this.editSelectedAction(fieldContent)}><span className="ms-Icon ms-Icon--Edit"></span></a>
+                    </div>
+                )
             default:
                 return <span className='ms-font-m-plus'>{fieldContent}</span>;
         }
@@ -107,12 +129,17 @@ class ActionResponsesHomepage extends React.Component<any, any> {
         );
     }
 }
+const mapDispatchToProps = (dispatch: any) => {
+    return bindActionCreators({
+        deleteAction: deleteAction
+    }, dispatch)
+}
 const mapStateToProps = (state: any) => {
     return {
         actions: state.actions
     }
 }
-export default connect(mapStateToProps, null)(ActionResponsesHomepage);
+export default connect(mapStateToProps, mapDispatchToProps)(ActionResponsesHomepage);
 
 export class EntityTile extends React.Component<any, any> {
     render() {

@@ -3,6 +3,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader';
 import EntityCreator from './EntityCreator';
+import { deleteEntity } from '../actions/delete'
 import { DetailsList, CommandButton, Link, CheckboxVisibility, IColumn } from 'office-ui-fabric-react';
 let columns : IColumn[] = [
     {
@@ -37,12 +38,28 @@ let columns : IColumn[] = [
         maxWidth: 200,
         isResizable: true
     },
+    {
+        key: 'actions',
+        name: 'Actions',
+        fieldName: 'id',
+        minWidth: 100,
+        maxWidth: 200,
+        isResizable: true
+    },
 ];
 class EntitiesHomepage extends React.Component<any, any> {
     constructor(p: any){
-        super(p)
+        super(p);
+        this.deleteSelectedEntity = this.deleteSelectedEntity.bind(this)
+    }
+    deleteSelectedEntity(GUID: string) {
+        //do something
+    }
+    editSelectedEntity(GUID: string) {
+        //do something
     }
     renderItemColumn(item?: any, index?: number, column?: IColumn) {
+        let self = this;
         let fieldContent = item[column.fieldName];
         switch (column.key) {
             case 'isBucketable':
@@ -57,11 +74,19 @@ class EntitiesHomepage extends React.Component<any, any> {
                 } else {
                     return <span className="ms-Icon ms-Icon--Remove notFoundIcon" aria-hidden="true"></span>;
                 }
+            case 'actions':
+                return (
+                    <div>
+                        <a onClick={() => this.deleteSelectedEntity(fieldContent)}><span className="ms-Icon ms-Icon--Delete"></span>&nbsp;&nbsp;</a>
+                        <a onClick={() => this.editSelectedEntity(fieldContent)}><span className="ms-Icon ms-Icon--Edit"></span></a>
+                    </div>
+                )
             default:
                 return <span className='ms-font-m-plus'>{fieldContent}</span>;
         }
     }
     render() {
+        console.log('rendering', this)
         let entities = this.props.entities;
         return (
             <div>
@@ -79,9 +104,14 @@ class EntitiesHomepage extends React.Component<any, any> {
         );
     }
 }
+const mapDispatchToProps = (dispatch: any) => {
+    return bindActionCreators({
+        deleteEntity: deleteEntity
+    }, dispatch)
+}
 const mapStateToProps = (state: any) => {
     return {
         entities: state.entities
     }
 }
-export default connect(mapStateToProps, null)(EntitiesHomepage);
+export default connect(mapStateToProps, mapDispatchToProps)(EntitiesHomepage);
