@@ -2539,8 +2539,8 @@ var Entity_1 = __webpack_require__(125);
 var Constants_1 = __webpack_require__(75);
 //=========================================================
 //=================== DUMMY DATA ==========================
-var firstApp = new Application_1.BLISApplication('58bdb485-3dd6-4451-b1cf-940dbf89e920', 'PizzaBot');
-var secondApp = new Application_1.BLISApplication('11tdb485-3dd6-1051-b1cf-040d3d4ae920', 'StockBot');
+var firstApp = new Application_1.BLISApplication('58bdb485-3dd6-4451-b1cf-940dbf89e920', 'PizzaBot', '2bd14f6c-8899-4682-855c-910fd6227351', 'East-US');
+var secondApp = new Application_1.BLISApplication('11tdb485-3dd6-1051-b1cf-040d3d4ae920', 'StockBot', 'a68af138-c7c7-499c-9491-7bc3754cef76', 'West-US');
 var bucketableMeta = new Entity_1.EntityMetadata(true, false, false, false);
 var noMeta = new Entity_1.EntityMetadata(false, false, false, false);
 var positiveMeta = new Entity_1.EntityMetadata(false, false, true, false);
@@ -20788,7 +20788,6 @@ var BLISAppCreator = (function (_super) {
     BLISAppCreator.prototype.createApplication = function () {
         var randomGUID = this.generateGUID();
         var appToAdd = new Application_1.BLISApplication(randomGUID, this.state.appNameVal, this.state.luisKeyVal, this.state.localeVal);
-        console.log(appToAdd);
         this.props.createBLISApplication(appToAdd);
         this.props.fetchAllActions(randomGUID);
         this.props.fetchAllEntities(randomGUID);
@@ -20893,9 +20892,17 @@ var columns = [
         isResizable: true
     },
     {
-        key: 'modelID',
-        name: 'Model ID',
-        fieldName: 'modelID',
+        key: 'luisKey',
+        name: 'LUIS Key',
+        fieldName: 'luisKey',
+        minWidth: 100,
+        maxWidth: 200,
+        isResizable: true
+    },
+    {
+        key: 'locale',
+        name: 'Locale',
+        fieldName: 'locale',
         minWidth: 100,
         maxWidth: 200,
         isResizable: true

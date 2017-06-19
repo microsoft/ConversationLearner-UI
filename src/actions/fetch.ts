@@ -9,8 +9,8 @@ import ActionObject from './ActionObject'
 //=========================================================
 //=================== DUMMY DATA ==========================
 
-let firstApp = new BLISApplication('58bdb485-3dd6-4451-b1cf-940dbf89e920', 'PizzaBot');
-let secondApp = new BLISApplication('11tdb485-3dd6-1051-b1cf-040d3d4ae920', 'StockBot');
+let firstApp = new BLISApplication('58bdb485-3dd6-4451-b1cf-940dbf89e920', 'PizzaBot', '2bd14f6c-8899-4682-855c-910fd6227351', 'East-US');
+let secondApp = new BLISApplication('11tdb485-3dd6-1051-b1cf-040d3d4ae920', 'StockBot', 'a68af138-c7c7-499c-9491-7bc3754cef76', 'West-US');
 let bucketableMeta = new EntityMetadata(true, false, false, false)
 let noMeta = new EntityMetadata(false, false, false, false)
 let positiveMeta = new EntityMetadata(false, false, true, false)

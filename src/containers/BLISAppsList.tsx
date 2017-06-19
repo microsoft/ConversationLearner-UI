@@ -17,9 +17,17 @@ let columns : IColumn[] = [
         isResizable: true
     },
     {
-        key: 'modelID',
-        name: 'Model ID',
-        fieldName: 'modelID',
+        key: 'luisKey',
+        name: 'LUIS Key',
+        fieldName: 'luisKey',
+        minWidth: 100,
+        maxWidth: 200,
+        isResizable: true
+    },
+    {
+        key: 'locale',
+        name: 'Locale',
+        fieldName: 'locale',
         minWidth: 100,
         maxWidth: 200,
         isResizable: true

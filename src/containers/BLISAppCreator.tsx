@@ -57,7 +57,6 @@ class BLISAppCreator extends React.Component<any, any> {
     createApplication() {
         let randomGUID = this.generateGUID();
         let appToAdd = new BLISApplication(randomGUID, this.state.appNameVal, this.state.luisKeyVal, this.state.localeVal);
-        console.log(appToAdd)
         this.props.createBLISApplication(appToAdd);
         this.props.fetchAllActions(randomGUID);
         this.props.fetchAllEntities(randomGUID);
