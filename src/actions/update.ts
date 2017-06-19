@@ -8,46 +8,46 @@ import { BLISApplication } from '../models/Application'
 import { Entity } from '../models/Entity'
 import { Action } from '../models/Action'
 import { TrainDialog } from '../models/TrainDialog'
-import ActionObject from './ActionObject'
+import { UpdateAction } from './ActionObject'
 
-export const setCurrentBLISApp = (app: BLISApplication) : ActionObject<BLISApplication> => { 
+export const setCurrentBLISApp = (app: BLISApplication) : UpdateAction => { 
     return {
         type: SET_CURRENT_BLIS_APP,
-        payload: app
+        currentBLISApp: app
     }
 }
-export const setBLISAppDisplay = (text: string) : ActionObject<string> => { 
+export const setBLISAppDisplay = (text: string) : UpdateAction => { 
     return {
         type: SET_BLIS_APP_DISPLAY,
-        payload: text
+        setDisplay: text
     }
 }
-export const editBLISApplication = (application: BLISApplication) : ActionObject<BLISApplication> => { 
+export const editBLISApplication = (application: BLISApplication) : UpdateAction => { 
     //will need to make a call to BLIS to edit this application for this user
     return {
         type: EDIT_BLIS_APPLICATION,
-        payload: application
+        blisApp: application
     }
 }
-export const editEntity = (entity: Entity) : ActionObject<Entity> => { 
+export const editEntity = (entity: Entity) : UpdateAction => { 
     //will need to make a call to BLIS to edit this entity for its application
     return {
         type: EDIT_ENTITY,
-        payload: entity
+        entity: entity
     }
 }
-export const editAction = (action: Action) : ActionObject<Action> => { 
+export const editAction = (action: Action) : UpdateAction => { 
     //will need to make a call to BLIS to edit this action for its application
     return {
         type: EDIT_ACTION,
-        payload: action
+        action: action
     }
 }
-export const editTrainDialog = () : ActionObject<any> => { 
+export const editTrainDialog = (trainDialog: TrainDialog) : UpdateAction => { 
     //currently any type because this creator hasnt been set up
     //will need to make a call to BLIS to edit this train dialog for its application
     return {
         type: EDIT_TRAIN_DIALOG,
-        payload: {}
+        trainDialog: trainDialog
     }
 }

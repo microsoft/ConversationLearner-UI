@@ -1,8 +1,6 @@
 import { Entity } from './Entity';
 export class TrainDialog {
-    constructor(public id: string, public dialog: Dialog){
-        this.id = id;
-        this.dialog = dialog;
+    constructor(public id: string, public dialog: Dialog, public appID: string){
     }
 }
 export class Dialog {

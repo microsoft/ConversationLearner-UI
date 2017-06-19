@@ -4,7 +4,7 @@ import { Action, ActionMetadata } from '../models/Action';
 import { Entity, EntityMetadata } from '../models/Entity';
 import { TrainDialog, Dialog, Turn, Input } from '../models/TrainDialog';
 import { ActionTypes, EntityTypes } from '../models/Constants'; 
-import ActionObject from './ActionObject'
+import { FetchAction } from './ActionObject'
 
 //=========================================================
 //=================== DUMMY DATA ==========================
@@ -28,44 +28,46 @@ let getSizeAction = new Action('d10ffd29-a8f4-4c3b-83ca-3481ae2727d8', ActionTyp
 let getNameAction = new Action('c8891a93-73f5-4f3c-8f48-72276d31b93f', ActionTypes.intent, 'What is your name?', [nameEntity], [], false, textResponseMeta, '58bdb485-3dd6-4451-b1cf-940dbf89e920')
 let getCompanyAction = new Action('d10ffa29-a8f4-4c3b-83ca-3481ae2727d8', ActionTypes.azure, 'What company do you need info for? ', [companyEntity], [], false, localAPICallMeta, '11tdb485-3dd6-1051-b1cf-040d3d4ae920')
 
-let APPS = [firstApp, secondApp];
+let APPS : BLISApplication[] = [firstApp, secondApp];
 let ENTITIES = [nameEntity, sizeEntity, toppingsEntity, companyEntity]
 let ACTIONS = [hiAction, getNameAction, getSizeAction, getCompanyAction]
+let TRAINDIALOGS: TrainDialog[];
 
 //=========================================================
 //=========================================================
 
-export const FETCH_APPLICATIONS = 'FETCH_APPS';
+export const FETCH_APPLICATIONS = 'FETCH_APPLICATIONS';
 export const FETCH_ENTITIES = 'FETCH_ENTITIES';
 export const FETCH_ACTIONS = 'FETCH_ACTIONS';
 export const FETCH_TRAIN_DIALOGS = 'FETCH_TRAIN_DIALOGS';
-export const fetchApplications = () : ActionObject<BLISApplication[]> => { 
+export const fetchApplications = () : FetchAction => { 
     //will need to make a call to BLIS to get all apps for this user
     return {
         type: FETCH_APPLICATIONS,
-        payload: APPS
+        blisApps: APPS
     }
 }
-export const fetchAllEntities = (blisAppID: string) : ActionObject<Entity[]> => { 
+export const fetchAllEntities = (blisAppID: string) : FetchAction => { 
     //will need to make a call to BLIS to get all entities for this app
     let entities = ENTITIES.filter(ent => ent.appID == blisAppID);
     return {
         type: FETCH_ENTITIES,
-        payload: entities
+        entities: entities
     }
 }
-export const fetchAllActions = (blisAppID: string) : ActionObject<Action[]> => { 
+export const fetchAllActions = (blisAppID: string) : FetchAction => { 
     //will need to make a call to BLIS to get all actions for this app
     let actions = ACTIONS.filter(ent => ent.appID == blisAppID);
     return {
         type: FETCH_ACTIONS,
-        payload: actions
+        actions: actions
     }
 }
-export const fetchAllTrainDialogs = (blisAppID: string) : ActionObject<any> => { 
+export const fetchAllTrainDialogs = (blisAppID: string) : FetchAction => { 
     //will need to make a call to BLIS to get all train dialogs for this app
+    let trainDialogs = TRAINDIALOGS.filter(td => td.appID == blisAppID);
     return {
         type: FETCH_TRAIN_DIALOGS,
-        payload: {}
+        trainDialogs: trainDialogs
     }
 }

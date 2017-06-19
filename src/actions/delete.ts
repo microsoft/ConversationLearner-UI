@@ -6,33 +6,33 @@ import { BLISApplication } from '../models/Application'
 import { Entity } from '../models/Entity'
 import { Action } from '../models/Action'
 import { TrainDialog } from '../models/TrainDialog'
-import ActionObject from './ActionObject'
-export const deleteBLISApplication = (application: BLISApplication) : ActionObject<BLISApplication> => { 
+import { DeleteAction } from './ActionObject'
+export const deleteBLISApplication = (GUID: string): DeleteAction => {
     //will need to make a call to BLIS to delete this application for this user
     return {
         type: DELETE_BLIS_APPLICATION,
-        payload: application
+        blisAppGUID: GUID
     }
 }
-export const deleteEntity = (entity: Entity) : ActionObject<Entity> => { 
+export const deleteEntity = (GUID: string): DeleteAction => {
     //will need to make a call to BLIS to delete this entity for its application
     return {
         type: DELETE_ENTITY,
-        payload: entity
+        entityGUID: GUID,
     }
 }
-export const deleteAction = (action: Action) : ActionObject<Action> => { 
+export const deleteAction = (GUID: string): DeleteAction => {
     //will need to make a call to BLIS to delete this action for its application
     return {
         type: DELETE_ACTION,
-        payload: action
+        actionGUID: GUID
     }
 }
-export const deleteTrainDialog = () : ActionObject<any> => { 
+export const deleteTrainDialog = (GUID: string): DeleteAction => {
     //currently any type because this creator hasnt been set up
     //will need to make a call to BLIS to delete this train dialog for its application
     return {
         type: DELETE_TRAIN_DIALOG,
-        payload: {}
+        trainDialogGUID: GUID
     }
 }
