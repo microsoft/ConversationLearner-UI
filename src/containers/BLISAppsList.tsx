@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { fetchAllActions, fetchAllEntities, fetchApplications, fetchAllTrainDialogs } from '../actions/fetch';
 import { setCurrentBLISApp, setBLISAppDisplay } from '../actions/update';
+import { deleteBLISApplication } from '../actions/delete'
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import BLISAppCreator from './BLISAppCreator'
@@ -48,7 +49,7 @@ class BLISAppsList extends React.Component<any, any> {
         this.BLISAppSelected = this.BLISAppSelected.bind(this);
     }
     deleteApp(GUID: string){
-        console.log(GUID);
+        this.props.deleteBLISApplication(GUID)
     }
     BLISAppSelected(appName: string) {
         let appSelected = this.props.blisApps.all.find((app: BLISApplication) => app.appName == appName);
@@ -96,7 +97,8 @@ const mapDispatchToProps = (dispatch: any) => {
         fetchAllEntities: fetchAllEntities,
         fetchAllTrainDialogs: fetchAllTrainDialogs,
         setCurrentBLISApp: setCurrentBLISApp,
-        setBLISAppDisplay: setBLISAppDisplay
+        setBLISAppDisplay: setBLISAppDisplay,
+        deleteBLISApplication: deleteBLISApplication
     }, dispatch);
 }
 const mapStateToProps = (state: any) => {

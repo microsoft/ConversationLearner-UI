@@ -25,7 +25,7 @@ export default (state = initialState, action: any) => {
         case SET_BLIS_APP_DISPLAY:
             return {...state, pageToDisplay: action.setDisplay};
         case DELETE_BLIS_APPLICATION:
-            // return {...state, current: action.payload};
+            return {...state, all: state.all.filter(app => app.modelID !== action.blisAppGUID)};
         case EDIT_BLIS_APPLICATION:
             // return {...state, pageToDisplay: action.payload};
         default:
