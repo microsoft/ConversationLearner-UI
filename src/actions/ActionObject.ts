@@ -36,16 +36,16 @@ export type UpdateAction = {
 
 export type FetchAction = {
     type: 'FETCH_APPLICATIONS',
-    blisApps: BLISApplication[],
+    allBlisApps: BLISApplication[],
 } | {
     type: 'FETCH_ENTITIES',
-    entities: Entity[],
+    allEntities: Entity[],
 } | {
     type: 'FETCH_ACTIONS',
-    actions: Action[],
+    allActions: Action[],
 } | {
     type: 'FETCH_TRAIN_DIALOGS',
-    trainDialogs: TrainDialog[],
+    allTrainDialogs: TrainDialog[],
 }
 
 export type CreateAction = {

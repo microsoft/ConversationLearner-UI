@@ -27,11 +27,12 @@ let hiAction = new Action('16f61108-d73c-4c09-8e39-0b86ccca958d', ActionTypes.te
 let getSizeAction = new Action('d10ffd29-a8f4-4c3b-83ca-3481ae2727d8', ActionTypes.local, 'What size would you like?', [sizeEntity], [], false, azureCallMeta, '58bdb485-3dd6-4451-b1cf-940dbf89e920')
 let getNameAction = new Action('c8891a93-73f5-4f3c-8f48-72276d31b93f', ActionTypes.intent, 'What is your name?', [nameEntity], [], false, textResponseMeta, '58bdb485-3dd6-4451-b1cf-940dbf89e920')
 let getCompanyAction = new Action('d10ffa29-a8f4-4c3b-83ca-3481ae2727d8', ActionTypes.azure, 'What company do you need info for? ', [companyEntity], [], false, localAPICallMeta, '11tdb485-3dd6-1051-b1cf-040d3d4ae920')
-
+let dialog1 = new TrainDialog('34edb485-3dd6-1051-b1cf-0wes3d4ae920', null, '11tdb485-3dd6-1051-b1cf-040d3d4ae920' )
+let dialog2 = new TrainDialog('1c85dc72-2f26-449e-840b-de247ffe83bf', null, '58bdb485-3dd6-4451-b1cf-940dbf89e920' )
 let APPS : BLISApplication[] = [firstApp, secondApp];
 let ENTITIES = [nameEntity, sizeEntity, toppingsEntity, companyEntity]
 let ACTIONS = [hiAction, getNameAction, getSizeAction, getCompanyAction]
-let TRAINDIALOGS: TrainDialog[];
+let TRAINDIALOGS: TrainDialog[] = [dialog1, dialog2];
 
 //=========================================================
 //=========================================================
@@ -68,6 +69,6 @@ export const fetchAllTrainDialogs = (blisAppID: string) : FetchAction => {
     let trainDialogs = TRAINDIALOGS.filter(td => td.appID == blisAppID);
     return {
         type: FETCH_TRAIN_DIALOGS,
-        allTrainDialogs: trainDialogs
+        allTrainDialogs: trainDialogs || {}
     }
 }
