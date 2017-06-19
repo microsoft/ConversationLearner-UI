@@ -20990,7 +20990,7 @@ var columns = [
     {
         key: 'actions',
         name: 'Actions',
-        fieldName: 'actions',
+        fieldName: 'modelID',
         minWidth: 100,
         maxWidth: 200,
         isResizable: true
@@ -21004,6 +21004,9 @@ var BLISAppsList = (function (_super) {
         _this.BLISAppSelected = _this.BLISAppSelected.bind(_this);
         return _this;
     }
+    BLISAppsList.prototype.deleteApp = function (GUID) {
+        console.log(GUID);
+    };
     BLISAppsList.prototype.BLISAppSelected = function (appName) {
         var appSelected = this.props.blisApps.all.find(function (app) { return app.appName == appName; });
         this.props.setCurrentBLISApp(appSelected);
@@ -21018,7 +21021,10 @@ var BLISAppsList = (function (_super) {
         switch (column.key) {
             case 'appName':
                 return React.createElement("span", { className: 'ms-font-m-plus' },
-                    React.createElement(office_ui_fabric_react_1.Link, { href: '#', onClick: function () { return _this.BLISAppSelected(fieldContent); } }, fieldContent));
+                    React.createElement(office_ui_fabric_react_1.Link, { onClick: function () { return _this.BLISAppSelected(fieldContent); } }, fieldContent));
+            case 'actions':
+                return React.createElement("a", { onClick: function () { return _this.deleteApp(fieldContent); } },
+                    React.createElement("span", { className: "ms-Icon ms-Icon--Delete" }));
             default:
                 return React.createElement("span", { className: 'ms-font-m-plus' }, fieldContent);
         }

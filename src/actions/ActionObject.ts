@@ -8,10 +8,6 @@ import { FETCH_ACTIONS, FETCH_APPLICATIONS, FETCH_ENTITIES, FETCH_TRAIN_DIALOGS 
 import { DELETE_ACTION, DELETE_BLIS_APPLICATION, DELETE_ENTITY, DELETE_TRAIN_DIALOG } from '../actions/delete';
 import { SET_CURRENT_BLIS_APP, SET_BLIS_APP_DISPLAY, EDIT_BLIS_APPLICATION, EDIT_ACTION, EDIT_TRAIN_DIALOG, EDIT_ENTITY } from '../actions/update';
 
-interface ActionObject<T>{
-  type: string;
-  payload: T;
-}
 
 export type UpdateAction = {
     type: 'EDIT_BLIS_APPLICATION',
@@ -75,6 +71,3 @@ export type DeleteAction = {
     type: 'DELETE_TRAIN_DIALOG',
     trainDialogGUID: string,
 }
-
-
-export default ActionObject;

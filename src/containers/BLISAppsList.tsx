@@ -35,7 +35,7 @@ let columns : IColumn[] = [
     {
         key: 'actions',
         name: 'Actions',
-        fieldName: 'actions',
+        fieldName: 'modelID',
         minWidth: 100,
         maxWidth: 200,
         isResizable: true
@@ -46,6 +46,9 @@ class BLISAppsList extends React.Component<any, any> {
         super(p);
         this.renderItemColumn = this.renderItemColumn.bind(this);
         this.BLISAppSelected = this.BLISAppSelected.bind(this);
+    }
+    deleteApp(GUID: string){
+        console.log(GUID);
     }
     BLISAppSelected(appName: string) {
         let appSelected = this.props.blisApps.all.find((app: BLISApplication) => app.appName == appName);
@@ -59,7 +62,9 @@ class BLISAppsList extends React.Component<any, any> {
         let fieldContent = item[column.fieldName];
         switch (column.key) {
             case 'appName':
-                return <span className='ms-font-m-plus'><Link href='#' onClick={() => this.BLISAppSelected(fieldContent)}>{fieldContent}</Link></span>;
+                return <span className='ms-font-m-plus'><Link onClick={() => this.BLISAppSelected(fieldContent)}>{fieldContent}</Link></span>;
+            case 'actions':
+                return <a onClick={() => this.deleteApp(fieldContent)}><span className="ms-Icon ms-Icon--Delete"></span></a>
             default:
                 return <span className='ms-font-m-plus'>{fieldContent}</span>;
         }
