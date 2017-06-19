@@ -2,15 +2,15 @@ import { CREATE_TRAIN_DIALOG } from '../actions/create';
 import { FETCH_TRAIN_DIALOGS } from '../actions/fetch';
 import { DELETE_TRAIN_DIALOG } from '../actions/delete';
 import { EDIT_TRAIN_DIALOG } from '../actions/update';
-import ActionObject from '../actions/ActionObject';
+import { CreateAction, FetchAction, UpdateAction, DeleteAction} from '../actions/ActionObject'
 import { TrainDialog } from '../models/TrainDialog'
 const initialState: TrainDialog[] = [];
-export default (state = initialState, action: ActionObject<any>) => {
+export default (state = initialState, action: any) => {
     switch(action.type) {
         case FETCH_TRAIN_DIALOGS:
-            return action.payload;
+            return action.trainDialogs;
         case CREATE_TRAIN_DIALOG:
-            return [...state, action.payload];
+            return [...state, action.trainDialog];
         case DELETE_TRAIN_DIALOG:
             // return [...state, action.payload];
         case EDIT_TRAIN_DIALOG:

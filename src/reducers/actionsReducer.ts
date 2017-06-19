@@ -5,12 +5,12 @@ import { EDIT_ACTION } from '../actions/update';
 import ActionObject from '../actions/ActionObject'
 import { Action } from '../models/Action'
 const initialState: Action[] = [];
-export default (state = initialState, action: ActionObject<any>) => {
+export default (state = initialState, action: any) => {
     switch(action.type) {
         case FETCH_ACTIONS:
-            return action.payload;
+            return action.actions;
         case CREATE_ACTION:
-            return [...state, action.payload];
+            return [...state, action.action];
         case DELETE_ACTION:
             // return [...state, action.payload];
         case EDIT_ACTION:
