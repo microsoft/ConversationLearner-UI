@@ -21008,6 +21008,9 @@ var BLISAppsList = (function (_super) {
     BLISAppsList.prototype.deleteApp = function (GUID) {
         this.props.deleteBLISApplication(GUID);
     };
+    BLISAppsList.prototype.editApp = function (GUID) {
+        //do something
+    };
     BLISAppsList.prototype.BLISAppSelected = function (appName) {
         var appSelected = this.props.blisApps.all.find(function (app) { return app.appName == appName; });
         this.props.setCurrentBLISApp(appSelected);
@@ -21024,8 +21027,12 @@ var BLISAppsList = (function (_super) {
                 return React.createElement("span", { className: 'ms-font-m-plus' },
                     React.createElement(office_ui_fabric_react_1.Link, { onClick: function () { return _this.BLISAppSelected(fieldContent); } }, fieldContent));
             case 'actions':
-                return React.createElement("a", { onClick: function () { return _this.deleteApp(fieldContent); } },
-                    React.createElement("span", { className: "ms-Icon ms-Icon--Delete" }));
+                return (React.createElement("div", null,
+                    React.createElement("a", { onClick: function () { return _this.deleteApp(fieldContent); } },
+                        React.createElement("span", { className: "ms-Icon ms-Icon--Delete" }),
+                        "\u00A0\u00A0"),
+                    React.createElement("a", { onClick: function () { return _this.editApp(fieldContent); } },
+                        React.createElement("span", { className: "ms-Icon ms-Icon--Edit" }))));
             default:
                 return React.createElement("span", { className: 'ms-font-m-plus' }, fieldContent);
         }

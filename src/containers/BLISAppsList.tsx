@@ -8,7 +8,7 @@ import BLISAppCreator from './BLISAppCreator'
 import TrainingGround from './TrainingGround';
 import { BLISApplication } from '../models/Application';
 import { DetailsList, CommandButton, Link, CheckboxVisibility, IColumn } from 'office-ui-fabric-react';
-let columns : IColumn[] = [
+let columns: IColumn[] = [
     {
         key: 'appName',
         name: 'App Name',
@@ -48,8 +48,11 @@ class BLISAppsList extends React.Component<any, any> {
         this.renderItemColumn = this.renderItemColumn.bind(this);
         this.BLISAppSelected = this.BLISAppSelected.bind(this);
     }
-    deleteApp(GUID: string){
+    deleteApp(GUID: string) {
         this.props.deleteBLISApplication(GUID)
+    }
+    editApp(GUID: string) {
+        //do something
     }
     BLISAppSelected(appName: string) {
         let appSelected = this.props.blisApps.all.find((app: BLISApplication) => app.appName == appName);
@@ -65,7 +68,12 @@ class BLISAppsList extends React.Component<any, any> {
             case 'appName':
                 return <span className='ms-font-m-plus'><Link onClick={() => this.BLISAppSelected(fieldContent)}>{fieldContent}</Link></span>;
             case 'actions':
-                return <a onClick={() => this.deleteApp(fieldContent)}><span className="ms-Icon ms-Icon--Delete"></span></a>
+                return (
+                    <div>
+                        <a onClick={() => this.deleteApp(fieldContent)}><span className="ms-Icon ms-Icon--Delete"></span>&nbsp;&nbsp;</a>
+                        <a onClick={() => this.editApp(fieldContent)}><span className="ms-Icon ms-Icon--Edit"></span></a>
+                    </div>
+                )
             default:
                 return <span className='ms-font-m-plus'>{fieldContent}</span>;
         }
