@@ -57,20 +57,9 @@ class EntitiesList extends React.Component<any, any> {
         this.editSelectedEntity = this.editSelectedEntity.bind(this)
         this.renderItemColumn = this.renderItemColumn.bind(this)
         this.onChange = this.onChange.bind(this)
-        this.onSearch = this.onSearch.bind(this)
+        this.renderEntityItems = this.renderEntityItems.bind(this)
         this.state = {
-            confirmDeleteEntityModalOpen: false,
-            entityIDToDelete: null,
-            entityItems: []
-        }
-    }
-    componentDidMount() {
-        let entities = this.props.entities;
-        let items = this.state.entityItems;
-        if (entities.length > 0 && entities.length !== items.length) {
-            this.setState({
-                entityItems: entities
-            })
+            searchValue: '',
         }
     }
     deleteSelectedEntity() {
@@ -95,32 +84,6 @@ class EntitiesList extends React.Component<any, any> {
     }
     editSelectedEntity(GUID: string) {
         //do something
-    }
-    onSearch(enteredValue: string){
-        //runs when user presses enter in the search;
-        let lcString = enteredValue.toLowerCase();
-        let filteredEntities = this.props.entities.filter((e: Entity) => {
-             let nameMatch = e.name.toLowerCase().includes(lcString);
-             let typeMatch = e.entityType.toLowerCase().includes(lcString);
-             let match = nameMatch || typeMatch
-             return match;
-        })
-        this.setState({
-            entityItems: filteredEntities
-        })
-    }
-    onChange(newValue: string){
-        //runs when user changes the text 
-        let lcString = newValue.toLowerCase();
-        let filteredEntities = this.props.entities.filter((e: Entity) => {
-             let nameMatch = e.name.toLowerCase().includes(lcString);
-             let typeMatch = e.entityType.toLowerCase().includes(lcString);
-             let match = nameMatch || typeMatch
-             return match;
-        })
-        this.setState({
-            entityItems: filteredEntities
-        })
     }
     renderItemColumn(item?: any, index?: number, column?: IColumn) {
         let self = this;
@@ -149,7 +112,26 @@ class EntitiesList extends React.Component<any, any> {
                 return <span className='ms-font-m-plus'>{fieldContent}</span>;
         }
     }
+    renderEntityItems() : Entity[]{
+        //runs when user changes the text 
+        let lcString = this.state.searchValue.toLowerCase();
+        let filteredEntities = this.props.entities.filter((e: Entity) => {
+             let nameMatch = e.name.toLowerCase().includes(lcString);
+             let typeMatch = e.entityType.toLowerCase().includes(lcString);
+             let match = nameMatch || typeMatch
+             return match;
+        })
+        return filteredEntities;
+    }
+    onChange(newValue: string) {
+        //runs when user changes the text 
+        let lcString = newValue.toLowerCase();
+        this.setState({
+            searchValue: lcString
+        })
+    }
     render() {
+        let entityItems = this.renderEntityItems();
         return (
             <div>
                 <TrainingGroundArenaHeader title="Entities" description="Manage a list of entities in your application and track and control their instances within actions..." />
@@ -157,11 +139,11 @@ class EntitiesList extends React.Component<any, any> {
                 <SearchBox
                     className="ms-font-m-plus"
                     onChange={(newValue) => this.onChange(newValue)}
-                    onSearch={(enteredValue) => this.onSearch(enteredValue)}
+                    onSearch={(newValue) => this.onChange(newValue)}
                 />
                 <DetailsList
                     className="ms-font-m-plus"
-                    items={this.state.entityItems}
+                    items={entityItems}
                     columns={columns}
                     checkboxVisibility={CheckboxVisibility.hidden}
                     onRenderItemColumn={this.renderItemColumn}
