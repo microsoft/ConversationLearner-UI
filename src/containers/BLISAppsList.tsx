@@ -8,6 +8,8 @@ import BLISAppCreator from './BLISAppCreator'
 import TrainingGround from './TrainingGround';
 import { BLISApplication } from '../models/Application';
 import { DetailsList, CommandButton, Link, CheckboxVisibility, IColumn } from 'office-ui-fabric-react';
+import ConfirmationModal from '../components/ConfirmationModal';
+
 let columns: IColumn[] = [
     {
         key: 'appName',
@@ -48,10 +50,29 @@ class BLISAppsList extends React.Component<any, any> {
         this.renderItemColumn = this.renderItemColumn.bind(this);
         this.BLISAppSelected = this.BLISAppSelected.bind(this);
         this.deleteApp = this.deleteApp.bind(this);
-        this.editApp = this.editApp.bind(this)
+        this.editApp = this.editApp.bind(this);
+        this.handleCloseModal = this.handleCloseModal.bind(this);
+        this.openDeleteModal = this.openDeleteModal.bind(this);
+        this.state = {
+            confirmDeleteAppModalOpen: false
+        }
     }
-    deleteApp(GUID: string) {
-        this.props.deleteBLISApplication(GUID)
+    deleteApp() {
+        //this.props.deleteBLISApplication(GUID)
+        this.setState({
+            confirmDeleteAppModalOpen: false
+        })
+
+    }
+    handleCloseModal(){
+        this.setState({
+            confirmDeleteAppModalOpen: false
+        })
+    }
+    openDeleteModal(){
+        this.setState({
+            confirmDeleteAppModalOpen: true
+        })
     }
     editApp(GUID: string) {
         //do something
@@ -72,7 +93,7 @@ class BLISAppsList extends React.Component<any, any> {
             case 'actions':
                 return (
                     <div>
-                        <a onClick={() => this.deleteApp(fieldContent)}><span className="ms-Icon ms-Icon--Delete"></span>&nbsp;&nbsp;</a>
+                        <a onClick={() => this.openDeleteModal()}><span className="ms-Icon ms-Icon--Delete"></span>&nbsp;&nbsp;</a>
                         <a onClick={() => this.editApp(fieldContent)}><span className="ms-Icon ms-Icon--Edit"></span></a>
                     </div>
                 )
@@ -96,6 +117,7 @@ class BLISAppsList extends React.Component<any, any> {
                     checkboxVisibility={CheckboxVisibility.hidden}
                     onRenderItemColumn={this.renderItemColumn}
                 />
+                <ConfirmationModal open={this.state.confirmDeleteAppModalOpen} onCancel={() => this.handleCloseModal()} onConfirm={() => this.deleteApp()} title="Are you sure you want to delete this application?"/>
             </div>
         );
     }
