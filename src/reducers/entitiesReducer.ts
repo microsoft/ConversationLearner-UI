@@ -2,10 +2,10 @@ import { CREATE_ENTITY } from '../actions/create';
 import { FETCH_ENTITIES } from '../actions/fetch';
 import { DELETE_ENTITY } from '../actions/delete';
 import { EDIT_ENTITY } from '../actions/update';
-import { CreateAction, FetchAction, UpdateAction, DeleteAction} from '../actions/ActionObject'
+import { ActionObject} from '../actions/ActionObject'
 import { Entity } from '../models/Entity'
 const initialState: Entity[] = [];
-export default (state = initialState, action: any) => {
+export default (state = initialState, action: ActionObject) => {
     switch(action.type) {
         case FETCH_ENTITIES:
             return action.allEntities;

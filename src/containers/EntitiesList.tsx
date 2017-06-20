@@ -112,14 +112,14 @@ class EntitiesList extends React.Component<any, any> {
                 return <span className='ms-font-m-plus'>{fieldContent}</span>;
         }
     }
-    renderEntityItems() : Entity[]{
+    renderEntityItems(): Entity[] {
         //runs when user changes the text 
         let lcString = this.state.searchValue.toLowerCase();
         let filteredEntities = this.props.entities.filter((e: Entity) => {
-             let nameMatch = e.name.toLowerCase().includes(lcString);
-             let typeMatch = e.entityType.toLowerCase().includes(lcString);
-             let match = nameMatch || typeMatch
-             return match;
+            let nameMatch = e.name.toLowerCase().includes(lcString);
+            let typeMatch = e.entityType.toLowerCase().includes(lcString);
+            let match = nameMatch || typeMatch
+            return match;
         })
         return filteredEntities;
     }

@@ -4,7 +4,7 @@ import { Action, ActionMetadata } from '../models/Action';
 import { Entity, EntityMetadata } from '../models/Entity';
 import { TrainDialog, Dialog, Turn, Input } from '../models/TrainDialog';
 import { ActionTypes, EntityTypes } from '../models/Constants'; 
-import { FetchAction } from './ActionObject'
+import { ActionObject } from './ActionObject'
 
 //=========================================================
 //=================== DUMMY DATA ==========================
@@ -41,14 +41,14 @@ export const FETCH_APPLICATIONS = 'FETCH_APPLICATIONS';
 export const FETCH_ENTITIES = 'FETCH_ENTITIES';
 export const FETCH_ACTIONS = 'FETCH_ACTIONS';
 export const FETCH_TRAIN_DIALOGS = 'FETCH_TRAIN_DIALOGS';
-export const fetchApplications = () : FetchAction => { 
+export const fetchApplications = () : ActionObject => { 
     //will need to make a call to BLIS to get all apps for this user
     return {
         type: FETCH_APPLICATIONS,
         allBlisApps: APPS
     }
 }
-export const fetchAllEntities = (blisAppID: string) : FetchAction => { 
+export const fetchAllEntities = (blisAppID: string) : ActionObject => { 
     //will need to make a call to BLIS to get all entities for this app
     let entities = ENTITIES.filter(ent => ent.appID == blisAppID);
     return {
@@ -56,7 +56,7 @@ export const fetchAllEntities = (blisAppID: string) : FetchAction => {
         allEntities: entities
     }
 }
-export const fetchAllActions = (blisAppID: string) : FetchAction => { 
+export const fetchAllActions = (blisAppID: string) : ActionObject => { 
     //will need to make a call to BLIS to get all actions for this app
     let actions = ACTIONS.filter(ent => ent.appID == blisAppID);
     return {
@@ -64,11 +64,11 @@ export const fetchAllActions = (blisAppID: string) : FetchAction => {
         allActions: actions
     }
 }
-export const fetchAllTrainDialogs = (blisAppID: string) : FetchAction => { 
+export const fetchAllTrainDialogs = (blisAppID: string) : ActionObject => { 
     //will need to make a call to BLIS to get all train dialogs for this app
     let trainDialogs = TRAINDIALOGS.filter(td => td.appID == blisAppID);
     return {
         type: FETCH_TRAIN_DIALOGS,
-        allTrainDialogs: trainDialogs || {}
+        allTrainDialogs: trainDialogs
     }
 }

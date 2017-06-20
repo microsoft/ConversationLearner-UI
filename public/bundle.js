@@ -2597,7 +2597,7 @@ exports.fetchAllTrainDialogs = function (blisAppID) {
     var trainDialogs = TRAINDIALOGS.filter(function (td) { return td.appID == blisAppID; });
     return {
         type: exports.FETCH_TRAIN_DIALOGS,
-        allTrainDialogs: trainDialogs || {}
+        allTrainDialogs: trainDialogs
     };
 };
 
@@ -20735,37 +20735,6 @@ var ActionResponsesHomepage = (function (_super) {
     ActionResponsesHomepage.prototype.editSelectedAction = function (GUID) {
         //do something
     };
-    ActionResponsesHomepage.prototype.onSearch = function (enteredValue) {
-        //runs when user presses enter in the search;
-    };
-    ActionResponsesHomepage.prototype.onChange = function (newValue) {
-        //runs when user changes the text 
-        var lcString = newValue.toLowerCase();
-        this.setState({
-            searchValue: lcString
-        });
-    };
-    ActionResponsesHomepage.prototype.renderActionItems = function () {
-        //runs when user changes the text 
-        var lcString = this.state.searchValue.toLowerCase();
-        var filteredActions = this.props.actions.filter(function (a) {
-            var nameMatch = a.content.toLowerCase().includes(lcString);
-            var typeMatch = a.actionType.toLowerCase().includes(lcString);
-            var positiveEntities = a.positiveEntities.map(function (ent) {
-                return ent.name;
-            });
-            var negativeEntities = a.negativeEntities.map(function (ent) {
-                return ent.name;
-            });
-            var requiredEnts = positiveEntities.join('');
-            var negativeEnts = negativeEntities.join('');
-            var reqEntsMatch = requiredEnts.toLowerCase().includes(lcString);
-            var negEntsMatch = negativeEnts.toLowerCase().includes(lcString);
-            var match = nameMatch || typeMatch || reqEntsMatch || negEntsMatch;
-            return match;
-        });
-        return filteredActions;
-    };
     ActionResponsesHomepage.prototype.renderItemColumn = function (item, index, column) {
         var _this = this;
         var fieldContent = item[column.fieldName];
@@ -20802,13 +20771,41 @@ var ActionResponsesHomepage = (function (_super) {
                 return React.createElement("span", { className: 'ms-font-m-plus' }, fieldContent);
         }
     };
+    ActionResponsesHomepage.prototype.renderActionItems = function () {
+        //runs when user changes the text 
+        var lcString = this.state.searchValue.toLowerCase();
+        var filteredActions = this.props.actions.filter(function (a) {
+            var nameMatch = a.content.toLowerCase().includes(lcString);
+            var typeMatch = a.actionType.toLowerCase().includes(lcString);
+            var positiveEntities = a.positiveEntities.map(function (ent) {
+                return ent.name;
+            });
+            var negativeEntities = a.negativeEntities.map(function (ent) {
+                return ent.name;
+            });
+            var requiredEnts = positiveEntities.join('');
+            var negativeEnts = negativeEntities.join('');
+            var reqEntsMatch = requiredEnts.toLowerCase().includes(lcString);
+            var negEntsMatch = negativeEnts.toLowerCase().includes(lcString);
+            var match = nameMatch || typeMatch || reqEntsMatch || negEntsMatch;
+            return match;
+        });
+        return filteredActions;
+    };
+    ActionResponsesHomepage.prototype.onChange = function (newValue) {
+        //runs when user changes the text 
+        var lcString = newValue.toLowerCase();
+        this.setState({
+            searchValue: lcString
+        });
+    };
     ActionResponsesHomepage.prototype.render = function () {
         var _this = this;
         var actionItems = this.renderActionItems();
         return (React.createElement("div", null,
             React.createElement(TrainingGroundArenaHeader_1.default, { title: "Actions", description: "Manage a list of actions that your application can take given it's state and user input.." }),
             React.createElement(ActionResponseCreator_1.default, null),
-            React.createElement(office_ui_fabric_react_1.SearchBox, { className: "ms-font-m-plus", onChange: function (newValue) { return _this.onChange(newValue); }, onSearch: function (enteredValue) { return _this.onSearch(enteredValue); } }),
+            React.createElement(office_ui_fabric_react_1.SearchBox, { className: "ms-font-m-plus", onChange: function (newValue) { return _this.onChange(newValue); }, onSearch: function (newValue) { return _this.onChange(newValue); } }),
             React.createElement(office_ui_fabric_react_1.DetailsList, { className: "ms-font-m-plus", items: actionItems, columns: columns, checkboxVisibility: office_ui_fabric_react_1.CheckboxVisibility.hidden, onRenderItemColumn: this.renderItemColumn }),
             React.createElement(ConfirmationModal_1.default, { open: this.state.confirmDeleteActionModalOpen, onCancel: function () { return _this.handleCloseModal(); }, onConfirm: function () { return _this.deleteSelectedAction(); }, title: "Are you sure you want to delete this action?" })));
     };

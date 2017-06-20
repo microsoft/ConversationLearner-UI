@@ -9,7 +9,7 @@ import ConfirmationModal from '../components/ConfirmationModal';
 import { Action } from '../models/Action'
 import { Entity } from '../models/Entity'
 
-let columns : IColumn[] = [
+let columns: IColumn[] = [
     {
         key: 'actionType',
         name: 'Action Type',
@@ -94,37 +94,6 @@ class ActionResponsesHomepage extends React.Component<any, any> {
     editSelectedAction(GUID: string) {
         //do something
     }
-    onSearch(enteredValue: string){
-        //runs when user presses enter in the search;
-    }
-    onChange(newValue: string) {
-        //runs when user changes the text 
-        let lcString = newValue.toLowerCase();
-        this.setState({
-            searchValue: lcString
-        })
-    }
-    renderActionItems() : Action[]{
-        //runs when user changes the text 
-        let lcString = this.state.searchValue.toLowerCase();
-        let filteredActions = this.props.actions.filter((a: Action) => {
-             let nameMatch = a.content.toLowerCase().includes(lcString);
-             let typeMatch = a.actionType.toLowerCase().includes(lcString);
-             let positiveEntities = a.positiveEntities.map((ent: Entity) => {
-                return ent.name;
-             })
-             let negativeEntities = a.negativeEntities.map((ent: Entity) => {
-                return ent.name;
-             })
-             let requiredEnts = positiveEntities.join('');
-             let negativeEnts = negativeEntities.join('');
-             let reqEntsMatch = requiredEnts.toLowerCase().includes(lcString);
-             let negEntsMatch = negativeEnts.toLowerCase().includes(lcString);
-             let match = nameMatch || typeMatch || reqEntsMatch || negEntsMatch
-             return match;
-        })
-        return filteredActions;
-    }
     renderItemColumn(item?: any, index?: number, column?: IColumn) {
         let fieldContent = item[column.fieldName];
         switch (column.key) {
@@ -171,6 +140,34 @@ class ActionResponsesHomepage extends React.Component<any, any> {
                 return <span className='ms-font-m-plus'>{fieldContent}</span>;
         }
     }
+    renderActionItems(): Action[] {
+        //runs when user changes the text 
+        let lcString = this.state.searchValue.toLowerCase();
+        let filteredActions = this.props.actions.filter((a: Action) => {
+            let nameMatch = a.content.toLowerCase().includes(lcString);
+            let typeMatch = a.actionType.toLowerCase().includes(lcString);
+            let positiveEntities = a.positiveEntities.map((ent: Entity) => {
+                return ent.name;
+            })
+            let negativeEntities = a.negativeEntities.map((ent: Entity) => {
+                return ent.name;
+            })
+            let requiredEnts = positiveEntities.join('');
+            let negativeEnts = negativeEntities.join('');
+            let reqEntsMatch = requiredEnts.toLowerCase().includes(lcString);
+            let negEntsMatch = negativeEnts.toLowerCase().includes(lcString);
+            let match = nameMatch || typeMatch || reqEntsMatch || negEntsMatch
+            return match;
+        })
+        return filteredActions;
+    }
+    onChange(newValue: string) {
+        //runs when user changes the text 
+        let lcString = newValue.toLowerCase();
+        this.setState({
+            searchValue: lcString
+        })
+    }
     render() {
         let actionItems = this.renderActionItems();
         return (
@@ -180,7 +177,7 @@ class ActionResponsesHomepage extends React.Component<any, any> {
                 <SearchBox
                     className="ms-font-m-plus"
                     onChange={(newValue) => this.onChange(newValue)}
-                    onSearch={(enteredValue) => this.onSearch(enteredValue)}
+                    onSearch={(newValue) => this.onChange(newValue)}
                 />
                 <DetailsList
                     className="ms-font-m-plus"
