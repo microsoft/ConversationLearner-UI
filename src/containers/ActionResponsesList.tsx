@@ -4,8 +4,10 @@ import { connect } from 'react-redux';
 import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader';
 import ActionResponseCreator from './ActionResponseCreator';
 import { deleteAction } from '../actions/delete'
-import { DetailsList, CommandButton, Link, CheckboxVisibility, List, IColumn } from 'office-ui-fabric-react';
+import { DetailsList, CommandButton, Link, CheckboxVisibility, List, IColumn, SearchBox } from 'office-ui-fabric-react';
 import ConfirmationModal from '../components/ConfirmationModal';
+import { Action } from '../models/Action'
+import { Entity } from '../models/Entity'
 
 let columns : IColumn[] = [
     {
@@ -65,7 +67,17 @@ class ActionResponsesHomepage extends React.Component<any, any> {
         this.renderItemColumn = this.renderItemColumn.bind(this)
         this.state = {
             confirmDeleteActionModalOpen: false,
-            actionIDToDelete: null
+            actionIDToDelete: null,
+            actionItems: []
+        }
+    }
+    componentDidMount() {
+        let actions = this.props.actions;
+        let items = this.state.actionItems;
+        if (actions.length > 0 && actions.length !== items.length) {
+            this.setState({
+                actionItems: actions
+            })
         }
     }
     deleteSelectedAction() {
@@ -90,6 +102,52 @@ class ActionResponsesHomepage extends React.Component<any, any> {
     }
     editSelectedAction(GUID: string) {
         //do something
+    }
+    onSearch(enteredValue: string){
+        //runs when user presses enter in the search;
+        let lcString = enteredValue.toLowerCase();
+        let filteredActions = this.props.actions.filter((a: Action) => {
+             let nameMatch = a.content.toLowerCase().includes(lcString);
+             let typeMatch = a.actionType.toLowerCase().includes(lcString);
+             let positiveEntities = a.positiveEntities.map((ent: Entity) => {
+                return ent.name;
+             })
+             let negativeEntities = a.negativeEntities.map((ent: Entity) => {
+                return ent.name;
+             })
+             let requiredEnts = positiveEntities.join('');
+             let negativeEnts = negativeEntities.join('');
+             let reqEntsMatch = requiredEnts.toLowerCase().includes(lcString);
+             let negEntsMatch = negativeEnts.toLowerCase().includes(lcString);
+             let match = nameMatch || typeMatch || reqEntsMatch || negEntsMatch
+             return match;
+        })
+        this.setState({
+            actionItems: filteredActions
+        })
+    }
+    onChange(newValue: string){
+        //runs when user changes the text 
+        let lcString = newValue.toLowerCase();
+        let filteredActions = this.props.actions.filter((a: Action) => {
+             let nameMatch = a.content.toLowerCase().includes(lcString);
+             let typeMatch = a.actionType.toLowerCase().includes(lcString);
+             let positiveEntities = a.positiveEntities.map((ent: Entity) => {
+                return ent.name;
+             })
+             let negativeEntities = a.negativeEntities.map((ent: Entity) => {
+                return ent.name;
+             })
+             let requiredEnts = positiveEntities.join('');
+             let negativeEnts = negativeEntities.join('');
+             let reqEntsMatch = requiredEnts.toLowerCase().includes(lcString);
+             let negEntsMatch = negativeEnts.toLowerCase().includes(lcString);
+             let match = nameMatch || typeMatch || reqEntsMatch || negEntsMatch
+             return match;
+        })
+        this.setState({
+            actionItems: filteredActions
+        })
     }
     renderItemColumn(item?: any, index?: number, column?: IColumn) {
         let fieldContent = item[column.fieldName];
@@ -138,14 +196,18 @@ class ActionResponsesHomepage extends React.Component<any, any> {
         }
     }
     render() {
-        let actions = this.props.actions
         return (
             <div>
                 <TrainingGroundArenaHeader title="Actions" description="Manage a list of actions that your application can take given it's state and user input.." />
                 <ActionResponseCreator />
+                <SearchBox
+                    className="ms-font-m-plus"
+                    onChange={(newValue) => this.onChange(newValue)}
+                    onSearch={(enteredValue) => this.onSearch(enteredValue)}
+                />
                 <DetailsList
                     className="ms-font-m-plus"
-                    items={actions}
+                    items={this.state.actionItems}
                     columns={columns}
                     checkboxVisibility={CheckboxVisibility.hidden}
                     onRenderItemColumn={this.renderItemColumn}

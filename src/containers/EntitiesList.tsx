@@ -72,7 +72,6 @@ class EntitiesList extends React.Component<any, any> {
                 entityItems: entities
             })
         }
-
     }
     deleteSelectedEntity() {
         this.props.deleteEntity(this.state.entityIDToDelete)
@@ -101,7 +100,10 @@ class EntitiesList extends React.Component<any, any> {
         //runs when user presses enter in the search;
         let lcString = enteredValue.toLowerCase();
         let filteredEntities = this.props.entities.filter((e: Entity) => {
-             return e.name.toLowerCase().includes(lcString);
+             let nameMatch = e.name.toLowerCase().includes(lcString);
+             let typeMatch = e.entityType.toLowerCase().includes(lcString);
+             let match = nameMatch || typeMatch
+             return match;
         })
         this.setState({
             entityItems: filteredEntities
@@ -111,7 +113,10 @@ class EntitiesList extends React.Component<any, any> {
         //runs when user changes the text 
         let lcString = newValue.toLowerCase();
         let filteredEntities = this.props.entities.filter((e: Entity) => {
-             return e.name.toLowerCase().includes(lcString);
+             let nameMatch = e.name.toLowerCase().includes(lcString);
+             let typeMatch = e.entityType.toLowerCase().includes(lcString);
+             let match = nameMatch || typeMatch
+             return match;
         })
         this.setState({
             entityItems: filteredEntities

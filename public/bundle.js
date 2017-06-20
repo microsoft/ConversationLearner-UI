@@ -20708,10 +20708,20 @@ var ActionResponsesHomepage = (function (_super) {
         _this.renderItemColumn = _this.renderItemColumn.bind(_this);
         _this.state = {
             confirmDeleteActionModalOpen: false,
-            actionIDToDelete: null
+            actionIDToDelete: null,
+            actionItems: []
         };
         return _this;
     }
+    ActionResponsesHomepage.prototype.componentDidMount = function () {
+        var actions = this.props.actions;
+        var items = this.state.actionItems;
+        if (actions.length > 0 && actions.length !== items.length) {
+            this.setState({
+                actionItems: actions
+            });
+        }
+    };
     ActionResponsesHomepage.prototype.deleteSelectedAction = function () {
         this.props.deleteAction(this.state.actionIDToDelete);
         this.setState({
@@ -20733,6 +20743,54 @@ var ActionResponsesHomepage = (function (_super) {
     };
     ActionResponsesHomepage.prototype.editSelectedAction = function (GUID) {
         //do something
+    };
+    ActionResponsesHomepage.prototype.onSearch = function (enteredValue) {
+        //runs when user presses enter in the search;
+        var lcString = enteredValue.toLowerCase();
+        var filteredActions = this.props.actions.filter(function (a) {
+            var nameMatch = a.content.toLowerCase().includes(lcString);
+            var typeMatch = a.actionType.toLowerCase().includes(lcString);
+            var positiveEntities = a.positiveEntities.map(function (ent) {
+                return ent.name;
+            });
+            var negativeEntities = a.negativeEntities.map(function (ent) {
+                return ent.name;
+            });
+            var requiredEnts = positiveEntities.join('');
+            var negativeEnts = negativeEntities.join('');
+            console.log(requiredEnts, negativeEnts);
+            var reqEntsMatch = requiredEnts.toLowerCase().includes(lcString);
+            var negEntsMatch = negativeEnts.toLowerCase().includes(lcString);
+            var match = nameMatch || typeMatch || reqEntsMatch || negEntsMatch;
+            return match;
+        });
+        this.setState({
+            actionItems: filteredActions
+        });
+    };
+    ActionResponsesHomepage.prototype.onChange = function (newValue) {
+        //runs when user changes the text 
+        var lcString = newValue.toLowerCase();
+        var filteredActions = this.props.actions.filter(function (a) {
+            var nameMatch = a.content.toLowerCase().includes(lcString);
+            var typeMatch = a.actionType.toLowerCase().includes(lcString);
+            var positiveEntities = a.positiveEntities.map(function (ent) {
+                return ent.name;
+            });
+            var negativeEntities = a.negativeEntities.map(function (ent) {
+                return ent.name;
+            });
+            var requiredEnts = positiveEntities.join('');
+            var negativeEnts = negativeEntities.join('');
+            console.log(requiredEnts, negativeEnts);
+            var reqEntsMatch = requiredEnts.toLowerCase().includes(lcString);
+            var negEntsMatch = negativeEnts.toLowerCase().includes(lcString);
+            var match = nameMatch || typeMatch || reqEntsMatch || negEntsMatch;
+            return match;
+        });
+        this.setState({
+            actionItems: filteredActions
+        });
     };
     ActionResponsesHomepage.prototype.renderItemColumn = function (item, index, column) {
         var _this = this;
@@ -20772,11 +20830,11 @@ var ActionResponsesHomepage = (function (_super) {
     };
     ActionResponsesHomepage.prototype.render = function () {
         var _this = this;
-        var actions = this.props.actions;
         return (React.createElement("div", null,
             React.createElement(TrainingGroundArenaHeader_1.default, { title: "Actions", description: "Manage a list of actions that your application can take given it's state and user input.." }),
             React.createElement(ActionResponseCreator_1.default, null),
-            React.createElement(office_ui_fabric_react_1.DetailsList, { className: "ms-font-m-plus", items: actions, columns: columns, checkboxVisibility: office_ui_fabric_react_1.CheckboxVisibility.hidden, onRenderItemColumn: this.renderItemColumn }),
+            React.createElement(office_ui_fabric_react_1.SearchBox, { className: "ms-font-m-plus", onChange: function (newValue) { return _this.onChange(newValue); }, onSearch: function (enteredValue) { return _this.onSearch(enteredValue); } }),
+            React.createElement(office_ui_fabric_react_1.DetailsList, { className: "ms-font-m-plus", items: this.state.actionItems, columns: columns, checkboxVisibility: office_ui_fabric_react_1.CheckboxVisibility.hidden, onRenderItemColumn: this.renderItemColumn }),
             React.createElement(ConfirmationModal_1.default, { open: this.state.confirmDeleteActionModalOpen, onCancel: function () { return _this.handleCloseModal(); }, onConfirm: function () { return _this.deleteSelectedAction(); }, title: "Are you sure you want to delete this action?" })));
     };
     return ActionResponsesHomepage;
@@ -21229,9 +21287,9 @@ var columns = [
         isResizable: true
     },
 ];
-var EntitiesHomepage = (function (_super) {
-    tslib_1.__extends(EntitiesHomepage, _super);
-    function EntitiesHomepage(p) {
+var EntitiesList = (function (_super) {
+    tslib_1.__extends(EntitiesList, _super);
+    function EntitiesList(p) {
         var _this = _super.call(this, p) || this;
         _this.deleteSelectedEntity = _this.deleteSelectedEntity.bind(_this);
         _this.editSelectedEntity = _this.editSelectedEntity.bind(_this);
@@ -21245,7 +21303,7 @@ var EntitiesHomepage = (function (_super) {
         };
         return _this;
     }
-    EntitiesHomepage.prototype.componentDidMount = function () {
+    EntitiesList.prototype.componentDidMount = function () {
         var entities = this.props.entities;
         var items = this.state.entityItems;
         if (entities.length > 0 && entities.length !== items.length) {
@@ -21254,51 +21312,55 @@ var EntitiesHomepage = (function (_super) {
             });
         }
     };
-    EntitiesHomepage.prototype.deleteSelectedEntity = function () {
+    EntitiesList.prototype.deleteSelectedEntity = function () {
         this.props.deleteEntity(this.state.entityIDToDelete);
         this.setState({
             confirmDeleteEntityModalOpen: false,
             entityIDToDelete: null
         });
     };
-    EntitiesHomepage.prototype.handleCloseModal = function () {
+    EntitiesList.prototype.handleCloseModal = function () {
         this.setState({
             confirmDeleteEntityModalOpen: false,
             entityIDToDelete: null
         });
     };
-    EntitiesHomepage.prototype.openDeleteModal = function (guid) {
+    EntitiesList.prototype.openDeleteModal = function (guid) {
         this.setState({
             confirmDeleteEntityModalOpen: true,
             entityIDToDelete: guid
         });
     };
-    EntitiesHomepage.prototype.editSelectedEntity = function (GUID) {
+    EntitiesList.prototype.editSelectedEntity = function (GUID) {
         //do something
     };
-    EntitiesHomepage.prototype.onSearch = function (enteredValue) {
+    EntitiesList.prototype.onSearch = function (enteredValue) {
         //runs when user presses enter in the search;
         var lcString = enteredValue.toLowerCase();
         var filteredEntities = this.props.entities.filter(function (e) {
-            return e.name.toLowerCase().includes(lcString);
+            var nameMatch = e.name.toLowerCase().includes(lcString);
+            var typeMatch = e.entityType.toLowerCase().includes(lcString);
+            var match = nameMatch || typeMatch;
+            return match;
         });
         this.setState({
             entityItems: filteredEntities
         });
     };
-    EntitiesHomepage.prototype.onChange = function (newValue) {
+    EntitiesList.prototype.onChange = function (newValue) {
         //runs when user changes the text 
         var lcString = newValue.toLowerCase();
-        console.log(lcString);
         var filteredEntities = this.props.entities.filter(function (e) {
-            return e.name.toLowerCase().includes(lcString);
+            var nameMatch = e.name.toLowerCase().includes(lcString);
+            var typeMatch = e.entityType.toLowerCase().includes(lcString);
+            var match = nameMatch || typeMatch;
+            return match;
         });
-        console.log(filteredEntities);
         this.setState({
             entityItems: filteredEntities
         });
     };
-    EntitiesHomepage.prototype.renderItemColumn = function (item, index, column) {
+    EntitiesList.prototype.renderItemColumn = function (item, index, column) {
         var _this = this;
         var self = this;
         var fieldContent = item[column.fieldName];
@@ -21328,7 +21390,7 @@ var EntitiesHomepage = (function (_super) {
                 return React.createElement("span", { className: 'ms-font-m-plus' }, fieldContent);
         }
     };
-    EntitiesHomepage.prototype.render = function () {
+    EntitiesList.prototype.render = function () {
         var _this = this;
         return (React.createElement("div", null,
             React.createElement(TrainingGroundArenaHeader_1.default, { title: "Entities", description: "Manage a list of entities in your application and track and control their instances within actions..." }),
@@ -21337,7 +21399,7 @@ var EntitiesHomepage = (function (_super) {
             React.createElement(office_ui_fabric_react_1.DetailsList, { className: "ms-font-m-plus", items: this.state.entityItems, columns: columns, checkboxVisibility: office_ui_fabric_react_1.CheckboxVisibility.hidden, onRenderItemColumn: this.renderItemColumn }),
             React.createElement(ConfirmationModal_1.default, { open: this.state.confirmDeleteEntityModalOpen, onCancel: function () { return _this.handleCloseModal(); }, onConfirm: function () { return _this.deleteSelectedEntity(); }, title: "Are you sure you want to delete this entity?" })));
     };
-    return EntitiesHomepage;
+    return EntitiesList;
 }(React.Component));
 var mapDispatchToProps = function (dispatch) {
     return redux_1.bindActionCreators({
@@ -21349,7 +21411,7 @@ var mapStateToProps = function (state) {
         entities: state.entities
     };
 };
-exports.default = react_redux_1.connect(mapStateToProps, mapDispatchToProps)(EntitiesHomepage);
+exports.default = react_redux_1.connect(mapStateToProps, mapDispatchToProps)(EntitiesList);
 
 
 /***/ }),
@@ -21520,23 +21582,23 @@ var tslib_1 = __webpack_require__(1);
 var React = __webpack_require__(0);
 var react_redux_1 = __webpack_require__(15);
 var TrainingGroundArenaHeader_1 = __webpack_require__(47);
-var TrainDialogsHomepage = (function (_super) {
-    tslib_1.__extends(TrainDialogsHomepage, _super);
-    function TrainDialogsHomepage() {
+var TrainDialogsList = (function (_super) {
+    tslib_1.__extends(TrainDialogsList, _super);
+    function TrainDialogsList() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
-    TrainDialogsHomepage.prototype.render = function () {
+    TrainDialogsList.prototype.render = function () {
         return (React.createElement("div", null,
             React.createElement(TrainingGroundArenaHeader_1.default, { title: "Train Dialogs", description: "Use this tool to test the current and published versions of your application, to check if you are progressing on the right track ..." })));
     };
-    return TrainDialogsHomepage;
+    return TrainDialogsList;
 }(React.Component));
 var mapStateToProps = function (state) {
     return {
         trainDialogs: state.trainDialogs
     };
 };
-exports.default = react_redux_1.connect(mapStateToProps, null)(TrainDialogsHomepage);
+exports.default = react_redux_1.connect(mapStateToProps, null)(TrainDialogsList);
 
 
 /***/ }),
@@ -21551,9 +21613,9 @@ var React = __webpack_require__(0);
 var fetch_1 = __webpack_require__(27);
 var redux_1 = __webpack_require__(19);
 var react_redux_1 = __webpack_require__(15);
-var EntitiesHomepage_1 = __webpack_require__(248);
-var TrainDialogsHomepage_1 = __webpack_require__(250);
-var ActionResponsesHomepage_1 = __webpack_require__(242);
+var EntitiesList_1 = __webpack_require__(248);
+var TrainDialogsList_1 = __webpack_require__(250);
+var ActionResponsesList_1 = __webpack_require__(242);
 var AppDashboard_1 = __webpack_require__(243);
 var AppSettings_1 = __webpack_require__(244);
 var Emulator_1 = __webpack_require__(238);
@@ -21587,17 +21649,17 @@ var TrainingGround = (function (_super) {
                 if (this.state.displayEmulator == true) {
                     this.setState({ displayEmulator: false });
                 }
-                return (React.createElement(EntitiesHomepage_1.default, null));
+                return (React.createElement(EntitiesList_1.default, null));
             case "Actions":
                 if (this.state.displayEmulator == true) {
                     this.setState({ displayEmulator: false });
                 }
-                return (React.createElement(ActionResponsesHomepage_1.default, null));
+                return (React.createElement(ActionResponsesList_1.default, null));
             case "TrainDialogs":
                 if (this.state.displayEmulator == false) {
                     this.setState({ displayEmulator: true });
                 }
-                return (React.createElement(TrainDialogsHomepage_1.default, null));
+                return (React.createElement(TrainDialogsList_1.default, null));
         }
     };
     TrainingGround.prototype.setArenaDisplay = function (page) {
