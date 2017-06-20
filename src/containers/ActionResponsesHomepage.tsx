@@ -5,6 +5,8 @@ import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader';
 import ActionResponseCreator from './ActionResponseCreator';
 import { deleteAction } from '../actions/delete'
 import { DetailsList, CommandButton, Link, CheckboxVisibility, List, IColumn } from 'office-ui-fabric-react';
+import ConfirmationModal from '../components/ConfirmationModal';
+
 let columns : IColumn[] = [
     {
         key: 'actionType',
@@ -61,9 +63,30 @@ class ActionResponsesHomepage extends React.Component<any, any> {
         this.deleteSelectedAction = this.deleteSelectedAction.bind(this);
         this.editSelectedAction = this.editSelectedAction.bind(this)
         this.renderItemColumn = this.renderItemColumn.bind(this)
+        this.state = {
+            confirmDeleteActionModalOpen: false,
+            actionIDToDelete: null
+        }
     }
-    deleteSelectedAction(GUID: string) {
-        this.props.deleteAction(GUID)
+    deleteSelectedAction() {
+        this.props.deleteAction(this.state.actionIDToDelete)
+        this.setState({
+            confirmDeleteActionModalOpen: false,
+            actionIDToDelete: null
+        })
+
+    }
+    handleCloseModal() {
+        this.setState({
+            confirmDeleteActionModalOpen: false,
+            actionIDToDelete: null
+        })
+    }
+    openDeleteModal(guid: string) {
+        this.setState({
+            confirmDeleteActionModalOpen: true,
+            actionIDToDelete: guid
+        })
     }
     editSelectedAction(GUID: string) {
         //do something
@@ -106,7 +129,7 @@ class ActionResponsesHomepage extends React.Component<any, any> {
             case 'actions':
                 return (
                     <div>
-                        <a onClick={() => this.deleteSelectedAction(fieldContent)}><span className="ms-Icon ms-Icon--Delete"></span>&nbsp;&nbsp;</a>
+                        <a onClick={() => this.openDeleteModal(fieldContent)}><span className="ms-Icon ms-Icon--Delete"></span>&nbsp;&nbsp;</a>
                         <a onClick={() => this.editSelectedAction(fieldContent)}><span className="ms-Icon ms-Icon--Edit"></span></a>
                     </div>
                 )
@@ -127,6 +150,7 @@ class ActionResponsesHomepage extends React.Component<any, any> {
                     checkboxVisibility={CheckboxVisibility.hidden}
                     onRenderItemColumn={this.renderItemColumn}
                 />
+                <ConfirmationModal open={this.state.confirmDeleteActionModalOpen} onCancel={() => this.handleCloseModal()} onConfirm={() => this.deleteSelectedAction()} title="Are you sure you want to delete this action?" />
 
             </div>
         );

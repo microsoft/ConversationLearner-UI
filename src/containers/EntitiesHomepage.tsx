@@ -5,6 +5,8 @@ import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader';
 import EntityCreator from './EntityCreator';
 import { deleteEntity } from '../actions/delete'
 import { DetailsList, CommandButton, Link, CheckboxVisibility, IColumn } from 'office-ui-fabric-react';
+import ConfirmationModal from '../components/ConfirmationModal';
+
 let columns : IColumn[] = [
     {
         key: 'name',
@@ -53,9 +55,30 @@ class EntitiesHomepage extends React.Component<any, any> {
         this.deleteSelectedEntity = this.deleteSelectedEntity.bind(this);
         this.editSelectedEntity = this.editSelectedEntity.bind(this)
         this.renderItemColumn = this.renderItemColumn.bind(this)
+        this.state = {
+            confirmDeleteEntityModalOpen: false,
+            entityIDToDelete: null
+        }
     }
-    deleteSelectedEntity(GUID: string) {
-        this.props.deleteEntity(GUID)
+    deleteSelectedEntity() {
+        this.props.deleteEntity(this.state.entityIDToDelete)
+        this.setState({
+            confirmDeleteEntityModalOpen: false,
+            entityIDToDelete: null
+        })
+
+    }
+    handleCloseModal() {
+        this.setState({
+            confirmDeleteEntityModalOpen: false,
+            entityIDToDelete: null
+        })
+    }
+    openDeleteModal(guid: string) {
+        this.setState({
+            confirmDeleteEntityModalOpen: true,
+            entityIDToDelete: guid
+        })
     }
     editSelectedEntity(GUID: string) {
         //do something
@@ -79,7 +102,7 @@ class EntitiesHomepage extends React.Component<any, any> {
             case 'actions':
                 return (
                     <div>
-                        <a onClick={() => this.deleteSelectedEntity(fieldContent)}><span className="ms-Icon ms-Icon--Delete"></span>&nbsp;&nbsp;</a>
+                        <a onClick={() => this.openDeleteModal(fieldContent)}><span className="ms-Icon ms-Icon--Delete"></span>&nbsp;&nbsp;</a>
                         <a onClick={() => this.editSelectedEntity(fieldContent)}><span className="ms-Icon ms-Icon--Edit"></span></a>
                     </div>
                 )
@@ -100,6 +123,7 @@ class EntitiesHomepage extends React.Component<any, any> {
                     checkboxVisibility={CheckboxVisibility.hidden}
                     onRenderItemColumn={this.renderItemColumn}
                 />
+                <ConfirmationModal open={this.state.confirmDeleteEntityModalOpen} onCancel={() => this.handleCloseModal()} onConfirm={() => this.deleteSelectedEntity()} title="Are you sure you want to delete this entity?" />
 
             </div>
         );
