@@ -54,24 +54,28 @@ class BLISAppsList extends React.Component<any, any> {
         this.handleCloseModal = this.handleCloseModal.bind(this);
         this.openDeleteModal = this.openDeleteModal.bind(this);
         this.state = {
-            confirmDeleteAppModalOpen: false
+            confirmDeleteAppModalOpen: false,
+            appIDToDelete: null
         }
     }
     deleteApp() {
-        //this.props.deleteBLISApplication(GUID)
+        this.props.deleteBLISApplication(this.state.appIDToDelete)
         this.setState({
-            confirmDeleteAppModalOpen: false
+            confirmDeleteAppModalOpen: false,
+            appIDToDelete: null
         })
 
     }
-    handleCloseModal(){
+    handleCloseModal() {
         this.setState({
-            confirmDeleteAppModalOpen: false
+            confirmDeleteAppModalOpen: false,
+            appIDToDelete: null
         })
     }
-    openDeleteModal(){
+    openDeleteModal(guid: string) {
         this.setState({
-            confirmDeleteAppModalOpen: true
+            confirmDeleteAppModalOpen: true,
+            appIDToDelete: guid
         })
     }
     editApp(GUID: string) {
@@ -93,7 +97,7 @@ class BLISAppsList extends React.Component<any, any> {
             case 'actions':
                 return (
                     <div>
-                        <a onClick={() => this.openDeleteModal()}><span className="ms-Icon ms-Icon--Delete"></span>&nbsp;&nbsp;</a>
+                        <a onClick={() => this.openDeleteModal(fieldContent)}><span className="ms-Icon ms-Icon--Delete"></span>&nbsp;&nbsp;</a>
                         <a onClick={() => this.editApp(fieldContent)}><span className="ms-Icon ms-Icon--Edit"></span></a>
                     </div>
                 )
@@ -117,7 +121,7 @@ class BLISAppsList extends React.Component<any, any> {
                     checkboxVisibility={CheckboxVisibility.hidden}
                     onRenderItemColumn={this.renderItemColumn}
                 />
-                <ConfirmationModal open={this.state.confirmDeleteAppModalOpen} onCancel={() => this.handleCloseModal()} onConfirm={() => this.deleteApp()} title="Are you sure you want to delete this application?"/>
+                <ConfirmationModal open={this.state.confirmDeleteAppModalOpen} onCancel={() => this.handleCloseModal()} onConfirm={() => this.deleteApp()} title="Are you sure you want to delete this application?" />
             </div>
         );
     }

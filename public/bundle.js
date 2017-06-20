@@ -21063,24 +21063,28 @@ var BLISAppsList = (function (_super) {
         _this.handleCloseModal = _this.handleCloseModal.bind(_this);
         _this.openDeleteModal = _this.openDeleteModal.bind(_this);
         _this.state = {
-            confirmDeleteAppModalOpen: false
+            confirmDeleteAppModalOpen: false,
+            appIDToDelete: null
         };
         return _this;
     }
     BLISAppsList.prototype.deleteApp = function () {
-        //this.props.deleteBLISApplication(GUID)
+        this.props.deleteBLISApplication(this.state.appIDToDelete);
         this.setState({
-            confirmDeleteAppModalOpen: false
+            confirmDeleteAppModalOpen: false,
+            appIDToDelete: null
         });
     };
     BLISAppsList.prototype.handleCloseModal = function () {
         this.setState({
-            confirmDeleteAppModalOpen: false
+            confirmDeleteAppModalOpen: false,
+            appIDToDelete: null
         });
     };
-    BLISAppsList.prototype.openDeleteModal = function () {
+    BLISAppsList.prototype.openDeleteModal = function (guid) {
         this.setState({
-            confirmDeleteAppModalOpen: true
+            confirmDeleteAppModalOpen: true,
+            appIDToDelete: guid
         });
     };
     BLISAppsList.prototype.editApp = function (GUID) {
@@ -21103,7 +21107,7 @@ var BLISAppsList = (function (_super) {
                     React.createElement(office_ui_fabric_react_1.Link, { onClick: function () { return _this.BLISAppSelected(fieldContent); } }, fieldContent));
             case 'actions':
                 return (React.createElement("div", null,
-                    React.createElement("a", { onClick: function () { return _this.openDeleteModal(); } },
+                    React.createElement("a", { onClick: function () { return _this.openDeleteModal(fieldContent); } },
                         React.createElement("span", { className: "ms-Icon ms-Icon--Delete" }),
                         "\u00A0\u00A0"),
                     React.createElement("a", { onClick: function () { return _this.editApp(fieldContent); } },
