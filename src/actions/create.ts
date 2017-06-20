@@ -1,7 +1,3 @@
-export const CREATE_BLIS_APPLICATION = 'CREATE_BLIS_APPLICATION';
-export const CREATE_ENTITY = 'CREATE_ENTITY';
-export const CREATE_ACTION = 'CREATE_ACTION';
-export const CREATE_TRAIN_DIALOG = 'CREATE_TRAIN_DIALOG';
 import { BLISApplication } from '../models/Application'
 import { Entity } from '../models/Entity'
 import { Action } from '../models/Action'
@@ -10,21 +6,21 @@ import { ActionObject } from './ActionObject'
 export const createBLISApplication = (application: BLISApplication): ActionObject => {
     //will need to make a call to BLIS to add this application for this user
     return {
-        type: CREATE_BLIS_APPLICATION,
+        type: 'CREATE_BLIS_APPLICATION',
         blisApp: application
     }
 }
 export const createEntity = (entity: Entity): ActionObject => {
     //will need to make a call to BLIS to add this entity for its application
     return {
-        type: CREATE_ENTITY,
+        type: 'CREATE_ENTITY',
         entity: entity
     }
 }
 export const createAction = (action: Action): ActionObject => {
     //will need to make a call to BLIS to add this action for its application
     return {
-        type: CREATE_ACTION,
+        type: 'CREATE_ACTION',
         action: action
     }
 }
@@ -32,7 +28,7 @@ export const createTrainDialog = (trainDialog: TrainDialog): ActionObject => {
     //currently any type because this creator hasnt been set up
     //will need to make a call to BLIS to add this train dialog for its application
     return {
-        type: CREATE_TRAIN_DIALOG,
+        type: 'CREATE_TRAIN_DIALOG',
         trainDialog: trainDialog
     }
 }

@@ -1,9 +1,3 @@
-export const SET_CURRENT_BLIS_APP = 'SET_CURRENT_BLIS_APP';
-export const SET_BLIS_APP_DISPLAY = 'SET_BLIS_APP_DISPLAY';
-export const EDIT_BLIS_APPLICATION = 'EDIT_BLIS_APPLICATION';
-export const EDIT_ENTITY = 'EDIT_ENTITY';
-export const EDIT_ACTION = 'EDIT_ACTION';
-export const EDIT_TRAIN_DIALOG = 'EDIT_TRAIN_DIALOG';
 import { BLISApplication } from '../models/Application'
 import { Entity } from '../models/Entity'
 import { Action } from '../models/Action'
@@ -12,34 +6,34 @@ import { ActionObject } from './ActionObject'
 
 export const setCurrentBLISApp = (app: BLISApplication) : ActionObject => { 
     return {
-        type: SET_CURRENT_BLIS_APP,
+        type: 'SET_CURRENT_BLIS_APP',
         currentBLISApp: app
     }
 }
 export const setBLISAppDisplay = (text: string) : ActionObject => { 
     return {
-        type: SET_BLIS_APP_DISPLAY,
+        type: 'SET_BLIS_APP_DISPLAY',
         setDisplay: text
     }
 }
 export const editBLISApplication = (application: BLISApplication) : ActionObject => { 
     //will need to make a call to BLIS to edit this application for this user
     return {
-        type: EDIT_BLIS_APPLICATION,
+        type: 'EDIT_BLIS_APPLICATION',
         blisApp: application
     }
 }
 export const editEntity = (entity: Entity) : ActionObject => { 
     //will need to make a call to BLIS to edit this entity for its application
     return {
-        type: EDIT_ENTITY,
+        type: 'EDIT_ENTITY',
         entity: entity
     }
 }
 export const editAction = (action: Action) : ActionObject => { 
     //will need to make a call to BLIS to edit this action for its application
     return {
-        type: EDIT_ACTION,
+        type: 'EDIT_ACTION',
         action: action
     }
 }
@@ -47,7 +41,7 @@ export const editTrainDialog = (trainDialog: TrainDialog) : ActionObject => {
     //currently any type because this creator hasnt been set up
     //will need to make a call to BLIS to edit this train dialog for its application
     return {
-        type: EDIT_TRAIN_DIALOG,
+        type: 'EDIT_TRAIN_DIALOG',
         trainDialog: trainDialog
     }
 }

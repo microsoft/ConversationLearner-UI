@@ -37,14 +37,10 @@ let TRAINDIALOGS: TrainDialog[] = [dialog1, dialog2];
 //=========================================================
 //=========================================================
 
-export const FETCH_APPLICATIONS = 'FETCH_APPLICATIONS';
-export const FETCH_ENTITIES = 'FETCH_ENTITIES';
-export const FETCH_ACTIONS = 'FETCH_ACTIONS';
-export const FETCH_TRAIN_DIALOGS = 'FETCH_TRAIN_DIALOGS';
 export const fetchApplications = () : ActionObject => { 
     //will need to make a call to BLIS to get all apps for this user
     return {
-        type: FETCH_APPLICATIONS,
+        type: 'FETCH_APPLICATIONS',
         allBlisApps: APPS
     }
 }
@@ -52,7 +48,7 @@ export const fetchAllEntities = (blisAppID: string) : ActionObject => {
     //will need to make a call to BLIS to get all entities for this app
     let entities = ENTITIES.filter(ent => ent.appID == blisAppID);
     return {
-        type: FETCH_ENTITIES,
+        type: 'FETCH_ENTITIES',
         allEntities: entities
     }
 }
@@ -60,7 +56,7 @@ export const fetchAllActions = (blisAppID: string) : ActionObject => {
     //will need to make a call to BLIS to get all actions for this app
     let actions = ACTIONS.filter(ent => ent.appID == blisAppID);
     return {
-        type: FETCH_ACTIONS,
+        type: 'FETCH_ACTIONS',
         allActions: actions
     }
 }
@@ -68,7 +64,7 @@ export const fetchAllTrainDialogs = (blisAppID: string) : ActionObject => {
     //will need to make a call to BLIS to get all train dialogs for this app
     let trainDialogs = TRAINDIALOGS.filter(td => td.appID == blisAppID);
     return {
-        type: FETCH_TRAIN_DIALOGS,
+        type: 'FETCH_TRAIN_DIALOGS',
         allTrainDialogs: trainDialogs
     }
 }
