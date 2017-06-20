@@ -72,5 +72,4 @@ export type DeleteAction = {
     trainDialogGUID: string,
 }
 
-
-//union these 
+export type ActionObject = FetchAction | CreateAction | UpdateAction | DeleteAction;
