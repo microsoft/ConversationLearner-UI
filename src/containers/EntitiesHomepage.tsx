@@ -4,10 +4,11 @@ import { connect } from 'react-redux';
 import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader';
 import EntityCreator from './EntityCreator';
 import { deleteEntity } from '../actions/delete'
-import { DetailsList, CommandButton, Link, CheckboxVisibility, IColumn } from 'office-ui-fabric-react';
+import { DetailsList, CommandButton, Link, CheckboxVisibility, IColumn, SearchBox } from 'office-ui-fabric-react';
 import ConfirmationModal from '../components/ConfirmationModal';
+import { Entity } from '../models/Entity';
 
-let columns : IColumn[] = [
+let columns: IColumn[] = [
     {
         key: 'name',
         name: 'Name',
@@ -50,15 +51,28 @@ let columns : IColumn[] = [
     },
 ];
 class EntitiesHomepage extends React.Component<any, any> {
-    constructor(p: any){
+    constructor(p: any) {
         super(p);
         this.deleteSelectedEntity = this.deleteSelectedEntity.bind(this);
         this.editSelectedEntity = this.editSelectedEntity.bind(this)
         this.renderItemColumn = this.renderItemColumn.bind(this)
+        this.onChange = this.onChange.bind(this)
+        this.onSearch = this.onSearch.bind(this)
         this.state = {
             confirmDeleteEntityModalOpen: false,
-            entityIDToDelete: null
+            entityIDToDelete: null,
+            entityItems: []
         }
+    }
+    componentDidMount() {
+        let entities = this.props.entities;
+        let items = this.state.entityItems;
+        if (entities.length > 0 && entities.length !== items.length) {
+            this.setState({
+                entityItems: entities
+            })
+        }
+
     }
     deleteSelectedEntity() {
         this.props.deleteEntity(this.state.entityIDToDelete)
@@ -83,18 +97,38 @@ class EntitiesHomepage extends React.Component<any, any> {
     editSelectedEntity(GUID: string) {
         //do something
     }
+    onSearch(enteredValue: string){
+        //runs when user presses enter in the search;
+        let lcString = enteredValue.toLowerCase();
+        let filteredEntities = this.props.entities.filter((e: Entity) => {
+             return e.name.toLowerCase().includes(lcString);
+        })
+        this.setState({
+            entityItems: filteredEntities
+        })
+    }
+    onChange(newValue: string){
+        //runs when user changes the text 
+        let lcString = newValue.toLowerCase();
+        let filteredEntities = this.props.entities.filter((e: Entity) => {
+             return e.name.toLowerCase().includes(lcString);
+        })
+        this.setState({
+            entityItems: filteredEntities
+        })
+    }
     renderItemColumn(item?: any, index?: number, column?: IColumn) {
         let self = this;
         let fieldContent = item[column.fieldName];
         switch (column.key) {
             case 'isBucketable':
-                if(fieldContent.bucket == true){
+                if (fieldContent.bucket == true) {
                     return <span className="ms-Icon ms-Icon--CheckMark checkIcon" aria-hidden="true"></span>;
                 } else {
                     return <span className="ms-Icon ms-Icon--Remove notFoundIcon" aria-hidden="true"></span>;
                 }
             case 'isNegatable':
-                if(fieldContent.negative == true){
+                if (fieldContent.negative == true) {
                     return <span className="ms-Icon ms-Icon--CheckMark checkIcon" aria-hidden="true"></span>;
                 } else {
                     return <span className="ms-Icon ms-Icon--Remove notFoundIcon" aria-hidden="true"></span>;
@@ -111,14 +145,18 @@ class EntitiesHomepage extends React.Component<any, any> {
         }
     }
     render() {
-        let entities = this.props.entities;
         return (
             <div>
-                <TrainingGroundArenaHeader title="Entities" description="Manage a list of entities in your application and track and control their instances within actions..."/>
+                <TrainingGroundArenaHeader title="Entities" description="Manage a list of entities in your application and track and control their instances within actions..." />
                 <EntityCreator />
+                <SearchBox
+                    className="ms-font-m-plus"
+                    onChange={(newValue) => this.onChange(newValue)}
+                    onSearch={(enteredValue) => this.onSearch(enteredValue)}
+                />
                 <DetailsList
                     className="ms-font-m-plus"
-                    items={entities}
+                    items={this.state.entityItems}
                     columns={columns}
                     checkboxVisibility={CheckboxVisibility.hidden}
                     onRenderItemColumn={this.renderItemColumn}

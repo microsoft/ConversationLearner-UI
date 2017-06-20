@@ -21236,12 +21236,24 @@ var EntitiesHomepage = (function (_super) {
         _this.deleteSelectedEntity = _this.deleteSelectedEntity.bind(_this);
         _this.editSelectedEntity = _this.editSelectedEntity.bind(_this);
         _this.renderItemColumn = _this.renderItemColumn.bind(_this);
+        _this.onChange = _this.onChange.bind(_this);
+        _this.onSearch = _this.onSearch.bind(_this);
         _this.state = {
             confirmDeleteEntityModalOpen: false,
-            entityIDToDelete: null
+            entityIDToDelete: null,
+            entityItems: []
         };
         return _this;
     }
+    EntitiesHomepage.prototype.componentDidMount = function () {
+        var entities = this.props.entities;
+        var items = this.state.entityItems;
+        if (entities.length > 0 && entities.length !== items.length) {
+            this.setState({
+                entityItems: entities
+            });
+        }
+    };
     EntitiesHomepage.prototype.deleteSelectedEntity = function () {
         this.props.deleteEntity(this.state.entityIDToDelete);
         this.setState({
@@ -21263,6 +21275,28 @@ var EntitiesHomepage = (function (_super) {
     };
     EntitiesHomepage.prototype.editSelectedEntity = function (GUID) {
         //do something
+    };
+    EntitiesHomepage.prototype.onSearch = function (enteredValue) {
+        //runs when user presses enter in the search;
+        var lcString = enteredValue.toLowerCase();
+        var filteredEntities = this.props.entities.filter(function (e) {
+            return e.name.toLowerCase().includes(lcString);
+        });
+        this.setState({
+            entityItems: filteredEntities
+        });
+    };
+    EntitiesHomepage.prototype.onChange = function (newValue) {
+        //runs when user changes the text 
+        var lcString = newValue.toLowerCase();
+        console.log(lcString);
+        var filteredEntities = this.props.entities.filter(function (e) {
+            return e.name.toLowerCase().includes(lcString);
+        });
+        console.log(filteredEntities);
+        this.setState({
+            entityItems: filteredEntities
+        });
     };
     EntitiesHomepage.prototype.renderItemColumn = function (item, index, column) {
         var _this = this;
@@ -21296,11 +21330,11 @@ var EntitiesHomepage = (function (_super) {
     };
     EntitiesHomepage.prototype.render = function () {
         var _this = this;
-        var entities = this.props.entities;
         return (React.createElement("div", null,
             React.createElement(TrainingGroundArenaHeader_1.default, { title: "Entities", description: "Manage a list of entities in your application and track and control their instances within actions..." }),
             React.createElement(EntityCreator_1.default, null),
-            React.createElement(office_ui_fabric_react_1.DetailsList, { className: "ms-font-m-plus", items: entities, columns: columns, checkboxVisibility: office_ui_fabric_react_1.CheckboxVisibility.hidden, onRenderItemColumn: this.renderItemColumn }),
+            React.createElement(office_ui_fabric_react_1.SearchBox, { className: "ms-font-m-plus", onChange: function (newValue) { return _this.onChange(newValue); }, onSearch: function (enteredValue) { return _this.onSearch(enteredValue); } }),
+            React.createElement(office_ui_fabric_react_1.DetailsList, { className: "ms-font-m-plus", items: this.state.entityItems, columns: columns, checkboxVisibility: office_ui_fabric_react_1.CheckboxVisibility.hidden, onRenderItemColumn: this.renderItemColumn }),
             React.createElement(ConfirmationModal_1.default, { open: this.state.confirmDeleteEntityModalOpen, onCancel: function () { return _this.handleCloseModal(); }, onConfirm: function () { return _this.deleteSelectedEntity(); }, title: "Are you sure you want to delete this entity?" })));
     };
     return EntitiesHomepage;
