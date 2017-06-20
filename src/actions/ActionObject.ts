@@ -71,3 +71,6 @@ export type DeleteAction = {
     type: 'DELETE_TRAIN_DIALOG',
     trainDialogGUID: string,
 }
+
+
+//union these 

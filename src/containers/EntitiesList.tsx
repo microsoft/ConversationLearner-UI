@@ -50,7 +50,7 @@ let columns: IColumn[] = [
         isResizable: true
     },
 ];
-class EntitiesHomepage extends React.Component<any, any> {
+class EntitiesList extends React.Component<any, any> {
     constructor(p: any) {
         super(p);
         this.deleteSelectedEntity = this.deleteSelectedEntity.bind(this);
@@ -177,4 +177,4 @@ const mapStateToProps = (state: any) => {
         entities: state.entities
     }
 }
-export default connect(mapStateToProps, mapDispatchToProps)(EntitiesHomepage);
+export default connect(mapStateToProps, mapDispatchToProps)(EntitiesList);

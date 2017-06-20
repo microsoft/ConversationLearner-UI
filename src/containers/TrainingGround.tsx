@@ -2,9 +2,9 @@ import * as React from 'react';
 import { fetchAllActions, fetchAllEntities, fetchApplications, fetchAllTrainDialogs } from '../actions/fetch';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import EntitiesHomepage from './EntitiesHomepage';
-import TrainDialogsHomepage from './TrainDialogsHomepage';
-import ActionResponsesHomepage from './ActionResponsesHomepage';
+import EntitiesList from './EntitiesList';
+import TrainDialogsList from './TrainDialogsList';
+import ActionResponsesList from './ActionResponsesList';
 import BLISAppsHomepage from './BLISAppsHomepage';
 import AppDashboard from './AppDashboard';
 import AppSettings from './AppSettings';
@@ -42,21 +42,21 @@ class TrainingGround extends React.Component<any, any> {
                     this.setState({ displayEmulator: false })
                 }
                 return (
-                    <EntitiesHomepage />
+                    <EntitiesList />
                 )
             case "Actions":
                 if (this.state.displayEmulator == true) {
                     this.setState({ displayEmulator: false })
                 }
                 return (
-                    <ActionResponsesHomepage />
+                    <ActionResponsesList />
                 )
             case "TrainDialogs":
                 if (this.state.displayEmulator == false) {
                     this.setState({ displayEmulator: true })
                 }
                 return (
-                    <TrainDialogsHomepage />
+                    <TrainDialogsList />
                 )
         }
     }

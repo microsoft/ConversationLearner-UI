@@ -2,7 +2,7 @@ import * as React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader'
-class TrainDialogsHomepage extends React.Component<any, any> {
+class TrainDialogsList extends React.Component<any, any> {
     render() {
         return (
             <div>
@@ -16,4 +16,4 @@ const mapStateToProps = (state: any) => {
         trainDialogs: state.trainDialogs
     }
 }
-export default connect(mapStateToProps, null)(TrainDialogsHomepage);
+export default connect(mapStateToProps, null)(TrainDialogsList);
