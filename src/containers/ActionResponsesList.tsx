@@ -4,11 +4,11 @@ import { connect } from 'react-redux';
 import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader';
 import { deleteAction } from '../actions/delete'
 import { DetailsList, CommandButton, Link, CheckboxVisibility, List, IColumn, SearchBox } from 'office-ui-fabric-react';
-import ConfirmationModal from '../components/ConfirmationModal';
+import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import { Action } from '../models/Action'
 import { Entity } from '../models/Entity'
 import ActionResponseCreatorEditor from './ActionResponseCreatorEditor';
-
+import EntityTile from '../components/EntityTile';
 let columns: IColumn[] = [
     {
         key: 'actionType',
@@ -214,7 +214,7 @@ class ActionResponsesHomepage extends React.Component<any, any> {
                     checkboxVisibility={CheckboxVisibility.hidden}
                     onRenderItemColumn={this.renderItemColumn}
                 />
-                <ConfirmationModal open={this.state.confirmDeleteActionModalOpen} onCancel={() => this.handleCloseModal()} onConfirm={() => this.deleteSelectedAction()} title="Are you sure you want to delete this action?" />
+                <ConfirmDeleteModal open={this.state.confirmDeleteActionModalOpen} onCancel={() => this.handleCloseModal()} onConfirm={() => this.deleteSelectedAction()} title="Are you sure you want to delete this action?" />
 
             </div>
         );
@@ -231,14 +231,3 @@ const mapStateToProps = (state: any) => {
     }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(ActionResponsesHomepage);
-
-export class EntityTile extends React.Component<any, any> {
-    render() {
-        let { item } = this.props;
-        return (
-            <div className='ms-ListItem is-selectable'>
-                <span className='ms-ListItem-primaryText'>{item.name}</span>
-            </div>
-        );
-    }
-}

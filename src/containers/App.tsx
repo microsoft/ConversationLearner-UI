@@ -3,10 +3,10 @@ import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
 import BLISAppsHomepage from '../containers/BLISAppsHomepage';
 import { fetchApplications } from '../actions/fetch'
 import { setBLISAppDisplay } from '../actions/update'
-import Header from './Header';
-import Docs from './Docs';
-import About from './About';
-import Support from './Support';
+import Header from '../components/Header';
+import Docs from '../components/otherPages/Docs';
+import About from '../components/otherPages/About';
+import Support from '../components/otherPages/Support';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 

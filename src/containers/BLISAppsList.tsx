@@ -8,7 +8,7 @@ import BLISAppCreator from './BLISAppCreator'
 import TrainingGround from './TrainingGround';
 import { BLISApplication } from '../models/Application';
 import { DetailsList, CommandButton, Link, CheckboxVisibility, IColumn } from 'office-ui-fabric-react';
-import ConfirmationModal from '../components/ConfirmationModal';
+import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 
 let columns: IColumn[] = [
     {
@@ -120,7 +120,7 @@ class BLISAppsList extends React.Component<any, any> {
                     checkboxVisibility={CheckboxVisibility.hidden}
                     onRenderItemColumn={this.renderItemColumn}
                 />
-                <ConfirmationModal open={this.state.confirmDeleteAppModalOpen} onCancel={() => this.handleCloseModal()} onConfirm={() => this.deleteApp()} title="Are you sure you want to delete this application?" />
+                <ConfirmDeleteModal open={this.state.confirmDeleteAppModalOpen} onCancel={() => this.handleCloseModal()} onConfirm={() => this.deleteApp()} title="Are you sure you want to delete this application?" />
             </div>
         );
     }

@@ -9,7 +9,7 @@ export interface Props {
     title: string;
 }
 
-const ConfirmationModal = (props: Props) => {
+const ConfirmDeleteModal = (props: Props) => {
     return (
         <Modal
             isOpen={props.open}
@@ -38,4 +38,4 @@ const ConfirmationModal = (props: Props) => {
         </Modal>
     )
 }
-export default ConfirmationModal;
+export default ConfirmDeleteModal;

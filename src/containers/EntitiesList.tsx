@@ -5,7 +5,7 @@ import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader';
 import EntityCreatorEditor from './EntityCreatorEditor';
 import { deleteEntity } from '../actions/delete'
 import { DetailsList, CommandButton, Link, CheckboxVisibility, IColumn, SearchBox } from 'office-ui-fabric-react';
-import ConfirmationModal from '../components/ConfirmationModal';
+import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import { Entity } from '../models/Entity';
 
 let columns: IColumn[] = [
@@ -176,7 +176,7 @@ class EntitiesList extends React.Component<any, any> {
                     checkboxVisibility={CheckboxVisibility.hidden}
                     onRenderItemColumn={this.renderItemColumn}
                 />
-                <ConfirmationModal open={this.state.confirmDeleteEntityModalOpen} onCancel={() => this.handleCloseDeleteModal()} onConfirm={() => this.deleteSelectedEntity()} title="Are you sure you want to delete this entity?" />
+                <ConfirmDeleteModal open={this.state.confirmDeleteEntityModalOpen} onCancel={() => this.handleCloseDeleteModal()} onConfirm={() => this.deleteSelectedEntity()} title="Are you sure you want to delete this entity?" />
 
             </div>
         );
