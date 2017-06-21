@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { createEntity } from '../actions/create';
+import { editEntity } from '../actions/update';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
@@ -90,9 +91,9 @@ class EntityCreatorEditor extends React.Component<any, any> {
         this.props.handleClose();
     }
     editEntity(ent: Entity) {
-        let randomGUID = this.generateGUID();
         let meta = new EntityMetadata(this.state.isBucketableVal, this.state.isNegatableVal, false, false);
-        let entityToAdd = new Entity(randomGUID, this.state.entityTypeVal, null, this.state.entityNameVal, meta, this.props.blisApps.current.modelID);
+        let entityToAdd = new Entity(this.props.entity.id, this.state.entityTypeVal, null, this.state.entityNameVal, meta, this.props.blisApps.current.modelID);
+        this.props.editEntity(entityToAdd)
         // do something
     }
     nameChanged(text: string) {
@@ -157,7 +158,7 @@ class EntityCreatorEditor extends React.Component<any, any> {
                             value={this.state.entityNameVal} />
                         <Dropdown
                             label='Entity Type'
-                            defaultSelectedKey='LOCAL'
+                            defaultSelectedKey={this.state.entityTypeVal}
                             options={options}
                             onChanged={this.typeChanged.bind(this)}
                             selectedKey={this.state.entityTypeVal}
@@ -219,7 +220,8 @@ class EntityCreatorEditor extends React.Component<any, any> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        createEntity: createEntity
+        createEntity: createEntity,
+        editEntity: editEntity
     }, dispatch);
 }
 const mapStateToProps = (state: any) => {

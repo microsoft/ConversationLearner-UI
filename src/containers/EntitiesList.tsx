@@ -2,7 +2,6 @@ import * as React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader';
-import EntityCreator from './EntityCreator';
 import EntityCreatorEditor from './EntityCreatorEditor';
 import { deleteEntity } from '../actions/delete'
 import { DetailsList, CommandButton, Link, CheckboxVisibility, IColumn, SearchBox } from 'office-ui-fabric-react';

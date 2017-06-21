@@ -10,7 +10,15 @@ export default (state = initialState, action: ActionObject) => {
         case 'DELETE_ENTITY':
             return state.filter(ent => ent.id !== action.entityGUID);
         case 'EDIT_ENTITY':
-            // return [...state, action.payload];
+            let index: number = 0;
+            for(let i = 0; i < state.length; i++){
+                if(state[i].id == action.entity.id){
+                    index = i
+                }
+            }
+            let newState = Object.assign([], state);
+            newState[index] = action.entity;
+            return newState
         default:
             return state;
     }
