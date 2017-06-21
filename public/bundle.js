@@ -20481,8 +20481,6 @@ var ActionResponseCreatorEditor = (function (_super) {
                     name: e.name
                 };
             });
-            console.log(requiredEntities);
-            console.log(negativeEntities);
             this.setState({
                 actionTypeVal: p.action.actionType,
                 contentVal: p.action.content,
@@ -20596,20 +20594,19 @@ var ActionResponseCreatorEditor = (function (_super) {
     ActionResponseCreatorEditor.prototype.onFilterChanged = function (filterText, tagList) {
         var _this = this;
         var entList = filterText ? this.state.availableRequiredEntities.filter(function (ent) { return ent.name.toLowerCase().indexOf(filterText.toLowerCase()) === 0; }).filter(function (item) { return !_this.listContainsDocument(item, tagList); }) : [];
-        return entList;
+        var usedEntities = this.state.reqEntitiesVal.concat(this.state.negEntitiesVal);
+        var entListToReturn = entList.filter(function (e) {
+            var decision = true;
+            usedEntities.map(function (u) {
+                if (e.key == u.key) {
+                    decision = false;
+                }
+            });
+            return decision;
+        });
+        return entListToReturn;
     };
     ActionResponseCreatorEditor.prototype.listContainsDocument = function (tag, tagList) {
-        if (!tagList || !tagList.length || tagList.length === 0) {
-            return false;
-        }
-        return tagList.filter(function (compareTag) { return compareTag.key === tag.key; }).length > 0;
-    };
-    ActionResponseCreatorEditor.prototype.onFilterChangedNegative = function (filterText, tagList) {
-        var _this = this;
-        var entList = filterText ? this.state.availableNegativeEntities.filter(function (ent) { return ent.name.toLowerCase().indexOf(filterText.toLowerCase()) === 0; }).filter(function (item) { return !_this.listContainsDocumentNegative(item, tagList); }) : [];
-        return entList;
-    };
-    ActionResponseCreatorEditor.prototype.listContainsDocumentNegative = function (tag, tagList) {
         if (!tagList || !tagList.length || tagList.length === 0) {
             return false;
         }
@@ -20654,7 +20651,7 @@ var ActionResponseCreatorEditor = (function (_super) {
                             noResultsFoundText: 'No Entities Found'
                         }, defaultSelectedItems: this.state.defaultRequiredEntities }),
                     React.createElement(office_ui_fabric_react_1.Label, null, "Negative Entities"),
-                    React.createElement(office_ui_fabric_react_1.TagPicker, { onResolveSuggestions: this.onFilterChangedNegative.bind(this), getTextFromItem: function (item) { return item.name; }, onChange: this.handleChangeNegativeEntities.bind(this), pickerSuggestionsProps: {
+                    React.createElement(office_ui_fabric_react_1.TagPicker, { onResolveSuggestions: this.onFilterChanged.bind(this), getTextFromItem: function (item) { return item.name; }, onChange: this.handleChangeNegativeEntities.bind(this), pickerSuggestionsProps: {
                             suggestionsHeaderText: 'Entities',
                             noResultsFoundText: 'No Entities Found'
                         }, defaultSelectedItems: this.state.defaultNegativeEntities }),
@@ -21239,9 +21236,7 @@ var BLISAppsList = (function (_super) {
                 return (React.createElement("div", null,
                     React.createElement("a", { onClick: function () { return _this.openDeleteModal(fieldContent); } },
                         React.createElement("span", { className: "ms-Icon ms-Icon--Delete" }),
-                        "\u00A0\u00A0"),
-                    React.createElement("a", { onClick: function () { return _this.editApp(fieldContent); } },
-                        React.createElement("span", { className: "ms-Icon ms-Icon--Edit" }))));
+                        "\u00A0\u00A0")));
             default:
                 return React.createElement("span", { className: 'ms-font-m-plus' }, fieldContent);
         }
@@ -21949,7 +21944,6 @@ exports.default = function (state, action) {
             }
             var newState = Object.assign([], state);
             newState[index] = action.action;
-            console.log('returning new state');
             return newState;
         default:
             return state;

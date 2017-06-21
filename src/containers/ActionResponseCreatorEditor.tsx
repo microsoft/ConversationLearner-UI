@@ -147,7 +147,7 @@ class ActionResponseCreatorEditor extends React.Component<any, any> {
         let internal = this.state.actionTypeVal == 'TEXT' ? true : false;
         let meta = new ActionMetadata(internal, null)
         let actionToAdd = new Action(randomGUID, this.state.actionTypeVal, this.state.contentVal, negativeEntities, requiredEntities, this.state.waitVal, meta, this.props.blisApps.current.modelID);
-        if(this.state.editing === false){
+        if (this.state.editing === false) {
             this.props.createAction(actionToAdd);
         } else {
             this.editAction(actionToAdd);
@@ -184,21 +184,20 @@ class ActionResponseCreatorEditor extends React.Component<any, any> {
     }
     onFilterChanged(filterText: string, tagList: EntityPickerObject[]) {
         let entList = filterText ? this.state.availableRequiredEntities.filter((ent: EntityPickerObject) => ent.name.toLowerCase().indexOf(filterText.toLowerCase()) === 0).filter((item: EntityPickerObject) => !this.listContainsDocument(item, tagList)) : [];
-        return entList;
+        let usedEntities = this.state.reqEntitiesVal.concat(this.state.negEntitiesVal);
+        let entListToReturn = entList.filter((e: EntityPickerObject) => {
+            let decision: boolean = true;
+            usedEntities.map((u: EntityPickerObject) => {
+                if (e.key == u.key) {
+                    decision = false;
+                }
+            })
+            return decision;
+        })
+        return entListToReturn;
     }
 
     listContainsDocument(tag: EntityPickerObject, tagList: EntityPickerObject[]) {
-        if (!tagList || !tagList.length || tagList.length === 0) {
-            return false;
-        }
-        return tagList.filter(compareTag => compareTag.key === tag.key).length > 0;
-    }
-    onFilterChangedNegative(filterText: string, tagList: EntityPickerObject[]) {
-        let entList = filterText ? this.state.availableNegativeEntities.filter((ent: EntityPickerObject) => ent.name.toLowerCase().indexOf(filterText.toLowerCase()) === 0).filter((item: EntityPickerObject) => !this.listContainsDocumentNegative(item, tagList)) : [];
-        return entList;
-    }
-
-    listContainsDocumentNegative(tag: EntityPickerObject, tagList: EntityPickerObject[]) {
         if (!tagList || !tagList.length || tagList.length === 0) {
             return false;
         }
@@ -266,7 +265,7 @@ class ActionResponseCreatorEditor extends React.Component<any, any> {
                         />
                         <Label>Negative Entities</Label>
                         <TagPicker
-                            onResolveSuggestions={this.onFilterChangedNegative.bind(this)}
+                            onResolveSuggestions={this.onFilterChanged.bind(this)}
                             getTextFromItem={(item) => { return item.name; }}
                             onChange={this.handleChangeNegativeEntities.bind(this)}
                             pickerSuggestionsProps={
