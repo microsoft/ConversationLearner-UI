@@ -3,6 +3,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader';
 import EntityCreator from './EntityCreator';
+import EntityCreatorEditor from './EntityCreatorEditor';
 import { deleteEntity } from '../actions/delete'
 import { DetailsList, CommandButton, Link, CheckboxVisibility, IColumn, SearchBox } from 'office-ui-fabric-react';
 import ConfirmationModal from '../components/ConfirmationModal';
@@ -60,6 +61,8 @@ class EntitiesList extends React.Component<any, any> {
         this.renderEntityItems = this.renderEntityItems.bind(this)
         this.state = {
             searchValue: '',
+            createEditModalOpen: false,
+            entitySelected: null
         }
     }
     deleteSelectedEntity() {
@@ -70,7 +73,7 @@ class EntitiesList extends React.Component<any, any> {
         })
 
     }
-    handleCloseModal() {
+    handleCloseDeleteModal() {
         this.setState({
             confirmDeleteEntityModalOpen: false,
             entityIDToDelete: null
@@ -81,9 +84,6 @@ class EntitiesList extends React.Component<any, any> {
             confirmDeleteEntityModalOpen: true,
             entityIDToDelete: guid
         })
-    }
-    editSelectedEntity(GUID: string) {
-        //do something
     }
     renderItemColumn(item?: any, index?: number, column?: IColumn) {
         let self = this;
@@ -130,12 +130,41 @@ class EntitiesList extends React.Component<any, any> {
             searchValue: lcString
         })
     }
+    editSelectedEntity(guid: string) {
+        //do something
+        let entitySelected = this.props.entities.find((e: Entity) => e.id == guid)
+        this.setState({
+            entitySelected: entitySelected,
+            createEditModalOpen: true
+        })
+    }
+    handleOpenCreateModal() {
+        this.setState({
+            createEditModalOpen: true
+        })
+    }
+    handleCloseCreateModal() {
+        this.setState({
+            createEditModalOpen: false,
+            entitySelected: null
+        })
+    }
     render() {
         let entityItems = this.renderEntityItems();
         return (
             <div>
                 <TrainingGroundArenaHeader title="Entities" description="Manage a list of entities in your application and track and control their instances within actions..." />
-                <EntityCreator />
+                <div className='entityCreator'>
+                    <CommandButton
+                        data-automation-id='randomID4'
+                        disabled={false}
+                        onClick={this.handleOpenCreateModal.bind(this)}
+                        className='goldButton'
+                        ariaDescription='Create a New Entity'
+                        text='New Entity'
+                    />
+                    <EntityCreatorEditor open={this.state.createEditModalOpen} entity={this.state.entitySelected} handleClose={this.handleCloseCreateModal.bind(this)} />
+                </div>
                 <SearchBox
                     className="ms-font-m-plus"
                     onChange={(newValue) => this.onChange(newValue)}
@@ -148,7 +177,7 @@ class EntitiesList extends React.Component<any, any> {
                     checkboxVisibility={CheckboxVisibility.hidden}
                     onRenderItemColumn={this.renderItemColumn}
                 />
-                <ConfirmationModal open={this.state.confirmDeleteEntityModalOpen} onCancel={() => this.handleCloseModal()} onConfirm={() => this.deleteSelectedEntity()} title="Are you sure you want to delete this entity?" />
+                <ConfirmationModal open={this.state.confirmDeleteEntityModalOpen} onCancel={() => this.handleCloseDeleteModal()} onConfirm={() => this.deleteSelectedEntity()} title="Are you sure you want to delete this entity?" />
 
             </div>
         );

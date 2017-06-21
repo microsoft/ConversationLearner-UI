@@ -21195,7 +21195,7 @@ var React = __webpack_require__(0);
 var redux_1 = __webpack_require__(19);
 var react_redux_1 = __webpack_require__(15);
 var TrainingGroundArenaHeader_1 = __webpack_require__(43);
-var EntityCreator_1 = __webpack_require__(249);
+var EntityCreatorEditor_1 = __webpack_require__(249);
 var delete_1 = __webpack_require__(74);
 var office_ui_fabric_react_1 = __webpack_require__(26);
 var ConfirmationModal_1 = __webpack_require__(76);
@@ -21252,6 +21252,8 @@ var EntitiesList = (function (_super) {
         _this.renderEntityItems = _this.renderEntityItems.bind(_this);
         _this.state = {
             searchValue: '',
+            createEditModalOpen: false,
+            entitySelected: null
         };
         return _this;
     }
@@ -21262,7 +21264,7 @@ var EntitiesList = (function (_super) {
             entityIDToDelete: null
         });
     };
-    EntitiesList.prototype.handleCloseModal = function () {
+    EntitiesList.prototype.handleCloseDeleteModal = function () {
         this.setState({
             confirmDeleteEntityModalOpen: false,
             entityIDToDelete: null
@@ -21273,9 +21275,6 @@ var EntitiesList = (function (_super) {
             confirmDeleteEntityModalOpen: true,
             entityIDToDelete: guid
         });
-    };
-    EntitiesList.prototype.editSelectedEntity = function (GUID) {
-        //do something
     };
     EntitiesList.prototype.renderItemColumn = function (item, index, column) {
         var _this = this;
@@ -21325,15 +21324,36 @@ var EntitiesList = (function (_super) {
             searchValue: lcString
         });
     };
+    EntitiesList.prototype.editSelectedEntity = function (guid) {
+        //do something
+        var entitySelected = this.props.entities.find(function (e) { return e.id == guid; });
+        this.setState({
+            entitySelected: entitySelected,
+            createEditModalOpen: true
+        });
+    };
+    EntitiesList.prototype.handleOpenCreateModal = function () {
+        this.setState({
+            createEditModalOpen: true
+        });
+    };
+    EntitiesList.prototype.handleCloseCreateModal = function () {
+        this.setState({
+            createEditModalOpen: false,
+            entitySelected: null
+        });
+    };
     EntitiesList.prototype.render = function () {
         var _this = this;
         var entityItems = this.renderEntityItems();
         return (React.createElement("div", null,
             React.createElement(TrainingGroundArenaHeader_1.default, { title: "Entities", description: "Manage a list of entities in your application and track and control their instances within actions..." }),
-            React.createElement(EntityCreator_1.default, null),
+            React.createElement("div", { className: 'entityCreator' },
+                React.createElement(office_ui_fabric_react_1.CommandButton, { "data-automation-id": 'randomID4', disabled: false, onClick: this.handleOpenCreateModal.bind(this), className: 'goldButton', ariaDescription: 'Create a New Entity', text: 'New Entity' }),
+                React.createElement(EntityCreatorEditor_1.default, { open: this.state.createEditModalOpen, entity: this.state.entitySelected, handleClose: this.handleCloseCreateModal.bind(this) })),
             React.createElement(office_ui_fabric_react_1.SearchBox, { className: "ms-font-m-plus", onChange: function (newValue) { return _this.onChange(newValue); }, onSearch: function (newValue) { return _this.onChange(newValue); } }),
             React.createElement(office_ui_fabric_react_1.DetailsList, { className: "ms-font-m-plus", items: entityItems, columns: columns, checkboxVisibility: office_ui_fabric_react_1.CheckboxVisibility.hidden, onRenderItemColumn: this.renderItemColumn }),
-            React.createElement(ConfirmationModal_1.default, { open: this.state.confirmDeleteEntityModalOpen, onCancel: function () { return _this.handleCloseModal(); }, onConfirm: function () { return _this.deleteSelectedEntity(); }, title: "Are you sure you want to delete this entity?" })));
+            React.createElement(ConfirmationModal_1.default, { open: this.state.confirmDeleteEntityModalOpen, onCancel: function () { return _this.handleCloseDeleteModal(); }, onConfirm: function () { return _this.deleteSelectedEntity(); }, title: "Are you sure you want to delete this entity?" })));
     };
     return EntitiesList;
 }(React.Component));
@@ -21366,38 +21386,60 @@ var Modal_1 = __webpack_require__(49);
 var office_ui_fabric_react_1 = __webpack_require__(26);
 var Entity_1 = __webpack_require__(127);
 var Constants_1 = __webpack_require__(77);
-var EntityCreator = (function (_super) {
-    tslib_1.__extends(EntityCreator, _super);
-    function EntityCreator(p) {
+var EntityCreatorEditor = (function (_super) {
+    tslib_1.__extends(EntityCreatorEditor, _super);
+    function EntityCreatorEditor(p) {
         var _this = _super.call(this, p) || this;
         _this.state = {
-            open: false,
             entityNameVal: '',
             entityTypeVal: 'LOCAL',
             isBucketableVal: false,
             isNegatableVal: false,
             bucketableKey: 'bucketableFalse',
-            negatableKey: 'negatableFalse'
+            negatableKey: 'negatableFalse',
+            editing: false
         };
         return _this;
     }
-    EntityCreator.prototype.handleOpen = function () {
-        this.setState({
-            open: true
-        });
+    EntityCreatorEditor.prototype.componentWillReceiveProps = function (p) {
+        if (p.entity === null) {
+            this.setState({
+                entityNameVal: '',
+                entityTypeVal: 'LOCAL',
+                isBucketableVal: false,
+                isNegatableVal: false,
+                bucketableKey: 'bucketableFalse',
+                negatableKey: 'negatableFalse',
+                editing: false
+            });
+        }
+        else {
+            var initBucketableKey = void 0;
+            var initNegatableKey = void 0;
+            if (p.entity.metadata.bucket == false) {
+                initBucketableKey = 'bucketableFalse';
+            }
+            else {
+                initBucketableKey = 'bucketableTrue';
+            }
+            if (p.entity.metadata.negative == false) {
+                initNegatableKey = 'negatableFalse';
+            }
+            else {
+                initNegatableKey = 'negatableTrue';
+            }
+            this.setState({
+                entityNameVal: p.entity.name,
+                entityTypeVal: p.entity.entityType,
+                isBucketableVal: p.entity.metadata.bucket,
+                isNegatableVal: p.entity.metadata.negative,
+                bucketableKey: initBucketableKey,
+                negatableKey: initNegatableKey,
+                editing: true
+            });
+        }
     };
-    EntityCreator.prototype.handleClose = function () {
-        this.setState({
-            open: false,
-            entityNameVal: '',
-            entityTypeVal: 'LOCAL',
-            isBucketableVal: false,
-            isNegatableVal: false,
-            bucketableKey: 'bucketableFalse',
-            negatableKey: 'negatableFalse'
-        });
-    };
-    EntityCreator.prototype.generateGUID = function () {
+    EntityCreatorEditor.prototype.generateGUID = function () {
         var d = new Date().getTime();
         var guid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (char) {
             var r = (d + Math.random() * 16) % 16 | 0;
@@ -21406,24 +21448,45 @@ var EntityCreator = (function (_super) {
         });
         return guid;
     };
-    EntityCreator.prototype.createEntity = function () {
+    EntityCreatorEditor.prototype.createEntity = function () {
         var randomGUID = this.generateGUID();
         var meta = new Entity_1.EntityMetadata(this.state.isBucketableVal, this.state.isNegatableVal, false, false);
         var entityToAdd = new Entity_1.Entity(randomGUID, this.state.entityTypeVal, null, this.state.entityNameVal, meta, this.props.blisApps.current.modelID);
-        this.props.createEntity(entityToAdd);
-        this.handleClose();
+        if (this.state.editing === false) {
+            this.props.createEntity(entityToAdd);
+        }
+        else {
+            this.editEntity(entityToAdd);
+        }
+        this.setState({
+            entityNameVal: '',
+            entityTypeVal: 'LOCAL',
+            isBucketableVal: false,
+            isNegatableVal: false,
+            bucketableKey: 'bucketableFalse',
+            negatableKey: 'negatableFalse',
+            editing: false
+        });
+        this.props.handleClose();
     };
-    EntityCreator.prototype.nameChanged = function (text) {
+    EntityCreatorEditor.prototype.editEntity = function (ent) {
+        var randomGUID = this.generateGUID();
+        var meta = new Entity_1.EntityMetadata(this.state.isBucketableVal, this.state.isNegatableVal, false, false);
+        var entityToAdd = new Entity_1.Entity(randomGUID, this.state.entityTypeVal, null, this.state.entityNameVal, meta, this.props.blisApps.current.modelID);
+        console.log('editing', entityToAdd);
+        // do something
+    };
+    EntityCreatorEditor.prototype.nameChanged = function (text) {
         this.setState({
             entityNameVal: text
         });
     };
-    EntityCreator.prototype.typeChanged = function (obj) {
+    EntityCreatorEditor.prototype.typeChanged = function (obj) {
         this.setState({
             entityTypeVal: obj.text
         });
     };
-    EntityCreator.prototype.bucketableChanged = function (event, option) {
+    EntityCreatorEditor.prototype.bucketableChanged = function (event, option) {
         if (option.text == 'False') {
             this.setState({
                 isBucketableVal: false,
@@ -21437,7 +21500,7 @@ var EntityCreator = (function (_super) {
             });
         }
     };
-    EntityCreator.prototype.negatableChanged = function (event, option) {
+    EntityCreatorEditor.prototype.negatableChanged = function (event, option) {
         if (option.text == 'False') {
             this.setState({
                 isNegatableVal: false,
@@ -21451,7 +21514,8 @@ var EntityCreator = (function (_super) {
             });
         }
     };
-    EntityCreator.prototype.render = function () {
+    EntityCreatorEditor.prototype.render = function () {
+        var _this = this;
         var vals = Object.values(Constants_1.EntityTypes);
         var options = vals.map(function (v) {
             return {
@@ -21459,9 +21523,8 @@ var EntityCreator = (function (_super) {
                 text: v
             };
         });
-        return (React.createElement("div", { className: 'entityCreator' },
-            React.createElement(office_ui_fabric_react_1.CommandButton, { "data-automation-id": 'randomID4', disabled: false, onClick: this.handleOpen.bind(this), className: 'goldButton', ariaDescription: 'Create a New Entity', text: 'New Entity' }),
-            React.createElement(Modal_1.Modal, { isOpen: this.state.open, onDismiss: this.handleClose.bind(this), isBlocking: false, containerClassName: 'createModal' },
+        return (React.createElement("div", null,
+            React.createElement(Modal_1.Modal, { isOpen: this.props.open, isBlocking: false, containerClassName: 'createModal' },
                 React.createElement("div", { className: 'modalHeader' },
                     React.createElement("span", { className: 'ms-font-xxl ms-fontWeight-semilight' }, "Create an Entity")),
                 React.createElement("div", null,
@@ -21489,9 +21552,9 @@ var EntityCreator = (function (_super) {
                         ], label: 'Negatable', onChange: this.negatableChanged.bind(this), selectedKey: this.state.negatableKey })),
                 React.createElement("div", { className: 'modalFooter' },
                     React.createElement(office_ui_fabric_react_1.CommandButton, { "data-automation-id": 'randomID2', disabled: false, onClick: this.createEntity.bind(this), className: 'goldButton', ariaDescription: 'Create', text: 'Create' }),
-                    React.createElement(office_ui_fabric_react_1.CommandButton, { "data-automation-id": 'randomID3', className: "grayButton", disabled: false, onClick: this.handleClose.bind(this), ariaDescription: 'Cancel', text: 'Cancel' })))));
+                    React.createElement(office_ui_fabric_react_1.CommandButton, { "data-automation-id": 'randomID3', className: "grayButton", disabled: false, onClick: function () { return _this.props.handleClose(); }, ariaDescription: 'Cancel', text: 'Cancel' })))));
     };
-    return EntityCreator;
+    return EntityCreatorEditor;
 }(React.Component));
 var mapDispatchToProps = function (dispatch) {
     return redux_1.bindActionCreators({
@@ -21504,7 +21567,7 @@ var mapStateToProps = function (state) {
         blisApps: state.apps
     };
 };
-exports.default = react_redux_1.connect(mapStateToProps, mapDispatchToProps)(EntityCreator);
+exports.default = react_redux_1.connect(mapStateToProps, mapDispatchToProps)(EntityCreatorEditor);
 
 
 /***/ }),

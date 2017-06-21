@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { CommandButton, Dialog, DialogFooter, DialogType, ChoiceGroup, TextField, DefaultButton, Dropdown } from 'office-ui-fabric-react';
 import { Entity, EntityMetadata } from '../models/Entity';
-import { EntityTypes } from '../models/Constants'
+import { EntityTypes } from '../models/Constants';
 class EntityCreator extends React.Component<any, any> {
     constructor(p: any) {
         super(p);
