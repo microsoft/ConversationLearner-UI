@@ -1,4 +1,5 @@
 import * as React from 'react';
+import axios from 'axios';
 import { createBLISApplication } from '../actions/create';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -6,16 +7,47 @@ import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { CommandButton, Dialog, DialogFooter, DialogType, ChoiceGroup, TextField, DefaultButton, Dropdown } from 'office-ui-fabric-react';
 import { setBLISAppDisplay } from '../actions/update'
 import { fetchAllActions, fetchAllEntities, fetchAllTrainDialogs } from '../actions/fetch'
-import { BLISApplication } from '../models/Application'
+import { BLISApplication } from '../models/Application';
+import { developmentSubKeyLUIS } from '../secrets'
+type CultureObject = {
+    CultureCode: string;
+    CultureName: string;
+}
 class BLISAppCreator extends React.Component<any, any> {
     constructor(p: any) {
         super(p);
         this.state = {
             open: false,
             appNameVal: '',
-            localeVal: 'East-US',
-            luisKeyVal: ''
+            localeVal: '',
+            luisKeyVal: '',
+            localeOptions: []
         }
+    }
+    componentWillMount() {
+        let url = 'https://westus.api.cognitive.microsoft.com/luis/v1.0/prog/apps/applicationcultures?';
+        const subscriptionKey: string = developmentSubKeyLUIS;
+        const config = {
+            headers: { "Ocp-Apim-Subscription-Key": subscriptionKey }
+        };
+        axios.get(url, config)
+            .then((response) => {
+                if (response.data) {
+                    let cultures: CultureObject[] = response.data;
+                    let cultureOptions = cultures.map((c: CultureObject) => {
+                        return {
+                            key: c.CultureName,
+                            text: c.CultureName,
+                        }
+                    })
+                    this.setState({
+                        localeOptions: cultureOptions,
+                        localeVal: cultureOptions[0].text
+                    })
+                }
+
+
+            })
     }
     handleOpen() {
         this.setState({
@@ -23,10 +55,11 @@ class BLISAppCreator extends React.Component<any, any> {
         })
     }
     handleClose() {
+        let firstValue = this.state.localeOptions[0].text
         this.setState({
             open: false,
             appNameVal: '',
-            localeVal: null,
+            localeVal: firstValue,
             luisKeyVal: ''
         })
     }
@@ -35,7 +68,7 @@ class BLISAppCreator extends React.Component<any, any> {
             appNameVal: text
         })
     }
-    localeChanged(obj: {text: string}) {
+    localeChanged(obj: { text: string }) {
         this.setState({
             localeVal: obj.text
         })
@@ -65,13 +98,6 @@ class BLISAppCreator extends React.Component<any, any> {
         this.props.setBLISAppDisplay("TrainingGround");
     }
     render() {
-        let localeOptions = ['East-US', 'West-US']
-        let options = localeOptions.map(v => {
-            return {
-                key: v,
-                text: v
-            }
-        })
         return (
             <div>
                 <CommandButton
@@ -96,8 +122,8 @@ class BLISAppCreator extends React.Component<any, any> {
                         <TextField onChanged={this.luisKeyChanged.bind(this)} label="LUIS Key" placeholder="Key..." value={this.state.luisKeyVal} />
                         <Dropdown
                             label='Locale'
-                            defaultSelectedKey='East-US'
-                            options={options}
+                            defaultSelectedKey={this.state.localeVal}
+                            options={this.state.localeOptions}
                             onChanged={this.localeChanged.bind(this)}
                             selectedKey={this.state.localeVal}
                         />
