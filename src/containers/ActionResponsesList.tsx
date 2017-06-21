@@ -2,12 +2,12 @@ import * as React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader';
-import ActionResponseCreator from './ActionResponseCreator';
 import { deleteAction } from '../actions/delete'
 import { DetailsList, CommandButton, Link, CheckboxVisibility, List, IColumn, SearchBox } from 'office-ui-fabric-react';
 import ConfirmationModal from '../components/ConfirmationModal';
 import { Action } from '../models/Action'
 import { Entity } from '../models/Entity'
+import ActionResponseCreatorEditor from './ActionResponseCreatorEditor';
 
 let columns: IColumn[] = [
     {
@@ -69,6 +69,8 @@ class ActionResponsesHomepage extends React.Component<any, any> {
         this.renderActionItems = this.renderActionItems.bind(this)
         this.state = {
             searchValue: '',
+            createEditModalOpen: false,
+            actionSelected: null
         }
     }
     deleteSelectedAction() {
@@ -91,8 +93,13 @@ class ActionResponsesHomepage extends React.Component<any, any> {
             actionIDToDelete: guid
         })
     }
-    editSelectedAction(GUID: string) {
+    editSelectedAction(guid: string) {
         //do something
+        let actionSelected = this.props.actions.find((a: Action) => a.id == guid)
+        this.setState({
+            actionSelected: actionSelected,
+            createEditModalOpen: true
+        })
     }
     renderItemColumn(item?: any, index?: number, column?: IColumn) {
         let fieldContent = item[column.fieldName];
@@ -168,12 +175,33 @@ class ActionResponsesHomepage extends React.Component<any, any> {
             searchValue: lcString
         })
     }
+    handleOpenCreateModal() {
+        this.setState({
+            createEditModalOpen: true
+        })
+    }
+    handleCloseCreateModal() {
+        this.setState({
+            createEditModalOpen: false,
+            actionSelected: null
+        })
+    }
     render() {
         let actionItems = this.renderActionItems();
         return (
             <div>
                 <TrainingGroundArenaHeader title="Actions" description="Manage a list of actions that your application can take given it's state and user input.." />
-                <ActionResponseCreator />
+                <div className='actionResponseCreator'>
+                    <CommandButton
+                        data-automation-id='randomID4'
+                        disabled={false}
+                        onClick={this.handleOpenCreateModal.bind(this)}
+                        className='goldButton'
+                        ariaDescription='Create a New Action'
+                        text='New Action'
+                    />
+                    <ActionResponseCreatorEditor open={this.state.createEditModalOpen} action={this.state.actionSelected} handleClose={this.handleCloseCreateModal.bind(this)} />
+                </div>
                 <SearchBox
                     className="ms-font-m-plus"
                     onChange={(newValue) => this.onChange(newValue)}

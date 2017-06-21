@@ -93,8 +93,7 @@ class EntityCreatorEditor extends React.Component<any, any> {
     editEntity(ent: Entity) {
         let meta = new EntityMetadata(this.state.isBucketableVal, this.state.isNegatableVal, false, false);
         let entityToAdd = new Entity(this.props.entity.id, this.state.entityTypeVal, null, this.state.entityNameVal, meta, this.props.blisApps.current.modelID);
-        this.props.editEntity(entityToAdd)
-        // do something
+        this.props.editEntity(entityToAdd);
     }
     nameChanged(text: string) {
         this.setState({
@@ -140,6 +139,12 @@ class EntityCreatorEditor extends React.Component<any, any> {
                 text: v
             }
         })
+        let title: string;
+        if(this.state.editing == true){
+            title = "Edit Entity"
+        } else {
+            title = "Create an Entity"
+        }
         return (
             <div>
                 <Modal
@@ -148,7 +153,7 @@ class EntityCreatorEditor extends React.Component<any, any> {
                     containerClassName='createModal'
                 >
                     <div className='modalHeader'>
-                        <span className='ms-font-xxl ms-fontWeight-semilight'>Create an Entity</span>
+                        <span className='ms-font-xxl ms-fontWeight-semilight'>{title}</span>
                     </div>
                     <div>
                         <TextField

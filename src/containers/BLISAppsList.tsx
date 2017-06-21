@@ -98,7 +98,6 @@ class BLISAppsList extends React.Component<any, any> {
                 return (
                     <div>
                         <a onClick={() => this.openDeleteModal(fieldContent)}><span className="ms-Icon ms-Icon--Delete"></span>&nbsp;&nbsp;</a>
-                        <a onClick={() => this.editApp(fieldContent)}><span className="ms-Icon ms-Icon--Edit"></span></a>
                     </div>
                 )
             default:

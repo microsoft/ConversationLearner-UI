@@ -74,8 +74,6 @@ class ActionResponseCreatorEditor extends React.Component<any, any> {
                     name: e.name
                 }
             })
-            console.log(requiredEntities);
-            console.log(negativeEntities);
             this.setState({
                 actionTypeVal: p.action.actionType,
                 contentVal: p.action.content,
