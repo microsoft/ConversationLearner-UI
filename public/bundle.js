@@ -2525,6 +2525,67 @@ module.exports = ReactCurrentOwner;
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
+/**
+ * WARNING: This entry should NOT be imported for production purposes. This entry forces every control to be
+ * parsed and available at load time, which is not necessary for most cases.
+ */
+
+function __export(m) {
+    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+}
+Object.defineProperty(exports, "__esModule", { value: true });
+__export(__webpack_require__(347));
+__export(__webpack_require__(16));
+__export(__webpack_require__(154));
+__export(__webpack_require__(29));
+__export(__webpack_require__(348));
+__export(__webpack_require__(349));
+__export(__webpack_require__(350));
+__export(__webpack_require__(351));
+__export(__webpack_require__(62));
+__export(__webpack_require__(352));
+__export(__webpack_require__(353));
+__export(__webpack_require__(354));
+__export(__webpack_require__(355));
+__export(__webpack_require__(356));
+__export(__webpack_require__(156));
+__export(__webpack_require__(357));
+__export(__webpack_require__(358));
+__export(__webpack_require__(14));
+__export(__webpack_require__(157));
+__export(__webpack_require__(10));
+__export(__webpack_require__(50));
+__export(__webpack_require__(37));
+__export(__webpack_require__(63));
+__export(__webpack_require__(86));
+__export(__webpack_require__(64));
+__export(__webpack_require__(360));
+__export(__webpack_require__(359));
+__export(__webpack_require__(361));
+__export(__webpack_require__(87));
+__export(__webpack_require__(158));
+__export(__webpack_require__(362));
+__export(__webpack_require__(52));
+__export(__webpack_require__(363));
+__export(__webpack_require__(364));
+__export(__webpack_require__(365));
+__export(__webpack_require__(366));
+__export(__webpack_require__(367));
+__export(__webpack_require__(88));
+__export(__webpack_require__(9));
+__export(__webpack_require__(368));
+__export(__webpack_require__(89));
+__export(__webpack_require__(369));
+__export(__webpack_require__(160));
+__export(__webpack_require__(2));
+
+
+
+/***/ }),
+/* 27 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
 /* WEBPACK VAR INJECTION */(function(process) {/**
  * Copyright 2013-present, Facebook, Inc.
  * All rights reserved.
@@ -2793,67 +2854,6 @@ function getPooledWarningPropertyDefinition(propName, getVal) {
   }
 }
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
-
-/***/ }),
-/* 27 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/**
- * WARNING: This entry should NOT be imported for production purposes. This entry forces every control to be
- * parsed and available at load time, which is not necessary for most cases.
- */
-
-function __export(m) {
-    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
-}
-Object.defineProperty(exports, "__esModule", { value: true });
-__export(__webpack_require__(347));
-__export(__webpack_require__(16));
-__export(__webpack_require__(154));
-__export(__webpack_require__(29));
-__export(__webpack_require__(348));
-__export(__webpack_require__(349));
-__export(__webpack_require__(350));
-__export(__webpack_require__(351));
-__export(__webpack_require__(62));
-__export(__webpack_require__(352));
-__export(__webpack_require__(353));
-__export(__webpack_require__(354));
-__export(__webpack_require__(355));
-__export(__webpack_require__(356));
-__export(__webpack_require__(156));
-__export(__webpack_require__(357));
-__export(__webpack_require__(358));
-__export(__webpack_require__(14));
-__export(__webpack_require__(157));
-__export(__webpack_require__(10));
-__export(__webpack_require__(50));
-__export(__webpack_require__(37));
-__export(__webpack_require__(63));
-__export(__webpack_require__(86));
-__export(__webpack_require__(64));
-__export(__webpack_require__(360));
-__export(__webpack_require__(359));
-__export(__webpack_require__(361));
-__export(__webpack_require__(87));
-__export(__webpack_require__(158));
-__export(__webpack_require__(362));
-__export(__webpack_require__(52));
-__export(__webpack_require__(363));
-__export(__webpack_require__(364));
-__export(__webpack_require__(365));
-__export(__webpack_require__(366));
-__export(__webpack_require__(367));
-__export(__webpack_require__(88));
-__export(__webpack_require__(9));
-__export(__webpack_require__(368));
-__export(__webpack_require__(89));
-__export(__webpack_require__(369));
-__export(__webpack_require__(160));
-__export(__webpack_require__(2));
-
-
 
 /***/ }),
 /* 28 */
@@ -5316,7 +5316,7 @@ module.exports = ReactInstanceMap;
 
 
 
-var SyntheticEvent = __webpack_require__(26);
+var SyntheticEvent = __webpack_require__(27);
 
 var getEventTarget = __webpack_require__(116);
 
@@ -5425,8 +5425,8 @@ var TrainDialog_1 = __webpack_require__(261);
 var Constants_1 = __webpack_require__(78);
 //=========================================================
 //=================== DUMMY DATA ==========================
-var firstApp = new Application_1.BLISApplication('58bdb485-3dd6-4451-b1cf-940dbf89e920', 'PizzaBot', '2bd14f6c-8899-4682-855c-910fd6227351', 'East-US');
-var secondApp = new Application_1.BLISApplication('11tdb485-3dd6-1051-b1cf-040d3d4ae920', 'StockBot', 'a68af138-c7c7-499c-9491-7bc3754cef76', 'West-US');
+var firstApp = new Application_1.BLISApplication('58bdb485-3dd6-4451-b1cf-940dbf89e920', 'PizzaBot', '2bd14f6c-8899-4682-855c-910fd6227351', 'English');
+var secondApp = new Application_1.BLISApplication('11tdb485-3dd6-1051-b1cf-040d3d4ae920', 'StockBot', 'a68af138-c7c7-499c-9491-7bc3754cef76', 'English');
 var bucketableMeta = new Entity_1.EntityMetadata(true, false, false, false);
 var noMeta = new Entity_1.EntityMetadata(false, false, false, false);
 var positiveMeta = new Entity_1.EntityMetadata(false, false, true, false);
@@ -5442,8 +5442,8 @@ var hiAction = new Action_1.Action('16f61108-d73c-4c09-8e39-0b86ccca958d', Const
 var getSizeAction = new Action_1.Action('d10ffd29-a8f4-4c3b-83ca-3481ae2727d8', Constants_1.ActionTypes.local, 'What size would you like?', [sizeEntity], [], false, azureCallMeta, '58bdb485-3dd6-4451-b1cf-940dbf89e920');
 var getNameAction = new Action_1.Action('c8891a93-73f5-4f3c-8f48-72276d31b93f', Constants_1.ActionTypes.intent, 'What is your name?', [nameEntity], [], false, textResponseMeta, '58bdb485-3dd6-4451-b1cf-940dbf89e920');
 var getCompanyAction = new Action_1.Action('d10ffa29-a8f4-4c3b-83ca-3481ae2727d8', Constants_1.ActionTypes.azure, 'What company do you need info for? ', [companyEntity], [], false, localAPICallMeta, '11tdb485-3dd6-1051-b1cf-040d3d4ae920');
-var dialog1 = new TrainDialog_1.TrainDialog('34edb485-3dd6-1051-b1cf-0wes3d4ae920', null, '11tdb485-3dd6-1051-b1cf-040d3d4ae920');
-var dialog2 = new TrainDialog_1.TrainDialog('1c85dc72-2f26-449e-840b-de247ffe83bf', null, '58bdb485-3dd6-4451-b1cf-940dbf89e920');
+var dialog1 = new TrainDialog_1.TrainDialog('34edb485-3dd6-1051-b1cf-0wes3d4ae920', new TrainDialog_1.Dialog([new TrainDialog_1.Turn(null, null)]), '11tdb485-3dd6-1051-b1cf-040d3d4ae920');
+var dialog2 = new TrainDialog_1.TrainDialog('1c85dc72-2f26-449e-840b-de247ffe83bf', new TrainDialog_1.Dialog([new TrainDialog_1.Turn(null, null)]), '58bdb485-3dd6-4451-b1cf-940dbf89e920');
 var APPS = [firstApp, secondApp];
 var ENTITIES = [nameEntity, sizeEntity, toppingsEntity, companyEntity];
 var ACTIONS = [hiAction, getNameAction, getSizeAction, getCompanyAction];
@@ -5478,7 +5478,7 @@ exports.fetchAllTrainDialogs = function (blisAppID) {
     var trainDialogs = TRAINDIALOGS.filter(function (td) { return td.appID == blisAppID; });
     return {
         type: 'FETCH_TRAIN_DIALOGS',
-        allTrainDialogs: trainDialogs
+        allTrainDialogs: TRAINDIALOGS
     };
 };
 
@@ -7228,7 +7228,7 @@ exports.deleteTrainDialog = function (GUID) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var React = __webpack_require__(0);
 var Modal_1 = __webpack_require__(51);
-var office_ui_fabric_react_1 = __webpack_require__(27);
+var office_ui_fabric_react_1 = __webpack_require__(26);
 var ConfirmDeleteModal = function (props) {
     return (React.createElement(Modal_1.Modal, { isOpen: props.open, isBlocking: false, containerClassName: 'createModal' },
         React.createElement("div", { className: 'modalHeader' },
@@ -21103,7 +21103,7 @@ var update_1 = __webpack_require__(44);
 var redux_1 = __webpack_require__(19);
 var react_redux_1 = __webpack_require__(15);
 var Modal_1 = __webpack_require__(51);
-var office_ui_fabric_react_1 = __webpack_require__(27);
+var office_ui_fabric_react_1 = __webpack_require__(26);
 var Action_1 = __webpack_require__(127);
 var Constants_1 = __webpack_require__(78);
 var ActionResponseCreatorEditor = (function (_super) {
@@ -21386,7 +21386,7 @@ var redux_1 = __webpack_require__(19);
 var react_redux_1 = __webpack_require__(15);
 var TrainingGroundArenaHeader_1 = __webpack_require__(45);
 var delete_1 = __webpack_require__(76);
-var office_ui_fabric_react_1 = __webpack_require__(27);
+var office_ui_fabric_react_1 = __webpack_require__(26);
 var ConfirmDeleteModal_1 = __webpack_require__(77);
 var ActionResponseCreatorEditor_1 = __webpack_require__(249);
 var EntityTile_1 = __webpack_require__(244);
@@ -21668,7 +21668,7 @@ var create_1 = __webpack_require__(58);
 var redux_1 = __webpack_require__(19);
 var react_redux_1 = __webpack_require__(15);
 var Modal_1 = __webpack_require__(51);
-var office_ui_fabric_react_1 = __webpack_require__(27);
+var office_ui_fabric_react_1 = __webpack_require__(26);
 var update_1 = __webpack_require__(44);
 var fetch_1 = __webpack_require__(59);
 var Application_1 = __webpack_require__(128);
@@ -21690,7 +21690,6 @@ var BLISAppCreator = (function (_super) {
         var _this = this;
         var url = 'https://westus.api.cognitive.microsoft.com/luis/v1.0/prog/apps/applicationcultures?';
         var subscriptionKey = secrets_1.developmentSubKeyLUIS;
-        console.log(subscriptionKey);
         var config = {
             headers: { "Ocp-Apim-Subscription-Key": subscriptionKey }
         };
@@ -21839,7 +21838,7 @@ var delete_1 = __webpack_require__(76);
 var redux_1 = __webpack_require__(19);
 var react_redux_1 = __webpack_require__(15);
 var BLISAppCreator_1 = __webpack_require__(253);
-var office_ui_fabric_react_1 = __webpack_require__(27);
+var office_ui_fabric_react_1 = __webpack_require__(26);
 var ConfirmDeleteModal_1 = __webpack_require__(77);
 var columns = [
     {
@@ -21982,9 +21981,9 @@ var redux_1 = __webpack_require__(19);
 var react_redux_1 = __webpack_require__(15);
 var TrainingGroundArenaHeader_1 = __webpack_require__(45);
 var EntityCreatorEditor_1 = __webpack_require__(257);
-var delete_1 = __webpack_require__(76);
-var office_ui_fabric_react_1 = __webpack_require__(27);
 var ConfirmDeleteModal_1 = __webpack_require__(77);
+var delete_1 = __webpack_require__(76);
+var office_ui_fabric_react_1 = __webpack_require__(26);
 var columns = [
     {
         key: 'name',
@@ -22170,7 +22169,7 @@ var update_1 = __webpack_require__(44);
 var redux_1 = __webpack_require__(19);
 var react_redux_1 = __webpack_require__(15);
 var Modal_1 = __webpack_require__(51);
-var office_ui_fabric_react_1 = __webpack_require__(27);
+var office_ui_fabric_react_1 = __webpack_require__(26);
 var Entity_1 = __webpack_require__(129);
 var Constants_1 = __webpack_require__(78);
 var EntityCreatorEditor = (function (_super) {
@@ -22374,14 +22373,49 @@ var tslib_1 = __webpack_require__(1);
 var React = __webpack_require__(0);
 var react_redux_1 = __webpack_require__(15);
 var TrainingGroundArenaHeader_1 = __webpack_require__(45);
+var office_ui_fabric_react_1 = __webpack_require__(26);
+var columns = [
+    {
+        key: 'id',
+        name: 'ID',
+        fieldName: 'id',
+        minWidth: 100,
+        maxWidth: 200,
+        isResizable: true
+    },
+    {
+        key: 'turns',
+        name: 'Turns',
+        fieldName: 'dialog',
+        minWidth: 100,
+        maxWidth: 200,
+        isResizable: true
+    },
+];
 var TrainDialogsList = (function (_super) {
     tslib_1.__extends(TrainDialogsList, _super);
-    function TrainDialogsList() {
-        return _super !== null && _super.apply(this, arguments) || this;
+    function TrainDialogsList(p) {
+        return _super.call(this, p) || this;
     }
+    TrainDialogsList.prototype.renderItemColumn = function (item, index, column) {
+        var self = this;
+        var fieldContent = item[column.fieldName];
+        switch (column.key) {
+            case 'turns':
+                console.log('content', fieldContent);
+                console.log('length', fieldContent.turns.length);
+                return React.createElement("span", { className: 'ms-font-m-plus' }, fieldContent.turns.length);
+            default:
+                return React.createElement("span", { className: 'ms-font-m-plus' }, fieldContent);
+        }
+    };
     TrainDialogsList.prototype.render = function () {
+        var trainDialogs = this.props.trainDialogs;
+        console.log('DIalogs', trainDialogs);
         return (React.createElement("div", null,
-            React.createElement(TrainingGroundArenaHeader_1.default, { title: "Train Dialogs", description: "Use this tool to test the current and published versions of your application, to check if you are progressing on the right track ..." })));
+            React.createElement(TrainingGroundArenaHeader_1.default, { title: "Train Dialogs", description: "Use this tool to test the current and published versions of your application, to check if you are progressing on the right track ..." }),
+            React.createElement(office_ui_fabric_react_1.CommandButton, { "data-automation-id": 'randomID9', disabled: false, onClick: function () { return console.log('clicked'); }, className: 'goldButton', ariaDescription: 'Create a New Train Dialog', text: 'New Train Dialog' }),
+            React.createElement(office_ui_fabric_react_1.DetailsList, { className: "ms-font-m-plus", items: trainDialogs, columns: columns, checkboxVisibility: office_ui_fabric_react_1.CheckboxVisibility.onHover, onRenderItemColumn: this.renderItemColumn })));
     };
     return TrainDialogsList;
 }(React.Component));
@@ -22411,7 +22445,7 @@ var ActionResponsesList_1 = __webpack_require__(250);
 var AppDashboard_1 = __webpack_require__(251);
 var AppSettings_1 = __webpack_require__(252);
 var Emulator_1 = __webpack_require__(243);
-var office_ui_fabric_react_1 = __webpack_require__(27);
+var office_ui_fabric_react_1 = __webpack_require__(26);
 var react_router_dom_1 = __webpack_require__(121);
 var TrainingGround = (function (_super) {
     tslib_1.__extends(TrainingGround, _super);
@@ -45297,7 +45331,7 @@ var EventPropagators = __webpack_require__(54);
 var ExecutionEnvironment = __webpack_require__(12);
 var ReactDOMComponentTree = __webpack_require__(11);
 var ReactUpdates = __webpack_require__(24);
-var SyntheticEvent = __webpack_require__(26);
+var SyntheticEvent = __webpack_require__(27);
 
 var getEventTarget = __webpack_require__(116);
 var isEventSupported = __webpack_require__(117);
@@ -52313,7 +52347,7 @@ var EventPropagators = __webpack_require__(54);
 var ExecutionEnvironment = __webpack_require__(12);
 var ReactDOMComponentTree = __webpack_require__(11);
 var ReactInputSelection = __webpack_require__(215);
-var SyntheticEvent = __webpack_require__(26);
+var SyntheticEvent = __webpack_require__(27);
 
 var getActiveElement = __webpack_require__(146);
 var isTextInputElement = __webpack_require__(225);
@@ -52513,7 +52547,7 @@ var EventPropagators = __webpack_require__(54);
 var ReactDOMComponentTree = __webpack_require__(11);
 var SyntheticAnimationEvent = __webpack_require__(575);
 var SyntheticClipboardEvent = __webpack_require__(576);
-var SyntheticEvent = __webpack_require__(26);
+var SyntheticEvent = __webpack_require__(27);
 var SyntheticFocusEvent = __webpack_require__(579);
 var SyntheticKeyboardEvent = __webpack_require__(581);
 var SyntheticMouseEvent = __webpack_require__(71);
@@ -52739,7 +52773,7 @@ module.exports = SimpleEventPlugin;
 
 
 
-var SyntheticEvent = __webpack_require__(26);
+var SyntheticEvent = __webpack_require__(27);
 
 /**
  * @interface Event
@@ -52783,7 +52817,7 @@ module.exports = SyntheticAnimationEvent;
 
 
 
-var SyntheticEvent = __webpack_require__(26);
+var SyntheticEvent = __webpack_require__(27);
 
 /**
  * @interface Event
@@ -52826,7 +52860,7 @@ module.exports = SyntheticClipboardEvent;
 
 
 
-var SyntheticEvent = __webpack_require__(26);
+var SyntheticEvent = __webpack_require__(27);
 
 /**
  * @interface Event
@@ -52949,7 +52983,7 @@ module.exports = SyntheticFocusEvent;
 
 
 
-var SyntheticEvent = __webpack_require__(26);
+var SyntheticEvent = __webpack_require__(27);
 
 /**
  * @interface Event
@@ -53130,7 +53164,7 @@ module.exports = SyntheticTouchEvent;
 
 
 
-var SyntheticEvent = __webpack_require__(26);
+var SyntheticEvent = __webpack_require__(27);
 
 /**
  * @interface Event

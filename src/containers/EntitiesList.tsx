@@ -3,9 +3,9 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader';
 import EntityCreatorEditor from './EntityCreatorEditor';
+import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import { deleteEntity } from '../actions/delete'
 import { DetailsList, CommandButton, Link, CheckboxVisibility, IColumn, SearchBox } from 'office-ui-fabric-react';
-import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import { Entity } from '../models/Entity';
 
 let columns: IColumn[] = [
