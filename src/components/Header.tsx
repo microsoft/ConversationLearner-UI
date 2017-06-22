@@ -12,7 +12,7 @@ export default class Header extends React.Component<any, any> {
         this.tabSelected = this.tabSelected.bind(this)
     }
     tabSelected(tab: string) {
-        switch(tab){
+        switch (tab) {
             case "myApps":
                 this.setState({
                     myAppsClass: 'selectedHeaderElementDiv',
@@ -54,9 +54,10 @@ export default class Header extends React.Component<any, any> {
             <div className='header'>
                 <div className='headerListDiv'>
                     <div className={this.state.myAppsClass}>
-                        <span className="ms-font-m-plus ms-fontColor-themePrimary"><Link onClick={() =>{
+                        <span className="ms-font-m-plus ms-fontColor-themePrimary"><Link onClick={() => {
                             this.props.setDisplay("Home")
-                            this.tabSelected('myApps') 
+                            this.props.setWebchatDisplay(false)
+                            this.tabSelected('myApps')
                         }} className='headerLink' to="/myApps">My Apps</Link></span>
                     </div>
                     <div className={this.state.docsClass}>
@@ -71,8 +72,9 @@ export default class Header extends React.Component<any, any> {
                 </div>
                 <div className='headerTitleDiv'>
                     <div className='headerTitle'>
-                        <span className="ms-font-xl ms-fontColor-themePrimary"><Link onClick={() =>{
+                        <span className="ms-font-xl ms-fontColor-themePrimary"><Link onClick={() => {
                             this.props.setDisplay("Home")
+                            this.props.setWebchatDisplay(false)
                             this.tabSelected('myApps')
                         }} className='headerLink' to="/">BLIS</Link></span>
                     </div>

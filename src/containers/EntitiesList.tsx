@@ -85,7 +85,6 @@ class EntitiesList extends React.Component<any, any> {
         })
     }
     renderItemColumn(item?: any, index?: number, column?: IColumn) {
-        let self = this;
         let fieldContent = item[column.fieldName];
         switch (column.key) {
             case 'isBucketable':

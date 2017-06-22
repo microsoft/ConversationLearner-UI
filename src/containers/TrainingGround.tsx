@@ -11,52 +11,42 @@ import AppSettings from './AppSettings';
 import Emulator from '../components/Emulator';
 import { Nav, INavLink, INavLinkGroup } from 'office-ui-fabric-react';
 import { Link } from 'react-router-dom';
+import { setWebchatDisplay } from '../actions/update'
+
 class TrainingGround extends React.Component<any, any> {
     constructor(p: any) {
         super(p);
         this.state = {
             display: 'Dash',
             selectedKey: 'Dash',
-            displayEmulator: false
         }
         this.setArenaDisplay = this.setArenaDisplay.bind(this);
     }
     renderChosenNavLink() {
         switch (this.state.display) {
             case "Settings":
-                if (this.state.displayEmulator == true) {
-                    this.setState({ displayEmulator: false })
-                }
                 return (
                     <AppSettings />
                 )
             case "Dash":
-                if (this.state.displayEmulator == true) {
-                    this.setState({ displayEmulator: false })
-                }
                 return (
                     <AppDashboard />
                 )
             case "Entities":
-                if (this.state.displayEmulator == true) {
-                    this.setState({ displayEmulator: false })
-                }
                 return (
                     <EntitiesList />
                 )
             case "Actions":
-                if (this.state.displayEmulator == true) {
-                    this.setState({ displayEmulator: false })
-                }
                 return (
                     <ActionResponsesList />
                 )
             case "TrainDialogs":
-                if (this.state.displayEmulator == false) {
-                    this.setState({ displayEmulator: true })
-                }
                 return (
                     <TrainDialogsList />
+                )
+            default:
+                return (
+                    <AppDashboard />
                 )
         }
     }
@@ -65,6 +55,7 @@ class TrainingGround extends React.Component<any, any> {
             display: page,
             selectedKey: page
         })
+        this.props.setWebchatDisplay(false)
     }
     renderWithoutEmulator() {
         return (
@@ -148,7 +139,7 @@ class TrainingGround extends React.Component<any, any> {
     render() {
         return (
             <div className="container">
-                {this.state.displayEmulator == true ?
+                {this.props.display.displayWebchat == true ?
                     this.renderWithEmulator()
                     : this.renderWithoutEmulator()
                 }
@@ -159,6 +150,7 @@ class TrainingGround extends React.Component<any, any> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         fetchApplications: fetchApplications,
+        setWebchatDisplay: setWebchatDisplay
     }, dispatch);
 }
 const mapStateToProps = (state: any) => {
@@ -166,7 +158,8 @@ const mapStateToProps = (state: any) => {
         blisApps: state.apps,
         entities: state.entities,
         actions: state.actions,
-        trainDialogs: state.trainDialogs
+        trainDialogs: state.trainDialogs,
+        display: state.display
     }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(TrainingGround);

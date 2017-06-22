@@ -2,7 +2,7 @@ import * as React from 'react';
 import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
 import BLISAppsHomepage from '../containers/BLISAppsHomepage';
 import { fetchApplications } from '../actions/fetch'
-import { setBLISAppDisplay } from '../actions/update'
+import { setBLISAppDisplay, setWebchatDisplay } from '../actions/update'
 import Header from '../components/Header';
 import Docs from '../components/otherPages/Docs';
 import About from '../components/otherPages/About';
@@ -18,7 +18,7 @@ class App extends React.Component<any, any> {
     return (
       <Router>
         <div className="app">
-          <Header setDisplay={this.props.setBLISAppDisplay}/>
+          <Header setDisplay={this.props.setBLISAppDisplay} setWebchatDisplay={this.props.setWebchatDisplay}/>
           <Route exact path="/" component={BLISAppsHomepage} />
           <Route path="/myApps" component={BLISAppsHomepage} />
           <Route path="/about" component={About} />
@@ -33,7 +33,8 @@ class App extends React.Component<any, any> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         fetchApplications: fetchApplications,
-        setBLISAppDisplay: setBLISAppDisplay
+        setBLISAppDisplay: setBLISAppDisplay,
+        setWebchatDisplay: setWebchatDisplay
     }, dispatch);
 }
 export default connect(null, mapDispatchToProps)(App);

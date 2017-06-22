@@ -3,8 +3,9 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader'
 import { DetailsList, CommandButton, Link, CheckboxVisibility, IColumn, SearchBox } from 'office-ui-fabric-react';
-import { TrainDialog } from '../models/TrainDialog';
+import { TrainDialog, Dialog, Turn, Input } from '../models/TrainDialog';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
+import { setWebchatDisplay } from '../actions/update'
 
 let columns: IColumn[] = [
     {
@@ -23,11 +24,20 @@ let columns: IColumn[] = [
         maxWidth: 200,
         isResizable: true
     },
+    {
+        key: 'actions',
+        name: 'Actions',
+        fieldName: 'id',
+        minWidth: 100,
+        maxWidth: 200,
+        isResizable: true
+    },
 ];
 
 class TrainDialogsList extends React.Component<any, any> {
     constructor(p: any) {
         super(p);
+        this.handleSelection = this.handleSelection.bind(this)
     }
     renderItemColumn(item?: any, index?: number, column?: IColumn) {
         let self = this;
@@ -35,9 +45,21 @@ class TrainDialogsList extends React.Component<any, any> {
         switch (column.key) {
             case 'turns':
                 return <span className='ms-font-m-plus'>{fieldContent.turns.length}</span>;
+            case 'actions':
+                return (
+                    <div>
+                        <a onClick={() => this.handleSelection(item)}><span className="ms-Icon ms-Icon--Edit"></span></a>
+                    </div>
+                )
             default:
                 return <span className='ms-font-m-plus'>{fieldContent}</span>;
         }
+    }
+    handleClick(){
+        this.props.setWebchatDisplay(true)
+    }
+    handleSelection(selected: TrainDialog){
+        this.props.setWebchatDisplay(true)
     }
     render() {
         let trainDialogs = this.props.trainDialogs;
@@ -47,7 +69,7 @@ class TrainDialogsList extends React.Component<any, any> {
                 <CommandButton
                     data-automation-id='randomID9'
                     disabled={false}
-                    onClick={() => console.log('clicked')}
+                    onClick={this.handleClick.bind(this)}
                     className='goldButton'
                     ariaDescription='Create a New Train Dialog'
                     text='New Train Dialog'
@@ -57,15 +79,20 @@ class TrainDialogsList extends React.Component<any, any> {
                     items={trainDialogs}
                     columns={columns}
                     checkboxVisibility={CheckboxVisibility.onHover}
-                    onRenderItemColumn={this.renderItemColumn}
+                    onRenderItemColumn={this.renderItemColumn.bind(this)}
                 />
             </div>
         );
     }
+}
+const mapDispatchToProps  = (dispatch: any) => {
+    return bindActionCreators({
+        setWebchatDisplay: setWebchatDisplay
+    }, dispatch)
 }
 const mapStateToProps = (state: any) => {
     return {
         trainDialogs: state.trainDialogs
     }
 }
-export default connect(mapStateToProps, null)(TrainDialogsList);
+export default connect(mapStateToProps, mapDispatchToProps)(TrainDialogsList);
