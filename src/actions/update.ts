@@ -23,6 +23,13 @@ export const editBLISApplication = (application: BLISApplication) : ActionObject
         blisApp: application
     }
 }
+export const setWebchatDisplay = (isShown: boolean) : ActionObject => { 
+    //will need to make a call to BLIS to edit this application for this user
+    return {
+        type: 'SET_WEBCHAT_DISPLAY',
+        setWebchatDisplay: isShown
+    }
+}
 export const editEntity = (entity: Entity) : ActionObject => { 
     //will need to make a call to BLIS to edit this entity for its application
     return {

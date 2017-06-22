@@ -3,10 +3,6 @@ import { Action, ActionMetadata } from '../models/Action';
 import { Entity, EntityMetadata } from '../models/Entity';
 import { TrainDialog, Dialog, Turn, Input } from '../models/TrainDialog';
 import { ActionTypes, EntityTypes } from '../models/Constants'; 
-import { CREATE_ACTION, CREATE_BLIS_APPLICATION, CREATE_ENTITY, CREATE_TRAIN_DIALOG } from '../actions/create';
-import { FETCH_ACTIONS, FETCH_APPLICATIONS, FETCH_ENTITIES, FETCH_TRAIN_DIALOGS } from '../actions/fetch';
-import { DELETE_ACTION, DELETE_BLIS_APPLICATION, DELETE_ENTITY, DELETE_TRAIN_DIALOG } from '../actions/delete';
-import { SET_CURRENT_BLIS_APP, SET_BLIS_APP_DISPLAY, EDIT_BLIS_APPLICATION, EDIT_ACTION, EDIT_TRAIN_DIALOG, EDIT_ENTITY } from '../actions/update';
 
 
 export type UpdateAction = {
@@ -28,6 +24,10 @@ export type UpdateAction = {
     //used for setting whether the app list or app homepage (trainingGround) is displayed
     type: 'SET_BLIS_APP_DISPLAY',
     setDisplay: string,
+} | {
+    //used for setting whether the app list or app homepage (trainingGround) is displayed
+    type: 'SET_WEBCHAT_DISPLAY',
+    setWebchatDisplay: boolean,
 }
 
 export type FetchAction = {
