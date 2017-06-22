@@ -11,7 +11,7 @@ class BLISAppsHomepage extends React.Component<any, any> {
     render() {
         return (
             <div className="fluidCont">
-                {this.props.blisApps.pageToDisplay == 'Home' ?
+                {this.props.display.myAppsDisplay == 'Home' ?
                     <BLISAppsList  />
                     : <TrainingGround />
                 }
@@ -21,7 +21,7 @@ class BLISAppsHomepage extends React.Component<any, any> {
 }
 const mapStateToProps = (state: any) => {
     return {
-        blisApps: state.apps
+        display: state.display
     }
 }
 export default connect(mapStateToProps, null)(BLISAppsHomepage);

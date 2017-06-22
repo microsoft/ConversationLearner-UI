@@ -21811,7 +21811,7 @@ var BLISAppsHomepage = (function (_super) {
         return _super.call(this, p) || this;
     }
     BLISAppsHomepage.prototype.render = function () {
-        return (React.createElement("div", { className: "fluidCont" }, this.props.blisApps.pageToDisplay == 'Home' ?
+        return (React.createElement("div", { className: "fluidCont" }, this.props.display.myAppsDisplay == 'Home' ?
             React.createElement(BLISAppsList_1.default, null)
             : React.createElement(TrainingGround_1.default, null)));
     };
@@ -21819,7 +21819,7 @@ var BLISAppsHomepage = (function (_super) {
 }(React.Component));
 var mapStateToProps = function (state) {
     return {
-        blisApps: state.apps
+        display: state.display
     };
 };
 exports.default = react_redux_1.connect(mapStateToProps, null)(BLISAppsHomepage);
@@ -22690,8 +22690,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = __webpack_require__(1);
 var initialState = {
     all: [],
-    current: null,
-    pageToDisplay: "Home"
+    current: null
 };
 exports.default = function (state, action) {
     if (state === void 0) { state = initialState; }
@@ -22702,8 +22701,6 @@ exports.default = function (state, action) {
             return tslib_1.__assign({}, state, { current: action.blisApp, all: state.all.concat([action.blisApp]) });
         case 'SET_CURRENT_BLIS_APP':
             return tslib_1.__assign({}, state, { current: action.currentBLISApp });
-        case 'SET_BLIS_APP_DISPLAY':
-            return tslib_1.__assign({}, state, { pageToDisplay: action.setDisplay });
         case 'DELETE_BLIS_APPLICATION':
             return tslib_1.__assign({}, state, { all: state.all.filter(function (app) { return app.modelID !== action.blisAppGUID; }) });
         case 'EDIT_BLIS_APPLICATION':
