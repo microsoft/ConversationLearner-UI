@@ -21353,7 +21353,7 @@ var ActionResponseCreatorEditor = (function (_super) {
                             suggestionsHeaderText: 'Entities',
                             noResultsFoundText: 'No Entities Found'
                         }, defaultSelectedItems: this.state.defaultNegativeEntities }),
-                    React.createElement(office_ui_fabric_react_1.ChoiceGroup, { defaultSelectedKey: 'waitFalse', options: [
+                    React.createElement(office_ui_fabric_react_1.ChoiceGroup, { options: [
                             {
                                 key: 'waitTrue',
                                 text: 'True',
@@ -22342,7 +22342,7 @@ var EntityCreatorEditor = (function (_super) {
                                 text: 'False',
                             }
                         ], label: 'Bucketable', onChange: this.bucketableChanged.bind(this), selectedKey: this.state.bucketableKey }),
-                    React.createElement(office_ui_fabric_react_1.ChoiceGroup, { defaultSelectedKey: 'negatableFalse', options: [
+                    React.createElement(office_ui_fabric_react_1.ChoiceGroup, { options: [
                             {
                                 key: 'negatableTrue',
                                 text: 'True'
@@ -22440,7 +22440,6 @@ var TrainDialogsList = (function (_super) {
     };
     TrainDialogsList.prototype.handleSelection = function (selected) {
         this.props.setWebchatDisplay(true);
-        console.log(selected);
     };
     TrainDialogsList.prototype.render = function () {
         var trainDialogs = this.props.trainDialogs;

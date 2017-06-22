@@ -184,7 +184,6 @@ class EntityCreatorEditor extends React.Component<any, any> {
                             selectedKey={this.state.bucketableKey}
                         />
                         <ChoiceGroup
-                            defaultSelectedKey='negatableFalse'
                             options={[
                                 {
                                     key: 'negatableTrue',

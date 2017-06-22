@@ -277,7 +277,6 @@ class ActionResponseCreatorEditor extends React.Component<any, any> {
                             defaultSelectedItems={this.state.defaultNegativeEntities}
                         />
                         <ChoiceGroup
-                            defaultSelectedKey='waitFalse'
                             options={[
                                 {
                                     key: 'waitTrue',
