@@ -8,7 +8,7 @@ import { CommandButton, Dialog, DialogFooter, DialogType, ChoiceGroup, TextField
 import { Action, ActionMetadata } from '../models/Action';
 import { ActionTypes } from '../models/Constants';
 import { Entity } from '../models/Entity';
-import { State } from '../reducers/stateTypes'
+import { State } from '../types'
 
 
 interface EntityPickerObject {

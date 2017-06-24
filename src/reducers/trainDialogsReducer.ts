@@ -1,6 +1,6 @@
-import { ActionObject } from '../actions/ActionObject'
+import { ActionObject } from '../types'
 import { TrainDialog } from '../models/TrainDialog'
-import { TrainDialogState } from './stateTypes'
+import { TrainDialogState } from '../types'
 
 const initialState: TrainDialogState = [];
 

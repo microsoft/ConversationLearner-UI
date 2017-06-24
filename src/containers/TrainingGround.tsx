@@ -12,7 +12,7 @@ import Emulator from '../components/Emulator';
 import { Nav, INavLink, INavLinkGroup } from 'office-ui-fabric-react';
 import { Link } from 'react-router-dom';
 import { setWebchatDisplay } from '../actions/update'
-import { State } from '../reducers/stateTypes'
+import { State } from '../types'
 
 class TrainingGround extends React.Component<any, any> {
     constructor(p: any) {

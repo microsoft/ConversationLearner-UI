@@ -9,7 +9,7 @@ import { setBLISAppDisplay } from '../actions/update'
 import { fetchAllActions, fetchAllEntities, fetchAllTrainDialogs } from '../actions/fetch'
 import { BLISApplication } from '../models/Application';
 import { developmentSubKeyLUIS } from '../secrets'
-import { State } from '../reducers/stateTypes'
+import { State } from '../types'
 type CultureObject = {
     CultureCode: string;
     CultureName: string;

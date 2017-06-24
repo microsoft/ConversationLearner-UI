@@ -3,7 +3,7 @@ import TrainingGround from './TrainingGround';
 import BLISAppsList from './BLISAppsList';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { State } from '../reducers/stateTypes'
+import { State } from '../types'
 
 class BLISAppsHomepage extends React.Component<any, any> {
     constructor(p: any) {

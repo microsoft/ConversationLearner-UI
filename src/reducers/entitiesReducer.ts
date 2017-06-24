@@ -1,6 +1,6 @@
-import { ActionObject} from '../actions/ActionObject'
+import { ActionObject} from '../types'
 import { Entity } from '../models/Entity'
-import { EntityState } from './stateTypes'
+import { EntityState } from '../types'
 
 const initialState: EntityState = [];
 

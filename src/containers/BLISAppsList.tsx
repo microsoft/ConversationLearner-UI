@@ -9,7 +9,7 @@ import TrainingGround from './TrainingGround';
 import { BLISApplication } from '../models/Application';
 import { DetailsList, CommandButton, Link, CheckboxVisibility, IColumn } from 'office-ui-fabric-react';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
-import { State } from '../reducers/stateTypes'
+import { State } from '../types'
 
 let columns: IColumn[] = [
     {

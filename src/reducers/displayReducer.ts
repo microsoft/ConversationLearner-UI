@@ -1,5 +1,5 @@
-import { ActionObject } from '../actions/ActionObject'
-import { DisplayState } from './stateTypes'
+import { ActionObject } from '../types'
+import { DisplayState } from '../types'
 
 const initialState: DisplayState = {
     myAppsDisplay: "Home",

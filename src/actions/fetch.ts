@@ -4,7 +4,7 @@ import { Action, ActionMetadata } from '../models/Action';
 import { Entity, EntityMetadata } from '../models/Entity';
 import { TrainDialog, Dialog, Turn, Input } from '../models/TrainDialog';
 import { ActionTypes, EntityTypes } from '../models/Constants'; 
-import { ActionObject } from './ActionObject'
+import { ActionObject } from '../types'
 
 //=========================================================
 //=================== DUMMY DATA ==========================

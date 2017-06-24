@@ -9,7 +9,7 @@ import { Action } from '../models/Action'
 import { Entity } from '../models/Entity'
 import ActionResponseCreatorEditor from './ActionResponseCreatorEditor';
 import EntityTile from '../components/EntityTile';
-import { State } from '../reducers/stateTypes'
+import { State } from '../types'
 
 let columns: IColumn[] = [
     {

@@ -1,6 +1,6 @@
-import { ActionObject } from '../actions/ActionObject'
+import { ActionObject } from '../types'
 import { Action } from '../models/Action'
-import { ActionState } from './stateTypes'
+import { ActionState } from '../types'
 
 const initialState: ActionState = [];
 

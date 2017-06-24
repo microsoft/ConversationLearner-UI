@@ -2,7 +2,7 @@ import { BLISApplication } from '../models/Application'
 import { Entity } from '../models/Entity'
 import { Action } from '../models/Action'
 import { TrainDialog } from '../models/TrainDialog'
-import { ActionObject } from './ActionObject'
+import { ActionObject } from '../types'
 
 export const setCurrentBLISApp = (app: BLISApplication) : ActionObject => { 
     return {

@@ -7,7 +7,7 @@ import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import { deleteEntity } from '../actions/delete'
 import { DetailsList, CommandButton, Link, CheckboxVisibility, IColumn, SearchBox } from 'office-ui-fabric-react';
 import { Entity } from '../models/Entity';
-import { State } from '../reducers/stateTypes'
+import { State } from '../types'
 
 let columns: IColumn[] = [
     {

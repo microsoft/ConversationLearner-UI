@@ -2,7 +2,8 @@ import * as React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader'
-import { State } from '../reducers/stateTypes'
+import { State } from '../types'
+
 class AppDashboard extends React.Component<any, any> {
     render() {
         return (

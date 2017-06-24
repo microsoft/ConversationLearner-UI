@@ -1,6 +1,6 @@
-import { ActionObject } from '../actions/ActionObject'
 import { BLISApplication } from '../models/Application'
-import { AppState } from './stateTypes'
+import { AppState } from '../types'
+import { ActionObject } from '../types'
 
 const initialState: AppState = {
     all: [], 
