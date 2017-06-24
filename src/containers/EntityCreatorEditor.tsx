@@ -7,6 +7,8 @@ import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { CommandButton, Dialog, DialogFooter, DialogType, ChoiceGroup, TextField, DefaultButton, Dropdown } from 'office-ui-fabric-react';
 import { Entity, EntityMetadata } from '../models/Entity';
 import { EntityTypes } from '../models/Constants';
+import { State } from '../reducers/stateTypes'
+
 interface Props {
     open: boolean,
     entity: Entity | null,
@@ -228,7 +230,7 @@ const mapDispatchToProps = (dispatch: any) => {
         editEntity: editEntity
     }, dispatch);
 }
-const mapStateToProps = (state: any) => {
+const mapStateToProps = (state: State) => {
     return {
         entities: state.entities,
         blisApps: state.apps

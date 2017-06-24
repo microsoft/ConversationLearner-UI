@@ -7,6 +7,7 @@ import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import { deleteEntity } from '../actions/delete'
 import { DetailsList, CommandButton, Link, CheckboxVisibility, IColumn, SearchBox } from 'office-ui-fabric-react';
 import { Entity } from '../models/Entity';
+import { State } from '../reducers/stateTypes'
 
 let columns: IColumn[] = [
     {
@@ -186,7 +187,7 @@ const mapDispatchToProps = (dispatch: any) => {
         deleteEntity: deleteEntity
     }, dispatch)
 }
-const mapStateToProps = (state: any) => {
+const mapStateToProps = (state: State) => {
     return {
         entities: state.entities
     }

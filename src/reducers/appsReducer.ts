@@ -1,10 +1,8 @@
 import { ActionObject } from '../actions/ActionObject'
-import { BLISApplication } from '../models/Application';
-export interface appReducerState {
-    all: BLISApplication[],
-    current: BLISApplication
-}
-const initialState: appReducerState = {
+import { BLISApplication } from '../models/Application'
+import { AppState } from './stateTypes'
+
+const initialState: AppState = {
     all: [], 
     current: null
 };

@@ -3,6 +3,7 @@ import TrainingGround from './TrainingGround';
 import BLISAppsList from './BLISAppsList';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import { State } from '../reducers/stateTypes'
 
 class BLISAppsHomepage extends React.Component<any, any> {
     constructor(p: any) {
@@ -19,7 +20,7 @@ class BLISAppsHomepage extends React.Component<any, any> {
         );
     }
 }
-const mapStateToProps = (state: any) => {
+const mapStateToProps = (state: State) => {
     return {
         display: state.display
     }

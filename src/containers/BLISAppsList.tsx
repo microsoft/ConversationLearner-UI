@@ -9,6 +9,7 @@ import TrainingGround from './TrainingGround';
 import { BLISApplication } from '../models/Application';
 import { DetailsList, CommandButton, Link, CheckboxVisibility, IColumn } from 'office-ui-fabric-react';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
+import { State } from '../reducers/stateTypes'
 
 let columns: IColumn[] = [
     {
@@ -136,7 +137,7 @@ const mapDispatchToProps = (dispatch: any) => {
         deleteBLISApplication: deleteBLISApplication
     }, dispatch);
 }
-const mapStateToProps = (state: any) => {
+const mapStateToProps = (state: State) => {
     return {
         blisApps: state.apps
     }

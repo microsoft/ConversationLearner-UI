@@ -12,6 +12,7 @@ import Emulator from '../components/Emulator';
 import { Nav, INavLink, INavLinkGroup } from 'office-ui-fabric-react';
 import { Link } from 'react-router-dom';
 import { setWebchatDisplay } from '../actions/update'
+import { State } from '../reducers/stateTypes'
 
 class TrainingGround extends React.Component<any, any> {
     constructor(p: any) {
@@ -153,7 +154,7 @@ const mapDispatchToProps = (dispatch: any) => {
         setWebchatDisplay: setWebchatDisplay
     }, dispatch);
 }
-const mapStateToProps = (state: any) => {
+const mapStateToProps = (state: State) => {
     return {
         blisApps: state.apps,
         entities: state.entities,

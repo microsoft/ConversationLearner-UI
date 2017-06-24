@@ -1,6 +1,9 @@
 import { ActionObject} from '../actions/ActionObject'
 import { Entity } from '../models/Entity'
-const initialState: Entity[] = [];
+import { EntityState } from './stateTypes'
+
+const initialState: EntityState = [];
+
 export default (state = initialState, action: ActionObject) => {
     switch(action.type) {
         case 'FETCH_ENTITIES':

@@ -6,6 +6,7 @@ import { DetailsList, CommandButton, Link, CheckboxVisibility, IColumn, SearchBo
 import { TrainDialog, Dialog, Turn, Input } from '../models/TrainDialog';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import { setWebchatDisplay } from '../actions/update'
+import { State } from '../reducers/stateTypes'
 
 let columns: IColumn[] = [
     {
@@ -90,7 +91,7 @@ const mapDispatchToProps  = (dispatch: any) => {
         setWebchatDisplay: setWebchatDisplay
     }, dispatch)
 }
-const mapStateToProps = (state: any) => {
+const mapStateToProps = (state: State) => {
     return {
         trainDialogs: state.trainDialogs
     }

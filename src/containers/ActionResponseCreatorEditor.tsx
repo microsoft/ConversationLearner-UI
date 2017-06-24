@@ -8,6 +8,9 @@ import { CommandButton, Dialog, DialogFooter, DialogType, ChoiceGroup, TextField
 import { Action, ActionMetadata } from '../models/Action';
 import { ActionTypes } from '../models/Constants';
 import { Entity } from '../models/Entity';
+import { State } from '../reducers/stateTypes'
+
+
 interface EntityPickerObject {
     key: string
     name: string
@@ -321,7 +324,7 @@ const mapDispatchToProps = (dispatch: any) => {
         editAction: editAction
     }, dispatch);
 }
-const mapStateToProps = (state: any) => {
+const mapStateToProps = (state: State) => {
     return {
         actions: state.actions,
         blisApps: state.apps,

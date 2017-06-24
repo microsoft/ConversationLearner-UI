@@ -9,6 +9,8 @@ import { Action } from '../models/Action'
 import { Entity } from '../models/Entity'
 import ActionResponseCreatorEditor from './ActionResponseCreatorEditor';
 import EntityTile from '../components/EntityTile';
+import { State } from '../reducers/stateTypes'
+
 let columns: IColumn[] = [
     {
         key: 'actionType',
@@ -225,7 +227,7 @@ const mapDispatchToProps = (dispatch: any) => {
         deleteAction: deleteAction
     }, dispatch)
 }
-const mapStateToProps = (state: any) => {
+const mapStateToProps = (state: State) => {
     return {
         actions: state.actions
     }

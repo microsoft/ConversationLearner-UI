@@ -1,6 +1,9 @@
 import { ActionObject } from '../actions/ActionObject'
 import { TrainDialog } from '../models/TrainDialog'
-const initialState: TrainDialog[] = [];
+import { TrainDialogState } from './stateTypes'
+
+const initialState: TrainDialogState = [];
+
 export default (state = initialState, action: ActionObject) => {
     switch(action.type) {
         case 'FETCH_TRAIN_DIALOGS':

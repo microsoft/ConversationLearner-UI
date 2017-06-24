@@ -3,6 +3,7 @@ import { createBLISApplication } from '../actions/create';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader'
+import { State } from '../reducers/stateTypes'
 class AppSettings extends React.Component<any, any> {
     render() {
         return (
@@ -17,7 +18,7 @@ const mapDispatchToProps = (dispatch: any) => {
         createBLISApplication: createBLISApplication,
     }, dispatch);
 }
-const mapStateToProps = (state: any) => {
+const mapStateToProps = (state: State) => {
     return {
         blisApps: state.apps
     }

@@ -1,6 +1,9 @@
 import { ActionObject } from '../actions/ActionObject'
 import { Action } from '../models/Action'
-const initialState: Action[] = [];
+import { ActionState } from './stateTypes'
+
+const initialState: ActionState = [];
+
 export default (state = initialState, action: ActionObject) => {
     switch(action.type) {
         case 'FETCH_ACTIONS':

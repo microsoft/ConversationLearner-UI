@@ -1,12 +1,11 @@
 import { ActionObject } from '../actions/ActionObject'
-export interface displayReducerState {
-    myAppsDisplay: string,
-    displayWebchat: boolean
-}
-const initialState: displayReducerState = {
+import { DisplayState } from './stateTypes'
+
+const initialState: DisplayState = {
     myAppsDisplay: "Home",
     displayWebchat: false
 };
+
 export default (state = initialState, action: ActionObject) => {
     switch(action.type) {
         case 'SET_BLIS_APP_DISPLAY':
