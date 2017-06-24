@@ -5437,18 +5437,18 @@ var secondApp = new Application_1.BLISApplication('11tdb485-3dd6-1051-b1cf-040d3
 var bucketableMeta = new Entity_1.EntityMetadata(true, false, false, false);
 var noMeta = new Entity_1.EntityMetadata(false, false, false, false);
 var positiveMeta = new Entity_1.EntityMetadata(false, false, true, false);
-var nameEntity = new Entity_1.Entity('11002431b-cb6a-42df-9a54-da167bedc23f', Constants_1.EntityTypes.local, null, 'name', noMeta, '58bdb485-3dd6-4451-b1cf-940dbf89e920');
-var toppingsEntity = new Entity_1.Entity('3f7663a8-1a12-45a1-a531-d56401c469a4', Constants_1.EntityTypes.local, null, 'toppings', bucketableMeta, '58bdb485-3dd6-4451-b1cf-940dbf89e920');
-var sizeEntity = new Entity_1.Entity('ede8946e-6a19-46c3-950f-c7661ea8faf0', Constants_1.EntityTypes.luis, null, 'size', noMeta, '58bdb485-3dd6-4451-b1cf-940dbf89e920');
-var companyEntity = new Entity_1.Entity('a463f832-0402-45df-a209-9dcf0e106a62', Constants_1.EntityTypes.local, null, 'company', noMeta, '11tdb485-3dd6-1051-b1cf-040d3d4ae920');
+var nameEntity = new Entity_1.Entity('11002431b-cb6a-42df-9a54-da167bedc23f', Constants_1.EntityTypes.LOCAL, null, 'name', noMeta, '58bdb485-3dd6-4451-b1cf-940dbf89e920');
+var toppingsEntity = new Entity_1.Entity('3f7663a8-1a12-45a1-a531-d56401c469a4', Constants_1.EntityTypes.LOCAL, null, 'toppings', bucketableMeta, '58bdb485-3dd6-4451-b1cf-940dbf89e920');
+var sizeEntity = new Entity_1.Entity('ede8946e-6a19-46c3-950f-c7661ea8faf0', Constants_1.EntityTypes.LUIS, null, 'size', noMeta, '58bdb485-3dd6-4451-b1cf-940dbf89e920');
+var companyEntity = new Entity_1.Entity('a463f832-0402-45df-a209-9dcf0e106a62', Constants_1.EntityTypes.LOCAL, null, 'company', noMeta, '11tdb485-3dd6-1051-b1cf-040d3d4ae920');
 var localAPICallMeta = new Action_1.ActionMetadata(false, null);
 var azureCallMeta = new Action_1.ActionMetadata(false, null);
 var intentCallMeta = new Action_1.ActionMetadata(false, null);
 var textResponseMeta = new Action_1.ActionMetadata(true, null);
-var hiAction = new Action_1.Action('16f61108-d73c-4c09-8e39-0b86ccca958d', Constants_1.ActionTypes.text, 'Hi there', [], [nameEntity], false, textResponseMeta, '58bdb485-3dd6-4451-b1cf-940dbf89e920');
-var getSizeAction = new Action_1.Action('d10ffd29-a8f4-4c3b-83ca-3481ae2727d8', Constants_1.ActionTypes.local, 'What size would you like?', [sizeEntity], [], false, azureCallMeta, '58bdb485-3dd6-4451-b1cf-940dbf89e920');
-var getNameAction = new Action_1.Action('c8891a93-73f5-4f3c-8f48-72276d31b93f', Constants_1.ActionTypes.intent, 'What is your name?', [nameEntity], [], false, textResponseMeta, '58bdb485-3dd6-4451-b1cf-940dbf89e920');
-var getCompanyAction = new Action_1.Action('d10ffa29-a8f4-4c3b-83ca-3481ae2727d8', Constants_1.ActionTypes.azure, 'What company do you need info for? ', [companyEntity], [], false, localAPICallMeta, '11tdb485-3dd6-1051-b1cf-040d3d4ae920');
+var hiAction = new Action_1.Action('16f61108-d73c-4c09-8e39-0b86ccca958d', Constants_1.ActionTypes.TEXT, 'Hi there', [], [nameEntity], false, textResponseMeta, '58bdb485-3dd6-4451-b1cf-940dbf89e920');
+var getSizeAction = new Action_1.Action('d10ffd29-a8f4-4c3b-83ca-3481ae2727d8', Constants_1.ActionTypes.API_LOCAL, 'What size would you like?', [sizeEntity], [], false, azureCallMeta, '58bdb485-3dd6-4451-b1cf-940dbf89e920');
+var getNameAction = new Action_1.Action('c8891a93-73f5-4f3c-8f48-72276d31b93f', Constants_1.ActionTypes.INTENT, 'What is your name?', [nameEntity], [], false, textResponseMeta, '58bdb485-3dd6-4451-b1cf-940dbf89e920');
+var getCompanyAction = new Action_1.Action('d10ffa29-a8f4-4c3b-83ca-3481ae2727d8', Constants_1.ActionTypes.API_AZURE, 'What company do you need info for? ', [companyEntity], [], false, localAPICallMeta, '11tdb485-3dd6-1051-b1cf-040d3d4ae920');
 var dialog1 = new TrainDialog_1.TrainDialog('34edb485-3dd6-1051-b1cf-0wes3d4ae920', new TrainDialog_1.Dialog([new TrainDialog_1.Turn(null, null)]), '11tdb485-3dd6-1051-b1cf-040d3d4ae920');
 var dialog2 = new TrainDialog_1.TrainDialog('1c85dc72-2f26-449e-840b-de247ffe83bf', new TrainDialog_1.Dialog([new TrainDialog_1.Turn(null, null)]), '58bdb485-3dd6-4451-b1cf-940dbf89e920');
 var APPS = [firstApp, secondApp];
@@ -7255,15 +7255,15 @@ exports.default = ConfirmDeleteModal;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EntityTypes = {
-    local: 'LOCAL',
-    luis: 'LUIS'
+    LOCAL: 'LOCAL',
+    LUIS: 'LUIS'
 };
 exports.ActionTypes = {
-    text: 'TEXT',
-    azure: 'AZURE FUNCTION',
-    local: 'LOCAL API CALL',
-    intent: 'INTENT',
-    template: 'ADAPTIVE CARD'
+    TEXT: "TEXT",
+    API_LOCAL: "API_LOCAL",
+    API_AZURE: "API_AZURE",
+    INTENT: "INTENT",
+    CARD: "CARD"
 };
 
 

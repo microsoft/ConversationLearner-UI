@@ -1,4 +1,4 @@
-import { combineReducers } from 'redux';
+import { combineReducers, Reducer } from 'redux';
 import appsReducer from './appsReducer';
 import entitiesReducer from './entitiesReducer';
 import actionsReducer from './actionsReducer';
