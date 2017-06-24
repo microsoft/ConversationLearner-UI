@@ -21711,8 +21711,8 @@ var BLISAppCreator = (function (_super) {
                 var cultures = response.data;
                 var cultureOptions = cultures.map(function (c) {
                     return {
-                        key: c.CultureName,
-                        text: c.CultureName,
+                        key: c.CultureCode,
+                        text: c.CultureCode,
                     };
                 });
                 _this.setState({

@@ -36,8 +36,8 @@ class BLISAppCreator extends React.Component<any, any> {
                     let cultures: CultureObject[] = response.data;
                     let cultureOptions = cultures.map((c: CultureObject) => {
                         return {
-                            key: c.CultureName,
-                            text: c.CultureName,
+                            key: c.CultureCode,
+                            text: c.CultureCode,
                         }
                     })
                     this.setState({
