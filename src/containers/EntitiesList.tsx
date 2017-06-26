@@ -103,8 +103,7 @@ class EntitiesList extends React.Component<any, any> {
             case 'actions':
                 return (
                     <div>
-                        <a onClick={() => this.openDeleteModal(fieldContent)}><span className="ms-Icon ms-Icon--Delete"></span>&nbsp;&nbsp;</a>
-                        <a onClick={() => this.editSelectedEntity(fieldContent)}><span className="ms-Icon ms-Icon--Edit"></span></a>
+                        <a onClick={() => this.openDeleteModal(fieldContent)}><span className="ms-Icon ms-Icon--Delete"></span></a>
                     </div>
                 )
             default:
@@ -129,11 +128,10 @@ class EntitiesList extends React.Component<any, any> {
             searchValue: lcString
         })
     }
-    editSelectedEntity(guid: string) {
+    editSelectedEntity(entity: Entity) {
         //do something
-        let entitySelected = this.props.entities.find((e: Entity) => e.id == guid)
         this.setState({
-            entitySelected: entitySelected,
+            entitySelected: entity,
             createEditModalOpen: true
         })
     }
@@ -175,6 +173,7 @@ class EntitiesList extends React.Component<any, any> {
                     columns={columns}
                     checkboxVisibility={CheckboxVisibility.hidden}
                     onRenderItemColumn={this.renderItemColumn}
+                    onActiveItemChanged={(item) => this.editSelectedEntity(item)}
                 />
                 <ConfirmDeleteModal open={this.state.confirmDeleteEntityModalOpen} onCancel={() => this.handleCloseDeleteModal()} onConfirm={() => this.deleteSelectedEntity()} title="Are you sure you want to delete this entity?" />
 

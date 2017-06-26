@@ -21505,11 +21505,9 @@ var ActionResponsesHomepage = (function (_super) {
             actionIDToDelete: guid
         });
     };
-    ActionResponsesHomepage.prototype.editSelectedAction = function (guid) {
-        //do something
-        var actionSelected = this.props.actions.find(function (a) { return a.id == guid; });
+    ActionResponsesHomepage.prototype.editSelectedAction = function (action) {
         this.setState({
-            actionSelected: actionSelected,
+            actionSelected: action,
             createEditModalOpen: true
         });
     };
@@ -21541,10 +21539,7 @@ var ActionResponsesHomepage = (function (_super) {
             case 'actions':
                 return (React.createElement("div", null,
                     React.createElement("a", { onClick: function () { return _this.openDeleteModal(fieldContent); } },
-                        React.createElement("span", { className: "ms-Icon ms-Icon--Delete" }),
-                        "\u00A0\u00A0"),
-                    React.createElement("a", { onClick: function () { return _this.editSelectedAction(fieldContent); } },
-                        React.createElement("span", { className: "ms-Icon ms-Icon--Edit" }))));
+                        React.createElement("span", { className: "ms-Icon ms-Icon--Delete" }))));
             default:
                 return React.createElement("span", { className: 'ms-font-m-plus' }, fieldContent);
         }
@@ -21597,7 +21592,7 @@ var ActionResponsesHomepage = (function (_super) {
                 React.createElement(office_ui_fabric_react_1.CommandButton, { "data-automation-id": 'randomID4', disabled: false, onClick: this.handleOpenCreateModal.bind(this), className: 'goldButton', ariaDescription: 'Create a New Action', text: 'New Action' }),
                 React.createElement(ActionResponseCreatorEditor_1.default, { open: this.state.createEditModalOpen, action: this.state.actionSelected, handleClose: this.handleCloseCreateModal.bind(this) })),
             React.createElement(office_ui_fabric_react_1.SearchBox, { className: "ms-font-m-plus", onChange: function (newValue) { return _this.onChange(newValue); }, onSearch: function (newValue) { return _this.onChange(newValue); } }),
-            React.createElement(office_ui_fabric_react_1.DetailsList, { className: "ms-font-m-plus", items: actionItems, columns: columns, checkboxVisibility: office_ui_fabric_react_1.CheckboxVisibility.hidden, onRenderItemColumn: this.renderItemColumn }),
+            React.createElement(office_ui_fabric_react_1.DetailsList, { className: "ms-font-m-plus", items: actionItems, columns: columns, checkboxVisibility: office_ui_fabric_react_1.CheckboxVisibility.hidden, onRenderItemColumn: this.renderItemColumn, onActiveItemChanged: function (item) { return _this.editSelectedAction(item); } }),
             React.createElement(ConfirmDeleteModal_1.default, { open: this.state.confirmDeleteActionModalOpen, onCancel: function () { return _this.handleCloseModal(); }, onConfirm: function () { return _this.deleteSelectedAction(); }, title: "Are you sure you want to delete this action?" })));
     };
     return ActionResponsesHomepage;
@@ -22112,10 +22107,7 @@ var EntitiesList = (function (_super) {
             case 'actions':
                 return (React.createElement("div", null,
                     React.createElement("a", { onClick: function () { return _this.openDeleteModal(fieldContent); } },
-                        React.createElement("span", { className: "ms-Icon ms-Icon--Delete" }),
-                        "\u00A0\u00A0"),
-                    React.createElement("a", { onClick: function () { return _this.editSelectedEntity(fieldContent); } },
-                        React.createElement("span", { className: "ms-Icon ms-Icon--Edit" }))));
+                        React.createElement("span", { className: "ms-Icon ms-Icon--Delete" }))));
             default:
                 return React.createElement("span", { className: 'ms-font-m-plus' }, fieldContent);
         }
@@ -22138,11 +22130,10 @@ var EntitiesList = (function (_super) {
             searchValue: lcString
         });
     };
-    EntitiesList.prototype.editSelectedEntity = function (guid) {
+    EntitiesList.prototype.editSelectedEntity = function (entity) {
         //do something
-        var entitySelected = this.props.entities.find(function (e) { return e.id == guid; });
         this.setState({
-            entitySelected: entitySelected,
+            entitySelected: entity,
             createEditModalOpen: true
         });
     };
@@ -22166,7 +22157,7 @@ var EntitiesList = (function (_super) {
                 React.createElement(office_ui_fabric_react_1.CommandButton, { "data-automation-id": 'randomID4', disabled: false, onClick: this.handleOpenCreateModal.bind(this), className: 'goldButton', ariaDescription: 'Create a New Entity', text: 'New Entity' }),
                 React.createElement(EntityCreatorEditor_1.default, { open: this.state.createEditModalOpen, entity: this.state.entitySelected, handleClose: this.handleCloseCreateModal.bind(this) })),
             React.createElement(office_ui_fabric_react_1.SearchBox, { className: "ms-font-m-plus", onChange: function (newValue) { return _this.onChange(newValue); }, onSearch: function (newValue) { return _this.onChange(newValue); } }),
-            React.createElement(office_ui_fabric_react_1.DetailsList, { className: "ms-font-m-plus", items: entityItems, columns: columns, checkboxVisibility: office_ui_fabric_react_1.CheckboxVisibility.hidden, onRenderItemColumn: this.renderItemColumn }),
+            React.createElement(office_ui_fabric_react_1.DetailsList, { className: "ms-font-m-plus", items: entityItems, columns: columns, checkboxVisibility: office_ui_fabric_react_1.CheckboxVisibility.hidden, onRenderItemColumn: this.renderItemColumn, onActiveItemChanged: function (item) { return _this.editSelectedEntity(item); } }),
             React.createElement(ConfirmDeleteModal_1.default, { open: this.state.confirmDeleteEntityModalOpen, onCancel: function () { return _this.handleCloseDeleteModal(); }, onConfirm: function () { return _this.deleteSelectedEntity(); }, title: "Are you sure you want to delete this entity?" })));
     };
     return EntitiesList;

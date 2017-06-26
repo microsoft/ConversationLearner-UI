@@ -95,11 +95,9 @@ class ActionResponsesHomepage extends React.Component<any, any> {
             actionIDToDelete: guid
         })
     }
-    editSelectedAction(guid: string) {
-        //do something
-        let actionSelected = this.props.actions.find((a: Action) => a.id == guid)
+    editSelectedAction(action: Action) {
         this.setState({
-            actionSelected: actionSelected,
+            actionSelected: action,
             createEditModalOpen: true
         })
     }
@@ -141,8 +139,7 @@ class ActionResponsesHomepage extends React.Component<any, any> {
             case 'actions':
                 return (
                     <div>
-                        <a onClick={() => this.openDeleteModal(fieldContent)}><span className="ms-Icon ms-Icon--Delete"></span>&nbsp;&nbsp;</a>
-                        <a onClick={() => this.editSelectedAction(fieldContent)}><span className="ms-Icon ms-Icon--Edit"></span></a>
+                        <a onClick={() => this.openDeleteModal(fieldContent)}><span className="ms-Icon ms-Icon--Delete"></span></a>
                     </div>
                 )
             default:
@@ -215,6 +212,7 @@ class ActionResponsesHomepage extends React.Component<any, any> {
                     columns={columns}
                     checkboxVisibility={CheckboxVisibility.hidden}
                     onRenderItemColumn={this.renderItemColumn}
+                    onActiveItemChanged={(item) => this.editSelectedAction(item)}
                 />
                 <ConfirmDeleteModal open={this.state.confirmDeleteActionModalOpen} onCancel={() => this.handleCloseModal()} onConfirm={() => this.deleteSelectedAction()} title="Are you sure you want to delete this action?" />
 
