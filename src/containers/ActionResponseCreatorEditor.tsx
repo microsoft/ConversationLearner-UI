@@ -247,6 +247,7 @@ class ActionResponseCreatorEditor extends React.Component<any, any> {
                             options={actionTypeOptions}
                             onChanged={this.actionTypeChanged.bind(this)}
                             selectedKey={this.state.actionTypeVal}
+                            disabled={this.state.editing}
                         />
                         <TextField
                             onChanged={this.contentChanged.bind(this)}
@@ -293,6 +294,7 @@ class ActionResponseCreatorEditor extends React.Component<any, any> {
                             label='Wait For Response?'
                             onChange={this.waitChanged.bind(this)}
                             selectedKey={this.state.waitKey}
+                            disabled={this.state.editing}
                         />
                     </div>
                     <div className='modalFooter'>

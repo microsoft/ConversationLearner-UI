@@ -169,6 +169,7 @@ class EntityCreatorEditor extends React.Component<any, any> {
                             options={options}
                             onChanged={this.typeChanged.bind(this)}
                             selectedKey={this.state.entityTypeVal}
+                            disabled={this.state.editing}
                         />
                         <ChoiceGroup
                             options={[
