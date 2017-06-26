@@ -22389,9 +22389,9 @@ var office_ui_fabric_react_1 = __webpack_require__(26);
 var update_1 = __webpack_require__(29);
 var columns = [
     {
-        key: 'id',
-        name: 'DialogID',
-        fieldName: 'id',
+        key: 'firstUtterance',
+        name: 'First Utterance',
+        fieldName: 'firstUtterance',
         minWidth: 100,
         maxWidth: 200,
         isResizable: true
@@ -22405,8 +22405,16 @@ var columns = [
         isResizable: true
     },
     {
-        key: 'actions',
-        name: 'Actions',
+        key: 'lastEdit',
+        name: 'Last Edit',
+        fieldName: 'lastEdit',
+        minWidth: 100,
+        maxWidth: 200,
+        isResizable: true
+    },
+    {
+        key: 'id',
+        name: 'DialogID',
         fieldName: 'id',
         minWidth: 100,
         maxWidth: 200,
@@ -22421,16 +22429,11 @@ var TrainDialogsList = (function (_super) {
         return _this;
     }
     TrainDialogsList.prototype.renderItemColumn = function (item, index, column) {
-        var _this = this;
         var self = this;
         var fieldContent = item[column.fieldName];
         switch (column.key) {
             case 'turns':
                 return React.createElement("span", { className: 'ms-font-m-plus' }, fieldContent.turns.length);
-            case 'actions':
-                return (React.createElement("div", null,
-                    React.createElement("a", { onClick: function () { return _this.handleSelection(item); } },
-                        React.createElement("span", { className: "ms-Icon ms-Icon--Edit" }))));
             default:
                 return React.createElement("span", { className: 'ms-font-m-plus' }, fieldContent);
         }
@@ -22439,14 +22442,16 @@ var TrainDialogsList = (function (_super) {
         this.props.setWebchatDisplay(true);
     };
     TrainDialogsList.prototype.handleSelection = function (selected) {
+        console.log(selected);
         this.props.setWebchatDisplay(true);
     };
     TrainDialogsList.prototype.render = function () {
+        var _this = this;
         var trainDialogs = this.props.trainDialogs;
         return (React.createElement("div", null,
             React.createElement(TrainingGroundArenaHeader_1.default, { title: "Train Dialogs", description: "Use this tool to test the current and published versions of your application, to check if you are progressing on the right track ..." }),
             React.createElement(office_ui_fabric_react_1.CommandButton, { "data-automation-id": 'randomID9', disabled: false, onClick: this.handleClick.bind(this), className: 'goldButton', ariaDescription: 'Create a New Train Dialog', text: 'New Train Dialog' }),
-            React.createElement(office_ui_fabric_react_1.DetailsList, { className: "ms-font-m-plus", items: trainDialogs, columns: columns, checkboxVisibility: office_ui_fabric_react_1.CheckboxVisibility.onHover, onRenderItemColumn: this.renderItemColumn.bind(this) })));
+            React.createElement(office_ui_fabric_react_1.DetailsList, { className: "ms-font-m-plus", items: trainDialogs, columns: columns, checkboxVisibility: office_ui_fabric_react_1.CheckboxVisibility.hidden, onRenderItemColumn: this.renderItemColumn.bind(this), onActiveItemChanged: function (item) { return _this.handleSelection(item); } })));
     };
     return TrainDialogsList;
 }(React.Component));

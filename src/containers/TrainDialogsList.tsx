@@ -10,9 +10,9 @@ import { State } from '../types'
 
 let columns: IColumn[] = [
     {
-        key: 'id',
-        name: 'DialogID',
-        fieldName: 'id',
+        key: 'firstUtterance',
+        name: 'First Utterance',
+        fieldName: 'firstUtterance',
         minWidth: 100,
         maxWidth: 200,
         isResizable: true
@@ -26,8 +26,16 @@ let columns: IColumn[] = [
         isResizable: true
     },
     {
-        key: 'actions',
-        name: 'Actions',
+        key: 'lastEdit',
+        name: 'Last Edit',
+        fieldName: 'lastEdit',
+        minWidth: 100,
+        maxWidth: 200,
+        isResizable: true
+    },
+    {
+        key: 'id',
+        name: 'DialogID',
         fieldName: 'id',
         minWidth: 100,
         maxWidth: 200,
@@ -45,13 +53,7 @@ class TrainDialogsList extends React.Component<any, any> {
         let fieldContent = item[column.fieldName];
         switch (column.key) {
             case 'turns':
-                return <span className='ms-font-m-plus'>{fieldContent.turns.length}</span>;
-            case 'actions':
-                return (
-                    <div>
-                        <a onClick={() => this.handleSelection(item)}><span className="ms-Icon ms-Icon--Edit"></span></a>
-                    </div>
-                )
+                return <span className='ms-font-m-plus'>{fieldContent.turns.length}</span>;\
             default:
                 return <span className='ms-font-m-plus'>{fieldContent}</span>;
         }
@@ -79,8 +81,9 @@ class TrainDialogsList extends React.Component<any, any> {
                     className="ms-font-m-plus"
                     items={trainDialogs}
                     columns={columns}
-                    checkboxVisibility={CheckboxVisibility.onHover}
+                    checkboxVisibility={CheckboxVisibility.hidden}
                     onRenderItemColumn={this.renderItemColumn.bind(this)}
+                    onActiveItemChanged={(item) => this.handleSelection(item)}
                 />
             </div>
         );
