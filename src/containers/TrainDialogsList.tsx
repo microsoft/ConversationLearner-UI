@@ -53,7 +53,7 @@ class TrainDialogsList extends React.Component<any, any> {
         let fieldContent = item[column.fieldName];
         switch (column.key) {
             case 'turns':
-                return <span className='ms-font-m-plus'>{fieldContent.turns.length}</span>;\
+                return <span className='ms-font-m-plus'>{fieldContent.turns.length}</span>;
             default:
                 return <span className='ms-font-m-plus'>{fieldContent}</span>;
         }

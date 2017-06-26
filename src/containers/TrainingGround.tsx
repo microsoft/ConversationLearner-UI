@@ -60,48 +60,8 @@ class TrainingGround extends React.Component<any, any> {
     }
     renderWithoutEmulator() {
         return (
-            <div className="content">
-                <div className='trainingGroundNavigationArea'>
-                    <span className="ms-font-xxl">{this.props.blisApps.current.appName}</span>
-                    <div className="tgSettingsDiv">
-                        <a onClick={() => this.setArenaDisplay('Settings')}><span className="ms-Icon ms-Icon--Settings" aria-hidden="true"></span>&nbsp;&nbsp;</a>
-                        <span className="ms-font-m-plus"><a onClick={() => this.setArenaDisplay('Settings')}>Settings</a></span>
-                    </div>
-                    <div className="tgNavDiv">
-                        <Nav
-                            className="ms-font-m-plus trainingGroundNav"
-                            initialSelectedKey="Dash"
-                            selectedKey={this.state.selectedKey}
-                            groups={[{
-                                links: [
-                                    { name: 'Dashboard', key: 'Dash', onClick: () => this.setArenaDisplay('Dash') },
-                                    { name: 'Entities', key: 'Entities', onClick: () => this.setArenaDisplay('Entities') },
-                                    { name: 'Actions', key: 'Actions', onClick: () => this.setArenaDisplay('Actions') },
-                                    { name: 'Train Dialogs', key: 'TrainDialogs', onClick: () => this.setArenaDisplay('TrainDialogs') }
-                                ]
-                            }]}
-                        />
-                    </div>
-                    <div className="tgbackToAppsDiv">
-                        <Link className="backToApps" onClick={() => this.props.setDisplay("Home")} to="/myApps"><span className="ms-Icon ms-Icon--Back backToApps backToAppsIcon" aria-hidden="true"></span>&nbsp;&nbsp;</Link>
-                        <span className="ms-font-m-plus backToApps"><Link className="backToApps" onClick={() => this.props.setDisplay("Home")} to="/myApps">Back to App List</Link></span>
-                    </div>
-                </div>
-
-                <div className='trainingGroundArena'>
-                    {this.renderChosenNavLink()}
-                </div>
-            </div>
-        )
-
-    }
-    renderWithEmulator() {
-        return (
             <div className="container">
-                <div className="emulatorDisplay">
-                    <Emulator />
-                </div>
-                <div className="trainingGroundDisplayWithEmulator">
+                <div className="content">
                     <div className='trainingGroundNavigationArea'>
                         <span className="ms-font-xxl">{this.props.blisApps.current.appName}</span>
                         <div className="tgSettingsDiv">
@@ -131,6 +91,45 @@ class TrainingGround extends React.Component<any, any> {
 
                     <div className='trainingGroundArena'>
                         {this.renderChosenNavLink()}
+                    </div>
+                </div>
+            </div>
+        )
+
+    }
+    renderWithEmulator() {
+        return (
+            <div className="container">
+                <div className="emulatorContent">
+                    <div className='trainingGroundNavigationArea'>
+                        <span className="ms-font-xxl">{this.props.blisApps.current.appName}</span>
+                        <div className="tgSettingsDiv">
+                            <a onClick={() => this.setArenaDisplay('Settings')}><span className="ms-Icon ms-Icon--Settings" aria-hidden="true"></span>&nbsp;&nbsp;</a>
+                            <span className="ms-font-m-plus"><a onClick={() => this.setArenaDisplay('Settings')}>Settings</a></span>
+                        </div>
+                        <div className="tgNavDiv">
+                            <Nav
+                                className="ms-font-m-plus trainingGroundNav"
+                                initialSelectedKey="Dash"
+                                selectedKey={this.state.selectedKey}
+                                groups={[{
+                                    links: [
+                                        { name: 'Dashboard', key: 'Dash', onClick: () => this.setArenaDisplay('Dash') },
+                                        { name: 'Entities', key: 'Entities', onClick: () => this.setArenaDisplay('Entities') },
+                                        { name: 'Actions', key: 'Actions', onClick: () => this.setArenaDisplay('Actions') },
+                                        { name: 'Train Dialogs', key: 'TrainDialogs', onClick: () => this.setArenaDisplay('TrainDialogs') }
+                                    ]
+                                }]}
+                            />
+                        </div>
+                        <div className="tgbackToAppsDiv">
+                            <Link className="backToApps" onClick={() => this.props.setDisplay("Home")} to="/myApps"><span className="ms-Icon ms-Icon--Back backToApps backToAppsIcon" aria-hidden="true"></span>&nbsp;&nbsp;</Link>
+                            <span className="ms-font-m-plus backToApps"><Link className="backToApps" onClick={() => this.props.setDisplay("Home")} to="/myApps">Back to App List</Link></span>
+                        </div>
+                    </div>
+
+                    <div className='emulatorDisplay'>
+                        <Emulator />
                     </div>
                 </div>
             </div>
