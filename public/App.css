@@ -237,3 +237,8 @@
   transform: translate(-50%, -50%);
   color: #ffb900
 }
+.saveAppChangesButtonsDiv{
+  width: 100%;
+  display: block;
+  margin-top: 1em;
+}
