@@ -90,9 +90,9 @@ class AppSettings extends React.Component<any, any> {
                 <TextField className="ms-font-m-plus" disabled={true} label="Name" value={this.state.appNameVal} />
                 <TextField className="ms-font-m-plus" disabled={true} label="Model ID" value={this.state.modelIDVal} />
                 <TextField className="ms-font-m-plus" onChanged={(text) => this.luisKeyChanged(text)} label="LUIS Key" value={this.state.luisKeyVal} />
+                <Label className="ms-font-m-plus">Locale</Label>
                 <Dropdown
-                    className="ms-font-m-plus" 
-                    label='Locale'
+                    className="ms-font-m-plus"
                     defaultSelectedKey={this.state.localeVal}
                     options={options}
                     selectedKey={this.state.localeVal}

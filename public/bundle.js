@@ -21736,16 +21736,18 @@ var AppSettings = (function (_super) {
                 key: this.state.localeVal,
                 text: this.state.localeVal,
             }];
-        var buttonsDivStyle = this.state.edited == true ? styles.shown : styles.hidden;
+        // let buttonsDivStyle = this.state.edited == true ? styles.shown : styles.hidden;
+        var disabled = this.state.edited == true ? true : false;
         return (React.createElement("div", null,
             React.createElement(TrainingGroundArenaHeader_1.default, { title: "Settings", description: "Control your application versions, who has access to it and whether it is public or private...." }),
             React.createElement(office_ui_fabric_react_1.TextField, { className: "ms-font-m-plus", disabled: true, label: "Name", value: this.state.appNameVal }),
             React.createElement(office_ui_fabric_react_1.TextField, { className: "ms-font-m-plus", disabled: true, label: "Model ID", value: this.state.modelIDVal }),
             React.createElement(office_ui_fabric_react_1.TextField, { className: "ms-font-m-plus", onChanged: function (text) { return _this.luisKeyChanged(text); }, label: "LUIS Key", value: this.state.luisKeyVal }),
-            React.createElement(office_ui_fabric_react_1.Dropdown, { className: "ms-font-m-plus", label: 'Locale', defaultSelectedKey: this.state.localeVal, options: options, selectedKey: this.state.localeVal, disabled: true }),
-            React.createElement("div", { style: buttonsDivStyle, className: "saveAppChangesButtonsDiv" },
-                React.createElement(office_ui_fabric_react_1.CommandButton, { "data-automation-id": 'randomID6', disabled: false, onClick: this.editApp.bind(this), className: 'goldButton', ariaDescription: 'Save Changes', text: 'Save Changes' }),
-                React.createElement(office_ui_fabric_react_1.CommandButton, { "data-automation-id": 'randomID7', className: "grayButton", disabled: false, onClick: this.discardChanges.bind(this), ariaDescription: 'Discard', text: 'Discard' }))));
+            React.createElement(office_ui_fabric_react_1.Label, { className: "ms-font-m-plus" }, "Locale"),
+            React.createElement(office_ui_fabric_react_1.Dropdown, { className: "ms-font-m-plus", defaultSelectedKey: this.state.localeVal, options: options, selectedKey: this.state.localeVal, disabled: true }),
+            React.createElement("div", { className: "saveAppChangesButtonsDiv" },
+                React.createElement(office_ui_fabric_react_1.CommandButton, { "data-automation-id": 'randomID6', disabled: disabled, onClick: this.editApp.bind(this), className: 'goldButton', ariaDescription: 'Save Changes', text: 'Save Changes' }),
+                React.createElement(office_ui_fabric_react_1.CommandButton, { "data-automation-id": 'randomID7', className: "grayButton", disabled: disabled, onClick: this.discardChanges.bind(this), ariaDescription: 'Discard', text: 'Discard' }))));
     };
     return AppSettings;
 }(React.Component));
