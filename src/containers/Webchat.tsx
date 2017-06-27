@@ -17,7 +17,6 @@ class Webchat extends React.Component<any, any> {
         return 
     }
     render() {
-        console.log('WEBCHAT', this.props)
         return (
             <div className="container">
                 <CommandButton

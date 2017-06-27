@@ -22581,6 +22581,9 @@ var TrainDialogsList = (function (_super) {
     tslib_1.__extends(TrainDialogsList, _super);
     function TrainDialogsList(p) {
         var _this = _super.call(this, p) || this;
+        _this.state = {
+            searchValue: ''
+        };
         _this.handleSelection = _this.handleSelection.bind(_this);
         return _this;
     }
@@ -22614,13 +22617,31 @@ var TrainDialogsList = (function (_super) {
         this.props.setWebchatDisplay(true);
         this.props.setCurrentTrainDialog(selected);
     };
+    TrainDialogsList.prototype.onChange = function (newValue) {
+        var lcString = newValue.toLowerCase();
+        this.setState({
+            searchValue: lcString
+        });
+    };
+    TrainDialogsList.prototype.renderTrainDialogItems = function () {
+        var lcString = this.state.searchValue.toLowerCase();
+        var filteredTrainDialogs = this.props.trainDialogs.all.filter(function (t) {
+            // let firstUtterance = t.dialog.turns[0].input.text;
+            // let match = firstUtterance.toLowerCase().includes(lcString);
+            // return match;
+            return true;
+        });
+        return filteredTrainDialogs;
+    };
     TrainDialogsList.prototype.render = function () {
         var _this = this;
-        var trainDialogs = this.props.trainDialogs.all;
+        var trainDialogItems = this.renderTrainDialogItems();
         return (React.createElement("div", null,
             React.createElement(TrainingGroundArenaHeader_1.default, { title: "Train Dialogs", description: "Use this tool to test the current and published versions of your application, to check if you are progressing on the right track ..." }),
-            React.createElement(office_ui_fabric_react_1.CommandButton, { "data-automation-id": 'randomID9', disabled: false, onClick: this.handleClick.bind(this), className: 'goldButton', ariaDescription: 'Create a New Train Dialog', text: 'New Train Dialog' }),
-            React.createElement(office_ui_fabric_react_1.DetailsList, { className: "ms-font-m-plus", items: trainDialogs, columns: columns, checkboxVisibility: office_ui_fabric_react_1.CheckboxVisibility.hidden, onRenderItemColumn: this.renderItemColumn.bind(this), onActiveItemChanged: function (item) { return _this.handleSelection(item); } })));
+            React.createElement("div", { className: "entityCreator" },
+                React.createElement(office_ui_fabric_react_1.CommandButton, { "data-automation-id": 'randomID9', disabled: false, onClick: this.handleClick.bind(this), className: 'goldButton', ariaDescription: 'Create a New Train Dialog', text: 'New Train Dialog' })),
+            React.createElement(office_ui_fabric_react_1.SearchBox, { className: "ms-font-m-plus", onChange: function (newValue) { return _this.onChange(newValue); }, onSearch: function (newValue) { return _this.onChange(newValue); } }),
+            React.createElement(office_ui_fabric_react_1.DetailsList, { className: "ms-font-m-plus", items: trainDialogItems, columns: columns, checkboxVisibility: office_ui_fabric_react_1.CheckboxVisibility.hidden, onRenderItemColumn: this.renderItemColumn.bind(this), onActiveItemChanged: function (item) { return _this.handleSelection(item); } })));
     };
     return TrainDialogsList;
 }(React.Component));
@@ -22803,7 +22824,6 @@ var Webchat = (function (_super) {
     };
     Webchat.prototype.render = function () {
         var _this = this;
-        console.log('WEBCHAT', this.props);
         return (React.createElement("div", { className: "container" },
             React.createElement(office_ui_fabric_react_1.CommandButton, { "data-automation-id": 'randomID12', disabled: false, className: 'webchatGoBack', onClick: function () { return _this.props.setWebchatDisplay(false); }, ariaDescription: this.props.buttonText, iconProps: { iconName: 'Back' } }),
             React.createElement(office_ui_fabric_react_1.CommandButton, { "data-automation-id": 'randomID11', disabled: false, onClick: function () { return _this.props.toggleMeta(); }, className: 'toggleMeta', ariaDescription: this.props.buttonText, text: this.props.buttonText }),
