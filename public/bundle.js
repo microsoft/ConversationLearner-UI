@@ -2586,6 +2586,63 @@ module.exports = ReactCurrentOwner;
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.setCurrentBLISApp = function (app) {
+    return {
+        type: 'SET_CURRENT_BLIS_APP',
+        currentBLISApp: app
+    };
+};
+exports.setBLISAppDisplay = function (text) {
+    return {
+        type: 'SET_BLIS_APP_DISPLAY',
+        setDisplay: text
+    };
+};
+exports.editBLISApplication = function (application) {
+    //will need to make a call to BLIS to edit this application for this user
+    return {
+        type: 'EDIT_BLIS_APPLICATION',
+        blisApp: application
+    };
+};
+exports.setWebchatDisplay = function (isShown) {
+    //will need to make a call to BLIS to edit this application for this user
+    return {
+        type: 'SET_WEBCHAT_DISPLAY',
+        setWebchatDisplay: isShown
+    };
+};
+exports.editEntity = function (entity) {
+    //will need to make a call to BLIS to edit this entity for its application
+    return {
+        type: 'EDIT_ENTITY',
+        entity: entity
+    };
+};
+exports.editAction = function (action) {
+    //will need to make a call to BLIS to edit this action for its application
+    return {
+        type: 'EDIT_ACTION',
+        action: action
+    };
+};
+exports.editTrainDialog = function (trainDialog) {
+    //currently any type because this creator hasnt been set up
+    //will need to make a call to BLIS to edit this train dialog for its application
+    return {
+        type: 'EDIT_TRAIN_DIALOG',
+        trainDialog: trainDialog
+    };
+};
+
+
+/***/ }),
+/* 28 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
 /* WEBPACK VAR INJECTION */(function(process) {/**
  * Copyright 2013-present, Facebook, Inc.
  * All rights reserved.
@@ -2854,63 +2911,6 @@ function getPooledWarningPropertyDefinition(propName, getVal) {
   }
 }
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
-
-/***/ }),
-/* 28 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.setCurrentBLISApp = function (app) {
-    return {
-        type: 'SET_CURRENT_BLIS_APP',
-        currentBLISApp: app
-    };
-};
-exports.setBLISAppDisplay = function (text) {
-    return {
-        type: 'SET_BLIS_APP_DISPLAY',
-        setDisplay: text
-    };
-};
-exports.editBLISApplication = function (application) {
-    //will need to make a call to BLIS to edit this application for this user
-    return {
-        type: 'EDIT_BLIS_APPLICATION',
-        blisApp: application
-    };
-};
-exports.setWebchatDisplay = function (isShown) {
-    //will need to make a call to BLIS to edit this application for this user
-    return {
-        type: 'SET_WEBCHAT_DISPLAY',
-        setWebchatDisplay: isShown
-    };
-};
-exports.editEntity = function (entity) {
-    //will need to make a call to BLIS to edit this entity for its application
-    return {
-        type: 'EDIT_ENTITY',
-        entity: entity
-    };
-};
-exports.editAction = function (action) {
-    //will need to make a call to BLIS to edit this action for its application
-    return {
-        type: 'EDIT_ACTION',
-        action: action
-    };
-};
-exports.editTrainDialog = function (trainDialog) {
-    //currently any type because this creator hasnt been set up
-    //will need to make a call to BLIS to edit this train dialog for its application
-    return {
-        type: 'EDIT_TRAIN_DIALOG',
-        trainDialog: trainDialog
-    };
-};
-
 
 /***/ }),
 /* 29 */
@@ -5361,7 +5361,7 @@ module.exports = ReactInstanceMap;
 
 
 
-var SyntheticEvent = __webpack_require__(27);
+var SyntheticEvent = __webpack_require__(28);
 
 var getEventTarget = __webpack_require__(117);
 
@@ -20839,7 +20839,7 @@ var React = __webpack_require__(0);
 var react_router_dom_1 = __webpack_require__(122);
 var BLISAppsHomepage_1 = __webpack_require__(254);
 var fetch_1 = __webpack_require__(59);
-var update_1 = __webpack_require__(28);
+var update_1 = __webpack_require__(27);
 var Header_1 = __webpack_require__(245);
 var Docs_1 = __webpack_require__(247);
 var About_1 = __webpack_require__(246);
@@ -21129,7 +21129,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = __webpack_require__(1);
 var React = __webpack_require__(0);
 var create_1 = __webpack_require__(45);
-var update_1 = __webpack_require__(28);
+var update_1 = __webpack_require__(27);
 var redux_1 = __webpack_require__(15);
 var react_redux_1 = __webpack_require__(14);
 var Modal_1 = __webpack_require__(52);
@@ -21651,7 +21651,7 @@ exports.default = react_redux_1.connect(mapStateToProps, null)(AppDashboard);
 Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = __webpack_require__(1);
 var React = __webpack_require__(0);
-var update_1 = __webpack_require__(28);
+var update_1 = __webpack_require__(27);
 var redux_1 = __webpack_require__(15);
 var react_redux_1 = __webpack_require__(14);
 var TrainingGroundArenaHeader_1 = __webpack_require__(46);
@@ -21736,8 +21736,7 @@ var AppSettings = (function (_super) {
                 key: this.state.localeVal,
                 text: this.state.localeVal,
             }];
-        // let buttonsDivStyle = this.state.edited == true ? styles.shown : styles.hidden;
-        var disabled = this.state.edited == true ? true : false;
+        var buttonsDivStyle = this.state.edited == true ? styles.shown : styles.hidden;
         return (React.createElement("div", null,
             React.createElement(TrainingGroundArenaHeader_1.default, { title: "Settings", description: "Control your application versions, who has access to it and whether it is public or private...." }),
             React.createElement(office_ui_fabric_react_1.TextField, { className: "ms-font-m-plus", disabled: true, label: "Name", value: this.state.appNameVal }),
@@ -21745,9 +21744,9 @@ var AppSettings = (function (_super) {
             React.createElement(office_ui_fabric_react_1.TextField, { className: "ms-font-m-plus", onChanged: function (text) { return _this.luisKeyChanged(text); }, label: "LUIS Key", value: this.state.luisKeyVal }),
             React.createElement(office_ui_fabric_react_1.Label, { className: "ms-font-m-plus" }, "Locale"),
             React.createElement(office_ui_fabric_react_1.Dropdown, { className: "ms-font-m-plus", defaultSelectedKey: this.state.localeVal, options: options, selectedKey: this.state.localeVal, disabled: true }),
-            React.createElement("div", { className: "saveAppChangesButtonsDiv" },
-                React.createElement(office_ui_fabric_react_1.CommandButton, { "data-automation-id": 'randomID6', disabled: disabled, onClick: this.editApp.bind(this), className: 'goldButton', ariaDescription: 'Save Changes', text: 'Save Changes' }),
-                React.createElement(office_ui_fabric_react_1.CommandButton, { "data-automation-id": 'randomID7', className: "grayButton", disabled: disabled, onClick: this.discardChanges.bind(this), ariaDescription: 'Discard', text: 'Discard' }))));
+            React.createElement("div", { style: buttonsDivStyle, className: "saveAppChangesButtonsDiv" },
+                React.createElement(office_ui_fabric_react_1.CommandButton, { "data-automation-id": 'randomID6', disabled: false, onClick: this.editApp.bind(this), className: 'goldButton', ariaDescription: 'Save Changes', text: 'Save Changes' }),
+                React.createElement(office_ui_fabric_react_1.CommandButton, { "data-automation-id": 'randomID7', className: "grayButton", disabled: false, onClick: this.discardChanges.bind(this), ariaDescription: 'Discard', text: 'Discard' }))));
     };
     return AppSettings;
 }(React.Component));
@@ -21779,7 +21778,7 @@ var redux_1 = __webpack_require__(15);
 var react_redux_1 = __webpack_require__(14);
 var Modal_1 = __webpack_require__(52);
 var office_ui_fabric_react_1 = __webpack_require__(24);
-var update_1 = __webpack_require__(28);
+var update_1 = __webpack_require__(27);
 var fetch_1 = __webpack_require__(59);
 var Application_1 = __webpack_require__(78);
 var secrets_1 = __webpack_require__(269);
@@ -21943,7 +21942,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = __webpack_require__(1);
 var React = __webpack_require__(0);
 var fetch_1 = __webpack_require__(59);
-var update_1 = __webpack_require__(28);
+var update_1 = __webpack_require__(27);
 var delete_1 = __webpack_require__(76);
 var redux_1 = __webpack_require__(15);
 var react_redux_1 = __webpack_require__(14);
@@ -22270,7 +22269,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = __webpack_require__(1);
 var React = __webpack_require__(0);
 var create_1 = __webpack_require__(45);
-var update_1 = __webpack_require__(28);
+var update_1 = __webpack_require__(27);
 var redux_1 = __webpack_require__(15);
 var react_redux_1 = __webpack_require__(14);
 var Modal_1 = __webpack_require__(52);
@@ -22480,7 +22479,7 @@ var redux_1 = __webpack_require__(15);
 var react_redux_1 = __webpack_require__(14);
 var TrainingGroundArenaHeader_1 = __webpack_require__(46);
 var office_ui_fabric_react_1 = __webpack_require__(24);
-var update_1 = __webpack_require__(28);
+var update_1 = __webpack_require__(27);
 var columns = [
     {
         key: 'firstUtterance',
@@ -22581,7 +22580,7 @@ var AppSettings_1 = __webpack_require__(252);
 var Emulator_1 = __webpack_require__(243);
 var office_ui_fabric_react_1 = __webpack_require__(24);
 var react_router_dom_1 = __webpack_require__(122);
-var update_1 = __webpack_require__(28);
+var update_1 = __webpack_require__(27);
 var TrainingGround = (function (_super) {
     tslib_1.__extends(TrainingGround, _super);
     function TrainingGround(p) {
@@ -22710,6 +22709,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = __webpack_require__(1);
 var React = __webpack_require__(0);
 var create_1 = __webpack_require__(45);
+var update_1 = __webpack_require__(27);
 var redux_1 = __webpack_require__(15);
 var react_redux_1 = __webpack_require__(14);
 var office_ui_fabric_react_1 = __webpack_require__(24);
@@ -22721,6 +22721,7 @@ var Webchat = (function (_super) {
     Webchat.prototype.render = function () {
         var _this = this;
         return (React.createElement("div", { className: "container" },
+            React.createElement(office_ui_fabric_react_1.CommandButton, { "data-automation-id": 'randomID12', disabled: false, className: 'webchatGoBack', onClick: function () { return _this.props.setWebchatDisplay(false); }, ariaDescription: this.props.buttonText, iconProps: { iconName: 'Back', styles: { color: 'black' } } }),
             React.createElement(office_ui_fabric_react_1.CommandButton, { "data-automation-id": 'randomID11', disabled: false, onClick: function () { return _this.props.toggleMeta(); }, className: 'toggleMeta', ariaDescription: this.props.buttonText, text: this.props.buttonText }),
             React.createElement("span", { className: "ms-font-su goldText" }, "WEBCHAT")));
     };
@@ -22729,6 +22730,7 @@ var Webchat = (function (_super) {
 var mapDispatchToProps = function (dispatch) {
     return redux_1.bindActionCreators({
         createBLISApplication: create_1.createBLISApplication,
+        setWebchatDisplay: update_1.setWebchatDisplay
     }, dispatch);
 };
 var mapStateToProps = function (state) {
@@ -45564,7 +45566,7 @@ var EventPropagators = __webpack_require__(55);
 var ExecutionEnvironment = __webpack_require__(12);
 var ReactDOMComponentTree = __webpack_require__(11);
 var ReactUpdates = __webpack_require__(25);
-var SyntheticEvent = __webpack_require__(27);
+var SyntheticEvent = __webpack_require__(28);
 
 var getEventTarget = __webpack_require__(117);
 var isEventSupported = __webpack_require__(118);
@@ -52580,7 +52582,7 @@ var EventPropagators = __webpack_require__(55);
 var ExecutionEnvironment = __webpack_require__(12);
 var ReactDOMComponentTree = __webpack_require__(11);
 var ReactInputSelection = __webpack_require__(215);
-var SyntheticEvent = __webpack_require__(27);
+var SyntheticEvent = __webpack_require__(28);
 
 var getActiveElement = __webpack_require__(146);
 var isTextInputElement = __webpack_require__(225);
@@ -52780,7 +52782,7 @@ var EventPropagators = __webpack_require__(55);
 var ReactDOMComponentTree = __webpack_require__(11);
 var SyntheticAnimationEvent = __webpack_require__(578);
 var SyntheticClipboardEvent = __webpack_require__(579);
-var SyntheticEvent = __webpack_require__(27);
+var SyntheticEvent = __webpack_require__(28);
 var SyntheticFocusEvent = __webpack_require__(582);
 var SyntheticKeyboardEvent = __webpack_require__(584);
 var SyntheticMouseEvent = __webpack_require__(71);
@@ -53006,7 +53008,7 @@ module.exports = SimpleEventPlugin;
 
 
 
-var SyntheticEvent = __webpack_require__(27);
+var SyntheticEvent = __webpack_require__(28);
 
 /**
  * @interface Event
@@ -53050,7 +53052,7 @@ module.exports = SyntheticAnimationEvent;
 
 
 
-var SyntheticEvent = __webpack_require__(27);
+var SyntheticEvent = __webpack_require__(28);
 
 /**
  * @interface Event
@@ -53093,7 +53095,7 @@ module.exports = SyntheticClipboardEvent;
 
 
 
-var SyntheticEvent = __webpack_require__(27);
+var SyntheticEvent = __webpack_require__(28);
 
 /**
  * @interface Event
@@ -53216,7 +53218,7 @@ module.exports = SyntheticFocusEvent;
 
 
 
-var SyntheticEvent = __webpack_require__(27);
+var SyntheticEvent = __webpack_require__(28);
 
 /**
  * @interface Event
@@ -53397,7 +53399,7 @@ module.exports = SyntheticTouchEvent;
 
 
 
-var SyntheticEvent = __webpack_require__(27);
+var SyntheticEvent = __webpack_require__(28);
 
 /**
  * @interface Event

@@ -242,3 +242,12 @@
   display: block;
   margin-top: 1em;
 }
+.webchatGoBack{
+  background-color: #ffb900 !important;
+  padding: 0em 2em !important;
+  float: left;
+  position: relative
+}
+.webchatGoBack *{
+  color:black !important;
+}

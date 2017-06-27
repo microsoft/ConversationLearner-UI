@@ -1,15 +1,15 @@
 import * as React from 'react';
 import { createBLISApplication } from '../actions/create';
+import { setWebchatDisplay } from '../actions/update';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../types';
-import { CommandButton } from 'office-ui-fabric-react';
+import { CommandButton, IIconProps } from 'office-ui-fabric-react';
 
 interface Props {
     toggleMeta: Function;
     buttonText: string
 }
-
 class Webchat extends React.Component<any, any> {
     constructor(p: Props) {
         super(p);
@@ -17,6 +17,14 @@ class Webchat extends React.Component<any, any> {
     render() {
         return (
             <div className="container">
+                <CommandButton
+                    data-automation-id='randomID12'
+                    disabled={false}
+                    className='webchatGoBack'
+                    onClick={() => this.props.setWebchatDisplay(false)}
+                    ariaDescription={this.props.buttonText}
+                    iconProps={{ iconName: 'Back', styles: {color: 'black'} }}
+                />
                 <CommandButton
                     data-automation-id='randomID11'
                     disabled={false}
@@ -33,6 +41,7 @@ class Webchat extends React.Component<any, any> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         createBLISApplication: createBLISApplication,
+        setWebchatDisplay: setWebchatDisplay
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {
