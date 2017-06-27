@@ -5,7 +5,8 @@ import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader'
 import { DetailsList, CommandButton, Link, CheckboxVisibility, IColumn, SearchBox } from 'office-ui-fabric-react';
 import { TrainDialog, Dialog, Turn, Input } from '../models/TrainDialog';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
-import { setWebchatDisplay } from '../actions/update'
+import { setWebchatDisplay, setCurrentTrainDialog } from '../actions/update'
+import { createTrainDialog } from '../actions/create'
 import { State } from '../types'
 
 let columns: IColumn[] = [
@@ -59,10 +60,24 @@ class TrainDialogsList extends React.Component<any, any> {
         }
     }
     handleClick(){
+        let turns : Turn [] = [];
+        let dialog = new Dialog(turns)
+        let trainDialog = new TrainDialog(this.generateGUID(), dialog, this.props.blisApps.current.modelID)
         this.props.setWebchatDisplay(true)
+        this.props.createTrainDialog(trainDialog);
+    }
+    generateGUID(): string {
+        let d = new Date().getTime();
+        let guid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (char) => {
+            let r = (d + Math.random() * 16) % 16 | 0;
+            d = Math.floor(d / 16);
+            return (char == 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+        });
+        return guid;
     }
     handleSelection(selected: TrainDialog){
         this.props.setWebchatDisplay(true)
+        this.props.setCurrentTrainDialog(selected);
     }
     render() {
         let trainDialogs = this.props.trainDialogs.all;
@@ -91,11 +106,14 @@ class TrainDialogsList extends React.Component<any, any> {
 }
 const mapDispatchToProps  = (dispatch: any) => {
     return bindActionCreators({
-        setWebchatDisplay: setWebchatDisplay
+        setWebchatDisplay: setWebchatDisplay,
+        setCurrentTrainDialog: setCurrentTrainDialog,
+        createTrainDialog: createTrainDialog
     }, dispatch)
 }
 const mapStateToProps = (state: State) => {
     return {
+        blisApps: state.apps,
         trainDialogs: state.trainDialogs
     }
 }

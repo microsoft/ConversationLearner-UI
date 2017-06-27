@@ -12,7 +12,7 @@ export default (state = initialState, action: ActionObject) => {
         case 'FETCH_TRAIN_DIALOGS':
             return { ...state, all: action.allTrainDialogs };
         case 'CREATE_TRAIN_DIALOG':
-            return { ...state, current: action.trainDialog };
+            return { ...state, all: [...state.all, action.trainDialog], current: action.trainDialog };
         case 'SET_CURRENT_TRAIN_DIALOG':
             return { ...state, current: action.currentTrainDialog };
         case 'DELETE_TRAIN_DIALOG':

@@ -15,6 +15,7 @@ class Webchat extends React.Component<any, any> {
         super(p);
     }
     render() {
+        console.log('WEBCHAT', this.props)
         return (
             <div className="container">
                 <CommandButton
@@ -46,7 +47,8 @@ const mapDispatchToProps = (dispatch: any) => {
 }
 const mapStateToProps = (state: State) => {
     return {
-        blisApps: state.apps
+        blisApps: state.apps,
+        trainDialogs: state.trainDialogs
     }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(Webchat);
