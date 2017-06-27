@@ -65,7 +65,7 @@ class TrainDialogsList extends React.Component<any, any> {
         this.props.setWebchatDisplay(true)
     }
     render() {
-        let trainDialogs = this.props.trainDialogs;
+        let trainDialogs = this.props.trainDialogs.all;
         return (
             <div>
                 <TrainingGroundArenaHeader title="Train Dialogs" description="Use this tool to test the current and published versions of your application, to check if you are progressing on the right track ..." />

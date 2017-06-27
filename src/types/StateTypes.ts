@@ -5,7 +5,10 @@ import { BLISApplication } from '../models/Application';
 
 export type ActionState = Action[]
 export type EntityState = Entity[]
-export type TrainDialogState = TrainDialog[]
+export type TrainDialogState = {
+    all: TrainDialog[],
+    current: TrainDialog
+}
 export type AppState = {
     all: BLISApplication[],
     current: BLISApplication
