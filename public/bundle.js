@@ -22710,10 +22710,10 @@ var TrainingGround = (function (_super) {
                     React.createElement("div", { className: "tgNavDiv" },
                         React.createElement(office_ui_fabric_react_1.Nav, { className: "ms-font-m-plus trainingGroundNav", initialSelectedKey: "Dash", selectedKey: this.state.selectedKey, groups: [{
                                     links: [
-                                        { name: 'Dashboard', key: 'Dash', onClick: function () { return _this.setArenaDisplay('Dash'); } },
-                                        { name: 'Entities', key: 'Entities', onClick: function () { return _this.setArenaDisplay('Entities'); } },
-                                        { name: 'Actions', key: 'Actions', onClick: function () { return _this.setArenaDisplay('Actions'); } },
-                                        { name: 'Train Dialogs', key: 'TrainDialogs', onClick: function () { return _this.setArenaDisplay('TrainDialogs'); } }
+                                        { name: 'Dashboard', key: 'Dash', url: null, onClick: function () { return _this.setArenaDisplay('Dash'); } },
+                                        { name: 'Entities', key: 'Entities', url: null, onClick: function () { return _this.setArenaDisplay('Entities'); } },
+                                        { name: 'Actions', key: 'Actions', url: null, onClick: function () { return _this.setArenaDisplay('Actions'); } },
+                                        { name: 'Train Dialogs', key: 'TrainDialogs', url: null, onClick: function () { return _this.setArenaDisplay('TrainDialogs'); } }
                                     ]
                                 }] })),
                     React.createElement("div", { className: "tgbackToAppsDiv" },
@@ -22739,10 +22739,10 @@ var TrainingGround = (function (_super) {
                     React.createElement("div", { className: "tgNavDiv" },
                         React.createElement(office_ui_fabric_react_1.Nav, { className: "ms-font-m-plus trainingGroundNav", initialSelectedKey: "Dash", selectedKey: this.state.selectedKey, groups: [{
                                     links: [
-                                        { name: 'Dashboard', key: 'Dash', onClick: function () { return _this.setArenaDisplay('Dash'); } },
-                                        { name: 'Entities', key: 'Entities', onClick: function () { return _this.setArenaDisplay('Entities'); } },
-                                        { name: 'Actions', key: 'Actions', onClick: function () { return _this.setArenaDisplay('Actions'); } },
-                                        { name: 'Train Dialogs', key: 'TrainDialogs', onClick: function () { return _this.setArenaDisplay('TrainDialogs'); } }
+                                        { name: 'Dashboard', key: 'Dash', url: null, onClick: function () { return _this.setArenaDisplay('Dash'); } },
+                                        { name: 'Entities', key: 'Entities', url: null, onClick: function () { return _this.setArenaDisplay('Entities'); } },
+                                        { name: 'Actions', key: 'Actions', url: null, onClick: function () { return _this.setArenaDisplay('Actions'); } },
+                                        { name: 'Train Dialogs', key: 'TrainDialogs', url: null, onClick: function () { return _this.setArenaDisplay('TrainDialogs'); } }
                                     ]
                                 }] })),
                     React.createElement("div", { className: "tgbackToAppsDiv" },
@@ -22798,11 +22798,14 @@ var Webchat = (function (_super) {
     function Webchat(p) {
         return _super.call(this, p) || this;
     }
+    Webchat.prototype.another = function () {
+        return;
+    };
     Webchat.prototype.render = function () {
         var _this = this;
         console.log('WEBCHAT', this.props);
         return (React.createElement("div", { className: "container" },
-            React.createElement(office_ui_fabric_react_1.CommandButton, { "data-automation-id": 'randomID12', disabled: false, className: 'webchatGoBack', onClick: function () { return _this.props.setWebchatDisplay(false); }, ariaDescription: this.props.buttonText, iconProps: { iconName: 'Back', styles: { color: 'black' } } }),
+            React.createElement(office_ui_fabric_react_1.CommandButton, { "data-automation-id": 'randomID12', disabled: false, className: 'webchatGoBack', onClick: function () { return _this.props.setWebchatDisplay(false); }, ariaDescription: this.props.buttonText, iconProps: { iconName: 'Back' } }),
             React.createElement(office_ui_fabric_react_1.CommandButton, { "data-automation-id": 'randomID11', disabled: false, onClick: function () { return _this.props.toggleMeta(); }, className: 'toggleMeta', ariaDescription: this.props.buttonText, text: this.props.buttonText }),
             React.createElement("span", { className: "ms-font-su goldText" }, "WEBCHAT")));
     };
@@ -23028,10 +23031,8 @@ exports.default = function (state, action) {
         case 'FETCH_TRAIN_DIALOGS':
             return tslib_1.__assign({}, state, { all: action.allTrainDialogs });
         case 'CREATE_TRAIN_DIALOG':
-            console.log(action);
             return tslib_1.__assign({}, state, { all: state.all.concat([action.trainDialog]), current: action.trainDialog });
         case 'SET_CURRENT_TRAIN_DIALOG':
-            console.log(action);
             return tslib_1.__assign({}, state, { current: action.currentTrainDialog });
         case 'DELETE_TRAIN_DIALOG':
         // return [...state, action.payload];

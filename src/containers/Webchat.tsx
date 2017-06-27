@@ -4,8 +4,7 @@ import { setWebchatDisplay } from '../actions/update';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../types';
-import { CommandButton, IIconProps } from 'office-ui-fabric-react';
-
+import { CommandButton, IIconProps, IIconStyles } from 'office-ui-fabric-react';
 interface Props {
     toggleMeta: Function;
     buttonText: string
@@ -13,6 +12,9 @@ interface Props {
 class Webchat extends React.Component<any, any> {
     constructor(p: Props) {
         super(p);
+    }
+    another(){
+        return 
     }
     render() {
         console.log('WEBCHAT', this.props)
@@ -24,7 +26,7 @@ class Webchat extends React.Component<any, any> {
                     className='webchatGoBack'
                     onClick={() => this.props.setWebchatDisplay(false)}
                     ariaDescription={this.props.buttonText}
-                    iconProps={{ iconName: 'Back', styles: {color: 'black'} }}
+                    iconProps={{ iconName: 'Back' }}
                 />
                 <CommandButton
                     data-automation-id='randomID11'
