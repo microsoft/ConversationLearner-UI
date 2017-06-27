@@ -10,6 +10,12 @@ export const setCurrentBLISApp = (app: BLISApplication) : ActionObject => {
         currentBLISApp: app
     }
 }
+export const setCurrentTrainDialog = (trainDialog: TrainDialog) : ActionObject => { 
+    return {
+        type: 'SET_CURRENT_TRAIN_DIALOG',
+        currentTrainDialog: trainDialog
+    }
+}
 export const setBLISAppDisplay = (text: string) : ActionObject => { 
     return {
         type: 'SET_BLIS_APP_DISPLAY',

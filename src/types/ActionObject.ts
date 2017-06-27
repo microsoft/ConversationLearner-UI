@@ -21,6 +21,9 @@ export type UpdateAction = {
     type: 'SET_CURRENT_BLIS_APP',
     currentBLISApp: BLISApplication,
 } | {
+    type: 'SET_CURRENT_TRAIN_DIALOG',
+    currentTrainDialog: TrainDialog,
+} | {
     //used for setting whether the app list or app homepage (trainingGround) is displayed
     type: 'SET_BLIS_APP_DISPLAY',
     setDisplay: string,

@@ -13,6 +13,8 @@ export default (state = initialState, action: ActionObject) => {
             return { ...state, all: action.allTrainDialogs };
         case 'CREATE_TRAIN_DIALOG':
             return { ...state, current: action.trainDialog };
+        case 'SET_CURRENT_TRAIN_DIALOG':
+            return { ...state, current: action.currentTrainDialog };
         case 'DELETE_TRAIN_DIALOG':
         // return [...state, action.payload];
         case 'EDIT_TRAIN_DIALOG':
