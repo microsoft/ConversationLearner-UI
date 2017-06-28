@@ -8,8 +8,8 @@ import { CommandButton, Dialog, DialogFooter, DialogType, ChoiceGroup, TextField
 import { Action, ActionMetadata } from '../models/Action';
 import { ActionTypes } from '../models/Constants';
 import { Entity } from '../models/Entity';
-import { State } from '../types'
-
+import { State } from '../types';
+import EntityCreatorEditor from './EntityCreatorEditor'
 
 interface EntityPickerObject {
     key: string
@@ -35,65 +35,84 @@ class ActionResponseCreatorEditor extends React.Component<any, any> {
             editing: false,
             defaultNegativeEntities: [],
             defaultRequiredEntities: [],
+            entityModalOpen: false,
+            open: false
         }
     }
     componentWillReceiveProps(p: Props) {
-        if (p.action === null) {
-            this.setState({
-                actionTypeVal: 'TEXT',
-                contentVal: '',
-                reqEntitiesVal: [],
-                negEntitiesVal: [],
-                waitVal: false,
-                waitKey: 'waitFalse',
-                availableRequiredEntities: [],
-                availableNegativeEntities: [],
-                editing: false,
-                defaultNegativeEntities: [],
-                defaultRequiredEntities: [],
-            })
-        } else {
-            let initWaitKey: string;
-            if (p.action.waitAction == false) {
-                initWaitKey = 'waitFalse'
-            } else {
-                initWaitKey = 'waitTrue'
-            }
+        if (p.open === true && this.state.open === true) {
             let entities = this.props.entities.map((e: Entity) => {
                 return {
                     key: e.name,
                     name: e.name
                 }
             })
-            let requiredEntities = p.action.positiveEntities.map((e: Entity) => {
-                return {
-                    key: e.name,
-                    name: e.name
-                }
-            })
-            let negativeEntities = p.action.negativeEntities.map((e: Entity) => {
-                return {
-                    key: e.name,
-                    name: e.name
-                }
-            })
             this.setState({
-                actionTypeVal: p.action.actionType,
-                contentVal: p.action.content,
-                reqEntitiesVal: requiredEntities,
-                negEntitiesVal: negativeEntities,
-                waitVal: p.action.waitAction,
-                waitKey: initWaitKey,
                 availableRequiredEntities: entities,
                 availableNegativeEntities: entities,
-                editing: true,
-                defaultNegativeEntities: negativeEntities,
-                defaultRequiredEntities: requiredEntities,
             })
+        } else {
+            if (p.action === null) {
+                this.setState({
+                    actionTypeVal: 'TEXT',
+                    contentVal: '',
+                    reqEntitiesVal: [],
+                    negEntitiesVal: [],
+                    waitVal: false,
+                    waitKey: 'waitFalse',
+                    availableRequiredEntities: [],
+                    availableNegativeEntities: [],
+                    editing: false,
+                    defaultNegativeEntities: [],
+                    defaultRequiredEntities: [],
+                    entityModalOpen: false,
+                    open: p.open
+                })
+            } else {
+                let initWaitKey: string;
+                if (p.action.waitAction == false) {
+                    initWaitKey = 'waitFalse'
+                } else {
+                    initWaitKey = 'waitTrue'
+                }
+                let entities = this.props.entities.map((e: Entity) => {
+                    return {
+                        key: e.name,
+                        name: e.name
+                    }
+                })
+                let requiredEntities = p.action.positiveEntities.map((e: Entity) => {
+                    return {
+                        key: e.name,
+                        name: e.name
+                    }
+                })
+                let negativeEntities = p.action.negativeEntities.map((e: Entity) => {
+                    return {
+                        key: e.name,
+                        name: e.name
+                    }
+                })
+                this.setState({
+                    actionTypeVal: p.action.actionType,
+                    contentVal: p.action.content,
+                    reqEntitiesVal: requiredEntities,
+                    negEntitiesVal: negativeEntities,
+                    waitVal: p.action.waitAction,
+                    waitKey: initWaitKey,
+                    availableRequiredEntities: entities,
+                    availableNegativeEntities: entities,
+                    editing: true,
+                    defaultNegativeEntities: negativeEntities,
+                    defaultRequiredEntities: requiredEntities,
+                    entityModalOpen: false,
+                    open: p.open
+                })
+            }
         }
 
     }
-    componentWillUpdate() {
+    componentDidUpdate() {
         if (this.state.availableRequiredEntities.length != this.props.entities.length) {
             let entities = this.props.entities.map((e: Entity) => {
                 return {
@@ -127,7 +146,8 @@ class ActionResponseCreatorEditor extends React.Component<any, any> {
             waitVal: false,
             waitKey: 'waitFalse',
             availableRequiredEntities: [],
-            availableNegativeEntities: []
+            availableNegativeEntities: [],
+            entityModalOpen: false
         })
     }
     generateGUID(): string {
@@ -216,6 +236,16 @@ class ActionResponseCreatorEditor extends React.Component<any, any> {
             negEntitiesVal: items
         })
     }
+    handleCloseEntityModal() {
+        this.setState({
+            entityModalOpen: false
+        })
+    }
+    handleOpenEntityModal() {
+        this.setState({
+            entityModalOpen: true
+        })
+    }
     render() {
         let actionTypeVals = Object.values(ActionTypes);
         let actionTypeOptions = actionTypeVals.map(v => {
@@ -297,7 +327,7 @@ class ActionResponseCreatorEditor extends React.Component<any, any> {
                             disabled={this.state.editing}
                         />
                     </div>
-                    <div className='modalFooter'>
+                    <div className="modalFooter">
                         <CommandButton
                             data-automation-id='randomID6'
                             disabled={false}
@@ -314,7 +344,17 @@ class ActionResponseCreatorEditor extends React.Component<any, any> {
                             ariaDescription='Cancel'
                             text='Cancel'
                         />
+                        <CommandButton
+                            data-automation-id='randomID7'
+                            className="goldButton actionCreatorCreateEntityButton"
+                            disabled={false}
+                            onClick={this.handleOpenEntityModal.bind(this)}
+                            ariaDescription='Cancel'
+                            text='Entity'
+                            iconProps={{ iconName: 'CirclePlus' }}
+                        />
                     </div>
+                    <EntityCreatorEditor open={this.state.entityModalOpen} entity={null} handleClose={this.handleCloseEntityModal.bind(this)} />
                 </Modal>
             </div>
         );

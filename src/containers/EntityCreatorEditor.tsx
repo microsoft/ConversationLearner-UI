@@ -61,7 +61,6 @@ class EntityCreatorEditor extends React.Component<any, any> {
                 editing: true
             })
         }
-
     }
     generateGUID(): string {
         let d = new Date().getTime();
