@@ -65,7 +65,7 @@ class TrainDialogsList extends React.Component<any, any> {
     handleClick() {
         let turns: Turn[] = [];
         let dialog = new Dialog(turns)
-        let trainDialog = new TrainDialog(this.generateGUID(), dialog, this.props.blisApps.current.modelID)
+        let trainDialog = new TrainDialog(this.generateGUID(), dialog, this.props.blisApps.current.appId)
         this.props.setWebchatDisplay(true)
         this.props.createTrainDialog(trainDialog);
     }

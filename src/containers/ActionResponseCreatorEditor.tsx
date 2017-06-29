@@ -169,7 +169,7 @@ class ActionResponseCreatorEditor extends React.Component<any, any> {
         })
         let internal = this.state.actionTypeVal == 'TEXT' ? true : false;
         let meta = new ActionMetadata(internal, null)
-        let actionToAdd = new Action(randomGUID, this.state.actionTypeVal, this.state.contentVal, negativeEntities, requiredEntities, this.state.waitVal, meta, this.props.blisApps.current.modelID);
+        let actionToAdd = new Action(randomGUID, this.state.actionTypeVal, this.state.contentVal, negativeEntities, requiredEntities, this.state.waitVal, meta, this.props.blisApps.current.appId);
         if (this.state.editing === false) {
             this.props.createAction(actionToAdd);
         } else {

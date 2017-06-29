@@ -74,7 +74,7 @@ class EntityCreatorEditor extends React.Component<any, any> {
     createEntity() {
         let randomGUID = this.generateGUID();
         let meta = new EntityMetadata(this.state.isBucketableVal, this.state.isNegatableVal, false, false);
-        let entityToAdd = new Entity(randomGUID, this.state.entityTypeVal, null, this.state.entityNameVal, meta, this.props.blisApps.current.modelID);
+        let entityToAdd = new Entity(randomGUID, this.state.entityTypeVal, null, this.state.entityNameVal, meta, this.props.blisApps.current.appId);
         if (this.state.editing === false) {
             this.props.createEntity(entityToAdd);
         } else {
@@ -93,7 +93,7 @@ class EntityCreatorEditor extends React.Component<any, any> {
     }
     editEntity(ent: Entity) {
         let meta = new EntityMetadata(this.state.isBucketableVal, this.state.isNegatableVal, false, false);
-        let entityToAdd = new Entity(this.props.entity.id, this.state.entityTypeVal, null, this.state.entityNameVal, meta, this.props.blisApps.current.modelID);
+        let entityToAdd = new Entity(this.props.entity.id, this.state.entityTypeVal, null, this.state.entityNameVal, meta, this.props.blisApps.current.appId);
         this.props.editEntity(entityToAdd);
     }
     nameChanged(text: string) {

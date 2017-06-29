@@ -39,7 +39,7 @@ let columns: IColumn[] = [
     {
         key: 'actions',
         name: 'Actions',
-        fieldName: 'modelID',
+        fieldName: 'appId',
         minWidth: 100,
         maxWidth: 200,
         isResizable: true
@@ -85,9 +85,9 @@ class BLISAppsList extends React.Component<any, any> {
     BLISAppSelected(appName: string) {
         let appSelected = this.props.blisApps.all.find((app: BLISApplication) => app.appName == appName);
         this.props.setCurrentBLISApp(appSelected);
-        this.props.fetchAllActions(appSelected.modelID);
-        this.props.fetchAllEntities(appSelected.modelID);
-        this.props.fetchAllTrainDialogs(appSelected.modelID);
+        this.props.fetchAllActions(appSelected.appId);
+        this.props.fetchAllEntities(appSelected.appId);
+        this.props.fetchAllTrainDialogs(appSelected.appId);
         this.props.setBLISAppDisplay("TrainingGround");
     }
     renderItemColumn(item?: any, index?: number, column?: IColumn) {

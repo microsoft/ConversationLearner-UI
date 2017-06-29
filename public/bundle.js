@@ -7261,8 +7261,8 @@ exports.default = ConfirmDeleteModal;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 var BLISApplication = (function () {
-    function BLISApplication(modelID, appName, luisKey, locale) {
-        this.modelID = modelID;
+    function BLISApplication(appId, appName, luisKey, locale) {
+        this.appId = appId;
         this.appName = appName;
         this.luisKey = luisKey;
         this.locale = locale;
@@ -11438,7 +11438,7 @@ var EntityCreatorEditor = (function (_super) {
     EntityCreatorEditor.prototype.createEntity = function () {
         var randomGUID = this.generateGUID();
         var meta = new Entity_1.EntityMetadata(this.state.isBucketableVal, this.state.isNegatableVal, false, false);
-        var entityToAdd = new Entity_1.Entity(randomGUID, this.state.entityTypeVal, null, this.state.entityNameVal, meta, this.props.blisApps.current.modelID);
+        var entityToAdd = new Entity_1.Entity(randomGUID, this.state.entityTypeVal, null, this.state.entityNameVal, meta, this.props.blisApps.current.appId);
         if (this.state.editing === false) {
             this.props.createEntity(entityToAdd);
         }
@@ -11458,7 +11458,7 @@ var EntityCreatorEditor = (function (_super) {
     };
     EntityCreatorEditor.prototype.editEntity = function (ent) {
         var meta = new Entity_1.EntityMetadata(this.state.isBucketableVal, this.state.isNegatableVal, false, false);
-        var entityToAdd = new Entity_1.Entity(this.props.entity.id, this.state.entityTypeVal, null, this.state.entityNameVal, meta, this.props.blisApps.current.modelID);
+        var entityToAdd = new Entity_1.Entity(this.props.entity.id, this.state.entityTypeVal, null, this.state.entityNameVal, meta, this.props.blisApps.current.appId);
         this.props.editEntity(entityToAdd);
     };
     EntityCreatorEditor.prototype.nameChanged = function (text) {
@@ -21559,7 +21559,7 @@ var ActionResponseCreatorEditor = (function (_super) {
         });
         var internal = this.state.actionTypeVal == 'TEXT' ? true : false;
         var meta = new Action_1.ActionMetadata(internal, null);
-        var actionToAdd = new Action_1.Action(randomGUID, this.state.actionTypeVal, this.state.contentVal, negativeEntities, requiredEntities, this.state.waitVal, meta, this.props.blisApps.current.modelID);
+        var actionToAdd = new Action_1.Action(randomGUID, this.state.actionTypeVal, this.state.contentVal, negativeEntities, requiredEntities, this.state.waitVal, meta, this.props.blisApps.current.appId);
         if (this.state.editing === false) {
             this.props.createAction(actionToAdd);
         }
@@ -21973,7 +21973,7 @@ var AppSettings = (function (_super) {
         var _this = _super.call(this, p) || this;
         _this.state = {
             localeVal: '',
-            modelIDVal: '',
+            appIdVal: '',
             appNameVal: '',
             luisKeyVal: '',
             edited: false
@@ -21985,7 +21985,7 @@ var AppSettings = (function (_super) {
         var current = this.props.blisApps.current;
         this.setState({
             localeVal: current.locale,
-            modelIDVal: current.modelID,
+            appIdVal: current.appId,
             appNameVal: current.appName,
             luisKeyVal: current.luisKey
         });
@@ -21993,12 +21993,12 @@ var AppSettings = (function (_super) {
     AppSettings.prototype.componentDidUpdate = function () {
         var current = this.props.blisApps.current;
         if (this.state.edited == false && (this.state.localeVal !== current.locale ||
-            this.state.modelIDVal !== current.modelID ||
+            this.state.appIdVal !== current.appId ||
             this.state.appNameVal !== current.appName ||
             this.state.luisKeyVal !== current.luisKey)) {
             this.setState({
                 localeVal: current.locale,
-                modelIDVal: current.modelID,
+                appIdVal: current.appId,
                 appNameVal: current.appName,
                 luisKeyVal: current.luisKey
             });
@@ -22014,7 +22014,7 @@ var AppSettings = (function (_super) {
         var current = this.props.blisApps.current;
         this.setState({
             localeVal: current.locale,
-            modelIDVal: current.modelID,
+            appIdVal: current.appId,
             appNameVal: current.appName,
             luisKeyVal: current.luisKey,
             edited: false
@@ -22022,11 +22022,11 @@ var AppSettings = (function (_super) {
     };
     AppSettings.prototype.editApp = function () {
         var current = this.props.blisApps.current;
-        var appToAdd = new Application_1.BLISApplication(current.modelID, current.appName, this.state.luisKeyVal, current.locale);
+        var appToAdd = new Application_1.BLISApplication(current.appId, current.appName, this.state.luisKeyVal, current.locale);
         this.props.editBLISApplication(appToAdd);
         this.setState({
             localeVal: current.locale,
-            modelIDVal: current.modelID,
+            appIdVal: current.appId,
             appNameVal: current.appName,
             luisKeyVal: current.luisKey,
             edited: false
@@ -22042,7 +22042,7 @@ var AppSettings = (function (_super) {
         return (React.createElement("div", null,
             React.createElement(TrainingGroundArenaHeader_1.default, { title: "Settings", description: "Control your application versions, who has access to it and whether it is public or private...." }),
             React.createElement(office_ui_fabric_react_1.TextField, { className: "ms-font-m-plus", disabled: true, label: "Name", value: this.state.appNameVal }),
-            React.createElement(office_ui_fabric_react_1.TextField, { className: "ms-font-m-plus", disabled: true, label: "Model ID", value: this.state.modelIDVal }),
+            React.createElement(office_ui_fabric_react_1.TextField, { className: "ms-font-m-plus", disabled: true, label: "Model ID", value: this.state.appIdVal }),
             React.createElement(office_ui_fabric_react_1.TextField, { className: "ms-font-m-plus", onChanged: function (text) { return _this.luisKeyChanged(text); }, label: "LUIS Key", value: this.state.luisKeyVal }),
             React.createElement(office_ui_fabric_react_1.Label, { className: "ms-font-m-plus" }, "Locale"),
             React.createElement(office_ui_fabric_react_1.Dropdown, { className: "ms-font-m-plus", defaultSelectedKey: this.state.localeVal, options: options, selectedKey: this.state.localeVal, disabled: true }),
@@ -22279,7 +22279,7 @@ var columns = [
     {
         key: 'actions',
         name: 'Actions',
-        fieldName: 'modelID',
+        fieldName: 'appId',
         minWidth: 100,
         maxWidth: 200,
         isResizable: true
@@ -22326,9 +22326,9 @@ var BLISAppsList = (function (_super) {
     BLISAppsList.prototype.BLISAppSelected = function (appName) {
         var appSelected = this.props.blisApps.all.find(function (app) { return app.appName == appName; });
         this.props.setCurrentBLISApp(appSelected);
-        this.props.fetchAllActions(appSelected.modelID);
-        this.props.fetchAllEntities(appSelected.modelID);
-        this.props.fetchAllTrainDialogs(appSelected.modelID);
+        this.props.fetchAllActions(appSelected.appId);
+        this.props.fetchAllEntities(appSelected.appId);
+        this.props.fetchAllTrainDialogs(appSelected.appId);
         this.props.setBLISAppDisplay("TrainingGround");
     };
     BLISAppsList.prototype.renderItemColumn = function (item, index, column) {
@@ -22634,7 +22634,7 @@ var TrainDialogsList = (function (_super) {
     TrainDialogsList.prototype.handleClick = function () {
         var turns = [];
         var dialog = new TrainDialog_1.Dialog(turns);
-        var trainDialog = new TrainDialog_1.TrainDialog(this.generateGUID(), dialog, this.props.blisApps.current.modelID);
+        var trainDialog = new TrainDialog_1.TrainDialog(this.generateGUID(), dialog, this.props.blisApps.current.appId);
         this.props.setWebchatDisplay(true);
         this.props.createTrainDialog(trainDialog);
     };
@@ -22988,11 +22988,11 @@ exports.default = function (state, action) {
         case 'SET_CURRENT_BLIS_APP':
             return tslib_1.__assign({}, state, { current: action.currentBLISApp });
         case 'DELETE_BLIS_APPLICATION':
-            return tslib_1.__assign({}, state, { all: state.all.filter(function (app) { return app.modelID !== action.blisAppGUID; }) });
+            return tslib_1.__assign({}, state, { all: state.all.filter(function (app) { return app.appId !== action.blisAppGUID; }) });
         case 'EDIT_BLIS_APPLICATION':
             var index = 0;
             for (var i = 0; i < state.all.length; i++) {
-                if (state.all[i].modelID == action.blisApp.modelID) {
+                if (state.all[i].appId == action.blisApp.appId) {
                     index = i;
                 }
             }
