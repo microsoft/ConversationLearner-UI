@@ -207,6 +207,25 @@
   margin-top: 2%;
   height: 100%;
 }
+.goldText{
+  position: relative;
+  float: left;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #ffb900
+}
+.saveAppChangesButtonsDiv{
+  width: 100%;
+  display: block;
+  margin-top: 1em;
+}
+.actionCreatorCreateEntityButton{
+  float: right;
+}
+.webchatHeader{
+  width: 100%;
+}
 .webchatMetaShrink{
   width: 35%;
   height: 100%;
@@ -223,32 +242,32 @@
 .toggleMeta{
   background-color: #ffb900 !important;
   color:black !important;
-  padding: 0em 2em !important;
+  padding: 0em 2em !important; 
   float: right;
-  position: relative
-}
-.goldText{
-  position: relative;
-  float: left;
-  top: 30%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  color: #ffb900
-}
-.saveAppChangesButtonsDiv{
-  width: 100%;
-  display: block;
-  margin-top: 1em;
 }
 .webchatGoBack{
   background-color: #ffb900 !important;
   padding: 0em 2em !important;
-  float: left;
-  position: relative
+  display: inline-block;
+  vertical-align: top;
 }
 .webchatGoBack *{
   color:black !important;
 }
-.actionCreatorCreateEntityButton{
-  float: right;
+.toggleTrainDialog{
+  background-color: #323232 !important;
+  padding: 0em 2em !important;
+  margin-top: 20em;
 }
+.toggleTrainDialogForward{
+  float: right;
+  height: 80%;
+}
+.toggleTrainDialogBack{
+  float: left;
+  height: 80%;
+}
+.toggleTrainDialog *{
+  color: #ffb900 !important;
+}
+/*command buttons have 5em width*/

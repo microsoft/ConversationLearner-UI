@@ -2642,6 +2642,12 @@ exports.editTrainDialog = function (trainDialog) {
         trainDialog: trainDialog
     };
 };
+exports.toggleTrainDialog = function (forward) {
+    return {
+        type: "TOGGLE_TRAIN_DIALOG",
+        forward: forward
+    };
+};
 
 
 /***/ }),
@@ -22859,22 +22865,26 @@ var Webchat = (function (_super) {
     function Webchat(p) {
         return _super.call(this, p) || this;
     }
-    Webchat.prototype.another = function () {
-        return;
-    };
     Webchat.prototype.render = function () {
         var _this = this;
+        console.log(this.props.trainDialogs.current);
         return (React.createElement("div", { className: "container" },
-            React.createElement(office_ui_fabric_react_1.CommandButton, { "data-automation-id": 'randomID12', disabled: false, className: 'webchatGoBack', onClick: function () { return _this.props.setWebchatDisplay(false); }, ariaDescription: this.props.buttonText, iconProps: { iconName: 'Back' } }),
-            React.createElement(office_ui_fabric_react_1.CommandButton, { "data-automation-id": 'randomID11', disabled: false, onClick: function () { return _this.props.toggleMeta(); }, className: 'toggleMeta', ariaDescription: this.props.buttonText, text: this.props.buttonText }),
-            React.createElement("span", { className: "ms-font-su goldText" }, "WEBCHAT")));
+            React.createElement("div", { className: "webchatHeader" },
+                React.createElement(office_ui_fabric_react_1.CommandButton, { "data-automation-id": 'randomID12', disabled: false, className: 'webchatGoBack', onClick: function () { return _this.props.setWebchatDisplay(false); }, ariaDescription: this.props.buttonText, iconProps: { iconName: 'Cancel' } }),
+                React.createElement(office_ui_fabric_react_1.CommandButton, { "data-automation-id": 'randomID11', disabled: false, onClick: function () { return _this.props.toggleMeta(); }, className: 'toggleMeta', ariaDescription: this.props.buttonText, text: this.props.buttonText })),
+            React.createElement("div", { className: "toggleTrainDialogBack" },
+                React.createElement(office_ui_fabric_react_1.CommandButton, { "data-automation-id": 'randomID14', disabled: false, className: 'toggleTrainDialog', onClick: function () { return _this.props.toggleTrainDialog(false); }, ariaDescription: this.props.buttonText, iconProps: { iconName: 'Back' } })),
+            React.createElement("div", null),
+            React.createElement("div", { className: "toggleTrainDialogForward" },
+                React.createElement(office_ui_fabric_react_1.CommandButton, { "data-automation-id": 'randomID13', disabled: false, onClick: function () { return _this.props.toggleTrainDialog(true); }, className: 'toggleTrainDialog', ariaDescription: this.props.buttonText, iconProps: { iconName: 'Forward' } }))));
     };
     return Webchat;
 }(React.Component));
 var mapDispatchToProps = function (dispatch) {
     return redux_1.bindActionCreators({
         createBLISApplication: create_1.createBLISApplication,
-        setWebchatDisplay: update_1.setWebchatDisplay
+        setWebchatDisplay: update_1.setWebchatDisplay,
+        toggleTrainDialog: update_1.toggleTrainDialog
     }, dispatch);
 };
 var mapStateToProps = function (state) {
@@ -23094,6 +23104,31 @@ exports.default = function (state, action) {
             return tslib_1.__assign({}, state, { all: state.all.concat([action.trainDialog]), current: action.trainDialog });
         case 'SET_CURRENT_TRAIN_DIALOG':
             return tslib_1.__assign({}, state, { current: action.currentTrainDialog });
+        case "TOGGLE_TRAIN_DIALOG":
+            var index = 0;
+            for (var i = 0; i < state.all.length; i++) {
+                if (state.all[i].id == state.current.id) {
+                    index = i;
+                }
+            }
+            if (index == 0) {
+                if (action.forward === false) {
+                    return tslib_1.__assign({}, state, { current: state.all[state.all.length - 1] });
+                }
+            }
+            if (index == state.all.length - 1) {
+                if (action.forward === true) {
+                    return tslib_1.__assign({}, state, { current: state.all[0] });
+                }
+            }
+            var newState = void 0;
+            if (action.forward === true) {
+                newState = tslib_1.__assign({}, state, { current: state.all[index + 1] });
+            }
+            else {
+                newState = tslib_1.__assign({}, state, { current: state.all[index - 1] });
+            }
+            return newState;
         case 'DELETE_TRAIN_DIALOG':
         // return [...state, action.payload];
         case 'EDIT_TRAIN_DIALOG':

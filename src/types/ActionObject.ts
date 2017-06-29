@@ -31,6 +31,9 @@ export type UpdateAction = {
     //used for setting whether the app list or app homepage (trainingGround) is displayed
     type: 'SET_WEBCHAT_DISPLAY',
     setWebchatDisplay: boolean,
+} | {
+    type: "TOGGLE_TRAIN_DIALOG",
+    forward: boolean
 }
 
 export type FetchAction = {

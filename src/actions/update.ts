@@ -58,3 +58,9 @@ export const editTrainDialog = (trainDialog: TrainDialog) : ActionObject => {
         trainDialog: trainDialog
     }
 }
+export const toggleTrainDialog = (forward: boolean) => {
+    return {
+        type: "TOGGLE_TRAIN_DIALOG",
+        forward: forward
+    }
+}
