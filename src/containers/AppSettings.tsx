@@ -50,6 +50,12 @@ class AppSettings extends React.Component<any, any> {
             })
         }
     }
+    appNameChanged(text: string) {
+        this.setState({
+            appNameVal: text,
+            edited: true
+        })
+    }
     luisKeyChanged(text: string) {
         this.setState({
             luisKeyVal: text,
@@ -68,7 +74,7 @@ class AppSettings extends React.Component<any, any> {
     }
     editApp() {
         let current: BLISApplication = this.props.blisApps.current
-        let appToAdd = new BLISApplication(current.appId, current.appName, this.state.luisKeyVal, current.locale);
+        let appToAdd = new BLISApplication(current.appId, this.state.appNameVal, this.state.luisKeyVal, current.locale);
         this.props.editBLISApplication(appToAdd);
         this.setState({
             localeVal: current.locale,
@@ -87,7 +93,7 @@ class AppSettings extends React.Component<any, any> {
         return (
             <div>
                 <TrainingGroundArenaHeader title="Settings" description="Control your application versions, who has access to it and whether it is public or private...." />
-                <TextField className="ms-font-m-plus" disabled={true} label="Name" value={this.state.appNameVal} />
+                <TextField className="ms-font-m-plus" onChanged={(text) => this.appNameChanged(text)} label="Name" value={this.state.appNameVal} />
                 <TextField className="ms-font-m-plus" disabled={true} label="Model ID" value={this.state.appIdVal} />
                 <TextField className="ms-font-m-plus" onChanged={(text) => this.luisKeyChanged(text)} label="LUIS Key" value={this.state.luisKeyVal} />
                 <Label className="ms-font-m-plus">Locale</Label>

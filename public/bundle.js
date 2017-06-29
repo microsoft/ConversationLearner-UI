@@ -22004,6 +22004,12 @@ var AppSettings = (function (_super) {
             });
         }
     };
+    AppSettings.prototype.appNameChanged = function (text) {
+        this.setState({
+            appNameVal: text,
+            edited: true
+        });
+    };
     AppSettings.prototype.luisKeyChanged = function (text) {
         this.setState({
             luisKeyVal: text,
@@ -22022,7 +22028,7 @@ var AppSettings = (function (_super) {
     };
     AppSettings.prototype.editApp = function () {
         var current = this.props.blisApps.current;
-        var appToAdd = new Application_1.BLISApplication(current.appId, current.appName, this.state.luisKeyVal, current.locale);
+        var appToAdd = new Application_1.BLISApplication(current.appId, this.state.appNameVal, this.state.luisKeyVal, current.locale);
         this.props.editBLISApplication(appToAdd);
         this.setState({
             localeVal: current.locale,
@@ -22041,7 +22047,7 @@ var AppSettings = (function (_super) {
         var buttonsDivStyle = this.state.edited == true ? styles.shown : styles.hidden;
         return (React.createElement("div", null,
             React.createElement(TrainingGroundArenaHeader_1.default, { title: "Settings", description: "Control your application versions, who has access to it and whether it is public or private...." }),
-            React.createElement(office_ui_fabric_react_1.TextField, { className: "ms-font-m-plus", disabled: true, label: "Name", value: this.state.appNameVal }),
+            React.createElement(office_ui_fabric_react_1.TextField, { className: "ms-font-m-plus", onChanged: function (text) { return _this.appNameChanged(text); }, label: "Name", value: this.state.appNameVal }),
             React.createElement(office_ui_fabric_react_1.TextField, { className: "ms-font-m-plus", disabled: true, label: "Model ID", value: this.state.appIdVal }),
             React.createElement(office_ui_fabric_react_1.TextField, { className: "ms-font-m-plus", onChanged: function (text) { return _this.luisKeyChanged(text); }, label: "LUIS Key", value: this.state.luisKeyVal }),
             React.createElement(office_ui_fabric_react_1.Label, { className: "ms-font-m-plus" }, "Locale"),
