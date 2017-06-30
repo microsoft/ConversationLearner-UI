@@ -9,7 +9,7 @@ export interface Props {
     title: string;
 }
 
-const ConfirmDeleteModal = (props: Props) => {
+const ConfirmDeleteModal: React.SFC<Props> = (props: Props) => {
     return (
         <Modal
             isOpen={props.open}

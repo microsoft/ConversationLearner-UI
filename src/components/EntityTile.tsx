@@ -3,7 +3,7 @@ import { Entity } from '../models/Entity'
 export interface Props {
     item: Entity
 }
-const EntityTile = (props: Props) => {
+const EntityTile: React.SFC<Props> = (props: Props) => {
     return (
         <div className='ms-ListItem is-selectable'>
             <span className='ms-ListItem-primaryText'>{props.item.name}</span>

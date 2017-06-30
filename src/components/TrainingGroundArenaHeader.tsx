@@ -4,7 +4,7 @@ export interface Props {
     title: string;
     description: string;
 }
-const TrainingGroundArenaHeader = (props: Props) => {
+const TrainingGroundArenaHeader: React.SFC<Props> = (props: Props) => {
     return (
         <div className='trainingGroundArenaHeader'>
             <span className="ms-font-xxl trainingGroundHeaderContent">{props.title}</span>
