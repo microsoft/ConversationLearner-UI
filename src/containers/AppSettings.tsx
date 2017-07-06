@@ -94,7 +94,7 @@ class AppSettings extends React.Component<any, any> {
             <div>
                 <TrainingGroundArenaHeader title="Settings" description="Control your application versions, who has access to it and whether it is public or private...." />
                 <TextField className="ms-font-m-plus" onChanged={(text) => this.appNameChanged(text)} label="Name" value={this.state.appNameVal} />
-                <TextField className="ms-font-m-plus" disabled={true} label="Model ID" value={this.state.appIdVal} />
+                <TextField className="ms-font-m-plus" disabled={true} label="App ID" value={this.state.appIdVal} />
                 <TextField className="ms-font-m-plus" onChanged={(text) => this.luisKeyChanged(text)} label="LUIS Key" value={this.state.luisKeyVal} />
                 <Label className="ms-font-m-plus">Locale</Label>
                 <Dropdown
