@@ -6,7 +6,7 @@ import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, 
 
 export const fetchApplications = (): ActionObject => {
     //will need to make a call to BLIS to get all apps for this user
-    let apps: BlisAppList;
+    let apps: BlisAppBase[];
     return {
         type: 'FETCH_APPLICATIONS',
         allBlisApps: apps
@@ -15,7 +15,7 @@ export const fetchApplications = (): ActionObject => {
 
 export const fetchAllEntities = (blisAppID: string): ActionObject => {
     //will need to make a call to BLIS to get all entities for this app
-    let entities: EntityList;
+    let entities: EntityBase[];
     return {
         type: 'FETCH_ENTITIES',
         allEntities: entities
@@ -24,7 +24,7 @@ export const fetchAllEntities = (blisAppID: string): ActionObject => {
 
 export const fetchAllActions = (blisAppID: string): ActionObject => {
     //will need to make a call to BLIS to get all actions for this app
-    let actions: ActionList;
+    let actions: ActionBase[];
     return {
         type: 'FETCH_ACTIONS',
         allActions: actions

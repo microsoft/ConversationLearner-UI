@@ -1,6 +1,6 @@
-import { BLISApplication } from '../models/Application'
 import { AppState } from '../types'
 import { ActionObject } from '../types'
+import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, ActionMetaData, ActionList, ActionTypes } from 'blis-models';
 
 const initialState: AppState = {
     all: [],

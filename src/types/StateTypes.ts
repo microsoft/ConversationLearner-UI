@@ -1,17 +1,15 @@
-import { Action } from '../models/Action'
 import { TrainDialog } from '../models/TrainDialog'
-import { Entity } from '../models/Entity'
-import { BLISApplication } from '../models/Application';
+import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, ActionMetaData, ActionList, ActionTypes } from 'blis-models';
 
-export type ActionState = Action[]
-export type EntityState = Entity[]
+export type ActionState = ActionBase[]
+export type EntityState = EntityBase[]
 export type TrainDialogState = {
     all: TrainDialog[],
     current: TrainDialog
 }
 export type AppState = {
-    all: BLISApplication[],
-    current: BLISApplication
+    all: BlisAppBase[],
+    current: BlisAppBase
 }
 export type DisplayState = {
     myAppsDisplay: string,
