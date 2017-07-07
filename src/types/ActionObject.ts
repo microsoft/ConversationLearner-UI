@@ -1,25 +1,22 @@
-import { BLISApplication } from '../models/Application';
-import { Action, ActionMetadata } from '../models/Action';
-import { Entity, EntityMetadata } from '../models/Entity';
 import { TrainDialog, Dialog, Turn, Input } from '../models/TrainDialog';
-import { ActionTypes, EntityTypes } from '../models/Constants'; 
+import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, ActionMetaData, ActionList, ActionTypes } from 'blis-models'
 
 
 export type UpdateAction = {
     type: 'EDIT_BLIS_APPLICATION',
-    blisApp: BLISApplication,
+    blisApp: BlisAppBase,
 } | {
     type: 'EDIT_ENTITY',
-    entity: Entity,
+    entity: EntityBase,
 } | {
     type: 'EDIT_ACTION',
-    action: Action,
+    action: ActionBase,
 } | {
     type: 'EDIT_TRAIN_DIALOG',
     trainDialog: TrainDialog,
 } | {
     type: 'SET_CURRENT_BLIS_APP',
-    currentBLISApp: BLISApplication,
+    currentBLISApp: BlisAppBase,
 } | {
     type: 'SET_CURRENT_TRAIN_DIALOG',
     currentTrainDialog: TrainDialog,
@@ -38,13 +35,13 @@ export type UpdateAction = {
 
 export type FetchAction = {
     type: 'FETCH_APPLICATIONS',
-    allBlisApps: BLISApplication[],
+    allBlisApps: BlisAppList,
 } | {
     type: 'FETCH_ENTITIES',
-    allEntities: Entity[],
+    allEntities: EntityList,
 } | {
     type: 'FETCH_ACTIONS',
-    allActions: Action[],
+    allActions: ActionList
 } | {
     type: 'FETCH_TRAIN_DIALOGS',
     allTrainDialogs: TrainDialog[],
@@ -52,13 +49,13 @@ export type FetchAction = {
 
 export type CreateAction = {
     type: 'CREATE_BLIS_APPLICATION',
-    blisApp: BLISApplication,
+    blisApp: BlisAppBase,
 } | {
     type: 'CREATE_ENTITY',
-    entity: Entity,
+    entity: EntityBase,
 } | {
     type: 'CREATE_ACTION',
-    action: Action,
+    action: ActionBase,
 } | {
     type: 'CREATE_TRAIN_DIALOG',
     trainDialog: TrainDialog,
