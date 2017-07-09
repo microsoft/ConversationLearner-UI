@@ -1,13 +1,14 @@
 import { ActionObject } from '../types'
 import { TrainDialog } from '../models/TrainDialog'
 import { TrainDialogState } from '../types'
+import { Reducer } from 'redux'
 
 const initialState: TrainDialogState = {
     all: [],
     current: null
 };
 
-export default (state = initialState, action: ActionObject) => {
+const trainDialogsReducer: Reducer<TrainDialogState> =  (state = initialState, action: ActionObject) => {
     switch (action.type) {
         case 'FETCH_TRAIN_DIALOGS':
             return { ...state, all: action.allTrainDialogs };
@@ -47,3 +48,4 @@ export default (state = initialState, action: ActionObject) => {
             return state;
     }
 }
+export default trainDialogsReducer;

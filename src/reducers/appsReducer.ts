@@ -1,12 +1,14 @@
 import { AppState } from '../types'
 import { ActionObject } from '../types'
 import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, ActionMetaData, ActionList, ActionTypes } from 'blis-models';
+import { Reducer } from 'redux'
 
 const initialState: AppState = {
     all: [],
     current: null
 };
-export default (state = initialState, action: ActionObject) => {
+
+const appsReducer: Reducer<AppState> = (state = initialState, action: ActionObject) => {
     switch (action.type) {
         case 'FETCH_APPLICATIONS':
             return { ...state, all: action.allBlisApps };
@@ -34,3 +36,4 @@ export default (state = initialState, action: ActionObject) => {
             return state;
     }
 }
+export default appsReducer;
