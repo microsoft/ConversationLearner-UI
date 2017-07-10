@@ -1,5 +1,8 @@
-import axios, { AxiosPromise, AxiosRequestConfig } from 'axios'
+import 'rxjs'
+import axios, { AxiosResponse, AxiosRequestConfig } from 'axios'
 import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, ActionMetaData, ActionList, ActionTypes } from 'blis-models'
+import * as Rx from 'rxjs';
+import {Observable, Observer} from 'rxjs'
 
 const config: AxiosRequestConfig = {
 	headers: {
@@ -9,59 +12,59 @@ const config: AxiosRequestConfig = {
 
 const rootUrl: string = "http://localhost:5000/";
 
-export const getAllBlisApps = (): AxiosPromise => {
+export const getAllBlisApps = (): Observable<AxiosResponse> => {
 	const getAppsRoute: string = "apps"
-	return axios.get(rootUrl.concat(getAppsRoute), config)
+	return Rx.Observable.fromPromise(axios.get(rootUrl.concat(getAppsRoute), config))
 };
-export const getBlisApp = (appId: string): AxiosPromise => {
+export const getBlisApp = (appId: string): Observable<AxiosResponse> => {
 	let getAppRoute: string = `app/${appId}`
-	return axios.get(rootUrl.concat(getAppRoute), config)
+	return Rx.Observable.fromPromise(axios.get(rootUrl.concat(getAppRoute), config))
 };
-export const getAllEntitiesForBlisApp = (appId: string): AxiosPromise => {
+export const getAllEntitiesForBlisApp = (appId: string): Observable<AxiosResponse> => {
 	let getEntitiesForAppRoute: string = `app/${appId}/entities`
-	return axios.get(rootUrl.concat(getEntitiesForAppRoute), config)
+	return Rx.Observable.fromPromise(axios.get(rootUrl.concat(getEntitiesForAppRoute), config))
 };
-export const getBlisEntity = (appId: string, entityId: string): AxiosPromise => {
+export const getBlisEntity = (appId: string, entityId: string): Observable<AxiosResponse> => {
 	let getEntityRoute: string = `app/${appId}/entity/${entityId}`
-	return axios.get(rootUrl.concat(getEntityRoute), config)
+	return Rx.Observable.fromPromise(axios.get(rootUrl.concat(getEntityRoute), config))
 };
-export const getAllActionsForBlisApp = (appId: string): AxiosPromise => {
+export const getAllActionsForBlisApp = (appId: string): Observable<AxiosResponse> => {
 	let getActionsForAppRoute: string = `app/${appId}/actions`;
-	return axios.get(rootUrl.concat(getActionsForAppRoute), config)
+	return Rx.Observable.fromPromise(axios.get(rootUrl.concat(getActionsForAppRoute), config))
 };
-export const getBlisAction = (appId: string, actionId: string): AxiosPromise => {
+export const getBlisAction = (appId: string, actionId: string): Observable<AxiosResponse> => {
 	let getActionRoute: string = `app/${appId}/action/${actionId}`
-	return axios.get(rootUrl.concat(getActionRoute), config)
+	return Rx.Observable.fromPromise(axios.get(rootUrl.concat(getActionRoute), config))
 };
-export const createBlisApp = (blisApp: BlisAppBase): AxiosPromise => {
+export const createBlisApp = (blisApp: BlisAppBase): Observable<AxiosResponse> => {
 	let addAppRoute: string = `app`    //takes an app in the body
-	return axios.get(rootUrl.concat(addAppRoute), config)
+	return Rx.Observable.fromPromise(axios.get(rootUrl.concat(addAppRoute), config))
 };
-export const createBlisEntity = (appId: string, entity: EntityBase): AxiosPromise => {
+export const createBlisEntity = (appId: string, entity: EntityBase): Observable<AxiosResponse> => {
 	let addEntityRoute: string = `app/${appId}/entity` //takes an entity in the body
-	return axios.get(rootUrl.concat(addEntityRoute), config)
+	return Rx.Observable.fromPromise(axios.get(rootUrl.concat(addEntityRoute), config))
 };
-export const createBlisAction = (appId: string, action: ActionBase): AxiosPromise => {
+export const createBlisAction = (appId: string, action: ActionBase): Observable<AxiosResponse> => {
 	let addActionRoute: string = `app/${appId}/action` //takes an action in the body
-	return axios.get(rootUrl.concat(addActionRoute), config)
+	return Rx.Observable.fromPromise(axios.get(rootUrl.concat(addActionRoute), config))
 };
-export const deleteBlisApp = (appId: string, blisApp: BlisAppBase): AxiosPromise => {
+export const deleteBlisApp = (appId: string, blisApp: BlisAppBase): Observable<AxiosResponse> => {
 	let deleteAppRoute: string = `app/${appId}` //takes an app in the body
-	return axios.get(rootUrl.concat(deleteAppRoute), config)
+	return Rx.Observable.fromPromise(axios.get(rootUrl.concat(deleteAppRoute), config))
 };
-export const deleteBlisEntity = (appId: string, entity: EntityBase): AxiosPromise => {
+export const deleteBlisEntity = (appId: string, entity: EntityBase): Observable<AxiosResponse> => {
 	let deleteEntityRoute: string = `app/${appId}/entity` //takes an entity in the body
-	return axios.get(rootUrl.concat(deleteEntityRoute), config)
+	return Rx.Observable.fromPromise(axios.get(rootUrl.concat(deleteEntityRoute), config))
 };
-export const deleteBlisAction = (appId: string, actionId: string, action: ActionBase): AxiosPromise => {
+export const deleteBlisAction = (appId: string, actionId: string, action: ActionBase): Observable<AxiosResponse> => {
 	let deleteActionRoute: string = `app/${appId}/action/${actionId}` //takes an action in the body
-	return axios.get(rootUrl.concat(deleteActionRoute), config)
+	return Rx.Observable.fromPromise(axios.get(rootUrl.concat(deleteActionRoute), config))
 };
-export const editBlisApp = (appId: string, blisApp: BlisAppBase): AxiosPromise => {
+export const editBlisApp = (appId: string, blisApp: BlisAppBase): Observable<AxiosResponse> => {
 	let editAppRoute: string = `app/${appId}`//takes an app in the body
-	return axios.get(rootUrl.concat(editAppRoute), config)
+	return Rx.Observable.fromPromise(axios.get(rootUrl.concat(editAppRoute), config))
 };
-export const editBlisAction = (appId: string, actionId: string, action: ActionBase): AxiosPromise => {
+export const editBlisAction = (appId: string, actionId: string, action: ActionBase): Observable<AxiosResponse> => {
 	let editActionRoute: string = `app/${appId}/action/${actionId}` //takes an action in the body
-	return axios.get(rootUrl.concat(editActionRoute), config)
+	return Rx.Observable.fromPromise(axios.get(rootUrl.concat(editActionRoute), config))
 };
