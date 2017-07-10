@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { fetchAllActions, fetchAllEntities, fetchApplications, fetchAllTrainDialogs } from '../actions/fetch';
-import { setCurrentBLISApp, setBLISAppDisplay } from '../actions/update';
-import { deleteBLISApplication } from '../actions/delete'
+import { fetchAllActions, fetchAllEntities, fetchApplications, fetchAllTrainDialogs } from '../actions/fetchActions';
+import { setCurrentBLISApp, setBLISAppDisplay } from '../actions/updateActions';
+import { deleteBLISApplication } from '../actions/deleteActions'
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import BLISAppCreator from './BLISAppCreator'

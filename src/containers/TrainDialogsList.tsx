@@ -5,8 +5,8 @@ import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader'
 import { DetailsList, CommandButton, Link, CheckboxVisibility, IColumn, SearchBox } from 'office-ui-fabric-react';
 import { TrainDialog, Dialog, Turn, Input } from '../models/TrainDialog';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
-import { setWebchatDisplay, setCurrentTrainDialog } from '../actions/update'
-import { createTrainDialog } from '../actions/create'
+import { setWebchatDisplay, setCurrentTrainDialog } from '../actions/updateActions'
+import { createTrainDialog } from '../actions/createActions'
 import { State } from '../types'
 
 let columns: IColumn[] = [

@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { createAction } from '../actions/create';
-import { editAction } from '../actions/update';
+import { createAction } from '../actions/createActions';
+import { editAction } from '../actions/updateActions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';

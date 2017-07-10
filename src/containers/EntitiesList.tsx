@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader';
 import EntityCreatorEditor from './EntityCreatorEditor';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
-import { deleteEntity } from '../actions/delete'
+import { deleteEntity } from '../actions/deleteActions'
 import { DetailsList, CommandButton, Link, CheckboxVisibility, IColumn, SearchBox } from 'office-ui-fabric-react';
 import { Entity } from '../models/Entity';
 import { State } from '../types'

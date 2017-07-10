@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { createBLISApplication } from '../actions/create';
-import { setWebchatDisplay, toggleTrainDialog } from '../actions/update';
+import { createBLISApplication } from '../actions/createActions';
+import { setWebchatDisplay, toggleTrainDialog } from '../actions/updateActions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../types';

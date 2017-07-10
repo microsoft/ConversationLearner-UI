@@ -1,12 +1,12 @@
 import * as React from 'react';
 import axios from 'axios';
-import { createBLISApplication } from '../actions/create';
+import { createBLISApplication } from '../actions/createActions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { CommandButton, Dialog, DialogFooter, DialogType, ChoiceGroup, TextField, DefaultButton, Dropdown } from 'office-ui-fabric-react';
-import { setBLISAppDisplay } from '../actions/update'
-import { fetchAllActions, fetchAllEntities, fetchAllTrainDialogs } from '../actions/fetch'
+import { setBLISAppDisplay } from '../actions/updateActions'
+import { fetchAllActions, fetchAllEntities, fetchAllTrainDialogs } from '../actions/fetchActions'
 import { BLISApplication } from '../models/Application';
 import { developmentSubKeyLUIS } from '../secrets'
 import { State } from '../types'

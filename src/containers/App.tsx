@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
 import BLISAppsHomepage from '../containers/BLISAppsHomepage';
-import { fetchApplications } from '../actions/fetch'
-import { setBLISAppDisplay, setWebchatDisplay } from '../actions/update'
+import { fetchApplications } from '../actions/fetchActions'
+import { setBLISAppDisplay, setWebchatDisplay } from '../actions/updateActions'
 import Header from '../components/Header';
 import Docs from '../components/otherPages/Docs';
 import About from '../components/otherPages/About';

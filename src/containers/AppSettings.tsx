@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { editBLISApplication } from '../actions/update';
+import { editBLISApplication } from '../actions/updateActions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader'
