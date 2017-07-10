@@ -7,7 +7,6 @@ import { Reducer } from 'redux'
 const initialState: ActionState = [];
 
 const actionsReducer: Reducer<ActionState> =  (state = initialState, action: ActionObject) => {
-    console.log('reducer working')
     switch(action.type) {
         case 'FETCH_ACTIONS':
             return action.allActions;

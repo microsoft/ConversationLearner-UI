@@ -5,10 +5,14 @@ import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, 
 //=========================================================
 
 export const fetchApplications = (): ActionObject => {
-    //will need to make a call to BLIS to get all apps for this user
-    let apps: BlisAppBase[];
     return {
         type: 'FETCH_APPLICATIONS',
+        allBlisApps: null
+    }
+}
+export const fetchApplicationsFulfilled = (apps: BlisAppBase[]): ActionObject => {
+    return {
+        type: 'FETCH_APPLICATIONS_FULFILLED',
         allBlisApps: apps
     }
 }

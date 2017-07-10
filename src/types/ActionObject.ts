@@ -45,6 +45,15 @@ export type FetchAction = {
 } | {
     type: 'FETCH_TRAIN_DIALOGS',
     allTrainDialogs: TrainDialog[],
+} | {
+    type: 'FETCH_APPLICATIONS_FULFILLED',
+    allBlisApps: BlisAppBase[],
+} | {
+    type: 'FETCH_ENTITIES_FULFILLED',
+    allEntities: EntityBase[],
+} | {
+    type: 'FETCH_ACTIONS_FULFILLED',
+    allActions: ActionBase[]
 }
 
 export type CreateAction = {

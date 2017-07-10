@@ -10,7 +10,8 @@ const initialState: AppState = {
 
 const appsReducer: Reducer<AppState> = (state = initialState, action: ActionObject) => {
     switch (action.type) {
-        case 'FETCH_APPLICATIONS':
+        case 'FETCH_APPLICATIONS_FULFILLED':
+            console.log("In reducer receiving fulfilled ActionObject")
             return { ...state, all: action.allBlisApps };
         case 'CREATE_BLIS_APPLICATION':
             return { ...state, current: action.blisApp, all: [...state.all, action.blisApp] };

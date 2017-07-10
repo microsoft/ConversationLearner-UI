@@ -106,7 +106,7 @@ class BLISAppsList extends React.Component<any, any> {
         }
     }
     render() {
-        let allApps = this.props.blisApps.all;
+        let allApps = this.props.blisApps.all || [];
         return (
             <div className='content'>
                 <span className="ms-font-su myAppsHeaderContentBlock">My Apps</span>
