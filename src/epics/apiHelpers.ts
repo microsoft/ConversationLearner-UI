@@ -28,7 +28,6 @@ export const getBlisApp = (appId: string): Observable<AxiosResponse> => {
 	return Rx.Observable.fromPromise(axios.get(rootUrl.concat(getAppRoute), config))
 };
 export const getAllEntitiesForBlisApp = (appId: string): Observable<AxiosResponse> => {
-	console.log("In api helper entity route and appId is:", appId)
 	let getEntitiesForAppRoute: string = `app/${appId}/entities`
 	return Rx.Observable.fromPromise(axios.get(rootUrl.concat(getEntitiesForAppRoute), config))
 };

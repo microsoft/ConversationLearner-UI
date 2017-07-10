@@ -6203,7 +6203,6 @@ exports.fetchApplications = function () {
     };
 };
 exports.fetchAllEntities = function (blisAppID) {
-    console.log("in action creator, blisAppID is:", blisAppID);
     //needs a fulfilled version to handle response from Epic
     return {
         type: 'FETCH_ENTITIES',
@@ -30329,9 +30328,9 @@ var deleteActions_1 = __webpack_require__(109);
 var office_ui_fabric_react_1 = __webpack_require__(34);
 var columns = [
     {
-        key: 'name',
+        key: 'entityName',
         name: 'Name',
-        fieldName: 'name',
+        fieldName: 'entityName',
         minWidth: 100,
         maxWidth: 200,
         isResizable: true
@@ -30363,7 +30362,7 @@ var columns = [
     {
         key: 'actions',
         name: 'Actions',
-        fieldName: 'id',
+        fieldName: 'entityId',
         minWidth: 100,
         maxWidth: 200,
         isResizable: true
@@ -30409,14 +30408,14 @@ var EntitiesList = (function (_super) {
         var fieldContent = item[column.fieldName];
         switch (column.key) {
             case 'isBucketable':
-                if (fieldContent.bucket == true) {
+                if (fieldContent.isBucket == true) {
                     return React.createElement("span", { className: "ms-Icon ms-Icon--CheckMark checkIcon", "aria-hidden": "true" });
                 }
                 else {
                     return React.createElement("span", { className: "ms-Icon ms-Icon--Remove notFoundIcon", "aria-hidden": "true" });
                 }
             case 'isNegatable':
-                if (fieldContent.negative == true) {
+                if (fieldContent.isReversible == true) {
                     return React.createElement("span", { className: "ms-Icon ms-Icon--CheckMark checkIcon", "aria-hidden": "true" });
                 }
                 else {
@@ -30433,8 +30432,9 @@ var EntitiesList = (function (_super) {
     EntitiesList.prototype.renderEntityItems = function () {
         //runs when user changes the text 
         var lcString = this.state.searchValue.toLowerCase();
+        console.log('RENDERING ENTS', this.props.entities);
         var filteredEntities = this.props.entities.filter(function (e) {
-            var nameMatch = e.name.toLowerCase().includes(lcString);
+            var nameMatch = e.entityName.toLowerCase().includes(lcString);
             var typeMatch = e.entityType.toLowerCase().includes(lcString);
             var match = nameMatch || typeMatch;
             return match;
@@ -30449,7 +30449,6 @@ var EntitiesList = (function (_super) {
         });
     };
     EntitiesList.prototype.editSelectedEntity = function (entity) {
-        //do something
         this.setState({
             entitySelected: entity,
             createEditModalOpen: true
@@ -30882,7 +30881,6 @@ exports.getBlisApp = function (appId) {
     return Rx.Observable.fromPromise(axios_1.default.get(rootUrl.concat(getAppRoute), config));
 };
 exports.getAllEntitiesForBlisApp = function (appId) {
-    console.log("In api helper entity route and appId is:", appId);
     var getEntitiesForAppRoute = "app/" + appId + "/entities";
     return Rx.Observable.fromPromise(axios_1.default.get(rootUrl.concat(getEntitiesForAppRoute), config));
 };
@@ -30953,21 +30951,23 @@ var apiHelpers_1 = __webpack_require__(347);
 var fetchActions_1 = __webpack_require__(62);
 exports.fetchApplications = function (action$) {
     return action$.ofType("FETCH_APPLICATIONS")
-        .mergeMap(function (action) {
-        return apiHelpers_1.getAllBlisApps().map(function (response) { return fetchActions_1.fetchApplicationsFulfilled(response.data.apps); });
+        .flatMap(function (action) {
+        return apiHelpers_1.getAllBlisApps()
+            .map(function (response) { return fetchActions_1.fetchApplicationsFulfilled(response.data.apps); });
     });
 };
 exports.fetchEntities = function (action$) {
     return action$.ofType("FETCH_ENTITIES")
-        .mergeMap(function (action) {
-        return apiHelpers_1.getAllEntitiesForBlisApp(action.blisAppID).map(function (response) { return fetchActions_1.fetchAllEntitiesFulfilled(response.data.entities); });
+        .flatMap(function (action) {
+        return apiHelpers_1.getAllEntitiesForBlisApp(action.blisAppID)
+            .map(function (response) { return fetchActions_1.fetchAllEntitiesFulfilled(response.data.entities); });
     });
 };
 exports.fetchActions = function (action$) {
-    var appID;
     return action$.ofType("FETCH_ACTIONS")
-        .mergeMap(function (action) {
-        return apiHelpers_1.getAllActionsForBlisApp(action.blisAppID).map(function (response) { return fetchActions_1.fetchAllActionsFulfilled(response.data.actions); });
+        .flatMap(function (action) {
+        return apiHelpers_1.getAllActionsForBlisApp(action.blisAppID)
+            .map(function (response) { return fetchActions_1.fetchAllActionsFulfilled(response.data.actions); });
     });
 };
 
@@ -31131,7 +31131,6 @@ var actionsReducer = function (state, action) {
     if (state === void 0) { state = initialState; }
     switch (action.type) {
         case 'FETCH_ACTIONS_FULFILLED':
-            console.log('ACTIONS FULFILLED', action);
             return action.allActions;
         case 'CREATE_ACTION':
             return state.concat([action.action]);
@@ -31236,7 +31235,6 @@ var entitiesReducer = function (state, action) {
     if (state === void 0) { state = initialState; }
     switch (action.type) {
         case 'FETCH_ENTITIES_FULFILLED':
-            console.log('ENTITIES FULFILLED', action);
             return action.allEntities;
         case 'CREATE_ENTITY':
             return state.concat([action.entity]);

@@ -12,7 +12,6 @@ export const fetchApplications = (): ActionObject => {
 }
 
 export const fetchAllEntities = (blisAppID: string): ActionObject => {
-    console.log("in action creator, blisAppID is:", blisAppID)
     //needs a fulfilled version to handle response from Epic
     return {
         type: 'FETCH_ENTITIES',
