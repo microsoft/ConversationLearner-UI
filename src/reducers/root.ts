@@ -4,8 +4,9 @@ import entitiesReducer from './entitiesReducer';
 import actionsReducer from './actionsReducer';
 import trainDialogsReducer from './trainDialogsReducer';
 import displayReducer from './displayReducer';
+import { State } from '../types';
 
-const rootReducer = combineReducers({
+const rootReducer = combineReducers<State>({
     apps: appsReducer,
     entities: entitiesReducer,
     actions: actionsReducer,
