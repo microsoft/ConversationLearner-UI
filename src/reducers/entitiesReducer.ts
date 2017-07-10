@@ -7,7 +7,7 @@ const initialState: EntityState = [];
 
 const entitiesReducer: Reducer<EntityState> =  (state = initialState, action: ActionObject) => {
     switch(action.type) {
-        case 'FETCH_ENTITIES':
+        case 'FETCH_ENTITIES_FULFILLED':
             return action.allEntities;
         case 'CREATE_ENTITY':
             return [...state, action.entity];

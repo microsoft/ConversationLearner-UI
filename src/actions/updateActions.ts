@@ -17,6 +17,13 @@ export const setCurrentTrainDialog = (trainDialog: TrainDialog) : ActionObject =
     }
 }
 
+export const toggleTrainDialog = (forward: boolean) => {
+    return {
+        type: "TOGGLE_TRAIN_DIALOG",
+        forward: forward
+    }
+}
+
 export const setBLISAppDisplay = (text: string) : ActionObject => { 
     return {
         type: 'SET_BLIS_APP_DISPLAY',
@@ -24,24 +31,23 @@ export const setBLISAppDisplay = (text: string) : ActionObject => {
     }
 }
 
-export const editBLISApplication = (application: BlisAppBase) : ActionObject => { 
-    //will need to make a call to BLIS to edit this application for this user
-    return {
-        type: 'EDIT_BLIS_APPLICATION',
-        blisApp: application
-    }
-}
-
 export const setWebchatDisplay = (isShown: boolean) : ActionObject => { 
-    //will need to make a call to BLIS to edit this application for this user
     return {
         type: 'SET_WEBCHAT_DISPLAY',
         setWebchatDisplay: isShown
     }
 }
 
+export const editBLISApplication = (application: BlisAppBase) : ActionObject => { 
+    //needs to make a call to an Epic to send data to BLIS
+    return {
+        type: 'EDIT_BLIS_APPLICATION',
+        blisApp: application
+    }
+}
+
 export const editEntity = (entity: EntityBase) : ActionObject => { 
-    //will need to make a call to BLIS to edit this entity for its application
+    //needs to make a call to an Epic to send data to BLIS
     return {
         type: 'EDIT_ENTITY',
         entity: entity
@@ -49,7 +55,7 @@ export const editEntity = (entity: EntityBase) : ActionObject => {
 }
 
 export const editAction = (action: ActionBase) : ActionObject => { 
-    //will need to make a call to BLIS to edit this action for its application
+    //needs to make a call to an Epic to send data to BLIS
     return {
         type: 'EDIT_ACTION',
         action: action
@@ -57,17 +63,9 @@ export const editAction = (action: ActionBase) : ActionObject => {
 }
 
 export const editTrainDialog = (trainDialog: TrainDialog) : ActionObject => { 
-    //currently any type because this creator hasnt been set up
-    //will need to make a call to BLIS to edit this train dialog for its application
+    //needs to make a call to an Epic to send data to BLIS
     return {
         type: 'EDIT_TRAIN_DIALOG',
         trainDialog: trainDialog
-    }
-}
-
-export const toggleTrainDialog = (forward: boolean) => {
-    return {
-        type: "TOGGLE_TRAIN_DIALOG",
-        forward: forward
     }
 }

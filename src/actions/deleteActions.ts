@@ -1,7 +1,7 @@
 import { ActionObject } from '../types'
 
 export const deleteBLISApplication = (GUID: string): ActionObject => {
-    //will need to make a call to BLIS to delete this application for this user
+    //needs to make a call to an Epic to send data to BLIS
     return {
         type: 'DELETE_BLIS_APPLICATION',
         blisAppGUID: GUID
@@ -9,7 +9,7 @@ export const deleteBLISApplication = (GUID: string): ActionObject => {
 }
 
 export const deleteEntity = (GUID: string): ActionObject => {
-    //will need to make a call to BLIS to delete this entity for its application
+    //needs to make a call to an Epic to send data to BLIS
     return {
         type: 'DELETE_ENTITY',
         entityGUID: GUID,
@@ -17,7 +17,7 @@ export const deleteEntity = (GUID: string): ActionObject => {
 }
 
 export const deleteAction = (GUID: string): ActionObject => {
-    //will need to make a call to BLIS to delete this action for its application
+    //needs to make a call to an Epic to send data to BLIS
     return {
         type: 'DELETE_ACTION',
         actionGUID: GUID
@@ -25,8 +25,7 @@ export const deleteAction = (GUID: string): ActionObject => {
 }
 
 export const deleteTrainDialog = (GUID: string): ActionObject => {
-    //currently any type because this creator hasnt been set up
-    //will need to make a call to BLIS to delete this train dialog for its application
+    //needs to make a call to an Epic to send data to BLIS
     return {
         type: 'DELETE_TRAIN_DIALOG',
         trainDialogGUID: GUID

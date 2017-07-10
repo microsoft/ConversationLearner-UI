@@ -34,14 +34,13 @@ export type UpdateAction = {
 }
 
 export type FetchAction = {
-    type: 'FETCH_APPLICATIONS',
-    allBlisApps: BlisAppBase[],
+    type: 'FETCH_APPLICATIONS'
 } | {
     type: 'FETCH_ENTITIES',
-    allEntities: EntityBase[],
+    blisAppID: string
 } | {
     type: 'FETCH_ACTIONS',
-    allActions: ActionBase[]
+    blisAppID: string
 } | {
     type: 'FETCH_TRAIN_DIALOGS',
     allTrainDialogs: TrainDialog[],

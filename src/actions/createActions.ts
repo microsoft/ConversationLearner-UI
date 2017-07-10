@@ -3,7 +3,7 @@ import { ActionObject } from '../types'
 import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, ActionMetaData, ActionList, ActionTypes } from 'blis-models';
 
 export const createBLISApplication = (application: BlisAppBase): ActionObject => {
-    //will need to make a call to BLIS to add this application for this user
+    //needs to make a call to an Epic to send data to BLIS
     return {
         type: 'CREATE_BLIS_APPLICATION',
         blisApp: application
@@ -11,7 +11,7 @@ export const createBLISApplication = (application: BlisAppBase): ActionObject =>
 }
 
 export const createEntity = (entity: EntityBase): ActionObject => {
-    //will need to make a call to BLIS to add this entity for its application
+    //needs to make a call to an Epic to send data to BLIS
     return {
         type: 'CREATE_ENTITY',
         entity: entity
@@ -19,7 +19,7 @@ export const createEntity = (entity: EntityBase): ActionObject => {
 }
 
 export const createAction = (action: ActionBase): ActionObject => {
-    //will need to make a call to BLIS to add this action for its application
+    //needs to make a call to an Epic to send data to BLIS
     return {
         type: 'CREATE_ACTION',
         action: action
@@ -27,8 +27,7 @@ export const createAction = (action: ActionBase): ActionObject => {
 }
 
 export const createTrainDialog = (trainDialog: TrainDialog): ActionObject => {
-    //currently any type because this creator hasnt been set up
-    //will need to make a call to BLIS to add this train dialog for its application
+    //needs to make a call to an Epic to send data to BLIS
     return {
         type: 'CREATE_TRAIN_DIALOG',
         trainDialog: trainDialog

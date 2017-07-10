@@ -3802,52 +3802,50 @@ exports.setCurrentTrainDialog = function (trainDialog) {
         currentTrainDialog: trainDialog
     };
 };
+exports.toggleTrainDialog = function (forward) {
+    return {
+        type: "TOGGLE_TRAIN_DIALOG",
+        forward: forward
+    };
+};
 exports.setBLISAppDisplay = function (text) {
     return {
         type: 'SET_BLIS_APP_DISPLAY',
         setDisplay: text
     };
 };
-exports.editBLISApplication = function (application) {
-    //will need to make a call to BLIS to edit this application for this user
-    return {
-        type: 'EDIT_BLIS_APPLICATION',
-        blisApp: application
-    };
-};
 exports.setWebchatDisplay = function (isShown) {
-    //will need to make a call to BLIS to edit this application for this user
     return {
         type: 'SET_WEBCHAT_DISPLAY',
         setWebchatDisplay: isShown
     };
 };
+exports.editBLISApplication = function (application) {
+    //needs to make a call to an Epic to send data to BLIS
+    return {
+        type: 'EDIT_BLIS_APPLICATION',
+        blisApp: application
+    };
+};
 exports.editEntity = function (entity) {
-    //will need to make a call to BLIS to edit this entity for its application
+    //needs to make a call to an Epic to send data to BLIS
     return {
         type: 'EDIT_ENTITY',
         entity: entity
     };
 };
 exports.editAction = function (action) {
-    //will need to make a call to BLIS to edit this action for its application
+    //needs to make a call to an Epic to send data to BLIS
     return {
         type: 'EDIT_ACTION',
         action: action
     };
 };
 exports.editTrainDialog = function (trainDialog) {
-    //currently any type because this creator hasnt been set up
-    //will need to make a call to BLIS to edit this train dialog for its application
+    //needs to make a call to an Epic to send data to BLIS
     return {
         type: 'EDIT_TRAIN_DIALOG',
         trainDialog: trainDialog
-    };
-};
-exports.toggleTrainDialog = function (forward) {
-    return {
-        type: "TOGGLE_TRAIN_DIALOG",
-        forward: forward
     };
 };
 
@@ -5210,29 +5208,28 @@ module.exports = warning;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createBLISApplication = function (application) {
-    //will need to make a call to BLIS to add this application for this user
+    //needs to make a call to an Epic to send data to BLIS
     return {
         type: 'CREATE_BLIS_APPLICATION',
         blisApp: application
     };
 };
 exports.createEntity = function (entity) {
-    //will need to make a call to BLIS to add this entity for its application
+    //needs to make a call to an Epic to send data to BLIS
     return {
         type: 'CREATE_ENTITY',
         entity: entity
     };
 };
 exports.createAction = function (action) {
-    //will need to make a call to BLIS to add this action for its application
+    //needs to make a call to an Epic to send data to BLIS
     return {
         type: 'CREATE_ACTION',
         action: action
     };
 };
 exports.createTrainDialog = function (trainDialog) {
-    //currently any type because this creator hasnt been set up
-    //will need to make a call to BLIS to add this train dialog for its application
+    //needs to make a call to an Epic to send data to BLIS
     return {
         type: 'CREATE_TRAIN_DIALOG',
         trainDialog: trainDialog
@@ -6200,40 +6197,54 @@ Object.defineProperty(exports, "__esModule", { value: true });
 //=========================================================
 //=========================================================
 exports.fetchApplications = function () {
-    console.log('in original fetch action');
+    //needs a fulfilled version to handle response from Epic
     return {
-        type: 'FETCH_APPLICATIONS',
-        allBlisApps: null
+        type: 'FETCH_APPLICATIONS'
     };
 };
+exports.fetchAllEntities = function (blisAppID) {
+    console.log("in action creator, blisAppID is:", blisAppID);
+    //needs a fulfilled version to handle response from Epic
+    return {
+        type: 'FETCH_ENTITIES',
+        blisAppID: blisAppID
+    };
+};
+exports.fetchAllActions = function (blisAppID) {
+    //needs a fulfilled version to handle response from Epic
+    return {
+        type: 'FETCH_ACTIONS',
+        blisAppID: blisAppID
+    };
+};
+exports.fetchAllTrainDialogs = function (blisAppID) {
+    //needs a fulfilled version to handle response from Epic
+    return {
+        type: 'FETCH_TRAIN_DIALOGS',
+        allTrainDialogs: []
+    };
+};
+//=========================================================
+// FULFILLED FROM EPICS
+//=========================================================
 exports.fetchApplicationsFulfilled = function (apps) {
-    console.log('In fulfilled action', apps);
     return {
         type: 'FETCH_APPLICATIONS_FULFILLED',
         allBlisApps: apps
     };
 };
-exports.fetchAllEntities = function (blisAppID) {
-    //will need to make a call to BLIS to get all entities for this app
-    var entities;
+exports.fetchAllEntitiesFulfilled = function (entities) {
+    //needs a fulfilled version to handle response from Epic
     return {
-        type: 'FETCH_ENTITIES',
+        type: 'FETCH_ENTITIES_FULFILLED',
         allEntities: entities
     };
 };
-exports.fetchAllActions = function (blisAppID) {
-    //will need to make a call to BLIS to get all actions for this app
-    var actions;
+exports.fetchAllActionsFulfilled = function (actions) {
+    //needs a fulfilled version to handle response from Epic
     return {
-        type: 'FETCH_ACTIONS',
+        type: 'FETCH_ACTIONS_FULFILLED',
         allActions: actions
-    };
-};
-exports.fetchAllTrainDialogs = function (blisAppID) {
-    //will need to make a call to BLIS to get all train dialogs for this app
-    return {
-        type: 'FETCH_TRAIN_DIALOGS',
-        allTrainDialogs: []
     };
 };
 
@@ -9946,29 +9957,28 @@ exports.isNumeric = isNumeric;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteBLISApplication = function (GUID) {
-    //will need to make a call to BLIS to delete this application for this user
+    //needs to make a call to an Epic to send data to BLIS
     return {
         type: 'DELETE_BLIS_APPLICATION',
         blisAppGUID: GUID
     };
 };
 exports.deleteEntity = function (GUID) {
-    //will need to make a call to BLIS to delete this entity for its application
+    //needs to make a call to an Epic to send data to BLIS
     return {
         type: 'DELETE_ENTITY',
         entityGUID: GUID,
     };
 };
 exports.deleteAction = function (GUID) {
-    //will need to make a call to BLIS to delete this action for its application
+    //needs to make a call to an Epic to send data to BLIS
     return {
         type: 'DELETE_ACTION',
         actionGUID: GUID
     };
 };
 exports.deleteTrainDialog = function (GUID) {
-    //currently any type because this creator hasnt been set up
-    //will need to make a call to BLIS to delete this train dialog for its application
+    //needs to make a call to an Epic to send data to BLIS
     return {
         type: 'DELETE_TRAIN_DIALOG',
         trainDialogGUID: GUID
@@ -29043,7 +29053,6 @@ var App = (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     App.prototype.componentWillMount = function () {
-        console.log('mounting and about to call fetchApplications');
         this.props.fetchApplications();
     };
     App.prototype.render = function () {
@@ -30852,12 +30861,18 @@ Object.defineProperty(exports, "__esModule", { value: true });
 __webpack_require__(99);
 var axios_1 = __webpack_require__(185);
 var Rx = __webpack_require__(99);
+//=========================================================
+// CONFIG
+//=========================================================
 var config = {
     headers: {
         "Content-Type": "application/json"
     }
 };
 var rootUrl = "http://localhost:5000/";
+//=========================================================
+// GET ROUTES
+//=========================================================
 exports.getAllBlisApps = function () {
     var getAppsRoute = "apps";
     return Rx.Observable.fromPromise(axios_1.default.get(rootUrl.concat(getAppsRoute), config));
@@ -30867,6 +30882,7 @@ exports.getBlisApp = function (appId) {
     return Rx.Observable.fromPromise(axios_1.default.get(rootUrl.concat(getAppRoute), config));
 };
 exports.getAllEntitiesForBlisApp = function (appId) {
+    console.log("In api helper entity route and appId is:", appId);
     var getEntitiesForAppRoute = "app/" + appId + "/entities";
     return Rx.Observable.fromPromise(axios_1.default.get(rootUrl.concat(getEntitiesForAppRoute), config));
 };
@@ -30882,6 +30898,9 @@ exports.getBlisAction = function (appId, actionId) {
     var getActionRoute = "app/" + appId + "/action/" + actionId;
     return Rx.Observable.fromPromise(axios_1.default.get(rootUrl.concat(getActionRoute), config));
 };
+//=========================================================
+// CREATE ROUTES
+//=========================================================
 exports.createBlisApp = function (blisApp) {
     var addAppRoute = "app"; //takes an app in the body
     return Rx.Observable.fromPromise(axios_1.default.get(rootUrl.concat(addAppRoute), config));
@@ -30894,6 +30913,9 @@ exports.createBlisAction = function (appId, action) {
     var addActionRoute = "app/" + appId + "/action"; //takes an action in the body
     return Rx.Observable.fromPromise(axios_1.default.get(rootUrl.concat(addActionRoute), config));
 };
+//=========================================================
+// DELETE ROUTES
+//=========================================================
 exports.deleteBlisApp = function (appId, blisApp) {
     var deleteAppRoute = "app/" + appId; //takes an app in the body
     return Rx.Observable.fromPromise(axios_1.default.get(rootUrl.concat(deleteAppRoute), config));
@@ -30906,6 +30928,9 @@ exports.deleteBlisAction = function (appId, actionId, action) {
     var deleteActionRoute = "app/" + appId + "/action/" + actionId; //takes an action in the body
     return Rx.Observable.fromPromise(axios_1.default.get(rootUrl.concat(deleteActionRoute), config));
 };
+//=========================================================
+// EDIT ROUTES
+//=========================================================
 exports.editBlisApp = function (appId, blisApp) {
     var editAppRoute = "app/" + appId; //takes an app in the body
     return Rx.Observable.fromPromise(axios_1.default.get(rootUrl.concat(editAppRoute), config));
@@ -30927,10 +30952,22 @@ __webpack_require__(99);
 var apiHelpers_1 = __webpack_require__(347);
 var fetchActions_1 = __webpack_require__(62);
 exports.fetchApplications = function (action$) {
-    console.log("in epic");
     return action$.ofType("FETCH_APPLICATIONS")
         .mergeMap(function (action) {
         return apiHelpers_1.getAllBlisApps().map(function (response) { return fetchActions_1.fetchApplicationsFulfilled(response.data.apps); });
+    });
+};
+exports.fetchEntities = function (action$) {
+    return action$.ofType("FETCH_ENTITIES")
+        .mergeMap(function (action) {
+        return apiHelpers_1.getAllEntitiesForBlisApp(action.blisAppID).map(function (response) { return fetchActions_1.fetchAllEntitiesFulfilled(response.data.entities); });
+    });
+};
+exports.fetchActions = function (action$) {
+    var appID;
+    return action$.ofType("FETCH_ACTIONS")
+        .mergeMap(function (action) {
+        return apiHelpers_1.getAllActionsForBlisApp(action.blisAppID).map(function (response) { return fetchActions_1.fetchAllActionsFulfilled(response.data.actions); });
     });
 };
 
@@ -30945,7 +30982,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 __webpack_require__(99);
 var redux_observable_1 = __webpack_require__(289);
 var fetchEpics_1 = __webpack_require__(348);
-var rootEpic = redux_observable_1.combineEpics(fetchEpics_1.fetchApplications);
+var rootEpic = redux_observable_1.combineEpics(fetchEpics_1.fetchApplications, fetchEpics_1.fetchEntities, fetchEpics_1.fetchActions);
 exports.default = rootEpic;
 
 
@@ -31093,7 +31130,8 @@ var initialState = [];
 var actionsReducer = function (state, action) {
     if (state === void 0) { state = initialState; }
     switch (action.type) {
-        case 'FETCH_ACTIONS':
+        case 'FETCH_ACTIONS_FULFILLED':
+            console.log('ACTIONS FULFILLED', action);
             return action.allActions;
         case 'CREATE_ACTION':
             return state.concat([action.action]);
@@ -31132,7 +31170,6 @@ var appsReducer = function (state, action) {
     if (state === void 0) { state = initialState; }
     switch (action.type) {
         case 'FETCH_APPLICATIONS_FULFILLED':
-            console.log("In reducer receiving fulfilled ActionObject");
             return tslib_1.__assign({}, state, { all: action.allBlisApps });
         case 'CREATE_BLIS_APPLICATION':
             return tslib_1.__assign({}, state, { current: action.blisApp, all: state.all.concat([action.blisApp]) });
@@ -31198,7 +31235,8 @@ var initialState = [];
 var entitiesReducer = function (state, action) {
     if (state === void 0) { state = initialState; }
     switch (action.type) {
-        case 'FETCH_ENTITIES':
+        case 'FETCH_ENTITIES_FULFILLED':
+            console.log('ENTITIES FULFILLED', action);
             return action.allEntities;
         case 'CREATE_ENTITY':
             return state.concat([action.entity]);

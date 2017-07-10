@@ -3,12 +3,11 @@ import { ActionState } from '../types'
 import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, ActionMetaData, ActionList, ActionTypes } from 'blis-models';
 import { Reducer } from 'redux'
 
-
 const initialState: ActionState = [];
 
 const actionsReducer: Reducer<ActionState> =  (state = initialState, action: ActionObject) => {
     switch(action.type) {
-        case 'FETCH_ACTIONS':
+        case 'FETCH_ACTIONS_FULFILLED':
             return action.allActions;
         case 'CREATE_ACTION':
             return [...state, action.action];

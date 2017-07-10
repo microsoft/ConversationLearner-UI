@@ -6,10 +6,10 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import BLISAppCreator from './BLISAppCreator'
 import TrainingGround from './TrainingGround';
-import { BLISApplication } from '../models/Application';
 import { DetailsList, CommandButton, Link, CheckboxVisibility, IColumn } from 'office-ui-fabric-react';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
-import { State } from '../types'
+import { State } from '../types';
+import { BlisAppBase, BlisAppList, BlisAppMetaData } from 'blis-models'
 
 let columns: IColumn[] = [
     {
@@ -83,7 +83,7 @@ class BLISAppsList extends React.Component<any, any> {
         //do something
     }
     BLISAppSelected(appName: string) {
-        let appSelected = this.props.blisApps.all.find((app: BLISApplication) => app.appName == appName);
+        let appSelected = this.props.blisApps.all.find((app: BlisAppBase) => app.appName == appName);
         this.props.setCurrentBLISApp(appSelected);
         this.props.fetchAllActions(appSelected.appId);
         this.props.fetchAllEntities(appSelected.appId);
