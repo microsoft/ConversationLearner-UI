@@ -160,6 +160,7 @@ class ActionResponseCreatorEditor extends React.Component<any, any> {
         return guid;
     }
     createAction() {
+        let currentAppId: string = this.props.blisApps.current.appId;
         let randomGUID = this.generateGUID();
         let requiredEntities = this.state.reqEntitiesVal.map((req: EntityPickerObject) => {
             let found: EntityBase = this.props.entities.find((e: EntityBase) => e.entityName == req.key)
@@ -184,7 +185,7 @@ class ActionResponseCreatorEditor extends React.Component<any, any> {
             packageDeletionId: null
         })
         if (this.state.editing === false) {
-            this.props.createAction(actionToAdd);
+            this.props.createAction(actionToAdd, currentAppId);
         } else {
             this.editAction(actionToAdd);
         }

@@ -16,6 +16,17 @@ const config: AxiosRequestConfig = {
 const rootUrl: string = "http://localhost:5000/";
 
 //=========================================================
+// PARAMETER REQUIREMENTS
+//=========================================================
+
+interface CreatedBlisApp {
+	appName: string;
+	locale: string;
+	luisKey: string;
+	metadata: BlisAppMetaData
+}
+
+//=========================================================
 // GET ROUTES
 //=========================================================
 
@@ -49,21 +60,18 @@ export const getBlisAction = (appId: string, actionId: string): Observable<Axios
 //=========================================================
 
 export const createBlisApp = (blisApp: BlisAppBase): Observable<AxiosResponse> => {
-	let addAppRoute: string = `app`    //takes an app in the body
-	console.log("In API Helper, blisApp value is: ", blisApp)
-	return Rx.Observable.fromPromise(axios.get(rootUrl.concat(addAppRoute), config))
+	let addAppRoute: string = `app` //takes an app in the body
+	//remove the appId property from the object
+	const {appId, ...app} = blisApp
+	return Rx.Observable.fromPromise(axios.post(rootUrl.concat(addAppRoute), app, config))
 };
-export const createBlisEntity = (appId: string, entity: EntityBase): Observable<AxiosResponse> => {
-	console.log("In API Helper, entity value is: ", entity)
-	console.log("In API Helper, appId value is: ", appId)
+export const createBlisEntity = (entity: EntityBase, appId: string, ): Observable<AxiosResponse> => {
 	let addEntityRoute: string = `app/${appId}/entity` //takes an entity in the body
-	return Rx.Observable.fromPromise(axios.get(rootUrl.concat(addEntityRoute), config))
+	return Rx.Observable.fromPromise(axios.post(rootUrl.concat(addEntityRoute), entity, config))
 };
-export const createBlisAction = (appId: string, action: ActionBase): Observable<AxiosResponse> => {
-	console.log("In API Helper, action value is: ", action)
-	console.log("In API Helper, appId value is: ", appId)
+export const createBlisAction = (action: ActionBase, appId: string): Observable<AxiosResponse> => {
 	let addActionRoute: string = `app/${appId}/action` //takes an action in the body
-	return Rx.Observable.fromPromise(axios.get(rootUrl.concat(addActionRoute), config))
+	return Rx.Observable.fromPromise(axios.post(rootUrl.concat(addActionRoute), action, config))
 };
 
 //=========================================================

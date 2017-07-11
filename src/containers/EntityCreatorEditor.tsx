@@ -74,6 +74,7 @@ class EntityCreatorEditor extends React.Component<any, any> {
         return guid;
     }
     createEntity() {
+        let currentAppId: string = this.props.blisApps.current.appId;
         let randomGUID = this.generateGUID();
         let meta2 = new EntityMetaData({
             isBucket: this.state.isBucketableVal,
@@ -91,7 +92,7 @@ class EntityCreatorEditor extends React.Component<any, any> {
             packageDeletionId: null
         })
         if (this.state.editing === false) {
-            this.props.createEntity(entityToAdd);
+            this.props.createEntity(entityToAdd, currentAppId);
         } else {
             this.editEntity(entityToAdd);
         }

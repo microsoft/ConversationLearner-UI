@@ -61,9 +61,11 @@ export type CreateAction = {
 } | {
     type: 'CREATE_ENTITY',
     entity: EntityBase,
+    currentAppId: string
 } | {
     type: 'CREATE_ACTION',
     action: ActionBase,
+    currentAppId: string
 } | {
     type: 'CREATE_TRAIN_DIALOG',
     trainDialog: TrainDialog,

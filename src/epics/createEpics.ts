@@ -15,14 +15,14 @@ export const createNewApplication: Epic<ActionObject, State> = (action$: Actions
 export const createNewEntity: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
     return action$.ofType("CREATE_ENTITY")
         .flatMap(action =>
-            createBlisEntity(action.entity)
+            createBlisEntity(action.entity, action.currentAppId)
 				.mapTo({type: "CREATE_OPERATION_FULFILLED"})
         );
 }
 export const createNewAction: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
     return action$.ofType("CREATE_ACTION")
         .flatMap(action =>
-            createBlisAction(action.action)
+            createBlisAction(action.action, action.currentAppId)
 				.mapTo({type: "CREATE_OPERATION_FULFILLED"})
         );
 }

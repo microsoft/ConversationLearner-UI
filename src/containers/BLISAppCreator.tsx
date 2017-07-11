@@ -101,9 +101,6 @@ class BLISAppCreator extends React.Component<any, any> {
             metadata: meta
         })
         this.props.createBLISApplication(appToAdd);
-        this.props.fetchAllActions(randomGUID);
-        this.props.fetchAllEntities(randomGUID);
-        this.props.fetchAllTrainDialogs(randomGUID);
         this.handleClose();
         this.props.setBLISAppDisplay("TrainingGround");
     }
