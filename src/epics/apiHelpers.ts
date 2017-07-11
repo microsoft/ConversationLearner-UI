@@ -50,13 +50,18 @@ export const getBlisAction = (appId: string, actionId: string): Observable<Axios
 
 export const createBlisApp = (blisApp: BlisAppBase): Observable<AxiosResponse> => {
 	let addAppRoute: string = `app`    //takes an app in the body
+	console.log("In API Helper, blisApp value is: ", blisApp)
 	return Rx.Observable.fromPromise(axios.get(rootUrl.concat(addAppRoute), config))
 };
 export const createBlisEntity = (appId: string, entity: EntityBase): Observable<AxiosResponse> => {
+	console.log("In API Helper, entity value is: ", entity)
+	console.log("In API Helper, appId value is: ", appId)
 	let addEntityRoute: string = `app/${appId}/entity` //takes an entity in the body
 	return Rx.Observable.fromPromise(axios.get(rootUrl.concat(addEntityRoute), config))
 };
 export const createBlisAction = (appId: string, action: ActionBase): Observable<AxiosResponse> => {
+	console.log("In API Helper, action value is: ", action)
+	console.log("In API Helper, appId value is: ", appId)
 	let addActionRoute: string = `app/${appId}/action` //takes an action in the body
 	return Rx.Observable.fromPromise(axios.get(rootUrl.concat(addActionRoute), config))
 };

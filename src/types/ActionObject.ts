@@ -67,6 +67,8 @@ export type CreateAction = {
 } | {
     type: 'CREATE_TRAIN_DIALOG',
     trainDialog: TrainDialog,
+} | {
+    type: "CREATE_OPERATION_FULFILLED"
 }
 
 export type DeleteAction = {

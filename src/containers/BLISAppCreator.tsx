@@ -6,8 +6,8 @@ import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { CommandButton, Dialog, DialogFooter, DialogType, ChoiceGroup, TextField, DefaultButton, Dropdown } from 'office-ui-fabric-react';
 import { setBLISAppDisplay } from '../actions/updateActions'
-import { fetchAllActions, fetchAllEntities, fetchAllTrainDialogs } from '../actions/fetchActions'
-import { BLISApplication } from '../models/Application';
+import { fetchAllActions, fetchAllEntities, fetchAllTrainDialogs } from '../actions/fetchActions';
+import { BlisAppBase, BlisAppMetaData } from 'blis-models'
 import { developmentSubKeyLUIS } from '../secrets'
 import { State } from '../types'
 type CultureObject = {
@@ -90,7 +90,16 @@ class BLISAppCreator extends React.Component<any, any> {
     }
     createApplication() {
         let randomGUID = this.generateGUID();
-        let appToAdd = new BLISApplication(randomGUID, this.state.appNameVal, this.state.luisKeyVal, this.state.localeVal);
+        let meta = new BlisAppMetaData({
+            botFrameworkApps: []
+        })
+        let appToAdd = new BlisAppBase({
+            appId: randomGUID,
+            appName: this.state.appNameVal,
+            luisKey: this.state.luisKeyVal,
+            locale: this.state.localeVal,
+            metadata: meta
+        })
         this.props.createBLISApplication(appToAdd);
         this.props.fetchAllActions(randomGUID);
         this.props.fetchAllEntities(randomGUID);
