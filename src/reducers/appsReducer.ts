@@ -1,25 +1,27 @@
-import { BLISApplication } from '../models/Application'
 import { AppState } from '../types'
 import { ActionObject } from '../types'
+import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, ActionMetaData, ActionList, ActionTypes } from 'blis-models';
+import { Reducer } from 'redux'
 
 const initialState: AppState = {
     all: [],
     current: null
 };
-export default (state = initialState, action: ActionObject) => {
+
+const appsReducer: Reducer<AppState> = (state = initialState, action: ActionObject) => {
     switch (action.type) {
-        case 'FETCH_APPLICATIONS':
+        case 'FETCH_APPLICATIONS_FULFILLED':
             return { ...state, all: action.allBlisApps };
         case 'CREATE_BLIS_APPLICATION':
             return { ...state, current: action.blisApp, all: [...state.all, action.blisApp] };
         case 'SET_CURRENT_BLIS_APP':
             return { ...state, current: action.currentBLISApp };
         case 'DELETE_BLIS_APPLICATION':
-            return { ...state, all: state.all.filter(app => app.modelID !== action.blisAppGUID) };
+            return { ...state, all: state.all.filter(app => app.appId !== action.blisAppGUID) };
         case 'EDIT_BLIS_APPLICATION':
             let index: number = 0;
             for (let i = 0; i < state.all.length; i++) {
-                if (state.all[i].modelID == action.blisApp.modelID) {
+                if (state.all[i].appId == action.blisApp.appId) {
                     index = i
                 }
             }
@@ -34,3 +36,4 @@ export default (state = initialState, action: ActionObject) => {
             return state;
     }
 }
+export default appsReducer;

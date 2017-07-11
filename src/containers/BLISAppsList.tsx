@@ -1,15 +1,15 @@
 import * as React from 'react';
-import { fetchAllActions, fetchAllEntities, fetchApplications, fetchAllTrainDialogs } from '../actions/fetch';
-import { setCurrentBLISApp, setBLISAppDisplay } from '../actions/update';
-import { deleteBLISApplication } from '../actions/delete'
+import { fetchAllActions, fetchAllEntities, fetchApplications, fetchAllTrainDialogs } from '../actions/fetchActions';
+import { setCurrentBLISApp, setBLISAppDisplay } from '../actions/updateActions';
+import { deleteBLISApplication } from '../actions/deleteActions'
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import BLISAppCreator from './BLISAppCreator'
 import TrainingGround from './TrainingGround';
-import { BLISApplication } from '../models/Application';
 import { DetailsList, CommandButton, Link, CheckboxVisibility, IColumn } from 'office-ui-fabric-react';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
-import { State } from '../types'
+import { State } from '../types';
+import { BlisAppBase, BlisAppList, BlisAppMetaData } from 'blis-models'
 
 let columns: IColumn[] = [
     {
@@ -39,7 +39,7 @@ let columns: IColumn[] = [
     {
         key: 'actions',
         name: 'Actions',
-        fieldName: 'modelID',
+        fieldName: 'appId',
         minWidth: 100,
         maxWidth: 200,
         isResizable: true
@@ -83,11 +83,11 @@ class BLISAppsList extends React.Component<any, any> {
         //do something
     }
     BLISAppSelected(appName: string) {
-        let appSelected = this.props.blisApps.all.find((app: BLISApplication) => app.appName == appName);
+        let appSelected = this.props.blisApps.all.find((app: BlisAppBase) => app.appName == appName);
         this.props.setCurrentBLISApp(appSelected);
-        this.props.fetchAllActions(appSelected.modelID);
-        this.props.fetchAllEntities(appSelected.modelID);
-        this.props.fetchAllTrainDialogs(appSelected.modelID);
+        this.props.fetchAllActions(appSelected.appId);
+        this.props.fetchAllEntities(appSelected.appId);
+        this.props.fetchAllTrainDialogs(appSelected.appId);
         this.props.setBLISAppDisplay("TrainingGround");
     }
     renderItemColumn(item?: any, index?: number, column?: IColumn) {
@@ -106,7 +106,7 @@ class BLISAppsList extends React.Component<any, any> {
         }
     }
     render() {
-        let allApps = this.props.blisApps.all;
+        let allApps = this.props.blisApps.all || [];
         return (
             <div className='content'>
                 <span className="ms-font-su myAppsHeaderContentBlock">My Apps</span>

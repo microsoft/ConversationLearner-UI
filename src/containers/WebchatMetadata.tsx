@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { createBLISApplication } from '../actions/create';
+import { createBLISApplication } from '../actions/createActions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../types'

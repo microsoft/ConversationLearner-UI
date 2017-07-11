@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { editBLISApplication } from '../actions/update';
+import { editBLISApplication } from '../actions/updateActions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader'
@@ -20,7 +20,7 @@ class AppSettings extends React.Component<any, any> {
         super(p);
         this.state = {
             localeVal: '',
-            modelIDVal: '',
+            appIdVal: '',
             appNameVal: '',
             luisKeyVal: '',
             edited: false
@@ -31,7 +31,7 @@ class AppSettings extends React.Component<any, any> {
         let current: BLISApplication = this.props.blisApps.current
         this.setState({
             localeVal: current.locale,
-            modelIDVal: current.modelID,
+            appIdVal: current.appId,
             appNameVal: current.appName,
             luisKeyVal: current.luisKey
         })
@@ -39,16 +39,22 @@ class AppSettings extends React.Component<any, any> {
     componentDidUpdate() {
         let current: BLISApplication = this.props.blisApps.current
         if (this.state.edited == false && (this.state.localeVal !== current.locale ||
-            this.state.modelIDVal !== current.modelID ||
+            this.state.appIdVal !== current.appId ||
             this.state.appNameVal !== current.appName ||
             this.state.luisKeyVal !== current.luisKey)) {
             this.setState({
                 localeVal: current.locale,
-                modelIDVal: current.modelID,
+                appIdVal: current.appId,
                 appNameVal: current.appName,
                 luisKeyVal: current.luisKey
             })
         }
+    }
+    appNameChanged(text: string) {
+        this.setState({
+            appNameVal: text,
+            edited: true
+        })
     }
     luisKeyChanged(text: string) {
         this.setState({
@@ -60,7 +66,7 @@ class AppSettings extends React.Component<any, any> {
         let current: BLISApplication = this.props.blisApps.current
         this.setState({
             localeVal: current.locale,
-            modelIDVal: current.modelID,
+            appIdVal: current.appId,
             appNameVal: current.appName,
             luisKeyVal: current.luisKey,
             edited: false
@@ -68,11 +74,11 @@ class AppSettings extends React.Component<any, any> {
     }
     editApp() {
         let current: BLISApplication = this.props.blisApps.current
-        let appToAdd = new BLISApplication(current.modelID, current.appName, this.state.luisKeyVal, current.locale);
+        let appToAdd = new BLISApplication(current.appId, this.state.appNameVal, this.state.luisKeyVal, current.locale);
         this.props.editBLISApplication(appToAdd);
         this.setState({
             localeVal: current.locale,
-            modelIDVal: current.modelID,
+            appIdVal: current.appId,
             appNameVal: current.appName,
             luisKeyVal: current.luisKey,
             edited: false
@@ -87,8 +93,8 @@ class AppSettings extends React.Component<any, any> {
         return (
             <div>
                 <TrainingGroundArenaHeader title="Settings" description="Control your application versions, who has access to it and whether it is public or private...." />
-                <TextField className="ms-font-m-plus" disabled={true} label="Name" value={this.state.appNameVal} />
-                <TextField className="ms-font-m-plus" disabled={true} label="Model ID" value={this.state.modelIDVal} />
+                <TextField className="ms-font-m-plus" onChanged={(text) => this.appNameChanged(text)} label="Name" value={this.state.appNameVal} />
+                <TextField className="ms-font-m-plus" disabled={true} label="App ID" value={this.state.appIdVal} />
                 <TextField className="ms-font-m-plus" onChanged={(text) => this.luisKeyChanged(text)} label="LUIS Key" value={this.state.luisKeyVal} />
                 <Label className="ms-font-m-plus">Locale</Label>
                 <Dropdown

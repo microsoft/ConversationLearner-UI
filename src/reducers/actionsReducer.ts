@@ -1,21 +1,22 @@
 import { ActionObject } from '../types'
-import { Action } from '../models/Action'
 import { ActionState } from '../types'
+import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, ActionMetaData, ActionList, ActionTypes } from 'blis-models';
+import { Reducer } from 'redux'
 
 const initialState: ActionState = [];
 
-export default (state = initialState, action: ActionObject) => {
+const actionsReducer: Reducer<ActionState> =  (state = initialState, action: ActionObject) => {
     switch(action.type) {
-        case 'FETCH_ACTIONS':
+        case 'FETCH_ACTIONS_FULFILLED':
             return action.allActions;
         case 'CREATE_ACTION':
             return [...state, action.action];
         case 'DELETE_ACTION':
-            return state.filter(ent => ent.id !== action.actionGUID)
+            return state.filter(a => a.actionId !== action.actionGUID)
         case 'EDIT_ACTION':
             let index: number = 0;
             for(let i = 0; i < state.length; i++){
-                if(state[i].id == action.action.id){
+                if(state[i].actionId == action.action.actionId){
                     index = i
                 }
             }
@@ -26,3 +27,4 @@ export default (state = initialState, action: ActionObject) => {
             return state;
     }
 }
+export default actionsReducer;

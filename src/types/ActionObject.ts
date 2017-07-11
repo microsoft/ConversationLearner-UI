@@ -1,25 +1,25 @@
-import { BLISApplication } from '../models/Application';
-import { Action, ActionMetadata } from '../models/Action';
-import { Entity, EntityMetadata } from '../models/Entity';
 import { TrainDialog, Dialog, Turn, Input } from '../models/TrainDialog';
-import { ActionTypes, EntityTypes } from '../models/Constants'; 
+import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, ActionMetaData, ActionList, ActionTypes } from 'blis-models'
 
 
 export type UpdateAction = {
     type: 'EDIT_BLIS_APPLICATION',
-    blisApp: BLISApplication,
+    blisApp: BlisAppBase,
 } | {
     type: 'EDIT_ENTITY',
-    entity: Entity,
+    entity: EntityBase,
 } | {
     type: 'EDIT_ACTION',
-    action: Action,
+    action: ActionBase,
 } | {
     type: 'EDIT_TRAIN_DIALOG',
     trainDialog: TrainDialog,
 } | {
     type: 'SET_CURRENT_BLIS_APP',
-    currentBLISApp: BLISApplication,
+    currentBLISApp: BlisAppBase,
+} | {
+    type: 'SET_CURRENT_TRAIN_DIALOG',
+    currentTrainDialog: TrainDialog,
 } | {
     //used for setting whether the app list or app homepage (trainingGround) is displayed
     type: 'SET_BLIS_APP_DISPLAY',
@@ -28,31 +28,42 @@ export type UpdateAction = {
     //used for setting whether the app list or app homepage (trainingGround) is displayed
     type: 'SET_WEBCHAT_DISPLAY',
     setWebchatDisplay: boolean,
+} | {
+    type: "TOGGLE_TRAIN_DIALOG",
+    forward: boolean
 }
 
 export type FetchAction = {
-    type: 'FETCH_APPLICATIONS',
-    allBlisApps: BLISApplication[],
+    type: 'FETCH_APPLICATIONS'
 } | {
     type: 'FETCH_ENTITIES',
-    allEntities: Entity[],
+    blisAppID: string
 } | {
     type: 'FETCH_ACTIONS',
-    allActions: Action[],
+    blisAppID: string
 } | {
     type: 'FETCH_TRAIN_DIALOGS',
     allTrainDialogs: TrainDialog[],
+} | {
+    type: 'FETCH_APPLICATIONS_FULFILLED',
+    allBlisApps: BlisAppBase[],
+} | {
+    type: 'FETCH_ENTITIES_FULFILLED',
+    allEntities: EntityBase[],
+} | {
+    type: 'FETCH_ACTIONS_FULFILLED',
+    allActions: ActionBase[]
 }
 
 export type CreateAction = {
     type: 'CREATE_BLIS_APPLICATION',
-    blisApp: BLISApplication,
+    blisApp: BlisAppBase,
 } | {
     type: 'CREATE_ENTITY',
-    entity: Entity,
+    entity: EntityBase,
 } | {
     type: 'CREATE_ACTION',
-    action: Action,
+    action: ActionBase,
 } | {
     type: 'CREATE_TRAIN_DIALOG',
     trainDialog: TrainDialog,

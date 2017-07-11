@@ -4,16 +4,16 @@ import { connect } from 'react-redux';
 import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader';
 import EntityCreatorEditor from './EntityCreatorEditor';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
-import { deleteEntity } from '../actions/delete'
+import { deleteEntity } from '../actions/deleteActions'
 import { DetailsList, CommandButton, Link, CheckboxVisibility, IColumn, SearchBox } from 'office-ui-fabric-react';
-import { Entity } from '../models/Entity';
-import { State } from '../types'
+import { State } from '../types';
+import { EntityBase, EntityIdList, EntityList, EntityMetaData } from 'blis-models'
 
 let columns: IColumn[] = [
     {
-        key: 'name',
+        key: 'entityName',
         name: 'Name',
-        fieldName: 'name',
+        fieldName: 'entityName',
         minWidth: 100,
         maxWidth: 200,
         isResizable: true
@@ -45,7 +45,7 @@ let columns: IColumn[] = [
     {
         key: 'actions',
         name: 'Actions',
-        fieldName: 'id',
+        fieldName: 'entityId',
         minWidth: 100,
         maxWidth: 200,
         isResizable: true
@@ -89,13 +89,13 @@ class EntitiesList extends React.Component<any, any> {
         let fieldContent = item[column.fieldName];
         switch (column.key) {
             case 'isBucketable':
-                if (fieldContent.bucket == true) {
+                if (fieldContent.isBucket == true) {
                     return <span className="ms-Icon ms-Icon--CheckMark checkIcon" aria-hidden="true"></span>;
                 } else {
                     return <span className="ms-Icon ms-Icon--Remove notFoundIcon" aria-hidden="true"></span>;
                 }
             case 'isNegatable':
-                if (fieldContent.negative == true) {
+                if (fieldContent.isReversible == true) {
                     return <span className="ms-Icon ms-Icon--CheckMark checkIcon" aria-hidden="true"></span>;
                 } else {
                     return <span className="ms-Icon ms-Icon--Remove notFoundIcon" aria-hidden="true"></span>;
@@ -110,11 +110,11 @@ class EntitiesList extends React.Component<any, any> {
                 return <span className='ms-font-m-plus'>{fieldContent}</span>;
         }
     }
-    renderEntityItems(): Entity[] {
+    renderEntityItems(): EntityBase[] {
         //runs when user changes the text 
         let lcString = this.state.searchValue.toLowerCase();
-        let filteredEntities = this.props.entities.filter((e: Entity) => {
-            let nameMatch = e.name.toLowerCase().includes(lcString);
+        let filteredEntities = this.props.entities.filter((e: EntityBase) => {
+            let nameMatch = e.entityName.toLowerCase().includes(lcString);
             let typeMatch = e.entityType.toLowerCase().includes(lcString);
             let match = nameMatch || typeMatch
             return match;
@@ -128,8 +128,7 @@ class EntitiesList extends React.Component<any, any> {
             searchValue: lcString
         })
     }
-    editSelectedEntity(entity: Entity) {
-        //do something
+    editSelectedEntity(entity: EntityBase) {
         this.setState({
             entitySelected: entity,
             createEditModalOpen: true

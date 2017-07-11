@@ -2,11 +2,10 @@ import * as React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader';
-import { deleteAction } from '../actions/delete'
+import { deleteAction } from '../actions/deleteActions'
 import { DetailsList, CommandButton, Link, CheckboxVisibility, List, IColumn, SearchBox } from 'office-ui-fabric-react';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
-import { Action } from '../models/Action'
-import { Entity } from '../models/Entity'
+import { ActionBase, ActionMetaData, EntityBase, EntityMetaData } from 'blis-models'
 import ActionResponseCreatorEditor from './ActionResponseCreatorEditor';
 import EntityTile from '../components/EntityTile';
 import { State } from '../types'
@@ -15,23 +14,23 @@ let columns: IColumn[] = [
     {
         key: 'actionType',
         name: 'Action Type',
-        fieldName: 'actionType',
+        fieldName: 'metadata',
         minWidth: 100,
         maxWidth: 200,
         isResizable: true
     },
     {
-        key: 'content',
-        name: 'Content',
-        fieldName: 'content',
+        key: 'payload',
+        name: 'Payload',
+        fieldName: 'payload',
         minWidth: 100,
         maxWidth: 200,
         isResizable: true
     },
     {
-        key: 'positiveEntities',
+        key: 'requiredEntities',
         name: 'Required Entities',
-        fieldName: 'positiveEntities',
+        fieldName: 'requiredEntities',
         minWidth: 100,
         maxWidth: 200,
         isResizable: true
@@ -47,7 +46,7 @@ let columns: IColumn[] = [
     {
         key: 'wait',
         name: 'Wait',
-        fieldName: 'waitAction',
+        fieldName: 'isTerminal',
         minWidth: 100,
         maxWidth: 200,
         isResizable: true
@@ -55,7 +54,7 @@ let columns: IColumn[] = [
     {
         key: 'actions',
         name: 'Actions',
-        fieldName: 'id',
+        fieldName: 'actionId',
         minWidth: 100,
         maxWidth: 200,
         isResizable: true
@@ -74,6 +73,7 @@ class ActionResponsesHomepage extends React.Component<any, any> {
             createEditModalOpen: false,
             actionSelected: null
         }
+        this.renderEntityList = this.renderEntityList.bind(this)
     }
     deleteSelectedAction() {
         this.props.deleteAction(this.state.actionIDToDelete)
@@ -95,7 +95,7 @@ class ActionResponsesHomepage extends React.Component<any, any> {
             actionIDToDelete: guid
         })
     }
-    editSelectedAction(action: Action) {
+    editSelectedAction(action: ActionBase) {
         this.setState({
             actionSelected: action,
             createEditModalOpen: true
@@ -110,29 +110,17 @@ class ActionResponsesHomepage extends React.Component<any, any> {
                 } else {
                     return <span className="ms-Icon ms-Icon--Remove notFoundIcon" aria-hidden="true"></span>;
                 }
-            case 'positiveEntities':
+            case 'actionType':
+                return <span className='ms-font-m-plus'>{fieldContent.actionType}</span>;
+            case 'requiredEntities':
                 if (fieldContent.length > 0) {
-                    return (
-                        <List
-                            items={fieldContent}
-                            onRenderCell={(item, index) => (
-                                <EntityTile item={item} />
-                            )}
-                        />
-                    )
+                    return this.renderEntityList(fieldContent)
                 } else {
                     return <span className="ms-Icon ms-Icon--Remove notFoundIcon" aria-hidden="true"></span>;
                 }
             case 'negativeEntities':
                 if (fieldContent.length > 0) {
-                    return (
-                        <List
-                            items={fieldContent}
-                            onRenderCell={(item, index) => (
-                                <EntityTile item={item} />
-                            )}
-                        />
-                    )
+                    return this.renderEntityList(fieldContent)
                 } else {
                     return <span className="ms-Icon ms-Icon--Remove notFoundIcon" aria-hidden="true"></span>;
                 }
@@ -146,17 +134,34 @@ class ActionResponsesHomepage extends React.Component<any, any> {
                 return <span className='ms-font-m-plus'>{fieldContent}</span>;
         }
     }
-    renderActionItems(): Action[] {
+    renderEntityList(entityIDs: string[]) {
+        let entityObjects: EntityBase[];
+        entityObjects = entityIDs.map((id: string) => {
+            return this.props.entities.find((e: EntityBase) => e.entityId == id)
+        })
+        return (
+            <List
+                items={entityObjects}
+                onRenderCell={(item, index) => (
+                    <EntityTile item={item} />
+                )}
+            />
+        )
+
+    }
+    renderActionItems(): ActionBase[] {
         //runs when user changes the text 
         let lcString = this.state.searchValue.toLowerCase();
-        let filteredActions = this.props.actions.filter((a: Action) => {
-            let nameMatch = a.content.toLowerCase().includes(lcString);
-            let typeMatch = a.actionType.toLowerCase().includes(lcString);
-            let positiveEntities = a.positiveEntities.map((ent: Entity) => {
-                return ent.name;
+        let filteredActions = this.props.actions.filter((a: ActionBase) => {
+            let nameMatch = a.payload.toLowerCase().includes(lcString);
+            let typeMatch = a.metadata.actionType ? a.metadata.actionType.toLowerCase().includes(lcString) : true;
+            let negativeEntities: string[] = a.negativeEntities.map((entityId: string) => {
+                let found: EntityBase = this.props.entities.find((e: EntityBase) => e.entityId == entityId);
+                return found.entityName;
             })
-            let negativeEntities = a.negativeEntities.map((ent: Entity) => {
-                return ent.name;
+            let positiveEntities: string[] = a.requiredEntities.map((entityId: string) => {
+                let found: EntityBase = this.props.entities.find((e: EntityBase) => e.entityId == entityId);
+                return found.entityName;
             })
             let requiredEnts = positiveEntities.join('');
             let negativeEnts = negativeEntities.join('');
@@ -227,7 +232,8 @@ const mapDispatchToProps = (dispatch: any) => {
 }
 const mapStateToProps = (state: State) => {
     return {
-        actions: state.actions
+        actions: state.actions,
+        entities: state.entities
     }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(ActionResponsesHomepage);

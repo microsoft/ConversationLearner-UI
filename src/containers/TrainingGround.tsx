@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { fetchAllActions, fetchAllEntities, fetchApplications, fetchAllTrainDialogs } from '../actions/fetch';
+import { fetchAllActions, fetchAllEntities, fetchApplications, fetchAllTrainDialogs } from '../actions/fetchActions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import EntitiesList from './EntitiesList';
@@ -11,7 +11,7 @@ import AppSettings from './AppSettings';
 import Emulator from '../components/Emulator';
 import { Nav, INavLink, INavLinkGroup } from 'office-ui-fabric-react';
 import { Link } from 'react-router-dom';
-import { setWebchatDisplay } from '../actions/update'
+import { setWebchatDisplay } from '../actions/updateActions'
 import { State } from '../types'
 
 class TrainingGround extends React.Component<any, any> {
@@ -75,10 +75,10 @@ class TrainingGround extends React.Component<any, any> {
                                 selectedKey={this.state.selectedKey}
                                 groups={[{
                                     links: [
-                                        { name: 'Dashboard', key: 'Dash', onClick: () => this.setArenaDisplay('Dash') },
-                                        { name: 'Entities', key: 'Entities', onClick: () => this.setArenaDisplay('Entities') },
-                                        { name: 'Actions', key: 'Actions', onClick: () => this.setArenaDisplay('Actions') },
-                                        { name: 'Train Dialogs', key: 'TrainDialogs', onClick: () => this.setArenaDisplay('TrainDialogs') }
+                                        { name: 'Dashboard', key: 'Dash', url: null,  onClick: () => this.setArenaDisplay('Dash') },
+                                        { name: 'Entities', key: 'Entities', url: null,  onClick: () => this.setArenaDisplay('Entities') },
+                                        { name: 'Actions', key: 'Actions',  url: null, onClick: () => this.setArenaDisplay('Actions') },
+                                        { name: 'Train Dialogs', key: 'TrainDialogs', url: null, onClick: () => this.setArenaDisplay('TrainDialogs') }
                                     ]
                                 }]}
                             />
@@ -114,10 +114,10 @@ class TrainingGround extends React.Component<any, any> {
                                 selectedKey={this.state.selectedKey}
                                 groups={[{
                                     links: [
-                                        { name: 'Dashboard', key: 'Dash', onClick: () => this.setArenaDisplay('Dash') },
-                                        { name: 'Entities', key: 'Entities', onClick: () => this.setArenaDisplay('Entities') },
-                                        { name: 'Actions', key: 'Actions', onClick: () => this.setArenaDisplay('Actions') },
-                                        { name: 'Train Dialogs', key: 'TrainDialogs', onClick: () => this.setArenaDisplay('TrainDialogs') }
+                                        { name: 'Dashboard', key: 'Dash',  url: null, onClick: () => this.setArenaDisplay('Dash') },
+                                        { name: 'Entities', key: 'Entities', url: null,  onClick: () => this.setArenaDisplay('Entities') },
+                                        { name: 'Actions', key: 'Actions',  url: null, onClick: () => this.setArenaDisplay('Actions') },
+                                        { name: 'Train Dialogs', key: 'TrainDialogs', url: null, onClick: () => this.setArenaDisplay('TrainDialogs') }
                                     ]
                                 }]}
                             />
