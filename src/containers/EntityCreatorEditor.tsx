@@ -43,15 +43,15 @@ class EntityCreatorEditor extends React.Component<any, any> {
         } else {
             let initBucketableKey: string;
             let initNegatableKey: string;
-            if (p.entity.metadata.isBucket == false) {
-                initBucketableKey = 'bucketableFalse'
-            } else {
+            if (p.entity.metadata.isBucket == true) {
                 initBucketableKey = 'bucketableTrue'
-            }
-            if (p.entity.metadata.isReversable == false) {
-                initNegatableKey = 'negatableFalse'
             } else {
+                initBucketableKey = 'bucketableFalse'
+            }
+            if (p.entity.metadata.isReversable == true) {
                 initNegatableKey = 'negatableTrue'
+            } else {
+                initNegatableKey = 'negatableFalse'
             }
             this.setState({
                 entityNameVal: p.entity.entityName,

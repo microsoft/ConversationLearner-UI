@@ -68,10 +68,10 @@ class ActionResponseCreatorEditor extends React.Component<any, any> {
                 })
             } else {
                 let initWaitKey: string;
-                if (p.action.isTerminal == false) {
-                    initWaitKey = 'waitFalse'
-                } else {
+                if (p.action.isTerminal == true) {
                     initWaitKey = 'waitTrue'
+                } else {
+                    initWaitKey = 'waitFalse'
                 }
                 let entities = this.props.entities.map((e: EntityBase) => {
                     return {

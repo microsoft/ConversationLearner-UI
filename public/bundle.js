@@ -6458,15 +6458,12 @@ exports.fetchApplicationsFulfilled = function (apps) {
     };
 };
 exports.fetchAllEntitiesFulfilled = function (entities) {
-    //needs a fulfilled version to handle response from Epic
     return {
         type: 'FETCH_ENTITIES_FULFILLED',
         allEntities: entities
     };
 };
 exports.fetchAllActionsFulfilled = function (actions) {
-    console.log(actions);
-    //needs a fulfilled version to handle response from Epic
     return {
         type: 'FETCH_ACTIONS_FULFILLED',
         allActions: actions
@@ -16059,17 +16056,17 @@ var EntityCreatorEditor = (function (_super) {
         else {
             var initBucketableKey = void 0;
             var initNegatableKey = void 0;
-            if (p.entity.metadata.isBucket == false) {
-                initBucketableKey = 'bucketableFalse';
-            }
-            else {
+            if (p.entity.metadata.isBucket == true) {
                 initBucketableKey = 'bucketableTrue';
             }
-            if (p.entity.metadata.isReversable == false) {
-                initNegatableKey = 'negatableFalse';
+            else {
+                initBucketableKey = 'bucketableFalse';
+            }
+            if (p.entity.metadata.isReversable == true) {
+                initNegatableKey = 'negatableTrue';
             }
             else {
-                initNegatableKey = 'negatableTrue';
+                initNegatableKey = 'negatableFalse';
             }
             this.setState({
                 entityNameVal: p.entity.entityName,
@@ -30215,11 +30212,11 @@ var ActionResponseCreatorEditor = (function (_super) {
             }
             else {
                 var initWaitKey = void 0;
-                if (p.action.isTerminal == false) {
-                    initWaitKey = 'waitFalse';
+                if (p.action.isTerminal == true) {
+                    initWaitKey = 'waitTrue';
                 }
                 else {
-                    initWaitKey = 'waitTrue';
+                    initWaitKey = 'waitFalse';
                 }
                 var entities = this.props.entities.map(function (e) {
                     return {
