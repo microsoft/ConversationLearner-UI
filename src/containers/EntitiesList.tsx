@@ -66,7 +66,9 @@ class EntitiesList extends React.Component<any, any> {
         }
     }
     deleteSelectedEntity() {
-        this.props.deleteEntity(this.state.entityIDToDelete)
+        let currentAppId: string = this.props.apps.current.appId;
+        let entityToDelete: EntityBase = this.props.entities.find((a: EntityBase) => a.entityId == this.state.entityIDToDelete)
+        this.props.deleteEntity(this.state.entityIDToDelete, entityToDelete, currentAppId)
         this.setState({
             confirmDeleteEntityModalOpen: false,
             entityIDToDelete: null
@@ -187,7 +189,8 @@ const mapDispatchToProps = (dispatch: any) => {
 }
 const mapStateToProps = (state: State) => {
     return {
-        entities: state.entities
+        entities: state.entities,
+        apps: state.apps
     }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(EntitiesList);

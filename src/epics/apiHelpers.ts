@@ -19,11 +19,11 @@ const rootUrl: string = "http://localhost:5000/";
 // PARAMETER REQUIREMENTS
 //=========================================================
 
-interface CreatedBlisApp {
-	appName: string;
-	locale: string;
-	luisKey: string;
-	metadata: BlisAppMetaData
+export interface BlisAppForUpdate extends BlisAppBase {
+	trainingFailureMessage: string;
+	trainingRequired: boolean;
+	trainingStatus: string;
+	latestPackageId: number
 }
 
 //=========================================================
@@ -82,28 +82,36 @@ export const createBlisAction = (action: ActionBase, appId: string): Observable<
 // DELETE ROUTES
 //=========================================================
 
-export const deleteBlisApp = (appId: string, blisApp: BlisAppBase): Observable<AxiosResponse> => {
-	let deleteAppRoute: string = `app/${appId}` //takes an app in the body
-	return Rx.Observable.fromPromise(axios.get(rootUrl.concat(deleteAppRoute), config))
+export const deleteBlisApp = (blisAppId: string, blisApp: BlisAppForUpdate): Observable<AxiosResponse> => {
+	let deleteAppRoute: string = `app/${blisAppId}` //takes an app in the body
+	const { appId, latestPackageId, metadata, trainingRequired, trainingStatus, trainingFailureMessage, ...appToSend } = blisApp
+	let configWithBody = {...config, body: appToSend}
+	return Rx.Observable.fromPromise(axios.delete(rootUrl.concat(deleteAppRoute), configWithBody))
 };
 export const deleteBlisEntity = (appId: string, entity: EntityBase): Observable<AxiosResponse> => {
-	let deleteEntityRoute: string = `app/${appId}/entity` //takes an entity in the body
-	return Rx.Observable.fromPromise(axios.get(rootUrl.concat(deleteEntityRoute), config))
+	let deleteEntityRoute: string = `app/${appId}/entity`
+	const { version, packageCreationId, packageDeletionId, entityId, ...entityToSend } = entity;
+	let configWithBody = {...config, body: entityToSend};
+	return Rx.Observable.fromPromise(axios.delete(rootUrl.concat(deleteEntityRoute), configWithBody))
 };
-export const deleteBlisAction = (appId: string, actionId: string, action: ActionBase): Observable<AxiosResponse> => {
-	let deleteActionRoute: string = `app/${appId}/action/${actionId}` //takes an action in the body
-	return Rx.Observable.fromPromise(axios.get(rootUrl.concat(deleteActionRoute), config))
+export const deleteBlisAction = (appId: string, blisActionId: string, action: ActionBase): Observable<AxiosResponse> => {
+	let deleteActionRoute: string = `app/${appId}/action/${blisActionId}` 
+	const { actionId, version, packageCreationId, packageDeletionId, ...actionToSend } = action
+	let configWithBody = {...config, body: actionToSend}
+	return Rx.Observable.fromPromise(axios.delete(rootUrl.concat(deleteActionRoute), configWithBody))
 };
 
 //=========================================================
 // EDIT ROUTES
 //=========================================================
 
-export const editBlisApp = (appId: string, blisApp: BlisAppBase): Observable<AxiosResponse> => {
-	let editAppRoute: string = `app/${appId}`//takes an app in the body
-	return Rx.Observable.fromPromise(axios.get(rootUrl.concat(editAppRoute), config))
+export const editBlisApp = (blisAppId: string, blisApp: BlisAppForUpdate): Observable<AxiosResponse> => {
+	let editAppRoute: string = `app/${blisAppId}`;
+	const { appId, latestPackageId, metadata, trainingRequired, trainingStatus, trainingFailureMessage, ...appToSend } = blisApp
+	return Rx.Observable.fromPromise(axios.put(rootUrl.concat(editAppRoute), appToSend, config))
 };
-export const editBlisAction = (appId: string, actionId: string, action: ActionBase): Observable<AxiosResponse> => {
-	let editActionRoute: string = `app/${appId}/action/${actionId}` //takes an action in the body
-	return Rx.Observable.fromPromise(axios.get(rootUrl.concat(editActionRoute), config))
+export const editBlisAction = (appId: string, blisActionId: string, action: ActionBase): Observable<AxiosResponse> => {
+	let editActionRoute: string = `app/${appId}/action/${blisActionId}`
+	const { actionId, version, packageCreationId, packageDeletionId, ...actionToSend } = action
+	return Rx.Observable.fromPromise(axios.put(rootUrl.concat(editActionRoute), actionToSend, config))
 };

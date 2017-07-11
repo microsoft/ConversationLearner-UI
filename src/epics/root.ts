@@ -4,6 +4,8 @@ import { combineEpics, ActionsObservable, Epic } from 'redux-observable'
 import { State, ActionObject } from '../types'
 import { fetchApplications, fetchEntities, fetchActions } from './fetchEpics'
 import { createNewApplication, createNewEntity, createNewAction } from './createEpics'
+import { deleteAction, deleteApplication, deleteEntity } from './deleteEpics'
+import { editAction, editApplication } from './updateEpics'
 
 const rootEpic = combineEpics(
 	fetchApplications,
@@ -11,7 +13,12 @@ const rootEpic = combineEpics(
 	fetchActions,
 	createNewApplication,
 	createNewEntity,
-	createNewAction
+	createNewAction,
+	deleteApplication,
+	deleteEntity,
+	deleteAction,
+	editApplication,
+	editAction
 )
 
 export default rootEpic;

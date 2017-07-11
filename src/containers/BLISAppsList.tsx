@@ -60,10 +60,11 @@ class BLISAppsList extends React.Component<any, any> {
         }
     }
     deleteApp() {
-        this.props.deleteBLISApplication(this.state.appIDToDelete)
+        let blisAppToDelete: BlisAppBase = this.props.blisApps.all.find((app: BlisAppBase) => app.appId == this.state.appIDToDelete);
+        this.props.deleteBLISApplication(this.state.appIDToDelete, blisAppToDelete);
         this.setState({
             confirmDeleteAppModalOpen: false,
-            appIDToDelete: null
+            appIDToDelete: null,
         })
 
     }

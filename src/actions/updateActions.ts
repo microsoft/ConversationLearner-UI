@@ -54,11 +54,12 @@ export const editEntity = (entity: EntityBase) : ActionObject => {
     }
 }
 
-export const editAction = (action: ActionBase) : ActionObject => { 
+export const editAction = (action: ActionBase, currentAppId: string) : ActionObject => { 
     //needs to make a call to an Epic to send data to BLIS
     return {
         type: 'EDIT_ACTION',
-        action: action
+        blisAction: action,
+        currentAppId: currentAppId
     }
 }
 

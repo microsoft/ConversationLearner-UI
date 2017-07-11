@@ -10,7 +10,8 @@ export type UpdateAction = {
     entity: EntityBase,
 } | {
     type: 'EDIT_ACTION',
-    action: ActionBase,
+    blisAction: ActionBase,
+    currentAppId: string
 } | {
     type: 'EDIT_TRAIN_DIALOG',
     trainDialog: TrainDialog,
@@ -31,6 +32,8 @@ export type UpdateAction = {
 } | {
     type: "TOGGLE_TRAIN_DIALOG",
     forward: boolean
+} | {
+    type: "UPDATE_OPERATION_FULFILLED"
 }
 
 export type FetchAction = {
@@ -76,15 +79,22 @@ export type CreateAction = {
 export type DeleteAction = {
     type: 'DELETE_BLIS_APPLICATION',
     blisAppGUID: string,
+    blisApp: BlisAppBase
 } | {
     type: 'DELETE_ENTITY',
     entityGUID: string,
+    currentAppId: string,
+    entity: EntityBase
 } | {
     type: 'DELETE_ACTION',
     actionGUID: string,
+    action: ActionBase,
+    currentAppId: string
 } | {
     type: 'DELETE_TRAIN_DIALOG',
     trainDialogGUID: string,
+} | {
+    type: "DELETE_OPERATION_FULFILLED"
 }
 
 export type ActionObject = FetchAction | CreateAction | UpdateAction | DeleteAction;

@@ -16,12 +16,12 @@ const actionsReducer: Reducer<ActionState> =  (state = initialState, action: Act
         case 'EDIT_ACTION':
             let index: number = 0;
             for(let i = 0; i < state.length; i++){
-                if(state[i].actionId == action.action.actionId){
+                if(state[i].actionId == action.blisAction.actionId){
                     index = i
                 }
             }
             let newState = Object.assign([], state);
-            newState[index] = action.action;
+            newState[index] = action.blisAction;
             return newState
         default:
             return state;

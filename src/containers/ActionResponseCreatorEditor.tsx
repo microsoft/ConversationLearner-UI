@@ -187,14 +187,14 @@ class ActionResponseCreatorEditor extends React.Component<any, any> {
         if (this.state.editing === false) {
             this.props.createAction(actionToAdd, currentAppId);
         } else {
-            this.editAction(actionToAdd);
+            this.editAction(actionToAdd, currentAppId);
         }
         this.handleClose();
         this.props.handleClose();
     }
-    editAction(actionToAdd: ActionBase) {
-        actionToAdd.actionId = this.props.action.id;
-        this.props.editAction(actionToAdd);
+    editAction(actionToAdd: ActionBase, currentAppId: string) {
+        actionToAdd.actionId = this.props.action.actionId;
+        this.props.editAction(actionToAdd, currentAppId);
     }
     waitChanged(event: any, option: { text: string }) {
         if (option.text == 'False') {

@@ -76,7 +76,9 @@ class ActionResponsesHomepage extends React.Component<any, any> {
         this.renderEntityList = this.renderEntityList.bind(this)
     }
     deleteSelectedAction() {
-        this.props.deleteAction(this.state.actionIDToDelete)
+        let currentAppId: string = this.props.apps.current.appId;
+        let actionToDelete: ActionBase = this.props.actions.find((a: ActionBase) => a.actionId == this.state.actionIDToDelete)
+        this.props.deleteAction(this.state.actionIDToDelete, actionToDelete, currentAppId);
         this.setState({
             confirmDeleteActionModalOpen: false,
             actionIDToDelete: null
@@ -233,7 +235,8 @@ const mapDispatchToProps = (dispatch: any) => {
 const mapStateToProps = (state: State) => {
     return {
         actions: state.actions,
-        entities: state.entities
+        entities: state.entities,
+        apps: state.apps
     }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(ActionResponsesHomepage);
