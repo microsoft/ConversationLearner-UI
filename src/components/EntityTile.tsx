@@ -1,12 +1,12 @@
 import * as React from 'react';
-import { Entity } from '../models/Entity'
+import { EntityBase } from 'blis-models'
 export interface Props {
-    item: Entity
+    item: EntityBase
 }
 const EntityTile: React.SFC<Props> = (props: Props) => {
     return (
         <div className='ms-ListItem is-selectable'>
-            <span className='ms-ListItem-primaryText'>{props.item.name}</span>
+            <span className='ms-ListItem-primaryText'>{props.item.entityName}</span>
         </div>
     );
 }

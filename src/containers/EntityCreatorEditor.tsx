@@ -5,15 +5,15 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { CommandButton, Dialog, DialogFooter, DialogType, ChoiceGroup, TextField, DefaultButton, Dropdown } from 'office-ui-fabric-react';
-import { Entity, EntityMetadata } from '../models/Entity';
-import { EntityTypes } from '../models/Constants';
-import { State } from '../types'
+import { State } from '../types';
+import { EntityBase, EntityMetaData } from 'blis-models'
 
 interface Props {
     open: boolean,
-    entity: Entity | null,
+    entity: EntityBase | null,
     handleClose: Function
 }
+
 class EntityCreatorEditor extends React.Component<any, any> {
     constructor(p: Props) {
         super(p);
@@ -26,6 +26,8 @@ class EntityCreatorEditor extends React.Component<any, any> {
             negatableKey: 'negatableFalse',
             editing: false
         };
+        this.bucketableChanged = this.bucketableChanged.bind(this)
+        this.negatableChanged = this.negatableChanged.bind(this)
     }
     componentWillReceiveProps(p: Props) {
         if (p.entity === null) {
@@ -41,21 +43,21 @@ class EntityCreatorEditor extends React.Component<any, any> {
         } else {
             let initBucketableKey: string;
             let initNegatableKey: string;
-            if (p.entity.metadata.bucket == false) {
+            if (p.entity.metadata.isBucket == false) {
                 initBucketableKey = 'bucketableFalse'
             } else {
                 initBucketableKey = 'bucketableTrue'
             }
-            if (p.entity.metadata.negative == false) {
+            if (p.entity.metadata.isReversable == false) {
                 initNegatableKey = 'negatableFalse'
             } else {
                 initNegatableKey = 'negatableTrue'
             }
             this.setState({
-                entityNameVal: p.entity.name,
+                entityNameVal: p.entity.entityName,
                 entityTypeVal: p.entity.entityType,
-                isBucketableVal: p.entity.metadata.bucket,
-                isNegatableVal: p.entity.metadata.negative,
+                isBucketableVal: p.entity.metadata.isBucket,
+                isNegatableVal: p.entity.metadata.isReversable,
                 bucketableKey: initBucketableKey,
                 negatableKey: initNegatableKey,
                 editing: true
@@ -73,8 +75,21 @@ class EntityCreatorEditor extends React.Component<any, any> {
     }
     createEntity() {
         let randomGUID = this.generateGUID();
-        let meta = new EntityMetadata(this.state.isBucketableVal, this.state.isNegatableVal, false, false);
-        let entityToAdd = new Entity(randomGUID, this.state.entityTypeVal, null, this.state.entityNameVal, meta, this.props.blisApps.current.appId);
+        let meta2 = new EntityMetaData({
+            isBucket: this.state.isBucketableVal,
+            isReversable: this.state.isNegatableVal,
+            negativeId: null,
+            positiveId: null,
+        })
+        let entityToAdd = new EntityBase({
+            entityId: randomGUID,
+            entityName: this.state.entityNameVal,
+            metadata: meta2,
+            entityType: this.state.entityTypeVal,
+            version: null,
+            packageCreationId: null,
+            packageDeletionId: null
+        })
         if (this.state.editing === false) {
             this.props.createEntity(entityToAdd);
         } else {
@@ -91,10 +106,9 @@ class EntityCreatorEditor extends React.Component<any, any> {
         })
         this.props.handleClose();
     }
-    editEntity(ent: Entity) {
-        let meta = new EntityMetadata(this.state.isBucketableVal, this.state.isNegatableVal, false, false);
-        let entityToAdd = new Entity(this.props.entity.id, this.state.entityTypeVal, null, this.state.entityNameVal, meta, this.props.blisApps.current.appId);
-        this.props.editEntity(entityToAdd);
+    editEntity(ent: EntityBase) {
+        ent.entityId = this.props.entity.entityId;
+        this.props.editEntity(ent);
     }
     nameChanged(text: string) {
         this.setState({
@@ -133,7 +147,7 @@ class EntityCreatorEditor extends React.Component<any, any> {
         }
     }
     render() {
-        let vals = Object.values(EntityTypes);
+        let vals: string[] = ["LOCAL", "LUIS"]
         let options = vals.map(v => {
             return {
                 key: v,
@@ -141,7 +155,7 @@ class EntityCreatorEditor extends React.Component<any, any> {
             }
         })
         let title: string;
-        if(this.state.editing == true){
+        if (this.state.editing == true) {
             title = "Edit Entity"
         } else {
             title = "Create an Entity"
@@ -164,7 +178,6 @@ class EntityCreatorEditor extends React.Component<any, any> {
                             value={this.state.entityNameVal} />
                         <Dropdown
                             label='Entity Type'
-                            defaultSelectedKey={this.state.entityTypeVal}
                             options={options}
                             onChanged={this.typeChanged.bind(this)}
                             selectedKey={this.state.entityTypeVal}
@@ -182,7 +195,7 @@ class EntityCreatorEditor extends React.Component<any, any> {
                                 }
                             ]}
                             label='Bucketable'
-                            onChange={this.bucketableChanged.bind(this)}
+                            onChange={this.bucketableChanged}
                             selectedKey={this.state.bucketableKey}
                         />
                         <ChoiceGroup
@@ -197,7 +210,7 @@ class EntityCreatorEditor extends React.Component<any, any> {
                                 }
                             ]}
                             label='Negatable'
-                            onChange={this.negatableChanged.bind(this)}
+                            onChange={this.negatableChanged}
                             selectedKey={this.state.negatableKey}
                         />
                     </div>

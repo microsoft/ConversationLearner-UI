@@ -55,6 +55,7 @@ export const fetchAllEntitiesFulfilled = (entities: EntityBase[]): ActionObject 
 }
 
 export const fetchAllActionsFulfilled = (actions: ActionBase[]): ActionObject => {
+    console.log(actions);
     //needs a fulfilled version to handle response from Epic
     return {
         type: 'FETCH_ACTIONS_FULFILLED',

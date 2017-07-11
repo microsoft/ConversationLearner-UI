@@ -113,7 +113,6 @@ class EntitiesList extends React.Component<any, any> {
     renderEntityItems(): EntityBase[] {
         //runs when user changes the text 
         let lcString = this.state.searchValue.toLowerCase();
-        console.log('RENDERING ENTS', this.props.entities)
         let filteredEntities = this.props.entities.filter((e: EntityBase) => {
             let nameMatch = e.entityName.toLowerCase().includes(lcString);
             let typeMatch = e.entityType.toLowerCase().includes(lcString);
