@@ -12,7 +12,7 @@ import { EntityBase, EntityIdList, EntityList, EntityMetaData } from 'blis-model
 let columns: IColumn[] = [
     {
         key: 'entityName',
-        name: 'Name',
+        name: 'Entity Name',
         fieldName: 'entityName',
         minWidth: 100,
         maxWidth: 200,

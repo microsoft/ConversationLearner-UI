@@ -16185,7 +16185,7 @@ var EntityCreatorEditor = (function (_super) {
                 React.createElement("div", { className: 'modalHeader' },
                     React.createElement("span", { className: 'ms-font-xxl ms-fontWeight-semilight' }, title)),
                 React.createElement("div", null,
-                    React.createElement(office_ui_fabric_react_1.TextField, { onChanged: this.nameChanged.bind(this), label: "Name", placeholder: "Entity Name...", value: this.state.entityNameVal }),
+                    React.createElement(office_ui_fabric_react_1.TextField, { onChanged: this.nameChanged.bind(this), label: "Entity Name", placeholder: "Name...", value: this.state.entityNameVal }),
                     React.createElement(office_ui_fabric_react_1.Dropdown, { label: 'Entity Type', options: options, onChanged: this.typeChanged.bind(this), selectedKey: this.state.entityTypeVal, disabled: this.state.editing }),
                     React.createElement(office_ui_fabric_react_1.ChoiceGroup, { options: [
                             {
@@ -30428,7 +30428,7 @@ var ActionResponseCreatorEditor = (function (_super) {
                     React.createElement("span", { className: 'ms-font-xxl ms-fontWeight-semilight' }, title)),
                 React.createElement("div", null,
                     React.createElement(office_ui_fabric_react_1.Dropdown, { label: 'Action Type', options: actionTypeOptions, onChanged: this.actionTypeChanged.bind(this), selectedKey: this.state.actionTypeVal, disabled: this.state.editing }),
-                    React.createElement(office_ui_fabric_react_1.TextField, { onChanged: this.contentChanged.bind(this), label: "Content", placeholder: "Content...", value: this.state.contentVal }),
+                    React.createElement(office_ui_fabric_react_1.TextField, { onChanged: this.contentChanged.bind(this), label: "Payload", placeholder: "Payload...", value: this.state.contentVal }),
                     React.createElement(office_ui_fabric_react_1.Label, null, "Required Entities"),
                     React.createElement(office_ui_fabric_react_1.TagPicker, { onResolveSuggestions: this.onFilterChanged.bind(this), getTextFromItem: function (item) { return item.name; }, onChange: this.handleChangeRequiredEntities.bind(this), pickerSuggestionsProps: {
                             suggestionsHeaderText: 'Entities',
@@ -31187,7 +31187,7 @@ var office_ui_fabric_react_1 = __webpack_require__(35);
 var columns = [
     {
         key: 'entityName',
-        name: 'Name',
+        name: 'Entity Name',
         fieldName: 'entityName',
         minWidth: 100,
         maxWidth: 200,

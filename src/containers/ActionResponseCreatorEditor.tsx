@@ -294,8 +294,8 @@ class ActionResponseCreatorEditor extends React.Component<any, any> {
                         />
                         <TextField
                             onChanged={this.contentChanged.bind(this)}
-                            label="Content"
-                            placeholder="Content..."
+                            label="Payload"
+                            placeholder="Payload..."
                             value={this.state.contentVal} />
                         <Label>Required Entities</Label>
                         <TagPicker
