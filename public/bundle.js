@@ -16306,18 +16306,22 @@ exports.getBlisAction = function (appId, actionId) {
 // CREATE ROUTES
 //=========================================================
 exports.createBlisApp = function (blisApp) {
-    var addAppRoute = "app"; //takes an app in the body
+    var addAppRoute = "app";
     //remove the appId property from the object
-    var appId = blisApp.appId, app = tslib_1.__rest(blisApp, ["appId"]);
-    return Rx.Observable.fromPromise(axios_1.default.post(rootUrl.concat(addAppRoute), app, config));
+    var appId = blisApp.appId, appToSend = tslib_1.__rest(blisApp, ["appId"]);
+    return Rx.Observable.fromPromise(axios_1.default.post(rootUrl.concat(addAppRoute), appToSend, config));
 };
 exports.createBlisEntity = function (entity, appId) {
-    var addEntityRoute = "app/" + appId + "/entity"; //takes an entity in the body
-    return Rx.Observable.fromPromise(axios_1.default.post(rootUrl.concat(addEntityRoute), entity, config));
+    var addEntityRoute = "app/" + appId + "/entity";
+    //remove property from the object that the route will not accept
+    var version = entity.version, packageCreationId = entity.packageCreationId, packageDeletionId = entity.packageDeletionId, entityId = entity.entityId, entityToSend = tslib_1.__rest(entity, ["version", "packageCreationId", "packageDeletionId", "entityId"]);
+    return Rx.Observable.fromPromise(axios_1.default.post(rootUrl.concat(addEntityRoute), entityToSend, config));
 };
 exports.createBlisAction = function (action, appId) {
-    var addActionRoute = "app/" + appId + "/action"; //takes an action in the body
-    return Rx.Observable.fromPromise(axios_1.default.post(rootUrl.concat(addActionRoute), action, config));
+    var addActionRoute = "app/" + appId + "/action";
+    //remove property from the object that the route will not accept
+    var actionId = action.actionId, version = action.version, packageCreationId = action.packageCreationId, packageDeletionId = action.packageDeletionId, actionToSend = tslib_1.__rest(action, ["actionId", "version", "packageCreationId", "packageDeletionId"]);
+    return Rx.Observable.fromPromise(axios_1.default.post(rootUrl.concat(addActionRoute), actionToSend, config));
 };
 //=========================================================
 // DELETE ROUTES

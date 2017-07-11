@@ -60,18 +60,22 @@ export const getBlisAction = (appId: string, actionId: string): Observable<Axios
 //=========================================================
 
 export const createBlisApp = (blisApp: BlisAppBase): Observable<AxiosResponse> => {
-	let addAppRoute: string = `app` //takes an app in the body
+	let addAppRoute: string = `app`
 	//remove the appId property from the object
-	const {appId, ...app} = blisApp
-	return Rx.Observable.fromPromise(axios.post(rootUrl.concat(addAppRoute), app, config))
+	const { appId, ...appToSend } = blisApp
+	return Rx.Observable.fromPromise(axios.post(rootUrl.concat(addAppRoute), appToSend, config))
 };
 export const createBlisEntity = (entity: EntityBase, appId: string, ): Observable<AxiosResponse> => {
-	let addEntityRoute: string = `app/${appId}/entity` //takes an entity in the body
-	return Rx.Observable.fromPromise(axios.post(rootUrl.concat(addEntityRoute), entity, config))
+	let addEntityRoute: string = `app/${appId}/entity`
+	//remove property from the object that the route will not accept
+	const { version, packageCreationId, packageDeletionId, entityId, ...entityToSend } = entity;
+	return Rx.Observable.fromPromise(axios.post(rootUrl.concat(addEntityRoute), entityToSend, config))
 };
 export const createBlisAction = (action: ActionBase, appId: string): Observable<AxiosResponse> => {
-	let addActionRoute: string = `app/${appId}/action` //takes an action in the body
-	return Rx.Observable.fromPromise(axios.post(rootUrl.concat(addActionRoute), action, config))
+	let addActionRoute: string = `app/${appId}/action`
+	//remove property from the object that the route will not accept
+	const { actionId, version, packageCreationId, packageDeletionId, ...actionToSend } = action
+	return Rx.Observable.fromPromise(axios.post(rootUrl.concat(addActionRoute), actionToSend, config))
 };
 
 //=========================================================
