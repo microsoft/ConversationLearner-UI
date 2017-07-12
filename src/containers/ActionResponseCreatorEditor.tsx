@@ -269,10 +269,13 @@ class ActionResponseCreatorEditor extends React.Component<any, any> {
             }
         })
         let title: string;
+        let createButtonText: string
         if (this.state.editing == true) {
             title = "Edit Action"
+            createButtonText = "Save"
         } else {
             title = "Create an Action"
+            createButtonText = "Create"
         }
         return (
             <div>
@@ -348,7 +351,7 @@ class ActionResponseCreatorEditor extends React.Component<any, any> {
                             onClick={this.createAction.bind(this)}
                             className='goldButton'
                             ariaDescription='Create'
-                            text='Create'
+                            text={createButtonText}
                         />
                         <CommandButton
                             data-automation-id='randomID7'
