@@ -8038,6 +8038,7 @@ var Rx = __webpack_require__(50);
 //=========================================================
 // CONFIG
 //=========================================================
+var userId = 'testUser';
 var config = {
     headers: {
         "Content-Type": "application/json"
@@ -8075,7 +8076,7 @@ exports.getBlisAction = function (appId, actionId) {
 // CREATE ROUTES
 //=========================================================
 exports.createBlisApp = function (blisApp) {
-    var addAppRoute = "app";
+    var addAppRoute = "app?userId=" + userId;
     //remove the appId property from the object
     var appId = blisApp.appId, appToSend = tslib_1.__rest(blisApp, ["appId"]);
     return Rx.Observable.fromPromise(axios_1.default.post(rootUrl.concat(addAppRoute), appToSend, config));
@@ -30939,7 +30940,7 @@ var AppSettings = (function (_super) {
             React.createElement(office_ui_fabric_react_1.TextField, { className: "ms-font-m-plus", disabled: true, label: "App ID", value: this.state.appIdVal }),
             React.createElement(office_ui_fabric_react_1.TextField, { className: "ms-font-m-plus", onChanged: function (text) { return _this.luisKeyChanged(text); }, label: "LUIS Key", value: this.state.luisKeyVal }),
             React.createElement(office_ui_fabric_react_1.Label, { className: "ms-font-m-plus" }, "Locale"),
-            React.createElement(office_ui_fabric_react_1.Dropdown, { className: "ms-font-m-plus", defaultSelectedKey: this.state.localeVal, options: options, selectedKey: this.state.localeVal, disabled: true }),
+            React.createElement(office_ui_fabric_react_1.Dropdown, { className: "ms-font-m-plus", options: options, selectedKey: this.state.localeVal, disabled: true }),
             React.createElement("div", { style: buttonsDivStyle, className: "saveAppChangesButtonsDiv" },
                 React.createElement(office_ui_fabric_react_1.CommandButton, { "data-automation-id": 'randomID6', disabled: false, onClick: this.editApp.bind(this), className: 'goldButton', ariaDescription: 'Save Changes', text: 'Save Changes' }),
                 React.createElement(office_ui_fabric_react_1.CommandButton, { "data-automation-id": 'randomID7', className: "grayButton", disabled: false, onClick: this.discardChanges.bind(this), ariaDescription: 'Discard', text: 'Discard' }))));

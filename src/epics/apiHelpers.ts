@@ -7,7 +7,7 @@ import { Observable, Observer } from 'rxjs'
 //=========================================================
 // CONFIG
 //=========================================================
-
+const userId = 'testUser'
 const config: AxiosRequestConfig = {
 	headers: {
 		"Content-Type": "application/json"
@@ -60,7 +60,7 @@ export const getBlisAction = (appId: string, actionId: string): Observable<Axios
 //=========================================================
 
 export const createBlisApp = (blisApp: BlisAppBase): Observable<AxiosResponse> => {
-	let addAppRoute: string = `app`
+	let addAppRoute: string = `app?userId=${userId}`
 	//remove the appId property from the object
 	const { appId, ...appToSend } = blisApp
 	return Rx.Observable.fromPromise(axios.post(rootUrl.concat(addAppRoute), appToSend, config))
