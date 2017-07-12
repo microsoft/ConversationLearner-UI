@@ -1,13 +1,17 @@
-import { combineReducers } from 'redux';
+import { combineReducers, Reducer } from 'redux';
 import appsReducer from './appsReducer';
 import entitiesReducer from './entitiesReducer';
 import actionsReducer from './actionsReducer';
 import trainDialogsReducer from './trainDialogsReducer';
-const rootReducer = combineReducers({
+import displayReducer from './displayReducer';
+import { State } from '../types';
+
+const rootReducer = combineReducers<State>({
     apps: appsReducer,
     entities: entitiesReducer,
     actions: actionsReducer,
-    trainDialogs: trainDialogsReducer
+    trainDialogs: trainDialogsReducer,
+    display: displayReducer
 });
 
 export default rootReducer;

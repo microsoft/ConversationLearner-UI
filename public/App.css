@@ -5,7 +5,6 @@
 */
 
 .app{
-  display: inline-block;
   width: 100%;
   height: 100%;
 }
@@ -69,9 +68,6 @@
 .headerTitle:hover *{ 
     color: black;
 }
-.dummyContent {
-  height: 90%;
-}
 .dummyContent *{
   position: relative;
   float: left;
@@ -93,8 +89,11 @@
 }
 .goldButton{
   background-color: #ffb900 !important;
-  color:black !important;
+  color: black !important;
   padding: 0em 2em !important;
+}
+.goldButton *{
+  color: black !important;
 }
 .grayButton:hover {
   border: 1px solid #004b50;
@@ -169,7 +168,7 @@
   padding: 1em;
 }
 .modalFooter{
-  margin-top: 1em;
+  margin-top: 1.5em;
 }
 .createModal{
   border: 2px solid #004b50;
@@ -177,27 +176,98 @@
   padding: 1em;
   position: relative
 }
-.emulatorDisplay{
-  width: 32%;
-  display: inline-block;
-  vertical-align: top;
-  background: #323232;
-  border: 2px solid #ffb900;
-  height: 99.5%;
-}
-.emulatorDisplay *{ 
-  color: #ffb900
-}
-.trainingGroundDisplayWithEmulator{
-  margin-top: 2%;
-  margin-left: 2%;
-  width: 65%;
-  vertical-align: top;
-  display: inline-block;
-}
 .container{
   height: 100%;
 }
-.fluidCont{
-  height: 92%
+.emulatorDisplay{
+  background: #323232;
+  border: 2px solid #ffb900;
+  height: 99.5%;
+  margin-top: -2.2%;
+  width:80.7%;
+  margin-left: 5%;
+  display: inline-block;
+  vertical-align: top;
 }
+.webchatContainer *{
+  position: relative;
+  float: left;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.fluidCont{
+  height: 91.5%;
+}
+.ms-Icon--Delete:hover, .ms-Icon--Edit:hover{
+  cursor: pointer;
+}
+.emulatorContent{
+  margin-left: 5%;
+  margin-top: 2%;
+  height: 100%;
+}
+.goldText{
+  position: relative;
+  float: left;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #ffb900
+}
+.saveAppChangesButtonsDiv{
+  width: 100%;
+  display: block;
+  margin-top: 1em;
+}
+.actionCreatorCreateEntityButton{
+  float: right;
+}
+.webchatHeader{
+  width: 100%;
+}
+.webchatMetaShrink{
+  width: 35%;
+  height: 100%;
+  display: inline-block;
+  vertical-align: top;
+}
+.webchatShrink{
+  width: 64%;
+  height: 100%;
+  border-right: 2px solid #ffb900;
+  display: inline-block;
+  vertical-align: top;
+}
+.toggleMeta{
+  background-color: #ffb900 !important;
+  color:black !important;
+  padding: 0em 2em !important; 
+  float: right;
+}
+.webchatGoBack{
+  background-color: #ffb900 !important;
+  padding: 0em 2em !important;
+  display: inline-block;
+  vertical-align: top;
+}
+.webchatGoBack *{
+  color:black !important;
+}
+.toggleTrainDialog{
+  background-color: #323232 !important;
+  padding: 0em 2em !important;
+  margin-top: 20em;
+}
+.toggleTrainDialogForward{
+  float: right;
+  height: 80%;
+}
+.toggleTrainDialogBack{
+  float: left;
+  height: 80%;
+}
+.toggleTrainDialog *{
+  color: #ffb900 !important;
+}
+/*command buttons have 5em width*/

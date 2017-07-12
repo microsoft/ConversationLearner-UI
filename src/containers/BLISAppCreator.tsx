@@ -1,20 +1,54 @@
 import * as React from 'react';
-import { createBLISApplication } from '../actions/create';
+import axios from 'axios';
+import { createBLISApplication } from '../actions/createActions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
-import { CommandButton, Dialog, DialogFooter, DialogType, ChoiceGroup, TextField, DefaultButton } from 'office-ui-fabric-react';
-import { setBLISAppDisplay } from '../actions/update'
-import { fetchAllActions, fetchAllEntities, fetchAllTrainDialogs } from '../actions/fetch'
-import { BLISApplication } from '../models/Application'
+import { CommandButton, Dialog, DialogFooter, DialogType, ChoiceGroup, TextField, DefaultButton, Dropdown } from 'office-ui-fabric-react';
+import { setBLISAppDisplay } from '../actions/updateActions'
+import { fetchAllActions, fetchAllEntities, fetchAllTrainDialogs } from '../actions/fetchActions';
+import { BlisAppBase, BlisAppMetaData } from 'blis-models'
+import { developmentSubKeyLUIS } from '../secrets'
+import { State } from '../types'
+type CultureObject = {
+    CultureCode: string;
+    CultureName: string;
+}
 class BLISAppCreator extends React.Component<any, any> {
     constructor(p: any) {
         super(p);
         this.state = {
             open: false,
             appNameVal: '',
-            appDescVal: ''
+            localeVal: '',
+            luisKeyVal: '',
+            localeOptions: []
         }
+    }
+    componentWillMount() {
+        let url = 'https://westus.api.cognitive.microsoft.com/luis/v1.0/prog/apps/applicationcultures?';
+        const subscriptionKey: string = developmentSubKeyLUIS;
+        const config = {
+            headers: { "Ocp-Apim-Subscription-Key": subscriptionKey }
+        };
+        axios.get(url, config)
+            .then((response) => {
+                if (response.data) {
+                    let cultures: CultureObject[] = response.data;
+                    let cultureOptions = cultures.map((c: CultureObject) => {
+                        return {
+                            key: c.CultureCode,
+                            text: c.CultureCode,
+                        }
+                    })
+                    this.setState({
+                        localeOptions: cultureOptions,
+                        localeVal: cultureOptions[0].text
+                    })
+                }
+
+
+            })
     }
     handleOpen() {
         this.setState({
@@ -22,10 +56,12 @@ class BLISAppCreator extends React.Component<any, any> {
         })
     }
     handleClose() {
+        let firstValue = this.state.localeOptions[0].text
         this.setState({
             open: false,
             appNameVal: '',
-            appDescVal: ''
+            localeVal: firstValue,
+            luisKeyVal: ''
         })
     }
     nameChanged(text: string) {
@@ -33,12 +69,17 @@ class BLISAppCreator extends React.Component<any, any> {
             appNameVal: text
         })
     }
-    descriptionChanged(text: string) {
+    localeChanged(obj: { text: string }) {
         this.setState({
-            appDescVal: text
+            localeVal: obj.text
         })
     }
-    generateGUID() : string {
+    luisKeyChanged(text: string) {
+        this.setState({
+            luisKeyVal: text
+        })
+    }
+    generateGUID(): string {
         let d = new Date().getTime();
         let guid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (char) => {
             let r = (d + Math.random() * 16) % 16 | 0;
@@ -49,11 +90,17 @@ class BLISAppCreator extends React.Component<any, any> {
     }
     createApplication() {
         let randomGUID = this.generateGUID();
-        let appToAdd = new BLISApplication(randomGUID, this.state.appNameVal);
+        let meta = new BlisAppMetaData({
+            botFrameworkApps: []
+        })
+        let appToAdd = new BlisAppBase({
+            appId: randomGUID,
+            appName: this.state.appNameVal,
+            luisKey: this.state.luisKeyVal,
+            locale: this.state.localeVal,
+            metadata: meta
+        })
         this.props.createBLISApplication(appToAdd);
-        this.props.fetchAllActions(randomGUID);
-        this.props.fetchAllEntities(randomGUID);
-        this.props.fetchAllTrainDialogs(randomGUID);
         this.handleClose();
         this.props.setBLISAppDisplay("TrainingGround");
     }
@@ -78,8 +125,15 @@ class BLISAppCreator extends React.Component<any, any> {
                         <span className='ms-font-xxl ms-fontWeight-semilight'>Create a BLIS App</span>
                     </div>
                     <div>
-                        <TextField onChanged={this.nameChanged.bind(this)} label="Name" required={true} placeholder="Application Name..." value={this.state.appNameVal} />
-                        <TextField multiline inputClassName="ms-font-m-plus" autoAdjustHeight onChanged={this.descriptionChanged.bind(this)} label="Description" required={true} placeholder="Application Description..." value={this.state.appDescVal} />
+                        <TextField onChanged={this.nameChanged.bind(this)} label="Name" placeholder="Application Name..." value={this.state.appNameVal} />
+                        <TextField onChanged={this.luisKeyChanged.bind(this)} label="LUIS Key" placeholder="Key..." value={this.state.luisKeyVal} />
+                        <Dropdown
+                            label='Locale'
+                            defaultSelectedKey={this.state.localeVal}
+                            options={this.state.localeOptions}
+                            onChanged={this.localeChanged.bind(this)}
+                            selectedKey={this.state.localeVal}
+                        />
                     </div>
                     <div className='modalFooter'>
                         <CommandButton
@@ -113,7 +167,7 @@ const mapDispatchToProps = (dispatch: any) => {
         setBLISAppDisplay: setBLISAppDisplay
     }, dispatch);
 }
-const mapStateToProps = (state: any) => {
+const mapStateToProps = (state: State) => {
     return {
         blisApps: state.apps
     }

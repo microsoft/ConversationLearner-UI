@@ -1,15 +1,30 @@
-import { CREATE_ACTION } from '../actions/create';
-import { FETCH_ACTIONS } from '../actions/fetch';
-import ActionObject from '../actions/ActionObject'
-import { Action } from '../models/Action'
-const initialState: Action[] = [];
-export default (state = initialState, action: ActionObject<any>) => {
+import { ActionObject } from '../types'
+import { ActionState } from '../types'
+import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, ActionMetaData, ActionList, ActionTypes } from 'blis-models';
+import { Reducer } from 'redux'
+
+const initialState: ActionState = [];
+
+const actionsReducer: Reducer<ActionState> =  (state = initialState, action: ActionObject) => {
     switch(action.type) {
-        case FETCH_ACTIONS:
-            return action.payload;
-        case CREATE_ACTION:
-            return [...state, action.payload];
+        case 'FETCH_ACTIONS_FULFILLED':
+            return action.allActions;
+        case 'CREATE_ACTION':
+            return [...state, action.action];
+        case 'DELETE_ACTION':
+            return state.filter(a => a.actionId !== action.actionGUID)
+        case 'EDIT_ACTION':
+            let index: number = 0;
+            for(let i = 0; i < state.length; i++){
+                if(state[i].actionId == action.blisAction.actionId){
+                    index = i
+                }
+            }
+            let newState = Object.assign([], state);
+            newState[index] = action.blisAction;
+            return newState
         default:
             return state;
     }
 }
+export default actionsReducer;

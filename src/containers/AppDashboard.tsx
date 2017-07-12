@@ -2,6 +2,8 @@ import * as React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader'
+import { State } from '../types'
+
 class AppDashboard extends React.Component<any, any> {
     render() {
         return (
@@ -11,7 +13,7 @@ class AppDashboard extends React.Component<any, any> {
         );
     }
 }
-const mapStateToProps = (state: any) => {
+const mapStateToProps = (state: State) => {
     return {
         entities: state.entities,
         actions: state.actions,

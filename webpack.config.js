@@ -1,7 +1,7 @@
 var webpack = require('webpack');
 
 module.exports = {
-    entry: "./dist/index.js",
+    entry: "./src/index.tsx",
     output: {
         libraryTarget: "umd",
         library: "BLISTrainerProto",
