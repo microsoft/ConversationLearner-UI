@@ -7,6 +7,7 @@ import { Observable, Observer } from 'rxjs'
 //=========================================================
 // CONFIG
 //=========================================================
+
 const userId = 'testUser'
 const config: AxiosRequestConfig = {
 	headers: {

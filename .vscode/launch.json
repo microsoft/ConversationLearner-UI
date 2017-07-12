@@ -12,6 +12,23 @@
 			"stopOnEntry": false,
 			"args": [],
 			"cwd": "${workspaceRoot}",
+			"runtimeExecutable": null,
+			"runtimeArgs": [
+				"--nolazy"
+			],
+			"env": {
+				"NODE_ENV": "development"
+			},
+			"sourceMaps": false
+		},
+		{
+			"name": "Launch & Build",
+			"type": "node",
+			"request": "launch",
+			"program": "${workspaceRoot}/node_modules/lite-server/bin/lite-server",
+			"stopOnEntry": false,
+			"args": [],
+			"cwd": "${workspaceRoot}",
 			"preLaunchTask": "build",	
 			"runtimeExecutable": null,
 			"runtimeArgs": [
