@@ -1,4 +1,4 @@
-import { Entity } from './Entity';
+import { EntityBase } from 'blis-models';
 export class TrainDialog {
     constructor(public id: string, public dialog: Dialog, public appID: string){
     }
@@ -16,7 +16,7 @@ export class Turn {
     }
 }
 export class Input {
-    constructor(public context: any, public entityIDs: number[], public maskedActionIDs: number[], public text: string, public textAlts: string[], public textEntities: Entity[]){
+    constructor(public context: any, public entityIDs: number[], public maskedActionIDs: number[], public text: string, public textAlts: string[], public textEntities: EntityBase[]){
         this.context = context;
         this.entityIDs = entityIDs;
         this.maskedActionIDs = maskedActionIDs;

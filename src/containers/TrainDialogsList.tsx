@@ -3,7 +3,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader'
 import { DetailsList, CommandButton, Link, CheckboxVisibility, IColumn, SearchBox } from 'office-ui-fabric-react';
-import { TrainDialog, Dialog, Turn, Input } from '../models/TrainDialog';
+import { TrainDialog, Dialog, Turn, Input } from '../types';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import { setWebchatDisplay, setCurrentTrainDialog } from '../actions/updateActions'
 import { createTrainDialog } from '../actions/createActions'

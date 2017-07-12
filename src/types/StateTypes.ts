@@ -1,4 +1,4 @@
-import { TrainDialog } from '../models/TrainDialog'
+import { TrainDialog } from './TrainDialog'
 import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, ActionMetaData, ActionList, ActionTypes } from 'blis-models';
 
 export type ActionState = ActionBase[]

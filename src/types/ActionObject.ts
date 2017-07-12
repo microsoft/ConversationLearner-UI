@@ -1,4 +1,4 @@
-import { TrainDialog, Dialog, Turn, Input } from '../models/TrainDialog';
+import { TrainDialog, Dialog, Turn, Input } from '../types';
 import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, ActionMetaData, ActionList, ActionTypes } from 'blis-models'
 
 

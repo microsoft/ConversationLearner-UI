@@ -1,6 +1,5 @@
 import { ActionObject } from '../types'
-import { TrainDialog } from '../models/TrainDialog'
-import { TrainDialogState } from '../types'
+import { TrainDialogState, TrainDialog } from '../types'
 import { Reducer } from 'redux'
 
 const initialState: TrainDialogState = {

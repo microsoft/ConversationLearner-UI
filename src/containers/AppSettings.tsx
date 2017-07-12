@@ -4,8 +4,8 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader'
 import { State } from '../types';
-import { BLISApplication } from '../models/Application'
 import { CommandButton, ChoiceGroup, TextField, DefaultButton, Dropdown, Label } from 'office-ui-fabric-react';
+import { BlisAppBase, BlisAppMetaData } from 'blis-models'
 
 const styles = {
     shown: {
@@ -15,6 +15,7 @@ const styles = {
         visibility: "hidden"
     }
 }
+
 class AppSettings extends React.Component<any, any> {
     constructor(p: any) {
         super(p);
@@ -28,7 +29,7 @@ class AppSettings extends React.Component<any, any> {
         this.luisKeyChanged = this.luisKeyChanged.bind(this)
     }
     componentWillMount() {
-        let current: BLISApplication = this.props.blisApps.current
+        let current: BlisAppBase = this.props.blisApps.current
         this.setState({
             localeVal: current.locale,
             appIdVal: current.appId,
@@ -37,7 +38,7 @@ class AppSettings extends React.Component<any, any> {
         })
     }
     componentDidUpdate() {
-        let current: BLISApplication = this.props.blisApps.current
+        let current: BlisAppBase = this.props.blisApps.current
         if (this.state.edited == false && (this.state.localeVal !== current.locale ||
             this.state.appIdVal !== current.appId ||
             this.state.appNameVal !== current.appName ||
@@ -63,7 +64,7 @@ class AppSettings extends React.Component<any, any> {
         })
     }
     discardChanges() {
-        let current: BLISApplication = this.props.blisApps.current
+        let current: BlisAppBase = this.props.blisApps.current
         this.setState({
             localeVal: current.locale,
             appIdVal: current.appId,
@@ -73,8 +74,14 @@ class AppSettings extends React.Component<any, any> {
         })
     }
     editApp() {
-        let current: BLISApplication = this.props.blisApps.current
-        let appToAdd = new BLISApplication(current.appId, this.state.appNameVal, this.state.luisKeyVal, current.locale);
+        let current: BlisAppBase = this.props.blisApps.current;
+        let appToAdd = new BlisAppBase({
+            appName: this.state.appNameVal,
+            appId: current.appId,
+            luisKey: this.state.luisKeyVal,
+            locale: current.locale,
+            metadata: current.metadata
+        })
         this.props.editBLISApplication(appToAdd);
         this.setState({
             localeVal: current.locale,
@@ -99,7 +106,6 @@ class AppSettings extends React.Component<any, any> {
                 <Label className="ms-font-m-plus">Locale</Label>
                 <Dropdown
                     className="ms-font-m-plus"
-                    defaultSelectedKey={this.state.localeVal}
                     options={options}
                     selectedKey={this.state.localeVal}
                     disabled={true}

@@ -1,5 +1,4 @@
-import { TrainDialog } from '../models/TrainDialog'
-import { ActionObject } from '../types'
+import { ActionObject, TrainDialog } from '../types'
 import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, ActionMetaData, ActionList, ActionTypes } from 'blis-models';
 
 export const createBLISApplication = (application: BlisAppBase): ActionObject => {
