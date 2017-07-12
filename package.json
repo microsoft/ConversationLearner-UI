@@ -11,7 +11,7 @@
     "blis-models": "https://aka.ms/blis-models",
     "botframework-webchat": "^0.10.6",
     "lite-server": "^2.3.0",
-    "office-ui-fabric-react": "^4.4.0",
+    "office-ui-fabric-react": "^4.18.0",
     "react": "^15.5.4",
     "react-dom": "^15.5.4",
     "react-redux": "^5.0.5",
