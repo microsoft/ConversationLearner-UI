@@ -8,7 +8,7 @@ import { fetchApplicationsFulfilled, fetchAllEntitiesFulfilled, fetchAllActionsF
 
 export const fetchApplications: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
     return action$.ofType("FETCH_APPLICATIONS")
-        .flatMap(action =>
+        .flatMap((action: any) =>
             getAllBlisApps()
                 .map(response => fetchApplicationsFulfilled(response.data.apps))
         );
@@ -16,7 +16,7 @@ export const fetchApplications: Epic<ActionObject, State> = (action$: ActionsObs
 
 export const fetchEntities: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
     return action$.ofType("FETCH_ENTITIES")
-        .flatMap(action =>
+        .flatMap((action: any) =>
             getAllEntitiesForBlisApp(action.blisAppID)
                 .map(response => fetchAllEntitiesFulfilled(response.data.entities))
         );       
@@ -24,7 +24,7 @@ export const fetchEntities: Epic<ActionObject, State> = (action$: ActionsObserva
 
 export const fetchActions: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
     return action$.ofType("FETCH_ACTIONS")
-        .flatMap(action =>
+        .flatMap((action: any) =>
             getAllActionsForBlisApp(action.blisAppID)
                 .map(response => fetchAllActionsFulfilled(response.data.actions))
         );

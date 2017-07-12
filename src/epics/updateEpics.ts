@@ -8,7 +8,7 @@ import { editBlisAction, editBlisApp } from "./apiHelpers";
 
 export const editApplication: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
     return action$.ofType("EDIT_BLIS_APPLICATION")
-        .flatMap(action =>
+        .flatMap((action: any) =>
             editBlisApp(action.blisApp.appId, action.blisApp)
 				.mapTo({type: "UPDATE_OPERATION_FULFILLED"})
         );
@@ -16,7 +16,7 @@ export const editApplication: Epic<ActionObject, State> = (action$: ActionsObser
 
 export const editAction: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
     return action$.ofType("EDIT_ACTION")
-        .flatMap(action =>
+        .flatMap((action: any) =>
             editBlisAction(action.currentAppId, action.blisAction.actionId, action.blisAction)
 				.mapTo({type: "UPDATE_OPERATION_FULFILLED"})
         );
