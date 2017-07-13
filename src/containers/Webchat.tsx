@@ -3,13 +3,23 @@ import { createBLISApplication } from '../actions/createActions';
 import { setWebchatDisplay, toggleTrainDialog } from '../actions/updateActions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { State } from '../types';
+import { State, TrainDialogState, AppState } from '../types';
 import { CommandButton, IIconProps, IIconStyles } from 'office-ui-fabric-react';
-interface Props {
+
+interface PassedProps {
     toggleMeta: Function;
     buttonText: string
 }
-class Webchat extends React.Component<any, any> {
+interface ConnectedProps {
+    blisApps: AppState,
+    trainDialogs: TrainDialogState,
+    createBLISApplication: Function,
+    setWebchatDisplay: Function,
+    toggleTrainDialog: Function
+}
+type Props = PassedProps & ConnectedProps;
+
+class Webchat extends React.Component<Props, any> {
     constructor(p: Props) {
         super(p);
     }
@@ -34,28 +44,28 @@ class Webchat extends React.Component<any, any> {
                         text={this.props.buttonText}
                     />
                 </div>
-                    <div className="toggleTrainDialogBack">
-                        <CommandButton
-                            data-automation-id='randomID14'
-                            disabled={false}
-                            className='toggleTrainDialog'
-                            onClick={() => this.props.toggleTrainDialog(false)}
-                            ariaDescription={this.props.buttonText}
-                            iconProps={{ iconName: 'Back' }}
-                        />
-                    </div>
-                    <div>
-                    </div>
-                    <div className="toggleTrainDialogForward">
-                        <CommandButton
-                            data-automation-id='randomID13'
-                            disabled={false}
-                            onClick={() => this.props.toggleTrainDialog(true)}
-                            className='toggleTrainDialog'
-                            ariaDescription={this.props.buttonText}
-                            iconProps={{ iconName: 'Forward' }}
-                        />
-                    </div>
+                <div className="toggleTrainDialogBack">
+                    <CommandButton
+                        data-automation-id='randomID14'
+                        disabled={false}
+                        className='toggleTrainDialog'
+                        onClick={() => this.props.toggleTrainDialog(false)}
+                        ariaDescription={this.props.buttonText}
+                        iconProps={{ iconName: 'Back' }}
+                    />
+                </div>
+                <div>
+                </div>
+                <div className="toggleTrainDialogForward">
+                    <CommandButton
+                        data-automation-id='randomID13'
+                        disabled={false}
+                        onClick={() => this.props.toggleTrainDialog(true)}
+                        className='toggleTrainDialog'
+                        ariaDescription={this.props.buttonText}
+                        iconProps={{ iconName: 'Forward' }}
+                    />
+                </div>
             </div>
         );
     }
@@ -67,10 +77,10 @@ const mapDispatchToProps = (dispatch: any) => {
         toggleTrainDialog: toggleTrainDialog
     }, dispatch);
 }
-const mapStateToProps = (state: State) => {
+const mapStateToProps = (state: State, ownProps: any) => {
     return {
         blisApps: state.apps,
         trainDialogs: state.trainDialogs
     }
 }
-export default connect(mapStateToProps, mapDispatchToProps)(Webchat);
+export default connect(mapStateToProps, mapDispatchToProps)(Webchat as React.ComponentClass<any>);

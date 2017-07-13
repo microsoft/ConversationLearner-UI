@@ -16360,7 +16360,7 @@ var mapDispatchToProps = function (dispatch) {
         editEntity: updateActions_1.editEntity
     }, dispatch);
 };
-var mapStateToProps = function (state) {
+var mapStateToProps = function (state, ownProps) {
     return {
         entities: state.entities,
         blisApps: state.apps
@@ -30565,7 +30565,7 @@ var mapDispatchToProps = function (dispatch) {
         editAction: updateActions_1.editAction
     }, dispatch);
 };
-var mapStateToProps = function (state) {
+var mapStateToProps = function (state, ownProps) {
     return {
         actions: state.actions,
         blisApps: state.apps,
@@ -31786,7 +31786,7 @@ var mapDispatchToProps = function (dispatch) {
         toggleTrainDialog: updateActions_1.toggleTrainDialog
     }, dispatch);
 };
-var mapStateToProps = function (state) {
+var mapStateToProps = function (state, ownProps) {
     return {
         blisApps: state.apps,
         trainDialogs: state.trainDialogs

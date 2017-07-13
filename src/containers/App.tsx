@@ -20,8 +20,8 @@ class App extends React.Component<any, any> {
       <Router>
         <div className="app">
           <Header setDisplay={this.props.setBLISAppDisplay} setWebchatDisplay={this.props.setWebchatDisplay} />
-          <Route exact path="/" component={BLISAppsHomepage} />
-          <Route path="/myApps" component={BLISAppsHomepage} />
+          <Route exact path="/" component={BLISAppsHomepage as React.ComponentClass<any>} />
+          <Route path="/myApps" component={BLISAppsHomepage as React.ComponentClass<any>} />
           <Route path="/about" component={About} />
           <Route path="/support" component={Support} />
           <Route path="/docs" component={Docs} />
