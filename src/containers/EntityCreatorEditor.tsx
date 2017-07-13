@@ -156,10 +156,13 @@ class EntityCreatorEditor extends React.Component<any, any> {
             }
         })
         let title: string;
+        let createButtonText: string;
         if (this.state.editing == true) {
             title = "Edit Entity"
+            createButtonText = "Save"
         } else {
             title = "Create an Entity"
+            createButtonText = "Create"
         }
         return (
             <div>
@@ -222,7 +225,7 @@ class EntityCreatorEditor extends React.Component<any, any> {
                             onClick={this.createEntity.bind(this)}
                             className='goldButton'
                             ariaDescription='Create'
-                            text='Create'
+                            text={createButtonText}
                         />
                         <CommandButton
                             data-automation-id='randomID3'
