@@ -247,10 +247,10 @@ const mapDispatchToProps = (dispatch: any) => {
         editEntity: editEntity
     }, dispatch);
 }
-const mapStateToProps = (state: State) => {
+const mapStateToProps = (state: State, ownProps: any) => {
     return {
         entities: state.entities,
         blisApps: state.apps
     }
 }
-export default connect(mapStateToProps, mapDispatchToProps)(EntityCreatorEditor);
+export default connect(mapStateToProps, mapDispatchToProps)(EntityCreatorEditor as React.ComponentClass<any>);
