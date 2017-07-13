@@ -4,8 +4,8 @@ import { editEntity } from '../actions/updateActions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
-import { CommandButton, Dialog, DialogFooter, DialogType, ChoiceGroup, TextField, DefaultButton, Dropdown } from 'office-ui-fabric-react';
-import { State } from '../types';
+import { CommandButton, Dialog, DialogFooter, DialogType, ChoiceGroup, TextField, DefaultButton, Dropdown, DropdownMenuItemType } from 'office-ui-fabric-react';
+import { State, PreBuiltEntities, PreBuilts, LocalePreBuilts } from '../types';
 import { EntityBase, EntityMetaData } from 'blis-models'
 
 interface Props {
@@ -149,14 +149,29 @@ class EntityCreatorEditor extends React.Component<any, any> {
     }
     render() {
         let vals: string[] = ["LOCAL", "LUIS"]
-        let options = vals.map(v => {
+        let options: {}[] = vals.map(v => {
             return {
                 key: v,
                 text: v
             }
         })
+        options.unshift({ key: 'BlisHeader', text: 'BLIS Entity Types', itemType: DropdownMenuItemType.Header })
+        options.push({ key: 'divider', text: '-', itemType: DropdownMenuItemType.Divider })
+        options.push({ key: 'LuisHeader', text: 'LUIS Pre-Built Entity Types', itemType: DropdownMenuItemType.Header })
+        
+        let localePreBuilts: LocalePreBuilts = PreBuiltEntities.find((obj: LocalePreBuilts) => obj.locale == this.props.blisApps.current.locale)
+        let prebuiltVals: string[] = localePreBuilts.preBuiltEntities.map((entityName: string) => {
+            return entityName
+        })
+        prebuiltVals.map((entityName: string) => {
+            options.push({
+                key: entityName,
+                text: entityName
+            })
+        })
         let title: string;
         let createButtonText: string;
+
         if (this.state.editing == true) {
             title = "Edit Entity"
             createButtonText = "Save"

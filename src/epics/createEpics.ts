@@ -12,6 +12,7 @@ export const createNewApplication: Epic<ActionObject, State> = (action$: Actions
 				.mapTo({type: "CREATE_OPERATION_FULFILLED"})
         );
 }
+
 export const createNewEntity: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
     return action$.ofType("CREATE_ENTITY")
         .flatMap((action: any) =>
@@ -19,6 +20,7 @@ export const createNewEntity: Epic<ActionObject, State> = (action$: ActionsObser
 				.mapTo({type: "CREATE_OPERATION_FULFILLED"})
         );
 }
+
 export const createNewAction: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
     return action$.ofType("CREATE_ACTION")
         .flatMap((actionObject: any) =>
