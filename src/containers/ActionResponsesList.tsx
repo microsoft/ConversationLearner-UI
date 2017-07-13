@@ -206,7 +206,7 @@ class ActionResponsesHomepage extends React.Component<any, any> {
                         ariaDescription='Create a New Action'
                         text='New Action'
                     />
-                    <ActionResponseCreatorEditor open={this.state.createEditModalOpen} action={this.state.actionSelected} handleClose={this.handleCloseCreateModal.bind(this)} />
+                    <ActionResponseCreatorEditor open={this.state.createEditModalOpen} blisAction={this.state.actionSelected} handleClose={this.handleCloseCreateModal.bind(this)} />
                 </div>
                 <SearchBox
                     className="ms-font-m-plus"

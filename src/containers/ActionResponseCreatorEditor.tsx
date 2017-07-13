@@ -15,7 +15,7 @@ interface EntityPickerObject {
 }
 interface Props {
     open: boolean,
-    action: ActionBase | null,
+    blisAction: ActionBase | null,
     handleClose: Function
 }
 class ActionResponseCreatorEditor extends React.Component<any, any> {
@@ -50,7 +50,7 @@ class ActionResponseCreatorEditor extends React.Component<any, any> {
                 availableNegativeEntities: entities,
             })
         } else {
-            if (p.action === null) {
+            if (p.blisAction === null) {
                 this.setState({
                     actionTypeVal: 'TEXT',
                     contentVal: '',
@@ -68,7 +68,7 @@ class ActionResponseCreatorEditor extends React.Component<any, any> {
                 })
             } else {
                 let initWaitKey: string;
-                if (p.action.isTerminal == true) {
+                if (p.blisAction.isTerminal == true) {
                     initWaitKey = 'waitTrue'
                 } else {
                     initWaitKey = 'waitFalse'
@@ -79,14 +79,14 @@ class ActionResponseCreatorEditor extends React.Component<any, any> {
                         name: e.entityName
                     }
                 })
-                let requiredEntities: EntityPickerObject[] = p.action.requiredEntities.map((entityId: string) => {
+                let requiredEntities: EntityPickerObject[] = p.blisAction.requiredEntities.map((entityId: string) => {
                     let found: EntityBase = this.props.entities.find((e: EntityBase) => e.entityId == entityId);
                     return {
                         key: found.entityName,
                         name: found.entityName
                     }
                 })
-                let negativeEntities: EntityPickerObject[] = p.action.negativeEntities.map((entityId: string) => {
+                let negativeEntities: EntityPickerObject[] = p.blisAction.negativeEntities.map((entityId: string) => {
                     let found: EntityBase = this.props.entities.find((e: EntityBase) => e.entityId == entityId);
                     return {
                         key: found.entityName,
@@ -94,11 +94,11 @@ class ActionResponseCreatorEditor extends React.Component<any, any> {
                     }
                 })
                 this.setState({
-                    actionTypeVal: p.action.metadata.actionType,
-                    contentVal: p.action.payload,
+                    actionTypeVal: p.blisAction.metadata.actionType,
+                    contentVal: p.blisAction.payload,
                     reqEntitiesVal: requiredEntities,
                     negEntitiesVal: negativeEntities,
-                    waitVal: p.action.isTerminal,
+                    waitVal: p.blisAction.isTerminal,
                     waitKey: initWaitKey,
                     availableRequiredEntities: entities,
                     availableNegativeEntities: entities,
@@ -193,7 +193,7 @@ class ActionResponseCreatorEditor extends React.Component<any, any> {
         this.props.handleClose();
     }
     editAction(actionToAdd: ActionBase, currentAppId: string) {
-        actionToAdd.actionId = this.props.action.actionId;
+        actionToAdd.actionId = this.props.blisAction.actionId;
         this.props.editAction(actionToAdd, currentAppId);
     }
     waitChanged(event: any, option: { text: string }) {

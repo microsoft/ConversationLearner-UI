@@ -5,23 +5,23 @@ import { Reducer } from 'redux'
 
 const initialState: ActionState = [];
 
-const actionsReducer: Reducer<ActionState> =  (state = initialState, action: ActionObject) => {
-    switch(action.type) {
+const actionsReducer: Reducer<ActionState> =  (state = initialState, actionObject: ActionObject) => {
+    switch(actionObject.type) {
         case 'FETCH_ACTIONS_FULFILLED':
-            return action.allActions;
+            return actionObject.allActions;
         case 'CREATE_ACTION':
-            return [...state, action.action];
+            return [...state, actionObject.action];
         case 'DELETE_ACTION':
-            return state.filter(a => a.actionId !== action.actionGUID)
+            return state.filter(a => a.actionId !== actionObject.actionGUID)
         case 'EDIT_ACTION':
             let index: number = 0;
             for(let i = 0; i < state.length; i++){
-                if(state[i].actionId == action.blisAction.actionId){
+                if(state[i].actionId == actionObject.blisAction.actionId){
                     index = i
                 }
             }
             let newState = Object.assign([], state);
-            newState[index] = action.blisAction;
+            newState[index] = actionObject.blisAction;
             return newState
         default:
             return state;

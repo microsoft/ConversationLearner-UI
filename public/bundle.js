@@ -30291,7 +30291,7 @@ var ActionResponseCreatorEditor = (function (_super) {
             });
         }
         else {
-            if (p.action === null) {
+            if (p.blisAction === null) {
                 this.setState({
                     actionTypeVal: 'TEXT',
                     contentVal: '',
@@ -30310,7 +30310,7 @@ var ActionResponseCreatorEditor = (function (_super) {
             }
             else {
                 var initWaitKey = void 0;
-                if (p.action.isTerminal == true) {
+                if (p.blisAction.isTerminal == true) {
                     initWaitKey = 'waitTrue';
                 }
                 else {
@@ -30322,14 +30322,14 @@ var ActionResponseCreatorEditor = (function (_super) {
                         name: e.entityName
                     };
                 });
-                var requiredEntities = p.action.requiredEntities.map(function (entityId) {
+                var requiredEntities = p.blisAction.requiredEntities.map(function (entityId) {
                     var found = _this.props.entities.find(function (e) { return e.entityId == entityId; });
                     return {
                         key: found.entityName,
                         name: found.entityName
                     };
                 });
-                var negativeEntities = p.action.negativeEntities.map(function (entityId) {
+                var negativeEntities = p.blisAction.negativeEntities.map(function (entityId) {
                     var found = _this.props.entities.find(function (e) { return e.entityId == entityId; });
                     return {
                         key: found.entityName,
@@ -30337,11 +30337,11 @@ var ActionResponseCreatorEditor = (function (_super) {
                     };
                 });
                 this.setState({
-                    actionTypeVal: p.action.metadata.actionType,
-                    contentVal: p.action.payload,
+                    actionTypeVal: p.blisAction.metadata.actionType,
+                    contentVal: p.blisAction.payload,
                     reqEntitiesVal: requiredEntities,
                     negEntitiesVal: negativeEntities,
-                    waitVal: p.action.isTerminal,
+                    waitVal: p.blisAction.isTerminal,
                     waitKey: initWaitKey,
                     availableRequiredEntities: entities,
                     availableNegativeEntities: entities,
@@ -30437,7 +30437,7 @@ var ActionResponseCreatorEditor = (function (_super) {
         this.props.handleClose();
     };
     ActionResponseCreatorEditor.prototype.editAction = function (actionToAdd, currentAppId) {
-        actionToAdd.actionId = this.props.action.actionId;
+        actionToAdd.actionId = this.props.blisAction.actionId;
         this.props.editAction(actionToAdd, currentAppId);
     };
     ActionResponseCreatorEditor.prototype.waitChanged = function (event, option) {
@@ -30779,7 +30779,7 @@ var ActionResponsesHomepage = (function (_super) {
             React.createElement(TrainingGroundArenaHeader_1.default, { title: "Actions", description: "Manage a list of actions that your application can take given it's state and user input.." }),
             React.createElement("div", { className: 'actionResponseCreator' },
                 React.createElement(office_ui_fabric_react_1.CommandButton, { "data-automation-id": 'randomID4', disabled: false, onClick: this.handleOpenCreateModal.bind(this), className: 'goldButton', ariaDescription: 'Create a New Action', text: 'New Action' }),
-                React.createElement(ActionResponseCreatorEditor_1.default, { open: this.state.createEditModalOpen, action: this.state.actionSelected, handleClose: this.handleCloseCreateModal.bind(this) })),
+                React.createElement(ActionResponseCreatorEditor_1.default, { open: this.state.createEditModalOpen, blisAction: this.state.actionSelected, handleClose: this.handleCloseCreateModal.bind(this) })),
             React.createElement(office_ui_fabric_react_1.SearchBox, { className: "ms-font-m-plus", onChange: function (newValue) { return _this.onChange(newValue); }, onSearch: function (newValue) { return _this.onChange(newValue); } }),
             React.createElement(office_ui_fabric_react_1.DetailsList, { className: "ms-font-m-plus", items: actionItems, columns: columns, checkboxVisibility: office_ui_fabric_react_1.CheckboxVisibility.hidden, onRenderItemColumn: this.renderItemColumn, onActiveItemChanged: function (item) { return _this.editSelectedAction(item); } }),
             React.createElement(ConfirmDeleteModal_1.default, { open: this.state.confirmDeleteActionModalOpen, onCancel: function () { return _this.handleCloseModal(); }, onConfirm: function () { return _this.deleteSelectedAction(); }, title: "Are you sure you want to delete this action?" })));
@@ -31856,8 +31856,8 @@ exports.createNewEntity = function (action$) {
 };
 exports.createNewAction = function (action$) {
     return action$.ofType("CREATE_ACTION")
-        .flatMap(function (action) {
-        return apiHelpers_1.createBlisAction(action.action, action.currentAppId)
+        .flatMap(function (actionObject) {
+        return apiHelpers_1.createBlisAction(actionObject.action, actionObject.currentAppId)
             .mapTo({ type: "CREATE_OPERATION_FULFILLED" });
     });
 };
@@ -31888,8 +31888,8 @@ exports.deleteEntity = function (action$) {
 };
 exports.deleteAction = function (action$) {
     return action$.ofType("DELETE_ACTION")
-        .flatMap(function (action) {
-        return apiHelpers_1.deleteBlisAction(action.currentAppId, action.actionGUID, action.action)
+        .flatMap(function (actionObject) {
+        return apiHelpers_1.deleteBlisAction(actionObject.currentAppId, actionObject.actionGUID, actionObject.action)
             .mapTo({ type: "DELETE_OPERATION_FULFILLED" });
     });
 };
@@ -31994,24 +31994,24 @@ ReactDOM.render(React.createElement(react_redux_1.Provider, { store: reduxStore_
 
 Object.defineProperty(exports, "__esModule", { value: true });
 var initialState = [];
-var actionsReducer = function (state, action) {
+var actionsReducer = function (state, actionObject) {
     if (state === void 0) { state = initialState; }
-    switch (action.type) {
+    switch (actionObject.type) {
         case 'FETCH_ACTIONS_FULFILLED':
-            return action.allActions;
+            return actionObject.allActions;
         case 'CREATE_ACTION':
-            return state.concat([action.action]);
+            return state.concat([actionObject.action]);
         case 'DELETE_ACTION':
-            return state.filter(function (a) { return a.actionId !== action.actionGUID; });
+            return state.filter(function (a) { return a.actionId !== actionObject.actionGUID; });
         case 'EDIT_ACTION':
             var index = 0;
             for (var i = 0; i < state.length; i++) {
-                if (state[i].actionId == action.blisAction.actionId) {
+                if (state[i].actionId == actionObject.blisAction.actionId) {
                     index = i;
                 }
             }
             var newState = Object.assign([], state);
-            newState[index] = action.blisAction;
+            newState[index] = actionObject.blisAction;
             return newState;
         default:
             return state;

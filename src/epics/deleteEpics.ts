@@ -23,8 +23,8 @@ export const deleteEntity: Epic<ActionObject, State> = (action$: ActionsObservab
 
 export const deleteAction: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
     return action$.ofType("DELETE_ACTION")
-        .flatMap((action: any) =>
-            deleteBlisAction(action.currentAppId, action.actionGUID, action.action)
+        .flatMap((actionObject: any) =>
+            deleteBlisAction(actionObject.currentAppId, actionObject.actionGUID, actionObject.action)
 				.mapTo({type: "DELETE_OPERATION_FULFILLED"})
         );
 }
