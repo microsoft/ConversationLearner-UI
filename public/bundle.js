@@ -8182,7 +8182,7 @@ exports.deleteBlisApp = function (blisAppId, blisApp) {
     return Rx.Observable.fromPromise(axios_1.default.delete(rootUrl.concat(deleteAppRoute), configWithBody));
 };
 exports.deleteBlisEntity = function (appId, entity) {
-    var deleteEntityRoute = "app/" + appId + "/entity";
+    var deleteEntityRoute = "app/" + appId + "/entity/" + entity.entityId;
     var version = entity.version, packageCreationId = entity.packageCreationId, packageDeletionId = entity.packageDeletionId, entityId = entity.entityId, entityToSend = tslib_1.__rest(entity, ["version", "packageCreationId", "packageDeletionId", "entityId"]);
     var configWithBody = tslib_1.__assign({}, config, { body: entityToSend });
     return Rx.Observable.fromPromise(axios_1.default.delete(rootUrl.concat(deleteEntityRoute), configWithBody));
