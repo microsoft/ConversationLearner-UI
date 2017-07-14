@@ -55,7 +55,6 @@ class EntitiesList extends React.Component<any, any> {
     constructor(p: any) {
         super(p);
         this.deleteSelectedEntity = this.deleteSelectedEntity.bind(this);
-        this.editSelectedEntity = this.editSelectedEntity.bind(this)
         this.renderItemColumn = this.renderItemColumn.bind(this)
         this.onChange = this.onChange.bind(this)
         this.renderEntityItems = this.renderEntityItems.bind(this)
@@ -130,12 +129,6 @@ class EntitiesList extends React.Component<any, any> {
             searchValue: lcString
         })
     }
-    editSelectedEntity(entity: EntityBase) {
-        this.setState({
-            entitySelected: entity,
-            createEditModalOpen: true
-        })
-    }
     handleOpenCreateModal() {
         this.setState({
             createEditModalOpen: true
@@ -174,7 +167,6 @@ class EntitiesList extends React.Component<any, any> {
                     columns={columns}
                     checkboxVisibility={CheckboxVisibility.hidden}
                     onRenderItemColumn={this.renderItemColumn}
-                    onActiveItemChanged={(item) => this.editSelectedEntity(item)}
                 />
                 <ConfirmDeleteModal open={this.state.confirmDeleteEntityModalOpen} onCancel={() => this.handleCloseDeleteModal()} onConfirm={() => this.deleteSelectedEntity()} title="Are you sure you want to delete this entity?" />
 

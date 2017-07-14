@@ -31568,7 +31568,6 @@ var EntitiesList = (function (_super) {
     function EntitiesList(p) {
         var _this = _super.call(this, p) || this;
         _this.deleteSelectedEntity = _this.deleteSelectedEntity.bind(_this);
-        _this.editSelectedEntity = _this.editSelectedEntity.bind(_this);
         _this.renderItemColumn = _this.renderItemColumn.bind(_this);
         _this.onChange = _this.onChange.bind(_this);
         _this.renderEntityItems = _this.renderEntityItems.bind(_this);
@@ -31645,12 +31644,6 @@ var EntitiesList = (function (_super) {
             searchValue: lcString
         });
     };
-    EntitiesList.prototype.editSelectedEntity = function (entity) {
-        this.setState({
-            entitySelected: entity,
-            createEditModalOpen: true
-        });
-    };
     EntitiesList.prototype.handleOpenCreateModal = function () {
         this.setState({
             createEditModalOpen: true
@@ -31671,7 +31664,7 @@ var EntitiesList = (function (_super) {
                 React.createElement(office_ui_fabric_react_1.CommandButton, { "data-automation-id": 'randomID4', disabled: false, onClick: this.handleOpenCreateModal.bind(this), className: 'goldButton', ariaDescription: 'Create a New Entity', text: 'New Entity' }),
                 React.createElement(EntityCreatorEditor_1.default, { open: this.state.createEditModalOpen, entity: this.state.entitySelected, handleClose: this.handleCloseCreateModal.bind(this) })),
             React.createElement(office_ui_fabric_react_1.SearchBox, { className: "ms-font-m-plus", onChange: function (newValue) { return _this.onChange(newValue); }, onSearch: function (newValue) { return _this.onChange(newValue); } }),
-            React.createElement(office_ui_fabric_react_1.DetailsList, { className: "ms-font-m-plus", items: entityItems, columns: columns, checkboxVisibility: office_ui_fabric_react_1.CheckboxVisibility.hidden, onRenderItemColumn: this.renderItemColumn, onActiveItemChanged: function (item) { return _this.editSelectedEntity(item); } }),
+            React.createElement(office_ui_fabric_react_1.DetailsList, { className: "ms-font-m-plus", items: entityItems, columns: columns, checkboxVisibility: office_ui_fabric_react_1.CheckboxVisibility.hidden, onRenderItemColumn: this.renderItemColumn }),
             React.createElement(ConfirmDeleteModal_1.default, { open: this.state.confirmDeleteEntityModalOpen, onCancel: function () { return _this.handleCloseDeleteModal(); }, onConfirm: function () { return _this.deleteSelectedEntity(); }, title: "Are you sure you want to delete this entity?" })));
     };
     return EntitiesList;
