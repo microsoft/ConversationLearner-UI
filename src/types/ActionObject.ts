@@ -39,7 +39,9 @@ export type UpdateAction = {
     name: string,
     password: string,
     id: string
-} 
+} | {
+    type: "EMPTY_STATE_PROPERTIES"
+}
 
 export type FetchAction = {
     type: 'FETCH_APPLICATIONS',
@@ -81,6 +83,9 @@ export type CreateAction = {
     trainDialog: TrainDialog,
 } | {
     type: "CREATE_OPERATION_FULFILLED"
+} | {
+    type: 'CREATE_BLIS_APPLICATION_FULFILLED',
+    blisAppId: string
 }
 
 export type DeleteAction = {

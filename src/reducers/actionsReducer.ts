@@ -9,6 +9,9 @@ const actionsReducer: Reducer<ActionState> =  (state = initialState, actionObjec
     switch(actionObject.type) {
         case 'FETCH_ACTIONS_FULFILLED':
             return actionObject.allActions;
+        case "EMPTY_STATE_PROPERTIES": 
+            let empty: ActionState = []
+            return empty;
         case 'CREATE_ACTION':
             return [...state, actionObject.action];
         case 'DELETE_ACTION':

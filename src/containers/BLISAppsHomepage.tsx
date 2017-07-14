@@ -17,7 +17,9 @@ class BLISAppsHomepage extends React.Component<any, any> {
     componentDidUpdate()
     {
         if (this.state.displayedUserId != this.props.userId) {
-            this.state.displayedUserId = this.props.userId;
+            this.setState({
+                displayedUserId: this.props.userId
+            })
             this.props.fetchApplications(this.props.userId);
         }
     }

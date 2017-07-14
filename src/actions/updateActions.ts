@@ -9,6 +9,12 @@ export const setCurrentBLISApp = (app: BlisAppBase) : ActionObject => {
     }
 }
 
+export const emptyStateProperties = () : ActionObject => { 
+    return {
+        type: 'EMPTY_STATE_PROPERTIES'
+    }
+}
+
 export const setCurrentTrainDialog = (trainDialog: TrainDialog) : ActionObject => { 
     return {
         type: 'SET_CURRENT_TRAIN_DIALOG',

@@ -5,11 +5,12 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { CommandButton, Dialog, DialogFooter, DialogType, ChoiceGroup, TextField, DefaultButton, Dropdown } from 'office-ui-fabric-react';
-import { setBLISAppDisplay } from '../actions/updateActions'
+import { setBLISAppDisplay, emptyStateProperties } from '../actions/updateActions'
 import { fetchAllActions, fetchAllEntities, fetchAllTrainDialogs } from '../actions/fetchActions';
 import { BlisAppBase, BlisAppMetaData } from 'blis-models'
 import { developmentSubKeyLUIS } from '../secrets'
 import { State } from '../types'
+
 type CultureObject = {
     CultureCode: string;
     CultureName: string;
@@ -79,28 +80,20 @@ class BLISAppCreator extends React.Component<any, any> {
             luisKeyVal: text
         })
     }
-    generateGUID(): string {
-        let d = new Date().getTime();
-        let guid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (char) => {
-            let r = (d + Math.random() * 16) % 16 | 0;
-            d = Math.floor(d / 16);
-            return (char == 'x' ? r : (r & 0x3 | 0x8)).toString(16);
-        });
-        return guid;
-    }
     createApplication() {
-        let randomGUID = this.generateGUID();
         let meta = new BlisAppMetaData({
             botFrameworkApps: []
         })
         let appToAdd = new BlisAppBase({
-            appId: randomGUID,
+            appId: null,
             appName: this.state.appNameVal,
             luisKey: this.state.luisKeyVal,
             locale: this.state.localeVal,
             metadata: meta
         })
         this.props.createBLISApplication(this.props.userId, appToAdd);
+        //need to empty entities, actions, and trainDialogs arrays
+        this.props.emptyStateProperties();
         this.handleClose();
         this.props.setBLISAppDisplay("TrainingGround");
     }
@@ -164,7 +157,8 @@ const mapDispatchToProps = (dispatch: any) => {
         fetchAllActions: fetchAllActions,
         fetchAllEntities: fetchAllEntities,
         fetchAllTrainDialogs: fetchAllTrainDialogs,
-        setBLISAppDisplay: setBLISAppDisplay
+        setBLISAppDisplay: setBLISAppDisplay,
+        emptyStateProperties: emptyStateProperties
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {
