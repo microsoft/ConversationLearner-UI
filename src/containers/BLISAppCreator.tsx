@@ -100,7 +100,7 @@ class BLISAppCreator extends React.Component<any, any> {
             locale: this.state.localeVal,
             metadata: meta
         })
-        this.props.createBLISApplication(appToAdd);
+        this.props.createBLISApplication(this.props.userId, appToAdd);
         this.handleClose();
         this.props.setBLISAppDisplay("TrainingGround");
     }
@@ -169,7 +169,8 @@ const mapDispatchToProps = (dispatch: any) => {
 }
 const mapStateToProps = (state: State) => {
     return {
-        blisApps: state.apps
+        blisApps: state.apps,
+        userId: state.user.id
     }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(BLISAppCreator);

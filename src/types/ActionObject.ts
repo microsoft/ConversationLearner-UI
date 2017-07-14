@@ -34,10 +34,16 @@ export type UpdateAction = {
     forward: boolean
 } | {
     type: "UPDATE_OPERATION_FULFILLED"
-}
+} | {
+    type: 'SET_USER',
+    name: string,
+    password: string,
+    id: string
+} 
 
 export type FetchAction = {
-    type: 'FETCH_APPLICATIONS'
+    type: 'FETCH_APPLICATIONS',
+    userId: string
 } | {
     type: 'FETCH_ENTITIES',
     blisAppID: string
@@ -60,6 +66,7 @@ export type FetchAction = {
 
 export type CreateAction = {
     type: 'CREATE_BLIS_APPLICATION',
+    userId: string,
     blisApp: BlisAppBase,
 } | {
     type: 'CREATE_ENTITY',

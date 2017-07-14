@@ -8,7 +8,7 @@ import { createBlisApp, createBlisAction, createBlisEntity } from "./apiHelpers"
 export const createNewApplication: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
     return action$.ofType("CREATE_BLIS_APPLICATION")
         .flatMap((action: any) =>
-            createBlisApp(action.blisApp)
+            createBlisApp(action.userId, action.blisApp)
 				.mapTo({type: "CREATE_OPERATION_FULFILLED"})
         );
 }

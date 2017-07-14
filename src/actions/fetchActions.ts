@@ -4,10 +4,11 @@ import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, 
 //=========================================================
 //=========================================================
 
-export const fetchApplications = (): ActionObject => {
+export const fetchApplications = (userId : string): ActionObject => {
     //needs a fulfilled version to handle response from Epic
     return {
-        type: 'FETCH_APPLICATIONS'
+        type: 'FETCH_APPLICATIONS',
+        userId : userId
     }
 }
 
