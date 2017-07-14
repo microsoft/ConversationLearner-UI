@@ -9,6 +9,9 @@ const entitiesReducer: Reducer<EntityState> =  (state = initialState, action: Ac
     switch(action.type) {
         case 'FETCH_ENTITIES_FULFILLED':
             return action.allEntities;
+        case "EMPTY_STATE_PROPERTIES": 
+            let empty: EntityState = []
+            return empty;
         case 'CREATE_ENTITY':
             return [...state, action.entity];
         case 'DELETE_ENTITY':

@@ -39,7 +39,9 @@ export type UpdateAction = {
     name: string,
     password: string,
     id: string
-} 
+} | {
+    type: "EMPTY_STATE_PROPERTIES"
+}
 
 export type FetchAction = {
     type: 'FETCH_APPLICATIONS',

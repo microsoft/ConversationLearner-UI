@@ -11,6 +11,8 @@ const trainDialogsReducer: Reducer<TrainDialogState> =  (state = initialState, a
     switch (action.type) {
         case 'FETCH_TRAIN_DIALOGS':
             return { ...state, all: action.allTrainDialogs };
+        case "EMPTY_STATE_PROPERTIES": 
+            return {...state, all: []};
         case 'CREATE_TRAIN_DIALOG':
             return { ...state, all: [...state.all, action.trainDialog], current: action.trainDialog };
         case 'SET_CURRENT_TRAIN_DIALOG':

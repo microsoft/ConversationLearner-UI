@@ -3689,6 +3689,11 @@ exports.setCurrentBLISApp = function (app) {
         currentBLISApp: app
     };
 };
+exports.emptyStateProperties = function () {
+    return {
+        type: 'EMPTY_STATE_PROPERTIES'
+    };
+};
 exports.setCurrentTrainDialog = function (trainDialog) {
     return {
         type: 'SET_CURRENT_TRAIN_DIALOG',
@@ -31219,6 +31224,7 @@ var BLISAppCreator = (function (_super) {
             metadata: meta
         });
         this.props.createBLISApplication(this.props.userId, appToAdd);
+        this.props.emptyStateProperties();
         this.handleClose();
         this.props.setBLISAppDisplay("TrainingGround");
     };
@@ -31244,7 +31250,8 @@ var mapDispatchToProps = function (dispatch) {
         fetchAllActions: fetchActions_1.fetchAllActions,
         fetchAllEntities: fetchActions_1.fetchAllEntities,
         fetchAllTrainDialogs: fetchActions_1.fetchAllTrainDialogs,
-        setBLISAppDisplay: updateActions_1.setBLISAppDisplay
+        setBLISAppDisplay: updateActions_1.setBLISAppDisplay,
+        emptyStateProperties: updateActions_1.emptyStateProperties
     }, dispatch);
 };
 var mapStateToProps = function (state) {
@@ -32256,6 +32263,10 @@ var actionsReducer = function (state, actionObject) {
     switch (actionObject.type) {
         case 'FETCH_ACTIONS_FULFILLED':
             return actionObject.allActions;
+        case "EMPTY_STATE_PROPERTIES":
+            console.log('emptied');
+            var empty = [];
+            return empty;
         case 'CREATE_ACTION':
             return state.concat([actionObject.action]);
         case 'DELETE_ACTION':
@@ -32362,6 +32373,10 @@ var entitiesReducer = function (state, action) {
     switch (action.type) {
         case 'FETCH_ENTITIES_FULFILLED':
             return action.allEntities;
+        case "EMPTY_STATE_PROPERTIES":
+            console.log('emptied');
+            var empty = [];
+            return empty;
         case 'CREATE_ENTITY':
             return state.concat([action.entity]);
         case 'DELETE_ENTITY':
@@ -32425,6 +32440,9 @@ var trainDialogsReducer = function (state, action) {
     switch (action.type) {
         case 'FETCH_TRAIN_DIALOGS':
             return tslib_1.__assign({}, state, { all: action.allTrainDialogs });
+        case "EMPTY_STATE_PROPERTIES":
+            console.log('emptied');
+            return tslib_1.__assign({}, state, { all: [] });
         case 'CREATE_TRAIN_DIALOG':
             return tslib_1.__assign({}, state, { all: state.all.concat([action.trainDialog]), current: action.trainDialog });
         case 'SET_CURRENT_TRAIN_DIALOG':

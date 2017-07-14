@@ -5,7 +5,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { CommandButton, Dialog, DialogFooter, DialogType, ChoiceGroup, TextField, DefaultButton, Dropdown } from 'office-ui-fabric-react';
-import { setBLISAppDisplay } from '../actions/updateActions'
+import { setBLISAppDisplay, emptyStateProperties } from '../actions/updateActions'
 import { fetchAllActions, fetchAllEntities, fetchAllTrainDialogs } from '../actions/fetchActions';
 import { BlisAppBase, BlisAppMetaData } from 'blis-models'
 import { developmentSubKeyLUIS } from '../secrets'
@@ -92,6 +92,8 @@ class BLISAppCreator extends React.Component<any, any> {
             metadata: meta
         })
         this.props.createBLISApplication(this.props.userId, appToAdd);
+        //need to empty entities, actions, and trainDialogs arrays
+        this.props.emptyStateProperties();
         this.handleClose();
         this.props.setBLISAppDisplay("TrainingGround");
     }
@@ -155,7 +157,8 @@ const mapDispatchToProps = (dispatch: any) => {
         fetchAllActions: fetchAllActions,
         fetchAllEntities: fetchAllEntities,
         fetchAllTrainDialogs: fetchAllTrainDialogs,
-        setBLISAppDisplay: setBLISAppDisplay
+        setBLISAppDisplay: setBLISAppDisplay,
+        emptyStateProperties: emptyStateProperties
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {
