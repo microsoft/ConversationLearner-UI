@@ -10,6 +10,7 @@ import { fetchAllActions, fetchAllEntities, fetchAllTrainDialogs } from '../acti
 import { BlisAppBase, BlisAppMetaData } from 'blis-models'
 import { developmentSubKeyLUIS } from '../secrets'
 import { State } from '../types'
+
 type CultureObject = {
     CultureCode: string;
     CultureName: string;
@@ -79,22 +80,12 @@ class BLISAppCreator extends React.Component<any, any> {
             luisKeyVal: text
         })
     }
-    generateGUID(): string {
-        let d = new Date().getTime();
-        let guid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (char) => {
-            let r = (d + Math.random() * 16) % 16 | 0;
-            d = Math.floor(d / 16);
-            return (char == 'x' ? r : (r & 0x3 | 0x8)).toString(16);
-        });
-        return guid;
-    }
     createApplication() {
-        let randomGUID = this.generateGUID();
         let meta = new BlisAppMetaData({
             botFrameworkApps: []
         })
         let appToAdd = new BlisAppBase({
-            appId: randomGUID,
+            appId: null,
             appName: this.state.appNameVal,
             luisKey: this.state.luisKeyVal,
             locale: this.state.localeVal,

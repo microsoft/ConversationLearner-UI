@@ -34,3 +34,10 @@ export const createTrainDialog = (trainDialog: TrainDialog): ActionObject => {
         trainDialog: trainDialog
     }
 }
+
+export const createApplicationFulfilled = (appId: string): ActionObject => {
+    return {
+        type: 'CREATE_BLIS_APPLICATION_FULFILLED',
+        blisAppId: appId
+    }
+}

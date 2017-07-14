@@ -74,6 +74,9 @@ export type CreateAction = {
     trainDialog: TrainDialog,
 } | {
     type: "CREATE_OPERATION_FULFILLED"
+} | {
+    type: 'CREATE_BLIS_APPLICATION_FULFILLED',
+    blisAppId: string
 }
 
 export type DeleteAction = {
