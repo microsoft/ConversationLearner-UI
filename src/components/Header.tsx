@@ -1,6 +1,11 @@
 import * as React from 'react';
+import { setBLISAppDisplay, setWebchatDisplay } from '../actions/updateActions'
 import { Link } from 'react-router-dom';
-export default class Header extends React.Component<any, any> {
+import { connect } from 'react-redux';
+import { State } from '../types'
+import { bindActionCreators } from 'redux';
+
+class Header extends React.Component<any, any> {
     constructor(p: any) {
         super(p);
         this.state = {
@@ -50,12 +55,13 @@ export default class Header extends React.Component<any, any> {
         }
     }
     render() {
+        let displayName = this.props.userName ? this.props.userName : "BLIS";
         return (
             <div className='header'>
                 <div className='headerListDiv'>
                     <div className={this.state.myAppsClass}>
                         <span className="ms-font-m-plus ms-fontColor-themePrimary"><Link onClick={() => {
-                            this.props.setDisplay("Home")
+                            this.props.setBLISAppDisplay("Home")
                             this.props.setWebchatDisplay(false)
                             this.tabSelected('myApps')
                         }} className='headerLink' to="/myApps">My Apps</Link></span>
@@ -73,13 +79,28 @@ export default class Header extends React.Component<any, any> {
                 <div className='headerTitleDiv'>
                     <div className='headerTitle'>
                         <span className="ms-font-xl ms-fontColor-themePrimary"><Link onClick={() => {
-                            this.props.setDisplay("Home")
+                            this.props.setBLISAppDisplay("Home")
                             this.props.setWebchatDisplay(false)
                             this.tabSelected('myApps')
-                        }} className='headerLink' to="/">BLIS</Link></span>
+                        }} className='headerLink' to="/">{displayName}</Link></span>
                     </div>
                 </div>
             </div>
         )
     }
 }
+
+const mapDispatchToProps = (dispatch: any) => {
+  return bindActionCreators({
+    setBLISAppDisplay: setBLISAppDisplay,
+    setWebchatDisplay: setWebchatDisplay
+  }, dispatch);
+}
+
+const mapStateToProps = (state: State) => {
+    return {
+        userName: state.user.name
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Header);

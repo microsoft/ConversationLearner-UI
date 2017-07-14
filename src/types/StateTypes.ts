@@ -15,10 +15,18 @@ export type DisplayState = {
     myAppsDisplay: string,
     displayWebchat: boolean
 };
+export type UserState =
+{
+    name: string,
+    password: string,
+    id: string
+}
 export type State = {
+    user: UserState,
     apps: AppState,
     entities: EntityState,
     actions: ActionState,
     trainDialogs: TrainDialogState,
     display: DisplayState
 }
+
