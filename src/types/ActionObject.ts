@@ -75,6 +75,10 @@ export type CreateAction = {
     entity: EntityBase,
     currentAppId: string
 } | {
+    type: 'CREATE_REVERSIBLE_ENTITY',
+    entity: EntityBase,
+    currentAppId: string
+} | {
     type: 'CREATE_ACTION',
     action: ActionBase,
     currentAppId: string
@@ -86,7 +90,18 @@ export type CreateAction = {
 } | {
     type: 'CREATE_BLIS_APPLICATION_FULFILLED',
     blisAppId: string
+} | {
+    type: 'CREATE_POSITIVE_ENTITY_FULFILLED',
+    negativeEntity: EntityBase,
+    positiveEntity: EntityBase,
+    currentAppId: string
+} | {
+    type: 'CREATE_NEGATIVE_ENTITY_FULFILLED',
+    negativeEntity: EntityBase,
+    positiveEntity: EntityBase,
+    currentAppId: string
 }
+
 
 export type DeleteAction = {
     type: 'DELETE_BLIS_APPLICATION',

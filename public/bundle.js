@@ -4806,6 +4806,7 @@ exports.EmptyObservable = EmptyObservable;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+var tslib_1 = __webpack_require__(2);
 exports.createBLISApplication = function (userId, application) {
     //needs to make a call to an Epic to send data to BLIS
     return {
@@ -4818,6 +4819,14 @@ exports.createEntity = function (entity, currentAppId) {
     //needs to make a call to an Epic to send data to BLIS
     return {
         type: 'CREATE_ENTITY',
+        entity: entity,
+        currentAppId: currentAppId
+    };
+};
+exports.createReversibleEntity = function (entity, currentAppId) {
+    //needs to make a call to an Epic to send data to BLIS
+    return {
+        type: 'CREATE_REVERSIBLE_ENTITY',
         entity: entity,
         currentAppId: currentAppId
     };
@@ -4841,6 +4850,28 @@ exports.createApplicationFulfilled = function (appId) {
     return {
         type: 'CREATE_BLIS_APPLICATION_FULFILLED',
         blisAppId: appId
+    };
+};
+exports.createPositiveEntityFulfilled = function (positiveEntity, positiveEntityId, currentAppId) {
+    var negativeEntity = tslib_1.__assign({}, positiveEntity, { entityName: "~" + positiveEntity.entityName, metadata: tslib_1.__assign({}, positiveEntity.metadata, { positiveId: positiveEntityId }) });
+    return {
+        type: 'CREATE_POSITIVE_ENTITY_FULFILLED',
+        negativeEntity: negativeEntity,
+        positiveEntity: positiveEntity,
+        currentAppId: currentAppId
+    };
+};
+exports.createNegativeEntityFulfilled = function (positiveEntity, negativeEntity, negativeEntityId, currentAppId) {
+    var posEntity = positiveEntity;
+    posEntity.metadata.negativeId = negativeEntityId;
+    posEntity.entityId = negativeEntity.metadata.positiveId;
+    negativeEntity.entityId = negativeEntityId;
+    //send both to store to be saved locally, and send the positive entity back to the service to update its metadata
+    return {
+        type: 'CREATE_NEGATIVE_ENTITY_FULFILLED',
+        positiveEntity: posEntity,
+        negativeEntity: negativeEntity,
+        currentAppId: currentAppId
     };
 };
 
@@ -16293,7 +16324,7 @@ var EntityCreatorEditor = (function (_super) {
     EntityCreatorEditor.prototype.createEntity = function () {
         var currentAppId = this.props.blisApps.current.appId;
         var randomGUID = this.generateGUID();
-        var meta2 = new blis_models_1.EntityMetaData({
+        var meta = new blis_models_1.EntityMetaData({
             isBucket: this.state.isBucketableVal,
             isReversable: this.state.isNegatableVal,
             negativeId: null,
@@ -16302,14 +16333,19 @@ var EntityCreatorEditor = (function (_super) {
         var entityToAdd = new blis_models_1.EntityBase({
             entityId: randomGUID,
             entityName: this.state.entityNameVal,
-            metadata: meta2,
+            metadata: meta,
             entityType: this.state.entityTypeVal,
             version: null,
             packageCreationId: null,
             packageDeletionId: null
         });
         if (this.state.editing === false) {
-            this.props.createEntity(entityToAdd, currentAppId);
+            if (meta.isReversable === false) {
+                this.props.createReversibleEntity(entityToAdd, currentAppId);
+            }
+            else {
+                this.props.createEntity(entityToAdd, currentAppId);
+            }
         }
         else {
             this.editEntity(entityToAdd);
@@ -16435,7 +16471,8 @@ var EntityCreatorEditor = (function (_super) {
 var mapDispatchToProps = function (dispatch) {
     return redux_1.bindActionCreators({
         createEntity: createActions_1.createEntity,
-        editEntity: updateActions_1.editEntity
+        editEntity: updateActions_1.editEntity,
+        createReversibleEntity: createActions_1.createReversibleEntity
     }, dispatch);
 };
 var mapStateToProps = function (state, ownProps) {
@@ -31224,6 +31261,7 @@ var BLISAppCreator = (function (_super) {
             metadata: meta
         });
         this.props.createBLISApplication(this.props.userId, appToAdd);
+        //need to empty entities, actions, and trainDialogs arrays
         this.props.emptyStateProperties();
         this.handleClose();
         this.props.setBLISAppDisplay("TrainingGround");
@@ -32118,6 +32156,20 @@ exports.createNewEntity = function (action$) {
             .mapTo({ type: "CREATE_OPERATION_FULFILLED" });
     });
 };
+exports.createReversibleEntity = function (action$) {
+    return action$.ofType("CREATE_REVERSIBLE_ENTITY")
+        .flatMap(function (action) {
+        return apiHelpers_1.createBlisEntity(action.entity, action.currentAppId)
+            .map(function (response) { return createActions_1.createPositiveEntityFulfilled(action.entity, response.data, action.currentAppId); });
+    });
+};
+exports.createNegativeEntity = function (action$) {
+    return action$.ofType("CREATE_POSITIVE_ENTITY_FULFILLED")
+        .flatMap(function (action) {
+        return apiHelpers_1.createBlisEntity(action.negativeEntity, action.currentAppId)
+            .map(function (response) { return createActions_1.createNegativeEntityFulfilled(action.positiveEntity, action.negativeEntity, response.data, action.currentAppId); });
+    });
+};
 exports.createNewAction = function (action$) {
     return action$.ofType("CREATE_ACTION")
         .flatMap(function (actionObject) {
@@ -32205,7 +32257,7 @@ var fetchEpics_1 = __webpack_require__(359);
 var createEpics_1 = __webpack_require__(357);
 var deleteEpics_1 = __webpack_require__(358);
 var updateEpics_1 = __webpack_require__(361);
-var rootEpic = redux_observable_1.combineEpics(fetchEpics_1.fetchApplications, fetchEpics_1.fetchEntities, fetchEpics_1.fetchActions, createEpics_1.createNewApplication, createEpics_1.createNewEntity, createEpics_1.createNewAction, deleteEpics_1.deleteApplication, deleteEpics_1.deleteEntity, deleteEpics_1.deleteAction, updateEpics_1.editApplication, updateEpics_1.editAction);
+var rootEpic = redux_observable_1.combineEpics(fetchEpics_1.fetchApplications, fetchEpics_1.fetchEntities, fetchEpics_1.fetchActions, createEpics_1.createNewApplication, createEpics_1.createNewEntity, createEpics_1.createNewAction, createEpics_1.createReversibleEntity, createEpics_1.createNegativeEntity, deleteEpics_1.deleteApplication, deleteEpics_1.deleteEntity, deleteEpics_1.deleteAction, updateEpics_1.editApplication, updateEpics_1.editAction);
 exports.default = rootEpic;
 
 
@@ -32231,6 +32283,11 @@ exports.editAction = function (action$) {
         return apiHelpers_1.editBlisAction(action.currentAppId, action.blisAction.actionId, action.blisAction)
             .mapTo({ type: "UPDATE_OPERATION_FULFILLED" });
     });
+};
+exports.update = function (action$) {
+    //we will want to update the positive entity in the action object once that route is set up
+    return action$.ofType("CREATE_NEGATIVE_ENTITY_FULFILLED")
+        .mapTo({ type: "UPDATE_OPERATION_FULFILLED" });
 };
 
 
@@ -32264,7 +32321,6 @@ var actionsReducer = function (state, actionObject) {
         case 'FETCH_ACTIONS_FULFILLED':
             return actionObject.allActions;
         case "EMPTY_STATE_PROPERTIES":
-            console.log('emptied');
             var empty = [];
             return empty;
         case 'CREATE_ACTION':
@@ -32374,11 +32430,13 @@ var entitiesReducer = function (state, action) {
         case 'FETCH_ENTITIES_FULFILLED':
             return action.allEntities;
         case "EMPTY_STATE_PROPERTIES":
-            console.log('emptied');
             var empty = [];
             return empty;
         case 'CREATE_ENTITY':
             return state.concat([action.entity]);
+        case 'CREATE_NEGATIVE_ENTITY_FULFILLED':
+            var entities = [action.positiveEntity, action.negativeEntity];
+            return state.concat(entities);
         case 'DELETE_ENTITY':
             return state.filter(function (ent) { return ent.entityId !== action.entityGUID; });
         case 'EDIT_ENTITY':
@@ -32441,7 +32499,6 @@ var trainDialogsReducer = function (state, action) {
         case 'FETCH_TRAIN_DIALOGS':
             return tslib_1.__assign({}, state, { all: action.allTrainDialogs });
         case "EMPTY_STATE_PROPERTIES":
-            console.log('emptied');
             return tslib_1.__assign({}, state, { all: [] });
         case 'CREATE_TRAIN_DIALOG':
             return tslib_1.__assign({}, state, { all: state.all.concat([action.trainDialog]), current: action.trainDialog });

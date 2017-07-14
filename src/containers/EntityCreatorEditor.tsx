@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { createEntity } from '../actions/createActions';
+import { createEntity, createReversibleEntity } from '../actions/createActions';
 import { editEntity } from '../actions/updateActions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -76,7 +76,7 @@ class EntityCreatorEditor extends React.Component<any, any> {
     createEntity() {
         let currentAppId: string = this.props.blisApps.current.appId;
         let randomGUID = this.generateGUID();
-        let meta2 = new EntityMetaData({
+        let meta = new EntityMetaData({
             isBucket: this.state.isBucketableVal,
             isReversable: this.state.isNegatableVal,
             negativeId: null,
@@ -85,14 +85,18 @@ class EntityCreatorEditor extends React.Component<any, any> {
         let entityToAdd = new EntityBase({
             entityId: randomGUID,
             entityName: this.state.entityNameVal,
-            metadata: meta2,
+            metadata: meta,
             entityType: this.state.entityTypeVal,
             version: null,
             packageCreationId: null,
             packageDeletionId: null
         })
         if (this.state.editing === false) {
-            this.props.createEntity(entityToAdd, currentAppId);
+            if (meta.isReversable === false) {
+                this.props.createReversibleEntity(entityToAdd, currentAppId);
+            } else {
+                this.props.createEntity(entityToAdd, currentAppId);
+            }
         } else {
             this.editEntity(entityToAdd);
         }
@@ -158,7 +162,7 @@ class EntityCreatorEditor extends React.Component<any, any> {
         options.unshift({ key: 'BlisHeader', text: 'BLIS Entity Types', itemType: DropdownMenuItemType.Header })
         options.push({ key: 'divider', text: '-', itemType: DropdownMenuItemType.Divider })
         options.push({ key: 'LuisHeader', text: 'LUIS Pre-Built Entity Types', itemType: DropdownMenuItemType.Header })
-        
+
         let localePreBuilts: LocalePreBuilts = PreBuiltEntities.find((obj: LocalePreBuilts) => obj.locale == this.props.blisApps.current.locale)
         let prebuiltVals: string[] = localePreBuilts.preBuiltEntities.map((entityName: string) => {
             return entityName
@@ -259,7 +263,8 @@ class EntityCreatorEditor extends React.Component<any, any> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         createEntity: createEntity,
-        editEntity: editEntity
+        editEntity: editEntity,
+        createReversibleEntity: createReversibleEntity
     }, dispatch);
 }
 const mapStateToProps = (state: State, ownProps: any) => {
