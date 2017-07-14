@@ -9,7 +9,7 @@ import { fetchApplicationsFulfilled, fetchAllEntitiesFulfilled, fetchAllActionsF
 export const fetchApplications: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
     return action$.ofType("FETCH_APPLICATIONS")
         .flatMap((action: any) =>
-            getAllBlisApps()
+            getAllBlisApps(action.userId)
                 .map(response => fetchApplicationsFulfilled(response.data.apps))
         );
 }

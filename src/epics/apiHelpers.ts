@@ -8,7 +8,6 @@ import { Observable, Observer } from 'rxjs'
 // CONFIG
 //=========================================================
 
-const userId = 'testUser'
 const config: AxiosRequestConfig = {
 	headers: {
 		"Content-Type": "application/json"
@@ -31,8 +30,8 @@ export interface BlisAppForUpdate extends BlisAppBase {
 // GET ROUTES
 //=========================================================
 
-export const getAllBlisApps = (): Observable<AxiosResponse> => {
-	const getAppsRoute: string = "apps"
+export const getAllBlisApps = (userId : string): Observable<AxiosResponse> => {
+	const getAppsRoute: string = `apps?userId=${userId}`;
 	return Rx.Observable.fromPromise(axios.get(rootUrl.concat(getAppsRoute), config))
 };
 export const getBlisApp = (appId: string): Observable<AxiosResponse> => {
@@ -60,7 +59,7 @@ export const getBlisAction = (appId: string, actionId: string): Observable<Axios
 // CREATE ROUTES
 //=========================================================
 
-export const createBlisApp = (blisApp: BlisAppBase): Observable<AxiosResponse> => {
+export const createBlisApp = (userId : string, blisApp: BlisAppBase): Observable<AxiosResponse> => {
 	let addAppRoute: string = `app?userId=${userId}`
 	//remove the appId property from the object
 	const { appId, ...appToSend } = blisApp

@@ -69,3 +69,12 @@ export const editTrainDialog = (trainDialog: TrainDialog) : ActionObject => {
         trainDialog: trainDialog
     }
 }
+
+export const setUser = (name: string, password: string, id: string) : ActionObject => { 
+    return {
+        type: 'SET_USER',
+        name: name,
+        password: password,
+        id: id
+    }
+}
