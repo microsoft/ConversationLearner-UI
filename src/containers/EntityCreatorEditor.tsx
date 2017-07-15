@@ -92,7 +92,7 @@ class EntityCreatorEditor extends React.Component<any, any> {
             packageDeletionId: null
         })
         if (this.state.editing === false) {
-            if (meta.isReversable === false) {
+            if (meta.isReversable === true) {
                 this.props.createReversibleEntity(entityToAdd, currentAppId);
             } else {
                 this.props.createEntity(entityToAdd, currentAppId);

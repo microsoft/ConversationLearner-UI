@@ -5,7 +5,6 @@ import { State, ActionObject } from '../types'
 import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, ActionMetaData, ActionList, ActionTypes } from 'blis-models';
 import { editBlisAction, editBlisApp, editBlisEntity } from "./apiHelpers";
 
-
 export const editApplication: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
     return action$.ofType("EDIT_BLIS_APPLICATION")
         .flatMap((action: any) =>
