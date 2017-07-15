@@ -115,3 +115,8 @@ export const editBlisAction = (appId: string, blisActionId: string, action: Acti
 	const { actionId, version, packageCreationId, packageDeletionId, ...actionToSend } = action
 	return Rx.Observable.fromPromise(axios.put(rootUrl.concat(editActionRoute), actionToSend, config))
 };
+export const editBlisEntity = (appId: string, entity: EntityBase): Observable<AxiosResponse> => {
+	let editActionRoute: string = `app/${appId}/entity/${entity.entityId}`
+	const { version, packageCreationId, packageDeletionId, ...entityToSend } = entity;
+	return Rx.Observable.fromPromise(axios.put(rootUrl.concat(editActionRoute), entityToSend, config))
+};

@@ -8206,6 +8206,11 @@ exports.editBlisAction = function (appId, blisActionId, action) {
     var actionId = action.actionId, version = action.version, packageCreationId = action.packageCreationId, packageDeletionId = action.packageDeletionId, actionToSend = tslib_1.__rest(action, ["actionId", "version", "packageCreationId", "packageDeletionId"]);
     return Rx.Observable.fromPromise(axios_1.default.put(rootUrl.concat(editActionRoute), actionToSend, config));
 };
+exports.editBlisEntity = function (appId, entity) {
+    var editActionRoute = "app/" + appId + "/entity/" + entity.entityId;
+    var version = entity.version, packageCreationId = entity.packageCreationId, packageDeletionId = entity.packageDeletionId, entityToSend = tslib_1.__rest(entity, ["version", "packageCreationId", "packageDeletionId"]);
+    return Rx.Observable.fromPromise(axios_1.default.put(rootUrl.concat(editActionRoute), entityToSend, config));
+};
 
 
 /***/ }),
@@ -31658,6 +31663,7 @@ var EntitiesList = (function (_super) {
     EntitiesList.prototype.render = function () {
         var _this = this;
         var entityItems = this.renderEntityItems();
+        console.log(this.props.entities);
         return (React.createElement("div", null,
             React.createElement(TrainingGroundArenaHeader_1.default, { title: "Entities", description: "Manage a list of entities in your application and track and control their instances within actions..." }),
             React.createElement("div", { className: 'entityCreator' },
@@ -32250,7 +32256,7 @@ var fetchEpics_1 = __webpack_require__(359);
 var createEpics_1 = __webpack_require__(357);
 var deleteEpics_1 = __webpack_require__(358);
 var updateEpics_1 = __webpack_require__(361);
-var rootEpic = redux_observable_1.combineEpics(fetchEpics_1.fetchApplications, fetchEpics_1.fetchEntities, fetchEpics_1.fetchActions, createEpics_1.createNewApplication, createEpics_1.createNewEntity, createEpics_1.createNewAction, createEpics_1.createReversibleEntity, createEpics_1.createNegativeEntity, deleteEpics_1.deleteApplication, deleteEpics_1.deleteEntity, deleteEpics_1.deleteAction, updateEpics_1.editApplication, updateEpics_1.editAction);
+var rootEpic = redux_observable_1.combineEpics(fetchEpics_1.fetchApplications, fetchEpics_1.fetchEntities, fetchEpics_1.fetchActions, createEpics_1.createNewApplication, createEpics_1.createNewEntity, createEpics_1.createNewAction, createEpics_1.createReversibleEntity, createEpics_1.createNegativeEntity, deleteEpics_1.deleteApplication, deleteEpics_1.deleteEntity, deleteEpics_1.deleteAction, updateEpics_1.editApplication, updateEpics_1.editAction, updateEpics_1.editEntity);
 exports.default = rootEpic;
 
 
@@ -32277,10 +32283,13 @@ exports.editAction = function (action$) {
             .mapTo({ type: "UPDATE_OPERATION_FULFILLED" });
     });
 };
-exports.update = function (action$) {
+exports.editEntity = function (action$) {
     //we will want to update the positive entity in the action object once that route is set up
     return action$.ofType("CREATE_NEGATIVE_ENTITY_FULFILLED")
-        .mapTo({ type: "UPDATE_OPERATION_FULFILLED" });
+        .flatMap(function (action) {
+        return apiHelpers_1.editBlisEntity(action.currentAppId, action.positiveEntity)
+            .mapTo({ type: "UPDATE_OPERATION_FULFILLED" });
+    });
 };
 
 
