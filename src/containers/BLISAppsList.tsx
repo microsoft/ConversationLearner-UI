@@ -37,6 +37,14 @@ let columns: IColumn[] = [
         isResizable: true
     },
     {
+        key: 'bots',
+        name: 'Linked Bots',
+        fieldName: 'metadata',
+        minWidth: 100,
+        maxWidth: 200,
+        isResizable: true
+    },
+    {
         key: 'actions',
         name: 'Actions',
         fieldName: 'appId',
@@ -51,7 +59,6 @@ class BLISAppsList extends React.Component<any, any> {
         this.renderItemColumn = this.renderItemColumn.bind(this);
         this.BLISAppSelected = this.BLISAppSelected.bind(this);
         this.deleteApp = this.deleteApp.bind(this);
-        this.editApp = this.editApp.bind(this);
         this.handleCloseModal = this.handleCloseModal.bind(this);
         this.openDeleteModal = this.openDeleteModal.bind(this);
         this.state = {
@@ -80,9 +87,6 @@ class BLISAppsList extends React.Component<any, any> {
             appIDToDelete: guid
         })
     }
-    editApp(GUID: string) {
-        //do something
-    }
     BLISAppSelected(appName: string) {
         let appSelected = this.props.blisApps.all.find((app: BlisAppBase) => app.appName == appName);
         this.props.setCurrentBLISApp(appSelected);
@@ -96,6 +100,9 @@ class BLISAppsList extends React.Component<any, any> {
         switch (column.key) {
             case 'appName':
                 return <span className='ms-font-m-plus'><Link onClick={() => this.BLISAppSelected(fieldContent)}>{fieldContent}</Link></span>;
+            case 'bots':
+                let botsCount = fieldContent? fieldContent.botFrameworkApps.length : 0;
+                return <span className='ms-font-m-plus'>{botsCount}</span>;
             case 'actions':
                 return (
                     <div>

@@ -31406,6 +31406,14 @@ var columns = [
         isResizable: true
     },
     {
+        key: 'bots',
+        name: 'Linked Bots',
+        fieldName: 'metadata',
+        minWidth: 100,
+        maxWidth: 200,
+        isResizable: true
+    },
+    {
         key: 'actions',
         name: 'Actions',
         fieldName: 'appId',
@@ -31421,7 +31429,6 @@ var BLISAppsList = (function (_super) {
         _this.renderItemColumn = _this.renderItemColumn.bind(_this);
         _this.BLISAppSelected = _this.BLISAppSelected.bind(_this);
         _this.deleteApp = _this.deleteApp.bind(_this);
-        _this.editApp = _this.editApp.bind(_this);
         _this.handleCloseModal = _this.handleCloseModal.bind(_this);
         _this.openDeleteModal = _this.openDeleteModal.bind(_this);
         _this.state = {
@@ -31451,9 +31458,6 @@ var BLISAppsList = (function (_super) {
             appIDToDelete: guid
         });
     };
-    BLISAppsList.prototype.editApp = function (GUID) {
-        //do something
-    };
     BLISAppsList.prototype.BLISAppSelected = function (appName) {
         var appSelected = this.props.blisApps.all.find(function (app) { return app.appName == appName; });
         this.props.setCurrentBLISApp(appSelected);
@@ -31469,6 +31473,9 @@ var BLISAppsList = (function (_super) {
             case 'appName':
                 return React.createElement("span", { className: 'ms-font-m-plus' },
                     React.createElement(office_ui_fabric_react_1.Link, { onClick: function () { return _this.BLISAppSelected(fieldContent); } }, fieldContent));
+            case 'bots':
+                var botsCount = fieldContent ? fieldContent.botFrameworkApps.length : 0;
+                return React.createElement("span", { className: 'ms-font-m-plus' }, botsCount);
             case 'actions':
                 return (React.createElement("div", null,
                     React.createElement("a", { onClick: function () { return _this.openDeleteModal(fieldContent); } },
@@ -31691,7 +31698,7 @@ var EntitiesList = (function (_super) {
             React.createElement(ConfirmDeleteModal_1.default, { open: this.state.confirmDeleteEntityModalOpen, onCancel: function () { return _this.handleCloseDeleteModal(); }, onConfirm: function () { return _this.deleteSelectedEntity(); }, title: "Are you sure you want to delete this entity?" }),
             React.createElement(Modal_1.Modal, { isOpen: this.state.errorModalOpen, isBlocking: false, containerClassName: 'createModal' },
                 React.createElement("div", { className: 'modalHeader' },
-                    React.createElement("span", { className: 'ms-font-xl ms-fontWeight-semilight' }, "You're unable to delete this entity because it is being used in an action.")),
+                    React.createElement("span", { className: 'ms-font-xl ms-fontWeight-semilight' }, "You cannot delete this entity because it is being used in an action.")),
                 React.createElement("div", { className: 'modalFooter' },
                     React.createElement(office_ui_fabric_react_1.CommandButton, { disabled: false, onClick: function () { return _this.handleCloseDeleteModal(); }, className: 'goldButton', ariaDescription: 'Close', text: 'Close' })))));
     };
