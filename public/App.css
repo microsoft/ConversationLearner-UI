@@ -282,5 +282,8 @@
   float: right;
   margin-top: -.1em
 }
+.checkBox{
+   margin-top: 1em;
+   display: inline-block;
+}
 
-/*command buttons have 5em width*/

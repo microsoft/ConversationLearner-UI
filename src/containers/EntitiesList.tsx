@@ -112,7 +112,7 @@ class EntitiesList extends React.Component<any, any> {
                     return <span className="ms-Icon ms-Icon--Remove notFoundIcon" aria-hidden="true"></span>;
                 }
             case 'isNegatable':
-                if (fieldContent.isReversible == true) {
+                if (fieldContent.isReversable == true) {
                     return <span className="ms-Icon ms-Icon--CheckMark checkIcon" aria-hidden="true"></span>;
                 } else {
                     return <span className="ms-Icon ms-Icon--Remove notFoundIcon" aria-hidden="true"></span>;

@@ -16271,12 +16271,8 @@ var EntityCreatorEditor = (function (_super) {
             entityTypeVal: 'LOCAL',
             isBucketableVal: false,
             isNegatableVal: false,
-            bucketableKey: 'bucketableFalse',
-            negatableKey: 'negatableFalse',
             editing: false
         };
-        _this.bucketableChanged = _this.bucketableChanged.bind(_this);
-        _this.negatableChanged = _this.negatableChanged.bind(_this);
         return _this;
     }
     EntityCreatorEditor.prototype.componentWillReceiveProps = function (p) {
@@ -16292,27 +16288,11 @@ var EntityCreatorEditor = (function (_super) {
             });
         }
         else {
-            var initBucketableKey = void 0;
-            var initNegatableKey = void 0;
-            if (p.entity.metadata.isBucket == true) {
-                initBucketableKey = 'bucketableTrue';
-            }
-            else {
-                initBucketableKey = 'bucketableFalse';
-            }
-            if (p.entity.metadata.isReversable == true) {
-                initNegatableKey = 'negatableTrue';
-            }
-            else {
-                initNegatableKey = 'negatableFalse';
-            }
             this.setState({
                 entityNameVal: p.entity.entityName,
                 entityTypeVal: p.entity.entityType,
                 isBucketableVal: p.entity.metadata.isBucket,
                 isNegatableVal: p.entity.metadata.isReversable,
-                bucketableKey: initBucketableKey,
-                negatableKey: initNegatableKey,
                 editing: true
             });
         }
@@ -16355,13 +16335,12 @@ var EntityCreatorEditor = (function (_super) {
         else {
             this.editEntity(entityToAdd);
         }
+        console.log(entityToAdd);
         this.setState({
             entityNameVal: '',
             entityTypeVal: 'LOCAL',
             isBucketableVal: false,
             isNegatableVal: false,
-            bucketableKey: 'bucketableFalse',
-            negatableKey: 'negatableFalse',
             editing: false
         });
         this.props.handleClose();
@@ -16380,33 +16359,15 @@ var EntityCreatorEditor = (function (_super) {
             entityTypeVal: obj.text
         });
     };
-    EntityCreatorEditor.prototype.bucketableChanged = function (event, option) {
-        if (option.text == 'False') {
-            this.setState({
-                isBucketableVal: false,
-                bucketableKey: 'bucketableFalse'
-            });
-        }
-        else {
-            this.setState({
-                isBucketableVal: true,
-                bucketableKey: 'bucketableTrue'
-            });
-        }
+    EntityCreatorEditor.prototype.handleCheckBucketable = function () {
+        this.setState({
+            isBucketableVal: !this.state.isBucketableVal,
+        });
     };
-    EntityCreatorEditor.prototype.negatableChanged = function (event, option) {
-        if (option.text == 'False') {
-            this.setState({
-                isNegatableVal: false,
-                negatableKey: 'negatableFalse'
-            });
-        }
-        else {
-            this.setState({
-                isNegatableVal: true,
-                negatableKey: 'negatableTrue'
-            });
-        }
+    EntityCreatorEditor.prototype.handleCheckReversible = function () {
+        this.setState({
+            isNegatableVal: !this.state.isNegatableVal,
+        });
     };
     EntityCreatorEditor.prototype.render = function () {
         var _this = this;
@@ -16447,26 +16408,8 @@ var EntityCreatorEditor = (function (_super) {
                 React.createElement("div", null,
                     React.createElement(office_ui_fabric_react_1.TextField, { onChanged: this.nameChanged.bind(this), label: "Entity Name", placeholder: "Name...", value: this.state.entityNameVal }),
                     React.createElement(office_ui_fabric_react_1.Dropdown, { label: 'Entity Type', options: options, onChanged: this.typeChanged.bind(this), selectedKey: this.state.entityTypeVal, disabled: this.state.editing }),
-                    React.createElement(office_ui_fabric_react_1.ChoiceGroup, { options: [
-                            {
-                                key: 'bucketableTrue',
-                                text: 'True'
-                            },
-                            {
-                                key: 'bucketableFalse',
-                                text: 'False',
-                            }
-                        ], label: 'Bucketable', onChange: this.bucketableChanged, selectedKey: this.state.bucketableKey }),
-                    React.createElement(office_ui_fabric_react_1.ChoiceGroup, { options: [
-                            {
-                                key: 'negatableTrue',
-                                text: 'True'
-                            },
-                            {
-                                key: 'negatableFalse',
-                                text: 'False',
-                            }
-                        ], label: 'Negatable', onChange: this.negatableChanged, selectedKey: this.state.negatableKey })),
+                    React.createElement(office_ui_fabric_react_1.Checkbox, { label: 'Bucketable', defaultChecked: false, className: "checkBox", onChange: this.handleCheckBucketable.bind(this), style: { marginTop: "1em", marginRight: "3em", display: "inline-block" } }),
+                    React.createElement(office_ui_fabric_react_1.Checkbox, { label: 'Reversible', defaultChecked: false, onChange: this.handleCheckReversible.bind(this), style: { marginTop: "1em", display: "inline-block" } })),
                 React.createElement("div", { className: 'modalFooter' },
                     React.createElement(office_ui_fabric_react_1.CommandButton, { "data-automation-id": 'randomID2', disabled: false, onClick: this.createEntity.bind(this), className: 'goldButton', ariaDescription: 'Create', text: createButtonText }),
                     React.createElement(office_ui_fabric_react_1.CommandButton, { "data-automation-id": 'randomID3', className: "grayButton", disabled: false, onClick: function () { return _this.props.handleClose(); }, ariaDescription: 'Cancel', text: 'Cancel' })))));
@@ -31678,7 +31621,7 @@ var EntitiesList = (function (_super) {
                     return React.createElement("span", { className: "ms-Icon ms-Icon--Remove notFoundIcon", "aria-hidden": "true" });
                 }
             case 'isNegatable':
-                if (fieldContent.isReversible == true) {
+                if (fieldContent.isReversable == true) {
                     return React.createElement("span", { className: "ms-Icon ms-Icon--CheckMark checkIcon", "aria-hidden": "true" });
                 }
                 else {
