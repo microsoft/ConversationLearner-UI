@@ -37,7 +37,7 @@ let columns: IColumn[] = [
     },
     {
         key: 'isNegatable',
-        name: 'Negatable',
+        name: 'Reversible',
         fieldName: 'metadata',
         minWidth: 100,
         maxWidth: 200,

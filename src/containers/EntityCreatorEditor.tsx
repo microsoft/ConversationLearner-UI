@@ -82,6 +82,7 @@ class EntityCreatorEditor extends React.Component<any, any> {
         } else {
             this.editEntity(entityToAdd);
         }
+        console.log(entityToAdd)
         this.setState({
             entityNameVal: '',
             entityTypeVal: 'LOCAL',
@@ -172,15 +173,14 @@ class EntityCreatorEditor extends React.Component<any, any> {
                         <Checkbox
                             label='Bucketable'
                             defaultChecked={false}
-                            className="checkBox"
                             onChange={this.handleCheckBucketable.bind(this)}
-                            style={{marginRight: "3em"}}
+                            style={{ marginTop: "1em", marginRight: "3em", display: "inline-block" }}
                         />
                         <Checkbox
                             label='Reversible'
                             defaultChecked={false}
-                            className="checkBox"
                             onChange={this.handleCheckReversible.bind(this)}
+                            style={{ marginTop: "1em", display: "inline-block" }}
                         />
                     </div>
                     <div className='modalFooter'>

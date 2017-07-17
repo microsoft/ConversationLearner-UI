@@ -16408,7 +16408,7 @@ var EntityCreatorEditor = (function (_super) {
                 React.createElement("div", null,
                     React.createElement(office_ui_fabric_react_1.TextField, { onChanged: this.nameChanged.bind(this), label: "Entity Name", placeholder: "Name...", value: this.state.entityNameVal }),
                     React.createElement(office_ui_fabric_react_1.Dropdown, { label: 'Entity Type', options: options, onChanged: this.typeChanged.bind(this), selectedKey: this.state.entityTypeVal, disabled: this.state.editing }),
-                    React.createElement(office_ui_fabric_react_1.Checkbox, { label: 'Bucketable', defaultChecked: false, className: "checkBox", onChange: this.handleCheckBucketable.bind(this), style: { marginTop: "1em", marginRight: "3em", display: "inline-block" } }),
+                    React.createElement(office_ui_fabric_react_1.Checkbox, { label: 'Bucketable', defaultChecked: false, onChange: this.handleCheckBucketable.bind(this), style: { marginTop: "1em", marginRight: "3em", display: "inline-block" } }),
                     React.createElement(office_ui_fabric_react_1.Checkbox, { label: 'Reversible', defaultChecked: false, onChange: this.handleCheckReversible.bind(this), style: { marginTop: "1em", display: "inline-block" } })),
                 React.createElement("div", { className: 'modalFooter' },
                     React.createElement(office_ui_fabric_react_1.CommandButton, { "data-automation-id": 'randomID2', disabled: false, onClick: this.createEntity.bind(this), className: 'goldButton', ariaDescription: 'Create', text: createButtonText }),
@@ -30411,7 +30411,6 @@ var ActionResponseCreatorEditor = (function (_super) {
             reqEntitiesVal: [],
             negEntitiesVal: [],
             waitVal: false,
-            waitKey: 'waitFalse',
             availableRequiredEntities: [],
             availableNegativeEntities: [],
             editing: false,
@@ -30444,7 +30443,6 @@ var ActionResponseCreatorEditor = (function (_super) {
                     reqEntitiesVal: [],
                     negEntitiesVal: [],
                     waitVal: false,
-                    waitKey: 'waitFalse',
                     availableRequiredEntities: [],
                     availableNegativeEntities: [],
                     editing: false,
@@ -30455,13 +30453,6 @@ var ActionResponseCreatorEditor = (function (_super) {
                 });
             }
             else {
-                var initWaitKey = void 0;
-                if (p.blisAction.isTerminal == true) {
-                    initWaitKey = 'waitTrue';
-                }
-                else {
-                    initWaitKey = 'waitFalse';
-                }
                 var entities = this.props.entities.map(function (e) {
                     return {
                         key: e.entityName,
@@ -30488,7 +30479,6 @@ var ActionResponseCreatorEditor = (function (_super) {
                     reqEntitiesVal: requiredEntities,
                     negEntitiesVal: negativeEntities,
                     waitVal: p.blisAction.isTerminal,
-                    waitKey: initWaitKey,
                     availableRequiredEntities: entities,
                     availableNegativeEntities: entities,
                     editing: true,
@@ -30532,7 +30522,6 @@ var ActionResponseCreatorEditor = (function (_super) {
             reqEntitiesVal: [],
             negEntitiesVal: [],
             waitVal: false,
-            waitKey: 'waitFalse',
             availableRequiredEntities: [],
             availableNegativeEntities: [],
             entityModalOpen: false
@@ -30586,19 +30575,10 @@ var ActionResponseCreatorEditor = (function (_super) {
         actionToAdd.actionId = this.props.blisAction.actionId;
         this.props.editAction(actionToAdd, currentAppId);
     };
-    ActionResponseCreatorEditor.prototype.waitChanged = function (event, option) {
-        if (option.text == 'False') {
-            this.setState({
-                waitVal: false,
-                waitKey: 'waitFalse'
-            });
-        }
-        else {
-            this.setState({
-                waitVal: true,
-                waitKey: 'waitTrue'
-            });
-        }
+    ActionResponseCreatorEditor.prototype.waitChanged = function () {
+        this.setState({
+            waitVal: !this.state.waitVal,
+        });
     };
     ActionResponseCreatorEditor.prototype.actionTypeChanged = function (obj) {
         this.setState({
@@ -30687,16 +30667,7 @@ var ActionResponseCreatorEditor = (function (_super) {
                             suggestionsHeaderText: 'Entities',
                             noResultsFoundText: 'No Entities Found'
                         }, defaultSelectedItems: this.state.defaultNegativeEntities }),
-                    React.createElement(office_ui_fabric_react_1.ChoiceGroup, { options: [
-                            {
-                                key: 'waitTrue',
-                                text: 'True',
-                            },
-                            {
-                                key: 'waitFalse',
-                                text: 'False',
-                            }
-                        ], label: 'Wait For Response?', onChange: this.waitChanged.bind(this), selectedKey: this.state.waitKey, disabled: this.state.editing })),
+                    React.createElement(office_ui_fabric_react_1.Checkbox, { label: 'Wait For Response?', defaultChecked: false, onChange: this.waitChanged.bind(this), style: { marginTop: "1em", display: "inline-block" }, disabled: this.state.editing })),
                 React.createElement("div", { className: "modalFooter" },
                     React.createElement(office_ui_fabric_react_1.CommandButton, { "data-automation-id": 'randomID6', disabled: false, onClick: this.createAction.bind(this), className: 'goldButton', ariaDescription: 'Create', text: createButtonText }),
                     React.createElement(office_ui_fabric_react_1.CommandButton, { "data-automation-id": 'randomID7', className: "grayButton", disabled: false, onClick: function () { return _this.props.handleClose(); }, ariaDescription: 'Cancel', text: 'Cancel' }),
@@ -31541,7 +31512,7 @@ var columns = [
     },
     {
         key: 'isNegatable',
-        name: 'Negatable',
+        name: 'Reversible',
         fieldName: 'metadata',
         minWidth: 100,
         maxWidth: 200,

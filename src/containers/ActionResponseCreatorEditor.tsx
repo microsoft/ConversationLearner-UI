@@ -4,7 +4,7 @@ import { editAction } from '../actions/updateActions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
-import { CommandButton, Dialog, DialogFooter, DialogType, ChoiceGroup, TextField, DefaultButton, Dropdown, TagPicker, Label } from 'office-ui-fabric-react';
+import { CommandButton, Dialog, DialogFooter, DialogType, ChoiceGroup, TextField, DefaultButton, Dropdown, TagPicker, Label,Checkbox } from 'office-ui-fabric-react';
 import { ActionBase, ActionMetaData, ActionTypes, EntityBase, EntityMetaData } from 'blis-models'
 import { State } from '../types';
 import EntityCreatorEditor from './EntityCreatorEditor'
@@ -27,7 +27,6 @@ class ActionResponseCreatorEditor extends React.Component<any, any> {
             reqEntitiesVal: [],
             negEntitiesVal: [],
             waitVal: false,
-            waitKey: 'waitFalse',
             availableRequiredEntities: [],
             availableNegativeEntities: [],
             editing: false,
@@ -57,7 +56,6 @@ class ActionResponseCreatorEditor extends React.Component<any, any> {
                     reqEntitiesVal: [],
                     negEntitiesVal: [],
                     waitVal: false,
-                    waitKey: 'waitFalse',
                     availableRequiredEntities: [],
                     availableNegativeEntities: [],
                     editing: false,
@@ -67,12 +65,6 @@ class ActionResponseCreatorEditor extends React.Component<any, any> {
                     open: p.open
                 })
             } else {
-                let initWaitKey: string;
-                if (p.blisAction.isTerminal == true) {
-                    initWaitKey = 'waitTrue'
-                } else {
-                    initWaitKey = 'waitFalse'
-                }
                 let entities = this.props.entities.map((e: EntityBase) => {
                     return {
                         key: e.entityName,
@@ -99,7 +91,6 @@ class ActionResponseCreatorEditor extends React.Component<any, any> {
                     reqEntitiesVal: requiredEntities,
                     negEntitiesVal: negativeEntities,
                     waitVal: p.blisAction.isTerminal,
-                    waitKey: initWaitKey,
                     availableRequiredEntities: entities,
                     availableNegativeEntities: entities,
                     editing: true,
@@ -144,7 +135,6 @@ class ActionResponseCreatorEditor extends React.Component<any, any> {
             reqEntitiesVal: [],
             negEntitiesVal: [],
             waitVal: false,
-            waitKey: 'waitFalse',
             availableRequiredEntities: [],
             availableNegativeEntities: [],
             entityModalOpen: false
@@ -196,18 +186,10 @@ class ActionResponseCreatorEditor extends React.Component<any, any> {
         actionToAdd.actionId = this.props.blisAction.actionId;
         this.props.editAction(actionToAdd, currentAppId);
     }
-    waitChanged(event: any, option: { text: string }) {
-        if (option.text == 'False') {
-            this.setState({
-                waitVal: false,
-                waitKey: 'waitFalse'
-            })
-        } else {
-            this.setState({
-                waitVal: true,
-                waitKey: 'waitTrue'
-            })
-        }
+    waitChanged() {
+        this.setState({
+            waitVal: !this.state.waitVal,
+        })
     }
     actionTypeChanged(obj: { text: string }) {
         this.setState({
@@ -327,20 +309,11 @@ class ActionResponseCreatorEditor extends React.Component<any, any> {
                             }
                             defaultSelectedItems={this.state.defaultNegativeEntities}
                         />
-                        <ChoiceGroup
-                            options={[
-                                {
-                                    key: 'waitTrue',
-                                    text: 'True',
-                                },
-                                {
-                                    key: 'waitFalse',
-                                    text: 'False',
-                                }
-                            ]}
+                        <Checkbox
                             label='Wait For Response?'
+                            defaultChecked={false}
                             onChange={this.waitChanged.bind(this)}
-                            selectedKey={this.state.waitKey}
+                            style={{ marginTop: "1em", display: "inline-block" }}
                             disabled={this.state.editing}
                         />
                     </div>
