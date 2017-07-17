@@ -1,6 +1,11 @@
 import 'rxjs'
 import axios, { AxiosResponse, AxiosRequestConfig } from 'axios'
-import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, ActionMetaData, ActionList, ActionTypes } from 'blis-models'
+import { 
+	BlisAppBase, BlisAppMetaData, BlisAppList, 
+	EntityBase, EntityMetaData, EntityList, 
+	ActionBase, ActionMetaData, ActionList, ActionTypes,
+	UserInput,
+	TrainExtractorStep, ExtractResponse, TrainScorerStep } from 'blis-models'
 import * as Rx from 'rxjs';
 import { Observable, Observer } from 'rxjs'
 
@@ -114,4 +119,113 @@ export const editBlisAction = (appId: string, blisActionId: string, action: Acti
 	let editActionRoute: string = `app/${appId}/action/${blisActionId}`
 	const { actionId, version, packageCreationId, packageDeletionId, ...actionToSend } = action
 	return Rx.Observable.fromPromise(axios.put(rootUrl.concat(editActionRoute), actionToSend, config))
+};
+
+//========================================================
+// SESSION ROUTES
+//========================================================
+
+/** START SESSION : Creates a new session and a corresponding logDialog */
+export const createSession = (appId : string, key : string): Observable<AxiosResponse> => {
+	let addAppRoute: string = `app/${appId}/session?key=${key}`
+	return Rx.Observable.fromPromise(axios.post(rootUrl.concat(addAppRoute), config))
+};
+
+/** GET SESSION : Retrieves information about the specified session */
+export const getSession = (appId: string, sessionId: string): Observable<AxiosResponse> => {
+	let getAppRoute: string = `app/${appId}/session/${sessionId}`
+	return Rx.Observable.fromPromise(axios.get(rootUrl.concat(getAppRoute), config))
+};
+
+/** END SESSION : End a session. */
+export const deleteSession = (appId: string, sessionId: string, key : string): Observable<AxiosResponse> => {
+	let deleteAppRoute: string = `app/${appId}/session/${sessionId}` 
+	return Rx.Observable.fromPromise(axios.delete(rootUrl.concat(deleteAppRoute)))
+};
+
+/** GET SESSIONS : Retrieves definitions of ALL open sessions */
+export const getSessions = (appId: string): Observable<AxiosResponse> => {
+	let getAppRoute: string = `app/${appId}/sessions`
+	return Rx.Observable.fromPromise(axios.get(rootUrl.concat(getAppRoute), config))
+};
+
+/** GET SESSION IDS : Retrieves a list of session IDs */
+export const getSessionIds = (appId: string): Observable<AxiosResponse> => {
+	let getAppRoute: string = `app/${appId}/session`
+	return Rx.Observable.fromPromise(axios.get(rootUrl.concat(getAppRoute), config))
+};
+
+//========================================================
+// Teach
+//========================================================
+
+/** START TEACH SESSION: Creates a new teaching session and a corresponding trainDialog */
+export const createTeach = (appId : string, key : string): Observable<AxiosResponse> => {
+	let addAppRoute: string = `app/${appId}/teach?key=${key}`
+	return Rx.Observable.fromPromise(axios.post(rootUrl.concat(addAppRoute), config))
+};
+
+/** GET TEACH: Retrieves information about the specified teach */
+export const getTeach = (appId: string, teachId: string): Observable<AxiosResponse> => {
+	let getAppRoute: string = `app/${appId}/teach/${teachId}`
+	return Rx.Observable.fromPromise(axios.get(rootUrl.concat(getAppRoute), config))
+};
+
+/** RUN EXTRACTOR: Runs entity extraction (prediction). 
+ * If a more recent version of the package is available on 
+ * the server, the session will first migrate to that newer version.  This 
+ * doesn't affect the trainDialog maintained.
+ */
+export const putExtract = (appId: string, teachId: string, userInput: UserInput): Observable<AxiosResponse> => {
+	let editAppRoute: string = `app/${appId}/teach/${teachId}/extractor`;
+	return Rx.Observable.fromPromise(axios.put(rootUrl.concat(editAppRoute), userInput, config))
+};
+
+/** EXTRACTION FEEDBACK: Uploads a labeled entity extraction instance
+ * ie "commits" an entity extraction label, appending it to the teach session's
+ * trainDialog, and advancing the dialog. This may yield produce a new package.
+ */
+export const postExtraction = (appId : string, teachId: string, trainExtractorStep : TrainExtractorStep, key : string): Observable<AxiosResponse> => {
+	let addAppRoute: string = `app/${appId}/teach/${teachId}/extractor`
+	return Rx.Observable.fromPromise(axios.post(rootUrl.concat(addAppRoute), trainExtractorStep, config))
+};
+
+/** RUN SCORER: Takes a turn and return distribution over actions.
+ * If a more recent version of the package is 
+ * available on the server, the session will first migrate to that newer version.  
+ * This doesn't affect the trainDialog maintained by the teaching session.
+ */
+export const putScore = (appId: string, teachId: string, extractResponse: ExtractResponse, key: string): Observable<AxiosResponse> => {
+	let editAppRoute: string = `app/${appId}/teach/${teachId}/scorer?key=${key}`;
+	return Rx.Observable.fromPromise(axios.put(rootUrl.concat(editAppRoute), extractResponse, config))
+};
+
+/** SCORE FEEDBACK: Uploads a labeled scorer step instance 
+ * – ie "commits" a scorer label, appending it to the teach session's 
+ * trainDialog, and advancing the dialog. This may yield produce a new package.
+ */
+export const postScore = (appId : string, teachId: string, trainScorerStep : TrainScorerStep, key : string): Observable<AxiosResponse> => {
+	let addAppRoute: string = `app/${appId}/teach/${teachId}/scorer?key=${key}`
+	return Rx.Observable.fromPromise(axios.post(rootUrl.concat(addAppRoute), trainScorerStep, config))
+};
+
+/** END TEACH: Ends a teach.   
+ * For Teach sessions, does NOT delete the associated trainDialog.
+ * To delete the associated trainDialog, call DELETE on the trainDialog.
+ */
+export const deleteTeach = (appId: string, teachId: string, key : string): Observable<AxiosResponse> => {
+	let deleteAppRoute: string = `app/${appId}/teach/${teachId}?key=${key}`
+	return Rx.Observable.fromPromise(axios.delete(rootUrl.concat(deleteAppRoute)))
+};
+
+/** GET TEACH SESSIONS: Retrieves definitions of ALL open teach sessions */
+export const getTeaches = (appId: string): Observable<AxiosResponse> => {
+	let getAppRoute: string = `app/${appId}/teaches`
+	return Rx.Observable.fromPromise(axios.get(rootUrl.concat(getAppRoute), config))
+};
+
+/** GET TEACH SESSION IDS: Retrieves a list of teach session IDs */
+export const getTeachIds = (appId: string): Observable<AxiosResponse> => {
+	let getAppRoute: string = `app/${appId}/teach`
+	return Rx.Observable.fromPromise(axios.get(rootUrl.concat(getAppRoute), config))
 };
