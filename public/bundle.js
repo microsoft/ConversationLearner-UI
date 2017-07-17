@@ -3792,7 +3792,7 @@ var _prodInvariant = __webpack_require__(12),
     _assign = __webpack_require__(13);
 
 var CallbackQueue = __webpack_require__(263);
-var PooledClass = __webpack_require__(49);
+var PooledClass = __webpack_require__(50);
 var ReactFeatureFlags = __webpack_require__(268);
 var ReactReconciler = __webpack_require__(61);
 var Transaction = __webpack_require__(100);
@@ -4081,7 +4081,7 @@ module.exports = ReactCurrentOwner;
 
 var _assign = __webpack_require__(13);
 
-var PooledClass = __webpack_require__(49);
+var PooledClass = __webpack_require__(50);
 
 var emptyFunction = __webpack_require__(31);
 var warning = __webpack_require__(8);
@@ -4806,6 +4806,7 @@ exports.EmptyObservable = EmptyObservable;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+var tslib_1 = __webpack_require__(2);
 exports.createBLISApplication = function (userId, application) {
     //needs to make a call to an Epic to send data to BLIS
     return {
@@ -4818,6 +4819,14 @@ exports.createEntity = function (entity, currentAppId) {
     //needs to make a call to an Epic to send data to BLIS
     return {
         type: 'CREATE_ENTITY',
+        entity: entity,
+        currentAppId: currentAppId
+    };
+};
+exports.createReversibleEntity = function (entity, currentAppId) {
+    //needs to make a call to an Epic to send data to BLIS
+    return {
+        type: 'CREATE_REVERSIBLE_ENTITY',
         entity: entity,
         currentAppId: currentAppId
     };
@@ -4843,10 +4852,48 @@ exports.createApplicationFulfilled = function (appId) {
         blisAppId: appId
     };
 };
+exports.createPositiveEntityFulfilled = function (positiveEntity, positiveEntityId, currentAppId) {
+    var negativeEntity = tslib_1.__assign({}, positiveEntity, { entityName: "~" + positiveEntity.entityName, metadata: tslib_1.__assign({}, positiveEntity.metadata, { positiveId: positiveEntityId }) });
+    return {
+        type: 'CREATE_POSITIVE_ENTITY_FULFILLED',
+        negativeEntity: negativeEntity,
+        positiveEntity: positiveEntity,
+        currentAppId: currentAppId
+    };
+};
+exports.createNegativeEntityFulfilled = function (positiveEntity, negativeEntity, negativeEntityId, currentAppId) {
+    var posEntity = positiveEntity;
+    posEntity.metadata.negativeId = negativeEntityId;
+    posEntity.entityId = negativeEntity.metadata.positiveId;
+    negativeEntity.entityId = negativeEntityId;
+    //send both to store to be saved locally, and send the positive entity back to the service to update its metadata
+    return {
+        type: 'CREATE_NEGATIVE_ENTITY_FULFILLED',
+        positiveEntity: posEntity,
+        negativeEntity: negativeEntity,
+        currentAppId: currentAppId
+    };
+};
 
 
 /***/ }),
 /* 48 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+function __export(m) {
+    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+}
+Object.defineProperty(exports, "__esModule", { value: true });
+__export(__webpack_require__(239));
+var index_1 = __webpack_require__(239);
+exports.default = index_1.Modal;
+
+
+
+/***/ }),
+/* 49 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4863,7 +4910,7 @@ __export(__webpack_require__(659));
 
 
 /***/ }),
-/* 49 */
+/* 50 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4981,7 +5028,7 @@ module.exports = PooledClass;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ }),
-/* 50 */
+/* 51 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5328,7 +5375,7 @@ module.exports = ReactElement;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ }),
-/* 51 */
+/* 52 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5563,7 +5610,7 @@ exports.Symbol = Symbol;
 
 
 /***/ }),
-/* 52 */
+/* 53 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5626,7 +5673,7 @@ exports.MulticastOperator = MulticastOperator;
 
 
 /***/ }),
-/* 53 */
+/* 54 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5694,7 +5741,7 @@ module.exports = warning;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ }),
-/* 54 */
+/* 55 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5710,7 +5757,7 @@ exports.buildClassMap = buildClassMap_1.buildClassMap;
 
 
 /***/ }),
-/* 55 */
+/* 56 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5879,22 +5926,6 @@ exports.getRect = getRect;
 function isVirtualElement(element) {
     return element && !!element._virtual;
 }
-
-
-
-/***/ }),
-/* 56 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-function __export(m) {
-    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
-}
-Object.defineProperty(exports, "__esModule", { value: true });
-__export(__webpack_require__(239));
-var index_1 = __webpack_require__(239);
-exports.default = index_1.Modal;
 
 
 
@@ -6515,7 +6546,7 @@ var _assign = __webpack_require__(13);
 var ReactBaseClasses = __webpack_require__(290);
 var ReactChildren = __webpack_require__(763);
 var ReactDOMFactories = __webpack_require__(764);
-var ReactElement = __webpack_require__(50);
+var ReactElement = __webpack_require__(51);
 var ReactPropTypes = __webpack_require__(766);
 var ReactVersion = __webpack_require__(768);
 
@@ -8081,9 +8112,9 @@ exports.ArgumentOutOfRangeError = ArgumentOutOfRangeError;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = __webpack_require__(2);
-__webpack_require__(51);
+__webpack_require__(52);
 var axios_1 = __webpack_require__(189);
-var Rx = __webpack_require__(51);
+var Rx = __webpack_require__(52);
 //=========================================================
 // CONFIG
 //=========================================================
@@ -8151,7 +8182,7 @@ exports.deleteBlisApp = function (blisAppId, blisApp) {
     return Rx.Observable.fromPromise(axios_1.default.delete(rootUrl.concat(deleteAppRoute), configWithBody));
 };
 exports.deleteBlisEntity = function (appId, entity) {
-    var deleteEntityRoute = "app/" + appId + "/entity";
+    var deleteEntityRoute = "app/" + appId + "/entity/" + entity.entityId;
     var version = entity.version, packageCreationId = entity.packageCreationId, packageDeletionId = entity.packageDeletionId, entityId = entity.entityId, entityToSend = tslib_1.__rest(entity, ["version", "packageCreationId", "packageDeletionId", "entityId"]);
     var configWithBody = tslib_1.__assign({}, config, { body: entityToSend });
     return Rx.Observable.fromPromise(axios_1.default.delete(rootUrl.concat(deleteEntityRoute), configWithBody));
@@ -8174,6 +8205,11 @@ exports.editBlisAction = function (appId, blisActionId, action) {
     var editActionRoute = "app/" + appId + "/action/" + blisActionId;
     var actionId = action.actionId, version = action.version, packageCreationId = action.packageCreationId, packageDeletionId = action.packageDeletionId, actionToSend = tslib_1.__rest(action, ["actionId", "version", "packageCreationId", "packageDeletionId"]);
     return Rx.Observable.fromPromise(axios_1.default.put(rootUrl.concat(editActionRoute), actionToSend, config));
+};
+exports.editBlisEntity = function (appId, entity) {
+    var editActionRoute = "app/" + appId + "/entity/" + entity.entityId;
+    var version = entity.version, packageCreationId = entity.packageCreationId, packageDeletionId = entity.packageDeletionId, entityToSend = tslib_1.__rest(entity, ["version", "packageCreationId", "packageDeletionId"]);
+    return Rx.Observable.fromPromise(axios_1.default.put(rootUrl.concat(editActionRoute), entityToSend, config));
 };
 
 
@@ -10425,7 +10461,7 @@ exports.deleteTrainDialog = function (GUID) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 var React = __webpack_require__(1);
-var Modal_1 = __webpack_require__(56);
+var Modal_1 = __webpack_require__(48);
 var office_ui_fabric_react_1 = __webpack_require__(32);
 var ConfirmDeleteModal = function (props) {
     return (React.createElement(Modal_1.Modal, { isOpen: props.open, isBlocking: false, containerClassName: 'createModal' },
@@ -11250,7 +11286,7 @@ var locationsAreEqual = exports.locationsAreEqual = function locationsAreEqual(a
 
 exports.__esModule = true;
 
-var _warning = __webpack_require__(53);
+var _warning = __webpack_require__(54);
 
 var _warning2 = _interopRequireDefault(_warning);
 
@@ -12285,7 +12321,7 @@ var React = __webpack_require__(1);
 var Utilities_1 = __webpack_require__(3);
 var FocusZone_1 = __webpack_require__(19);
 var Callout_1 = __webpack_require__(37);
-var index_1 = __webpack_require__(48);
+var index_1 = __webpack_require__(49);
 var Suggestions_1 = __webpack_require__(253);
 var SuggestionsController_1 = __webpack_require__(254);
 var BaseAutoFill_1 = __webpack_require__(146);
@@ -14912,7 +14948,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_warning__ = __webpack_require__(53);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_warning__ = __webpack_require__(54);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_warning___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_warning__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_invariant__ = __webpack_require__(70);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_invariant___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_invariant__);
@@ -16222,7 +16258,7 @@ var createActions_1 = __webpack_require__(47);
 var updateActions_1 = __webpack_require__(36);
 var redux_1 = __webpack_require__(20);
 var react_redux_1 = __webpack_require__(22);
-var Modal_1 = __webpack_require__(56);
+var Modal_1 = __webpack_require__(48);
 var office_ui_fabric_react_1 = __webpack_require__(32);
 var types_1 = __webpack_require__(179);
 var blis_models_1 = __webpack_require__(86);
@@ -16235,12 +16271,8 @@ var EntityCreatorEditor = (function (_super) {
             entityTypeVal: 'LOCAL',
             isBucketableVal: false,
             isNegatableVal: false,
-            bucketableKey: 'bucketableFalse',
-            negatableKey: 'negatableFalse',
             editing: false
         };
-        _this.bucketableChanged = _this.bucketableChanged.bind(_this);
-        _this.negatableChanged = _this.negatableChanged.bind(_this);
         return _this;
     }
     EntityCreatorEditor.prototype.componentWillReceiveProps = function (p) {
@@ -16256,27 +16288,11 @@ var EntityCreatorEditor = (function (_super) {
             });
         }
         else {
-            var initBucketableKey = void 0;
-            var initNegatableKey = void 0;
-            if (p.entity.metadata.isBucket == true) {
-                initBucketableKey = 'bucketableTrue';
-            }
-            else {
-                initBucketableKey = 'bucketableFalse';
-            }
-            if (p.entity.metadata.isReversable == true) {
-                initNegatableKey = 'negatableTrue';
-            }
-            else {
-                initNegatableKey = 'negatableFalse';
-            }
             this.setState({
                 entityNameVal: p.entity.entityName,
                 entityTypeVal: p.entity.entityType,
                 isBucketableVal: p.entity.metadata.isBucket,
                 isNegatableVal: p.entity.metadata.isReversable,
-                bucketableKey: initBucketableKey,
-                negatableKey: initNegatableKey,
                 editing: true
             });
         }
@@ -16293,7 +16309,7 @@ var EntityCreatorEditor = (function (_super) {
     EntityCreatorEditor.prototype.createEntity = function () {
         var currentAppId = this.props.blisApps.current.appId;
         var randomGUID = this.generateGUID();
-        var meta2 = new blis_models_1.EntityMetaData({
+        var meta = new blis_models_1.EntityMetaData({
             isBucket: this.state.isBucketableVal,
             isReversable: this.state.isNegatableVal,
             negativeId: null,
@@ -16302,25 +16318,29 @@ var EntityCreatorEditor = (function (_super) {
         var entityToAdd = new blis_models_1.EntityBase({
             entityId: randomGUID,
             entityName: this.state.entityNameVal,
-            metadata: meta2,
+            metadata: meta,
             entityType: this.state.entityTypeVal,
             version: null,
             packageCreationId: null,
             packageDeletionId: null
         });
         if (this.state.editing === false) {
-            this.props.createEntity(entityToAdd, currentAppId);
+            if (meta.isReversable === true) {
+                this.props.createReversibleEntity(entityToAdd, currentAppId);
+            }
+            else {
+                this.props.createEntity(entityToAdd, currentAppId);
+            }
         }
         else {
             this.editEntity(entityToAdd);
         }
+        console.log(entityToAdd);
         this.setState({
             entityNameVal: '',
             entityTypeVal: 'LOCAL',
             isBucketableVal: false,
             isNegatableVal: false,
-            bucketableKey: 'bucketableFalse',
-            negatableKey: 'negatableFalse',
             editing: false
         });
         this.props.handleClose();
@@ -16339,33 +16359,15 @@ var EntityCreatorEditor = (function (_super) {
             entityTypeVal: obj.text
         });
     };
-    EntityCreatorEditor.prototype.bucketableChanged = function (event, option) {
-        if (option.text == 'False') {
-            this.setState({
-                isBucketableVal: false,
-                bucketableKey: 'bucketableFalse'
-            });
-        }
-        else {
-            this.setState({
-                isBucketableVal: true,
-                bucketableKey: 'bucketableTrue'
-            });
-        }
+    EntityCreatorEditor.prototype.handleCheckBucketable = function () {
+        this.setState({
+            isBucketableVal: !this.state.isBucketableVal,
+        });
     };
-    EntityCreatorEditor.prototype.negatableChanged = function (event, option) {
-        if (option.text == 'False') {
-            this.setState({
-                isNegatableVal: false,
-                negatableKey: 'negatableFalse'
-            });
-        }
-        else {
-            this.setState({
-                isNegatableVal: true,
-                negatableKey: 'negatableTrue'
-            });
-        }
+    EntityCreatorEditor.prototype.handleCheckReversible = function () {
+        this.setState({
+            isNegatableVal: !this.state.isNegatableVal,
+        });
     };
     EntityCreatorEditor.prototype.render = function () {
         var _this = this;
@@ -16406,26 +16408,8 @@ var EntityCreatorEditor = (function (_super) {
                 React.createElement("div", null,
                     React.createElement(office_ui_fabric_react_1.TextField, { onChanged: this.nameChanged.bind(this), label: "Entity Name", placeholder: "Name...", value: this.state.entityNameVal }),
                     React.createElement(office_ui_fabric_react_1.Dropdown, { label: 'Entity Type', options: options, onChanged: this.typeChanged.bind(this), selectedKey: this.state.entityTypeVal, disabled: this.state.editing }),
-                    React.createElement(office_ui_fabric_react_1.ChoiceGroup, { options: [
-                            {
-                                key: 'bucketableTrue',
-                                text: 'True'
-                            },
-                            {
-                                key: 'bucketableFalse',
-                                text: 'False',
-                            }
-                        ], label: 'Bucketable', onChange: this.bucketableChanged, selectedKey: this.state.bucketableKey }),
-                    React.createElement(office_ui_fabric_react_1.ChoiceGroup, { options: [
-                            {
-                                key: 'negatableTrue',
-                                text: 'True'
-                            },
-                            {
-                                key: 'negatableFalse',
-                                text: 'False',
-                            }
-                        ], label: 'Negatable', onChange: this.negatableChanged, selectedKey: this.state.negatableKey })),
+                    React.createElement(office_ui_fabric_react_1.Checkbox, { label: 'Bucketable', defaultChecked: false, onChange: this.handleCheckBucketable.bind(this), style: { marginTop: "1em", marginRight: "3em", display: "inline-block" } }),
+                    React.createElement(office_ui_fabric_react_1.Checkbox, { label: 'Reversible', defaultChecked: false, onChange: this.handleCheckReversible.bind(this), style: { marginTop: "1em", display: "inline-block" } })),
                 React.createElement("div", { className: 'modalFooter' },
                     React.createElement(office_ui_fabric_react_1.CommandButton, { "data-automation-id": 'randomID2', disabled: false, onClick: this.createEntity.bind(this), className: 'goldButton', ariaDescription: 'Create', text: createButtonText }),
                     React.createElement(office_ui_fabric_react_1.CommandButton, { "data-automation-id": 'randomID3', className: "grayButton", disabled: false, onClick: function () { return _this.props.handleClose(); }, ariaDescription: 'Cancel', text: 'Cancel' })))));
@@ -16435,7 +16419,8 @@ var EntityCreatorEditor = (function (_super) {
 var mapDispatchToProps = function (dispatch) {
     return redux_1.bindActionCreators({
         createEntity: createActions_1.createEntity,
-        editEntity: updateActions_1.editEntity
+        editEntity: updateActions_1.editEntity,
+        createReversibleEntity: createActions_1.createReversibleEntity
     }, dispatch);
 };
 var mapStateToProps = function (state, ownProps) {
@@ -17338,7 +17323,7 @@ FabricPerformance.setPeriodicReset();
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var dom_1 = __webpack_require__(55);
+var dom_1 = __webpack_require__(56);
 // Default to undefined so that we initialize on first read.
 var _language;
 /**
@@ -17492,7 +17477,7 @@ exports.getId = getId;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var dom_1 = __webpack_require__(55);
+var dom_1 = __webpack_require__(56);
 // Default to undefined so that we initialize on first read.
 var _isRTL;
 /**
@@ -17551,7 +17536,7 @@ exports.getRTLSafeKeyCode = getRTLSafeKeyCode;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var dom_1 = __webpack_require__(55);
+var dom_1 = __webpack_require__(56);
 var scroll_scss_1 = __webpack_require__(403);
 var _scrollbarWidth;
 var _bodyScrollDisabledCount = 0;
@@ -23359,7 +23344,7 @@ var _prodInvariant = __webpack_require__(12);
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var PooledClass = __webpack_require__(49);
+var PooledClass = __webpack_require__(50);
 
 var invariant = __webpack_require__(7);
 
@@ -26084,7 +26069,7 @@ Link.contextTypes = {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_warning__ = __webpack_require__(53);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_warning__ = __webpack_require__(54);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_warning___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_warning__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_react__);
@@ -26423,7 +26408,7 @@ module.exports = REACT_ELEMENT_TYPE;
 
 var ReactCurrentOwner = __webpack_require__(39);
 var ReactComponentTreeHook = __webpack_require__(29);
-var ReactElement = __webpack_require__(50);
+var ReactElement = __webpack_require__(51);
 
 var checkReactTypeSpec = __webpack_require__(769);
 
@@ -30412,7 +30397,7 @@ var createActions_1 = __webpack_require__(47);
 var updateActions_1 = __webpack_require__(36);
 var redux_1 = __webpack_require__(20);
 var react_redux_1 = __webpack_require__(22);
-var Modal_1 = __webpack_require__(56);
+var Modal_1 = __webpack_require__(48);
 var office_ui_fabric_react_1 = __webpack_require__(32);
 var blis_models_1 = __webpack_require__(86);
 var EntityCreatorEditor_1 = __webpack_require__(178);
@@ -30426,7 +30411,6 @@ var ActionResponseCreatorEditor = (function (_super) {
             reqEntitiesVal: [],
             negEntitiesVal: [],
             waitVal: false,
-            waitKey: 'waitFalse',
             availableRequiredEntities: [],
             availableNegativeEntities: [],
             editing: false,
@@ -30459,7 +30443,6 @@ var ActionResponseCreatorEditor = (function (_super) {
                     reqEntitiesVal: [],
                     negEntitiesVal: [],
                     waitVal: false,
-                    waitKey: 'waitFalse',
                     availableRequiredEntities: [],
                     availableNegativeEntities: [],
                     editing: false,
@@ -30470,13 +30453,6 @@ var ActionResponseCreatorEditor = (function (_super) {
                 });
             }
             else {
-                var initWaitKey = void 0;
-                if (p.blisAction.isTerminal == true) {
-                    initWaitKey = 'waitTrue';
-                }
-                else {
-                    initWaitKey = 'waitFalse';
-                }
                 var entities = this.props.entities.map(function (e) {
                     return {
                         key: e.entityName,
@@ -30503,7 +30479,6 @@ var ActionResponseCreatorEditor = (function (_super) {
                     reqEntitiesVal: requiredEntities,
                     negEntitiesVal: negativeEntities,
                     waitVal: p.blisAction.isTerminal,
-                    waitKey: initWaitKey,
                     availableRequiredEntities: entities,
                     availableNegativeEntities: entities,
                     editing: true,
@@ -30547,7 +30522,6 @@ var ActionResponseCreatorEditor = (function (_super) {
             reqEntitiesVal: [],
             negEntitiesVal: [],
             waitVal: false,
-            waitKey: 'waitFalse',
             availableRequiredEntities: [],
             availableNegativeEntities: [],
             entityModalOpen: false
@@ -30601,19 +30575,10 @@ var ActionResponseCreatorEditor = (function (_super) {
         actionToAdd.actionId = this.props.blisAction.actionId;
         this.props.editAction(actionToAdd, currentAppId);
     };
-    ActionResponseCreatorEditor.prototype.waitChanged = function (event, option) {
-        if (option.text == 'False') {
-            this.setState({
-                waitVal: false,
-                waitKey: 'waitFalse'
-            });
-        }
-        else {
-            this.setState({
-                waitVal: true,
-                waitKey: 'waitTrue'
-            });
-        }
+    ActionResponseCreatorEditor.prototype.waitChanged = function () {
+        this.setState({
+            waitVal: !this.state.waitVal,
+        });
     };
     ActionResponseCreatorEditor.prototype.actionTypeChanged = function (obj) {
         this.setState({
@@ -30702,16 +30667,7 @@ var ActionResponseCreatorEditor = (function (_super) {
                             suggestionsHeaderText: 'Entities',
                             noResultsFoundText: 'No Entities Found'
                         }, defaultSelectedItems: this.state.defaultNegativeEntities }),
-                    React.createElement(office_ui_fabric_react_1.ChoiceGroup, { options: [
-                            {
-                                key: 'waitTrue',
-                                text: 'True',
-                            },
-                            {
-                                key: 'waitFalse',
-                                text: 'False',
-                            }
-                        ], label: 'Wait For Response?', onChange: this.waitChanged.bind(this), selectedKey: this.state.waitKey, disabled: this.state.editing })),
+                    React.createElement(office_ui_fabric_react_1.Checkbox, { label: 'Wait For Response?', defaultChecked: false, onChange: this.waitChanged.bind(this), style: { marginTop: "1em", display: "inline-block" }, disabled: this.state.editing })),
                 React.createElement("div", { className: "modalFooter" },
                     React.createElement(office_ui_fabric_react_1.CommandButton, { "data-automation-id": 'randomID6', disabled: false, onClick: this.createAction.bind(this), className: 'goldButton', ariaDescription: 'Create', text: createButtonText }),
                     React.createElement(office_ui_fabric_react_1.CommandButton, { "data-automation-id": 'randomID7', className: "grayButton", disabled: false, onClick: function () { return _this.props.handleClose(); }, ariaDescription: 'Cancel', text: 'Cancel' }),
@@ -31026,9 +30982,13 @@ var AppSettings = (function (_super) {
             appIdVal: '',
             appNameVal: '',
             luisKeyVal: '',
-            edited: false
+            edited: false,
+            botFrameworkAppsVal: [],
+            newBotVal: ""
         };
         _this.luisKeyChanged = _this.luisKeyChanged.bind(_this);
+        _this.botIdChanged = _this.botIdChanged.bind(_this);
+        _this.appNameChanged = _this.appNameChanged.bind(_this);
         return _this;
     }
     AppSettings.prototype.componentWillMount = function () {
@@ -31037,7 +30997,9 @@ var AppSettings = (function (_super) {
             localeVal: current.locale,
             appIdVal: current.appId,
             appNameVal: current.appName,
-            luisKeyVal: current.luisKey
+            luisKeyVal: current.luisKey,
+            botFrameworkAppsVal: current.metadata.botFrameworkApps,
+            newBotVal: ""
         });
     };
     AppSettings.prototype.componentDidUpdate = function () {
@@ -31045,12 +31007,14 @@ var AppSettings = (function (_super) {
         if (this.state.edited == false && (this.state.localeVal !== current.locale ||
             this.state.appIdVal !== current.appId ||
             this.state.appNameVal !== current.appName ||
-            this.state.luisKeyVal !== current.luisKey)) {
+            this.state.luisKeyVal !== current.luisKey ||
+            this.state.botFrameworkAppsVal !== current.metadata.botFrameworkApps)) {
             this.setState({
                 localeVal: current.locale,
                 appIdVal: current.appId,
                 appNameVal: current.appName,
-                luisKeyVal: current.luisKey
+                luisKeyVal: current.luisKey,
+                botFrameworkAppsVal: current.metadata.botFrameworkApps
             });
         }
     };
@@ -31060,11 +31024,28 @@ var AppSettings = (function (_super) {
             edited: true
         });
     };
+    AppSettings.prototype.botIdChanged = function (text) {
+        this.setState({
+            newBotVal: text,
+            edited: true
+        });
+    };
     AppSettings.prototype.luisKeyChanged = function (text) {
         this.setState({
             luisKeyVal: text,
             edited: true
         });
+    };
+    AppSettings.prototype.botAdded = function () {
+        var newBotApps = this.state.botFrameworkAppsVal.concat(this.state.newBotVal);
+        this.setState({
+            botFrameworkAppsVal: newBotApps,
+            newBotVal: ""
+        });
+    };
+    AppSettings.prototype.onRenderBotListRow = function (item, index) {
+        return (React.createElement("div", { className: "textFieldInlineButtonDiv" },
+            React.createElement(office_ui_fabric_react_1.TextField, { className: "ms-font-m-plus textFieldWithButton", disabled: true, value: item })));
     };
     AppSettings.prototype.discardChanges = function () {
         var current = this.props.blisApps.current;
@@ -31073,17 +31054,22 @@ var AppSettings = (function (_super) {
             appIdVal: current.appId,
             appNameVal: current.appName,
             luisKeyVal: current.luisKey,
-            edited: false
+            botFrameworkAppsVal: current.metadata.botFrameworkApps,
+            edited: false,
+            newBotVal: ""
         });
     };
     AppSettings.prototype.editApp = function () {
         var current = this.props.blisApps.current;
+        var meta = new blis_models_1.BlisAppMetaData({
+            botFrameworkApps: this.state.botFrameworkAppsVal
+        });
         var appToAdd = new blis_models_1.BlisAppBase({
             appName: this.state.appNameVal,
             appId: current.appId,
             luisKey: this.state.luisKeyVal,
             locale: current.locale,
-            metadata: current.metadata
+            metadata: meta
         });
         this.props.editBLISApplication(appToAdd);
         this.setState({
@@ -31091,7 +31077,8 @@ var AppSettings = (function (_super) {
             appIdVal: current.appId,
             appNameVal: current.appName,
             luisKeyVal: current.luisKey,
-            edited: false
+            edited: false,
+            newBotVal: ""
         });
     };
     AppSettings.prototype.render = function () {
@@ -31108,6 +31095,12 @@ var AppSettings = (function (_super) {
             React.createElement(office_ui_fabric_react_1.TextField, { className: "ms-font-m-plus", onChanged: function (text) { return _this.luisKeyChanged(text); }, label: "LUIS Key", value: this.state.luisKeyVal }),
             React.createElement(office_ui_fabric_react_1.Label, { className: "ms-font-m-plus" }, "Locale"),
             React.createElement(office_ui_fabric_react_1.Dropdown, { className: "ms-font-m-plus", options: options, selectedKey: this.state.localeVal, disabled: true }),
+            React.createElement("div", null,
+                React.createElement(office_ui_fabric_react_1.Label, { className: "ms-font-m-plus" }, "Bot Framework Apps"),
+                React.createElement(office_ui_fabric_react_1.List, { items: this.state.botFrameworkAppsVal, onRenderCell: this.onRenderBotListRow.bind(this) }),
+                React.createElement("div", { className: "textFieldInlineButtonDiv" },
+                    React.createElement(office_ui_fabric_react_1.TextField, { className: "ms-font-m-plus textFieldWithButton", onChanged: function (text) { return _this.botIdChanged(text); }, placeholder: "Application ID", value: this.state.newBotVal }),
+                    React.createElement(office_ui_fabric_react_1.CommandButton, { "data-automation-id": 'randomID16', disabled: false, onClick: this.botAdded.bind(this), className: 'goldButton buttonWithTextField', ariaDescription: 'Add', text: 'Add' }))),
             React.createElement("div", { style: buttonsDivStyle, className: "saveAppChangesButtonsDiv" },
                 React.createElement(office_ui_fabric_react_1.CommandButton, { "data-automation-id": 'randomID6', disabled: false, onClick: this.editApp.bind(this), className: 'goldButton', ariaDescription: 'Save Changes', text: 'Save Changes' }),
                 React.createElement(office_ui_fabric_react_1.CommandButton, { "data-automation-id": 'randomID7', className: "grayButton", disabled: false, onClick: this.discardChanges.bind(this), ariaDescription: 'Discard', text: 'Discard' }))));
@@ -31140,7 +31133,7 @@ var axios_1 = __webpack_require__(189);
 var createActions_1 = __webpack_require__(47);
 var redux_1 = __webpack_require__(20);
 var react_redux_1 = __webpack_require__(22);
-var Modal_1 = __webpack_require__(56);
+var Modal_1 = __webpack_require__(48);
 var office_ui_fabric_react_1 = __webpack_require__(32);
 var updateActions_1 = __webpack_require__(36);
 var fetchActions_1 = __webpack_require__(66);
@@ -31224,6 +31217,7 @@ var BLISAppCreator = (function (_super) {
             metadata: meta
         });
         this.props.createBLISApplication(this.props.userId, appToAdd);
+        //need to empty entities, actions, and trainDialogs arrays
         this.props.emptyStateProperties();
         this.handleClose();
         this.props.setBLISAppDisplay("TrainingGround");
@@ -31363,6 +31357,14 @@ var columns = [
         isResizable: true
     },
     {
+        key: 'bots',
+        name: 'Linked Bots',
+        fieldName: 'metadata',
+        minWidth: 100,
+        maxWidth: 200,
+        isResizable: true
+    },
+    {
         key: 'actions',
         name: 'Actions',
         fieldName: 'appId',
@@ -31378,7 +31380,6 @@ var BLISAppsList = (function (_super) {
         _this.renderItemColumn = _this.renderItemColumn.bind(_this);
         _this.BLISAppSelected = _this.BLISAppSelected.bind(_this);
         _this.deleteApp = _this.deleteApp.bind(_this);
-        _this.editApp = _this.editApp.bind(_this);
         _this.handleCloseModal = _this.handleCloseModal.bind(_this);
         _this.openDeleteModal = _this.openDeleteModal.bind(_this);
         _this.state = {
@@ -31408,9 +31409,6 @@ var BLISAppsList = (function (_super) {
             appIDToDelete: guid
         });
     };
-    BLISAppsList.prototype.editApp = function (GUID) {
-        //do something
-    };
     BLISAppsList.prototype.BLISAppSelected = function (appName) {
         var appSelected = this.props.blisApps.all.find(function (app) { return app.appName == appName; });
         this.props.setCurrentBLISApp(appSelected);
@@ -31426,6 +31424,9 @@ var BLISAppsList = (function (_super) {
             case 'appName':
                 return React.createElement("span", { className: 'ms-font-m-plus' },
                     React.createElement(office_ui_fabric_react_1.Link, { onClick: function () { return _this.BLISAppSelected(fieldContent); } }, fieldContent));
+            case 'bots':
+                var botsCount = fieldContent ? fieldContent.botFrameworkApps.length : 0;
+                return React.createElement("span", { className: 'ms-font-m-plus' }, botsCount);
             case 'actions':
                 return (React.createElement("div", null,
                     React.createElement("a", { onClick: function () { return _this.openDeleteModal(fieldContent); } },
@@ -31483,6 +31484,7 @@ var EntityCreatorEditor_1 = __webpack_require__(178);
 var ConfirmDeleteModal_1 = __webpack_require__(116);
 var deleteActions_1 = __webpack_require__(115);
 var office_ui_fabric_react_1 = __webpack_require__(32);
+var Modal_1 = __webpack_require__(48);
 var columns = [
     {
         key: 'entityName',
@@ -31510,7 +31512,7 @@ var columns = [
     },
     {
         key: 'isNegatable',
-        name: 'Negatable',
+        name: 'Reversible',
         fieldName: 'metadata',
         minWidth: 100,
         maxWidth: 200,
@@ -31530,14 +31532,14 @@ var EntitiesList = (function (_super) {
     function EntitiesList(p) {
         var _this = _super.call(this, p) || this;
         _this.deleteSelectedEntity = _this.deleteSelectedEntity.bind(_this);
-        _this.editSelectedEntity = _this.editSelectedEntity.bind(_this);
         _this.renderItemColumn = _this.renderItemColumn.bind(_this);
         _this.onChange = _this.onChange.bind(_this);
         _this.renderEntityItems = _this.renderEntityItems.bind(_this);
         _this.state = {
             searchValue: '',
             createEditModalOpen: false,
-            entitySelected: null
+            entitySelected: null,
+            errorModalOpen: false
         };
         return _this;
     }
@@ -31554,14 +31556,29 @@ var EntitiesList = (function (_super) {
     EntitiesList.prototype.handleCloseDeleteModal = function () {
         this.setState({
             confirmDeleteEntityModalOpen: false,
-            entityIDToDelete: null
+            entityIDToDelete: null,
+            errorModalOpen: false
         });
     };
     EntitiesList.prototype.openDeleteModal = function (guid) {
-        this.setState({
-            confirmDeleteEntityModalOpen: true,
-            entityIDToDelete: guid
+        var tiedToAction;
+        this.props.actions.map(function (a) {
+            if (a.negativeEntities.includes(guid) || a.requiredEntities.includes(guid)) {
+                tiedToAction = true;
+                return;
+            }
         });
+        if (tiedToAction && tiedToAction === true) {
+            this.setState({
+                errorModalOpen: true
+            });
+        }
+        else {
+            this.setState({
+                confirmDeleteEntityModalOpen: true,
+                entityIDToDelete: guid
+            });
+        }
     };
     EntitiesList.prototype.renderItemColumn = function (item, index, column) {
         var _this = this;
@@ -31575,7 +31592,7 @@ var EntitiesList = (function (_super) {
                     return React.createElement("span", { className: "ms-Icon ms-Icon--Remove notFoundIcon", "aria-hidden": "true" });
                 }
             case 'isNegatable':
-                if (fieldContent.isReversible == true) {
+                if (fieldContent.isReversable == true) {
                     return React.createElement("span", { className: "ms-Icon ms-Icon--CheckMark checkIcon", "aria-hidden": "true" });
                 }
                 else {
@@ -31607,12 +31624,6 @@ var EntitiesList = (function (_super) {
             searchValue: lcString
         });
     };
-    EntitiesList.prototype.editSelectedEntity = function (entity) {
-        this.setState({
-            entitySelected: entity,
-            createEditModalOpen: true
-        });
-    };
     EntitiesList.prototype.handleOpenCreateModal = function () {
         this.setState({
             createEditModalOpen: true
@@ -31633,8 +31644,14 @@ var EntitiesList = (function (_super) {
                 React.createElement(office_ui_fabric_react_1.CommandButton, { "data-automation-id": 'randomID4', disabled: false, onClick: this.handleOpenCreateModal.bind(this), className: 'goldButton', ariaDescription: 'Create a New Entity', text: 'New Entity' }),
                 React.createElement(EntityCreatorEditor_1.default, { open: this.state.createEditModalOpen, entity: this.state.entitySelected, handleClose: this.handleCloseCreateModal.bind(this) })),
             React.createElement(office_ui_fabric_react_1.SearchBox, { className: "ms-font-m-plus", onChange: function (newValue) { return _this.onChange(newValue); }, onSearch: function (newValue) { return _this.onChange(newValue); } }),
-            React.createElement(office_ui_fabric_react_1.DetailsList, { className: "ms-font-m-plus", items: entityItems, columns: columns, checkboxVisibility: office_ui_fabric_react_1.CheckboxVisibility.hidden, onRenderItemColumn: this.renderItemColumn, onActiveItemChanged: function (item) { return _this.editSelectedEntity(item); } }),
-            React.createElement(ConfirmDeleteModal_1.default, { open: this.state.confirmDeleteEntityModalOpen, onCancel: function () { return _this.handleCloseDeleteModal(); }, onConfirm: function () { return _this.deleteSelectedEntity(); }, title: "Are you sure you want to delete this entity?" })));
+            React.createElement(office_ui_fabric_react_1.DetailsList, { className: "ms-font-m-plus", items: entityItems, columns: columns, checkboxVisibility: office_ui_fabric_react_1.CheckboxVisibility.hidden, onRenderItemColumn: this.renderItemColumn }),
+            React.createElement(ConfirmDeleteModal_1.default, { open: this.state.confirmDeleteEntityModalOpen, onCancel: function () { return _this.handleCloseDeleteModal(); }, onConfirm: function () { return _this.deleteSelectedEntity(); }, title: "Are you sure you want to delete this entity?" }),
+            React.createElement(ConfirmDeleteModal_1.default, { open: this.state.confirmDeleteEntityModalOpen, onCancel: function () { return _this.handleCloseDeleteModal(); }, onConfirm: function () { return _this.deleteSelectedEntity(); }, title: "Are you sure you want to delete this entity?" }),
+            React.createElement(Modal_1.Modal, { isOpen: this.state.errorModalOpen, isBlocking: false, containerClassName: 'createModal' },
+                React.createElement("div", { className: 'modalHeader' },
+                    React.createElement("span", { className: 'ms-font-xl ms-fontWeight-semilight' }, "You cannot delete this entity because it is being used in an action.")),
+                React.createElement("div", { className: 'modalFooter' },
+                    React.createElement(office_ui_fabric_react_1.CommandButton, { disabled: false, onClick: function () { return _this.handleCloseDeleteModal(); }, className: 'goldButton', ariaDescription: 'Close', text: 'Close' })))));
     };
     return EntitiesList;
 }(React.Component));
@@ -31646,7 +31663,8 @@ var mapDispatchToProps = function (dispatch) {
 var mapStateToProps = function (state) {
     return {
         entities: state.entities,
-        apps: state.apps
+        apps: state.apps,
+        actions: state.actions
     };
 };
 exports.default = react_redux_1.connect(mapStateToProps, mapDispatchToProps)(EntitiesList);
@@ -31936,7 +31954,7 @@ var tslib_1 = __webpack_require__(2);
 var React = __webpack_require__(1);
 var redux_1 = __webpack_require__(20);
 var react_redux_1 = __webpack_require__(22);
-var Modal_1 = __webpack_require__(56);
+var Modal_1 = __webpack_require__(48);
 var office_ui_fabric_react_1 = __webpack_require__(32);
 var updateActions_1 = __webpack_require__(36);
 var UserLogin = (function (_super) {
@@ -32101,7 +32119,7 @@ exports.default = react_redux_1.connect(mapStateToProps, mapDispatchToProps)(Web
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-__webpack_require__(51);
+__webpack_require__(52);
 var apiHelpers_1 = __webpack_require__(84);
 var createActions_1 = __webpack_require__(47);
 exports.createNewApplication = function (action$) {
@@ -32116,6 +32134,20 @@ exports.createNewEntity = function (action$) {
         .flatMap(function (action) {
         return apiHelpers_1.createBlisEntity(action.entity, action.currentAppId)
             .mapTo({ type: "CREATE_OPERATION_FULFILLED" });
+    });
+};
+exports.createReversibleEntity = function (action$) {
+    return action$.ofType("CREATE_REVERSIBLE_ENTITY")
+        .flatMap(function (action) {
+        return apiHelpers_1.createBlisEntity(action.entity, action.currentAppId)
+            .map(function (response) { return createActions_1.createPositiveEntityFulfilled(action.entity, response.data, action.currentAppId); });
+    });
+};
+exports.createNegativeEntity = function (action$) {
+    return action$.ofType("CREATE_POSITIVE_ENTITY_FULFILLED")
+        .flatMap(function (action) {
+        return apiHelpers_1.createBlisEntity(action.negativeEntity, action.currentAppId)
+            .map(function (response) { return createActions_1.createNegativeEntityFulfilled(action.positiveEntity, action.negativeEntity, response.data, action.currentAppId); });
     });
 };
 exports.createNewAction = function (action$) {
@@ -32134,7 +32166,7 @@ exports.createNewAction = function (action$) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-__webpack_require__(51);
+__webpack_require__(52);
 var apiHelpers_1 = __webpack_require__(84);
 exports.deleteApplication = function (action$) {
     return action$.ofType("DELETE_BLIS_APPLICATION")
@@ -32166,7 +32198,7 @@ exports.deleteAction = function (action$) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-__webpack_require__(51);
+__webpack_require__(52);
 var apiHelpers_1 = __webpack_require__(84);
 var fetchActions_1 = __webpack_require__(66);
 exports.fetchApplications = function (action$) {
@@ -32199,13 +32231,13 @@ exports.fetchActions = function (action$) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-__webpack_require__(51);
+__webpack_require__(52);
 var redux_observable_1 = __webpack_require__(297);
 var fetchEpics_1 = __webpack_require__(359);
 var createEpics_1 = __webpack_require__(357);
 var deleteEpics_1 = __webpack_require__(358);
 var updateEpics_1 = __webpack_require__(361);
-var rootEpic = redux_observable_1.combineEpics(fetchEpics_1.fetchApplications, fetchEpics_1.fetchEntities, fetchEpics_1.fetchActions, createEpics_1.createNewApplication, createEpics_1.createNewEntity, createEpics_1.createNewAction, deleteEpics_1.deleteApplication, deleteEpics_1.deleteEntity, deleteEpics_1.deleteAction, updateEpics_1.editApplication, updateEpics_1.editAction);
+var rootEpic = redux_observable_1.combineEpics(fetchEpics_1.fetchApplications, fetchEpics_1.fetchEntities, fetchEpics_1.fetchActions, createEpics_1.createNewApplication, createEpics_1.createNewEntity, createEpics_1.createNewAction, createEpics_1.createReversibleEntity, createEpics_1.createNegativeEntity, deleteEpics_1.deleteApplication, deleteEpics_1.deleteEntity, deleteEpics_1.deleteAction, updateEpics_1.editApplication, updateEpics_1.editAction, updateEpics_1.editEntity);
 exports.default = rootEpic;
 
 
@@ -32216,7 +32248,7 @@ exports.default = rootEpic;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-__webpack_require__(51);
+__webpack_require__(52);
 var apiHelpers_1 = __webpack_require__(84);
 exports.editApplication = function (action$) {
     return action$.ofType("EDIT_BLIS_APPLICATION")
@@ -32229,6 +32261,13 @@ exports.editAction = function (action$) {
     return action$.ofType("EDIT_ACTION")
         .flatMap(function (action) {
         return apiHelpers_1.editBlisAction(action.currentAppId, action.blisAction.actionId, action.blisAction)
+            .mapTo({ type: "UPDATE_OPERATION_FULFILLED" });
+    });
+};
+exports.editEntity = function (action$) {
+    return action$.ofType("CREATE_NEGATIVE_ENTITY_FULFILLED")
+        .flatMap(function (action) {
+        return apiHelpers_1.editBlisEntity(action.currentAppId, action.positiveEntity)
             .mapTo({ type: "UPDATE_OPERATION_FULFILLED" });
     });
 };
@@ -32264,7 +32303,6 @@ var actionsReducer = function (state, actionObject) {
         case 'FETCH_ACTIONS_FULFILLED':
             return actionObject.allActions;
         case "EMPTY_STATE_PROPERTIES":
-            console.log('emptied');
             var empty = [];
             return empty;
         case 'CREATE_ACTION':
@@ -32374,11 +32412,13 @@ var entitiesReducer = function (state, action) {
         case 'FETCH_ENTITIES_FULFILLED':
             return action.allEntities;
         case "EMPTY_STATE_PROPERTIES":
-            console.log('emptied');
             var empty = [];
             return empty;
         case 'CREATE_ENTITY':
             return state.concat([action.entity]);
+        case 'CREATE_NEGATIVE_ENTITY_FULFILLED':
+            var entities = [action.positiveEntity, action.negativeEntity];
+            return state.concat(entities);
         case 'DELETE_ENTITY':
             return state.filter(function (ent) { return ent.entityId !== action.entityGUID; });
         case 'EDIT_ENTITY':
@@ -32441,7 +32481,6 @@ var trainDialogsReducer = function (state, action) {
         case 'FETCH_TRAIN_DIALOGS':
             return tslib_1.__assign({}, state, { all: action.allTrainDialogs });
         case "EMPTY_STATE_PROPERTIES":
-            console.log('emptied');
             return tslib_1.__assign({}, state, { all: [] });
         case 'CREATE_TRAIN_DIALOG':
             return tslib_1.__assign({}, state, { all: state.all.concat([action.trainDialog]), current: action.trainDialog });
@@ -32669,7 +32708,7 @@ exports.Input = Input;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var index_1 = __webpack_require__(54);
+var index_1 = __webpack_require__(55);
 var index_2 = __webpack_require__(68);
 exports.AnimationClassNames = index_1.buildClassMap(index_2.AnimationStyles);
 
@@ -32682,7 +32721,7 @@ exports.AnimationClassNames = index_1.buildClassMap(index_2.AnimationStyles);
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var index_1 = __webpack_require__(54);
+var index_1 = __webpack_require__(55);
 var DefaultPalette_1 = __webpack_require__(117);
 var index_2 = __webpack_require__(68);
 exports.ColorClassNames = {};
@@ -32727,7 +32766,7 @@ function _defineGetter(obj, colorName, suffix, isHover, cssProperty) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var index_1 = __webpack_require__(54);
+var index_1 = __webpack_require__(55);
 var index_2 = __webpack_require__(68);
 exports.FontClassNames = index_1.buildClassMap(index_2.DefaultFontStyles);
 
@@ -32741,7 +32780,7 @@ exports.FontClassNames = index_1.buildClassMap(index_2.DefaultFontStyles);
 
 Object.defineProperty(exports, "__esModule", { value: true });
 var index_1 = __webpack_require__(68);
-var index_2 = __webpack_require__(54);
+var index_2 = __webpack_require__(55);
 /**
  * All class names for all Fabric icons.
  */
@@ -32802,7 +32841,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 __export(__webpack_require__(85));
 __export(__webpack_require__(377));
 __export(__webpack_require__(68));
-__export(__webpack_require__(54));
+__export(__webpack_require__(55));
 
 
 
@@ -35804,7 +35843,7 @@ exports.IconCodes = {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var index_1 = __webpack_require__(54);
+var index_1 = __webpack_require__(55);
 var glamorExports_1 = __webpack_require__(85);
 /**
  * Generates a focus style which can be used to define an :after focus border.
@@ -36019,7 +36058,7 @@ exports.mergeStyleSets = mergeStyleSets;
 Object.defineProperty(exports, "__esModule", { value: true });
 var EventGroup_1 = __webpack_require__(119);
 var scroll_1 = __webpack_require__(187);
-var dom_1 = __webpack_require__(55);
+var dom_1 = __webpack_require__(56);
 var SCROLL_ITERATION_DELAY = 16;
 var SCROLL_GUTTER_HEIGHT = 100;
 var MAX_SCROLL_VELOCITY = 15;
@@ -36494,7 +36533,7 @@ exports.customizable = customizable;
 /* tslint:disable:no-string-literal */
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var dom_1 = __webpack_require__(55);
+var dom_1 = __webpack_require__(56);
 var IS_FOCUSABLE_ATTRIBUTE = 'data-is-focusable';
 var IS_VISIBLE_ATTRIBUTE = 'data-is-visible';
 var FOCUSZONE_ID_ATTRIBUTE = 'data-focuszone-id';
@@ -36777,7 +36816,7 @@ __export(__webpack_require__(390));
 __export(__webpack_require__(391));
 __export(__webpack_require__(392));
 __export(__webpack_require__(393));
-__export(__webpack_require__(55));
+__export(__webpack_require__(56));
 __export(__webpack_require__(394));
 __export(__webpack_require__(395));
 __export(__webpack_require__(397));
@@ -41260,7 +41299,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var _warning = __webpack_require__(53);
+var _warning = __webpack_require__(54);
 
 var _warning2 = _interopRequireDefault(_warning);
 
@@ -41571,7 +41610,7 @@ exports.__esModule = true;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var _warning = __webpack_require__(53);
+var _warning = __webpack_require__(54);
 
 var _warning2 = _interopRequireDefault(_warning);
 
@@ -41903,7 +41942,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var _warning = __webpack_require__(53);
+var _warning = __webpack_require__(54);
 
 var _warning2 = _interopRequireDefault(_warning);
 
@@ -42524,7 +42563,7 @@ function __export(m) {
 }
 Object.defineProperty(exports, "__esModule", { value: true });
 __export(__webpack_require__(585));
-__export(__webpack_require__(48));
+__export(__webpack_require__(49));
 
 
 
@@ -47184,7 +47223,7 @@ var DetailsList_Props_1 = __webpack_require__(93);
 var DetailsHeader_1 = __webpack_require__(531);
 var DetailsRow_1 = __webpack_require__(223);
 var FocusZone_1 = __webpack_require__(19);
-var index_1 = __webpack_require__(48);
+var index_1 = __webpack_require__(49);
 var DragDropHelper_1 = __webpack_require__(656);
 var GroupedList_1 = __webpack_require__(90);
 var List_1 = __webpack_require__(92);
@@ -47759,7 +47798,7 @@ function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
 Object.defineProperty(exports, "__esModule", { value: true });
-__export(__webpack_require__(48));
+__export(__webpack_require__(49));
 __export(__webpack_require__(232));
 __export(__webpack_require__(533));
 __export(__webpack_require__(93));
@@ -47779,7 +47818,7 @@ var tslib_1 = __webpack_require__(2);
 var React = __webpack_require__(1);
 var Utilities_1 = __webpack_require__(3);
 var DialogContent_Props_1 = __webpack_require__(139);
-var Modal_1 = __webpack_require__(56);
+var Modal_1 = __webpack_require__(48);
 var withResponsiveMode_1 = __webpack_require__(74);
 var stylesImport = __webpack_require__(138);
 var styles = stylesImport;
@@ -49760,7 +49799,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = __webpack_require__(2);
 var React = __webpack_require__(1);
 var Utilities_1 = __webpack_require__(3);
-var index_1 = __webpack_require__(48);
+var index_1 = __webpack_require__(49);
 var Check_1 = __webpack_require__(211);
 var Icon_1 = __webpack_require__(14);
 var GroupSpacer_1 = __webpack_require__(94);
@@ -49923,7 +49962,7 @@ var React = __webpack_require__(1);
 var Utilities_1 = __webpack_require__(3);
 var GroupedListSection_1 = __webpack_require__(563);
 var List_1 = __webpack_require__(92);
-var index_1 = __webpack_require__(48);
+var index_1 = __webpack_require__(49);
 var stylesImport = __webpack_require__(233);
 var styles = stylesImport;
 var GroupedList = (function (_super) {
@@ -50099,7 +50138,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = __webpack_require__(2);
 var React = __webpack_require__(1);
 var Utilities_1 = __webpack_require__(3);
-var index_1 = __webpack_require__(48);
+var index_1 = __webpack_require__(49);
 var GroupFooter_1 = __webpack_require__(557);
 var GroupHeader_1 = __webpack_require__(559);
 var List_1 = __webpack_require__(92);
@@ -59143,7 +59182,7 @@ module.exports = EnterLeaveEventPlugin;
 
 var _assign = __webpack_require__(13);
 
-var PooledClass = __webpack_require__(49);
+var PooledClass = __webpack_require__(50);
 
 var getTextContentAccessor = __webpack_require__(278);
 
@@ -63856,7 +63895,7 @@ var _assign = __webpack_require__(13);
 
 var EventListener = __webpack_require__(199);
 var ExecutionEnvironment = __webpack_require__(18);
-var PooledClass = __webpack_require__(49);
+var PooledClass = __webpack_require__(50);
 var ReactDOMComponentTree = __webpack_require__(15);
 var ReactUpdates = __webpack_require__(38);
 
@@ -64773,7 +64812,7 @@ module.exports = ReactPropTypeLocationNames;
 var _assign = __webpack_require__(13);
 
 var CallbackQueue = __webpack_require__(263);
-var PooledClass = __webpack_require__(49);
+var PooledClass = __webpack_require__(50);
 var ReactBrowserEventEmitter = __webpack_require__(98);
 var ReactInputSelection = __webpack_require__(270);
 var ReactInstrumentation = __webpack_require__(33);
@@ -65050,7 +65089,7 @@ module.exports = ReactRef;
 
 var _assign = __webpack_require__(13);
 
-var PooledClass = __webpack_require__(49);
+var PooledClass = __webpack_require__(50);
 var Transaction = __webpack_require__(100);
 var ReactInstrumentation = __webpack_require__(33);
 var ReactServerUpdateQueue = __webpack_require__(708);
@@ -68567,7 +68606,7 @@ StaticRouter.childContextTypes = {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types__ = __webpack_require__(25);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_prop_types__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_warning__ = __webpack_require__(53);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_warning__ = __webpack_require__(54);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_warning___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_warning__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__matchPath__ = __webpack_require__(169);
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -68889,7 +68928,7 @@ module.exports = PooledClass;
 
 
 var PooledClass = __webpack_require__(762);
-var ReactElement = __webpack_require__(50);
+var ReactElement = __webpack_require__(51);
 
 var emptyFunction = __webpack_require__(31);
 var traverseAllChildren = __webpack_require__(773);
@@ -69084,7 +69123,7 @@ module.exports = ReactChildren;
 
 
 
-var ReactElement = __webpack_require__(50);
+var ReactElement = __webpack_require__(51);
 
 /**
  * Create a factory that creates HTML tag elements.
@@ -69290,7 +69329,7 @@ module.exports = ReactPropTypeLocationNames;
 
 
 
-var _require = __webpack_require__(50),
+var _require = __webpack_require__(51),
     isValidElement = _require.isValidElement;
 
 var factory = __webpack_require__(260);
@@ -69451,7 +69490,7 @@ module.exports = checkReactTypeSpec;
 var _require = __webpack_require__(290),
     Component = _require.Component;
 
-var _require2 = __webpack_require__(50),
+var _require2 = __webpack_require__(51),
     isValidElement = _require2.isValidElement;
 
 var ReactNoopUpdateQueue = __webpack_require__(293);
@@ -69503,7 +69542,7 @@ module.exports = getNextDebugID;
 
 var _prodInvariant = __webpack_require__(63);
 
-var ReactElement = __webpack_require__(50);
+var ReactElement = __webpack_require__(51);
 
 var invariant = __webpack_require__(7);
 
@@ -72553,7 +72592,7 @@ Observable_1.Observable.prototype.min = min_1.min;
 "use strict";
 
 var Observable_1 = __webpack_require__(0);
-var multicast_1 = __webpack_require__(52);
+var multicast_1 = __webpack_require__(53);
 Observable_1.Observable.prototype.multicast = multicast_1.multicast;
 
 
@@ -80381,7 +80420,7 @@ function plucker(props, length) {
 "use strict";
 
 var Subject_1 = __webpack_require__(16);
-var multicast_1 = __webpack_require__(52);
+var multicast_1 = __webpack_require__(53);
 /* tslint:enable:max-line-length */
 /**
  * Returns a ConnectableObservable, which is a variety of Observable that waits until its connect method is called
@@ -80410,7 +80449,7 @@ exports.publish = publish;
 "use strict";
 
 var BehaviorSubject_1 = __webpack_require__(301);
-var multicast_1 = __webpack_require__(52);
+var multicast_1 = __webpack_require__(53);
 /**
  * @param value
  * @return {ConnectableObservable<T>}
@@ -80430,7 +80469,7 @@ exports.publishBehavior = publishBehavior;
 "use strict";
 
 var AsyncSubject_1 = __webpack_require__(104);
-var multicast_1 = __webpack_require__(52);
+var multicast_1 = __webpack_require__(53);
 /**
  * @return {ConnectableObservable<T>}
  * @method publishLast
@@ -80449,7 +80488,7 @@ exports.publishLast = publishLast;
 "use strict";
 
 var ReplaySubject_1 = __webpack_require__(105);
-var multicast_1 = __webpack_require__(52);
+var multicast_1 = __webpack_require__(53);
 /**
  * @param bufferSize
  * @param windowTime
@@ -81326,7 +81365,7 @@ var SequenceEqualCompareToSubscriber = (function (_super) {
 
 "use strict";
 
-var multicast_1 = __webpack_require__(52);
+var multicast_1 = __webpack_require__(53);
 var Subject_1 = __webpack_require__(16);
 function shareSubjectFactory() {
     return new Subject_1.Subject();
@@ -81356,7 +81395,7 @@ exports.share = share;
 
 "use strict";
 
-var multicast_1 = __webpack_require__(52);
+var multicast_1 = __webpack_require__(53);
 var ReplaySubject_1 = __webpack_require__(105);
 /**
  * @method shareReplay

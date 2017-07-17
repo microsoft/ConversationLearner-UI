@@ -270,4 +270,16 @@
 .toggleTrainDialog *{
   color: #ffb900 !important;
 }
-/*command buttons have 5em width*/
+.textFieldInlineButtonDiv{
+  display: block;
+}
+.textFieldWithButton{
+  display: inline-block;
+  width: 85%;
+}
+.buttonWithTextField{
+  display: inline-block;
+  float: right;
+  margin-top: -.1em
+}
+

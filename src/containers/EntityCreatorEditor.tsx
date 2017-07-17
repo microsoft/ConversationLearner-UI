@@ -1,10 +1,10 @@
 import * as React from 'react';
-import { createEntity } from '../actions/createActions';
+import { createEntity, createReversibleEntity } from '../actions/createActions';
 import { editEntity } from '../actions/updateActions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
-import { CommandButton, Dialog, DialogFooter, DialogType, ChoiceGroup, TextField, DefaultButton, Dropdown, DropdownMenuItemType } from 'office-ui-fabric-react';
+import { CommandButton, Dialog, DialogFooter, DialogType, ChoiceGroup, TextField, DefaultButton, Dropdown, DropdownMenuItemType, Checkbox } from 'office-ui-fabric-react';
 import { State, PreBuiltEntities, PreBuilts, LocalePreBuilts } from '../types';
 import { EntityBase, EntityMetaData } from 'blis-models'
 
@@ -22,12 +22,8 @@ class EntityCreatorEditor extends React.Component<any, any> {
             entityTypeVal: 'LOCAL',
             isBucketableVal: false,
             isNegatableVal: false,
-            bucketableKey: 'bucketableFalse',
-            negatableKey: 'negatableFalse',
             editing: false
         };
-        this.bucketableChanged = this.bucketableChanged.bind(this)
-        this.negatableChanged = this.negatableChanged.bind(this)
     }
     componentWillReceiveProps(p: Props) {
         if (p.entity === null) {
@@ -41,25 +37,11 @@ class EntityCreatorEditor extends React.Component<any, any> {
                 editing: false
             })
         } else {
-            let initBucketableKey: string;
-            let initNegatableKey: string;
-            if (p.entity.metadata.isBucket == true) {
-                initBucketableKey = 'bucketableTrue'
-            } else {
-                initBucketableKey = 'bucketableFalse'
-            }
-            if (p.entity.metadata.isReversable == true) {
-                initNegatableKey = 'negatableTrue'
-            } else {
-                initNegatableKey = 'negatableFalse'
-            }
             this.setState({
                 entityNameVal: p.entity.entityName,
                 entityTypeVal: p.entity.entityType,
                 isBucketableVal: p.entity.metadata.isBucket,
                 isNegatableVal: p.entity.metadata.isReversable,
-                bucketableKey: initBucketableKey,
-                negatableKey: initNegatableKey,
                 editing: true
             })
         }
@@ -76,7 +58,7 @@ class EntityCreatorEditor extends React.Component<any, any> {
     createEntity() {
         let currentAppId: string = this.props.blisApps.current.appId;
         let randomGUID = this.generateGUID();
-        let meta2 = new EntityMetaData({
+        let meta = new EntityMetaData({
             isBucket: this.state.isBucketableVal,
             isReversable: this.state.isNegatableVal,
             negativeId: null,
@@ -85,24 +67,27 @@ class EntityCreatorEditor extends React.Component<any, any> {
         let entityToAdd = new EntityBase({
             entityId: randomGUID,
             entityName: this.state.entityNameVal,
-            metadata: meta2,
+            metadata: meta,
             entityType: this.state.entityTypeVal,
             version: null,
             packageCreationId: null,
             packageDeletionId: null
         })
         if (this.state.editing === false) {
-            this.props.createEntity(entityToAdd, currentAppId);
+            if (meta.isReversable === true) {
+                this.props.createReversibleEntity(entityToAdd, currentAppId);
+            } else {
+                this.props.createEntity(entityToAdd, currentAppId);
+            }
         } else {
             this.editEntity(entityToAdd);
         }
+        console.log(entityToAdd)
         this.setState({
             entityNameVal: '',
             entityTypeVal: 'LOCAL',
             isBucketableVal: false,
             isNegatableVal: false,
-            bucketableKey: 'bucketableFalse',
-            negatableKey: 'negatableFalse',
             editing: false
         })
         this.props.handleClose();
@@ -121,31 +106,15 @@ class EntityCreatorEditor extends React.Component<any, any> {
             entityTypeVal: obj.text
         })
     }
-    bucketableChanged(event: any, option: { text: string }) {
-        if (option.text == 'False') {
-            this.setState({
-                isBucketableVal: false,
-                bucketableKey: 'bucketableFalse'
-            })
-        } else {
-            this.setState({
-                isBucketableVal: true,
-                bucketableKey: 'bucketableTrue'
-            })
-        }
+    handleCheckBucketable() {
+        this.setState({
+            isBucketableVal: !this.state.isBucketableVal,
+        })
     }
-    negatableChanged(event: any, option: { text: string }) {
-        if (option.text == 'False') {
-            this.setState({
-                isNegatableVal: false,
-                negatableKey: 'negatableFalse'
-            })
-        } else {
-            this.setState({
-                isNegatableVal: true,
-                negatableKey: 'negatableTrue'
-            })
-        }
+    handleCheckReversible() {
+        this.setState({
+            isNegatableVal: !this.state.isNegatableVal,
+        })
     }
     render() {
         let vals: string[] = ["LOCAL", "LUIS"]
@@ -158,7 +127,7 @@ class EntityCreatorEditor extends React.Component<any, any> {
         options.unshift({ key: 'BlisHeader', text: 'BLIS Entity Types', itemType: DropdownMenuItemType.Header })
         options.push({ key: 'divider', text: '-', itemType: DropdownMenuItemType.Divider })
         options.push({ key: 'LuisHeader', text: 'LUIS Pre-Built Entity Types', itemType: DropdownMenuItemType.Header })
-        
+
         let localePreBuilts: LocalePreBuilts = PreBuiltEntities.find((obj: LocalePreBuilts) => obj.locale == this.props.blisApps.current.locale)
         let prebuiltVals: string[] = localePreBuilts.preBuiltEntities.map((entityName: string) => {
             return entityName
@@ -171,7 +140,6 @@ class EntityCreatorEditor extends React.Component<any, any> {
         })
         let title: string;
         let createButtonText: string;
-
         if (this.state.editing == true) {
             title = "Edit Entity"
             createButtonText = "Save"
@@ -202,35 +170,17 @@ class EntityCreatorEditor extends React.Component<any, any> {
                             selectedKey={this.state.entityTypeVal}
                             disabled={this.state.editing}
                         />
-                        <ChoiceGroup
-                            options={[
-                                {
-                                    key: 'bucketableTrue',
-                                    text: 'True'
-                                },
-                                {
-                                    key: 'bucketableFalse',
-                                    text: 'False',
-                                }
-                            ]}
+                        <Checkbox
                             label='Bucketable'
-                            onChange={this.bucketableChanged}
-                            selectedKey={this.state.bucketableKey}
+                            defaultChecked={false}
+                            onChange={this.handleCheckBucketable.bind(this)}
+                            style={{ marginTop: "1em", marginRight: "3em", display: "inline-block" }}
                         />
-                        <ChoiceGroup
-                            options={[
-                                {
-                                    key: 'negatableTrue',
-                                    text: 'True'
-                                },
-                                {
-                                    key: 'negatableFalse',
-                                    text: 'False',
-                                }
-                            ]}
-                            label='Negatable'
-                            onChange={this.negatableChanged}
-                            selectedKey={this.state.negatableKey}
+                        <Checkbox
+                            label='Reversible'
+                            defaultChecked={false}
+                            onChange={this.handleCheckReversible.bind(this)}
+                            style={{ marginTop: "1em", display: "inline-block" }}
                         />
                     </div>
                     <div className='modalFooter'>
@@ -259,7 +209,8 @@ class EntityCreatorEditor extends React.Component<any, any> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         createEntity: createEntity,
-        editEntity: editEntity
+        editEntity: editEntity,
+        createReversibleEntity: createReversibleEntity
     }, dispatch);
 }
 const mapStateToProps = (state: State, ownProps: any) => {

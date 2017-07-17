@@ -3,9 +3,9 @@ import * as Rx from 'rxjs';
 import { combineEpics, ActionsObservable, Epic } from 'redux-observable'
 import { State, ActionObject } from '../types'
 import { fetchApplications, fetchEntities, fetchActions } from './fetchEpics'
-import { createNewApplication, createNewEntity, createNewAction } from './createEpics'
+import { createNewApplication, createNewEntity, createNewAction, createReversibleEntity, createNegativeEntity } from './createEpics'
 import { deleteAction, deleteApplication, deleteEntity } from './deleteEpics'
-import { editAction, editApplication } from './updateEpics'
+import { editAction, editApplication, editEntity } from './updateEpics'
 
 const rootEpic = combineEpics(
 	fetchApplications,
@@ -14,11 +14,14 @@ const rootEpic = combineEpics(
 	createNewApplication,
 	createNewEntity,
 	createNewAction,
+	createReversibleEntity,
+	createNegativeEntity,
 	deleteApplication,
 	deleteEntity,
 	deleteAction,
 	editApplication,
-	editAction
+	editAction,
+	editEntity
 )
 
 export default rootEpic;

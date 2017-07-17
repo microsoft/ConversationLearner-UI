@@ -89,7 +89,7 @@ export const deleteBlisApp = (blisAppId: string, blisApp: BlisAppForUpdate): Obs
 	return Rx.Observable.fromPromise(axios.delete(rootUrl.concat(deleteAppRoute), configWithBody))
 };
 export const deleteBlisEntity = (appId: string, entity: EntityBase): Observable<AxiosResponse> => {
-	let deleteEntityRoute: string = `app/${appId}/entity`
+	let deleteEntityRoute: string = `app/${appId}/entity/${entity.entityId}`
 	const { version, packageCreationId, packageDeletionId, entityId, ...entityToSend } = entity;
 	let configWithBody = {...config, body: entityToSend};
 	return Rx.Observable.fromPromise(axios.delete(rootUrl.concat(deleteEntityRoute), configWithBody))
@@ -114,4 +114,9 @@ export const editBlisAction = (appId: string, blisActionId: string, action: Acti
 	let editActionRoute: string = `app/${appId}/action/${blisActionId}`
 	const { actionId, version, packageCreationId, packageDeletionId, ...actionToSend } = action
 	return Rx.Observable.fromPromise(axios.put(rootUrl.concat(editActionRoute), actionToSend, config))
+};
+export const editBlisEntity = (appId: string, entity: EntityBase): Observable<AxiosResponse> => {
+	let editActionRoute: string = `app/${appId}/entity/${entity.entityId}`
+	const { version, packageCreationId, packageDeletionId, ...entityToSend } = entity;
+	return Rx.Observable.fromPromise(axios.put(rootUrl.concat(editActionRoute), entityToSend, config))
 };

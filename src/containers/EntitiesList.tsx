@@ -7,7 +7,8 @@ import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import { deleteEntity } from '../actions/deleteActions'
 import { DetailsList, CommandButton, Link, CheckboxVisibility, IColumn, SearchBox } from 'office-ui-fabric-react';
 import { State } from '../types';
-import { EntityBase, EntityIdList, EntityList, EntityMetaData } from 'blis-models'
+import { EntityBase, EntityIdList, EntityList, EntityMetaData, ActionBase, ActionMetaData } from 'blis-models'
+import { Modal } from 'office-ui-fabric-react/lib/Modal';
 
 let columns: IColumn[] = [
     {
@@ -36,7 +37,7 @@ let columns: IColumn[] = [
     },
     {
         key: 'isNegatable',
-        name: 'Negatable',
+        name: 'Reversible',
         fieldName: 'metadata',
         minWidth: 100,
         maxWidth: 200,
@@ -55,14 +56,14 @@ class EntitiesList extends React.Component<any, any> {
     constructor(p: any) {
         super(p);
         this.deleteSelectedEntity = this.deleteSelectedEntity.bind(this);
-        this.editSelectedEntity = this.editSelectedEntity.bind(this)
         this.renderItemColumn = this.renderItemColumn.bind(this)
         this.onChange = this.onChange.bind(this)
         this.renderEntityItems = this.renderEntityItems.bind(this)
         this.state = {
             searchValue: '',
             createEditModalOpen: false,
-            entitySelected: null
+            entitySelected: null,
+            errorModalOpen: false
         }
     }
     deleteSelectedEntity() {
@@ -78,14 +79,28 @@ class EntitiesList extends React.Component<any, any> {
     handleCloseDeleteModal() {
         this.setState({
             confirmDeleteEntityModalOpen: false,
-            entityIDToDelete: null
+            entityIDToDelete: null,
+            errorModalOpen: false
         })
     }
     openDeleteModal(guid: string) {
-        this.setState({
-            confirmDeleteEntityModalOpen: true,
-            entityIDToDelete: guid
+        let tiedToAction: boolean;
+        this.props.actions.map((a: ActionBase) => {
+            if(a.negativeEntities.includes(guid) || a.requiredEntities.includes(guid)){
+                tiedToAction = true;
+                return;
+            }
         })
+        if (tiedToAction && tiedToAction === true) {
+            this.setState({
+                errorModalOpen: true
+            })
+        } else {
+            this.setState({
+                confirmDeleteEntityModalOpen: true,
+                entityIDToDelete: guid
+            })
+        }
     }
     renderItemColumn(item?: any, index?: number, column?: IColumn) {
         let fieldContent = item[column.fieldName];
@@ -97,7 +112,7 @@ class EntitiesList extends React.Component<any, any> {
                     return <span className="ms-Icon ms-Icon--Remove notFoundIcon" aria-hidden="true"></span>;
                 }
             case 'isNegatable':
-                if (fieldContent.isReversible == true) {
+                if (fieldContent.isReversable == true) {
                     return <span className="ms-Icon ms-Icon--CheckMark checkIcon" aria-hidden="true"></span>;
                 } else {
                     return <span className="ms-Icon ms-Icon--Remove notFoundIcon" aria-hidden="true"></span>;
@@ -128,12 +143,6 @@ class EntitiesList extends React.Component<any, any> {
         let lcString = newValue.toLowerCase();
         this.setState({
             searchValue: lcString
-        })
-    }
-    editSelectedEntity(entity: EntityBase) {
-        this.setState({
-            entitySelected: entity,
-            createEditModalOpen: true
         })
     }
     handleOpenCreateModal() {
@@ -174,10 +183,27 @@ class EntitiesList extends React.Component<any, any> {
                     columns={columns}
                     checkboxVisibility={CheckboxVisibility.hidden}
                     onRenderItemColumn={this.renderItemColumn}
-                    onActiveItemChanged={(item) => this.editSelectedEntity(item)}
                 />
                 <ConfirmDeleteModal open={this.state.confirmDeleteEntityModalOpen} onCancel={() => this.handleCloseDeleteModal()} onConfirm={() => this.deleteSelectedEntity()} title="Are you sure you want to delete this entity?" />
-
+                <ConfirmDeleteModal open={this.state.confirmDeleteEntityModalOpen} onCancel={() => this.handleCloseDeleteModal()} onConfirm={() => this.deleteSelectedEntity()} title="Are you sure you want to delete this entity?" />
+                <Modal
+                    isOpen={this.state.errorModalOpen}
+                    isBlocking={false}
+                    containerClassName='createModal'
+                >
+                    <div className='modalHeader'>
+                        <span className='ms-font-xl ms-fontWeight-semilight'>You cannot delete this entity because it is being used in an action.</span>
+                    </div>
+                    <div className='modalFooter'>
+                        <CommandButton
+                            disabled={false}
+                            onClick={() => this.handleCloseDeleteModal()}
+                            className='goldButton'
+                            ariaDescription='Close'
+                            text='Close'
+                        />
+                    </div>
+                </Modal>
             </div>
         );
     }
@@ -190,7 +216,8 @@ const mapDispatchToProps = (dispatch: any) => {
 const mapStateToProps = (state: State) => {
     return {
         entities: state.entities,
-        apps: state.apps
+        apps: state.apps,
+        actions: state.actions
     }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(EntitiesList);

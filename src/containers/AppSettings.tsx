@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader'
 import { State } from '../types';
-import { CommandButton, ChoiceGroup, TextField, DefaultButton, Dropdown, Label } from 'office-ui-fabric-react';
+import { CommandButton, ChoiceGroup, TextField, DefaultButton, Dropdown, Label, List } from 'office-ui-fabric-react';
 import { BlisAppBase, BlisAppMetaData } from 'blis-models'
 
 const styles = {
@@ -24,9 +24,13 @@ class AppSettings extends React.Component<any, any> {
             appIdVal: '',
             appNameVal: '',
             luisKeyVal: '',
-            edited: false
+            edited: false,
+            botFrameworkAppsVal: [],
+            newBotVal: ""
         }
         this.luisKeyChanged = this.luisKeyChanged.bind(this)
+        this.botIdChanged = this.botIdChanged.bind(this)
+        this.appNameChanged = this.appNameChanged.bind(this)
     }
     componentWillMount() {
         let current: BlisAppBase = this.props.blisApps.current
@@ -34,7 +38,9 @@ class AppSettings extends React.Component<any, any> {
             localeVal: current.locale,
             appIdVal: current.appId,
             appNameVal: current.appName,
-            luisKeyVal: current.luisKey
+            luisKeyVal: current.luisKey,
+            botFrameworkAppsVal: current.metadata.botFrameworkApps,
+            newBotVal: ""
         })
     }
     componentDidUpdate() {
@@ -42,12 +48,14 @@ class AppSettings extends React.Component<any, any> {
         if (this.state.edited == false && (this.state.localeVal !== current.locale ||
             this.state.appIdVal !== current.appId ||
             this.state.appNameVal !== current.appName ||
-            this.state.luisKeyVal !== current.luisKey)) {
+            this.state.luisKeyVal !== current.luisKey ||
+            this.state.botFrameworkAppsVal !== current.metadata.botFrameworkApps)) {
             this.setState({
                 localeVal: current.locale,
                 appIdVal: current.appId,
                 appNameVal: current.appName,
-                luisKeyVal: current.luisKey
+                luisKeyVal: current.luisKey,
+                botFrameworkAppsVal: current.metadata.botFrameworkApps
             })
         }
     }
@@ -57,11 +65,31 @@ class AppSettings extends React.Component<any, any> {
             edited: true
         })
     }
+    botIdChanged(text: string) {
+        this.setState({
+            newBotVal: text,
+            edited: true
+        })
+    }
     luisKeyChanged(text: string) {
         this.setState({
             luisKeyVal: text,
             edited: true
         })
+    }
+    botAdded() {
+        let newBotApps = this.state.botFrameworkAppsVal.concat(this.state.newBotVal);
+        this.setState({
+            botFrameworkAppsVal: newBotApps,
+            newBotVal: ""
+        })
+    }
+    onRenderBotListRow(item?: any, index?: number) {
+        return (
+            <div className="textFieldInlineButtonDiv">
+                <TextField className="ms-font-m-plus textFieldWithButton" disabled={true} value={item} />
+            </div>
+        )
     }
     discardChanges() {
         let current: BlisAppBase = this.props.blisApps.current
@@ -70,17 +98,22 @@ class AppSettings extends React.Component<any, any> {
             appIdVal: current.appId,
             appNameVal: current.appName,
             luisKeyVal: current.luisKey,
-            edited: false
+            botFrameworkAppsVal: current.metadata.botFrameworkApps,
+            edited: false,
+            newBotVal: ""
         })
     }
     editApp() {
         let current: BlisAppBase = this.props.blisApps.current;
+        let meta: BlisAppMetaData = new BlisAppMetaData({
+            botFrameworkApps: this.state.botFrameworkAppsVal
+        })
         let appToAdd = new BlisAppBase({
             appName: this.state.appNameVal,
             appId: current.appId,
             luisKey: this.state.luisKeyVal,
             locale: current.locale,
-            metadata: current.metadata
+            metadata: meta
         })
         this.props.editBLISApplication(appToAdd);
         this.setState({
@@ -88,7 +121,8 @@ class AppSettings extends React.Component<any, any> {
             appIdVal: current.appId,
             appNameVal: current.appName,
             luisKeyVal: current.luisKey,
-            edited: false
+            edited: false,
+            newBotVal: ""
         })
     }
     render() {
@@ -110,6 +144,24 @@ class AppSettings extends React.Component<any, any> {
                     selectedKey={this.state.localeVal}
                     disabled={true}
                 />
+                <div>
+                    <Label className="ms-font-m-plus">Bot Framework Apps</Label>
+                    <List
+                        items={this.state.botFrameworkAppsVal}
+                        onRenderCell={this.onRenderBotListRow.bind(this)}
+                    />
+                    <div className="textFieldInlineButtonDiv">
+                        <TextField className="ms-font-m-plus textFieldWithButton" onChanged={(text) => this.botIdChanged(text)} placeholder="Application ID" value={this.state.newBotVal} />
+                        <CommandButton
+                            data-automation-id='randomID16'
+                            disabled={false}
+                            onClick={this.botAdded.bind(this)}
+                            className='goldButton buttonWithTextField'
+                            ariaDescription='Add'
+                            text='Add'
+                        />
+                    </div>
+                </div>
                 <div style={buttonsDivStyle} className="saveAppChangesButtonsDiv">
                     <CommandButton
                         data-automation-id='randomID6'
