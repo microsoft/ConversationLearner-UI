@@ -8206,10 +8206,98 @@ exports.editBlisAction = function (appId, blisActionId, action) {
     var actionId = action.actionId, version = action.version, packageCreationId = action.packageCreationId, packageDeletionId = action.packageDeletionId, actionToSend = tslib_1.__rest(action, ["actionId", "version", "packageCreationId", "packageDeletionId"]);
     return Rx.Observable.fromPromise(axios_1.default.put(rootUrl.concat(editActionRoute), actionToSend, config));
 };
-exports.editBlisEntity = function (appId, entity) {
-    var editActionRoute = "app/" + appId + "/entity/" + entity.entityId;
-    var version = entity.version, packageCreationId = entity.packageCreationId, packageDeletionId = entity.packageDeletionId, entityToSend = tslib_1.__rest(entity, ["version", "packageCreationId", "packageDeletionId"]);
-    return Rx.Observable.fromPromise(axios_1.default.put(rootUrl.concat(editActionRoute), entityToSend, config));
+//========================================================
+// SESSION ROUTES
+//========================================================
+/** START SESSION : Creates a new session and a corresponding logDialog */
+exports.createSession = function (appId, key) {
+    var addAppRoute = "app/" + appId + "/session?key=" + key;
+    return Rx.Observable.fromPromise(axios_1.default.post(rootUrl.concat(addAppRoute), config));
+};
+/** GET SESSION : Retrieves information about the specified session */
+exports.getSession = function (appId, sessionId) {
+    var getAppRoute = "app/" + appId + "/session/" + sessionId;
+    return Rx.Observable.fromPromise(axios_1.default.get(rootUrl.concat(getAppRoute), config));
+};
+/** END SESSION : End a session. */
+exports.deleteSession = function (appId, sessionId, key) {
+    var deleteAppRoute = "app/" + appId + "/session/" + sessionId;
+    return Rx.Observable.fromPromise(axios_1.default.delete(rootUrl.concat(deleteAppRoute)));
+};
+/** GET SESSIONS : Retrieves definitions of ALL open sessions */
+exports.getSessions = function (appId) {
+    var getAppRoute = "app/" + appId + "/sessions";
+    return Rx.Observable.fromPromise(axios_1.default.get(rootUrl.concat(getAppRoute), config));
+};
+/** GET SESSION IDS : Retrieves a list of session IDs */
+exports.getSessionIds = function (appId) {
+    var getAppRoute = "app/" + appId + "/session";
+    return Rx.Observable.fromPromise(axios_1.default.get(rootUrl.concat(getAppRoute), config));
+};
+//========================================================
+// Teach
+//========================================================
+/** START TEACH SESSION: Creates a new teaching session and a corresponding trainDialog */
+exports.createTeach = function (appId, key) {
+    var addAppRoute = "app/" + appId + "/teach?key=" + key;
+    return Rx.Observable.fromPromise(axios_1.default.post(rootUrl.concat(addAppRoute), config));
+};
+/** GET TEACH: Retrieves information about the specified teach */
+exports.getTeach = function (appId, teachId) {
+    var getAppRoute = "app/" + appId + "/teach/" + teachId;
+    return Rx.Observable.fromPromise(axios_1.default.get(rootUrl.concat(getAppRoute), config));
+};
+/** RUN EXTRACTOR: Runs entity extraction (prediction).
+ * If a more recent version of the package is available on
+ * the server, the session will first migrate to that newer version.  This
+ * doesn't affect the trainDialog maintained.
+ */
+exports.putExtract = function (appId, teachId, userInput) {
+    var editAppRoute = "app/" + appId + "/teach/" + teachId + "/extractor";
+    return Rx.Observable.fromPromise(axios_1.default.put(rootUrl.concat(editAppRoute), userInput, config));
+};
+/** EXTRACTION FEEDBACK: Uploads a labeled entity extraction instance
+ * ie "commits" an entity extraction label, appending it to the teach session's
+ * trainDialog, and advancing the dialog. This may yield produce a new package.
+ */
+exports.postExtraction = function (appId, teachId, trainExtractorStep, key) {
+    var addAppRoute = "app/" + appId + "/teach/" + teachId + "/extractor";
+    return Rx.Observable.fromPromise(axios_1.default.post(rootUrl.concat(addAppRoute), trainExtractorStep, config));
+};
+/** RUN SCORER: Takes a turn and return distribution over actions.
+ * If a more recent version of the package is
+ * available on the server, the session will first migrate to that newer version.
+ * This doesn't affect the trainDialog maintained by the teaching session.
+ */
+exports.putScore = function (appId, teachId, extractResponse, key) {
+    var editAppRoute = "app/" + appId + "/teach/" + teachId + "/scorer?key=" + key;
+    return Rx.Observable.fromPromise(axios_1.default.put(rootUrl.concat(editAppRoute), extractResponse, config));
+};
+/** SCORE FEEDBACK: Uploads a labeled scorer step instance
+ * – ie "commits" a scorer label, appending it to the teach session's
+ * trainDialog, and advancing the dialog. This may yield produce a new package.
+ */
+exports.postScore = function (appId, teachId, trainScorerStep, key) {
+    var addAppRoute = "app/" + appId + "/teach/" + teachId + "/scorer?key=" + key;
+    return Rx.Observable.fromPromise(axios_1.default.post(rootUrl.concat(addAppRoute), trainScorerStep, config));
+};
+/** END TEACH: Ends a teach.
+ * For Teach sessions, does NOT delete the associated trainDialog.
+ * To delete the associated trainDialog, call DELETE on the trainDialog.
+ */
+exports.deleteTeach = function (appId, teachId, key) {
+    var deleteAppRoute = "app/" + appId + "/teach/" + teachId + "?key=" + key;
+    return Rx.Observable.fromPromise(axios_1.default.delete(rootUrl.concat(deleteAppRoute)));
+};
+/** GET TEACH SESSIONS: Retrieves definitions of ALL open teach sessions */
+exports.getTeaches = function (appId) {
+    var getAppRoute = "app/" + appId + "/teaches";
+    return Rx.Observable.fromPromise(axios_1.default.get(rootUrl.concat(getAppRoute), config));
+};
+/** GET TEACH SESSION IDS: Retrieves a list of teach session IDs */
+exports.getTeachIds = function (appId) {
+    var getAppRoute = "app/" + appId + "/teach";
+    return Rx.Observable.fromPromise(axios_1.default.get(rootUrl.concat(getAppRoute), config));
 };
 
 
@@ -16335,7 +16423,6 @@ var EntityCreatorEditor = (function (_super) {
         else {
             this.editEntity(entityToAdd);
         }
-        console.log(entityToAdd);
         this.setState({
             entityNameVal: '',
             entityTypeVal: 'LOCAL',
