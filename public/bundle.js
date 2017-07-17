@@ -31068,9 +31068,13 @@ var AppSettings = (function (_super) {
             appIdVal: '',
             appNameVal: '',
             luisKeyVal: '',
-            edited: false
+            edited: false,
+            botFrameworkAppsVal: [],
+            newBotVal: ""
         };
         _this.luisKeyChanged = _this.luisKeyChanged.bind(_this);
+        _this.botIdChanged = _this.botIdChanged.bind(_this);
+        _this.appNameChanged = _this.appNameChanged.bind(_this);
         return _this;
     }
     AppSettings.prototype.componentWillMount = function () {
@@ -31079,7 +31083,9 @@ var AppSettings = (function (_super) {
             localeVal: current.locale,
             appIdVal: current.appId,
             appNameVal: current.appName,
-            luisKeyVal: current.luisKey
+            luisKeyVal: current.luisKey,
+            botFrameworkAppsVal: current.metadata.botFrameworkApps,
+            newBotVal: ""
         });
     };
     AppSettings.prototype.componentDidUpdate = function () {
@@ -31087,12 +31093,14 @@ var AppSettings = (function (_super) {
         if (this.state.edited == false && (this.state.localeVal !== current.locale ||
             this.state.appIdVal !== current.appId ||
             this.state.appNameVal !== current.appName ||
-            this.state.luisKeyVal !== current.luisKey)) {
+            this.state.luisKeyVal !== current.luisKey ||
+            this.state.botFrameworkAppsVal !== current.metadata.botFrameworkApps)) {
             this.setState({
                 localeVal: current.locale,
                 appIdVal: current.appId,
                 appNameVal: current.appName,
-                luisKeyVal: current.luisKey
+                luisKeyVal: current.luisKey,
+                botFrameworkAppsVal: current.metadata.botFrameworkApps
             });
         }
     };
@@ -31102,11 +31110,28 @@ var AppSettings = (function (_super) {
             edited: true
         });
     };
+    AppSettings.prototype.botIdChanged = function (text) {
+        this.setState({
+            newBotVal: text,
+            edited: true
+        });
+    };
     AppSettings.prototype.luisKeyChanged = function (text) {
         this.setState({
             luisKeyVal: text,
             edited: true
         });
+    };
+    AppSettings.prototype.botAdded = function () {
+        var newBotApps = this.state.botFrameworkAppsVal.concat(this.state.newBotVal);
+        this.setState({
+            botFrameworkAppsVal: newBotApps,
+            newBotVal: ""
+        });
+    };
+    AppSettings.prototype.onRenderBotListRow = function (item, index) {
+        return (React.createElement("div", { className: "textFieldInlineButtonDiv" },
+            React.createElement(office_ui_fabric_react_1.TextField, { className: "ms-font-m-plus textFieldWithButton", disabled: true, value: item })));
     };
     AppSettings.prototype.discardChanges = function () {
         var current = this.props.blisApps.current;
@@ -31115,17 +31140,22 @@ var AppSettings = (function (_super) {
             appIdVal: current.appId,
             appNameVal: current.appName,
             luisKeyVal: current.luisKey,
-            edited: false
+            botFrameworkAppsVal: current.metadata.botFrameworkApps,
+            edited: false,
+            newBotVal: ""
         });
     };
     AppSettings.prototype.editApp = function () {
         var current = this.props.blisApps.current;
+        var meta = new blis_models_1.BlisAppMetaData({
+            botFrameworkApps: this.state.botFrameworkAppsVal
+        });
         var appToAdd = new blis_models_1.BlisAppBase({
             appName: this.state.appNameVal,
             appId: current.appId,
             luisKey: this.state.luisKeyVal,
             locale: current.locale,
-            metadata: current.metadata
+            metadata: meta
         });
         this.props.editBLISApplication(appToAdd);
         this.setState({
@@ -31133,7 +31163,8 @@ var AppSettings = (function (_super) {
             appIdVal: current.appId,
             appNameVal: current.appName,
             luisKeyVal: current.luisKey,
-            edited: false
+            edited: false,
+            newBotVal: ""
         });
     };
     AppSettings.prototype.render = function () {
@@ -31150,6 +31181,12 @@ var AppSettings = (function (_super) {
             React.createElement(office_ui_fabric_react_1.TextField, { className: "ms-font-m-plus", onChanged: function (text) { return _this.luisKeyChanged(text); }, label: "LUIS Key", value: this.state.luisKeyVal }),
             React.createElement(office_ui_fabric_react_1.Label, { className: "ms-font-m-plus" }, "Locale"),
             React.createElement(office_ui_fabric_react_1.Dropdown, { className: "ms-font-m-plus", options: options, selectedKey: this.state.localeVal, disabled: true }),
+            React.createElement("div", null,
+                React.createElement(office_ui_fabric_react_1.Label, { className: "ms-font-m-plus" }, "Bot Framework Apps"),
+                React.createElement(office_ui_fabric_react_1.List, { items: this.state.botFrameworkAppsVal, onRenderCell: this.onRenderBotListRow.bind(this) }),
+                React.createElement("div", { className: "textFieldInlineButtonDiv" },
+                    React.createElement(office_ui_fabric_react_1.TextField, { className: "ms-font-m-plus textFieldWithButton", onChanged: function (text) { return _this.botIdChanged(text); }, placeholder: "Application ID", value: this.state.newBotVal }),
+                    React.createElement(office_ui_fabric_react_1.CommandButton, { "data-automation-id": 'randomID16', disabled: false, onClick: this.botAdded.bind(this), className: 'goldButton buttonWithTextField', ariaDescription: 'Add', text: 'Add' }))),
             React.createElement("div", { style: buttonsDivStyle, className: "saveAppChangesButtonsDiv" },
                 React.createElement(office_ui_fabric_react_1.CommandButton, { "data-automation-id": 'randomID6', disabled: false, onClick: this.editApp.bind(this), className: 'goldButton', ariaDescription: 'Save Changes', text: 'Save Changes' }),
                 React.createElement(office_ui_fabric_react_1.CommandButton, { "data-automation-id": 'randomID7', className: "grayButton", disabled: false, onClick: this.discardChanges.bind(this), ariaDescription: 'Discard', text: 'Discard' }))));
