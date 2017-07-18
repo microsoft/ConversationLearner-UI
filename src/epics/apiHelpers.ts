@@ -20,6 +20,16 @@ const config: AxiosRequestConfig = {
 }
 const rootUrl: string = "http://localhost:5000/";
 
+const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
+{
+	let route = rootUrl.concat(actionRoute, `?key=${key}`);
+	if (qstring)
+	{
+		route = route + `&${qstring}`;
+	}
+	return route;
+}
+
 //=========================================================
 // PARAMETER REQUIREMENTS
 //=========================================================
@@ -35,124 +45,128 @@ export interface BlisAppForUpdate extends BlisAppBase {
 // GET ROUTES
 //=========================================================
 
-export const getAllBlisApps = (userId : string): Observable<AxiosResponse> => {
-	const getAppsRoute: string = `apps?userId=${userId}`;
-	return Rx.Observable.fromPromise(axios.get(rootUrl.concat(getAppsRoute), config))
+export const getAllBlisApps = (key : string, userId : string): Observable<AxiosResponse> => {
+	const getAppsRoute: string = makeRoute(key, `apps`, `userId=${userId}`);
+	return Rx.Observable.fromPromise(axios.get(getAppsRoute, config))
 };
-export const getBlisApp = (appId: string): Observable<AxiosResponse> => {
-	let getAppRoute: string = `app/${appId}`
-	return Rx.Observable.fromPromise(axios.get(rootUrl.concat(getAppRoute), config))
+export const getBlisApp = (key : string, appId: string): Observable<AxiosResponse> => {
+	let getAppRoute: string = makeRoute(key, `app/${appId}`);
+	return Rx.Observable.fromPromise(axios.get(getAppRoute, config))
 };
-export const getAllEntitiesForBlisApp = (appId: string): Observable<AxiosResponse> => {
-	let getEntitiesForAppRoute: string = `app/${appId}/entities`
-	return Rx.Observable.fromPromise(axios.get(rootUrl.concat(getEntitiesForAppRoute), config))
+export const getAllEntitiesForBlisApp = (key : string, appId: string): Observable<AxiosResponse> => {
+	let getEntitiesForAppRoute: string = makeRoute(key, `app/${appId}/entities`);
+	return Rx.Observable.fromPromise(axios.get(getEntitiesForAppRoute, config))
 };
-export const getBlisEntity = (appId: string, entityId: string): Observable<AxiosResponse> => {
-	let getEntityRoute: string = `app/${appId}/entity/${entityId}`
-	return Rx.Observable.fromPromise(axios.get(rootUrl.concat(getEntityRoute), config))
+export const getBlisEntity = (key : string, appId: string, entityId: string): Observable<AxiosResponse> => {
+	let getEntityRoute: string = makeRoute(key, `app/${appId}/entity/${entityId}`);
+	return Rx.Observable.fromPromise(axios.get(getEntityRoute, config))
 };
-export const getAllActionsForBlisApp = (appId: string): Observable<AxiosResponse> => {
-	let getActionsForAppRoute: string = `app/${appId}/actions`;
-	return Rx.Observable.fromPromise(axios.get(rootUrl.concat(getActionsForAppRoute), config))
+export const getAllActionsForBlisApp = (key : string, appId: string): Observable<AxiosResponse> => {
+	let getActionsForAppRoute: string = makeRoute(key, `app/${appId}/actions`);
+	return Rx.Observable.fromPromise(axios.get(getActionsForAppRoute, config))
 };
-export const getBlisAction = (appId: string, actionId: string): Observable<AxiosResponse> => {
-	let getActionRoute: string = `app/${appId}/action/${actionId}`
-	return Rx.Observable.fromPromise(axios.get(rootUrl.concat(getActionRoute), config))
+export const getBlisAction = (key : string, appId: string, actionId: string): Observable<AxiosResponse> => {
+	let getActionRoute: string = makeRoute(key, `app/${appId}/action/${actionId}`);
+	return Rx.Observable.fromPromise(axios.get(getActionRoute, config))
 };
 
 //=========================================================
 // CREATE ROUTES
 //=========================================================
 
-export const createBlisApp = (userId : string, blisApp: BlisAppBase): Observable<AxiosResponse> => {
-	let addAppRoute: string = `app?userId=${userId}`
+export const createBlisApp = (key: string, userId : string, blisApp: BlisAppBase): Observable<AxiosResponse> => {
+	let addAppRoute: string = makeRoute(key, `app`, `userId=${userId}`);
 	//remove the appId property from the object
 	const { appId, ...appToSend } = blisApp
-	return Rx.Observable.fromPromise(axios.post(rootUrl.concat(addAppRoute), appToSend, config))
+	return Rx.Observable.fromPromise(axios.post(addAppRoute, appToSend, config))
 };
-export const createBlisEntity = (entity: EntityBase, appId: string, ): Observable<AxiosResponse> => {
-	let addEntityRoute: string = `app/${appId}/entity`
+export const createBlisEntity = (key: string, entity: EntityBase, appId: string): Observable<AxiosResponse> => {
+	let addEntityRoute: string = makeRoute(key, `app/${appId}/entity`);
 	//remove property from the object that the route will not accept
 	const { version, packageCreationId, packageDeletionId, entityId, ...entityToSend } = entity;
-	return Rx.Observable.fromPromise(axios.post(rootUrl.concat(addEntityRoute), entityToSend, config))
+	return Rx.Observable.fromPromise(axios.post(addEntityRoute, entityToSend, config))
 };
-export const createBlisAction = (action: ActionBase, appId: string): Observable<AxiosResponse> => {
-	let addActionRoute: string = `app/${appId}/action`
+export const createBlisAction = (key: string, action: ActionBase, appId: string): Observable<AxiosResponse> => {
+	let addActionRoute: string = this.makeRoute(key, `app/${appId}/action`);
 	//remove property from the object that the route will not accept
 	const { actionId, version, packageCreationId, packageDeletionId, ...actionToSend } = action
-	return Rx.Observable.fromPromise(axios.post(rootUrl.concat(addActionRoute), actionToSend, config))
+	return Rx.Observable.fromPromise(axios.post(addActionRoute, actionToSend, config))
 };
 
 //=========================================================
 // DELETE ROUTES
 //=========================================================
 
-export const deleteBlisApp = (blisAppId: string, blisApp: BlisAppForUpdate): Observable<AxiosResponse> => {
-	let deleteAppRoute: string = `app/${blisAppId}` //takes an app in the body
+export const deleteBlisApp = (key : string, blisAppId: string, blisApp: BlisAppForUpdate): Observable<AxiosResponse> => {
+	let deleteAppRoute: string = makeRoute(key, `app/${blisAppId}`); //takes an app in the body
 	const { appId, latestPackageId, metadata, trainingRequired, trainingStatus, trainingFailureMessage, ...appToSend } = blisApp
 	let configWithBody = {...config, body: appToSend}
-	return Rx.Observable.fromPromise(axios.delete(rootUrl.concat(deleteAppRoute), configWithBody))
+	return Rx.Observable.fromPromise(axios.delete(deleteAppRoute, configWithBody))
 };
-export const deleteBlisEntity = (appId: string, entity: EntityBase): Observable<AxiosResponse> => {
-	let deleteEntityRoute: string = `app/${appId}/entity`
+export const deleteBlisEntity = (key : string, appId: string, entity: EntityBase): Observable<AxiosResponse> => {
+	let deleteEntityRoute: string = makeRoute(key, `app/${appId}/entity`);
 	const { version, packageCreationId, packageDeletionId, entityId, ...entityToSend } = entity;
 	let configWithBody = {...config, body: entityToSend};
-	return Rx.Observable.fromPromise(axios.delete(rootUrl.concat(deleteEntityRoute), configWithBody))
+	return Rx.Observable.fromPromise(axios.delete(deleteEntityRoute, configWithBody))
 };
-export const deleteBlisAction = (appId: string, blisActionId: string, action: ActionBase): Observable<AxiosResponse> => {
-	let deleteActionRoute: string = `app/${appId}/action/${blisActionId}` 
+export const deleteBlisAction = (key : string, appId: string, blisActionId: string, action: ActionBase): Observable<AxiosResponse> => {
+	let deleteActionRoute: string = makeRoute(key, `app/${appId}/action/${blisActionId}`); 
 	const { actionId, version, packageCreationId, packageDeletionId, ...actionToSend } = action
 	let configWithBody = {...config, body: actionToSend}
-	return Rx.Observable.fromPromise(axios.delete(rootUrl.concat(deleteActionRoute), configWithBody))
+	return Rx.Observable.fromPromise(axios.delete(deleteActionRoute, configWithBody))
 };
 
 //=========================================================
 // EDIT ROUTES
 //=========================================================
 
-export const editBlisApp = (blisAppId: string, blisApp: BlisAppForUpdate): Observable<AxiosResponse> => {
-	let editAppRoute: string = `app/${blisAppId}`;
+export const editBlisApp = (key : string, blisAppId: string, blisApp: BlisAppForUpdate): Observable<AxiosResponse> => {
+	let editAppRoute: string = makeRoute(key, `app/${blisAppId}`);
 	const { appId, latestPackageId, metadata, trainingRequired, trainingStatus, trainingFailureMessage, ...appToSend } = blisApp
-	return Rx.Observable.fromPromise(axios.put(rootUrl.concat(editAppRoute), appToSend, config))
+	return Rx.Observable.fromPromise(axios.put(editAppRoute, appToSend, config))
 };
-export const editBlisAction = (appId: string, blisActionId: string, action: ActionBase): Observable<AxiosResponse> => {
-	let editActionRoute: string = `app/${appId}/action/${blisActionId}`
+export const editBlisAction = (key : string, appId: string, blisActionId: string, action: ActionBase): Observable<AxiosResponse> => {
+	let editActionRoute: string = makeRoute(key, `app/${appId}/action/${blisActionId}`);
 	const { actionId, version, packageCreationId, packageDeletionId, ...actionToSend } = action
-	return Rx.Observable.fromPromise(axios.put(rootUrl.concat(editActionRoute), actionToSend, config))
+	return Rx.Observable.fromPromise(axios.put(editActionRoute, actionToSend, config))
 };
-
+export const editBlisEntity = (key: string, appId: string, entity: EntityBase): Observable<AxiosResponse> => {
+ 	let editActionRoute: string = makeRoute(key, `app/${appId}/entity/${entity.entityId}`);
+ 	const { version, packageCreationId, packageDeletionId, ...entityToSend } = entity;
+	 return Rx.Observable.fromPromise(axios.put(editActionRoute, entityToSend, config))
+}
 //========================================================
 // SESSION ROUTES
 //========================================================
 
 /** START SESSION : Creates a new session and a corresponding logDialog */
-export const createSession = (appId : string, key : string): Observable<AxiosResponse> => {
-	let addAppRoute: string = `app/${appId}/session?key=${key}`
-	return Rx.Observable.fromPromise(axios.post(rootUrl.concat(addAppRoute), config))
+export const createSession = (key : string, appId : string): Observable<AxiosResponse> => {
+	let addAppRoute: string = makeRoute(key, `app/${appId}/session`);
+	return Rx.Observable.fromPromise(axios.post(addAppRoute, config))
 };
 
 /** GET SESSION : Retrieves information about the specified session */
-export const getSession = (appId: string, sessionId: string): Observable<AxiosResponse> => {
-	let getAppRoute: string = `app/${appId}/session/${sessionId}`
-	return Rx.Observable.fromPromise(axios.get(rootUrl.concat(getAppRoute), config))
+export const getSession = (key : string, appId: string, sessionId: string): Observable<AxiosResponse> => {
+	let getAppRoute: string = makeRoute(key, `app/${appId}/session/${sessionId}`);
+	return Rx.Observable.fromPromise(axios.get(getAppRoute, config))
 };
 
 /** END SESSION : End a session. */
-export const deleteSession = (appId: string, sessionId: string, key : string): Observable<AxiosResponse> => {
-	let deleteAppRoute: string = `app/${appId}/session/${sessionId}` 
-	return Rx.Observable.fromPromise(axios.delete(rootUrl.concat(deleteAppRoute)))
+export const deleteSession = (key : string, appId: string, sessionId: string): Observable<AxiosResponse> => {
+	let deleteAppRoute: string = makeRoute(key, `app/${appId}/session/${sessionId}`); 
+	return Rx.Observable.fromPromise(axios.delete(deleteAppRoute))
 };
 
 /** GET SESSIONS : Retrieves definitions of ALL open sessions */
-export const getSessions = (appId: string): Observable<AxiosResponse> => {
-	let getAppRoute: string = `app/${appId}/sessions`
-	return Rx.Observable.fromPromise(axios.get(rootUrl.concat(getAppRoute), config))
+export const getSessions = (key : string, appId: string): Observable<AxiosResponse> => {
+	let getAppRoute: string = makeRoute(key, `app/${appId}/sessions`);
+	return Rx.Observable.fromPromise(axios.get(getAppRoute, config))
 };
 
 /** GET SESSION IDS : Retrieves a list of session IDs */
-export const getSessionIds = (appId: string): Observable<AxiosResponse> => {
-	let getAppRoute: string = `app/${appId}/session`
-	return Rx.Observable.fromPromise(axios.get(rootUrl.concat(getAppRoute), config))
+export const getSessionIds = (key : string, appId: string): Observable<AxiosResponse> => {
+	let getAppRoute: string = makeRoute(key, `app/${appId}/session`);
+	return Rx.Observable.fromPromise(axios.get(getAppRoute, config))
 };
 
 //========================================================
@@ -160,15 +174,15 @@ export const getSessionIds = (appId: string): Observable<AxiosResponse> => {
 //========================================================
 
 /** START TEACH SESSION: Creates a new teaching session and a corresponding trainDialog */
-export const createTeach = (appId : string, key : string): Observable<AxiosResponse> => {
-	let addAppRoute: string = `app/${appId}/teach?key=${key}`
-	return Rx.Observable.fromPromise(axios.post(rootUrl.concat(addAppRoute), config))
+export const createTeach = (key : string, appId : string): Observable<AxiosResponse> => {
+	let addAppRoute: string = makeRoute(key, `app/${appId}/teach`);
+	return Rx.Observable.fromPromise(axios.post(addAppRoute, config))
 };
 
 /** GET TEACH: Retrieves information about the specified teach */
-export const getTeach = (appId: string, teachId: string): Observable<AxiosResponse> => {
-	let getAppRoute: string = `app/${appId}/teach/${teachId}`
-	return Rx.Observable.fromPromise(axios.get(rootUrl.concat(getAppRoute), config))
+export const getTeach = (key : string, appId: string, teachId: string): Observable<AxiosResponse> => {
+	let getAppRoute: string = makeRoute(key, `app/${appId}/teach/${teachId}`);
+	return Rx.Observable.fromPromise(axios.get(getAppRoute, config))
 };
 
 /** RUN EXTRACTOR: Runs entity extraction (prediction). 
@@ -176,18 +190,18 @@ export const getTeach = (appId: string, teachId: string): Observable<AxiosRespon
  * the server, the session will first migrate to that newer version.  This 
  * doesn't affect the trainDialog maintained.
  */
-export const putExtract = (appId: string, teachId: string, userInput: UserInput): Observable<AxiosResponse> => {
-	let editAppRoute: string = `app/${appId}/teach/${teachId}/extractor`;
-	return Rx.Observable.fromPromise(axios.put(rootUrl.concat(editAppRoute), userInput, config))
+export const putExtract = (key : string, appId: string, teachId: string, userInput: UserInput): Observable<AxiosResponse> => {
+	let editAppRoute: string = makeRoute(key, `app/${appId}/teach/${teachId}/extractor`);
+	return Rx.Observable.fromPromise(axios.put(editAppRoute, userInput, config))
 };
 
 /** EXTRACTION FEEDBACK: Uploads a labeled entity extraction instance
  * ie "commits" an entity extraction label, appending it to the teach session's
  * trainDialog, and advancing the dialog. This may yield produce a new package.
  */
-export const postExtraction = (appId : string, teachId: string, trainExtractorStep : TrainExtractorStep, key : string): Observable<AxiosResponse> => {
-	let addAppRoute: string = `app/${appId}/teach/${teachId}/extractor`
-	return Rx.Observable.fromPromise(axios.post(rootUrl.concat(addAppRoute), trainExtractorStep, config))
+export const postExtraction = (key : string, appId : string, teachId: string, trainExtractorStep : TrainExtractorStep): Observable<AxiosResponse> => {
+	let addAppRoute: string = makeRoute(key, `app/${appId}/teach/${teachId}/extractor`);
+	return Rx.Observable.fromPromise(axios.post(addAppRoute, trainExtractorStep, config))
 };
 
 /** RUN SCORER: Takes a turn and return distribution over actions.
@@ -195,37 +209,37 @@ export const postExtraction = (appId : string, teachId: string, trainExtractorSt
  * available on the server, the session will first migrate to that newer version.  
  * This doesn't affect the trainDialog maintained by the teaching session.
  */
-export const putScore = (appId: string, teachId: string, extractResponse: ExtractResponse, key: string): Observable<AxiosResponse> => {
-	let editAppRoute: string = `app/${appId}/teach/${teachId}/scorer?key=${key}`;
-	return Rx.Observable.fromPromise(axios.put(rootUrl.concat(editAppRoute), extractResponse, config))
+export const putScore = (key : string, appId: string, teachId: string, extractResponse: ExtractResponse): Observable<AxiosResponse> => {
+	let editAppRoute: string = makeRoute(key, `app/${appId}/teach/${teachId}/scorer`);
+	return Rx.Observable.fromPromise(axios.put(editAppRoute, extractResponse, config))
 };
 
 /** SCORE FEEDBACK: Uploads a labeled scorer step instance 
  * – ie "commits" a scorer label, appending it to the teach session's 
  * trainDialog, and advancing the dialog. This may yield produce a new package.
  */
-export const postScore = (appId : string, teachId: string, trainScorerStep : TrainScorerStep, key : string): Observable<AxiosResponse> => {
-	let addAppRoute: string = `app/${appId}/teach/${teachId}/scorer?key=${key}`
-	return Rx.Observable.fromPromise(axios.post(rootUrl.concat(addAppRoute), trainScorerStep, config))
+export const postScore = (key : string, appId : string, teachId: string, trainScorerStep : TrainScorerStep): Observable<AxiosResponse> => {
+	let addAppRoute: string = makeRoute(key, `app/${appId}/teach/${teachId}/scorer`);
+	return Rx.Observable.fromPromise(axios.post(addAppRoute, trainScorerStep, config))
 };
 
 /** END TEACH: Ends a teach.   
  * For Teach sessions, does NOT delete the associated trainDialog.
  * To delete the associated trainDialog, call DELETE on the trainDialog.
  */
-export const deleteTeach = (appId: string, teachId: string, key : string): Observable<AxiosResponse> => {
-	let deleteAppRoute: string = `app/${appId}/teach/${teachId}?key=${key}`
+export const deleteTeach = (key : string, appId: string, teachId: string): Observable<AxiosResponse> => {
+	let deleteAppRoute: string = `app/${appId}/teach/${teachId}`
 	return Rx.Observable.fromPromise(axios.delete(rootUrl.concat(deleteAppRoute)))
 };
 
 /** GET TEACH SESSIONS: Retrieves definitions of ALL open teach sessions */
-export const getTeaches = (appId: string): Observable<AxiosResponse> => {
-	let getAppRoute: string = `app/${appId}/teaches`
-	return Rx.Observable.fromPromise(axios.get(rootUrl.concat(getAppRoute), config))
+export const getTeaches = (key : string, appId: string): Observable<AxiosResponse> => {
+	let getAppRoute: string = makeRoute(key, `app/${appId}/teaches`);
+	return Rx.Observable.fromPromise(axios.get(getAppRoute, config))
 };
 
 /** GET TEACH SESSION IDS: Retrieves a list of teach session IDs */
-export const getTeachIds = (appId: string): Observable<AxiosResponse> => {
-	let getAppRoute: string = `app/${appId}/teach`
-	return Rx.Observable.fromPromise(axios.get(rootUrl.concat(getAppRoute), config))
+export const getTeachIds = (key : string, appId: string): Observable<AxiosResponse> => {
+	let getAppRoute: string = makeRoute(key, `app/${appId}/teach`);
+	return Rx.Observable.fromPromise(axios.get(getAppRoute, config))
 };

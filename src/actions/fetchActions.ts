@@ -4,26 +4,29 @@ import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, 
 //=========================================================
 //=========================================================
 
-export const fetchApplications = (userId : string): ActionObject => {
+export const fetchApplications = (key: string, userId : string): ActionObject => {
     //needs a fulfilled version to handle response from Epic
     return {
         type: 'FETCH_APPLICATIONS',
+        key: key,
         userId : userId
     }
 }
 
-export const fetchAllEntities = (blisAppID: string): ActionObject => {
+export const fetchAllEntities = (key: string, blisAppID: string): ActionObject => {
     //needs a fulfilled version to handle response from Epic
     return {
         type: 'FETCH_ENTITIES',
+        key: key,
         blisAppID: blisAppID
     }
 }
 
-export const fetchAllActions = (blisAppID: string): ActionObject => {
+export const fetchAllActions = (key: string, blisAppID: string): ActionObject => {
     //needs a fulfilled version to handle response from Epic
     return {
         type: 'FETCH_ACTIONS',
+        key: key,
         blisAppID: blisAppID
     }
 }

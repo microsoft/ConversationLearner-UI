@@ -67,7 +67,7 @@ class TrainDialogsList extends React.Component<any, any> {
         let dialog = new Dialog(turns)
         let trainDialog = new TrainDialog(this.generateGUID(), dialog, this.props.blisApps.current.appId)
         this.props.setWebchatDisplay(true)
-        this.props.createTrainDialog(trainDialog);
+        this.props.createTrainDialog(this.props.userKey, trainDialog);
     }
     generateGUID(): string {
         let d = new Date().getTime();
@@ -80,7 +80,7 @@ class TrainDialogsList extends React.Component<any, any> {
     }
     handleSelection(selected: TrainDialog) {
         this.props.setWebchatDisplay(true)
-        this.props.setCurrentTrainDialog(selected);
+        this.props.setCurrentTrainDialog(this.props.userKey, selected);
     }
     onChange(newValue: string) {
         let lcString = newValue.toLowerCase();
@@ -139,6 +139,7 @@ const mapDispatchToProps = (dispatch: any) => {
 }
 const mapStateToProps = (state: State) => {
     return {
+        userKey: state.user.key,
         blisApps: state.apps,
         trainDialogs: state.trainDialogs
     }

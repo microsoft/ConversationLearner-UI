@@ -91,7 +91,7 @@ class BLISAppCreator extends React.Component<any, any> {
             locale: this.state.localeVal,
             metadata: meta
         })
-        this.props.createBLISApplication(this.props.userId, appToAdd);
+        this.props.createBLISApplication(this.props.userKey, this.props.userId, appToAdd);
         //need to empty entities, actions, and trainDialogs arrays
         this.props.emptyStateProperties();
         this.handleClose();
@@ -164,7 +164,8 @@ const mapDispatchToProps = (dispatch: any) => {
 const mapStateToProps = (state: State) => {
     return {
         blisApps: state.apps,
-        userId: state.user.id
+        userId: state.user.id,
+        userKey: state.user.key
     }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(BLISAppCreator);

@@ -115,7 +115,7 @@ class AppSettings extends React.Component<any, any> {
             locale: current.locale,
             metadata: meta
         })
-        this.props.editBLISApplication(appToAdd);
+        this.props.editBLISApplication(this.props.userKey, appToAdd);
         this.setState({
             localeVal: current.locale,
             appIdVal: current.appId,
@@ -191,6 +191,7 @@ const mapDispatchToProps = (dispatch: any) => {
 }
 const mapStateToProps = (state: State) => {
     return {
+        userKey: state.user.key,
         blisApps: state.apps
     }
 }
