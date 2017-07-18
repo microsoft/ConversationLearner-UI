@@ -3683,9 +3683,10 @@ function serializeProperty(metadata, prop) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.setCurrentBLISApp = function (app) {
+exports.setCurrentBLISApp = function (key, app) {
     return {
         type: 'SET_CURRENT_BLIS_APP',
+        key: key,
         currentBLISApp: app
     };
 };
@@ -3694,9 +3695,10 @@ exports.emptyStateProperties = function () {
         type: 'EMPTY_STATE_PROPERTIES'
     };
 };
-exports.setCurrentTrainDialog = function (trainDialog) {
+exports.setCurrentTrainDialog = function (key, trainDialog) {
     return {
         type: 'SET_CURRENT_TRAIN_DIALOG',
+        key: key,
         currentTrainDialog: trainDialog
     };
 };
@@ -3718,32 +3720,36 @@ exports.setWebchatDisplay = function (isShown) {
         setWebchatDisplay: isShown
     };
 };
-exports.editBLISApplication = function (application) {
+exports.editBLISApplication = function (key, application) {
     //needs to make a call to an Epic to send data to BLIS
     return {
         type: 'EDIT_BLIS_APPLICATION',
+        key: key,
         blisApp: application
     };
 };
-exports.editEntity = function (entity) {
+exports.editEntity = function (key, entity) {
     //needs to make a call to an Epic to send data to BLIS
     return {
         type: 'EDIT_ENTITY',
+        key: key,
         entity: entity
     };
 };
-exports.editAction = function (action, currentAppId) {
+exports.editAction = function (key, action, currentAppId) {
     //needs to make a call to an Epic to send data to BLIS
     return {
         type: 'EDIT_ACTION',
+        key: key,
         blisAction: action,
         currentAppId: currentAppId
     };
 };
-exports.editTrainDialog = function (trainDialog) {
+exports.editTrainDialog = function (key, trainDialog) {
     //needs to make a call to an Epic to send data to BLIS
     return {
         type: 'EDIT_TRAIN_DIALOG',
+        key: key,
         trainDialog: trainDialog
     };
 };
@@ -3753,6 +3759,12 @@ exports.setUser = function (name, password, id) {
         name: name,
         password: password,
         id: id
+    };
+};
+exports.setUserKey = function (key) {
+    return {
+        type: 'SET_USER_KEY',
+        key: key
     };
 };
 
@@ -4807,42 +4819,47 @@ exports.EmptyObservable = EmptyObservable;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = __webpack_require__(2);
-exports.createBLISApplication = function (userId, application) {
+exports.createBLISApplication = function (key, userId, application) {
     //needs to make a call to an Epic to send data to BLIS
     return {
         type: 'CREATE_BLIS_APPLICATION',
+        key: key,
         userId: userId,
         blisApp: application,
     };
 };
-exports.createEntity = function (entity, currentAppId) {
+exports.createEntity = function (key, entity, currentAppId) {
     //needs to make a call to an Epic to send data to BLIS
     return {
         type: 'CREATE_ENTITY',
+        key: key,
         entity: entity,
         currentAppId: currentAppId
     };
 };
-exports.createReversibleEntity = function (entity, currentAppId) {
+exports.createReversibleEntity = function (key, entity, currentAppId) {
     //needs to make a call to an Epic to send data to BLIS
     return {
         type: 'CREATE_REVERSIBLE_ENTITY',
+        key: key,
         entity: entity,
         currentAppId: currentAppId
     };
 };
-exports.createAction = function (action, currentAppId) {
+exports.createAction = function (key, action, currentAppId) {
     //needs to make a call to an Epic to send data to BLIS
     return {
         type: 'CREATE_ACTION',
+        key: key,
         action: action,
         currentAppId: currentAppId
     };
 };
-exports.createTrainDialog = function (trainDialog) {
+exports.createTrainDialog = function (key, trainDialog) {
     //needs to make a call to an Epic to send data to BLIS
     return {
         type: 'CREATE_TRAIN_DIALOG',
+        key: key,
         trainDialog: trainDialog
     };
 };
@@ -4852,16 +4869,17 @@ exports.createApplicationFulfilled = function (appId) {
         blisAppId: appId
     };
 };
-exports.createPositiveEntityFulfilled = function (positiveEntity, positiveEntityId, currentAppId) {
+exports.createPositiveEntityFulfilled = function (key, positiveEntity, positiveEntityId, currentAppId) {
     var negativeEntity = tslib_1.__assign({}, positiveEntity, { entityName: "~" + positiveEntity.entityName, metadata: tslib_1.__assign({}, positiveEntity.metadata, { positiveId: positiveEntityId }) });
     return {
         type: 'CREATE_POSITIVE_ENTITY_FULFILLED',
+        key: key,
         negativeEntity: negativeEntity,
         positiveEntity: positiveEntity,
         currentAppId: currentAppId
     };
 };
-exports.createNegativeEntityFulfilled = function (positiveEntity, negativeEntity, negativeEntityId, currentAppId) {
+exports.createNegativeEntityFulfilled = function (key, positiveEntity, negativeEntity, negativeEntityId, currentAppId) {
     var posEntity = positiveEntity;
     posEntity.metadata.negativeId = negativeEntityId;
     posEntity.entityId = negativeEntity.metadata.positiveId;
@@ -4869,6 +4887,7 @@ exports.createNegativeEntityFulfilled = function (positiveEntity, negativeEntity
     //send both to store to be saved locally, and send the positive entity back to the service to update its metadata
     return {
         type: 'CREATE_NEGATIVE_ENTITY_FULFILLED',
+        key: key,
         positiveEntity: posEntity,
         negativeEntity: negativeEntity,
         currentAppId: currentAppId
@@ -6752,24 +6771,27 @@ module.exports = __webpack_require__(677);
 Object.defineProperty(exports, "__esModule", { value: true });
 //=========================================================
 //=========================================================
-exports.fetchApplications = function (userId) {
+exports.fetchApplications = function (key, userId) {
     //needs a fulfilled version to handle response from Epic
     return {
         type: 'FETCH_APPLICATIONS',
+        key: key,
         userId: userId
     };
 };
-exports.fetchAllEntities = function (blisAppID) {
+exports.fetchAllEntities = function (key, blisAppID) {
     //needs a fulfilled version to handle response from Epic
     return {
         type: 'FETCH_ENTITIES',
+        key: key,
         blisAppID: blisAppID
     };
 };
-exports.fetchAllActions = function (blisAppID) {
+exports.fetchAllActions = function (key, blisAppID) {
     //needs a fulfilled version to handle response from Epic
     return {
         type: 'FETCH_ACTIONS',
+        key: key,
         blisAppID: blisAppID
     };
 };
@@ -8110,6 +8132,7 @@ exports.ArgumentOutOfRangeError = ArgumentOutOfRangeError;
 
 "use strict";
 
+var _this = this;
 Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = __webpack_require__(2);
 __webpack_require__(52);
@@ -8124,180 +8147,192 @@ var config = {
     }
 };
 var rootUrl = "http://localhost:5000/";
+var makeRoute = function (key, actionRoute, qstring) {
+    var route = rootUrl.concat(actionRoute, "?key=" + key);
+    if (qstring) {
+        route = route + ("&" + qstring);
+    }
+    return route;
+};
 //=========================================================
 // GET ROUTES
 //=========================================================
-exports.getAllBlisApps = function (userId) {
-    var getAppsRoute = "apps?userId=" + userId;
-    return Rx.Observable.fromPromise(axios_1.default.get(rootUrl.concat(getAppsRoute), config));
+exports.getAllBlisApps = function (key, userId) {
+    var getAppsRoute = makeRoute(key, "apps", "userId=" + userId);
+    return Rx.Observable.fromPromise(axios_1.default.get(getAppsRoute, config));
 };
-exports.getBlisApp = function (appId) {
-    var getAppRoute = "app/" + appId;
-    return Rx.Observable.fromPromise(axios_1.default.get(rootUrl.concat(getAppRoute), config));
+exports.getBlisApp = function (key, appId) {
+    var getAppRoute = makeRoute(key, "app/" + appId);
+    return Rx.Observable.fromPromise(axios_1.default.get(getAppRoute, config));
 };
-exports.getAllEntitiesForBlisApp = function (appId) {
-    var getEntitiesForAppRoute = "app/" + appId + "/entities";
-    return Rx.Observable.fromPromise(axios_1.default.get(rootUrl.concat(getEntitiesForAppRoute), config));
+exports.getAllEntitiesForBlisApp = function (key, appId) {
+    var getEntitiesForAppRoute = makeRoute(key, "app/" + appId + "/entities");
+    return Rx.Observable.fromPromise(axios_1.default.get(getEntitiesForAppRoute, config));
 };
-exports.getBlisEntity = function (appId, entityId) {
-    var getEntityRoute = "app/" + appId + "/entity/" + entityId;
-    return Rx.Observable.fromPromise(axios_1.default.get(rootUrl.concat(getEntityRoute), config));
+exports.getBlisEntity = function (key, appId, entityId) {
+    var getEntityRoute = makeRoute(key, "app/" + appId + "/entity/" + entityId);
+    return Rx.Observable.fromPromise(axios_1.default.get(getEntityRoute, config));
 };
-exports.getAllActionsForBlisApp = function (appId) {
-    var getActionsForAppRoute = "app/" + appId + "/actions";
-    return Rx.Observable.fromPromise(axios_1.default.get(rootUrl.concat(getActionsForAppRoute), config));
+exports.getAllActionsForBlisApp = function (key, appId) {
+    var getActionsForAppRoute = makeRoute(key, "app/" + appId + "/actions");
+    return Rx.Observable.fromPromise(axios_1.default.get(getActionsForAppRoute, config));
 };
-exports.getBlisAction = function (appId, actionId) {
-    var getActionRoute = "app/" + appId + "/action/" + actionId;
-    return Rx.Observable.fromPromise(axios_1.default.get(rootUrl.concat(getActionRoute), config));
+exports.getBlisAction = function (key, appId, actionId) {
+    var getActionRoute = makeRoute(key, "app/" + appId + "/action/" + actionId);
+    return Rx.Observable.fromPromise(axios_1.default.get(getActionRoute, config));
 };
 //=========================================================
 // CREATE ROUTES
 //=========================================================
-exports.createBlisApp = function (userId, blisApp) {
-    var addAppRoute = "app?userId=" + userId;
+exports.createBlisApp = function (key, userId, blisApp) {
+    var addAppRoute = makeRoute(key, "app", "userId=" + userId);
     //remove the appId property from the object
     var appId = blisApp.appId, appToSend = tslib_1.__rest(blisApp, ["appId"]);
-    return Rx.Observable.fromPromise(axios_1.default.post(rootUrl.concat(addAppRoute), appToSend, config));
+    return Rx.Observable.fromPromise(axios_1.default.post(addAppRoute, appToSend, config));
 };
-exports.createBlisEntity = function (entity, appId) {
-    var addEntityRoute = "app/" + appId + "/entity";
+exports.createBlisEntity = function (key, entity, appId) {
+    var addEntityRoute = makeRoute(key, "app/" + appId + "/entity");
     //remove property from the object that the route will not accept
     var version = entity.version, packageCreationId = entity.packageCreationId, packageDeletionId = entity.packageDeletionId, entityId = entity.entityId, entityToSend = tslib_1.__rest(entity, ["version", "packageCreationId", "packageDeletionId", "entityId"]);
-    return Rx.Observable.fromPromise(axios_1.default.post(rootUrl.concat(addEntityRoute), entityToSend, config));
+    return Rx.Observable.fromPromise(axios_1.default.post(addEntityRoute, entityToSend, config));
 };
-exports.createBlisAction = function (action, appId) {
-    var addActionRoute = "app/" + appId + "/action";
+exports.createBlisAction = function (key, action, appId) {
+    var addActionRoute = _this.makeRoute(key, "app/" + appId + "/action");
     //remove property from the object that the route will not accept
     var actionId = action.actionId, version = action.version, packageCreationId = action.packageCreationId, packageDeletionId = action.packageDeletionId, actionToSend = tslib_1.__rest(action, ["actionId", "version", "packageCreationId", "packageDeletionId"]);
-    return Rx.Observable.fromPromise(axios_1.default.post(rootUrl.concat(addActionRoute), actionToSend, config));
+    return Rx.Observable.fromPromise(axios_1.default.post(addActionRoute, actionToSend, config));
 };
 //=========================================================
 // DELETE ROUTES
 //=========================================================
-exports.deleteBlisApp = function (blisAppId, blisApp) {
-    var deleteAppRoute = "app/" + blisAppId; //takes an app in the body
+exports.deleteBlisApp = function (key, blisAppId, blisApp) {
+    var deleteAppRoute = makeRoute(key, "app/" + blisAppId); //takes an app in the body
     var appId = blisApp.appId, latestPackageId = blisApp.latestPackageId, metadata = blisApp.metadata, trainingRequired = blisApp.trainingRequired, trainingStatus = blisApp.trainingStatus, trainingFailureMessage = blisApp.trainingFailureMessage, appToSend = tslib_1.__rest(blisApp, ["appId", "latestPackageId", "metadata", "trainingRequired", "trainingStatus", "trainingFailureMessage"]);
     var configWithBody = tslib_1.__assign({}, config, { body: appToSend });
-    return Rx.Observable.fromPromise(axios_1.default.delete(rootUrl.concat(deleteAppRoute), configWithBody));
+    return Rx.Observable.fromPromise(axios_1.default.delete(deleteAppRoute, configWithBody));
 };
-exports.deleteBlisEntity = function (appId, entity) {
-    var deleteEntityRoute = "app/" + appId + "/entity/" + entity.entityId;
+exports.deleteBlisEntity = function (key, appId, entity) {
+    var deleteEntityRoute = makeRoute(key, "app/" + appId + "/entity/" + entity.entityId);
     var version = entity.version, packageCreationId = entity.packageCreationId, packageDeletionId = entity.packageDeletionId, entityId = entity.entityId, entityToSend = tslib_1.__rest(entity, ["version", "packageCreationId", "packageDeletionId", "entityId"]);
     var configWithBody = tslib_1.__assign({}, config, { body: entityToSend });
-    return Rx.Observable.fromPromise(axios_1.default.delete(rootUrl.concat(deleteEntityRoute), configWithBody));
+    return Rx.Observable.fromPromise(axios_1.default.delete(deleteEntityRoute, configWithBody));
 };
-exports.deleteBlisAction = function (appId, blisActionId, action) {
-    var deleteActionRoute = "app/" + appId + "/action/" + blisActionId;
+exports.deleteBlisAction = function (key, appId, blisActionId, action) {
+    var deleteActionRoute = makeRoute(key, "app/" + appId + "/action/" + blisActionId);
     var actionId = action.actionId, version = action.version, packageCreationId = action.packageCreationId, packageDeletionId = action.packageDeletionId, actionToSend = tslib_1.__rest(action, ["actionId", "version", "packageCreationId", "packageDeletionId"]);
     var configWithBody = tslib_1.__assign({}, config, { body: actionToSend });
-    return Rx.Observable.fromPromise(axios_1.default.delete(rootUrl.concat(deleteActionRoute), configWithBody));
+    return Rx.Observable.fromPromise(axios_1.default.delete(deleteActionRoute, configWithBody));
 };
 //=========================================================
 // EDIT ROUTES
 //=========================================================
-exports.editBlisApp = function (blisAppId, blisApp) {
-    var editAppRoute = "app/" + blisAppId;
+exports.editBlisApp = function (key, blisAppId, blisApp) {
+    var editAppRoute = makeRoute(key, "app/" + blisAppId);
     var appId = blisApp.appId, latestPackageId = blisApp.latestPackageId, metadata = blisApp.metadata, trainingRequired = blisApp.trainingRequired, trainingStatus = blisApp.trainingStatus, trainingFailureMessage = blisApp.trainingFailureMessage, appToSend = tslib_1.__rest(blisApp, ["appId", "latestPackageId", "metadata", "trainingRequired", "trainingStatus", "trainingFailureMessage"]);
-    return Rx.Observable.fromPromise(axios_1.default.put(rootUrl.concat(editAppRoute), appToSend, config));
+    return Rx.Observable.fromPromise(axios_1.default.put(editAppRoute, appToSend, config));
 };
-exports.editBlisAction = function (appId, blisActionId, action) {
-    var editActionRoute = "app/" + appId + "/action/" + blisActionId;
+exports.editBlisAction = function (key, appId, blisActionId, action) {
+    var editActionRoute = makeRoute(key, "app/" + appId + "/action/" + blisActionId);
     var actionId = action.actionId, version = action.version, packageCreationId = action.packageCreationId, packageDeletionId = action.packageDeletionId, actionToSend = tslib_1.__rest(action, ["actionId", "version", "packageCreationId", "packageDeletionId"]);
-    return Rx.Observable.fromPromise(axios_1.default.put(rootUrl.concat(editActionRoute), actionToSend, config));
+    return Rx.Observable.fromPromise(axios_1.default.put(editActionRoute, actionToSend, config));
+};
+exports.editBlisEntity = function (key, appId, entity) {
+    var editActionRoute = makeRoute(key, "app/" + appId + "/entity/" + entity.entityId);
+    var version = entity.version, packageCreationId = entity.packageCreationId, packageDeletionId = entity.packageDeletionId, entityToSend = tslib_1.__rest(entity, ["version", "packageCreationId", "packageDeletionId"]);
+    return Rx.Observable.fromPromise(axios_1.default.put(editActionRoute, entityToSend, config));
 };
 //========================================================
 // SESSION ROUTES
 //========================================================
 /** START SESSION : Creates a new session and a corresponding logDialog */
-exports.createSession = function (appId, key) {
-    var addAppRoute = "app/" + appId + "/session?key=" + key;
-    return Rx.Observable.fromPromise(axios_1.default.post(rootUrl.concat(addAppRoute), config));
+exports.createSession = function (key, appId) {
+    var addAppRoute = makeRoute(key, "app/" + appId + "/session");
+    return Rx.Observable.fromPromise(axios_1.default.post(addAppRoute, config));
 };
 /** GET SESSION : Retrieves information about the specified session */
-exports.getSession = function (appId, sessionId) {
-    var getAppRoute = "app/" + appId + "/session/" + sessionId;
-    return Rx.Observable.fromPromise(axios_1.default.get(rootUrl.concat(getAppRoute), config));
+exports.getSession = function (key, appId, sessionId) {
+    var getAppRoute = makeRoute(key, "app/" + appId + "/session/" + sessionId);
+    return Rx.Observable.fromPromise(axios_1.default.get(getAppRoute, config));
 };
 /** END SESSION : End a session. */
-exports.deleteSession = function (appId, sessionId, key) {
-    var deleteAppRoute = "app/" + appId + "/session/" + sessionId;
-    return Rx.Observable.fromPromise(axios_1.default.delete(rootUrl.concat(deleteAppRoute)));
+exports.deleteSession = function (key, appId, sessionId) {
+    var deleteAppRoute = makeRoute(key, "app/" + appId + "/session/" + sessionId);
+    return Rx.Observable.fromPromise(axios_1.default.delete(deleteAppRoute));
 };
 /** GET SESSIONS : Retrieves definitions of ALL open sessions */
-exports.getSessions = function (appId) {
-    var getAppRoute = "app/" + appId + "/sessions";
-    return Rx.Observable.fromPromise(axios_1.default.get(rootUrl.concat(getAppRoute), config));
+exports.getSessions = function (key, appId) {
+    var getAppRoute = makeRoute(key, "app/" + appId + "/sessions");
+    return Rx.Observable.fromPromise(axios_1.default.get(getAppRoute, config));
 };
 /** GET SESSION IDS : Retrieves a list of session IDs */
-exports.getSessionIds = function (appId) {
-    var getAppRoute = "app/" + appId + "/session";
-    return Rx.Observable.fromPromise(axios_1.default.get(rootUrl.concat(getAppRoute), config));
+exports.getSessionIds = function (key, appId) {
+    var getAppRoute = makeRoute(key, "app/" + appId + "/session");
+    return Rx.Observable.fromPromise(axios_1.default.get(getAppRoute, config));
 };
 //========================================================
 // Teach
 //========================================================
 /** START TEACH SESSION: Creates a new teaching session and a corresponding trainDialog */
-exports.createTeach = function (appId, key) {
-    var addAppRoute = "app/" + appId + "/teach?key=" + key;
-    return Rx.Observable.fromPromise(axios_1.default.post(rootUrl.concat(addAppRoute), config));
+exports.createTeach = function (key, appId) {
+    var addAppRoute = makeRoute(key, "app/" + appId + "/teach");
+    return Rx.Observable.fromPromise(axios_1.default.post(addAppRoute, config));
 };
 /** GET TEACH: Retrieves information about the specified teach */
-exports.getTeach = function (appId, teachId) {
-    var getAppRoute = "app/" + appId + "/teach/" + teachId;
-    return Rx.Observable.fromPromise(axios_1.default.get(rootUrl.concat(getAppRoute), config));
+exports.getTeach = function (key, appId, teachId) {
+    var getAppRoute = makeRoute(key, "app/" + appId + "/teach/" + teachId);
+    return Rx.Observable.fromPromise(axios_1.default.get(getAppRoute, config));
 };
 /** RUN EXTRACTOR: Runs entity extraction (prediction).
  * If a more recent version of the package is available on
  * the server, the session will first migrate to that newer version.  This
  * doesn't affect the trainDialog maintained.
  */
-exports.putExtract = function (appId, teachId, userInput) {
-    var editAppRoute = "app/" + appId + "/teach/" + teachId + "/extractor";
-    return Rx.Observable.fromPromise(axios_1.default.put(rootUrl.concat(editAppRoute), userInput, config));
+exports.putExtract = function (key, appId, teachId, userInput) {
+    var editAppRoute = makeRoute(key, "app/" + appId + "/teach/" + teachId + "/extractor");
+    return Rx.Observable.fromPromise(axios_1.default.put(editAppRoute, userInput, config));
 };
 /** EXTRACTION FEEDBACK: Uploads a labeled entity extraction instance
  * ie "commits" an entity extraction label, appending it to the teach session's
  * trainDialog, and advancing the dialog. This may yield produce a new package.
  */
-exports.postExtraction = function (appId, teachId, trainExtractorStep, key) {
-    var addAppRoute = "app/" + appId + "/teach/" + teachId + "/extractor";
-    return Rx.Observable.fromPromise(axios_1.default.post(rootUrl.concat(addAppRoute), trainExtractorStep, config));
+exports.postExtraction = function (key, appId, teachId, trainExtractorStep) {
+    var addAppRoute = makeRoute(key, "app/" + appId + "/teach/" + teachId + "/extractor");
+    return Rx.Observable.fromPromise(axios_1.default.post(addAppRoute, trainExtractorStep, config));
 };
 /** RUN SCORER: Takes a turn and return distribution over actions.
  * If a more recent version of the package is
  * available on the server, the session will first migrate to that newer version.
  * This doesn't affect the trainDialog maintained by the teaching session.
  */
-exports.putScore = function (appId, teachId, extractResponse, key) {
-    var editAppRoute = "app/" + appId + "/teach/" + teachId + "/scorer?key=" + key;
-    return Rx.Observable.fromPromise(axios_1.default.put(rootUrl.concat(editAppRoute), extractResponse, config));
+exports.putScore = function (key, appId, teachId, extractResponse) {
+    var editAppRoute = makeRoute(key, "app/" + appId + "/teach/" + teachId + "/scorer");
+    return Rx.Observable.fromPromise(axios_1.default.put(editAppRoute, extractResponse, config));
 };
 /** SCORE FEEDBACK: Uploads a labeled scorer step instance
  * – ie "commits" a scorer label, appending it to the teach session's
  * trainDialog, and advancing the dialog. This may yield produce a new package.
  */
-exports.postScore = function (appId, teachId, trainScorerStep, key) {
-    var addAppRoute = "app/" + appId + "/teach/" + teachId + "/scorer?key=" + key;
-    return Rx.Observable.fromPromise(axios_1.default.post(rootUrl.concat(addAppRoute), trainScorerStep, config));
+exports.postScore = function (key, appId, teachId, trainScorerStep) {
+    var addAppRoute = makeRoute(key, "app/" + appId + "/teach/" + teachId + "/scorer");
+    return Rx.Observable.fromPromise(axios_1.default.post(addAppRoute, trainScorerStep, config));
 };
 /** END TEACH: Ends a teach.
  * For Teach sessions, does NOT delete the associated trainDialog.
  * To delete the associated trainDialog, call DELETE on the trainDialog.
  */
-exports.deleteTeach = function (appId, teachId, key) {
-    var deleteAppRoute = "app/" + appId + "/teach/" + teachId + "?key=" + key;
+exports.deleteTeach = function (key, appId, teachId) {
+    var deleteAppRoute = "app/" + appId + "/teach/" + teachId;
     return Rx.Observable.fromPromise(axios_1.default.delete(rootUrl.concat(deleteAppRoute)));
 };
 /** GET TEACH SESSIONS: Retrieves definitions of ALL open teach sessions */
-exports.getTeaches = function (appId) {
-    var getAppRoute = "app/" + appId + "/teaches";
-    return Rx.Observable.fromPromise(axios_1.default.get(rootUrl.concat(getAppRoute), config));
+exports.getTeaches = function (key, appId) {
+    var getAppRoute = makeRoute(key, "app/" + appId + "/teaches");
+    return Rx.Observable.fromPromise(axios_1.default.get(getAppRoute, config));
 };
 /** GET TEACH SESSION IDS: Retrieves a list of teach session IDs */
-exports.getTeachIds = function (appId) {
-    var getAppRoute = "app/" + appId + "/teach";
-    return Rx.Observable.fromPromise(axios_1.default.get(rootUrl.concat(getAppRoute), config));
+exports.getTeachIds = function (key, appId) {
+    var getAppRoute = makeRoute(key, "app/" + appId + "/teach");
+    return Rx.Observable.fromPromise(axios_1.default.get(getAppRoute, config));
 };
 
 
@@ -10506,36 +10541,40 @@ exports.isNumeric = isNumeric;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteBLISApplication = function (GUID, blisApp) {
+exports.deleteBLISApplication = function (key, GUID, blisApp) {
     //needs to make a call to an Epic to send data to BLIS
     return {
         type: 'DELETE_BLIS_APPLICATION',
+        key: key,
         blisAppGUID: GUID,
         blisApp: blisApp
     };
 };
-exports.deleteEntity = function (GUID, entity, currentAppId) {
+exports.deleteEntity = function (key, GUID, entity, currentAppId) {
     //needs to make a call to an Epic to send data to BLIS
     return {
         type: 'DELETE_ENTITY',
+        key: key,
         entityGUID: GUID,
         entity: entity,
         currentAppId: currentAppId
     };
 };
-exports.deleteAction = function (GUID, action, currentAppId) {
+exports.deleteAction = function (key, GUID, action, currentAppId) {
     //needs to make a call to an Epic to send data to BLIS
     return {
         type: 'DELETE_ACTION',
+        key: key,
         actionGUID: GUID,
         action: action,
         currentAppId: currentAppId
     };
 };
-exports.deleteTrainDialog = function (GUID) {
+exports.deleteTrainDialog = function (key, GUID) {
     //needs to make a call to an Epic to send data to BLIS
     return {
         type: 'DELETE_TRAIN_DIALOG',
+        key: key,
         trainDialogGUID: GUID
     };
 };
@@ -16414,10 +16453,10 @@ var EntityCreatorEditor = (function (_super) {
         });
         if (this.state.editing === false) {
             if (meta.isReversable === true) {
-                this.props.createReversibleEntity(entityToAdd, currentAppId);
+                this.props.createReversibleEntity(this.props.userKey, entityToAdd, currentAppId);
             }
             else {
-                this.props.createEntity(entityToAdd, currentAppId);
+                this.props.createEntity(this.props.userKey, entityToAdd, currentAppId);
             }
         }
         else {
@@ -16434,7 +16473,7 @@ var EntityCreatorEditor = (function (_super) {
     };
     EntityCreatorEditor.prototype.editEntity = function (ent) {
         ent.entityId = this.props.entity.entityId;
-        this.props.editEntity(ent);
+        this.props.editEntity(this.props.userKey, ent);
     };
     EntityCreatorEditor.prototype.nameChanged = function (text) {
         this.setState({
@@ -16512,6 +16551,7 @@ var mapDispatchToProps = function (dispatch) {
 };
 var mapStateToProps = function (state, ownProps) {
     return {
+        userKey: state.user.key,
         entities: state.entities,
         blisApps: state.apps
     };
@@ -30650,7 +30690,7 @@ var ActionResponseCreatorEditor = (function (_super) {
             packageDeletionId: null
         });
         if (this.state.editing === false) {
-            this.props.createAction(actionToAdd, currentAppId);
+            this.props.createAction(this.props.userkey, actionToAdd, currentAppId);
         }
         else {
             this.editAction(actionToAdd, currentAppId);
@@ -30660,7 +30700,7 @@ var ActionResponseCreatorEditor = (function (_super) {
     };
     ActionResponseCreatorEditor.prototype.editAction = function (actionToAdd, currentAppId) {
         actionToAdd.actionId = this.props.blisAction.actionId;
-        this.props.editAction(actionToAdd, currentAppId);
+        this.props.editAction(this.props.userKey, actionToAdd, currentAppId);
     };
     ActionResponseCreatorEditor.prototype.waitChanged = function () {
         this.setState({
@@ -30771,6 +30811,7 @@ var mapDispatchToProps = function (dispatch) {
 };
 var mapStateToProps = function (state, ownProps) {
     return {
+        userKey: state.user.key,
         actions: state.actions,
         blisApps: state.apps,
         entities: state.entities
@@ -30867,7 +30908,7 @@ var ActionResponsesHomepage = (function (_super) {
         var _this = this;
         var currentAppId = this.props.apps.current.appId;
         var actionToDelete = this.props.actions.find(function (a) { return a.actionId == _this.state.actionIDToDelete; });
-        this.props.deleteAction(this.state.actionIDToDelete, actionToDelete, currentAppId);
+        this.props.deleteAction(this.props.userKey, this.state.actionIDToDelete, actionToDelete, currentAppId);
         this.setState({
             confirmDeleteActionModalOpen: false,
             actionIDToDelete: null
@@ -30997,6 +31038,7 @@ var mapDispatchToProps = function (dispatch) {
 };
 var mapStateToProps = function (state) {
     return {
+        userKey: state.user.key,
         actions: state.actions,
         entities: state.entities,
         apps: state.apps
@@ -31158,7 +31200,7 @@ var AppSettings = (function (_super) {
             locale: current.locale,
             metadata: meta
         });
-        this.props.editBLISApplication(appToAdd);
+        this.props.editBLISApplication(this.props.userKey, appToAdd);
         this.setState({
             localeVal: current.locale,
             appIdVal: current.appId,
@@ -31201,6 +31243,7 @@ var mapDispatchToProps = function (dispatch) {
 };
 var mapStateToProps = function (state) {
     return {
+        userKey: state.user.key,
         blisApps: state.apps
     };
 };
@@ -31303,7 +31346,7 @@ var BLISAppCreator = (function (_super) {
             locale: this.state.localeVal,
             metadata: meta
         });
-        this.props.createBLISApplication(this.props.userId, appToAdd);
+        this.props.createBLISApplication(this.props.userKey, this.props.userId, appToAdd);
         //need to empty entities, actions, and trainDialogs arrays
         this.props.emptyStateProperties();
         this.handleClose();
@@ -31338,7 +31381,8 @@ var mapDispatchToProps = function (dispatch) {
 var mapStateToProps = function (state) {
     return {
         blisApps: state.apps,
-        userId: state.user.id
+        userId: state.user.id,
+        userKey: state.user.key
     };
 };
 exports.default = react_redux_1.connect(mapStateToProps, mapDispatchToProps)(BLISAppCreator);
@@ -31373,7 +31417,7 @@ var BLISAppsHomepage = (function (_super) {
             this.setState({
                 displayedUserId: this.props.userId
             });
-            this.props.fetchApplications(this.props.userId);
+            this.props.fetchApplications(this.props.userKey, this.props.userId);
         }
     };
     BLISAppsHomepage.prototype.render = function () {
@@ -31394,6 +31438,7 @@ var mapDispatchToProps = function (dispatch) {
 var mapStateToProps = function (state) {
     return {
         display: state.display,
+        userKey: state.user.key,
         userId: state.user.id,
         blisApps: state.apps
     };
@@ -31478,7 +31523,7 @@ var BLISAppsList = (function (_super) {
     BLISAppsList.prototype.deleteApp = function () {
         var _this = this;
         var blisAppToDelete = this.props.blisApps.all.find(function (app) { return app.appId == _this.state.appIDToDelete; });
-        this.props.deleteBLISApplication(this.state.appIDToDelete, blisAppToDelete);
+        this.props.deleteBLISApplication(this.props.userKey, this.state.appIDToDelete, blisAppToDelete);
         this.setState({
             confirmDeleteAppModalOpen: false,
             appIDToDelete: null,
@@ -31498,10 +31543,10 @@ var BLISAppsList = (function (_super) {
     };
     BLISAppsList.prototype.BLISAppSelected = function (appName) {
         var appSelected = this.props.blisApps.all.find(function (app) { return app.appName == appName; });
-        this.props.setCurrentBLISApp(appSelected);
-        this.props.fetchAllActions(appSelected.appId);
-        this.props.fetchAllEntities(appSelected.appId);
-        this.props.fetchAllTrainDialogs(appSelected.appId);
+        this.props.setCurrentBLISApp(this.props.userKey, appSelected);
+        this.props.fetchAllActions(this.props.userKey, appSelected.appId);
+        this.props.fetchAllEntities(this.props.userKey, appSelected.appId);
+        this.props.fetchAllTrainDialogs(this.props.userKey, appSelected.appId);
         this.props.setBLISAppDisplay("TrainingGround");
     };
     BLISAppsList.prototype.renderItemColumn = function (item, index, column) {
@@ -31549,6 +31594,7 @@ var mapDispatchToProps = function (dispatch) {
 };
 var mapStateToProps = function (state) {
     return {
+        userKey: state.user.key,
         blisApps: state.apps
     };
 };
@@ -31634,7 +31680,7 @@ var EntitiesList = (function (_super) {
         var _this = this;
         var currentAppId = this.props.apps.current.appId;
         var entityToDelete = this.props.entities.find(function (a) { return a.entityId == _this.state.entityIDToDelete; });
-        this.props.deleteEntity(this.state.entityIDToDelete, entityToDelete, currentAppId);
+        this.props.deleteEntity(this.props.userKey, this.state.entityIDToDelete, entityToDelete, currentAppId);
         this.setState({
             confirmDeleteEntityModalOpen: false,
             entityIDToDelete: null
@@ -31749,6 +31795,7 @@ var mapDispatchToProps = function (dispatch) {
 };
 var mapStateToProps = function (state) {
     return {
+        userKey: state.user.key,
         entities: state.entities,
         apps: state.apps,
         actions: state.actions
@@ -31832,7 +31879,7 @@ var TrainDialogsList = (function (_super) {
         var dialog = new types_1.Dialog(turns);
         var trainDialog = new types_1.TrainDialog(this.generateGUID(), dialog, this.props.blisApps.current.appId);
         this.props.setWebchatDisplay(true);
-        this.props.createTrainDialog(trainDialog);
+        this.props.createTrainDialog(this.props.userKey, trainDialog);
     };
     TrainDialogsList.prototype.generateGUID = function () {
         var d = new Date().getTime();
@@ -31845,7 +31892,7 @@ var TrainDialogsList = (function (_super) {
     };
     TrainDialogsList.prototype.handleSelection = function (selected) {
         this.props.setWebchatDisplay(true);
-        this.props.setCurrentTrainDialog(selected);
+        this.props.setCurrentTrainDialog(this.props.userKey, selected);
     };
     TrainDialogsList.prototype.onChange = function (newValue) {
         var lcString = newValue.toLowerCase();
@@ -31884,6 +31931,7 @@ var mapDispatchToProps = function (dispatch) {
 };
 var mapStateToProps = function (state) {
     return {
+        userKey: state.user.key,
         blisApps: state.apps,
         trainDialogs: state.trainDialogs
     };
@@ -32212,35 +32260,35 @@ var createActions_1 = __webpack_require__(47);
 exports.createNewApplication = function (action$) {
     return action$.ofType("CREATE_BLIS_APPLICATION")
         .flatMap(function (action) {
-        return apiHelpers_1.createBlisApp(action.userId, action.blisApp)
+        return apiHelpers_1.createBlisApp(action.key, action.userId, action.blisApp)
             .map(function (response) { return createActions_1.createApplicationFulfilled(response.data); });
     });
 };
 exports.createNewEntity = function (action$) {
     return action$.ofType("CREATE_ENTITY")
         .flatMap(function (action) {
-        return apiHelpers_1.createBlisEntity(action.entity, action.currentAppId)
+        return apiHelpers_1.createBlisEntity(action.key, action.entity, action.currentAppId)
             .mapTo({ type: "CREATE_OPERATION_FULFILLED" });
     });
 };
 exports.createReversibleEntity = function (action$) {
     return action$.ofType("CREATE_REVERSIBLE_ENTITY")
         .flatMap(function (action) {
-        return apiHelpers_1.createBlisEntity(action.entity, action.currentAppId)
-            .map(function (response) { return createActions_1.createPositiveEntityFulfilled(action.entity, response.data, action.currentAppId); });
+        return apiHelpers_1.createBlisEntity(action.key, action.entity, action.currentAppId)
+            .map(function (response) { return createActions_1.createPositiveEntityFulfilled(action.key, action.entity, response.data, action.currentAppId); });
     });
 };
 exports.createNegativeEntity = function (action$) {
     return action$.ofType("CREATE_POSITIVE_ENTITY_FULFILLED")
         .flatMap(function (action) {
-        return apiHelpers_1.createBlisEntity(action.negativeEntity, action.currentAppId)
-            .map(function (response) { return createActions_1.createNegativeEntityFulfilled(action.positiveEntity, action.negativeEntity, response.data, action.currentAppId); });
+        return apiHelpers_1.createBlisEntity(action.key, action.negativeEntity, action.currentAppId)
+            .map(function (response) { return createActions_1.createNegativeEntityFulfilled(action.key, action.positiveEntity, action.negativeEntity, response.data, action.currentAppId); });
     });
 };
 exports.createNewAction = function (action$) {
     return action$.ofType("CREATE_ACTION")
         .flatMap(function (actionObject) {
-        return apiHelpers_1.createBlisAction(actionObject.action, actionObject.currentAppId)
+        return apiHelpers_1.createBlisAction(actionObject.key, actionObject.action, actionObject.currentAppId)
             .mapTo({ type: "CREATE_OPERATION_FULFILLED" });
     });
 };
@@ -32258,21 +32306,21 @@ var apiHelpers_1 = __webpack_require__(84);
 exports.deleteApplication = function (action$) {
     return action$.ofType("DELETE_BLIS_APPLICATION")
         .flatMap(function (action) {
-        return apiHelpers_1.deleteBlisApp(action.blisAppGUID, action.blisApp)
+        return apiHelpers_1.deleteBlisApp(action.key, action.blisAppGUID, action.blisApp)
             .mapTo({ type: "DELETE_OPERATION_FULFILLED" });
     });
 };
 exports.deleteEntity = function (action$) {
     return action$.ofType("DELETE_ENTITY")
         .flatMap(function (action) {
-        return apiHelpers_1.deleteBlisEntity(action.currentAppId, action.entity)
+        return apiHelpers_1.deleteBlisEntity(action.key, action.currentAppId, action.entity)
             .mapTo({ type: "DELETE_OPERATION_FULFILLED" });
     });
 };
 exports.deleteAction = function (action$) {
     return action$.ofType("DELETE_ACTION")
         .flatMap(function (actionObject) {
-        return apiHelpers_1.deleteBlisAction(actionObject.currentAppId, actionObject.actionGUID, actionObject.action)
+        return apiHelpers_1.deleteBlisAction(actionObject.key, actionObject.currentAppId, actionObject.actionGUID, actionObject.action)
             .mapTo({ type: "DELETE_OPERATION_FULFILLED" });
     });
 };
@@ -32291,21 +32339,21 @@ var fetchActions_1 = __webpack_require__(66);
 exports.fetchApplications = function (action$) {
     return action$.ofType("FETCH_APPLICATIONS")
         .flatMap(function (action) {
-        return apiHelpers_1.getAllBlisApps(action.userId)
+        return apiHelpers_1.getAllBlisApps(action.key, action.userId)
             .map(function (response) { return fetchActions_1.fetchApplicationsFulfilled(response.data.apps); });
     });
 };
 exports.fetchEntities = function (action$) {
     return action$.ofType("FETCH_ENTITIES")
         .flatMap(function (action) {
-        return apiHelpers_1.getAllEntitiesForBlisApp(action.blisAppID)
+        return apiHelpers_1.getAllEntitiesForBlisApp(action.key, action.blisAppID)
             .map(function (response) { return fetchActions_1.fetchAllEntitiesFulfilled(response.data.entities); });
     });
 };
 exports.fetchActions = function (action$) {
     return action$.ofType("FETCH_ACTIONS")
         .flatMap(function (action) {
-        return apiHelpers_1.getAllActionsForBlisApp(action.blisAppID)
+        return apiHelpers_1.getAllActionsForBlisApp(action.key, action.blisAppID)
             .map(function (response) { return fetchActions_1.fetchAllActionsFulfilled(response.data.actions); });
     });
 };
@@ -32340,21 +32388,21 @@ var apiHelpers_1 = __webpack_require__(84);
 exports.editApplication = function (action$) {
     return action$.ofType("EDIT_BLIS_APPLICATION")
         .flatMap(function (action) {
-        return apiHelpers_1.editBlisApp(action.blisApp.appId, action.blisApp)
+        return apiHelpers_1.editBlisApp(action.key, action.blisApp.appId, action.blisApp)
             .mapTo({ type: "UPDATE_OPERATION_FULFILLED" });
     });
 };
 exports.editAction = function (action$) {
     return action$.ofType("EDIT_ACTION")
         .flatMap(function (action) {
-        return apiHelpers_1.editBlisAction(action.currentAppId, action.blisAction.actionId, action.blisAction)
+        return apiHelpers_1.editBlisAction(action.key, action.currentAppId, action.blisAction.actionId, action.blisAction)
             .mapTo({ type: "UPDATE_OPERATION_FULFILLED" });
     });
 };
 exports.editEntity = function (action$) {
     return action$.ofType("CREATE_NEGATIVE_ENTITY_FULFILLED")
         .flatMap(function (action) {
-        return apiHelpers_1.editBlisEntity(action.currentAppId, action.positiveEntity)
+        return apiHelpers_1.editBlisEntity(action.key, action.currentAppId, action.positiveEntity)
             .mapTo({ type: "UPDATE_OPERATION_FULFILLED" });
     });
 };
@@ -32620,13 +32668,16 @@ var tslib_1 = __webpack_require__(2);
 var initialState = {
     name: "",
     password: "",
-    id: null
+    id: null,
+    key: null
 };
 var userReducer = function (state, action) {
     if (state === void 0) { state = initialState; }
     switch (action.type) {
         case 'SET_USER':
             return tslib_1.__assign({}, state, { name: action.name, password: action.password, id: action.id });
+        case 'SET_USER_KEY':
+            return tslib_1.__assign({}, state, { key: action.key });
         default:
             return state;
     }
