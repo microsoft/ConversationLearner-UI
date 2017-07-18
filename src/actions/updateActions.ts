@@ -45,6 +45,13 @@ export const setWebchatDisplay = (isShown: boolean) : ActionObject => {
     }
 }
 
+export const setLoginDisplay = (isShown: boolean) : ActionObject => { 
+    return {
+        type: 'SET_LOGIN_DISPLAY',
+        setLoginDisplay: isShown
+    }
+}
+
 export const editBLISApplication = (key: string, application: BlisAppBase) : ActionObject => { 
     //needs to make a call to an Epic to send data to BLIS
     return {

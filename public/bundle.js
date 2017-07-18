@@ -340,16 +340,6 @@ exports.Observable = Observable;
 
 /***/ }),
 /* 1 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-module.exports = __webpack_require__(62);
-
-
-/***/ }),
-/* 2 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -531,6 +521,16 @@ function __asyncValues(o) {
     var m = o[Symbol.asyncIterator];
     return m ? m.call(o) : typeof __values === "function" ? __values(o) : o[Symbol.iterator]();
 }
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+module.exports = __webpack_require__(62);
+
 
 /***/ }),
 /* 3 */
@@ -3484,6 +3484,105 @@ module.exports = { debugTool: debugTool };
 
 "use strict";
 
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.setCurrentBLISApp = function (key, app) {
+    return {
+        type: 'SET_CURRENT_BLIS_APP',
+        key: key,
+        currentBLISApp: app
+    };
+};
+exports.emptyStateProperties = function () {
+    return {
+        type: 'EMPTY_STATE_PROPERTIES'
+    };
+};
+exports.setCurrentTrainDialog = function (key, trainDialog) {
+    return {
+        type: 'SET_CURRENT_TRAIN_DIALOG',
+        key: key,
+        currentTrainDialog: trainDialog
+    };
+};
+exports.toggleTrainDialog = function (forward) {
+    return {
+        type: "TOGGLE_TRAIN_DIALOG",
+        forward: forward
+    };
+};
+exports.setBLISAppDisplay = function (text) {
+    return {
+        type: 'SET_BLIS_APP_DISPLAY',
+        setDisplay: text
+    };
+};
+exports.setWebchatDisplay = function (isShown) {
+    return {
+        type: 'SET_WEBCHAT_DISPLAY',
+        setWebchatDisplay: isShown
+    };
+};
+exports.setLoginDisplay = function (isShown) {
+    return {
+        type: 'SET_LOGIN_DISPLAY',
+        setLoginDisplay: isShown
+    };
+};
+exports.editBLISApplication = function (key, application) {
+    //needs to make a call to an Epic to send data to BLIS
+    return {
+        type: 'EDIT_BLIS_APPLICATION',
+        key: key,
+        blisApp: application
+    };
+};
+exports.editEntity = function (key, entity) {
+    //needs to make a call to an Epic to send data to BLIS
+    return {
+        type: 'EDIT_ENTITY',
+        key: key,
+        entity: entity
+    };
+};
+exports.editAction = function (key, action, currentAppId) {
+    //needs to make a call to an Epic to send data to BLIS
+    return {
+        type: 'EDIT_ACTION',
+        key: key,
+        blisAction: action,
+        currentAppId: currentAppId
+    };
+};
+exports.editTrainDialog = function (key, trainDialog) {
+    //needs to make a call to an Epic to send data to BLIS
+    return {
+        type: 'EDIT_TRAIN_DIALOG',
+        key: key,
+        trainDialog: trainDialog
+    };
+};
+exports.setUser = function (name, password, id) {
+    return {
+        type: 'SET_USER',
+        name: name,
+        password: password,
+        id: id
+    };
+};
+exports.setUserKey = function (key) {
+    return {
+        type: 'SET_USER_KEY',
+        key: key
+    };
+};
+
+
+/***/ }),
+/* 36 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
 __webpack_require__(779);
 var utils_1 = __webpack_require__(337);
 /**
@@ -3675,87 +3774,6 @@ function serializeProperty(metadata, prop) {
     return serialize(prop);
 }
 //# sourceMappingURL=index.js.map
-
-/***/ }),
-/* 36 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.setCurrentBLISApp = function (app) {
-    return {
-        type: 'SET_CURRENT_BLIS_APP',
-        currentBLISApp: app
-    };
-};
-exports.emptyStateProperties = function () {
-    return {
-        type: 'EMPTY_STATE_PROPERTIES'
-    };
-};
-exports.setCurrentTrainDialog = function (trainDialog) {
-    return {
-        type: 'SET_CURRENT_TRAIN_DIALOG',
-        currentTrainDialog: trainDialog
-    };
-};
-exports.toggleTrainDialog = function (forward) {
-    return {
-        type: "TOGGLE_TRAIN_DIALOG",
-        forward: forward
-    };
-};
-exports.setBLISAppDisplay = function (text) {
-    return {
-        type: 'SET_BLIS_APP_DISPLAY',
-        setDisplay: text
-    };
-};
-exports.setWebchatDisplay = function (isShown) {
-    return {
-        type: 'SET_WEBCHAT_DISPLAY',
-        setWebchatDisplay: isShown
-    };
-};
-exports.editBLISApplication = function (application) {
-    //needs to make a call to an Epic to send data to BLIS
-    return {
-        type: 'EDIT_BLIS_APPLICATION',
-        blisApp: application
-    };
-};
-exports.editEntity = function (entity) {
-    //needs to make a call to an Epic to send data to BLIS
-    return {
-        type: 'EDIT_ENTITY',
-        entity: entity
-    };
-};
-exports.editAction = function (action, currentAppId) {
-    //needs to make a call to an Epic to send data to BLIS
-    return {
-        type: 'EDIT_ACTION',
-        blisAction: action,
-        currentAppId: currentAppId
-    };
-};
-exports.editTrainDialog = function (trainDialog) {
-    //needs to make a call to an Epic to send data to BLIS
-    return {
-        type: 'EDIT_TRAIN_DIALOG',
-        trainDialog: trainDialog
-    };
-};
-exports.setUser = function (name, password, id) {
-    return {
-        type: 'SET_USER',
-        name: name,
-        password: password,
-        id: id
-    };
-};
-
 
 /***/ }),
 /* 37 */
@@ -4806,43 +4824,48 @@ exports.EmptyObservable = EmptyObservable;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-exports.createBLISApplication = function (userId, application) {
+var tslib_1 = __webpack_require__(1);
+exports.createBLISApplication = function (key, userId, application) {
     //needs to make a call to an Epic to send data to BLIS
     return {
         type: 'CREATE_BLIS_APPLICATION',
+        key: key,
         userId: userId,
         blisApp: application,
     };
 };
-exports.createEntity = function (entity, currentAppId) {
+exports.createEntity = function (key, entity, currentAppId) {
     //needs to make a call to an Epic to send data to BLIS
     return {
         type: 'CREATE_ENTITY',
+        key: key,
         entity: entity,
         currentAppId: currentAppId
     };
 };
-exports.createReversibleEntity = function (entity, currentAppId) {
+exports.createReversibleEntity = function (key, entity, currentAppId) {
     //needs to make a call to an Epic to send data to BLIS
     return {
         type: 'CREATE_REVERSIBLE_ENTITY',
+        key: key,
         entity: entity,
         currentAppId: currentAppId
     };
 };
-exports.createAction = function (action, currentAppId) {
+exports.createAction = function (key, action, currentAppId) {
     //needs to make a call to an Epic to send data to BLIS
     return {
         type: 'CREATE_ACTION',
+        key: key,
         action: action,
         currentAppId: currentAppId
     };
 };
-exports.createTrainDialog = function (trainDialog) {
+exports.createTrainDialog = function (key, trainDialog) {
     //needs to make a call to an Epic to send data to BLIS
     return {
         type: 'CREATE_TRAIN_DIALOG',
+        key: key,
         trainDialog: trainDialog
     };
 };
@@ -4852,16 +4875,17 @@ exports.createApplicationFulfilled = function (appId) {
         blisAppId: appId
     };
 };
-exports.createPositiveEntityFulfilled = function (positiveEntity, positiveEntityId, currentAppId) {
+exports.createPositiveEntityFulfilled = function (key, positiveEntity, positiveEntityId, currentAppId) {
     var negativeEntity = tslib_1.__assign({}, positiveEntity, { entityName: "~" + positiveEntity.entityName, metadata: tslib_1.__assign({}, positiveEntity.metadata, { positiveId: positiveEntityId }) });
     return {
         type: 'CREATE_POSITIVE_ENTITY_FULFILLED',
+        key: key,
         negativeEntity: negativeEntity,
         positiveEntity: positiveEntity,
         currentAppId: currentAppId
     };
 };
-exports.createNegativeEntityFulfilled = function (positiveEntity, negativeEntity, negativeEntityId, currentAppId) {
+exports.createNegativeEntityFulfilled = function (key, positiveEntity, negativeEntity, negativeEntityId, currentAppId) {
     var posEntity = positiveEntity;
     posEntity.metadata.negativeId = negativeEntityId;
     posEntity.entityId = negativeEntity.metadata.positiveId;
@@ -4869,6 +4893,7 @@ exports.createNegativeEntityFulfilled = function (positiveEntity, negativeEntity
     //send both to store to be saved locally, and send the positive entity back to the service to update its metadata
     return {
         type: 'CREATE_NEGATIVE_ENTITY_FULFILLED',
+        key: key,
         positiveEntity: posEntity,
         negativeEntity: negativeEntity,
         currentAppId: currentAppId
@@ -5936,8 +5961,8 @@ function isVirtualElement(element) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var Utilities_1 = __webpack_require__(3);
 var Icon_1 = __webpack_require__(14);
 var DirectionalHint_1 = __webpack_require__(24);
@@ -6752,24 +6777,27 @@ module.exports = __webpack_require__(677);
 Object.defineProperty(exports, "__esModule", { value: true });
 //=========================================================
 //=========================================================
-exports.fetchApplications = function (userId) {
+exports.fetchApplications = function (key, userId) {
     //needs a fulfilled version to handle response from Epic
     return {
         type: 'FETCH_APPLICATIONS',
+        key: key,
         userId: userId
     };
 };
-exports.fetchAllEntities = function (blisAppID) {
+exports.fetchAllEntities = function (key, blisAppID) {
     //needs a fulfilled version to handle response from Epic
     return {
         type: 'FETCH_ENTITIES',
+        key: key,
         blisAppID: blisAppID
     };
 };
-exports.fetchAllActions = function (blisAppID) {
+exports.fetchAllActions = function (key, blisAppID) {
     //needs a fulfilled version to handle response from Epic
     return {
         type: 'FETCH_ACTIONS',
+        key: key,
         blisAppID: blisAppID
     };
 };
@@ -6810,7 +6838,7 @@ exports.fetchAllActionsFulfilled = function (actions) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var React = __webpack_require__(1);
+var React = __webpack_require__(2);
 var TrainingGroundArenaHeader = function (props) {
     return (React.createElement("div", { className: 'trainingGroundArenaHeader' },
         React.createElement("span", { className: "ms-font-xxl trainingGroundHeaderContent" }, props.title),
@@ -7063,8 +7091,8 @@ exports.getStyles = Utilities_1.memoizeFunction(function (theme, customStyles) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var BaseDecorator_1 = __webpack_require__(257);
 var Utilities_1 = __webpack_require__(3);
 var ResponsiveMode;
@@ -8110,8 +8138,9 @@ exports.ArgumentOutOfRangeError = ArgumentOutOfRangeError;
 
 "use strict";
 
+var _this = this;
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
+var tslib_1 = __webpack_require__(1);
 __webpack_require__(52);
 var axios_1 = __webpack_require__(189);
 var Rx = __webpack_require__(52);
@@ -8124,180 +8153,192 @@ var config = {
     }
 };
 var rootUrl = "http://localhost:5000/";
+var makeRoute = function (key, actionRoute, qstring) {
+    var route = rootUrl.concat(actionRoute, "?key=" + key);
+    if (qstring) {
+        route = route + ("&" + qstring);
+    }
+    return route;
+};
 //=========================================================
 // GET ROUTES
 //=========================================================
-exports.getAllBlisApps = function (userId) {
-    var getAppsRoute = "apps?userId=" + userId;
-    return Rx.Observable.fromPromise(axios_1.default.get(rootUrl.concat(getAppsRoute), config));
+exports.getAllBlisApps = function (key, userId) {
+    var getAppsRoute = makeRoute(key, "apps", "userId=" + userId);
+    return Rx.Observable.fromPromise(axios_1.default.get(getAppsRoute, config));
 };
-exports.getBlisApp = function (appId) {
-    var getAppRoute = "app/" + appId;
-    return Rx.Observable.fromPromise(axios_1.default.get(rootUrl.concat(getAppRoute), config));
+exports.getBlisApp = function (key, appId) {
+    var getAppRoute = makeRoute(key, "app/" + appId);
+    return Rx.Observable.fromPromise(axios_1.default.get(getAppRoute, config));
 };
-exports.getAllEntitiesForBlisApp = function (appId) {
-    var getEntitiesForAppRoute = "app/" + appId + "/entities";
-    return Rx.Observable.fromPromise(axios_1.default.get(rootUrl.concat(getEntitiesForAppRoute), config));
+exports.getAllEntitiesForBlisApp = function (key, appId) {
+    var getEntitiesForAppRoute = makeRoute(key, "app/" + appId + "/entities");
+    return Rx.Observable.fromPromise(axios_1.default.get(getEntitiesForAppRoute, config));
 };
-exports.getBlisEntity = function (appId, entityId) {
-    var getEntityRoute = "app/" + appId + "/entity/" + entityId;
-    return Rx.Observable.fromPromise(axios_1.default.get(rootUrl.concat(getEntityRoute), config));
+exports.getBlisEntity = function (key, appId, entityId) {
+    var getEntityRoute = makeRoute(key, "app/" + appId + "/entity/" + entityId);
+    return Rx.Observable.fromPromise(axios_1.default.get(getEntityRoute, config));
 };
-exports.getAllActionsForBlisApp = function (appId) {
-    var getActionsForAppRoute = "app/" + appId + "/actions";
-    return Rx.Observable.fromPromise(axios_1.default.get(rootUrl.concat(getActionsForAppRoute), config));
+exports.getAllActionsForBlisApp = function (key, appId) {
+    var getActionsForAppRoute = makeRoute(key, "app/" + appId + "/actions");
+    return Rx.Observable.fromPromise(axios_1.default.get(getActionsForAppRoute, config));
 };
-exports.getBlisAction = function (appId, actionId) {
-    var getActionRoute = "app/" + appId + "/action/" + actionId;
-    return Rx.Observable.fromPromise(axios_1.default.get(rootUrl.concat(getActionRoute), config));
+exports.getBlisAction = function (key, appId, actionId) {
+    var getActionRoute = makeRoute(key, "app/" + appId + "/action/" + actionId);
+    return Rx.Observable.fromPromise(axios_1.default.get(getActionRoute, config));
 };
 //=========================================================
 // CREATE ROUTES
 //=========================================================
-exports.createBlisApp = function (userId, blisApp) {
-    var addAppRoute = "app?userId=" + userId;
+exports.createBlisApp = function (key, userId, blisApp) {
+    var addAppRoute = makeRoute(key, "app", "userId=" + userId);
     //remove the appId property from the object
     var appId = blisApp.appId, appToSend = tslib_1.__rest(blisApp, ["appId"]);
-    return Rx.Observable.fromPromise(axios_1.default.post(rootUrl.concat(addAppRoute), appToSend, config));
+    return Rx.Observable.fromPromise(axios_1.default.post(addAppRoute, appToSend, config));
 };
-exports.createBlisEntity = function (entity, appId) {
-    var addEntityRoute = "app/" + appId + "/entity";
+exports.createBlisEntity = function (key, entity, appId) {
+    var addEntityRoute = makeRoute(key, "app/" + appId + "/entity");
     //remove property from the object that the route will not accept
     var version = entity.version, packageCreationId = entity.packageCreationId, packageDeletionId = entity.packageDeletionId, entityId = entity.entityId, entityToSend = tslib_1.__rest(entity, ["version", "packageCreationId", "packageDeletionId", "entityId"]);
-    return Rx.Observable.fromPromise(axios_1.default.post(rootUrl.concat(addEntityRoute), entityToSend, config));
+    return Rx.Observable.fromPromise(axios_1.default.post(addEntityRoute, entityToSend, config));
 };
-exports.createBlisAction = function (action, appId) {
-    var addActionRoute = "app/" + appId + "/action";
+exports.createBlisAction = function (key, action, appId) {
+    var addActionRoute = _this.makeRoute(key, "app/" + appId + "/action");
     //remove property from the object that the route will not accept
     var actionId = action.actionId, version = action.version, packageCreationId = action.packageCreationId, packageDeletionId = action.packageDeletionId, actionToSend = tslib_1.__rest(action, ["actionId", "version", "packageCreationId", "packageDeletionId"]);
-    return Rx.Observable.fromPromise(axios_1.default.post(rootUrl.concat(addActionRoute), actionToSend, config));
+    return Rx.Observable.fromPromise(axios_1.default.post(addActionRoute, actionToSend, config));
 };
 //=========================================================
 // DELETE ROUTES
 //=========================================================
-exports.deleteBlisApp = function (blisAppId, blisApp) {
-    var deleteAppRoute = "app/" + blisAppId; //takes an app in the body
+exports.deleteBlisApp = function (key, blisAppId, blisApp) {
+    var deleteAppRoute = makeRoute(key, "app/" + blisAppId); //takes an app in the body
     var appId = blisApp.appId, latestPackageId = blisApp.latestPackageId, metadata = blisApp.metadata, trainingRequired = blisApp.trainingRequired, trainingStatus = blisApp.trainingStatus, trainingFailureMessage = blisApp.trainingFailureMessage, appToSend = tslib_1.__rest(blisApp, ["appId", "latestPackageId", "metadata", "trainingRequired", "trainingStatus", "trainingFailureMessage"]);
     var configWithBody = tslib_1.__assign({}, config, { body: appToSend });
-    return Rx.Observable.fromPromise(axios_1.default.delete(rootUrl.concat(deleteAppRoute), configWithBody));
+    return Rx.Observable.fromPromise(axios_1.default.delete(deleteAppRoute, configWithBody));
 };
-exports.deleteBlisEntity = function (appId, entity) {
-    var deleteEntityRoute = "app/" + appId + "/entity/" + entity.entityId;
+exports.deleteBlisEntity = function (key, appId, entity) {
+    var deleteEntityRoute = makeRoute(key, "app/" + appId + "/entity");
     var version = entity.version, packageCreationId = entity.packageCreationId, packageDeletionId = entity.packageDeletionId, entityId = entity.entityId, entityToSend = tslib_1.__rest(entity, ["version", "packageCreationId", "packageDeletionId", "entityId"]);
     var configWithBody = tslib_1.__assign({}, config, { body: entityToSend });
-    return Rx.Observable.fromPromise(axios_1.default.delete(rootUrl.concat(deleteEntityRoute), configWithBody));
+    return Rx.Observable.fromPromise(axios_1.default.delete(deleteEntityRoute, configWithBody));
 };
-exports.deleteBlisAction = function (appId, blisActionId, action) {
-    var deleteActionRoute = "app/" + appId + "/action/" + blisActionId;
+exports.deleteBlisAction = function (key, appId, blisActionId, action) {
+    var deleteActionRoute = makeRoute(key, "app/" + appId + "/action/" + blisActionId);
     var actionId = action.actionId, version = action.version, packageCreationId = action.packageCreationId, packageDeletionId = action.packageDeletionId, actionToSend = tslib_1.__rest(action, ["actionId", "version", "packageCreationId", "packageDeletionId"]);
     var configWithBody = tslib_1.__assign({}, config, { body: actionToSend });
-    return Rx.Observable.fromPromise(axios_1.default.delete(rootUrl.concat(deleteActionRoute), configWithBody));
+    return Rx.Observable.fromPromise(axios_1.default.delete(deleteActionRoute, configWithBody));
 };
 //=========================================================
 // EDIT ROUTES
 //=========================================================
-exports.editBlisApp = function (blisAppId, blisApp) {
-    var editAppRoute = "app/" + blisAppId;
+exports.editBlisApp = function (key, blisAppId, blisApp) {
+    var editAppRoute = makeRoute(key, "app/" + blisAppId);
     var appId = blisApp.appId, latestPackageId = blisApp.latestPackageId, metadata = blisApp.metadata, trainingRequired = blisApp.trainingRequired, trainingStatus = blisApp.trainingStatus, trainingFailureMessage = blisApp.trainingFailureMessage, appToSend = tslib_1.__rest(blisApp, ["appId", "latestPackageId", "metadata", "trainingRequired", "trainingStatus", "trainingFailureMessage"]);
-    return Rx.Observable.fromPromise(axios_1.default.put(rootUrl.concat(editAppRoute), appToSend, config));
+    return Rx.Observable.fromPromise(axios_1.default.put(editAppRoute, appToSend, config));
 };
-exports.editBlisAction = function (appId, blisActionId, action) {
-    var editActionRoute = "app/" + appId + "/action/" + blisActionId;
+exports.editBlisAction = function (key, appId, blisActionId, action) {
+    var editActionRoute = makeRoute(key, "app/" + appId + "/action/" + blisActionId);
     var actionId = action.actionId, version = action.version, packageCreationId = action.packageCreationId, packageDeletionId = action.packageDeletionId, actionToSend = tslib_1.__rest(action, ["actionId", "version", "packageCreationId", "packageDeletionId"]);
-    return Rx.Observable.fromPromise(axios_1.default.put(rootUrl.concat(editActionRoute), actionToSend, config));
+    return Rx.Observable.fromPromise(axios_1.default.put(editActionRoute, actionToSend, config));
+};
+exports.editBlisEntity = function (key, appId, entity) {
+    var editActionRoute = makeRoute(key, "app/" + appId + "/entity/" + entity.entityId);
+    var version = entity.version, packageCreationId = entity.packageCreationId, packageDeletionId = entity.packageDeletionId, entityToSend = tslib_1.__rest(entity, ["version", "packageCreationId", "packageDeletionId"]);
+    return Rx.Observable.fromPromise(axios_1.default.put(editActionRoute, entityToSend, config));
 };
 //========================================================
 // SESSION ROUTES
 //========================================================
 /** START SESSION : Creates a new session and a corresponding logDialog */
-exports.createSession = function (appId, key) {
-    var addAppRoute = "app/" + appId + "/session?key=" + key;
-    return Rx.Observable.fromPromise(axios_1.default.post(rootUrl.concat(addAppRoute), config));
+exports.createSession = function (key, appId) {
+    var addAppRoute = makeRoute(key, "app/" + appId + "/session");
+    return Rx.Observable.fromPromise(axios_1.default.post(addAppRoute, config));
 };
 /** GET SESSION : Retrieves information about the specified session */
-exports.getSession = function (appId, sessionId) {
-    var getAppRoute = "app/" + appId + "/session/" + sessionId;
-    return Rx.Observable.fromPromise(axios_1.default.get(rootUrl.concat(getAppRoute), config));
+exports.getSession = function (key, appId, sessionId) {
+    var getAppRoute = makeRoute(key, "app/" + appId + "/session/" + sessionId);
+    return Rx.Observable.fromPromise(axios_1.default.get(getAppRoute, config));
 };
 /** END SESSION : End a session. */
-exports.deleteSession = function (appId, sessionId, key) {
-    var deleteAppRoute = "app/" + appId + "/session/" + sessionId;
-    return Rx.Observable.fromPromise(axios_1.default.delete(rootUrl.concat(deleteAppRoute)));
+exports.deleteSession = function (key, appId, sessionId) {
+    var deleteAppRoute = makeRoute(key, "app/" + appId + "/session/" + sessionId);
+    return Rx.Observable.fromPromise(axios_1.default.delete(deleteAppRoute));
 };
 /** GET SESSIONS : Retrieves definitions of ALL open sessions */
-exports.getSessions = function (appId) {
-    var getAppRoute = "app/" + appId + "/sessions";
-    return Rx.Observable.fromPromise(axios_1.default.get(rootUrl.concat(getAppRoute), config));
+exports.getSessions = function (key, appId) {
+    var getAppRoute = makeRoute(key, "app/" + appId + "/sessions");
+    return Rx.Observable.fromPromise(axios_1.default.get(getAppRoute, config));
 };
 /** GET SESSION IDS : Retrieves a list of session IDs */
-exports.getSessionIds = function (appId) {
-    var getAppRoute = "app/" + appId + "/session";
-    return Rx.Observable.fromPromise(axios_1.default.get(rootUrl.concat(getAppRoute), config));
+exports.getSessionIds = function (key, appId) {
+    var getAppRoute = makeRoute(key, "app/" + appId + "/session");
+    return Rx.Observable.fromPromise(axios_1.default.get(getAppRoute, config));
 };
 //========================================================
 // Teach
 //========================================================
 /** START TEACH SESSION: Creates a new teaching session and a corresponding trainDialog */
-exports.createTeach = function (appId, key) {
-    var addAppRoute = "app/" + appId + "/teach?key=" + key;
-    return Rx.Observable.fromPromise(axios_1.default.post(rootUrl.concat(addAppRoute), config));
+exports.createTeach = function (key, appId) {
+    var addAppRoute = makeRoute(key, "app/" + appId + "/teach");
+    return Rx.Observable.fromPromise(axios_1.default.post(addAppRoute, config));
 };
 /** GET TEACH: Retrieves information about the specified teach */
-exports.getTeach = function (appId, teachId) {
-    var getAppRoute = "app/" + appId + "/teach/" + teachId;
-    return Rx.Observable.fromPromise(axios_1.default.get(rootUrl.concat(getAppRoute), config));
+exports.getTeach = function (key, appId, teachId) {
+    var getAppRoute = makeRoute(key, "app/" + appId + "/teach/" + teachId);
+    return Rx.Observable.fromPromise(axios_1.default.get(getAppRoute, config));
 };
 /** RUN EXTRACTOR: Runs entity extraction (prediction).
  * If a more recent version of the package is available on
  * the server, the session will first migrate to that newer version.  This
  * doesn't affect the trainDialog maintained.
  */
-exports.putExtract = function (appId, teachId, userInput) {
-    var editAppRoute = "app/" + appId + "/teach/" + teachId + "/extractor";
-    return Rx.Observable.fromPromise(axios_1.default.put(rootUrl.concat(editAppRoute), userInput, config));
+exports.putExtract = function (key, appId, teachId, userInput) {
+    var editAppRoute = makeRoute(key, "app/" + appId + "/teach/" + teachId + "/extractor");
+    return Rx.Observable.fromPromise(axios_1.default.put(editAppRoute, userInput, config));
 };
 /** EXTRACTION FEEDBACK: Uploads a labeled entity extraction instance
  * ie "commits" an entity extraction label, appending it to the teach session's
  * trainDialog, and advancing the dialog. This may yield produce a new package.
  */
-exports.postExtraction = function (appId, teachId, trainExtractorStep, key) {
-    var addAppRoute = "app/" + appId + "/teach/" + teachId + "/extractor";
-    return Rx.Observable.fromPromise(axios_1.default.post(rootUrl.concat(addAppRoute), trainExtractorStep, config));
+exports.postExtraction = function (key, appId, teachId, trainExtractorStep) {
+    var addAppRoute = makeRoute(key, "app/" + appId + "/teach/" + teachId + "/extractor");
+    return Rx.Observable.fromPromise(axios_1.default.post(addAppRoute, trainExtractorStep, config));
 };
 /** RUN SCORER: Takes a turn and return distribution over actions.
  * If a more recent version of the package is
  * available on the server, the session will first migrate to that newer version.
  * This doesn't affect the trainDialog maintained by the teaching session.
  */
-exports.putScore = function (appId, teachId, extractResponse, key) {
-    var editAppRoute = "app/" + appId + "/teach/" + teachId + "/scorer?key=" + key;
-    return Rx.Observable.fromPromise(axios_1.default.put(rootUrl.concat(editAppRoute), extractResponse, config));
+exports.putScore = function (key, appId, teachId, extractResponse) {
+    var editAppRoute = makeRoute(key, "app/" + appId + "/teach/" + teachId + "/scorer");
+    return Rx.Observable.fromPromise(axios_1.default.put(editAppRoute, extractResponse, config));
 };
 /** SCORE FEEDBACK: Uploads a labeled scorer step instance
  * – ie "commits" a scorer label, appending it to the teach session's
  * trainDialog, and advancing the dialog. This may yield produce a new package.
  */
-exports.postScore = function (appId, teachId, trainScorerStep, key) {
-    var addAppRoute = "app/" + appId + "/teach/" + teachId + "/scorer?key=" + key;
-    return Rx.Observable.fromPromise(axios_1.default.post(rootUrl.concat(addAppRoute), trainScorerStep, config));
+exports.postScore = function (key, appId, teachId, trainScorerStep) {
+    var addAppRoute = makeRoute(key, "app/" + appId + "/teach/" + teachId + "/scorer");
+    return Rx.Observable.fromPromise(axios_1.default.post(addAppRoute, trainScorerStep, config));
 };
 /** END TEACH: Ends a teach.
  * For Teach sessions, does NOT delete the associated trainDialog.
  * To delete the associated trainDialog, call DELETE on the trainDialog.
  */
-exports.deleteTeach = function (appId, teachId, key) {
-    var deleteAppRoute = "app/" + appId + "/teach/" + teachId + "?key=" + key;
+exports.deleteTeach = function (key, appId, teachId) {
+    var deleteAppRoute = "app/" + appId + "/teach/" + teachId;
     return Rx.Observable.fromPromise(axios_1.default.delete(rootUrl.concat(deleteAppRoute)));
 };
 /** GET TEACH SESSIONS: Retrieves definitions of ALL open teach sessions */
-exports.getTeaches = function (appId) {
-    var getAppRoute = "app/" + appId + "/teaches";
-    return Rx.Observable.fromPromise(axios_1.default.get(rootUrl.concat(getAppRoute), config));
+exports.getTeaches = function (key, appId) {
+    var getAppRoute = makeRoute(key, "app/" + appId + "/teaches");
+    return Rx.Observable.fromPromise(axios_1.default.get(getAppRoute, config));
 };
 /** GET TEACH SESSION IDS: Retrieves a list of teach session IDs */
-exports.getTeachIds = function (appId) {
-    var getAppRoute = "app/" + appId + "/teach";
-    return Rx.Observable.fromPromise(axios_1.default.get(rootUrl.concat(getAppRoute), config));
+exports.getTeachIds = function (key, appId) {
+    var getAppRoute = makeRoute(key, "app/" + appId + "/teach");
+    return Rx.Observable.fromPromise(axios_1.default.get(getAppRoute, config));
 };
 
 
@@ -8382,7 +8423,7 @@ exports.keyframes = keyframes;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
+var tslib_1 = __webpack_require__(1);
 tslib_1.__exportStar(__webpack_require__(195), exports);
 tslib_1.__exportStar(__webpack_require__(422), exports);
 tslib_1.__exportStar(__webpack_require__(196), exports);
@@ -8404,8 +8445,8 @@ tslib_1.__exportStar(__webpack_require__(426), exports);
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var json_typescript_mapper_1 = __webpack_require__(35);
+var tslib_1 = __webpack_require__(1);
+var json_typescript_mapper_1 = __webpack_require__(36);
 var Metrics = (function () {
     function Metrics(init) {
         this.wallTime = undefined;
@@ -8576,7 +8617,7 @@ var CheckboxVisibility;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 /* tslint:disable:no-unused-variable */
-var React = __webpack_require__(1);
+var React = __webpack_require__(2);
 /* tslint:enable:no-unused-variable */
 var Utilities_1 = __webpack_require__(3);
 var stylesImport = __webpack_require__(561);
@@ -10506,36 +10547,40 @@ exports.isNumeric = isNumeric;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteBLISApplication = function (GUID, blisApp) {
+exports.deleteBLISApplication = function (key, GUID, blisApp) {
     //needs to make a call to an Epic to send data to BLIS
     return {
         type: 'DELETE_BLIS_APPLICATION',
+        key: key,
         blisAppGUID: GUID,
         blisApp: blisApp
     };
 };
-exports.deleteEntity = function (GUID, entity, currentAppId) {
+exports.deleteEntity = function (key, GUID, entity, currentAppId) {
     //needs to make a call to an Epic to send data to BLIS
     return {
         type: 'DELETE_ENTITY',
+        key: key,
         entityGUID: GUID,
         entity: entity,
         currentAppId: currentAppId
     };
 };
-exports.deleteAction = function (GUID, action, currentAppId) {
+exports.deleteAction = function (key, GUID, action, currentAppId) {
     //needs to make a call to an Epic to send data to BLIS
     return {
         type: 'DELETE_ACTION',
+        key: key,
         actionGUID: GUID,
         action: action,
         currentAppId: currentAppId
     };
 };
-exports.deleteTrainDialog = function (GUID) {
+exports.deleteTrainDialog = function (key, GUID) {
     //needs to make a call to an Epic to send data to BLIS
     return {
         type: 'DELETE_TRAIN_DIALOG',
+        key: key,
         trainDialogGUID: GUID
     };
 };
@@ -10548,7 +10593,7 @@ exports.deleteTrainDialog = function (GUID) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var React = __webpack_require__(1);
+var React = __webpack_require__(2);
 var Modal_1 = __webpack_require__(48);
 var office_ui_fabric_react_1 = __webpack_require__(32);
 var ConfirmDeleteModal = function (props) {
@@ -11109,8 +11154,8 @@ module.exports = defaults;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var json_typescript_mapper_1 = __webpack_require__(35);
+var tslib_1 = __webpack_require__(1);
+var json_typescript_mapper_1 = __webpack_require__(36);
 var Metrics_1 = __webpack_require__(87);
 var Action_1 = __webpack_require__(195);
 var ScoreInput = (function () {
@@ -11722,8 +11767,8 @@ exports.getStyles = Utilities_1.memoizeFunction(function (theme, customStyles, f
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var BaseButton_1 = __webpack_require__(57);
 var Utilities_1 = __webpack_require__(3);
 var Styling_1 = __webpack_require__(11);
@@ -11851,9 +11896,9 @@ module.exports = styles;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
+var tslib_1 = __webpack_require__(1);
 /* tslint:disable:no-unused-variable */
-var React = __webpack_require__(1);
+var React = __webpack_require__(2);
 /* tslint:enable:no-unused-variable */
 var Utilities_1 = __webpack_require__(3);
 var Check_1 = __webpack_require__(211);
@@ -11984,9 +12029,9 @@ var ExpandingCardMode;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
+var tslib_1 = __webpack_require__(1);
 /* tslint:disable:no-unused-variable */
-var React = __webpack_require__(1);
+var React = __webpack_require__(2);
 var ReactDOM = __webpack_require__(65);
 /* tslint:enable:no-unused-variable */
 var Fabric_1 = __webpack_require__(212);
@@ -12201,8 +12246,8 @@ var TooltipDelay;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var Utilities_1 = __webpack_require__(3);
 var SELECTION_FORWARD = 'forward';
 var SELECTION_BACKWARD = 'backward';
@@ -12404,8 +12449,8 @@ exports.BaseAutoFill = BaseAutoFill;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var Utilities_1 = __webpack_require__(3);
 var FocusZone_1 = __webpack_require__(19);
 var Callout_1 = __webpack_require__(37);
@@ -15040,7 +15085,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_warning___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_warning__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_invariant__ = __webpack_require__(70);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_invariant___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_invariant__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_react__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_react__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_prop_types__ = __webpack_require__(25);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_prop_types___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_prop_types__);
@@ -16340,10 +16385,10 @@ var ZipBufferIterator = (function (_super) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var createActions_1 = __webpack_require__(47);
-var updateActions_1 = __webpack_require__(36);
+var updateActions_1 = __webpack_require__(35);
 var redux_1 = __webpack_require__(20);
 var react_redux_1 = __webpack_require__(22);
 var Modal_1 = __webpack_require__(48);
@@ -16414,10 +16459,10 @@ var EntityCreatorEditor = (function (_super) {
         });
         if (this.state.editing === false) {
             if (meta.isReversable === true) {
-                this.props.createReversibleEntity(entityToAdd, currentAppId);
+                this.props.createReversibleEntity(this.props.userKey, entityToAdd, currentAppId);
             }
             else {
-                this.props.createEntity(entityToAdd, currentAppId);
+                this.props.createEntity(this.props.userKey, entityToAdd, currentAppId);
             }
         }
         else {
@@ -16434,7 +16479,7 @@ var EntityCreatorEditor = (function (_super) {
     };
     EntityCreatorEditor.prototype.editEntity = function (ent) {
         ent.entityId = this.props.entity.entityId;
-        this.props.editEntity(ent);
+        this.props.editEntity(this.props.userKey, ent);
     };
     EntityCreatorEditor.prototype.nameChanged = function (text) {
         this.setState({
@@ -16512,6 +16557,7 @@ var mapDispatchToProps = function (dispatch) {
 };
 var mapStateToProps = function (state, ownProps) {
     return {
+        userKey: state.user.key,
         entities: state.entities,
         blisApps: state.apps
     };
@@ -16525,12 +16571,10 @@ exports.default = react_redux_1.connect(mapStateToProps, mapDispatchToProps)(Ent
 
 "use strict";
 
-function __export(m) {
-    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
-}
 Object.defineProperty(exports, "__esModule", { value: true });
-__export(__webpack_require__(372));
-__export(__webpack_require__(371));
+var tslib_1 = __webpack_require__(1);
+tslib_1.__exportStar(__webpack_require__(372), exports);
+tslib_1.__exportStar(__webpack_require__(371), exports);
 
 
 /***/ }),
@@ -17115,8 +17159,8 @@ exports.Async = Async;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var Async_1 = __webpack_require__(181);
 var EventGroup_1 = __webpack_require__(119);
 var warn_1 = __webpack_require__(188);
@@ -18100,8 +18144,8 @@ module.exports = function bind(fn, thisArg) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var json_typescript_mapper_1 = __webpack_require__(35);
+var tslib_1 = __webpack_require__(1);
+var json_typescript_mapper_1 = __webpack_require__(36);
 exports.ActionTypes = {
     TEXT: "TEXT",
     API_LOCAL: "API_LOCAL",
@@ -18211,8 +18255,8 @@ exports.ActionIdList = ActionIdList;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var json_typescript_mapper_1 = __webpack_require__(35);
+var tslib_1 = __webpack_require__(1);
+var json_typescript_mapper_1 = __webpack_require__(36);
 var EntityMetaData = (function () {
     function EntityMetaData(init) {
         this.isBucket = false;
@@ -18319,8 +18363,8 @@ exports.EntityIdList = EntityIdList;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var json_typescript_mapper_1 = __webpack_require__(35);
+var tslib_1 = __webpack_require__(1);
+var json_typescript_mapper_1 = __webpack_require__(36);
 var TrainDialog_1 = __webpack_require__(198);
 var Entity_1 = __webpack_require__(196);
 var Metrics_1 = __webpack_require__(87);
@@ -18380,8 +18424,8 @@ exports.ExtractResponse = ExtractResponse;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var json_typescript_mapper_1 = __webpack_require__(35);
+var tslib_1 = __webpack_require__(1);
+var json_typescript_mapper_1 = __webpack_require__(36);
 var Score_1 = __webpack_require__(122);
 var LabeledEntity = (function () {
     function LabeledEntity(init) {
@@ -20266,8 +20310,8 @@ var ButtonType;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var BaseButton_1 = __webpack_require__(57);
 var Utilities_1 = __webpack_require__(3);
 var Styling_1 = __webpack_require__(11);
@@ -20302,8 +20346,8 @@ exports.CommandButton = CommandButton;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var BaseButton_1 = __webpack_require__(57);
 var Utilities_1 = __webpack_require__(3);
 var Styling_1 = __webpack_require__(11);
@@ -20338,8 +20382,8 @@ exports.CompoundButton = CompoundButton;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var BaseButton_1 = __webpack_require__(57);
 var Utilities_1 = __webpack_require__(3);
 var Styling_1 = __webpack_require__(11);
@@ -20374,8 +20418,8 @@ exports.DefaultButton = DefaultButton;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var Utilities_1 = __webpack_require__(3);
 var Styling_1 = __webpack_require__(11);
 var BaseButton_1 = __webpack_require__(57);
@@ -20441,8 +20485,8 @@ var ContextualMenuItemType;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var ReactDOM = __webpack_require__(65);
 var Utilities_1 = __webpack_require__(3);
 var DetailsList_Props_1 = __webpack_require__(93);
@@ -20692,8 +20736,8 @@ module.exports = styles;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var Utilities_1 = __webpack_require__(3);
 var DialogContent_Props_1 = __webpack_require__(139);
 var Button_1 = __webpack_require__(23);
@@ -20776,8 +20820,8 @@ exports.DialogContent = DialogContent;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var Utilities_1 = __webpack_require__(3);
 var stylesImport = __webpack_require__(138);
 var styles = stylesImport;
@@ -20932,9 +20976,9 @@ module.exports = styles;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
+var tslib_1 = __webpack_require__(1);
 /* tslint:disable:no-unused-variable */
-var React = __webpack_require__(1);
+var React = __webpack_require__(2);
 /* tslint:enable:no-unused-variable */
 var Utilities_1 = __webpack_require__(3);
 var ExpandingCard_Props_1 = __webpack_require__(141);
@@ -21128,9 +21172,9 @@ var ImageLoadState;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
+var tslib_1 = __webpack_require__(1);
 /* tslint:disable:no-unused-variable */
-var React = __webpack_require__(1);
+var React = __webpack_require__(2);
 /* tslint:enable:no-unused-variable */
 var Utilities_1 = __webpack_require__(3);
 var Image_Props_1 = __webpack_require__(236);
@@ -21530,8 +21574,8 @@ var _a, _b, _c;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var Utilities_1 = __webpack_require__(3);
 var PivotItem = (function (_super) {
     tslib_1.__extends(PivotItem, _super);
@@ -21671,9 +21715,9 @@ module.exports = styles;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
+var tslib_1 = __webpack_require__(1);
 /* tslint:disable:no-unused-variable */
-var React = __webpack_require__(1);
+var React = __webpack_require__(2);
 /* tslint:enable:no-unused-variable */
 var Utilities_1 = __webpack_require__(3);
 var Button_1 = __webpack_require__(23);
@@ -21748,9 +21792,9 @@ exports.TeachingBubbleContent = TeachingBubbleContent;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
+var tslib_1 = __webpack_require__(1);
 /* tslint:disable:no-unused-variable */
-var React = __webpack_require__(1);
+var React = __webpack_require__(2);
 /* tslint:enable:no-unused-variable */
 var Utilities_1 = __webpack_require__(3);
 var Tooltip_Props_1 = __webpack_require__(145);
@@ -21838,8 +21882,8 @@ module.exports = styles;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var Utilities_1 = __webpack_require__(3);
 var Button_1 = __webpack_require__(23);
 var Spinner_1 = __webpack_require__(129);
@@ -22043,7 +22087,7 @@ exports.SuggestionsController = SuggestionsController;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 /* tslint:disable */
-var React = __webpack_require__(1);
+var React = __webpack_require__(2);
 /* tslint:enable */
 var Utilities_1 = __webpack_require__(3);
 var Icon_1 = __webpack_require__(14);
@@ -22085,7 +22129,7 @@ module.exports = styles;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
+var tslib_1 = __webpack_require__(1);
 var Utilities_1 = __webpack_require__(3);
 var BaseDecorator = (function (_super) {
     tslib_1.__extends(BaseDecorator, _super);
@@ -25651,7 +25695,7 @@ module.exports = traverseAllChildren;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_hoist_non_react_statics___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_hoist_non_react_statics__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_invariant__ = __webpack_require__(70);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_invariant___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_invariant__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_react__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_react__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__utils_Subscription__ = __webpack_require__(741);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__utils_PropTypes__ = __webpack_require__(286);
@@ -26053,7 +26097,7 @@ function verifyPlainObject(value, displayName, methodName) {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types__ = __webpack_require__(25);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_prop_types__);
@@ -26158,7 +26202,7 @@ Link.contextTypes = {
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_warning__ = __webpack_require__(54);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_warning___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_warning__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_prop_types__ = __webpack_require__(25);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_prop_types___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_prop_types__);
@@ -30166,8 +30210,8 @@ exports.clearImmediate = clearImmediate;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var react_router_dom_1 = __webpack_require__(167);
 var BLISAppsHomepage_1 = __webpack_require__(349);
 var Header_1 = __webpack_require__(340);
@@ -30243,8 +30287,8 @@ exports.isArrayOrArrayClass = isArrayOrArrayClass;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var Webchat_1 = __webpack_require__(355);
 var WebchatMetadata_1 = __webpack_require__(356);
 var Emulator = (function (_super) {
@@ -30284,7 +30328,7 @@ exports.default = Emulator;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var React = __webpack_require__(1);
+var React = __webpack_require__(2);
 var EntityTile = function (props) {
     return (React.createElement("div", { className: 'ms-ListItem is-selectable' },
         React.createElement("span", { className: 'ms-ListItem-primaryText' }, props.item.entityName)));
@@ -30299,9 +30343,10 @@ exports.default = EntityTile;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
-var updateActions_1 = __webpack_require__(36);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
+var updateActions_1 = __webpack_require__(35);
+var UserLogin_1 = __webpack_require__(354);
 var react_router_dom_1 = __webpack_require__(167);
 var react_redux_1 = __webpack_require__(22);
 var redux_1 = __webpack_require__(20);
@@ -30360,6 +30405,8 @@ var Header = (function (_super) {
         var _this = this;
         var displayName = this.props.userName ? this.props.userName : "BLIS";
         return (React.createElement("div", { className: 'header' },
+            React.createElement("div", { className: "myAppsHeaderContentBlock myAppsButtonsDiv" },
+                React.createElement(UserLogin_1.default, null)),
             React.createElement("div", { className: 'headerListDiv' },
                 React.createElement("div", { className: this.state.myAppsClass },
                     React.createElement("span", { className: "ms-font-m-plus ms-fontColor-themePrimary" },
@@ -30380,18 +30427,15 @@ var Header = (function (_super) {
             React.createElement("div", { className: 'headerTitleDiv' },
                 React.createElement("div", { className: 'headerTitle' },
                     React.createElement("span", { className: "ms-font-xl ms-fontColor-themePrimary" },
-                        React.createElement(react_router_dom_1.Link, { onClick: function () {
-                                _this.props.setBLISAppDisplay("Home");
-                                _this.props.setWebchatDisplay(false);
-                                _this.tabSelected('myApps');
-                            }, className: 'headerLink', to: "/" }, displayName))))));
+                        React.createElement(react_router_dom_1.Link, { onClick: function () { return _this.props.setLoginDisplay(true); }, className: 'headerLink', to: "/" }, displayName))))));
     };
     return Header;
 }(React.Component));
 var mapDispatchToProps = function (dispatch) {
     return redux_1.bindActionCreators({
         setBLISAppDisplay: updateActions_1.setBLISAppDisplay,
-        setWebchatDisplay: updateActions_1.setWebchatDisplay
+        setWebchatDisplay: updateActions_1.setWebchatDisplay,
+        setLoginDisplay: updateActions_1.setLoginDisplay,
     }, dispatch);
 };
 var mapStateToProps = function (state) {
@@ -30409,8 +30453,8 @@ exports.default = react_redux_1.connect(mapStateToProps, mapDispatchToProps)(Hea
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var About = (function (_super) {
     tslib_1.__extends(About, _super);
     function About(p) {
@@ -30432,8 +30476,8 @@ exports.default = About;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var Docs = (function (_super) {
     tslib_1.__extends(Docs, _super);
     function Docs(p) {
@@ -30455,8 +30499,8 @@ exports.default = Docs;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var Support = (function (_super) {
     tslib_1.__extends(Support, _super);
     function Support(p) {
@@ -30478,10 +30522,10 @@ exports.default = Support;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var createActions_1 = __webpack_require__(47);
-var updateActions_1 = __webpack_require__(36);
+var updateActions_1 = __webpack_require__(35);
 var redux_1 = __webpack_require__(20);
 var react_redux_1 = __webpack_require__(22);
 var Modal_1 = __webpack_require__(48);
@@ -30650,7 +30694,7 @@ var ActionResponseCreatorEditor = (function (_super) {
             packageDeletionId: null
         });
         if (this.state.editing === false) {
-            this.props.createAction(actionToAdd, currentAppId);
+            this.props.createAction(this.props.userkey, actionToAdd, currentAppId);
         }
         else {
             this.editAction(actionToAdd, currentAppId);
@@ -30660,7 +30704,7 @@ var ActionResponseCreatorEditor = (function (_super) {
     };
     ActionResponseCreatorEditor.prototype.editAction = function (actionToAdd, currentAppId) {
         actionToAdd.actionId = this.props.blisAction.actionId;
-        this.props.editAction(actionToAdd, currentAppId);
+        this.props.editAction(this.props.userKey, actionToAdd, currentAppId);
     };
     ActionResponseCreatorEditor.prototype.waitChanged = function () {
         this.setState({
@@ -30771,6 +30815,7 @@ var mapDispatchToProps = function (dispatch) {
 };
 var mapStateToProps = function (state, ownProps) {
     return {
+        userKey: state.user.key,
         actions: state.actions,
         blisApps: state.apps,
         entities: state.entities
@@ -30786,8 +30831,8 @@ exports.default = react_redux_1.connect(mapStateToProps, mapDispatchToProps)(Act
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var redux_1 = __webpack_require__(20);
 var react_redux_1 = __webpack_require__(22);
 var TrainingGroundArenaHeader_1 = __webpack_require__(67);
@@ -30867,7 +30912,7 @@ var ActionResponsesHomepage = (function (_super) {
         var _this = this;
         var currentAppId = this.props.apps.current.appId;
         var actionToDelete = this.props.actions.find(function (a) { return a.actionId == _this.state.actionIDToDelete; });
-        this.props.deleteAction(this.state.actionIDToDelete, actionToDelete, currentAppId);
+        this.props.deleteAction(this.props.userKey, this.state.actionIDToDelete, actionToDelete, currentAppId);
         this.setState({
             confirmDeleteActionModalOpen: false,
             actionIDToDelete: null
@@ -30997,6 +31042,7 @@ var mapDispatchToProps = function (dispatch) {
 };
 var mapStateToProps = function (state) {
     return {
+        userKey: state.user.key,
         actions: state.actions,
         entities: state.entities,
         apps: state.apps
@@ -31012,8 +31058,8 @@ exports.default = react_redux_1.connect(mapStateToProps, mapDispatchToProps)(Act
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var react_redux_1 = __webpack_require__(22);
 var TrainingGroundArenaHeader_1 = __webpack_require__(67);
 var AppDashboard = (function (_super) {
@@ -31044,9 +31090,9 @@ exports.default = react_redux_1.connect(mapStateToProps, null)(AppDashboard);
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
-var updateActions_1 = __webpack_require__(36);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
+var updateActions_1 = __webpack_require__(35);
 var redux_1 = __webpack_require__(20);
 var react_redux_1 = __webpack_require__(22);
 var TrainingGroundArenaHeader_1 = __webpack_require__(67);
@@ -31158,7 +31204,7 @@ var AppSettings = (function (_super) {
             locale: current.locale,
             metadata: meta
         });
-        this.props.editBLISApplication(appToAdd);
+        this.props.editBLISApplication(this.props.userKey, appToAdd);
         this.setState({
             localeVal: current.locale,
             appIdVal: current.appId,
@@ -31201,6 +31247,7 @@ var mapDispatchToProps = function (dispatch) {
 };
 var mapStateToProps = function (state) {
     return {
+        userKey: state.user.key,
         blisApps: state.apps
     };
 };
@@ -31214,15 +31261,15 @@ exports.default = react_redux_1.connect(mapStateToProps, mapDispatchToProps)(App
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var axios_1 = __webpack_require__(189);
 var createActions_1 = __webpack_require__(47);
 var redux_1 = __webpack_require__(20);
 var react_redux_1 = __webpack_require__(22);
 var Modal_1 = __webpack_require__(48);
 var office_ui_fabric_react_1 = __webpack_require__(32);
-var updateActions_1 = __webpack_require__(36);
+var updateActions_1 = __webpack_require__(35);
 var fetchActions_1 = __webpack_require__(66);
 var blis_models_1 = __webpack_require__(86);
 var secrets_1 = __webpack_require__(370);
@@ -31303,7 +31350,7 @@ var BLISAppCreator = (function (_super) {
             locale: this.state.localeVal,
             metadata: meta
         });
-        this.props.createBLISApplication(this.props.userId, appToAdd);
+        this.props.createBLISApplication(this.props.userKey, this.props.userId, appToAdd);
         //need to empty entities, actions, and trainDialogs arrays
         this.props.emptyStateProperties();
         this.handleClose();
@@ -31338,7 +31385,8 @@ var mapDispatchToProps = function (dispatch) {
 var mapStateToProps = function (state) {
     return {
         blisApps: state.apps,
-        userId: state.user.id
+        userId: state.user.id,
+        userKey: state.user.key
     };
 };
 exports.default = react_redux_1.connect(mapStateToProps, mapDispatchToProps)(BLISAppCreator);
@@ -31351,12 +31399,11 @@ exports.default = react_redux_1.connect(mapStateToProps, mapDispatchToProps)(BLI
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var TrainingGround_1 = __webpack_require__(353);
 var fetchActions_1 = __webpack_require__(66);
 var BLISAppsList_1 = __webpack_require__(350);
-var UserLogin_1 = __webpack_require__(354);
 var redux_1 = __webpack_require__(20);
 var react_redux_1 = __webpack_require__(22);
 var BLISAppsHomepage = (function (_super) {
@@ -31373,16 +31420,13 @@ var BLISAppsHomepage = (function (_super) {
             this.setState({
                 displayedUserId: this.props.userId
             });
-            this.props.fetchApplications(this.props.userId);
+            this.props.fetchApplications(this.props.userKey, this.props.userId);
         }
     };
     BLISAppsHomepage.prototype.render = function () {
-        return (React.createElement("div", { className: "fluidCont" },
-            React.createElement("div", { className: "myAppsHeaderContentBlock myAppsButtonsDiv" },
-                React.createElement(UserLogin_1.default, null)),
-            this.props.display.myAppsDisplay == 'Home' ?
-                React.createElement(BLISAppsList_1.default, null)
-                : React.createElement(TrainingGround_1.default, null)));
+        return (React.createElement("div", { className: "fluidCont" }, this.props.display.myAppsDisplay == 'Home' ?
+            React.createElement(BLISAppsList_1.default, null)
+            : React.createElement(TrainingGround_1.default, null)));
     };
     return BLISAppsHomepage;
 }(React.Component));
@@ -31394,6 +31438,7 @@ var mapDispatchToProps = function (dispatch) {
 var mapStateToProps = function (state) {
     return {
         display: state.display,
+        userKey: state.user.key,
         userId: state.user.id,
         blisApps: state.apps
     };
@@ -31408,10 +31453,10 @@ exports.default = react_redux_1.connect(mapStateToProps, mapDispatchToProps)(BLI
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var fetchActions_1 = __webpack_require__(66);
-var updateActions_1 = __webpack_require__(36);
+var updateActions_1 = __webpack_require__(35);
 var deleteActions_1 = __webpack_require__(115);
 var redux_1 = __webpack_require__(20);
 var react_redux_1 = __webpack_require__(22);
@@ -31478,7 +31523,7 @@ var BLISAppsList = (function (_super) {
     BLISAppsList.prototype.deleteApp = function () {
         var _this = this;
         var blisAppToDelete = this.props.blisApps.all.find(function (app) { return app.appId == _this.state.appIDToDelete; });
-        this.props.deleteBLISApplication(this.state.appIDToDelete, blisAppToDelete);
+        this.props.deleteBLISApplication(this.props.userKey, this.state.appIDToDelete, blisAppToDelete);
         this.setState({
             confirmDeleteAppModalOpen: false,
             appIDToDelete: null,
@@ -31498,10 +31543,10 @@ var BLISAppsList = (function (_super) {
     };
     BLISAppsList.prototype.BLISAppSelected = function (appName) {
         var appSelected = this.props.blisApps.all.find(function (app) { return app.appName == appName; });
-        this.props.setCurrentBLISApp(appSelected);
-        this.props.fetchAllActions(appSelected.appId);
-        this.props.fetchAllEntities(appSelected.appId);
-        this.props.fetchAllTrainDialogs(appSelected.appId);
+        this.props.setCurrentBLISApp(this.props.userKey, appSelected);
+        this.props.fetchAllActions(this.props.userKey, appSelected.appId);
+        this.props.fetchAllEntities(this.props.userKey, appSelected.appId);
+        this.props.fetchAllTrainDialogs(this.props.userKey, appSelected.appId);
         this.props.setBLISAppDisplay("TrainingGround");
     };
     BLISAppsList.prototype.renderItemColumn = function (item, index, column) {
@@ -31549,6 +31594,7 @@ var mapDispatchToProps = function (dispatch) {
 };
 var mapStateToProps = function (state) {
     return {
+        userKey: state.user.key,
         blisApps: state.apps
     };
 };
@@ -31562,8 +31608,8 @@ exports.default = react_redux_1.connect(mapStateToProps, mapDispatchToProps)(BLI
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var redux_1 = __webpack_require__(20);
 var react_redux_1 = __webpack_require__(22);
 var TrainingGroundArenaHeader_1 = __webpack_require__(67);
@@ -31634,7 +31680,7 @@ var EntitiesList = (function (_super) {
         var _this = this;
         var currentAppId = this.props.apps.current.appId;
         var entityToDelete = this.props.entities.find(function (a) { return a.entityId == _this.state.entityIDToDelete; });
-        this.props.deleteEntity(this.state.entityIDToDelete, entityToDelete, currentAppId);
+        this.props.deleteEntity(this.props.userKey, this.state.entityIDToDelete, entityToDelete, currentAppId);
         this.setState({
             confirmDeleteEntityModalOpen: false,
             entityIDToDelete: null
@@ -31749,6 +31795,7 @@ var mapDispatchToProps = function (dispatch) {
 };
 var mapStateToProps = function (state) {
     return {
+        userKey: state.user.key,
         entities: state.entities,
         apps: state.apps,
         actions: state.actions
@@ -31764,14 +31811,14 @@ exports.default = react_redux_1.connect(mapStateToProps, mapDispatchToProps)(Ent
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var redux_1 = __webpack_require__(20);
 var react_redux_1 = __webpack_require__(22);
 var TrainingGroundArenaHeader_1 = __webpack_require__(67);
 var office_ui_fabric_react_1 = __webpack_require__(32);
 var types_1 = __webpack_require__(179);
-var updateActions_1 = __webpack_require__(36);
+var updateActions_1 = __webpack_require__(35);
 var createActions_1 = __webpack_require__(47);
 var columns = [
     {
@@ -31832,7 +31879,7 @@ var TrainDialogsList = (function (_super) {
         var dialog = new types_1.Dialog(turns);
         var trainDialog = new types_1.TrainDialog(this.generateGUID(), dialog, this.props.blisApps.current.appId);
         this.props.setWebchatDisplay(true);
-        this.props.createTrainDialog(trainDialog);
+        this.props.createTrainDialog(this.props.userKey, trainDialog);
     };
     TrainDialogsList.prototype.generateGUID = function () {
         var d = new Date().getTime();
@@ -31845,7 +31892,7 @@ var TrainDialogsList = (function (_super) {
     };
     TrainDialogsList.prototype.handleSelection = function (selected) {
         this.props.setWebchatDisplay(true);
-        this.props.setCurrentTrainDialog(selected);
+        this.props.setCurrentTrainDialog(this.props.userKey, selected);
     };
     TrainDialogsList.prototype.onChange = function (newValue) {
         var lcString = newValue.toLowerCase();
@@ -31884,6 +31931,7 @@ var mapDispatchToProps = function (dispatch) {
 };
 var mapStateToProps = function (state) {
     return {
+        userKey: state.user.key,
         blisApps: state.apps,
         trainDialogs: state.trainDialogs
     };
@@ -31898,8 +31946,8 @@ exports.default = react_redux_1.connect(mapStateToProps, mapDispatchToProps)(Tra
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var fetchActions_1 = __webpack_require__(66);
 var redux_1 = __webpack_require__(20);
 var react_redux_1 = __webpack_require__(22);
@@ -31911,7 +31959,7 @@ var AppSettings_1 = __webpack_require__(347);
 var Emulator_1 = __webpack_require__(338);
 var office_ui_fabric_react_1 = __webpack_require__(32);
 var react_router_dom_1 = __webpack_require__(167);
-var updateActions_1 = __webpack_require__(36);
+var updateActions_1 = __webpack_require__(35);
 var TrainingGround = (function (_super) {
     tslib_1.__extends(TrainingGround, _super);
     function TrainingGround(p) {
@@ -32037,32 +32085,27 @@ exports.default = react_redux_1.connect(mapStateToProps, mapDispatchToProps)(Tra
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var redux_1 = __webpack_require__(20);
 var react_redux_1 = __webpack_require__(22);
 var Modal_1 = __webpack_require__(48);
 var office_ui_fabric_react_1 = __webpack_require__(32);
-var updateActions_1 = __webpack_require__(36);
+var updateActions_1 = __webpack_require__(35);
+var updateActions_2 = __webpack_require__(35);
 var UserLogin = (function (_super) {
     tslib_1.__extends(UserLogin, _super);
     function UserLogin(p) {
         var _this = _super.call(this, p) || this;
         _this.state = {
-            open: _this.props.user.id == null,
             userName: '',
             userPassword: ''
         };
         return _this;
     }
-    UserLogin.prototype.handleOpen = function () {
-        this.setState({
-            open: true
-        });
-    };
     UserLogin.prototype.handleClose = function () {
+        this.props.setLoginDisplay(false);
         this.setState({
-            open: false,
             userName: '',
             userPassword: ''
         });
@@ -32088,27 +32131,48 @@ var UserLogin = (function (_super) {
         this.props.setUser(this.state.userName, this.state.userPassword, userId);
         this.handleClose();
     };
+    UserLogin.prototype.logout = function () {
+        this.props.setUser(null, null, null);
+    };
     UserLogin.prototype.render = function () {
-        return (React.createElement("div", null,
-            React.createElement(Modal_1.Modal, { isOpen: this.state.open, onDismiss: this.handleClose.bind(this), isBlocking: true, containerClassName: 'createModal' },
-                React.createElement("div", { className: 'modalHeader' },
-                    React.createElement("span", { className: 'ms-font-xxl ms-fontWeight-semilight' }, "Log In")),
+        var isBlocking, title, input, button = null;
+        if (this.props.user.id == null) {
+            isBlocking = true;
+            title = "Log In";
+            input =
                 React.createElement("div", null,
                     React.createElement(office_ui_fabric_react_1.TextField, { onChanged: this.nameChanged.bind(this), label: "Name", placeholder: "User Name...", value: this.state.userName }),
-                    React.createElement(office_ui_fabric_react_1.TextField, { onChanged: this.passwordChanged.bind(this), label: "Password", placeholder: "Password...", value: this.state.userPassword })),
-                React.createElement("div", { className: 'modalFooter' },
-                    React.createElement(office_ui_fabric_react_1.CommandButton, { "data-automation-id": 'randomID2', disabled: false, onClick: this.createUser.bind(this), className: 'goldButton', ariaDescription: 'Log In', text: 'Log In' })))));
+                    React.createElement(office_ui_fabric_react_1.TextField, { onChanged: this.passwordChanged.bind(this), label: "Password", placeholder: "Password...", value: this.state.userPassword }));
+            button =
+                React.createElement(office_ui_fabric_react_1.CommandButton, { "data-automation-id": 'randomID2', disabled: false, onClick: this.createUser.bind(this), className: 'goldButton', ariaDescription: 'Log In', text: 'Log In' });
+        }
+        else {
+            isBlocking = false;
+            title = "Log Out";
+            button =
+                React.createElement("div", null,
+                    React.createElement(office_ui_fabric_react_1.CommandButton, { "data-automation-id": 'randomID2', disabled: false, onClick: this.logout.bind(this), className: 'goldButton', ariaDescription: 'Log Out', text: 'Log Out' }),
+                    React.createElement(office_ui_fabric_react_1.CommandButton, { "data-automation-id": 'randomID3', className: "grayButton", disabled: false, onClick: this.handleClose.bind(this), ariaDescription: 'Cancel', text: 'Cancel' }));
+        }
+        return (React.createElement("div", null,
+            React.createElement(Modal_1.Modal, { isOpen: this.props.displayLogin, onDismiss: this.handleClose.bind(this), isBlocking: isBlocking, containerClassName: 'createModal' },
+                React.createElement("div", { className: 'modalHeader' },
+                    React.createElement("span", { className: 'ms-font-xxl ms-fontWeight-semilight' }, title)),
+                input,
+                React.createElement("div", { className: 'modalFooter' }, button))));
     };
     return UserLogin;
 }(React.Component));
 var mapDispatchToProps = function (dispatch) {
     return redux_1.bindActionCreators({
         setUser: updateActions_1.setUser,
+        setLoginDisplay: updateActions_2.setLoginDisplay
     }, dispatch);
 };
 var mapStateToProps = function (state) {
     return {
-        user: state.user
+        user: state.user,
+        displayLogin: state.display.displayLogin
     };
 };
 exports.default = react_redux_1.connect(mapStateToProps, mapDispatchToProps)(UserLogin);
@@ -32121,10 +32185,10 @@ exports.default = react_redux_1.connect(mapStateToProps, mapDispatchToProps)(Use
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var createActions_1 = __webpack_require__(47);
-var updateActions_1 = __webpack_require__(36);
+var updateActions_1 = __webpack_require__(35);
 var redux_1 = __webpack_require__(20);
 var react_redux_1 = __webpack_require__(22);
 var office_ui_fabric_react_1 = __webpack_require__(32);
@@ -32170,8 +32234,8 @@ exports.default = react_redux_1.connect(mapStateToProps, mapDispatchToProps)(Web
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var createActions_1 = __webpack_require__(47);
 var redux_1 = __webpack_require__(20);
 var react_redux_1 = __webpack_require__(22);
@@ -32212,35 +32276,35 @@ var createActions_1 = __webpack_require__(47);
 exports.createNewApplication = function (action$) {
     return action$.ofType("CREATE_BLIS_APPLICATION")
         .flatMap(function (action) {
-        return apiHelpers_1.createBlisApp(action.userId, action.blisApp)
+        return apiHelpers_1.createBlisApp(action.key, action.userId, action.blisApp)
             .map(function (response) { return createActions_1.createApplicationFulfilled(response.data); });
     });
 };
 exports.createNewEntity = function (action$) {
     return action$.ofType("CREATE_ENTITY")
         .flatMap(function (action) {
-        return apiHelpers_1.createBlisEntity(action.entity, action.currentAppId)
+        return apiHelpers_1.createBlisEntity(action.key, action.entity, action.currentAppId)
             .mapTo({ type: "CREATE_OPERATION_FULFILLED" });
     });
 };
 exports.createReversibleEntity = function (action$) {
     return action$.ofType("CREATE_REVERSIBLE_ENTITY")
         .flatMap(function (action) {
-        return apiHelpers_1.createBlisEntity(action.entity, action.currentAppId)
-            .map(function (response) { return createActions_1.createPositiveEntityFulfilled(action.entity, response.data, action.currentAppId); });
+        return apiHelpers_1.createBlisEntity(action.key, action.entity, action.currentAppId)
+            .map(function (response) { return createActions_1.createPositiveEntityFulfilled(action.key, action.entity, response.data, action.currentAppId); });
     });
 };
 exports.createNegativeEntity = function (action$) {
     return action$.ofType("CREATE_POSITIVE_ENTITY_FULFILLED")
         .flatMap(function (action) {
-        return apiHelpers_1.createBlisEntity(action.negativeEntity, action.currentAppId)
-            .map(function (response) { return createActions_1.createNegativeEntityFulfilled(action.positiveEntity, action.negativeEntity, response.data, action.currentAppId); });
+        return apiHelpers_1.createBlisEntity(action.key, action.negativeEntity, action.currentAppId)
+            .map(function (response) { return createActions_1.createNegativeEntityFulfilled(action.key, action.positiveEntity, action.negativeEntity, response.data, action.currentAppId); });
     });
 };
 exports.createNewAction = function (action$) {
     return action$.ofType("CREATE_ACTION")
         .flatMap(function (actionObject) {
-        return apiHelpers_1.createBlisAction(actionObject.action, actionObject.currentAppId)
+        return apiHelpers_1.createBlisAction(actionObject.key, actionObject.action, actionObject.currentAppId)
             .mapTo({ type: "CREATE_OPERATION_FULFILLED" });
     });
 };
@@ -32258,21 +32322,21 @@ var apiHelpers_1 = __webpack_require__(84);
 exports.deleteApplication = function (action$) {
     return action$.ofType("DELETE_BLIS_APPLICATION")
         .flatMap(function (action) {
-        return apiHelpers_1.deleteBlisApp(action.blisAppGUID, action.blisApp)
+        return apiHelpers_1.deleteBlisApp(action.key, action.blisAppGUID, action.blisApp)
             .mapTo({ type: "DELETE_OPERATION_FULFILLED" });
     });
 };
 exports.deleteEntity = function (action$) {
     return action$.ofType("DELETE_ENTITY")
         .flatMap(function (action) {
-        return apiHelpers_1.deleteBlisEntity(action.currentAppId, action.entity)
+        return apiHelpers_1.deleteBlisEntity(action.key, action.currentAppId, action.entity)
             .mapTo({ type: "DELETE_OPERATION_FULFILLED" });
     });
 };
 exports.deleteAction = function (action$) {
     return action$.ofType("DELETE_ACTION")
         .flatMap(function (actionObject) {
-        return apiHelpers_1.deleteBlisAction(actionObject.currentAppId, actionObject.actionGUID, actionObject.action)
+        return apiHelpers_1.deleteBlisAction(actionObject.key, actionObject.currentAppId, actionObject.actionGUID, actionObject.action)
             .mapTo({ type: "DELETE_OPERATION_FULFILLED" });
     });
 };
@@ -32291,21 +32355,21 @@ var fetchActions_1 = __webpack_require__(66);
 exports.fetchApplications = function (action$) {
     return action$.ofType("FETCH_APPLICATIONS")
         .flatMap(function (action) {
-        return apiHelpers_1.getAllBlisApps(action.userId)
+        return apiHelpers_1.getAllBlisApps(action.key, action.userId)
             .map(function (response) { return fetchActions_1.fetchApplicationsFulfilled(response.data.apps); });
     });
 };
 exports.fetchEntities = function (action$) {
     return action$.ofType("FETCH_ENTITIES")
         .flatMap(function (action) {
-        return apiHelpers_1.getAllEntitiesForBlisApp(action.blisAppID)
+        return apiHelpers_1.getAllEntitiesForBlisApp(action.key, action.blisAppID)
             .map(function (response) { return fetchActions_1.fetchAllEntitiesFulfilled(response.data.entities); });
     });
 };
 exports.fetchActions = function (action$) {
     return action$.ofType("FETCH_ACTIONS")
         .flatMap(function (action) {
-        return apiHelpers_1.getAllActionsForBlisApp(action.blisAppID)
+        return apiHelpers_1.getAllActionsForBlisApp(action.key, action.blisAppID)
             .map(function (response) { return fetchActions_1.fetchAllActionsFulfilled(response.data.actions); });
     });
 };
@@ -32340,21 +32404,21 @@ var apiHelpers_1 = __webpack_require__(84);
 exports.editApplication = function (action$) {
     return action$.ofType("EDIT_BLIS_APPLICATION")
         .flatMap(function (action) {
-        return apiHelpers_1.editBlisApp(action.blisApp.appId, action.blisApp)
+        return apiHelpers_1.editBlisApp(action.key, action.blisApp.appId, action.blisApp)
             .mapTo({ type: "UPDATE_OPERATION_FULFILLED" });
     });
 };
 exports.editAction = function (action$) {
     return action$.ofType("EDIT_ACTION")
         .flatMap(function (action) {
-        return apiHelpers_1.editBlisAction(action.currentAppId, action.blisAction.actionId, action.blisAction)
+        return apiHelpers_1.editBlisAction(action.key, action.currentAppId, action.blisAction.actionId, action.blisAction)
             .mapTo({ type: "UPDATE_OPERATION_FULFILLED" });
     });
 };
 exports.editEntity = function (action$) {
     return action$.ofType("CREATE_NEGATIVE_ENTITY_FULFILLED")
         .flatMap(function (action) {
-        return apiHelpers_1.editBlisEntity(action.currentAppId, action.positiveEntity)
+        return apiHelpers_1.editBlisEntity(action.key, action.currentAppId, action.positiveEntity)
             .mapTo({ type: "UPDATE_OPERATION_FULFILLED" });
     });
 };
@@ -32367,7 +32431,7 @@ exports.editEntity = function (action$) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var React = __webpack_require__(1);
+var React = __webpack_require__(2);
 var ReactDOM = __webpack_require__(65);
 var App_1 = __webpack_require__(335);
 var react_redux_1 = __webpack_require__(22);
@@ -32420,7 +32484,7 @@ exports.default = actionsReducer;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
+var tslib_1 = __webpack_require__(1);
 var initialState = {
     all: [],
     current: null
@@ -32466,10 +32530,11 @@ exports.default = appsReducer;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
+var tslib_1 = __webpack_require__(1);
 var initialState = {
     myAppsDisplay: "Home",
-    displayWebchat: false
+    displayWebchat: false,
+    displayLogin: true
 };
 var displayReducer = function (state, action) {
     if (state === void 0) { state = initialState; }
@@ -32478,6 +32543,8 @@ var displayReducer = function (state, action) {
             return tslib_1.__assign({}, state, { myAppsDisplay: action.setDisplay });
         case 'SET_WEBCHAT_DISPLAY':
             return tslib_1.__assign({}, state, { displayWebchat: action.setWebchatDisplay });
+        case 'SET_LOGIN_DISPLAY':
+            return tslib_1.__assign({}, state, { displayLogin: action.setLoginDisplay });
         default:
             return state;
     }
@@ -32557,7 +32624,7 @@ exports.default = rootReducer;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
+var tslib_1 = __webpack_require__(1);
 var initialState = {
     all: [],
     current: null
@@ -32616,17 +32683,20 @@ exports.default = trainDialogsReducer;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
+var tslib_1 = __webpack_require__(1);
 var initialState = {
     name: "",
     password: "",
-    id: null
+    id: null,
+    key: null
 };
 var userReducer = function (state, action) {
     if (state === void 0) { state = initialState; }
     switch (action.type) {
         case 'SET_USER':
             return tslib_1.__assign({}, state, { name: action.name, password: action.password, id: action.id });
+        case 'SET_USER_KEY':
+            return tslib_1.__assign({}, state, { key: action.key });
         default:
             return state;
     }
@@ -35972,7 +36042,7 @@ exports.getFocusStyle = getFocusStyle;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
+var tslib_1 = __webpack_require__(1);
 var GlobalSettings_1 = __webpack_require__(120);
 var DefaultFontStyles_1 = __webpack_require__(180);
 var DefaultPalette_1 = __webpack_require__(117);
@@ -36235,8 +36305,8 @@ exports.AutoScroll = AutoScroll;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var PropTypes = __webpack_require__(25);
 var BaseComponent_1 = __webpack_require__(182);
 /**
@@ -36291,8 +36361,8 @@ exports.Customizer = Customizer;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 /**
  * Utility component for delaying the render of a child component after a given delay. This component
  * requires a single child component; don't pass in many components. Wrap multiple components in a DIV
@@ -36565,8 +36635,8 @@ exports.css = css;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var PropTypes = __webpack_require__(25);
 var GlobalSettings_1 = __webpack_require__(120);
 function customizable(fields) {
@@ -38374,8 +38444,8 @@ module.exports = function spread(callback) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var json_typescript_mapper_1 = __webpack_require__(35);
+var tslib_1 = __webpack_require__(1);
+var json_typescript_mapper_1 = __webpack_require__(36);
 var BlisAppMetaData = (function () {
     function BlisAppMetaData(init) {
         this.botFrameworkApps = undefined;
@@ -38483,8 +38553,8 @@ exports.KeyGen = KeyGen;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var json_typescript_mapper_1 = __webpack_require__(35);
+var tslib_1 = __webpack_require__(1);
+var json_typescript_mapper_1 = __webpack_require__(36);
 var Score_1 = __webpack_require__(122);
 var Extract_1 = __webpack_require__(197);
 var Metrics_1 = __webpack_require__(87);
@@ -38632,8 +38702,8 @@ exports.LogDialogIdList = LogDialogIdList;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var json_typescript_mapper_1 = __webpack_require__(35);
+var tslib_1 = __webpack_require__(1);
+var json_typescript_mapper_1 = __webpack_require__(36);
 var Session = (function () {
     function Session(init) {
         this.sessionId = undefined;
@@ -38699,8 +38769,8 @@ exports.SessionIdList = SessionIdList;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var json_typescript_mapper_1 = __webpack_require__(35);
+var tslib_1 = __webpack_require__(1);
+var json_typescript_mapper_1 = __webpack_require__(36);
 var UserInput = (function () {
     function UserInput(init) {
         this.text = undefined;
@@ -38722,8 +38792,8 @@ exports.UserInput = UserInput;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var json_typescript_mapper_1 = __webpack_require__(35);
+var tslib_1 = __webpack_require__(1);
+var json_typescript_mapper_1 = __webpack_require__(36);
 var Teach = (function () {
     function Teach(init) {
         this.teachId = undefined;
@@ -42857,8 +42927,8 @@ __export(__webpack_require__(645));
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var Utilities_1 = __webpack_require__(3);
 var FocusZone_1 = __webpack_require__(19);
 var Link_1 = __webpack_require__(127);
@@ -43043,9 +43113,9 @@ exports.getClassNames = Utilities_1.memoizeFunction(function (styles, className,
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
+var tslib_1 = __webpack_require__(1);
 /* tslint:disable:no-unused-variable */
-var React = __webpack_require__(1);
+var React = __webpack_require__(2);
 /* tslint:enable:no-unused-variable */
 var Utilities_1 = __webpack_require__(3);
 var Button_Props_1 = __webpack_require__(216);
@@ -43322,8 +43392,8 @@ __export(__webpack_require__(133));
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var DateValues_1 = __webpack_require__(149);
 var CalendarDay_1 = __webpack_require__(499);
 var CalendarMonth_1 = __webpack_require__(500);
@@ -43485,8 +43555,8 @@ exports.Calendar = Calendar;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var Utilities_1 = __webpack_require__(3);
 var FocusZone_1 = __webpack_require__(19);
 var Icon_1 = __webpack_require__(14);
@@ -43671,8 +43741,8 @@ exports.CalendarDay = CalendarDay;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var Utilities_1 = __webpack_require__(3);
 var FocusZone_1 = __webpack_require__(19);
 var DateMath_1 = __webpack_require__(95);
@@ -43760,9 +43830,9 @@ __export(__webpack_require__(221));
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
+var tslib_1 = __webpack_require__(1);
 /* tslint:disable:no-unused-variable */
-var React = __webpack_require__(1);
+var React = __webpack_require__(2);
 /* tslint:enable:no-unused-variable */
 var Utilities_1 = __webpack_require__(3);
 var CalloutContent_1 = __webpack_require__(504);
@@ -43811,9 +43881,9 @@ module.exports = styles;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
+var tslib_1 = __webpack_require__(1);
 /* tslint:disable:no-unused-variable */
-var React = __webpack_require__(1);
+var React = __webpack_require__(2);
 var DirectionalHint_1 = __webpack_require__(24);
 var Utilities_1 = __webpack_require__(3);
 var positioning_1 = __webpack_require__(258);
@@ -44110,8 +44180,8 @@ __export(__webpack_require__(24));
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var Utilities_1 = __webpack_require__(3);
 var Icon_1 = __webpack_require__(14);
 var stylesImport = __webpack_require__(507);
@@ -44187,8 +44257,8 @@ __export(__webpack_require__(506));
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var Utilities_1 = __webpack_require__(3);
 var Icon_1 = __webpack_require__(14);
 var stylesImport = __webpack_require__(510);
@@ -44336,8 +44406,8 @@ __export(__webpack_require__(509));
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var Image_1 = __webpack_require__(71);
 var Label_1 = __webpack_require__(44);
 var Icon_1 = __webpack_require__(14);
@@ -44542,8 +44612,8 @@ __export(__webpack_require__(512));
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var Utilities_1 = __webpack_require__(3);
 var TextField_1 = __webpack_require__(130);
 var ColorRectangle_1 = __webpack_require__(516);
@@ -44655,8 +44725,8 @@ exports.ColorPicker = ColorPicker;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var Utilities_1 = __webpack_require__(3);
 var colors_1 = __webpack_require__(148);
 var stylesImport = __webpack_require__(135);
@@ -44750,8 +44820,8 @@ exports.ColorRectangle = ColorRectangle;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var Utilities_1 = __webpack_require__(3);
 var stylesImport = __webpack_require__(135);
 var styles = stylesImport;
@@ -44851,8 +44921,8 @@ __export(__webpack_require__(515));
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var DirectionalHint_1 = __webpack_require__(24);
 var Callout_1 = __webpack_require__(37);
 var Label_1 = __webpack_require__(44);
@@ -45783,8 +45853,8 @@ __export(__webpack_require__(519));
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var Utilities_1 = __webpack_require__(3);
 var FocusZone_1 = __webpack_require__(19);
 var ContextualMenu_1 = __webpack_require__(89);
@@ -46106,8 +46176,8 @@ __export(__webpack_require__(522));
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var ContextualMenu_Props_1 = __webpack_require__(222);
 var DirectionalHint_1 = __webpack_require__(24);
 var FocusZone_1 = __webpack_require__(19);
@@ -46543,8 +46613,8 @@ __export(__webpack_require__(222));
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var Calendar_1 = __webpack_require__(210);
 var Callout_1 = __webpack_require__(37);
 var DirectionalHint_1 = __webpack_require__(24);
@@ -46910,8 +46980,8 @@ __export(__webpack_require__(221));
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var ReactDOM = __webpack_require__(65);
 var Utilities_1 = __webpack_require__(3);
 var DetailsList_Props_1 = __webpack_require__(93);
@@ -47302,8 +47372,8 @@ module.exports = styles;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var stylesImport = __webpack_require__(534);
 var Utilities_1 = __webpack_require__(3);
 var DetailsList_Props_1 = __webpack_require__(93);
@@ -47819,8 +47889,8 @@ module.exports = styles;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var Utilities_1 = __webpack_require__(3);
 var stylesImport = __webpack_require__(224);
 var styles = stylesImport;
@@ -47901,8 +47971,8 @@ __export(__webpack_require__(136));
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var Utilities_1 = __webpack_require__(3);
 var DialogContent_Props_1 = __webpack_require__(139);
 var Modal_1 = __webpack_require__(48);
@@ -47976,8 +48046,8 @@ exports.Dialog = Dialog;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var DocumentCard_Props_1 = __webpack_require__(228);
 var Utilities_1 = __webpack_require__(3);
 var stylesImport = __webpack_require__(58);
@@ -48055,8 +48125,8 @@ exports.DocumentCard = DocumentCard;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var Utilities_1 = __webpack_require__(3);
 var Icon_1 = __webpack_require__(14);
 var Button_1 = __webpack_require__(23);
@@ -48091,8 +48161,8 @@ exports.DocumentCardActions = DocumentCardActions;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var Utilities_1 = __webpack_require__(3);
 var Persona_1 = __webpack_require__(72);
 var stylesImport = __webpack_require__(58);
@@ -48143,8 +48213,8 @@ exports.DocumentCardActivity = DocumentCardActivity;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var Utilities_1 = __webpack_require__(3);
 var stylesImport = __webpack_require__(58);
 var styles = stylesImport;
@@ -48170,8 +48240,8 @@ exports.DocumentCardLocation = DocumentCardLocation;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var Image_1 = __webpack_require__(71);
 var Utilities_1 = __webpack_require__(3);
 var stylesImport = __webpack_require__(58);
@@ -48248,9 +48318,9 @@ exports.DocumentCardPreview = DocumentCardPreview;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
+var tslib_1 = __webpack_require__(1);
 /* tslint:disable:no-unused-variable */
-var React = __webpack_require__(1);
+var React = __webpack_require__(2);
 /* tslint:enable:no-unused-variable */
 var Utilities_1 = __webpack_require__(3);
 var stylesImport = __webpack_require__(58);
@@ -48394,8 +48464,8 @@ __export(__webpack_require__(543));
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var Dropdown_Props_1 = __webpack_require__(229);
 var DirectionalHint_1 = __webpack_require__(24);
 var Callout_1 = __webpack_require__(37);
@@ -48818,8 +48888,8 @@ __export(__webpack_require__(229));
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var Utilities_1 = __webpack_require__(3);
 var Fabric_styles_1 = __webpack_require__(549);
 var DIRECTIONAL_KEY_CODES = [
@@ -48931,8 +49001,8 @@ __export(__webpack_require__(548));
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var Utilities_1 = __webpack_require__(3);
 var Facepile_Props_1 = __webpack_require__(230);
 var FocusZone_1 = __webpack_require__(19);
@@ -49092,8 +49162,8 @@ __export(__webpack_require__(551));
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var Utilities_1 = __webpack_require__(3);
 var FocusTrapZone = (function (_super) {
     tslib_1.__extends(FocusTrapZone, _super);
@@ -49230,8 +49300,8 @@ exports.FocusTrapZone = FocusTrapZone;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var FocusZone_Props_1 = __webpack_require__(231);
 var Utilities_1 = __webpack_require__(3);
 var IS_FOCUSABLE_ATTRIBUTE = 'data-is-focusable';
@@ -49827,8 +49897,8 @@ __export(__webpack_require__(231));
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var Utilities_1 = __webpack_require__(3);
 var Link_1 = __webpack_require__(127);
 var GroupSpacer_1 = __webpack_require__(94);
@@ -49883,8 +49953,8 @@ module.exports = styles;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var Utilities_1 = __webpack_require__(3);
 var index_1 = __webpack_require__(49);
 var Check_1 = __webpack_require__(211);
@@ -50044,8 +50114,8 @@ module.exports = styles;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var Utilities_1 = __webpack_require__(3);
 var GroupedListSection_1 = __webpack_require__(563);
 var List_1 = __webpack_require__(92);
@@ -50222,8 +50292,8 @@ exports.GroupedList = GroupedList;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var Utilities_1 = __webpack_require__(3);
 var index_1 = __webpack_require__(49);
 var GroupFooter_1 = __webpack_require__(557);
@@ -50490,9 +50560,9 @@ exports.getStyles = Utilities_1.memoizeFunction(function (theme, customStyles) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
+var tslib_1 = __webpack_require__(1);
 /* tslint:disable:no-unused-variable */
-var React = __webpack_require__(1);
+var React = __webpack_require__(2);
 /* tslint:enable:no-unused-variable */
 var Utilities_1 = __webpack_require__(3);
 var ExpandingCard_1 = __webpack_require__(234);
@@ -50637,9 +50707,9 @@ __export(__webpack_require__(24));
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
+var tslib_1 = __webpack_require__(1);
 /* tslint:disable */
-var React = __webpack_require__(1);
+var React = __webpack_require__(2);
 /* tslint:enable */
 var Icon_Props_1 = __webpack_require__(235);
 var Image_1 = __webpack_require__(237);
@@ -50761,8 +50831,8 @@ __export(__webpack_require__(236));
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var Utilities_1 = __webpack_require__(3);
 var stylesImport = __webpack_require__(575);
 var styles = stylesImport;
@@ -50846,8 +50916,8 @@ module.exports = styles;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var Utilities_1 = __webpack_require__(3);
 var Layer_1 = __webpack_require__(142);
 var LayerHost = (function (_super) {
@@ -50895,8 +50965,8 @@ __export(__webpack_require__(578));
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var Utilities_1 = __webpack_require__(3);
 var stylesImport = __webpack_require__(581);
 var styles = stylesImport;
@@ -50979,8 +51049,8 @@ __export(__webpack_require__(580));
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var Utilities_1 = __webpack_require__(3);
 var RESIZE_DELAY = 16;
 var MIN_SCROLL_UPDATE_DELAY = 100;
@@ -51602,8 +51672,8 @@ __export(__webpack_require__(583));
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var Utilities_1 = __webpack_require__(3);
 var stylesImport = __webpack_require__(586);
 var styles = stylesImport;
@@ -51873,8 +51943,8 @@ module.exports = styles;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var Utilities_1 = __webpack_require__(3);
 var Button_1 = __webpack_require__(23);
 var Icon_1 = __webpack_require__(14);
@@ -52045,8 +52115,8 @@ __export(__webpack_require__(238));
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var Utilities_1 = __webpack_require__(3);
 var index_1 = __webpack_require__(140);
 var Overlay_1 = __webpack_require__(128);
@@ -52171,8 +52241,8 @@ module.exports = styles;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var Utilities_1 = __webpack_require__(3);
 var FocusZone_1 = __webpack_require__(19);
 var Button_1 = __webpack_require__(23);
@@ -52415,8 +52485,8 @@ __export(__webpack_require__(592));
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var Utilities_1 = __webpack_require__(3);
 var FocusZone_1 = __webpack_require__(19);
 var stylesImport = __webpack_require__(596);
@@ -52490,8 +52560,8 @@ __export(__webpack_require__(595));
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var Utilities_1 = __webpack_require__(3);
 var stylesImport = __webpack_require__(599);
 var styles = stylesImport;
@@ -52561,9 +52631,9 @@ __export(__webpack_require__(598));
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
+var tslib_1 = __webpack_require__(1);
 /* tslint:disable:no-unused-variable */
-var React = __webpack_require__(1);
+var React = __webpack_require__(2);
 /* tslint:enable:no-unused-variable */
 var Utilities_1 = __webpack_require__(3);
 var index_1 = __webpack_require__(140);
@@ -52792,8 +52862,8 @@ __export(__webpack_require__(240));
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var Utilities_1 = __webpack_require__(3);
 var Icon_1 = __webpack_require__(14);
 var Image_1 = __webpack_require__(71);
@@ -52952,8 +53022,8 @@ __export(__webpack_require__(242));
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var Utilities_1 = __webpack_require__(3);
 var Button_1 = __webpack_require__(23);
 var FocusZone_1 = __webpack_require__(19);
@@ -53207,8 +53277,8 @@ __export(__webpack_require__(144));
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var Utilities_1 = __webpack_require__(3);
 /**
  * This adds accessibility to Dialog and Panel controls
@@ -53281,9 +53351,9 @@ exports.Popup = Popup;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
+var tslib_1 = __webpack_require__(1);
 /* tslint:disable:no-unused-variable */
-var React = __webpack_require__(1);
+var React = __webpack_require__(2);
 /* tslint:enable:no-unused-variable */
 var Utilities_1 = __webpack_require__(3);
 var stylesImport = __webpack_require__(611);
@@ -53372,8 +53442,8 @@ __export(__webpack_require__(610));
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var Utilities_1 = __webpack_require__(3);
 var Icon_1 = __webpack_require__(14);
 var Rating_Props_1 = __webpack_require__(245);
@@ -53518,8 +53588,8 @@ __export(__webpack_require__(245));
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var Utilities_1 = __webpack_require__(3);
 var styles = __webpack_require__(617);
 var RESIZE_DELAY = 16;
@@ -53749,8 +53819,8 @@ __export(__webpack_require__(616));
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var Utilities_1 = __webpack_require__(3);
 var Icon_1 = __webpack_require__(14);
 var stylesImport = __webpack_require__(620);
@@ -53923,8 +53993,8 @@ __export(__webpack_require__(619));
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var Utilities_1 = __webpack_require__(3);
 var Label_1 = __webpack_require__(44);
 var stylesImport = __webpack_require__(623);
@@ -54168,8 +54238,8 @@ __export(__webpack_require__(622));
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var Button_1 = __webpack_require__(23);
 var Label_1 = __webpack_require__(44);
 var Icon_1 = __webpack_require__(14);
@@ -54536,8 +54606,8 @@ __export(__webpack_require__(625));
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var Utilities_1 = __webpack_require__(3);
 var Spinner_Props_1 = __webpack_require__(246);
 var stylesImport = __webpack_require__(629);
@@ -54626,8 +54696,8 @@ __export(__webpack_require__(246));
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var Utilities_1 = __webpack_require__(3);
 var SwatchColorPicker_Props_1 = __webpack_require__(247);
 var ContextualMenu_1 = __webpack_require__(89);
@@ -55140,9 +55210,9 @@ __export(__webpack_require__(247));
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
+var tslib_1 = __webpack_require__(1);
 /* tslint:disable:no-unused-variable */
-var React = __webpack_require__(1);
+var React = __webpack_require__(2);
 /* tslint:enable:no-unused-variable */
 var Utilities_1 = __webpack_require__(3);
 var TeachingBubbleContent_1 = __webpack_require__(249);
@@ -55201,8 +55271,8 @@ __export(__webpack_require__(249));
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var Label_1 = __webpack_require__(44);
 var Icon_1 = __webpack_require__(14);
 var Utilities_1 = __webpack_require__(3);
@@ -55546,8 +55616,8 @@ __export(__webpack_require__(636));
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var Utilities_1 = __webpack_require__(3);
 var Label_1 = __webpack_require__(44);
 var Utilities_2 = __webpack_require__(3);
@@ -55819,9 +55889,9 @@ module.exports = styles;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
+var tslib_1 = __webpack_require__(1);
 /* tslint:disable:no-unused-variable */
-var React = __webpack_require__(1);
+var React = __webpack_require__(2);
 /* tslint:enable:no-unused-variable */
 var Utilities_1 = __webpack_require__(3);
 var TooltipHost_Props_1 = __webpack_require__(251);
@@ -55966,9 +56036,9 @@ module.exports = styles;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
+var tslib_1 = __webpack_require__(1);
 /* tslint:disable */
-var React = __webpack_require__(1);
+var React = __webpack_require__(2);
 /* tslint:enable */
 var BasePicker_1 = __webpack_require__(147);
 var SelectedItemDefault_1 = __webpack_require__(649);
@@ -56067,9 +56137,9 @@ module.exports = styles;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
+var tslib_1 = __webpack_require__(1);
 /* tslint:disable */
-var React = __webpack_require__(1);
+var React = __webpack_require__(2);
 /* tslint:enable */
 var Utilities_1 = __webpack_require__(3);
 var Persona_1 = __webpack_require__(72);
@@ -56098,9 +56168,9 @@ exports.SelectedItemDefault = function (peoplePickerItemProps) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
+var tslib_1 = __webpack_require__(1);
 /* tslint:disable */
-var React = __webpack_require__(1);
+var React = __webpack_require__(2);
 /* tslint:enable */
 var Utilities_1 = __webpack_require__(3);
 var Persona_1 = __webpack_require__(72);
@@ -56152,9 +56222,9 @@ module.exports = styles;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
+var tslib_1 = __webpack_require__(1);
 /* tslint:disable */
-var React = __webpack_require__(1);
+var React = __webpack_require__(2);
 var Utilities_1 = __webpack_require__(3);
 /* tslint:enable */
 var BasePicker_1 = __webpack_require__(147);
@@ -56366,8 +56436,8 @@ exports.COLOR_VALUES = {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var BaseDecorator_1 = __webpack_require__(257);
 var Utilities_1 = __webpack_require__(3);
 var RESIZE_DELAY = 500;
@@ -56770,8 +56840,8 @@ exports.DragDropHelper = DragDropHelper;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var Utilities_1 = __webpack_require__(3);
 var Grid = (function (_super) {
     tslib_1.__extends(Grid, _super);
@@ -57040,8 +57110,8 @@ exports.Selection = Selection;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(2);
-var React = __webpack_require__(1);
+var tslib_1 = __webpack_require__(1);
+var React = __webpack_require__(2);
 var Utilities_1 = __webpack_require__(3);
 var SelectionLayout_1 = __webpack_require__(259);
 var interfaces_1 = __webpack_require__(59);
@@ -67421,7 +67491,7 @@ module.exports = ReactMount.renderSubtreeIntoContainer;
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(process) {/* harmony export (immutable) */ __webpack_exports__["b"] = createProvider;
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types__ = __webpack_require__(25);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_prop_types__);
@@ -68004,7 +68074,7 @@ function shallowEqual(objA, objB) {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types__ = __webpack_require__(25);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_prop_types__);
@@ -68064,7 +68134,7 @@ BrowserRouter.propTypes = {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types__ = __webpack_require__(25);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_prop_types__);
@@ -68132,7 +68202,7 @@ HashRouter.propTypes = {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types__ = __webpack_require__(25);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_prop_types__);
@@ -68281,7 +68351,7 @@ NavLink.defaultProps = {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types__ = __webpack_require__(25);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_prop_types__);
@@ -68341,7 +68411,7 @@ MemoryRouter.propTypes = {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types__ = __webpack_require__(25);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_prop_types__);
@@ -68427,7 +68497,7 @@ Prompt.contextTypes = {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types__ = __webpack_require__(25);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_prop_types__);
@@ -68515,7 +68585,7 @@ Redirect.contextTypes = {
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_invariant__ = __webpack_require__(70);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_invariant___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_invariant__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_prop_types__ = __webpack_require__(25);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_prop_types___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_prop_types__);
@@ -68689,7 +68759,7 @@ StaticRouter.childContextTypes = {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types__ = __webpack_require__(25);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_prop_types__);
@@ -68775,7 +68845,7 @@ Switch.propTypes = {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types__ = __webpack_require__(25);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_prop_types__);
