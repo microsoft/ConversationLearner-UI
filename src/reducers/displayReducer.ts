@@ -4,7 +4,8 @@ import { Reducer } from 'redux'
 
 const initialState: DisplayState = {
     myAppsDisplay: "Home",
-    displayWebchat: false
+    displayWebchat: false,
+    displayLogin: true
 };
 
 const displayReducer: Reducer<DisplayState> =  (state = initialState, action: ActionObject) => {
@@ -13,6 +14,8 @@ const displayReducer: Reducer<DisplayState> =  (state = initialState, action: Ac
             return {...state, myAppsDisplay: action.setDisplay};
         case 'SET_WEBCHAT_DISPLAY':
             return {...state, displayWebchat: action.setWebchatDisplay};
+        case 'SET_LOGIN_DISPLAY':
+            return {...state, displayLogin: action.setLoginDisplay};
         default:
             return state;
     }

@@ -30,6 +30,10 @@ export type UpdateAction = {
     type: 'SET_WEBCHAT_DISPLAY',
     setWebchatDisplay: boolean,
 } | {
+    //used for setting whether the login popup is displayed
+    type: 'SET_LOGIN_DISPLAY',
+    setLoginDisplay: boolean,
+} | {
     type: "TOGGLE_TRAIN_DIALOG",
     forward: boolean
 } | {

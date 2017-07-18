@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { setBLISAppDisplay, setWebchatDisplay } from '../actions/updateActions'
+import { setBLISAppDisplay, setWebchatDisplay, setLoginDisplay } from '../actions/updateActions'
+import UserLogin from '../containers/UserLogin'
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { State } from '../types'
@@ -58,6 +59,9 @@ class Header extends React.Component<any, any> {
         let displayName = this.props.userName ? this.props.userName : "BLIS";
         return (
             <div className='header'>
+                <div className="myAppsHeaderContentBlock myAppsButtonsDiv">
+                    <UserLogin/>
+                </div>
                 <div className='headerListDiv'>
                     <div className={this.state.myAppsClass}>
                         <span className="ms-font-m-plus ms-fontColor-themePrimary"><Link onClick={() => {
@@ -78,11 +82,7 @@ class Header extends React.Component<any, any> {
                 </div>
                 <div className='headerTitleDiv'>
                     <div className='headerTitle'>
-                        <span className="ms-font-xl ms-fontColor-themePrimary"><Link onClick={() => {
-                            this.props.setBLISAppDisplay("Home")
-                            this.props.setWebchatDisplay(false)
-                            this.tabSelected('myApps')
-                        }} className='headerLink' to="/">{displayName}</Link></span>
+                        <span className="ms-font-xl ms-fontColor-themePrimary"><Link onClick={() => this.props.setLoginDisplay(true)} className='headerLink' to="/">{displayName}</Link></span>
                     </div>
                 </div>
             </div>
@@ -93,7 +93,8 @@ class Header extends React.Component<any, any> {
 const mapDispatchToProps = (dispatch: any) => {
   return bindActionCreators({
     setBLISAppDisplay: setBLISAppDisplay,
-    setWebchatDisplay: setWebchatDisplay
+    setWebchatDisplay: setWebchatDisplay,
+    setLoginDisplay: setLoginDisplay,
   }, dispatch);
 }
 

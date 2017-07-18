@@ -13,7 +13,8 @@ export type AppState = {
 }
 export type DisplayState = {
     myAppsDisplay: string,
-    displayWebchat: boolean
+    displayWebchat: boolean,
+    displayLogin: boolean
 };
 export type UserState =
 {
