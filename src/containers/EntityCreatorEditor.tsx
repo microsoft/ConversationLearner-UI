@@ -82,7 +82,6 @@ class EntityCreatorEditor extends React.Component<any, any> {
         } else {
             this.editEntity(entityToAdd);
         }
-        console.log(entityToAdd)
         this.setState({
             entityNameVal: '',
             entityTypeVal: 'LOCAL',
