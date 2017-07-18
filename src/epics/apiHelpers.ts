@@ -104,7 +104,7 @@ export const deleteBlisApp = (key : string, blisAppId: string, blisApp: BlisAppF
 	return Rx.Observable.fromPromise(axios.delete(deleteAppRoute, configWithBody))
 };
 export const deleteBlisEntity = (key : string, appId: string, entity: EntityBase): Observable<AxiosResponse> => {
-	let deleteEntityRoute: string = makeRoute(key, `app/${appId}/entity`);
+	let deleteEntityRoute: string = makeRoute(key, `app/${appId}/entity/${entity.entityId}`);
 	const { version, packageCreationId, packageDeletionId, entityId, ...entityToSend } = entity;
 	let configWithBody = {...config, body: entityToSend};
 	return Rx.Observable.fromPromise(axios.delete(deleteEntityRoute, configWithBody))
