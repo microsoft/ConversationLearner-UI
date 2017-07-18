@@ -19,7 +19,8 @@ export type UserState =
 {
     name: string,
     password: string,
-    id: string
+    id: string,
+    key: string
 }
 export type State = {
     user: UserState,

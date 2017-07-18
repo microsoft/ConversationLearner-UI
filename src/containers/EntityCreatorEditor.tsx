@@ -75,9 +75,9 @@ class EntityCreatorEditor extends React.Component<any, any> {
         })
         if (this.state.editing === false) {
             if (meta.isReversable === true) {
-                this.props.createReversibleEntity(entityToAdd, currentAppId);
+                this.props.createReversibleEntity(this.props.userKey, entityToAdd, currentAppId);
             } else {
-                this.props.createEntity(entityToAdd, currentAppId);
+                this.props.createEntity(this.props.userKey, entityToAdd, currentAppId);
             }
         } else {
             this.editEntity(entityToAdd);
@@ -93,7 +93,7 @@ class EntityCreatorEditor extends React.Component<any, any> {
     }
     editEntity(ent: EntityBase) {
         ent.entityId = this.props.entity.entityId;
-        this.props.editEntity(ent);
+        this.props.editEntity(this.props.userKey, ent);
     }
     nameChanged(text: string) {
         this.setState({
@@ -214,6 +214,7 @@ const mapDispatchToProps = (dispatch: any) => {
 }
 const mapStateToProps = (state: State, ownProps: any) => {
     return {
+        userKey: state.user.key,
         entities: state.entities,
         blisApps: state.apps
     }

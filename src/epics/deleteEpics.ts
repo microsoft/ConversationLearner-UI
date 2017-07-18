@@ -8,7 +8,7 @@ import { deleteBlisApp, deleteBlisEntity, deleteBlisAction } from "./apiHelpers"
 export const deleteApplication: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
     return action$.ofType("DELETE_BLIS_APPLICATION")
         .flatMap((action: any) =>
-            deleteBlisApp(action.blisAppGUID, action.blisApp)
+            deleteBlisApp(action.key, action.blisAppGUID, action.blisApp)
 				.mapTo({type: "DELETE_OPERATION_FULFILLED"})
         );
 }
@@ -16,7 +16,7 @@ export const deleteApplication: Epic<ActionObject, State> = (action$: ActionsObs
 export const deleteEntity: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
     return action$.ofType("DELETE_ENTITY")
         .flatMap((action: any) =>
-            deleteBlisEntity(action.currentAppId, action.entity)
+            deleteBlisEntity(action.key, action.currentAppId, action.entity)
 				.mapTo({type: "DELETE_OPERATION_FULFILLED"})
         );
 }
@@ -24,7 +24,7 @@ export const deleteEntity: Epic<ActionObject, State> = (action$: ActionsObservab
 export const deleteAction: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
     return action$.ofType("DELETE_ACTION")
         .flatMap((actionObject: any) =>
-            deleteBlisAction(actionObject.currentAppId, actionObject.actionGUID, actionObject.action)
+            deleteBlisAction(actionObject.key, actionObject.currentAppId, actionObject.actionGUID, actionObject.action)
 				.mapTo({type: "DELETE_OPERATION_FULFILLED"})
         );
 }

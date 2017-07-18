@@ -69,7 +69,7 @@ class EntitiesList extends React.Component<any, any> {
     deleteSelectedEntity() {
         let currentAppId: string = this.props.apps.current.appId;
         let entityToDelete: EntityBase = this.props.entities.find((a: EntityBase) => a.entityId == this.state.entityIDToDelete)
-        this.props.deleteEntity(this.state.entityIDToDelete, entityToDelete, currentAppId)
+        this.props.deleteEntity(this.props.userKey, this.state.entityIDToDelete, entityToDelete, currentAppId)
         this.setState({
             confirmDeleteEntityModalOpen: false,
             entityIDToDelete: null
@@ -215,6 +215,7 @@ const mapDispatchToProps = (dispatch: any) => {
 }
 const mapStateToProps = (state: State) => {
     return {
+        userKey: state.user.key,
         entities: state.entities,
         apps: state.apps,
         actions: state.actions

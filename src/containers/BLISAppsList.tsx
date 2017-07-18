@@ -68,7 +68,7 @@ class BLISAppsList extends React.Component<any, any> {
     }
     deleteApp() {
         let blisAppToDelete: BlisAppBase = this.props.blisApps.all.find((app: BlisAppBase) => app.appId == this.state.appIDToDelete);
-        this.props.deleteBLISApplication(this.state.appIDToDelete, blisAppToDelete);
+        this.props.deleteBLISApplication(this.props.userKey, this.state.appIDToDelete, blisAppToDelete);
         this.setState({
             confirmDeleteAppModalOpen: false,
             appIDToDelete: null,
@@ -89,10 +89,10 @@ class BLISAppsList extends React.Component<any, any> {
     }
     BLISAppSelected(appName: string) {
         let appSelected = this.props.blisApps.all.find((app: BlisAppBase) => app.appName == appName);
-        this.props.setCurrentBLISApp(appSelected);
-        this.props.fetchAllActions(appSelected.appId);
-        this.props.fetchAllEntities(appSelected.appId);
-        this.props.fetchAllTrainDialogs(appSelected.appId);
+        this.props.setCurrentBLISApp(this.props.userKey, appSelected);
+        this.props.fetchAllActions(this.props.userKey, appSelected.appId);
+        this.props.fetchAllEntities(this.props.userKey, appSelected.appId);
+        this.props.fetchAllTrainDialogs(this.props.userKey, appSelected.appId);
         this.props.setBLISAppDisplay("TrainingGround");
     }
     renderItemColumn(item?: any, index?: number, column?: IColumn) {
@@ -147,6 +147,7 @@ const mapDispatchToProps = (dispatch: any) => {
 }
 const mapStateToProps = (state: State) => {
     return {
+        userKey: state.user.key,
         blisApps: state.apps
     }
 }

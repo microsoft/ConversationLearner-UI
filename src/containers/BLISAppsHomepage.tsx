@@ -20,7 +20,7 @@ class BLISAppsHomepage extends React.Component<any, any> {
             this.setState({
                 displayedUserId: this.props.userId
             })
-            this.props.fetchApplications(this.props.userId);
+            this.props.fetchApplications(this.props.userKey, this.props.userId);
         }
     }
     render() {
@@ -47,6 +47,7 @@ const mapDispatchToProps = (dispatch: any) => {
 const mapStateToProps = (state: State) => {
     return {
         display: state.display,
+        userKey: state.user.key,
         userId: state.user.id,
         blisApps: state.apps
     }

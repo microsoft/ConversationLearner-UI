@@ -2,9 +2,10 @@
 import { ActionObject, TrainDialog } from '../types'
 import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, ActionMetaData, ActionList, ActionTypes } from 'blis-models';
 
-export const setCurrentBLISApp = (app: BlisAppBase) : ActionObject => { 
+export const setCurrentBLISApp = (key: string, app: BlisAppBase) : ActionObject => { 
     return {
         type: 'SET_CURRENT_BLIS_APP',
+        key: key,
         currentBLISApp: app
     }
 }
@@ -15,9 +16,10 @@ export const emptyStateProperties = () : ActionObject => {
     }
 }
 
-export const setCurrentTrainDialog = (trainDialog: TrainDialog) : ActionObject => { 
+export const setCurrentTrainDialog = (key: string, trainDialog: TrainDialog) : ActionObject => { 
     return {
         type: 'SET_CURRENT_TRAIN_DIALOG',
+        key: key,
         currentTrainDialog: trainDialog
     }
 }
@@ -43,35 +45,39 @@ export const setWebchatDisplay = (isShown: boolean) : ActionObject => {
     }
 }
 
-export const editBLISApplication = (application: BlisAppBase) : ActionObject => { 
+export const editBLISApplication = (key: string, application: BlisAppBase) : ActionObject => { 
     //needs to make a call to an Epic to send data to BLIS
     return {
         type: 'EDIT_BLIS_APPLICATION',
+        key: key,
         blisApp: application
     }
 }
 
-export const editEntity = (entity: EntityBase) : ActionObject => { 
+export const editEntity = (key: string, entity: EntityBase) : ActionObject => { 
     //needs to make a call to an Epic to send data to BLIS
     return {
         type: 'EDIT_ENTITY',
+        key: key,
         entity: entity
     }
 }
 
-export const editAction = (action: ActionBase, currentAppId: string) : ActionObject => { 
+export const editAction = (key: string, action: ActionBase, currentAppId: string) : ActionObject => { 
     //needs to make a call to an Epic to send data to BLIS
     return {
         type: 'EDIT_ACTION',
+        key: key,
         blisAction: action,
         currentAppId: currentAppId
     }
 }
 
-export const editTrainDialog = (trainDialog: TrainDialog) : ActionObject => { 
+export const editTrainDialog = (key: string, trainDialog: TrainDialog) : ActionObject => { 
     //needs to make a call to an Epic to send data to BLIS
     return {
         type: 'EDIT_TRAIN_DIALOG',
+        key: key,
         trainDialog: trainDialog
     }
 }
@@ -82,5 +88,12 @@ export const setUser = (name: string, password: string, id: string) : ActionObje
         name: name,
         password: password,
         id: id
+    }
+}
+
+export const setUserKey = (key: string) : ActionObject => { 
+    return {
+        type: 'SET_USER_KEY',
+        key: key
     }
 }

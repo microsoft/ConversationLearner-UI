@@ -175,7 +175,7 @@ class ActionResponseCreatorEditor extends React.Component<any, any> {
             packageDeletionId: null
         })
         if (this.state.editing === false) {
-            this.props.createAction(actionToAdd, currentAppId);
+            this.props.createAction(this.props.userkey, actionToAdd, currentAppId);
         } else {
             this.editAction(actionToAdd, currentAppId);
         }
@@ -184,7 +184,7 @@ class ActionResponseCreatorEditor extends React.Component<any, any> {
     }
     editAction(actionToAdd: ActionBase, currentAppId: string) {
         actionToAdd.actionId = this.props.blisAction.actionId;
-        this.props.editAction(actionToAdd, currentAppId);
+        this.props.editAction(this.props.userKey, actionToAdd, currentAppId);
     }
     waitChanged() {
         this.setState({
@@ -358,6 +358,7 @@ const mapDispatchToProps = (dispatch: any) => {
 }
 const mapStateToProps = (state: State, ownProps: any) => {
     return {
+        userKey: state.user.key,
         actions: state.actions,
         blisApps: state.apps,
         entities: state.entities

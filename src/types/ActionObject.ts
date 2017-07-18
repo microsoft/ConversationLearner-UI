@@ -40,6 +40,9 @@ export type UpdateAction = {
     password: string,
     id: string
 } | {
+    type: 'SET_USER_KEY',
+    key: string
+}| {
     type: "EMPTY_STATE_PROPERTIES"
 }
 
@@ -68,14 +71,17 @@ export type FetchAction = {
 
 export type CreateAction = {
     type: 'CREATE_BLIS_APPLICATION',
+    key: string,
     userId: string,
     blisApp: BlisAppBase,
 } | {
     type: 'CREATE_ENTITY',
+    key: string,
     entity: EntityBase,
     currentAppId: string
 } | {
     type: 'CREATE_REVERSIBLE_ENTITY',
+    key: string,
     entity: EntityBase,
     currentAppId: string
 } | {
@@ -92,6 +98,7 @@ export type CreateAction = {
     blisAppId: string
 } | {
     type: 'CREATE_POSITIVE_ENTITY_FULFILLED',
+    key: string,
     negativeEntity: EntityBase,
     positiveEntity: EntityBase,
     currentAppId: string
