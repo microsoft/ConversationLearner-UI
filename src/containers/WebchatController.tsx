@@ -24,19 +24,55 @@ class WebchatController extends React.Component<any, any> {
     renderWithMeta() {
         return (
             <div className="container">
+                <div className="toggleTrainDialogBack">
+                    <CommandButton
+                        data-automation-id='randomID14'
+                        disabled={false}
+                        className='toggleTrainDialog'
+                        onClick={() => this.props.toggleTrainDialog(false)}
+                        iconProps={{ iconName: 'Back' }}
+                    />
+                </div>
                 <div className="webchatShrink">
-                    <Webchat toggleMeta={this.toggleMeta.bind(this)} buttonText="HIDE METADATA"/>
+                    <Webchat />
                 </div>
                 <div className="webchatMetaShrink">
-                    <WebchatMetadata/>
+                    <WebchatMetadata />
+                </div>
+                <div className="toggleTrainDialogForward">
+                    <CommandButton
+                        data-automation-id='randomID13'
+                        disabled={false}
+                        onClick={() => this.props.toggleTrainDialog(true)}
+                        className='toggleTrainDialog'
+                        iconProps={{ iconName: 'Forward' }}
+                    />
                 </div>
             </div>
         )
     }
-    renderWithoutMeta(){
+    renderWithoutMeta() {
         return (
             <div className="container">
-                <Webchat toggleMeta={this.toggleMeta.bind(this)} buttonText="SHOW METADATA" />
+                <div className="toggleTrainDialogBack">
+                    <CommandButton
+                        data-automation-id='randomID14'
+                        disabled={false}
+                        className='toggleTrainDialog'
+                        onClick={() => this.props.toggleTrainDialog(false)}
+                        iconProps={{ iconName: 'Back' }}
+                    />
+                </div>
+                {/*<Webchat />*/}
+                <div className="toggleTrainDialogForward">
+                    <CommandButton
+                        data-automation-id='randomID13'
+                        disabled={false}
+                        onClick={() => this.props.toggleTrainDialog(true)}
+                        className='toggleTrainDialog'
+                        iconProps={{ iconName: 'Forward' }}
+                    />
+                </div>
             </div>
         )
     }
@@ -58,7 +94,7 @@ class WebchatController extends React.Component<any, any> {
                         text={buttonText}
                     />
                 </div>
-                { this.state.displayMetadata == true ? this.renderWithMeta() : this.renderWithoutMeta() }
+                {this.state.displayMetadata == true ? this.renderWithMeta() : this.renderWithoutMeta()}
             </div>
         )
 
