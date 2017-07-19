@@ -5,15 +5,7 @@ import { connect } from 'react-redux';
 import { State, TrainDialogState } from '../types';
 import { Chat } from 'botframework-webchat'
 
-interface Props {
-    trainDialogs: TrainDialogState,
-    toggleTrainDialog: Function
-}
-
-class Webchat extends React.Component<Props, any> {
-    constructor(p: Props) {
-        super(p);
-    }
+class Webchat extends React.Component<any, any> {
     render() {
         return (
             <div className="container">
@@ -21,8 +13,6 @@ class Webchat extends React.Component<Props, any> {
             </div>
         )
     }
-
-
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({

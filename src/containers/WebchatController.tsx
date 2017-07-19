@@ -33,11 +33,13 @@ class WebchatController extends React.Component<any, any> {
                         iconProps={{ iconName: 'Back' }}
                     />
                 </div>
-                <div className="webchatShrink">
-                    <Webchat />
-                </div>
-                <div className="webchatMetaShrink">
-                    <WebchatMetadata />
+                <div className="webchatContent">
+                    <div className="webchatShrink">
+                        <Webchat />
+                    </div>
+                    <div className="webchatMetaShrink">
+                        <WebchatMetadata />
+                    </div>
                 </div>
                 <div className="toggleTrainDialogForward">
                     <CommandButton
@@ -63,7 +65,9 @@ class WebchatController extends React.Component<any, any> {
                         iconProps={{ iconName: 'Back' }}
                     />
                 </div>
-                {/*<Webchat />*/}
+                <div className="webchatContent">
+                    <Webchat />
+                </div>
                 <div className="toggleTrainDialogForward">
                     <CommandButton
                         data-automation-id='randomID13'

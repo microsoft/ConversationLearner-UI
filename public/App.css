@@ -222,6 +222,14 @@
   width: 100%;
   border-bottom: 2px solid #ffb900
 }
+.webchatContent{
+  border-right: 1px solid #ffb900;
+  border-left: 1px solid #ffb900;
+  border-bottom: 1px solid #ffb900;
+  width: 85%;
+  height: 92%;
+  display: inline-block
+}
 .webchatMetaShrink{
   width: 35%;
   height: 100%;
