@@ -8,7 +8,7 @@ import ActionResponsesList from './ActionResponsesList';
 import BLISAppsHomepage from './BLISAppsHomepage';
 import AppDashboard from './AppDashboard';
 import AppSettings from './AppSettings';
-import Emulator from '../components/Emulator';
+import WebchatController from './WebchatController';
 import { Nav, INavLink, INavLinkGroup } from 'office-ui-fabric-react';
 import { Link } from 'react-router-dom';
 import { setWebchatDisplay } from '../actions/updateActions'
@@ -129,7 +129,7 @@ class TrainingGround extends React.Component<any, any> {
                     </div>
 
                     <div className='emulatorDisplay'>
-                        <Emulator />
+                        <WebchatController />
                     </div>
                 </div>
             </div>

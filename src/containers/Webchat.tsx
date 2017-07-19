@@ -5,6 +5,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State, TrainDialogState, AppState } from '../types';
 import { CommandButton, IIconProps, IIconStyles } from 'office-ui-fabric-react';
+import { Chat } from 'botframework-webchat'
 
 interface PassedProps {
     toggleMeta: Function;
@@ -54,7 +55,7 @@ class Webchat extends React.Component<Props, any> {
                         iconProps={{ iconName: 'Back' }}
                     />
                 </div>
-                <div>
+                <div style={{border: "1px solid red"}}>
                 </div>
                 <div className="toggleTrainDialogForward">
                     <CommandButton

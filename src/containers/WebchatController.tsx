@@ -1,7 +1,12 @@
 import * as React from 'react';
-import Webchat from '../containers/Webchat'
-import WebchatMetadata from '../containers/WebchatMetadata'
-export default class Emulator extends React.Component<any, any> {
+import { editTrainDialog } from '../actions/updateActions';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { State, TrainDialogState, AppState } from '../types';
+import Webchat from './Webchat'
+import WebchatMetadata from './WebchatMetadata'
+
+class WebchatController extends React.Component<any, any> {
     constructor(p: any) {
         super(p);
         this.state = {
@@ -35,3 +40,14 @@ export default class Emulator extends React.Component<any, any> {
 
     }
 }
+const mapDispatchToProps = (dispatch: any) => {
+    return bindActionCreators({
+        editTrainDialog: editTrainDialog,
+    }, dispatch);
+}
+const mapStateToProps = (state: State, ownProps: any) => {
+    return {
+        trainDialogs: state.trainDialogs
+    }
+}
+export default connect(mapStateToProps, mapDispatchToProps)(WebchatController as React.ComponentClass<any>);
