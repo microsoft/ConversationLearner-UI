@@ -128,7 +128,7 @@ class TrainingGround extends React.Component<any, any> {
                         </div>
                     </div>
 
-                    <div className='emulatorDisplay'>
+                    <div className='trainingGroundArena fluidCont'>
                         <WebchatController />
                     </div>
                 </div>

@@ -1,10 +1,11 @@
 import * as React from 'react';
-import { editTrainDialog } from '../actions/updateActions';
+import { setWebchatDisplay, toggleTrainDialog } from '../actions/updateActions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State, TrainDialogState, AppState } from '../types';
 import Webchat from './Webchat'
 import WebchatMetadata from './WebchatMetadata'
+import { CommandButton, IIconProps, IIconStyles } from 'office-ui-fabric-react';
 
 class WebchatController extends React.Component<any, any> {
     constructor(p: any) {
@@ -13,6 +14,7 @@ class WebchatController extends React.Component<any, any> {
             displayMetadata: true
         }
         this.renderWithMeta = this.renderWithMeta.bind(this)
+        this.toggleMeta = this.toggleMeta.bind(this)
     }
     toggleMeta() {
         this.setState({
@@ -21,7 +23,7 @@ class WebchatController extends React.Component<any, any> {
     }
     renderWithMeta() {
         return (
-            <div className='container'>
+            <div className="container">
                 <div className="webchatShrink">
                     <Webchat toggleMeta={this.toggleMeta.bind(this)} buttonText="HIDE METADATA"/>
                 </div>
@@ -31,10 +33,32 @@ class WebchatController extends React.Component<any, any> {
             </div>
         )
     }
-    render() {
+    renderWithoutMeta(){
         return (
-            <div className='container'>
-                { this.state.displayMetadata == true ? this.renderWithMeta() : <Webchat toggleMeta={this.toggleMeta.bind(this)} buttonText="SHOW METADATA" /> }
+            <div className="container">
+                <Webchat toggleMeta={this.toggleMeta.bind(this)} buttonText="SHOW METADATA" />
+            </div>
+        )
+    }
+    render() {
+        let buttonText = this.state.displayMetadata === true ? "HIDE METADATA" : "SHOW METADATA"
+        return (
+            <div className='container webchatController'>
+                <div className="webchatHeader">
+                    <CommandButton
+                        data-automation-id='randomID12'
+                        className='webchatGoBack'
+                        onClick={() => this.props.setWebchatDisplay(false)}
+                        iconProps={{ iconName: 'Cancel' }}
+                    />
+                    <CommandButton
+                        data-automation-id='randomID11'
+                        onClick={() => this.toggleMeta()}
+                        className='toggleMeta'
+                        text={buttonText}
+                    />
+                </div>
+                { this.state.displayMetadata == true ? this.renderWithMeta() : this.renderWithoutMeta() }
             </div>
         )
 
@@ -42,7 +66,8 @@ class WebchatController extends React.Component<any, any> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        editTrainDialog: editTrainDialog,
+        setWebchatDisplay: setWebchatDisplay,
+        toggleTrainDialog: toggleTrainDialog
     }, dispatch);
 }
 const mapStateToProps = (state: State, ownProps: any) => {
