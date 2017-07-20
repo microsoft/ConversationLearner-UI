@@ -102,10 +102,12 @@ export type CreateAction = {
     action: ActionBase,
     currentAppId: string
 } | {
+    type: 'CREATE_ACTION_FULFILLED',
+    actionId: string,
+    action: ActionBase
+} | {
     type: 'CREATE_TRAIN_DIALOG',
     trainDialog: TrainDialog,
-} | {
-    type: "CREATE_OPERATION_FULFILLED"
 } | {
     type: 'CREATE_BLIS_APPLICATION_FULFILLED',
     blisApp: BlisAppBase,

@@ -74,6 +74,14 @@ export const createAction = (key: string, action: ActionBase, currentAppId: stri
     }
 }
 
+export const createActionFulfilled = (action: ActionBase, actionId: string): ActionObject => {
+    return {
+        type: 'CREATE_ACTION_FULFILLED',
+        action: action,
+        actionId: actionId
+    }
+}
+
 export const createTrainDialog = (key: string, trainDialog: TrainDialog): ActionObject => {
     //needs to make a call to an Epic to send data to BLIS
     return {
