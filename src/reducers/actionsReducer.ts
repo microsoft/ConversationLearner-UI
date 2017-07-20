@@ -17,7 +17,7 @@ const actionsReducer: Reducer<ActionState> =  (state = initialState, actionObjec
             return [...state, newAction];
         case 'DELETE_ACTION_FULFILLED':
             return state.filter(a => a.actionId !== actionObject.actionGUID)
-        case 'EDIT_ACTION':
+        case 'EDIT_ACTION_FULFILLED':
             let index: number = 0;
             for(let i = 0; i < state.length; i++){
                 if(state[i].actionId == actionObject.blisAction.actionId){

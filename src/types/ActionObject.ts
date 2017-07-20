@@ -6,12 +6,21 @@ export type UpdateAction = {
     type: 'EDIT_BLIS_APPLICATION',
     blisApp: BlisAppBase,
 } | {
+    type: 'EDIT_BLIS_APPLICATION_FULFILLED',
+    blisApp: BlisAppBase,
+} | {
     type: 'EDIT_ENTITY',
+    entity: EntityBase,
+} | {
+    type: 'EDIT_ENTITY_FULFILLED',
     entity: EntityBase,
 } | {
     type: 'EDIT_ACTION',
     blisAction: ActionBase,
     currentAppId: string
+} | {
+    type: 'EDIT_ACTION_FULFILLED',
+    blisAction: ActionBase
 } | {
     type: 'EDIT_TRAIN_DIALOG',
     trainDialog: TrainDialog,
