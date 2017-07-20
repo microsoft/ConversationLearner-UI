@@ -4,6 +4,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { CommandButton, Dialog, DialogFooter, DialogType, ChoiceGroup, TextField, DefaultButton, Dropdown } from 'office-ui-fabric-react';
+import { TextFieldPlaceholder } from './TextFieldPlaceholder';
 import { setUser } from '../actions/updateActions'
 import { fetchAllActions, fetchAllEntities, fetchAllTrainDialogs } from '../actions/fetchActions';
 import { setLoginDisplay } from '../actions/updateActions'
@@ -61,8 +62,8 @@ class UserLogin extends React.Component<any, any> {
             title = "Log In";
             input =
                     <div>
-                        <TextField onChanged={this.nameChanged.bind(this)} label="Name" placeholder="User Name..." value={this.state.userName} />
-                        <TextField onChanged={this.passwordChanged.bind(this)} label="Password" placeholder="Password..." value={this.state.userPassword} />
+                        <TextFieldPlaceholder onChanged={this.nameChanged.bind(this)} label="Name" placeholder="User Name..." value={this.state.userName} />
+                        <TextFieldPlaceholder onChanged={this.passwordChanged.bind(this)} label="Password" placeholder="Password..." value={this.state.userPassword} />
                     </div>;
             button =
                 <CommandButton

@@ -5,6 +5,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { CommandButton, Dialog, DialogFooter, DialogType, ChoiceGroup, TextField, DefaultButton, Dropdown, DropdownMenuItemType, Checkbox } from 'office-ui-fabric-react';
+import { TextFieldPlaceholder } from './TextFieldPlaceholder';
 import { State, PreBuiltEntities, PreBuilts, LocalePreBuilts } from '../types';
 import { EntityBase, EntityMetaData } from 'blis-models'
 
@@ -153,7 +154,7 @@ class EntityCreatorEditor extends React.Component<any, any> {
                         <span className='ms-font-xxl ms-fontWeight-semilight'>{title}</span>
                     </div>
                     <div>
-                        <TextField
+                        <TextFieldPlaceholder
                             onChanged={this.nameChanged.bind(this)}
                             label="Entity Name"
                             placeholder="Name..."
