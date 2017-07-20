@@ -52,11 +52,18 @@ export const setLoginDisplay = (isShown: boolean) : ActionObject => {
     }
 }
 
-export const setErrorDisplay = (message: string, failedRoute : string) : ActionObject => { 
+export const setErrorDisplay = (error: string, message: string, route : string) : ActionObject => { 
     return {
         type: 'SET_ERROR_DISPLAY',
-        setErrorDisplay: message,
-        failedRoute: failedRoute
+        error: error,
+        message: message,
+        route: route
+    }
+}
+
+export const clearErrorDisplay = () : ActionObject => { 
+    return {
+        type: 'CLEAR_ERROR_DISPLAY'
     }
 }
 

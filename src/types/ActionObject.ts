@@ -36,8 +36,11 @@ export type UpdateAction = {
 } | {
     //used for setting whether the error popup is displayed
     type: 'SET_ERROR_DISPLAY',
-    setErrorDisplay: string,
-    failedRoute: string
+    error: string,
+    message: string,
+    route: string
+} | {
+    type: 'CLEAR_ERROR_DISPLAY'
 } | {
     type: "TOGGLE_TRAIN_DIALOG",
     forward: boolean
@@ -131,15 +134,24 @@ export type DeleteAction = {
     blisAppGUID: string,
     blisApp: BlisAppBase
 } | {
+    type: 'DELETE_BLIS_APPLICATION_FULFILLED',
+    blisAppGUID: string
+} | {
     type: 'DELETE_ENTITY',
     entityGUID: string,
     currentAppId: string,
     entity: EntityBase
 } | {
+    type: 'DELETE_ENTITY_FULFILLED',
+    entityGUID: string
+} | {
     type: 'DELETE_ACTION',
     actionGUID: string,
     action: ActionBase,
     currentAppId: string
+}| {
+    type: 'DELETE_ACTION_FULFILLED',
+    actionGUID: string
 } | {
     type: 'DELETE_TRAIN_DIALOG',
     trainDialogGUID: string,

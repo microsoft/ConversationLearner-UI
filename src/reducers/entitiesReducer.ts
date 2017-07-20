@@ -13,12 +13,12 @@ const entitiesReducer: Reducer<EntityState> =  (state = initialState, action: Ac
             let empty: EntityState = []
             return empty;
         case 'CREATE_ENTITY_FULFILLED':
-            let newEntity = {...action.entity, appId: action.entityId};
+            let newEntity = {...action.entity, entityId: action.entityId};
             return [...state, newEntity];
         case 'CREATE_NEGATIVE_ENTITY_FULFILLED':
             let entities: EntityBase[] = [action.positiveEntity, action.negativeEntity];
             return [...state, ...entities]
-        case 'DELETE_ENTITY':
+        case 'DELETE_ENTITY_FULFILLED':
             return state.filter(ent => ent.entityId !== action.entityGUID);
         case 'EDIT_ENTITY':
             let index: number = 0;
