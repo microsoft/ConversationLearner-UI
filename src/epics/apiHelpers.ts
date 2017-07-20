@@ -8,6 +8,10 @@ import {
 	TrainExtractorStep, ExtractResponse, TrainScorerStep } from 'blis-models'
 import * as Rx from 'rxjs';
 import { Observable, Observer } from 'rxjs'
+import { fetchApplicationsFulfilled, fetchAllEntitiesFulfilled, fetchAllActionsFulfilled } from '../actions/fetchActions'
+import { createApplicationFulfilled, createEntityFulfilled, createPositiveEntityFulfilled, createNegativeEntityFulfilled } from '../actions/createActions'
+import { setErrorDisplay } from '../actions/updateActions'
+import { ActionObject } from '../types'
 
 //=========================================================
 // CONFIG
@@ -45,9 +49,17 @@ export interface BlisAppForUpdate extends BlisAppBase {
 // GET ROUTES
 //=========================================================
 
-export const getAllBlisApps = (key : string, userId : string): Observable<AxiosResponse> => {
+export const getAllBlisApps = (key : string, userId : string): Observable<ActionObject> => {
 	const getAppsRoute: string = makeRoute(key, `apps`, `userId=${userId}`);
-	return Rx.Observable.fromPromise(axios.get(getAppsRoute, config))
+	return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.get(getAppsRoute, config)
+          .then(response => {
+            obs.next(fetchApplicationsFulfilled(response.data.apps));
+            obs.complete();
+          })
+          .catch(err => {
+            obs.next(setErrorDisplay(err.message, "FETCH_APPLICATIONS"));
+            obs.complete();
+          }));
 };
 export const getBlisApp = (key : string, appId: string): Observable<AxiosResponse> => {
 	let getAppRoute: string = makeRoute(key, `app/${appId}`);
@@ -74,17 +86,41 @@ export const getBlisAction = (key : string, appId: string, actionId: string): Ob
 // CREATE ROUTES
 //=========================================================
 
-export const createBlisApp = (key: string, userId : string, blisApp: BlisAppBase): Observable<AxiosResponse> => {
+export const createBlisApp = (key: string, userId : string, blisApp: BlisAppBase): Observable<ActionObject> => {
 	let addAppRoute: string = makeRoute(key, `app`, `userId=${userId}`);
 	//remove the appId property from the object
 	const { appId, ...appToSend } = blisApp
-	return Rx.Observable.fromPromise(axios.post(addAppRoute, appToSend, config))
+	return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.post(addAppRoute, appToSend, config)
+          .then(response => {
+            obs.next(createApplicationFulfilled(blisApp, response.data));
+            obs.complete();
+          })
+          .catch(err => {
+            obs.next(setErrorDisplay(err.message, "CREATE_BLIS_APPLICATION"));
+            obs.complete();
+          }));
 };
-export const createBlisEntity = (key: string, entity: EntityBase, appId: string): Observable<AxiosResponse> => {
+export const createBlisEntity = (key: string, entity: EntityBase, appId: string, reverseEntity?: EntityBase): Observable<ActionObject> => {
 	let addEntityRoute: string = makeRoute(key, `app/${appId}/entity`);
 	//remove property from the object that the route will not accept
 	const { version, packageCreationId, packageDeletionId, entityId, ...entityToSend } = entity;
-	return Rx.Observable.fromPromise(axios.post(addEntityRoute, entityToSend, config))
+	return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.post(addEntityRoute, entityToSend, config).then(response => {
+			let newEntityId = response.data;
+			if (!entity.metadata.isReversable) {
+				obs.next(createEntityFulfilled(entity, newEntityId));
+			}
+			else if (entity.metadata.positiveId) {
+				obs.next(createNegativeEntityFulfilled(key, reverseEntity, entity, newEntityId, appId));
+			}
+			else {
+				obs.next(createPositiveEntityFulfilled(key, entity, newEntityId, appId));
+			}
+            obs.complete();
+          })
+          .catch(err => {
+            obs.next(setErrorDisplay(err.message, "CREATE_ENTITY"));
+            obs.complete();
+          }));
 };
 export const createBlisAction = (key: string, action: ActionBase, appId: string): Observable<AxiosResponse> => {
 	let addActionRoute: string = this.makeRoute(key, `app/${appId}/action`);

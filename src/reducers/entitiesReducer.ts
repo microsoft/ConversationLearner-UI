@@ -12,8 +12,9 @@ const entitiesReducer: Reducer<EntityState> =  (state = initialState, action: Ac
         case "EMPTY_STATE_PROPERTIES": 
             let empty: EntityState = []
             return empty;
-        case 'CREATE_ENTITY':
-            return [...state, action.entity];
+        case 'CREATE_ENTITY_FULFILLED':
+            let newEntity = {...action.entity, appId: action.entityId};
+            return [...state, newEntity];
         case 'CREATE_NEGATIVE_ENTITY_FULFILLED':
             let entities: EntityBase[] = [action.positiveEntity, action.negativeEntity];
             return [...state, ...entities]
