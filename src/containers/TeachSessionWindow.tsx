@@ -4,11 +4,11 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../types'
 
-class WebchatMetadata extends React.Component<any, any> {
+class TeachSessionWindow extends React.Component<any, any> {
     render() {
         return (
             <div className="container">
-                <span className="ms-font-su goldText">METADATA</span>
+                <span className="ms-font-su goldText">TEACH WINDOW</span>
             </div>
         );
     }
@@ -23,4 +23,4 @@ const mapStateToProps = (state: State) => {
         blisApps: state.apps
     }
 }
-export default connect(mapStateToProps, mapDispatchToProps)(WebchatMetadata);
+export default connect(mapStateToProps, mapDispatchToProps)(TeachSessionWindow);

@@ -4,24 +4,25 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State, TrainDialogState, AppState } from '../types';
 import Webchat from './Webchat'
-import WebchatMetadata from './WebchatMetadata'
+import TeachSessionWindow from './TeachSessionWindow'
 import { CommandButton, IIconProps, IIconStyles } from 'office-ui-fabric-react';
 
-class WebchatController extends React.Component<any, any> {
+class SessionController extends React.Component<any, any> {
     constructor(p: any) {
         super(p);
         this.state = {
-            displayMetadata: true
+            teachSession: false
         }
-        this.renderWithMeta = this.renderWithMeta.bind(this)
-        this.toggleMeta = this.toggleMeta.bind(this)
+        this.teachSession = this.teachSession.bind(this)
+        this.regularSession = this.regularSession.bind(this)
+        this.toggleSessionType = this.toggleSessionType.bind(this)
     }
-    toggleMeta() {
+    toggleSessionType() {
         this.setState({
-            displayMetadata: !this.state.displayMetadata
+            teachSession: !this.state.teachSession
         })
     }
-    renderWithMeta() {
+    teachSession() {
         return (
             <div className="container">
                 <div className="toggleTrainDialogBack">
@@ -38,7 +39,7 @@ class WebchatController extends React.Component<any, any> {
                         <Webchat />
                     </div>
                     <div className="webchatMetaShrink">
-                        <WebchatMetadata />
+                        <TeachSessionWindow />
                     </div>
                 </div>
                 <div className="toggleTrainDialogForward">
@@ -53,7 +54,7 @@ class WebchatController extends React.Component<any, any> {
             </div>
         )
     }
-    renderWithoutMeta() {
+    regularSession() {
         return (
             <div className="container">
                 <div className="toggleTrainDialogBack">
@@ -81,7 +82,7 @@ class WebchatController extends React.Component<any, any> {
         )
     }
     render() {
-        let buttonText = this.state.displayMetadata === true ? "HIDE METADATA" : "SHOW METADATA"
+        let buttonText = this.state.teachSession === true ? "TEACH SESSION" : "CHAT SESSION"
         return (
             <div className='container webchatController'>
                 <div className="webchatHeader">
@@ -93,12 +94,12 @@ class WebchatController extends React.Component<any, any> {
                     />
                     <CommandButton
                         data-automation-id='randomID11'
-                        onClick={() => this.toggleMeta()}
+                        onClick={() => this.toggleSessionType()}
                         className='toggleMeta'
                         text={buttonText}
                     />
                 </div>
-                {this.state.displayMetadata == true ? this.renderWithMeta() : this.renderWithoutMeta()}
+                {this.state.teachSession == true ? this.teachSession() : this.regularSession()}
             </div>
         )
 
@@ -115,4 +116,4 @@ const mapStateToProps = (state: State, ownProps: any) => {
         trainDialogs: state.trainDialogs
     }
 }
-export default connect(mapStateToProps, mapDispatchToProps)(WebchatController as React.ComponentClass<any>);
+export default connect(mapStateToProps, mapDispatchToProps)(SessionController as React.ComponentClass<any>);

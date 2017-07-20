@@ -8,7 +8,7 @@ import ActionResponsesList from './ActionResponsesList';
 import BLISAppsHomepage from './BLISAppsHomepage';
 import AppDashboard from './AppDashboard';
 import AppSettings from './AppSettings';
-import WebchatController from './WebchatController';
+import SessionController from './SessionController';
 import { Nav, INavLink, INavLinkGroup } from 'office-ui-fabric-react';
 import { Link } from 'react-router-dom';
 import { setWebchatDisplay } from '../actions/updateActions'
@@ -129,7 +129,7 @@ class TrainingGround extends React.Component<any, any> {
                     </div>
 
                     <div className='trainingGroundArena fluidCont'>
-                        <WebchatController />
+                        <SessionController />
                     </div>
                 </div>
             </div>
