@@ -63,22 +63,44 @@ export const getAllBlisApps = (key : string, userId : string): Observable<Action
             obs.complete();
           }));
 };
+
+export const getAllEntitiesForBlisApp = (key : string, appId: string): Observable<ActionObject> => {
+	let getEntitiesForAppRoute: string = makeRoute(key, `app/${appId}/entities`);
+	return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.get(getEntitiesForAppRoute, config)
+		.then(response => {
+            obs.next(fetchAllEntitiesFulfilled(response.data.entities));
+            obs.complete();
+          })
+          .catch(err => {
+            obs.next(setErrorDisplay(err.message, "", "FETCH_ENTITIES"));
+            obs.complete();
+          }));
+};
+
+export const getAllActionsForBlisApp = (key : string, appId: string): Observable<ActionObject> => {
+	let getActionsForAppRoute: string = makeRoute(key, `app/${appId}/actions`);
+	return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.get(getActionsForAppRoute, config)
+		.then(response => {
+            obs.next(fetchAllActionsFulfilled(response.data.actions));
+            obs.complete();
+          })
+          .catch(err => {
+            obs.next(setErrorDisplay(err.message, "", "FETCH_ACTIONS"));
+            obs.complete();
+          }));
+};
+
+// Not currently used
 export const getBlisApp = (key : string, appId: string): Observable<AxiosResponse> => {
 	let getAppRoute: string = makeRoute(key, `app/${appId}`);
 	return Rx.Observable.fromPromise(axios.get(getAppRoute, config))
 };
-export const getAllEntitiesForBlisApp = (key : string, appId: string): Observable<AxiosResponse> => {
-	let getEntitiesForAppRoute: string = makeRoute(key, `app/${appId}/entities`);
-	return Rx.Observable.fromPromise(axios.get(getEntitiesForAppRoute, config))
-};
+// Not currently used
 export const getBlisEntity = (key : string, appId: string, entityId: string): Observable<AxiosResponse> => {
 	let getEntityRoute: string = makeRoute(key, `app/${appId}/entity/${entityId}`);
 	return Rx.Observable.fromPromise(axios.get(getEntityRoute, config))
 };
-export const getAllActionsForBlisApp = (key : string, appId: string): Observable<AxiosResponse> => {
-	let getActionsForAppRoute: string = makeRoute(key, `app/${appId}/actions`);
-	return Rx.Observable.fromPromise(axios.get(getActionsForAppRoute, config))
-};
+// Not currently used
 export const getBlisAction = (key : string, appId: string, actionId: string): Observable<AxiosResponse> => {
 	let getActionRoute: string = makeRoute(key, `app/${appId}/action/${actionId}`);
 	return Rx.Observable.fromPromise(axios.get(getActionRoute, config))

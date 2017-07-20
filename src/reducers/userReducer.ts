@@ -16,7 +16,7 @@ const userReducer: Reducer<UserState> =  (state = initialState, action: ActionOb
         case 'SET_USER_KEY':
             return {...state, key: action.key };
         case 'SET_ERROR_DISPLAY':
-            switch (action.failedRoute) {
+            switch (action.route) {
                 case 'FETCH_APPLICATIONS' :
                     return {...initialState};
                 default:

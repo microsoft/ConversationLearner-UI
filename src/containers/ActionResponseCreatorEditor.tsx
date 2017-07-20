@@ -4,7 +4,8 @@ import { editAction } from '../actions/updateActions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
-import { CommandButton, Dialog, DialogFooter, DialogType, ChoiceGroup, TextField, DefaultButton, Dropdown, TagPicker, Label,Checkbox } from 'office-ui-fabric-react';
+import { CommandButton, Dialog, DialogFooter, DialogType, ChoiceGroup, DefaultButton, Dropdown, TagPicker, Label,Checkbox } from 'office-ui-fabric-react';
+import { TextFieldPlaceholder } from './TextFieldPlaceholder';
 import { ActionBase, ActionMetaData, ActionTypes, EntityBase, EntityMetaData } from 'blis-models'
 import { State } from '../types';
 import EntityCreatorEditor from './EntityCreatorEditor'
@@ -18,6 +19,7 @@ interface Props {
     blisAction: ActionBase | null,
     handleClose: Function
 }
+
 class ActionResponseCreatorEditor extends React.Component<any, any> {
     constructor(p: Props) {
         super(p);
@@ -278,7 +280,7 @@ class ActionResponseCreatorEditor extends React.Component<any, any> {
                             selectedKey={this.state.actionTypeVal}
                             disabled={this.state.editing}
                         />
-                        <TextField
+                        <TextFieldPlaceholder
                             onChanged={this.contentChanged.bind(this)}
                             label="Payload"
                             placeholder="Payload..."
