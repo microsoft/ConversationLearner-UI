@@ -25,16 +25,10 @@ class SessionController extends React.Component<any, any> {
     teachSession() {
         return (
             <div className="container">
-                <div className="toggleTrainDialogBack">
-                    <CommandButton
-                        data-automation-id='randomID14'
-                        disabled={false}
-                        className='toggleTrainDialog'
-                        onClick={() => this.props.toggleTrainDialog(false)}
-                        iconProps={{ iconName: 'Back' }}
-                    />
+                <div className="webchatHeader">
+                    <p className="webchatHeaderTitle ms-font-m-plus">TEACH SESSION</p>
                 </div>
-                <div className="webchatContent">
+                <div className="webchatWindow">
                     <div className="webchatShrink">
                         <Webchat />
                     </div>
@@ -42,22 +36,31 @@ class SessionController extends React.Component<any, any> {
                         <TeachSessionWindow />
                     </div>
                 </div>
-                <div className="toggleTrainDialogForward">
-                    <CommandButton
-                        data-automation-id='randomID13'
-                        disabled={false}
-                        onClick={() => this.props.toggleTrainDialog(true)}
-                        className='toggleTrainDialog'
-                        iconProps={{ iconName: 'Forward' }}
-                    />
-                </div>
             </div>
         )
     }
     regularSession() {
         return (
             <div className="container">
+                <div className="webchatHeader">
+                    <p className="webchatHeaderTitle ms-font-m-plus">CHAT SESSION</p>
+                </div>
+                <div className="webchatWindow">
+                    <Webchat />
+                </div>
+            </div>
+        )
+    }
+    render() {
+        return (
+            <div className='container webchatController'>
                 <div className="toggleTrainDialogBack">
+                    <CommandButton
+                        data-automation-id='randomID12'
+                        className='webchatButton'
+                        onClick={() => this.props.setWebchatDisplay(false)}
+                        iconProps={{ iconName: 'Cancel' }}
+                    />
                     <CommandButton
                         data-automation-id='randomID14'
                         disabled={false}
@@ -67,9 +70,15 @@ class SessionController extends React.Component<any, any> {
                     />
                 </div>
                 <div className="webchatContent">
-                    <Webchat />
+                    {this.state.teachSession == true ? this.teachSession() : this.regularSession()}
                 </div>
                 <div className="toggleTrainDialogForward">
+                    <CommandButton
+                        data-automation-id='randomID11'
+                        className='webchatButton'
+                        onClick={() => this.toggleSessionType()}
+                        iconProps={{ iconName: 'Settings' }}
+                    />
                     <CommandButton
                         data-automation-id='randomID13'
                         disabled={false}
@@ -78,28 +87,6 @@ class SessionController extends React.Component<any, any> {
                         iconProps={{ iconName: 'Forward' }}
                     />
                 </div>
-            </div>
-        )
-    }
-    render() {
-        let buttonText = this.state.teachSession === true ? "TEACH SESSION" : "CHAT SESSION"
-        return (
-            <div className='container webchatController'>
-                <div className="webchatHeader">
-                    <CommandButton
-                        data-automation-id='randomID12'
-                        className='webchatGoBack'
-                        onClick={() => this.props.setWebchatDisplay(false)}
-                        iconProps={{ iconName: 'Cancel' }}
-                    />
-                    <CommandButton
-                        data-automation-id='randomID11'
-                        onClick={() => this.toggleSessionType()}
-                        className='toggleMeta'
-                        text={buttonText}
-                    />
-                </div>
-                {this.state.teachSession == true ? this.teachSession() : this.regularSession()}
             </div>
         )
 
