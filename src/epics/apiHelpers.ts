@@ -9,7 +9,7 @@ import {
 import * as Rx from 'rxjs';
 import { Observable, Observer } from 'rxjs'
 import { fetchApplicationsFulfilled, fetchAllEntitiesFulfilled, fetchAllActionsFulfilled } from '../actions/fetchActions'
-import { createApplicationFulfilled, createEntityFulfilled, createPositiveEntityFulfilled, createNegativeEntityFulfilled } from '../actions/createActions'
+import { createApplicationFulfilled, createEntityFulfilled, createPositiveEntityFulfilled, createNegativeEntityFulfilled, createActionFulfilled } from '../actions/createActions'
 import { setErrorDisplay } from '../actions/updateActions'
 import { ActionObject } from '../types'
 
@@ -122,11 +122,20 @@ export const createBlisEntity = (key: string, entity: EntityBase, appId: string,
             obs.complete();
           }));
 };
-export const createBlisAction = (key: string, action: ActionBase, appId: string): Observable<AxiosResponse> => {
-	let addActionRoute: string = this.makeRoute(key, `app/${appId}/action`);
+
+export const createBlisAction = (key: string, action: ActionBase, appId: string): Observable<ActionObject> => {
+	let addActionRoute: string = makeRoute(key, `app/${appId}/action`);
 	//remove property from the object that the route will not accept
 	const { actionId, version, packageCreationId, packageDeletionId, ...actionToSend } = action
-	return Rx.Observable.fromPromise(axios.post(addActionRoute, actionToSend, config))
+	return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.post(addActionRoute, actionToSend, config).then(response => {
+			let newActionId = response.data;
+			obs.next(createActionFulfilled(action, newActionId));
+            obs.complete();
+          })
+          .catch(err => {
+            obs.next(setErrorDisplay(err.message, "CREATE_ACTION"));
+            obs.complete();
+          }));
 };
 
 //=========================================================

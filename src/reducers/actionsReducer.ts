@@ -12,8 +12,9 @@ const actionsReducer: Reducer<ActionState> =  (state = initialState, actionObjec
         case "EMPTY_STATE_PROPERTIES": 
             let empty: ActionState = []
             return empty;
-        case 'CREATE_ACTION':
-            return [...state, actionObject.action];
+        case 'CREATE_ACTION_FULFILLED':
+            let newAction = {...actionObject.action, appId: actionObject.actionId};
+            return [...state, newAction];
         case 'DELETE_ACTION':
             return state.filter(a => a.actionId !== actionObject.actionGUID)
         case 'EDIT_ACTION':

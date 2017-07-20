@@ -17,7 +17,6 @@ export const createNewAction: Epic<ActionObject, State> = (action$: ActionsObser
     return action$.ofType("CREATE_ACTION")
         .flatMap((actionObject: any) =>
             createBlisAction(actionObject.key, actionObject.action, actionObject.currentAppId)
-				.mapTo({type: "CREATE_OPERATION_FULFILLED"})
         );
 }
 
