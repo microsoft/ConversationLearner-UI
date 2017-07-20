@@ -11,6 +11,7 @@ import { Observable, Observer } from 'rxjs'
 import { fetchApplicationsFulfilled, fetchAllEntitiesFulfilled, fetchAllActionsFulfilled } from '../actions/fetchActions'
 import { createApplicationFulfilled, createEntityFulfilled, createPositiveEntityFulfilled, createNegativeEntityFulfilled, createActionFulfilled } from '../actions/createActions'
 import { deleteBLISApplicationFulfilled, deleteEntityFulfilled, deleteActionFulfilled } from '../actions/deleteActions'
+import { editBLISApplicationFulfilled, editEntityFulfilled, editActionFulfilled } from '../actions/updateActions'
 import { setErrorDisplay } from '../actions/updateActions'
 import { ActionObject } from '../types'
 
@@ -190,20 +191,44 @@ export const deleteBlisAction = (key : string, appId: string, action: ActionBase
 // EDIT ROUTES
 //=========================================================
 
-export const editBlisApp = (key : string, blisAppId: string, blisApp: BlisAppForUpdate): Observable<AxiosResponse> => {
+export const editBlisApp = (key : string, blisAppId: string, blisApp: BlisAppForUpdate): Observable<ActionObject> => {
 	let editAppRoute: string = makeRoute(key, `app/${blisAppId}`);
 	const { appId, latestPackageId, metadata, trainingRequired, trainingStatus, trainingFailureMessage, ...appToSend } = blisApp
-	return Rx.Observable.fromPromise(axios.put(editAppRoute, appToSend, config))
+	return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.put(editAppRoute, appToSend, config)
+		.then(response => {
+            obs.next(editBLISApplicationFulfilled(blisApp));
+            obs.complete();
+          })
+          .catch(err => {
+            obs.next(setErrorDisplay(err.message, "", "EDIT_BLIS_APPLICATION"));
+            obs.complete();
+          }));
 };
-export const editBlisAction = (key : string, appId: string, blisActionId: string, action: ActionBase): Observable<AxiosResponse> => {
+export const editBlisAction = (key : string, appId: string, blisActionId: string, action: ActionBase): Observable<ActionObject> => {
 	let editActionRoute: string = makeRoute(key, `app/${appId}/action/${blisActionId}`);
 	const { actionId, version, packageCreationId, packageDeletionId, ...actionToSend } = action
-	return Rx.Observable.fromPromise(axios.put(editActionRoute, actionToSend, config))
+	return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.put(editActionRoute, actionToSend, config)
+		.then(response => {
+            obs.next(editActionFulfilled(action));
+            obs.complete();
+          })
+          .catch(err => {
+            obs.next(setErrorDisplay(err.message, "", "EDIT_ACTION"));
+            obs.complete();
+          }));
 };
-export const editBlisEntity = (key: string, appId: string, entity: EntityBase): Observable<AxiosResponse> => {
+export const editBlisEntity = (key: string, appId: string, entity: EntityBase): Observable<ActionObject> => {
  	let editActionRoute: string = makeRoute(key, `app/${appId}/entity/${entity.entityId}`);
  	const { version, packageCreationId, packageDeletionId, ...entityToSend } = entity;
-	 return Rx.Observable.fromPromise(axios.put(editActionRoute, entityToSend, config))
+	 return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.put(editActionRoute, entityToSend, config)
+	  	.then(response => {
+            obs.next(editEntityFulfilled(entity));
+            obs.complete();
+          })
+          .catch(err => {
+            obs.next(setErrorDisplay(err.message, "", "EDIT_ENTITY"));
+            obs.complete();
+          }));
 }
 //========================================================
 // SESSION ROUTES

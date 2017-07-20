@@ -76,11 +76,27 @@ export const editBLISApplication = (key: string, application: BlisAppBase) : Act
     }
 }
 
+export const editBLISApplicationFulfilled = (application: BlisAppBase) : ActionObject => { 
+    //needs to make a call to an Epic to send data to BLIS
+    return {
+        type: 'EDIT_BLIS_APPLICATION_FULFILLED',
+        blisApp: application
+    }
+}
+
 export const editEntity = (key: string, entity: EntityBase) : ActionObject => { 
     //needs to make a call to an Epic to send data to BLIS
     return {
         type: 'EDIT_ENTITY',
         key: key,
+        entity: entity
+    }
+}
+
+export const editEntityFulfilled = (entity: EntityBase) : ActionObject => { 
+    //needs to make a call to an Epic to send data to BLIS
+    return {
+        type: 'EDIT_ENTITY_FULFILLED',
         entity: entity
     }
 }
@@ -92,6 +108,14 @@ export const editAction = (key: string, action: ActionBase, currentAppId: string
         key: key,
         blisAction: action,
         currentAppId: currentAppId
+    }
+}
+
+export const editActionFulfilled = (action: ActionBase) : ActionObject => { 
+    //needs to make a call to an Epic to send data to BLIS
+    return {
+        type: 'EDIT_ACTION_FULFILLED',
+        blisAction: action,
     }
 }
 

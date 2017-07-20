@@ -20,7 +20,7 @@ const entitiesReducer: Reducer<EntityState> =  (state = initialState, action: Ac
             return [...state, ...entities]
         case 'DELETE_ENTITY_FULFILLED':
             return state.filter(ent => ent.entityId !== action.entityGUID);
-        case 'EDIT_ENTITY':
+        case 'EDIT_ENTITY_FULFILLED':
             let index: number = 0;
             for(let i = 0; i < state.length; i++){
                 if(state[i].entityId == action.entity.entityId){
