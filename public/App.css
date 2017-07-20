@@ -208,11 +208,6 @@
   height: 100%;
 }
 .goldText{
-  position: relative;
-  float: left;
-  top: 30%;
-  left: 50%;
-  transform: translate(-50%, -50%);
   color: #ffb900
 }
 .saveAppChangesButtonsDiv{
@@ -225,6 +220,15 @@
 }
 .webchatHeader{
   width: 100%;
+  border-bottom: 2px solid #ffb900
+}
+.webchatContent{
+  border-right: 1px solid #ffb900;
+  border-left: 1px solid #ffb900;
+  border-bottom: 1px solid #ffb900;
+  width: 85%;
+  height: 92%;
+  display: inline-block
 }
 .webchatMetaShrink{
   width: 35%;
@@ -281,5 +285,8 @@
   display: inline-block;
   float: right;
   margin-top: -.1em
+}
+.webchatController{
+  background-color: #323232
 }
 
