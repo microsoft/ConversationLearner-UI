@@ -3,9 +3,11 @@ import { setWebchatDisplay, toggleTrainDialog } from '../actions/updateActions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State, TrainDialogState, AppState } from '../types';
+import { CommandButton, IIconProps, IIconStyles } from 'office-ui-fabric-react';
 import Webchat from './Webchat'
 import TeachSessionWindow from './TeachSessionWindow'
-import { CommandButton, IIconProps, IIconStyles } from 'office-ui-fabric-react';
+import ChatSessionHeader from './ChatSessionHeader'
+import TeachSessionHeader from './TeachSessionHeader'
 
 class SessionController extends React.Component<any, any> {
     constructor(p: any) {
