@@ -95,7 +95,6 @@ class BLISAppCreator extends React.Component<any, any> {
         //need to empty entities, actions, and trainDialogs arrays
         this.props.emptyStateProperties();
         this.handleClose();
-        this.props.setBLISAppDisplay("TrainingGround");
     }
     render() {
         return (

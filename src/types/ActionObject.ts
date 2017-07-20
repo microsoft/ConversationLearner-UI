@@ -34,6 +34,11 @@ export type UpdateAction = {
     type: 'SET_LOGIN_DISPLAY',
     setLoginDisplay: boolean,
 } | {
+    //used for setting whether the error popup is displayed
+    type: 'SET_ERROR_DISPLAY',
+    setErrorDisplay: string,
+    failedRoute: string
+} | {
     type: "TOGGLE_TRAIN_DIALOG",
     forward: boolean
 } | {
@@ -84,6 +89,10 @@ export type CreateAction = {
     entity: EntityBase,
     currentAppId: string
 } | {
+    type: 'CREATE_ENTITY_FULFILLED',
+    entityId: string,
+    entity: EntityBase
+} | {
     type: 'CREATE_REVERSIBLE_ENTITY',
     key: string,
     entity: EntityBase,
@@ -99,6 +108,7 @@ export type CreateAction = {
     type: "CREATE_OPERATION_FULFILLED"
 } | {
     type: 'CREATE_BLIS_APPLICATION_FULFILLED',
+    blisApp: BlisAppBase,
     blisAppId: string
 } | {
     type: 'CREATE_POSITIVE_ENTITY_FULFILLED',

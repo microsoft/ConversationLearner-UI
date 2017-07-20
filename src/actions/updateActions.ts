@@ -52,6 +52,14 @@ export const setLoginDisplay = (isShown: boolean) : ActionObject => {
     }
 }
 
+export const setErrorDisplay = (message: string, failedRoute : string) : ActionObject => { 
+    return {
+        type: 'SET_ERROR_DISPLAY',
+        setErrorDisplay: message,
+        failedRoute: failedRoute
+    }
+}
+
 export const editBLISApplication = (key: string, application: BlisAppBase) : ActionObject => { 
     //needs to make a call to an Epic to send data to BLIS
     return {

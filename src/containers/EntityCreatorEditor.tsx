@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { createEntity, createReversibleEntity } from '../actions/createActions';
+import { createEntity } from '../actions/createActions';
 import { editEntity } from '../actions/updateActions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -74,11 +74,7 @@ class EntityCreatorEditor extends React.Component<any, any> {
             packageDeletionId: null
         })
         if (this.state.editing === false) {
-            if (meta.isReversable === true) {
-                this.props.createReversibleEntity(this.props.userKey, entityToAdd, currentAppId);
-            } else {
-                this.props.createEntity(this.props.userKey, entityToAdd, currentAppId);
-            }
+            this.props.createEntity(this.props.userKey, entityToAdd, currentAppId);
         } else {
             this.editEntity(entityToAdd);
         }
@@ -208,8 +204,7 @@ class EntityCreatorEditor extends React.Component<any, any> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         createEntity: createEntity,
-        editEntity: editEntity,
-        createReversibleEntity: createReversibleEntity
+        editEntity: editEntity
     }, dispatch);
 }
 const mapStateToProps = (state: State, ownProps: any) => {

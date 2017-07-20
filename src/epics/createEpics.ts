@@ -5,37 +5,12 @@ import { State, ActionObject } from '../types'
 import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, ActionMetaData, ActionList, ActionTypes } from 'blis-models';
 import { createBlisApp, createBlisAction, createBlisEntity } from "./apiHelpers";
 import { createApplicationFulfilled, createPositiveEntityFulfilled, createNegativeEntityFulfilled } from '../actions/createActions'
+import { setErrorDisplay } from '../actions/updateActions'
 
 export const createNewApplication: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
     return action$.ofType("CREATE_BLIS_APPLICATION")
         .flatMap((action: any) =>
-            createBlisApp(action.key, action.userId, action.blisApp)
-                .map(response => createApplicationFulfilled(response.data))
-        );
-}
-
-export const createNewEntity: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
-    return action$.ofType("CREATE_ENTITY")
-        .flatMap((action: any) =>
-            createBlisEntity(action.key, action.entity, action.currentAppId)
-				.mapTo({type: "CREATE_OPERATION_FULFILLED"})
-        );
-}
-
-export const createReversibleEntity: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
-    return action$.ofType("CREATE_REVERSIBLE_ENTITY")
-        .flatMap((action: any) =>
-            createBlisEntity(action.key, action.entity, action.currentAppId)
-                .map(response => createPositiveEntityFulfilled(action.key, action.entity, response.data, action.currentAppId))
-        );
-}
-
-export const createNegativeEntity: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
-    return action$.ofType("CREATE_POSITIVE_ENTITY_FULFILLED")
-        .flatMap((action: any) =>
-            createBlisEntity(action.key, action.negativeEntity, action.currentAppId)
-                .map(response => createNegativeEntityFulfilled(action.key, action.positiveEntity, action.negativeEntity, response.data, action.currentAppId))
-        );
+            createBlisApp(action.key, action.userId, action.blisApp))
 }
 
 export const createNewAction: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
@@ -43,5 +18,19 @@ export const createNewAction: Epic<ActionObject, State> = (action$: ActionsObser
         .flatMap((actionObject: any) =>
             createBlisAction(actionObject.key, actionObject.action, actionObject.currentAppId)
 				.mapTo({type: "CREATE_OPERATION_FULFILLED"})
+        );
+}
+
+export const createNewEntity: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
+    return action$.ofType("CREATE_ENTITY")
+        .flatMap((action: any) =>
+            createBlisEntity(action.key, action.entity, action.currentAppId)
+        );
+}
+
+export const createNegativeEntity: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
+    return action$.ofType("CREATE_POSITIVE_ENTITY_FULFILLED")
+        .flatMap((action: any) =>
+            createBlisEntity(action.key, action.negativeEntity, action.currentAppId, action.positiveEntity)
         );
 }

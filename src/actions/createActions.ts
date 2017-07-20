@@ -11,6 +11,14 @@ export const createBLISApplication = (key : string, userId : string, application
     }
 }
 
+export const createApplicationFulfilled = (blisApp: BlisAppBase, appId: string): ActionObject => {
+    return {
+        type: 'CREATE_BLIS_APPLICATION_FULFILLED',
+        blisApp: blisApp,
+        blisAppId: appId
+    }
+}
+
 export const createEntity = (key: string, entity: EntityBase, currentAppId: string): ActionObject => {
     //needs to make a call to an Epic to send data to BLIS
     return {
@@ -21,45 +29,18 @@ export const createEntity = (key: string, entity: EntityBase, currentAppId: stri
     }
 }
 
-export const createReversibleEntity = (key: string, entity: EntityBase, currentAppId: string): ActionObject => {
-    //needs to make a call to an Epic to send data to BLIS
+export const createEntityFulfilled = (entity: EntityBase, entityId: string): ActionObject => {
     return {
-        type: 'CREATE_REVERSIBLE_ENTITY',
-        key: key,
+        type: 'CREATE_ENTITY_FULFILLED',
         entity: entity,
-        currentAppId: currentAppId
+        entityId: entityId
     }
 }
 
-export const createAction = (key: string, action: ActionBase, currentAppId: string): ActionObject => {
-    //needs to make a call to an Epic to send data to BLIS
-    return {
-        type: 'CREATE_ACTION',
-        key: key,
-        action: action,
-        currentAppId: currentAppId
-    }
-}
-
-export const createTrainDialog = (key: string, trainDialog: TrainDialog): ActionObject => {
-    //needs to make a call to an Epic to send data to BLIS
-    return {
-        type: 'CREATE_TRAIN_DIALOG',
-        key: key,
-        trainDialog: trainDialog
-    }
-}
-
-export const createApplicationFulfilled = (appId: string): ActionObject => {
-    return {
-        type: 'CREATE_BLIS_APPLICATION_FULFILLED',
-        blisAppId: appId
-    }
-}
-
+// After positive entity has been created, create the negative entity with a reference to the positiveId
 export const createPositiveEntityFulfilled = (key: string, positiveEntity: EntityBase, positiveEntityId: string, currentAppId: string): ActionObject => {
     let negativeEntity: EntityBase = {...positiveEntity, entityName: `~${positiveEntity.entityName}`, metadata: {...positiveEntity.metadata, positiveId: positiveEntityId}} as EntityBase;
-    return {
+    return { 
         type: 'CREATE_POSITIVE_ENTITY_FULFILLED',
         key: key,
         negativeEntity: negativeEntity,
@@ -80,6 +61,25 @@ export const createNegativeEntityFulfilled = (key: string, positiveEntity: Entit
         positiveEntity: posEntity,
         negativeEntity: negativeEntity,
         currentAppId: currentAppId
+    }
+}
+
+export const createAction = (key: string, action: ActionBase, currentAppId: string): ActionObject => {
+    //needs to make a call to an Epic to send data to BLIS
+    return {
+        type: 'CREATE_ACTION',
+        key: key,
+        action: action,
+        currentAppId: currentAppId
+    }
+}
+
+export const createTrainDialog = (key: string, trainDialog: TrainDialog): ActionObject => {
+    //needs to make a call to an Epic to send data to BLIS
+    return {
+        type: 'CREATE_TRAIN_DIALOG',
+        key: key,
+        trainDialog: trainDialog
     }
 }
 
