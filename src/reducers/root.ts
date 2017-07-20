@@ -5,6 +5,7 @@ import actionsReducer from './actionsReducer';
 import trainDialogsReducer from './trainDialogsReducer';
 import displayReducer from './displayReducer';
 import userReducer from './userReducer';
+import errorReducer from './errorReducer';
 import { State } from '../types';
 
 const rootReducer = combineReducers<State>({
@@ -14,6 +15,7 @@ const rootReducer = combineReducers<State>({
     actions: actionsReducer,
     trainDialogs: trainDialogsReducer,
     display: displayReducer,
+    error: errorReducer
 });
 
 export default rootReducer;

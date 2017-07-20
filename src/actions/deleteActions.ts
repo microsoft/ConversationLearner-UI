@@ -11,6 +11,13 @@ export const deleteBLISApplication = (key: string, GUID: string, blisApp: BlisAp
     }
 }
 
+export const deleteBLISApplicationFulfilled = (blisAppGUID: string): ActionObject => {
+    return {
+        type: 'DELETE_BLIS_APPLICATION_FULFILLED',
+        blisAppGUID: blisAppGUID
+    }
+}
+
 export const deleteEntity = (key: string, GUID: string, entity: EntityBase, currentAppId: string): ActionObject => {
     //needs to make a call to an Epic to send data to BLIS
     return {
@@ -22,6 +29,13 @@ export const deleteEntity = (key: string, GUID: string, entity: EntityBase, curr
     }
 }
 
+export const deleteEntityFulfilled = (entityGUID: string): ActionObject => {
+    return {
+        type: 'DELETE_ENTITY_FULFILLED',
+        entityGUID: entityGUID
+    }
+}
+
 export const deleteAction = (key: string, GUID: string, action: ActionBase, currentAppId: string): ActionObject => {
     //needs to make a call to an Epic to send data to BLIS
     return {
@@ -30,6 +44,13 @@ export const deleteAction = (key: string, GUID: string, action: ActionBase, curr
         actionGUID: GUID,
         action: action,
         currentAppId: currentAppId
+    }
+}
+
+export const deleteActionFulfilled = (actionGUID: string): ActionObject => {
+    return {
+        type: 'DELETE_ACTION_FULFILLED',
+        actionGUID: actionGUID
     }
 }
 

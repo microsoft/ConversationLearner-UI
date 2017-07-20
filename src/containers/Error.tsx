@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { CommandButton, Dialog, DialogFooter, DialogType, ChoiceGroup, TextField, DefaultButton, Dropdown } from 'office-ui-fabric-react';
-import { setErrorDisplay } from '../actions/updateActions'
+import { clearErrorDisplay } from '../actions/updateActions'
 import { State } from '../types'
 type CultureObject = {
     CultureCode: string;
@@ -15,13 +15,13 @@ class UIError extends React.Component<any, any> {
         super(p);
     }
     handleClose() {
-        this.props.setErrorDisplay(null);
+        this.props.clearErrorDisplay();
     }
     render() {
         return (
             <div>
                 <Modal
-                    isOpen={this.props.displayError != null}
+                    isOpen={this.props.error.error != null}
                     onDismiss={this.handleClose.bind(this)}
                     isBlocking={false}
                     containerClassName='createModal'
@@ -29,7 +29,8 @@ class UIError extends React.Component<any, any> {
                     <div className='modalHeader'>
                         <span className='ms-font-xxl ms-fontWeight-semilight'>Error</span>
                     </div>
-                    <span className='ms-font-l ms-fontWeight-semilight'>{this.props.displayError}</span>
+                    <div className='ms-font-l ms-fontWeight-semilight'>{this.props.error.route} Failed</div>
+                    <div className='ms-font-m ms-fontWeight-semilight'>{this.props.error.error}</div>
                     <div className='modalFooter'>
                         <CommandButton
                             data-automation-id='randomID2'
@@ -47,12 +48,12 @@ class UIError extends React.Component<any, any> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        setErrorDisplay: setErrorDisplay
+        clearErrorDisplay: clearErrorDisplay
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {
     return {
-        displayError: state.display.displayError
+        error: state.error
     }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(UIError);
