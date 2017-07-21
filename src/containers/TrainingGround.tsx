@@ -13,6 +13,7 @@ import { Nav, INavLink, INavLinkGroup } from 'office-ui-fabric-react';
 import { Link } from 'react-router-dom';
 import { setWebchatDisplay } from '../actions/updateActions'
 import { State } from '../types'
+import LogDialogsList from './LogDialogsList'
 
 class TrainingGround extends React.Component<any, any> {
     constructor(p: any) {
@@ -44,6 +45,10 @@ class TrainingGround extends React.Component<any, any> {
             case "TrainDialogs":
                 return (
                     <TrainDialogsList />
+                )
+            case "LogDialogs":
+                return (
+                    <LogDialogsList />
                 )
             default:
                 return (
@@ -78,7 +83,8 @@ class TrainingGround extends React.Component<any, any> {
                                         { name: 'Dashboard', key: 'Dash', url: null,  onClick: () => this.setArenaDisplay('Dash') },
                                         { name: 'Entities', key: 'Entities', url: null,  onClick: () => this.setArenaDisplay('Entities') },
                                         { name: 'Actions', key: 'Actions',  url: null, onClick: () => this.setArenaDisplay('Actions') },
-                                        { name: 'Train Dialogs', key: 'TrainDialogs', url: null, onClick: () => this.setArenaDisplay('TrainDialogs') }
+                                        { name: 'Train Dialogs', key: 'TrainDialogs', url: null, onClick: () => this.setArenaDisplay('TrainDialogs') },
+                                        { name: 'Log Dialogs', key: 'LogDialogs', url: null, onClick: () => this.setArenaDisplay('LogDialogs') }
                                     ]
                                 }]}
                             />
@@ -117,7 +123,8 @@ class TrainingGround extends React.Component<any, any> {
                                         { name: 'Dashboard', key: 'Dash',  url: null, onClick: () => this.setArenaDisplay('Dash') },
                                         { name: 'Entities', key: 'Entities', url: null,  onClick: () => this.setArenaDisplay('Entities') },
                                         { name: 'Actions', key: 'Actions',  url: null, onClick: () => this.setArenaDisplay('Actions') },
-                                        { name: 'Train Dialogs', key: 'TrainDialogs', url: null, onClick: () => this.setArenaDisplay('TrainDialogs') }
+                                        { name: 'Train Dialogs', key: 'TrainDialogs', url: null, onClick: () => this.setArenaDisplay('TrainDialogs') },
+                                        { name: 'Log Dialogs', key: 'LogDialogs', url: null, onClick: () => this.setArenaDisplay('LogDialogs') }
                                     ]
                                 }]}
                             />
