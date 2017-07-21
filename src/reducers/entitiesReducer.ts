@@ -19,7 +19,8 @@ const entitiesReducer: Reducer<EntityState> =  (state = initialState, action: Ac
             let entities: EntityBase[] = [action.positiveEntity, action.negativeEntity];
             return [...state, ...entities]
         case 'DELETE_ENTITY_FULFILLED':
-            return state.filter(ent => ent.entityId !== action.entityGUID);
+        case 'DELETE_REVERSE_ENTITY':
+            return state.filter(ent => ent.entityId !== action.deletedEntityId);
         case 'EDIT_ENTITY_FULFILLED':
             let index: number = 0;
             for(let i = 0; i < state.length; i++){
