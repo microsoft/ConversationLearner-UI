@@ -218,7 +218,7 @@ export const deleteBlisAction = (key : string, appId: string, action: ActionBase
 
 export const editBlisApp = (key : string, blisAppId: string, blisApp: BlisAppForUpdate): Observable<ActionObject> => {
 	let editAppRoute: string = makeRoute(key, `app/${blisAppId}`);
-	const { appId, latestPackageId, metadata, trainingRequired, trainingStatus, trainingFailureMessage, ...appToSend } = blisApp
+	const { appId, latestPackageId, trainingRequired, trainingStatus, trainingFailureMessage, ...appToSend } = blisApp
 	return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.put(editAppRoute, appToSend, config)
 		.then(response => {
             obs.next(editBLISApplicationFulfilled(blisApp));
