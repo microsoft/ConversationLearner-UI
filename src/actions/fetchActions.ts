@@ -39,6 +39,14 @@ export const fetchAllTrainDialogs = (blisAppID: string): ActionObject => {
     }
 }
 
+export const fetchAllLogDialogs = (blisAppID: string): ActionObject => {
+    //needs a fulfilled version to handle response from Epic
+    return {
+        type: 'FETCH_LOG_DIALOGS',
+        allLogDialogs: []
+    }
+}
+
 //=========================================================
 // FULFILLED FROM EPICS
 //=========================================================

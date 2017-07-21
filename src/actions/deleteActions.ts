@@ -74,3 +74,11 @@ export const deleteTrainDialog = (key: string, GUID: string): ActionObject => {
         trainDialogGUID: GUID
     }
 }
+export const deleteLogDialog = (key: string, GUID: string): ActionObject => {
+    //needs to make a call to an Epic to send data to BLIS
+    return {
+        type: 'DELETE_LOG_DIALOG',
+        key: key,
+        logDialogGUID: GUID
+    }
+}
