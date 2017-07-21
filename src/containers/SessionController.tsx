@@ -44,11 +44,12 @@ class SessionController extends React.Component<any, any> {
         )
     }
     render() {
+        let sessionType = this.state.teachSession === true ? "TEACH SESSION" : "CHAT SESSION"
         return (
             <div className='container webchatController'>
-                {this.state.teachSession == true ? <TeachSessionHeader toggleSessionType={this.toggleSessionType} /> : <ChatSessionHeader toggleSessionType={this.toggleSessionType}/>}
+                {this.state.teachSession === true ? <TeachSessionHeader sessionType={sessionType} toggleSessionType={this.toggleSessionType} /> : <ChatSessionHeader sessionType={sessionType} toggleSessionType={this.toggleSessionType}/>}
                 <div className="webchatContent">
-                    {this.state.teachSession == true ? this.teachSession() : this.regularSession()}
+                    {this.state.teachSession === true ? this.teachSession() : this.regularSession()}
                 </div>
             </div>
         )
