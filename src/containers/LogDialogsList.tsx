@@ -62,6 +62,7 @@ class LogDialogsList extends React.Component<any, any> {
     }
     handleClick() {
         this.props.setWebchatDisplay(true)
+        //need to create a new session
     }
     generateGUID(): string {
         let d = new Date().getTime();
@@ -96,8 +97,8 @@ class LogDialogsList extends React.Component<any, any> {
                         disabled={false}
                         onClick={this.handleClick.bind(this)}
                         className='goldButton'
-                        ariaDescription='Create a New Log Dialog'
-                        text='New Log Dialog'
+                        ariaDescription='Create a New Chat Session'
+                        text='New Chat Session'
                     />
                 </div>
                 <SearchBox
