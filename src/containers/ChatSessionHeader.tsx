@@ -64,8 +64,14 @@ class ChatSessionHeader extends React.Component<any, any> {
 			{
 				key: "abandonSession",
 				iconProps: { iconName: 'Delete' },
-				name: "Abandon Session",
+				name: "Abandon Changes",
 				onClick: () => console.log('store current session in the session controllers state and just tell it to reinitialize that value')
+			},
+			{
+				key: "deleteSession",
+				name: "Delete Session",
+				iconProps: { iconName: 'RemoveFilter' },
+				onClick: () => console.log('delete the chat session')
 			},
 			{
 				key: "newSession",
