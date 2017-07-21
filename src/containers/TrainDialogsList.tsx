@@ -89,9 +89,6 @@ class TrainDialogsList extends React.Component<any, any> {
     renderTrainDialogItems(): TrainDialog[] {
         let lcString = this.state.searchValue.toLowerCase();
         let filteredTrainDialogs = this.props.trainDialogs.all.filter((t: TrainDialog) => {
-            // let firstUtterance = t.dialog.turns[0].input.text;
-            // let match = firstUtterance.toLowerCase().includes(lcString);
-            // return match;
             return true
         })
         return filteredTrainDialogs;
