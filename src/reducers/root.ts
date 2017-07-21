@@ -3,6 +3,7 @@ import appsReducer from './appsReducer';
 import entitiesReducer from './entitiesReducer';
 import actionsReducer from './actionsReducer';
 import trainDialogsReducer from './trainDialogsReducer';
+import logDialogsReducer from './logDialogsReducer';
 import displayReducer from './displayReducer';
 import userReducer from './userReducer';
 import errorReducer from './errorReducer';
@@ -15,7 +16,8 @@ const rootReducer = combineReducers<State>({
     actions: actionsReducer,
     trainDialogs: trainDialogsReducer,
     display: displayReducer,
-    error: errorReducer
+    error: errorReducer,
+    logDialogs: logDialogsReducer
 });
 
 export default rootReducer;

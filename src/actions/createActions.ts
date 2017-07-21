@@ -1,5 +1,5 @@
 import { ActionObject } from '../types'
-import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, ActionMetaData, ActionList, ActionTypes, TrainDialog } from 'blis-models';
+import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, ActionMetaData, ActionList, ActionTypes, TrainDialog, LogDialog } from 'blis-models';
 
 export const createBLISApplication = (key : string, userId : string, application: BlisAppBase): ActionObject => {
     //needs to make a call to an Epic to send data to BLIS
@@ -88,6 +88,15 @@ export const createTrainDialog = (key: string, trainDialog: TrainDialog): Action
         type: 'CREATE_TRAIN_DIALOG',
         key: key,
         trainDialog: trainDialog
+    }
+}
+
+export const createLogDialog = (key: string, logDialog: LogDialog): ActionObject => {
+    //needs to make a call to an Epic to send data to BLIS
+    return {
+        type: 'CREATE_LOG_DIALOG',
+        key: key,
+        logDialog: logDialog
     }
 }
 

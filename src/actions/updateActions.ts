@@ -1,6 +1,6 @@
 
 import { ActionObject } from '../types'
-import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, ActionMetaData, ActionList, ActionTypes, TrainDialog } from 'blis-models';
+import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, ActionMetaData, ActionList, ActionTypes, TrainDialog, LogDialog } from 'blis-models';
 
 export const setCurrentBLISApp = (key: string, app: BlisAppBase) : ActionObject => { 
     return {
@@ -24,9 +24,24 @@ export const setCurrentTrainDialog = (key: string, trainDialog: TrainDialog) : A
     }
 }
 
+export const setCurrentLogDialog = (key: string, logDialog: LogDialog) : ActionObject => { 
+    return {
+        type: 'SET_CURRENT_LOG_DIALOG',
+        key: key,
+        currentLogDialog: logDialog
+    }
+}
+
 export const toggleTrainDialog = (forward: boolean) => {
     return {
         type: "TOGGLE_TRAIN_DIALOG",
+        forward: forward
+    }
+}
+
+export const toggleLogDialog = (forward: boolean) => {
+    return {
+        type: "TOGGLE_LOG_DIALOG",
         forward: forward
     }
 }
@@ -126,6 +141,15 @@ export const editTrainDialog = (key: string, trainDialog: TrainDialog) : ActionO
         type: 'EDIT_TRAIN_DIALOG',
         key: key,
         trainDialog: trainDialog
+    }
+}
+
+export const editLogDialog = (key: string, logDialog: LogDialog) : ActionObject => { 
+    //needs to make a call to an Epic to send data to BLIS
+    return {
+        type: 'EDIT_LOG_DIALOG',
+        key: key,
+        logDialog: logDialog
     }
 }
 
