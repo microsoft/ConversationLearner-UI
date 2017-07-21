@@ -1,4 +1,4 @@
-import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, ActionMetaData, ActionList, ActionTypes, TrainDialog } from 'blis-models'
+import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, ActionMetaData, ActionList, ActionTypes, TrainDialog, LogDialog } from 'blis-models'
 
 
 export type UpdateAction = {
@@ -24,11 +24,17 @@ export type UpdateAction = {
     type: 'EDIT_TRAIN_DIALOG',
     trainDialog: TrainDialog,
 } | {
+    type: 'EDIT_LOG_DIALOG',
+    logDialog: LogDialog,
+} | {
     type: 'SET_CURRENT_BLIS_APP',
     currentBLISApp: BlisAppBase,
 } | {
     type: 'SET_CURRENT_TRAIN_DIALOG',
     currentTrainDialog: TrainDialog,
+} |{
+    type: 'SET_CURRENT_LOG_DIALOG',
+    currentLogDialog: LogDialog,
 } | {
     //used for setting whether the app list or app homepage (trainingGround) is displayed
     type: 'SET_BLIS_APP_DISPLAY',
@@ -54,6 +60,9 @@ export type UpdateAction = {
     type: "TOGGLE_TRAIN_DIALOG",
     forward: boolean
 } | {
+    type: "TOGGLE_LOG_DIALOG",
+    forward: boolean
+} | {
     type: "UPDATE_OPERATION_FULFILLED"
 } | {
     type: 'SET_USER',
@@ -65,7 +74,7 @@ export type UpdateAction = {
     key: string
 } | {
     type: "EMPTY_STATE_PROPERTIES"
-}| {
+} | {
     type: "NO_OP"
 }
 
@@ -81,6 +90,9 @@ export type FetchAction = {
 } | {
     type: 'FETCH_TRAIN_DIALOGS',
     allTrainDialogs: TrainDialog[],
+} | {
+    type: 'FETCH_LOG_DIALOGS',
+    allLogDialogs: LogDialog[],
 } | {
     type: 'FETCH_APPLICATIONS_FULFILLED',
     allBlisApps: BlisAppBase[],
@@ -122,6 +134,9 @@ export type CreateAction = {
 } | {
     type: 'CREATE_TRAIN_DIALOG',
     trainDialog: TrainDialog,
+} | {
+    type: 'CREATE_LOG_DIALOG',
+    logDialog: LogDialog,
 } | {
     type: 'CREATE_BLIS_APPLICATION_FULFILLED',
     blisApp: BlisAppBase,
@@ -174,6 +189,9 @@ export type DeleteAction = {
 } | {
     type: 'DELETE_TRAIN_DIALOG',
     trainDialogGUID: string,
+} | {
+    type: 'DELETE_LOG_DIALOG',
+    logDialogGUID: string,
 } | {
     type: "DELETE_OPERATION_FULFILLED"
 }
