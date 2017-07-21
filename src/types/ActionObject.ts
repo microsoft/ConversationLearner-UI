@@ -63,8 +63,10 @@ export type UpdateAction = {
 } | {
     type: 'SET_USER_KEY',
     key: string
-}| {
+} | {
     type: "EMPTY_STATE_PROPERTIES"
+}| {
+    type: "NO_OP"
 }
 
 export type FetchAction = {
@@ -151,8 +153,16 @@ export type DeleteAction = {
     currentAppId: string,
     entity: EntityBase
 } | {
+    type: 'DELETE_REVERSE_ENTITY',
+    key: string,
+    deletedEntityId: string,
+    reverseEntityId: string,
+    currentAppId: string
+} | {
     type: 'DELETE_ENTITY_FULFILLED',
-    entityGUID: string
+    key: string,
+    deletedEntityId: string,
+    currentAppId: string
 } | {
     type: 'DELETE_ACTION',
     actionGUID: string,

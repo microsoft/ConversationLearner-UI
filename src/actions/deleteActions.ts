@@ -29,10 +29,22 @@ export const deleteEntity = (key: string, GUID: string, entity: EntityBase, curr
     }
 }
 
-export const deleteEntityFulfilled = (entityGUID: string): ActionObject => {
+export const deleteReverseEntity = (key: string, deletedEntityId: string, reverseEntityId: string, currentAppId: string): ActionObject => {
+    return {
+        type: 'DELETE_REVERSE_ENTITY',
+        key: key,
+        currentAppId: currentAppId,
+        deletedEntityId: deletedEntityId,
+        reverseEntityId: reverseEntityId
+    }
+}
+
+export const deleteEntityFulfilled = (key: string, deletedEntityId: string, currentAppId: string): ActionObject => {
     return {
         type: 'DELETE_ENTITY_FULFILLED',
-        entityGUID: entityGUID
+        key: key,
+        currentAppId: currentAppId,
+        deletedEntityId: deletedEntityId
     }
 }
 

@@ -10,7 +10,7 @@ import * as Rx from 'rxjs';
 import { Observable, Observer } from 'rxjs'
 import { fetchApplicationsFulfilled, fetchAllEntitiesFulfilled, fetchAllActionsFulfilled } from '../actions/fetchActions'
 import { createApplicationFulfilled, createEntityFulfilled, createPositiveEntityFulfilled, createNegativeEntityFulfilled, createActionFulfilled } from '../actions/createActions'
-import { deleteBLISApplicationFulfilled, deleteEntityFulfilled, deleteActionFulfilled } from '../actions/deleteActions'
+import { deleteBLISApplicationFulfilled, deleteReverseEntity, deleteEntityFulfilled, deleteActionFulfilled } from '../actions/deleteActions'
 import { editBLISApplicationFulfilled, editEntityFulfilled, editActionFulfilled } from '../actions/updateActions'
 import { setErrorDisplay } from '../actions/updateActions'
 import { ActionObject } from '../types'
@@ -180,13 +180,16 @@ export const deleteBlisApp = (key : string, blisAppId: string, blisApp: BlisAppF
             obs.complete();
           }));
 };
-export const deleteBlisEntity = (key : string, appId: string, entity: EntityBase): Observable<ActionObject> => {
-	let deleteEntityRoute: string = makeRoute(key, `app/${appId}/entity/${entity.entityId}`);
-	const { version, packageCreationId, packageDeletionId, entityId, ...entityToSend } = entity;
-	let configWithBody = {...config, body: entityToSend};
-	return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.delete(deleteEntityRoute, configWithBody)
+export const deleteBlisEntity = (key : string, appId: string, deleteEntityId: string, reverseEntityId: string): Observable<ActionObject> => {
+	let deleteEntityRoute: string = makeRoute(key, `app/${appId}/entity/${deleteEntityId}`);
+	return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.delete(deleteEntityRoute)
 		.then(response => {
-            obs.next(deleteEntityFulfilled(entity.entityId));
+					if (reverseEntityId) {
+							obs.next(deleteReverseEntity(key, deleteEntityId, reverseEntityId, appId));
+						}
+						else {
+							obs.next(deleteEntityFulfilled(key, deleteEntityId, appId));
+						}
             obs.complete();
           })
           .catch(err => {
