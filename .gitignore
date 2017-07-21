@@ -288,6 +288,7 @@ __pycache__/
 *.btm.cs
 *.odx.cs
 *.xsd.cs
+*.js.map
 *.map
 public/bundle.js
 
