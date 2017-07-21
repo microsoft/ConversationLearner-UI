@@ -218,17 +218,17 @@
 .actionCreatorCreateEntityButton{
   float: right;
 }
+.webchatContent{
+  width: 100%;
+  height: 92.5%;
+}
 .webchatHeader{
   width: 100%;
-  border-bottom: 2px solid #ffb900
+  height: 6%;
+  text-align: center;
 }
-.webchatContent{
-  border-right: 1px solid #ffb900;
-  border-left: 1px solid #ffb900;
-  border-bottom: 1px solid #ffb900;
-  width: 85%;
-  height: 92%;
-  display: inline-block
+.webchatHeader *{
+  color: #323232 !important
 }
 .webchatMetaShrink{
   width: 35%;
@@ -243,33 +243,32 @@
   display: inline-block;
   vertical-align: top;
 }
-.toggleMeta{
-  background-color: #ffb900 !important;
-  color:black !important;
-  padding: 0em 2em !important; 
-  float: right;
-}
-.webchatGoBack{
+.webchatButton{
+  height: 3em !important;
+  display: block !important;
   background-color: #ffb900 !important;
   padding: 0em 2em !important;
-  display: inline-block;
-  vertical-align: top;
 }
-.webchatGoBack *{
+.webchatButton *{
   color:black !important;
 }
 .toggleTrainDialog{
   background-color: #323232 !important;
   padding: 0em 2em !important;
+  display: block !important;
   margin-top: 20em;
 }
 .toggleTrainDialogForward{
-  float: right;
-  height: 80%;
+  height: 99.8%;
+  border-left: 1px solid #ffb900;
+  display: inline-block;
+  vertical-align: top;
 }
 .toggleTrainDialogBack{
-  float: left;
-  height: 80%;
+  border-right: 1px solid #ffb900;
+  height: 99.8%;
+  display: inline-block;
+  vertical-align: top;
 }
 .toggleTrainDialog *{
   color: #ffb900 !important;
