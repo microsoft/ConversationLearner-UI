@@ -92,6 +92,7 @@ export type FetchAction = {
     blisAppID: string
 } | {
     type: 'FETCH_CHAT_SESSIONS',
+    key: string,
     blisAppID: string
 } | {
     type: 'FETCH_TRAIN_DIALOGS',
@@ -163,6 +164,7 @@ export type CreateAction = {
     currentAppId: string
 } | {
     type: 'CREATE_CHAT_SESSION',
+    key: string,
     currentAppId: string,
     session: Session
 } | {
@@ -211,6 +213,7 @@ export type DeleteAction = {
     logDialogGUID: string,
 } | {
     type: 'DELETE_CHAT_SESSION',
+    key: string,
     session: Session,
     currentAppId: string
 } | {
