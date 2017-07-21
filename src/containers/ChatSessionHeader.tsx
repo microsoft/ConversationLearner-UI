@@ -54,11 +54,18 @@ class ChatSessionHeader extends React.Component<any, any> {
 				className: "ms-font-m-plus"
 			},
 		];
+		let chatOperations: IContextualMenuItem[] = [
+			{
+				key: "toggleRight",
+				iconProps: { iconName: 'Forward' },
+				onClick: () => this.props.toggleTrainDialog(true)
+			},
+		]
 		let farItems: IContextualMenuItem[] = [
 			{
 				key: "operations",
 				iconProps: { iconName: 'DeveloperTools' },
-				onClick: () => console.log('clicked operations')
+				items: chatOperations
 			}
 		]
 
