@@ -61,7 +61,7 @@ class LogDialogsList extends React.Component<any, any> {
         }
     }
     handleClick() {
-        this.props.setWebchatDisplay(true)
+        this.props.setWebchatDisplay(true, false)
         //need to create a new session
     }
     generateGUID(): string {

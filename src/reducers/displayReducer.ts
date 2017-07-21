@@ -5,6 +5,7 @@ import { Reducer } from 'redux'
 const initialState: DisplayState = {
     myAppsDisplay: "Home",
     displayWebchat: false,
+    webchatTeachMode: false,
     displayLogin: true
 };
 
@@ -13,7 +14,7 @@ const displayReducer: Reducer<DisplayState> =  (state = initialState, action: Ac
         case 'SET_BLIS_APP_DISPLAY':
             return {...state, myAppsDisplay: action.setDisplay};
         case 'SET_WEBCHAT_DISPLAY':
-            return {...state, displayWebchat: action.setWebchatDisplay};
+            return {...state, displayWebchat: action.setWebchatDisplay, webchatTeachMode: action.teachMode};
         case 'SET_LOGIN_DISPLAY':
             return {...state, displayLogin: action.setLoginDisplay};
         case 'CREATE_BLIS_APPLICATION_FULFILLED':

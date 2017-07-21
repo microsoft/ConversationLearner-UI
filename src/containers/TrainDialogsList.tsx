@@ -63,7 +63,7 @@ class TrainDialogsList extends React.Component<any, any> {
         }
     }
     handleClick() {
-        this.props.setWebchatDisplay(true)
+        this.props.setWebchatDisplay(true, true)
         //need to create a new teach session
     }
     generateGUID(): string {
@@ -76,7 +76,7 @@ class TrainDialogsList extends React.Component<any, any> {
         return guid;
     }
     handleSelection(selected: TrainDialog) {
-        this.props.setWebchatDisplay(true)
+        this.props.setWebchatDisplay(true, true)
         this.props.setCurrentTrainDialog(this.props.userKey, selected);
     }
     onChange(newValue: string) {

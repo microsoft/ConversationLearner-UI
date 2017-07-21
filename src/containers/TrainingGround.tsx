@@ -61,7 +61,7 @@ class TrainingGround extends React.Component<any, any> {
             display: page,
             selectedKey: page
         })
-        this.props.setWebchatDisplay(false)
+        this.props.setWebchatDisplay(false, false)
     }
     renderWithoutEmulator() {
         return (

@@ -68,7 +68,7 @@ class Header extends React.Component<any, any> {
                     <div className={this.state.myAppsClass}>
                         <span className="ms-font-m-plus ms-fontColor-themePrimary"><Link onClick={() => {
                             this.props.setBLISAppDisplay("Home")
-                            this.props.setWebchatDisplay(false)
+                            this.props.setWebchatDisplay(false, false)
                             this.tabSelected('myApps')
                         }} className='headerLink' to="/myApps">My Apps</Link></span>
                     </div>

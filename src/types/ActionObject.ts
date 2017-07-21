@@ -37,6 +37,7 @@ export type UpdateAction = {
     //used for setting whether the app list or app homepage (trainingGround) is displayed
     type: 'SET_WEBCHAT_DISPLAY',
     setWebchatDisplay: boolean,
+    teachMode: boolean
 } | {
     //used for setting whether the login popup is displayed
     type: 'SET_LOGIN_DISPLAY',

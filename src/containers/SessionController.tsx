@@ -44,7 +44,7 @@ class SessionController extends React.Component<any, any> {
         )
     }
     render() {
-        let sessionType = this.state.teachSession === true ? "TEACH SESSION" : "CHAT SESSION"
+        let sessionType = this.props.display.webchatTeachMode === true ? "TEACH SESSION" : "CHAT SESSION"
         return (
             <div className='container webchatController'>
                 {this.state.teachSession === true ? <TeachSessionHeader sessionType={sessionType} toggleSessionType={this.toggleSessionType} /> : <ChatSessionHeader sessionType={sessionType} toggleSessionType={this.toggleSessionType}/>}
@@ -64,7 +64,7 @@ const mapDispatchToProps = (dispatch: any) => {
 }
 const mapStateToProps = (state: State, ownProps: any) => {
     return {
-        trainDialogs: state.trainDialogs
+        display: state.display
     }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(SessionController as React.ComponentClass<any>);
