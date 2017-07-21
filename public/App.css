@@ -227,6 +227,9 @@
   height: 6%;
   text-align: center;
 }
+.webchatHeader *{
+  color: #323232 !important
+}
 .webchatMetaShrink{
   width: 35%;
   height: 100%;

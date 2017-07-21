@@ -19,7 +19,7 @@ class TeachSessionHeader extends React.Component<any, any> {
 		let items: IContextualMenuItem[] = [
 			{
 				key: "close",
-				iconProps: { iconName: 'ChromeClose' },
+				iconProps: { iconName: 'Clear' },
 				onClick: () => this.props.setWebchatDisplay(false)
 			},
 			{
