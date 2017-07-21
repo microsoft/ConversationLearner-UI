@@ -56,9 +56,22 @@ class ChatSessionHeader extends React.Component<any, any> {
 		];
 		let chatOperations: IContextualMenuItem[] = [
 			{
-				key: "toggleRight",
-				iconProps: { iconName: 'Forward' },
-				onClick: () => this.props.toggleTrainDialog(true)
+				key: "saveSession",
+				iconProps: { iconName: 'Save' },
+				name: "Save Session",
+				onClick: () => console.log('session controller will send the session through to service')
+			},
+			{
+				key: "abandonSession",
+				iconProps: { iconName: 'Delete' },
+				name: "Abandon Session",
+				onClick: () => console.log('store current session in the session controllers state and just tell it to reinitialize that value')
+			},
+			{
+				key: "newSession",
+				name: "New Session",
+				iconProps: { iconName: 'CalculatorAddition' },
+				onClick: () => console.log('tell session controller to create a new session')
 			},
 		]
 		let farItems: IContextualMenuItem[] = [
