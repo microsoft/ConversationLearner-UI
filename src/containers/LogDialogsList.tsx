@@ -4,9 +4,10 @@ import { connect } from 'react-redux';
 import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader'
 import { DetailsList, CommandButton, Link, CheckboxVisibility, IColumn, SearchBox } from 'office-ui-fabric-react';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
-import { setWebchatDisplay } from '../actions/updateActions'
+import { setWebchatDisplay, setCurrentLogDialog } from '../actions/updateActions'
+import { createLogDialog } from '../actions/createActions'
 import { State } from '../types'
-import { TrainDialog } from 'blis-models'
+import { LogDialog } from 'blis-models'
 
 let columns: IColumn[] = [
     {
@@ -79,15 +80,16 @@ class LogDialogsList extends React.Component<any, any> {
             searchValue: lcString
         })
     }
-    renderLogDialogItems(): TrainDialog[] {
+    renderLogDialogItems(): LogDialog[] {
         let lcString = this.state.searchValue.toLowerCase();
-        let filteredLogDialogs = this.props.trainDialogs.all.filter((t: TrainDialog) => {
+        let filteredLogDialogs = this.props.logDialogs.all.filter((logDialogItems: LogDialog) => {
             return true
         })
         return filteredLogDialogs;
     }
     render() {
-        let logDialogItems: any[] = []
+        let logDialogItems: any[] = [];
+        console.log(this.props.logDialogs)
         return (
             <div>
                 <TrainingGroundArenaHeader title="Log Dialogs" description="Use this tool to test the current versions of your application, to check if you are progressing on the right track ..." />
@@ -125,7 +127,7 @@ const mapDispatchToProps = (dispatch: any) => {
 }
 const mapStateToProps = (state: State) => {
     return {
-        blisApps: state.apps,
+        logDialogs: state.logDialogs,
     }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(LogDialogsList);
