@@ -1,5 +1,4 @@
-import { TrainDialog } from './TrainDialog'
-import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, ActionMetaData, ActionList, ActionTypes } from 'blis-models';
+import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, ActionMetaData, ActionList, ActionTypes, TrainDialog } from 'blis-models';
 
 export type ActionState = ActionBase[]
 export type EntityState = EntityBase[]
@@ -19,6 +18,7 @@ export type AppState = {
 export type DisplayState = {
     myAppsDisplay: string,
     displayWebchat: boolean,
+    webchatTeachMode: boolean,
     displayLogin: boolean
 };
 export type UserState =

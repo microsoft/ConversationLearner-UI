@@ -1,6 +1,6 @@
 
-import { ActionObject, TrainDialog } from '../types'
-import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, ActionMetaData, ActionList, ActionTypes } from 'blis-models';
+import { ActionObject } from '../types'
+import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, ActionMetaData, ActionList, ActionTypes, TrainDialog } from 'blis-models';
 
 export const setCurrentBLISApp = (key: string, app: BlisAppBase) : ActionObject => { 
     return {
@@ -38,10 +38,11 @@ export const setBLISAppDisplay = (text: string) : ActionObject => {
     }
 }
 
-export const setWebchatDisplay = (isShown: boolean) : ActionObject => { 
+export const setWebchatDisplay = (isShown: boolean, teachMode: boolean) : ActionObject => { 
     return {
         type: 'SET_WEBCHAT_DISPLAY',
-        setWebchatDisplay: isShown
+        setWebchatDisplay: isShown,
+        teachMode: teachMode
     }
 }
 

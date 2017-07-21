@@ -3,11 +3,11 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader'
 import { DetailsList, CommandButton, Link, CheckboxVisibility, IColumn, SearchBox } from 'office-ui-fabric-react';
-import { TrainDialog, Dialog, Turn, Input } from '../types';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import { setWebchatDisplay, setCurrentTrainDialog } from '../actions/updateActions'
 import { createTrainDialog } from '../actions/createActions'
 import { State } from '../types'
+import { TrainDialog } from 'blis-models'
 
 let columns: IColumn[] = [
     {
@@ -63,11 +63,8 @@ class TrainDialogsList extends React.Component<any, any> {
         }
     }
     handleClick() {
-        let turns: Turn[] = [];
-        let dialog = new Dialog(turns)
-        let trainDialog = new TrainDialog(this.generateGUID(), dialog, this.props.blisApps.current.appId)
-        this.props.setWebchatDisplay(true)
-        this.props.createTrainDialog(this.props.userKey, trainDialog);
+        this.props.setWebchatDisplay(true, true)
+        //need to create a new teach session
     }
     generateGUID(): string {
         let d = new Date().getTime();
@@ -79,7 +76,7 @@ class TrainDialogsList extends React.Component<any, any> {
         return guid;
     }
     handleSelection(selected: TrainDialog) {
-        this.props.setWebchatDisplay(true)
+        this.props.setWebchatDisplay(true, true)
         this.props.setCurrentTrainDialog(this.props.userKey, selected);
     }
     onChange(newValue: string) {
@@ -91,9 +88,6 @@ class TrainDialogsList extends React.Component<any, any> {
     renderTrainDialogItems(): TrainDialog[] {
         let lcString = this.state.searchValue.toLowerCase();
         let filteredTrainDialogs = this.props.trainDialogs.all.filter((t: TrainDialog) => {
-            // let firstUtterance = t.dialog.turns[0].input.text;
-            // let match = firstUtterance.toLowerCase().includes(lcString);
-            // return match;
             return true
         })
         return filteredTrainDialogs;
@@ -102,15 +96,15 @@ class TrainDialogsList extends React.Component<any, any> {
         let trainDialogItems = this.renderTrainDialogItems()
         return (
             <div>
-                <TrainingGroundArenaHeader title="Train Dialogs" description="Use this tool to test the current and published versions of your application, to check if you are progressing on the right track ..." />
+                <TrainingGroundArenaHeader title="Train Dialogs" description="Use this tool to train and improve the current versions of your application ..." />
                 <div className="entityCreator">
                     <CommandButton
                         data-automation-id='randomID9'
                         disabled={false}
                         onClick={this.handleClick.bind(this)}
                         className='goldButton'
-                        ariaDescription='Create a New Train Dialog'
-                        text='New Train Dialog'
+                        ariaDescription='Create a New Teach Session'
+                        text='New Teach Session'
                     />
                 </div>
                 <SearchBox
