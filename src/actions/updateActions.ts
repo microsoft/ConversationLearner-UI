@@ -1,6 +1,6 @@
 
-import { ActionObject, TrainDialog } from '../types'
-import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, ActionMetaData, ActionList, ActionTypes } from 'blis-models';
+import { ActionObject } from '../types'
+import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, ActionMetaData, ActionList, ActionTypes, TrainDialog } from 'blis-models';
 
 export const setCurrentBLISApp = (key: string, app: BlisAppBase) : ActionObject => { 
     return {
