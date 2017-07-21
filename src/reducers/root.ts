@@ -7,6 +7,8 @@ import logDialogsReducer from './logDialogsReducer';
 import displayReducer from './displayReducer';
 import userReducer from './userReducer';
 import errorReducer from './errorReducer';
+import teachSessionReducer from './teachSessionReducer';
+import chatSessionReducer from './chatSessionReducer';
 import { State } from '../types';
 
 const rootReducer = combineReducers<State>({
@@ -17,7 +19,9 @@ const rootReducer = combineReducers<State>({
     trainDialogs: trainDialogsReducer,
     display: displayReducer,
     error: errorReducer,
-    logDialogs: logDialogsReducer
+    logDialogs: logDialogsReducer,
+    teachSessions: teachSessionReducer,
+    chatSessions: chatSessionReducer
 });
 
 export default rootReducer;
