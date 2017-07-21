@@ -1,5 +1,6 @@
 import { ActionObject } from '../types'
-import { TrainDialogState, TrainDialog } from '../types'
+import { TrainDialogState } from '../types'
+import { TrainDialog } from 'blis-models'
 import { Reducer } from 'redux'
 
 const initialState: TrainDialogState = {
@@ -20,7 +21,7 @@ const trainDialogsReducer: Reducer<TrainDialogState> =  (state = initialState, a
         case "TOGGLE_TRAIN_DIALOG":
             let index: number = 0;
             for (let i = 0; i < state.all.length; i++) {
-                if (state.all[i].id == state.current.id) {
+                if (state.all[i].trainDialogId == state.current.trainDialogId) {
                     index = i
                 }
             }
