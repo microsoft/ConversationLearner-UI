@@ -9,7 +9,6 @@ export const editApplication: Epic<ActionObject, State> = (action$: ActionsObser
     return action$.ofType("EDIT_BLIS_APPLICATION")
         .flatMap((action: any) =>
             editBlisApp(action.key, action.blisApp.appId, action.blisApp)
-                .mapTo({ type: "UPDATE_OPERATION_FULFILLED" })
         );
 }
 
@@ -17,7 +16,6 @@ export const editAction: Epic<ActionObject, State> = (action$: ActionsObservable
     return action$.ofType("EDIT_ACTION")
         .flatMap((action: any) =>
             editBlisAction(action.key, action.currentAppId, action.blisAction.actionId, action.blisAction)
-                .mapTo({ type: "UPDATE_OPERATION_FULFILLED" })
         );
 }
 
@@ -25,6 +23,5 @@ export const editEntity: Epic<ActionObject, State> = (action$: ActionsObservable
     return action$.ofType("CREATE_NEGATIVE_ENTITY_FULFILLED")
         .flatMap((action: any) =>
             editBlisEntity(action.key, action.currentAppId, action.positiveEntity)
-                .mapTo({ type: "UPDATE_OPERATION_FULFILLED" })
         );
 }

@@ -5,6 +5,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { CommandButton, Dialog, DialogFooter, DialogType, ChoiceGroup, TextField, DefaultButton, Dropdown } from 'office-ui-fabric-react';
+import { TextFieldPlaceholder } from './TextFieldPlaceholder';
 import { setBLISAppDisplay, emptyStateProperties } from '../actions/updateActions'
 import { fetchAllActions, fetchAllEntities, fetchAllTrainDialogs } from '../actions/fetchActions';
 import { BlisAppBase, BlisAppMetaData } from 'blis-models'
@@ -95,7 +96,6 @@ class BLISAppCreator extends React.Component<any, any> {
         //need to empty entities, actions, and trainDialogs arrays
         this.props.emptyStateProperties();
         this.handleClose();
-        this.props.setBLISAppDisplay("TrainingGround");
     }
     render() {
         return (
@@ -118,8 +118,8 @@ class BLISAppCreator extends React.Component<any, any> {
                         <span className='ms-font-xxl ms-fontWeight-semilight'>Create a BLIS App</span>
                     </div>
                     <div>
-                        <TextField onChanged={this.nameChanged.bind(this)} label="Name" placeholder="Application Name..." value={this.state.appNameVal} />
-                        <TextField onChanged={this.luisKeyChanged.bind(this)} label="LUIS Key" placeholder="Key..." value={this.state.luisKeyVal} />
+                        <TextFieldPlaceholder onChanged={this.nameChanged.bind(this)} label="Name" placeholder="Application Name..." value={this.state.appNameVal} />
+                        <TextFieldPlaceholder onChanged={this.luisKeyChanged.bind(this)} label="LUIS Key" placeholder="Key..." value={this.state.luisKeyVal} />
                         <Dropdown
                             label='Locale'
                             defaultSelectedKey={this.state.localeVal}

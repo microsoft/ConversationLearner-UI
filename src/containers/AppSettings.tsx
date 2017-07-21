@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader'
 import { State } from '../types';
 import { CommandButton, ChoiceGroup, TextField, DefaultButton, Dropdown, Label, List } from 'office-ui-fabric-react';
+import { TextFieldPlaceholder } from './TextFieldPlaceholder';
 import { BlisAppBase, BlisAppMetaData } from 'blis-models'
 
 const styles = {
@@ -151,7 +152,7 @@ class AppSettings extends React.Component<any, any> {
                         onRenderCell={this.onRenderBotListRow.bind(this)}
                     />
                     <div className="textFieldInlineButtonDiv">
-                        <TextField className="ms-font-m-plus textFieldWithButton" onChanged={(text) => this.botIdChanged(text)} placeholder="Application ID" value={this.state.newBotVal} />
+                        <TextFieldPlaceholder className="ms-font-m-plus textFieldWithButton" onChanged={(text) => this.botIdChanged(text)} placeholder="Application ID" value={this.state.newBotVal} />
                         <CommandButton
                             data-automation-id='randomID16'
                             disabled={false}

@@ -3,6 +3,11 @@ import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, 
 
 export type ActionState = ActionBase[]
 export type EntityState = EntityBase[]
+export type ErrorState = {
+    error: string,
+    message: string,
+    route: string
+};
 export type TrainDialogState = {
     all: TrainDialog[],
     current: TrainDialog
@@ -29,6 +34,7 @@ export type State = {
     entities: EntityState,
     actions: ActionState,
     trainDialogs: TrainDialogState,
-    display: DisplayState
+    display: DisplayState,
+    error: ErrorState
 }
 

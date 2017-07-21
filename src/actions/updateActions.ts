@@ -52,11 +52,34 @@ export const setLoginDisplay = (isShown: boolean) : ActionObject => {
     }
 }
 
+export const setErrorDisplay = (error: string, message: string, route : string) : ActionObject => { 
+    return {
+        type: 'SET_ERROR_DISPLAY',
+        error: error,
+        message: message,
+        route: route
+    }
+}
+
+export const clearErrorDisplay = () : ActionObject => { 
+    return {
+        type: 'CLEAR_ERROR_DISPLAY'
+    }
+}
+
 export const editBLISApplication = (key: string, application: BlisAppBase) : ActionObject => { 
     //needs to make a call to an Epic to send data to BLIS
     return {
         type: 'EDIT_BLIS_APPLICATION',
         key: key,
+        blisApp: application
+    }
+}
+
+export const editBLISApplicationFulfilled = (application: BlisAppBase) : ActionObject => { 
+    //needs to make a call to an Epic to send data to BLIS
+    return {
+        type: 'EDIT_BLIS_APPLICATION_FULFILLED',
         blisApp: application
     }
 }
@@ -70,6 +93,14 @@ export const editEntity = (key: string, entity: EntityBase) : ActionObject => {
     }
 }
 
+export const editEntityFulfilled = (entity: EntityBase) : ActionObject => { 
+    //needs to make a call to an Epic to send data to BLIS
+    return {
+        type: 'EDIT_ENTITY_FULFILLED',
+        entity: entity
+    }
+}
+
 export const editAction = (key: string, action: ActionBase, currentAppId: string) : ActionObject => { 
     //needs to make a call to an Epic to send data to BLIS
     return {
@@ -77,6 +108,14 @@ export const editAction = (key: string, action: ActionBase, currentAppId: string
         key: key,
         blisAction: action,
         currentAppId: currentAppId
+    }
+}
+
+export const editActionFulfilled = (action: ActionBase) : ActionObject => { 
+    //needs to make a call to an Epic to send data to BLIS
+    return {
+        type: 'EDIT_ACTION_FULFILLED',
+        blisAction: action,
     }
 }
 

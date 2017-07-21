@@ -15,6 +15,14 @@ const userReducer: Reducer<UserState> =  (state = initialState, action: ActionOb
             return {...state, name: action.name, password: action.password, id: action.id };
         case 'SET_USER_KEY':
             return {...state, key: action.key };
+        case 'SET_ERROR_DISPLAY':
+            switch (action.route) {
+                case 'FETCH_APPLICATIONS' :
+                    return {...initialState};
+                default:
+                    return {...state}
+            }
+            
         default:
             return state;
     }

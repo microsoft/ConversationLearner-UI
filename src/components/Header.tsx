@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { setBLISAppDisplay, setWebchatDisplay, setLoginDisplay } from '../actions/updateActions'
 import UserLogin from '../containers/UserLogin'
+import UIError from '../containers/Error'
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { State } from '../types'
@@ -60,6 +61,7 @@ class Header extends React.Component<any, any> {
         return (
             <div className='header'>
                 <div className="myAppsHeaderContentBlock myAppsButtonsDiv">
+                    <UIError/>
                     <UserLogin/>
                 </div>
                 <div className='headerListDiv'>
