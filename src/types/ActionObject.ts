@@ -1,5 +1,4 @@
-import { TrainDialog, Dialog, Turn, Input } from '../types';
-import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, ActionMetaData, ActionList, ActionTypes } from 'blis-models'
+import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, ActionMetaData, ActionList, ActionTypes, TrainDialog } from 'blis-models'
 
 
 export type UpdateAction = {

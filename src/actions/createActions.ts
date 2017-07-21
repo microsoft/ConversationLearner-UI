@@ -1,5 +1,5 @@
-import { ActionObject, TrainDialog } from '../types'
-import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, ActionMetaData, ActionList, ActionTypes } from 'blis-models';
+import { ActionObject } from '../types'
+import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, ActionMetaData, ActionList, ActionTypes, TrainDialog } from 'blis-models';
 
 export const createBLISApplication = (key : string, userId : string, application: BlisAppBase): ActionObject => {
     //needs to make a call to an Epic to send data to BLIS

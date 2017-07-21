@@ -3,11 +3,11 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader'
 import { DetailsList, CommandButton, Link, CheckboxVisibility, IColumn, SearchBox } from 'office-ui-fabric-react';
-import { TrainDialog, Dialog, Turn, Input } from '../types';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import { setWebchatDisplay, setCurrentTrainDialog } from '../actions/updateActions'
 import { createTrainDialog } from '../actions/createActions'
 import { State } from '../types'
+import { TrainDialog } from 'blis-models'
 
 let columns: IColumn[] = [
     {
@@ -63,11 +63,9 @@ class TrainDialogsList extends React.Component<any, any> {
         }
     }
     handleClick() {
-        let turns: Turn[] = [];
-        let dialog = new Dialog(turns)
-        let trainDialog = new TrainDialog(this.generateGUID(), dialog, this.props.blisApps.current.appId)
         this.props.setWebchatDisplay(true)
-        this.props.createTrainDialog(this.props.userKey, trainDialog);
+        // let trainDialog = new TrainDialog(this.generateGUID(), dialog, this.props.blisApps.current.appId)
+        // this.props.createTrainDialog(this.props.userKey, trainDialog);
     }
     generateGUID(): string {
         let d = new Date().getTime();
