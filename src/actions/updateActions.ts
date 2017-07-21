@@ -38,10 +38,11 @@ export const setBLISAppDisplay = (text: string) : ActionObject => {
     }
 }
 
-export const setWebchatDisplay = (isShown: boolean) : ActionObject => { 
+export const setWebchatDisplay = (isShown: boolean, teachMode: boolean) : ActionObject => { 
     return {
         type: 'SET_WEBCHAT_DISPLAY',
-        setWebchatDisplay: isShown
+        setWebchatDisplay: isShown,
+        teachMode: teachMode
     }
 }
 

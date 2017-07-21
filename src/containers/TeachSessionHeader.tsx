@@ -20,7 +20,7 @@ class TeachSessionHeader extends React.Component<any, any> {
 			{
 				key: "close",
 				iconProps: { iconName: 'Clear' },
-				onClick: () => this.props.setWebchatDisplay(false)
+				onClick: () => this.props.setWebchatDisplay(false, false)
 			},
 			{
 				key: "spacer"
