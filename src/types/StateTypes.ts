@@ -39,6 +39,7 @@ export type State = {
     actions: ActionState,
     trainDialogs: TrainDialogState,
     display: DisplayState,
-    error: ErrorState
+    error: ErrorState,
+    logDialogs: LogDialogState
 }
 
