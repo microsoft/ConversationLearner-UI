@@ -3,7 +3,7 @@ import * as Rx from 'rxjs';
 import { ActionsObservable, Epic } from 'redux-observable'
 import { State, ActionObject } from '../types'
 import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, ActionMetaData, ActionList, ActionTypes } from 'blis-models';
-import { createBlisApp, createBlisAction, createBlisEntity } from "./apiHelpers";
+import { createBlisApp, createBlisAction, createBlisEntity, createBlisSession } from "./apiHelpers";
 import { createApplicationFulfilled, createPositiveEntityFulfilled, createNegativeEntityFulfilled } from '../actions/createActions'
 import { setErrorDisplay } from '../actions/updateActions'
 
@@ -31,5 +31,12 @@ export const createNegativeEntity: Epic<ActionObject, State> = (action$: Actions
     return action$.ofType("CREATE_POSITIVE_ENTITY_FULFILLED")
         .flatMap((action: any) =>
             createBlisEntity(action.key, action.negativeEntity, action.currentAppId, action.positiveEntity)
+        );
+}
+
+export const createNewChatSession: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
+    return action$.ofType("CREATE_CHAT_SESSION")
+        .flatMap((actionObject: any) =>
+            createBlisSession(actionObject.key, actionObject.session, actionObject.currentAppId)
         );
 }

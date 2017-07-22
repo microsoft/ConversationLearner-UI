@@ -4,10 +4,11 @@ import { connect } from 'react-redux';
 import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader'
 import { DetailsList, CommandButton, Link, CheckboxVisibility, IColumn, SearchBox } from 'office-ui-fabric-react';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
-import { setWebchatDisplay, setCurrentLogDialog } from '../actions/updateActions'
-import { createLogDialog } from '../actions/createActions'
+import { setWebchatDisplay, setCurrentLogDialog, setCurrentChatSession } from '../actions/updateActions'
+import { createLogDialog, createChatSession } from '../actions/createActions'
+import { deleteChatSession } from '../actions/deleteActions'
 import { State } from '../types'
-import { LogDialog } from 'blis-models'
+import { LogDialog, Session } from 'blis-models'
 
 let columns: IColumn[] = [
     {
@@ -63,7 +64,13 @@ class LogDialogsList extends React.Component<any, any> {
     }
     handleClick() {
         this.props.setWebchatDisplay(true, false)
-        //need to create a new session
+        let testSession = new Session({
+            saveToLog: null
+        });
+        let currentAppId: string = this.props.apps.current.appId;
+        // this.props.createChatSession(this.props.userKey, testSession, currentAppId)
+        // this.props.deleteChatSession(this.props.userKey, testSession, currentAppId)
+        this.props.setCurrentChatSession(this.props.chatSessions.all.find((s: Session) => s.sessionId == "d1df3e2f-a1fb-4fd9-9fa6-c89d87bc99df"))
     }
     generateGUID(): string {
         let d = new Date().getTime();
@@ -89,7 +96,7 @@ class LogDialogsList extends React.Component<any, any> {
     }
     render() {
         let logDialogItems: any[] = [];
-        console.log(this.props.logDialogs)
+        console.log('log dialog list', this.props.chatSessions)
         return (
             <div>
                 <TrainingGroundArenaHeader title="Log Dialogs" description="Use this tool to test the current versions of your application, to check if you are progressing on the right track ..." />
@@ -123,11 +130,17 @@ class LogDialogsList extends React.Component<any, any> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         setWebchatDisplay: setWebchatDisplay,
+        createChatSession: createChatSession,
+        deleteChatSession: deleteChatSession,
+        setCurrentChatSession: setCurrentChatSession
     }, dispatch)
 }
 const mapStateToProps = (state: State) => {
     return {
         logDialogs: state.logDialogs,
+        userKey: state.user.key,
+        apps: state.apps,
+        chatSessions: state.chatSessions
     }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(LogDialogsList);

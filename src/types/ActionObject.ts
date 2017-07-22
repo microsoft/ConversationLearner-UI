@@ -1,4 +1,4 @@
-import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, ActionMetaData, ActionList, ActionTypes, TrainDialog, LogDialog } from 'blis-models'
+import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, ActionMetaData, ActionList, ActionTypes, TrainDialog, LogDialog, Session } from 'blis-models'
 
 
 export type UpdateAction = {
@@ -32,9 +32,12 @@ export type UpdateAction = {
 } | {
     type: 'SET_CURRENT_TRAIN_DIALOG',
     currentTrainDialog: TrainDialog,
-} |{
+} | {
     type: 'SET_CURRENT_LOG_DIALOG',
     currentLogDialog: LogDialog,
+} |  {
+    type: 'SET_CURRENT_CHAT_SESSION',
+    currentSession: Session,
 } | {
     //used for setting whether the app list or app homepage (trainingGround) is displayed
     type: 'SET_BLIS_APP_DISPLAY',
@@ -88,6 +91,10 @@ export type FetchAction = {
     type: 'FETCH_ACTIONS',
     blisAppID: string
 } | {
+    type: 'FETCH_CHAT_SESSIONS',
+    key: string,
+    blisAppID: string
+} | {
     type: 'FETCH_TRAIN_DIALOGS',
     allTrainDialogs: TrainDialog[],
 } | {
@@ -102,6 +109,9 @@ export type FetchAction = {
 } | {
     type: 'FETCH_ACTIONS_FULFILLED',
     allActions: ActionBase[]
+} | {
+    type: 'FETCH_CHAT_SESSIONS_FULFILLED',
+    allSessions: Session[]
 }
 
 export type CreateAction = {
@@ -152,6 +162,15 @@ export type CreateAction = {
     negativeEntity: EntityBase,
     positiveEntity: EntityBase,
     currentAppId: string
+} | {
+    type: 'CREATE_CHAT_SESSION',
+    key: string,
+    currentAppId: string,
+    session: Session
+} | {
+    type: 'CREATE_CHAT_SESSION_FULFILLED',
+    sessionId: string,
+    session: Session
 }
 
 
@@ -183,7 +202,7 @@ export type DeleteAction = {
     actionGUID: string,
     action: ActionBase,
     currentAppId: string
-}| {
+} | {
     type: 'DELETE_ACTION_FULFILLED',
     actionGUID: string
 } | {
@@ -192,6 +211,14 @@ export type DeleteAction = {
 } | {
     type: 'DELETE_LOG_DIALOG',
     logDialogGUID: string,
+} | {
+    type: 'DELETE_CHAT_SESSION',
+    key: string,
+    session: Session,
+    currentAppId: string
+} | {
+    type: 'DELETE_CHAT_SESSION_FULFILLED',
+    sessionGUID: string,
 } | {
     type: "DELETE_OPERATION_FULFILLED"
 }

@@ -5,12 +5,14 @@ import {
 	EntityBase, EntityMetaData, EntityList, 
 	ActionBase, ActionMetaData, ActionList, ActionTypes,
 	UserInput,
-	TrainExtractorStep, ExtractResponse, TrainScorerStep } from 'blis-models'
+	TrainExtractorStep, ExtractResponse, TrainScorerStep,
+	Session
+} from 'blis-models'
 import * as Rx from 'rxjs';
 import { Observable, Observer } from 'rxjs'
-import { fetchApplicationsFulfilled, fetchAllEntitiesFulfilled, fetchAllActionsFulfilled } from '../actions/fetchActions'
-import { createApplicationFulfilled, createEntityFulfilled, createPositiveEntityFulfilled, createNegativeEntityFulfilled, createActionFulfilled } from '../actions/createActions'
-import { deleteBLISApplicationFulfilled, deleteReverseEntity, deleteEntityFulfilled, deleteActionFulfilled } from '../actions/deleteActions'
+import { fetchApplicationsFulfilled, fetchAllEntitiesFulfilled, fetchAllActionsFulfilled, fetchAllChatSessionsFulfilled } from '../actions/fetchActions'
+import { createApplicationFulfilled, createEntityFulfilled, createPositiveEntityFulfilled, createNegativeEntityFulfilled, createActionFulfilled, createChatSessionFulfilled } from '../actions/createActions'
+import { deleteBLISApplicationFulfilled, deleteReverseEntity, deleteEntityFulfilled, deleteActionFulfilled, deleteChatSessionFulfilled } from '../actions/deleteActions'
 import { editBLISApplicationFulfilled, editEntityFulfilled, editActionFulfilled } from '../actions/updateActions'
 import { setErrorDisplay } from '../actions/updateActions'
 import { ActionObject } from '../types'
@@ -260,9 +262,18 @@ export const editBlisEntity = (key: string, appId: string, entity: EntityBase): 
 //========================================================
 
 /** START SESSION : Creates a new session and a corresponding logDialog */
-export const createSession = (key : string, appId : string): Observable<AxiosResponse> => {
-	let addAppRoute: string = makeRoute(key, `app/${appId}/session`);
-	return Rx.Observable.fromPromise(axios.post(addAppRoute, config))
+export const createBlisSession = (key: string, session: Session, appId: string): Observable<ActionObject> => {
+	let addSessionRoute: string = makeRoute(key, `app/${appId}/session`);
+	let configWithBody = {...config, body: session}
+	return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.post(addSessionRoute, config).then(response => {
+			let newSessionId = response.data.sessionId;
+			obs.next(createChatSessionFulfilled(session, newSessionId));
+            obs.complete();
+          })
+          .catch(err => {
+            obs.next(setErrorDisplay(err.message, "", "CREATE_CHAT_SESSION"));
+            obs.complete();
+          }));
 };
 
 /** GET SESSION : Retrieves information about the specified session */
@@ -271,16 +282,31 @@ export const getSession = (key : string, appId: string, sessionId: string): Obse
 	return Rx.Observable.fromPromise(axios.get(getAppRoute, config))
 };
 
-/** END SESSION : End a session. */
-export const deleteSession = (key : string, appId: string, sessionId: string): Observable<AxiosResponse> => {
-	let deleteAppRoute: string = makeRoute(key, `app/${appId}/session/${sessionId}`); 
-	return Rx.Observable.fromPromise(axios.delete(deleteAppRoute))
+
+export const deleteChatSession = (key : string, appId: string, session: Session): Observable<ActionObject> => {
+	let deleteAppRoute: string = makeRoute(key, `app/${appId}/session/${session.sessionId}`);
+	return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.delete(deleteAppRoute, config)
+		.then(response => {
+            obs.next(deleteChatSessionFulfilled(session.sessionId));
+            obs.complete();
+          })
+          .catch(err => {
+            obs.next(setErrorDisplay(err.message, "", "DELETE_CHAT_SESSION"));
+            obs.complete();
+          }));
 };
 
-/** GET SESSIONS : Retrieves definitions of ALL open sessions */
-export const getSessions = (key : string, appId: string): Observable<AxiosResponse> => {
-	let getAppRoute: string = makeRoute(key, `app/${appId}/sessions`);
-	return Rx.Observable.fromPromise(axios.get(getAppRoute, config))
+export const getAllSessionsForBlisApp = (key: string, appId: string): Observable<ActionObject> => {
+	let getSessionsForAppRoute: string = makeRoute(key, `app/${appId}/sessions`);
+	return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.get(getSessionsForAppRoute, config)
+		.then(response => {
+            obs.next(fetchAllChatSessionsFulfilled(response.data.sessions));
+            obs.complete();
+          })
+          .catch(err => {
+            obs.next(setErrorDisplay(err.message, "", "FETCH_CHAT_SESSIONS"));
+            obs.complete();
+          }));
 };
 
 /** GET SESSION IDS : Retrieves a list of session IDs */
