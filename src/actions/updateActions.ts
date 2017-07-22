@@ -166,7 +166,7 @@ export const setUserKey = (key: string) : ActionObject => {
     }
 }
 
-export const setCurrentChatSession = (key: string, session: Session) : ActionObject => { 
+export const setCurrentChatSession = (session: Session) : ActionObject => { 
     return {
         type: 'SET_CURRENT_CHAT_SESSION',
         currentSession: session
