@@ -5,11 +5,13 @@ import {
 	EntityBase, EntityMetaData, EntityList, 
 	ActionBase, ActionMetaData, ActionList, ActionTypes,
 	UserInput,
-	TrainExtractorStep, ExtractResponse, TrainScorerStep } from 'blis-models'
+	TrainExtractorStep, ExtractResponse, TrainScorerStep,
+	Session
+} from 'blis-models'
 import * as Rx from 'rxjs';
 import { Observable, Observer } from 'rxjs'
 import { fetchApplicationsFulfilled, fetchAllEntitiesFulfilled, fetchAllActionsFulfilled, fetchAllChatSessionsFulfilled } from '../actions/fetchActions'
-import { createApplicationFulfilled, createEntityFulfilled, createPositiveEntityFulfilled, createNegativeEntityFulfilled, createActionFulfilled } from '../actions/createActions'
+import { createApplicationFulfilled, createEntityFulfilled, createPositiveEntityFulfilled, createNegativeEntityFulfilled, createActionFulfilled, createChatSessionFulfilled } from '../actions/createActions'
 import { deleteBLISApplicationFulfilled, deleteReverseEntity, deleteEntityFulfilled, deleteActionFulfilled } from '../actions/deleteActions'
 import { editBLISApplicationFulfilled, editEntityFulfilled, editActionFulfilled } from '../actions/updateActions'
 import { setErrorDisplay } from '../actions/updateActions'
@@ -260,11 +262,19 @@ export const editBlisEntity = (key: string, appId: string, entity: EntityBase): 
 //========================================================
 
 /** START SESSION : Creates a new session and a corresponding logDialog */
-export const createSession = (key : string, appId : string): Observable<AxiosResponse> => {
-	let addAppRoute: string = makeRoute(key, `app/${appId}/session`);
-	return Rx.Observable.fromPromise(axios.post(addAppRoute, config))
+export const createBlisSession = (key: string, session: Session, appId: string): Observable<ActionObject> => {
+	let addSessionRoute: string = makeRoute(key, `app/${appId}/session`);
+	let configWithBody = {...config, body: session}
+	return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.post(addSessionRoute, config).then(response => {
+			let newSessionId = response.data.sessionId;
+			obs.next(createChatSessionFulfilled(session, newSessionId));
+            obs.complete();
+          })
+          .catch(err => {
+            obs.next(setErrorDisplay(err.message, "", "CREATE_CHAT_SESSION"));
+            obs.complete();
+          }));
 };
-
 
 /** GET SESSION : Retrieves information about the specified session */
 export const getSession = (key : string, appId: string, sessionId: string): Observable<AxiosResponse> => {

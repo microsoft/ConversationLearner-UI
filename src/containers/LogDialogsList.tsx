@@ -5,9 +5,9 @@ import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader'
 import { DetailsList, CommandButton, Link, CheckboxVisibility, IColumn, SearchBox } from 'office-ui-fabric-react';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import { setWebchatDisplay, setCurrentLogDialog } from '../actions/updateActions'
-import { createLogDialog } from '../actions/createActions'
+import { createLogDialog, createChatSession } from '../actions/createActions'
 import { State } from '../types'
-import { LogDialog } from 'blis-models'
+import { LogDialog, Session } from 'blis-models'
 
 let columns: IColumn[] = [
     {
@@ -63,6 +63,11 @@ class LogDialogsList extends React.Component<any, any> {
     }
     handleClick() {
         this.props.setWebchatDisplay(true, false)
+        let testSession = new Session({
+            saveToLog: true
+        });
+        let currentAppId: string = this.props.apps.current.appId;
+        this.props.createChatSession(this.props.userKey, testSession, currentAppId)
         //need to create a new session
     }
     generateGUID(): string {
@@ -89,7 +94,7 @@ class LogDialogsList extends React.Component<any, any> {
     }
     render() {
         let logDialogItems: any[] = [];
-        console.log(this.props.logDialogs)
+        console.log(this.props.chatSessions)
         return (
             <div>
                 <TrainingGroundArenaHeader title="Log Dialogs" description="Use this tool to test the current versions of your application, to check if you are progressing on the right track ..." />
@@ -123,11 +128,15 @@ class LogDialogsList extends React.Component<any, any> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         setWebchatDisplay: setWebchatDisplay,
+        createChatSession: createChatSession
     }, dispatch)
 }
 const mapStateToProps = (state: State) => {
     return {
         logDialogs: state.logDialogs,
+        userKey: state.user.key,
+        apps: state.apps,
+        chatSessions: state.chatSessions
     }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(LogDialogsList);

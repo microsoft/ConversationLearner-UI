@@ -82,6 +82,25 @@ export const createActionFulfilled = (action: ActionBase, actionId: string): Act
     }
 }
 
+export const createChatSession = (key: string, session: Session, currentAppId: string): ActionObject => {
+    //needs to make a call to an Epic to send data to BLIS
+    return {
+        type: 'CREATE_CHAT_SESSION',
+        key: key,
+        session: session,
+        currentAppId: currentAppId
+    }
+}
+
+export const createChatSessionFulfilled = (session: Session, sessionId: string): ActionObject => {
+    //needs to make a call to an Epic to send data to BLIS
+    return {
+        type: 'CREATE_CHAT_SESSION_FULFILLED',
+        session: session,
+        sessionId: sessionId
+    }
+}
+
 export const createTrainDialog = (key: string, trainDialog: TrainDialog): ActionObject => {
     //needs to make a call to an Epic to send data to BLIS
     return {
@@ -97,24 +116,5 @@ export const createLogDialog = (key: string, logDialog: LogDialog): ActionObject
         type: 'CREATE_LOG_DIALOG',
         key: key,
         logDialog: logDialog
-    }
-}
-
-export const createChatSession = (key: string, session: Session, currentAppId: string): ActionObject => {
-    //needs to make a call to an Epic to send data to BLIS
-    return {
-        type: 'CREATE_CHAT_SESSION',
-        key: key,
-        session: session,
-        currentAppId: currentAppId
-    }
-}
-
-export const createChatSessionFulfilled = (key: string, session: Session, sessionId: string): ActionObject => {
-    //needs to make a call to an Epic to send data to BLIS
-    return {
-        type: 'CREATE_CHAT_SESSION_FULFILLED',
-        session: session,
-        sessionId: sessionId
     }
 }
