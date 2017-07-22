@@ -12,7 +12,7 @@ import * as Rx from 'rxjs';
 import { Observable, Observer } from 'rxjs'
 import { fetchApplicationsFulfilled, fetchAllEntitiesFulfilled, fetchAllActionsFulfilled, fetchAllChatSessionsFulfilled } from '../actions/fetchActions'
 import { createApplicationFulfilled, createEntityFulfilled, createPositiveEntityFulfilled, createNegativeEntityFulfilled, createActionFulfilled, createChatSessionFulfilled } from '../actions/createActions'
-import { deleteBLISApplicationFulfilled, deleteReverseEntity, deleteEntityFulfilled, deleteActionFulfilled } from '../actions/deleteActions'
+import { deleteBLISApplicationFulfilled, deleteReverseEntity, deleteEntityFulfilled, deleteActionFulfilled, deleteChatSessionFulfilled } from '../actions/deleteActions'
 import { editBLISApplicationFulfilled, editEntityFulfilled, editActionFulfilled } from '../actions/updateActions'
 import { setErrorDisplay } from '../actions/updateActions'
 import { ActionObject } from '../types'
@@ -282,10 +282,18 @@ export const getSession = (key : string, appId: string, sessionId: string): Obse
 	return Rx.Observable.fromPromise(axios.get(getAppRoute, config))
 };
 
-/** END SESSION : End a session. */
-export const deleteSession = (key : string, appId: string, sessionId: string): Observable<AxiosResponse> => {
-	let deleteAppRoute: string = makeRoute(key, `app/${appId}/session/${sessionId}`); 
-	return Rx.Observable.fromPromise(axios.delete(deleteAppRoute))
+
+export const deleteChatSession = (key : string, appId: string, session: Session): Observable<ActionObject> => {
+	let deleteAppRoute: string = makeRoute(key, `app/${appId}/session/${session.sessionId}`);
+	return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.delete(deleteAppRoute, config)
+		.then(response => {
+            obs.next(deleteChatSessionFulfilled(session.sessionId));
+            obs.complete();
+          })
+          .catch(err => {
+            obs.next(setErrorDisplay(err.message, "", "DELETE_CHAT_SESSION"));
+            obs.complete();
+          }));
 };
 
 export const getAllSessionsForBlisApp = (key: string, appId: string): Observable<ActionObject> => {

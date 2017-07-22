@@ -6,6 +6,7 @@ import { DetailsList, CommandButton, Link, CheckboxVisibility, IColumn, SearchBo
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import { setWebchatDisplay, setCurrentLogDialog } from '../actions/updateActions'
 import { createLogDialog, createChatSession } from '../actions/createActions'
+import { deleteChatSession } from '../actions/deleteActions'
 import { State } from '../types'
 import { LogDialog, Session } from 'blis-models'
 
@@ -64,11 +65,11 @@ class LogDialogsList extends React.Component<any, any> {
     handleClick() {
         this.props.setWebchatDisplay(true, false)
         let testSession = new Session({
-            saveToLog: true
+            sessionId: "6131ec20-5b9c-4c48-bd9d-dd2449760dc4"
         });
         let currentAppId: string = this.props.apps.current.appId;
-        this.props.createChatSession(this.props.userKey, testSession, currentAppId)
-        //need to create a new session
+        // this.props.createChatSession(this.props.userKey, testSession, currentAppId)
+        this.props.deleteChatSession(this.props.userKey, testSession, currentAppId)
     }
     generateGUID(): string {
         let d = new Date().getTime();
@@ -128,7 +129,8 @@ class LogDialogsList extends React.Component<any, any> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         setWebchatDisplay: setWebchatDisplay,
-        createChatSession: createChatSession
+        createChatSession: createChatSession,
+        deleteChatSession: deleteChatSession
     }, dispatch)
 }
 const mapStateToProps = (state: State) => {
