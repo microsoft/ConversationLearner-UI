@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { fetchAllActions, fetchAllEntities, fetchApplications, fetchAllTrainDialogs } from '../actions/fetchActions';
+import { fetchAllActions, fetchAllEntities, fetchApplications, fetchAllTrainDialogs, fetchAllChatSessions } from '../actions/fetchActions';
 import { setCurrentBLISApp, setBLISAppDisplay } from '../actions/updateActions';
 import { deleteBLISApplication } from '../actions/deleteActions'
 import { bindActionCreators } from 'redux';
@@ -93,6 +93,7 @@ class BLISAppsList extends React.Component<any, any> {
         this.props.fetchAllActions(this.props.userKey, appSelected.appId);
         this.props.fetchAllEntities(this.props.userKey, appSelected.appId);
         this.props.fetchAllTrainDialogs(this.props.userKey, appSelected.appId);
+        this.props.fetchAllChatSessions(this.props.userKey, appSelected.appId);
         this.props.setBLISAppDisplay("TrainingGround");
     }
     renderItemColumn(item?: any, index?: number, column?: IColumn) {
@@ -142,7 +143,8 @@ const mapDispatchToProps = (dispatch: any) => {
         fetchAllTrainDialogs: fetchAllTrainDialogs,
         setCurrentBLISApp: setCurrentBLISApp,
         setBLISAppDisplay: setBLISAppDisplay,
-        deleteBLISApplication: deleteBLISApplication
+        deleteBLISApplication: deleteBLISApplication,
+        fetchAllChatSessions: fetchAllChatSessions
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {

@@ -8,7 +8,7 @@ import {
 	TrainExtractorStep, ExtractResponse, TrainScorerStep } from 'blis-models'
 import * as Rx from 'rxjs';
 import { Observable, Observer } from 'rxjs'
-import { fetchApplicationsFulfilled, fetchAllEntitiesFulfilled, fetchAllActionsFulfilled } from '../actions/fetchActions'
+import { fetchApplicationsFulfilled, fetchAllEntitiesFulfilled, fetchAllActionsFulfilled, fetchAllChatSessionsFulfilled } from '../actions/fetchActions'
 import { createApplicationFulfilled, createEntityFulfilled, createPositiveEntityFulfilled, createNegativeEntityFulfilled, createActionFulfilled } from '../actions/createActions'
 import { deleteBLISApplicationFulfilled, deleteReverseEntity, deleteEntityFulfilled, deleteActionFulfilled } from '../actions/deleteActions'
 import { editBLISApplicationFulfilled, editEntityFulfilled, editActionFulfilled } from '../actions/updateActions'
@@ -265,6 +265,7 @@ export const createSession = (key : string, appId : string): Observable<AxiosRes
 	return Rx.Observable.fromPromise(axios.post(addAppRoute, config))
 };
 
+
 /** GET SESSION : Retrieves information about the specified session */
 export const getSession = (key : string, appId: string, sessionId: string): Observable<AxiosResponse> => {
 	let getAppRoute: string = makeRoute(key, `app/${appId}/session/${sessionId}`);
@@ -277,10 +278,17 @@ export const deleteSession = (key : string, appId: string, sessionId: string): O
 	return Rx.Observable.fromPromise(axios.delete(deleteAppRoute))
 };
 
-/** GET SESSIONS : Retrieves definitions of ALL open sessions */
-export const getSessions = (key : string, appId: string): Observable<AxiosResponse> => {
-	let getAppRoute: string = makeRoute(key, `app/${appId}/sessions`);
-	return Rx.Observable.fromPromise(axios.get(getAppRoute, config))
+export const getAllSessionsForBlisApp = (key: string, appId: string): Observable<ActionObject> => {
+	let getSessionsForAppRoute: string = makeRoute(key, `app/${appId}/sessions`);
+	return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.get(getSessionsForAppRoute, config)
+		.then(response => {
+            obs.next(fetchAllChatSessionsFulfilled(response.data.sessions));
+            obs.complete();
+          })
+          .catch(err => {
+            obs.next(setErrorDisplay(err.message, "", "FETCH_CHAT_SESSIONS"));
+            obs.complete();
+          }));
 };
 
 /** GET SESSION IDS : Retrieves a list of session IDs */
