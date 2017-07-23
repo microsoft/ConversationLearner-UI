@@ -1,6 +1,6 @@
 
 import { ActionObject } from '../types'
-import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, ActionMetaData, ActionList, ActionTypes, TrainDialog, LogDialog, Session } from 'blis-models';
+import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, ActionMetaData, ActionList, ActionTypes, TrainDialog, LogDialog, Session, Teach } from 'blis-models';
 
 export const setCurrentBLISApp = (key: string, app: BlisAppBase) : ActionObject => { 
     return {
@@ -170,5 +170,12 @@ export const setCurrentChatSession = (session: Session) : ActionObject => {
     return {
         type: 'SET_CURRENT_CHAT_SESSION',
         currentSession: session
+    }
+}
+
+export const setCurrentTeachSession = (teachSession: Teach) : ActionObject => { 
+    return {
+        type: 'SET_CURRENT_TEACH_SESSION',
+        currentTeachSession: teachSession
     }
 }
