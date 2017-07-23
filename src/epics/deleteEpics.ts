@@ -3,7 +3,7 @@ import * as Rx from 'rxjs';
 import { ActionsObservable, Epic } from 'redux-observable'
 import { State, ActionObject } from '../types'
 import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, ActionMetaData, ActionList, ActionTypes } from 'blis-models';
-import { deleteBlisApp, deleteBlisEntity, deleteBlisAction, deleteChatSession } from "./apiHelpers";
+import { deleteBlisApp, deleteBlisEntity, deleteBlisAction, deleteChatSession, deleteTeachSession } from "./apiHelpers";
 
 export const deleteApplication: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
     return action$.ofType("DELETE_BLIS_APPLICATION")
@@ -37,5 +37,12 @@ export const deleteSession: Epic<ActionObject, State> = (action$: ActionsObserva
     return action$.ofType("DELETE_CHAT_SESSION")
         .flatMap((actionObject: any) =>
             deleteChatSession(actionObject.key, actionObject.currentAppId, actionObject.session)
+        );
+}
+
+export const deleteTeach: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
+    return action$.ofType("DELETE_TEACH_SESSION")
+        .flatMap((actionObject: any) =>
+            deleteTeachSession(actionObject.key, actionObject.currentAppId, actionObject.teachSession)
         );
 }

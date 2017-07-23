@@ -3,7 +3,7 @@ import * as Rx from 'rxjs';
 import { ActionsObservable, Epic } from 'redux-observable'
 import { State, ActionObject } from '../types'
 import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, ActionMetaData, ActionList, ActionTypes } from 'blis-models';
-import { getAllBlisApps, getAllEntitiesForBlisApp, getAllActionsForBlisApp, getAllSessionsForBlisApp } from "./apiHelpers";
+import { getAllBlisApps, getAllEntitiesForBlisApp, getAllActionsForBlisApp, getAllSessionsForBlisApp, getAllTeachSessionsForBlisApp } from "./apiHelpers";
 import { fetchApplicationsFulfilled, fetchAllEntitiesFulfilled, fetchAllActionsFulfilled } from '../actions/fetchActions'
 import { setErrorDisplay } from '../actions/updateActions'
 
@@ -31,5 +31,12 @@ export const fetchChatSessions: Epic<ActionObject, State> = (action$: ActionsObs
     return action$.ofType("FETCH_CHAT_SESSIONS")
         .flatMap((action: any) =>
             getAllSessionsForBlisApp(action.key, action.blisAppID)
+        );
+}
+
+export const fetchTeachSessions: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
+    return action$.ofType("FETCH_TEACH_SESSIONS")
+        .flatMap((action: any) =>
+            getAllTeachSessionsForBlisApp(action.key, action.blisAppID)
         );
 }
