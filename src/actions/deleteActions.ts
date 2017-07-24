@@ -1,5 +1,5 @@
 import { ActionObject } from '../types'
-import { BlisAppBase, EntityBase, ActionBase} from 'blis-models'
+import { BlisAppBase, EntityBase, ActionBase, Session, Teach} from 'blis-models'
 
 export const deleteBLISApplication = (key: string, GUID: string, blisApp: BlisAppBase): ActionObject => {
     //needs to make a call to an Epic to send data to BLIS
@@ -72,5 +72,48 @@ export const deleteTrainDialog = (key: string, GUID: string): ActionObject => {
         type: 'DELETE_TRAIN_DIALOG',
         key: key,
         trainDialogGUID: GUID
+    }
+}
+export const deleteLogDialog = (key: string, GUID: string): ActionObject => {
+    //needs to make a call to an Epic to send data to BLIS
+    return {
+        type: 'DELETE_LOG_DIALOG',
+        key: key,
+        logDialogGUID: GUID
+    }
+}
+
+
+export const deleteChatSession = (key: string, session: Session, currentAppId: string): ActionObject => {
+    //needs to make a call to an Epic to send data to BLIS
+    return {
+        type: 'DELETE_CHAT_SESSION',
+        key: key,
+        session: session,
+        currentAppId: currentAppId
+    }
+}
+
+export const deleteChatSessionFulfilled = (sessionGUID: string): ActionObject => {
+    return {
+        type: 'DELETE_CHAT_SESSION_FULFILLED',
+        sessionGUID: sessionGUID
+    }
+}
+
+export const deleteTeachSession = (key: string, teachSession: Teach, currentAppId: string): ActionObject => {
+    //needs to make a call to an Epic to send data to BLIS
+    return {
+        type: 'DELETE_TEACH_SESSION',
+        key: key,
+        teachSession: teachSession,
+        currentAppId: currentAppId
+    }
+}
+
+export const deleteTeachSessionFulfilled = (teachSessionGUID: string): ActionObject => {
+    return {
+        type: 'DELETE_TEACH_SESSION_FULFILLED',
+        teachSessionGUID: teachSessionGUID
     }
 }

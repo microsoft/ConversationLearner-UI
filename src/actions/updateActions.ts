@@ -1,11 +1,10 @@
 
 import { ActionObject } from '../types'
-import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, ActionMetaData, ActionList, ActionTypes, TrainDialog } from 'blis-models';
+import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, ActionMetaData, ActionList, ActionTypes, TrainDialog, LogDialog, Session, Teach } from 'blis-models';
 
 export const setCurrentBLISApp = (key: string, app: BlisAppBase) : ActionObject => { 
     return {
         type: 'SET_CURRENT_BLIS_APP',
-        key: key,
         currentBLISApp: app
     }
 }
@@ -19,14 +18,27 @@ export const emptyStateProperties = () : ActionObject => {
 export const setCurrentTrainDialog = (key: string, trainDialog: TrainDialog) : ActionObject => { 
     return {
         type: 'SET_CURRENT_TRAIN_DIALOG',
-        key: key,
         currentTrainDialog: trainDialog
+    }
+}
+
+export const setCurrentLogDialog = (key: string, logDialog: LogDialog) : ActionObject => { 
+    return {
+        type: 'SET_CURRENT_LOG_DIALOG',
+        currentLogDialog: logDialog
     }
 }
 
 export const toggleTrainDialog = (forward: boolean) => {
     return {
         type: "TOGGLE_TRAIN_DIALOG",
+        forward: forward
+    }
+}
+
+export const toggleLogDialog = (forward: boolean) => {
+    return {
+        type: "TOGGLE_LOG_DIALOG",
         forward: forward
     }
 }
@@ -129,6 +141,15 @@ export const editTrainDialog = (key: string, trainDialog: TrainDialog) : ActionO
     }
 }
 
+export const editLogDialog = (key: string, logDialog: LogDialog) : ActionObject => { 
+    //needs to make a call to an Epic to send data to BLIS
+    return {
+        type: 'EDIT_LOG_DIALOG',
+        key: key,
+        logDialog: logDialog
+    }
+}
+
 export const setUser = (name: string, password: string, id: string) : ActionObject => { 
     return {
         type: 'SET_USER',
@@ -142,5 +163,19 @@ export const setUserKey = (key: string) : ActionObject => {
     return {
         type: 'SET_USER_KEY',
         key: key
+    }
+}
+
+export const setCurrentChatSession = (session: Session) : ActionObject => { 
+    return {
+        type: 'SET_CURRENT_CHAT_SESSION',
+        currentSession: session
+    }
+}
+
+export const setCurrentTeachSession = (teachSession: Teach) : ActionObject => { 
+    return {
+        type: 'SET_CURRENT_TEACH_SESSION',
+        currentTeachSession: teachSession
     }
 }

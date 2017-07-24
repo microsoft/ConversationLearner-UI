@@ -1,4 +1,5 @@
-import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, ActionMetaData, ActionList, ActionTypes, TrainDialog } from 'blis-models';
+import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, 
+    ActionMetaData, ActionList, ActionTypes, TrainDialog, LogDialog, Teach, Session } from 'blis-models';
 
 export type ActionState = ActionBase[]
 export type EntityState = EntityBase[]
@@ -11,9 +12,21 @@ export type TrainDialogState = {
     all: TrainDialog[],
     current: TrainDialog
 }
+export type LogDialogState = {
+    all: LogDialog[],
+    current: LogDialog
+}
 export type AppState = {
     all: BlisAppBase[],
     current: BlisAppBase
+}
+export type TeachSessionState = {
+    all: Teach[],
+    current: Teach
+}
+export type ChatSessionState = {
+    all: Session[],
+    current: Session
 }
 export type DisplayState = {
     myAppsDisplay: string,
@@ -35,6 +48,9 @@ export type State = {
     actions: ActionState,
     trainDialogs: TrainDialogState,
     display: DisplayState,
-    error: ErrorState
+    error: ErrorState,
+    logDialogs: LogDialogState,
+    teachSessions: TeachSessionState,
+    chatSessions: ChatSessionState
 }
 

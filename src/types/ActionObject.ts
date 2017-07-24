@@ -1,4 +1,4 @@
-import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, ActionMetaData, ActionList, ActionTypes, TrainDialog } from 'blis-models'
+import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, ActionMetaData, ActionList, ActionTypes, TrainDialog, LogDialog, Session, Teach } from 'blis-models'
 
 
 export type UpdateAction = {
@@ -24,11 +24,23 @@ export type UpdateAction = {
     type: 'EDIT_TRAIN_DIALOG',
     trainDialog: TrainDialog,
 } | {
+    type: 'EDIT_LOG_DIALOG',
+    logDialog: LogDialog,
+} | {
     type: 'SET_CURRENT_BLIS_APP',
     currentBLISApp: BlisAppBase,
 } | {
     type: 'SET_CURRENT_TRAIN_DIALOG',
     currentTrainDialog: TrainDialog,
+} | {
+    type: 'SET_CURRENT_LOG_DIALOG',
+    currentLogDialog: LogDialog,
+} | {
+    type: 'SET_CURRENT_CHAT_SESSION',
+    currentSession: Session,
+} | {
+    type: 'SET_CURRENT_TEACH_SESSION',
+    currentTeachSession: Teach,
 } | {
     //used for setting whether the app list or app homepage (trainingGround) is displayed
     type: 'SET_BLIS_APP_DISPLAY',
@@ -54,6 +66,9 @@ export type UpdateAction = {
     type: "TOGGLE_TRAIN_DIALOG",
     forward: boolean
 } | {
+    type: "TOGGLE_LOG_DIALOG",
+    forward: boolean
+} | {
     type: "UPDATE_OPERATION_FULFILLED"
 } | {
     type: 'SET_USER',
@@ -65,7 +80,7 @@ export type UpdateAction = {
     key: string
 } | {
     type: "EMPTY_STATE_PROPERTIES"
-}| {
+} | {
     type: "NO_OP"
 }
 
@@ -79,8 +94,15 @@ export type FetchAction = {
     type: 'FETCH_ACTIONS',
     blisAppID: string
 } | {
+    type: 'FETCH_CHAT_SESSIONS',
+    key: string,
+    blisAppID: string
+} | {
     type: 'FETCH_TRAIN_DIALOGS',
     allTrainDialogs: TrainDialog[],
+} | {
+    type: 'FETCH_LOG_DIALOGS',
+    allLogDialogs: LogDialog[],
 } | {
     type: 'FETCH_APPLICATIONS_FULFILLED',
     allBlisApps: BlisAppBase[],
@@ -90,6 +112,16 @@ export type FetchAction = {
 } | {
     type: 'FETCH_ACTIONS_FULFILLED',
     allActions: ActionBase[]
+} | {
+    type: 'FETCH_CHAT_SESSIONS_FULFILLED',
+    allSessions: Session[]
+} | {
+    type: 'FETCH_TEACH_SESSIONS_FULFILLED',
+    allTeachSessions: Teach[]
+} | {
+    type: 'FETCH_TEACH_SESSIONS',
+    key: string,
+    blisAppID: string
 }
 
 export type CreateAction = {
@@ -123,6 +155,9 @@ export type CreateAction = {
     type: 'CREATE_TRAIN_DIALOG',
     trainDialog: TrainDialog,
 } | {
+    type: 'CREATE_LOG_DIALOG',
+    logDialog: LogDialog,
+} | {
     type: 'CREATE_BLIS_APPLICATION_FULFILLED',
     blisApp: BlisAppBase,
     blisAppId: string
@@ -137,6 +172,24 @@ export type CreateAction = {
     negativeEntity: EntityBase,
     positiveEntity: EntityBase,
     currentAppId: string
+} | {
+    type: 'CREATE_CHAT_SESSION',
+    key: string,
+    currentAppId: string,
+    session: Session
+} | {
+    type: 'CREATE_CHAT_SESSION_FULFILLED',
+    sessionId: string,
+    session: Session
+} | {
+    type: 'CREATE_TEACH_SESSION',
+    key: string,
+    currentAppId: string,
+    teachSession: Teach
+} | {
+    type: 'CREATE_TEACH_SESSION_FULFILLED',
+    teachSessionId: string,
+    teachSession: Teach
 }
 
 
@@ -168,12 +221,31 @@ export type DeleteAction = {
     actionGUID: string,
     action: ActionBase,
     currentAppId: string
-}| {
+} | {
     type: 'DELETE_ACTION_FULFILLED',
     actionGUID: string
 } | {
     type: 'DELETE_TRAIN_DIALOG',
     trainDialogGUID: string,
+} | {
+    type: 'DELETE_LOG_DIALOG',
+    logDialogGUID: string,
+} | {
+    type: 'DELETE_CHAT_SESSION',
+    key: string,
+    session: Session,
+    currentAppId: string
+} | {
+    type: 'DELETE_CHAT_SESSION_FULFILLED',
+    sessionGUID: string,
+} | {
+    type: 'DELETE_TEACH_SESSION',
+    key: string,
+    teachSession: Teach,
+    currentAppId: string
+} | {
+    type: 'DELETE_TEACH_SESSION_FULFILLED',
+    teachSessionGUID: string,
 } | {
     type: "DELETE_OPERATION_FULFILLED"
 }
