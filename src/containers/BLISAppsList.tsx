@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { fetchAllActions, fetchAllEntities, fetchApplications, fetchAllTrainDialogs, fetchAllChatSessions } from '../actions/fetchActions';
+import { fetchAllActions, fetchAllEntities, fetchApplications, fetchAllTrainDialogs, fetchAllChatSessions, fetchAllTeachSessions } from '../actions/fetchActions';
 import { setCurrentBLISApp, setBLISAppDisplay } from '../actions/updateActions';
 import { deleteBLISApplication } from '../actions/deleteActions'
 import { bindActionCreators } from 'redux';
@@ -68,7 +68,7 @@ class BLISAppsList extends React.Component<any, any> {
     }
     deleteApp() {
         let blisAppToDelete: BlisAppBase = this.props.blisApps.all.find((app: BlisAppBase) => app.appId == this.state.appIDToDelete);
-        this.props.deleteBLISApplication(this.props.userKey, this.state.appIDToDelete, blisAppToDelete);
+        this.props.deleteBLISApplication(this.props.user.key, this.state.appIDToDelete, blisAppToDelete);
         this.setState({
             confirmDeleteAppModalOpen: false,
             appIDToDelete: null,
@@ -89,11 +89,12 @@ class BLISAppsList extends React.Component<any, any> {
     }
     BLISAppSelected(appName: string) {
         let appSelected = this.props.blisApps.all.find((app: BlisAppBase) => app.appName == appName);
-        this.props.setCurrentBLISApp(this.props.userKey, appSelected);
-        this.props.fetchAllActions(this.props.userKey, appSelected.appId);
-        this.props.fetchAllEntities(this.props.userKey, appSelected.appId);
-        this.props.fetchAllTrainDialogs(this.props.userKey, appSelected.appId);
-        this.props.fetchAllChatSessions(this.props.userKey, appSelected.appId);
+        this.props.setCurrentBLISApp(this.props.user.key, appSelected);
+        this.props.fetchAllActions(this.props.user.key, appSelected.appId);
+        this.props.fetchAllEntities(this.props.user.key, appSelected.appId);
+        this.props.fetchAllTrainDialogs(this.props.user.key, appSelected.appId);
+        this.props.fetchAllChatSessions(this.props.user.key, appSelected.appId);
+        this.props.fetchAllTeachSessions(this.props.user.key, appSelected.appId);
         this.props.setBLISAppDisplay("TrainingGround");
     }
     renderItemColumn(item?: any, index?: number, column?: IColumn) {
@@ -144,12 +145,13 @@ const mapDispatchToProps = (dispatch: any) => {
         setCurrentBLISApp: setCurrentBLISApp,
         setBLISAppDisplay: setBLISAppDisplay,
         deleteBLISApplication: deleteBLISApplication,
-        fetchAllChatSessions: fetchAllChatSessions
+        fetchAllChatSessions: fetchAllChatSessions,
+        fetchAllTeachSessions: fetchAllTeachSessions
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {
     return {
-        userKey: state.user.key,
+        user: state.user,
         blisApps: state.apps
     }
 }
