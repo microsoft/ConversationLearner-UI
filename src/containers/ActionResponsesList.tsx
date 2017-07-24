@@ -50,15 +50,7 @@ let columns: IColumn[] = [
         minWidth: 100,
         maxWidth: 200,
         isResizable: true
-    },
-    {
-        key: 'actions',
-        name: 'Actions',
-        fieldName: 'actionId',
-        minWidth: 100,
-        maxWidth: 200,
-        isResizable: true
-    },
+    }
 ];
 class ActionResponsesHomepage extends React.Component<any, any> {
     constructor(p: any) {
@@ -83,17 +75,18 @@ class ActionResponsesHomepage extends React.Component<any, any> {
         this.props.deleteAction(this.props.userKey, this.state.actionIDToDelete, actionToDelete, currentAppId);
         this.setState({
             confirmDeleteActionModalOpen: false,
+            createEditModalOpen: false,
             actionIDToDelete: null
         })
 
     }
-    handleCloseModal() {
+    handleCloseDeleteModal() {
         this.setState({
             confirmDeleteActionModalOpen: false,
             actionIDToDelete: null
         })
     }
-    openDeleteModal(guid: string) {
+    handleOpenDeleteModal(guid: string) {
         this.setState({
             confirmDeleteActionModalOpen: true,
             actionIDToDelete: guid
@@ -151,12 +144,6 @@ class ActionResponsesHomepage extends React.Component<any, any> {
                 } else {
                     return <span className="ms-Icon ms-Icon--Remove notFoundIcon" aria-hidden="true"></span>;
                 }
-            case 'actions':
-                return (
-                    <div>
-                        <a onClick={() => this.openDeleteModal(fieldContent)}><span className="ms-Icon ms-Icon--Delete"></span></a>
-                    </div>
-                )
             default:
                 return <span className='ms-font-m-plus'>{fieldContent}</span>;
         }
@@ -263,7 +250,7 @@ class ActionResponsesHomepage extends React.Component<any, any> {
                         ariaDescription='Create a New Action'
                         text='New Action'
                     />
-                    <ActionResponseCreatorEditor open={this.state.createEditModalOpen} blisAction={this.state.actionSelected} handleClose={this.handleCloseCreateModal.bind(this)} />
+                    <ActionResponseCreatorEditor open={this.state.createEditModalOpen} blisAction={this.state.actionSelected} handleClose={this.handleCloseCreateModal.bind(this)} handleOpenDeleteModal={this.handleOpenDeleteModal.bind(this)} />
                 </div>
                 <SearchBox
                     className="ms-font-m-plus"
@@ -279,7 +266,7 @@ class ActionResponsesHomepage extends React.Component<any, any> {
                     onActiveItemChanged={(item) => this.editSelectedAction(item)}
                     onColumnHeaderClick={ this.onColumnClick.bind(this) }
                 />
-                <ConfirmDeleteModal open={this.state.confirmDeleteActionModalOpen} onCancel={() => this.handleCloseModal()} onConfirm={() => this.deleteSelectedAction()} title="Are you sure you want to delete this action?" />
+                <ConfirmDeleteModal open={this.state.confirmDeleteActionModalOpen} onCancel={() => this.handleCloseDeleteModal()} onConfirm={() => this.deleteSelectedAction()} title="Are you sure you want to delete this action?" />
 
             </div>
         );

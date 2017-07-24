@@ -253,10 +253,21 @@ class ActionResponseCreatorEditor extends React.Component<any, any> {
             }
         })
         let title: string;
-        let createButtonText: string
+        let createButtonText: string;
+        let deleteButton = null;
+
         if (this.state.editing == true) {
             title = "Edit Action"
             createButtonText = "Save"
+            deleteButton =                         
+                    <CommandButton
+                            data-automation-id='randomID9'
+                            className="grayButton"
+                            disabled={false}
+                            onClick={() => this.props.handleOpenDeleteModal(this.props.blisAction.actionId)}
+                            ariaDescription='Delete'
+                            text='Delete'
+                    />
         } else {
             title = "Create an Action"
             createButtonText = "Create"
@@ -337,7 +348,7 @@ class ActionResponseCreatorEditor extends React.Component<any, any> {
                             text='Cancel'
                         />
                         <CommandButton
-                            data-automation-id='randomID7'
+                            data-automation-id='randomID8'
                             className="goldButton actionCreatorCreateEntityButton"
                             disabled={false}
                             onClick={this.handleOpenEntityModal.bind(this)}
@@ -345,6 +356,7 @@ class ActionResponseCreatorEditor extends React.Component<any, any> {
                             text='Entity'
                             iconProps={{ iconName: 'CirclePlus' }}
                         />
+                        {deleteButton}
                     </div>
                     <EntityCreatorEditor open={this.state.entityModalOpen} entity={null} handleClose={this.handleCloseEntityModal.bind(this)} />
                 </Modal>
