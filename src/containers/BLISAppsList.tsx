@@ -63,7 +63,9 @@ class BLISAppsList extends React.Component<any, any> {
         this.openDeleteModal = this.openDeleteModal.bind(this);
         this.state = {
             confirmDeleteAppModalOpen: false,
-            appIDToDelete: null
+            appIDToDelete: null,
+            columns: columns,
+            sortColumn : null
         }
     }
     deleteApp() {
@@ -97,6 +99,29 @@ class BLISAppsList extends React.Component<any, any> {
         // this.props.fetchAllTeachSessions(this.props.user.key, appSelected.appId);
         this.props.setBLISAppDisplay("TrainingGround");
     }
+    onColumnClick(event: any, column : any) {
+        let { sortedItems, columns } = this.state;
+        let isSortedDescending = column.isSortedDescending;
+
+        // If we've sorted this column, flip it.
+        if (column.isSorted) {
+            isSortedDescending = !isSortedDescending;
+        }
+
+        // Reset the items and columns to match the state.
+        this.setState({
+            columns: columns.map((col: any) => {
+                col.isSorted = (col.key === column.key);
+
+                if (col.isSorted) {
+                col.isSortedDescending = isSortedDescending;
+                }
+
+                return col;
+            }),
+            sortColumn : column
+        });
+    }
     renderItemColumn(item?: any, index?: number, column?: IColumn) {
         let fieldContent = item[column.fieldName];
         switch (column.key) {
@@ -115,8 +140,45 @@ class BLISAppsList extends React.Component<any, any> {
                 return <span className='ms-font-m-plus'>{fieldContent}</span>;
         }
     }
+     renderAppItems(): BlisAppBase[] {
+        let filteredApps = this.props.blisApps.all || [];
+
+        if (this.state.sortColumn)
+        {
+            // Sort the items.
+            filteredApps = filteredApps.concat([]).sort((a: any, b: any) => {
+                let firstValue = this.getValue(a, this.state.sortColumn);
+                let secondValue = this.getValue(b, this.state.sortColumn);
+
+                if (this.state.sortColumn.isSortedDescending) {
+                    return firstValue > secondValue ? -1 : 1;
+                } 
+                else {
+                    return firstValue > secondValue ? 1 : -1;
+                }
+            });
+        }
+
+        return filteredApps;
+    }
+    getValue(entity: any, col: IColumn) : any
+    {
+        let value;
+        if(col.key == 'bots') {
+            value = entity.metadata.bots;
+        }
+        else {
+            value = entity[col.fieldName];
+        }
+
+        if (typeof value == 'string' || value instanceof String) {
+            return value.toLowerCase();
+        }
+        return value;
+    }
+
     render() {
-        let allApps = this.props.blisApps.all || [];
+        let apps = this.renderAppItems();
         return (
             <div className='content'>
                 <span className="ms-font-su myAppsHeaderContentBlock">My Apps</span>
@@ -126,10 +188,11 @@ class BLISAppsList extends React.Component<any, any> {
                 </div>
                 <DetailsList
                     className="ms-font-m-plus"
-                    items={allApps}
-                    columns={columns}
+                    items={apps}
+                    columns={this.state.columns}
                     checkboxVisibility={CheckboxVisibility.hidden}
                     onRenderItemColumn={this.renderItemColumn}
+                    onColumnHeaderClick={ this.onColumnClick.bind(this) }
                 />
                 <ConfirmDeleteModal open={this.state.confirmDeleteAppModalOpen} onCancel={() => this.handleCloseModal()} onConfirm={() => this.deleteApp()} title="Are you sure you want to delete this application?" />
             </div>

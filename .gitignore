@@ -292,3 +292,5 @@ __pycache__/
 *.map
 public/bundle.js
 
+*.map
+public/bundle.js.map

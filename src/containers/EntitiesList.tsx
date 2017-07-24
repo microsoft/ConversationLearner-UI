@@ -63,7 +63,9 @@ class EntitiesList extends React.Component<any, any> {
             searchValue: '',
             createEditModalOpen: false,
             entitySelected: null,
-            errorModalOpen: false
+            errorModalOpen: false,
+            columns: columns,
+            sortColumn : null
         }
     }
     deleteSelectedEntity() {
@@ -102,6 +104,30 @@ class EntitiesList extends React.Component<any, any> {
             })
         }
     }
+    onColumnClick(event: any, column : any) {
+        let { sortedItems, columns } = this.state;
+        let isSortedDescending = column.isSortedDescending;
+
+        // If we've sorted this column, flip it.
+        if (column.isSorted) {
+            isSortedDescending = !isSortedDescending;
+        }
+
+        // Reset the items and columns to match the state.
+        this.setState({
+            columns: columns.map((col: any) => {
+                col.isSorted = (col.key === column.key);
+
+                if (col.isSorted) {
+                col.isSortedDescending = isSortedDescending;
+                }
+
+                return col;
+            }),
+            sortColumn : column
+        });
+    }
+    
     renderItemColumn(item?: any, index?: number, column?: IColumn) {
         let fieldContent = item[column.fieldName];
         switch (column.key) {
@@ -128,7 +154,7 @@ class EntitiesList extends React.Component<any, any> {
         }
     }
     renderEntityItems(): EntityBase[] {
-        //runs when user changes the text 
+        //runs when user changes the text or sort
         let lcString = this.state.searchValue.toLowerCase();
         let filteredEntities = this.props.entities.filter((e: EntityBase) => {
             let nameMatch = e.entityName.toLowerCase().includes(lcString);
@@ -136,8 +162,47 @@ class EntitiesList extends React.Component<any, any> {
             let match = nameMatch || typeMatch
             return match;
         })
-        return filteredEntities;
+
+        if (!this.state.sortColumn)
+        {
+            return filteredEntities;
+        }
+
+        // Sort the items.
+        let sortedItems = filteredEntities.concat([]).sort((a: any, b: any) => {
+            let firstValue = this.getValue(a, this.state.sortColumn);
+            let secondValue = this.getValue(b, this.state.sortColumn);
+
+            if (this.state.sortColumn.isSortedDescending) {
+                return firstValue > secondValue ? -1 : 1;
+            } 
+            else {
+                return firstValue > secondValue ? 1 : -1;
+            }
+        });
+
+        return sortedItems;
     }
+
+    getValue(entity: any, col: IColumn) : any
+    {
+        let value;
+        if(col.key == 'isBucketable') {
+            value = entity.metadata.isBucket;
+        }
+        else if (col.key == 'isNegatable')  {
+            value = entity.metadata.isReversable;
+        }
+        else {
+            value = entity[col.fieldName];
+        }
+              
+        if (typeof value == 'string' || value instanceof String) {
+            return value.toLowerCase();
+        }
+        return value;
+    }
+
     onChange(newValue: string) {
         //runs when user changes the text 
         let lcString = newValue.toLowerCase();
@@ -157,7 +222,8 @@ class EntitiesList extends React.Component<any, any> {
         })
     }
     render() {
-        let entityItems = this.renderEntityItems();
+        let entityItems = this.renderEntityItems(); 
+
         return (
             <div>
                 <TrainingGroundArenaHeader title="Entities" description="Manage a list of entities in your application and track and control their instances within actions..." />
@@ -180,9 +246,10 @@ class EntitiesList extends React.Component<any, any> {
                 <DetailsList
                     className="ms-font-m-plus"
                     items={entityItems}
-                    columns={columns}
+                    columns={this.state.columns}
                     checkboxVisibility={CheckboxVisibility.hidden}
                     onRenderItemColumn={this.renderItemColumn}
+                    onColumnHeaderClick={ this.onColumnClick.bind(this) }
                 />
                 <ConfirmDeleteModal open={this.state.confirmDeleteEntityModalOpen} onCancel={() => this.handleCloseDeleteModal()} onConfirm={() => this.deleteSelectedEntity()} title="Are you sure you want to delete this entity?" />
                 <ConfirmDeleteModal open={this.state.confirmDeleteEntityModalOpen} onCancel={() => this.handleCloseDeleteModal()} onConfirm={() => this.deleteSelectedEntity()} title="Are you sure you want to delete this entity?" />

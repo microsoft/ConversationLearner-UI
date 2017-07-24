@@ -71,7 +71,9 @@ class ActionResponsesHomepage extends React.Component<any, any> {
         this.state = {
             searchValue: '',
             createEditModalOpen: false,
-            actionSelected: null
+            actionSelected: null,
+            columns: columns,
+            sortColumn : null
         }
         this.renderEntityList = this.renderEntityList.bind(this)
     }
@@ -102,6 +104,29 @@ class ActionResponsesHomepage extends React.Component<any, any> {
             actionSelected: action,
             createEditModalOpen: true
         })
+    }
+    onColumnClick(event: any, column : any) {
+        let { sortedItems, columns } = this.state;
+        let isSortedDescending = column.isSortedDescending;
+
+        // If we've sorted this column, flip it.
+        if (column.isSorted) {
+            isSortedDescending = !isSortedDescending;
+        }
+
+        // Reset the items and columns to match the state.
+        this.setState({
+            columns: columns.map((col: any) => {
+                col.isSorted = (col.key === column.key);
+
+                if (col.isSorted) {
+                    col.isSortedDescending = isSortedDescending;
+                }
+
+                return col;
+            }),
+            sortColumn : column
+        });
     }
     renderItemColumn(item?: any, index?: number, column?: IColumn) {
         let fieldContent = item[column.fieldName];
@@ -136,7 +161,7 @@ class ActionResponsesHomepage extends React.Component<any, any> {
                 return <span className='ms-font-m-plus'>{fieldContent}</span>;
         }
     }
-    renderEntityList(entityIDs: string[]) {
+     renderEntityList(entityIDs: string[]) {
         let entityObjects: EntityBase[];
         entityObjects = entityIDs.map((id: string) => {
             return this.props.entities.find((e: EntityBase) => e.entityId == id)
@@ -149,8 +174,23 @@ class ActionResponsesHomepage extends React.Component<any, any> {
                 )}
             />
         )
-
     }
+    getValue(entity: any, col: IColumn) : any
+    {
+        let value;
+        if(col.key == 'actionType') {
+            value = entity.metadata.actionType;
+        }
+        else {
+            value = entity[col.fieldName];
+        }
+        
+        if (typeof value == 'string' || value instanceof String) {
+            return value.toLowerCase();
+        }
+        return value;
+    }
+
     renderActionItems(): ActionBase[] {
         //runs when user changes the text 
         let lcString = this.state.searchValue.toLowerCase();
@@ -172,6 +212,23 @@ class ActionResponsesHomepage extends React.Component<any, any> {
             let match = nameMatch || typeMatch || reqEntsMatch || negEntsMatch
             return match;
         })
+
+        if (this.state.sortColumn)
+        {
+            // Sort the items.
+            filteredActions = filteredActions.concat([]).sort((a: any, b: any) => {
+                let firstValue = this.getValue(a, this.state.sortColumn);
+                let secondValue = this.getValue(b, this.state.sortColumn);
+
+                if (this.state.sortColumn.isSortedDescending) {
+                    return firstValue > secondValue ? -1 : 1;
+                } 
+                else {
+                    return firstValue > secondValue ? 1 : -1;
+                }
+            });
+        }
+
         return filteredActions;
     }
     onChange(newValue: string) {
@@ -216,10 +273,11 @@ class ActionResponsesHomepage extends React.Component<any, any> {
                 <DetailsList
                     className="ms-font-m-plus"
                     items={actionItems}
-                    columns={columns}
+                    columns={this.state.columns}
                     checkboxVisibility={CheckboxVisibility.hidden}
                     onRenderItemColumn={this.renderItemColumn}
                     onActiveItemChanged={(item) => this.editSelectedAction(item)}
+                    onColumnHeaderClick={ this.onColumnClick.bind(this) }
                 />
                 <ConfirmDeleteModal open={this.state.confirmDeleteActionModalOpen} onCancel={() => this.handleCloseModal()} onConfirm={() => this.deleteSelectedAction()} title="Are you sure you want to delete this action?" />
 
