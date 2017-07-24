@@ -94,7 +94,7 @@ class BLISAppsList extends React.Component<any, any> {
         this.props.fetchAllEntities(this.props.user.key, appSelected.appId);
         this.props.fetchAllTrainDialogs(this.props.user.key, appSelected.appId);
         this.props.fetchAllChatSessions(this.props.user.key, appSelected.appId);
-        this.props.fetchAllTeachSessions(this.props.user.key, appSelected.appId);
+        // this.props.fetchAllTeachSessions(this.props.user.key, appSelected.appId);
         this.props.setBLISAppDisplay("TrainingGround");
     }
     renderItemColumn(item?: any, index?: number, column?: IColumn) {

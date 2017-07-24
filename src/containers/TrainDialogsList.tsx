@@ -4,10 +4,11 @@ import { connect } from 'react-redux';
 import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader'
 import { DetailsList, CommandButton, Link, CheckboxVisibility, IColumn, SearchBox } from 'office-ui-fabric-react';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
-import { setWebchatDisplay, setCurrentTrainDialog } from '../actions/updateActions'
-import { createTrainDialog } from '../actions/createActions'
+import { setWebchatDisplay, setCurrentTrainDialog, setCurrentTeachSession } from '../actions/updateActions'
+import { createTrainDialog, createTeachSession } from '../actions/createActions'
+import { deleteTeachSession } from '../actions/deleteActions'
 import { State } from '../types'
-import { TrainDialog } from 'blis-models'
+import { TrainDialog, Teach } from 'blis-models'
 
 let columns: IColumn[] = [
     {
@@ -64,6 +65,13 @@ class TrainDialogsList extends React.Component<any, any> {
     }
     handleClick() {
         this.props.setWebchatDisplay(true, true)
+        let testTeachSession = new Teach({
+            
+        });
+        let currentAppId: string = this.props.apps.current.appId;
+        this.props.createTeachSession(this.props.userKey, testTeachSession, currentAppId)
+        // this.props.deleteTeachSession(this.props.userKey, testTeachSession, currentAppId)
+        // this.props.setCurrentTeachSession(this.props.teachSessions.all.find((t: Teach) => t.teachId == ""))
         //need to create a new teach session
     }
     generateGUID(): string {
@@ -128,14 +136,18 @@ const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         setWebchatDisplay: setWebchatDisplay,
         setCurrentTrainDialog: setCurrentTrainDialog,
-        createTrainDialog: createTrainDialog
+        setCurrentTeachSession: setCurrentTeachSession,
+        createTrainDialog: createTrainDialog,
+        createTeachSession: createTeachSession,
+        deleteTeachSession: deleteTeachSession
     }, dispatch)
 }
 const mapStateToProps = (state: State) => {
     return {
         userKey: state.user.key,
-        blisApps: state.apps,
-        trainDialogs: state.trainDialogs
+        apps: state.apps,
+        trainDialogs: state.trainDialogs,
+        teachSessions: state.teachSessions
     }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(TrainDialogsList);
