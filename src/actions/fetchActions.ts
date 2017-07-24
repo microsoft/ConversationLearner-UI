@@ -1,5 +1,5 @@
 import { ActionObject } from '../types'
-import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, ActionMetaData, ActionList, ActionTypes, Session } from 'blis-models';
+import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, ActionMetaData, ActionList, ActionTypes, Session, Teach } from 'blis-models';
 
 //=========================================================
 //=========================================================
@@ -86,6 +86,22 @@ export const fetchAllChatSessionsFulfilled = (sessions: Session[]): ActionObject
     return {
         type: 'FETCH_CHAT_SESSIONS_FULFILLED',
         allSessions: sessions
+    }
+}
+
+export const fetchAllTeachSessions = (key: string, blisAppID: string): ActionObject => {
+    //needs a fulfilled version to handle response from Epic
+    return {
+        type: 'FETCH_TEACH_SESSIONS',
+        key: key,
+        blisAppID: blisAppID
+    }
+}
+
+export const fetchAllTeachSessionsFulfilled = (teachSessions: Teach[]): ActionObject => {
+    return {
+        type: 'FETCH_TEACH_SESSIONS_FULFILLED',
+        allTeachSessions: teachSessions
     }
 }
 

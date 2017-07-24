@@ -1,4 +1,4 @@
-import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, ActionMetaData, ActionList, ActionTypes, TrainDialog, LogDialog, Session } from 'blis-models'
+import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, ActionMetaData, ActionList, ActionTypes, TrainDialog, LogDialog, Session, Teach } from 'blis-models'
 
 
 export type UpdateAction = {
@@ -35,9 +35,12 @@ export type UpdateAction = {
 } | {
     type: 'SET_CURRENT_LOG_DIALOG',
     currentLogDialog: LogDialog,
-} |  {
+} | {
     type: 'SET_CURRENT_CHAT_SESSION',
     currentSession: Session,
+} | {
+    type: 'SET_CURRENT_TEACH_SESSION',
+    currentTeachSession: Teach,
 } | {
     //used for setting whether the app list or app homepage (trainingGround) is displayed
     type: 'SET_BLIS_APP_DISPLAY',
@@ -112,6 +115,13 @@ export type FetchAction = {
 } | {
     type: 'FETCH_CHAT_SESSIONS_FULFILLED',
     allSessions: Session[]
+} | {
+    type: 'FETCH_TEACH_SESSIONS_FULFILLED',
+    allTeachSessions: Teach[]
+} | {
+    type: 'FETCH_TEACH_SESSIONS',
+    key: string,
+    blisAppID: string
 }
 
 export type CreateAction = {
@@ -171,6 +181,15 @@ export type CreateAction = {
     type: 'CREATE_CHAT_SESSION_FULFILLED',
     sessionId: string,
     session: Session
+} | {
+    type: 'CREATE_TEACH_SESSION',
+    key: string,
+    currentAppId: string,
+    teachSession: Teach
+} | {
+    type: 'CREATE_TEACH_SESSION_FULFILLED',
+    teachSessionId: string,
+    teachSession: Teach
 }
 
 
@@ -219,6 +238,14 @@ export type DeleteAction = {
 } | {
     type: 'DELETE_CHAT_SESSION_FULFILLED',
     sessionGUID: string,
+} | {
+    type: 'DELETE_TEACH_SESSION',
+    key: string,
+    teachSession: Teach,
+    currentAppId: string
+} | {
+    type: 'DELETE_TEACH_SESSION_FULFILLED',
+    teachSessionGUID: string,
 } | {
     type: "DELETE_OPERATION_FULFILLED"
 }

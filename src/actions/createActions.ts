@@ -1,5 +1,5 @@
 import { ActionObject } from '../types'
-import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, ActionMetaData, ActionList, ActionTypes, TrainDialog, LogDialog, Session } from 'blis-models';
+import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, ActionMetaData, ActionList, ActionTypes, TrainDialog, LogDialog, Session, Teach } from 'blis-models';
 
 export const createBLISApplication = (key : string, userId : string, application: BlisAppBase): ActionObject => {
     //needs to make a call to an Epic to send data to BLIS
@@ -116,5 +116,24 @@ export const createLogDialog = (key: string, logDialog: LogDialog): ActionObject
         type: 'CREATE_LOG_DIALOG',
         key: key,
         logDialog: logDialog
+    }
+}
+
+export const createTeachSession = (key: string, teachSession: Teach, currentAppId: string): ActionObject => {
+    //needs to make a call to an Epic to send data to BLIS
+    return {
+        type: 'CREATE_TEACH_SESSION',
+        key: key,
+        teachSession: teachSession,
+        currentAppId: currentAppId
+    }
+}
+
+export const createTeachSessionFulfilled = (teachSession: Teach, teachSessionId: string): ActionObject => {
+    //needs to make a call to an Epic to send data to BLIS
+    return {
+        type: 'CREATE_TEACH_SESSION_FULFILLED',
+        teachSession: teachSession,
+        teachSessionId: teachSessionId
     }
 }

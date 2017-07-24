@@ -6,13 +6,13 @@ import {
 	ActionBase, ActionMetaData, ActionList, ActionTypes,
 	UserInput,
 	TrainExtractorStep, ExtractResponse, TrainScorerStep,
-	Session
+	Session, Teach
 } from 'blis-models'
 import * as Rx from 'rxjs';
 import { Observable, Observer } from 'rxjs'
-import { fetchApplicationsFulfilled, fetchAllEntitiesFulfilled, fetchAllActionsFulfilled, fetchAllChatSessionsFulfilled } from '../actions/fetchActions'
-import { createApplicationFulfilled, createEntityFulfilled, createPositiveEntityFulfilled, createNegativeEntityFulfilled, createActionFulfilled, createChatSessionFulfilled } from '../actions/createActions'
-import { deleteBLISApplicationFulfilled, deleteReverseEntity, deleteEntityFulfilled, deleteActionFulfilled, deleteChatSessionFulfilled } from '../actions/deleteActions'
+import { fetchApplicationsFulfilled, fetchAllEntitiesFulfilled, fetchAllActionsFulfilled, fetchAllChatSessionsFulfilled, fetchAllTeachSessionsFulfilled } from '../actions/fetchActions'
+import { createApplicationFulfilled, createEntityFulfilled, createPositiveEntityFulfilled, createNegativeEntityFulfilled, createActionFulfilled, createChatSessionFulfilled, createTeachSessionFulfilled } from '../actions/createActions'
+import { deleteBLISApplicationFulfilled, deleteReverseEntity, deleteEntityFulfilled, deleteActionFulfilled, deleteChatSessionFulfilled, deleteTeachSessionFulfilled } from '../actions/deleteActions'
 import { editBLISApplicationFulfilled, editEntityFulfilled, editActionFulfilled } from '../actions/updateActions'
 import { setErrorDisplay } from '../actions/updateActions'
 import { ActionObject } from '../types'
@@ -276,13 +276,6 @@ export const createBlisSession = (key: string, session: Session, appId: string):
           }));
 };
 
-/** GET SESSION : Retrieves information about the specified session */
-export const getSession = (key : string, appId: string, sessionId: string): Observable<AxiosResponse> => {
-	let getAppRoute: string = makeRoute(key, `app/${appId}/session/${sessionId}`);
-	return Rx.Observable.fromPromise(axios.get(getAppRoute, config))
-};
-
-
 export const deleteChatSession = (key : string, appId: string, session: Session): Observable<ActionObject> => {
 	let deleteAppRoute: string = makeRoute(key, `app/${appId}/session/${session.sessionId}`);
 	return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.delete(deleteAppRoute, config)
@@ -309,6 +302,12 @@ export const getAllSessionsForBlisApp = (key: string, appId: string): Observable
           }));
 };
 
+/** GET SESSION : Retrieves information about the specified session */
+export const getSession = (key : string, appId: string, sessionId: string): Observable<AxiosResponse> => {
+	let getAppRoute: string = makeRoute(key, `app/${appId}/session/${sessionId}`);
+	return Rx.Observable.fromPromise(axios.get(getAppRoute, config))
+};
+
 /** GET SESSION IDS : Retrieves a list of session IDs */
 export const getSessionIds = (key : string, appId: string): Observable<AxiosResponse> => {
 	let getAppRoute: string = makeRoute(key, `app/${appId}/session`);
@@ -319,10 +318,45 @@ export const getSessionIds = (key : string, appId: string): Observable<AxiosResp
 // Teach
 //========================================================
 
-/** START TEACH SESSION: Creates a new teaching session and a corresponding trainDialog */
-export const createTeach = (key : string, appId : string): Observable<AxiosResponse> => {
-	let addAppRoute: string = makeRoute(key, `app/${appId}/teach`);
-	return Rx.Observable.fromPromise(axios.post(addAppRoute, config))
+/** START SESSION : Creates a new session and a corresponding logDialog */
+export const createTeachSession = (key: string, teachSession: Teach, appId: string): Observable<ActionObject> => {
+	let addTeachRoute: string = makeRoute(key, `app/${appId}/teach`);
+	let configWithBody = {...config, body: teachSession}
+	return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.post(addTeachRoute, config).then(response => {
+			let newTeachSessionId = response.data.teachId;
+			obs.next(createTeachSessionFulfilled(teachSession, newTeachSessionId));
+            obs.complete();
+          })
+          .catch(err => {
+            obs.next(setErrorDisplay(err.message, "", "CREATE_TEACH_SESSION"));
+            obs.complete();
+          }));
+};
+
+export const deleteTeachSession = (key : string, appId: string, teachSession: Teach): Observable<ActionObject> => {
+	let deleteTeachSessionRoute: string = `app/${appId}/teach/${teachSession.teachId}`
+	return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.delete(deleteTeachSessionRoute, config)
+		.then(response => {
+            obs.next(deleteTeachSessionFulfilled(teachSession.teachId));
+            obs.complete();
+          })
+          .catch(err => {
+            obs.next(setErrorDisplay(err.message, "", "DELETE_TEACH_SESSION"));
+            obs.complete();
+          }));
+};
+
+export const getAllTeachSessionsForBlisApp = (key: string, appId: string): Observable<ActionObject> => {
+	let getTeachSessionsForAppRoute: string = makeRoute(key, `app/${appId}/teaches`);
+	return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.get(getTeachSessionsForAppRoute, config)
+		.then(response => {
+            obs.next(fetchAllTeachSessionsFulfilled(response.data.teaches));
+            obs.complete();
+          })
+          .catch(err => {
+            obs.next(setErrorDisplay(err.message, "", "FETCH_TEACH_SESSIONS"));
+            obs.complete();
+          }));
 };
 
 /** GET TEACH: Retrieves information about the specified teach */
@@ -373,16 +407,7 @@ export const postScore = (key : string, appId : string, teachId: string, trainSc
  * For Teach sessions, does NOT delete the associated trainDialog.
  * To delete the associated trainDialog, call DELETE on the trainDialog.
  */
-export const deleteTeach = (key : string, appId: string, teachId: string): Observable<AxiosResponse> => {
-	let deleteAppRoute: string = `app/${appId}/teach/${teachId}`
-	return Rx.Observable.fromPromise(axios.delete(rootUrl.concat(deleteAppRoute)))
-};
 
-/** GET TEACH SESSIONS: Retrieves definitions of ALL open teach sessions */
-export const getTeaches = (key : string, appId: string): Observable<AxiosResponse> => {
-	let getAppRoute: string = makeRoute(key, `app/${appId}/teaches`);
-	return Rx.Observable.fromPromise(axios.get(getAppRoute, config))
-};
 
 /** GET TEACH SESSION IDS: Retrieves a list of teach session IDs */
 export const getTeachIds = (key : string, appId: string): Observable<AxiosResponse> => {

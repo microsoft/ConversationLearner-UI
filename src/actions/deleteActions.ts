@@ -1,5 +1,5 @@
 import { ActionObject } from '../types'
-import { BlisAppBase, EntityBase, ActionBase, Session} from 'blis-models'
+import { BlisAppBase, EntityBase, ActionBase, Session, Teach} from 'blis-models'
 
 export const deleteBLISApplication = (key: string, GUID: string, blisApp: BlisAppBase): ActionObject => {
     //needs to make a call to an Epic to send data to BLIS
@@ -98,5 +98,22 @@ export const deleteChatSessionFulfilled = (sessionGUID: string): ActionObject =>
     return {
         type: 'DELETE_CHAT_SESSION_FULFILLED',
         sessionGUID: sessionGUID
+    }
+}
+
+export const deleteTeachSession = (key: string, teachSession: Teach, currentAppId: string): ActionObject => {
+    //needs to make a call to an Epic to send data to BLIS
+    return {
+        type: 'DELETE_TEACH_SESSION',
+        key: key,
+        teachSession: teachSession,
+        currentAppId: currentAppId
+    }
+}
+
+export const deleteTeachSessionFulfilled = (teachSessionGUID: string): ActionObject => {
+    return {
+        type: 'DELETE_TEACH_SESSION_FULFILLED',
+        teachSessionGUID: teachSessionGUID
     }
 }
