@@ -12,17 +12,18 @@ import { State } from '../types'
 
 let columns: IColumn[] = [
     {
-        key: 'actionType',
-        name: 'Action Type',
-        fieldName: 'metadata',
-        minWidth: 100,
-        maxWidth: 200,
-        isResizable: true
-    },
-    {
         key: 'payload',
         name: 'Payload',
         fieldName: 'payload',
+        minWidth: 100,
+        maxWidth: 200,
+        isResizable: true,
+        isMultiline: true
+    },
+    {
+        key: 'actionType',
+        name: 'Action Type',
+        fieldName: 'metadata',
         minWidth: 100,
         maxWidth: 200,
         isResizable: true
@@ -144,6 +145,8 @@ class ActionResponsesHomepage extends React.Component<any, any> {
                 } else {
                     return <span className="ms-Icon ms-Icon--Remove notFoundIcon" aria-hidden="true"></span>;
                 }
+            case 'payload':
+                return <span className='ms-font-m-plus'><Link onClick={() => this.editSelectedAction(item)}>{fieldContent}</Link></span>;
             default:
                 return <span className='ms-font-m-plus'>{fieldContent}</span>;
         }
