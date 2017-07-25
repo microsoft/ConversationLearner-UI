@@ -4,11 +4,12 @@ import { connect } from 'react-redux';
 import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader'
 import { DetailsList, CommandButton, Link, CheckboxVisibility, IColumn, SearchBox } from 'office-ui-fabric-react';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
-import { setWebchatDisplay, setCurrentTrainDialog, setCurrentTeachSession } from '../actions/updateActions'
+import { setDisplayMode, setCurrentTrainDialog, setCurrentTeachSession } from '../actions/updateActions'
 import { createTrainDialog, createTeachSession } from '../actions/createActions'
 import { deleteTeachSession } from '../actions/deleteActions'
 import { State } from '../types'
 import { TrainDialog, Teach } from 'blis-models'
+import { DisplayMode } from '../types/const';
 
 let columns: IColumn[] = [
     {
@@ -64,15 +65,7 @@ class TrainDialogsList extends React.Component<any, any> {
         }
     }
     handleClick() {
-        this.props.setWebchatDisplay(true, true)
-        let testTeachSession = new Teach({
-            
-        });
-        let currentAppId: string = this.props.apps.current.appId;
-        this.props.createTeachSession(this.props.userKey, testTeachSession, currentAppId)
-        // this.props.deleteTeachSession(this.props.userKey, testTeachSession, currentAppId)
-        // this.props.setCurrentTeachSession(this.props.teachSessions.all.find((t: Teach) => t.teachId == ""))
-        //need to create a new teach session
+        this.props.setDisplayMode(DisplayMode.Teach);
     }
     generateGUID(): string {
         let d = new Date().getTime();
@@ -134,7 +127,7 @@ class TrainDialogsList extends React.Component<any, any> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        setWebchatDisplay: setWebchatDisplay,
+        setDisplayMode: setDisplayMode,
         setCurrentTrainDialog: setCurrentTrainDialog,
         setCurrentTeachSession: setCurrentTeachSession,
         createTrainDialog: createTrainDialog,

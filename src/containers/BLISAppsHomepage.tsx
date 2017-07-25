@@ -1,5 +1,6 @@
 import * as React from 'react';
 import AppAdmin from './AppAdmin';
+import TeachWindow from './TeachWindow';
 import { fetchApplications } from '../actions/fetchActions'
 import BLISAppsList from './BLISAppsList';
 import { bindActionCreators } from 'redux';
@@ -24,12 +25,21 @@ class BLISAppsHomepage extends React.Component<any, any> {
         }
     }
     render() {
+        var display = null;
+         switch (this.props.display.displayMode) {
+            case DisplayMode.AppList:
+                display = <BLISAppsList  />
+                break;
+            case DisplayMode.AppAdmin:
+                display = <AppAdmin />
+                break;
+            case DisplayMode.Teach:
+                display = <TeachWindow />
+                break;
+         }
         return (
             <div className="fluidCont">
-                {this.props.display.displayMode == DisplayMode.AppList ?             
-                    <BLISAppsList  />
-                    : <AppAdmin />
-                }
+                {display}
             </div>
         );
     }
