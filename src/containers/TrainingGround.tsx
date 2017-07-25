@@ -9,9 +9,8 @@ import BLISAppsHomepage from './BLISAppsHomepage';
 import AppDashboard from './AppDashboard';
 import AppSettings from './AppSettings';
 import SessionController from './SessionController';
-import { Nav, INavLink, INavLinkGroup } from 'office-ui-fabric-react';
-import { Link } from 'react-router-dom';
-import { setWebchatDisplay } from '../actions/updateActions'
+import { Nav, INavLink, INavLinkGroup, Link } from 'office-ui-fabric-react';
+import { setWebchatDisplay, setBLISAppDisplay } from '../actions/updateActions'
 import { State } from '../types'
 import LogDialogsList from './LogDialogsList'
 
@@ -90,8 +89,7 @@ class TrainingGround extends React.Component<any, any> {
                             />
                         </div>
                         <div className="tgbackToAppsDiv">
-                            <Link className="backToApps" onClick={() => this.props.setDisplay("Home")} to="/myApps"><span className="ms-Icon ms-Icon--Back backToApps backToAppsIcon" aria-hidden="true"></span>&nbsp;&nbsp;</Link>
-                            <span className="ms-font-m-plus backToApps"><Link className="backToApps" onClick={() => this.props.setDisplay("Home")} to="/myApps">Back to App List</Link></span>
+                            <Link className="backToApps" onClick={() => this.props.setBLISAppDisplay("Home")}><span className="ms-Icon ms-Icon--Back backToApps backToAppsIcon" aria-hidden="true"></span>&nbsp;&nbsp;App List</Link>
                         </div>
                     </div>
 
@@ -130,8 +128,7 @@ class TrainingGround extends React.Component<any, any> {
                             />
                         </div>
                         <div className="tgbackToAppsDiv">
-                            <Link className="backToApps" onClick={() => this.props.setDisplay("Home")} to="/myApps"><span className="ms-Icon ms-Icon--Back backToApps backToAppsIcon" aria-hidden="true"></span>&nbsp;&nbsp;</Link>
-                            <span className="ms-font-m-plus backToApps"><Link className="backToApps" onClick={() => this.props.setDisplay("Home")} to="/myApps">Back to App List</Link></span>
+                            <Link className="backToApps" onClick={() => this.props.setBLISAppDisplay("Home")}><span className="ms-Icon ms-Icon--Back backToApps backToAppsIcon" aria-hidden="true"></span>&nbsp;&nbsp;App List</Link>
                         </div>
                     </div>
 
@@ -157,7 +154,8 @@ class TrainingGround extends React.Component<any, any> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         fetchApplications: fetchApplications,
-        setWebchatDisplay: setWebchatDisplay
+        setWebchatDisplay: setWebchatDisplay,
+        setBLISAppDisplay: setBLISAppDisplay
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {
