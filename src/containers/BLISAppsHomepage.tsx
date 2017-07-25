@@ -1,5 +1,5 @@
 import * as React from 'react';
-import TrainingGround from './TrainingGround';
+import AppAdmin from './AppAdmin';
 import { fetchApplications } from '../actions/fetchActions'
 import BLISAppsList from './BLISAppsList';
 import { bindActionCreators } from 'redux';
@@ -27,7 +27,7 @@ class BLISAppsHomepage extends React.Component<any, any> {
             <div className="fluidCont">
                 {this.props.display.myAppsDisplay == 'Home' ?             
                     <BLISAppsList  />
-                    : <TrainingGround />
+                    : <AppAdmin />
                 }
             </div>
         );

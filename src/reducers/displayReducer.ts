@@ -18,7 +18,7 @@ const displayReducer: Reducer<DisplayState> =  (state = initialState, action: Ac
         case 'SET_LOGIN_DISPLAY':
             return {...state, displayLogin: action.setLoginDisplay};
         case 'CREATE_BLIS_APPLICATION_FULFILLED':
-            return {...state, myAppsDisplay: "TrainingGround"};
+            return {...state, myAppsDisplay: "AppAdmin"};
         case 'SET_ERROR_DISPLAY':
             // If I fail to load critical data, return to home page
             switch (action.route) {

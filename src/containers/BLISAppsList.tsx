@@ -5,7 +5,7 @@ import { deleteBLISApplication } from '../actions/deleteActions'
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import BLISAppCreator from './BLISAppCreator'
-import TrainingGround from './TrainingGround';
+import AppAdmin from './AppAdmin';
 import { DetailsList, CommandButton, Link, CheckboxVisibility, IColumn } from 'office-ui-fabric-react';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import { State } from '../types';
@@ -97,7 +97,7 @@ class BLISAppsList extends React.Component<any, any> {
         this.props.fetchAllTrainDialogs(this.props.user.key, appSelected.appId);
         this.props.fetchAllChatSessions(this.props.user.key, appSelected.appId);
         // this.props.fetchAllTeachSessions(this.props.user.key, appSelected.appId);
-        this.props.setBLISAppDisplay("TrainingGround");
+        this.props.setBLISAppDisplay("AppAdmin");
     }
     onColumnClick(event: any, column : any) {
         let { sortedItems, columns } = this.state;

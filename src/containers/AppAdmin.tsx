@@ -14,7 +14,7 @@ import { setWebchatDisplay, setBLISAppDisplay } from '../actions/updateActions'
 import { State } from '../types'
 import LogDialogsList from './LogDialogsList'
 
-class TrainingGround extends React.Component<any, any> {
+class AppAdmin extends React.Component<any, any> {
     constructor(p: any) {
         super(p);
         this.state = {
@@ -167,4 +167,4 @@ const mapStateToProps = (state: State) => {
         display: state.display
     }
 }
-export default connect(mapStateToProps, mapDispatchToProps)(TrainingGround);
+export default connect(mapStateToProps, mapDispatchToProps)(AppAdmin);

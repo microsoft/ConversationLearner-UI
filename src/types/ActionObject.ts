@@ -42,11 +42,11 @@ export type UpdateAction = {
     type: 'SET_CURRENT_TEACH_SESSION',
     currentTeachSession: Teach,
 } | {
-    //used for setting whether the app list or app homepage (trainingGround) is displayed
+    //used for setting whether the app list or app homepage (AppAdmin) is displayed
     type: 'SET_BLIS_APP_DISPLAY',
     setDisplay: string,
 } | {
-    //used for setting whether the app list or app homepage (trainingGround) is displayed
+    //used for setting whether the app list or app homepage (AppAdmin) is displayed
     type: 'SET_WEBCHAT_DISPLAY',
     setWebchatDisplay: boolean,
     teachMode: boolean
