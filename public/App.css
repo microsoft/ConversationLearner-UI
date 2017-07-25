@@ -133,9 +133,10 @@
   padding: .5em 0em;
 }
 .backToApps{
-  color: gray;
+  color: gray !important;
   text-decoration: none;
   margin-top: 1.2em;
+  font-size: 14px !important;
 }
 .backToAppsIcon{
   text-decoration: none;
