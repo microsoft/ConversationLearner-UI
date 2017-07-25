@@ -10,9 +10,10 @@ import AppDashboard from './AppDashboard';
 import AppSettings from './AppSettings';
 import SessionController from './SessionController';
 import { Nav, INavLink, INavLinkGroup, Link } from 'office-ui-fabric-react';
-import { setWebchatDisplay, setBLISAppDisplay } from '../actions/updateActions'
-import { State } from '../types'
-import LogDialogsList from './LogDialogsList'
+import { setWebchatDisplay, setDisplayMode } from '../actions/updateActions';
+import { State } from '../types';
+import LogDialogsList from './LogDialogsList';
+import { DisplayMode } from '../types/const';
 
 class AppAdmin extends React.Component<any, any> {
     constructor(p: any) {
@@ -89,7 +90,7 @@ class AppAdmin extends React.Component<any, any> {
                             />
                         </div>
                         <div className="tgbackToAppsDiv">
-                            <Link className="backToApps" onClick={() => this.props.setBLISAppDisplay("Home")}><span className="ms-Icon ms-Icon--Back backToApps backToAppsIcon" aria-hidden="true"></span>&nbsp;&nbsp;App List</Link>
+                            <Link className="backToApps" onClick={() => this.props.setDisplayMode(DisplayMode.AppList)}><span className="ms-Icon ms-Icon--Back backToApps backToAppsIcon" aria-hidden="true"></span>&nbsp;&nbsp;App List</Link>
                         </div>
                     </div>
 
@@ -128,7 +129,7 @@ class AppAdmin extends React.Component<any, any> {
                             />
                         </div>
                         <div className="tgbackToAppsDiv">
-                            <Link className="backToApps" onClick={() => this.props.setBLISAppDisplay("Home")}><span className="ms-Icon ms-Icon--Back backToApps backToAppsIcon" aria-hidden="true"></span>&nbsp;&nbsp;App List</Link>
+                            <Link className="backToApps" onClick={() => this.props.setDisplayMode(DisplayMode.AppList)}><span className="ms-Icon ms-Icon--Back backToApps backToAppsIcon" aria-hidden="true"></span>&nbsp;&nbsp;App List</Link>
                         </div>
                     </div>
 
@@ -155,7 +156,7 @@ const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         fetchApplications: fetchApplications,
         setWebchatDisplay: setWebchatDisplay,
-        setBLISAppDisplay: setBLISAppDisplay
+        setDisplayMode: setDisplayMode
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {

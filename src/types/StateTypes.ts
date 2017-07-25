@@ -1,5 +1,6 @@
 import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, 
     ActionMetaData, ActionList, ActionTypes, TrainDialog, LogDialog, Teach, Session } from 'blis-models';
+import { DisplayMode } from '../types/const'
 
 export type ActionState = ActionBase[]
 export type EntityState = EntityBase[]
@@ -29,7 +30,7 @@ export type ChatSessionState = {
     current: Session
 }
 export type DisplayState = {
-    myAppsDisplay: string,
+    displayMode: DisplayMode,
     displayWebchat: boolean,
     webchatTeachMode: boolean,
     displayLogin: boolean

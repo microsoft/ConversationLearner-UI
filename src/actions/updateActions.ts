@@ -1,6 +1,7 @@
 
 import { ActionObject } from '../types'
 import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, ActionMetaData, ActionList, ActionTypes, TrainDialog, LogDialog, Session, Teach } from 'blis-models';
+import { DisplayMode } from '../types/const'
 
 export const setCurrentBLISApp = (key: string, app: BlisAppBase) : ActionObject => { 
     return {
@@ -43,10 +44,10 @@ export const toggleLogDialog = (forward: boolean) => {
     }
 }
 
-export const setBLISAppDisplay = (text: string) : ActionObject => { 
+export const setDisplayMode = (displayMode: DisplayMode) : ActionObject => { 
     return {
-        type: 'SET_BLIS_APP_DISPLAY',
-        setDisplay: text
+        type: 'SET_DISPLAY_MODE',
+        setDisplay: displayMode
     }
 }
 

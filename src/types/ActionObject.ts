@@ -1,5 +1,5 @@
 import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, ActionMetaData, ActionList, ActionTypes, TrainDialog, LogDialog, Session, Teach } from 'blis-models'
-
+import { DisplayMode } from '../types/const'
 
 export type UpdateAction = {
     type: 'EDIT_BLIS_APPLICATION',
@@ -43,8 +43,8 @@ export type UpdateAction = {
     currentTeachSession: Teach,
 } | {
     //used for setting whether the app list or app homepage (AppAdmin) is displayed
-    type: 'SET_BLIS_APP_DISPLAY',
-    setDisplay: string,
+    type: 'SET_DISPLAY_MODE',
+    setDisplay: DisplayMode,
 } | {
     //used for setting whether the app list or app homepage (AppAdmin) is displayed
     type: 'SET_WEBCHAT_DISPLAY',

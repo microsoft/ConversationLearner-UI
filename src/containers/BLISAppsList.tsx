@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { fetchAllActions, fetchAllEntities, fetchApplications, fetchAllTrainDialogs, fetchAllChatSessions, fetchAllTeachSessions } from '../actions/fetchActions';
-import { setCurrentBLISApp, setBLISAppDisplay } from '../actions/updateActions';
+import { setCurrentBLISApp, setDisplayMode } from '../actions/updateActions';
 import { deleteBLISApplication } from '../actions/deleteActions'
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -10,6 +10,7 @@ import { DetailsList, CommandButton, Link, CheckboxVisibility, IColumn } from 'o
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import { State } from '../types';
 import { BlisAppBase, BlisAppList, BlisAppMetaData } from 'blis-models'
+import { DisplayMode } from '../types/const'
 
 let columns: IColumn[] = [
     {
@@ -97,7 +98,7 @@ class BLISAppsList extends React.Component<any, any> {
         this.props.fetchAllTrainDialogs(this.props.user.key, appSelected.appId);
         this.props.fetchAllChatSessions(this.props.user.key, appSelected.appId);
         // this.props.fetchAllTeachSessions(this.props.user.key, appSelected.appId);
-        this.props.setBLISAppDisplay("AppAdmin");
+        this.props.setDisplayMode(DisplayMode.AppAdmin);
     }
     onColumnClick(event: any, column : any) {
         let { sortedItems, columns } = this.state;
@@ -206,7 +207,7 @@ const mapDispatchToProps = (dispatch: any) => {
         fetchAllEntities: fetchAllEntities,
         fetchAllTrainDialogs: fetchAllTrainDialogs,
         setCurrentBLISApp: setCurrentBLISApp,
-        setBLISAppDisplay: setBLISAppDisplay,
+        setDisplayMode: setDisplayMode,
         deleteBLISApplication: deleteBLISApplication,
         fetchAllChatSessions: fetchAllChatSessions,
         fetchAllTeachSessions: fetchAllTeachSessions

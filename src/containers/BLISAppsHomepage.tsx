@@ -5,6 +5,7 @@ import BLISAppsList from './BLISAppsList';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../types'
+import { DisplayMode } from '../types/const'
 
 class BLISAppsHomepage extends React.Component<any, any> {
     constructor(p: any) {
@@ -25,7 +26,7 @@ class BLISAppsHomepage extends React.Component<any, any> {
     render() {
         return (
             <div className="fluidCont">
-                {this.props.display.myAppsDisplay == 'Home' ?             
+                {this.props.display.displayMode == DisplayMode.AppList ?             
                     <BLISAppsList  />
                     : <AppAdmin />
                 }

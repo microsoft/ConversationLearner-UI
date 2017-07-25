@@ -1,9 +1,10 @@
 import { ActionObject } from '../types'
 import { DisplayState } from '../types'
 import { Reducer } from 'redux'
+import { DisplayMode } from '../types/const'
 
 const initialState: DisplayState = {
-    myAppsDisplay: "Home",
+    displayMode: DisplayMode.AppList,
     displayWebchat: false,
     webchatTeachMode: false,
     displayLogin: true
@@ -11,14 +12,14 @@ const initialState: DisplayState = {
 
 const displayReducer: Reducer<DisplayState> =  (state = initialState, action: ActionObject) => {
     switch(action.type) {
-        case 'SET_BLIS_APP_DISPLAY':
-            return {...state, myAppsDisplay: action.setDisplay};
+        case 'SET_DISPLAY_MODE':
+            return {...state, displayMode: action.setDisplay};
         case 'SET_WEBCHAT_DISPLAY':
             return {...state, displayWebchat: action.setWebchatDisplay, webchatTeachMode: action.teachMode};
         case 'SET_LOGIN_DISPLAY':
             return {...state, displayLogin: action.setLoginDisplay};
         case 'CREATE_BLIS_APPLICATION_FULFILLED':
-            return {...state, myAppsDisplay: "AppAdmin"};
+            return {...state, displayMode: DisplayMode.AppAdmin};
         case 'SET_ERROR_DISPLAY':
             // If I fail to load critical data, return to home page
             switch (action.route) {
