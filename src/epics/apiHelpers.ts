@@ -67,34 +67,6 @@ export interface BlisAppForUpdate extends BlisAppBase {
 						}));
 	};
 
-	/* Tell SDK that a session has started */
-	export const setSession = (key : string, blisApp: BlisAppBase): Observable<ActionObject> => {
-		let setBlisAppRoute: string = makeRoute(key, `state/session/${blisApp.appId}`);
-		return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.put(setBlisAppRoute, null, config)
-			.then(response => {
-							obs.next(setCurrentBLISAppFulfilled(blisApp));
-							obs.complete();
-						})
-						.catch(err => {
-							obs.next(setErrorDisplay(err.message, "", "SET_BLIS_APPLICATION"));  // TODO - handle error message
-							obs.complete();
-						}));
-	};
-
-	/* Tell SDK that a teach session has started */
-	export const setTeach = (key : string, blisApp: BlisAppBase): Observable<ActionObject> => {
-		let setBlisAppRoute: string = makeRoute(key, `state/teach/${blisApp.appId}`);
-		return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.put(setBlisAppRoute, null, config)
-			.then(response => {
-							obs.next(setCurrentBLISAppFulfilled(blisApp));
-							obs.complete();
-						})
-						.catch(err => {
-							obs.next(setErrorDisplay(err.message, "", "SET_BLIS_APPLICATION"));  // TODO - handle error message
-							obs.complete();
-						}));
-	};
-
 //=========================================================
 // GET ROUTES
 //=========================================================
