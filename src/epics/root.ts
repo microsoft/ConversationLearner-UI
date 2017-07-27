@@ -6,6 +6,7 @@ import { fetchApplications, fetchEntities, fetchActions, fetchChatSessions, fetc
 import { createNewApplication, createNewEntity, createNewAction, createNegativeEntity, createNewChatSession, createNewTeachSession } from './createEpics'
 import { deleteAction, deleteApplication, deleteEntity, deleteReverseEntity, deleteSession, deleteTeach } from './deleteEpics'
 import { editAction, editApplication, editEntity, setBlisApplication } from './updateEpics'
+import { runExtractor, extractorFeedback, runScorer, scorerFeedback } from './teachEpics'
 
 const rootEpic = combineEpics(
 	fetchApplications,
@@ -28,7 +29,11 @@ const rootEpic = combineEpics(
 	fetchTeachSessions,
 	createNewTeachSession,
 	deleteTeach,
-	setBlisApplication
+	setBlisApplication,
+	runExtractor,
+	extractorFeedback,
+	runScorer,
+	scorerFeedback
 )
 
 export default rootEpic;

@@ -388,18 +388,34 @@ export const getTeach = (key : string, appId: string, teachId: string): Observab
  * the server, the session will first migrate to that newer version.  This 
  * doesn't affect the trainDialog maintained.
  */
-export const putExtract = (key : string, appId: string, teachId: string, userInput: UserInput): Observable<AxiosResponse> => {
+export const putExtract = (key : string, appId: string, teachId: string, userInput: UserInput): Observable<ActionObject> => {
 	let editAppRoute: string = makeRoute(key, `app/${appId}/teach/${teachId}/extractor`);
-	return Rx.Observable.fromPromise(axios.put(editAppRoute, userInput, config))
+	return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.put(editAppRoute, userInput, config)		
+		.then(response => {
+            obs.next(fetchAllTeachSessionsFulfilled(response.data.teaches));  //TODO
+            obs.complete();
+          })
+          .catch(err => {
+            obs.next(setErrorDisplay(err.message, "", "RUN_EXTRACTOR"));
+            obs.complete();
+          }));
 };
 
 /** EXTRACTION FEEDBACK: Uploads a labeled entity extraction instance
  * ie "commits" an entity extraction label, appending it to the teach session's
  * trainDialog, and advancing the dialog. This may yield produce a new package.
  */
-export const postExtraction = (key : string, appId : string, teachId: string, trainExtractorStep : TrainExtractorStep): Observable<AxiosResponse> => {
+export const postExtraction = (key : string, appId : string, teachId: string, trainExtractorStep : TrainExtractorStep): Observable<ActionObject> => {
 	let addAppRoute: string = makeRoute(key, `app/${appId}/teach/${teachId}/extractor`);
-	return Rx.Observable.fromPromise(axios.post(addAppRoute, trainExtractorStep, config))
+	return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.post(addAppRoute, trainExtractorStep, config)		
+		.then(response => {
+            obs.next(fetchAllTeachSessionsFulfilled(response.data.teaches)); // TODO
+            obs.complete();
+          })
+          .catch(err => {
+            obs.next(setErrorDisplay(err.message, "", "POST_EXTACT_FEEDBACK"));
+            obs.complete();
+					}));
 };
 
 /** RUN SCORER: Takes a turn and return distribution over actions.
@@ -407,18 +423,34 @@ export const postExtraction = (key : string, appId : string, teachId: string, tr
  * available on the server, the session will first migrate to that newer version.  
  * This doesn't affect the trainDialog maintained by the teaching session.
  */
-export const putScore = (key : string, appId: string, teachId: string, extractResponse: ExtractResponse): Observable<AxiosResponse> => {
+export const putScore = (key : string, appId: string, teachId: string, extractResponse: ExtractResponse): Observable<ActionObject> => {
 	let editAppRoute: string = makeRoute(key, `app/${appId}/teach/${teachId}/scorer`);
-	return Rx.Observable.fromPromise(axios.put(editAppRoute, extractResponse, config))
+	return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.put(editAppRoute, extractResponse, config)	
+	 		.then(response => {
+            obs.next(fetchAllTeachSessionsFulfilled(response.data.teaches)); // TODO
+            obs.complete();
+          })
+          .catch(err => {
+            obs.next(setErrorDisplay(err.message, "", "RUN_SCORER"));
+            obs.complete();
+					}));
 };
 
 /** SCORE FEEDBACK: Uploads a labeled scorer step instance 
  * – ie "commits" a scorer label, appending it to the teach session's 
  * trainDialog, and advancing the dialog. This may yield produce a new package.
  */
-export const postScore = (key : string, appId : string, teachId: string, trainScorerStep : TrainScorerStep): Observable<AxiosResponse> => {
+export const postScore = (key : string, appId : string, teachId: string, trainScorerStep : TrainScorerStep): Observable<ActionObject> => {
 	let addAppRoute: string = makeRoute(key, `app/${appId}/teach/${teachId}/scorer`);
-	return Rx.Observable.fromPromise(axios.post(addAppRoute, trainScorerStep, config))
+	return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.post(addAppRoute, trainScorerStep, config)		
+			.then(response => {
+            obs.next(fetchAllTeachSessionsFulfilled(response.data.teaches)); // TODO
+            obs.complete();
+          })
+          .catch(err => {
+            obs.next(setErrorDisplay(err.message, "", "POST_SCORE_FEEDBACK"));
+            obs.complete();
+          }));
 };
 
 /** END TEACH: Ends a teach.   
