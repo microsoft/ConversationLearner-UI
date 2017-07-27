@@ -14,8 +14,6 @@ const displayReducer: Reducer<DisplayState> =  (state = initialState, action: Ac
     switch(action.type) {
         case 'SET_DISPLAY_MODE':
             return {...state, displayMode: action.setDisplay};
-        case 'SET_WEBCHAT_DISPLAY':
-            return {...state, displayWebchat: action.setWebchatDisplay, webchatTeachMode: action.teachMode};
         case 'SET_LOGIN_DISPLAY':
             return {...state, displayLogin: action.setLoginDisplay};
         case 'CREATE_BLIS_APPLICATION_FULFILLED':

@@ -62,7 +62,7 @@ export interface BlisAppForUpdate extends BlisAppBase {
 							obs.complete();
 						})
 						.catch(err => {
-							obs.next(setErrorDisplay(err.message, "", "SET_BLIS_APPLICATION"));  // TODO - handle error message
+							obs.next(setErrorDisplay(err.message, "", "SET_BLIS_APPLICATION"));  
 							obs.complete();
 						}));
 	};

@@ -68,7 +68,6 @@ class TrainDialogsList extends React.Component<any, any> {
         this.props.setDisplayMode(DisplayMode.Teach);
     }
     handleSelection(selected: TrainDialog) {
-        this.props.setWebchatDisplay(true, true)
         this.props.setCurrentTrainDialog(this.props.userKey, selected);
     }
     onChange(newValue: string) {

@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader'
 import { DetailsList, CommandButton, Link, CheckboxVisibility, IColumn, SearchBox } from 'office-ui-fabric-react';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
-import { setDisplayMode, setWebchatDisplay, setCurrentLogDialog, setCurrentChatSession } from '../actions/updateActions'
+import { setDisplayMode, setCurrentLogDialog, setCurrentChatSession } from '../actions/updateActions'
 import { createLogDialog, createChatSession } from '../actions/createActions'
 import { deleteChatSession } from '../actions/deleteActions'
 import { State } from '../types'
@@ -115,7 +115,6 @@ class LogDialogsList extends React.Component<any, any> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         setDisplayMode: setDisplayMode,
-  //      setWebchatDisplay: setWebchatDisplay, TODO -get rid of me
         createChatSession: createChatSession,
         deleteChatSession: deleteChatSession,
         setCurrentChatSession: setCurrentChatSession

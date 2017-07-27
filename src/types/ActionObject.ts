@@ -50,11 +50,6 @@ export type UpdateAction = {
     type: 'SET_DISPLAY_MODE',
     setDisplay: DisplayMode,
 } | {
-    //used for setting whether the app list or app homepage (AppAdmin) is displayed
-    type: 'SET_WEBCHAT_DISPLAY',
-    setWebchatDisplay: boolean,
-    teachMode: boolean
-} | {
     //used for setting whether the login popup is displayed
     type: 'SET_LOGIN_DISPLAY',
     setLoginDisplay: boolean,

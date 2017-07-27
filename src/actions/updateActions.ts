@@ -59,14 +59,6 @@ export const setDisplayMode = (displayMode: DisplayMode) : ActionObject => {
     }
 }
 
-export const setWebchatDisplay = (isShown: boolean, teachMode: boolean) : ActionObject => { 
-    return {
-        type: 'SET_WEBCHAT_DISPLAY',
-        setWebchatDisplay: isShown,
-        teachMode: teachMode
-    }
-}
-
 export const setLoginDisplay = (isShown: boolean) : ActionObject => { 
     return {
         type: 'SET_LOGIN_DISPLAY',

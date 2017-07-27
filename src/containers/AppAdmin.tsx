@@ -9,7 +9,7 @@ import BLISAppsHomepage from './BLISAppsHomepage';
 import AppDashboard from './AppDashboard';
 import AppSettings from './AppSettings';
 import { Nav, INavLink, INavLinkGroup, Link } from 'office-ui-fabric-react';
-import { setWebchatDisplay, setDisplayMode } from '../actions/updateActions';
+import { setDisplayMode } from '../actions/updateActions';
 import { State } from '../types';
 import LogDialogsList from './LogDialogsList';
 import { DisplayMode } from '../types/const';
@@ -60,7 +60,6 @@ class AppAdmin extends React.Component<any, any> {
             display: page,
             selectedKey: page
         })
-        this.props.setWebchatDisplay(false, false)
     }
     renderWithoutEmulator() {
         return (
@@ -150,7 +149,6 @@ class AppAdmin extends React.Component<any, any> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         fetchApplications: fetchApplications,
-        setWebchatDisplay: setWebchatDisplay,
         setDisplayMode: setDisplayMode
     }, dispatch);
 }
