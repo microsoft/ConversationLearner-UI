@@ -8,7 +8,6 @@ import ActionResponsesList from './ActionResponsesList';
 import BLISAppsHomepage from './BLISAppsHomepage';
 import AppDashboard from './AppDashboard';
 import AppSettings from './AppSettings';
-import SessionController from './SessionController';
 import { Nav, INavLink, INavLinkGroup, Link } from 'office-ui-fabric-react';
 import { setWebchatDisplay, setDisplayMode } from '../actions/updateActions';
 import { State } from '../types';
