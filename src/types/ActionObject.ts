@@ -1,4 +1,8 @@
-import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, ActionMetaData, ActionList, ActionTypes, TrainDialog, LogDialog, Session, Teach } from 'blis-models'
+import { BlisAppBase, BlisAppMetaData, BlisAppList, 
+    EntityBase, EntityMetaData, EntityList, 
+    ActionBase, ActionMetaData, ActionList, ActionTypes, 
+    TrainDialog, LogDialog, Session, Teach,
+    UserInput, TrainExtractorStep, ExtractResponse, TrainScorerStep } from 'blis-models'
 import { DisplayMode } from '../types/const'
 
 export type UpdateAction = {
@@ -249,4 +253,30 @@ export type DeleteAction = {
     type: "DELETE_OPERATION_FULFILLED"
 }
 
-export type ActionObject = FetchAction | CreateAction | UpdateAction | DeleteAction;
+export type TeachAction = {
+    type: 'RUN_EXTRACTOR',
+    key: string,
+    appId: string,
+    teachId: string,
+    userInput: UserInput
+} | {
+    type: 'POST_EXTACT_FEEDBACK',
+    key: string,
+    appId: string,
+    teachId: string,
+    trainExtractorStep: TrainExtractorStep
+} | {
+    type: 'RUN_SCORER',
+    key: string,
+    appId: string,
+    teachId: string,
+    extractResponse: ExtractResponse
+} | {
+    type: 'POST_SCORE_FEEDBACK',
+    key: string,
+    appId: string,
+    teachId: string,
+    trainScorerStep: TrainScorerStep
+}
+
+export type ActionObject = FetchAction | CreateAction | UpdateAction | DeleteAction | TeachAction;
