@@ -142,18 +142,8 @@ class ActionResponseCreatorEditor extends React.Component<any, any> {
             entityModalOpen: false
         })
     }
-    generateGUID(): string {
-        let d = new Date().getTime();
-        let guid: string = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (char) => {
-            let r = (d + Math.random() * 16) % 16 | 0;
-            d = Math.floor(d / 16);
-            return (char == 'x' ? r : (r & 0x3 | 0x8)).toString(16);
-        });
-        return guid;
-    }
     createAction() {
         let currentAppId: string = this.props.blisApps.current.appId;
-        let randomGUID = this.generateGUID();
         let requiredEntities = this.state.reqEntitiesVal.map((req: EntityPickerObject) => {
             let found: EntityBase = this.props.entities.find((e: EntityBase) => e.entityName == req.key)
             return found.entityId
@@ -166,7 +156,6 @@ class ActionResponseCreatorEditor extends React.Component<any, any> {
             actionType: this.state.actionTypeVal
         })
         let actionToAdd = new ActionBase({
-            actionId: randomGUID,
             payload: this.state.contentVal,
             negativeEntities: negativeEntities,
             requiredEntities: requiredEntities,

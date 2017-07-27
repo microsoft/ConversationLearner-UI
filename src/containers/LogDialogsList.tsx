@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader'
 import { DetailsList, CommandButton, Link, CheckboxVisibility, IColumn, SearchBox } from 'office-ui-fabric-react';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
-import { setDisplayMode, setWebchatDisplay, setCurrentLogDialog, setCurrentChatSession } from '../actions/updateActions'
+import { setDisplayMode, setCurrentLogDialog, setCurrentChatSession } from '../actions/updateActions'
 import { createLogDialog, createChatSession } from '../actions/createActions'
 import { deleteChatSession } from '../actions/deleteActions'
 import { State } from '../types'
@@ -66,15 +66,6 @@ class LogDialogsList extends React.Component<any, any> {
     handleClick() {
         this.props.setDisplayMode(DisplayMode.Session);
     }
-    generateGUID(): string {
-        let d = new Date().getTime();
-        let guid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (char) => {
-            let r = (d + Math.random() * 16) % 16 | 0;
-            d = Math.floor(d / 16);
-            return (char == 'x' ? r : (r & 0x3 | 0x8)).toString(16);
-        });
-        return guid;
-    }
     onChange(newValue: string) {
         let lcString = newValue.toLowerCase();
         this.setState({
@@ -124,7 +115,6 @@ class LogDialogsList extends React.Component<any, any> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         setDisplayMode: setDisplayMode,
-  //      setWebchatDisplay: setWebchatDisplay, TODO -get rid of me
         createChatSession: createChatSession,
         deleteChatSession: deleteChatSession,
         setCurrentChatSession: setCurrentChatSession

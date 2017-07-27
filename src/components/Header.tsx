@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { setDisplayMode, setWebchatDisplay, setLoginDisplay } from '../actions/updateActions'
+import { setDisplayMode, setLoginDisplay } from '../actions/updateActions'
 import UserLogin from '../containers/UserLogin'
 import UIError from '../containers/Error'
 import { Link } from 'react-router-dom';
@@ -69,7 +69,6 @@ class Header extends React.Component<any, any> {
                     <div className={this.state.myAppsClass}>
                         <span className="ms-font-m-plus ms-fontColor-themePrimary"><Link onClick={() => {
                             this.props.setDisplayMode(DisplayMode.AppAdmin);
-                            this.props.setWebchatDisplay(false, false);
                             this.tabSelected('myApps');
                         }} className='headerLink' to="/myApps">My Apps</Link></span>
                     </div>
@@ -96,7 +95,6 @@ class Header extends React.Component<any, any> {
 const mapDispatchToProps = (dispatch: any) => {
   return bindActionCreators({
     setDisplayMode: setDisplayMode,
-    setWebchatDisplay: setWebchatDisplay,
     setLoginDisplay: setLoginDisplay,
   }, dispatch);
 }
