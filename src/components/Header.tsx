@@ -1,11 +1,12 @@
 import * as React from 'react';
-import { setBLISAppDisplay, setWebchatDisplay, setLoginDisplay } from '../actions/updateActions'
+import { setDisplayMode, setWebchatDisplay, setLoginDisplay } from '../actions/updateActions'
 import UserLogin from '../containers/UserLogin'
 import UIError from '../containers/Error'
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { State } from '../types'
 import { bindActionCreators } from 'redux';
+import { DisplayMode } from '../types/const'
 
 class Header extends React.Component<any, any> {
     constructor(p: any) {
@@ -67,9 +68,9 @@ class Header extends React.Component<any, any> {
                 <div className='headerListDiv'>
                     <div className={this.state.myAppsClass}>
                         <span className="ms-font-m-plus ms-fontColor-themePrimary"><Link onClick={() => {
-                            this.props.setBLISAppDisplay("Home")
-                            this.props.setWebchatDisplay(false, false)
-                            this.tabSelected('myApps')
+                            this.props.setDisplayMode(DisplayMode.AppAdmin);
+                            this.props.setWebchatDisplay(false, false);
+                            this.tabSelected('myApps');
                         }} className='headerLink' to="/myApps">My Apps</Link></span>
                     </div>
                     <div className={this.state.docsClass}>
@@ -94,7 +95,7 @@ class Header extends React.Component<any, any> {
 
 const mapDispatchToProps = (dispatch: any) => {
   return bindActionCreators({
-    setBLISAppDisplay: setBLISAppDisplay,
+    setDisplayMode: setDisplayMode,
     setWebchatDisplay: setWebchatDisplay,
     setLoginDisplay: setLoginDisplay,
   }, dispatch);

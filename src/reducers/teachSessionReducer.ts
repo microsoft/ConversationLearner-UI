@@ -12,7 +12,7 @@ const teachSessionReducer: Reducer<any> = (state = initialState, action: ActionO
         case 'FETCH_TEACH_SESSIONS_FULFILLED':
             return { ...state, all: action.allTeachSessions };
         case 'CREATE_TEACH_SESSION_FULFILLED':
-            let newSession = { ...action.teachSession, sessionId: action.teachSessionId };
+            let newSession = { ...action.teachSession, teachId: action.teachSessionId };
             let newState: TeachSessionState = { all: [...state.all, newSession], current: newSession }
             return newState;
         case 'DELETE_TEACH_SESSION_FULFILLED':

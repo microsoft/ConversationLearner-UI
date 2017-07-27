@@ -5,7 +5,7 @@ import { State, ActionObject } from '../types'
 import { fetchApplications, fetchEntities, fetchActions, fetchChatSessions, fetchTeachSessions } from './fetchEpics'
 import { createNewApplication, createNewEntity, createNewAction, createNegativeEntity, createNewChatSession, createNewTeachSession } from './createEpics'
 import { deleteAction, deleteApplication, deleteEntity, deleteReverseEntity, deleteSession, deleteTeach } from './deleteEpics'
-import { editAction, editApplication, editEntity } from './updateEpics'
+import { editAction, editApplication, editEntity, setBlisApplication } from './updateEpics'
 
 const rootEpic = combineEpics(
 	fetchApplications,
@@ -27,7 +27,8 @@ const rootEpic = combineEpics(
 	deleteSession,
 	fetchTeachSessions,
 	createNewTeachSession,
-	deleteTeach
+	deleteTeach,
+	setBlisApplication
 )
 
 export default rootEpic;

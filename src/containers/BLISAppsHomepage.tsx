@@ -1,10 +1,13 @@
 import * as React from 'react';
-import TrainingGround from './TrainingGround';
+import AppAdmin from './AppAdmin';
+import TeachSessionWindow from './TeachSessionWindow';
+import ChatSessionWindow from './ChatSessionWindow';
 import { fetchApplications } from '../actions/fetchActions'
 import BLISAppsList from './BLISAppsList';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../types'
+import { DisplayMode } from '../types/const'
 
 class BLISAppsHomepage extends React.Component<any, any> {
     constructor(p: any) {
@@ -23,12 +26,24 @@ class BLISAppsHomepage extends React.Component<any, any> {
         }
     }
     render() {
+        var display = null;
+         switch (this.props.display.displayMode) {
+            case DisplayMode.AppList:
+                display = <BLISAppsList  />
+                break;
+            case DisplayMode.AppAdmin:
+                display = <AppAdmin />
+                break;
+            case DisplayMode.Teach:
+                display = <TeachSessionWindow />
+                break;
+            case DisplayMode.Session:
+                display = <ChatSessionWindow />
+                break;
+         }
         return (
             <div className="fluidCont">
-                {this.props.display.myAppsDisplay == 'Home' ?             
-                    <BLISAppsList  />
-                    : <TrainingGround />
-                }
+                {display}
             </div>
         );
     }

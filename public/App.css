@@ -286,7 +286,8 @@
   float: right;
   margin-top: -.1em
 }
-.webchatController{
-  background-color: #323232
+.webchatwindow{
+  height: 400px;
+  width: 500px;
 }
 

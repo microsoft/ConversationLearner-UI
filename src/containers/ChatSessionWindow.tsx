@@ -5,23 +5,20 @@ import { Nav, INavLink, INavLinkGroup, Link } from 'office-ui-fabric-react';
 import { State } from '../types';
 import { DisplayMode } from '../types/const';
 import Webchat from './Webchat'
-import TeachSessionAdmin from './TeachSessionAdmin'
-import { Teach } from 'blis-models'
-import { createTrainDialog, createTeachSession } from '../actions/createActions'
+import ChatSessionAdmin from './ChatSessionAdmin'
+import { Session } from 'blis-models'
+import { createChatSession } from '../actions/createActions'
 import { setCurrentTrainDialog, setCurrentTeachSession } from '../actions/updateActions'
 
 
-class TeachWindow extends React.Component<any, any> {
+class SessionWindow extends React.Component<any, any> {
     constructor(p: any) {
         super(p);
         this.state = {
-            teachSession : new Teach({})
+            chatSession : new Session({saveToLog : null})
         }
         let currentAppId: string = this.props.apps.current.appId;
-        this.props.createTeachSession(this.props.userKey, this.state.teachSession, currentAppId)
-        // this.props.deleteTeachSession(this.props.userKey, testTeachSession, currentAppId)
-        // this.props.setCurrentTeachSession(this.props.teachSessions.all.find((t: Teach) => t.teachId == ""))
-        //need to create a new teach session
+        this.props.createChatSession(this.props.userKey, this.state.chatSession, currentAppId);
     }
     handleAbandon() {
         let currentAppId: string = this.props.apps.current.appId;
@@ -35,7 +32,7 @@ class TeachWindow extends React.Component<any, any> {
                         <Webchat />
                     </div>
                     <div className="ms-Grid-col">
-                        <TeachSessionAdmin/>
+                        <ChatSessionAdmin/>
                     </div>
                 </div>
             </div>
@@ -44,7 +41,7 @@ class TeachWindow extends React.Component<any, any> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        createTeachSession: createTeachSession
+        createChatSession: createChatSession
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {
@@ -54,4 +51,4 @@ const mapStateToProps = (state: State) => {
         apps: state.apps
     }
 }
-export default connect(mapStateToProps, mapDispatchToProps)(TeachWindow);
+export default connect(mapStateToProps, mapDispatchToProps)(SessionWindow);

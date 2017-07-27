@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { CommandButton, Dialog, DialogFooter, DialogType, ChoiceGroup, TextField, DefaultButton, Dropdown } from 'office-ui-fabric-react';
 import { TextFieldPlaceholder } from './TextFieldPlaceholder';
-import { setBLISAppDisplay, emptyStateProperties } from '../actions/updateActions'
+import { setDisplayMode, emptyStateProperties } from '../actions/updateActions'
 import { fetchAllActions, fetchAllEntities, fetchAllTrainDialogs } from '../actions/fetchActions';
 import { BlisAppBase, BlisAppMetaData } from 'blis-models'
 import { developmentSubKeyLUIS } from '../secrets'
@@ -157,7 +157,7 @@ const mapDispatchToProps = (dispatch: any) => {
         fetchAllActions: fetchAllActions,
         fetchAllEntities: fetchAllEntities,
         fetchAllTrainDialogs: fetchAllTrainDialogs,
-        setBLISAppDisplay: setBLISAppDisplay,
+        setDisplayMode: setDisplayMode,
         emptyStateProperties: emptyStateProperties
     }, dispatch);
 }

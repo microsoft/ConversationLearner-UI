@@ -13,7 +13,7 @@ import { Observable, Observer } from 'rxjs'
 import { fetchApplicationsFulfilled, fetchAllEntitiesFulfilled, fetchAllActionsFulfilled, fetchAllChatSessionsFulfilled, fetchAllTeachSessionsFulfilled } from '../actions/fetchActions'
 import { createApplicationFulfilled, createEntityFulfilled, createPositiveEntityFulfilled, createNegativeEntityFulfilled, createActionFulfilled, createChatSessionFulfilled, createTeachSessionFulfilled } from '../actions/createActions'
 import { deleteBLISApplicationFulfilled, deleteReverseEntity, deleteEntityFulfilled, deleteActionFulfilled, deleteChatSessionFulfilled, deleteTeachSessionFulfilled } from '../actions/deleteActions'
-import { editBLISApplicationFulfilled, editEntityFulfilled, editActionFulfilled } from '../actions/updateActions'
+import { editBLISApplicationFulfilled, editEntityFulfilled, editActionFulfilled, setCurrentBLISAppFulfilled } from '../actions/updateActions'
 import { setErrorDisplay } from '../actions/updateActions'
 import { ActionObject } from '../types'
 
@@ -48,6 +48,24 @@ export interface BlisAppForUpdate extends BlisAppBase {
 	trainingStatus: string;
 	latestPackageId: number
 }
+
+//=========================================================
+// STATE ROUTES
+//=========================================================
+
+	/* Tell SDK what the currently selected AppId is */
+	export const setBlisApp = (key : string, blisApp: BlisAppBase): Observable<ActionObject> => {
+		let setBlisAppRoute: string = makeRoute(key, `state/app/${blisApp.appId}`);
+		return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.put(setBlisAppRoute, null, config)
+			.then(response => {
+							obs.next(setCurrentBLISAppFulfilled(blisApp));
+							obs.complete();
+						})
+						.catch(err => {
+							obs.next(setErrorDisplay(err.message, "", "SET_BLIS_APPLICATION"));  // TODO - handle error message
+							obs.complete();
+						}));
+	};
 
 //=========================================================
 // GET ROUTES
@@ -262,7 +280,7 @@ export const editBlisEntity = (key: string, appId: string, entity: EntityBase): 
 //========================================================
 
 /** START SESSION : Creates a new session and a corresponding logDialog */
-export const createBlisSession = (key: string, session: Session, appId: string): Observable<ActionObject> => {
+export const createChatSession = (key: string, session: Session, appId: string): Observable<ActionObject> => {
 	let addSessionRoute: string = makeRoute(key, `app/${appId}/session`);
 	let configWithBody = {...config, body: session}
 	return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.post(addSessionRoute, config).then(response => {
@@ -334,7 +352,7 @@ export const createTeachSession = (key: string, teachSession: Teach, appId: stri
 };
 
 export const deleteTeachSession = (key : string, appId: string, teachSession: Teach): Observable<ActionObject> => {
-	let deleteTeachSessionRoute: string = `app/${appId}/teach/${teachSession.teachId}`
+	let deleteTeachSessionRoute: string = makeRoute(key, `app/${appId}/teach/${teachSession.teachId}`);
 	return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.delete(deleteTeachSessionRoute, config)
 		.then(response => {
             obs.next(deleteTeachSessionFulfilled(teachSession.teachId));

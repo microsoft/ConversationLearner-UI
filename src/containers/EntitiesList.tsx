@@ -252,7 +252,6 @@ class EntitiesList extends React.Component<any, any> {
                     onColumnHeaderClick={ this.onColumnClick.bind(this) }
                 />
                 <ConfirmDeleteModal open={this.state.confirmDeleteEntityModalOpen} onCancel={() => this.handleCloseDeleteModal()} onConfirm={() => this.deleteSelectedEntity()} title="Are you sure you want to delete this entity?" />
-                <ConfirmDeleteModal open={this.state.confirmDeleteEntityModalOpen} onCancel={() => this.handleCloseDeleteModal()} onConfirm={() => this.deleteSelectedEntity()} title="Are you sure you want to delete this entity?" />
                 <Modal
                     isOpen={this.state.errorModalOpen}
                     isBlocking={false}
