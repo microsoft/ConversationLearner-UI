@@ -19,6 +19,7 @@ const displayReducer: Reducer<DisplayState> =  (state = initialState, action: Ac
         case 'SET_LOGIN_DISPLAY':
             return {...state, displayLogin: action.setLoginDisplay};
         case 'CREATE_BLIS_APPLICATION_FULFILLED':
+        case 'SET_CURRENT_BLIS_APP_FULFILLED':
             return {...state, displayMode: DisplayMode.AppAdmin};
         case 'SET_ERROR_DISPLAY':
             // If I fail to load critical data, return to home page

@@ -12,6 +12,7 @@ import { State } from '../types';
 import { BlisAppBase, BlisAppList, BlisAppMetaData } from 'blis-models'
 import { DisplayMode } from '../types/const'
 
+
 let columns: IColumn[] = [
     {
         key: 'appName',
@@ -98,7 +99,6 @@ class BLISAppsList extends React.Component<any, any> {
         this.props.fetchAllTrainDialogs(this.props.user.key, appSelected.appId);
         this.props.fetchAllChatSessions(this.props.user.key, appSelected.appId);
         // this.props.fetchAllTeachSessions(this.props.user.key, appSelected.appId);
-        this.props.setDisplayMode(DisplayMode.AppAdmin);
     }
     onColumnClick(event: any, column : any) {
         let { sortedItems, columns } = this.state;

@@ -132,10 +132,6 @@ class AppAdmin extends React.Component<any, any> {
                             <Link className="backToApps" onClick={() => this.props.setDisplayMode(DisplayMode.AppList)}><span className="ms-Icon ms-Icon--Back backToApps backToAppsIcon" aria-hidden="true"></span>&nbsp;&nbsp;App List</Link>
                         </div>
                     </div>
-
-                    <div className='trainingGroundArena fluidCont'>
-                        <SessionController />
-                    </div>
                 </div>
             </div>
         )

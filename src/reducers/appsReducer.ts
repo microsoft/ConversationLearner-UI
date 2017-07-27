@@ -15,7 +15,7 @@ const appsReducer: Reducer<AppState> = (state = initialState, action: ActionObje
         case 'CREATE_BLIS_APPLICATION_FULFILLED':
             let newApp = {...action.blisApp, appId: action.blisAppId};
             return { ...state, current: newApp, all: [...state.all, newApp]};
-        case 'SET_CURRENT_BLIS_APP':
+        case 'SET_CURRENT_BLIS_APP_FULFILLED':
             return { ...state, current: action.currentBLISApp };
         case 'DELETE_BLIS_APPLICATION_FULFILLED':
             return { ...state, all: state.all.filter(app => app.appId !== action.blisAppGUID) };

@@ -28,6 +28,10 @@ export type UpdateAction = {
     logDialog: LogDialog,
 } | {
     type: 'SET_CURRENT_BLIS_APP',
+    key: string,
+    currentBLISApp: BlisAppBase,
+} | {
+    type: 'SET_CURRENT_BLIS_APP_FULFILLED',
     currentBLISApp: BlisAppBase,
 } | {
     type: 'SET_CURRENT_TRAIN_DIALOG',

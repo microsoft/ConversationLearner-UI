@@ -4,11 +4,12 @@ import { connect } from 'react-redux';
 import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader'
 import { DetailsList, CommandButton, Link, CheckboxVisibility, IColumn, SearchBox } from 'office-ui-fabric-react';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
-import { setWebchatDisplay, setCurrentLogDialog, setCurrentChatSession } from '../actions/updateActions'
+import { setDisplayMode, setWebchatDisplay, setCurrentLogDialog, setCurrentChatSession } from '../actions/updateActions'
 import { createLogDialog, createChatSession } from '../actions/createActions'
 import { deleteChatSession } from '../actions/deleteActions'
 import { State } from '../types'
 import { LogDialog, Session } from 'blis-models'
+import { DisplayMode } from '../types/const';
 
 let columns: IColumn[] = [
     {
@@ -63,14 +64,7 @@ class LogDialogsList extends React.Component<any, any> {
         }
     }
     handleClick() {
-        this.props.setWebchatDisplay(true, false)
-        let testSession = new Session({
-            saveToLog: null
-        });
-        let currentAppId: string = this.props.apps.current.appId;
-        // this.props.createChatSession(this.props.userKey, testSession, currentAppId)
-        // this.props.deleteChatSession(this.props.userKey, testSession, currentAppId)
-        this.props.setCurrentChatSession(this.props.chatSessions.all.find((s: Session) => s.sessionId == "d1df3e2f-a1fb-4fd9-9fa6-c89d87bc99df"))
+        this.props.setDisplayMode(DisplayMode.Session);
     }
     generateGUID(): string {
         let d = new Date().getTime();
@@ -129,7 +123,8 @@ class LogDialogsList extends React.Component<any, any> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        setWebchatDisplay: setWebchatDisplay,
+        setDisplayMode: setDisplayMode,
+  //      setWebchatDisplay: setWebchatDisplay, TODO -get rid of me
         createChatSession: createChatSession,
         deleteChatSession: deleteChatSession,
         setCurrentChatSession: setCurrentChatSession

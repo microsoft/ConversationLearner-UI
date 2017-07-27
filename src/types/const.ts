@@ -1,5 +1,6 @@
 export enum DisplayMode {
     AppList,
     AppAdmin,
-    Teach
+    Teach,
+    Session
 }

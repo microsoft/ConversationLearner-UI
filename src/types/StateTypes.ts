@@ -42,6 +42,13 @@ export type UserState =
     id: string,
     key: string
 }
+export type TeachState =
+{
+    name: string,
+    password: string,
+    id: string,
+    key: string
+}
 export type State = {
     user: UserState,
     apps: AppState,

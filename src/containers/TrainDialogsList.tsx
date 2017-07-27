@@ -130,9 +130,7 @@ const mapDispatchToProps = (dispatch: any) => {
         setDisplayMode: setDisplayMode,
         setCurrentTrainDialog: setCurrentTrainDialog,
         setCurrentTeachSession: setCurrentTeachSession,
-        createTrainDialog: createTrainDialog,
-        createTeachSession: createTeachSession,
-        deleteTeachSession: deleteTeachSession
+        createTrainDialog: createTrainDialog
     }, dispatch)
 }
 const mapStateToProps = (state: State) => {

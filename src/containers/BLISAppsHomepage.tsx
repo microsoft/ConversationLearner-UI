@@ -1,6 +1,7 @@
 import * as React from 'react';
 import AppAdmin from './AppAdmin';
-import TeachWindow from './TeachWindow';
+import TeachSessionWindow from './TeachSessionWindow';
+import ChatSessionWindow from './ChatSessionWindow';
 import { fetchApplications } from '../actions/fetchActions'
 import BLISAppsList from './BLISAppsList';
 import { bindActionCreators } from 'redux';
@@ -34,7 +35,10 @@ class BLISAppsHomepage extends React.Component<any, any> {
                 display = <AppAdmin />
                 break;
             case DisplayMode.Teach:
-                display = <TeachWindow />
+                display = <TeachSessionWindow />
+                break;
+            case DisplayMode.Session:
+                display = <ChatSessionWindow />
                 break;
          }
         return (

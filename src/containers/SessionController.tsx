@@ -5,11 +5,11 @@ import { connect } from 'react-redux';
 import { State, TrainDialogState, AppState } from '../types';
 import { CommandButton, IIconProps, IIconStyles } from 'office-ui-fabric-react';
 import Webchat from './Webchat'
-import TeachSessionWindow from './TeachSessionWindow'
+import TeachSessionAdmin from './TeachSessionAdmin'
 import ChatSessionHeader from './ChatSessionHeader'
 import TeachSessionHeader from './TeachSessionHeader'
 
-class SessionController extends React.Component<any, any> {
+class SessionController extends React.Component<any, any> {  //TODO - delete me
     constructor(p: any) {
         super(p);
         this.state = {
@@ -31,7 +31,7 @@ class SessionController extends React.Component<any, any> {
                     <Webchat />
                 </div>
                 <div className="webchatMetaShrink">
-                    <TeachSessionWindow />
+                    <TeachSessionAdmin />
                 </div>
             </div>
         )
