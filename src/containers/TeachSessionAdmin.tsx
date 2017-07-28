@@ -7,6 +7,9 @@ import { State } from '../types'
 import { DisplayMode, TeachMode } from '../types/const';
 import { setDisplayMode } from '../actions/updateActions'
 import { deleteTeachSession } from '../actions/deleteActions'
+import TeachSessionScorer from './TeachSessionScorer'
+import TeachSessionExtractor from './TeachSessionExtractor'
+import TeachSessionMemory from './TeachSessionMemory'
 
 class TeachSessionAdmin extends React.Component<any, any> {
     handleAbandon() {
@@ -20,24 +23,25 @@ class TeachSessionAdmin extends React.Component<any, any> {
         let userWindow = null;
         switch (this.props.teachSession.mode) {
             case TeachMode.Extractor:
-                userWindow = null;//<TeachSessionExtractor />  TODO
+                userWindow = <TeachSessionExtractor />
                 break;
             case TeachMode.Scorer:
-                userWindow = null;//<TeachSessionScorer />  TODO
+                userWindow = <TeachSessionScorer />
                 break;
         }
         return (
             <div className="container">
-                <span className="ms-font-su goldText">                        
+                <span className="ms-font-su goldText">
                     <CommandButton
-                            data-automation-id='randomID16'
-                            disabled={false}
-                            onClick={this.handleAbandon.bind(this)}
-                            className='goldButton buttonWithTextField'
-                            ariaDescription='Abandon Teach'
-                            text='Abandon Teach'
-                        />
-                    </span>
+                        data-automation-id='randomID16'
+                        disabled={false}
+                        onClick={this.handleAbandon.bind(this)}
+                        className='goldButton buttonWithTextField'
+                        ariaDescription='Abandon Teach'
+                        text='Abandon Teach'
+                    />
+                </span>
+                <TeachSessionMemory />
                 {userWindow}
             </div>
         );

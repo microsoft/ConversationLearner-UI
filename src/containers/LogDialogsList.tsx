@@ -81,7 +81,6 @@ class LogDialogsList extends React.Component<any, any> {
     }
     render() {
         let logDialogItems: any[] = [];
-        console.log('log dialog list', this.props.chatSessions)
         return (
             <div>
                 <TrainingGroundArenaHeader title="Log Dialogs" description="Use this tool to test the current versions of your application, to check if you are progressing on the right track ..." />
