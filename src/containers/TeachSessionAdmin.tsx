@@ -4,7 +4,7 @@ import { CommandButton } from 'office-ui-fabric-react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../types'
-import { DisplayMode } from '../types/const';
+import { DisplayMode, TeachMode } from '../types/const';
 import { setDisplayMode } from '../actions/updateActions'
 import { deleteTeachSession } from '../actions/deleteActions'
 import TeachSessionScorer from './TeachSessionScorer'
@@ -16,10 +16,19 @@ class TeachSessionAdmin extends React.Component<any, any> {
         // TODO: Add confirmation modal
         this.props.setDisplayMode(DisplayMode.AppAdmin);
         let currentAppId: string = this.props.apps.current.appId;
-        this.props.deleteTeachSession(this.props.userKey, this.props.teachSession, currentAppId);
+        this.props.deleteTeachSession(this.props.userKey, this.props.teachSession.current, currentAppId);
     }
 
     render() {
+        let userWindow = null;
+        switch (this.props.teachSession.mode) {
+            case TeachMode.Extractor:
+                userWindow = <TeachSessionExtractor />
+                break;
+            case TeachMode.Scorer:
+                userWindow = <TeachSessionScorer />
+                break;
+        }
         return (
             <div className="container">
                 <span className="ms-font-su goldText">
@@ -32,9 +41,8 @@ class TeachSessionAdmin extends React.Component<any, any> {
                         text='Abandon Teach'
                     />
                 </span>
-                <TeachSessionScorer />
-                <TeachSessionExtractor />
                 <TeachSessionMemory />
+                {userWindow}
             </div>
         );
     }
@@ -47,7 +55,7 @@ const mapDispatchToProps = (dispatch: any) => {
 }
 const mapStateToProps = (state: State) => {
     return {
-        teachSession: state.teachSessions.current,
+        teachSession: state.teachSessions,
         apps: state.apps
     }
 }

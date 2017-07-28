@@ -1,5 +1,5 @@
 import { ActionObject } from '../types'
-import { UserInput, TrainExtractorStep, ExtractResponse, TrainScorerStep } from 'blis-models'
+import { UserInput, TrainExtractorStep, ExtractResponse, UIScoreResponse, TrainScorerStep, TeachResponse } from 'blis-models'
 
 export const runExtractor = (key: string, appId: string, teachId: string, userInput: UserInput) : ActionObject => { 
     return {
@@ -8,6 +8,16 @@ export const runExtractor = (key: string, appId: string, teachId: string, userIn
         appId: appId,
         teachId: teachId,
         userInput: userInput
+    }
+}
+
+export const runExtractorFulfilled = (key: string, appId: string, teachId: string, extractResponse: ExtractResponse) : ActionObject => { 
+    return {
+        type: 'RUN_EXTRACTOR_FULFILLED',
+        key: key,
+        appId: appId,
+        teachId: teachId,
+        extractResponse: extractResponse
     }
 }
 
@@ -21,6 +31,16 @@ export const postExtractorFeedback = (key: string, appId: string, teachId: strin
     }
 }
 
+export const postExtractorFeedbackFulfilled = (key: string, appId: string, teachId: string, teachResponse: TeachResponse) : ActionObject => { 
+    return {
+        type: 'POST_EXTACT_FEEDBACK_FULFILLED',
+        key: key,
+        appId: appId,
+        teachId: teachId,
+        teachResponse: teachResponse
+    }
+}
+
 export const runScorer = (key: string, appId: string, teachId: string, extractResponse: ExtractResponse) : ActionObject => { 
     return {
         type: 'RUN_SCORER',
@@ -31,6 +51,16 @@ export const runScorer = (key: string, appId: string, teachId: string, extractRe
     }
 }
 
+export const runScorerFulfilled = (key: string, appId: string, teachId: string, uiScoreResponse: UIScoreResponse) : ActionObject => { 
+    return {
+        type: 'RUN_SCORER_FULFILLED',
+        key: key,
+        appId: appId,
+        teachId: teachId,
+        uiScoreResponse: uiScoreResponse
+    }
+}
+
 export const postScorerFeedback = (key: string, appId: string, teachId: string, trainScorerStep: TrainScorerStep) : ActionObject => { 
     return {
         type: 'POST_SCORE_FEEDBACK',
@@ -38,5 +68,15 @@ export const postScorerFeedback = (key: string, appId: string, teachId: string, 
         appId: appId,
         teachId: teachId,
         trainScorerStep: trainScorerStep
+    }
+}
+
+export const postScorerFeedbackFulfilled = (key: string, appId: string, teachId: string, teachResponse: TeachResponse) : ActionObject => { 
+    return {
+        type: 'POST_SCORE_FEEDBACK_FULFILLED',
+        key: key,
+        appId: appId,
+        teachId: teachId,
+        teachResponse: teachResponse
     }
 }
