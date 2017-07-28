@@ -7,24 +7,37 @@ import { generateGUID } from '../util';
 import * as BotChat from 'botframework-webchat'
 
 class Webchat extends React.Component<any, any> {
-    render() {
+    componentDidMount(){
         const props: BotChat.ChatProps = {
-                directLine: {
-                    secret: 'secret', //params['s'],
-                    token: 'token', //params['t'],
-                    domain: "http://localhost:3000/directline", //params['domain'],
-                    webSocket: false // defaults to true 
-                },
-                formatOptions: {
-                    showHeader: false
-                },
-                user: { name: this.props.user.name, id: this.props.user.id },
-                bot: { name: "BlisTrainer", id: "BlisTrainer" },
-                resize: 'detect',
-            }
+            directLine: {
+                secret: 'secret', //params['s'],
+                token: 'token', //params['t'],
+                domain: "http://localhost:3000/directline", //params['domain'],
+                webSocket: false // defaults to true 
+            },
+            formatOptions: {
+                showHeader: false
+            },
+            user: { name: this.props.user.name, id: this.props.user.id },
+            bot: { name: "BlisTrainer", id: "BlisTrainer" },
+            resize: 'detect',
+        }
+        const dl = new BotChat.DirectLine({ secret: "secret" });
+        const postActivity = (activity: any) => {
+            dl.postActivity({
+                ...activity,
+            })
+        }
+        let chatProps: BotChat.ChatProps = {
+            ...dl,
+            postActivity: postActivity,
+            ...props,
+        }
+        const app = BotChat.App(chatProps, document.getElementById("botchat"))
+    }
+    render() {
         return (
-            <div className="container webchatwindow wc-app">
-                <BotChat.Chat directLine={{ secret: 'secret' }} {...props}/>'
+            <div id="botchat" className="container webchatwindow wc-app">
             </div>
         )
     }
