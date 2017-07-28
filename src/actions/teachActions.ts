@@ -1,5 +1,5 @@
 import { ActionObject } from '../types'
-import { UserInput, TrainExtractorStep, ExtractResponse, UIScoreResponse, TrainScorerStep, TeachResponse } from 'blis-models'
+import { UserInput, TrainExtractorStep, ExtractResponse, UIExtractResponse, UIScoreResponse, TrainScorerStep, TeachResponse } from 'blis-models'
 
 export const runExtractor = (key: string, appId: string, teachId: string, userInput: UserInput) : ActionObject => { 
     return {
@@ -11,13 +11,13 @@ export const runExtractor = (key: string, appId: string, teachId: string, userIn
     }
 }
 
-export const runExtractorFulfilled = (key: string, appId: string, teachId: string, extractResponse: ExtractResponse) : ActionObject => { 
+export const runExtractorFulfilled = (key: string, appId: string, teachId: string, uiExtractResponse: UIExtractResponse) : ActionObject => { 
     return {
         type: 'RUN_EXTRACTOR_FULFILLED',
         key: key,
         appId: appId,
         teachId: teachId,
-        extractResponse: extractResponse
+        uiExtractResponse: uiExtractResponse
     }
 }
 
