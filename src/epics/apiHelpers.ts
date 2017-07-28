@@ -14,6 +14,7 @@ import { fetchApplicationsFulfilled, fetchAllEntitiesFulfilled, fetchAllActionsF
 import { createApplicationFulfilled, createEntityFulfilled, createPositiveEntityFulfilled, createNegativeEntityFulfilled, createActionFulfilled, createChatSessionFulfilled, createTeachSessionFulfilled } from '../actions/createActions'
 import { deleteBLISApplicationFulfilled, deleteReverseEntity, deleteEntityFulfilled, deleteActionFulfilled, deleteChatSessionFulfilled, deleteTeachSessionFulfilled } from '../actions/deleteActions'
 import { editBLISApplicationFulfilled, editEntityFulfilled, editActionFulfilled, setCurrentBLISAppFulfilled } from '../actions/updateActions'
+import { runExtractorFulfilled, postExtractorFeedbackFulfilled, runScorerFulfilled, postScorerFeedbackFulfilled } from '../actions/teachActions'
 import { setErrorDisplay } from '../actions/updateActions'
 import { ActionObject } from '../types'
 
@@ -42,12 +43,12 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
 // PARAMETER REQUIREMENTS
 //=========================================================
 
-export interface BlisAppForUpdate extends BlisAppBase {
-	trainingFailureMessage: string;
-	trainingRequired: boolean;
-	trainingStatus: string;
-	latestPackageId: number
-}
+  export interface BlisAppForUpdate extends BlisAppBase {
+    trainingFailureMessage: string;
+    trainingRequired: boolean;
+    trainingStatus: string;
+    latestPackageId: number
+  }
 
 //=========================================================
 // STATE ROUTES
@@ -71,266 +72,266 @@ export interface BlisAppForUpdate extends BlisAppBase {
 // GET ROUTES
 //=========================================================
 
-export const getAllBlisApps = (key : string, userId : string): Observable<ActionObject> => {
-	const getAppsRoute: string = makeRoute(key, `apps`, `userId=${userId}`);
-	return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.get(getAppsRoute, config)
-          .then(response => {
-            obs.next(fetchApplicationsFulfilled(response.data.apps));
-            obs.complete();
-          })
-          .catch(err => {
-            obs.next(setErrorDisplay(err.message, "", "FETCH_APPLICATIONS"));
-            obs.complete();
-          }));
-};
+  export const getAllBlisApps = (key : string, userId : string): Observable<ActionObject> => {
+    const getAppsRoute: string = makeRoute(key, `apps`, `userId=${userId}`);
+    return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.get(getAppsRoute, config)
+            .then(response => {
+              obs.next(fetchApplicationsFulfilled(response.data.apps));
+              obs.complete();
+            })
+            .catch(err => {
+              obs.next(setErrorDisplay(err.message, "", "FETCH_APPLICATIONS"));
+              obs.complete();
+            }));
+  };
 
-export const getAllEntitiesForBlisApp = (key : string, appId: string): Observable<ActionObject> => {
-	let getEntitiesForAppRoute: string = makeRoute(key, `app/${appId}/entities`);
-	return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.get(getEntitiesForAppRoute, config)
-		.then(response => {
-            obs.next(fetchAllEntitiesFulfilled(response.data.entities));
-            obs.complete();
-          })
-          .catch(err => {
-            obs.next(setErrorDisplay(err.message, "", "FETCH_ENTITIES"));
-            obs.complete();
-          }));
-};
+  export const getAllEntitiesForBlisApp = (key : string, appId: string): Observable<ActionObject> => {
+    let getEntitiesForAppRoute: string = makeRoute(key, `app/${appId}/entities`);
+    return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.get(getEntitiesForAppRoute, config)
+      .then(response => {
+              obs.next(fetchAllEntitiesFulfilled(response.data.entities));
+              obs.complete();
+            })
+            .catch(err => {
+              obs.next(setErrorDisplay(err.message, "", "FETCH_ENTITIES"));
+              obs.complete();
+            }));
+  };
 
-export const getAllActionsForBlisApp = (key : string, appId: string): Observable<ActionObject> => {
-	let getActionsForAppRoute: string = makeRoute(key, `app/${appId}/actions`);
-	return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.get(getActionsForAppRoute, config)
-		.then(response => {
-            obs.next(fetchAllActionsFulfilled(response.data.actions));
-            obs.complete();
-          })
-          .catch(err => {
-            obs.next(setErrorDisplay(err.message, "", "FETCH_ACTIONS"));
-            obs.complete();
-          }));
-};
+  export const getAllActionsForBlisApp = (key : string, appId: string): Observable<ActionObject> => {
+    let getActionsForAppRoute: string = makeRoute(key, `app/${appId}/actions`);
+    return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.get(getActionsForAppRoute, config)
+      .then(response => {
+              obs.next(fetchAllActionsFulfilled(response.data.actions));
+              obs.complete();
+            })
+            .catch(err => {
+              obs.next(setErrorDisplay(err.message, "", "FETCH_ACTIONS"));
+              obs.complete();
+            }));
+  };
 
-// Not currently used
-export const getBlisApp = (key : string, appId: string): Observable<AxiosResponse> => {
-	let getAppRoute: string = makeRoute(key, `app/${appId}`);
-	return Rx.Observable.fromPromise(axios.get(getAppRoute, config))
-};
-// Not currently used
-export const getBlisEntity = (key : string, appId: string, entityId: string): Observable<AxiosResponse> => {
-	let getEntityRoute: string = makeRoute(key, `app/${appId}/entity/${entityId}`);
-	return Rx.Observable.fromPromise(axios.get(getEntityRoute, config))
-};
-// Not currently used
-export const getBlisAction = (key : string, appId: string, actionId: string): Observable<AxiosResponse> => {
-	let getActionRoute: string = makeRoute(key, `app/${appId}/action/${actionId}`);
-	return Rx.Observable.fromPromise(axios.get(getActionRoute, config))
-};
+  // Not currently used
+  export const getBlisApp = (key : string, appId: string): Observable<AxiosResponse> => {
+    let getAppRoute: string = makeRoute(key, `app/${appId}`);
+    return Rx.Observable.fromPromise(axios.get(getAppRoute, config))
+  };
+  // Not currently used
+  export const getBlisEntity = (key : string, appId: string, entityId: string): Observable<AxiosResponse> => {
+    let getEntityRoute: string = makeRoute(key, `app/${appId}/entity/${entityId}`);
+    return Rx.Observable.fromPromise(axios.get(getEntityRoute, config))
+  };
+  // Not currently used
+  export const getBlisAction = (key : string, appId: string, actionId: string): Observable<AxiosResponse> => {
+    let getActionRoute: string = makeRoute(key, `app/${appId}/action/${actionId}`);
+    return Rx.Observable.fromPromise(axios.get(getActionRoute, config))
+  };
 
 //=========================================================
 // CREATE ROUTES
 //=========================================================
 
-export const createBlisApp = (key: string, userId : string, blisApp: BlisAppBase): Observable<ActionObject> => {
-	let addAppRoute: string = makeRoute(key, `app`, `userId=${userId}`);
-	//remove the appId property from the object
-	const { appId, ...appToSend } = blisApp
-	return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.post(addAppRoute, appToSend, config)
-          .then(response => {
-            obs.next(createApplicationFulfilled(blisApp, response.data));
-            obs.complete();
-          })
-          .catch(err => {
-            obs.next(setErrorDisplay(err.message, "", "CREATE_BLIS_APPLICATION"));
-            obs.complete();
-          }));
-};
-export const createBlisEntity = (key: string, entity: EntityBase, appId: string, reverseEntity?: EntityBase): Observable<ActionObject> => {
-	let addEntityRoute: string = makeRoute(key, `app/${appId}/entity`);
-	//remove property from the object that the route will not accept
-	const { version, packageCreationId, packageDeletionId, entityId, ...entityToSend } = entity;
-	return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.post(addEntityRoute, entityToSend, config).then(response => {
-			let newEntityId = response.data;
-			if (!entity.metadata.isReversable) {
-				obs.next(createEntityFulfilled(entity, newEntityId));
-			}
-			else if (entity.metadata.positiveId) {
-				obs.next(createNegativeEntityFulfilled(key, reverseEntity, entity, newEntityId, appId));
-			}
-			else {
-				obs.next(createPositiveEntityFulfilled(key, entity, newEntityId, appId));
-			}
-            obs.complete();
-          })
-          .catch(err => {
-            obs.next(setErrorDisplay(err.message, "", "CREATE_ENTITY"));
-            obs.complete();
-          }));
-};
+  export const createBlisApp = (key: string, userId : string, blisApp: BlisAppBase): Observable<ActionObject> => {
+    let addAppRoute: string = makeRoute(key, `app`, `userId=${userId}`);
+    //remove the appId property from the object
+    const { appId, ...appToSend } = blisApp
+    return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.post(addAppRoute, appToSend, config)
+            .then(response => {
+              obs.next(createApplicationFulfilled(blisApp, response.data));
+              obs.complete();
+            })
+            .catch(err => {
+              obs.next(setErrorDisplay(err.message, "", "CREATE_BLIS_APPLICATION"));
+              obs.complete();
+            }));
+  };
+  export const createBlisEntity = (key: string, entity: EntityBase, appId: string, reverseEntity?: EntityBase): Observable<ActionObject> => {
+    let addEntityRoute: string = makeRoute(key, `app/${appId}/entity`);
+    //remove property from the object that the route will not accept
+    const { version, packageCreationId, packageDeletionId, entityId, ...entityToSend } = entity;
+    return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.post(addEntityRoute, entityToSend, config).then(response => {
+        let newEntityId = response.data;
+        if (!entity.metadata.isReversable) {
+          obs.next(createEntityFulfilled(entity, newEntityId));
+        }
+        else if (entity.metadata.positiveId) {
+          obs.next(createNegativeEntityFulfilled(key, reverseEntity, entity, newEntityId, appId));
+        }
+        else {
+          obs.next(createPositiveEntityFulfilled(key, entity, newEntityId, appId));
+        }
+              obs.complete();
+            })
+            .catch(err => {
+              obs.next(setErrorDisplay(err.message, "", "CREATE_ENTITY"));
+              obs.complete();
+            }));
+  };
 
-export const createBlisAction = (key: string, action: ActionBase, appId: string): Observable<ActionObject> => {
-	let addActionRoute: string = makeRoute(key, `app/${appId}/action`);
-	//remove property from the object that the route will not accept
-	const { actionId, version, packageCreationId, packageDeletionId, ...actionToSend } = action
-	return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.post(addActionRoute, actionToSend, config).then(response => {
-			let newActionId = response.data;
-			obs.next(createActionFulfilled(action, newActionId));
-            obs.complete();
-          })
-          .catch(err => {
-            obs.next(setErrorDisplay(err.message, "", "CREATE_ACTION"));
-            obs.complete();
-          }));
-};
+  export const createBlisAction = (key: string, action: ActionBase, appId: string): Observable<ActionObject> => {
+    let addActionRoute: string = makeRoute(key, `app/${appId}/action`);
+    //remove property from the object that the route will not accept
+    const { actionId, version, packageCreationId, packageDeletionId, ...actionToSend } = action
+    return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.post(addActionRoute, actionToSend, config).then(response => {
+        let newActionId = response.data;
+        obs.next(createActionFulfilled(action, newActionId));
+              obs.complete();
+            })
+            .catch(err => {
+              obs.next(setErrorDisplay(err.message, "", "CREATE_ACTION"));
+              obs.complete();
+            }));
+  };
 
 //=========================================================
 // DELETE ROUTES
 //=========================================================
 
-export const deleteBlisApp = (key : string, blisAppId: string, blisApp: BlisAppForUpdate): Observable<ActionObject> => {
-	let deleteAppRoute: string = makeRoute(key, `app/${blisAppId}`); //takes an app in the body
-	const { appId, latestPackageId, metadata, trainingRequired, trainingStatus, trainingFailureMessage, ...appToSend } = blisApp
-	let configWithBody = {...config, body: appToSend}
-	return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.delete(deleteAppRoute, configWithBody)
-		.then(response => {
-            obs.next(deleteBLISApplicationFulfilled(blisAppId));
-            obs.complete();
-          })
-          .catch(err => {
-            obs.next(setErrorDisplay(err.message, "", "DELETE_BLIS_APPLICATION"));
-            obs.complete();
-          }));
-};
-export const deleteBlisEntity = (key : string, appId: string, deleteEntityId: string, reverseEntityId: string): Observable<ActionObject> => {
-	let deleteEntityRoute: string = makeRoute(key, `app/${appId}/entity/${deleteEntityId}`);
-	return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.delete(deleteEntityRoute)
-		.then(response => {
-					if (reverseEntityId) {
-							obs.next(deleteReverseEntity(key, deleteEntityId, reverseEntityId, appId));
-						}
-						else {
-							obs.next(deleteEntityFulfilled(key, deleteEntityId, appId));
-						}
-            obs.complete();
-          })
-          .catch(err => {
-            obs.next(setErrorDisplay(err.message, "", "DELETE_ENTITY"));
-            obs.complete();
-          }));
-};
-export const deleteBlisAction = (key : string, appId: string, action: ActionBase): Observable<ActionObject> => {
-	let deleteActionRoute: string = makeRoute(key, `app/${appId}/action/${action.actionId}`); 
-	const { actionId, version, packageCreationId, packageDeletionId, ...actionToSend } = action
-	let configWithBody = {...config, body: actionToSend}
-	return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.delete(deleteActionRoute, configWithBody)
-		.then(response => {
-            obs.next(deleteActionFulfilled(action.actionId));
-            obs.complete();
-          })
-          .catch(err => {
-            obs.next(setErrorDisplay(err.message, "", "DELETE_ACTION"));
-            obs.complete();
-          }));
-};
+  export const deleteBlisApp = (key : string, blisAppId: string, blisApp: BlisAppForUpdate): Observable<ActionObject> => {
+    let deleteAppRoute: string = makeRoute(key, `app/${blisAppId}`); //takes an app in the body
+    const { appId, latestPackageId, metadata, trainingRequired, trainingStatus, trainingFailureMessage, ...appToSend } = blisApp
+    let configWithBody = {...config, body: appToSend}
+    return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.delete(deleteAppRoute, configWithBody)
+      .then(response => {
+              obs.next(deleteBLISApplicationFulfilled(blisAppId));
+              obs.complete();
+            })
+            .catch(err => {
+              obs.next(setErrorDisplay(err.message, "", "DELETE_BLIS_APPLICATION"));
+              obs.complete();
+            }));
+  };
+  export const deleteBlisEntity = (key : string, appId: string, deleteEntityId: string, reverseEntityId: string): Observable<ActionObject> => {
+    let deleteEntityRoute: string = makeRoute(key, `app/${appId}/entity/${deleteEntityId}`);
+    return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.delete(deleteEntityRoute)
+      .then(response => {
+            if (reverseEntityId) {
+                obs.next(deleteReverseEntity(key, deleteEntityId, reverseEntityId, appId));
+              }
+              else {
+                obs.next(deleteEntityFulfilled(key, deleteEntityId, appId));
+              }
+              obs.complete();
+            })
+            .catch(err => {
+              obs.next(setErrorDisplay(err.message, "", "DELETE_ENTITY"));
+              obs.complete();
+            }));
+  };
+  export const deleteBlisAction = (key : string, appId: string, action: ActionBase): Observable<ActionObject> => {
+    let deleteActionRoute: string = makeRoute(key, `app/${appId}/action/${action.actionId}`); 
+    const { actionId, version, packageCreationId, packageDeletionId, ...actionToSend } = action
+    let configWithBody = {...config, body: actionToSend}
+    return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.delete(deleteActionRoute, configWithBody)
+      .then(response => {
+              obs.next(deleteActionFulfilled(action.actionId));
+              obs.complete();
+            })
+            .catch(err => {
+              obs.next(setErrorDisplay(err.message, "", "DELETE_ACTION"));
+              obs.complete();
+            }));
+  };
 
 //=========================================================
 // EDIT ROUTES
 //=========================================================
 
-export const editBlisApp = (key : string, blisAppId: string, blisApp: BlisAppForUpdate): Observable<ActionObject> => {
-	let editAppRoute: string = makeRoute(key, `app/${blisAppId}`);
-	const { appId, latestPackageId, trainingRequired, trainingStatus, trainingFailureMessage, ...appToSend } = blisApp
-	return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.put(editAppRoute, appToSend, config)
-		.then(response => {
-            obs.next(editBLISApplicationFulfilled(blisApp));
-            obs.complete();
-          })
-          .catch(err => {
-            obs.next(setErrorDisplay(err.message, "", "EDIT_BLIS_APPLICATION"));
-            obs.complete();
-          }));
-};
-export const editBlisAction = (key : string, appId: string, blisActionId: string, action: ActionBase): Observable<ActionObject> => {
-	let editActionRoute: string = makeRoute(key, `app/${appId}/action/${blisActionId}`);
-	const { actionId, version, packageCreationId, packageDeletionId, ...actionToSend } = action
-	return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.put(editActionRoute, actionToSend, config)
-		.then(response => {
-            obs.next(editActionFulfilled(action));
-            obs.complete();
-          })
-          .catch(err => {
-            obs.next(setErrorDisplay(err.message, "", "EDIT_ACTION"));
-            obs.complete();
-          }));
-};
-export const editBlisEntity = (key: string, appId: string, entity: EntityBase): Observable<ActionObject> => {
- 	let editActionRoute: string = makeRoute(key, `app/${appId}/entity/${entity.entityId}`);
- 	const { version, packageCreationId, packageDeletionId, ...entityToSend } = entity;
-	 return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.put(editActionRoute, entityToSend, config)
-	  	.then(response => {
-            obs.next(editEntityFulfilled(entity));
-            obs.complete();
-          })
-          .catch(err => {
-            obs.next(setErrorDisplay(err.message, "", "EDIT_ENTITY"));
-            obs.complete();
-          }));
-}
+  export const editBlisApp = (key : string, blisAppId: string, blisApp: BlisAppForUpdate): Observable<ActionObject> => {
+    let editAppRoute: string = makeRoute(key, `app/${blisAppId}`);
+    const { appId, latestPackageId, trainingRequired, trainingStatus, trainingFailureMessage, ...appToSend } = blisApp
+    return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.put(editAppRoute, appToSend, config)
+      .then(response => {
+              obs.next(editBLISApplicationFulfilled(blisApp));
+              obs.complete();
+            })
+            .catch(err => {
+              obs.next(setErrorDisplay(err.message, "", "EDIT_BLIS_APPLICATION"));
+              obs.complete();
+            }));
+  };
+  export const editBlisAction = (key : string, appId: string, blisActionId: string, action: ActionBase): Observable<ActionObject> => {
+    let editActionRoute: string = makeRoute(key, `app/${appId}/action/${blisActionId}`);
+    const { actionId, version, packageCreationId, packageDeletionId, ...actionToSend } = action
+    return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.put(editActionRoute, actionToSend, config)
+      .then(response => {
+              obs.next(editActionFulfilled(action));
+              obs.complete();
+            })
+            .catch(err => {
+              obs.next(setErrorDisplay(err.message, "", "EDIT_ACTION"));
+              obs.complete();
+            }));
+  };
+  export const editBlisEntity = (key: string, appId: string, entity: EntityBase): Observable<ActionObject> => {
+    let editActionRoute: string = makeRoute(key, `app/${appId}/entity/${entity.entityId}`);
+    const { version, packageCreationId, packageDeletionId, ...entityToSend } = entity;
+    return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.put(editActionRoute, entityToSend, config)
+        .then(response => {
+              obs.next(editEntityFulfilled(entity));
+              obs.complete();
+            })
+            .catch(err => {
+              obs.next(setErrorDisplay(err.message, "", "EDIT_ENTITY"));
+              obs.complete();
+            }));
+  }
 //========================================================
 // SESSION ROUTES
 //========================================================
 
-/** START SESSION : Creates a new session and a corresponding logDialog */
-export const createChatSession = (key: string, session: Session, appId: string): Observable<ActionObject> => {
-	let addSessionRoute: string = makeRoute(key, `app/${appId}/session`);
-	let configWithBody = {...config, body: session}
-	return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.post(addSessionRoute, config).then(response => {
-			let newSessionId = response.data.sessionId;
-			obs.next(createChatSessionFulfilled(session, newSessionId));
-            obs.complete();
-          })
-          .catch(err => {
-            obs.next(setErrorDisplay(err.message, "", "CREATE_CHAT_SESSION"));
-            obs.complete();
-          }));
-};
+  /** START SESSION : Creates a new session and a corresponding logDialog */
+  export const createChatSession = (key: string, session: Session, appId: string): Observable<ActionObject> => {
+    let addSessionRoute: string = makeRoute(key, `app/${appId}/session`);
+    let configWithBody = {...config, body: session}
+    return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.post(addSessionRoute, config).then(response => {
+        let newSessionId = response.data.sessionId;
+        obs.next(createChatSessionFulfilled(session, newSessionId));
+              obs.complete();
+            })
+            .catch(err => {
+              obs.next(setErrorDisplay(err.message, "", "CREATE_CHAT_SESSION"));
+              obs.complete();
+            }));
+  };
 
-export const deleteChatSession = (key : string, appId: string, session: Session): Observable<ActionObject> => {
-	let deleteAppRoute: string = makeRoute(key, `app/${appId}/session/${session.sessionId}`);
-	return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.delete(deleteAppRoute, config)
-		.then(response => {
-            obs.next(deleteChatSessionFulfilled(session.sessionId));
-            obs.complete();
-          })
-          .catch(err => {
-            obs.next(setErrorDisplay(err.message, "", "DELETE_CHAT_SESSION"));
-            obs.complete();
-          }));
-};
+  export const deleteChatSession = (key : string, appId: string, session: Session): Observable<ActionObject> => {
+    let deleteAppRoute: string = makeRoute(key, `app/${appId}/session/${session.sessionId}`);
+    return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.delete(deleteAppRoute, config)
+      .then(response => {
+              obs.next(deleteChatSessionFulfilled(session.sessionId));
+              obs.complete();
+            })
+            .catch(err => {
+              obs.next(setErrorDisplay(err.message, "", "DELETE_CHAT_SESSION"));
+              obs.complete();
+            }));
+  };
 
-export const getAllSessionsForBlisApp = (key: string, appId: string): Observable<ActionObject> => {
-	let getSessionsForAppRoute: string = makeRoute(key, `app/${appId}/sessions`);
-	return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.get(getSessionsForAppRoute, config)
-		.then(response => {
-            obs.next(fetchAllChatSessionsFulfilled(response.data.sessions));
-            obs.complete();
-          })
-          .catch(err => {
-            obs.next(setErrorDisplay(err.message, "", "FETCH_CHAT_SESSIONS"));
-            obs.complete();
-          }));
-};
+  export const getAllSessionsForBlisApp = (key: string, appId: string): Observable<ActionObject> => {
+    let getSessionsForAppRoute: string = makeRoute(key, `app/${appId}/sessions`);
+    return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.get(getSessionsForAppRoute, config)
+      .then(response => {
+              obs.next(fetchAllChatSessionsFulfilled(response.data.sessions));
+              obs.complete();
+            })
+            .catch(err => {
+              obs.next(setErrorDisplay(err.message, "", "FETCH_CHAT_SESSIONS"));
+              obs.complete();
+            }));
+  };
 
-/** GET SESSION : Retrieves information about the specified session */
-export const getSession = (key : string, appId: string, sessionId: string): Observable<AxiosResponse> => {
-	let getAppRoute: string = makeRoute(key, `app/${appId}/session/${sessionId}`);
-	return Rx.Observable.fromPromise(axios.get(getAppRoute, config))
-};
+  /** GET SESSION : Retrieves information about the specified session */
+  export const getSession = (key : string, appId: string, sessionId: string): Observable<AxiosResponse> => {
+    let getAppRoute: string = makeRoute(key, `app/${appId}/session/${sessionId}`);
+    return Rx.Observable.fromPromise(axios.get(getAppRoute, config))
+  };
 
-/** GET SESSION IDS : Retrieves a list of session IDs */
-export const getSessionIds = (key : string, appId: string): Observable<AxiosResponse> => {
-	let getAppRoute: string = makeRoute(key, `app/${appId}/session`);
-	return Rx.Observable.fromPromise(axios.get(getAppRoute, config))
-};
+  /** GET SESSION IDS : Retrieves a list of session IDs */
+  export const getSessionIds = (key : string, appId: string): Observable<AxiosResponse> => {
+    let getAppRoute: string = makeRoute(key, `app/${appId}/session`);
+    return Rx.Observable.fromPromise(axios.get(getAppRoute, config))
+  };
 
 //========================================================
 // Teach
@@ -392,7 +393,7 @@ export const putExtract = (key : string, appId: string, teachId: string, userInp
 	let editAppRoute: string = makeRoute(key, `app/${appId}/teach/${teachId}/extractor`);
 	return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.put(editAppRoute, userInput, config)		
 		.then(response => {
-            obs.next(fetchAllTeachSessionsFulfilled(response.data.teaches));  //TODO
+            obs.next(runExtractorFulfilled(key, appId, teachId, response.data.extractResponse)); 
             obs.complete();
           })
           .catch(err => {
@@ -409,7 +410,7 @@ export const postExtraction = (key : string, appId : string, teachId: string, tr
 	let addAppRoute: string = makeRoute(key, `app/${appId}/teach/${teachId}/extractor`);
 	return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.post(addAppRoute, trainExtractorStep, config)		
 		.then(response => {
-            obs.next(fetchAllTeachSessionsFulfilled(response.data.teaches)); // TODO
+            obs.next(postExtractorFeedbackFulfilled(key, appId, teachId, response.data.teachResponse)); 
             obs.complete();
           })
           .catch(err => {
@@ -427,7 +428,7 @@ export const putScore = (key : string, appId: string, teachId: string, extractRe
 	let editAppRoute: string = makeRoute(key, `app/${appId}/teach/${teachId}/scorer`);
 	return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.put(editAppRoute, extractResponse, config)	
 	 		.then(response => {
-            obs.next(fetchAllTeachSessionsFulfilled(response.data.teaches)); // TODO
+            obs.next(runScorerFulfilled(key, appId, teachId, response.data.uiScoreResponse)); 
             obs.complete();
           })
           .catch(err => {
@@ -444,7 +445,7 @@ export const postScore = (key : string, appId : string, teachId: string, trainSc
 	let addAppRoute: string = makeRoute(key, `app/${appId}/teach/${teachId}/scorer`);
 	return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.post(addAppRoute, trainScorerStep, config)		
 			.then(response => {
-            obs.next(fetchAllTeachSessionsFulfilled(response.data.teaches)); // TODO
+            obs.next(postScorerFeedbackFulfilled(key, appId, teachId, response.data.teachResponse));
             obs.complete();
           })
           .catch(err => {

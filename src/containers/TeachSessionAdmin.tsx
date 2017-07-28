@@ -4,7 +4,7 @@ import { CommandButton } from 'office-ui-fabric-react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../types'
-import { DisplayMode } from '../types/const';
+import { DisplayMode, TeachMode } from '../types/const';
 import { setDisplayMode } from '../actions/updateActions'
 import { deleteTeachSession } from '../actions/deleteActions'
 
@@ -13,10 +13,19 @@ class TeachSessionAdmin extends React.Component<any, any> {
         // TODO: Add confirmation modal
         this.props.setDisplayMode(DisplayMode.AppAdmin);
         let currentAppId: string = this.props.apps.current.appId;
-        this.props.deleteTeachSession(this.props.userKey, this.props.teachSession, currentAppId);
+        this.props.deleteTeachSession(this.props.userKey, this.props.teachSession.current, currentAppId);
     }
 
     render() {
+        let userWindow = null;
+        switch (this.props.teachSession.mode) {
+            case TeachMode.Extractor:
+                userWindow = null;//<TeachSessionExtractor />  TODO
+                break;
+            case TeachMode.Scorer:
+                userWindow = null;//<TeachSessionScorer />  TODO
+                break;
+        }
         return (
             <div className="container">
                 <span className="ms-font-su goldText">                        
@@ -29,19 +38,20 @@ class TeachSessionAdmin extends React.Component<any, any> {
                             text='Abandon Teach'
                         />
                     </span>
+                {userWindow}
             </div>
         );
     }
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-         setDisplayMode: setDisplayMode,
+        setDisplayMode: setDisplayMode,
         deleteTeachSession: deleteTeachSession
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {
     return {
-        teachSession: state.teachSessions.current,
+        teachSession: state.teachSessions,
         apps: state.apps
     }
 }
