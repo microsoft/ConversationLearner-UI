@@ -1,6 +1,6 @@
 import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, 
     ActionMetaData, ActionList, ActionTypes, TrainDialog, LogDialog, Teach, Session } from 'blis-models';
-import { DisplayMode } from '../types/const'
+import { DisplayMode, TeachMode } from '../types/const'
 
 export type ActionState = ActionBase[]
 export type EntityState = EntityBase[]
@@ -23,7 +23,8 @@ export type AppState = {
 }
 export type TeachSessionState = {
     all: Teach[],
-    current: Teach
+    current: Teach,
+    mode: TeachMode
 }
 export type ChatSessionState = {
     all: Session[],
