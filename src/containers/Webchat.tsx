@@ -7,7 +7,7 @@ import { generateGUID } from '../util';
 import * as BotChat from 'botframework-webchat'
 
 class Webchat extends React.Component<any, any> {
-    componentDidMount(){
+    componentDidMount() {
         const props: BotChat.ChatProps = {
             directLine: {
                 secret: 'secret', //params['s'],
@@ -22,18 +22,17 @@ class Webchat extends React.Component<any, any> {
             bot: { name: "BlisTrainer", id: "BlisTrainer" },
             resize: 'detect',
         }
+
         const dl = new BotChat.DirectLine({ secret: "secret" });
-        const postActivity = (activity: any) => {
-            dl.postActivity({
-                ...activity,
-            })
-        }
-        let chatProps: BotChat.ChatProps = {
+        let botProps = {
             ...dl,
-            postActivity: postActivity,
-            ...props,
+            postActivity: (activity: any) => dl.postActivity({
+                ...activity,
+            }),
+            ...props
         }
-        const app = BotChat.App(chatProps, document.getElementById("botchat"))
+        const app = BotChat.App(botProps, document.getElementById("botchat"));
+        
     }
     render() {
         return (
