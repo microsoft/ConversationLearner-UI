@@ -26,13 +26,16 @@ class Webchat extends React.Component<any, any> {
         const dl = new BotChat.DirectLine({ secret: "secret" });
         let botProps = {
             ...dl,
-            postActivity: (activity: any) => dl.postActivity({
-                ...activity,
-            }),
+            postActivity: (activity: any) => {
+                console.log("ACTIVITY", activity)
+                dl.postActivity({
+                    ...activity,
+                })
+            },
             ...props
         }
         const app = BotChat.App(botProps, document.getElementById("botchat"));
-        
+
     }
     render() {
         return (

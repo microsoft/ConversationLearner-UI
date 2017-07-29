@@ -7,7 +7,7 @@ import { setDisplayMode } from '../actions/updateActions'
 class TeachSessionMemory extends React.Component<any, any> {
     render() {
         return (
-            <div>
+            <div className={this.props.class}>
                 TeachSessionMemory
             </div>
         )

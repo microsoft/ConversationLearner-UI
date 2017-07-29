@@ -23,25 +23,41 @@ class TeachSessionAdmin extends React.Component<any, any> {
         let userWindow = null;
         switch (this.props.teachSession.mode) {
             case TeachMode.Extractor:
-                userWindow = <TeachSessionExtractor />
+                userWindow = (
+                    <div className="teachSessionModeContainer">
+                        <TeachSessionMemory class={"teachSessionHalfMode"} />
+                        <TeachSessionExtractor className="teachSessionHalfMode" />
+                    </div>
+                )
                 break;
             case TeachMode.Scorer:
-                userWindow = <TeachSessionScorer />
+                userWindow = (
+                    <div className="teachSessionModeContainer">
+                        <TeachSessionMemory class={"teachSessionHalfMode"} />
+                        <TeachSessionScorer/>
+                    </div>
+                )
+                break;
+            default:
+                userWindow = (
+                    <div className="teachSessionModeContainer">
+                        <TeachSessionMemory class={"teachSessionFullMode"} />
+                    </div>
+                )
                 break;
         }
         return (
             <div className="container">
-                <span className="ms-font-su goldText">
+                <div className="teachSessionHeader">
                     <CommandButton
                         data-automation-id='randomID16'
                         disabled={false}
                         onClick={this.handleAbandon.bind(this)}
-                        className='goldButton buttonWithTextField'
+                        className='ms-font-su goldButton'
                         ariaDescription='Abandon Teach'
                         text='Abandon Teach'
                     />
-                </span>
-                <TeachSessionMemory />
+                </div>
                 {userWindow}
             </div>
         );

@@ -286,8 +286,37 @@
   float: right;
   margin-top: -.1em
 }
-.webchatwindow{
-  height: 400px;
-  width: 500px;
+.webchat, .teachAdmin, .teachSessionHalfMode{
+  display: inline-block;
+  vertical-align: top;
 }
-
+.webchatwindow{
+  height: 51em;
+}
+.webchat{
+  width: 33%;
+}
+.teachAdmin{
+  width: 67%;
+}
+.teachBody{
+  width: 100%;
+  height: 92%;
+}
+.teachSessionModeContainer{
+  height: 45em;
+  display: block;
+  width: 100%;
+}
+.teachSessionHeader{
+  display: block;
+  width: 100%;
+}
+.teachSessionFullMode{
+  width: 100%;
+  height: 100%;
+}
+.teachSessionHalfMode{
+  width: 49.5%;
+  height: 100%;
+}
