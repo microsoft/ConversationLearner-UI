@@ -7,7 +7,7 @@ import { setDisplayMode } from '../actions/updateActions'
 class TeachSessionExtractor extends React.Component<any, any> {
     render() {
         return (
-            <div>
+            <div className="teachSessionHalfMode">
                 TeachSessionExtractor
             </div>
         )

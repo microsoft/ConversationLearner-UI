@@ -7,7 +7,7 @@ import { setDisplayMode } from '../actions/updateActions'
 class TeachSessionScorer extends React.Component<any, any> {
     render() {
         return (
-            <div>
+            <div className="teachSessionHalfMode">
                 TeachSessionScorer
             </div>
         )
