@@ -6,7 +6,8 @@ import { TeachMode } from '../types/const'
 const initialState: TeachSessionState = {
     all: [],
     current: null,
-    mode: TeachMode.Wait
+    mode: TeachMode.Wait,
+    currentConversationStack: []
 };
 
 const teachSessionReducer: Reducer<any> = (state = initialState, action: ActionObject) => {
@@ -15,7 +16,7 @@ const teachSessionReducer: Reducer<any> = (state = initialState, action: ActionO
             return { ...state, all: action.allTeachSessions };
         case 'CREATE_TEACH_SESSION_FULFILLED':
             let newSession = { ...action.teachSession, teachId: action.teachSessionId };
-            let newState: TeachSessionState = { all: [...state.all, newSession], current: newSession, mode: TeachMode.Wait }
+            let newState: TeachSessionState = {...state, all: [...state.all, newSession], current: newSession, mode: TeachMode.Wait }
             return newState;
         case 'DELETE_TEACH_SESSION_FULFILLED':
             return { ...state, all: state.all.filter((t: Teach) => t.teachId !== action.teachSessionGUID) }
@@ -27,6 +28,8 @@ const teachSessionReducer: Reducer<any> = (state = initialState, action: ActionO
             return {...state, mode: TeachMode.Scorer};
         case 'POST_SCORE_FEEDBACK_FULFILLED':
             return {...state, mode: TeachMode.Wait};
+        case 'TEACH_MESSAGE_RECEIVED':
+            return {...state, currentConversationStack: [...state.currentConversationStack, action.message]};
         default:
             return state;
     }

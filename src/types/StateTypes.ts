@@ -24,7 +24,8 @@ export type AppState = {
 export type TeachSessionState = {
     all: Teach[],
     current: Teach,
-    mode: TeachMode
+    mode: TeachMode,
+    currentConversationStack: {}[]
 }
 export type ChatSessionState = {
     all: Session[],

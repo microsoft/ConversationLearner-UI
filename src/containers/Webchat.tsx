@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { toggleTrainDialog } from '../actions/updateActions';
+import { toggleTrainDialog, addMessageToTeachConversationStack } from '../actions/updateActions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State, TrainDialogState } from '../types';
@@ -9,6 +9,7 @@ import { Chat } from 'botframework-webchat'
 
 class Webchat extends React.Component<any, any> {
     render() {
+        console.log(this.props.teachSessions)
         const dl = new BotChat.DirectLine({
             secret: 'secret', //params['s'],
             token: 'token', //params['t'],
@@ -19,8 +20,8 @@ class Webchat extends React.Component<any, any> {
         const _dl = {
             ... dl,
             postActivity: (activity: any) => {
-                console.log("ACTIVITY FROM BOT PROPS", activity)
-                dl.postActivity(activity)
+                this.props.addMessageToTeachConversationStack(activity)
+                return dl.postActivity(activity)
             },
         } as BotChat.DirectLine;
 
@@ -42,12 +43,13 @@ class Webchat extends React.Component<any, any> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        toggleTrainDialog: toggleTrainDialog
+        toggleTrainDialog: toggleTrainDialog,
+        addMessageToTeachConversationStack: addMessageToTeachConversationStack
     }, dispatch);
 }
 const mapStateToProps = (state: State, ownProps: any) => {
     return {
-        trainDialogs: state.trainDialogs,
+        teachSessions: state.teachSessions,
         user: state.user
     }
 }
