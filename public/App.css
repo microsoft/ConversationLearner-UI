@@ -286,7 +286,7 @@
   float: right;
   margin-top: -.1em
 }
-.webchat, .teachAdmin, .teachSessionHalfMode{
+.webchat, .sessionAdmin, .teachSessionHalfMode{
   display: inline-block;
   vertical-align: top;
 }
@@ -297,7 +297,7 @@
   width: 33%;
   border-right: 3px solid #E0E0E0;
 }
-.teachAdmin{
+.sessionAdmin{
   width: 67%;
 }
 .teachBody{
