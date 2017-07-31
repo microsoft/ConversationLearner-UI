@@ -1,20 +1,32 @@
 import * as React from 'react';
-import { toggleTrainDialog } from '../actions/updateActions';
+import { toggleTrainDialog, addMessageToTeachConversationStack } from '../actions/updateActions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State, TrainDialogState } from '../types';
 import { generateGUID } from '../util';
 import * as BotChat from 'botframework-webchat'
+import { Chat } from 'botframework-webchat'
 
 class Webchat extends React.Component<any, any> {
-    componentDidMount() {
-        const props: BotChat.ChatProps = {
-            directLine: {
-                secret: 'secret', //params['s'],
-                token: 'token', //params['t'],
-                domain: "http://localhost:3000/directline", //params['domain'],
-                webSocket: false // defaults to true 
+    render() {
+        console.log(this.props.teachSessions)
+        const dl = new BotChat.DirectLine({
+            secret: 'secret', //params['s'],
+            token: 'token', //params['t'],
+            domain: "http://localhost:3000/directline", //params['domain'],
+            webSocket: false // defaults to true,
+        });
+
+        const _dl = {
+            ... dl,
+            postActivity: (activity: any) => {
+                this.props.addMessageToTeachConversationStack(activity)
+                return dl.postActivity(activity)
             },
+        } as BotChat.DirectLine;
+
+        const props: BotChat.ChatProps = {
+            botConnection: _dl,
             formatOptions: {
                 showHeader: false
             },
@@ -22,36 +34,22 @@ class Webchat extends React.Component<any, any> {
             bot: { name: "BlisTrainer", id: "BlisTrainer" },
             resize: 'detect',
         }
-
-        const dl = new BotChat.DirectLine({ secret: "secret" });
-        let botProps = {
-            ...dl,
-            postActivity: (activity: any) => {
-                console.log("ACTIVITY", activity)
-                dl.postActivity({
-                    ...activity,
-                })
-            },
-            ...props
-        }
-        const app = BotChat.App(botProps, document.getElementById("botchat"));
-
-    }
-    render() {
         return (
             <div id="botchat" className="container webchatwindow wc-app">
+                <Chat {...props}/>
             </div>
         )
     }
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        toggleTrainDialog: toggleTrainDialog
+        toggleTrainDialog: toggleTrainDialog,
+        addMessageToTeachConversationStack: addMessageToTeachConversationStack
     }, dispatch);
 }
 const mapStateToProps = (state: State, ownProps: any) => {
     return {
-        trainDialogs: state.trainDialogs,
+        teachSessions: state.teachSessions,
         user: state.user
     }
 }
