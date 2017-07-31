@@ -29,7 +29,8 @@ export type TeachSessionState = {
 }
 export type ChatSessionState = {
     all: Session[],
-    current: Session
+    current: Session,
+    currentConversationStack: {}[]
 }
 export type DisplayState = {
     displayMode: DisplayMode,

@@ -86,6 +86,9 @@ export type UpdateAction = {
     type: "EMPTY_STATE_PROPERTIES"
 } | {
     type: "NO_OP"
+} | {
+    type: 'CHAT_MESSAGE_RECEIVED',
+    message: {}
 }
 
 export type FetchAction = {
@@ -302,7 +305,7 @@ export type TeachAction = {
     appId: string,
     teachId: string,
     teachResponse: TeachResponse
-}| {
+} | {
     type: 'TEACH_MESSAGE_RECEIVED',
     message: {}
 }

@@ -18,9 +18,11 @@ class Webchat extends React.Component<any, any> {
         });
 
         const _dl = {
-            ... dl,
+            ...dl,
             postActivity: (activity: any) => {
-                this.props.addMessageToTeachConversationStack(activity)
+                if (this.props.sessionType === 'teach') {
+                    this.props.addMessageToTeachConversationStack(activity)
+                }
                 return dl.postActivity(activity)
             },
         } as BotChat.DirectLine;
@@ -36,7 +38,7 @@ class Webchat extends React.Component<any, any> {
         }
         return (
             <div id="botchat" className="container webchatwindow wc-app">
-                <Chat {...props}/>
+                <Chat {...props} />
             </div>
         )
     }
