@@ -9,6 +9,7 @@ import TeachSessionAdmin from './TeachSessionAdmin'
 import { Teach } from 'blis-models'
 import { createTrainDialog, createTeachSession } from '../actions/createActions'
 import { setCurrentTrainDialog, setCurrentTeachSession } from '../actions/updateActions'
+import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 
 
 class TeachWindow extends React.Component<any, any> {
