@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { toggleTrainDialog, addMessageToTeachConversationStack } from '../actions/updateActions';
+import { toggleTrainDialog, addMessageToTeachConversationStack, addMessageToChatConversationStack } from '../actions/updateActions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State, TrainDialogState } from '../types';
@@ -22,6 +22,8 @@ class Webchat extends React.Component<any, any> {
             postActivity: (activity: any) => {
                 if (this.props.sessionType === 'teach') {
                     this.props.addMessageToTeachConversationStack(activity)
+                } else {
+                    this.props.addMessageToChatConversationStack(activity)
                 }
                 return dl.postActivity(activity)
             },
