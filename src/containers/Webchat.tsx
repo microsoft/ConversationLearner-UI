@@ -9,7 +9,6 @@ import { Chat } from 'botframework-webchat'
 
 class Webchat extends React.Component<any, any> {
     render() {
-        console.log(this.props.teachSessions)
         const dl = new BotChat.DirectLine({
             secret: 'secret', //params['s'],
             token: 'token', //params['t'],
@@ -54,6 +53,7 @@ const mapDispatchToProps = (dispatch: any) => {
 const mapStateToProps = (state: State, ownProps: any) => {
     return {
         teachSessions: state.teachSessions,
+        chatSessions: state.chatSessions,
         user: state.user
     }
 }
