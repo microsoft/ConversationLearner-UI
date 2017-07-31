@@ -36,7 +36,7 @@ class ChatSessionAdmin extends React.Component<any, any> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         setDisplayMode: setDisplayMode,
-        deleteTeachSession: deleteChatSession
+        deleteChatSession: deleteChatSession
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {
