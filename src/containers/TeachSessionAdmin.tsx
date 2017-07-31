@@ -13,19 +13,33 @@ import TeachSessionScorer from './TeachSessionScorer';
 import TeachSessionExtractor from './TeachSessionExtractor';
 import TeachSessionMemory from './TeachSessionMemory';
 import { TextFieldPlaceholder } from './TextFieldPlaceholder';
+import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 
 class TeachSessionAdmin extends React.Component<any, any> {
     constructor(p: any) {
         super(p);
         this.state = {
             userInput: '',
-        };
+            open: false
+        }
+        this.handleAbandon = this.handleAbandon.bind(this)
+        this.handleCloseModal = this.handleCloseModal.bind(this)
     }
     handleAbandon() {
         // TODO: Add confirmation modal
         this.props.setDisplayMode(DisplayMode.AppAdmin);
         let currentAppId: string = this.props.apps.current.appId;
         this.props.deleteTeachSession(this.props.userKey, this.props.teachSession.current, currentAppId);
+    }
+    handleCloseModal() {
+        this.setState({
+            open: false
+        })
+    }
+    confirmDelete() {
+        this.setState({
+            open: true
+        })
     }
     nameChanged(text: string) {
         this.setState({
@@ -71,7 +85,7 @@ class TeachSessionAdmin extends React.Component<any, any> {
                     <CommandButton
                         data-automation-id='randomID16'
                         disabled={false}
-                        onClick={this.handleAbandon.bind(this)}
+                        onClick={this.confirmDelete.bind(this)}
                         className='ms-font-su goldButton abandonTeach'
                         ariaDescription='Abandon Teach'
                         text='Abandon Teach'
@@ -93,6 +107,7 @@ class TeachSessionAdmin extends React.Component<any, any> {
                     </div>
                 </div>
                 {userWindow}
+                <ConfirmDeleteModal open={this.state.open} onCancel={() => this.handleCloseModal()} onConfirm={() => this.handleAbandon()} title="Are you sure you want to abandon this teach session?" />
             </div>
         );
     }
