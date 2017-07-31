@@ -180,3 +180,17 @@ export const setCurrentTeachSession = (teachSession: Teach) : ActionObject => {
         currentTeachSession: teachSession
     }
 }
+
+export const addMessageToTeachConversationStack = (message: {}): ActionObject => {
+    return {
+        type: "TEACH_MESSAGE_RECEIVED",
+        message: message
+    }
+}
+
+export const addMessageToChatConversationStack = (message: {}): ActionObject => {
+    return {
+        type: "CHAT_MESSAGE_RECEIVED",
+        message: message
+    }
+}

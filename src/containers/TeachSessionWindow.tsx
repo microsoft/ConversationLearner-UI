@@ -31,10 +31,10 @@ class TeachWindow extends React.Component<any, any> {
         return (
             <div className="ms-Grid">
                 <div className="ms-Grid-row">
-                    <div className="ms-Grid-col">
-                        <Webchat />
+                    <div className="ms-Grid-col webchat">
+                        <Webchat sessionType={"teach"}/>
                     </div>
-                    <div className="ms-Grid-col">
+                    <div className="ms-Grid-col sessionAdmin">
                         <TeachSessionAdmin/>
                     </div>
                 </div>

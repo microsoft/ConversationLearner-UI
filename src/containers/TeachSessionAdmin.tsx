@@ -13,13 +13,17 @@ import TeachSessionScorer from './TeachSessionScorer';
 import TeachSessionExtractor from './TeachSessionExtractor';
 import TeachSessionMemory from './TeachSessionMemory';
 import { TextFieldPlaceholder } from './TextFieldPlaceholder';
+import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 
 class TeachSessionAdmin extends React.Component<any, any> {
     constructor(p: any) {
         super(p);
         this.state = {
             userInput: '',
-        };
+            open: false
+        }
+        this.handleAbandon = this.handleAbandon.bind(this)
+        this.handleCloseModal = this.handleCloseModal.bind(this)
     }
     handleAbandon() {
         // TODO: Add confirmation modal
@@ -27,13 +31,23 @@ class TeachSessionAdmin extends React.Component<any, any> {
         let currentAppId: string = this.props.apps.current.appId;
         this.props.deleteTeachSession(this.props.userKey, this.props.teachSession.current, currentAppId);
     }
+    handleCloseModal() {
+        this.setState({
+            open: false
+        })
+    }
+    confirmDelete() {
+        this.setState({
+            open: true
+        })
+    }
     nameChanged(text: string) {
         this.setState({
             userInput: text
         })
     }
     userInputReceived() {
-        let userInput = new UserInput({text: this.state.userInput});
+        let userInput = new UserInput({ text: this.state.userInput });
         let appId: string = this.props.apps.current.appId;
         let teachId: string = this.props.teachSession.current.teachId;
         this.props.runExtractor(this.props.user.key, appId, teachId, userInput);
@@ -42,31 +56,47 @@ class TeachSessionAdmin extends React.Component<any, any> {
         let userWindow = null;
         switch (this.props.teachSession.mode) {
             case TeachMode.Extractor:
-                userWindow = <TeachSessionExtractor />
+                userWindow = (
+                    <div className="teachSessionModeContainer">
+                        <TeachSessionMemory class={"teachSessionHalfMode"} />
+                        <TeachSessionExtractor className="teachSessionHalfMode" />
+                    </div>
+                )
                 break;
             case TeachMode.Scorer:
-                userWindow = <TeachSessionScorer />
+                userWindow = (
+                    <div className="teachSessionModeContainer">
+                        <TeachSessionMemory class={"teachSessionHalfMode"} />
+                        <TeachSessionScorer />
+                    </div>
+                )
+                break;
+            default:
+                userWindow = (
+                    <div className="teachSessionModeContainer">
+                        <TeachSessionMemory class={"teachSessionFullMode"} />
+                    </div>
+                )
                 break;
         }
         return (
             <div className="container">
-                <span className="ms-font-su goldText">
+                <div className="teachSessionHeader">
                     <CommandButton
                         data-automation-id='randomID16'
                         disabled={false}
-                        onClick={this.handleAbandon.bind(this)}
-                        className='goldButton buttonWithTextField'
+                        onClick={this.confirmDelete.bind(this)}
+                        className='ms-font-su goldButton abandonTeach'
                         ariaDescription='Abandon Teach'
                         text='Abandon Teach'
                     />
-                </span>
-                <div>
-                    <TextFieldPlaceholder
+                    <div className="fakeInputDiv">
+                        <TextFieldPlaceholder
                             onChanged={this.nameChanged.bind(this)}
-                            label="Fake User Input"
-                            placeholder="Name..."
+                            placeholder="Fake Input..."
+                            className="fakeInputText"
                             value={this.state.userInput} />
-                    <CommandButton
+                        <CommandButton
                             data-automation-id='randomID13'
                             className="grayButton"
                             disabled={false}
@@ -74,9 +104,10 @@ class TeachSessionAdmin extends React.Component<any, any> {
                             ariaDescription='Send Text'
                             text='Send Text'
                         />
+                    </div>
                 </div>
-                <TeachSessionMemory />
                 {userWindow}
+                <ConfirmDeleteModal open={this.state.open} onCancel={() => this.handleCloseModal()} onConfirm={() => this.handleAbandon()} title="Are you sure you want to abandon this teach session?" />
             </div>
         );
     }
