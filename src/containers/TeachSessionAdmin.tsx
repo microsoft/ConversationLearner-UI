@@ -35,7 +35,7 @@ class TeachSessionAdmin extends React.Component<any, any> {
     userInputReceived() {
         let userInput = new UserInput({text: this.state.userInput});
         let appId: string = this.props.apps.current.appId;
-        let teachId: string = this.props.teachSession.current;
+        let teachId: string = this.props.teachSession.current.teachId;
         this.props.runExtractor(this.props.user.key, appId, teachId, userInput);
     }
     render() {
