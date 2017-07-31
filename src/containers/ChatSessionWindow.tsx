@@ -29,7 +29,7 @@ class SessionWindow extends React.Component<any, any> {
             <div className="ms-Grid">
                 <div className="ms-Grid-row">
                     <div className="ms-Grid-col">
-                        <Webchat />
+                        <Webchat sessionType={"chat"}/>
                     </div>
                     <div className="ms-Grid-col">
                         <ChatSessionAdmin/>
