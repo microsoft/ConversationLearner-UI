@@ -2,7 +2,7 @@ import { BlisAppBase, BlisAppMetaData, BlisAppList,
     EntityBase, EntityMetaData, EntityList, 
     ActionBase, ActionMetaData, ActionList, ActionTypes, 
     TrainDialog, LogDialog, Session, Teach,
-    UserInput, TrainExtractorStep, ExtractResponse, TrainScorerStep,
+    UserInput, TrainExtractorStep, ExtractResponse, UIExtractResponse, TrainScorerStep,
     TeachResponse, UIScoreResponse } from 'blis-models'
 import { DisplayMode } from '../types/const'
 
@@ -265,7 +265,7 @@ export type TeachAction = {
     key: string,
     appId: string,
     teachId: string,
-    extractResponse: ExtractResponse
+    uiExtractResponse: UIExtractResponse
 } | {
     type: 'POST_EXTACT_FEEDBACK',
     key: string,

@@ -295,6 +295,7 @@
 }
 .webchat{
   width: 33%;
+  border-right: 3px solid #E0E0E0;
 }
 .teachAdmin{
   width: 67%;
@@ -311,6 +312,23 @@
 .teachSessionHeader{
   display: block;
   width: 100%;
+}
+.abandonTeach{
+  display: inline-block;
+  vertical-align: top;
+}
+.fakeInputDiv{
+  display: inline-block;
+  vertical-align: top;
+  float: right;
+}
+.fakeInputDiv *{
+  margin-left: 1em;
+  display: inline-block;
+  vertical-align: top;
+}
+.fakeInputText *{
+  width: 25em !important;
 }
 .teachSessionFullMode{
   width: 100%;
