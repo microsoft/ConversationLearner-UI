@@ -5,16 +5,27 @@ import { connect } from 'react-redux';
 import { State, TrainDialogState } from '../types';
 import { generateGUID } from '../util';
 import * as BotChat from 'botframework-webchat'
+import { Chat } from 'botframework-webchat'
 
 class Webchat extends React.Component<any, any> {
-    componentDidMount() {
-        const props: BotChat.ChatProps = {
-            directLine: {
-                secret: 'secret', //params['s'],
-                token: 'token', //params['t'],
-                domain: "http://localhost:3000/directline", //params['domain'],
-                webSocket: false // defaults to true 
+    render() {
+        const dl = new BotChat.DirectLine({
+            secret: 'secret', //params['s'],
+            token: 'token', //params['t'],
+            domain: "http://localhost:3000/directline", //params['domain'],
+            webSocket: false // defaults to true,
+        });
+
+        const _dl = {
+            ... dl,
+            postActivity: (activity: any) => {
+                console.log("ACTIVITY FROM BOT PROPS", activity)
+                dl.postActivity(activity)
             },
+        } as BotChat.DirectLine;
+
+        const props: BotChat.ChatProps = {
+            botConnection: _dl,
             formatOptions: {
                 showHeader: false
             },
@@ -22,24 +33,9 @@ class Webchat extends React.Component<any, any> {
             bot: { name: "BlisTrainer", id: "BlisTrainer" },
             resize: 'detect',
         }
-
-        const dl = new BotChat.DirectLine({ secret: "secret" });
-        let botProps = {
-            ...dl,
-            postActivity: (activity: any) => {
-                console.log("ACTIVITY", activity)
-                dl.postActivity({
-                    ...activity,
-                })
-            },
-            ...props
-        }
-        const app = BotChat.App(botProps, document.getElementById("botchat"));
-
-    }
-    render() {
         return (
             <div id="botchat" className="container webchatwindow wc-app">
+                <Chat {...props}/>
             </div>
         )
     }
