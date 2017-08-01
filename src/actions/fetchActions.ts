@@ -1,4 +1,5 @@
 import { ActionObject } from '../types'
+import { AT } from '../types/ActionTypes'
 import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, ActionMetaData, ActionList, ActionTypes, Session, Teach } from 'blis-models';
 
 //=========================================================
@@ -7,7 +8,7 @@ import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, 
 export const fetchApplications = (key: string, userId : string): ActionObject => {
     //needs a fulfilled version to handle response from Epic
     return {
-        type: 'FETCH_APPLICATIONS',
+        type: AT.FETCH_APPLICATIONS,
         key: key,
         userId : userId
     }
@@ -16,7 +17,7 @@ export const fetchApplications = (key: string, userId : string): ActionObject =>
 export const fetchAllEntities = (key: string, blisAppID: string): ActionObject => {
     //needs a fulfilled version to handle response from Epic
     return {
-        type: 'FETCH_ENTITIES',
+        type: AT.FETCH_ENTITIES,
         key: key,
         blisAppID: blisAppID
     }
@@ -25,7 +26,7 @@ export const fetchAllEntities = (key: string, blisAppID: string): ActionObject =
 export const fetchAllActions = (key: string, blisAppID: string): ActionObject => {
     //needs a fulfilled version to handle response from Epic
     return {
-        type: 'FETCH_ACTIONS',
+        type: AT.FETCH_ACTIONS,
         key: key,
         blisAppID: blisAppID
     }
@@ -34,7 +35,7 @@ export const fetchAllActions = (key: string, blisAppID: string): ActionObject =>
 export const fetchAllTrainDialogs = (blisAppID: string): ActionObject => {
     //needs a fulfilled version to handle response from Epic
     return {
-        type: 'FETCH_TRAIN_DIALOGS',
+        type: AT.FETCH_TRAIN_DIALOGS,
         allTrainDialogs: []
     }
 }
@@ -42,7 +43,7 @@ export const fetchAllTrainDialogs = (blisAppID: string): ActionObject => {
 export const fetchAllLogDialogs = (blisAppID: string): ActionObject => {
     //needs a fulfilled version to handle response from Epic
     return {
-        type: 'FETCH_LOG_DIALOGS',
+        type: AT.FETCH_LOG_DIALOGS,
         allLogDialogs: []
     }
 }
@@ -51,7 +52,7 @@ export const fetchAllLogDialogs = (blisAppID: string): ActionObject => {
 export const fetchAllChatSessions = (key: string, blisAppID: string): ActionObject => {
     //needs a fulfilled version to handle response from Epic
     return {
-        type: 'FETCH_CHAT_SESSIONS',
+        type: AT.FETCH_CHAT_SESSIONS,
         key: key,
         blisAppID: blisAppID
     }
@@ -63,28 +64,28 @@ export const fetchAllChatSessions = (key: string, blisAppID: string): ActionObje
 
 export const fetchApplicationsFulfilled = (apps: BlisAppBase[]): ActionObject => {
     return {
-        type: 'FETCH_APPLICATIONS_FULFILLED',
+        type: AT.FETCH_APPLICATIONS_FULFILLED,
         allBlisApps: apps
     }
 }
 
 export const fetchAllEntitiesFulfilled = (entities: EntityBase[]): ActionObject => {
     return {
-        type: 'FETCH_ENTITIES_FULFILLED',
+        type: AT.FETCH_ENTITIES_FULFILLED,
         allEntities: entities
     }
 }
 
 export const fetchAllActionsFulfilled = (actions: ActionBase[]): ActionObject => {
     return {
-        type: 'FETCH_ACTIONS_FULFILLED',
+        type: AT.FETCH_ACTIONS_FULFILLED,
         allActions: actions
     }
 }
 
 export const fetchAllChatSessionsFulfilled = (sessions: Session[]): ActionObject => {
     return {
-        type: 'FETCH_CHAT_SESSIONS_FULFILLED',
+        type: AT.FETCH_CHAT_SESSIONS_FULFILLED,
         allSessions: sessions
     }
 }
@@ -92,7 +93,7 @@ export const fetchAllChatSessionsFulfilled = (sessions: Session[]): ActionObject
 export const fetchAllTeachSessions = (key: string, blisAppID: string): ActionObject => {
     //needs a fulfilled version to handle response from Epic
     return {
-        type: 'FETCH_TEACH_SESSIONS',
+        type: AT.FETCH_TEACH_SESSIONS,
         key: key,
         blisAppID: blisAppID
     }
@@ -100,7 +101,7 @@ export const fetchAllTeachSessions = (key: string, blisAppID: string): ActionObj
 
 export const fetchAllTeachSessionsFulfilled = (teachSessions: Teach[]): ActionObject => {
     return {
-        type: 'FETCH_TEACH_SESSIONS_FULFILLED',
+        type: AT.FETCH_TEACH_SESSIONS_FULFILLED,
         allTeachSessions: teachSessions
     }
 }

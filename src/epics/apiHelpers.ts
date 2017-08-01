@@ -17,6 +17,7 @@ import { editBLISApplicationFulfilled, editEntityFulfilled, editActionFulfilled,
 import { runExtractorFulfilled, postExtractorFeedbackFulfilled, runScorerFulfilled, postScorerFeedbackFulfilled } from '../actions/teachActions'
 import { setErrorDisplay } from '../actions/updateActions'
 import { ActionObject } from '../types'
+import { AT } from '../types/ActionTypes'
 
 //=========================================================
 // CONFIG
@@ -63,7 +64,7 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
 							obs.complete();
 						})
 						.catch(err => {
-							obs.next(setErrorDisplay(err.message, "", "SET_BLIS_APPLICATION"));  
+							obs.next(setErrorDisplay(err.message, "", AT.SET_CURRENT_BLIS_APP));  
 							obs.complete();
 						}));
 	};
@@ -80,7 +81,7 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
               obs.complete();
             })
             .catch(err => {
-              obs.next(setErrorDisplay(err.message, "", "FETCH_APPLICATIONS"));
+              obs.next(setErrorDisplay(err.message, "", AT.FETCH_APPLICATIONS));
               obs.complete();
             }));
   };
@@ -93,7 +94,7 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
               obs.complete();
             })
             .catch(err => {
-              obs.next(setErrorDisplay(err.message, "", "FETCH_ENTITIES"));
+              obs.next(setErrorDisplay(err.message, "", AT.FETCH_ENTITIES));
               obs.complete();
             }));
   };
@@ -106,7 +107,7 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
               obs.complete();
             })
             .catch(err => {
-              obs.next(setErrorDisplay(err.message, "", "FETCH_ACTIONS"));
+              obs.next(setErrorDisplay(err.message, "", AT.FETCH_ACTIONS));
               obs.complete();
             }));
   };
@@ -141,7 +142,7 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
               obs.complete();
             })
             .catch(err => {
-              obs.next(setErrorDisplay(err.message, "", "CREATE_BLIS_APPLICATION"));
+              obs.next(setErrorDisplay(err.message, "", AT.CREATE_BLIS_APPLICATION));
               obs.complete();
             }));
   };
@@ -163,7 +164,7 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
               obs.complete();
             })
             .catch(err => {
-              obs.next(setErrorDisplay(err.message, "", "CREATE_ENTITY"));
+              obs.next(setErrorDisplay(err.message, "", AT.CREATE_ENTITY));
               obs.complete();
             }));
   };
@@ -178,7 +179,7 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
               obs.complete();
             })
             .catch(err => {
-              obs.next(setErrorDisplay(err.message, "", "CREATE_ACTION"));
+              obs.next(setErrorDisplay(err.message, "", AT.CREATE_ACTION));
               obs.complete();
             }));
   };
@@ -197,7 +198,7 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
               obs.complete();
             })
             .catch(err => {
-              obs.next(setErrorDisplay(err.message, "", "DELETE_BLIS_APPLICATION"));
+              obs.next(setErrorDisplay(err.message, "", AT.DELETE_BLIS_APPLICATION));
               obs.complete();
             }));
   };
@@ -214,7 +215,7 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
               obs.complete();
             })
             .catch(err => {
-              obs.next(setErrorDisplay(err.message, "", "DELETE_ENTITY"));
+              obs.next(setErrorDisplay(err.message, "", AT.DELETE_ENTITY));
               obs.complete();
             }));
   };
@@ -228,7 +229,7 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
               obs.complete();
             })
             .catch(err => {
-              obs.next(setErrorDisplay(err.message, "", "DELETE_ACTION"));
+              obs.next(setErrorDisplay(err.message, "", AT.DELETE_ACTION));
               obs.complete();
             }));
   };
@@ -246,7 +247,7 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
               obs.complete();
             })
             .catch(err => {
-              obs.next(setErrorDisplay(err.message, "", "EDIT_BLIS_APPLICATION"));
+              obs.next(setErrorDisplay(err.message, "", AT.EDIT_BLIS_APPLICATION));
               obs.complete();
             }));
   };
@@ -259,7 +260,7 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
               obs.complete();
             })
             .catch(err => {
-              obs.next(setErrorDisplay(err.message, "", "EDIT_ACTION"));
+              obs.next(setErrorDisplay(err.message, "", AT.EDIT_ACTION));
               obs.complete();
             }));
   };
@@ -272,7 +273,7 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
               obs.complete();
             })
             .catch(err => {
-              obs.next(setErrorDisplay(err.message, "", "EDIT_ENTITY"));
+              obs.next(setErrorDisplay(err.message, "", AT.EDIT_ENTITY));
               obs.complete();
             }));
   }
@@ -290,7 +291,7 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
               obs.complete();
             })
             .catch(err => {
-              obs.next(setErrorDisplay(err.message, "", "CREATE_CHAT_SESSION"));
+              obs.next(setErrorDisplay(err.message, "", AT.CREATE_CHAT_SESSION));
               obs.complete();
             }));
   };
@@ -303,7 +304,7 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
               obs.complete();
             })
             .catch(err => {
-              obs.next(setErrorDisplay(err.message, "", "DELETE_CHAT_SESSION"));
+              obs.next(setErrorDisplay(err.message, "", AT.DELETE_CHAT_SESSION));
               obs.complete();
             }));
   };
@@ -316,7 +317,7 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
               obs.complete();
             })
             .catch(err => {
-              obs.next(setErrorDisplay(err.message, "", "FETCH_CHAT_SESSIONS"));
+              obs.next(setErrorDisplay(err.message, "", AT.FETCH_CHAT_SESSIONS));
               obs.complete();
             }));
   };
@@ -347,7 +348,7 @@ export const createTeachSession = (key: string, teachSession: Teach, appId: stri
             obs.complete();
           })
           .catch(err => {
-            obs.next(setErrorDisplay(err.message, "", "CREATE_TEACH_SESSION"));
+            obs.next(setErrorDisplay(err.message, "", AT.CREATE_TEACH_SESSION));
             obs.complete();
           }));
 };
@@ -360,7 +361,7 @@ export const deleteTeachSession = (key : string, appId: string, teachSession: Te
             obs.complete();
           })
           .catch(err => {
-            obs.next(setErrorDisplay(err.message, "", "DELETE_TEACH_SESSION"));
+            obs.next(setErrorDisplay(err.message, "", AT.DELETE_TEACH_SESSION));
             obs.complete();
           }));
 };
@@ -373,7 +374,7 @@ export const getAllTeachSessionsForBlisApp = (key: string, appId: string): Obser
             obs.complete();
           })
           .catch(err => {
-            obs.next(setErrorDisplay(err.message, "", "FETCH_TEACH_SESSIONS"));
+            obs.next(setErrorDisplay(err.message, "", AT.FETCH_TEACH_SESSIONS));
             obs.complete();
           }));
 };
@@ -397,7 +398,7 @@ export const putExtract = (key : string, appId: string, teachId: string, userInp
             obs.complete();
           })
           .catch(err => {
-            obs.next(setErrorDisplay(err.message, "", "RUN_EXTRACTOR"));
+            obs.next(setErrorDisplay(err.message, "", AT.RUN_EXTRACTOR));
             obs.complete();
           }));
 };
@@ -414,7 +415,7 @@ export const postExtraction = (key : string, appId : string, teachId: string, tr
             obs.complete();
           })
           .catch(err => {
-            obs.next(setErrorDisplay(err.message, "", "POST_EXTACT_FEEDBACK"));
+            obs.next(setErrorDisplay(err.message, "", AT.POST_EXTACT_FEEDBACK));
             obs.complete();
 					}));
 };
@@ -432,7 +433,7 @@ export const putScore = (key : string, appId: string, teachId: string, extractRe
             obs.complete();
           })
           .catch(err => {
-            obs.next(setErrorDisplay(err.message, "", "RUN_SCORER"));
+            obs.next(setErrorDisplay(err.message, "", AT.RUN_SCORER));
             obs.complete();
 					}));
 };
@@ -449,7 +450,7 @@ export const postScore = (key : string, appId : string, teachId: string, trainSc
             obs.complete();
           })
           .catch(err => {
-            obs.next(setErrorDisplay(err.message, "", "POST_SCORE_FEEDBACK"));
+            obs.next(setErrorDisplay(err.message, "", AT.POST_SCORE_FEEDBACK));
             obs.complete();
           }));
 };

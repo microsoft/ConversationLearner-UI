@@ -1,9 +1,10 @@
 import { ActionObject } from '../types'
+import { AT } from '../types/ActionTypes'
 import { UserInput, TrainExtractorStep, ExtractResponse, UIExtractResponse, UIScoreResponse, TrainScorerStep, TeachResponse } from 'blis-models'
 
 export const runExtractor = (key: string, appId: string, teachId: string, userInput: UserInput) : ActionObject => { 
     return {
-        type: 'RUN_EXTRACTOR',
+        type: AT.RUN_EXTRACTOR,
         key: key,
         appId: appId,
         teachId: teachId,
@@ -13,7 +14,7 @@ export const runExtractor = (key: string, appId: string, teachId: string, userIn
 
 export const runExtractorFulfilled = (key: string, appId: string, teachId: string, uiExtractResponse: UIExtractResponse) : ActionObject => { 
     return {
-        type: 'RUN_EXTRACTOR_FULFILLED',
+        type: AT.RUN_EXTRACTOR_FULFILLED,
         key: key,
         appId: appId,
         teachId: teachId,
@@ -23,7 +24,7 @@ export const runExtractorFulfilled = (key: string, appId: string, teachId: strin
 
 export const postExtractorFeedback = (key: string, appId: string, teachId: string, trainExtractorStep: TrainExtractorStep) : ActionObject => { 
     return {
-        type: 'POST_EXTACT_FEEDBACK',
+        type: AT.POST_EXTACT_FEEDBACK,
         key: key,
         appId: appId,
         teachId: teachId,
@@ -33,7 +34,7 @@ export const postExtractorFeedback = (key: string, appId: string, teachId: strin
 
 export const postExtractorFeedbackFulfilled = (key: string, appId: string, teachId: string, teachResponse: TeachResponse) : ActionObject => { 
     return {
-        type: 'POST_EXTACT_FEEDBACK_FULFILLED',
+        type: AT.POST_EXTACT_FEEDBACK_FULFILLED,
         key: key,
         appId: appId,
         teachId: teachId,
@@ -43,7 +44,7 @@ export const postExtractorFeedbackFulfilled = (key: string, appId: string, teach
 
 export const runScorer = (key: string, appId: string, teachId: string, extractResponse: ExtractResponse) : ActionObject => { 
     return {
-        type: 'RUN_SCORER',
+        type: AT.RUN_SCORER,
         key: key,
         appId: appId,
         teachId: teachId,
@@ -53,7 +54,7 @@ export const runScorer = (key: string, appId: string, teachId: string, extractRe
 
 export const runScorerFulfilled = (key: string, appId: string, teachId: string, uiScoreResponse: UIScoreResponse) : ActionObject => { 
     return {
-        type: 'RUN_SCORER_FULFILLED',
+        type: AT.RUN_SCORER_FULFILLED,
         key: key,
         appId: appId,
         teachId: teachId,
@@ -63,7 +64,7 @@ export const runScorerFulfilled = (key: string, appId: string, teachId: string, 
 
 export const postScorerFeedback = (key: string, appId: string, teachId: string, trainScorerStep: TrainScorerStep) : ActionObject => { 
     return {
-        type: 'POST_SCORE_FEEDBACK',
+        type: AT.POST_SCORE_FEEDBACK,
         key: key,
         appId: appId,
         teachId: teachId,
@@ -73,7 +74,7 @@ export const postScorerFeedback = (key: string, appId: string, teachId: string, 
 
 export const postScorerFeedbackFulfilled = (key: string, appId: string, teachId: string, teachResponse: TeachResponse) : ActionObject => { 
     return {
-        type: 'POST_SCORE_FEEDBACK_FULFILLED',
+        type: AT.POST_SCORE_FEEDBACK_FULFILLED,
         key: key,
         appId: appId,
         teachId: teachId,

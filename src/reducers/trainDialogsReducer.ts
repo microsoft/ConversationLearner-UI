@@ -1,5 +1,6 @@
 import { ActionObject } from '../types'
 import { TrainDialogState } from '../types'
+import { AT } from '../types/ActionTypes'
 import { TrainDialog } from 'blis-models'
 import { Reducer } from 'redux'
 
@@ -10,15 +11,15 @@ const initialState: TrainDialogState = {
 
 const trainDialogsReducer: Reducer<TrainDialogState> =  (state = initialState, action: ActionObject) => {
     switch (action.type) {
-        case 'FETCH_TRAIN_DIALOGS':
+        case AT.FETCH_TRAIN_DIALOGS:
             return { ...state, all: action.allTrainDialogs };
-        case "EMPTY_STATE_PROPERTIES": 
+        case AT.EMPTY_STATE_PROPERTIES: 
             return {...state, all: []};
-        case 'CREATE_TRAIN_DIALOG':
+        case AT.CREATE_TRAIN_DIALOG:
             return { ...state, all: [...state.all, action.trainDialog], current: action.trainDialog };
-        case 'SET_CURRENT_TRAIN_DIALOG':
+        case AT.SET_CURRENT_TRAIN_DIALOG:
             return { ...state, current: action.currentTrainDialog };
-        case "TOGGLE_TRAIN_DIALOG":
+        case AT.TOGGLE_TRAIN_DIALOG:
             let index: number = 0;
             for (let i = 0; i < state.all.length; i++) {
                 if (state.all[i].trainDialogId == state.current.trainDialogId) {
@@ -42,9 +43,9 @@ const trainDialogsReducer: Reducer<TrainDialogState> =  (state = initialState, a
                 newState = { ...state, current: state.all[index - 1] }
             }
             return newState;
-        case 'DELETE_TRAIN_DIALOG':
+        case AT.DELETE_TRAIN_DIALOG:
         // return [...state, action.payload];
-        case 'EDIT_TRAIN_DIALOG':
+        case AT.EDIT_TRAIN_DIALOG:
         // return [...state, action.payload];
         default:
             return state;

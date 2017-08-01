@@ -2,38 +2,38 @@ import 'rxjs';
 import * as Rx from 'rxjs';
 import { combineEpics, ActionsObservable, Epic } from 'redux-observable'
 import { State, ActionObject } from '../types'
-import { fetchApplications, fetchEntities, fetchActions, fetchChatSessions, fetchTeachSessions } from './fetchEpics'
-import { createNewApplication, createNewEntity, createNewAction, createNegativeEntity, createNewChatSession, createNewTeachSession } from './createEpics'
-import { deleteAction, deleteApplication, deleteEntity, deleteReverseEntity, deleteSession, deleteTeach } from './deleteEpics'
-import { editAction, editApplication, editEntity, setBlisApplication } from './updateEpics'
-import { runExtractor, extractorFeedback, runScorer, scorerFeedback } from './teachEpics'
+import { fetchApplicationsEpic, fetchEntitiesEpic, fetchActionsEpic, fetchChatSessionsEpic, fetchTeachSessionsEpic } from './fetchEpics'
+import { createNewApplicationEpic, createNewEntityEpic, createNewActionEpic, createNegativeEntity, createNewChatSessionEpic, createNewTeachSessionEpic } from './createEpics'
+import { deleteActionEpic, deleteApplicationEpic, deleteEntityEpic, deleteReverseEntityEpic, deleteSessionEpic, deleteTeachEpic } from './deleteEpics'
+import { editActionEpic, editApplicationEpic, editEntityEpic, setBlisApplicationEpic } from './updateEpics'
+import { runExtractorEpic, extractorFeedbackEpic, runScorerEpic, scorerFeedbackEpic } from './teachEpics'
 
 const rootEpic = combineEpics(
-	fetchApplications,
-	fetchEntities,
-	fetchActions,
-	createNewApplication,
-	createNewEntity,
-	createNewAction,
+	fetchApplicationsEpic,
+	fetchEntitiesEpic,
+	fetchActionsEpic,
+	createNewApplicationEpic,
+	createNewEntityEpic,
+	createNewActionEpic,
 	createNegativeEntity,
-	deleteApplication,
-	deleteEntity,
-	deleteReverseEntity,
-	deleteAction,
-	editApplication,
-	editAction,
-	editEntity,
-	fetchChatSessions,
-	createNewChatSession,
-	deleteSession,
-	fetchTeachSessions,
-	createNewTeachSession,
-	deleteTeach,
-	setBlisApplication,
-	runExtractor,
-	extractorFeedback,
-	runScorer,
-	scorerFeedback
+	deleteApplicationEpic,
+	deleteEntityEpic,
+	deleteReverseEntityEpic,
+	deleteActionEpic,
+	editApplicationEpic,
+	editActionEpic,
+	editEntityEpic,
+	fetchChatSessionsEpic,
+	createNewChatSessionEpic,
+	deleteSessionEpic,
+	fetchTeachSessionsEpic,
+	createNewTeachSessionEpic,
+	deleteTeachEpic,
+	setBlisApplicationEpic,
+	runExtractorEpic,
+	extractorFeedbackEpic,
+	runScorerEpic,
+	scorerFeedbackEpic
 )
 
 export default rootEpic;

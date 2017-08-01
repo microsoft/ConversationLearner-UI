@@ -1,5 +1,6 @@
 import { ActionObject } from '../types'
 import { LogDialogState } from '../types'
+import { AT } from '../types/ActionTypes'
 import { LogDialog } from 'blis-models'
 import { Reducer } from 'redux'
 
@@ -10,15 +11,15 @@ const initialState: LogDialogState = {
 
 const logDialogsReducer: Reducer<LogDialogState> =  (state = initialState, action: ActionObject) => {
     switch (action.type) {
-        case 'FETCH_LOG_DIALOGS':
+        case AT.FETCH_LOG_DIALOGS:
             return { ...state, all: action.allLogDialogs };
-        case "EMPTY_STATE_PROPERTIES": 
+        case AT.EMPTY_STATE_PROPERTIES: 
             return {...state, all: []};
-        case 'CREATE_LOG_DIALOG':
+        case AT.CREATE_LOG_DIALOG:
             return { ...state, all: [...state.all, action.logDialog], current: action.logDialog };
-        case 'SET_CURRENT_LOG_DIALOG':
+        case AT.SET_CURRENT_LOG_DIALOG:
             return { ...state, current: action.currentLogDialog };
-        case "TOGGLE_LOG_DIALOG":
+        case AT.TOGGLE_LOG_DIALOG:
             let index: number = 0;
             for (let i = 0; i < state.all.length; i++) {
                 if (state.all[i].logDialogId == state.current.logDialogId) {
@@ -42,9 +43,9 @@ const logDialogsReducer: Reducer<LogDialogState> =  (state = initialState, actio
                 newState = { ...state, current: state.all[index - 1] }
             }
             return newState;
-        case 'DELETE_LOG_DIALOG':
+        case AT.DELETE_LOG_DIALOG:
         // return [...state, action.payload];
-        case 'EDIT_LOG_DIALOG':
+        case AT.EDIT_LOG_DIALOG:
         // return [...state, action.payload];
         default:
             return state;

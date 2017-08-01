@@ -1,11 +1,13 @@
 
 import { ActionObject } from '../types'
-import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, ActionMetaData, ActionList, ActionTypes, TrainDialog, LogDialog, Session, Teach } from 'blis-models';
+import { AT } from '../types/ActionTypes'
 import { DisplayMode } from '../types/const'
+import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, ActionMetaData, ActionList, ActionTypes, TrainDialog, LogDialog, Session, Teach } from 'blis-models';
+
 
 export const setCurrentBLISApp = (key: string, app: BlisAppBase) : ActionObject => { 
     return {
-        type: 'SET_CURRENT_BLIS_APP',
+        type: AT.SET_CURRENT_BLIS_APP,
         key: key,
         currentBLISApp: app
     }
@@ -13,62 +15,62 @@ export const setCurrentBLISApp = (key: string, app: BlisAppBase) : ActionObject 
 
 export const setCurrentBLISAppFulfilled = (app: BlisAppBase) : ActionObject => { 
     return {
-        type: 'SET_CURRENT_BLIS_APP_FULFILLED',
+        type: AT.SET_CURRENT_BLIS_APP_FULFILLED,
         currentBLISApp: app
     }
 }
 
 export const emptyStateProperties = () : ActionObject => { 
     return {
-        type: 'EMPTY_STATE_PROPERTIES'
+        type: AT.EMPTY_STATE_PROPERTIES
     }
 }
 
 export const setCurrentTrainDialog = (key: string, trainDialog: TrainDialog) : ActionObject => { 
     return {
-        type: 'SET_CURRENT_TRAIN_DIALOG',
+        type: AT.SET_CURRENT_TRAIN_DIALOG,
         currentTrainDialog: trainDialog
     }
 }
 
 export const setCurrentLogDialog = (key: string, logDialog: LogDialog) : ActionObject => { 
     return {
-        type: 'SET_CURRENT_LOG_DIALOG',
+        type: AT.SET_CURRENT_LOG_DIALOG,
         currentLogDialog: logDialog
     }
 }
 
 export const toggleTrainDialog = (forward: boolean) => {
     return {
-        type: "TOGGLE_TRAIN_DIALOG",
+        type: AT.TOGGLE_TRAIN_DIALOG,
         forward: forward
     }
 }
 
 export const toggleLogDialog = (forward: boolean) => {
     return {
-        type: "TOGGLE_LOG_DIALOG",
+        type: AT.TOGGLE_LOG_DIALOG,
         forward: forward
     }
 }
 
 export const setDisplayMode = (displayMode: DisplayMode) : ActionObject => { 
     return {
-        type: 'SET_DISPLAY_MODE',
+        type: AT.SET_DISPLAY_MODE,
         setDisplay: displayMode
     }
 }
 
 export const setLoginDisplay = (isShown: boolean) : ActionObject => { 
     return {
-        type: 'SET_LOGIN_DISPLAY',
+        type: AT.SET_LOGIN_DISPLAY,
         setLoginDisplay: isShown
     }
 }
 
-export const setErrorDisplay = (error: string, message: string, route : string) : ActionObject => { 
+export const setErrorDisplay = (error: string, message: string, route : AT) : ActionObject => { 
     return {
-        type: 'SET_ERROR_DISPLAY',
+        type: AT.SET_ERROR_DISPLAY,
         error: error,
         message: message,
         route: route
@@ -77,14 +79,14 @@ export const setErrorDisplay = (error: string, message: string, route : string) 
 
 export const clearErrorDisplay = () : ActionObject => { 
     return {
-        type: 'CLEAR_ERROR_DISPLAY'
+        type: AT.CLEAR_ERROR_DISPLAY
     }
 }
 
 export const editBLISApplication = (key: string, application: BlisAppBase) : ActionObject => { 
     //needs to make a call to an Epic to send data to BLIS
     return {
-        type: 'EDIT_BLIS_APPLICATION',
+        type: AT.EDIT_BLIS_APPLICATION,
         key: key,
         blisApp: application
     }
@@ -93,7 +95,7 @@ export const editBLISApplication = (key: string, application: BlisAppBase) : Act
 export const editBLISApplicationFulfilled = (application: BlisAppBase) : ActionObject => { 
     //needs to make a call to an Epic to send data to BLIS
     return {
-        type: 'EDIT_BLIS_APPLICATION_FULFILLED',
+        type: AT.EDIT_BLIS_APPLICATION_FULFILLED,
         blisApp: application
     }
 }
@@ -101,7 +103,7 @@ export const editBLISApplicationFulfilled = (application: BlisAppBase) : ActionO
 export const editEntity = (key: string, entity: EntityBase) : ActionObject => { 
     //needs to make a call to an Epic to send data to BLIS
     return {
-        type: 'EDIT_ENTITY',
+        type: AT.EDIT_ENTITY,
         key: key,
         entity: entity
     }
@@ -110,7 +112,7 @@ export const editEntity = (key: string, entity: EntityBase) : ActionObject => {
 export const editEntityFulfilled = (entity: EntityBase) : ActionObject => { 
     //needs to make a call to an Epic to send data to BLIS
     return {
-        type: 'EDIT_ENTITY_FULFILLED',
+        type: AT.EDIT_ENTITY_FULFILLED,
         entity: entity
     }
 }
@@ -118,7 +120,7 @@ export const editEntityFulfilled = (entity: EntityBase) : ActionObject => {
 export const editAction = (key: string, action: ActionBase, currentAppId: string) : ActionObject => { 
     //needs to make a call to an Epic to send data to BLIS
     return {
-        type: 'EDIT_ACTION',
+        type: AT.EDIT_ACTION,
         key: key,
         blisAction: action,
         currentAppId: currentAppId
@@ -128,7 +130,7 @@ export const editAction = (key: string, action: ActionBase, currentAppId: string
 export const editActionFulfilled = (action: ActionBase) : ActionObject => { 
     //needs to make a call to an Epic to send data to BLIS
     return {
-        type: 'EDIT_ACTION_FULFILLED',
+        type: AT.EDIT_ACTION_FULFILLED,
         blisAction: action,
     }
 }
@@ -136,7 +138,7 @@ export const editActionFulfilled = (action: ActionBase) : ActionObject => {
 export const editTrainDialog = (key: string, trainDialog: TrainDialog) : ActionObject => { 
     //needs to make a call to an Epic to send data to BLIS
     return {
-        type: 'EDIT_TRAIN_DIALOG',
+        type: AT.EDIT_TRAIN_DIALOG,
         key: key,
         trainDialog: trainDialog
     }
@@ -145,7 +147,7 @@ export const editTrainDialog = (key: string, trainDialog: TrainDialog) : ActionO
 export const editLogDialog = (key: string, logDialog: LogDialog) : ActionObject => { 
     //needs to make a call to an Epic to send data to BLIS
     return {
-        type: 'EDIT_LOG_DIALOG',
+        type: AT.EDIT_LOG_DIALOG,
         key: key,
         logDialog: logDialog
     }
@@ -153,7 +155,7 @@ export const editLogDialog = (key: string, logDialog: LogDialog) : ActionObject 
 
 export const setUser = (name: string, password: string, id: string) : ActionObject => { 
     return {
-        type: 'SET_USER',
+        type: AT.SET_USER,
         name: name,
         password: password,
         id: id
@@ -162,35 +164,35 @@ export const setUser = (name: string, password: string, id: string) : ActionObje
 
 export const setUserKey = (key: string) : ActionObject => { 
     return {
-        type: 'SET_USER_KEY',
+        type: AT.SET_USER_KEY,
         key: key
     }
 }
 
 export const setCurrentChatSession = (session: Session) : ActionObject => { 
     return {
-        type: 'SET_CURRENT_CHAT_SESSION',
+        type: AT.SET_CURRENT_CHAT_SESSION,
         currentSession: session
     }
 }
 
 export const setCurrentTeachSession = (teachSession: Teach) : ActionObject => { 
     return {
-        type: 'SET_CURRENT_TEACH_SESSION',
+        type: AT.SET_CURRENT_TEACH_SESSION,
         currentTeachSession: teachSession
     }
 }
 
 export const addMessageToTeachConversationStack = (message: {}): ActionObject => {
     return {
-        type: "TEACH_MESSAGE_RECEIVED",
+        type: AT.TEACH_MESSAGE_RECEIVED,
         message: message
     }
 }
 
 export const addMessageToChatConversationStack = (message: {}): ActionObject => {
     return {
-        type: "CHAT_MESSAGE_RECEIVED",
+        type: AT.CHAT_MESSAGE_RECEIVED,
         message: message
     }
 }
