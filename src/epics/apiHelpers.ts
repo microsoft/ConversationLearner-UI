@@ -454,7 +454,9 @@ export const postScore = (key : string, appId : string, teachId: string, trainSc
             obs.complete();
           })
           .catch(err => {
-            obs.next(setErrorDisplay(err.message, "", AT.POST_SCORE_FEEDBACK));
+             // TEMP
+            obs.next(postScorerFeedbackFulfilled(key, appId, teachId, { packageId: 15, teachId :  "1234", trainDialogId: "1234" } )); 
+            // TEMP obs.next(setErrorDisplay(err.message, "", AT.POST_SCORE_FEEDBACK));
             obs.complete();
           }));
 };
@@ -583,6 +585,27 @@ export const dummyScorerResponse = function() : UIScoreResponse
       }`;
       return JSON.parse(text);
   }
+
+  export const dummyTrainScorerStep = function(): TrainScorerStep
+  {
+    let text = `{
+        "input": {
+          "filledEntities": [
+            "cc7d156d-debc-4e8c-b94e-365c71b4a36f"
+          ],
+          "context": {
+            "user-logged-in": true,
+            "activity-in-progress": false
+          },
+          "maskedActions": [
+            "bf81de2a-0822-4766-ba0c-ef74261306ba"
+          ]
+        },
+        "labelAction": "f97e4d7f-b483-42e3-a92b-649a1a4a77a4"
+      }`
+      return JSON.parse(text);
+  }
+    
   export const dummyExtractResponse = function() : UIExtractResponse
   {
     let text = `

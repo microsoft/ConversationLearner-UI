@@ -6,6 +6,8 @@ import { State, TrainDialogState } from '../types';
 import { generateGUID } from '../util';
 import * as BotChat from 'botframework-webchat'
 import { Chat } from 'botframework-webchat'
+import { UserInput } from 'blis-models'
+import { runExtractor } from '../actions/teachActions';
 
 class Webchat extends React.Component<any, any> {
     render() {
@@ -19,10 +21,19 @@ class Webchat extends React.Component<any, any> {
         const _dl = {
             ...dl,
             postActivity: (activity: any) => {
-                if (this.props.sessionType === 'teach') {
-                    this.props.addMessageToTeachConversationStack(activity)
-                } else {
-                    this.props.addMessageToChatConversationStack(activity)
+                if (activity.type = "message")
+                {
+                    if (this.props.sessionType === 'teach') {
+                        this.props.addMessageToTeachConversationStack(activity)
+
+                        let userInput = new UserInput({ text: activity.text});
+                        let appId: string = this.props.apps.current.appId;
+                        let teachId: string = this.props.teachSessions.current.teachId;
+                        this.props.runExtractor(this.props.user.key, appId, teachId, userInput);
+
+                    } else {
+                        this.props.addMessageToChatConversationStack(activity)
+                    }
                 }
                 return dl.postActivity(activity)
             },
@@ -47,14 +58,16 @@ class Webchat extends React.Component<any, any> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         toggleTrainDialog: toggleTrainDialog,
-        addMessageToTeachConversationStack: addMessageToTeachConversationStack
+        addMessageToTeachConversationStack: addMessageToTeachConversationStack,
+        runExtractor: runExtractor
     }, dispatch);
 }
 const mapStateToProps = (state: State, ownProps: any) => {
     return {
         teachSessions: state.teachSessions,
         chatSessions: state.chatSessions,
-        user: state.user
+        user: state.user,
+        apps: state.apps
     }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(Webchat as React.ComponentClass<any>);

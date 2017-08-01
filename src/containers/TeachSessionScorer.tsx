@@ -5,11 +5,12 @@ import { State } from '../types'
 import { TrainScorerStep } from 'blis-models';
 import { postScorerFeedback } from '../actions/teachActions'
 import { CommandButton } from 'office-ui-fabric-react';
+import { dummyTrainScorerStep } from '../epics/apiHelpers' // TEMP
 
 class TeachSessionScorer extends React.Component<any, any> {
     sendFeedback() {
         // TEMP
-        let trainScorerStep = new TrainScorerStep();
+        let trainScorerStep = dummyTrainScorerStep();
         let appId: string = this.props.apps.current.appId;
         let teachId: string = this.props.teachSession.current.teachId;
         this.props.postScorerFeedback(this.props.user.key, appId, teachId, trainScorerStep);

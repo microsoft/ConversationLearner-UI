@@ -19,14 +19,12 @@ class TeachSessionAdmin extends React.Component<any, any> {
     constructor(p: any) {
         super(p);
         this.state = {
-            userInput: '',
             open: false
         }
         this.handleAbandon = this.handleAbandon.bind(this)
         this.handleCloseModal = this.handleCloseModal.bind(this)
     }
     handleAbandon() {
-        // TODO: Add confirmation modal
         this.props.setDisplayMode(DisplayMode.AppAdmin);
         let currentAppId: string = this.props.apps.current.appId;
         this.props.deleteTeachSession(this.props.userKey, this.props.teachSession.current, currentAppId);
@@ -40,17 +38,6 @@ class TeachSessionAdmin extends React.Component<any, any> {
         this.setState({
             open: true
         })
-    }
-    nameChanged(text: string) {
-        this.setState({
-            userInput: text
-        })
-    }
-    userInputReceived() {
-        let userInput = new UserInput({ text: this.state.userInput });
-        let appId: string = this.props.apps.current.appId;
-        let teachId: string = this.props.teachSession.current.teachId;
-        this.props.runExtractor(this.props.user.key, appId, teachId, userInput);
     }
     render() {
         let userWindow = null;
@@ -90,21 +77,6 @@ class TeachSessionAdmin extends React.Component<any, any> {
                         ariaDescription='Abandon Teach'
                         text='Abandon Teach'
                     />
-                    <div className="fakeInputDiv">
-                        <TextFieldPlaceholder
-                            onChanged={this.nameChanged.bind(this)}
-                            placeholder="Fake Input..."
-                            className="fakeInputText"
-                            value={this.state.userInput} />
-                        <CommandButton
-                            data-automation-id='randomID13'
-                            className="grayButton"
-                            disabled={false}
-                            onClick={() => this.userInputReceived()}
-                            ariaDescription='Send Text'
-                            text='Send Text'
-                        />
-                    </div>
                 </div>
                 {userWindow}
                 <ConfirmDeleteModal open={this.state.open} onCancel={() => this.handleCloseModal()} onConfirm={() => this.handleAbandon()} title="Are you sure you want to abandon this teach session?" />
