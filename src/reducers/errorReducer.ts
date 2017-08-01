@@ -1,18 +1,19 @@
 import { ActionObject } from '../types'
 import { ErrorState } from '../types'
 import { Reducer } from 'redux'
+import { AT } from '../types/ActionTypes'
 
 const initialState: ErrorState = {
     error: null,
     message: null,
-    route: null
+    route: AT.NO_OP
 };
 
 const errorReducer: Reducer<ErrorState> =  (state = initialState, action: ActionObject) => {
     switch(action.type) {
-        case 'CLEAR_ERROR_DISPLAY':
+        case AT.CLEAR_ERROR_DISPLAY:
             return { ...initialState };
-        case 'SET_ERROR_DISPLAY':
+        case AT.SET_ERROR_DISPLAY:
             return {error: action.error, message: action.message, route: action.route}          
         default:
             return state;

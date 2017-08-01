@@ -1,5 +1,6 @@
 import { AppState } from '../types'
 import { ActionObject } from '../types'
+import { AT } from '../types/ActionTypes'
 import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, ActionMetaData, ActionList, ActionTypes } from 'blis-models';
 import { Reducer } from 'redux'
 
@@ -10,16 +11,16 @@ const initialState: AppState = {
 
 const appsReducer: Reducer<AppState> = (state = initialState, action: ActionObject) => {
     switch (action.type) {
-        case 'FETCH_APPLICATIONS_FULFILLED':
+        case AT.FETCH_APPLICATIONS_FULFILLED:
             return { ...state, all: action.allBlisApps };
-        case 'CREATE_BLIS_APPLICATION_FULFILLED':
+        case AT.CREATE_BLIS_APPLICATION_FULFILLED:
             let newApp = {...action.blisApp, appId: action.blisAppId};
             return { ...state, current: newApp, all: [...state.all, newApp]};
-        case 'SET_CURRENT_BLIS_APP_FULFILLED':
+        case AT.SET_CURRENT_BLIS_APP_FULFILLED:
             return { ...state, current: action.currentBLISApp };
-        case 'DELETE_BLIS_APPLICATION_FULFILLED':
+        case AT.DELETE_BLIS_APPLICATION_FULFILLED:
             return { ...state, all: state.all.filter(app => app.appId !== action.blisAppGUID) };
-        case 'EDIT_BLIS_APPLICATION_FULFILLED':
+        case AT.EDIT_BLIS_APPLICATION_FULFILLED:
             let index: number = 0;
             for (let i = 0; i < state.all.length; i++) {
                 if (state.all[i].appId == action.blisApp.appId) {

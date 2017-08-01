@@ -1,13 +1,14 @@
 import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, 
     ActionMetaData, ActionList, ActionTypes, TrainDialog, LogDialog, Teach, Session } from 'blis-models';
 import { DisplayMode, TeachMode } from '../types/const'
+import { AT } from '../types/ActionTypes'
 
 export type ActionState = ActionBase[]
 export type EntityState = EntityBase[]
 export type ErrorState = {
     error: string,
     message: string,
-    route: string
+    route: AT
 };
 export type TrainDialogState = {
     all: TrainDialog[],

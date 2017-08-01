@@ -2,40 +2,41 @@ import 'rxjs';
 import * as Rx from 'rxjs';
 import { ActionsObservable, Epic } from 'redux-observable'
 import { State, ActionObject } from '../types'
+import { AT } from '../types/ActionTypes'
 import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, ActionMetaData, ActionList, ActionTypes } from 'blis-models';
 import { getAllBlisApps, getAllEntitiesForBlisApp, getAllActionsForBlisApp, getAllSessionsForBlisApp, getAllTeachSessionsForBlisApp } from "./apiHelpers";
 import { fetchApplicationsFulfilled, fetchAllEntitiesFulfilled, fetchAllActionsFulfilled } from '../actions/fetchActions'
 import { setErrorDisplay } from '../actions/updateActions'
 
-export const fetchApplications: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
-    return action$.ofType("FETCH_APPLICATIONS")
+export const fetchApplicationsEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
+    return action$.ofType(AT.FETCH_APPLICATIONS)
         .flatMap((action: any) => 
             getAllBlisApps(action.key, action.userId));
 }
 
-export const fetchEntities: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
-    return action$.ofType("FETCH_ENTITIES")
+export const fetchEntitiesEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
+    return action$.ofType(AT.FETCH_ENTITIES)
         .flatMap((action: any) =>
             getAllEntitiesForBlisApp(action.key, action.blisAppID)
         );       
 }
 
-export const fetchActions: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
-    return action$.ofType("FETCH_ACTIONS")
+export const fetchActionsEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
+    return action$.ofType(AT.FETCH_ACTIONS)
         .flatMap((action: any) =>
             getAllActionsForBlisApp(action.key, action.blisAppID)
         );
 }
 
-export const fetchChatSessions: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
-    return action$.ofType("FETCH_CHAT_SESSIONS")
+export const fetchChatSessionsEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
+    return action$.ofType(AT.FETCH_CHAT_SESSIONS)
         .flatMap((action: any) =>
             getAllSessionsForBlisApp(action.key, action.blisAppID)
         );
 }
 
-export const fetchTeachSessions: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
-    return action$.ofType("FETCH_TEACH_SESSIONS")
+export const fetchTeachSessionsEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
+    return action$.ofType(AT.FETCH_TEACH_SESSIONS)
         .flatMap((action: any) =>
             getAllTeachSessionsForBlisApp(action.key, action.blisAppID)
         );

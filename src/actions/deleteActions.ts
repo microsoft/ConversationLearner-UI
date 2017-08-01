@@ -1,10 +1,11 @@
 import { ActionObject } from '../types'
+import { AT } from '../types/ActionTypes'
 import { BlisAppBase, EntityBase, ActionBase, Session, Teach} from 'blis-models'
 
 export const deleteBLISApplication = (key: string, GUID: string, blisApp: BlisAppBase): ActionObject => {
     //needs to make a call to an Epic to send data to BLIS
     return {
-        type: 'DELETE_BLIS_APPLICATION',
+        type: AT.DELETE_BLIS_APPLICATION,
         key: key,
         blisAppGUID: GUID,
         blisApp: blisApp
@@ -13,7 +14,7 @@ export const deleteBLISApplication = (key: string, GUID: string, blisApp: BlisAp
 
 export const deleteBLISApplicationFulfilled = (blisAppGUID: string): ActionObject => {
     return {
-        type: 'DELETE_BLIS_APPLICATION_FULFILLED',
+        type: AT.DELETE_BLIS_APPLICATION_FULFILLED,
         blisAppGUID: blisAppGUID
     }
 }
@@ -21,7 +22,7 @@ export const deleteBLISApplicationFulfilled = (blisAppGUID: string): ActionObjec
 export const deleteEntity = (key: string, GUID: string, entity: EntityBase, currentAppId: string): ActionObject => {
     //needs to make a call to an Epic to send data to BLIS
     return {
-        type: 'DELETE_ENTITY',
+        type: AT.DELETE_ENTITY,
         key: key,
         entityGUID: GUID,
         entity: entity,
@@ -31,7 +32,7 @@ export const deleteEntity = (key: string, GUID: string, entity: EntityBase, curr
 
 export const deleteReverseEntity = (key: string, deletedEntityId: string, reverseEntityId: string, currentAppId: string): ActionObject => {
     return {
-        type: 'DELETE_REVERSE_ENTITY',
+        type: AT.DELETE_REVERSE_ENTITY,
         key: key,
         currentAppId: currentAppId,
         deletedEntityId: deletedEntityId,
@@ -41,7 +42,7 @@ export const deleteReverseEntity = (key: string, deletedEntityId: string, revers
 
 export const deleteEntityFulfilled = (key: string, deletedEntityId: string, currentAppId: string): ActionObject => {
     return {
-        type: 'DELETE_ENTITY_FULFILLED',
+        type: AT.DELETE_ENTITY_FULFILLED,
         key: key,
         currentAppId: currentAppId,
         deletedEntityId: deletedEntityId
@@ -51,7 +52,7 @@ export const deleteEntityFulfilled = (key: string, deletedEntityId: string, curr
 export const deleteAction = (key: string, GUID: string, action: ActionBase, currentAppId: string): ActionObject => {
     //needs to make a call to an Epic to send data to BLIS
     return {
-        type: 'DELETE_ACTION',
+        type: AT.DELETE_ACTION,
         key: key,
         actionGUID: GUID,
         action: action,
@@ -61,7 +62,7 @@ export const deleteAction = (key: string, GUID: string, action: ActionBase, curr
 
 export const deleteActionFulfilled = (actionGUID: string): ActionObject => {
     return {
-        type: 'DELETE_ACTION_FULFILLED',
+        type: AT.DELETE_ACTION_FULFILLED,
         actionGUID: actionGUID
     }
 }
@@ -69,7 +70,7 @@ export const deleteActionFulfilled = (actionGUID: string): ActionObject => {
 export const deleteTrainDialog = (key: string, GUID: string): ActionObject => {
     //needs to make a call to an Epic to send data to BLIS
     return {
-        type: 'DELETE_TRAIN_DIALOG',
+        type: AT.DELETE_TRAIN_DIALOG,
         key: key,
         trainDialogGUID: GUID
     }
@@ -77,7 +78,7 @@ export const deleteTrainDialog = (key: string, GUID: string): ActionObject => {
 export const deleteLogDialog = (key: string, GUID: string): ActionObject => {
     //needs to make a call to an Epic to send data to BLIS
     return {
-        type: 'DELETE_LOG_DIALOG',
+        type: AT.DELETE_LOG_DIALOG,
         key: key,
         logDialogGUID: GUID
     }
@@ -87,7 +88,7 @@ export const deleteLogDialog = (key: string, GUID: string): ActionObject => {
 export const deleteChatSession = (key: string, session: Session, currentAppId: string): ActionObject => {
     //needs to make a call to an Epic to send data to BLIS
     return {
-        type: 'DELETE_CHAT_SESSION',
+        type: AT.DELETE_CHAT_SESSION,
         key: key,
         session: session,
         currentAppId: currentAppId
@@ -96,7 +97,7 @@ export const deleteChatSession = (key: string, session: Session, currentAppId: s
 
 export const deleteChatSessionFulfilled = (sessionGUID: string): ActionObject => {
     return {
-        type: 'DELETE_CHAT_SESSION_FULFILLED',
+        type: AT.DELETE_CHAT_SESSION_FULFILLED,
         sessionGUID: sessionGUID
     }
 }
@@ -104,7 +105,7 @@ export const deleteChatSessionFulfilled = (sessionGUID: string): ActionObject =>
 export const deleteTeachSession = (key: string, teachSession: Teach, currentAppId: string): ActionObject => {
     //needs to make a call to an Epic to send data to BLIS
     return {
-        type: 'DELETE_TEACH_SESSION',
+        type: AT.DELETE_TEACH_SESSION,
         key: key,
         teachSession: teachSession,
         currentAppId: currentAppId
@@ -113,7 +114,7 @@ export const deleteTeachSession = (key: string, teachSession: Teach, currentAppI
 
 export const deleteTeachSessionFulfilled = (teachSessionGUID: string): ActionObject => {
     return {
-        type: 'DELETE_TEACH_SESSION_FULFILLED',
+        type: AT.DELETE_TEACH_SESSION_FULFILLED,
         teachSessionGUID: teachSessionGUID
     }
 }
