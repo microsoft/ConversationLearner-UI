@@ -1,5 +1,8 @@
-import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, 
-    ActionMetaData, ActionList, ActionTypes, TrainDialog, LogDialog, Teach, Session } from 'blis-models';
+import { BlisAppBase, BlisAppMetaData, BlisAppList, 
+    EntityBase, EntityMetaData, EntityList, 
+    ActionBase, ActionMetaData, ActionList, ActionTypes, 
+    TrainDialog, LogDialog, Teach, Session,
+    Memory, ExtractResponse, ScoreResponse } from 'blis-models';
 import { DisplayMode, TeachMode } from '../types/const'
 import { AT } from '../types/ActionTypes'
 
@@ -26,6 +29,9 @@ export type TeachSessionState = {
     all: Teach[],
     current: Teach,
     mode: TeachMode,
+    memories: Memory[],
+    extractResponse: ExtractResponse,
+    scoreResponse: ScoreResponse,
     currentConversationStack: {}[]
 }
 export type ChatSessionState = {
