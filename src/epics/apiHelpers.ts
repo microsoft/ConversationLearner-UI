@@ -6,7 +6,7 @@ import {
 	ActionBase, ActionMetaData, ActionList, ActionTypes,
 	UserInput,
 	TrainExtractorStep, ExtractResponse, TrainScorerStep,
-	Session, Teach
+	Session, Teach, UIExtractResponse
 } from 'blis-models'
 import * as Rx from 'rxjs';
 import { Observable, Observer } from 'rxjs'
@@ -398,7 +398,9 @@ export const putExtract = (key : string, appId: string, teachId: string, userInp
             obs.complete();
           })
           .catch(err => {
-            obs.next(setErrorDisplay(err.message, "", AT.RUN_EXTRACTOR));
+            // TEMP
+            obs.next(runExtractorFulfilled(key, appId, teachId, dummyExtractResponse() )); 
+            // TEMP obs.next(setErrorDisplay(err.message, "", AT.RUN_EXTRACTOR));
             obs.complete();
           }));
 };
@@ -466,3 +468,60 @@ export const getTeachIds = (key : string, appId: string): Observable<AxiosRespon
 	let getAppRoute: string = makeRoute(key, `app/${appId}/teach`);
 	return Rx.Observable.fromPromise(axios.get(getAppRoute, config))
 };
+
+
+let dummyExtractResponse = function() : UIExtractResponse
+{
+  let text = `
+  { "memories" :
+    [{ 
+        "entityName": "strangers",
+        "entityValue": "love"
+    },
+      { 
+        "entityName": "rules",
+        "entityValue": "you know"
+    },
+      { 
+        "entityName": "give up",
+        "entityValue": "never"
+    }
+    ],
+    "extractResponse" :
+      {
+        "packageId": 16,
+        "text": "start a run now",
+        "predictedEntities": [
+          {
+            "startCharIndex": 8,
+            "endCharIndex": 11,
+            "entityId": "cc7d156d-debc-4e8c-b94e-365c71b4a36f",
+            "entityText": "run",
+            "entityName": "activityType",
+            "score": 0.92,
+            "metadata": {
+              "fooData": "fooData"
+            }
+          },
+          {
+            "startCharIndex": 12,
+            "endCharIndex": 15,
+            "entityId": "c4716ae9-6f96-4937-b696-30788528c198",
+            "entityText": "now",
+            "entityName": "datetime",
+            "score": 0.92,
+            "metadata": {
+              "fooData": "fooData"
+            },
+            "resolution": {
+              "fooResolution": "fooResolution"
+            }
+          }
+        ],
+        "metrics": {
+          "fooMetric": "fooMetric"
+        }
+      }
+    }`;
+    return JSON.parse(text);
+}
