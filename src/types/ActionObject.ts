@@ -308,7 +308,7 @@ export type TeachAction = {
     teachResponse: TeachResponse
 } | {
     type: AT.TEACH_MESSAGE_RECEIVED,
-    message: {}
+    message: string
 }
 
 export type ActionObject = FetchAction | CreateAction | UpdateAction | DeleteAction | TeachAction;

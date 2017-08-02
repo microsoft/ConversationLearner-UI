@@ -183,7 +183,7 @@ export const setCurrentTeachSession = (teachSession: Teach) : ActionObject => {
     }
 }
 
-export const addMessageToTeachConversationStack = (message: {}): ActionObject => {
+export const addMessageToTeachConversationStack = (message: string): ActionObject => {
     return {
         type: AT.TEACH_MESSAGE_RECEIVED,
         message: message

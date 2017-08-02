@@ -8,6 +8,7 @@ const initialState: TeachSessionState = {
     all: [],
     current: null,
     mode: TeachMode.Wait,
+    input: "",
     memories: [],
     extractResponse: null,
     scoreResponse: null,
@@ -27,7 +28,7 @@ const teachSessionReducer: Reducer<any> = (state = initialState, action: ActionO
         case AT.SET_CURRENT_TEACH_SESSION:
             return { ...state, current: action.currentTeachSession };
         case AT.TEACH_MESSAGE_RECEIVED:
-            return {...state, currentConversationStack: [...state.currentConversationStack, action.message]};
+            return {...state, currentConversationStack: [...state.currentConversationStack, action.message], input: action.message};
         case AT.RUN_EXTRACTOR_FULFILLED:
             return {...state, mode: TeachMode.Extractor, memories: action.uiExtractResponse.memories, extractResponse: action.uiExtractResponse.extractResponse};
         case AT.RUN_SCORER_FULFILLED:

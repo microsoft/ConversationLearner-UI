@@ -24,7 +24,7 @@ class Webchat extends React.Component<any, any> {
                 if (activity.type = "message")
                 {
                     if (this.props.sessionType === 'teach') {
-                        this.props.addMessageToTeachConversationStack(activity)
+                        this.props.addMessageToTeachConversationStack(activity.text)
 
                         let userInput = new UserInput({ text: activity.text});
                         let appId: string = this.props.apps.current.appId;
