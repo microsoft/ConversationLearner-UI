@@ -2,7 +2,7 @@ import * as React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader';
-import { deleteAction } from '../actions/deleteActions'
+import { deleteActionAsync } from '../actions/deleteActions'
 import { DetailsList, CommandButton, Link, CheckboxVisibility, List, IColumn, SearchBox } from 'office-ui-fabric-react';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import { ActionBase, ActionMetaData, EntityBase, EntityMetaData } from 'blis-models'
@@ -277,7 +277,7 @@ class ActionResponsesHomepage extends React.Component<any, any> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        deleteAction: deleteAction
+        deleteAction: deleteActionAsync
     }, dispatch)
 }
 const mapStateToProps = (state: State) => {

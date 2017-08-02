@@ -44,7 +44,8 @@ export type DisplayState = {
     displayMode: DisplayMode,
     displayWebchat: boolean,
     webchatTeachMode: boolean,
-    displayLogin: boolean
+    displayLogin: boolean,
+    displaySpinner: string[]
 };
 export type UserState =
 {

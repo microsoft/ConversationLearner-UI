@@ -3,7 +3,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../types'
 import { ExtractResponse, TrainExtractorStep } from 'blis-models'
-import { postExtractorFeedback, runScorer } from '../actions/teachActions';
+import { postExtractorFeedbackAsync, runScorerAsync } from '../actions/teachActions';
 import { CommandButton } from 'office-ui-fabric-react';
 import { dummyExtractResponse, dummyTrainExtractorStep } from '../epics/apiHelpers' // TEMP
 
@@ -52,8 +52,8 @@ class TeachSessionExtractor extends React.Component<any, any> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({     
-        postExtractorFeedback: postExtractorFeedback,
-        runScorer: runScorer
+        postExtractorFeedback: postExtractorFeedbackAsync,
+        runScorer: runScorerAsync
     }, dispatch);
 }
 const mapStateToProps = (state: State, ownProps: any) => {

@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { createAction } from '../actions/createActions';
-import { editAction } from '../actions/updateActions';
+import { createActionAsync } from '../actions/createActions';
+import { editActionAsync } from '../actions/updateActions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
@@ -355,8 +355,8 @@ class ActionResponseCreatorEditor extends React.Component<any, any> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        createAction: createAction,
-        editAction: editAction
+        createAction: createActionAsync,
+        editAction: editActionAsync
     }, dispatch);
 }
 const mapStateToProps = (state: State, ownProps: any) => {

@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { setDisplayMode, setLoginDisplay } from '../actions/updateActions'
+import { setDisplayMode, setLoginDisplay } from '../actions/displayActions'
 import UserLogin from '../containers/UserLogin'
+import SpinnerWindow from '../containers/SpinnerWindow'
 import UIError from '../containers/Error'
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
@@ -64,6 +65,7 @@ class Header extends React.Component<any, any> {
                 <div className="myAppsHeaderContentBlock myAppsButtonsDiv">
                     <UIError/>
                     <UserLogin/>
+                    <SpinnerWindow/>
                 </div>
                 <div className='headerListDiv'>
                     <div className={this.state.myAppsClass}>

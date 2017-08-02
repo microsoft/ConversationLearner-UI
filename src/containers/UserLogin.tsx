@@ -5,9 +5,8 @@ import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { CommandButton, Dialog, DialogFooter, DialogType, ChoiceGroup, TextField, DefaultButton, Dropdown } from 'office-ui-fabric-react';
 import { TextFieldPlaceholder } from './TextFieldPlaceholder';
-import { setUser, logout } from '../actions/updateActions'
-import { fetchAllActions, fetchAllEntities, fetchAllTrainDialogs } from '../actions/fetchActions';
-import { setLoginDisplay } from '../actions/updateActions'
+import { setUser, logout, setLoginDisplay } from '../actions/displayActions'
+import { fetchAllActionsAsync, fetchAllEntitiesAsync, fetchAllTrainDialogs } from '../actions/fetchActions';
 import { BlisAppBase, BlisAppMetaData } from 'blis-models'
 import { developmentSubKeyLUIS } from '../secrets'
 import { State } from '../types'

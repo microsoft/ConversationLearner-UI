@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { createEntity } from '../actions/createActions';
-import { editEntity } from '../actions/updateActions';
+import { createEntityAsync } from '../actions/createActions';
+import { editEntityAsync } from '../actions/updateActions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
@@ -193,8 +193,8 @@ class EntityCreatorEditor extends React.Component<any, any> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        createEntity: createEntity,
-        editEntity: editEntity
+        createEntity: createEntityAsync,
+        editEntity: editEntityAsync
     }, dispatch);
 }
 const mapStateToProps = (state: State, ownProps: any) => {

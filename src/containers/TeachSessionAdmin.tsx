@@ -1,14 +1,14 @@
 import * as React from 'react';
-import { createBLISApplication } from '../actions/createActions';
+import { createBLISApplicationAsync } from '../actions/createActions';
 import { CommandButton } from 'office-ui-fabric-react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../types'
 import { UserInput } from 'blis-models'
 import { DisplayMode, TeachMode } from '../types/const';
-import { setDisplayMode } from '../actions/updateActions'
-import { deleteTeachSession } from '../actions/deleteActions';
-import { runExtractor } from '../actions/teachActions';
+import { setDisplayMode } from '../actions/displayActions'
+import { deleteTeachSessionAsync } from '../actions/deleteActions';
+import { runExtractorAsync } from '../actions/teachActions';
 import TeachSessionScorer from './TeachSessionScorer';
 import TeachSessionExtractor from './TeachSessionExtractor';
 import TeachSessionMemory from './TeachSessionMemory';
@@ -87,8 +87,8 @@ class TeachSessionAdmin extends React.Component<any, any> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         setDisplayMode: setDisplayMode,
-        deleteTeachSession: deleteTeachSession,
-        runExtractor: runExtractor
+        deleteTeachSession: deleteTeachSessionAsync,
+        runExtractor: runExtractorAsync
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {

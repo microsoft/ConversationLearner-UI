@@ -1,12 +1,12 @@
 import * as React from 'react';
-import { createBLISApplication } from '../actions/createActions';
+import { createBLISApplicationAsync } from '../actions/createActions';
 import { CommandButton } from 'office-ui-fabric-react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../types'
 import { DisplayMode } from '../types/const';
-import { setDisplayMode } from '../actions/updateActions'
-import { deleteChatSession } from '../actions/deleteActions'
+import { setDisplayMode } from '../actions/displayActions'
+import { deleteChatSessionAsync } from '../actions/deleteActions'
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 
 class ChatSessionAdmin extends React.Component<any, any> {
@@ -55,7 +55,7 @@ class ChatSessionAdmin extends React.Component<any, any> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         setDisplayMode: setDisplayMode,
-        deleteChatSession: deleteChatSession
+        deleteChatSession: deleteChatSessionAsync
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {

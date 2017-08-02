@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { fetchAllActions, fetchAllEntities, fetchApplications, fetchAllTrainDialogs } from '../actions/fetchActions';
+import { fetchAllActionsAsync, fetchAllEntitiesAsync, fetchApplicationsAsync, fetchAllTrainDialogs } from '../actions/fetchActions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import EntitiesList from './EntitiesList';
@@ -9,7 +9,7 @@ import BLISAppsHomepage from './BLISAppsHomepage';
 import AppDashboard from './AppDashboard';
 import AppSettings from './AppSettings';
 import { Nav, INavLink, INavLinkGroup, Link } from 'office-ui-fabric-react';
-import { setDisplayMode } from '../actions/updateActions';
+import { setDisplayMode } from '../actions/displayActions';
 import { State } from '../types';
 import LogDialogsList from './LogDialogsList';
 import { DisplayMode } from '../types/const';
@@ -148,7 +148,7 @@ class AppAdmin extends React.Component<any, any> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        fetchApplications: fetchApplications,
+        fetchApplications: fetchApplicationsAsync,
         setDisplayMode: setDisplayMode
     }, dispatch);
 }

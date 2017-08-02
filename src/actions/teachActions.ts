@@ -2,9 +2,9 @@ import { ActionObject } from '../types'
 import { AT } from '../types/ActionTypes'
 import { UserInput, TrainExtractorStep, ExtractResponse, UIExtractResponse, UIScoreResponse, TrainScorerStep, TeachResponse } from 'blis-models'
 
-export const runExtractor = (key: string, appId: string, teachId: string, userInput: UserInput) : ActionObject => { 
+export const runExtractorAsync = (key: string, appId: string, teachId: string, userInput: UserInput) : ActionObject => { 
     return {
-        type: AT.RUN_EXTRACTOR,
+        type: AT.RUN_EXTRACTOR_ASYNC,
         key: key,
         appId: appId,
         teachId: teachId,
@@ -22,9 +22,9 @@ export const runExtractorFulfilled = (key: string, appId: string, teachId: strin
     }
 }
 
-export const postExtractorFeedback = (key: string, appId: string, teachId: string, trainExtractorStep: TrainExtractorStep) : ActionObject => { 
+export const postExtractorFeedbackAsync = (key: string, appId: string, teachId: string, trainExtractorStep: TrainExtractorStep) : ActionObject => { 
     return {
-        type: AT.POST_EXTACT_FEEDBACK,
+        type: AT.POST_EXTACT_FEEDBACK_ASYNC,
         key: key,
         appId: appId,
         teachId: teachId,
@@ -42,9 +42,9 @@ export const postExtractorFeedbackFulfilled = (key: string, appId: string, teach
     }
 }
 
-export const runScorer = (key: string, appId: string, teachId: string, extractResponse: ExtractResponse) : ActionObject => { 
+export const runScorerAsync = (key: string, appId: string, teachId: string, extractResponse: ExtractResponse) : ActionObject => { 
     return {
-        type: AT.RUN_SCORER,
+        type: AT.RUN_SCORER_ASYNC,
         key: key,
         appId: appId,
         teachId: teachId,
@@ -62,9 +62,9 @@ export const runScorerFulfilled = (key: string, appId: string, teachId: string, 
     }
 }
 
-export const postScorerFeedback = (key: string, appId: string, teachId: string, trainScorerStep: TrainScorerStep) : ActionObject => { 
+export const postScorerFeedbackAsync = (key: string, appId: string, teachId: string, trainScorerStep: TrainScorerStep) : ActionObject => { 
     return {
-        type: AT.POST_SCORE_FEEDBACK,
+        type: AT.POST_SCORE_FEEDBACK_ASYNC,
         key: key,
         appId: appId,
         teachId: teachId,

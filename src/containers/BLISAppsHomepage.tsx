@@ -2,7 +2,7 @@ import * as React from 'react';
 import AppAdmin from './AppAdmin';
 import TeachSessionWindow from './TeachSessionWindow';
 import ChatSessionWindow from './ChatSessionWindow';
-import { fetchApplications } from '../actions/fetchActions'
+import { fetchApplicationsAsync } from '../actions/fetchActions'
 import BLISAppsList from './BLISAppsList';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -51,7 +51,7 @@ class BLISAppsHomepage extends React.Component<any, any> {
 
 const mapDispatchToProps = (dispatch: any) => {
   return bindActionCreators({
-    fetchApplications: fetchApplications
+    fetchApplications: fetchApplicationsAsync
   }, dispatch);
 }
 

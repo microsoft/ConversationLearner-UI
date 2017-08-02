@@ -2,7 +2,7 @@ import * as React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../types'
-import { setDisplayMode } from '../actions/updateActions'
+import { setDisplayMode } from '../actions/displayActions'
 import { IColumn, DetailsList, CheckboxVisibility } from 'office-ui-fabric-react';
 import { Memory } from 'blis-models'
 

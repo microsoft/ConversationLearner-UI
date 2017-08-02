@@ -1,13 +1,13 @@
 import * as React from 'react';
 import axios from 'axios';
-import { createBLISApplication } from '../actions/createActions';
+import { createBLISApplicationAsync } from '../actions/createActions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { CommandButton, Dialog, DialogFooter, DialogType, ChoiceGroup, TextField, DefaultButton, Dropdown } from 'office-ui-fabric-react';
 import { TextFieldPlaceholder } from './TextFieldPlaceholder';
-import { setDisplayMode, emptyStateProperties } from '../actions/updateActions'
-import { fetchAllActions, fetchAllEntities, fetchAllTrainDialogs } from '../actions/fetchActions';
+import { setDisplayMode, emptyStateProperties } from '../actions/displayActions'
+import { fetchAllActionsAsync, fetchAllEntitiesAsync, fetchAllTrainDialogs } from '../actions/fetchActions';
 import { BlisAppBase, BlisAppMetaData } from 'blis-models'
 import { developmentSubKeyLUIS } from '../secrets'
 import { State } from '../types'
@@ -153,9 +153,9 @@ class BLISAppCreator extends React.Component<any, any> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        createBLISApplication: createBLISApplication,
-        fetchAllActions: fetchAllActions,
-        fetchAllEntities: fetchAllEntities,
+        createBLISApplication: createBLISApplicationAsync,
+        fetchAllActions: fetchAllActionsAsync,
+        fetchAllEntities: fetchAllEntitiesAsync,
         fetchAllTrainDialogs: fetchAllTrainDialogs,
         setDisplayMode: setDisplayMode,
         emptyStateProperties: emptyStateProperties
