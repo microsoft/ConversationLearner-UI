@@ -25,27 +25,28 @@ class TeachSessionExtractor extends React.Component<any, any> {
     }
     render() {
         return (
-            <div className="teachSessionHalfMode">
-                TeachSessionExtractor
-
-                <CommandButton
-                        data-automation-id='randomID16'
-                        disabled={false}
-                        onClick={this.sendFeedback.bind(this)}
-                        className='ms-font-su goldButton abandonTeach'
-                        ariaDescription='Send Extract Feedback'
-                        text='Send Extract Feedback'
-                    />
-                <CommandButton
-                        data-automation-id='randomID16'
-                        disabled={false}
-                        onClick={this.runScorer.bind(this)}
-                        className='ms-font-su goldButton abandonTeach'
-                        ariaDescription='Run Scorer'
-                        text='Run Scorer'
-                    />
+            <div className='content'>
+                <div className="teachSessionHalfMode">
+                    Extractor
+                    <div>{this.props.teachSession.input}</div>
+                    <CommandButton
+                            data-automation-id='randomID16'
+                            disabled={false}
+                            onClick={this.sendFeedback.bind(this)}
+                            className='ms-font-su goldButton abandonTeach'
+                            ariaDescription='Send Extract Feedback'
+                            text='Send Extract Feedback'
+                        />
+                    <CommandButton
+                            data-automation-id='randomID16'
+                            disabled={false}
+                            onClick={this.runScorer.bind(this)}
+                            className='ms-font-su goldButton abandonTeach'
+                            ariaDescription='Run Scorer'
+                            text='Run Scorer'
+                        />
+                </div>
             </div>
-
         )
     }
 }

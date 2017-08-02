@@ -29,6 +29,7 @@ export type TeachSessionState = {
     all: Teach[],
     current: Teach,
     mode: TeachMode,
+    input: string,
     memories: Memory[],
     extractResponse: ExtractResponse,
     scoreResponse: ScoreResponse,

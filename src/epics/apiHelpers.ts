@@ -491,7 +491,7 @@ export const dummyScorerResponse = function() : UIScoreResponse
               "entityValue": "never"
             }
         ],
-      "extractResponse" :
+      "scoreResponse" :
       {
         "packageId": 16,
         "metrics": {
