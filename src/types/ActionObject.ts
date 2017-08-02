@@ -84,6 +84,8 @@ export type UpdateAction = {
     type: AT.SET_USER_KEY,
     key: string
 } | {
+    type: AT.LOGOUT
+} | {
     type: AT.EMPTY_STATE_PROPERTIES
 } | {
     type: AT.NO_OP

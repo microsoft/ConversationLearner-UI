@@ -13,6 +13,8 @@ const initialState: DisplayState = {
 
 const displayReducer: Reducer<DisplayState> =  (state = initialState, action: ActionObject) => {
     switch(action.type) {
+        case AT.LOGOUT:
+            return { ...initialState };
         case AT.SET_DISPLAY_MODE:
             return {...state, displayMode: action.setDisplay};
         case AT.SET_LOGIN_DISPLAY:

@@ -11,6 +11,8 @@ const initialState: LogDialogState = {
 
 const logDialogsReducer: Reducer<LogDialogState> =  (state = initialState, action: ActionObject) => {
     switch (action.type) {
+        case AT.LOGOUT:
+            return { ...initialState };
         case AT.FETCH_LOG_DIALOGS:
             return { ...state, all: action.allLogDialogs };
         case AT.EMPTY_STATE_PROPERTIES: 
@@ -47,6 +49,7 @@ const logDialogsReducer: Reducer<LogDialogState> =  (state = initialState, actio
         // return [...state, action.payload];
         case AT.EDIT_LOG_DIALOG:
         // return [...state, action.payload];
+        
         default:
             return state;
     }

@@ -153,6 +153,12 @@ export const editLogDialog = (key: string, logDialog: LogDialog) : ActionObject 
     }
 }
 
+export const logout = () : ActionObject => { 
+    return {
+        type: AT.LOGOUT
+    }
+}
+
 export const setUser = (name: string, password: string, id: string) : ActionObject => { 
     return {
         type: AT.SET_USER,

@@ -11,6 +11,8 @@ const initialState: AppState = {
 
 const appsReducer: Reducer<AppState> = (state = initialState, action: ActionObject) => {
     switch (action.type) {
+        case AT.LOGOUT:
+            return { ...initialState };
         case AT.FETCH_APPLICATIONS_FULFILLED:
             return { ...state, all: action.allBlisApps };
         case AT.CREATE_BLIS_APPLICATION_FULFILLED:

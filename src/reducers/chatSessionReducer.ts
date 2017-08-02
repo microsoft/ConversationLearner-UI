@@ -11,6 +11,8 @@ const initialState: ChatSessionState = {
 
 const chatSessionReducer: Reducer<ChatSessionState> = (state = initialState, action: ActionObject) => {
     switch (action.type) {
+        case AT.LOGOUT:
+            return { ...initialState };
         case AT.FETCH_CHAT_SESSIONS_FULFILLED:
             return { ...state, all: action.allSessions };
         case AT.CREATE_CHAT_SESSION_FULFILLED:
