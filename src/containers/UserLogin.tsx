@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { CommandButton, Dialog, DialogFooter, DialogType, ChoiceGroup, TextField, DefaultButton, Dropdown } from 'office-ui-fabric-react';
 import { TextFieldPlaceholder } from './TextFieldPlaceholder';
-import { setUser } from '../actions/updateActions'
+import { setUser, logout } from '../actions/updateActions'
 import { fetchAllActions, fetchAllEntities, fetchAllTrainDialogs } from '../actions/fetchActions';
 import { setLoginDisplay } from '../actions/updateActions'
 import { BlisAppBase, BlisAppMetaData } from 'blis-models'
@@ -52,7 +52,7 @@ class UserLogin extends React.Component<any, any> {
         this.handleClose();
     }
     logout() {
-        this.props.setUser(null, null, null);
+        this.props.logout();
     }
     render() {
         let isBlocking, title, input, button = null;
@@ -122,6 +122,7 @@ class UserLogin extends React.Component<any, any> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         setUser: setUser,
+        logout: logout,
         setLoginDisplay: setLoginDisplay
     }, dispatch);
 }

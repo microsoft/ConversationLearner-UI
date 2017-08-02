@@ -8,6 +8,8 @@ const initialState: EntityState = [];
 
 const entitiesReducer: Reducer<EntityState> =  (state = initialState, action: ActionObject) => {
     switch(action.type) {
+        case AT.LOGOUT:
+            return { ...initialState };
         case AT.FETCH_ENTITIES_FULFILLED:
             return action.allEntities;
         case AT.EMPTY_STATE_PROPERTIES: 
@@ -31,7 +33,7 @@ const entitiesReducer: Reducer<EntityState> =  (state = initialState, action: Ac
             }
             let newState = Object.assign([], state);
             newState[index] = action.entity;
-            return newState
+            return newState;
         default:
             return state;
     }
