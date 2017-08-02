@@ -28,14 +28,14 @@ let columns: IColumn[] = [
 ]
 
 class TeachSessionScorer extends React.Component<any, any> {
-            constructor(p: any) {
+    constructor(p: any) {
         super(p);
         this.state = {
             columns: columns,
-            sortColumn : null
+            sortColumn: null
         }
     }
-    onColumnClick(event: any, column : any) {
+    onColumnClick(event: any, column: any) {
         let { sortedItems, columns } = this.state;
         let isSortedDescending = column.isSortedDescending;
 
@@ -50,19 +50,18 @@ class TeachSessionScorer extends React.Component<any, any> {
                 col.isSorted = (col.key === column.key);
 
                 if (col.isSorted) {
-                col.isSortedDescending = isSortedDescending;
+                    col.isSortedDescending = isSortedDescending;
                 }
 
                 return col;
             }),
-            sortColumn : column
+            sortColumn: column
         });
     }
-    getValue(memory: any, col: IColumn) : any
-    {
+    getValue(memory: any, col: IColumn): any {
         let value = memory[col.fieldName]
         if (col.fieldName == "score" && !memory[col.fieldName]) {
-                value = memory["reason"];
+            value = memory["reason"];
         }
         if (!value) value = "";
 
@@ -83,7 +82,7 @@ class TeachSessionScorer extends React.Component<any, any> {
         switch (column.key) {
             case 'score':
                 if (fieldContent) {
-                    fieldContent = (fieldContent*100).toFixed(1) + "%"
+                    fieldContent = (fieldContent * 100).toFixed(1) + "%"
                 } else {
                     fieldContent = item["reason"]
                 }
@@ -95,8 +94,7 @@ class TeachSessionScorer extends React.Component<any, any> {
     renderScores(): ScoredBase[] {
         let filteredMemories = this.props.teachSession.scoreResponse.scoredActions.concat(this.props.teachSession.scoreResponse.unscoredActions) || [];
 
-        if (this.state.sortColumn)
-        {
+        if (this.state.sortColumn) {
             // Sort the items.
             filteredMemories = filteredMemories.concat([]).sort((a: any, b: any) => {
                 let firstValue = this.getValue(a, this.state.sortColumn);
@@ -104,7 +102,7 @@ class TeachSessionScorer extends React.Component<any, any> {
 
                 if (this.state.sortColumn.isSortedDescending) {
                     return firstValue > secondValue ? -1 : 1;
-                } 
+                }
                 else {
                     return firstValue > secondValue ? 1 : -1;
                 }
@@ -124,16 +122,16 @@ class TeachSessionScorer extends React.Component<any, any> {
                         items={scores}
                         columns={this.state.columns}
                         onRenderItemColumn={this.renderItemColumn}
-                        onColumnHeaderClick={ this.onColumnClick.bind(this) }
+                        onColumnHeaderClick={this.onColumnClick.bind(this)}
                     />
                     <CommandButton
-                            data-automation-id='randomID16'
-                            disabled={false}
-                            onClick={this.sendFeedback.bind(this)}
-                            className='ms-font-su goldButton abandonTeach'
-                            ariaDescription='Send Score Feedback'
-                            text='Send Score Feedback'
-                        />
+                        data-automation-id='randomID16'
+                        disabled={false}
+                        onClick={this.sendFeedback.bind(this)}
+                        className='ms-font-su goldButton abandonTeach'
+                        ariaDescription='Send Score Feedback'
+                        text='Send Score Feedback'
+                    />
                 </div>
             </div>
         )

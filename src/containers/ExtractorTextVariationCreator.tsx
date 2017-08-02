@@ -4,11 +4,11 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../types';
 
-class TeachSessionEntityHighlighter extends React.Component<any, any> {
+class ExtractorTextVariationCreator extends React.Component<any, any> {
     render() {
         return (
             <div >
-                 TeachSessionEntityHighlighter
+                 ExtractorTextVariationCreator
             </div>
         )
     }
@@ -23,4 +23,4 @@ const mapStateToProps = (state: State, ownProps: any) => {
         entities: state.entities
     }
 }
-export default connect(mapStateToProps, mapDispatchToProps)(TeachSessionEntityHighlighter as React.ComponentClass<any>);
+export default connect(mapStateToProps, mapDispatchToProps)(ExtractorTextVariationCreator as React.ComponentClass<any>);
