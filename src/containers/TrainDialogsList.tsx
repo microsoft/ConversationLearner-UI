@@ -4,9 +4,9 @@ import { connect } from 'react-redux';
 import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader'
 import { DetailsList, CommandButton, Link, CheckboxVisibility, IColumn, SearchBox } from 'office-ui-fabric-react';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
-import { setDisplayMode, setCurrentTrainDialog, setCurrentTeachSession } from '../actions/updateActions'
-import { createTrainDialog, createTeachSession } from '../actions/createActions'
-import { deleteTeachSession } from '../actions/deleteActions'
+import { setDisplayMode, setCurrentTrainDialog, setCurrentTeachSession } from '../actions/displayActions'
+import { createTrainDialog, createTeachSessionAsync } from '../actions/createActions'
+import { deleteTeachSessionAsync } from '../actions/deleteActions'
 import { State } from '../types'
 import { TrainDialog, Teach } from 'blis-models'
 import { DisplayMode } from '../types/const';

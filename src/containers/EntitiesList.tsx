@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader';
 import EntityCreatorEditor from './EntityCreatorEditor';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
-import { deleteEntity } from '../actions/deleteActions'
+import { deleteEntityAsync } from '../actions/deleteActions'
 import { DetailsList, CommandButton, Link, CheckboxVisibility, IColumn, SearchBox } from 'office-ui-fabric-react';
 import { State } from '../types';
 import { EntityBase, EntityIdList, EntityList, EntityMetaData, ActionBase, ActionMetaData } from 'blis-models'
@@ -276,7 +276,7 @@ class EntitiesList extends React.Component<any, any> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        deleteEntity: deleteEntity
+        deleteEntity: deleteEntityAsync
     }, dispatch)
 }
 const mapStateToProps = (state: State) => {

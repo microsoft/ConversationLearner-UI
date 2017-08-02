@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { CommandButton, Dialog, DialogFooter, DialogType, ChoiceGroup, TextField, DefaultButton, Dropdown } from 'office-ui-fabric-react';
-import { clearErrorDisplay } from '../actions/updateActions'
+import { clearErrorDisplay } from '../actions/displayActions'
 import { State } from '../types'
 type CultureObject = {
     CultureCode: string;

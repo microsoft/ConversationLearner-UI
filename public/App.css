@@ -177,6 +177,15 @@
   padding: 1em;
   position: relative
 }
+.spinnerBox
+{
+    width: 500px;
+    height: 500px;
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    position: relative
+}
 .container{
   height: 100%;
 }

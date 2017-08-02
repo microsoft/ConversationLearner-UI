@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { editBLISApplication } from '../actions/updateActions';
+import { editBLISApplicationAsync } from '../actions/updateActions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader'
@@ -187,7 +187,7 @@ class AppSettings extends React.Component<any, any> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        editBLISApplication: editBLISApplication,
+        editBLISApplication: editBLISApplicationAsync,
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {

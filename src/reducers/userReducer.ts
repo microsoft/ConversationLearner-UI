@@ -24,7 +24,7 @@ const userReducer: Reducer<UserState> =  (state = initialState, action: ActionOb
             return {...state, key: action.key };
         case AT.SET_ERROR_DISPLAY:
             switch (action.route) {
-                case AT.FETCH_APPLICATIONS :
+                case AT.FETCH_APPLICATIONS_ASYNC :
                     return {...initialState};
                 default:
                     return {...state}

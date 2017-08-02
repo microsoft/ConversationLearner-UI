@@ -3,7 +3,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../types'
 import { TrainScorerStep, ScoredBase } from 'blis-models';
-import { postScorerFeedback } from '../actions/teachActions'
+import { postScorerFeedbackAsync } from '../actions/teachActions'
 import { CommandButton } from 'office-ui-fabric-react';
 import { IColumn, DetailsList, CheckboxVisibility } from 'office-ui-fabric-react';
 import { dummyTrainScorerStep } from '../epics/apiHelpers' // TEMP
@@ -166,7 +166,7 @@ class TeachSessionScorer extends React.Component<any, any> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        postScorerFeedback: postScorerFeedback,
+        postScorerFeedback: postScorerFeedbackAsync,
     }, dispatch);
 }
 const mapStateToProps = (state: State, ownProps: any) => {

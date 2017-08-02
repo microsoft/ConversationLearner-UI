@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { toggleTrainDialog, addMessageToTeachConversationStack, addMessageToChatConversationStack } from '../actions/updateActions';
+import { toggleTrainDialog, addMessageToTeachConversationStack, addMessageToChatConversationStack } from '../actions/displayActions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State, TrainDialogState } from '../types';
@@ -7,7 +7,7 @@ import { generateGUID } from '../util';
 import * as BotChat from 'botframework-webchat'
 import { Chat } from 'botframework-webchat'
 import { UserInput } from 'blis-models'
-import { runExtractor } from '../actions/teachActions';
+import { runExtractorAsync } from '../actions/teachActions';
 
 class Webchat extends React.Component<any, any> {
     render() {
@@ -59,7 +59,7 @@ const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         toggleTrainDialog: toggleTrainDialog,
         addMessageToTeachConversationStack: addMessageToTeachConversationStack,
-        runExtractor: runExtractor
+        runExtractor: runExtractorAsync
     }, dispatch);
 }
 const mapStateToProps = (state: State, ownProps: any) => {
