@@ -3,7 +3,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../types'
 import { setDisplayMode } from '../actions/updateActions'
-import { IColumn, DetailsList } from 'office-ui-fabric-react';
+import { IColumn, DetailsList, CheckboxVisibility } from 'office-ui-fabric-react';
 import { Memory } from 'blis-models'
 
 let columns: IColumn[] = [
@@ -98,6 +98,7 @@ class TeachSessionMemory extends React.Component<any, any> {
                         items={memories}
                         columns={this.state.columns}
                         onColumnHeaderClick={ this.onColumnClick.bind(this) }
+                        checkboxVisibility={CheckboxVisibility.hidden}
                 />
             </div>
         )
