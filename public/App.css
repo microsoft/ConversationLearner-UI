@@ -211,6 +211,14 @@
 .goldText{
   color: #ffb900
 }
+.actionSelect{
+  color: #ffb900;
+  font-size: 24px;
+}
+.actionUnavailable{
+  color: #cc0000;
+  font-size: 24px;
+}
 .saveAppChangesButtonsDiv{
   width: 100%;
   display: block;

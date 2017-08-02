@@ -5,10 +5,18 @@ import { State } from '../types'
 import { TrainScorerStep, ScoredBase } from 'blis-models';
 import { postScorerFeedback } from '../actions/teachActions'
 import { CommandButton } from 'office-ui-fabric-react';
-import { IColumn, DetailsList } from 'office-ui-fabric-react';
+import { IColumn, DetailsList, CheckboxVisibility } from 'office-ui-fabric-react';
 import { dummyTrainScorerStep } from '../epics/apiHelpers' // TEMP
 
 let columns: IColumn[] = [
+    {
+        key: 'select',
+        name: '',
+        fieldName: 'actionId',
+        minWidth: 100,
+        maxWidth: 200,
+        isResizable: true
+    },
     {
         key: 'payload',
         name: 'Payload',
@@ -23,16 +31,18 @@ let columns: IColumn[] = [
         fieldName: 'score',
         minWidth: 100,
         maxWidth: 200,
-        isResizable: true
+        isResizable: true,
+        isSorted: true,
+        isSortedDescending: true
     }
 ]
 
 class TeachSessionScorer extends React.Component<any, any> {
-            constructor(p: any) {
+    constructor(p: any) {
         super(p);
         this.state = {
             columns: columns,
-            sortColumn : null
+            sortColumn : columns[2] // "score"
         }
     }
     onColumnClick(event: any, column : any) {
@@ -50,7 +60,7 @@ class TeachSessionScorer extends React.Component<any, any> {
                 col.isSorted = (col.key === column.key);
 
                 if (col.isSorted) {
-                col.isSortedDescending = isSortedDescending;
+                    col.isSortedDescending = isSortedDescending;
                 }
 
                 return col;
@@ -62,7 +72,12 @@ class TeachSessionScorer extends React.Component<any, any> {
     {
         let value = memory[col.fieldName]
         if (col.fieldName == "score" && !memory[col.fieldName]) {
-                value = memory["reason"];
+                if (memory["reason"] == 'notAvailable') {
+                    return -100;
+                }
+                else {  // notScorable
+                    return -1;
+                }
         }
         if (!value) value = "";
 
@@ -71,7 +86,9 @@ class TeachSessionScorer extends React.Component<any, any> {
         }
         return value;
     }
-    sendFeedback() {
+    handleActionSelection(actionId : string)
+    {
+        let labelAction = actionId;
         // TEMP
         let trainScorerStep = dummyTrainScorerStep();
         let appId: string = this.props.apps.current.appId;
@@ -81,24 +98,39 @@ class TeachSessionScorer extends React.Component<any, any> {
     renderItemColumn(item?: any, index?: number, column?: IColumn) {
         let fieldContent = item[column.fieldName];
         switch (column.key) {
+            case 'select':
+                if (item["reason"] == "notAvailable") {
+                    return (
+                        <div>
+                            <a><span className="actionUnavailable ms-Icon ms-Icon--ChromeClose"></span></a>
+                        </div>
+                        )
+                    }
+
+                return (
+                    <div>
+                        <a onClick={() => this.handleActionSelection(fieldContent)}><span className="actionSelect ms-Icon ms-Icon--CompletedSolid"></span></a>
+                    </div>
+                )
             case 'score':
                 if (fieldContent) {
                     fieldContent = (fieldContent*100).toFixed(1) + "%"
                 } else {
                     fieldContent = item["reason"]
                 }
+                break;
             default:
                 break;
         }
         return <span className='ms-font-m-plus'>{fieldContent}</span>
     }
     renderScores(): ScoredBase[] {
-        let filteredMemories = this.props.teachSession.scoreResponse.scoredActions.concat(this.props.teachSession.scoreResponse.unscoredActions) || [];
+        let filteredScores = this.props.teachSession.scoreResponse.scoredActions.concat(this.props.teachSession.scoreResponse.unscoredActions) || [];
 
         if (this.state.sortColumn)
         {
             // Sort the items.
-            filteredMemories = filteredMemories.concat([]).sort((a: any, b: any) => {
+            filteredScores = filteredScores.concat([]).sort((a: any, b: any) => {
                 let firstValue = this.getValue(a, this.state.sortColumn);
                 let secondValue = this.getValue(b, this.state.sortColumn);
 
@@ -111,7 +143,7 @@ class TeachSessionScorer extends React.Component<any, any> {
             });
         }
 
-        return filteredMemories;
+        return filteredScores;
     }
     render() {
         let scores = this.renderScores();
@@ -123,17 +155,10 @@ class TeachSessionScorer extends React.Component<any, any> {
                         className="ms-font-m-plus"
                         items={scores}
                         columns={this.state.columns}
-                        onRenderItemColumn={this.renderItemColumn}
+                        checkboxVisibility={CheckboxVisibility.hidden}
+                        onRenderItemColumn={this.renderItemColumn.bind(this)}
                         onColumnHeaderClick={ this.onColumnClick.bind(this) }
                     />
-                    <CommandButton
-                            data-automation-id='randomID16'
-                            disabled={false}
-                            onClick={this.sendFeedback.bind(this)}
-                            className='ms-font-su goldButton abandonTeach'
-                            ariaDescription='Send Score Feedback'
-                            text='Send Score Feedback'
-                        />
                 </div>
             </div>
         )
