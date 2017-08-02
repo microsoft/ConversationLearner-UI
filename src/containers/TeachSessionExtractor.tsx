@@ -10,12 +10,38 @@ import ExtractorTextVariationCreator from './ExtractorTextVariationCreator';
 import ExtractorResponseEditor from './ExtractorResponseEditor';
 
 class TeachSessionExtractor extends React.Component<any, any> {
+    constructor(p: any) {
+        super(p)
+        this.state = {
+            textVariations: [],
+            predictedEntities: [],
+            inputText: ""
+        }
+        this.setInitialValues = this.setInitialValues.bind(this)
+    }
+    setInitialValues(props: any){
+        let current = props.teachSession
+        if (current.extractResponse && (current.extractResponse.text !== this.state.inputText)) {
+            console.log('setting state')
+            this.setState({
+                inputText: current.extractResponse.text,
+                textVariations: [],
+                predictedEntities: current.extractResponse.predictedEntities
+            })
+        }
+    }
+    componentDidMount(){
+        this.setInitialValues(this.props)
+    }
+    componentWillReceiveProps(props: any) {
+        this.setInitialValues(props)
+    }
     sendFeedback() {
         // TEMP 
         let trainExtractorStep = dummyTrainExtractorStep();
         let appId: string = this.props.apps.current.appId;
         let teachId: string = this.props.teachSession.current.teachId;
-        this.props.postExtractorFeedback(this.props.user.key, appId, teachId, trainExtractorStep);
+        // this.props.postExtractorFeedback(this.props.user.key, appId, teachId, trainExtractorStep);
     }
     runScorer() {
         // TEMP
@@ -23,20 +49,21 @@ class TeachSessionExtractor extends React.Component<any, any> {
         let extractResponse = dummyER.extractResponse;
         let appId: string = this.props.apps.current.appId;
         let teachId: string = this.props.teachSession.current.teachId;
-        console.log('UI Extract Response Object', dummyER);
-        console.log('Extract response property', extractResponse);
         // this.props.runScorer(this.props.user.key, appId, teachId, extractResponse);
     }
     render() {
-        console.log('teach state', this.props.teachSession)
         return (
             <div className='content'>
                 <div className="teachSessionHalfMode">
                     <div className="extractorResponse">
-                        <ExtractorResponseEditor />
+                        <ExtractorResponseEditor input={this.state.inputText} predictedEntities={this.state.predictedEntities} />
                     </div>
                     <div className="extractorTextVariations">
-                        <ExtractorTextVariationCreator />
+                        {
+                            this.state.textVariations.map((t: any) => {
+                                <ExtractorTextVariationCreator textVariation={t}/>
+                            })
+                        }
                     </div>
                     <div className="extractorOperations">
                         <CommandButton
