@@ -15,28 +15,22 @@ interface Props {
     handleClose: Function
 }
 
-class EntityCreatorEditor extends React.Component<any, any> {
-    constructor(p: Props) {
-        super(p);
-        this.state = {
+const initState = {
             entityNameVal: '',
-            entityTypeVal: 'LOCAL',
+            entityTypeVal: 'LUIS',
             isBucketableVal: false,
             isNegatableVal: false,
             editing: false
         };
+
+class EntityCreatorEditor extends React.Component<any, any> {
+    constructor(p: Props) {
+        super(p);
+        this.state = initState;
     }
     componentWillReceiveProps(p: Props) {
         if (p.entity === null) {
-            this.setState({
-                entityNameVal: '',
-                entityTypeVal: 'LOCAL',
-                isBucketableVal: false,
-                isNegatableVal: false,
-                bucketableKey: 'bucketableFalse',
-                negatableKey: 'negatableFalse',
-                editing: false
-            })
+            this.setState({...initState});
         } else {
             this.setState({
                 entityNameVal: p.entity.entityName,
@@ -68,13 +62,7 @@ class EntityCreatorEditor extends React.Component<any, any> {
         } else {
             this.editEntity(entityToAdd);
         }
-        this.setState({
-            entityNameVal: '',
-            entityTypeVal: 'LOCAL',
-            isBucketableVal: false,
-            isNegatableVal: false,
-            editing: false
-        })
+        this.setState({...initState});
         this.props.handleClose();
     }
     editEntity(ent: EntityBase) {
