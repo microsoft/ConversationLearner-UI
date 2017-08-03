@@ -2,7 +2,7 @@ import * as React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../types'
-import { ExtractResponse, TrainExtractorStep } from 'blis-models'
+import { ExtractResponse, TrainExtractorStep, PredictedEntity, LabeledEntity } from 'blis-models'
 import { postExtractorFeedback, runScorer } from '../actions/teachActions';
 import { CommandButton } from 'office-ui-fabric-react';
 import { dummyExtractResponse, dummyTrainExtractorStep } from '../epics/apiHelpers'; // TEMP
@@ -15,22 +15,23 @@ class TeachSessionExtractor extends React.Component<any, any> {
         this.state = {
             textVariations: [],
             predictedEntities: [],
-            inputText: ""
+            inputText: "",
+            initialExtractResponse: {}
         }
         this.setInitialValues = this.setInitialValues.bind(this)
     }
-    setInitialValues(props: any){
+    setInitialValues(props: any) {
         let current = props.teachSession
         if (current.extractResponse && (current.extractResponse.text !== this.state.inputText)) {
-            console.log('setting state')
             this.setState({
                 inputText: current.extractResponse.text,
                 textVariations: [],
-                predictedEntities: current.extractResponse.predictedEntities
+                predictedEntities: current.extractResponse.predictedEntities,
+                initialExtractResponse: current.extractResponse
             })
         }
     }
-    componentDidMount(){
+    componentDidMount() {
         this.setInitialValues(this.props)
     }
     componentWillReceiveProps(props: any) {
@@ -46,43 +47,48 @@ class TeachSessionExtractor extends React.Component<any, any> {
     runScorer() {
         // TEMP
         let dummyER = dummyExtractResponse();
-        let extractResponse = dummyER.extractResponse;
         let appId: string = this.props.apps.current.appId;
         let teachId: string = this.props.teachSession.current.teachId;
+        let extractResponse = new ExtractResponse({
+            predictedEntities: this.state.predictedEntities,
+            text: this.state.inputText,
+            metrics: this.state.initialExtractResponse.metrics,
+            packageId: this.state.initialExtractResponse.packageId
+        })
         // this.props.runScorer(this.props.user.key, appId, teachId, extractResponse);
     }
     render() {
         return (
-            <div className='content'>
-                <div className="teachSessionHalfMode">
-                    <div className="extractorResponse">
-                        <ExtractorResponseEditor input={this.state.inputText} predictedEntities={this.state.predictedEntities} />
-                    </div>
-                    <div className="extractorTextVariations">
-                        {
-                            this.state.textVariations.map((t: any) => {
-                                <ExtractorTextVariationCreator textVariation={t}/>
-                            })
-                        }
-                    </div>
-                    <div className="extractorOperations">
-                        <CommandButton
-                            data-automation-id='randomID16'
-                            disabled={false}
-                            onClick={this.sendFeedback.bind(this)}
-                            className='ms-font-su grayButton abandonTeach'
-                            ariaDescription='Send Extract Feedback'
-                            text='Send Extract Feedback'
-                        />
-                        <CommandButton
-                            data-automation-id='randomID16'
-                            disabled={false}
-                            onClick={this.runScorer.bind(this)}
-                            className='ms-font-su goldButton abandonTeach'
-                            ariaDescription='Run Scorer'
-                            text='Run Scorer'
-                        />
-                    </div>
+            <div className="content">
+                <div>
+                    <span className='ms-font-xl extractorTitle'>Entities</span>
+                    <ExtractorResponseEditor input={this.state.inputText} predictedEntities={this.state.predictedEntities} />
+                </div>
+                <div>
+                    <span className='ms-font-xl extractorTitle'>Variations</span>
+                    {
+                        this.state.textVariations.map((t: any) => {
+                            <ExtractorTextVariationCreator textVariation={t} />
+                        })
+                    }
+                </div>
+                <div>
+                    <CommandButton
+                        data-automation-id='randomID16'
+                        disabled={false}
+                        onClick={this.sendFeedback.bind(this)}
+                        className='ms-font-su grayButton abandonTeach'
+                        ariaDescription='Send Extract Feedback'
+                        text='Send Extract Feedback'
+                    />
+                    <CommandButton
+                        data-automation-id='randomID16'
+                        disabled={false}
+                        onClick={this.runScorer.bind(this)}
+                        className='ms-font-su goldButton abandonTeach'
+                        ariaDescription='Run Scorer'
+                        text='Run Scorer'
+                    />
                 </div>
             </div>
         )
