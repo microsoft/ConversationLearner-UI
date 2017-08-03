@@ -479,13 +479,11 @@ export const dummyScorerResponse = function() : UIScoreResponse
     { "memories" :
      [{ 
           "entityName": "name",
-          "entityValue": "Jerry",
-          "id" : "ab3b1b47-6b21-4e10-8a6c-762259f75d06"
+          "entityValue": "Jerry"
       },
       { 
-        "entityName": "stock",
-        "entityValue": "microsoft",
-        "id" : "b9aa27ba-06ab-4548-adf0-50f0ddc3c179"
+        "entityName": "company",
+        "entityValue": "microsoft"
       }
       ],
       "scoreResponse" :
@@ -618,18 +616,15 @@ export const dummyScorerResponse = function() : UIScoreResponse
     { "memories" :
       [{ 
           "entityName": "name",
-          "entityValue": "Jerry",
-          "id" : "ab3b1b47-6b21-4e10-8a6c-762259f75d06"
-      },
+          "entityValue": "Jerry"
+        },
         { 
           "entityName": "color",
-          "entityValue": "Blue",
-          "id" : "86acd2c7-bf32-4811-9b24-79323ae80cb8"
-      },
+          "entityValue": "Blue"
+        },
         { 
-          "entityName": "stock",
-          "entityValue": "microsoft",
-          "id" : "b9aa27ba-06ab-4548-adf0-50f0ddc3c179"
+          "entityName": "company",
+          "entityValue": "microsoft"
         }
       ],
       "extractResponse" :

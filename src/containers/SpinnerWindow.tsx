@@ -17,15 +17,11 @@ class SpinnerWindow extends React.Component<Props, any> {
         return (
             <div>
                 <Modal
-                    
                     isOpen={this.props.displaySpinner.length > 0}
                     isBlocking={true}
                     containerClassName='spinnerBox'>
                     <Spinner size={ SpinnerSize.large } />
                 </Modal>
-                        <div>
-            {this.props.displaySpinner.join("\n\n")}
-        </div>
             </div>
         );
     }

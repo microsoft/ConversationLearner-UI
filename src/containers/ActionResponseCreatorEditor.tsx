@@ -21,7 +21,7 @@ const initState = {
             contentVal: '',
             reqEntitiesVal: [] as EntityPickerObject[],
             negEntitiesVal: [] as EntityPickerObject[],
-            waitVal: false,
+            waitVal: true,
             availableRequiredEntities: [] as EntityPickerObject[],
             availableNegativeEntities: [] as EntityPickerObject[],
             editing: false,
@@ -288,7 +288,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                         />
                         <Checkbox
                             label='Wait For Response?'
-                            defaultChecked={false}
+                            defaultChecked={true}
                             onChange={this.waitChanged.bind(this)}
                             style={{ marginTop: "1em", display: "inline-block" }}
                             disabled={this.state.editing}
