@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { returntypeof } from 'react-redux-typescript';
 import { toggleTrainDialog, addMessageToTeachConversationStack, addMessageToChatConversationStack } from '../actions/displayActions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -9,7 +10,7 @@ import { Chat } from 'botframework-webchat'
 import { UserInput } from 'blis-models'
 import { runExtractorAsync } from '../actions/teachActions';
 
-class Webchat extends React.Component<any, any> {
+class Webchat extends React.Component<Props, any> {
     render() {
         const dl = new BotChat.DirectLine({
             secret: 'secret', //params['s'],
@@ -59,6 +60,7 @@ const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         toggleTrainDialog: toggleTrainDialog,
         addMessageToTeachConversationStack: addMessageToTeachConversationStack,
+        addMessageToChatConversationStack: addMessageToChatConversationStack,
         runExtractor: runExtractorAsync
     }, dispatch);
 }
@@ -70,4 +72,14 @@ const mapStateToProps = (state: State, ownProps: any) => {
         apps: state.apps
     }
 }
+
+interface ReceivedProps {
+    sessionType: string
+}
+
+// Props types inferred from mapStateToProps & dispatchToProps
+const stateProps = returntypeof(mapStateToProps);
+const dispatchProps = returntypeof(mapDispatchToProps);
+type Props = typeof stateProps & typeof dispatchProps & ReceivedProps;
+
 export default connect(mapStateToProps, mapDispatchToProps)(Webchat as React.ComponentClass<any>);

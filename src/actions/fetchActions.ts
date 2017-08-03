@@ -3,19 +3,21 @@ import { AT } from '../types/ActionTypes'
 import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, ActionMetaData, ActionList, ActionTypes, Session, Teach } from 'blis-models';
 
 // TODO: These should have fullfillmen counterparts
-export const fetchAllTrainDialogs = (blisAppID: string): ActionObject => {
+export const fetchAllTrainDialogs = (key: string, blisAppID: string): ActionObject => {
     //needs a fulfilled version to handle response from Epic
     return {
         type: AT.FETCH_TRAIN_DIALOGS,
+        key: key,
         allTrainDialogs: []
     }
 }
 
 // TODO: These should have fullfillmen counterparts
-export const fetchAllLogDialogs = (blisAppID: string): ActionObject => {
+export const fetchAllLogDialogs = (key: string, blisAppID: string): ActionObject => {
     //needs a fulfilled version to handle response from Epic
     return {
         type: AT.FETCH_LOG_DIALOGS,
+        key: key,
         allLogDialogs: []
     }
 }

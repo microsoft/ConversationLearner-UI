@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Nav, INavLink, INavLinkGroup, Link } from 'office-ui-fabric-react';
@@ -7,11 +8,12 @@ import { DisplayMode } from '../types/const';
 import Webchat from './Webchat'
 import TeachSessionAdmin from './TeachSessionAdmin'
 import { Teach } from 'blis-models'
+import { deleteTeachSessionAsync } from '../actions/deleteActions'
 import { createTrainDialog, createTeachSessionAsync } from '../actions/createActions'
 import { setCurrentTrainDialog, setCurrentTeachSession } from '../actions/displayActions'
 
 
-class TeachWindow extends React.Component<any, any> {
+class TeachWindow extends React.Component<Props, any> {
     constructor(p: any) {
         super(p);
         this.state = {
@@ -44,7 +46,8 @@ class TeachWindow extends React.Component<any, any> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        createTeachSession: createTeachSessionAsync
+        createTeachSession: createTeachSessionAsync,
+        deleteTeachSession: deleteTeachSessionAsync
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {
@@ -54,4 +57,9 @@ const mapStateToProps = (state: State) => {
         apps: state.apps
     }
 }
+// Props types inferred from mapStateToProps & dispatchToProps
+const stateProps = returntypeof(mapStateToProps);
+const dispatchProps = returntypeof(mapDispatchToProps);
+type Props = typeof stateProps & typeof dispatchProps;
+
 export default connect(mapStateToProps, mapDispatchToProps)(TeachWindow);

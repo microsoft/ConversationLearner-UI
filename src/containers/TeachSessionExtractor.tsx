@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../types'
@@ -7,7 +8,7 @@ import { postExtractorFeedbackAsync, runScorerAsync } from '../actions/teachActi
 import { CommandButton } from 'office-ui-fabric-react';
 import { dummyExtractResponse, dummyTrainExtractorStep } from '../epics/apiHelpers' // TEMP
 
-class TeachSessionExtractor extends React.Component<any, any> {
+class TeachSessionExtractor extends React.Component<Props, any> {
     sendFeedback() {
         // TEMP 
         let trainExtractorStep = dummyTrainExtractorStep();
@@ -63,4 +64,9 @@ const mapStateToProps = (state: State, ownProps: any) => {
         apps: state.apps
     }
 }
+// Props types inferred from mapStateToProps & dispatchToProps
+const stateProps = returntypeof(mapStateToProps);
+const dispatchProps = returntypeof(mapDispatchToProps);
+type Props = typeof stateProps & typeof dispatchProps;
+
 export default connect(mapStateToProps, mapDispatchToProps)(TeachSessionExtractor as React.ComponentClass<any>);

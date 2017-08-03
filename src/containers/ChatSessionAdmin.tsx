@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { returntypeof } from 'react-redux-typescript';
 import { createBLISApplicationAsync } from '../actions/createActions';
 import { CommandButton } from 'office-ui-fabric-react';
 import { bindActionCreators } from 'redux';
@@ -9,7 +10,7 @@ import { setDisplayMode } from '../actions/displayActions'
 import { deleteChatSessionAsync } from '../actions/deleteActions'
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 
-class ChatSessionAdmin extends React.Component<any, any> {
+class ChatSessionAdmin extends React.Component<Props, any> {
     constructor(p: any){
         super(p)
         this.state = {
@@ -61,7 +62,13 @@ const mapDispatchToProps = (dispatch: any) => {
 const mapStateToProps = (state: State) => {
     return {
         chatSession: state.chatSessions.current,
-        apps: state.apps
+        apps: state.apps,
+        userKey: state.user.key
     }
 }
+// Props types inferred from mapStateToProps & dispatchToProps
+const stateProps = returntypeof(mapStateToProps);
+const dispatchProps = returntypeof(mapDispatchToProps);
+type Props = typeof stateProps & typeof dispatchProps;
+
 export default connect(mapStateToProps, mapDispatchToProps)(ChatSessionAdmin);

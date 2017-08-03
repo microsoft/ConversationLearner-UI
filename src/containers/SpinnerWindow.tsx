@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { returntypeof } from 'react-redux-typescript';
 import axios from 'axios';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -6,7 +7,7 @@ import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { Spinner, SpinnerSize } from 'office-ui-fabric-react/lib/Spinner';
 import { State } from '../types'
 
-class SpinnerWindow extends React.Component<any, any> {
+class SpinnerWindow extends React.Component<Props, any> {
     /* Tool for debugging a stuck spinner
         <div>
             {this.props.displaySpinner.join("\n\n")}
@@ -22,6 +23,9 @@ class SpinnerWindow extends React.Component<any, any> {
                     containerClassName='spinnerBox'>
                     <Spinner size={ SpinnerSize.large } />
                 </Modal>
+                        <div>
+            {this.props.displaySpinner.join("\n\n")}
+        </div>
             </div>
         );
     }
@@ -32,4 +36,9 @@ const mapStateToProps = (state: State) => {
         displaySpinner: state.display.displaySpinner
     }
 }
+
+// Props types inferred from mapStateToProps & dispatchToProps
+const stateProps = returntypeof(mapStateToProps);
+type Props = typeof stateProps;
+
 export default connect(mapStateToProps, null)(SpinnerWindow);

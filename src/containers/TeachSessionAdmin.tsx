@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { returntypeof } from 'react-redux-typescript';
 import { createBLISApplicationAsync } from '../actions/createActions';
 import { CommandButton } from 'office-ui-fabric-react';
 import { bindActionCreators } from 'redux';
@@ -15,7 +16,7 @@ import TeachSessionMemory from './TeachSessionMemory';
 import { TextFieldPlaceholder } from './TextFieldPlaceholder';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 
-class TeachSessionAdmin extends React.Component<any, any> {
+class TeachSessionAdmin extends React.Component<Props, any> {
     constructor(p: any) {
         super(p);
         this.state = {
@@ -27,7 +28,7 @@ class TeachSessionAdmin extends React.Component<any, any> {
     handleAbandon() {
         this.props.setDisplayMode(DisplayMode.AppAdmin);
         let currentAppId: string = this.props.apps.current.appId;
-        this.props.deleteTeachSession(this.props.userKey, this.props.teachSession.current, currentAppId);
+        this.props.deleteTeachSession(this.props.user.key, this.props.teachSession.current, currentAppId);
     }
     handleCloseModal() {
         this.setState({
@@ -98,4 +99,9 @@ const mapStateToProps = (state: State) => {
         apps: state.apps
     }
 }
+// Props types inferred from mapStateToProps & dispatchToProps
+const stateProps = returntypeof(mapStateToProps);
+const dispatchProps = returntypeof(mapDispatchToProps);
+type Props = typeof stateProps & typeof dispatchProps;
+
 export default connect(mapStateToProps, mapDispatchToProps)(TeachSessionAdmin);

@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { returntypeof } from 'react-redux-typescript';
 import { fetchAllActionsAsync, fetchAllEntitiesAsync, fetchApplicationsAsync, fetchAllTrainDialogs, fetchAllChatSessionsAsync, fetchAllTeachSessionsAsync } from '../actions/fetchActions';
 import { setCurrentBLISApp, setDisplayMode } from '../actions/displayActions';
 import { deleteBLISApplicationAsync } from '../actions/deleteActions'
@@ -55,7 +56,7 @@ let columns: IColumn[] = [
         isResizable: true
     },
 ];
-class BLISAppsList extends React.Component<any, any> {
+class BLISAppsList extends React.Component<Props, any> {
     constructor(p: any) {
         super(p);
         this.renderItemColumn = this.renderItemColumn.bind(this);
@@ -219,4 +220,9 @@ const mapStateToProps = (state: State) => {
         blisApps: state.apps
     }
 }
+// Props types inferred from mapStateToProps & dispatchToProps
+const stateProps = returntypeof(mapStateToProps);
+const dispatchProps = returntypeof(mapDispatchToProps);
+type Props = typeof stateProps & typeof dispatchProps;
+
 export default connect(mapStateToProps, mapDispatchToProps)(BLISAppsList);

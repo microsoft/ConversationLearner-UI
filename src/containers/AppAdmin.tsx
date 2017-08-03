@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { returntypeof } from 'react-redux-typescript';
 import { fetchAllActionsAsync, fetchAllEntitiesAsync, fetchApplicationsAsync, fetchAllTrainDialogs } from '../actions/fetchActions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -14,7 +15,7 @@ import { State } from '../types';
 import LogDialogsList from './LogDialogsList';
 import { DisplayMode } from '../types/const';
 
-class AppAdmin extends React.Component<any, any> {
+class AppAdmin extends React.Component<Props, any> {
     constructor(p: any) {
         super(p);
         this.state = {
@@ -161,4 +162,9 @@ const mapStateToProps = (state: State) => {
         display: state.display
     }
 }
+// Props types inferred from mapStateToProps & dispatchToProps
+const stateProps = returntypeof(mapStateToProps);
+const dispatchProps = returntypeof(mapDispatchToProps);
+type Props = typeof stateProps & typeof dispatchProps;
+
 export default connect(mapStateToProps, mapDispatchToProps)(AppAdmin);
