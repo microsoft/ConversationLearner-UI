@@ -205,8 +205,7 @@ class TeachSessionScorer extends React.Component<Props, any> {
         let scores = this.renderScores();
         return (
             <div className='content'>
-                <div className="teachSessionHalfMode">
-                    TeachSessionScorer
+                <div className='ms-font-xl'>TeachSessionScorer</div>
                     <DetailsList
                         className="ms-font-m-plus"
                         items={scores}
@@ -215,7 +214,6 @@ class TeachSessionScorer extends React.Component<Props, any> {
                         onRenderItemColumn={this.renderItemColumn.bind(this)}
                         onColumnHeaderClick={ this.onColumnClick.bind(this) }
                     />
-                </div>
             </div>
         )
     }

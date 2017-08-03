@@ -60,6 +60,9 @@ class Header extends React.Component<Props, any> {
         }
     }
     render() {
+        // Don't display the header in teach mode
+        if (this.props.displayMode == DisplayMode.Teach) return null;
+
         let displayName = this.props.userName ? this.props.userName : "BLIS";
         return (
             <div className='header'>
@@ -104,7 +107,8 @@ const mapDispatchToProps = (dispatch: any) => {
 
 const mapStateToProps = (state: State) => {
     return {
-        userName: state.user.name
+        userName: state.user.name,
+        displayMode: state.display.displayMode
     }
 }
 

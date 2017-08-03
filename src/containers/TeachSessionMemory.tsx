@@ -108,9 +108,7 @@ class TeachSessionMemory extends React.Component<Props, any> {
         let memories = this.renderMemories();
         return (
             <div className='content'>
-                <div className={this.props.class}>
-                    Memory
-                </div>
+                <div className='ms-font-xl'>Memory</div>
                 <DetailsList
                         className="ms-font-m-plus"
                         items={memories}
@@ -136,13 +134,9 @@ const mapStateToProps = (state: State, ownProps: any) => {
     }
 }
 
-interface ReceivedProps {
-    class: string
-}
-
 // Props types inferred from mapStateToProps & dispatchToProps
 const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
-type Props = typeof stateProps & typeof dispatchProps & ReceivedProps;
+type Props = typeof stateProps & typeof dispatchProps;
 
 export default connect(mapStateToProps, mapDispatchToProps)(TeachSessionMemory as React.ComponentClass<any>);
