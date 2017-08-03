@@ -170,7 +170,7 @@ class TeachSessionScorer extends React.Component<Props, any> {
                 if (fieldContent) {
                     fieldContent = (fieldContent*100).toFixed(1) + "%"
                 } else {
-                    fieldContent = item["reason"]
+                    fieldContent = (item["reason"] == "notAvailable") ? "Disqualified" : "Training...";
                 }
                 break;
             case 'entities':
