@@ -20,23 +20,25 @@ interface Props {
     handleClose: Function
 }
 
+const initState = {
+            actionTypeVal: 'TEXT',
+            contentVal: '',
+            reqEntitiesVal: [] as EntityPickerObject[],
+            negEntitiesVal: [] as EntityPickerObject[],
+            waitVal: false,
+            availableRequiredEntities: [] as EntityPickerObject[],
+            availableNegativeEntities: [] as EntityPickerObject[],
+            editing: false,
+            defaultNegativeEntities: [] as EntityPickerObject[],
+            defaultRequiredEntities: []as EntityPickerObject[],
+            entityModalOpen: false,
+            open: false
+        };
+
 class ActionResponseCreatorEditor extends React.Component<any, any> {
     constructor(p: Props) {
         super(p);
-        this.state = {
-            actionTypeVal: 'TEXT',
-            contentVal: '',
-            reqEntitiesVal: [],
-            negEntitiesVal: [],
-            waitVal: false,
-            availableRequiredEntities: [],
-            availableNegativeEntities: [],
-            editing: false,
-            defaultNegativeEntities: [],
-            defaultRequiredEntities: [],
-            entityModalOpen: false,
-            open: false
-        }
+        this.state = initState;
     }
     componentWillReceiveProps(p: Props) {
         if (p.open === true && this.state.open === true) {
@@ -52,20 +54,7 @@ class ActionResponseCreatorEditor extends React.Component<any, any> {
             })
         } else {
             if (p.blisAction === null) {
-                this.setState({
-                    actionTypeVal: 'TEXT',
-                    contentVal: '',
-                    reqEntitiesVal: [],
-                    negEntitiesVal: [],
-                    waitVal: false,
-                    availableRequiredEntities: [],
-                    availableNegativeEntities: [],
-                    editing: false,
-                    defaultNegativeEntities: [],
-                    defaultRequiredEntities: [],
-                    entityModalOpen: false,
-                    open: p.open
-                })
+                this.setState({...initState, open: p.open});
             } else {
                 let entities = this.props.entities.map((e: EntityBase) => {
                     return {
@@ -130,17 +119,7 @@ class ActionResponseCreatorEditor extends React.Component<any, any> {
         }
     }
     handleClose() {
-        this.setState({
-            open: false,
-            actionTypeVal: 'TEXT',
-            contentVal: '',
-            reqEntitiesVal: [],
-            negEntitiesVal: [],
-            waitVal: false,
-            availableRequiredEntities: [],
-            availableNegativeEntities: [],
-            entityModalOpen: false
-        })
+        this.setState({...initState});
     }
     createAction() {
         let currentAppId: string = this.props.blisApps.current.appId;

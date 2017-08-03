@@ -230,7 +230,8 @@ class ActionResponsesHomepage extends React.Component<any, any> {
     }
     handleOpenCreateModal() {
         this.setState({
-            createEditModalOpen: true
+            createEditModalOpen: true,
+            actionSelected: null
         })
     }
     handleCloseCreateModal() {
