@@ -29,6 +29,12 @@ class TeachSessionAdmin extends React.Component<Props, any> {
         this.props.setDisplayMode(DisplayMode.AppAdmin);
         let currentAppId: string = this.props.apps.current.appId;
         this.props.deleteTeachSession(this.props.user.key, this.props.teachSession.current, currentAppId);
+        // TODO: Still need to delete the associated training dialog.  This needs to be two steps
+    }
+    handleSave() {
+        this.props.setDisplayMode(DisplayMode.AppAdmin);
+        let currentAppId: string = this.props.apps.current.appId;
+        this.props.deleteTeachSession(this.props.user.key, this.props.teachSession.current, currentAppId);
     }
     handleCloseModal() {
         this.setState({
@@ -46,35 +52,47 @@ class TeachSessionAdmin extends React.Component<Props, any> {
             case TeachMode.Extractor:
                 userWindow = (
                     <div className="teachSessionModeContainer">
-                        <TeachSessionMemory class={"teachSessionHalfMode"} />
-                        <TeachSessionExtractor className="teachSessionHalfMode" />
+                        <TeachSessionMemory className="teachSessionWindow" />
+                        <TeachSessionExtractor className="teachSessionWindow" />
                     </div>
                 )
                 break;
             case TeachMode.Scorer:
                 userWindow = (
                     <div className="teachSessionModeContainer">
-                        <TeachSessionMemory class={"teachSessionHalfMode"} />
-                        <TeachSessionScorer />
+                        <TeachSessionMemory className="teachSessionWindow" />
+                        <TeachSessionScorer className="teachSessionWindow"  />
                     </div>
                 )
                 break;
             default:
                 userWindow = (
                     <div className="teachSessionModeContainer">
-                        <TeachSessionMemory class={"teachSessionFullMode"} />
+                        <TeachSessionMemory className="teachSessionWindow" />
                     </div>
                 )
                 break;
         }
+        // Show done button if at least on round and at end of round
+        let showDone = this.props.teachSession.currentConversationStack.length > 0 && this.props.teachSession.mode == TeachMode.Wait;
+        let doneButton = (showDone) ?
+                    <CommandButton
+                        data-automation-id='randomID16'
+                        disabled={false}
+                        onClick={this.handleSave.bind(this)}
+                        className='ms-font-su goldButton teachSessionHeaderButton'
+                        ariaDescription='Done Teaching'
+                        text='Done Teaching'
+                    /> : null;
         return (
             <div className="container">
                 <div className="teachSessionHeader">
+                    {doneButton}
                     <CommandButton
                         data-automation-id='randomID16'
                         disabled={false}
                         onClick={this.confirmDelete.bind(this)}
-                        className='ms-font-su goldButton abandonTeach'
+                        className='ms-font-su grayButton teachSessionHeaderButton abandonTeach'
                         ariaDescription='Abandon Teach'
                         text='Abandon Teach'
                     />

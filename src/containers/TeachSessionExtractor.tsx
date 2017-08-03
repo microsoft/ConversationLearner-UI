@@ -27,8 +27,7 @@ class TeachSessionExtractor extends React.Component<Props, any> {
     render() {
         return (
             <div className='content'>
-                <div className="teachSessionHalfMode">
-                    Extractor
+                <div className='ms-font-xl'>Extractor</div>
                     <div>{this.props.teachSession.input}</div>
                     <CommandButton
                             data-automation-id='randomID16'
@@ -46,7 +45,6 @@ class TeachSessionExtractor extends React.Component<Props, any> {
                             ariaDescription='Run Scorer'
                             text='Run Scorer'
                         />
-                </div>
             </div>
         )
     }
