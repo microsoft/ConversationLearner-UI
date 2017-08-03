@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader'
@@ -46,7 +47,7 @@ let columns: IColumn[] = [
     },
 ];
 
-class TrainDialogsList extends React.Component<any, any> {
+class TrainDialogsList extends React.Component<Props, any> {
     constructor(p: any) {
         super(p);
         this.state = {
@@ -131,4 +132,9 @@ const mapStateToProps = (state: State) => {
         teachSessions: state.teachSessions
     }
 }
+// Props types inferred from mapStateToProps & dispatchToProps
+const stateProps = returntypeof(mapStateToProps);
+const dispatchProps = returntypeof(mapDispatchToProps);
+type Props = typeof stateProps & typeof dispatchProps;
+
 export default connect(mapStateToProps, mapDispatchToProps)(TrainDialogsList);

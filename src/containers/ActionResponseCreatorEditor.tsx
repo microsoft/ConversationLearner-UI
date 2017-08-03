@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { returntypeof } from 'react-redux-typescript';
 import { createActionAsync } from '../actions/createActions';
 import { editActionAsync } from '../actions/updateActions';
 import { bindActionCreators } from 'redux';
@@ -13,11 +14,6 @@ import EntityCreatorEditor from './EntityCreatorEditor'
 interface EntityPickerObject {
     key: string
     name: string
-}
-interface Props {
-    open: boolean,
-    blisAction: ActionBase | null,
-    handleClose: Function
 }
 
 const initState = {
@@ -35,7 +31,7 @@ const initState = {
             open: false
         };
 
-class ActionResponseCreatorEditor extends React.Component<any, any> {
+class ActionResponseCreatorEditor extends React.Component<Props, any> {
     constructor(p: Props) {
         super(p);
         this.state = initState;
@@ -145,7 +141,7 @@ class ActionResponseCreatorEditor extends React.Component<any, any> {
             packageDeletionId: null
         })
         if (this.state.editing === false) {
-            this.props.createAction(this.props.userkey, actionToAdd, currentAppId);
+            this.props.createAction(this.props.userKey, actionToAdd, currentAppId);
         } else {
             this.editAction(actionToAdd, currentAppId);
         }
@@ -346,4 +342,16 @@ const mapStateToProps = (state: State, ownProps: any) => {
         entities: state.entities
     }
 }
+
+interface ReceiveProps {
+    open: boolean,
+    blisAction: ActionBase | null,
+    handleClose: Function,
+    handleOpenDeleteModal: Function
+}
+// Props types inferred from mapStateToProps & dispatchToProps
+const stateProps = returntypeof(mapStateToProps);
+const dispatchProps = returntypeof(mapDispatchToProps);
+type Props = typeof stateProps & typeof dispatchProps & ReceiveProps;
+
 export default connect(mapStateToProps, mapDispatchToProps)(ActionResponseCreatorEditor as React.ComponentClass<any>)

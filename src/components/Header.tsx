@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { returntypeof } from 'react-redux-typescript';
 import { setDisplayMode, setLoginDisplay } from '../actions/displayActions'
 import UserLogin from '../containers/UserLogin'
 import SpinnerWindow from '../containers/SpinnerWindow'
@@ -9,7 +10,7 @@ import { State } from '../types'
 import { bindActionCreators } from 'redux';
 import { DisplayMode } from '../types/const'
 
-class Header extends React.Component<any, any> {
+class Header extends React.Component<Props, any> {
     constructor(p: any) {
         super(p);
         this.state = {
@@ -106,5 +107,10 @@ const mapStateToProps = (state: State) => {
         userName: state.user.name
     }
 }
+
+// Props types inferred from mapStateToProps & dispatchToProps
+const stateProps = returntypeof(mapStateToProps);
+const dispatchProps = returntypeof(mapDispatchToProps);
+type Props = typeof stateProps & typeof dispatchProps;
 
 export default connect(mapStateToProps, mapDispatchToProps)(Header);

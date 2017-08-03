@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../types'
@@ -25,7 +26,7 @@ let columns: IColumn[] = [
     }
 ]
 
-class TeachSessionMemory extends React.Component<any, any> {
+class TeachSessionMemory extends React.Component<Props, any> {
         constructor(p: any) {
         super(p);
         this.state = {
@@ -115,4 +116,14 @@ const mapStateToProps = (state: State, ownProps: any) => {
         user: state.user
     }
 }
+
+interface ReceivedProps {
+    class: string
+}
+
+// Props types inferred from mapStateToProps & dispatchToProps
+const stateProps = returntypeof(mapStateToProps);
+const dispatchProps = returntypeof(mapDispatchToProps);
+type Props = typeof stateProps & typeof dispatchProps & ReceivedProps;
+
 export default connect(mapStateToProps, mapDispatchToProps)(TeachSessionMemory as React.ComponentClass<any>);

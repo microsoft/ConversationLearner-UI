@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { returntypeof } from 'react-redux-typescript';
 import axios from 'axios';
 import { createBLISApplicationAsync } from '../actions/createActions';
 import { bindActionCreators } from 'redux';
@@ -16,7 +17,7 @@ type CultureObject = {
     CultureCode: string;
     CultureName: string;
 }
-class BLISAppCreator extends React.Component<any, any> {
+class BLISAppCreator extends React.Component<Props, any> {
     constructor(p: any) {
         super(p);
         this.state = {
@@ -125,7 +126,6 @@ class BLISAppCreator extends React.Component<any, any> {
                             defaultSelectedKey={this.state.localeVal}
                             options={this.state.localeOptions}
                             onChanged={this.localeChanged.bind(this)}
-                            selectedKey={this.state.localeVal}
                         />
                     </div>
                     <div className='modalFooter'>
@@ -168,4 +168,9 @@ const mapStateToProps = (state: State) => {
         userKey: state.user.key
     }
 }
+// Props types inferred from mapStateToProps & dispatchToProps
+const stateProps = returntypeof(mapStateToProps);
+const dispatchProps = returntypeof(mapDispatchToProps);
+type Props = typeof stateProps & typeof dispatchProps;
+
 export default connect(mapStateToProps, mapDispatchToProps)(BLISAppCreator);

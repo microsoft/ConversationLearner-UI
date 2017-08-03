@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader';
@@ -53,7 +54,7 @@ let columns: IColumn[] = [
         isResizable: true
     }
 ];
-class ActionResponsesHomepage extends React.Component<any, any> {
+class ActionResponsesHomepage extends React.Component<Props, any> {
     constructor(p: any) {
         super(p);
         this.deleteSelectedAction = this.deleteSelectedAction.bind(this);
@@ -289,4 +290,9 @@ const mapStateToProps = (state: State) => {
         apps: state.apps
     }
 }
+// Props types inferred from mapStateToProps & dispatchToProps
+const stateProps = returntypeof(mapStateToProps);
+const dispatchProps = returntypeof(mapDispatchToProps);
+type Props = typeof stateProps & typeof dispatchProps;
+
 export default connect(mapStateToProps, mapDispatchToProps)(ActionResponsesHomepage);

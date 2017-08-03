@@ -36,6 +36,7 @@ const displayReducer: Reducer<DisplayState> =  (state = initialState, action: Ac
         case AT.SET_LOGIN_DISPLAY:
             return {...state, displayLogin: action.setLoginDisplay};
         case AT.CREATE_BLIS_APPLICATION_FULFILLED:
+            return {...state, displayMode: DisplayMode.AppAdmin, displaySpinner: removeSpinner(state.displaySpinner, action.type)}
         case AT.SET_CURRENT_BLIS_APP_FULFILLED:
             return {...state, displayMode: DisplayMode.AppAdmin};
         case AT.SET_ERROR_DISPLAY:
@@ -77,7 +78,7 @@ const displayReducer: Reducer<DisplayState> =  (state = initialState, action: Ac
             return {...state, displaySpinner: addSpinner(state.displaySpinner, action.type) };
 
         case AT.CREATE_ACTION_FULFILLED:
-        case AT.CREATE_BLIS_APPLICATION_FULFILLED:
+        //case AT.CREATE_BLIS_APPLICATION_FULFILLED: Handled above
         case AT.CREATE_CHAT_SESSION_FULFILLED:
         case AT.CREATE_ENTITY_FULFILLED:
 
