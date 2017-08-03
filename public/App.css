@@ -217,6 +217,29 @@
   margin-top: 2%;
   height: 100%;
 }
+.entityMatch
+{
+    flex-shrink: 1;
+    background: #e0ffe0;
+    margin: 1px;
+    display: inline-block;
+    -ms-flex-wrap: nowrap;
+    flex-wrap: nowrap;
+    padding: 4px;
+    text-align: center;
+}
+.entityMismatch
+{
+    flex-shrink: 1;
+    background: #ffe0e0;
+    margin: 1px;
+    display: inline-block;
+    -ms-flex-wrap: nowrap;
+    flex-wrap: nowrap;
+    padding: 4px;
+    text-align: center;
+}
+
 .goldText{
   color: #ffb900
 }

@@ -477,20 +477,17 @@ export const dummyScorerResponse = function() : UIScoreResponse
 {
   let text = `
     { "memories" :
-        [
-            { 
-              "entityName": "strangers",
-              "entityValue": "love"
-            },
-            { 
-              "entityName": "rules",
-              "entityValue": "you know"
-            },
-            { 
-              "entityName": "give up",
-              "entityValue": "never"
-            }
-        ],
+     [{ 
+          "entityName": "name",
+          "entityValue": "Jerry",
+          "id" : "ab3b1b47-6b21-4e10-8a6c-762259f75d06"
+      },
+      { 
+        "entityName": "stock",
+        "entityValue": "microsoft",
+        "id" : "b9aa27ba-06ab-4548-adf0-50f0ddc3c179"
+      }
+      ],
       "scoreResponse" :
       {
         "packageId": 16,
@@ -499,42 +496,51 @@ export const dummyScorerResponse = function() : UIScoreResponse
         },
         "scoredActions": [
           {
-            "actionId": "f97e4d7f-b483-42e3-a92b-649a1a4a77a4",
+            "actionId": "74701cef-46fe-4bb4-8b39-6488ac8a106b",
             "score": 0.8723,
             "metadata": {
               "fooData": "fooData"
             },
             "isTerminal": false,
-            "payload": "fooData"
+            "payload": "What is your favorite $color, *name"
           },
           {
-            "actionId": "21330f6f-e599-4145-a3f5-a5dce8818102",
+            "actionId": "1c327d5f-437a-4fad-98fc-c5b540b8d31a",
             "score": 0.1298,
             "metadata": {
               "fooData": "fooData"
             },
             "isTerminal": true,
-            "payload": "fooData2"
+            "payload": "How are you?"
           }    
         ],
         "unscoredActions": [
           {
-            "actionId": "7db7a47c-fdb6-453a-b740-300551b64602",
+            "actionId": "01db8ab6-cb35-461b-89ca-ab9b54245c2b",
             "reason": "notAvailable",
             "metadata": {
               "fooData": "fooData"
             },
             "isTerminal": false,
-            "payload": "fooData3"
+            "payload": "What is your *name?"
           },
           {
-            "actionId": "fe04b58d-1423-4ea2-9df7-a7dedcf07022",
+            "actionId": "8e341de6-8bca-4589-8c8b-009ece9d3b03",
+            "reason": "notAvailable",
+            "metadata": {
+              "fooData": "fooData"
+            },
+            "isTerminal": false,
+            "payload": "$color is a nice color, $name"
+          },
+          {
+            "actionId": "4eebf724-11a6-4976-98ea-6f90a6f7d848",
             "reason": "notScorable",
             "metadata": {
               "fooData": "fooData"
             },
             "isTerminal": true,
-            "payload": "fooData4"
+            "payload": "I can show you stocks, $name"
           }    
         ]
       }
@@ -611,17 +617,20 @@ export const dummyScorerResponse = function() : UIScoreResponse
     let text = `
     { "memories" :
       [{ 
-          "entityName": "strangers",
-          "entityValue": "love"
+          "entityName": "name",
+          "entityValue": "Jerry",
+          "id" : "ab3b1b47-6b21-4e10-8a6c-762259f75d06"
       },
         { 
-          "entityName": "rules",
-          "entityValue": "you know"
+          "entityName": "color",
+          "entityValue": "Blue",
+          "id" : "86acd2c7-bf32-4811-9b24-79323ae80cb8"
       },
         { 
-          "entityName": "give up",
-          "entityValue": "never"
-      }
+          "entityName": "stock",
+          "entityValue": "microsoft",
+          "id" : "b9aa27ba-06ab-4548-adf0-50f0ddc3c179"
+        }
       ],
       "extractResponse" :
         {
