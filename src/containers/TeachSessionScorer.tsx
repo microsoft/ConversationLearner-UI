@@ -1,8 +1,9 @@
 import * as React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import { returntypeof } from 'react-redux-typescript';
 import { State } from '../types'
-import { TrainScorerStep, ScoredBase } from 'blis-models';
+import { TrainScorerStep, ScoredBase, ActionBase, EntityBase, Memory } from 'blis-models';
 import { postScorerFeedbackAsync } from '../actions/teachActions'
 import { CommandButton } from 'office-ui-fabric-react';
 import { IColumn, DetailsList, CheckboxVisibility } from 'office-ui-fabric-react';
@@ -13,8 +14,8 @@ let columns: IColumn[] = [
         key: 'select',
         name: '',
         fieldName: 'actionId',
-        minWidth: 100,
-        maxWidth: 200,
+        minWidth: 35,
+        maxWidth: 35,
         isResizable: true
     },
     {
@@ -22,7 +23,7 @@ let columns: IColumn[] = [
         name: 'Payload',
         fieldName: 'payload',
         minWidth: 100,
-        maxWidth: 200,
+        maxWidth: 400,
         isResizable: true
     },
     {
@@ -34,10 +35,20 @@ let columns: IColumn[] = [
         isResizable: true,
         isSorted: true,
         isSortedDescending: true
+    },
+    {
+        key: 'entities',
+        name: 'Entities',
+        fieldName: 'entities',
+        minWidth: 100,
+        maxWidth: 200,
+        isResizable: true,
+        isSorted: true,
+        isSortedDescending: true
     }
 ]
 
-class TeachSessionScorer extends React.Component<any, any> {
+class TeachSessionScorer extends React.Component<Props, any> {
     constructor(p: any) {
         super(p);
         this.state = {
@@ -95,6 +106,49 @@ class TeachSessionScorer extends React.Component<any, any> {
         let teachId: string = this.props.teachSession.current.teachId;
         this.props.postScorerFeedback(this.props.user.key, appId, teachId, trainScorerStep);
     }
+    /** Check if entity is in memory and return it's name */
+    entityInMemory(entityId : string) : {match: boolean, name: string} {
+        let entity = this.props.entities.filter((e: EntityBase) => e.entityId == entityId)[0];
+
+        // If entity is null - there's a bug somewhere
+        if (!entity) {
+            return {match: false, name: "ERROR"};
+        }
+
+        let memory = this.props.teachSession.memories.filter((m : Memory) => m.entityName == entity.entityName)[0];
+        return {match: (memory != null), name: entity.entityName};
+    }
+    renderEntityRequirements(actionId: string) {
+        let action = this.props.actions.filter((a : ActionBase) => a.actionId == actionId)[0];
+
+        // If action is null - there's a bug somewhere
+        if (!action) {
+            return <div>ERROR: Missing Action</div>;
+        }
+
+        let response = [];
+        for (let entityId of action.requiredEntities) {
+            let found = this.entityInMemory(entityId);
+            let key = `${actionId}_${found.name}`
+            if (found.match) {
+                response.push(<span key={key} className="entityMatch">{found.name}</span>);
+            }
+            else {
+                response.push(<span key={key} className="entityMismatch">{found.name}</span>);
+            }
+        }
+        for (let entityId of action.negativeEntities) {
+            let found = this.entityInMemory(entityId);
+            let key = `${actionId}_${found.name}`
+            if (found.match) {
+                response.push(<span key={key} className="entityMismatch"><del>{found.name}</del></span>);
+            }
+            else {
+                response.push(<span key={key} className="entityMatch"><del>{found.name}</del></span>);
+            }
+        }
+        return response;
+    }
     renderItemColumn(item?: any, index?: number, column?: IColumn) {
         let fieldContent = item[column.fieldName];
         switch (column.key) {
@@ -119,18 +173,20 @@ class TeachSessionScorer extends React.Component<any, any> {
                     fieldContent = item["reason"]
                 }
                 break;
+            case 'entities':
+                return this.renderEntityRequirements(item.actionId);
             default:
                 break;
         }
         return <span className='ms-font-m-plus'>{fieldContent}</span>
     }
     renderScores(): ScoredBase[] {
-        let filteredScores = this.props.teachSession.scoreResponse.scoredActions.concat(this.props.teachSession.scoreResponse.unscoredActions) || [];
+        let filteredScores = (this.props.teachSession.scoreResponse.scoredActions as ScoredBase[]).concat(this.props.teachSession.scoreResponse.unscoredActions) || [];
 
         if (this.state.sortColumn)
         {
             // Sort the items.
-            filteredScores = filteredScores.concat([]).sort((a: any, b: any) => {
+            filteredScores = filteredScores.sort((a: any, b: any) => {
                 let firstValue = this.getValue(a, this.state.sortColumn);
                 let secondValue = this.getValue(b, this.state.sortColumn);
 
@@ -172,8 +228,15 @@ const mapDispatchToProps = (dispatch: any) => {
 const mapStateToProps = (state: State, ownProps: any) => {
     return {
         user: state.user,
-        teachSession: state.teachSessions,
-        apps: state.apps
+        teachSession : state.teachSessions,
+        apps: state.apps,
+        entities: state.entities,
+        actions: state.actions
     }
 }
+// Props types inferred from mapStateToProps & dispatchToProps
+const stateProps = returntypeof(mapStateToProps);
+const dispatchProps = returntypeof(mapDispatchToProps);
+type Props = typeof stateProps & typeof dispatchProps;
+
 export default connect(mapStateToProps, mapDispatchToProps)(TeachSessionScorer as React.ComponentClass<any>);
