@@ -2,7 +2,7 @@ import * as React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../types'
-import { ExtractResponse, TrainExtractorStep, PredictedEntity, LabeledEntity } from 'blis-models'
+import { ExtractResponse, TrainExtractorStep, PredictedEntity, LabeledEntity, TextVariation } from 'blis-models'
 import { postExtractorFeedback, runScorer } from '../actions/teachActions';
 import { CommandButton } from 'office-ui-fabric-react';
 import { dummyExtractResponse, dummyTrainExtractorStep } from '../epics/apiHelpers'; // TEMP
@@ -19,6 +19,7 @@ class TeachSessionExtractor extends React.Component<any, any> {
             initialExtractResponse: {}
         }
         this.setInitialValues = this.setInitialValues.bind(this)
+        this.updatePredictedEntities = this.updatePredictedEntities.bind(this)
     }
     setInitialValues(props: any) {
         let current = props.teachSession
@@ -30,6 +31,11 @@ class TeachSessionExtractor extends React.Component<any, any> {
                 initialExtractResponse: current.extractResponse
             })
         }
+    }
+    updatePredictedEntities(entities: PredictedEntity[]){
+        this.setState({
+            predictedEntities: entities
+        })
     }
     componentDidMount() {
         this.setInitialValues(this.props)
@@ -62,7 +68,7 @@ class TeachSessionExtractor extends React.Component<any, any> {
             <div className="content">
                 <div>
                     <span className='ms-font-xl extractorTitle'>Entities</span>
-                    <ExtractorResponseEditor input={this.state.inputText} predictedEntities={this.state.predictedEntities} />
+                    <ExtractorResponseEditor input={this.state.inputText} predictedEntities={this.state.predictedEntities} updatePredictedEntities={this.updatePredictedEntities}/>
                 </div>
                 <div>
                     <span className='ms-font-xl extractorTitle'>Variations</span>
