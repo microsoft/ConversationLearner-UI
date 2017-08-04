@@ -615,12 +615,12 @@ export const dummyExtractResponse = function (): UIExtractResponse {
     { "memories" :
       [
 		{ 
-          "entityName": "size",
-          "entityValue": "large"
+          "entityName": "name",
+          "entityValue": "Bob"
         },
         { 
-          "entityName": "topping",
-          "entityValue": "cheese"
+          "entityName": "color",
+          "entityValue": "red"
         }
       ],
       "extractResponse" :
