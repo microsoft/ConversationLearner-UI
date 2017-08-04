@@ -16,9 +16,9 @@ interface SubstringObject {
     text: string,
     entityName: string,
     entityId: string,
-    textClass: {},
-    dropdownClass: {},
-    labelClass: {},
+    textStyle: {},
+    dropdownStyle: {},
+    labelStyle: {},
 }
 
 interface IndexGroup {
@@ -32,20 +32,24 @@ const styles = {
         display: "none"
     },
     normal: {
-
+        display: "block"
     },
     highlighted: {
-        backgroundColor: "yellow"
+        backgroundColor: "yellow",
+        display: "block"
     },
     containerDiv: {
         display: "inline-block",
-        verticalAlign: "top"
+        verticalAlign: "bottom",
+        marginLeft: "3px"
     }
 }
 
 class ExtractorResponseEditor extends React.Component<any, any> {
     constructor(p: any) {
-        super(p)
+        super(p);
+        this.renderSubstringObject = this.renderSubstringObject.bind(this)
+        this.createSubstringObjects = this.createSubstringObjects.bind(this)
     }
     createSubstringObjects(input: string, predictedEntities: PredictedEntity[]): SubstringObject[] {
         let indexGroups: IndexGroup[] = [];
@@ -105,7 +109,7 @@ class ExtractorResponseEditor extends React.Component<any, any> {
             if (predictedEntities.length == count) {
                 //handle the case where there is text after the last predicted entity
                 if (p.endCharIndex !== input.length - 1) {
-                    currentIndexGroup = { ...currentIndexGroup, end: input.length}
+                    currentIndexGroup = { ...currentIndexGroup, end: input.length }
                     indexGroups.push(currentIndexGroup);
                 }
             }
@@ -116,26 +120,31 @@ class ExtractorResponseEditor extends React.Component<any, any> {
                 text: input.substring(i.start, i.end),
                 entityName: i.entity === null ? null : i.entity.entityName,
                 entityId: i.entity === null ? null : i.entity.entityId,
-                textClass: i.entity === null ? styles.normal : styles.highlighted,
-                //dropdown class is going to have to depend on some state object. When you click an substring group with an entity it needs to go from styles.hidden to styles.normal
-                dropdownClass: styles.hidden,
-                labelClass: i.entity === null ? styles.hidden : styles.normal
+                textStyle: i.entity === null ? styles.normal : styles.highlighted,
+                //dropdown Style is going to have to depend on some state object. When you click an substring group with an entity it needs to go from styles.hidden to styles.normal
+                dropdownStyle: styles.hidden,
+                labelStyle: i.entity === null ? styles.hidden : styles.normal
             }
             substringObjects.push(substringObj)
         })
-        console.log('SUBSTRING OBJS', substringObjects)
         return substringObjects;
+    }
+    renderSubstringObject(s: SubstringObject, key: number) {
+        return (
+            <div key={key} style={styles.containerDiv}>
+                <span style={s.labelStyle} className='ms-font-s'>{s.entityName}</span>
+                <span style={s.textStyle} className='ms-font-xl'>{s.text}</span>
+                <Dropdown style={s.dropdownStyle} />
+            </div>
+        )
     }
     render() {
         let substringObjects: SubstringObject[] = this.createSubstringObjects(this.props.input, this.props.predictedEntities)
+        let key: number = 0;
         return (
             <div>
                 {substringObjects.map((s: SubstringObject) => {
-                    <div style={styles.containerDiv}>
-                        <Label style={s.labelClass}>{s.entityName}</Label>
-                        <p style={s.textClass}>{s.text}</p>
-                        <Dropdown style={s.dropdownClass} />
-                    </div>
+                    return this.renderSubstringObject(s, ++key)
                 })}
             </div>
         )
