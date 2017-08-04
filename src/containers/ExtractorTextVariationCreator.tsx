@@ -1,4 +1,4 @@
-import { toggleTrainDialog } from '../actions/updateActions';
+import { editActionAsync } from '../actions/updateActions';
 import * as React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -15,7 +15,7 @@ class ExtractorTextVariationCreator extends React.Component<any, any> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        toggleTrainDialog: toggleTrainDialog,
+        editActionAsync: editActionAsync,
     }, dispatch);
 }
 const mapStateToProps = (state: State, ownProps: any) => {
