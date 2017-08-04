@@ -18,7 +18,7 @@ interface EntityPickerObject {
 
 const initState = {
             actionTypeVal: 'TEXT',
-            contentVal: '',
+            payloadVal: '',
             reqEntitiesVal: [] as EntityPickerObject[],
             negEntitiesVal: [] as EntityPickerObject[],
             waitVal: true,
@@ -74,7 +74,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                 })
                 this.setState({
                     actionTypeVal: p.blisAction.metadata.actionType,
-                    contentVal: p.blisAction.payload,
+                    payloadVal: p.blisAction.payload,
                     reqEntitiesVal: requiredEntities,
                     negEntitiesVal: negativeEntities,
                     waitVal: p.blisAction.isTerminal,
@@ -131,7 +131,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
             actionType: this.state.actionTypeVal
         })
         let actionToAdd = new ActionBase({
-            payload: this.state.contentVal,
+            payload: this.state.payloadVal,
             negativeEntities: negativeEntities,
             requiredEntities: requiredEntities,
             isTerminal: this.state.waitVal,
@@ -152,6 +152,9 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
         actionToAdd.actionId = this.props.blisAction.actionId;
         this.props.editAction(this.props.userKey, actionToAdd, currentAppId);
     }
+    checkPayload(value :string): string {
+        return value ? "" : "Payload is required";
+    }
     waitChanged() {
         this.setState({
             waitVal: !this.state.waitVal,
@@ -162,9 +165,9 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
             actionTypeVal: obj.text,
         })
     }
-    contentChanged(text: string) {
+    payloadChanged(text: string) {
         this.setState({
-            contentVal: text
+            payloadVal: text
         })
     }
     onFilterChanged(filterText: string, tagList: EntityPickerObject[]) {
@@ -256,10 +259,11 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                             disabled={this.state.editing}
                         />
                         <TextFieldPlaceholder
-                            onChanged={this.contentChanged.bind(this)}
+                            onGetErrorMessage={ this.checkPayload.bind(this)}
+                            onChanged={this.payloadChanged.bind(this)}
                             label="Payload"
                             placeholder="Payload..."
-                            value={this.state.contentVal} />
+                            value={this.state.payloadVal} />
                         <Label>Required Entities</Label>
                         <TagPicker
                             onResolveSuggestions={this.onFilterChanged.bind(this)}
@@ -297,7 +301,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                     <div className="modalFooter">
                         <CommandButton
                             data-automation-id='randomID6'
-                            disabled={false}
+                            disabled={!this.state.payloadVal}
                             onClick={this.createAction.bind(this)}
                             className='goldButton'
                             ariaDescription='Create'
