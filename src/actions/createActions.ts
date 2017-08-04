@@ -2,10 +2,10 @@ import { ActionObject } from '../types'
 import { AT } from '../types/ActionTypes'
 import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, ActionMetaData, ActionList, ActionTypes, TrainDialog, LogDialog, Session, Teach } from 'blis-models';
 
-export const createBLISApplication = (key : string, userId : string, application: BlisAppBase): ActionObject => {
+export const createBLISApplicationAsync = (key : string, userId : string, application: BlisAppBase): ActionObject => {
     //needs to make a call to an Epic to send data to BLIS
     return {
-        type: AT.CREATE_BLIS_APPLICATION,
+        type: AT.CREATE_BLIS_APPLICATION_ASYNC,
         key : key,
         userId: userId,
         blisApp: application,
@@ -20,10 +20,10 @@ export const createApplicationFulfilled = (blisApp: BlisAppBase, appId: string):
     }
 }
 
-export const createEntity = (key: string, entity: EntityBase, currentAppId: string): ActionObject => {
+export const createEntityAsync = (key: string, entity: EntityBase, currentAppId: string): ActionObject => {
     //needs to make a call to an Epic to send data to BLIS
     return {
-        type: AT.CREATE_ENTITY,
+        type: AT.CREATE_ENTITY_ASYNC,
         key: key,
         entity: entity,
         currentAppId: currentAppId
@@ -65,10 +65,10 @@ export const createNegativeEntityFulfilled = (key: string, positiveEntity: Entit
     }
 }
 
-export const createAction = (key: string, action: ActionBase, currentAppId: string): ActionObject => {
+export const createActionAsync = (key: string, action: ActionBase, currentAppId: string): ActionObject => {
     //needs to make a call to an Epic to send data to BLIS
     return {
-        type: AT.CREATE_ACTION,
+        type: AT.CREATE_ACTION_ASYNC,
         key: key,
         action: action,
         currentAppId: currentAppId
@@ -83,10 +83,10 @@ export const createActionFulfilled = (action: ActionBase, actionId: string): Act
     }
 }
 
-export const createChatSession = (key: string, session: Session, currentAppId: string): ActionObject => {
+export const createChatSessionAsync = (key: string, session: Session, currentAppId: string): ActionObject => {
     //needs to make a call to an Epic to send data to BLIS
     return {
-        type: AT.CREATE_CHAT_SESSION,
+        type: AT.CREATE_CHAT_SESSION_ASYNC,
         key: key,
         session: session,
         currentAppId: currentAppId
@@ -102,25 +102,7 @@ export const createChatSessionFulfilled = (session: Session, sessionId: string):
     }
 }
 
-export const createTrainDialog = (key: string, trainDialog: TrainDialog): ActionObject => {
-    //needs to make a call to an Epic to send data to BLIS
-    return {
-        type: AT.CREATE_TRAIN_DIALOG,
-        key: key,
-        trainDialog: trainDialog
-    }
-}
-
-export const createLogDialog = (key: string, logDialog: LogDialog): ActionObject => {
-    //needs to make a call to an Epic to send data to BLIS
-    return {
-        type: AT.CREATE_LOG_DIALOG,
-        key: key,
-        logDialog: logDialog
-    }
-}
-
-export const createTeachSession = (key: string, teachSession: Teach, currentAppId: string): ActionObject => {
+export const createTeachSessionAsync = (key: string, teachSession: Teach, currentAppId: string): ActionObject => {
     //needs to make a call to an Epic to send data to BLIS
     return {
         type: AT.CREATE_TEACH_SESSION,
@@ -136,5 +118,25 @@ export const createTeachSessionFulfilled = (teachSession: Teach, teachSessionId:
         type: AT.CREATE_TEACH_SESSION_FULFILLED,
         teachSession: teachSession,
         teachSessionId: teachSessionId
+    }
+}
+
+// TODO: should be async with fulfillment
+export const createTrainDialog = (key: string, trainDialog: TrainDialog): ActionObject => {
+    //needs to make a call to an Epic to send data to BLIS
+    return {
+        type: AT.CREATE_TRAIN_DIALOG,
+        key: key,
+        trainDialog: trainDialog
+    }
+}
+
+// TODO: should be async with fulfillment
+export const createLogDialog = (key: string, logDialog: LogDialog): ActionObject => {
+    //needs to make a call to an Epic to send data to BLIS
+    return {
+        type: AT.CREATE_LOG_DIALOG,
+        key: key,
+        logDialog: logDialog
     }
 }

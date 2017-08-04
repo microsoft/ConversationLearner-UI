@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { createAction } from '../actions/createActions';
-import { editAction } from '../actions/updateActions';
+import { returntypeof } from 'react-redux-typescript';
+import { createActionAsync } from '../actions/createActions';
+import { editActionAsync } from '../actions/updateActions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
@@ -14,29 +15,26 @@ interface EntityPickerObject {
     key: string
     name: string
 }
-interface Props {
-    open: boolean,
-    blisAction: ActionBase | null,
-    handleClose: Function
-}
 
-class ActionResponseCreatorEditor extends React.Component<any, any> {
-    constructor(p: Props) {
-        super(p);
-        this.state = {
+const initState = {
             actionTypeVal: 'TEXT',
             contentVal: '',
-            reqEntitiesVal: [],
-            negEntitiesVal: [],
-            waitVal: false,
-            availableRequiredEntities: [],
-            availableNegativeEntities: [],
+            reqEntitiesVal: [] as EntityPickerObject[],
+            negEntitiesVal: [] as EntityPickerObject[],
+            waitVal: true,
+            availableRequiredEntities: [] as EntityPickerObject[],
+            availableNegativeEntities: [] as EntityPickerObject[],
             editing: false,
-            defaultNegativeEntities: [],
-            defaultRequiredEntities: [],
+            defaultNegativeEntities: [] as EntityPickerObject[],
+            defaultRequiredEntities: []as EntityPickerObject[],
             entityModalOpen: false,
             open: false
-        }
+        };
+
+class ActionResponseCreatorEditor extends React.Component<Props, any> {
+    constructor(p: Props) {
+        super(p);
+        this.state = initState;
     }
     componentWillReceiveProps(p: Props) {
         if (p.open === true && this.state.open === true) {
@@ -52,20 +50,7 @@ class ActionResponseCreatorEditor extends React.Component<any, any> {
             })
         } else {
             if (p.blisAction === null) {
-                this.setState({
-                    actionTypeVal: 'TEXT',
-                    contentVal: '',
-                    reqEntitiesVal: [],
-                    negEntitiesVal: [],
-                    waitVal: false,
-                    availableRequiredEntities: [],
-                    availableNegativeEntities: [],
-                    editing: false,
-                    defaultNegativeEntities: [],
-                    defaultRequiredEntities: [],
-                    entityModalOpen: false,
-                    open: p.open
-                })
+                this.setState({...initState, open: p.open});
             } else {
                 let entities = this.props.entities.map((e: EntityBase) => {
                     return {
@@ -130,17 +115,7 @@ class ActionResponseCreatorEditor extends React.Component<any, any> {
         }
     }
     handleClose() {
-        this.setState({
-            open: false,
-            actionTypeVal: 'TEXT',
-            contentVal: '',
-            reqEntitiesVal: [],
-            negEntitiesVal: [],
-            waitVal: false,
-            availableRequiredEntities: [],
-            availableNegativeEntities: [],
-            entityModalOpen: false
-        })
+        this.setState({...initState});
     }
     createAction() {
         let currentAppId: string = this.props.blisApps.current.appId;
@@ -166,12 +141,12 @@ class ActionResponseCreatorEditor extends React.Component<any, any> {
             packageDeletionId: null
         })
         if (this.state.editing === false) {
-            this.props.createAction(this.props.userkey, actionToAdd, currentAppId);
+            this.props.createAction(this.props.userKey, actionToAdd, currentAppId);
         } else {
             this.editAction(actionToAdd, currentAppId);
         }
         this.handleClose();
-        this.props.handleClose();
+        this.props.handleClose(actionToAdd);
     }
     editAction(actionToAdd: ActionBase, currentAppId: string) {
         actionToAdd.actionId = this.props.blisAction.actionId;
@@ -313,7 +288,7 @@ class ActionResponseCreatorEditor extends React.Component<any, any> {
                         />
                         <Checkbox
                             label='Wait For Response?'
-                            defaultChecked={false}
+                            defaultChecked={true}
                             onChange={this.waitChanged.bind(this)}
                             style={{ marginTop: "1em", display: "inline-block" }}
                             disabled={this.state.editing}
@@ -332,7 +307,7 @@ class ActionResponseCreatorEditor extends React.Component<any, any> {
                             data-automation-id='randomID7'
                             className="grayButton"
                             disabled={false}
-                            onClick={() => this.props.handleClose()}
+                            onClick={() => this.props.handleClose(null)}
                             ariaDescription='Cancel'
                             text='Cancel'
                         />
@@ -355,8 +330,8 @@ class ActionResponseCreatorEditor extends React.Component<any, any> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        createAction: createAction,
-        editAction: editAction
+        createAction: createActionAsync,
+        editAction: editActionAsync
     }, dispatch);
 }
 const mapStateToProps = (state: State, ownProps: any) => {
@@ -367,4 +342,16 @@ const mapStateToProps = (state: State, ownProps: any) => {
         entities: state.entities
     }
 }
+
+interface ReceiveProps {
+    open: boolean,
+    blisAction: ActionBase | null,
+    handleClose: Function,
+    handleOpenDeleteModal: Function
+}
+// Props types inferred from mapStateToProps & dispatchToProps
+const stateProps = returntypeof(mapStateToProps);
+const dispatchProps = returntypeof(mapDispatchToProps);
+type Props = typeof stateProps & typeof dispatchProps & ReceiveProps;
+
 export default connect(mapStateToProps, mapDispatchToProps)(ActionResponseCreatorEditor as React.ComponentClass<any>)

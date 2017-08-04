@@ -1,10 +1,11 @@
 import * as React from 'react';
+import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../types'
-import { setDisplayMode } from '../actions/updateActions'
-import { IColumn, DetailsList } from 'office-ui-fabric-react';
-import { Memory } from 'blis-models'
+import { setDisplayMode } from '../actions/displayActions'
+import { IColumn, DetailsList, CheckboxVisibility } from 'office-ui-fabric-react';
+import { Memory, EntityBase } from 'blis-models'
 
 let columns: IColumn[] = [
     {
@@ -19,13 +20,21 @@ let columns: IColumn[] = [
         key: 'entityValue',
         name: 'Value',
         fieldName: 'entityValue',
+        minWidth: 200,
+        maxWidth: 400,
+        isResizable: true
+    },
+    {
+        key: 'entityType',
+        name: 'Type',
+        fieldName: 'entityType',
         minWidth: 100,
         maxWidth: 200,
         isResizable: true
     }
 ]
 
-class TeachSessionMemory extends React.Component<any, any> {
+class TeachSessionMemory extends React.Component<Props, any> {
         constructor(p: any) {
         super(p);
         this.state = {
@@ -65,6 +74,15 @@ class TeachSessionMemory extends React.Component<any, any> {
         }
         return value;
     }
+    renderItemColumn(item?: any, index?: number, column?: IColumn) {
+        let fieldContent = item[column.fieldName];
+        if (column.key == 'entityType') {
+            // Lookup entity type
+            let entity = this.props.entities.filter((e: EntityBase) => e.entityName == item.entityName)[0];
+            fieldContent = entity ? entity.entityType : "ERROR";
+        }
+        return <span className='ms-font-m-plus'>{fieldContent}</span>;
+    }
     renderMemories(): Memory[] {
         let filteredMemories = this.props.teachSessions.memories || [];
 
@@ -90,14 +108,14 @@ class TeachSessionMemory extends React.Component<any, any> {
         let memories = this.renderMemories();
         return (
             <div className='content'>
-                <div className={this.props.class}>
-                    Memory
-                </div>
+                <div className='ms-font-xl'>Memory</div>
                 <DetailsList
                         className="ms-font-m-plus"
                         items={memories}
                         columns={this.state.columns}
-                        onColumnHeaderClick={ this.onColumnClick.bind(this) }
+                        onColumnHeaderClick={ this.onColumnClick.bind(this)}
+                        onRenderItemColumn={this.renderItemColumn.bind(this)}
+                        checkboxVisibility={CheckboxVisibility.hidden}
                 />
             </div>
         )
@@ -111,7 +129,14 @@ const mapDispatchToProps = (dispatch: any) => {
 const mapStateToProps = (state: State, ownProps: any) => {
     return {
         teachSessions: state.teachSessions,
+        entities: state.entities,
         user: state.user
     }
 }
+
+// Props types inferred from mapStateToProps & dispatchToProps
+const stateProps = returntypeof(mapStateToProps);
+const dispatchProps = returntypeof(mapDispatchToProps);
+type Props = typeof stateProps & typeof dispatchProps;
+
 export default connect(mapStateToProps, mapDispatchToProps)(TeachSessionMemory as React.ComponentClass<any>);

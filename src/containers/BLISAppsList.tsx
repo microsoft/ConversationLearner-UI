@@ -1,7 +1,8 @@
 import * as React from 'react';
-import { fetchAllActions, fetchAllEntities, fetchApplications, fetchAllTrainDialogs, fetchAllChatSessions, fetchAllTeachSessions } from '../actions/fetchActions';
-import { setCurrentBLISApp, setDisplayMode } from '../actions/updateActions';
-import { deleteBLISApplication } from '../actions/deleteActions'
+import { returntypeof } from 'react-redux-typescript';
+import { fetchAllActionsAsync, fetchAllEntitiesAsync, fetchApplicationsAsync, fetchAllTrainDialogs, fetchAllChatSessionsAsync, fetchAllTeachSessionsAsync } from '../actions/fetchActions';
+import { setCurrentBLISApp, setDisplayMode } from '../actions/displayActions';
+import { deleteBLISApplicationAsync } from '../actions/deleteActions'
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import BLISAppCreator from './BLISAppCreator'
@@ -55,7 +56,7 @@ let columns: IColumn[] = [
         isResizable: true
     },
 ];
-class BLISAppsList extends React.Component<any, any> {
+class BLISAppsList extends React.Component<Props, any> {
     constructor(p: any) {
         super(p);
         this.renderItemColumn = this.renderItemColumn.bind(this);
@@ -202,15 +203,15 @@ class BLISAppsList extends React.Component<any, any> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        fetchApplications: fetchApplications,
-        fetchAllActions: fetchAllActions,
-        fetchAllEntities: fetchAllEntities,
+        fetchApplications: fetchApplicationsAsync,
+        fetchAllActions: fetchAllActionsAsync,
+        fetchAllEntities: fetchAllEntitiesAsync,
         fetchAllTrainDialogs: fetchAllTrainDialogs,
         setCurrentBLISApp: setCurrentBLISApp,
         setDisplayMode: setDisplayMode,
-        deleteBLISApplication: deleteBLISApplication,
-        fetchAllChatSessions: fetchAllChatSessions,
-        fetchAllTeachSessions: fetchAllTeachSessions
+        deleteBLISApplication: deleteBLISApplicationAsync,
+        fetchAllChatSessions: fetchAllChatSessionsAsync,
+        fetchAllTeachSessions: fetchAllTeachSessionsAsync
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {
@@ -219,4 +220,9 @@ const mapStateToProps = (state: State) => {
         blisApps: state.apps
     }
 }
+// Props types inferred from mapStateToProps & dispatchToProps
+const stateProps = returntypeof(mapStateToProps);
+const dispatchProps = returntypeof(mapDispatchToProps);
+type Props = typeof stateProps & typeof dispatchProps;
+
 export default connect(mapStateToProps, mapDispatchToProps)(BLISAppsList);

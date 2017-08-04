@@ -1,13 +1,13 @@
 import * as React from 'react';
+import { returntypeof } from 'react-redux-typescript';
 import axios from 'axios';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { CommandButton, Dialog, DialogFooter, DialogType, ChoiceGroup, TextField, DefaultButton, Dropdown } from 'office-ui-fabric-react';
 import { TextFieldPlaceholder } from './TextFieldPlaceholder';
-import { setUser } from '../actions/updateActions'
-import { fetchAllActions, fetchAllEntities, fetchAllTrainDialogs } from '../actions/fetchActions';
-import { setLoginDisplay } from '../actions/updateActions'
+import { setUser, logout, setLoginDisplay } from '../actions/displayActions'
+import { fetchAllActionsAsync, fetchAllEntitiesAsync, fetchAllTrainDialogs } from '../actions/fetchActions';
 import { BlisAppBase, BlisAppMetaData } from 'blis-models'
 import { developmentSubKeyLUIS } from '../secrets'
 import { State } from '../types'
@@ -15,7 +15,7 @@ type CultureObject = {
     CultureCode: string;
     CultureName: string;
 }
-class UserLogin extends React.Component<any, any> {
+class UserLogin extends React.Component<Props, any> {
     constructor(p: any) {
         super(p);
         this.state = {
@@ -52,7 +52,7 @@ class UserLogin extends React.Component<any, any> {
         this.handleClose();
     }
     logout() {
-        this.props.setUser(null, null, null);
+        this.props.logout();
     }
     render() {
         let isBlocking, title, input, button = null;
@@ -122,6 +122,7 @@ class UserLogin extends React.Component<any, any> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         setUser: setUser,
+        logout: logout,
         setLoginDisplay: setLoginDisplay
     }, dispatch);
 }
@@ -131,4 +132,9 @@ const mapStateToProps = (state: State) => {
         displayLogin: state.display.displayLogin
     }
 }
+// Props types inferred from mapStateToProps & dispatchToProps
+const stateProps = returntypeof(mapStateToProps);
+const dispatchProps = returntypeof(mapDispatchToProps);
+type Props = typeof stateProps & typeof dispatchProps;
+
 export default connect(mapStateToProps, mapDispatchToProps)(UserLogin);

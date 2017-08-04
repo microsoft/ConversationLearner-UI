@@ -1,10 +1,11 @@
 import * as React from 'react';
+import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader';
 import EntityCreatorEditor from './EntityCreatorEditor';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
-import { deleteEntity } from '../actions/deleteActions'
+import { deleteEntityAsync } from '../actions/deleteActions'
 import { DetailsList, CommandButton, Link, CheckboxVisibility, IColumn, SearchBox } from 'office-ui-fabric-react';
 import { State } from '../types';
 import { EntityBase, EntityIdList, EntityList, EntityMetaData, ActionBase, ActionMetaData } from 'blis-models'
@@ -52,7 +53,7 @@ let columns: IColumn[] = [
         isResizable: true
     },
 ];
-class EntitiesList extends React.Component<any, any> {
+class EntitiesList extends React.Component<Props, any> {
     constructor(p: any) {
         super(p);
         this.deleteSelectedEntity = this.deleteSelectedEntity.bind(this);
@@ -276,7 +277,7 @@ class EntitiesList extends React.Component<any, any> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        deleteEntity: deleteEntity
+        deleteEntity: deleteEntityAsync
     }, dispatch)
 }
 const mapStateToProps = (state: State) => {
@@ -287,4 +288,9 @@ const mapStateToProps = (state: State) => {
         actions: state.actions
     }
 }
+// Props types inferred from mapStateToProps & dispatchToProps
+const stateProps = returntypeof(mapStateToProps);
+const dispatchProps = returntypeof(mapDispatchToProps);
+type Props = typeof stateProps & typeof dispatchProps;
+
 export default connect(mapStateToProps, mapDispatchToProps)(EntitiesList);

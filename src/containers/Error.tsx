@@ -1,16 +1,17 @@
 import * as React from 'react';
+import { returntypeof } from 'react-redux-typescript';
 import axios from 'axios';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { CommandButton, Dialog, DialogFooter, DialogType, ChoiceGroup, TextField, DefaultButton, Dropdown } from 'office-ui-fabric-react';
-import { clearErrorDisplay } from '../actions/updateActions'
+import { clearErrorDisplay } from '../actions/displayActions'
 import { State } from '../types'
 type CultureObject = {
     CultureCode: string;
     CultureName: string;
 }
-class UIError extends React.Component<any, any> {
+class UIError extends React.Component<Props, any> {
     constructor(p: any) {
         super(p);
     }
@@ -56,4 +57,9 @@ const mapStateToProps = (state: State) => {
         error: state.error
     }
 }
+// Props types inferred from mapStateToProps & dispatchToProps
+const stateProps = returntypeof(mapStateToProps);
+const dispatchProps = returntypeof(mapDispatchToProps);
+type Props = typeof stateProps & typeof dispatchProps;
+
 export default connect(mapStateToProps, mapDispatchToProps)(UIError);

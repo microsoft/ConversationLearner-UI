@@ -1,12 +1,13 @@
 import * as React from 'react';
+import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader'
 import { DetailsList, CommandButton, Link, CheckboxVisibility, IColumn, SearchBox } from 'office-ui-fabric-react';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
-import { setDisplayMode, setCurrentTrainDialog, setCurrentTeachSession } from '../actions/updateActions'
-import { createTrainDialog, createTeachSession } from '../actions/createActions'
-import { deleteTeachSession } from '../actions/deleteActions'
+import { setDisplayMode, setCurrentTrainDialog, setCurrentTeachSession } from '../actions/displayActions'
+import { createTrainDialog, createTeachSessionAsync } from '../actions/createActions'
+import { deleteTeachSessionAsync } from '../actions/deleteActions'
 import { State } from '../types'
 import { TrainDialog, Teach } from 'blis-models'
 import { DisplayMode } from '../types/const';
@@ -46,7 +47,7 @@ let columns: IColumn[] = [
     },
 ];
 
-class TrainDialogsList extends React.Component<any, any> {
+class TrainDialogsList extends React.Component<Props, any> {
     constructor(p: any) {
         super(p);
         this.state = {
@@ -131,4 +132,9 @@ const mapStateToProps = (state: State) => {
         teachSessions: state.teachSessions
     }
 }
+// Props types inferred from mapStateToProps & dispatchToProps
+const stateProps = returntypeof(mapStateToProps);
+const dispatchProps = returntypeof(mapDispatchToProps);
+type Props = typeof stateProps & typeof dispatchProps;
+
 export default connect(mapStateToProps, mapDispatchToProps)(TrainDialogsList);

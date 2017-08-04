@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { createEntity } from '../actions/createActions';
-import { editEntity } from '../actions/updateActions';
+import { returntypeof } from 'react-redux-typescript';
+import { createEntityAsync } from '../actions/createActions';
+import { editEntityAsync } from '../actions/updateActions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
@@ -9,34 +10,22 @@ import { TextFieldPlaceholder } from './TextFieldPlaceholder';
 import { State, PreBuiltEntities, PreBuilts, LocalePreBuilts } from '../types';
 import { EntityBase, EntityMetaData } from 'blis-models'
 
-interface Props {
-    open: boolean,
-    entity: EntityBase | null,
-    handleClose: Function
-}
-
-class EntityCreatorEditor extends React.Component<any, any> {
-    constructor(p: Props) {
-        super(p);
-        this.state = {
+const initState = {
             entityNameVal: '',
-            entityTypeVal: 'LOCAL',
+            entityTypeVal: 'LUIS',
             isBucketableVal: false,
             isNegatableVal: false,
             editing: false
         };
+
+class EntityCreatorEditor extends React.Component<Props, any> {
+    constructor(p: Props) {
+        super(p);
+        this.state = initState;
     }
     componentWillReceiveProps(p: Props) {
         if (p.entity === null) {
-            this.setState({
-                entityNameVal: '',
-                entityTypeVal: 'LOCAL',
-                isBucketableVal: false,
-                isNegatableVal: false,
-                bucketableKey: 'bucketableFalse',
-                negatableKey: 'negatableFalse',
-                editing: false
-            })
+            this.setState({...initState});
         } else {
             this.setState({
                 entityNameVal: p.entity.entityName,
@@ -68,13 +57,7 @@ class EntityCreatorEditor extends React.Component<any, any> {
         } else {
             this.editEntity(entityToAdd);
         }
-        this.setState({
-            entityNameVal: '',
-            entityTypeVal: 'LOCAL',
-            isBucketableVal: false,
-            isNegatableVal: false,
-            editing: false
-        })
+        this.setState({...initState});
         this.props.handleClose();
     }
     editEntity(ent: EntityBase) {
@@ -193,8 +176,8 @@ class EntityCreatorEditor extends React.Component<any, any> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        createEntity: createEntity,
-        editEntity: editEntity
+        createEntity: createEntityAsync,
+        editEntity: editEntityAsync
     }, dispatch);
 }
 const mapStateToProps = (state: State, ownProps: any) => {
@@ -204,4 +187,16 @@ const mapStateToProps = (state: State, ownProps: any) => {
         blisApps: state.apps
     }
 }
+
+interface ReceivedProps {
+    open: boolean,
+    entity: EntityBase | null,
+    handleClose: Function
+}
+
+// Props types inferred from mapStateToProps & dispatchToProps
+const stateProps = returntypeof(mapStateToProps);
+const dispatchProps = returntypeof(mapDispatchToProps);
+type Props = typeof stateProps & typeof dispatchProps & ReceivedProps;
+
 export default connect(mapStateToProps, mapDispatchToProps)(EntityCreatorEditor as React.ComponentClass<any>);

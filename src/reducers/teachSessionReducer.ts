@@ -17,6 +17,8 @@ const initialState: TeachSessionState = {
 
 const teachSessionReducer: Reducer<any> = (state = initialState, action: ActionObject) => {
     switch (action.type) {
+        case AT.LOGOUT:
+            return { ...initialState };
         case AT.FETCH_TEACH_SESSIONS_FULFILLED:
             return { ...state, all: action.allTeachSessions };
         case AT.CREATE_TEACH_SESSION_FULFILLED:
@@ -24,7 +26,7 @@ const teachSessionReducer: Reducer<any> = (state = initialState, action: ActionO
             let newState: TeachSessionState = {...state, all: [...state.all, newSession], current: newSession, mode: TeachMode.Wait }
             return newState;
         case AT.DELETE_TEACH_SESSION_FULFILLED:
-            return { ...state, all: state.all.filter((t: Teach) => t.teachId !== action.teachSessionGUID) }
+            return { ...state, all: state.all.filter((t: Teach) => t.teachId !== action.teachSessionGUID), currentConversationStack: [] }
         case AT.SET_CURRENT_TEACH_SESSION:
             return { ...state, current: action.currentTeachSession };
         case AT.TEACH_MESSAGE_RECEIVED:

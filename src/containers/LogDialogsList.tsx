@@ -1,12 +1,13 @@
 import * as React from 'react';
+import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader'
 import { DetailsList, CommandButton, Link, CheckboxVisibility, IColumn, SearchBox } from 'office-ui-fabric-react';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
-import { setDisplayMode, setCurrentLogDialog, setCurrentChatSession } from '../actions/updateActions'
-import { createLogDialog, createChatSession } from '../actions/createActions'
-import { deleteChatSession } from '../actions/deleteActions'
+import { setDisplayMode, setCurrentLogDialog, setCurrentChatSession } from '../actions/displayActions'
+import { createLogDialog, createChatSessionAsync } from '../actions/createActions'
+import { deleteChatSessionAsync } from '../actions/deleteActions'
 import { State } from '../types'
 import { LogDialog, Session } from 'blis-models'
 import { DisplayMode } from '../types/const';
@@ -46,7 +47,7 @@ let columns: IColumn[] = [
     },
 ];
 
-class LogDialogsList extends React.Component<any, any> {
+class LogDialogsList extends React.Component<Props, any> {
     constructor(p: any) {
         super(p);
         this.state = {
@@ -114,8 +115,8 @@ class LogDialogsList extends React.Component<any, any> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         setDisplayMode: setDisplayMode,
-        createChatSession: createChatSession,
-        deleteChatSession: deleteChatSession,
+        createChatSession: createChatSessionAsync,
+        deleteChatSession: deleteChatSessionAsync,
         setCurrentChatSession: setCurrentChatSession
     }, dispatch)
 }
@@ -127,4 +128,9 @@ const mapStateToProps = (state: State) => {
         chatSessions: state.chatSessions
     }
 }
+// Props types inferred from mapStateToProps & dispatchToProps
+const stateProps = returntypeof(mapStateToProps);
+const dispatchProps = returntypeof(mapDispatchToProps);
+type Props = typeof stateProps & typeof dispatchProps;
+
 export default connect(mapStateToProps, mapDispatchToProps)(LogDialogsList);

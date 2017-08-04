@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { editBLISApplication } from '../actions/updateActions';
+import { returntypeof } from 'react-redux-typescript';
+import { editBLISApplicationAsync } from '../actions/updateActions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader'
@@ -17,7 +18,7 @@ const styles = {
     }
 }
 
-class AppSettings extends React.Component<any, any> {
+class AppSettings extends React.Component<Props, any> {
     constructor(p: any) {
         super(p);
         this.state = {
@@ -187,7 +188,7 @@ class AppSettings extends React.Component<any, any> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        editBLISApplication: editBLISApplication,
+        editBLISApplication: editBLISApplicationAsync,
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {
@@ -196,4 +197,9 @@ const mapStateToProps = (state: State) => {
         blisApps: state.apps
     }
 }
+// Props types inferred from mapStateToProps & dispatchToProps
+const stateProps = returntypeof(mapStateToProps);
+const dispatchProps = returntypeof(mapDispatchToProps);
+type Props = typeof stateProps & typeof dispatchProps;
+
 export default connect(mapStateToProps, mapDispatchToProps)(AppSettings);

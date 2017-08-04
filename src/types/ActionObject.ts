@@ -8,19 +8,19 @@ import { DisplayMode } from '../types/const'
 import { AT } from '../types/ActionTypes'
 
 export type UpdateAction = {
-    type: AT.EDIT_BLIS_APPLICATION,
+    type: AT.EDIT_BLIS_APPLICATION_ASYNC,
     blisApp: BlisAppBase,
 } | {
     type: AT.EDIT_BLIS_APPLICATION_FULFILLED,
     blisApp: BlisAppBase,
 } | {
-    type: AT.EDIT_ENTITY,
+    type: AT.EDIT_ENTITY_ASYNC,
     entity: EntityBase,
 } | {
     type: AT.EDIT_ENTITY_FULFILLED,
     entity: EntityBase,
 } | {
-    type: AT.EDIT_ACTION,
+    type: AT.EDIT_ACTION_ASYNC,
     blisAction: ActionBase,
     currentAppId: string
 } | {
@@ -32,7 +32,9 @@ export type UpdateAction = {
 } | {
     type: AT.EDIT_LOG_DIALOG,
     logDialog: LogDialog,
-} | {
+}
+
+export type DisplayAction = {
     type: AT.SET_CURRENT_BLIS_APP,
     key: string,
     currentBLISApp: BlisAppBase,
@@ -84,6 +86,8 @@ export type UpdateAction = {
     type: AT.SET_USER_KEY,
     key: string
 } | {
+    type: AT.LOGOUT
+} | {
     type: AT.EMPTY_STATE_PROPERTIES
 } | {
     type: AT.NO_OP
@@ -93,16 +97,16 @@ export type UpdateAction = {
 }
 
 export type FetchAction = {
-        type: AT.FETCH_APPLICATIONS,
+        type: AT.FETCH_APPLICATIONS_ASYNC,
         userId: string
     } | {
-        type: AT.FETCH_ENTITIES,
+        type: AT.FETCH_ENTITIES_ASYNC,
         blisAppID: string
     } | {
-        type: AT.FETCH_ACTIONS,
+        type: AT.FETCH_ACTIONS_ASYNC,
         blisAppID: string
     } | {
-        type: AT.FETCH_CHAT_SESSIONS,
+        type: AT.FETCH_CHAT_SESSIONS_ASYNC,
         key: string,
         blisAppID: string
     } | {
@@ -127,18 +131,18 @@ export type FetchAction = {
         type: AT.FETCH_TEACH_SESSIONS_FULFILLED,
         allTeachSessions: Teach[]
     } | {
-        type: AT.FETCH_TEACH_SESSIONS,
+        type: AT.FETCH_TEACH_SESSIONS_ASYNC,
         key: string,
         blisAppID: string
 }
 
 export type CreateAction = {
-        type: AT.CREATE_BLIS_APPLICATION,
+        type: AT.CREATE_BLIS_APPLICATION_ASYNC,
         key: string,
         userId: string,
         blisApp: BlisAppBase,
     } | {
-        type: AT.CREATE_ENTITY,
+        type: AT.CREATE_ENTITY_ASYNC,
         key: string,
         entity: EntityBase,
         currentAppId: string
@@ -152,7 +156,7 @@ export type CreateAction = {
         entity: EntityBase,
         currentAppId: string
     } | {
-        type: AT.CREATE_ACTION,
+        type: AT.CREATE_ACTION_ASYNC,
         action: ActionBase,
         currentAppId: string
     } | {
@@ -181,7 +185,7 @@ export type CreateAction = {
         positiveEntity: EntityBase,
         currentAppId: string
     } | {
-        type: AT.CREATE_CHAT_SESSION,
+        type: AT.CREATE_CHAT_SESSION_ASYNC,
         key: string,
         currentAppId: string,
         session: Session
@@ -202,19 +206,19 @@ export type CreateAction = {
 
 
 export type DeleteAction = {
-        type: AT.DELETE_BLIS_APPLICATION,
+        type: AT.DELETE_BLIS_APPLICATION_ASYNC,
         blisAppGUID: string,
         blisApp: BlisAppBase
     } | {
         type: AT.DELETE_BLIS_APPLICATION_FULFILLED,
         blisAppGUID: string
     } | {
-        type: AT.DELETE_ENTITY,
+        type: AT.DELETE_ENTITY_ASYNC,
         entityGUID: string,
         currentAppId: string,
         entity: EntityBase
     } | {
-        type: AT.DELETE_REVERSE_ENTITY,
+        type: AT.DELETE_REVERSE_ENTITY_ASYNC,
         key: string,
         deletedEntityId: string,
         reverseEntityId: string,
@@ -225,7 +229,7 @@ export type DeleteAction = {
         deletedEntityId: string,
         currentAppId: string
     } | {
-        type: AT.DELETE_ACTION,
+        type: AT.DELETE_ACTION_ASYNC,
         actionGUID: string,
         action: ActionBase,
         currentAppId: string
@@ -239,7 +243,7 @@ export type DeleteAction = {
         type: AT.DELETE_LOG_DIALOG,
         logDialogGUID: string,
     } | {
-        type: AT.DELETE_CHAT_SESSION,
+        type: AT.DELETE_CHAT_SESSION_ASYNC,
         key: string,
         session: Session,
         currentAppId: string
@@ -247,7 +251,7 @@ export type DeleteAction = {
         type: AT.DELETE_CHAT_SESSION_FULFILLED,
         sessionGUID: string,
     } | {
-        type: AT.DELETE_TEACH_SESSION,
+        type: AT.DELETE_TEACH_SESSION_ASYNC,
         key: string,
         teachSession: Teach,
         currentAppId: string
@@ -259,7 +263,7 @@ export type DeleteAction = {
 }
 
 export type TeachAction = {
-    type: AT.RUN_EXTRACTOR,
+    type: AT.RUN_EXTRACTOR_ASYNC,
     key: string,
     appId: string,
     teachId: string,
@@ -271,7 +275,7 @@ export type TeachAction = {
     teachId: string,
     uiExtractResponse: UIExtractResponse
 } | {
-    type: AT.POST_EXTACT_FEEDBACK,
+    type: AT.POST_EXTACT_FEEDBACK_ASYNC,
     key: string,
     appId: string,
     teachId: string,
@@ -283,7 +287,7 @@ export type TeachAction = {
     teachId: string,
     teachResponse: TeachResponse
 } | {
-    type: AT.RUN_SCORER,
+    type: AT.RUN_SCORER_ASYNC,
     key: string,
     appId: string,
     teachId: string,
@@ -295,7 +299,7 @@ export type TeachAction = {
     teachId: string,
     uiScoreResponse: UIScoreResponse
 } | {
-    type: AT.POST_SCORE_FEEDBACK,
+    type: AT.POST_SCORE_FEEDBACK_ASYNC,
     key: string,
     appId: string,
     teachId: string,
@@ -311,4 +315,10 @@ export type TeachAction = {
     message: string
 }
 
-export type ActionObject = FetchAction | CreateAction | UpdateAction | DeleteAction | TeachAction;
+export type ActionObject = 
+    FetchAction | 
+    DisplayAction |
+    CreateAction | 
+    UpdateAction | 
+    DeleteAction | 
+    TeachAction;

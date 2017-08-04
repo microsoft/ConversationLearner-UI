@@ -1,8 +1,9 @@
 import * as React from 'react';
+import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader';
-import { deleteAction } from '../actions/deleteActions'
+import { deleteActionAsync } from '../actions/deleteActions'
 import { DetailsList, CommandButton, Link, CheckboxVisibility, List, IColumn, SearchBox } from 'office-ui-fabric-react';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import { ActionBase, ActionMetaData, EntityBase, EntityMetaData } from 'blis-models'
@@ -53,7 +54,7 @@ let columns: IColumn[] = [
         isResizable: true
     }
 ];
-class ActionResponsesHomepage extends React.Component<any, any> {
+class ActionResponsesHomepage extends React.Component<Props, any> {
     constructor(p: any) {
         super(p);
         this.deleteSelectedAction = this.deleteSelectedAction.bind(this);
@@ -230,7 +231,8 @@ class ActionResponsesHomepage extends React.Component<any, any> {
     }
     handleOpenCreateModal() {
         this.setState({
-            createEditModalOpen: true
+            createEditModalOpen: true,
+            actionSelected: null
         })
     }
     handleCloseCreateModal() {
@@ -277,7 +279,7 @@ class ActionResponsesHomepage extends React.Component<any, any> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        deleteAction: deleteAction
+        deleteAction: deleteActionAsync
     }, dispatch)
 }
 const mapStateToProps = (state: State) => {
@@ -288,4 +290,9 @@ const mapStateToProps = (state: State) => {
         apps: state.apps
     }
 }
+// Props types inferred from mapStateToProps & dispatchToProps
+const stateProps = returntypeof(mapStateToProps);
+const dispatchProps = returntypeof(mapDispatchToProps);
+type Props = typeof stateProps & typeof dispatchProps;
+
 export default connect(mapStateToProps, mapDispatchToProps)(ActionResponsesHomepage);

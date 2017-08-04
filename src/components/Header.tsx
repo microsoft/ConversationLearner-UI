@@ -1,6 +1,8 @@
 import * as React from 'react';
-import { setDisplayMode, setLoginDisplay } from '../actions/updateActions'
+import { returntypeof } from 'react-redux-typescript';
+import { setDisplayMode, setLoginDisplay } from '../actions/displayActions'
 import UserLogin from '../containers/UserLogin'
+import SpinnerWindow from '../containers/SpinnerWindow'
 import UIError from '../containers/Error'
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
@@ -8,7 +10,7 @@ import { State } from '../types'
 import { bindActionCreators } from 'redux';
 import { DisplayMode } from '../types/const'
 
-class Header extends React.Component<any, any> {
+class Header extends React.Component<Props, any> {
     constructor(p: any) {
         super(p);
         this.state = {
@@ -58,12 +60,16 @@ class Header extends React.Component<any, any> {
         }
     }
     render() {
+        // Don't display the header in teach mode
+        if (this.props.displayMode == DisplayMode.Teach) return null;
+
         let displayName = this.props.userName ? this.props.userName : "BLIS";
         return (
             <div className='header'>
                 <div className="myAppsHeaderContentBlock myAppsButtonsDiv">
                     <UIError/>
                     <UserLogin/>
+                    <SpinnerWindow/>
                 </div>
                 <div className='headerListDiv'>
                     <div className={this.state.myAppsClass}>
@@ -101,8 +107,14 @@ const mapDispatchToProps = (dispatch: any) => {
 
 const mapStateToProps = (state: State) => {
     return {
-        userName: state.user.name
+        userName: state.user.name,
+        displayMode: state.display.displayMode
     }
 }
+
+// Props types inferred from mapStateToProps & dispatchToProps
+const stateProps = returntypeof(mapStateToProps);
+const dispatchProps = returntypeof(mapDispatchToProps);
+type Props = typeof stateProps & typeof dispatchProps;
 
 export default connect(mapStateToProps, mapDispatchToProps)(Header);

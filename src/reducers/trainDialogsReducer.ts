@@ -11,6 +11,8 @@ const initialState: TrainDialogState = {
 
 const trainDialogsReducer: Reducer<TrainDialogState> =  (state = initialState, action: ActionObject) => {
     switch (action.type) {
+        case AT.LOGOUT:
+            return { ...initialState };
         case AT.FETCH_TRAIN_DIALOGS:
             return { ...state, all: action.allTrainDialogs };
         case AT.EMPTY_STATE_PROPERTIES: 

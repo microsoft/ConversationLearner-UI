@@ -7,14 +7,14 @@ import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, 
 import { editBlisAction, editBlisApp, editBlisEntity, setBlisApp } from "./apiHelpers";
 
 export const editApplicationEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
-    return action$.ofType(AT.EDIT_BLIS_APPLICATION)
+    return action$.ofType(AT.EDIT_BLIS_APPLICATION_ASYNC)
         .flatMap((action: any) =>
             editBlisApp(action.key, action.blisApp.appId, action.blisApp)
         );
 }
 
 export const editActionEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
-    return action$.ofType(AT.EDIT_ACTION)
+    return action$.ofType(AT.EDIT_ACTION_ASYNC)
         .flatMap((action: any) =>
             editBlisAction(action.key, action.currentAppId, action.blisAction.actionId, action.blisAction)
         );

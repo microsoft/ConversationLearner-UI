@@ -13,6 +13,8 @@ const initialState: UserState = {
 
 const userReducer: Reducer<UserState> =  (state = initialState, action: ActionObject) => {
     switch(action.type) {
+        case AT.LOGOUT:
+            return { ...initialState };
         case AT.SET_USER:
             // TEMP: Until user data is passed through correctly
             let userdata = { id: action.id, name: action.name };
@@ -22,7 +24,7 @@ const userReducer: Reducer<UserState> =  (state = initialState, action: ActionOb
             return {...state, key: action.key };
         case AT.SET_ERROR_DISPLAY:
             switch (action.route) {
-                case AT.FETCH_APPLICATIONS :
+                case AT.FETCH_APPLICATIONS_ASYNC :
                     return {...initialState};
                 default:
                     return {...state}

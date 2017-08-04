@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { fetchAllActions, fetchAllEntities, fetchApplications, fetchAllTrainDialogs } from '../actions/fetchActions';
+import { returntypeof } from 'react-redux-typescript';
+import { fetchAllActionsAsync, fetchAllEntitiesAsync, fetchApplicationsAsync, fetchAllTrainDialogs } from '../actions/fetchActions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import EntitiesList from './EntitiesList';
@@ -9,12 +10,12 @@ import BLISAppsHomepage from './BLISAppsHomepage';
 import AppDashboard from './AppDashboard';
 import AppSettings from './AppSettings';
 import { Nav, INavLink, INavLinkGroup, Link } from 'office-ui-fabric-react';
-import { setDisplayMode } from '../actions/updateActions';
+import { setDisplayMode } from '../actions/displayActions';
 import { State } from '../types';
 import LogDialogsList from './LogDialogsList';
 import { DisplayMode } from '../types/const';
 
-class AppAdmin extends React.Component<any, any> {
+class AppAdmin extends React.Component<Props, any> {
     constructor(p: any) {
         super(p);
         this.state = {
@@ -148,7 +149,7 @@ class AppAdmin extends React.Component<any, any> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        fetchApplications: fetchApplications,
+        fetchApplications: fetchApplicationsAsync,
         setDisplayMode: setDisplayMode
     }, dispatch);
 }
@@ -161,4 +162,9 @@ const mapStateToProps = (state: State) => {
         display: state.display
     }
 }
+// Props types inferred from mapStateToProps & dispatchToProps
+const stateProps = returntypeof(mapStateToProps);
+const dispatchProps = returntypeof(mapDispatchToProps);
+type Props = typeof stateProps & typeof dispatchProps;
+
 export default connect(mapStateToProps, mapDispatchToProps)(AppAdmin);

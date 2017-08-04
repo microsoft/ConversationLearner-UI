@@ -40,6 +40,15 @@
   vertical-align: middle;
   width:17%;
 }
+.teachSessionHeader{
+  height: 8%;
+  width: 100%;
+  background-color: #004b50;
+  display: inline-block;
+}
+.teachSessionHeaderButton{
+  margin: 20px;
+}
 .selectedHeaderElementDiv{
   height: 100%;
   display: inline-block;
@@ -177,6 +186,15 @@
   padding: 1em;
   position: relative
 }
+.spinnerBox
+{
+    width: 500px;
+    height: 500px;
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    position: relative
+}
 .container{
   height: 100%;
 }
@@ -208,16 +226,50 @@
   margin-top: 2%;
   height: 100%;
 }
+.entityMatch
+{
+    flex-shrink: 1;
+    background: #e0ffe0;
+    margin: 1px;
+    display: inline-block;
+    -ms-flex-wrap: nowrap;
+    flex-wrap: nowrap;
+    padding: 4px;
+    text-align: center;
+}
+.entityMismatch
+{
+    flex-shrink: 1;
+    background: #ffe0e0;
+    margin: 1px;
+    display: inline-block;
+    -ms-flex-wrap: nowrap;
+    flex-wrap: nowrap;
+    padding: 4px;
+    text-align: center;
+}
+
 .goldText{
   color: #ffb900
+}
+.actionSelect{
+  color: #ffb900;
+  font-size: 24px;
+}
+.actionUnavailable{
+  color: #cc0000;
+  font-size: 24px;
 }
 .saveAppChangesButtonsDiv{
   width: 100%;
   display: block;
   margin-top: 1em;
 }
-.actionCreatorCreateEntityButton{
+.actionCreatorCreateEntityButton {
   float: right;
+}
+.scorerCreateActionButton {
+  float: left;
 }
 .webchatContent{
   width: 100%;
@@ -286,16 +338,17 @@
   float: right;
   margin-top: -.1em
 }
-.webchat, .sessionAdmin, .teachSessionHalfMode{
+.webchat, .sessionAdmin{
   display: inline-block;
   vertical-align: top;
+  padding: 0px;
 }
 .webchatwindow{
   height: 51em;
 }
 .webchat{
   width: 33%;
-  border-right: 3px solid #E0E0E0;
+  border: 3px solid #E0E0E0;
 }
 .sessionAdmin{
   width: 67%;
@@ -309,13 +362,11 @@
   display: block;
   width: 100%;
 }
-.teachSessionHeader{
-  display: block;
-  width: 100%;
+.teachSessionWindow{
+  width: 100%
 }
 .abandonTeach{
-  display: inline-block;
-  vertical-align: top;
+  float: right;
 }
 .fakeInputDiv{
   display: inline-block;
