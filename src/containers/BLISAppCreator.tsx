@@ -98,6 +98,9 @@ class BLISAppCreator extends React.Component<Props, any> {
         this.props.emptyStateProperties();
         this.handleClose();
     }
+    checkIfBlank(value :string): string {
+        return value ? "" : "Required Value";
+    }
     render() {
         return (
             <div>
@@ -119,8 +122,18 @@ class BLISAppCreator extends React.Component<Props, any> {
                         <span className='ms-font-xxl ms-fontWeight-semilight'>Create a BLIS App</span>
                     </div>
                     <div>
-                        <TextFieldPlaceholder onChanged={this.nameChanged.bind(this)} label="Name" placeholder="Application Name..." value={this.state.appNameVal} />
-                        <TextFieldPlaceholder onChanged={this.luisKeyChanged.bind(this)} label="LUIS Key" placeholder="Key..." value={this.state.luisKeyVal} />
+                        <TextFieldPlaceholder 
+                            onGetErrorMessage={ this.checkIfBlank.bind(this)}
+                            onChanged={this.nameChanged.bind(this)} 
+                            label="Name" 
+                            placeholder="Application Name..." 
+                            value={this.state.appNameVal} />
+                        <TextFieldPlaceholder 
+                            onGetErrorMessage={ this.checkIfBlank.bind(this)}
+                            onChanged={this.luisKeyChanged.bind(this)} 
+                            label="LUIS Key" 
+                            placeholder="Key..." 
+                            value={this.state.luisKeyVal} />
                         <Dropdown
                             label='Locale'
                             defaultSelectedKey={this.state.localeVal}
@@ -131,7 +144,7 @@ class BLISAppCreator extends React.Component<Props, any> {
                     <div className='modalFooter'>
                         <CommandButton
                             data-automation-id='randomID2'
-                            disabled={false}
+                            disabled={!this.state.appNameVal || !this.state.luisKeyVal}
                             onClick={this.createApplication.bind(this)}
                             className='goldButton'
                             ariaDescription='Create'

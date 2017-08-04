@@ -84,6 +84,9 @@ class EntityCreatorEditor extends React.Component<Props, any> {
             isNegatableVal: !this.state.isNegatableVal,
         })
     }
+    checkIfBlank(value :string): string {
+        return value ? "" : "Required Value";
+    }
     render() {
         let vals: string[] = ["LOCAL", "LUIS"]
         let options: {}[] = vals.map(v => {
@@ -127,6 +130,7 @@ class EntityCreatorEditor extends React.Component<Props, any> {
                     </div>
                     <div>
                         <TextFieldPlaceholder
+                            onGetErrorMessage={ this.checkIfBlank.bind(this)}
                             onChanged={this.nameChanged.bind(this)}
                             label="Entity Name"
                             placeholder="Name..."
@@ -154,7 +158,7 @@ class EntityCreatorEditor extends React.Component<Props, any> {
                     <div className='modalFooter'>
                         <CommandButton
                             data-automation-id='randomID2'
-                            disabled={false}
+                            disabled={!this.state.entityNameVal}
                             onClick={this.createEntity.bind(this)}
                             className='goldButton'
                             ariaDescription='Create'
