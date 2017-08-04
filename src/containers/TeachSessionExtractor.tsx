@@ -66,7 +66,7 @@ class TeachSessionExtractor extends React.Component<Props, any> {
                         />
                     <CommandButton
                             data-automation-id='randomID8'
-                            className="goldButton actionCreatorCreateEntityButton"
+                            className="goldButton teachSessionHeaderButton actionCreatorCreateEntityButton"
                             disabled={false}
                             onClick={this.handleOpenEntityModal.bind(this)}
                             ariaDescription='Cancel'
