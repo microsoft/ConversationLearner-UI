@@ -93,11 +93,10 @@ class TeachSessionScorer extends React.Component<Props, any> {
 
                 return col;
             }),
-            sortColumn : column
+            sortColumn: column
         });
     }
-    getValue(memory: any, col: IColumn) : any
-    {
+    getValue(memory: any, col: IColumn): any {
         let value = memory[col.fieldName]
         if (col.fieldName == "score" && !memory[col.fieldName]) {
                 if (memory["reason"] == 'notAvailable') {
@@ -185,7 +184,7 @@ class TeachSessionScorer extends React.Component<Props, any> {
                 )
             case 'score':
                 if (fieldContent) {
-                    fieldContent = (fieldContent*100).toFixed(1) + "%"
+                    fieldContent = (fieldContent * 100).toFixed(1) + "%"
                 } else {
                     fieldContent = (item["reason"] == "notAvailable") ? "Disqualified" : "Training...";
                 }
@@ -200,8 +199,7 @@ class TeachSessionScorer extends React.Component<Props, any> {
     renderScores(): ScoredBase[] {
         let filteredScores = (this.props.teachSession.scoreResponse.scoredActions as ScoredBase[]).concat(this.props.teachSession.scoreResponse.unscoredActions) || [];
 
-        if (this.state.sortColumn)
-        {
+        if (this.state.sortColumn) {
             // Sort the items.
             filteredScores = filteredScores.sort((a: any, b: any) => {
                 let firstValue = this.getValue(a, this.state.sortColumn);
@@ -209,7 +207,7 @@ class TeachSessionScorer extends React.Component<Props, any> {
 
                 if (this.state.sortColumn.isSortedDescending) {
                     return firstValue > secondValue ? -1 : 1;
-                } 
+                }
                 else {
                     return firstValue > secondValue ? 1 : -1;
                 }

@@ -610,45 +610,41 @@ export const dummyScorerResponse = function() : UIScoreResponse
       return JSON.parse(text);
   }
     
-  export const dummyExtractResponse = function() : UIExtractResponse
-  {
-    let text = `
+export const dummyExtractResponse = function (): UIExtractResponse {
+	let text = `
     { "memories" :
-      [{ 
-          "entityName": "name",
-          "entityValue": "Jerry"
+      [
+		{ 
+          "entityName": "size",
+          "entityValue": "large"
         },
         { 
-          "entityName": "color",
-          "entityValue": "Blue"
-        },
-        { 
-          "entityName": "company",
-          "entityValue": "microsoft"
+          "entityName": "topping",
+          "entityValue": "cheese"
         }
       ],
       "extractResponse" :
         {
           "packageId": 16,
-          "text": "start a run now",
+          "text": "Order a large pizza with cheese please",
           "predictedEntities": [
             {
               "startCharIndex": 8,
-              "endCharIndex": 11,
-              "entityId": "cc7d156d-debc-4e8c-b94e-365c71b4a36f",
-              "entityText": "run",
-              "entityName": "activityType",
+              "endCharIndex": 12,
+              "entityId": "19621bca-49b7-4b80-81f8-e493170b6f12",
+              "entityText": "large",
+              "entityName": "size",
               "score": 0.92,
               "metadata": {
                 "fooData": "fooData"
               }
             },
             {
-              "startCharIndex": 12,
-              "endCharIndex": 15,
-              "entityId": "c4716ae9-6f96-4937-b696-30788528c198",
-              "entityText": "now",
-              "entityName": "datetime",
+              "startCharIndex": 25,
+              "endCharIndex": 30,
+              "entityId": "7bd6da9c-66cc-4e4a-8c0a-319778c5fcba",
+              "entityText": "cheese",
+              "entityName": "topping",
               "score": 0.92,
               "metadata": {
                 "fooData": "fooData"
@@ -663,5 +659,6 @@ export const dummyScorerResponse = function() : UIScoreResponse
           }
         }
     }`;
-    return JSON.parse(text);
+	return JSON.parse(text);
 }
+
