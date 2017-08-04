@@ -626,25 +626,25 @@ export const dummyExtractResponse = function (): UIExtractResponse {
       "extractResponse" :
         {
           "packageId": 16,
-          "text": "Order a large pizza with cheese please",
+          "text": "Give Bob three red cards please",
           "predictedEntities": [
             {
-              "startCharIndex": 8,
-              "endCharIndex": 12,
-              "entityId": "19621bca-49b7-4b80-81f8-e493170b6f12",
-              "entityText": "large",
-              "entityName": "size",
+              "startCharIndex": 5,
+              "endCharIndex": 7,
+              "entityId": "ab3b1b47-6b21-4e10-8a6c-762259f75d06",
+              "entityText": "Bob",
+              "entityName": "name",
               "score": 0.92,
               "metadata": {
                 "fooData": "fooData"
               }
             },
             {
-              "startCharIndex": 25,
-              "endCharIndex": 30,
-              "entityId": "7bd6da9c-66cc-4e4a-8c0a-319778c5fcba",
-              "entityText": "cheese",
-              "entityName": "topping",
+              "startCharIndex": 15,
+              "endCharIndex": 17,
+              "entityId": "86acd2c7-bf32-4811-9b24-79323ae80cb8",
+              "entityText": "red",
+              "entityName": "color",
               "score": 0.92,
               "metadata": {
                 "fooData": "fooData"
