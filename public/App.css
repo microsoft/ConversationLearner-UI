@@ -265,8 +265,11 @@
   display: block;
   margin-top: 1em;
 }
-.actionCreatorCreateEntityButton{
+.actionCreatorCreateEntityButton {
   float: right;
+}
+.scorerCreateActionButton {
+  float: left;
 }
 .webchatContent{
   width: 100%;

@@ -146,7 +146,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
             this.editAction(actionToAdd, currentAppId);
         }
         this.handleClose();
-        this.props.handleClose();
+        this.props.handleClose(actionToAdd);
     }
     editAction(actionToAdd: ActionBase, currentAppId: string) {
         actionToAdd.actionId = this.props.blisAction.actionId;
@@ -307,7 +307,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                             data-automation-id='randomID7'
                             className="grayButton"
                             disabled={false}
-                            onClick={() => this.props.handleClose()}
+                            onClick={() => this.props.handleClose(null)}
                             ariaDescription='Cancel'
                             text='Cancel'
                         />

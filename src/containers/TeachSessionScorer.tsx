@@ -7,6 +7,7 @@ import { TrainScorerStep, ScoredBase, ActionBase, EntityBase, Memory } from 'bli
 import { postScorerFeedbackAsync } from '../actions/teachActions'
 import { CommandButton } from 'office-ui-fabric-react';
 import { IColumn, DetailsList, CheckboxVisibility } from 'office-ui-fabric-react';
+import ActionResponseCreatorEditor from './ActionResponseCreatorEditor'
 import { dummyTrainScorerStep } from '../epics/apiHelpers' // TEMP
 
 let columns: IColumn[] = [
@@ -48,13 +49,29 @@ let columns: IColumn[] = [
     }
 ]
 
+const initState = {
+    actionModalOpen: false,
+    columns: columns,
+    sortColumn : columns[2] // "score"
+}
 class TeachSessionScorer extends React.Component<Props, any> {
     constructor(p: any) {
         super(p);
-        this.state = {
-            columns: columns,
-            sortColumn : columns[2] // "score"
+        this.state = initState;
+    }
+    handleCloseActionModal(newAction: ActionBase) {
+        this.setState({
+            actionModalOpen: false
+        })
+        if (newAction)
+        {
+            this.handleActionSelection(newAction.actionId);
         }
+    }
+    handleOpenActionModal() {
+        this.setState({
+            actionModalOpen: true
+        })
     }
     onColumnClick(event: any, column : any) {
         let { sortedItems, columns } = this.state;
@@ -205,7 +222,7 @@ class TeachSessionScorer extends React.Component<Props, any> {
         let scores = this.renderScores();
         return (
             <div className='content'>
-                <div className='ms-font-xl'>TeachSessionScorer</div>
+                <div className='ms-font-xl'>Action Selection</div>
                     <DetailsList
                         className="ms-font-m-plus"
                         items={scores}
@@ -214,6 +231,18 @@ class TeachSessionScorer extends React.Component<Props, any> {
                         onRenderItemColumn={this.renderItemColumn.bind(this)}
                         onColumnHeaderClick={ this.onColumnClick.bind(this) }
                     />
+                    <div className="modalFooter">
+                        <CommandButton
+                            data-automation-id='randomID8'
+                            className="goldButton scorerCreateActionButton"
+                            disabled={false}
+                            onClick={this.handleOpenActionModal.bind(this)}
+                            ariaDescription='Cancel'
+                            text='Action'
+                            iconProps={{ iconName: 'CirclePlus' }}
+                        />
+                    </div>
+                    <ActionResponseCreatorEditor open={this.state.actionModalOpen} blisAction={null} handleClose={this.handleCloseActionModal.bind(this)} />
             </div>
         )
     }

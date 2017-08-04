@@ -27,7 +27,7 @@ class TeachSessionExtractor extends React.Component<Props, any> {
     render() {
         return (
             <div className='content'>
-                <div className='ms-font-xl'>Extractor</div>
+                <div className='ms-font-xl'>Entity Detection</div>
                     <div>{this.props.teachSession.input}</div>
                     <CommandButton
                             data-automation-id='randomID16'
