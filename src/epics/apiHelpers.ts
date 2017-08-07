@@ -613,15 +613,14 @@ export const dummyScorerResponse = function() : UIScoreResponse
 export const dummyExtractResponse = function (): UIExtractResponse {
 	let text = `
     { "memories" :
-      [
-		{ 
-          "entityName": "size",
-          "entityValue": "large"
-        },
-        { 
-          "entityName": "topping",
-          "entityValue": "cheese"
-        }
+      [{ 
+          "entityName": "name",
+          "entityValue": "Jerry"
+      },
+      { 
+        "entityName": "company",
+        "entityValue": "microsoft"
+      }
       ],
       "extractResponse" :
         {

@@ -26,7 +26,7 @@ const teachSessionReducer: Reducer<any> = (state = initialState, action: ActionO
             let newState: TeachSessionState = {...state, all: [...state.all, newSession], current: newSession, mode: TeachMode.Wait }
             return newState;
         case AT.DELETE_TEACH_SESSION_FULFILLED:
-            return { ...state, all: state.all.filter((t: Teach) => t.teachId !== action.teachSessionGUID), currentConversationStack: [] }
+            return { ...initialState, all: state.all.filter((t: Teach) => t.teachId !== action.teachSessionGUID) }
         case AT.SET_CURRENT_TEACH_SESSION:
             return { ...state, current: action.currentTeachSession };
         case AT.TEACH_MESSAGE_RECEIVED:
