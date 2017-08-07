@@ -482,8 +482,8 @@ export const dummyScorerResponse = function() : UIScoreResponse
           "entityValue": "Jerry"
       },
       { 
-        "entityName": "company",
-        "entityValue": "microsoft"
+        "entityName": "color",
+        "entityValue": "blue"
       }
       ],
       "scoreResponse" :
@@ -618,8 +618,8 @@ export const dummyExtractResponse = function (): UIExtractResponse {
           "entityValue": "Jerry"
       },
       { 
-        "entityName": "company",
-        "entityValue": "microsoft"
+        "entityName": "color",
+        "entityValue": "blue"
       }
       ],
       "extractResponse" :
