@@ -35,22 +35,34 @@ const styles = {
     normal: {
         display: "block"
     },
-    rightBracketDisplayed: {
+    rightBracketDisplayedBlack: {
         display: "inline-block",
-        marginLeft: "2px"
+        marginLeft: "2px",
+        color: "black"
     },
-    leftBracketDisplayed: {
+    leftBracketDisplayedBlack: {
         display: "inline-block",
-        marginRight: "2px"
+        marginRight: "2px",
+        color: "black"
+    },
+    rightBracketDisplayedGray: {
+        display: "inline-block",
+        marginLeft: "2px",
+        color: "gray"
+    },
+    leftBracketDisplayedGray: {
+        display: "inline-block",
+        marginRight: "2px",
+        color: "gray"
     },
     containerDiv: {
         display: "inline-block",
         verticalAlign: "bottom",
-        marginLeft: "3px"
+        marginLeft: "5px"
     },
     textBlockDiv: {
         display: "inline-block",
-        verticalAlign: "bottom",
+        verticalAlign: "bottom"
     }
 }
 
@@ -129,8 +141,8 @@ class ExtractorResponseEditor extends React.Component<any, any> {
                 text: input.substring(i.start, i.end),
                 entityName: i.entity === null ? null : i.entity.entityName,
                 entityId: i.entity === null ? null : i.entity.entityId,
-                rightBracketStyle: i.entity === null ? styles.hidden : styles.rightBracketDisplayed,
-                leftBracketStyle: i.entity === null ? styles.hidden : styles.leftBracketDisplayed,
+                rightBracketStyle: i.entity === null ? styles.hidden : styles.rightBracketDisplayedBlack,
+                leftBracketStyle: i.entity === null ? styles.hidden : styles.leftBracketDisplayedBlack,
                 //dropdown Style is going to have to depend on some state object. When you click an substring group with an entity it needs to go from styles.hidden to styles.normal
                 dropdownStyle: styles.hidden,
                 labelStyle: i.entity === null ? styles.hidden : styles.normal
