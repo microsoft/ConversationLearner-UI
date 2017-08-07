@@ -35,6 +35,9 @@ const styles = {
     normal: {
         display: "block"
     },
+    labelDisplayed: {
+        display: "block"
+    },
     rightBracketDisplayedBlack: {
         display: "inline-block",
         marginLeft: "2px",
@@ -58,7 +61,8 @@ const styles = {
     containerDiv: {
         display: "inline-block",
         verticalAlign: "bottom",
-        marginLeft: "5px"
+        marginLeft: "5px",
+        textAlign: "center"
     },
     textBlockDiv: {
         display: "inline-block",
@@ -145,7 +149,7 @@ class ExtractorResponseEditor extends React.Component<any, any> {
                 leftBracketStyle: i.entity === null ? styles.hidden : styles.leftBracketDisplayedBlack,
                 //dropdown Style is going to have to depend on some state object. When you click an substring group with an entity it needs to go from styles.hidden to styles.normal
                 dropdownStyle: styles.hidden,
-                labelStyle: i.entity === null ? styles.hidden : styles.normal
+                labelStyle: i.entity === null ? styles.hidden : styles.labelDisplayed
             }
             substringObjects.push(substringObj)
         })
