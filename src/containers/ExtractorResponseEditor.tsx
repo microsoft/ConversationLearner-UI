@@ -16,7 +16,8 @@ interface SubstringObject {
     text: string,
     entityName: string,
     entityId: string,
-    textStyle: {},
+    leftBracketStyle: {},
+    rightBracketStyle: {},
     dropdownStyle: {},
     labelStyle: {},
 }
@@ -34,14 +35,22 @@ const styles = {
     normal: {
         display: "block"
     },
-    highlighted: {
-        backgroundColor: "yellow",
-        display: "block"
+    rightBracketDisplayed: {
+        display: "inline-block",
+        marginLeft: "2px"
+    },
+    leftBracketDisplayed: {
+        display: "inline-block",
+        marginRight: "2px"
     },
     containerDiv: {
         display: "inline-block",
         verticalAlign: "bottom",
         marginLeft: "3px"
+    },
+    textBlockDiv: {
+        display: "inline-block",
+        verticalAlign: "bottom",
     }
 }
 
@@ -120,7 +129,8 @@ class ExtractorResponseEditor extends React.Component<any, any> {
                 text: input.substring(i.start, i.end),
                 entityName: i.entity === null ? null : i.entity.entityName,
                 entityId: i.entity === null ? null : i.entity.entityId,
-                textStyle: i.entity === null ? styles.normal : styles.highlighted,
+                rightBracketStyle: i.entity === null ? styles.hidden : styles.rightBracketDisplayed,
+                leftBracketStyle: i.entity === null ? styles.hidden : styles.leftBracketDisplayed,
                 //dropdown Style is going to have to depend on some state object. When you click an substring group with an entity it needs to go from styles.hidden to styles.normal
                 dropdownStyle: styles.hidden,
                 labelStyle: i.entity === null ? styles.hidden : styles.normal
@@ -129,12 +139,26 @@ class ExtractorResponseEditor extends React.Component<any, any> {
         })
         return substringObjects;
     }
+    handleClick(s: SubstringObject) {
+        console.log(s)
+    }
     renderSubstringObject(s: SubstringObject, key: number) {
+        let options = this.props.entities.map((e: EntityBase) => {
+            return {
+                key: e.entityName,
+                text: e.entityName
+            }
+        })
         return (
             <div key={key} style={styles.containerDiv}>
                 <span style={s.labelStyle} className='ms-font-s'>{s.entityName}</span>
-                <span style={s.textStyle} className='ms-font-xl'>{s.text}</span>
-                <Dropdown style={s.dropdownStyle} />
+                <div style={styles.textBlockDiv}>
+                    <span style={s.leftBracketStyle} className='ms-font-xxl'>[</span>
+                    <span className='ms-font-xl' onClick={() => this.handleClick(s)}>{s.text}</span>
+                    <span style={s.rightBracketStyle} className='ms-font-xxl'>]</span>
+                </div>
+
+                <Dropdown style={s.dropdownStyle} options={options} />
             </div>
         )
     }
