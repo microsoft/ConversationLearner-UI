@@ -73,8 +73,29 @@ const styles = {
 class ExtractorResponseEditor extends React.Component<any, any> {
     constructor(p: any) {
         super(p);
+        this.state = {
+            input: "",
+            predictedEntities: []
+        }
         this.renderSubstringObject = this.renderSubstringObject.bind(this)
         this.createSubstringObjects = this.createSubstringObjects.bind(this)
+        this.handleClick = this.handleClick.bind(this)
+        this.handleHover = this.handleHover.bind(this)
+        this.setInitialValues = this.setInitialValues.bind(this)
+    }
+    componentDidMount() {
+        this.setInitialValues(this.props)
+    }
+    componentWillReceiveProps(props: any) {
+        this.setInitialValues(props)
+    }
+    setInitialValues(props: any) {
+        if (props.input && props.predictedEntities && (props.input !== this.state.input)) {
+            this.setState({
+                input: props.input,
+                predictedEntities: props.predictedEntities
+            })
+        }
     }
     createSubstringObjects(input: string, predictedEntities: PredictedEntity[]): SubstringObject[] {
         let indexGroups: IndexGroup[] = [];
@@ -140,22 +161,41 @@ class ExtractorResponseEditor extends React.Component<any, any> {
             }
         })
         let substringObjects: SubstringObject[] = [];
+        // run through the index groups but handle the entities and strings differently
         indexGroups.map((i: IndexGroup) => {
-            let substringObj: SubstringObject = {
-                text: input.substring(i.start, i.end),
-                entityName: i.entity === null ? null : i.entity.entityName,
-                entityId: i.entity === null ? null : i.entity.entityId,
-                rightBracketStyle: i.entity === null ? styles.hidden : styles.rightBracketDisplayedBlack,
-                leftBracketStyle: i.entity === null ? styles.hidden : styles.leftBracketDisplayedBlack,
-                //dropdown Style is going to have to depend on some state object. When you click an substring group with an entity it needs to go from styles.hidden to styles.normal
-                dropdownStyle: styles.hidden,
-                labelStyle: i.entity === null ? styles.hidden : styles.labelDisplayed
+            if (i.entity === null) {
+                //is string
+                console.log('found index group for string', i)
+                let substringObj: SubstringObject = {
+                    text: input.substring(i.start, i.end),
+                    entityName: null,
+                    entityId: null,
+                    rightBracketStyle: styles.hidden,
+                    leftBracketStyle: styles.hidden,
+                    //dropdown Style is going to have to depend on some state object. When you click an substring group with an entity it needs to go from styles.hidden to styles.normal
+                    dropdownStyle: styles.hidden,
+                    labelStyle: styles.hidden
+                }
+            } else {
+                let substringObj: SubstringObject = {
+                    text: input.substring(i.start, i.end),
+                    entityName: i.entity.entityName,
+                    entityId: i.entity.entityId,
+                    rightBracketStyle: styles.rightBracketDisplayedBlack,
+                    leftBracketStyle: styles.leftBracketDisplayedBlack,
+                    //dropdown Style is going to have to depend on some state object. When you click an substring group with an entity it needs to go from styles.hidden to styles.normal
+                    dropdownStyle: styles.hidden,
+                    labelStyle: styles.labelDisplayed
+                }
+                substringObjects.push(substringObj)
             }
-            substringObjects.push(substringObj)
         })
         return substringObjects;
     }
     handleClick(s: SubstringObject) {
+        console.log(s)
+    }
+    handleHover(s: SubstringObject) {
         console.log(s)
     }
     renderSubstringObject(s: SubstringObject, key: number) {
@@ -170,16 +210,15 @@ class ExtractorResponseEditor extends React.Component<any, any> {
                 <span style={s.labelStyle} className='ms-font-s'>{s.entityName}</span>
                 <div style={styles.textBlockDiv}>
                     <span style={s.leftBracketStyle} className='ms-font-xxl'>[</span>
-                    <span className='ms-font-xl' onClick={() => this.handleClick(s)}>{s.text}</span>
+                    <span className='ms-font-xl' onClick={() => this.handleClick(s)} onMouseOver={() => this.handleHover(s)}>{s.text}</span>
                     <span style={s.rightBracketStyle} className='ms-font-xxl'>]</span>
                 </div>
-
                 <Dropdown style={s.dropdownStyle} options={options} />
             </div>
         )
     }
     render() {
-        let substringObjects: SubstringObject[] = this.createSubstringObjects(this.props.input, this.props.predictedEntities)
+        let substringObjects: SubstringObject[] = this.createSubstringObjects(this.state.input, this.state.predictedEntities)
         let key: number = 0;
         return (
             <div>

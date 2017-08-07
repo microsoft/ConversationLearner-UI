@@ -74,7 +74,7 @@ class TeachSessionExtractor extends React.Component<any, any> {
             metrics: this.state.initialExtractResponse.metrics,
             packageId: this.state.initialExtractResponse.packageId
         })
-        // this.props.runScorer(this.props.user.key, appId, teachId, extractResponse);
+        this.props.runScorer(this.props.user.key, appId, teachId, dummyER);
     }
     render() {
         return (
