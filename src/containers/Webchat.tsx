@@ -50,7 +50,7 @@ class Webchat extends React.Component<Props, any> {
             resize: 'detect',
         }
         return (
-            <div id="botchat" className="container webchatwindow wc-app">
+            <div id="botchat" className="webchatwindow wc-app">
                 <Chat {...props} />
             </div>
         )
