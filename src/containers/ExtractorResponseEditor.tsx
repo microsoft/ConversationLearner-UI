@@ -179,7 +179,7 @@ class ExtractorResponseEditor extends React.Component<any, any> {
                     //push substring objects into non entities
                     if (x == i.start) {
                         //this is the first letter of the string
-                        if (this.state.input[x] == " ") {
+                        if (input[x] == " ") {
                             let substringObjForSpace: SubstringObject = {
                                 text: input.substring(x, x + 1),
                                 entityName: null,
@@ -213,7 +213,7 @@ class ExtractorResponseEditor extends React.Component<any, any> {
                             }
                             nonEntities.push(substringObj)
                         } else {
-                            if (this.state.input[x] == " ") {
+                            if (input[x] == " ") {
                                 let substringObj: SubstringObject = {
                                     text: input.substring(wordStartIndex, x),
                                     entityName: null,
@@ -255,7 +255,7 @@ class ExtractorResponseEditor extends React.Component<any, any> {
                         }
                     } else {
                         //this some letter in the middle of the string
-                        if (this.state.input[x] == " ") {
+                        if (input[x] == " ") {
                             let substringObj: SubstringObject = {
                                 text: input.substring(wordStartIndex, x),
                                 entityName: null,
@@ -303,6 +303,7 @@ class ExtractorResponseEditor extends React.Component<any, any> {
                 substringObjects.push(substringObj)
             }
         })
+        console.log(substringObjects)
         this.setState({
             substringObjects: substringObjects
         })

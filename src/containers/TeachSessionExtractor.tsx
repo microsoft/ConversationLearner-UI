@@ -72,7 +72,6 @@ class TeachSessionExtractor extends React.Component<any, any> {
         this.props.runScorer(this.props.user.key, appId, teachId, dummyER);
     }
     render() {
-        console.log('rendering teach', this.state)
         return (
             <div className="content">
                 <div>
