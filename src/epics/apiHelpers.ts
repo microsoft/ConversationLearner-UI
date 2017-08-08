@@ -394,11 +394,11 @@ export const putExtract = (key : string, appId: string, teachId: string, userInp
 	let editAppRoute: string = makeRoute(key, `app/${appId}/teach/${teachId}/extractor`);
 	return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.put(editAppRoute, userInput, config)		
 		.then(response => {
-            obs.next(runExtractorFulfilled(key, appId, teachId, response.data)); 
+            obs.next(runExtractorFulfilled(key, appId, teachId, dummyExtractResponse()));
             obs.complete();
           })
           .catch(err => {
-            obs.next(setErrorDisplay(err.message, "", AT.RUN_EXTRACTOR_ASYNC));
+            obs.next(runExtractorFulfilled(key, appId, teachId, dummyExtractResponse()));
             obs.complete();
           }));
 };
