@@ -165,18 +165,116 @@ class ExtractorResponseEditor extends React.Component<any, any> {
         indexGroups.map((i: IndexGroup) => {
             if (i.entity === null) {
                 //is string
-                console.log('found index group for string', i)
-                let substringObj: SubstringObject = {
-                    text: input.substring(i.start, i.end),
-                    entityName: null,
-                    entityId: null,
-                    rightBracketStyle: styles.hidden,
-                    leftBracketStyle: styles.hidden,
-                    //dropdown Style is going to have to depend on some state object. When you click an substring group with an entity it needs to go from styles.hidden to styles.normal
-                    dropdownStyle: styles.hidden,
-                    labelStyle: styles.hidden
+                let nonEntities: SubstringObject[] = [];
+                let wordStartIndex: number;
+                for (var x = i.start; x <= i.end; x++) {
+                    //push substring objects into non entities
+                    if (x == i.start) {
+                        console.log('first letter of index group', i, x, this.state.input[x])
+                        //this is the first letter of the string
+                        if (this.state.input[x] == " ") {
+                            let substringObjForSpace: SubstringObject = {
+                                text: input.substring(x, x + 1),
+                                entityName: null,
+                                entityId: null,
+                                rightBracketStyle: styles.hidden,
+                                leftBracketStyle: styles.hidden,
+                                //dropdown Style is going to have to depend on some state object. When you click an substring group with an entity it needs to go from styles.hidden to styles.normal
+                                dropdownStyle: styles.hidden,
+                                labelStyle: styles.hidden
+                            }
+                            nonEntities.push(substringObjForSpace)
+                            wordStartIndex = x + 1
+                        } else {
+                            wordStartIndex = x;
+                        }
+                    } else if (x == (i.end - 1)) {
+                        //this is the last letter of the index group
+                        if (x == input.length - 1) {
+                            //this is the last letter of the input entirely
+                            let substringObj: SubstringObject = {
+                                text: input.substring(wordStartIndex, x + 1),
+                                entityName: null,
+                                entityId: null,
+                                rightBracketStyle: styles.hidden,
+                                leftBracketStyle: styles.hidden,
+                                //dropdown Style is going to have to depend on some state object. When you click an substring group with an entity it needs to go from styles.hidden to styles.normal
+                                dropdownStyle: styles.hidden,
+                                labelStyle: styles.hidden
+                            }
+                            nonEntities.push(substringObj)
+                        } else {
+                            if (this.state.input[x] == " ") {
+                                let substringObj: SubstringObject = {
+                                    text: input.substring(wordStartIndex, x),
+                                    entityName: null,
+                                    entityId: null,
+                                    rightBracketStyle: styles.hidden,
+                                    leftBracketStyle: styles.hidden,
+                                    //dropdown Style is going to have to depend on some state object. When you click an substring group with an entity it needs to go from styles.hidden to styles.normal
+                                    dropdownStyle: styles.hidden,
+                                    labelStyle: styles.hidden
+                                }
+                                let substringObjForSpace: SubstringObject = {
+                                    text: input.substring(x, x + 1),
+                                    entityName: null,
+                                    entityId: null,
+                                    rightBracketStyle: styles.hidden,
+                                    leftBracketStyle: styles.hidden,
+                                    //dropdown Style is going to have to depend on some state object. When you click an substring group with an entity it needs to go from styles.hidden to styles.normal
+                                    dropdownStyle: styles.hidden,
+                                    labelStyle: styles.hidden
+                                }
+                                nonEntities.push(substringObj)
+                                nonEntities.push(substringObjForSpace)
+                            } else {
+                                let substringObj: SubstringObject = {
+                                    text: input.substring(wordStartIndex, x),
+                                    entityName: null,
+                                    entityId: null,
+                                    rightBracketStyle: styles.hidden,
+                                    leftBracketStyle: styles.hidden,
+                                    //dropdown Style is going to have to depend on some state object. When you click an substring group with an entity it needs to go from styles.hidden to styles.normal
+                                    dropdownStyle: styles.hidden,
+                                    labelStyle: styles.hidden
+                                }
+                                nonEntities.push(substringObj)
+                            }
+                        }
+                    } else {
+                        //this some letter in the middle of the string
+                        if (this.state.input[x] == " ") {
+                            let substringObj: SubstringObject = {
+                                text: input.substring(wordStartIndex, x),
+                                entityName: null,
+                                entityId: null,
+                                rightBracketStyle: styles.hidden,
+                                leftBracketStyle: styles.hidden,
+                                //dropdown Style is going to have to depend on some state object. When you click an substring group with an entity it needs to go from styles.hidden to styles.normal
+                                dropdownStyle: styles.hidden,
+                                labelStyle: styles.hidden
+                            }
+                            let substringObjForSpace: SubstringObject = {
+                                text: input.substring(x, x + 1),
+                                entityName: null,
+                                entityId: null,
+                                rightBracketStyle: styles.hidden,
+                                leftBracketStyle: styles.hidden,
+                                //dropdown Style is going to have to depend on some state object. When you click an substring group with an entity it needs to go from styles.hidden to styles.normal
+                                dropdownStyle: styles.hidden,
+                                labelStyle: styles.hidden
+                            }
+                            nonEntities.push(substringObj)
+                            nonEntities.push(substringObjForSpace)
+                            wordStartIndex = x + 1
+                        }
+                    }
                 }
+                nonEntities.map((s: SubstringObject) => {
+                    substringObjects.push(s)
+                })
             } else {
+                //is entity
                 let substringObj: SubstringObject = {
                     text: input.substring(i.start, i.end),
                     entityName: i.entity.entityName,
@@ -190,6 +288,7 @@ class ExtractorResponseEditor extends React.Component<any, any> {
                 substringObjects.push(substringObj)
             }
         })
+        console.log(substringObjects)
         return substringObjects;
     }
     handleClick(s: SubstringObject) {
