@@ -7,7 +7,6 @@ import { DisplayMode } from '../types/const'
 const initialState: DisplayState = {
     displayMode: DisplayMode.AppList,
     displayWebchat: false,
-    webchatTeachMode: false,
     displayLogin: true,
     displaySpinner: []
 };
