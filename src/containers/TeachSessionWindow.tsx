@@ -60,6 +60,11 @@ class TeachWindow extends React.Component<Props, any> {
                 text='Done Teaching'
             /> : null;
 
+        // Put mask of webchat if not in input mode
+        let chatDisable = (this.props.teachSession.mode != TeachMode.Wait) ?
+                <div className="wc-disable"></div>
+                : null;
+
         return (
             <Modal
                 isOpen={this.props.error == null}
@@ -69,6 +74,7 @@ class TeachWindow extends React.Component<Props, any> {
                 <div className="wc-gridContainer">
                     <div className="wc-gridWebchat">
                         <Webchat sessionType={"teach"} />
+                        {chatDisable}
                     </div>
                     <div className="wc-gridAdmin">
                         <div className="wc-gridAdminContent">
