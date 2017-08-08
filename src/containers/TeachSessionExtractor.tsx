@@ -61,7 +61,7 @@ class TeachSessionExtractor extends React.Component<any, any> {
         let trainExtractorStep = dummyTrainExtractorStep();
         let appId: string = this.props.apps.current.appId;
         let teachId: string = this.props.teachSession.current.teachId;
-        // this.props.postExtractorFeedback(this.props.user.key, appId, teachId, trainExtractorStep);
+        this.props.postExtractorFeedback(this.props.user.key, appId, teachId, trainExtractorStep);
     }
     runScorer() {
         // TEMP
@@ -74,7 +74,7 @@ class TeachSessionExtractor extends React.Component<any, any> {
             metrics: this.state.initialExtractResponse.metrics,
             packageId: this.state.initialExtractResponse.packageId
         })
-        // this.props.runScorer(this.props.user.key, appId, teachId, extractResponse);
+        this.props.runScorer(this.props.user.key, appId, teachId, dummyER);
     }
     render() {
         return (

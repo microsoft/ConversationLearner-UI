@@ -142,7 +142,7 @@ class ExtractorResponseEditor extends React.Component<any, any> {
         let substringObjects: SubstringObject[] = this.createSubstringObjects(this.props.input, this.props.predictedEntities)
         let key: number = 0;
         return (
-            <div>
+            <div className="extractorResponseBox">
                 {substringObjects.map((s: SubstringObject) => {
                     return this.renderSubstringObject(s, ++key)
                 })}
