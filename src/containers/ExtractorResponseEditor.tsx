@@ -342,8 +342,10 @@ class ExtractorResponseEditor extends React.Component<any, any> {
         let allObjects = this.state.substringObjects;
         let sub: SubstringObject = this.state.substringClicked;
         let currentHoverIsPreviouslyClickedSubstring = (sub !== null && sub.startIndex == s.startIndex)
+        console.log(currentHoverIsPreviouslyClickedSubstring)
         //hovering over a specified entity does nothing, similarly hovering over a clicked substring should maintain the black brackets
         if (s.entityId === null && currentHoverIsPreviouslyClickedSubstring == false) {
+            console.log('hovering')
             if (this.state.substringClicked === null) {
                 //havent clicked any string yet
                 let newSubstringObj = { ...s, leftBracketStyle: styles.leftBracketDisplayedGray, rightBracketStyle: styles.rightBracketDisplayedGray }
@@ -357,6 +359,7 @@ class ExtractorResponseEditor extends React.Component<any, any> {
                 if (s.startIndex < sub.startIndex) {
                     //place a gray bracket to left of hovered substring
                     let newSubstringObj = { ...s, leftBracketStyle: styles.leftBracketDisplayedGray }
+                    allObjects[indexOfHoveredSubstring] = newSubstringObj;
                     //now remove the left bracket for the clicked substring object
                     this.setState({
                         substringObjects: allObjects
@@ -364,6 +367,7 @@ class ExtractorResponseEditor extends React.Component<any, any> {
                 } else {
                     //place a gray bracket to right of hovered substring
                     let newSubstringObj = { ...s, rightBracketStyle: styles.rightBracketDisplayedGray }
+                    allObjects[indexOfHoveredSubstring] = newSubstringObj;
                     //now remove the right bracket for the clicked substring object
                     this.setState({
                         substringObjects: allObjects
@@ -405,7 +409,6 @@ class ExtractorResponseEditor extends React.Component<any, any> {
         )
     }
     render() {
-        console.log('rendering', this.state)
         let key: number = 0;
         return (
             <div className="extractorResponseBox">
