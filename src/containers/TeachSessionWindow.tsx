@@ -18,7 +18,7 @@ class TeachWindow extends React.Component<Props, any> {
     constructor(p: any) {
         super(p);
         this.state = {
-            teachSession : new Teach({})
+            teachSession: new Teach({})
         }
         let currentAppId: string = this.props.apps.current.appId;
         this.props.createTeachSession(this.props.userKey, this.state.teachSession, currentAppId)
@@ -51,62 +51,48 @@ class TeachWindow extends React.Component<Props, any> {
         // Show done button if at least on round and at end of round
         let showDone = this.props.teachSession.currentConversationStack.length > 0 && this.props.teachSession.mode == TeachMode.Wait;
         let doneButton = (showDone) ?
-                    <CommandButton
-                        data-automation-id='randomID16'
-                        disabled={false}
-                        onClick={this.handleSave.bind(this)}
-                        className='ms-font-su goldButton teachSessionHeaderButton'
-                        ariaDescription='Done Teaching'
-                        text='Done Teaching'
-                    /> : null;
+            <CommandButton
+                data-automation-id='randomID16'
+                disabled={false}
+                onClick={this.handleSave.bind(this)}
+                className='ms-font-su goldButton teachSessionHeaderButton'
+                ariaDescription='Done Teaching'
+                text='Done Teaching'
+            /> : null;
 
         return (
-            <Modal 
+            <Modal
                 isOpen={true}
                 isBlocking={true}
                 containerClassName='teachModal'
             >
                 <div className="gridContainer">
-                    <div className="gridWebchat"><Webchat sessionType={"teach"}/></div>
-                    <div className="gridAdmin"><TeachSessionAdmin/></div>
-                    <div className="gridFooter">                                {doneButton}
-                                    <CommandButton
-                                        data-automation-id='randomID16'
-                                        disabled={false}
-                                        onClick={this.confirmDelete.bind(this)}
-                                        className='ms-font-su grayButton teachSessionHeaderButton abandonTeach'
-                                        ariaDescription='Abandon Teach'
-                                        text='Abandon Teach'
-                                    /></div>
+                    <div className="gridWebchat">
+                        <Webchat sessionType={"teach"} />
+                    </div>
+                    <div className="gridAdmin">
+                        <div className="gridAdminContent">
+                            <TeachSessionAdmin />
+                        </div>
+                        <div className="gridFooter">
+                            {doneButton}
+                            <CommandButton
+                                data-automation-id='randomID16'
+                                disabled={false}
+                                onClick={this.confirmDelete.bind(this)}
+                                className='ms-font-su grayButton teachSessionHeaderButton abandonTeach'
+                                ariaDescription='Abandon Teach'
+                                text='Abandon Teach'
+                            />
+                        </div>
+                    </div>
                 </div>
                 <ConfirmDeleteModal open={this.state.open} onCancel={() => this.handleCloseModal()} onConfirm={() => this.handleAbandon()} title="Are you sure you want to abandon this teach session?" />
             </Modal>
         );
     }
 }
-/*
-                <div className="ms-Grid">
-                    <div className="ms-Grid-row">
-                        <div className="ms-Grid-col webchat">
-                            <Webchat sessionType={"teach"}/>
-                        </div>
-                        <div className="ms-Grid-col sessionAdmin">
-                            <TeachSessionAdmin/>
-                            <div className="teachSessionHeader">
-                                {doneButton}
-                                <CommandButton
-                                    data-automation-id='randomID16'
-                                    disabled={false}
-                                    onClick={this.confirmDelete.bind(this)}
-                                    className='ms-font-su grayButton teachSessionHeaderButton abandonTeach'
-                                    ariaDescription='Abandon Teach'
-                                    text='Abandon Teach'
-                                />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                */
+
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         createTeachSession: createTeachSessionAsync,
