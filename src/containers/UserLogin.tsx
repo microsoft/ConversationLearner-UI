@@ -102,7 +102,7 @@ class UserLogin extends React.Component<Props, any> {
         return (
             <div>
                 <Modal
-                    isOpen={this.props.displayLogin}
+                    isOpen={(this.props.displayLogin || !this.props.user.key) && !this.props.displayError}
                     onDismiss={this.handleClose.bind(this)}
                     isBlocking={isBlocking}
                     containerClassName='createModal'
@@ -129,7 +129,8 @@ const mapDispatchToProps = (dispatch: any) => {
 const mapStateToProps = (state: State) => {
     return {
         user: state.user,
-        displayLogin: state.display.displayLogin
+        displayLogin: state.display.displayLogin,
+        displayError: state.error.error
     }
 }
 // Props types inferred from mapStateToProps & dispatchToProps
