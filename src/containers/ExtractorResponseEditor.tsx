@@ -89,10 +89,10 @@ class ExtractorResponseEditor extends React.Component<any, any> {
     }
     componentDidMount() {
         this.setInitialValues(this.props)
-    }  
+    }
     componentWillMount() {
         this.setInitialValues(this.props)
-    }                                    
+    }
     componentWillReceiveProps(props: any) {
         this.setInitialValues(props)
     }
@@ -326,25 +326,26 @@ class ExtractorResponseEditor extends React.Component<any, any> {
         //hovering over a specified entity does nothing
         if (s.entityId === null) {
             if (this.state.substringClicked === null) {
+                //havent clicked any string yet
                 let newSubstringObj = { ...s, leftBracketStyle: styles.leftBracketDisplayedGray, rightBracketStyle: styles.rightBracketDisplayedGray }
                 allObjects[indexOfHoveredSubstring] = newSubstringObj;
-                console.log('All Objects', allObjects)
                 this.setState({
                     substringObjects: allObjects
                 })
             } else {
+                //weve clicked a string and need to extend the bracket
                 let sub: SubstringObject = this.state.substringClicked;
                 if (s.startIndex < sub.startIndex) {
                     //place a gray bracket to left of hovered substring
                     let newSubstringObj = { ...s, leftBracketStyle: styles.leftBracketDisplayedGray }
-                    console.log('All Objects', allObjects)
+                    //now remove the left bracket for the clicked substring object
                     this.setState({
                         substringObjects: allObjects
                     })
                 } else {
                     //place a gray bracket to right of hovered substring
                     let newSubstringObj = { ...s, rightBracketStyle: styles.rightBracketDisplayedGray }
-                    console.log('All Objects', allObjects)
+                    //now remove the right bracket for the clicked substring object
                     this.setState({
                         substringObjects: allObjects
                     })
@@ -353,7 +354,15 @@ class ExtractorResponseEditor extends React.Component<any, any> {
         }
     }
     handleHoverOut(s: SubstringObject) {
-        
+        let indexOfHoveredSubstring: number = this.findIndexOfHoveredSubstring(s);
+        let allObjects = this.state.substringObjects;
+        if (s.entityId === null) {
+            let newSubstringObj = { ...s, leftBracketStyle: styles.hidden, rightBracketStyle: styles.hidden }
+            allObjects[indexOfHoveredSubstring] = newSubstringObj;
+            this.setState({
+                substringObjects: allObjects
+            })
+        }
     }
     renderSubstringObject(s: SubstringObject, key: number) {
         let options = this.props.entities.map((e: EntityBase) => {
