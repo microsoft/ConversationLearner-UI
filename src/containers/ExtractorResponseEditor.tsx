@@ -303,13 +303,29 @@ class ExtractorResponseEditor extends React.Component<any, any> {
                 substringObjects.push(substringObj)
             }
         })
-        console.log(substringObjects)
         this.setState({
             substringObjects: substringObjects
         })
     }
     handleClick(s: SubstringObject) {
-        console.log(s)
+        let indexOfHoveredSubstring: number = this.findIndexOfHoveredSubstring(s);
+        let allObjects = this.state.substringObjects;
+        //hovering over a specified entity does nothing
+        if (s.entityId === null) {
+            if (this.state.substringClicked === null) {
+                //havent clicked any string yet
+                let newSubstringObj = { ...s, leftBracketStyle: styles.leftBracketDisplayedBlack, rightBracketStyle: styles.rightBracketDisplayedBlack }
+                allObjects[indexOfHoveredSubstring] = newSubstringObj;
+                this.setState({
+                    substringObjects: allObjects
+                })
+            }
+            console.log(allObjects)
+            this.setState({
+                substringClicked: s,
+                substringObjects: allObjects
+            })
+        }
     }
     findIndexOfHoveredSubstring(hovered: SubstringObject): number {
         let allObjects = this.state.substringObjects;
@@ -324,8 +340,10 @@ class ExtractorResponseEditor extends React.Component<any, any> {
     handleHover(s: SubstringObject) {
         let indexOfHoveredSubstring: number = this.findIndexOfHoveredSubstring(s);
         let allObjects = this.state.substringObjects;
-        //hovering over a specified entity does nothing
-        if (s.entityId === null) {
+        let sub: SubstringObject = this.state.substringClicked;
+        let currentHoverIsPreviouslyClickedSubstring = (sub !== null && sub.startIndex == s.startIndex)
+        //hovering over a specified entity does nothing, similarly hovering over a clicked substring should maintain the black brackets
+        if (s.entityId === null && currentHoverIsPreviouslyClickedSubstring == false) {
             if (this.state.substringClicked === null) {
                 //havent clicked any string yet
                 let newSubstringObj = { ...s, leftBracketStyle: styles.leftBracketDisplayedGray, rightBracketStyle: styles.rightBracketDisplayedGray }
@@ -357,7 +375,9 @@ class ExtractorResponseEditor extends React.Component<any, any> {
     handleHoverOut(s: SubstringObject) {
         let indexOfHoveredSubstring: number = this.findIndexOfHoveredSubstring(s);
         let allObjects = this.state.substringObjects;
-        if (s.entityId === null) {
+        let sub: SubstringObject = this.state.substringClicked;
+        let currentHoverIsPreviouslyClickedSubstring = (sub !== null && sub.startIndex == s.startIndex)
+        if (s.entityId === null && currentHoverIsPreviouslyClickedSubstring == false) {
             let newSubstringObj = { ...s, leftBracketStyle: styles.hidden, rightBracketStyle: styles.hidden }
             allObjects[indexOfHoveredSubstring] = newSubstringObj;
             this.setState({
@@ -385,6 +405,7 @@ class ExtractorResponseEditor extends React.Component<any, any> {
         )
     }
     render() {
+        console.log('rendering', this.state)
         let key: number = 0;
         return (
             <div className="extractorResponseBox">
