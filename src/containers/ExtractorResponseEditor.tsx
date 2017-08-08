@@ -352,6 +352,9 @@ class ExtractorResponseEditor extends React.Component<any, any> {
             }
         }
     }
+    handleHoverOut(s: SubstringObject) {
+        
+    }
     renderSubstringObject(s: SubstringObject, key: number) {
         let options = this.props.entities.map((e: EntityBase) => {
             return {
@@ -364,7 +367,7 @@ class ExtractorResponseEditor extends React.Component<any, any> {
                 <span style={s.labelStyle} className='ms-font-s'>{s.entityName}</span>
                 <div style={styles.textBlockDiv}>
                     <span style={s.leftBracketStyle} className='ms-font-xxl'>[</span>
-                    <span className='ms-font-xl' onClick={() => this.handleClick(s)} onMouseOver={() => this.handleHover(s)}>{s.text}</span>
+                    <span className='ms-font-xl' onClick={() => this.handleClick(s)} onMouseOver={() => this.handleHover(s)} onMouseLeave={() => this.handleHoverOut(s)}>{s.text}</span>
                     <span style={s.rightBracketStyle} className='ms-font-xxl'>]</span>
                 </div>
                 <Dropdown style={s.dropdownStyle} options={options} />
@@ -372,7 +375,6 @@ class ExtractorResponseEditor extends React.Component<any, any> {
         )
     }
     render() {
-        console.log('rendering', this.props)
         let key: number = 0;
         return (
             <div className="extractorResponseBox">
