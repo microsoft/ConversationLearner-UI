@@ -361,6 +361,9 @@ class ExtractorResponseEditor extends React.Component<any, any> {
                     let newSubstringObj = { ...s, leftBracketStyle: styles.leftBracketDisplayedGray }
                     allObjects[indexOfHoveredSubstring] = newSubstringObj;
                     //now remove the left bracket for the clicked substring object
+                    let indexOfClickedSubstring: number = this.findIndexOfHoveredSubstring(sub);
+                    let newClickedSubstringObject = { ...sub, leftBracketStyle: styles.hidden };
+                    allObjects[indexOfClickedSubstring] = newClickedSubstringObject;
                     this.setState({
                         substringObjects: allObjects
                     })
@@ -369,6 +372,9 @@ class ExtractorResponseEditor extends React.Component<any, any> {
                     let newSubstringObj = { ...s, rightBracketStyle: styles.rightBracketDisplayedGray }
                     allObjects[indexOfHoveredSubstring] = newSubstringObj;
                     //now remove the right bracket for the clicked substring object
+                    let indexOfClickedSubstring: number = this.findIndexOfHoveredSubstring(sub);
+                    let newClickedSubstringObject = { ...sub, rightBracketStyle: styles.hidden }
+                    allObjects[indexOfClickedSubstring] = newClickedSubstringObject;
                     this.setState({
                         substringObjects: allObjects
                     })
@@ -382,11 +388,40 @@ class ExtractorResponseEditor extends React.Component<any, any> {
         let sub: SubstringObject = this.state.substringClicked;
         let currentHoverIsPreviouslyClickedSubstring = (sub !== null && sub.startIndex == s.startIndex)
         if (s.entityId === null && currentHoverIsPreviouslyClickedSubstring == false) {
-            let newSubstringObj = { ...s, leftBracketStyle: styles.hidden, rightBracketStyle: styles.hidden }
-            allObjects[indexOfHoveredSubstring] = newSubstringObj;
-            this.setState({
-                substringObjects: allObjects
-            })
+            if (this.state.substringClicked === null) {
+                //havent clicked any string yet
+                let newSubstringObj = { ...s, leftBracketStyle: styles.hidden, rightBracketStyle: styles.hidden }
+                allObjects[indexOfHoveredSubstring] = newSubstringObj;
+                this.setState({
+                    substringObjects: allObjects
+                })
+            } else {
+                //weve clicked a string and need to re add the bracket now that we've hovered out
+                let sub: SubstringObject = this.state.substringClicked;
+                if (s.startIndex < sub.startIndex) {
+                    //place a gray bracket to left of hovered substring
+                    let newSubstringObj = { ...s, leftBracketStyle: styles.hidden }
+                    allObjects[indexOfHoveredSubstring] = newSubstringObj;
+                    //now remove the left bracket for the clicked substring object
+                    let indexOfClickedSubstring: number = this.findIndexOfHoveredSubstring(sub);
+                    let newClickedSubstringObject = { ...sub, leftBracketStyle: styles.leftBracketDisplayedBlack };
+                    allObjects[indexOfClickedSubstring] = newClickedSubstringObject;
+                    this.setState({
+                        substringObjects: allObjects
+                    })
+                } else {
+                    //place a gray bracket to right of hovered substring
+                    let newSubstringObj = { ...s, rightBracketStyle: styles.hidden }
+                    allObjects[indexOfHoveredSubstring] = newSubstringObj;
+                    //now remove the right bracket for the clicked substring object
+                    let indexOfClickedSubstring: number = this.findIndexOfHoveredSubstring(sub);
+                    let newClickedSubstringObject = { ...sub, rightBracketStyle: styles.rightBracketDisplayedBlack }
+                    allObjects[indexOfClickedSubstring] = newClickedSubstringObject;
+                    this.setState({
+                        substringObjects: allObjects
+                    })
+                }
+            }
         }
     }
     renderSubstringObject(s: SubstringObject, key: number) {
