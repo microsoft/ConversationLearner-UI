@@ -20,6 +20,7 @@ interface SubstringObject {
     rightBracketStyle: {},
     dropdownStyle: {},
     labelStyle: {},
+    startIndex: number
 }
 
 interface IndexGroup {
@@ -75,7 +76,8 @@ class ExtractorResponseEditor extends React.Component<any, any> {
         super(p);
         this.state = {
             input: "",
-            predictedEntities: []
+            predictedEntities: [],
+            substringClicked: null
         }
         this.renderSubstringObject = this.renderSubstringObject.bind(this)
         this.createSubstringObjects = this.createSubstringObjects.bind(this)
@@ -181,7 +183,8 @@ class ExtractorResponseEditor extends React.Component<any, any> {
                                 leftBracketStyle: styles.hidden,
                                 //dropdown Style is going to have to depend on some state object. When you click an substring group with an entity it needs to go from styles.hidden to styles.normal
                                 dropdownStyle: styles.hidden,
-                                labelStyle: styles.hidden
+                                labelStyle: styles.hidden,
+                                startIndex: x
                             }
                             nonEntities.push(substringObjForSpace)
                             wordStartIndex = x + 1
@@ -200,7 +203,8 @@ class ExtractorResponseEditor extends React.Component<any, any> {
                                 leftBracketStyle: styles.hidden,
                                 //dropdown Style is going to have to depend on some state object. When you click an substring group with an entity it needs to go from styles.hidden to styles.normal
                                 dropdownStyle: styles.hidden,
-                                labelStyle: styles.hidden
+                                labelStyle: styles.hidden,
+                                startIndex: wordStartIndex
                             }
                             nonEntities.push(substringObj)
                         } else {
@@ -213,7 +217,8 @@ class ExtractorResponseEditor extends React.Component<any, any> {
                                     leftBracketStyle: styles.hidden,
                                     //dropdown Style is going to have to depend on some state object. When you click an substring group with an entity it needs to go from styles.hidden to styles.normal
                                     dropdownStyle: styles.hidden,
-                                    labelStyle: styles.hidden
+                                    labelStyle: styles.hidden,
+                                    startIndex: wordStartIndex
                                 }
                                 let substringObjForSpace: SubstringObject = {
                                     text: input.substring(x, x + 1),
@@ -223,7 +228,8 @@ class ExtractorResponseEditor extends React.Component<any, any> {
                                     leftBracketStyle: styles.hidden,
                                     //dropdown Style is going to have to depend on some state object. When you click an substring group with an entity it needs to go from styles.hidden to styles.normal
                                     dropdownStyle: styles.hidden,
-                                    labelStyle: styles.hidden
+                                    labelStyle: styles.hidden,
+                                    startIndex: x
                                 }
                                 nonEntities.push(substringObj)
                                 nonEntities.push(substringObjForSpace)
@@ -236,7 +242,8 @@ class ExtractorResponseEditor extends React.Component<any, any> {
                                     leftBracketStyle: styles.hidden,
                                     //dropdown Style is going to have to depend on some state object. When you click an substring group with an entity it needs to go from styles.hidden to styles.normal
                                     dropdownStyle: styles.hidden,
-                                    labelStyle: styles.hidden
+                                    labelStyle: styles.hidden,
+                                    startIndex: wordStartIndex
                                 }
                                 nonEntities.push(substringObj)
                             }
@@ -252,7 +259,8 @@ class ExtractorResponseEditor extends React.Component<any, any> {
                                 leftBracketStyle: styles.hidden,
                                 //dropdown Style is going to have to depend on some state object. When you click an substring group with an entity it needs to go from styles.hidden to styles.normal
                                 dropdownStyle: styles.hidden,
-                                labelStyle: styles.hidden
+                                labelStyle: styles.hidden,
+                                startIndex: wordStartIndex
                             }
                             let substringObjForSpace: SubstringObject = {
                                 text: input.substring(x, x + 1),
@@ -262,7 +270,8 @@ class ExtractorResponseEditor extends React.Component<any, any> {
                                 leftBracketStyle: styles.hidden,
                                 //dropdown Style is going to have to depend on some state object. When you click an substring group with an entity it needs to go from styles.hidden to styles.normal
                                 dropdownStyle: styles.hidden,
-                                labelStyle: styles.hidden
+                                labelStyle: styles.hidden,
+                                startIndex: x
                             }
                             nonEntities.push(substringObj)
                             nonEntities.push(substringObjForSpace)
@@ -283,7 +292,8 @@ class ExtractorResponseEditor extends React.Component<any, any> {
                     leftBracketStyle: styles.leftBracketDisplayedBlack,
                     //dropdown Style is going to have to depend on some state object. When you click an substring group with an entity it needs to go from styles.hidden to styles.normal
                     dropdownStyle: styles.hidden,
-                    labelStyle: styles.labelDisplayed
+                    labelStyle: styles.labelDisplayed,
+                    startIndex: i.start
                 }
                 substringObjects.push(substringObj)
             }
@@ -295,7 +305,19 @@ class ExtractorResponseEditor extends React.Component<any, any> {
         console.log(s)
     }
     handleHover(s: SubstringObject) {
-        console.log(s)
+        //hovering over a specified entity does nothing
+        if (s.entityId === null) {
+            if (this.state.substringClicked === null) {
+                //place gray brackets on both sides of hovered substring
+            } else {
+                let sub: SubstringObject = this.state.substringClicked
+                if (s.startIndex < sub.startIndex) {
+                    //place a gray bracket to left of hovered substring
+                } else {
+                    //place a gray bracket to right of hovered substring
+                }
+            }
+        }
     }
     renderSubstringObject(s: SubstringObject, key: number) {
         let options = this.props.entities.map((e: EntityBase) => {
