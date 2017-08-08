@@ -14,15 +14,15 @@ import EntityCreatorEditor from './EntityCreatorEditor';
 class TeachSessionExtractor extends React.Component<any, any> {
     constructor(p: any) {
         super(p)
+        let current = dummyExtractResponse();
         this.state = {
+            inputText: current.extractResponse.text,
             textVariations: [],
-            predictedEntities: [],
-            inputText: "",
-            initialExtractResponse: {},
+            predictedEntities: current.extractResponse.predictedEntities,
+            initialExtractResponse: current.extractResponse,
             entityModalOpen: false
         }
         this.setInitialValues = this.setInitialValues.bind(this)
-        this.updatePredictedEntities = this.updatePredictedEntities.bind(this)
     }
     setInitialValues(props: any) {
         let current = props.teachSession
@@ -34,11 +34,6 @@ class TeachSessionExtractor extends React.Component<any, any> {
                 initialExtractResponse: current.extractResponse
             })
         }
-    }
-    updatePredictedEntities(entities: PredictedEntity[]){
-        this.setState({
-            predictedEntities: entities
-        })
     }
     handleCloseEntityModal() {
         this.setState({
@@ -77,11 +72,12 @@ class TeachSessionExtractor extends React.Component<any, any> {
         this.props.runScorer(this.props.user.key, appId, teachId, dummyER);
     }
     render() {
+        console.log('rendering teach', this.state)
         return (
             <div className="content">
                 <div>
                     <span className='ms-font-xl extractorTitle'>Entities</span>
-                    <ExtractorResponseEditor input={this.state.inputText} predictedEntities={this.state.predictedEntities} updatePredictedEntities={this.updatePredictedEntities}/>
+                    <ExtractorResponseEditor input={this.state.inputText} predictedEntities={this.state.predictedEntities} />
                 </div>
                 <div>
                     <span className='ms-font-xl extractorTitle'>Variations</span>
@@ -93,30 +89,30 @@ class TeachSessionExtractor extends React.Component<any, any> {
                 </div>
                 <div>
                     <CommandButton
-                            data-automation-id='randomID16'
-                            disabled={false}
-                            onClick={this.sendFeedback.bind(this)}
-                            className='ms-font-su goldButton teachSessionHeaderButton'
-                            ariaDescription='Send Extract Feedback'
-                            text='Send Extract Feedback'
-                        />
+                        data-automation-id='randomID16'
+                        disabled={false}
+                        onClick={this.sendFeedback.bind(this)}
+                        className='ms-font-su goldButton teachSessionHeaderButton'
+                        ariaDescription='Send Extract Feedback'
+                        text='Send Extract Feedback'
+                    />
                     <CommandButton
-                            data-automation-id='randomID16'
-                            disabled={false}
-                            onClick={this.runScorer.bind(this)}
-                            className='ms-font-su goldButton teachSessionHeaderButton'
-                            ariaDescription='Run Scorer'
-                            text='Run Scorer'
-                        />
+                        data-automation-id='randomID16'
+                        disabled={false}
+                        onClick={this.runScorer.bind(this)}
+                        className='ms-font-su goldButton teachSessionHeaderButton'
+                        ariaDescription='Run Scorer'
+                        text='Run Scorer'
+                    />
                     <CommandButton
-                            data-automation-id='randomID8'
-                            className="goldButton teachSessionHeaderButton actionCreatorCreateEntityButton"
-                            disabled={false}
-                            onClick={this.handleOpenEntityModal.bind(this)}
-                            ariaDescription='Cancel'
-                            text='Entity'
-                            iconProps={{ iconName: 'CirclePlus' }}
-                        />
+                        data-automation-id='randomID8'
+                        className="goldButton teachSessionHeaderButton actionCreatorCreateEntityButton"
+                        disabled={false}
+                        onClick={this.handleOpenEntityModal.bind(this)}
+                        ariaDescription='Cancel'
+                        text='Entity'
+                        iconProps={{ iconName: 'CirclePlus' }}
+                    />
                     <EntityCreatorEditor open={this.state.entityModalOpen} entity={null} handleClose={this.handleCloseEntityModal.bind(this)} />
                 </div>
             </div>
@@ -124,7 +120,7 @@ class TeachSessionExtractor extends React.Component<any, any> {
     }
 }
 const mapDispatchToProps = (dispatch: any) => {
-    return bindActionCreators({     
+    return bindActionCreators({
         postExtractorFeedback: postExtractorFeedbackAsync,
         runScorer: runScorerAsync
     }, dispatch);
