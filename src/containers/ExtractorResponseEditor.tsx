@@ -389,13 +389,18 @@ class ExtractorResponseEditor extends React.Component<any, any> {
                     })
                 }
             }
-            let currentlyClicked: SubstringObject[] = this.state.substringsClicked === null? [] : this.state.substringsClicked;
+            let currentlyClicked: SubstringObject[] = this.state.substringsClicked === null ? [] : this.state.substringsClicked;
             this.setState({
                 substringsClicked: [...currentlyClicked, s],
                 substringObjects: allObjects
             })
         } else {
             //make the dropdown reappear. The user can edit the entity that applies to this string
+            let newSubstringObj = { ...s, dropdownStyle: styles.normal }
+            allObjects[indexOfHoveredSubstring] = newSubstringObj;
+            this.setState({
+                substringObjects: allObjects
+            })
         }
     }
     handleHover(s: SubstringObject) {
@@ -457,7 +462,6 @@ class ExtractorResponseEditor extends React.Component<any, any> {
                 let left: SubstringObject = this.findLeftMostClickedSubstring();
                 let right: SubstringObject = this.findRightMostClickedSubstring();
                 if (s.startIndex < left.startIndex) {
-                    console.log("hovered out of string to left of clicked entities")
                     //place a gray bracket to left of hovered substring
                     let newSubstringObj = { ...s, leftBracketStyle: styles.hidden }
                     allObjects[indexOfHoveredSubstring] = newSubstringObj;
@@ -469,7 +473,6 @@ class ExtractorResponseEditor extends React.Component<any, any> {
                         substringObjects: allObjects
                     })
                 } else if (s.startIndex > right.startIndex) {
-                    console.log("hovered out of string to right of clicked entities")
                     //place a gray bracket to right of hovered substring
                     let newSubstringObj = { ...s, rightBracketStyle: styles.hidden }
                     allObjects[indexOfHoveredSubstring] = newSubstringObj;
