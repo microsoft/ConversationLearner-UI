@@ -319,11 +319,39 @@ class ExtractorResponseEditor extends React.Component<any, any> {
                 this.setState({
                     substringObjects: allObjects
                 })
+            } else {
+                //we already have an entity clicked but not set
+                let sub: SubstringObject = this.state.substringClicked;
+                if (s.startIndex < sub.startIndex) {
+                    //place a gray bracket to left of hovered substring
+                    let newSubstringObj = { ...s, leftBracketStyle: styles.leftBracketDisplayedBlack }
+                    allObjects[indexOfHoveredSubstring] = newSubstringObj;
+                    //now remove the left bracket for the clicked substring object
+                    let indexOfClickedSubstring: number = this.findIndexOfHoveredSubstring(sub);
+                    let newClickedSubstringObject = { ...sub, leftBracketStyle: styles.hidden, rightBracketStyle: styles.rightBracketDisplayedBlack };
+                    allObjects[indexOfClickedSubstring] = newClickedSubstringObject;
+                    this.setState({
+                        substringObjects: allObjects
+                    })
+                } else {
+                    //place a gray bracket to right of hovered substring
+                    let newSubstringObj = { ...s, rightBracketStyle: styles.rightBracketDisplayedBlack }
+                    allObjects[indexOfHoveredSubstring] = newSubstringObj;
+                    //now remove the right bracket for the clicked substring object
+                    let indexOfClickedSubstring: number = this.findIndexOfHoveredSubstring(sub);
+                    let newClickedSubstringObject = { ...sub, rightBracketStyle: styles.hidden, leftBracketStyle: styles.leftBracketDisplayedBlack, }
+                    allObjects[indexOfClickedSubstring] = newClickedSubstringObject;
+                    this.setState({
+                        substringObjects: allObjects
+                    })
+                }
             }
             this.setState({
                 substringClicked: s,
                 substringObjects: allObjects
             })
+        } else {
+            //make the dropdown reappear. The user can edit the entity that applies to this string
         }
     }
     findIndexOfHoveredSubstring(hovered: SubstringObject): number {
