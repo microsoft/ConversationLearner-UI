@@ -354,21 +354,34 @@ class ExtractorResponseEditor extends React.Component<any, any> {
         let result: boolean = false;
         if (this.state.substringsClicked !== null) {
             let entityStartIndexes: number[] = this.state.substringObjects.map((s: SubstringObject) => {
-                if(s.entityId !== null){
+                if (s.entityId !== null) {
                     return s.startIndex;
                 }
             })
             entityStartIndexes.map((entityStartIndex: number) => {
-                if(startIndex < entityStartIndex && endIndex > entityStartIndex){
+                if (startIndex < entityStartIndex && endIndex > entityStartIndex) {
                     result = true
                 }
             })
         }
         return result;
     }
+    removeBracketsFromAllSelectedSubstrings() {
+        let allObjects = this.state.substringObjects;
+        let clickedObjects = this.state.substringsClicked;
+        clickedObjects.map((c: SubstringObject) => {
+            let indexOfClickedSubstring: number = this.findIndexOfHoveredSubstring(c);
+            let newClickedSubstringObject = { ...c, leftBracketStyle: styles.hidden, rightBracketStyle: styles.hidden }
+            allObjects[indexOfClickedSubstring] = newClickedSubstringObject;
+        })
+        this.setState({
+            substringObjects: allObjects
+        })
+    }
     handleClick(s: SubstringObject) {
         let indexOfHoveredSubstring: number = this.findIndexOfHoveredSubstring(s);
         let allObjects = this.state.substringObjects;
+        let updateClickedSubstrings: boolean = true;
         //hovering over a specified entity does nothing
         if (s.entityId === null) {
             if (this.state.substringsClicked === null) {
@@ -379,38 +392,49 @@ class ExtractorResponseEditor extends React.Component<any, any> {
                     substringObjects: allObjects
                 })
             } else {
-                //we already have an entity clicked but not set
-                let left: SubstringObject = this.findLeftMostClickedSubstring();
-                let right: SubstringObject = this.findRightMostClickedSubstring();
-                if (s.startIndex < left.startIndex && (this.isDefinedEntityBetweenClickedSubstrings(s.startIndex, left.startIndex) == false)) {
-                    //place a gray bracket to left of hovered substring
-                    let newSubstringObj = { ...s, leftBracketStyle: styles.leftBracketDisplayedBlack }
-                    allObjects[indexOfHoveredSubstring] = newSubstringObj;
-                    //now remove the left bracket for the leftmost clicked substring object
-                    let indexOfClickedSubstring: number = this.findIndexOfHoveredSubstring(left);
-                    let newClickedSubstringObject = { ...left, leftBracketStyle: styles.hidden, rightBracketStyle: styles.rightBracketDisplayedBlack };
-                    allObjects[indexOfClickedSubstring] = newClickedSubstringObject;
+                if (this.substringHasBeenClicked(s) === true) {
+                    //user has clicked into the already clicked string/group of strings. We need to remove the brackets around all clicked but not set strings
+                    this.removeBracketsFromAllSelectedSubstrings();
                     this.setState({
-                        substringObjects: allObjects
+                        substringsClicked: null
                     })
-                } else if (s.startIndex > right.startIndex && (this.isDefinedEntityBetweenClickedSubstrings(right.startIndex, s.startIndex) == false)) {
-                    //place a gray bracket to right of hovered substring
-                    let newSubstringObj = { ...s, rightBracketStyle: styles.rightBracketDisplayedBlack }
-                    allObjects[indexOfHoveredSubstring] = newSubstringObj;
-                    //now remove the right bracket for the rightmost clicked substring object
-                    let indexOfClickedSubstring: number = this.findIndexOfHoveredSubstring(right);
-                    let newClickedSubstringObject = { ...right, rightBracketStyle: styles.hidden, leftBracketStyle: styles.leftBracketDisplayedBlack, }
-                    allObjects[indexOfClickedSubstring] = newClickedSubstringObject;
-                    this.setState({
-                        substringObjects: allObjects
-                    })
+                    updateClickedSubstrings = false
+                } else {
+                    //we already have an entity clicked but not set, and this is a different string than has previously been clicked
+                    let left: SubstringObject = this.findLeftMostClickedSubstring();
+                    let right: SubstringObject = this.findRightMostClickedSubstring();
+                    if (s.startIndex < left.startIndex && (this.isDefinedEntityBetweenClickedSubstrings(s.startIndex, left.startIndex) == false)) {
+                        //place a gray bracket to left of hovered substring
+                        let newSubstringObj = { ...s, leftBracketStyle: styles.leftBracketDisplayedBlack }
+                        allObjects[indexOfHoveredSubstring] = newSubstringObj;
+                        //now remove the left bracket for the leftmost clicked substring object
+                        let indexOfClickedSubstring: number = this.findIndexOfHoveredSubstring(left);
+                        let newClickedSubstringObject = { ...left, leftBracketStyle: styles.hidden, rightBracketStyle: styles.rightBracketDisplayedBlack };
+                        allObjects[indexOfClickedSubstring] = newClickedSubstringObject;
+                        this.setState({
+                            substringObjects: allObjects
+                        })
+                    } else if (s.startIndex > right.startIndex && (this.isDefinedEntityBetweenClickedSubstrings(right.startIndex, s.startIndex) == false)) {
+                        //place a gray bracket to right of hovered substring
+                        let newSubstringObj = { ...s, rightBracketStyle: styles.rightBracketDisplayedBlack }
+                        allObjects[indexOfHoveredSubstring] = newSubstringObj;
+                        //now remove the right bracket for the rightmost clicked substring object
+                        let indexOfClickedSubstring: number = this.findIndexOfHoveredSubstring(right);
+                        let newClickedSubstringObject = { ...right, rightBracketStyle: styles.hidden, leftBracketStyle: styles.leftBracketDisplayedBlack, }
+                        allObjects[indexOfClickedSubstring] = newClickedSubstringObject;
+                        this.setState({
+                            substringObjects: allObjects
+                        })
+                    }
+
                 }
             }
-            let currentlyClicked: SubstringObject[] = this.state.substringsClicked === null ? [] : this.state.substringsClicked;
-            this.setState({
-                substringsClicked: [...currentlyClicked, s],
-                substringObjects: allObjects
-            })
+            if (updateClickedSubstrings === true) {
+                let currentlyClicked: SubstringObject[] = this.state.substringsClicked === null ? [] : this.state.substringsClicked;
+                this.setState({
+                    substringsClicked: [...currentlyClicked, s]
+                })
+            }
         } else {
             //make the dropdown reappear. The user can edit the entity that applies to this string
             let newSubstringObj = { ...s, dropdownStyle: styles.normal }
@@ -424,8 +448,9 @@ class ExtractorResponseEditor extends React.Component<any, any> {
         let indexOfHoveredSubstring: number = this.findIndexOfHoveredSubstring(s);
         let allObjects = this.state.substringObjects;
         let currentHoverIsPreviouslyClickedSubstring = this.substringHasBeenClicked(s)
+
         //hovering over a specified entity does nothing, similarly hovering over a clicked substring should maintain the black brackets
-        if (s.entityId === null && currentHoverIsPreviouslyClickedSubstring == false) {
+        if (s.entityId === null && currentHoverIsPreviouslyClickedSubstring === false) {
             if (this.state.substringsClicked === null) {
                 //havent clicked any strings yet
                 let newSubstringObj = { ...s, leftBracketStyle: styles.leftBracketDisplayedGray, rightBracketStyle: styles.rightBracketDisplayedGray }
