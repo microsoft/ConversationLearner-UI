@@ -349,6 +349,22 @@ class ExtractorResponseEditor extends React.Component<any, any> {
         }
         return index;
     }
+    isDefinedEntityBetweenClickedSubstrings(startIndex: number, endIndex: number): boolean {
+        let result: boolean = false;
+        if (this.state.substringsClicked !== null) {
+            let entityStartIndexes: number[] = this.state.substringObjects.map((s: SubstringObject) => {
+                if(s.entityId !== null){
+                    return s.startIndex;
+                }
+            })
+            entityStartIndexes.map((entityStartIndex: number) => {
+                if(startIndex < entityStartIndex && endIndex > entityStartIndex){
+                    result = true
+                }
+            })
+        }
+        return result;
+    }
     handleClick(s: SubstringObject) {
         let indexOfHoveredSubstring: number = this.findIndexOfHoveredSubstring(s);
         let allObjects = this.state.substringObjects;
