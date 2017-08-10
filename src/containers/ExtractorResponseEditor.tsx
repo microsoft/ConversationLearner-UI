@@ -125,7 +125,8 @@ class ExtractorResponseEditor extends React.Component<any, any> {
                     entityId: s.entityId,
                     entityName: s.entityName,
                     entityText: s.text,
-                    metadata: this.props.entities.find((e: EntityBase) => e.entityName == s.entityName).metadata   
+                    metadata: this.props.entities.find((e: EntityBase) => e.entityName == s.entityName).metadata,
+                    score: 1.0   
                 });
                 predictions.push(predictedEntity);
             }
