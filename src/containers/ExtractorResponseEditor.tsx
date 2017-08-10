@@ -68,6 +68,9 @@ const styles = {
     textBlockDiv: {
         display: "inline-block",
         verticalAlign: "bottom"
+    },
+    dropdownNormal: {
+        display: "block"
     }
 }
 
@@ -371,7 +374,7 @@ class ExtractorResponseEditor extends React.Component<any, any> {
         let clickedObjects = this.state.substringsClicked;
         clickedObjects.map((c: SubstringObject) => {
             let indexOfClickedSubstring: number = this.findIndexOfHoveredSubstring(c);
-            let newClickedSubstringObject = { ...c, leftBracketStyle: styles.hidden, rightBracketStyle: styles.hidden }
+            let newClickedSubstringObject = { ...c, leftBracketStyle: styles.hidden, rightBracketStyle: styles.hidden, dropdownStyle: styles.hidden }
             allObjects[indexOfClickedSubstring] = newClickedSubstringObject;
         })
         this.setState({
@@ -386,14 +389,14 @@ class ExtractorResponseEditor extends React.Component<any, any> {
         if (s.entityId === null) {
             if (this.state.substringsClicked === null) {
                 //havent clicked any strings yet
-                let newSubstringObj = { ...s, leftBracketStyle: styles.leftBracketDisplayedBlack, rightBracketStyle: styles.rightBracketDisplayedBlack }
+                let newSubstringObj = { ...s, leftBracketStyle: styles.leftBracketDisplayedBlack, rightBracketStyle: styles.rightBracketDisplayedBlack, dropdownStyle: styles.dropdownNormal }
                 allObjects[indexOfHoveredSubstring] = newSubstringObj;
                 this.setState({
                     substringObjects: allObjects
                 })
             } else {
                 if (this.substringHasBeenClicked(s) === true) {
-                    //user has clicked into the already clicked string/group of strings. We need to remove the brackets around all clicked but not set strings
+                    //user has clicked into the already clicked string/group of strings. We need to remove the brackets around all clicked but not set strings, and remove the dropwdowns currently displayed underneath them
                     this.removeBracketsFromAllSelectedSubstrings();
                     this.setState({
                         substringsClicked: null
@@ -437,7 +440,7 @@ class ExtractorResponseEditor extends React.Component<any, any> {
             }
         } else {
             //make the dropdown reappear. The user can edit the entity that applies to this string
-            let newSubstringObj = { ...s, dropdownStyle: styles.normal }
+            let newSubstringObj = { ...s, dropdownStyle: styles.dropdownNormal }
             allObjects[indexOfHoveredSubstring] = newSubstringObj;
             this.setState({
                 substringObjects: allObjects
