@@ -94,6 +94,7 @@ class ExtractorResponseEditor extends React.Component<any, any> {
         this.findRightMostClickedSubstring = this.findRightMostClickedSubstring.bind(this)
         this.isDefinedEntityBetweenClickedSubstrings = this.isDefinedEntityBetweenClickedSubstrings.bind(this)
         this.entitySelected = this.entitySelected.bind(this)
+        this.getFullStringBetweenSubstrings = this.getFullStringBetweenSubstrings.bind(this)
     }
     componentDidMount() {
         this.setInitialValues(this.props)
@@ -539,6 +540,15 @@ class ExtractorResponseEditor extends React.Component<any, any> {
             }
         }
     }
+    getFullStringBetweenSubstrings(left: SubstringObject, right: SubstringObject): string{
+        let fullString: string = "";
+        this.state.substringObjects.map((s: SubstringObject) => {
+            if((s.startIndex >= left.startIndex) && (s.startIndex <= right.startIndex)){
+                fullString += s.text;
+            }
+        })
+        return fullString;
+    }
     entitySelected(obj: { text: string }, substringClicked: SubstringObject) {
         //is this thing already an entity or was it a string before?
         let indexOfClickedSubstring: number = this.findIndexOfHoveredSubstring(substringClicked);
@@ -554,7 +564,27 @@ class ExtractorResponseEditor extends React.Component<any, any> {
                     substringObjects: allObjects
                 })
             } else if (this.state.substringsClicked.length > 1) {
+                //1. set the entity and styling for the leftmost substring object 
+                //2. remove all substring objects after the first one up to the second substring object 
+                //3. set the state
+                let left: SubstringObject = this.findLeftMostClickedSubstring();
+                let right: SubstringObject = this.findRightMostClickedSubstring();
+                let allObjectsBeforeLeftmost: SubstringObject[] = []
+                let allObjectsAfterRightmost: SubstringObject[] = [];
 
+                this.state.substringObjects.map((s: SubstringObject) => {
+                    if (s.startIndex < left.startIndex) {
+                        allObjectsBeforeLeftmost.push(s);
+                    } else if (s.startIndex > right.startIndex) {
+                        allObjectsAfterRightmost.push(s)
+                    }
+                })
+                let newText = this.getFullStringBetweenSubstrings(left, right);
+                let newClickedSubstringObject = { ...left, rightBracketStyle: styles.rightBracketDisplayedBlack, entityName: entitySelected.entityName, entityId: entitySelected.entityId, dropdownStyle: styles.hidden, labelStyle: styles.labelDisplayed, text: newText };
+                allObjects = [...allObjectsBeforeLeftmost, newClickedSubstringObject, ...allObjectsAfterRightmost];
+                this.setState({
+                    substringObjects: allObjects
+                })
             }
             this.setState({
                 substringsClicked: null
