@@ -332,7 +332,8 @@ class ExtractorResponseEditor extends React.Component<any, any> {
                 min = sub
             }
         })
-        return min;
+        let objWithPersistentClassInfo = this.state.substringObjects.find((s: SubstringObject) => s.startIndex == min.startIndex)
+        return objWithPersistentClassInfo;
     }
     findRightMostClickedSubstring(): SubstringObject {
         let min: SubstringObject = this.state.substringsClicked[0];
@@ -341,7 +342,8 @@ class ExtractorResponseEditor extends React.Component<any, any> {
                 min = sub
             }
         })
-        return min;
+        let objWithPersistentClassInfo = this.state.substringObjects.find((s: SubstringObject) => s.startIndex == min.startIndex)
+        return objWithPersistentClassInfo;
     }
     findIndexOfHoveredSubstring(hovered: SubstringObject): number {
         let allObjects = this.state.substringObjects;
