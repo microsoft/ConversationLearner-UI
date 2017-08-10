@@ -549,6 +549,12 @@ class ExtractorResponseEditor extends React.Component<any, any> {
                 text: e.entityName
             }
         })
+        if(s.entityId !== null){
+            options.push({
+                key: "Remove",
+                text: "Remove"
+            })
+        }
         return (
             <div key={key} style={styles.containerDiv}>
                 <span style={s.labelStyle} className='ms-font-s'>{s.entityName}</span>
