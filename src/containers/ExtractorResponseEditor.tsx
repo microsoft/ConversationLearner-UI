@@ -95,6 +95,7 @@ class ExtractorResponseEditor extends React.Component<any, any> {
         this.isDefinedEntityBetweenClickedSubstrings = this.isDefinedEntityBetweenClickedSubstrings.bind(this)
         this.entitySelected = this.entitySelected.bind(this)
         this.getFullStringBetweenSubstrings = this.getFullStringBetweenSubstrings.bind(this)
+        this.updateCurrentPredictedEntities = this.updateCurrentPredictedEntities.bind(this)
     }
     componentDidMount() {
         this.setInitialValues(this.props)
@@ -113,6 +114,25 @@ class ExtractorResponseEditor extends React.Component<any, any> {
             })
             this.createSubstringObjects(props.input, props.predictedEntities)
         }
+    }
+    updateCurrentPredictedEntities(substringObjects: SubstringObject[]) {
+        let predictions: PredictedEntity[] = [];
+        substringObjects.map((s: SubstringObject) => {
+            if (s.entityId !== null) {
+                let predictedEntity: PredictedEntity = new PredictedEntity({
+                    startCharIndex: s.startIndex,
+                    endCharIndex: (s.startIndex + (s.text.length - 1)),
+                    entityId: s.entityId,
+                    entityName: s.entityName,
+                    entityText: s.text,
+                    metadata: this.props.entities.find((e: EntityBase) => e.entityName == s.entityName).metadata   
+                });
+                predictions.push(predictedEntity);
+            }
+        })
+        this.setState({
+            predictedEntities: predictions
+        })
     }
     createSubstringObjects(input: string, predictedEntities: PredictedEntity[]): void {
         let indexGroups: IndexGroup[] = [];
@@ -540,10 +560,10 @@ class ExtractorResponseEditor extends React.Component<any, any> {
             }
         }
     }
-    getFullStringBetweenSubstrings(left: SubstringObject, right: SubstringObject): string{
+    getFullStringBetweenSubstrings(left: SubstringObject, right: SubstringObject): string {
         let fullString: string = "";
         this.state.substringObjects.map((s: SubstringObject) => {
-            if((s.startIndex >= left.startIndex) && (s.startIndex <= right.startIndex)){
+            if ((s.startIndex >= left.startIndex) && (s.startIndex <= right.startIndex)) {
                 fullString += s.text;
             }
         })
@@ -596,6 +616,7 @@ class ExtractorResponseEditor extends React.Component<any, any> {
                 substringObjects: allObjects
             })
         }
+        this.updateCurrentPredictedEntities(allObjects)
     }
     renderSubstringObject(s: SubstringObject, key: number) {
         let options = this.props.entities.map((e: EntityBase) => {
