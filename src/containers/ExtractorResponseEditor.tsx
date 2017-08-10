@@ -532,6 +532,9 @@ class ExtractorResponseEditor extends React.Component<any, any> {
             }
         }
     }
+    entitySelected(obj: { text: string }){
+        console.log(obj)
+    }
     renderSubstringObject(s: SubstringObject, key: number) {
         let options = this.props.entities.map((e: EntityBase) => {
             return {
@@ -547,7 +550,11 @@ class ExtractorResponseEditor extends React.Component<any, any> {
                     <span className='ms-font-xl' onClick={() => this.handleClick(s)} onMouseOver={() => this.handleHover(s)} onMouseLeave={() => this.handleHoverOut(s)}>{s.text}</span>
                     <span style={s.rightBracketStyle} className='ms-font-xxl'>]</span>
                 </div>
-                <Dropdown style={s.dropdownStyle} options={options} />
+                <Dropdown
+                    style={s.dropdownStyle}
+                    options={options}
+                    onChanged={this.entitySelected.bind(this)}
+                />
             </div>
         )
     }
