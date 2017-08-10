@@ -546,7 +546,16 @@ class ExtractorResponseEditor extends React.Component<any, any> {
         let allObjects = this.state.substringObjects;
 
         if (substringClicked.entityId === null) {
-            //non entity
+            let currentlyClickedSubstrings = this.state.substringsClicked;
+            if (this.state.substringsClicked.length == 1) {
+                let newClickedSubstringObject: SubstringObject = { ...substringClicked, entityName: entitySelected.entityName, entityId: entitySelected.entityId, dropdownStyle: styles.hidden, labelStyle: styles.labelDisplayed }
+                allObjects[indexOfClickedSubstring] = newClickedSubstringObject;
+                this.setState({
+                    substringObjects: allObjects
+                })
+            } else if (this.state.substringsClicked.length > 1) {
+
+            }
         } else {
             let newClickedSubstringObject: SubstringObject = { ...substringClicked, entityName: entitySelected.entityName, entityId: entitySelected.entityId, dropdownStyle: styles.hidden }
             allObjects[indexOfClickedSubstring] = newClickedSubstringObject;
