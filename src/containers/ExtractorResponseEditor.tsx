@@ -442,7 +442,11 @@ class ExtractorResponseEditor extends React.Component<any, any> {
             }
         } else {
             //make the dropdown reappear. The user can edit the entity that applies to this string
-            let newSubstringObj = { ...s, dropdownStyle: styles.dropdownNormal }
+            let style: {} = styles.hidden;
+            if(s.dropdownStyle === styles.hidden){
+                style = styles.dropdownNormal
+            }
+            let newSubstringObj = { ...s, dropdownStyle: style }
             allObjects[indexOfHoveredSubstring] = newSubstringObj;
             this.setState({
                 substringObjects: allObjects
@@ -535,6 +539,7 @@ class ExtractorResponseEditor extends React.Component<any, any> {
         }
     }
     entitySelected(obj: { text: string }){
+        //is this thing already an entity or was it a string before?
         console.log(obj)
     }
     renderSubstringObject(s: SubstringObject, key: number) {
