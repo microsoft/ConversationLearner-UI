@@ -556,6 +556,9 @@ class ExtractorResponseEditor extends React.Component<any, any> {
             } else if (this.state.substringsClicked.length > 1) {
 
             }
+            this.setState({
+                substringsClicked: null
+            })
         } else {
             let newClickedSubstringObject: SubstringObject = { ...substringClicked, entityName: entitySelected.entityName, entityId: entitySelected.entityId, dropdownStyle: styles.hidden }
             allObjects[indexOfClickedSubstring] = newClickedSubstringObject;
