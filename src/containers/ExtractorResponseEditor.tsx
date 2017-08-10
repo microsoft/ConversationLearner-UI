@@ -103,9 +103,6 @@ class ExtractorResponseEditor extends React.Component<any, any> {
     componentWillMount() {
         this.setInitialValues(this.props)
     }
-    componentWillReceiveProps(props: any) {
-        this.setInitialValues(props)
-    }
     setInitialValues(props: any) {
         if (props.input && props.predictedEntities && (props.input !== this.state.input)) {
             this.setState({
@@ -131,6 +128,7 @@ class ExtractorResponseEditor extends React.Component<any, any> {
                 predictions.push(predictedEntity);
             }
         })
+        this.props.updatePredictedEntities(predictions);
         this.setState({
             predictedEntities: predictions
         })

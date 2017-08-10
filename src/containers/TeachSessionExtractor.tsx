@@ -23,6 +23,7 @@ class TeachSessionExtractor extends React.Component<any, any> {
             entityModalOpen: false
         }
         this.setInitialValues = this.setInitialValues.bind(this)
+        this.updatePredictedEntities = this.updatePredictedEntities.bind(this)
     }
     setInitialValues(props: any) {
         let current = props.teachSession
@@ -34,6 +35,11 @@ class TeachSessionExtractor extends React.Component<any, any> {
                 initialExtractResponse: current.extractResponse
             })
         }
+    }
+    updatePredictedEntities(predictedEntities: PredictedEntity[]){
+        this.setState({
+            predictedEntities: predictedEntities
+        })
     }
     handleCloseEntityModal() {
         this.setState({
@@ -76,7 +82,7 @@ class TeachSessionExtractor extends React.Component<any, any> {
             <div className="content">
                 <div>
                     <span className='ms-font-xl extractorTitle'>Entities</span>
-                    <ExtractorResponseEditor input={this.state.inputText} predictedEntities={this.state.predictedEntities} />
+                    <ExtractorResponseEditor input={this.state.inputText} predictedEntities={this.state.predictedEntities} updatePredictedEntities={this.updatePredictedEntities}/>
                 </div>
                 <div>
                     <span className='ms-font-xl extractorTitle'>Variations</span>
