@@ -93,6 +93,7 @@ class ExtractorResponseEditor extends React.Component<any, any> {
         this.findLeftMostClickedSubstring = this.findLeftMostClickedSubstring.bind(this)
         this.findRightMostClickedSubstring = this.findRightMostClickedSubstring.bind(this)
         this.isDefinedEntityBetweenClickedSubstrings = this.isDefinedEntityBetweenClickedSubstrings.bind(this)
+        this.entitySelected = this.entitySelected.bind(this)
     }
     componentDidMount() {
         this.setInitialValues(this.props)
@@ -443,7 +444,7 @@ class ExtractorResponseEditor extends React.Component<any, any> {
         } else {
             //make the dropdown reappear. The user can edit the entity that applies to this string
             let style: {} = styles.hidden;
-            if(s.dropdownStyle === styles.hidden){
+            if (s.dropdownStyle === styles.hidden) {
                 style = styles.dropdownNormal
             }
             let newSubstringObj = { ...s, dropdownStyle: style }
@@ -538,9 +539,21 @@ class ExtractorResponseEditor extends React.Component<any, any> {
             }
         }
     }
-    entitySelected(obj: { text: string }){
+    entitySelected(obj: { text: string }, substringClicked: SubstringObject) {
         //is this thing already an entity or was it a string before?
-        console.log(obj)
+        let indexOfClickedSubstring: number = this.findIndexOfHoveredSubstring(substringClicked);
+        let entitySelected: EntityBase = this.props.entities.find((e: EntityBase) => e.entityName == obj.text)
+        let allObjects = this.state.substringObjects;
+
+        if (substringClicked.entityId === null) {
+            //non entity
+        } else {
+            let newClickedSubstringObject: SubstringObject = { ...substringClicked, entityName: entitySelected.entityName, entityId: entitySelected.entityId, dropdownStyle: styles.hidden }
+            allObjects[indexOfClickedSubstring] = newClickedSubstringObject;
+            this.setState({
+                substringObjects: allObjects
+            })
+        }
     }
     renderSubstringObject(s: SubstringObject, key: number) {
         let options = this.props.entities.map((e: EntityBase) => {
@@ -549,7 +562,7 @@ class ExtractorResponseEditor extends React.Component<any, any> {
                 text: e.entityName
             }
         })
-        if(s.entityId !== null){
+        if (s.entityId !== null) {
             options.push({
                 key: "Remove",
                 text: "Remove"
@@ -566,7 +579,9 @@ class ExtractorResponseEditor extends React.Component<any, any> {
                 <Dropdown
                     style={s.dropdownStyle}
                     options={options}
-                    onChanged={this.entitySelected.bind(this)}
+                    onChanged={(obj) => {
+                        this.entitySelected(obj, s)
+                    }}
                 />
             </div>
         )
