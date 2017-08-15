@@ -64,7 +64,7 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
 							obs.complete();
 						})
 						.catch(err => {
-							obs.next(setErrorDisplay(err.message, "", AT.SET_CURRENT_BLIS_APP));  
+							obs.next(setErrorDisplay(err.message, toErrorString(err.response), AT.SET_CURRENT_BLIS_APP));  
 							obs.complete();
 						}));
 	};
@@ -81,7 +81,7 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
               obs.complete();
             })
             .catch(err => {
-              obs.next(setErrorDisplay(err.message, "", AT.FETCH_APPLICATIONS_ASYNC));
+              obs.next(setErrorDisplay(err.message, toErrorString(err.response), AT.FETCH_APPLICATIONS_ASYNC));
               obs.complete();
             }));
   };
@@ -94,7 +94,7 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
               obs.complete();
             })
             .catch(err => {
-              obs.next(setErrorDisplay(err.message, "", AT.FETCH_ENTITIES_ASYNC));
+              obs.next(setErrorDisplay(err.message, toErrorString(err.response), AT.FETCH_ENTITIES_ASYNC));
               obs.complete();
             }));
   };
@@ -107,7 +107,7 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
               obs.complete();
             })
             .catch(err => {
-              obs.next(setErrorDisplay(err.message, "", AT.FETCH_ACTIONS_ASYNC));
+              obs.next(setErrorDisplay(err.message, toErrorString(err.response), AT.FETCH_ACTIONS_ASYNC));
               obs.complete();
             }));
   };
@@ -142,7 +142,7 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
               obs.complete();
             })
             .catch(err => {
-              obs.next(setErrorDisplay(err.message, "", AT.CREATE_BLIS_APPLICATION_ASYNC));
+              obs.next(setErrorDisplay(err.message, toErrorString(err.response), AT.CREATE_BLIS_APPLICATION_ASYNC));
               obs.complete();
             }));
   };
@@ -164,7 +164,7 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
               obs.complete();
             })
             .catch(err => {
-              obs.next(setErrorDisplay(err.message, "", AT.CREATE_ENTITY_ASYNC));
+              obs.next(setErrorDisplay(err.message, toErrorString(err.response), AT.CREATE_ENTITY_ASYNC));
               obs.complete();
             }));
   };
@@ -179,7 +179,7 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
               obs.complete();
             })
             .catch(err => {
-              obs.next(setErrorDisplay(err.message, "", AT.CREATE_ACTION_ASYNC));
+              obs.next(setErrorDisplay(err.message, toErrorString(err.response), AT.CREATE_ACTION_ASYNC));
               obs.complete();
             }));
   };
@@ -198,7 +198,7 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
               obs.complete();
             })
             .catch(err => {
-              obs.next(setErrorDisplay(err.message, "", AT.DELETE_BLIS_APPLICATION_ASYNC));
+              obs.next(setErrorDisplay(err.message, toErrorString(err.response), AT.DELETE_BLIS_APPLICATION_ASYNC));
               obs.complete();
             }));
   };
@@ -215,7 +215,7 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
               obs.complete();
             })
             .catch(err => {
-              obs.next(setErrorDisplay(err.message, "", AT.DELETE_ENTITY_ASYNC));
+              obs.next(setErrorDisplay(err.message, toErrorString(err.response), AT.DELETE_ENTITY_ASYNC));
               obs.complete();
             }));
   };
@@ -229,7 +229,7 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
               obs.complete();
             })
             .catch(err => {
-              obs.next(setErrorDisplay(err.message, "", AT.DELETE_ACTION_ASYNC));
+              obs.next(setErrorDisplay(err.message, toErrorString(err.response), AT.DELETE_ACTION_ASYNC));
               obs.complete();
             }));
   };
@@ -247,7 +247,7 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
               obs.complete();
             })
             .catch(err => {
-              obs.next(setErrorDisplay(err.message, "", AT.EDIT_BLIS_APPLICATION_ASYNC));
+              obs.next(setErrorDisplay(err.message, toErrorString(err.response), AT.EDIT_BLIS_APPLICATION_ASYNC));
               obs.complete();
             }));
   };
@@ -260,7 +260,7 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
               obs.complete();
             })
             .catch(err => {
-              obs.next(setErrorDisplay(err.message, "", AT.EDIT_ACTION_ASYNC));
+              obs.next(setErrorDisplay(err.message, toErrorString(err.response), AT.EDIT_ACTION_ASYNC));
               obs.complete();
             }));
   };
@@ -273,7 +273,7 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
               obs.complete();
             })
             .catch(err => {
-              obs.next(setErrorDisplay(err.message, "", AT.EDIT_ENTITY_ASYNC));
+              obs.next(setErrorDisplay(err.message, toErrorString(err.response), AT.EDIT_ENTITY_ASYNC));
               obs.complete();
             }));
   }
@@ -291,7 +291,7 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
               obs.complete();
             })
             .catch(err => {
-              obs.next(setErrorDisplay(err.message, "", AT.CREATE_CHAT_SESSION_ASYNC));
+              obs.next(setErrorDisplay(err.message, toErrorString(err.response), AT.CREATE_CHAT_SESSION_ASYNC));
               obs.complete();
             }));
   };
@@ -304,7 +304,7 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
               obs.complete();
             })
             .catch(err => {
-              obs.next(setErrorDisplay(err.message, "", AT.DELETE_CHAT_SESSION_ASYNC));
+              obs.next(setErrorDisplay(err.message, toErrorString(err.response), AT.DELETE_CHAT_SESSION_ASYNC));
               obs.complete();
             }));
   };
@@ -317,7 +317,7 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
               obs.complete();
             })
             .catch(err => {
-              obs.next(setErrorDisplay(err.message, "", AT.FETCH_CHAT_SESSIONS_ASYNC));
+              obs.next(setErrorDisplay(err.message, toErrorString(err.response), AT.FETCH_CHAT_SESSIONS_ASYNC));
               obs.complete();
             }));
   };
@@ -348,7 +348,7 @@ export const createTeachSession = (key: string, teachSession: Teach, appId: stri
             obs.complete();
           })
           .catch(err => {
-            obs.next(setErrorDisplay(err.message, "", AT.CREATE_TEACH_SESSION));
+            obs.next(setErrorDisplay(err.message, toErrorString(err.response), AT.CREATE_TEACH_SESSION));
             obs.complete();
           }));
 };
@@ -361,7 +361,7 @@ export const deleteTeachSession = (key : string, appId: string, teachSession: Te
             obs.complete();
           })
           .catch(err => {
-            obs.next(setErrorDisplay(err.message, "", AT.DELETE_TEACH_SESSION_ASYNC));
+            obs.next(setErrorDisplay(err.message, toErrorString(err.response), AT.DELETE_TEACH_SESSION_ASYNC));
             obs.complete();
           }));
 };
@@ -374,7 +374,7 @@ export const getAllTeachSessionsForBlisApp = (key: string, appId: string): Obser
             obs.complete();
           })
           .catch(err => {
-            obs.next(setErrorDisplay(err.message, "", AT.FETCH_TEACH_SESSIONS_ASYNC));
+            obs.next(setErrorDisplay(err.message, toErrorString(err.response), AT.FETCH_TEACH_SESSIONS_ASYNC));
             obs.complete();
           }));
 };
@@ -398,7 +398,7 @@ export const putExtract = (key : string, appId: string, teachId: string, userInp
             obs.complete();
           })
           .catch(err => {
-            obs.next(setErrorDisplay(err.message, "", AT.RUN_EXTRACTOR_ASYNC));
+            obs.next(setErrorDisplay(err.message, toErrorString(err.response), AT.RUN_EXTRACTOR_ASYNC));
             obs.complete();
           }));
 };
@@ -415,7 +415,7 @@ export const postExtraction = (key : string, appId : string, teachId: string, tr
             obs.complete();
           })
           .catch(err => {
-            obs.next(setErrorDisplay(err.message, "", AT.POST_EXTACT_FEEDBACK_ASYNC));
+            obs.next(setErrorDisplay(err.message, toErrorString(err.response), AT.POST_EXTACT_FEEDBACK_ASYNC));
             obs.complete();
 					}));
 };
@@ -433,9 +433,7 @@ export const putScore = (key : string, appId: string, teachId: string, extractRe
             obs.complete();
           })
           .catch(err => {
-            // TEMP
-            obs.next(runScorerFulfilled(key, appId, teachId, dummyScorerResponse() )); 
-            // TEMP obs.next(setErrorDisplay(err.message, "", AT.RUN_SCORER));
+            obs.next(setErrorDisplay(err.message, toErrorString(err.response), AT.RUN_SCORER_ASYNC));
             obs.complete();
 					}));
 };
@@ -452,9 +450,7 @@ export const postScore = (key : string, appId : string, teachId: string, trainSc
             obs.complete();
           })
           .catch(err => {
-             // TEMP
-            obs.next(postScorerFeedbackFulfilled(key, appId, teachId, { packageId: 15, teachId :  "1234", trainDialogId: "1234" } )); 
-            // TEMP obs.next(setErrorDisplay(err.message, "", AT.POST_SCORE_FEEDBACK));
+            obs.next(setErrorDisplay(err.message, toErrorString(err.response), AT.POST_SCORE_FEEDBACK_ASYNC));
             obs.complete();
           }));
 };
@@ -470,6 +466,22 @@ export const getTeachIds = (key : string, appId: string): Observable<AxiosRespon
 	let getAppRoute: string = makeRoute(key, `app/${appId}/teach`);
 	return Rx.Observable.fromPromise(axios.get(getAppRoute, config))
 };
+
+let toErrorString = function(error : any) : string 
+{
+  try {
+    if (!error || !error.data) {
+      return "";
+    }
+    else if (error.data.errorMessages) {
+      return error.data.errorMessages.join();
+    }
+    return error.data.stringify();
+  }
+  catch (e) {
+    return "Unknown Error";
+  }
+}
 
 export const dummyScorerResponse = function() : UIScoreResponse
 {
