@@ -19,6 +19,9 @@ class UIError extends React.Component<Props, any> {
         this.props.clearErrorDisplay();
     }
     render() {
+        let message = this.props.error.message ? 
+             <div className='ms-font-m ms-fontWeight-semilight'>{this.props.error.message}</div> :
+             null;
         return (
             <div>
                 <Modal
@@ -32,6 +35,7 @@ class UIError extends React.Component<Props, any> {
                     </div>
                     <div className='ms-font-l ms-fontWeight-semilight'>{this.props.error.route} Failed</div>
                     <div className='ms-font-m ms-fontWeight-semilight'>{this.props.error.error}</div>
+                    {message}
                     <div className='modalFooter'>
                         <CommandButton
                             data-automation-id='randomID2'
