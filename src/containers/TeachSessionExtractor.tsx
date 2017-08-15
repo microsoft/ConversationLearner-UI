@@ -20,12 +20,14 @@ class TeachSessionExtractor extends React.Component<any, any> {
             initialExtractResponse: [],//current.extractResponse,
             entityModalOpen: false
         }
-        this.setInitialValues = this.setInitialValues.bind(this)
+        this.updateExtractValues = this.updateExtractValues.bind(this)
         this.updatePredictedEntities = this.updatePredictedEntities.bind(this)
     }
-    setInitialValues(props: any) {
+    updateExtractValues(props: any) {
+        console.log('updating')
         let current = props.teachSession
         if (current.extractResponse && (current.extractResponse.text !== this.state.inputText)) {
+            console.log('setting state')
             this.setState({
                 inputText: current.extractResponse.text,
                 textVariations: [],
@@ -49,11 +51,11 @@ class TeachSessionExtractor extends React.Component<any, any> {
             entityModalOpen: true
         })
     }
-    componentDidMount() {
-        this.setInitialValues(this.props)
+    componentWillMount() {
+        this.updateExtractValues(this.props)
     }
     componentWillReceiveProps(props: any) {
-        this.setInitialValues(props)
+        this.updateExtractValues(props)
     }
     sendFeedback() {
         // TEMP 
