@@ -20,6 +20,7 @@ interface SubstringObject {
     rightBracketStyle: {},
     dropdownStyle: {},
     labelStyle: {},
+    startIndex: number
 }
 
 interface IndexGroup {
@@ -67,6 +68,9 @@ const styles = {
     textBlockDiv: {
         display: "inline-block",
         verticalAlign: "bottom"
+    },
+    dropdownNormal: {
+        display: "block"
     }
 }
 
@@ -75,19 +79,29 @@ class ExtractorResponseEditor extends React.Component<any, any> {
         super(p);
         this.state = {
             input: "",
-            predictedEntities: []
+            predictedEntities: [],
+            substringObjects: null,
+            substringsClicked: null,
         }
         this.renderSubstringObject = this.renderSubstringObject.bind(this)
         this.createSubstringObjects = this.createSubstringObjects.bind(this)
         this.handleClick = this.handleClick.bind(this)
         this.handleHover = this.handleHover.bind(this)
         this.setInitialValues = this.setInitialValues.bind(this)
+        this.findIndexOfHoveredSubstring = this.findIndexOfHoveredSubstring.bind(this)
+        this.substringHasBeenClicked = this.substringHasBeenClicked.bind(this)
+        this.findLeftMostClickedSubstring = this.findLeftMostClickedSubstring.bind(this)
+        this.findRightMostClickedSubstring = this.findRightMostClickedSubstring.bind(this)
+        this.isDefinedEntityBetweenClickedSubstrings = this.isDefinedEntityBetweenClickedSubstrings.bind(this)
+        this.entitySelected = this.entitySelected.bind(this)
+        this.getFullStringBetweenSubstrings = this.getFullStringBetweenSubstrings.bind(this)
+        this.updateCurrentPredictedEntities = this.updateCurrentPredictedEntities.bind(this)
     }
     componentDidMount() {
         this.setInitialValues(this.props)
     }
-    componentWillReceiveProps(props: any) {
-        this.setInitialValues(props)
+    componentWillMount() {
+        this.setInitialValues(this.props)
     }
     setInitialValues(props: any) {
         if (props.input && props.predictedEntities && (props.input !== this.state.input)) {
@@ -95,9 +109,31 @@ class ExtractorResponseEditor extends React.Component<any, any> {
                 input: props.input,
                 predictedEntities: props.predictedEntities
             })
+            this.createSubstringObjects(props.input, props.predictedEntities)
         }
     }
-    createSubstringObjects(input: string, predictedEntities: PredictedEntity[]): SubstringObject[] {
+    updateCurrentPredictedEntities(substringObjects: SubstringObject[]) {
+        let predictions: PredictedEntity[] = [];
+        substringObjects.map((s: SubstringObject) => {
+            if (s.entityId !== null) {
+                let predictedEntity: PredictedEntity = new PredictedEntity({
+                    startCharIndex: s.startIndex,
+                    endCharIndex: (s.startIndex + (s.text.length - 1)),
+                    entityId: s.entityId,
+                    entityName: s.entityName,
+                    entityText: s.text,
+                    metadata: this.props.entities.find((e: EntityBase) => e.entityName == s.entityName).metadata,
+                    score: 1.0
+                });
+                predictions.push(predictedEntity);
+            }
+        })
+        this.props.updatePredictedEntities(predictions);
+        this.setState({
+            predictedEntities: predictions
+        })
+    }
+    createSubstringObjects(input: string, predictedEntities: PredictedEntity[]): void {
         let indexGroups: IndexGroup[] = [];
         let count: number = 0;
         let currentIndexGroup: IndexGroup = {
@@ -170,9 +206,8 @@ class ExtractorResponseEditor extends React.Component<any, any> {
                 for (var x = i.start; x <= i.end; x++) {
                     //push substring objects into non entities
                     if (x == i.start) {
-                        console.log('first letter of index group', i, x, this.state.input[x])
                         //this is the first letter of the string
-                        if (this.state.input[x] == " ") {
+                        if (input[x] == " ") {
                             let substringObjForSpace: SubstringObject = {
                                 text: input.substring(x, x + 1),
                                 entityName: null,
@@ -181,7 +216,8 @@ class ExtractorResponseEditor extends React.Component<any, any> {
                                 leftBracketStyle: styles.hidden,
                                 //dropdown Style is going to have to depend on some state object. When you click an substring group with an entity it needs to go from styles.hidden to styles.normal
                                 dropdownStyle: styles.hidden,
-                                labelStyle: styles.hidden
+                                labelStyle: styles.hidden,
+                                startIndex: x
                             }
                             nonEntities.push(substringObjForSpace)
                             wordStartIndex = x + 1
@@ -200,11 +236,12 @@ class ExtractorResponseEditor extends React.Component<any, any> {
                                 leftBracketStyle: styles.hidden,
                                 //dropdown Style is going to have to depend on some state object. When you click an substring group with an entity it needs to go from styles.hidden to styles.normal
                                 dropdownStyle: styles.hidden,
-                                labelStyle: styles.hidden
+                                labelStyle: styles.hidden,
+                                startIndex: wordStartIndex
                             }
                             nonEntities.push(substringObj)
                         } else {
-                            if (this.state.input[x] == " ") {
+                            if (input[x] == " ") {
                                 let substringObj: SubstringObject = {
                                     text: input.substring(wordStartIndex, x),
                                     entityName: null,
@@ -213,7 +250,8 @@ class ExtractorResponseEditor extends React.Component<any, any> {
                                     leftBracketStyle: styles.hidden,
                                     //dropdown Style is going to have to depend on some state object. When you click an substring group with an entity it needs to go from styles.hidden to styles.normal
                                     dropdownStyle: styles.hidden,
-                                    labelStyle: styles.hidden
+                                    labelStyle: styles.hidden,
+                                    startIndex: wordStartIndex
                                 }
                                 let substringObjForSpace: SubstringObject = {
                                     text: input.substring(x, x + 1),
@@ -223,7 +261,8 @@ class ExtractorResponseEditor extends React.Component<any, any> {
                                     leftBracketStyle: styles.hidden,
                                     //dropdown Style is going to have to depend on some state object. When you click an substring group with an entity it needs to go from styles.hidden to styles.normal
                                     dropdownStyle: styles.hidden,
-                                    labelStyle: styles.hidden
+                                    labelStyle: styles.hidden,
+                                    startIndex: x
                                 }
                                 nonEntities.push(substringObj)
                                 nonEntities.push(substringObjForSpace)
@@ -236,14 +275,15 @@ class ExtractorResponseEditor extends React.Component<any, any> {
                                     leftBracketStyle: styles.hidden,
                                     //dropdown Style is going to have to depend on some state object. When you click an substring group with an entity it needs to go from styles.hidden to styles.normal
                                     dropdownStyle: styles.hidden,
-                                    labelStyle: styles.hidden
+                                    labelStyle: styles.hidden,
+                                    startIndex: wordStartIndex
                                 }
                                 nonEntities.push(substringObj)
                             }
                         }
                     } else {
                         //this some letter in the middle of the string
-                        if (this.state.input[x] == " ") {
+                        if (input[x] == " ") {
                             let substringObj: SubstringObject = {
                                 text: input.substring(wordStartIndex, x),
                                 entityName: null,
@@ -252,7 +292,8 @@ class ExtractorResponseEditor extends React.Component<any, any> {
                                 leftBracketStyle: styles.hidden,
                                 //dropdown Style is going to have to depend on some state object. When you click an substring group with an entity it needs to go from styles.hidden to styles.normal
                                 dropdownStyle: styles.hidden,
-                                labelStyle: styles.hidden
+                                labelStyle: styles.hidden,
+                                startIndex: wordStartIndex
                             }
                             let substringObjForSpace: SubstringObject = {
                                 text: input.substring(x, x + 1),
@@ -262,7 +303,8 @@ class ExtractorResponseEditor extends React.Component<any, any> {
                                 leftBracketStyle: styles.hidden,
                                 //dropdown Style is going to have to depend on some state object. When you click an substring group with an entity it needs to go from styles.hidden to styles.normal
                                 dropdownStyle: styles.hidden,
-                                labelStyle: styles.hidden
+                                labelStyle: styles.hidden,
+                                startIndex: x
                             }
                             nonEntities.push(substringObj)
                             nonEntities.push(substringObjForSpace)
@@ -283,19 +325,305 @@ class ExtractorResponseEditor extends React.Component<any, any> {
                     leftBracketStyle: styles.leftBracketDisplayedBlack,
                     //dropdown Style is going to have to depend on some state object. When you click an substring group with an entity it needs to go from styles.hidden to styles.normal
                     dropdownStyle: styles.hidden,
-                    labelStyle: styles.labelDisplayed
+                    labelStyle: styles.labelDisplayed,
+                    startIndex: i.start
                 }
                 substringObjects.push(substringObj)
             }
         })
-        console.log(substringObjects)
-        return substringObjects;
+        this.setState({
+            substringObjects: substringObjects
+        })
+    }
+    substringHasBeenClicked(s: SubstringObject): boolean {
+        let result: boolean = false;
+        if (this.state.substringsClicked !== null) {
+            this.state.substringsClicked.map((sub: SubstringObject) => {
+                if (sub.startIndex == s.startIndex) {
+                    result = true
+                }
+            })
+        }
+        return result;
+    }
+    findLeftMostClickedSubstring(): SubstringObject {
+        let min: SubstringObject = this.state.substringsClicked[0];
+        this.state.substringsClicked.map((sub: SubstringObject) => {
+            if (sub.startIndex < min.startIndex) {
+                min = sub
+            }
+        })
+        let objWithPersistentClassInfo = this.state.substringObjects.find((s: SubstringObject) => s.startIndex == min.startIndex)
+        return objWithPersistentClassInfo;
+    }
+    findRightMostClickedSubstring(): SubstringObject {
+        let min: SubstringObject = this.state.substringsClicked[0];
+        this.state.substringsClicked.map((sub: SubstringObject) => {
+            if (sub.startIndex > min.startIndex) {
+                min = sub
+            }
+        })
+        let objWithPersistentClassInfo = this.state.substringObjects.find((s: SubstringObject) => s.startIndex == min.startIndex)
+        return objWithPersistentClassInfo;
+    }
+    findIndexOfHoveredSubstring(hovered: SubstringObject): number {
+        let allObjects = this.state.substringObjects;
+        let index: number;
+        for (var i = 0; i < allObjects.length; i++) {
+            if (allObjects[i].startIndex == hovered.startIndex) {
+                index = i;
+            }
+        }
+        return index;
+    }
+    isDefinedEntityBetweenClickedSubstrings(startIndex: number, endIndex: number): boolean {
+        let result: boolean = false;
+        if (this.state.substringsClicked !== null) {
+            let entityStartIndexes: number[] = this.state.substringObjects.map((s: SubstringObject) => {
+                if (s.entityId !== null) {
+                    return s.startIndex;
+                }
+            })
+            entityStartIndexes.map((entityStartIndex: number) => {
+                if (startIndex < entityStartIndex && endIndex > entityStartIndex) {
+                    result = true
+                }
+            })
+        }
+        return result;
+    }
+    removeBracketsFromAllSelectedSubstrings() {
+        let allObjects = this.state.substringObjects;
+        let clickedObjects = this.state.substringsClicked;
+        clickedObjects.map((c: SubstringObject) => {
+            let indexOfClickedSubstring: number = this.findIndexOfHoveredSubstring(c);
+            let newClickedSubstringObject = { ...c, leftBracketStyle: styles.hidden, rightBracketStyle: styles.hidden, dropdownStyle: styles.hidden }
+            allObjects[indexOfClickedSubstring] = newClickedSubstringObject;
+        })
+        this.setState({
+            substringObjects: allObjects
+        })
     }
     handleClick(s: SubstringObject) {
-        console.log(s)
+        let indexOfHoveredSubstring: number = this.findIndexOfHoveredSubstring(s);
+        let allObjects = this.state.substringObjects;
+        let updateClickedSubstrings: boolean = true;
+        //hovering over a specified entity does nothing
+        if (s.entityId === null) {
+            if (this.state.substringsClicked === null) {
+                //havent clicked any strings yet
+                let newSubstringObj = { ...s, leftBracketStyle: styles.leftBracketDisplayedBlack, rightBracketStyle: styles.rightBracketDisplayedBlack, dropdownStyle: styles.dropdownNormal }
+                allObjects[indexOfHoveredSubstring] = newSubstringObj;
+                this.setState({
+                    substringObjects: allObjects
+                })
+            } else {
+                if (this.substringHasBeenClicked(s) === true) {
+                    //user has clicked into the already clicked string/group of strings. We need to remove the brackets around all clicked but not set strings, and remove the dropwdowns currently displayed underneath them
+                    this.removeBracketsFromAllSelectedSubstrings();
+                    this.setState({
+                        substringsClicked: null
+                    })
+                    updateClickedSubstrings = false
+                } else {
+                    //we already have an entity clicked but not set, and this is a different string than has previously been clicked
+                    let left: SubstringObject = this.findLeftMostClickedSubstring();
+                    let right: SubstringObject = this.findRightMostClickedSubstring();
+                    if (s.startIndex < left.startIndex && (this.isDefinedEntityBetweenClickedSubstrings(s.startIndex, left.startIndex) == false)) {
+                        //place a gray bracket to left of hovered substring
+                        let newSubstringObj = { ...s, leftBracketStyle: styles.leftBracketDisplayedBlack }
+                        allObjects[indexOfHoveredSubstring] = newSubstringObj;
+                        //now remove the left bracket for the leftmost clicked substring object
+                        let indexOfClickedSubstring: number = this.findIndexOfHoveredSubstring(left);
+                        let newClickedSubstringObject = { ...left, leftBracketStyle: styles.hidden, rightBracketStyle: styles.rightBracketDisplayedBlack };
+                        allObjects[indexOfClickedSubstring] = newClickedSubstringObject;
+                        this.setState({
+                            substringObjects: allObjects
+                        })
+                    } else if (s.startIndex > right.startIndex && (this.isDefinedEntityBetweenClickedSubstrings(right.startIndex, s.startIndex) == false)) {
+                        //place a gray bracket to right of hovered substring
+                        let newSubstringObj = { ...s, rightBracketStyle: styles.rightBracketDisplayedBlack }
+                        allObjects[indexOfHoveredSubstring] = newSubstringObj;
+                        //now remove the right bracket for the rightmost clicked substring object
+                        let indexOfClickedSubstring: number = this.findIndexOfHoveredSubstring(right);
+                        let newClickedSubstringObject = { ...right, rightBracketStyle: styles.hidden, leftBracketStyle: styles.leftBracketDisplayedBlack, }
+                        allObjects[indexOfClickedSubstring] = newClickedSubstringObject;
+                        this.setState({
+                            substringObjects: allObjects
+                        })
+                    }
+
+                }
+            }
+            if (updateClickedSubstrings === true) {
+                let currentlyClicked: SubstringObject[] = this.state.substringsClicked === null ? [] : this.state.substringsClicked;
+                this.setState({
+                    substringsClicked: [...currentlyClicked, s]
+                })
+            }
+        } else {
+            //make the dropdown reappear. The user can edit the entity that applies to this string
+            let style: {} = styles.hidden;
+            if (s.dropdownStyle === styles.hidden) {
+                style = styles.dropdownNormal
+            }
+            let newSubstringObj = { ...s, dropdownStyle: style }
+            allObjects[indexOfHoveredSubstring] = newSubstringObj;
+            this.setState({
+                substringObjects: allObjects
+            })
+        }
     }
     handleHover(s: SubstringObject) {
-        console.log(s)
+        let indexOfHoveredSubstring: number = this.findIndexOfHoveredSubstring(s);
+        let allObjects = this.state.substringObjects;
+        let currentHoverIsPreviouslyClickedSubstring = this.substringHasBeenClicked(s)
+
+        //hovering over a specified entity does nothing, similarly hovering over a clicked substring should maintain the black brackets
+        if (s.entityId === null && currentHoverIsPreviouslyClickedSubstring === false) {
+            if (this.state.substringsClicked === null) {
+                //havent clicked any strings yet
+                let newSubstringObj = { ...s, leftBracketStyle: styles.leftBracketDisplayedGray, rightBracketStyle: styles.rightBracketDisplayedGray }
+                allObjects[indexOfHoveredSubstring] = newSubstringObj;
+                this.setState({
+                    substringObjects: allObjects
+                })
+            } else {
+                //weve clicked a string and need to extend the bracket
+                let left: SubstringObject = this.findLeftMostClickedSubstring();
+                let right: SubstringObject = this.findRightMostClickedSubstring();
+                if (s.startIndex < left.startIndex && (this.isDefinedEntityBetweenClickedSubstrings(s.startIndex, left.startIndex) == false)) {
+                    //place a gray bracket to left of hovered substring
+                    let newSubstringObj = { ...s, leftBracketStyle: styles.leftBracketDisplayedGray }
+                    allObjects[indexOfHoveredSubstring] = newSubstringObj;
+                    //now remove the left bracket for the clicked substring object
+                    let indexOfClickedSubstring: number = this.findIndexOfHoveredSubstring(left);
+                    let newClickedSubstringObject = { ...left, leftBracketStyle: styles.hidden, rightBracketStyle: styles.rightBracketDisplayedBlack };
+                    allObjects[indexOfClickedSubstring] = newClickedSubstringObject;
+                    this.setState({
+                        substringObjects: allObjects
+                    })
+                } else if (s.startIndex > right.startIndex && (this.isDefinedEntityBetweenClickedSubstrings(right.startIndex, s.startIndex) == false)) {
+                    //place a gray bracket to right of hovered substring
+                    let newSubstringObj = { ...s, rightBracketStyle: styles.rightBracketDisplayedGray }
+                    allObjects[indexOfHoveredSubstring] = newSubstringObj;
+                    //now remove the right bracket for the clicked substring object
+                    let indexOfClickedSubstring: number = this.findIndexOfHoveredSubstring(right);
+                    let newClickedSubstringObject = { ...right, rightBracketStyle: styles.hidden, leftBracketStyle: styles.leftBracketDisplayedBlack, }
+                    allObjects[indexOfClickedSubstring] = newClickedSubstringObject;
+                    this.setState({
+                        substringObjects: allObjects
+                    })
+                }
+            }
+        }
+    }
+    handleHoverOut(s: SubstringObject) {
+        let indexOfHoveredSubstring: number = this.findIndexOfHoveredSubstring(s);
+        let allObjects = this.state.substringObjects;
+        let currentHoverIsPreviouslyClickedSubstring = this.substringHasBeenClicked(s)
+        if (s.entityId === null && currentHoverIsPreviouslyClickedSubstring == false) {
+            if (this.state.substringsClicked === null) {
+                //havent clicked any string yet
+                let newSubstringObj = { ...s, leftBracketStyle: styles.hidden, rightBracketStyle: styles.hidden }
+                allObjects[indexOfHoveredSubstring] = newSubstringObj;
+                this.setState({
+                    substringObjects: allObjects
+                })
+            } else {
+                let left: SubstringObject = this.findLeftMostClickedSubstring();
+                let right: SubstringObject = this.findRightMostClickedSubstring();
+                if (s.startIndex < left.startIndex && (this.isDefinedEntityBetweenClickedSubstrings(s.startIndex, left.startIndex) == false)) {
+                    //place a gray bracket to left of hovered substring
+                    let newSubstringObj = { ...s, leftBracketStyle: styles.hidden }
+                    allObjects[indexOfHoveredSubstring] = newSubstringObj;
+                    //now remove the left bracket for the clicked substring object
+                    let indexOfClickedSubstring: number = this.findIndexOfHoveredSubstring(left);
+                    let newClickedSubstringObject = { ...left, leftBracketStyle: styles.leftBracketDisplayedBlack };
+                    allObjects[indexOfClickedSubstring] = newClickedSubstringObject;
+                    this.setState({
+                        substringObjects: allObjects
+                    })
+                } else if (s.startIndex > right.startIndex && (this.isDefinedEntityBetweenClickedSubstrings(right.startIndex, s.startIndex) == false)) {
+                    //place a gray bracket to right of hovered substring
+                    let newSubstringObj = { ...s, rightBracketStyle: styles.hidden }
+                    allObjects[indexOfHoveredSubstring] = newSubstringObj;
+                    //now remove the right bracket for the clicked substring object
+                    let indexOfClickedSubstring: number = this.findIndexOfHoveredSubstring(right);
+                    let newClickedSubstringObject = { ...right, rightBracketStyle: styles.rightBracketDisplayedBlack }
+                    allObjects[indexOfClickedSubstring] = newClickedSubstringObject;
+                    this.setState({
+                        substringObjects: allObjects
+                    })
+                }
+            }
+        }
+    }
+    getFullStringBetweenSubstrings(left: SubstringObject, right: SubstringObject): string {
+        let fullString: string = "";
+        this.state.substringObjects.map((s: SubstringObject) => {
+            if ((s.startIndex >= left.startIndex) && (s.startIndex <= right.startIndex)) {
+                fullString += s.text;
+            }
+        })
+        return fullString;
+    }
+    entitySelected(obj: { text: string }, substringClicked: SubstringObject) {
+        //is this thing already an entity or was it a string before?
+        let indexOfClickedSubstring: number = this.findIndexOfHoveredSubstring(substringClicked);
+        let entitySelected: EntityBase = this.props.entities.find((e: EntityBase) => e.entityName == obj.text)
+        let allObjects = this.state.substringObjects;
+
+        if (substringClicked.entityId === null) {
+            let currentlyClickedSubstrings = this.state.substringsClicked;
+            if (this.state.substringsClicked.length == 1) {
+                let newClickedSubstringObject: SubstringObject = { ...substringClicked, entityName: entitySelected.entityName, entityId: entitySelected.entityId, dropdownStyle: styles.hidden, labelStyle: styles.labelDisplayed }
+                allObjects[indexOfClickedSubstring] = newClickedSubstringObject;
+                this.setState({
+                    substringObjects: allObjects
+                })
+            } else if (this.state.substringsClicked.length > 1) {
+                //1. set the entity and styling for the leftmost substring object 
+                //2. remove all substring objects after the first one up to the second substring object 
+                //3. set the state
+                let left: SubstringObject = this.findLeftMostClickedSubstring();
+                let right: SubstringObject = this.findRightMostClickedSubstring();
+                let allObjectsBeforeLeftmost: SubstringObject[] = []
+                let allObjectsAfterRightmost: SubstringObject[] = [];
+
+                this.state.substringObjects.map((s: SubstringObject) => {
+                    if (s.startIndex < left.startIndex) {
+                        allObjectsBeforeLeftmost.push(s);
+                    } else if (s.startIndex > right.startIndex) {
+                        allObjectsAfterRightmost.push(s)
+                    }
+                })
+                let newText = this.getFullStringBetweenSubstrings(left, right);
+                let newClickedSubstringObject = { ...left, rightBracketStyle: styles.rightBracketDisplayedBlack, entityName: entitySelected.entityName, entityId: entitySelected.entityId, dropdownStyle: styles.hidden, labelStyle: styles.labelDisplayed, text: newText };
+                allObjects = [...allObjectsBeforeLeftmost, newClickedSubstringObject, ...allObjectsAfterRightmost];
+                this.setState({
+                    substringObjects: allObjects
+                })
+            }
+            this.setState({
+                substringsClicked: null
+            })
+        } else {
+            if (obj.text == 'Remove') {
+                let newClickedSubstringObject: SubstringObject = { ...substringClicked, entityName: null, entityId: null, dropdownStyle: styles.hidden, leftBracketStyle: styles.hidden, rightBracketStyle: styles.hidden }
+                allObjects[indexOfClickedSubstring] = newClickedSubstringObject;
+                this.setState({
+                    substringObjects: allObjects
+                })
+            } else {
+                let newClickedSubstringObject: SubstringObject = { ...substringClicked, entityName: entitySelected.entityName, entityId: entitySelected.entityId, dropdownStyle: styles.hidden }
+                allObjects[indexOfClickedSubstring] = newClickedSubstringObject;
+                this.setState({
+                    substringObjects: allObjects
+                })
+            }
+        }
+        this.updateCurrentPredictedEntities(allObjects)
     }
     renderSubstringObject(s: SubstringObject, key: number) {
         let options = this.props.entities.map((e: EntityBase) => {
@@ -304,24 +632,35 @@ class ExtractorResponseEditor extends React.Component<any, any> {
                 text: e.entityName
             }
         })
+        if (s.entityId !== null) {
+            options.push({
+                key: "Remove",
+                text: "Remove"
+            })
+        }
         return (
             <div key={key} style={styles.containerDiv}>
                 <span style={s.labelStyle} className='ms-font-s'>{s.entityName}</span>
                 <div style={styles.textBlockDiv}>
                     <span style={s.leftBracketStyle} className='ms-font-xxl'>[</span>
-                    <span className='ms-font-xl' onClick={() => this.handleClick(s)} onMouseOver={() => this.handleHover(s)}>{s.text}</span>
+                    <span className='ms-font-xl' onClick={() => this.handleClick(s)} onMouseOver={() => this.handleHover(s)} onMouseLeave={() => this.handleHoverOut(s)}>{s.text}</span>
                     <span style={s.rightBracketStyle} className='ms-font-xxl'>]</span>
                 </div>
-                <Dropdown style={s.dropdownStyle} options={options} />
+                <Dropdown
+                    style={s.dropdownStyle}
+                    options={options}
+                    onChanged={(obj) => {
+                        this.entitySelected(obj, s)
+                    }}
+                />
             </div>
         )
     }
     render() {
-        let substringObjects: SubstringObject[] = this.createSubstringObjects(this.state.input, this.state.predictedEntities)
         let key: number = 0;
         return (
             <div className="extractorResponseBox">
-                {substringObjects.map((s: SubstringObject) => {
+                {this.state.substringObjects.map((s: SubstringObject) => {
                     return this.renderSubstringObject(s, ++key)
                 })}
             </div>
