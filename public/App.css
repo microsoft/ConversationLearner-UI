@@ -265,54 +265,49 @@
 .scorerCreateActionButton {
   float: left;
 }
-.gridContainer{
-  display: grid;
-  grid-template-columns: 300px minmax(min-content, 1fr);
-  grid-template-rows: auto 60px;
-  grid-column-gap: 10px;
-}
-.gridWebchat{
+.wc-gridWebchat{
   grid-column: 1;
   grid-row: 1;
+  display: inline-block;
+  vertical-align: top;
+  position: relative;
+  width: 400px;
 }
-.gridAdmin{
+.wc-gridAdmin{
+  display: inline-block;
+  vertical-align: top;
+  position: relative;
   grid-column: 2;
   grid-row: 1;
+  border-style: none none none solid;
+  border-width: 1px;
+  border-color: #999999;
 }
-.gridFooter{
-    grid-column: 2;
-    grid-row: 2;
-    background-color: #004b50;
-}
-.webchatHeader{
+.wc-gridAdminContent{
+  display: block;
   width: 100%;
-  height: 6%;
-  text-align: center;
 }
-.webchatHeader *{
-  color: #323232 !important
+.wc-gridFooter{
+  grid-column: 2;
+  grid-row: 2;
+  background-color: #004b50;
+  display: block;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
 }
-.webchatMetaShrink{
-  width: 35%;
+.wc-gridContainer{
+  width: 100%;
   height: 100%;
-  display: inline-block;
-  vertical-align: top;
+  display: grid;
+  grid-template-columns: 400px minmax(min-content, 1fr);
+  grid-template-rows: auto 60px;
 }
-.webchatShrink{
-  width: 64%;
+.wc-disable{
+  width: 100%;
   height: 100%;
-  border-right: 2px solid #ffb900;
-  display: inline-block;
-  vertical-align: top;
-}
-.webchatButton{
-  height: 3em !important;
-  display: block !important;
-  background-color: #ffb900 !important;
-  padding: 0em 2em !important;
-}
-.webchatButton *{
-  color:black !important;
+  opacity: 0.09;
+  background-color: #000000;
 }
 .toggleTrainDialog{
   background-color: #323232 !important;
@@ -406,34 +401,7 @@
 }
 .webchatwindow{
   height: 550px !important;
-  width: 500px !important;
+  width: 400px !important;
   bottom: 0;
   position: absolute;
-}
-.gridWebchat{
-  display: inline-block;
-  vertical-align: top;
-  position: relative;
-  width: 500px;
-}
-.gridAdmin{
-  display: inline-block;
-  vertical-align: top;
-  position: relative;
-  width: 75%;
-  margin-left: 20%;
-}
-.gridAdminContent{
-  display: block;
-  width: 100%;
-}
-.gridFooter{
-  display: block;
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-}
-.gridContainer{
-  width: 100%;
-  height: 100%;
 }

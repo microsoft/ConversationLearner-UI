@@ -59,14 +59,15 @@ class TeachSessionExtractor extends React.Component<any, any> {
     }
     sendFeedback() {
         // TEMP 
-        let trainExtractorStep = dummyTrainExtractorStep();
+        let trainExtractorStep = new TrainExtractorStep({
+            textVariations: [new TextVariation({text: this.state.inputText, labelEntities: []})]
+        });
+
         let appId: string = this.props.apps.current.appId;
         let teachId: string = this.props.teachSession.current.teachId;
         this.props.postExtractorFeedback(this.props.user.key, appId, teachId, trainExtractorStep);
     }
     runScorer() {
-        // TEMP
-        let dummyER = dummyExtractResponse();
         let appId: string = this.props.apps.current.appId;
         let teachId: string = this.props.teachSession.current.teachId;
         let extractResponse = new ExtractResponse({
@@ -75,7 +76,7 @@ class TeachSessionExtractor extends React.Component<any, any> {
             metrics: this.state.initialExtractResponse.metrics,
             packageId: this.state.initialExtractResponse.packageId
         })
-        this.props.runScorer(this.props.user.key, appId, teachId, dummyER);
+        this.props.runScorer(this.props.user.key, appId, teachId, extractResponse);
     }
     render() {
         return (

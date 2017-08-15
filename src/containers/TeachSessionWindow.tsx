@@ -60,21 +60,27 @@ class TeachWindow extends React.Component<Props, any> {
                 text='Done Teaching'
             /> : null;
 
+        // Put mask of webchat if not in input mode
+        let chatDisable = (this.props.teachSession.mode != TeachMode.Wait) ?
+                <div className="wc-disable"></div>
+                : null;
+
         return (
             <Modal
-                isOpen={true}
+                isOpen={this.props.error == null}
                 isBlocking={true}
                 containerClassName='teachModal'
             >
-                <div className="gridContainer">
-                    <div className="gridWebchat">
+                <div className="wc-gridContainer">
+                    <div className="wc-gridWebchat">
                         <Webchat sessionType={"teach"} />
+                        {chatDisable}
                     </div>
-                    <div className="gridAdmin">
-                        <div className="gridAdminContent">
+                    <div className="wc-gridAdmin">
+                        <div className="wc-gridAdminContent">
                             <TeachSessionAdmin />
                         </div>
-                        <div className="gridFooter">
+                        <div className="wc-gridFooter">
                             {doneButton}
                             <CommandButton
                                 data-automation-id='randomID16'
@@ -106,6 +112,7 @@ const mapStateToProps = (state: State) => {
         userKey: state.user.key,
         apps: state.apps,
         user: state.user,
+        error: state.error.error
     }
 }
 // Props types inferred from mapStateToProps & dispatchToProps
