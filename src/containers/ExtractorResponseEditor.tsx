@@ -196,6 +196,14 @@ class ExtractorResponseEditor extends React.Component<any, any> {
                 }
             }
         })
+        if (predictedEntities.length == 0) {
+            let i: IndexGroup = {
+                start: 0,
+                end: input.length,
+                entity: null
+            }
+            indexGroups.push(i)
+        }
         let substringObjects: SubstringObject[] = [];
         // run through the index groups but handle the entities and strings differently
         indexGroups.map((i: IndexGroup) => {

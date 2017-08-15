@@ -32,7 +32,6 @@ const teachSessionReducer: Reducer<any> = (state = initialState, action: ActionO
         case AT.TEACH_MESSAGE_RECEIVED:
             return {...state, currentConversationStack: [...state.currentConversationStack, action.message], input: action.message};
         case AT.RUN_EXTRACTOR_FULFILLED:
-            console.log('Extract response received', action)
             return {...state, mode: TeachMode.Extractor, memories: action.uiExtractResponse.memories, extractResponse: action.uiExtractResponse.extractResponse};
         case AT.RUN_SCORER_FULFILLED:
             return {...state, mode: TeachMode.Scorer, memories: action.uiScoreResponse.memories, scoreResponse: action.uiScoreResponse.scoreResponse};
