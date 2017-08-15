@@ -6,7 +6,6 @@ import { State } from '../types'
 import { ExtractResponse, TrainExtractorStep, PredictedEntity, LabeledEntity, TextVariation } from 'blis-models'
 import { postExtractorFeedbackAsync, runScorerAsync } from '../actions/teachActions';
 import { CommandButton } from 'office-ui-fabric-react';
-import { dummyExtractResponse, dummyTrainExtractorStep } from '../epics/apiHelpers'; // TEMP
 import ExtractorTextVariationCreator from './ExtractorTextVariationCreator';
 import ExtractorResponseEditor from './ExtractorResponseEditor';
 import EntityCreatorEditor from './EntityCreatorEditor';
@@ -14,20 +13,21 @@ import EntityCreatorEditor from './EntityCreatorEditor';
 class TeachSessionExtractor extends React.Component<any, any> {
     constructor(p: any) {
         super(p)
-        let current = dummyExtractResponse();
         this.state = {
-            inputText: current.extractResponse.text,
+            inputText: "",//current.extractResponse.text,  TODO - clean up
             textVariations: [],
-            predictedEntities: current.extractResponse.predictedEntities,
-            initialExtractResponse: current.extractResponse,
+            predictedEntities: [],//current.extractResponse.predictedEntities,
+            initialExtractResponse: [],//current.extractResponse,
             entityModalOpen: false
         }
-        this.setInitialValues = this.setInitialValues.bind(this)
+        this.updateExtractValues = this.updateExtractValues.bind(this)
         this.updatePredictedEntities = this.updatePredictedEntities.bind(this)
     }
-    setInitialValues(props: any) {
+    updateExtractValues(props: any) {
+        console.log('updating')
         let current = props.teachSession
         if (current.extractResponse && (current.extractResponse.text !== this.state.inputText)) {
+            console.log('setting state')
             this.setState({
                 inputText: current.extractResponse.text,
                 textVariations: [],
@@ -51,11 +51,11 @@ class TeachSessionExtractor extends React.Component<any, any> {
             entityModalOpen: true
         })
     }
-    componentDidMount() {
-        this.setInitialValues(this.props)
+    componentWillMount() {
+        this.updateExtractValues(this.props)
     }
     componentWillReceiveProps(props: any) {
-        this.setInitialValues(props)
+        this.updateExtractValues(props)
     }
     sendFeedback() {
         // TEMP 

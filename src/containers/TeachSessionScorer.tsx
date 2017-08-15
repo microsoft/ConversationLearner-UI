@@ -8,7 +8,6 @@ import { postScorerFeedbackAsync } from '../actions/teachActions'
 import { CommandButton } from 'office-ui-fabric-react';
 import { IColumn, DetailsList, CheckboxVisibility } from 'office-ui-fabric-react';
 import ActionResponseCreatorEditor from './ActionResponseCreatorEditor'
-import { dummyTrainScorerStep } from '../epics/apiHelpers' // TEMP
 
 let columns: IColumn[] = [
     {
@@ -117,7 +116,7 @@ class TeachSessionScorer extends React.Component<Props, any> {
     {
         let labelAction = actionId;
         // TEMP
-        let trainScorerStep = dummyTrainScorerStep();
+        let trainScorerStep = new TrainScorerStep();  // TODO
         let appId: string = this.props.apps.current.appId;
         let teachId: string = this.props.teachSession.current.teachId;
         this.props.postScorerFeedback(this.props.user.key, appId, teachId, trainScorerStep);

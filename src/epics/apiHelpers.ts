@@ -394,7 +394,7 @@ export const putExtract = (key : string, appId: string, teachId: string, userInp
 	let editAppRoute: string = makeRoute(key, `app/${appId}/teach/${teachId}/extractor`);
 	return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.put(editAppRoute, userInput, config)		
 		.then(response => {
-            obs.next(runExtractorFulfilled(key, appId, teachId, dummyExtractResponse()));
+            obs.next(runExtractorFulfilled(key, appId, teachId, response.data));
             obs.complete();
           })
           .catch(err => {
@@ -411,7 +411,7 @@ export const postExtraction = (key : string, appId : string, teachId: string, tr
 	let addAppRoute: string = makeRoute(key, `app/${appId}/teach/${teachId}/extractor`);
 	return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.post(addAppRoute, trainExtractorStep, config)		
 		.then(response => {
-            obs.next(postExtractorFeedbackFulfilled(key, appId, teachId, response.data.teachResponse)); 
+            obs.next(postExtractorFeedbackFulfilled(key, appId, teachId, response.data)); 
             obs.complete();
           })
           .catch(err => {
@@ -429,7 +429,7 @@ export const putScore = (key : string, appId: string, teachId: string, extractRe
 	let editAppRoute: string = makeRoute(key, `app/${appId}/teach/${teachId}/scorer`);
 	return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.put(editAppRoute, extractResponse, config)	
 	 		.then(response => {
-            obs.next(runScorerFulfilled(key, appId, teachId, response.data.uiScoreResponse)); 
+            obs.next(runScorerFulfilled(key, appId, teachId, response.data)); 
             obs.complete();
           })
           .catch(err => {
@@ -446,7 +446,7 @@ export const postScore = (key : string, appId : string, teachId: string, trainSc
 	let addAppRoute: string = makeRoute(key, `app/${appId}/teach/${teachId}/scorer`);
 	return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.post(addAppRoute, trainScorerStep, config)		
 			.then(response => {
-            obs.next(postScorerFeedbackFulfilled(key, appId, teachId, response.data.teachResponse));
+            obs.next(postScorerFeedbackFulfilled(key, appId, teachId, response.data));
             obs.complete();
           })
           .catch(err => {
@@ -482,7 +482,7 @@ let toErrorString = function(error : any) : string
     return "Unknown Error";
   }
 }
-
+/* TODO - DELETE
 export const dummyScorerResponse = function() : UIScoreResponse
 {
   let text = `
@@ -670,4 +670,4 @@ export const dummyExtractResponse = function (): UIExtractResponse {
     }`;
 	return JSON.parse(text);
 }
-
+*/
