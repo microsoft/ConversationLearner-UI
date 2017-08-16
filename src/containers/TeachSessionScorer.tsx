@@ -3,7 +3,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { returntypeof } from 'react-redux-typescript';
 import { State } from '../types'
-import { TrainScorerStep, ScoredBase, ActionBase, EntityBase, Memory } from 'blis-models';
+import { TrainScorerStep, ScoredBase, ActionBase, EntityBase, Memory, ScoreInput, ScoredAction } from 'blis-models';
 import { postScorerFeedbackAsync } from '../actions/teachActions'
 import { CommandButton } from 'office-ui-fabric-react';
 import { IColumn, DetailsList, CheckboxVisibility } from 'office-ui-fabric-react';
@@ -115,8 +115,13 @@ class TeachSessionScorer extends React.Component<Props, any> {
     handleActionSelection(actionId : string)
     {
         let labelAction = actionId;
-        // TEMP
-        let trainScorerStep = new TrainScorerStep();  // TODO
+        let scoredAction = this.props.teachSession.scoreResponse.scoredActions.filter((a: ScoredAction) => a.actionId == actionId)[0];
+        let trainScorerStep = new TrainScorerStep(
+            {
+                input: this.props.teachSession.scoreInput,
+                labelAction: actionId,
+                scoredAction: scoredAction
+            });  
         let appId: string = this.props.apps.current.appId;
         let teachId: string = this.props.teachSession.current.teachId;
         this.props.postScorerFeedback(this.props.user.key, appId, teachId, trainScorerStep);

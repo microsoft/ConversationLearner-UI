@@ -10,6 +10,7 @@ const initialState: TeachSessionState = {
     mode: TeachMode.Wait,
     input: "",
     memories: [],
+    scoreInput: null,
     extractResponse: null,
     scoreResponse: null,
     currentConversationStack: []
@@ -34,7 +35,7 @@ const teachSessionReducer: Reducer<any> = (state = initialState, action: ActionO
         case AT.RUN_EXTRACTOR_FULFILLED:
             return {...state, mode: TeachMode.Extractor, memories: action.uiExtractResponse.memories, extractResponse: action.uiExtractResponse.extractResponse};
         case AT.RUN_SCORER_FULFILLED:
-            return {...state, mode: TeachMode.Scorer, memories: action.uiScoreResponse.memories, scoreResponse: action.uiScoreResponse.scoreResponse};
+            return {...state, mode: TeachMode.Scorer, memories: action.uiScoreResponse.memories, scoreInput: action.uiScoreResponse.scoreInput, scoreResponse: action.uiScoreResponse.scoreResponse};
         case AT.POST_SCORE_FEEDBACK_FULFILLED:
             return {...state, mode: TeachMode.Wait};
          default:
