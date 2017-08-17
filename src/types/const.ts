@@ -6,7 +6,7 @@ export enum DisplayMode {
 }
 
 export enum TeachMode {
-    Extractor,      // Waiting for Extractor feedback
-    Scorer,         // Waiting for Scorer feedback
-    Wait            // Waiting for user input
+    Extractor = "Extract",    // Waiting for Extractor feedback
+    Scorer = "Score",        // Waiting for Scorer feedback
+    Wait  = "Wait"           // Waiting for user input
 }

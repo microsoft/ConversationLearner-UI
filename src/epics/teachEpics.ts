@@ -3,7 +3,7 @@ import * as Rx from 'rxjs';
 import { ActionsObservable, Epic } from 'redux-observable'
 import { State, ActionObject } from '../types'
 import { AT } from '../types/ActionTypes'
-import { UserInput, TrainExtractorStep, ExtractResponse, TrainScorerStep } from 'blis-models';
+import { UserInput, TrainExtractorStep, ExtractResponse } from 'blis-models';
 import { putExtract, postExtraction, putScore, postScore } from "./apiHelpers";
 
 export const runExtractorEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {

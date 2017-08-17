@@ -22,6 +22,14 @@ export const runExtractorFulfilled = (key: string, appId: string, teachId: strin
     }
 }
 
+// User makes an update to an extract response
+export const updateExtractResponse = (extractResponse: ExtractResponse) : ActionObject => { 
+    return {
+        type: AT.UPDATE_EXTRACT_RESPONSE,
+        extractResponse: extractResponse
+    }
+}
+
 export const postExtractorFeedbackAsync = (key: string, appId: string, teachId: string, trainExtractorStep: TrainExtractorStep) : ActionObject => { 
     return {
         type: AT.POST_EXTACT_FEEDBACK_ASYNC,

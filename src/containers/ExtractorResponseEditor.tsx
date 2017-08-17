@@ -3,12 +3,12 @@ import * as React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { ExtractResponse, TrainExtractorStep, PredictedEntity, LabeledEntity, EntityBase } from 'blis-models'
+import { updateExtractResponse } from '../actions/teachActions';
 import { State } from '../types';
 import { TextField, Dropdown, Label } from 'office-ui-fabric-react'
 
 interface PassedProps {
     extractResponse: ExtractResponse;
-    updatePredictedEntities: Function
 }
 
 interface SubstringObject {
@@ -103,12 +103,12 @@ class ExtractorResponseEditor extends React.Component<any, any> {
         this.setInitialValues(this.props)
     }
     setInitialValues(props: any) {
-        if (props.extractResponse.input && props.extractResponse.predictedEntities && (props.extractResponse.input !== this.state.input)) {
+        if (props.extractResponse.text && props.extractResponse.predictedEntities && (props.extractResponse.input !== this.state.input)) {
             this.setState({
-                input: props.extractResponse.input,
+                input: props.extractResponse.text,
                 predictedEntities: props.extractResponse.predictedEntities
             })
-            this.createSubstringObjects(props.extractResponse.input, props.extractResponse.predictedEntities)
+            this.createSubstringObjects(props.extractResponse.text, props.extractResponse.predictedEntities)
         }
     }
     updateCurrentPredictedEntities(substringObjects: SubstringObject[]) {
@@ -127,8 +127,9 @@ class ExtractorResponseEditor extends React.Component<any, any> {
                 predictions.push(predictedEntity);
             }
         })
-        let newExtractResponse = new ExtractResponse({text: this.props.input, predictedEntities: predictions});
-        this.props.updatePredictedEntities(newExtractResponse);
+        let newExtractResponse = new ExtractResponse({text: this.state.input, predictedEntities: predictions});
+;
+        this.props.updateExtractResponse(newExtractResponse)
         this.setState({
             predictedEntities: predictions
         })
@@ -677,7 +678,7 @@ class ExtractorResponseEditor extends React.Component<any, any> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        editActionAsync: editActionAsync,
+        updateExtractResponse: updateExtractResponse
     }, dispatch);
 }
 const mapStateToProps = (state: State, ownProps: any) => {

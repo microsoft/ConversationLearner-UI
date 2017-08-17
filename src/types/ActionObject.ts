@@ -289,6 +289,9 @@ export type TeachAction = {
     teachId: string,
     uiExtractResponse: UIExtractResponse
 } | {
+    type: AT.UPDATE_EXTRACT_RESPONSE,
+    extractResponse: ExtractResponse
+} | {
     type: AT.POST_EXTACT_FEEDBACK_ASYNC,
     key: string,
     appId: string,
