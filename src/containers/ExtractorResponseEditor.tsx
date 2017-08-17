@@ -7,8 +7,7 @@ import { State } from '../types';
 import { TextField, Dropdown, Label } from 'office-ui-fabric-react'
 
 interface PassedProps {
-    input: string;
-    predictedEntities: PredictedEntity[],
+    extractResponse: ExtractResponse;
     updatePredictedEntities: Function
 }
 
@@ -104,12 +103,12 @@ class ExtractorResponseEditor extends React.Component<any, any> {
         this.setInitialValues(this.props)
     }
     setInitialValues(props: any) {
-        if (props.input && props.predictedEntities && (props.input !== this.state.input)) {
+        if (props.extractResponse.input && props.extractResponse.predictedEntities && (props.extractResponse.input !== this.state.input)) {
             this.setState({
-                input: props.input,
-                predictedEntities: props.predictedEntities
+                input: props.extractResponse.input,
+                predictedEntities: props.extractResponse.predictedEntities
             })
-            this.createSubstringObjects(props.input, props.predictedEntities)
+            this.createSubstringObjects(props.extractResponse.input, props.extractResponse.predictedEntities)
         }
     }
     updateCurrentPredictedEntities(substringObjects: SubstringObject[]) {
@@ -128,7 +127,8 @@ class ExtractorResponseEditor extends React.Component<any, any> {
                 predictions.push(predictedEntity);
             }
         })
-        this.props.updatePredictedEntities(predictions);
+        let newExtractResponse = new ExtractResponse({text: this.props.input, predictedEntities: predictions});
+        this.props.updatePredictedEntities(newExtractResponse);
         this.setState({
             predictedEntities: predictions
         })

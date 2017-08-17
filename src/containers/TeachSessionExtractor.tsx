@@ -9,22 +9,23 @@ import { CommandButton } from 'office-ui-fabric-react';
 import ExtractorTextVariationCreator from './ExtractorTextVariationCreator';
 import ExtractorResponseEditor from './ExtractorResponseEditor';
 import EntityCreatorEditor from './EntityCreatorEditor';
+import { generateGUID } from '../Util'
 
 class TeachSessionExtractor extends React.Component<any, any> {
     constructor(p: any) {
         super(p)
         this.state = {
-            inputText: "",//current.extractResponse.text,  TODO - clean up
-            textVariations: [],
-            predictedEntities: [],//current.extractResponse.predictedEntities,
-            initialExtractResponse: [],//current.extractResponse,
+  //          inputText: "",//current.extractResponse.text,  TODO - clean up
+  //          textVariations: [],
+ //           predictedEntities: [],//current.extractResponse.predictedEntities,
+ //           initialExtractResponse: [],//current.extractResponse,
             entityModalOpen: false
         }
         this.updateExtractValues = this.updateExtractValues.bind(this)
         this.updatePredictedEntities = this.updatePredictedEntities.bind(this)
     }
     updateExtractValues(props: any) {
-        console.log('updating')
+   /*     console.log('updating')
         let current = props.teachSession
         if (current.extractResponse && (current.extractResponse.text !== this.state.inputText)) {
             console.log('setting state')
@@ -34,7 +35,7 @@ class TeachSessionExtractor extends React.Component<any, any> {
                 predictedEntities: current.extractResponse.predictedEntities,
                 initialExtractResponse: current.extractResponse
             })
-        }
+        }*/
     }
     updatePredictedEntities(predictedEntities: PredictedEntity[]){
         this.setState({
@@ -52,10 +53,10 @@ class TeachSessionExtractor extends React.Component<any, any> {
         })
     }
     componentWillMount() {
-        this.updateExtractValues(this.props)
+ //       this.updateExtractValues(this.props)
     }
     componentWillReceiveProps(props: any) {
-        this.updateExtractValues(props)
+ //       this.updateExtractValues(props)
     }
     sendFeedback() {
         // TEMP 
@@ -79,11 +80,17 @@ class TeachSessionExtractor extends React.Component<any, any> {
         this.props.runScorer(this.props.user.key, appId, teachId, extractResponse);
     }
     render() {
+        let extractDisplay = [];
+        for (let extractResponse of this.props.teachSession.extractResponses)
+            {
+                let guid = generateGUID();
+                extractDisplay.push(<ExtractorResponseEditor key={guid} extractResponse={extractResponse} updatePredictedEntities={this.updatePredictedEntities}/>);
+            }
         return (
             <div className="content">
                 <div>
                     <span className='ms-font-xl extractorTitle'>Entities</span>
-                    <ExtractorResponseEditor input={this.state.inputText} predictedEntities={this.state.predictedEntities} updatePredictedEntities={this.updatePredictedEntities}/>
+                    {extractDisplay}
                 </div>
                 <div>
                     <span className='ms-font-xl extractorTitle'>Variations</span>
