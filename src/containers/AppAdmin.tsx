@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
-import { fetchAllActionsAsync, fetchAllEntitiesAsync, fetchApplicationsAsync, fetchAllTrainDialogs } from '../actions/fetchActions';
+import { fetchAllActionsAsync, fetchAllEntitiesAsync, fetchApplicationsAsync, fetchAllTrainDialogsAsync } from '../actions/fetchActions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import EntitiesList from './EntitiesList';

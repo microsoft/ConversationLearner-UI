@@ -4,7 +4,7 @@ import { ActionsObservable, Epic } from 'redux-observable'
 import { State, ActionObject } from '../types'
 import { AT } from '../types/ActionTypes'
 import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, ActionMetaData, ActionList, ActionTypes } from 'blis-models';
-import { getAllBlisApps, getAllEntitiesForBlisApp, getAllActionsForBlisApp, getAllSessionsForBlisApp, getAllTeachSessionsForBlisApp } from "./apiHelpers";
+import { getAllBlisApps, getAllEntitiesForBlisApp, getAllActionsForBlisApp, getAllSessionsForBlisApp, getAllTeachSessionsForBlisApp, getAllTrainDialogsForBlisApp, getAllLogDialogsForBlisApp } from "./apiHelpers";
 import { fetchApplicationsFulfilled, fetchAllEntitiesFulfilled, fetchAllActionsFulfilled } from '../actions/fetchActions'
 import { setErrorDisplay } from '../actions/displayActions'
 
@@ -25,6 +25,20 @@ export const fetchActionsEpic: Epic<ActionObject, State> = (action$: ActionsObse
     return action$.ofType(AT.FETCH_ACTIONS_ASYNC)
         .flatMap((action: any) =>
             getAllActionsForBlisApp(action.key, action.blisAppID)
+        );
+}
+
+export const fetchTrainDialogsEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
+    return action$.ofType(AT.FETCH_TRAIN_DIALOGS_ASYNC)
+        .flatMap((action: any) =>
+            getAllTrainDialogsForBlisApp(action.key, action.blisAppID)
+        );
+}
+
+export const fetchLogDialogsEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
+    return action$.ofType(AT.FETCH_LOG_DIALOGS_ASYNC)
+        .flatMap((action: any) =>
+            getAllLogDialogsForBlisApp(action.key, action.blisAppID)
         );
 }
 

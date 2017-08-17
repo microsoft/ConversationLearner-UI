@@ -7,7 +7,7 @@ import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { CommandButton, Dialog, DialogFooter, DialogType, ChoiceGroup, TextField, DefaultButton, Dropdown } from 'office-ui-fabric-react';
 import { TextFieldPlaceholder } from './TextFieldPlaceholder';
 import { setUser, logout, setLoginDisplay } from '../actions/displayActions'
-import { fetchAllActionsAsync, fetchAllEntitiesAsync, fetchAllTrainDialogs } from '../actions/fetchActions';
+import { fetchAllActionsAsync, fetchAllEntitiesAsync, fetchAllTrainDialogsAsync } from '../actions/fetchActions';
 import { BlisAppBase, BlisAppMetaData } from 'blis-models'
 import { developmentSubKeyLUIS } from '../secrets'
 import { State } from '../types'

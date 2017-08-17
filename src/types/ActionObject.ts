@@ -110,10 +110,18 @@ export type FetchAction = {
         key: string,
         blisAppID: string
     } | {
-        type: AT.FETCH_TRAIN_DIALOGS,
+        type: AT.FETCH_TRAIN_DIALOGS_ASYNC,
+        key: string,
+        blisAppID: string
+    } | {
+        type: AT.FETCH_TRAIN_DIALOGS_FULFILLED,
         allTrainDialogs: TrainDialog[],
     } | {
-        type: AT.FETCH_LOG_DIALOGS,
+        type: AT.FETCH_LOG_DIALOGS_ASYNC,
+        key: string,
+        blisAppID: string
+    } | {
+        type: AT.FETCH_LOG_DIALOGS_FULFILLED,
         allLogDialogs: LogDialog[],
     } | {
         type: AT.FETCH_APPLICATIONS_FULFILLED,
@@ -237,12 +245,18 @@ export type DeleteAction = {
         type: AT.DELETE_ACTION_FULFILLED,
         actionGUID: string
     } | {
-        type: AT.DELETE_TRAIN_DIALOG,
+        type: AT.DELETE_TRAIN_DIALOG_ASYNC,
         trainDialogGUID: string,
     } | {
-        type: AT.DELETE_LOG_DIALOG,
+        type: AT.DELETE_TRAIN_DIALOG_FULFILLED,
+        trainDialogGUID: string,
+    }| {
+        type: AT.DELETE_LOG_DIALOG_ASYNC,
         logDialogGUID: string,
     } | {
+        type: AT.DELETE_LOG_DIALOG_FULFILLED,
+        logDialogGUID: string,
+    }| {
         type: AT.DELETE_CHAT_SESSION_ASYNC,
         key: string,
         session: Session,

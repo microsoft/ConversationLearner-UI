@@ -8,6 +8,7 @@ import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import { setDisplayMode, setCurrentTrainDialog, setCurrentTeachSession } from '../actions/displayActions'
 import { createTrainDialog, createTeachSessionAsync } from '../actions/createActions'
 import { deleteTeachSessionAsync } from '../actions/deleteActions'
+import { fetchAllTrainDialogsAsync } from '../actions/fetchActions';
 import { State } from '../types'
 import { TrainDialog, Teach } from 'blis-models'
 import { DisplayMode } from '../types/const';
@@ -121,7 +122,8 @@ const mapDispatchToProps = (dispatch: any) => {
         setDisplayMode: setDisplayMode,
         setCurrentTrainDialog: setCurrentTrainDialog,
         setCurrentTeachSession: setCurrentTeachSession,
-        createTrainDialog: createTrainDialog
+        createTrainDialog: createTrainDialog,
+        fetchAllTrainDialogs : fetchAllTrainDialogsAsync,
     }, dispatch)
 }
 const mapStateToProps = (state: State) => {

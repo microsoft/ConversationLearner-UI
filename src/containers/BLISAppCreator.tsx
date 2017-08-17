@@ -8,7 +8,7 @@ import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { CommandButton, Dialog, DialogFooter, DialogType, ChoiceGroup, TextField, DefaultButton, Dropdown } from 'office-ui-fabric-react';
 import { TextFieldPlaceholder } from './TextFieldPlaceholder';
 import { setDisplayMode, emptyStateProperties } from '../actions/displayActions'
-import { fetchAllActionsAsync, fetchAllEntitiesAsync, fetchAllTrainDialogs } from '../actions/fetchActions';
+import { fetchAllActionsAsync, fetchAllEntitiesAsync, fetchAllTrainDialogsAsync } from '../actions/fetchActions';
 import { BlisAppBase, BlisAppMetaData } from 'blis-models'
 import { developmentSubKeyLUIS } from '../secrets'
 import { State } from '../types'
@@ -169,7 +169,7 @@ const mapDispatchToProps = (dispatch: any) => {
         createBLISApplication: createBLISApplicationAsync,
         fetchAllActions: fetchAllActionsAsync,
         fetchAllEntities: fetchAllEntitiesAsync,
-        fetchAllTrainDialogs: fetchAllTrainDialogs,
+        fetchAllTrainDialogs: fetchAllTrainDialogsAsync,
         setDisplayMode: setDisplayMode,
         emptyStateProperties: emptyStateProperties
     }, dispatch);

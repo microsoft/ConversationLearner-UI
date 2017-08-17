@@ -8,6 +8,7 @@ import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import { setDisplayMode, setCurrentLogDialog, setCurrentChatSession } from '../actions/displayActions'
 import { createLogDialog, createChatSessionAsync } from '../actions/createActions'
 import { deleteChatSessionAsync } from '../actions/deleteActions'
+import { fetchAllLogDialogsAsync } from '../actions/fetchActions';
 import { State } from '../types'
 import { LogDialog, Session } from 'blis-models'
 import { DisplayMode } from '../types/const';
@@ -117,7 +118,8 @@ const mapDispatchToProps = (dispatch: any) => {
         setDisplayMode: setDisplayMode,
         createChatSession: createChatSessionAsync,
         deleteChatSession: deleteChatSessionAsync,
-        setCurrentChatSession: setCurrentChatSession
+        setCurrentChatSession: setCurrentChatSession,
+        fetchAllLogDialogs : fetchAllLogDialogsAsync,
     }, dispatch)
 }
 const mapStateToProps = (state: State) => {

@@ -9,6 +9,12 @@ import { CommandButton } from 'office-ui-fabric-react';
 import { IColumn, DetailsList, CheckboxVisibility } from 'office-ui-fabric-react';
 import ActionResponseCreatorEditor from './ActionResponseCreatorEditor'
 
+enum Reason 
+{
+    NotAvailable = "notAvailable",
+    NotScorable = "notScorable"
+}
+
 let columns: IColumn[] = [
     {
         key: 'select',
@@ -98,7 +104,7 @@ class TeachSessionScorer extends React.Component<Props, any> {
     getValue(memory: any, col: IColumn): any {
         let value = memory[col.fieldName]
         if (col.fieldName == "score" && !memory[col.fieldName]) {
-                if (memory["reason"] == 'notAvailable') {
+                if (memory["reason"] == Reason.NotAvailable) {
                     return -100;
                 }
                 else {  // notScorable
@@ -173,7 +179,7 @@ class TeachSessionScorer extends React.Component<Props, any> {
         let fieldContent = item[column.fieldName];
         switch (column.key) {
             case 'select':
-                if (item["reason"] == "notAvailable") {
+                if (item["reason"] == Reason.NotAvailable) {
                     return (
                         <div>
                             <a><span className="actionUnavailable ms-Icon ms-Icon--ChromeClose"></span></a>

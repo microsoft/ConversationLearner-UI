@@ -4,15 +4,16 @@ import {
 	BlisAppBase, BlisAppMetaData, BlisAppList, 
 	EntityBase, EntityMetaData, EntityList, 
 	ActionBase, ActionMetaData, ActionList, ActionTypes,
-	UserInput,
+  UserInput,
+  TrainDialog, LogDialog,
 	TrainExtractorStep, ExtractResponse, TrainScorerStep,
 	Session, Teach, UIExtractResponse, UIScoreResponse
 } from 'blis-models'
 import * as Rx from 'rxjs';
 import { Observable, Observer } from 'rxjs'
-import { fetchApplicationsFulfilled, fetchAllEntitiesFulfilled, fetchAllActionsFulfilled, fetchAllChatSessionsFulfilled, fetchAllTeachSessionsFulfilled } from '../actions/fetchActions'
+import { fetchApplicationsFulfilled, fetchAllEntitiesFulfilled, fetchAllActionsFulfilled, fetchAllChatSessionsFulfilled, fetchAllTeachSessionsFulfilled, fetchAllTrainDialogsFulfilled, fetchAllLogDialogsFulfilled } from '../actions/fetchActions'
 import { createApplicationFulfilled, createEntityFulfilled, createPositiveEntityFulfilled, createNegativeEntityFulfilled, createActionFulfilled, createChatSessionFulfilled, createTeachSessionFulfilled } from '../actions/createActions'
-import { deleteBLISApplicationFulfilled, deleteReverseEntityAsnyc, deleteEntityFulfilled, deleteActionFulfilled, deleteChatSessionFulfilled, deleteTeachSessionFulfilled } from '../actions/deleteActions'
+import { deleteBLISApplicationFulfilled, deleteReverseEntityAsnyc, deleteEntityFulfilled, deleteActionFulfilled, deleteChatSessionFulfilled, deleteTeachSessionFulfilled, deleteLogDialogFulFilled, deleteTrainDialogFulfilled } from '../actions/deleteActions'
 import { editBLISApplicationFulfilled, editEntityFulfilled, editActionFulfilled } from '../actions/updateActions'
 import { runExtractorFulfilled, postExtractorFeedbackFulfilled, runScorerFulfilled, postScorerFeedbackFulfilled } from '../actions/teachActions'
 import { setErrorDisplay, setCurrentBLISAppFulfilled } from '../actions/displayActions'
@@ -104,6 +105,32 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
     return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.get(getActionsForAppRoute, config)
       .then(response => {
               obs.next(fetchAllActionsFulfilled(response.data.actions));
+              obs.complete();
+            })
+            .catch(err => {
+              obs.next(setErrorDisplay(err.message, toErrorString(err.response), AT.FETCH_ACTIONS_ASYNC));
+              obs.complete();
+            }));
+  };
+
+  export const getAllTrainDialogsForBlisApp = (key : string, appId: string): Observable<ActionObject> => {
+    let getEntitiesForAppRoute: string = makeRoute(key, `app/${appId}/traindialogs`);
+    return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.get(getEntitiesForAppRoute, config)
+      .then(response => {
+              obs.next(fetchAllTrainDialogsFulfilled(response.data.trainDialogs));
+              obs.complete();
+            })
+            .catch(err => {
+              obs.next(setErrorDisplay(err.message, toErrorString(err.response), AT.FETCH_ENTITIES_ASYNC));
+              obs.complete();
+            }));
+  };
+
+  export const getAllLogDialogsForBlisApp = (key : string, appId: string): Observable<ActionObject> => {
+    let getActionsForAppRoute: string = makeRoute(key, `app/${appId}/logdialogs`);
+    return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.get(getActionsForAppRoute, config)
+      .then(response => {
+              obs.next(fetchAllLogDialogsFulfilled(response.data.logDialogs));
               obs.complete();
             })
             .catch(err => {
@@ -234,6 +261,36 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
             }));
   };
 
+  export const deleteLogDialog = (key : string, appId: string, logDialog: LogDialog): Observable<ActionObject> => {
+    let deleteActionRoute: string = makeRoute(key, `app/${appId}/logDialog/${logDialog.logDialogId}`); 
+    const { logDialogId, ...dialogToSend } = logDialog
+    let configWithBody = {...config, body: dialogToSend}
+    return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.delete(deleteActionRoute, configWithBody)
+      .then(response => {
+              obs.next(deleteLogDialogFulFilled(key, logDialog.logDialogId));
+              obs.complete();
+            })
+            .catch(err => {
+              obs.next(setErrorDisplay(err.message, toErrorString(err.response), AT.DELETE_LOG_DIALOG_ASYNC));
+              obs.complete();
+            }));
+  };
+
+  export const deleteTrainDialog = (key : string, appId: string, trainDialog: TrainDialog): Observable<ActionObject> => {
+    let deleteActionRoute: string = makeRoute(key, `app/${appId}/trainDialog/${trainDialog.trainDialogId}`); 
+    const { trainDialogId, version, packageCreationId, packageDeletionId, ...dialogToSend } = trainDialog
+    let configWithBody = {...config, body: dialogToSend}
+    return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.delete(deleteActionRoute, configWithBody)
+      .then(response => {
+              obs.next(deleteTrainDialogFulfilled(key, trainDialog.trainDialogId));
+              obs.complete();
+            })
+            .catch(err => {
+              obs.next(setErrorDisplay(err.message, toErrorString(err.response), AT.DELETE_TRAIN_DIALOG_ASYNC));
+              obs.complete();
+            }));
+  };
+
 //=========================================================
 // EDIT ROUTES
 //=========================================================
@@ -338,336 +395,148 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
 // Teach
 //========================================================
 
-/** START SESSION : Creates a new session and a corresponding logDialog */
-export const createTeachSession = (key: string, teachSession: Teach, appId: string): Observable<ActionObject> => {
-	let addTeachRoute: string = makeRoute(key, `app/${appId}/teach`);
-	let configWithBody = {...config, body: teachSession}
-	return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.post(addTeachRoute, config).then(response => {
-			let newTeachSessionId = response.data.teachId;
-			obs.next(createTeachSessionFulfilled(teachSession, newTeachSessionId));
-            obs.complete();
-          })
-          .catch(err => {
-            obs.next(setErrorDisplay(err.message, toErrorString(err.response), AT.CREATE_TEACH_SESSION));
-            obs.complete();
-          }));
-};
+  /** START SESSION : Creates a new session and a corresponding logDialog */
+  export const createTeachSession = (key: string, teachSession: Teach, appId: string): Observable<ActionObject> => {
+    let addTeachRoute: string = makeRoute(key, `app/${appId}/teach`);
+    let configWithBody = {...config, body: teachSession}
+    return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.post(addTeachRoute, config).then(response => {
+        let newTeachSessionId = response.data.teachId;
+        obs.next(createTeachSessionFulfilled(teachSession, newTeachSessionId));
+              obs.complete();
+            })
+            .catch(err => {
+              obs.next(setErrorDisplay(err.message, toErrorString(err.response), AT.CREATE_TEACH_SESSION));
+              obs.complete();
+            }));
+  };
 
-export const deleteTeachSession = (key : string, appId: string, teachSession: Teach): Observable<ActionObject> => {
-	let deleteTeachSessionRoute: string = makeRoute(key, `app/${appId}/teach/${teachSession.teachId}`);
-	return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.delete(deleteTeachSessionRoute, config)
-		.then(response => {
-            obs.next(deleteTeachSessionFulfilled(teachSession.teachId));
-            obs.complete();
-          })
-          .catch(err => {
-            obs.next(setErrorDisplay(err.message, toErrorString(err.response), AT.DELETE_TEACH_SESSION_ASYNC));
-            obs.complete();
-          }));
-};
+  export const deleteTeachSession = (key : string, appId: string, teachSession: Teach): Observable<ActionObject> => {
+    let deleteTeachSessionRoute: string = makeRoute(key, `app/${appId}/teach/${teachSession.teachId}`);
+    return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.delete(deleteTeachSessionRoute, config)
+      .then(response => {
+              obs.next(deleteTeachSessionFulfilled(teachSession.teachId));
+              obs.complete();
+            })
+            .catch(err => {
+              obs.next(setErrorDisplay(err.message, toErrorString(err.response), AT.DELETE_TEACH_SESSION_ASYNC));
+              obs.complete();
+            }));
+  };
 
-export const getAllTeachSessionsForBlisApp = (key: string, appId: string): Observable<ActionObject> => {
-	let getTeachSessionsForAppRoute: string = makeRoute(key, `app/${appId}/teaches`);
-	return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.get(getTeachSessionsForAppRoute, config)
-		.then(response => {
-            obs.next(fetchAllTeachSessionsFulfilled(response.data.teaches));
-            obs.complete();
-          })
-          .catch(err => {
-            obs.next(setErrorDisplay(err.message, toErrorString(err.response), AT.FETCH_TEACH_SESSIONS_ASYNC));
-            obs.complete();
-          }));
-};
+  export const getAllTeachSessionsForBlisApp = (key: string, appId: string): Observable<ActionObject> => {
+    let getTeachSessionsForAppRoute: string = makeRoute(key, `app/${appId}/teaches`);
+    return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.get(getTeachSessionsForAppRoute, config)
+      .then(response => {
+              obs.next(fetchAllTeachSessionsFulfilled(response.data.teaches));
+              obs.complete();
+            })
+            .catch(err => {
+              obs.next(setErrorDisplay(err.message, toErrorString(err.response), AT.FETCH_TEACH_SESSIONS_ASYNC));
+              obs.complete();
+            }));
+  };
 
-/** GET TEACH: Retrieves information about the specified teach */
-export const getTeach = (key : string, appId: string, teachId: string): Observable<AxiosResponse> => {
-	let getAppRoute: string = makeRoute(key, `app/${appId}/teach/${teachId}`);
-	return Rx.Observable.fromPromise(axios.get(getAppRoute, config))
-};
+  /** GET TEACH: Retrieves information about the specified teach */
+  export const getTeach = (key : string, appId: string, teachId: string): Observable<AxiosResponse> => {
+    let getAppRoute: string = makeRoute(key, `app/${appId}/teach/${teachId}`);
+    return Rx.Observable.fromPromise(axios.get(getAppRoute, config))
+  };
 
-/** RUN EXTRACTOR: Runs entity extraction (prediction). 
- * If a more recent version of the package is available on 
- * the server, the session will first migrate to that newer version.  This 
- * doesn't affect the trainDialog maintained.
- */
-export const putExtract = (key : string, appId: string, teachId: string, userInput: UserInput): Observable<ActionObject> => {
-	let editAppRoute: string = makeRoute(key, `app/${appId}/teach/${teachId}/extractor`);
-	return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.put(editAppRoute, userInput, config)		
-		.then(response => {
-            obs.next(runExtractorFulfilled(key, appId, teachId, response.data));
-            obs.complete();
-          })
-          .catch(err => {
-            obs.next(setErrorDisplay(err.message, toErrorString(err.response), AT.RUN_EXTRACTOR_ASYNC));
-            obs.complete();
-          }));
-};
+  /** RUN EXTRACTOR: Runs entity extraction (prediction). 
+   * If a more recent version of the package is available on 
+   * the server, the session will first migrate to that newer version.  This 
+   * doesn't affect the trainDialog maintained.
+   */
+  export const putExtract = (key : string, appId: string, teachId: string, userInput: UserInput): Observable<ActionObject> => {
+    let editAppRoute: string = makeRoute(key, `app/${appId}/teach/${teachId}/extractor`);
+    return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.put(editAppRoute, userInput, config)		
+      .then(response => {
+              obs.next(runExtractorFulfilled(key, appId, teachId, response.data));
+              obs.complete();
+            })
+            .catch(err => {
+              obs.next(setErrorDisplay(err.message, toErrorString(err.response), AT.RUN_EXTRACTOR_ASYNC));
+              obs.complete();
+            }));
+  };
 
-/** EXTRACTION FEEDBACK: Uploads a labeled entity extraction instance
- * ie "commits" an entity extraction label, appending it to the teach session's
- * trainDialog, and advancing the dialog. This may yield produce a new package.
- */
-export const postExtraction = (key : string, appId : string, teachId: string, trainExtractorStep : TrainExtractorStep): Observable<ActionObject> => {
-	let addAppRoute: string = makeRoute(key, `app/${appId}/teach/${teachId}/extractor`);
-	return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.post(addAppRoute, trainExtractorStep, config)		
-		.then(response => {
-            obs.next(postExtractorFeedbackFulfilled(key, appId, teachId, response.data)); 
-            obs.complete();
-          })
-          .catch(err => {
-            obs.next(setErrorDisplay(err.message, toErrorString(err.response), AT.POST_EXTACT_FEEDBACK_ASYNC));
-            obs.complete();
-					}));
-};
+  /** EXTRACTION FEEDBACK: Uploads a labeled entity extraction instance
+   * ie "commits" an entity extraction label, appending it to the teach session's
+   * trainDialog, and advancing the dialog. This may yield produce a new package.
+   */
+  export const postExtraction = (key : string, appId : string, teachId: string, trainExtractorStep : TrainExtractorStep): Observable<ActionObject> => {
+    let addAppRoute: string = makeRoute(key, `app/${appId}/teach/${teachId}/extractor`);
+    return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.post(addAppRoute, trainExtractorStep, config)		
+      .then(response => {
+              obs.next(postExtractorFeedbackFulfilled(key, appId, teachId, response.data)); 
+              obs.complete();
+            })
+            .catch(err => {
+              obs.next(setErrorDisplay(err.message, toErrorString(err.response), AT.POST_EXTACT_FEEDBACK_ASYNC));
+              obs.complete();
+            }));
+  };
 
-/** RUN SCORER: Takes a turn and return distribution over actions.
- * If a more recent version of the package is 
- * available on the server, the session will first migrate to that newer version.  
- * This doesn't affect the trainDialog maintained by the teaching session.
- */
-export const putScore = (key : string, appId: string, teachId: string, extractResponse: ExtractResponse): Observable<ActionObject> => {
-	let editAppRoute: string = makeRoute(key, `app/${appId}/teach/${teachId}/scorer`);
-	return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.put(editAppRoute, extractResponse, config)	
-	 		.then(response => {
-            obs.next(runScorerFulfilled(key, appId, teachId, response.data)); 
-            obs.complete();
-          })
-          .catch(err => {
-            obs.next(setErrorDisplay(err.message, toErrorString(err.response), AT.RUN_SCORER_ASYNC));
-            obs.complete();
-					}));
-};
+  /** RUN SCORER: Takes a turn and return distribution over actions.
+   * If a more recent version of the package is 
+   * available on the server, the session will first migrate to that newer version.  
+   * This doesn't affect the trainDialog maintained by the teaching session.
+   */
+  export const putScore = (key : string, appId: string, teachId: string, extractResponse: ExtractResponse): Observable<ActionObject> => {
+    let editAppRoute: string = makeRoute(key, `app/${appId}/teach/${teachId}/scorer`);
+    return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.put(editAppRoute, extractResponse, config)	
+        .then(response => {
+              obs.next(runScorerFulfilled(key, appId, teachId, response.data)); 
+              obs.complete();
+            })
+            .catch(err => {
+              obs.next(setErrorDisplay(err.message, toErrorString(err.response), AT.RUN_SCORER_ASYNC));
+              obs.complete();
+            }));
+  };
 
-/** SCORE FEEDBACK: Uploads a labeled scorer step instance 
- * – ie "commits" a scorer label, appending it to the teach session's 
- * trainDialog, and advancing the dialog. This may yield produce a new package.
- */
-export const postScore = (key : string, appId : string, teachId: string, trainScorerStep : TrainScorerStep): Observable<ActionObject> => {
-	let addAppRoute: string = makeRoute(key, `app/${appId}/teach/${teachId}/scorer`);
-	return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.post(addAppRoute, trainScorerStep, config)		
-			.then(response => {
-            obs.next(postScorerFeedbackFulfilled(key, appId, teachId, response.data));
-            obs.complete();
-          })
-          .catch(err => {
-            obs.next(setErrorDisplay(err.message, toErrorString(err.response), AT.POST_SCORE_FEEDBACK_ASYNC));
-            obs.complete();
-          }));
-};
+  /** SCORE FEEDBACK: Uploads a labeled scorer step instance 
+   * – ie "commits" a scorer label, appending it to the teach session's 
+   * trainDialog, and advancing the dialog. This may yield produce a new package.
+   */
+  export const postScore = (key : string, appId : string, teachId: string, trainScorerStep : TrainScorerStep): Observable<ActionObject> => {
+    let addAppRoute: string = makeRoute(key, `app/${appId}/teach/${teachId}/scorer`);
+    return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.post(addAppRoute, trainScorerStep, config)		
+        .then(response => {
+              obs.next(postScorerFeedbackFulfilled(key, appId, teachId, response.data));
+              obs.complete();
+            })
+            .catch(err => {
+              obs.next(setErrorDisplay(err.message, toErrorString(err.response), AT.POST_SCORE_FEEDBACK_ASYNC));
+              obs.complete();
+            }));
+  };
 
-/** END TEACH: Ends a teach.   
- * For Teach sessions, does NOT delete the associated trainDialog.
- * To delete the associated trainDialog, call DELETE on the trainDialog.
- */
+  /** END TEACH: Ends a teach.   
+   * For Teach sessions, does NOT delete the associated trainDialog.
+   * To delete the associated trainDialog, call DELETE on the trainDialog.
+   */
 
 
-/** GET TEACH SESSION IDS: Retrieves a list of teach session IDs */
-export const getTeachIds = (key : string, appId: string): Observable<AxiosResponse> => {
-	let getAppRoute: string = makeRoute(key, `app/${appId}/teach`);
-	return Rx.Observable.fromPromise(axios.get(getAppRoute, config))
-};
+  /** GET TEACH SESSION IDS: Retrieves a list of teach session IDs */
+  export const getTeachIds = (key : string, appId: string): Observable<AxiosResponse> => {
+    let getAppRoute: string = makeRoute(key, `app/${appId}/teach`);
+    return Rx.Observable.fromPromise(axios.get(getAppRoute, config))
+  };
 
-let toErrorString = function(error : any) : string 
-{
-  try {
-    if (!error || !error.data) {
-      return "";
-    }
-    else if (error.data.errorMessages) {
-      return error.data.errorMessages.join();
-    }
-    return error.data.stringify();
-  }
-  catch (e) {
-    return "Unknown Error";
-  }
-}
-/* TODO - DELETE
-export const dummyScorerResponse = function() : UIScoreResponse
-{
-  let text = `
-    { "memories" :
-     [{ 
-          "entityName": "name",
-          "entityValue": "Jerry"
-      },
-      { 
-        "entityName": "color",
-        "entityValue": "blue"
-      }
-      ],
-      "scoreResponse" :
-      {
-        "packageId": 16,
-        "metrics": {
-          "fooData": "fooData"
-        },
-        "scoredActions": [
-          {
-            "actionId": "74701cef-46fe-4bb4-8b39-6488ac8a106b",
-            "score": 0.8723,
-            "metadata": {
-              "fooData": "fooData"
-            },
-            "isTerminal": false,
-            "payload": "What is your favorite $color, *name"
-          },
-          {
-            "actionId": "1c327d5f-437a-4fad-98fc-c5b540b8d31a",
-            "score": 0.1298,
-            "metadata": {
-              "fooData": "fooData"
-            },
-            "isTerminal": true,
-            "payload": "How are you?"
-          }    
-        ],
-        "unscoredActions": [
-          {
-            "actionId": "01db8ab6-cb35-461b-89ca-ab9b54245c2b",
-            "reason": "notAvailable",
-            "metadata": {
-              "fooData": "fooData"
-            },
-            "isTerminal": false,
-            "payload": "What is your *name?"
-          },
-          {
-            "actionId": "8e341de6-8bca-4589-8c8b-009ece9d3b03",
-            "reason": "notAvailable",
-            "metadata": {
-              "fooData": "fooData"
-            },
-            "isTerminal": false,
-            "payload": "$color is a nice color, $name"
-          },
-          {
-            "actionId": "4eebf724-11a6-4976-98ea-6f90a6f7d848",
-            "reason": "notScorable",
-            "metadata": {
-              "fooData": "fooData"
-            },
-            "isTerminal": true,
-            "payload": "I can show you stocks, $name"
-          }    
-        ]
-      }
-    }`;
-    return JSON.parse(text);
-  }
-
-  // TEMP: This should be generated by the UI
-  export const dummyTrainExtractorStep = function() : TrainExtractorStep
+  let toErrorString = function(error : any) : string 
   {
-    let text = `{
-        "textVariations": [
-          {
-            "text": "start a run now",
-            "labelEntities": [
-              {
-                "startCharIndex": 8,
-                "endCharIndex": 11,
-                "entityId": "cc7d156d-debc-4e8c-b94e-365c71b4a36f",
-                "entityText": "run"
-              },
-              {
-                "startCharIndex": 12,
-                "endCharIndex": 15,
-                "entityId": "c4716ae9-6f96-4937-b696-30788528c198",
-                "entityText": "now"
-              }
-            ]
-          },
-          {
-            "text": "go for a run now",
-            "labelEntities": [
-              {
-                "startCharIndex": 9,
-                "endCharIndex": 12,
-                "entityId": "cc7d156d-debc-4e8c-b94e-365c71b4a36f",
-                "entityText": "run"
-              },
-              {
-                "startCharIndex": 11,
-                "endCharIndex": 14,
-                "entityId": "c4716ae9-6f96-4937-b696-30788528c198",
-                "entityText": "now"
-              }
-            ]
-          }
-        ]
-      }`;
-      return JSON.parse(text);
+    try {
+      if (!error || !error.data) {
+        return "";
+      }
+      else if (error.data.errorMessages) {
+        return error.data.errorMessages.join();
+      }
+      return error.data.stringify();
+    }
+    catch (e) {
+      return "Unknown Error";
+    }
   }
 
-  export const dummyTrainScorerStep = function(): TrainScorerStep
-  {
-    let text = `{
-        "input": {
-          "filledEntities": [
-            "cc7d156d-debc-4e8c-b94e-365c71b4a36f"
-          ],
-          "context": {
-            "user-logged-in": true,
-            "activity-in-progress": false
-          },
-          "maskedActions": [
-            "bf81de2a-0822-4766-ba0c-ef74261306ba"
-          ]
-        },
-        "labelAction": "f97e4d7f-b483-42e3-a92b-649a1a4a77a4"
-      }`
-      return JSON.parse(text);
-  }
-    
-export const dummyExtractResponse = function (): UIExtractResponse {
-	let text = `
-    { "memories" :
-      [{ 
-          "entityName": "name",
-          "entityValue": "Jerry"
-      },
-      { 
-        "entityName": "color",
-        "entityValue": "blue"
-      }
-      ],
-      "extractResponse" :
-        {
-          "packageId": 16,
-          "text": "Give Bob three red cards please",
-          "predictedEntities": [
-            {
-              "startCharIndex": 5,
-              "endCharIndex": 7,
-              "entityId": "ab3b1b47-6b21-4e10-8a6c-762259f75d06",
-              "entityText": "Bob",
-              "entityName": "name",
-              "score": 0.92,
-              "metadata": {
-                "fooData": "fooData"
-              }
-            },
-            {
-              "startCharIndex": 15,
-              "endCharIndex": 17,
-              "entityId": "86acd2c7-bf32-4811-9b24-79323ae80cb8",
-              "entityText": "red",
-              "entityName": "color",
-              "score": 0.92,
-              "metadata": {
-                "fooData": "fooData"
-              },
-              "resolution": {
-                "fooResolution": "fooResolution"
-              }
-            }
-          ],
-          "metrics": {
-            "fooMetric": "fooMetric"
-          }
-        }
-    }`;
-	return JSON.parse(text);
-}
-*/

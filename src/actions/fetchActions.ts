@@ -1,27 +1,40 @@
 import { ActionObject } from '../types'
 import { AT } from '../types/ActionTypes'
-import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, ActionMetaData, ActionList, ActionTypes, Session, Teach } from 'blis-models';
+import { BlisAppBase, BlisAppMetaData, BlisAppList, 
+        EntityBase, EntityMetaData, EntityList, 
+        ActionBase, ActionMetaData, ActionList, ActionTypes, 
+        TrainDialog, LogDialog,
+        Session, Teach } from 'blis-models';
 
-// TODO: These should have fullfillmen counterparts
-export const fetchAllTrainDialogs = (key: string, blisAppID: string): ActionObject => {
-    //needs a fulfilled version to handle response from Epic
+export const fetchAllTrainDialogsAsync = (key: string, blisAppID: string): ActionObject => {
     return {
-        type: AT.FETCH_TRAIN_DIALOGS,
+        type: AT.FETCH_TRAIN_DIALOGS_ASYNC,
         key: key,
-        allTrainDialogs: []
+        blisAppID: blisAppID
     }
 }
 
-// TODO: These should have fullfillmen counterparts
-export const fetchAllLogDialogs = (key: string, blisAppID: string): ActionObject => {
-    //needs a fulfilled version to handle response from Epic
+export const fetchAllTrainDialogsFulfilled = (trainDialogs: TrainDialog[]): ActionObject => {
     return {
-        type: AT.FETCH_LOG_DIALOGS,
-        key: key,
-        allLogDialogs: []
+        type: AT.FETCH_TRAIN_DIALOGS_FULFILLED,
+        allTrainDialogs: trainDialogs
     }
 }
 
+export const fetchAllLogDialogsAsync = (key: string, blisAppID: string): ActionObject => {
+    return {
+        type: AT.FETCH_LOG_DIALOGS_ASYNC,
+        key: key,
+        blisAppID: blisAppID
+    }
+}
+
+export const fetchAllLogDialogsFulfilled = (logDialogs: LogDialog[]): ActionObject => {
+    return {
+        type: AT.FETCH_LOG_DIALOGS_FULFILLED,
+        allLogDialogs: logDialogs
+    }
+}
 
 export const fetchApplicationsAsync = (key: string, userId : string): ActionObject => {
     //needs a fulfilled version to handle response from Epic
