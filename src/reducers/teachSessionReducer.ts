@@ -1,6 +1,6 @@
 import { ActionObject, TeachSessionState } from '../types'
 import { Reducer } from 'redux'
-import { Teach } from 'blis-models'
+import { Teach, ExtractResponse } from 'blis-models'
 import { TeachMode } from '../types/const'
 import { AT } from '../types/ActionTypes'
 
@@ -11,7 +11,7 @@ const initialState: TeachSessionState = {
     input: "",
     memories: [],
     scoreInput: null,
-    extractResponse: null,
+    extractResponses: [],
     scoreResponse: null,
     currentConversationStack: []
 };
@@ -33,11 +33,19 @@ const teachSessionReducer: Reducer<any> = (state = initialState, action: ActionO
         case AT.TEACH_MESSAGE_RECEIVED:
             return {...state, currentConversationStack: [...state.currentConversationStack, action.message], input: action.message};
         case AT.RUN_EXTRACTOR_FULFILLED:
-            return {...state, mode: TeachMode.Extractor, memories: action.uiExtractResponse.memories, extractResponse: action.uiExtractResponse.extractResponse};
+            // Replace existing extract response (if any) with new one
+            let extractResponses : ExtractResponse[] = state.extractResponses.filter((e : ExtractResponse) => e.text != action.uiExtractResponse.extractResponse.text);
+            extractResponses.push(action.uiExtractResponse.extractResponse);
+            return {...state, mode: TeachMode.Extractor, memories: action.uiExtractResponse.memories, extractResponses: extractResponses};
+        case AT.UPDATE_EXTRACT_RESPONSE:
+            // Replace existing extract response (if any) with new one
+            let editedResponses : ExtractResponse[] = state.extractResponses.filter((e : ExtractResponse) => e.text != action.extractResponse.text);
+            editedResponses.push(action.extractResponse);
+            return {...state, mode: TeachMode.Extractor, extractResponses: editedResponses};
         case AT.RUN_SCORER_FULFILLED:
             return {...state, mode: TeachMode.Scorer, memories: action.uiScoreResponse.memories, scoreInput: action.uiScoreResponse.scoreInput, scoreResponse: action.uiScoreResponse.scoreResponse};
         case AT.POST_SCORE_FEEDBACK_FULFILLED:
-            return {...state, mode: TeachMode.Wait};
+            return {...state, mode: TeachMode.Wait, scoreInput: null, scoreResponse: null, extractResponses: []};
          default:
             return state;
     }

@@ -32,7 +32,7 @@ export type TeachSessionState = {
     input: string,
     memories: Memory[],
     scoreInput: ScoreInput
-    extractResponse: ExtractResponse,
+    extractResponses: ExtractResponse[],
     scoreResponse: ScoreResponse,
     currentConversationStack: {}[]
 }

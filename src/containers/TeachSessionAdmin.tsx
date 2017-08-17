@@ -7,7 +7,6 @@ import { connect } from 'react-redux';
 import { State } from '../types'
 import { UserInput } from 'blis-models'
 import { DisplayMode, TeachMode } from '../types/const';
-import { runExtractorAsync } from '../actions/teachActions';
 import TeachSessionScorer from './TeachSessionScorer';
 import TeachSessionExtractor from './TeachSessionExtractor';
 import TeachSessionMemory from './TeachSessionMemory';
@@ -51,7 +50,6 @@ class TeachSessionAdmin extends React.Component<Props, any> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        runExtractor: runExtractorAsync
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {

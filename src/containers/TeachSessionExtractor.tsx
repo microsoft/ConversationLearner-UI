@@ -9,37 +9,14 @@ import { CommandButton } from 'office-ui-fabric-react';
 import ExtractorTextVariationCreator from './ExtractorTextVariationCreator';
 import ExtractorResponseEditor from './ExtractorResponseEditor';
 import EntityCreatorEditor from './EntityCreatorEditor';
+import { generateGUID } from '../Util'
 
 class TeachSessionExtractor extends React.Component<any, any> {
     constructor(p: any) {
         super(p)
         this.state = {
-            inputText: "",//current.extractResponse.text,  TODO - clean up
-            textVariations: [],
-            predictedEntities: [],//current.extractResponse.predictedEntities,
-            initialExtractResponse: [],//current.extractResponse,
             entityModalOpen: false
         }
-        this.updateExtractValues = this.updateExtractValues.bind(this)
-        this.updatePredictedEntities = this.updatePredictedEntities.bind(this)
-    }
-    updateExtractValues(props: any) {
-        console.log('updating')
-        let current = props.teachSession
-        if (current.extractResponse && (current.extractResponse.text !== this.state.inputText)) {
-            console.log('setting state')
-            this.setState({
-                inputText: current.extractResponse.text,
-                textVariations: [],
-                predictedEntities: current.extractResponse.predictedEntities,
-                initialExtractResponse: current.extractResponse
-            })
-        }
-    }
-    updatePredictedEntities(predictedEntities: PredictedEntity[]){
-        this.setState({
-            predictedEntities: predictedEntities
-        })
     }
     handleCloseEntityModal() {
         this.setState({
@@ -51,16 +28,14 @@ class TeachSessionExtractor extends React.Component<any, any> {
             entityModalOpen: true
         })
     }
-    componentWillMount() {
-        this.updateExtractValues(this.props)
-    }
-    componentWillReceiveProps(props: any) {
-        this.updateExtractValues(props)
-    }
     sendFeedback() {
-        // TEMP 
+        let textVariations : TextVariation[] = [];
+        for (let extractResponse of this.props.teachSession.extractResponses)
+            {
+                textVariations.push(new TextVariation({text : extractResponse.text, labelEntities: extractResponse.predictedEntity}));
+            }
         let trainExtractorStep = new TrainExtractorStep({
-            textVariations: [new TextVariation({text: this.state.inputText, labelEntities: []})]
+            textVariations: textVariations
         });
 
         let appId: string = this.props.apps.current.appId;
@@ -70,29 +45,32 @@ class TeachSessionExtractor extends React.Component<any, any> {
     runScorer() {
         let appId: string = this.props.apps.current.appId;
         let teachId: string = this.props.teachSession.current.teachId;
-        let extractResponse = new ExtractResponse({
-            predictedEntities: this.state.predictedEntities,
-            text: this.state.inputText,
-            metrics: this.state.initialExtractResponse.metrics,
-            packageId: this.state.initialExtractResponse.packageId
-        })
-        this.props.runScorer(this.props.user.key, appId, teachId, extractResponse);
+        this.props.runScorer(this.props.user.key, appId, teachId, this.props.teachSession.extractResponses[0]);
     }
     render() {
-        return (
-            <div className="content">
-                <div>
-                    <span className='ms-font-xl extractorTitle'>Entities</span>
-                    <ExtractorResponseEditor input={this.state.inputText} predictedEntities={this.state.predictedEntities} updatePredictedEntities={this.updatePredictedEntities}/>
-                </div>
-                <div>
+        let extractDisplay = [];
+        let key = 0;
+        for (let extractResponse of this.props.teachSession.extractResponses)
+            {
+                extractDisplay.push(<ExtractorResponseEditor key={key++} extractResponse={extractResponse}/>);
+            }
+            /*
+                            <div>
                     <span className='ms-font-xl extractorTitle'>Variations</span>
                     {
                         this.state.textVariations.map((t: any) => {
                             <ExtractorTextVariationCreator textVariation={t} />
                         })
                     }
+                </div>*/
+            
+        return (
+            <div className="content">
+                <div>
+                    <span className='ms-font-xl extractorTitle'>Entities</span>
+                    {extractDisplay}
                 </div>
+
                 <div>
                     <CommandButton
                         data-automation-id='randomID16'

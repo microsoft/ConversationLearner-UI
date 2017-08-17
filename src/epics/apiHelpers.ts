@@ -63,11 +63,8 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
 			.then(response => {
 							obs.next(setCurrentBLISAppFulfilled(blisApp));
 							obs.complete();
-						})
-						.catch(err => {
-							obs.next(setErrorDisplay(err.message, toErrorString(err.response), AT.SET_CURRENT_BLIS_APP));  
-							obs.complete();
-						}));
+            })
+            .catch(err => handleError(obs, err,  AT.SET_CURRENT_BLIS_APP)));
 	};
 
 //=========================================================
@@ -81,10 +78,7 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
               obs.next(fetchApplicationsFulfilled(response.data.apps));
               obs.complete();
             })
-            .catch(err => {
-              obs.next(setErrorDisplay(err.message, toErrorString(err.response), AT.FETCH_APPLICATIONS_ASYNC));
-              obs.complete();
-            }));
+            .catch(err => handleError(obs, err,  AT.FETCH_APPLICATIONS_ASYNC)));
   };
 
   export const getAllEntitiesForBlisApp = (key : string, appId: string): Observable<ActionObject> => {
@@ -94,10 +88,7 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
               obs.next(fetchAllEntitiesFulfilled(response.data.entities));
               obs.complete();
             })
-            .catch(err => {
-              obs.next(setErrorDisplay(err.message, toErrorString(err.response), AT.FETCH_ENTITIES_ASYNC));
-              obs.complete();
-            }));
+            .catch(err => handleError(obs, err,  AT.FETCH_ENTITIES_ASYNC)));
   };
 
   export const getAllActionsForBlisApp = (key : string, appId: string): Observable<ActionObject> => {
@@ -107,10 +98,7 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
               obs.next(fetchAllActionsFulfilled(response.data.actions));
               obs.complete();
             })
-            .catch(err => {
-              obs.next(setErrorDisplay(err.message, toErrorString(err.response), AT.FETCH_ACTIONS_ASYNC));
-              obs.complete();
-            }));
+            .catch(err => handleError(obs, err,  AT.FETCH_ACTIONS_ASYNC)));
   };
 
   export const getAllTrainDialogsForBlisApp = (key : string, appId: string): Observable<ActionObject> => {
@@ -120,10 +108,7 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
               obs.next(fetchAllTrainDialogsFulfilled(response.data.trainDialogs));
               obs.complete();
             })
-            .catch(err => {
-              obs.next(setErrorDisplay(err.message, toErrorString(err.response), AT.FETCH_ENTITIES_ASYNC));
-              obs.complete();
-            }));
+            .catch(err => handleError(obs, err,  AT.FETCH_ENTITIES_ASYNC)));
   };
 
   export const getAllLogDialogsForBlisApp = (key : string, appId: string): Observable<ActionObject> => {
@@ -133,10 +118,7 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
               obs.next(fetchAllLogDialogsFulfilled(response.data.logDialogs));
               obs.complete();
             })
-            .catch(err => {
-              obs.next(setErrorDisplay(err.message, toErrorString(err.response), AT.FETCH_ACTIONS_ASYNC));
-              obs.complete();
-            }));
+            .catch(err => handleError(obs, err,  AT.FETCH_ACTIONS_ASYNC)));
   };
 
   // Not currently used
@@ -168,10 +150,7 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
               obs.next(createApplicationFulfilled(blisApp, response.data));
               obs.complete();
             })
-            .catch(err => {
-              obs.next(setErrorDisplay(err.message, toErrorString(err.response), AT.CREATE_BLIS_APPLICATION_ASYNC));
-              obs.complete();
-            }));
+            .catch(err => handleError(obs, err,  AT.CREATE_BLIS_APPLICATION_ASYNC)));
   };
   export const createBlisEntity = (key: string, entity: EntityBase, appId: string, reverseEntity?: EntityBase): Observable<ActionObject> => {
     let addEntityRoute: string = makeRoute(key, `app/${appId}/entity`);
@@ -190,10 +169,7 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
         }
               obs.complete();
             })
-            .catch(err => {
-              obs.next(setErrorDisplay(err.message, toErrorString(err.response), AT.CREATE_ENTITY_ASYNC));
-              obs.complete();
-            }));
+            .catch(err => handleError(obs, err,  AT.CREATE_ENTITY_ASYNC)));
   };
 
   export const createBlisAction = (key: string, action: ActionBase, appId: string): Observable<ActionObject> => {
@@ -205,10 +181,7 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
         obs.next(createActionFulfilled(action, newActionId));
               obs.complete();
             })
-            .catch(err => {
-              obs.next(setErrorDisplay(err.message, toErrorString(err.response), AT.CREATE_ACTION_ASYNC));
-              obs.complete();
-            }));
+            .catch(err => handleError(obs, err,  AT.CREATE_ACTION_ASYNC)));
   };
 
 //=========================================================
@@ -224,10 +197,7 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
               obs.next(deleteBLISApplicationFulfilled(blisAppId));
               obs.complete();
             })
-            .catch(err => {
-              obs.next(setErrorDisplay(err.message, toErrorString(err.response), AT.DELETE_BLIS_APPLICATION_ASYNC));
-              obs.complete();
-            }));
+            .catch(err => handleError(obs, err,  AT.DELETE_BLIS_APPLICATION_ASYNC)));
   };
   export const deleteBlisEntity = (key : string, appId: string, deleteEntityId: string, reverseEntityId: string): Observable<ActionObject> => {
     let deleteEntityRoute: string = makeRoute(key, `app/${appId}/entity/${deleteEntityId}`);
@@ -241,10 +211,7 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
               }
               obs.complete();
             })
-            .catch(err => {
-              obs.next(setErrorDisplay(err.message, toErrorString(err.response), AT.DELETE_ENTITY_ASYNC));
-              obs.complete();
-            }));
+            .catch(err => handleError(obs, err,  AT.DELETE_ENTITY_ASYNC)));
   };
   export const deleteBlisAction = (key : string, appId: string, action: ActionBase): Observable<ActionObject> => {
     let deleteActionRoute: string = makeRoute(key, `app/${appId}/action/${action.actionId}`); 
@@ -255,10 +222,7 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
               obs.next(deleteActionFulfilled(action.actionId));
               obs.complete();
             })
-            .catch(err => {
-              obs.next(setErrorDisplay(err.message, toErrorString(err.response), AT.DELETE_ACTION_ASYNC));
-              obs.complete();
-            }));
+            .catch(err => handleError(obs, err,  AT.DELETE_ACTION_ASYNC)));
   };
 
   export const deleteLogDialog = (key : string, appId: string, logDialog: LogDialog): Observable<ActionObject> => {
@@ -270,10 +234,7 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
               obs.next(deleteLogDialogFulFilled(key, logDialog.logDialogId));
               obs.complete();
             })
-            .catch(err => {
-              obs.next(setErrorDisplay(err.message, toErrorString(err.response), AT.DELETE_LOG_DIALOG_ASYNC));
-              obs.complete();
-            }));
+            .catch(err => handleError(obs, err,  AT.DELETE_LOG_DIALOG_ASYNC)));
   };
 
   export const deleteTrainDialog = (key : string, appId: string, trainDialog: TrainDialog): Observable<ActionObject> => {
@@ -285,10 +246,7 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
               obs.next(deleteTrainDialogFulfilled(key, trainDialog.trainDialogId));
               obs.complete();
             })
-            .catch(err => {
-              obs.next(setErrorDisplay(err.message, toErrorString(err.response), AT.DELETE_TRAIN_DIALOG_ASYNC));
-              obs.complete();
-            }));
+            .catch(err => handleError(obs, err,  AT.DELETE_TRAIN_DIALOG_ASYNC)));
   };
 
 //=========================================================
@@ -303,11 +261,8 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
               obs.next(editBLISApplicationFulfilled(blisApp));
               obs.complete();
             })
-            .catch(err => {
-              obs.next(setErrorDisplay(err.message, toErrorString(err.response), AT.EDIT_BLIS_APPLICATION_ASYNC));
-              obs.complete();
-            }));
-  };
+            .catch(err => handleError(obs, err,  AT.EDIT_BLIS_APPLICATION_ASYNC)));
+  }
   export const editBlisAction = (key : string, appId: string, blisActionId: string, action: ActionBase): Observable<ActionObject> => {
     let editActionRoute: string = makeRoute(key, `app/${appId}/action/${blisActionId}`);
     const { actionId, version, packageCreationId, packageDeletionId, ...actionToSend } = action
@@ -316,10 +271,7 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
               obs.next(editActionFulfilled(action));
               obs.complete();
             })
-            .catch(err => {
-              obs.next(setErrorDisplay(err.message, toErrorString(err.response), AT.EDIT_ACTION_ASYNC));
-              obs.complete();
-            }));
+            .catch(err => handleError(obs, err,  AT.EDIT_ACTION_ASYNC)));
   };
   export const editBlisEntity = (key: string, appId: string, entity: EntityBase): Observable<ActionObject> => {
     let editActionRoute: string = makeRoute(key, `app/${appId}/entity/${entity.entityId}`);
@@ -329,10 +281,7 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
               obs.next(editEntityFulfilled(entity));
               obs.complete();
             })
-            .catch(err => {
-              obs.next(setErrorDisplay(err.message, toErrorString(err.response), AT.EDIT_ENTITY_ASYNC));
-              obs.complete();
-            }));
+            .catch(err => handleError(obs, err,  AT.EDIT_ENTITY_ASYNC)));
   }
 //========================================================
 // SESSION ROUTES
@@ -347,10 +296,7 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
         obs.next(createChatSessionFulfilled(session, newSessionId));
               obs.complete();
             })
-            .catch(err => {
-              obs.next(setErrorDisplay(err.message, toErrorString(err.response), AT.CREATE_CHAT_SESSION_ASYNC));
-              obs.complete();
-            }));
+            .catch(err => handleError(obs, err,  AT.CREATE_CHAT_SESSION_ASYNC)));
   };
 
   export const deleteChatSession = (key : string, appId: string, session: Session): Observable<ActionObject> => {
@@ -360,10 +306,7 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
               obs.next(deleteChatSessionFulfilled(session.sessionId));
               obs.complete();
             })
-            .catch(err => {
-              obs.next(setErrorDisplay(err.message, toErrorString(err.response), AT.DELETE_CHAT_SESSION_ASYNC));
-              obs.complete();
-            }));
+            .catch(err => handleError(obs, err,  AT.DELETE_CHAT_SESSION_ASYNC)));
   };
 
   export const getAllSessionsForBlisApp = (key: string, appId: string): Observable<ActionObject> => {
@@ -373,10 +316,7 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
               obs.next(fetchAllChatSessionsFulfilled(response.data.sessions));
               obs.complete();
             })
-            .catch(err => {
-              obs.next(setErrorDisplay(err.message, toErrorString(err.response), AT.FETCH_CHAT_SESSIONS_ASYNC));
-              obs.complete();
-            }));
+            .catch(err => handleError(obs, err,  AT.FETCH_CHAT_SESSIONS_ASYNC)));
   };
 
   /** GET SESSION : Retrieves information about the specified session */
@@ -404,10 +344,7 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
         obs.next(createTeachSessionFulfilled(teachSession, newTeachSessionId));
               obs.complete();
             })
-            .catch(err => {
-              obs.next(setErrorDisplay(err.message, toErrorString(err.response), AT.CREATE_TEACH_SESSION));
-              obs.complete();
-            }));
+            .catch(err => handleError(obs, err,  AT.CREATE_TEACH_SESSION)));;
   };
 
   export const deleteTeachSession = (key : string, appId: string, teachSession: Teach): Observable<ActionObject> => {
@@ -417,10 +354,7 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
               obs.next(deleteTeachSessionFulfilled(teachSession.teachId));
               obs.complete();
             })
-            .catch(err => {
-              obs.next(setErrorDisplay(err.message, toErrorString(err.response), AT.DELETE_TEACH_SESSION_ASYNC));
-              obs.complete();
-            }));
+            .catch(err => handleError(obs, err,  AT.DELETE_TEACH_SESSION_ASYNC)));
   };
 
   export const getAllTeachSessionsForBlisApp = (key: string, appId: string): Observable<ActionObject> => {
@@ -430,10 +364,7 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
               obs.next(fetchAllTeachSessionsFulfilled(response.data.teaches));
               obs.complete();
             })
-            .catch(err => {
-              obs.next(setErrorDisplay(err.message, toErrorString(err.response), AT.FETCH_TEACH_SESSIONS_ASYNC));
-              obs.complete();
-            }));
+            .catch(err => handleError(obs, err,  AT.FETCH_TEACH_SESSIONS_ASYNC)));
   };
 
   /** GET TEACH: Retrieves information about the specified teach */
@@ -454,10 +385,7 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
               obs.next(runExtractorFulfilled(key, appId, teachId, response.data));
               obs.complete();
             })
-            .catch(err => {
-              obs.next(setErrorDisplay(err.message, toErrorString(err.response), AT.RUN_EXTRACTOR_ASYNC));
-              obs.complete();
-            }));
+            .catch(err => handleError(obs, err,  AT.RUN_EXTRACTOR_ASYNC)));
   };
 
   /** EXTRACTION FEEDBACK: Uploads a labeled entity extraction instance
@@ -471,10 +399,7 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
               obs.next(postExtractorFeedbackFulfilled(key, appId, teachId, response.data)); 
               obs.complete();
             })
-            .catch(err => {
-              obs.next(setErrorDisplay(err.message, toErrorString(err.response), AT.POST_EXTACT_FEEDBACK_ASYNC));
-              obs.complete();
-            }));
+            .catch(err => handleError(obs, err,  AT.POST_EXTACT_FEEDBACK_ASYNC)));
   };
 
   /** RUN SCORER: Takes a turn and return distribution over actions.
@@ -489,10 +414,7 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
               obs.next(runScorerFulfilled(key, appId, teachId, response.data)); 
               obs.complete();
             })
-            .catch(err => {
-              obs.next(setErrorDisplay(err.message, toErrorString(err.response), AT.RUN_SCORER_ASYNC));
-              obs.complete();
-            }));
+            .catch(err => handleError(obs, err,  AT.RUN_SCORER_ASYNC)));
   };
 
   /** SCORE FEEDBACK: Uploads a labeled scorer step instance 
@@ -506,10 +428,7 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
               obs.next(postScorerFeedbackFulfilled(key, appId, teachId, response.data));
               obs.complete();
             })
-            .catch(err => {
-              obs.next(setErrorDisplay(err.message, toErrorString(err.response), AT.POST_SCORE_FEEDBACK_ASYNC));
-              obs.complete();
-            }));
+            .catch(err => handleError(obs, err,  AT.POST_SCORE_FEEDBACK_ASYNC)));
   };
 
   /** END TEACH: Ends a teach.   
@@ -523,6 +442,19 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
     let getAppRoute: string = makeRoute(key, `app/${appId}/teach`);
     return Rx.Observable.fromPromise(axios.get(getAppRoute, config))
   };
+
+  let handleError = function(obs : Observer<ActionObject>, err: any, route : AT)
+  {
+    if (!obs.closed) {
+      // Service call failure
+      obs.next(setErrorDisplay(err.message, toErrorString(err.response), route));
+      obs.complete();
+    }
+    else {
+      // Means we've hit a code error not a service failure
+      throw(err);
+    }
+  }
 
   let toErrorString = function(error : any) : string 
   {
