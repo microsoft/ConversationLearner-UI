@@ -13,7 +13,7 @@ const trainDialogsReducer: Reducer<TrainDialogState> =  (state = initialState, a
     switch (action.type) {
         case AT.LOGOUT:
             return { ...initialState };
-        case AT.FETCH_TRAIN_DIALOGS:
+        case AT.FETCH_TRAIN_DIALOGS_FULFILLED:
             return { ...state, all: action.allTrainDialogs };
         case AT.EMPTY_STATE_PROPERTIES: 
             return {...state, all: []};
@@ -45,10 +45,24 @@ const trainDialogsReducer: Reducer<TrainDialogState> =  (state = initialState, a
                 newState = { ...state, current: state.all[index - 1] }
             }
             return newState;
-        case AT.DELETE_TRAIN_DIALOG:
-        // return [...state, action.payload];
-        case AT.EDIT_TRAIN_DIALOG:
-        // return [...state, action.payload];
+        case AT.DELETE_TRAIN_DIALOG_FULFILLED:
+            return { ...state, all: state.all.filter(dialog => dialog.trainDialogId !== action.trainDialogGUID) };
+    /* TODO
+        case AT.EDIT_TRAIN_DIALOG_FULFILLED:
+            let index: number = 0;
+            for (let i = 0; i < state.all.length; i++) {
+                if (state.all[i].trainDialogId == action.trainDialog.trainDialogId) {
+                    index = i
+                }
+            }
+            let newAll = Object.assign([], state.all);
+            newAll[index] = action.trainDialog;
+            let stateToReturn: AppState = {
+                all: newAll,
+                current: action.trainDialog
+            }
+            return stateToReturn
+    */ 
         default:
             return state;
     }

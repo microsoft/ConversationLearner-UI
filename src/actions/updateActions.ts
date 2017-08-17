@@ -5,7 +5,7 @@ import { DisplayMode } from '../types/const'
 import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, ActionMetaData, ActionList, ActionTypes, TrainDialog, LogDialog, Session, Teach } from 'blis-models';
 
 export const editBLISApplicationAsync = (key: string, application: BlisAppBase) : ActionObject => { 
-    //needs to make a call to an Epic to send data to BLIS
+    
     return {
         type: AT.EDIT_BLIS_APPLICATION_ASYNC,
         key: key,
@@ -14,7 +14,7 @@ export const editBLISApplicationAsync = (key: string, application: BlisAppBase) 
 }
 
 export const editBLISApplicationFulfilled = (application: BlisAppBase) : ActionObject => { 
-    //needs to make a call to an Epic to send data to BLIS
+    
     return {
         type: AT.EDIT_BLIS_APPLICATION_FULFILLED,
         blisApp: application
@@ -22,7 +22,7 @@ export const editBLISApplicationFulfilled = (application: BlisAppBase) : ActionO
 }
 
 export const editEntityAsync = (key: string, entity: EntityBase) : ActionObject => { 
-    //needs to make a call to an Epic to send data to BLIS
+    
     return {
         type: AT.EDIT_ENTITY_ASYNC,
         key: key,
@@ -31,7 +31,7 @@ export const editEntityAsync = (key: string, entity: EntityBase) : ActionObject 
 }
 
 export const editEntityFulfilled = (entity: EntityBase) : ActionObject => { 
-    //needs to make a call to an Epic to send data to BLIS
+    
     return {
         type: AT.EDIT_ENTITY_FULFILLED,
         entity: entity
@@ -39,7 +39,7 @@ export const editEntityFulfilled = (entity: EntityBase) : ActionObject => {
 }
 
 export const editActionAsync = (key: string, action: ActionBase, currentAppId: string) : ActionObject => { 
-    //needs to make a call to an Epic to send data to BLIS
+    
     return {
         type: AT.EDIT_ACTION_ASYNC,
         key: key,
@@ -49,7 +49,7 @@ export const editActionAsync = (key: string, action: ActionBase, currentAppId: s
 }
 
 export const editActionFulfilled = (action: ActionBase) : ActionObject => { 
-    //needs to make a call to an Epic to send data to BLIS
+    
     return {
         type: AT.EDIT_ACTION_FULFILLED,
         blisAction: action,
@@ -58,7 +58,7 @@ export const editActionFulfilled = (action: ActionBase) : ActionObject => {
 
 // TODO: should be async with fulfillment
 export const editTrainDialog = (key: string, trainDialog: TrainDialog) : ActionObject => { 
-    //needs to make a call to an Epic to send data to BLIS
+    
     return {
         type: AT.EDIT_TRAIN_DIALOG,
         key: key,
@@ -68,7 +68,7 @@ export const editTrainDialog = (key: string, trainDialog: TrainDialog) : ActionO
 
 // TODO: should be async with fulfillment
 export const editLogDialog = (key: string, logDialog: LogDialog) : ActionObject => { 
-    //needs to make a call to an Epic to send data to BLIS
+    
     return {
         type: AT.EDIT_LOG_DIALOG,
         key: key,

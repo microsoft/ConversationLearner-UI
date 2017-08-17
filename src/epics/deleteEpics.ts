@@ -4,7 +4,7 @@ import { ActionsObservable, Epic } from 'redux-observable'
 import { State, ActionObject } from '../types'
 import { AT } from '../types/ActionTypes'
 import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, ActionMetaData, ActionList, ActionTypes } from 'blis-models';
-import { deleteBlisApp, deleteBlisEntity, deleteBlisAction, deleteChatSession, deleteTeachSession } from "./apiHelpers";
+import { deleteBlisApp, deleteBlisEntity, deleteBlisAction, deleteChatSession, deleteTeachSession, deleteTrainDialog, deleteLogDialog } from "./apiHelpers";
 
 export const deleteApplicationEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
     return action$.ofType(AT.DELETE_BLIS_APPLICATION_ASYNC)
@@ -45,5 +45,19 @@ export const deleteTeachEpic: Epic<ActionObject, State> = (action$: ActionsObser
     return action$.ofType(AT.DELETE_TEACH_SESSION_ASYNC)
         .flatMap((actionObject: any) =>
             deleteTeachSession(actionObject.key, actionObject.currentAppId, actionObject.teachSession)
+        );
+}
+
+export const deleteTrainDialogEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
+    return action$.ofType(AT.DELETE_TRAIN_DIALOG_ASYNC)
+        .flatMap((actionObject: any) =>
+            deleteTrainDialog(actionObject.key, actionObject.currentAppId, actionObject.teachSession)
+        );
+}
+
+export const deleteLogDialogEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
+    return action$.ofType(AT.DELETE_LOG_DIALOG_ASYNC)
+        .flatMap((actionObject: any) =>
+            deleteLogDialog(actionObject.key, actionObject.currentAppId, actionObject.teachSession)
         );
 }

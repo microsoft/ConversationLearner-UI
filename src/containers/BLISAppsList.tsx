@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
-import { fetchAllActionsAsync, fetchAllEntitiesAsync, fetchApplicationsAsync, fetchAllTrainDialogs, fetchAllChatSessionsAsync, fetchAllTeachSessionsAsync } from '../actions/fetchActions';
+import { fetchAllActionsAsync, fetchAllEntitiesAsync, fetchApplicationsAsync, fetchAllTrainDialogsAsync, fetchAllChatSessionsAsync, fetchAllTeachSessionsAsync } from '../actions/fetchActions';
 import { setCurrentBLISApp, setDisplayMode } from '../actions/displayActions';
 import { deleteBLISApplicationAsync } from '../actions/deleteActions'
 import { bindActionCreators } from 'redux';
@@ -206,7 +206,7 @@ const mapDispatchToProps = (dispatch: any) => {
         fetchApplications: fetchApplicationsAsync,
         fetchAllActions: fetchAllActionsAsync,
         fetchAllEntities: fetchAllEntitiesAsync,
-        fetchAllTrainDialogs: fetchAllTrainDialogs,
+        fetchAllTrainDialogs: fetchAllTrainDialogsAsync,
         setCurrentBLISApp: setCurrentBLISApp,
         setDisplayMode: setDisplayMode,
         deleteBLISApplication: deleteBLISApplicationAsync,

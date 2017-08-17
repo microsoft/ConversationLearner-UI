@@ -3,7 +3,7 @@ import { AT } from '../types/ActionTypes'
 import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, ActionMetaData, ActionList, ActionTypes, TrainDialog, LogDialog, Session, Teach } from 'blis-models';
 
 export const createBLISApplicationAsync = (key : string, userId : string, application: BlisAppBase): ActionObject => {
-    //needs to make a call to an Epic to send data to BLIS
+    
     return {
         type: AT.CREATE_BLIS_APPLICATION_ASYNC,
         key : key,
@@ -21,7 +21,7 @@ export const createApplicationFulfilled = (blisApp: BlisAppBase, appId: string):
 }
 
 export const createEntityAsync = (key: string, entity: EntityBase, currentAppId: string): ActionObject => {
-    //needs to make a call to an Epic to send data to BLIS
+    
     return {
         type: AT.CREATE_ENTITY_ASYNC,
         key: key,
@@ -66,7 +66,6 @@ export const createNegativeEntityFulfilled = (key: string, positiveEntity: Entit
 }
 
 export const createActionAsync = (key: string, action: ActionBase, currentAppId: string): ActionObject => {
-    //needs to make a call to an Epic to send data to BLIS
     return {
         type: AT.CREATE_ACTION_ASYNC,
         key: key,
@@ -84,7 +83,7 @@ export const createActionFulfilled = (action: ActionBase, actionId: string): Act
 }
 
 export const createChatSessionAsync = (key: string, session: Session, currentAppId: string): ActionObject => {
-    //needs to make a call to an Epic to send data to BLIS
+    
     return {
         type: AT.CREATE_CHAT_SESSION_ASYNC,
         key: key,
@@ -94,7 +93,7 @@ export const createChatSessionAsync = (key: string, session: Session, currentApp
 }
 
 export const createChatSessionFulfilled = (session: Session, sessionId: string): ActionObject => {
-    //needs to make a call to an Epic to send data to BLIS
+    
     return {
         type: AT.CREATE_CHAT_SESSION_FULFILLED,
         session: session,
@@ -103,7 +102,7 @@ export const createChatSessionFulfilled = (session: Session, sessionId: string):
 }
 
 export const createTeachSessionAsync = (key: string, teachSession: Teach, currentAppId: string): ActionObject => {
-    //needs to make a call to an Epic to send data to BLIS
+    
     return {
         type: AT.CREATE_TEACH_SESSION,
         key: key,
@@ -113,7 +112,7 @@ export const createTeachSessionAsync = (key: string, teachSession: Teach, curren
 }
 
 export const createTeachSessionFulfilled = (teachSession: Teach, teachSessionId: string): ActionObject => {
-    //needs to make a call to an Epic to send data to BLIS
+    
     return {
         type: AT.CREATE_TEACH_SESSION_FULFILLED,
         teachSession: teachSession,
@@ -123,7 +122,7 @@ export const createTeachSessionFulfilled = (teachSession: Teach, teachSessionId:
 
 // TODO: should be async with fulfillment
 export const createTrainDialog = (key: string, trainDialog: TrainDialog): ActionObject => {
-    //needs to make a call to an Epic to send data to BLIS
+    
     return {
         type: AT.CREATE_TRAIN_DIALOG,
         key: key,
@@ -133,7 +132,7 @@ export const createTrainDialog = (key: string, trainDialog: TrainDialog): Action
 
 // TODO: should be async with fulfillment
 export const createLogDialog = (key: string, logDialog: LogDialog): ActionObject => {
-    //needs to make a call to an Epic to send data to BLIS
+    
     return {
         type: AT.CREATE_LOG_DIALOG,
         key: key,

@@ -3,7 +3,7 @@ import { AT } from '../types/ActionTypes'
 import { BlisAppBase, EntityBase, ActionBase, Session, Teach} from 'blis-models'
 
 export const deleteBLISApplicationAsync = (key: string, GUID: string, blisApp: BlisAppBase): ActionObject => {
-    //needs to make a call to an Epic to send data to BLIS
+    
     return {
         type: AT.DELETE_BLIS_APPLICATION_ASYNC,
         key: key,
@@ -20,7 +20,7 @@ export const deleteBLISApplicationFulfilled = (blisAppGUID: string): ActionObjec
 }
 
 export const deleteEntityAsync = (key: string, GUID: string, entity: EntityBase, currentAppId: string): ActionObject => {
-    //needs to make a call to an Epic to send data to BLIS
+    
     return {
         type: AT.DELETE_ENTITY_ASYNC,
         key: key,
@@ -50,7 +50,7 @@ export const deleteEntityFulfilled = (key: string, deletedEntityId: string, curr
 }
 
 export const deleteActionAsync = (key: string, GUID: string, action: ActionBase, currentAppId: string): ActionObject => {
-    //needs to make a call to an Epic to send data to BLIS
+    
     return {
         type: AT.DELETE_ACTION_ASYNC,
         key: key,
@@ -68,7 +68,7 @@ export const deleteActionFulfilled = (actionGUID: string): ActionObject => {
 }
 
 export const deleteChatSessionAsync = (key: string, session: Session, currentAppId: string): ActionObject => {
-    //needs to make a call to an Epic to send data to BLIS
+    
     return {
         type: AT.DELETE_CHAT_SESSION_ASYNC,
         key: key,
@@ -85,7 +85,7 @@ export const deleteChatSessionFulfilled = (sessionGUID: string): ActionObject =>
 }
 
 export const deleteTeachSessionAsync = (key: string, teachSession: Teach, currentAppId: string): ActionObject => {
-    //needs to make a call to an Epic to send data to BLIS
+    
     return {
         type: AT.DELETE_TEACH_SESSION_ASYNC,
         key: key,
@@ -102,21 +102,33 @@ export const deleteTeachSessionFulfilled = (teachSessionGUID: string): ActionObj
 }
 
 
-// TODO: should be async with fulfillment
-export const deleteTrainDialog = (key: string, GUID: string): ActionObject => {
-    //needs to make a call to an Epic to send data to BLIS
+export const deleteTrainDialogAsync = (key: string, GUID: string): ActionObject => {
     return {
-        type: AT.DELETE_TRAIN_DIALOG,
+        type: AT.DELETE_TRAIN_DIALOG_ASYNC,
         key: key,
         trainDialogGUID: GUID
     }
 }
 
-// TODO: should be async with fulfillment
-export const deleteLogDialog = (key: string, GUID: string): ActionObject => {
-    //needs to make a call to an Epic to send data to BLIS
+export const deleteTrainDialogFulfilled = (key: string, GUID: string): ActionObject => {
     return {
-        type: AT.DELETE_LOG_DIALOG,
+        type: AT.DELETE_TRAIN_DIALOG_FULFILLED,
+        key: key,
+        trainDialogGUID: GUID
+    }
+}
+
+export const deleteLogDialogAsync = (key: string, GUID: string): ActionObject => {
+    return {
+        type: AT.DELETE_LOG_DIALOG_ASYNC,
+        key: key,
+        logDialogGUID: GUID
+    }
+}
+
+export const deleteLogDialogFulFilled = (key: string, GUID: string): ActionObject => {
+    return {
+        type: AT.DELETE_LOG_DIALOG_FULFILLED,
         key: key,
         logDialogGUID: GUID
     }
