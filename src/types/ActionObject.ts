@@ -292,6 +292,9 @@ export type TeachAction = {
     type: AT.UPDATE_EXTRACT_RESPONSE,
     extractResponse: ExtractResponse
 } | {
+    type: AT.REMOVE_EXTRACT_RESPONSE,
+    extractResponse: ExtractResponse
+}| {
     type: AT.POST_EXTACT_FEEDBACK_ASYNC,
     key: string,
     appId: string,

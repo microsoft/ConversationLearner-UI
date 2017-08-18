@@ -30,6 +30,14 @@ export const updateExtractResponse = (extractResponse: ExtractResponse) : Action
     }
 }
 
+// User removes extract response
+export const removeExtractResponse = (extractResponse: ExtractResponse) : ActionObject => { 
+    return {
+        type: AT.REMOVE_EXTRACT_RESPONSE,
+        extractResponse: extractResponse
+    }
+}
+
 export const postExtractorFeedbackAsync = (key: string, appId: string, teachId: string, trainExtractorStep: TrainExtractorStep) : ActionObject => { 
     return {
         type: AT.POST_EXTACT_FEEDBACK_ASYNC,
