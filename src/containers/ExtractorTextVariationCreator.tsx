@@ -42,7 +42,7 @@ class ExtractorTextVariationCreator extends React.Component<Props, any> {
                         disabled={!this.state.variationValue}
                         onClick={this.handleAddVariation.bind(this)}
                         ariaDescription='Add Variation'
-                        text='Add Variation'
+                        text='Add'
                         iconProps={{ iconName: 'CirclePlus' }}
                     />
                 <div className='teachAddVariation'>

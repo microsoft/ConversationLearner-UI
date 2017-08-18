@@ -3,12 +3,14 @@ import * as React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { ExtractResponse, TrainExtractorStep, PredictedEntity, LabeledEntity, EntityBase } from 'blis-models'
-import { updateExtractResponse } from '../actions/teachActions';
+import { updateExtractResponse, removeExtractResponse } from '../actions/teachActions';
+import { CommandButton } from 'office-ui-fabric-react';
 import { State } from '../types';
 import { TextField, Dropdown, Label } from 'office-ui-fabric-react'
 
 interface PassedProps {
     extractResponse: ExtractResponse;
+    isPrimary: boolean;
 }
 
 interface SubstringObject {
@@ -102,8 +104,12 @@ class ExtractorResponseEditor extends React.Component<any, any> {
     componentWillMount() {
         this.setInitialValues(this.props)
     }
+    componentDidUpdate()
+    {
+        this.setInitialValues(this.props)
+    }
     setInitialValues(props: any) {
-        if (props.extractResponse.text && props.extractResponse.predictedEntities && (props.extractResponse.input !== this.state.input)) {
+        if (props.extractResponse.text && props.extractResponse.predictedEntities && (props.extractResponse.text !== this.state.input)) {
             this.setState({
                 input: props.extractResponse.text,
                 predictedEntities: props.extractResponse.predictedEntities
@@ -665,20 +671,42 @@ class ExtractorResponseEditor extends React.Component<any, any> {
             </div>
         )
     }
+    handleDeleteVariation() {
+        let removedResponse = new ExtractResponse({text: this.state.input, predictedEntities: []});
+        this.props.removeExtractResponse(removedResponse);
+        this.setState({
+            variationValue: ''
+        })
+    }
     render() {
         let key: number = 0;
+        let button = this.props.isPrimary ? null :
+            <CommandButton
+                data-automation-id='randomID8'
+                className="orangeButton teachVariationButton"
+                onClick={this.handleDeleteVariation.bind(this)}
+                ariaDescription='Delete Variation'
+                text='Delete'
+                iconProps={{ iconName: 'ErrorBadge' }}
+            />
         return (
-            <div className="extractorResponseBox">
-                {this.state.substringObjects.map((s: SubstringObject) => {
-                    return this.renderSubstringObject(s, ++key)
-                })}
+            <div className='teachVariationBox'>
+                {button}
+                <div className='teachAddVariation'>
+                    <div className="extractorResponseBox">
+                        {this.state.substringObjects.map((s: SubstringObject) => {
+                            return this.renderSubstringObject(s, ++key)
+                        })}
+                    </div>
+                </div>
             </div>
         )
     }
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        updateExtractResponse: updateExtractResponse
+        updateExtractResponse: updateExtractResponse,
+        removeExtractResponse: removeExtractResponse
     }, dispatch);
 }
 const mapStateToProps = (state: State, ownProps: any) => {

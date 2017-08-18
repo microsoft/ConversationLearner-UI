@@ -42,7 +42,11 @@ const teachSessionReducer: Reducer<any> = (state = initialState, action: ActionO
             let editedResponses : ExtractResponse[] = state.extractResponses.filter((e : ExtractResponse) => e.text != action.extractResponse.text);
             editedResponses.push(action.extractResponse);
             return {...state, mode: TeachMode.Extractor, extractResponses: editedResponses};
-        case AT.RUN_SCORER_FULFILLED:
+        case AT.REMOVE_EXTRACT_RESPONSE:
+            // Remove existing extract response
+            let remainingResponses : ExtractResponse[] = state.extractResponses.filter((e : ExtractResponse) => e.text != action.extractResponse.text);
+            return {...state, mode: TeachMode.Extractor, extractResponses: remainingResponses};
+       case AT.RUN_SCORER_FULFILLED:
             return {...state, mode: TeachMode.Scorer, memories: action.uiScoreResponse.memories, scoreInput: action.uiScoreResponse.scoreInput, scoreResponse: action.uiScoreResponse.scoreResponse};
         case AT.POST_SCORE_FEEDBACK_FULFILLED:
             return {...state, mode: TeachMode.Wait, scoreInput: null, scoreResponse: null, extractResponses: []};

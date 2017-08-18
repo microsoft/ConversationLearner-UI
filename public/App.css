@@ -117,6 +117,17 @@
   display: inline-block;
   vertical-align: top;
 }
+.orangeButton:hover {
+  border: 1px solid #a80000;
+}
+.orangeButton{
+  background-color: #ea4300 !important;
+  color: black !important;
+  padding: 0em 2em !important;
+}
+.orangeButton *{
+  color: black !important;
+}
 .tgNavDiv{
   border-top: 1px solid lightgrey;
   border-bottom: 1px solid lightgrey;
@@ -282,6 +293,7 @@
   border-style: none none none solid;
   border-width: 1px;
   border-color: #999999;
+  width: 95%;
 }
 .wc-gridAdminContent{
   display: block;
@@ -372,6 +384,7 @@
 .teachVariationButton {
   float: right;
   height: 35px !important;
+  width: 120px;
 }
 .teachModal{
   width: 90%;

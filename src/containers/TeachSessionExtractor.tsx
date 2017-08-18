@@ -52,7 +52,7 @@ class TeachSessionExtractor extends React.Component<any, any> {
         let key = 0;
         for (let extractResponse of this.props.teachSession.extractResponses)
             {
-                extractDisplay.push(<ExtractorResponseEditor key={key++} extractResponse={extractResponse}/>);
+                extractDisplay.push(<ExtractorResponseEditor key={key++} isPrimary={key==1} extractResponse={extractResponse}/>);
             }
         return (
             <div className="content">
