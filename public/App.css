@@ -362,6 +362,17 @@
 .teachSessionWindow{
   width: 100%
 }
+.teachVariationBox{
+  margin-top: 10px;
+}
+.teachAddVariation{
+  overflow: hidden;
+  padding-right: 0.5em;
+}
+.teachVariationButton {
+  float: right;
+  height: 35px !important;
+}
 .teachModal{
   width: 90%;
   height: 90%;
@@ -398,6 +409,7 @@
     border-width: 1px;
     border-color: #999999;
     padding: 10px;
+    margin-bottom: 10px;
 }
 .webchatwindow{
   height: 550px !important;

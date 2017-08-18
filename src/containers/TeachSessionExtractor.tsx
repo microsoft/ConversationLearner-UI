@@ -54,21 +54,12 @@ class TeachSessionExtractor extends React.Component<any, any> {
             {
                 extractDisplay.push(<ExtractorResponseEditor key={key++} extractResponse={extractResponse}/>);
             }
-            /*
-                            <div>
-                    <span className='ms-font-xl extractorTitle'>Variations</span>
-                    {
-                        this.state.textVariations.map((t: any) => {
-                            <ExtractorTextVariationCreator textVariation={t} />
-                        })
-                    }
-                </div>*/
-            
         return (
             <div className="content">
                 <div>
                     <span className='ms-font-xl extractorTitle'>Entities</span>
                     {extractDisplay}
+                    <ExtractorTextVariationCreator/>
                 </div>
 
                 <div>
