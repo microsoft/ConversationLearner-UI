@@ -108,7 +108,7 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
               obs.next(fetchAllTrainDialogsFulfilled(response.data.trainDialogs));
               obs.complete();
             })
-            .catch(err => handleError(obs, err,  AT.FETCH_ENTITIES_ASYNC)));
+            .catch(err => handleError(obs, err,  AT.FETCH_TRAIN_DIALOGS_ASYNC)));
   };
 
   export const getAllLogDialogsForBlisApp = (key : string, appId: string): Observable<ActionObject> => {
@@ -118,7 +118,7 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
               obs.next(fetchAllLogDialogsFulfilled(response.data.logDialogs));
               obs.complete();
             })
-            .catch(err => handleError(obs, err,  AT.FETCH_ACTIONS_ASYNC)));
+            .catch(err => handleError(obs, err,  AT.FETCH_LOG_DIALOGS_ASYNC)));
   };
 
   // Not currently used
