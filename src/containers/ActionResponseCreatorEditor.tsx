@@ -5,7 +5,7 @@ import { editActionAsync } from '../actions/updateActions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
-import { CommandButton, Dialog, DialogFooter, DialogType, ChoiceGroup, DefaultButton, Dropdown, TagPicker, Label,Checkbox } from 'office-ui-fabric-react';
+import { CommandButton, Dialog, DialogFooter, DialogType, ChoiceGroup, DefaultButton, Dropdown, TagPicker, Label, Checkbox } from 'office-ui-fabric-react';
 import { TextFieldPlaceholder } from './TextFieldPlaceholder';
 import { ActionBase, ActionMetaData, ActionTypes, EntityBase, EntityMetaData } from 'blis-models'
 import { State } from '../types';
@@ -17,24 +17,27 @@ interface EntityPickerObject {
 }
 
 const initState = {
-            actionTypeVal: 'TEXT',
-            payloadVal: '',
-            reqEntitiesVal: [] as EntityPickerObject[],
-            negEntitiesVal: [] as EntityPickerObject[],
-            waitVal: true,
-            availableRequiredEntities: [] as EntityPickerObject[],
-            availableNegativeEntities: [] as EntityPickerObject[],
-            editing: false,
-            defaultNegativeEntities: [] as EntityPickerObject[],
-            defaultRequiredEntities: []as EntityPickerObject[],
-            entityModalOpen: false,
-            open: false
-        };
+    actionTypeVal: 'TEXT',
+    payloadVal: '',
+    reqEntitiesVal: [] as EntityPickerObject[],
+    negEntitiesVal: [] as EntityPickerObject[],
+    waitVal: true,
+    availableRequiredEntities: [] as EntityPickerObject[],
+    availableNegativeEntities: [] as EntityPickerObject[],
+    editing: false,
+    defaultNegativeEntities: [] as EntityPickerObject[],
+    defaultRequiredEntities: [] as EntityPickerObject[],
+    entityModalOpen: false,
+    open: false,
+};
 
 class ActionResponseCreatorEditor extends React.Component<Props, any> {
     constructor(p: Props) {
         super(p);
         this.state = initState;
+    }
+    componentDidMount(){
+        this.reInitializeDropdown();
     }
     componentWillReceiveProps(p: Props) {
         if (p.open === true && this.state.open === true) {
@@ -50,7 +53,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
             })
         } else {
             if (p.blisAction === null) {
-                this.setState({...initState, open: p.open});
+                this.setState({ ...initState, open: p.open });
             } else {
                 let entities = this.props.entities.map((e: EntityBase) => {
                     return {
@@ -114,8 +117,17 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
             })
         }
     }
+    reInitializeDropdown() {
+        this.setState({
+            displayDropdown: false,
+            filterLength: null,
+            filterText: null,
+            requiredEntity: null,
+            filterStartIndex: null
+        });
+    }
     handleClose() {
-        this.setState({...initState});
+        this.setState({ ...initState });
     }
     createAction() {
         let currentAppId: string = this.props.blisApps.current.appId;
@@ -152,7 +164,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
         actionToAdd.actionId = this.props.blisAction.actionId;
         this.props.editAction(this.props.userKey, actionToAdd, currentAppId);
     }
-    checkPayload(value :string): string {
+    checkPayload(value: string): string {
         return value ? "" : "Payload is required";
     }
     waitChanged() {
@@ -166,9 +178,38 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
         })
     }
     payloadChanged(text: string) {
+        this.checkLastLetterTyped(text)
         this.setState({
             payloadVal: text
         })
+    }
+    checkLastLetterTyped(text: string) {
+        let current: string = this.state.payloadVal;
+        let added: boolean = text.length > current.length;
+        for (let i = 0; i < text.length; i++) {
+            if (current[i] !== text[i]) {
+                if (added == true) {
+                    let letter: string = text[i];
+                    if (letter == "$") {
+                        this.setState({
+                            displayDropdown: true,
+                            filterLength: 0,
+                            filterText: "",
+                            requiredEntity: true,
+                            filterStartIndex: i
+                        })
+                    } else if (letter == "*") {
+                        this.setState({
+                            displayDropdown: true,
+                            filterLength: 0,
+                            filterText: "",
+                            requiredEntity: false,
+                            filterStartIndex: i
+                        })
+                    }
+                }
+            }
+        }
     }
     onFilterChanged(filterText: string, tagList: EntityPickerObject[]) {
         let entList = filterText ? this.state.availableRequiredEntities.filter((ent: EntityPickerObject) => ent.name.toLowerCase().indexOf(filterText.toLowerCase()) === 0).filter((item: EntityPickerObject) => !this.listContainsDocument(item, tagList)) : [];
@@ -226,15 +267,15 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
         if (this.state.editing == true) {
             title = "Edit Action"
             createButtonText = "Save"
-            deleteButton =                         
-                    <CommandButton
-                            data-automation-id='randomID9'
-                            className="grayButton"
-                            disabled={false}
-                            onClick={() => this.props.handleOpenDeleteModal(this.props.blisAction.actionId)}
-                            ariaDescription='Delete'
-                            text='Delete'
-                    />
+            deleteButton =
+                <CommandButton
+                    data-automation-id='randomID9'
+                    className="grayButton"
+                    disabled={false}
+                    onClick={() => this.props.handleOpenDeleteModal(this.props.blisAction.actionId)}
+                    ariaDescription='Delete'
+                    text='Delete'
+                />
         } else {
             title = "Create an Action"
             createButtonText = "Create"
@@ -259,7 +300,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                             disabled={this.state.editing}
                         />
                         <TextFieldPlaceholder
-                            onGetErrorMessage={ this.checkPayload.bind(this)}
+                            onGetErrorMessage={this.checkPayload.bind(this)}
                             onChanged={this.payloadChanged.bind(this)}
                             label="Payload"
                             placeholder="Payload..."
