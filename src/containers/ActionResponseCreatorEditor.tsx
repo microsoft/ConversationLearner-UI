@@ -245,6 +245,14 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
         })
     }
     render() {
+        let pixels: string = this.state.displayDropdown === true ? this.state.dropdownIndex.toString().concat("px") : null;
+        let entitySuggestStyle = this.state.displayDropdown === true ? {
+            marginLeft: pixels,
+            marginTop: "-7px",
+            maxWidth: "12em"
+        } : {
+            display: "none"
+        };
         let actionTypeVals = Object.values(ActionTypes);
         let actionTypeOptions = actionTypeVals.map(v => {
             return {
@@ -255,7 +263,6 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
         let title: string;
         let createButtonText: string;
         let deleteButton = null;
-
         if (this.state.editing == true) {
             title = "Edit Action"
             createButtonText = "Save"
@@ -297,6 +304,11 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                             label="Payload"
                             placeholder="Payload..."
                             value={this.state.payloadVal} />
+                        <Dropdown
+                            options={actionTypeOptions}
+                            selectedKey={this.state.actionTypeVal}
+                            style={entitySuggestStyle}
+                        />
                         <Label>Required Entities</Label>
                         <TagPicker
                             onResolveSuggestions={this.onFilterChanged.bind(this)}
