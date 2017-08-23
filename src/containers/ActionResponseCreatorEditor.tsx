@@ -36,6 +36,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
         super(p);
         this.state = initState;
         this.checkForSpecialCharacters = this.checkForSpecialCharacters.bind(this);
+        this.findWordFollowingSpecialCharacter = this.findWordFollowingSpecialCharacter.bind(this)
     }
     componentDidMount() {
         this.reInitializeDropdown();
@@ -122,7 +123,8 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
         this.setState({
             displayDropdown: false,
             dropdownIndex: null,
-            requiredEntity: true
+            requiredEntity: true,
+            entitySuggestFilterText: ""
         });
     }
     handleClose() {
@@ -182,9 +184,13 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
             payloadVal: text
         })
     }
+    findWordFollowingSpecialCharacter(text: string){
+
+    }
     checkForSpecialCharacters(text: string) {
         let pixels: number = 0;
         if (this.state.displayDropdown === false) {
+            //we only care about $ and * if dropdown isnt displayed yet
             for (let letter of text) {
                 if (letter === "$") {
                     this.setState({
@@ -201,8 +207,48 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                 }
                 pixels++;
             }
+        } else {
+            if (this.state.payloadVal.length < text.length) {
+                //the dropdown is displayed and we've added a letter. We need to see if the letter added was after the $ or *
+                //if it is, we need to add it to the filter text
+                //if it isnt, do nothing
+                let addedIndex = this.findUpdatedIndex(text);
+                let filterText = this.findWordFollowingSpecialCharacter(text);
+                for (let letter of text) {
+                    if (letter !== " ") {
+                        this.setState({
+                            entitySuggestFilterText: this.state.entitySuggestFilterText.concat(letter)
+                        })
+                    }
+                    pixels++;
+                }
+            } else {
+                //we've deleted a letter and the dropdown is displayed. Need to determine if the letter was deleted from the entity string or not
+                //if it is, we need to remove it from the filter text
+                //if it isnt, do nothing
+                let deletedIndex: number = this.findUpdatedIndex(text);
+                console.log("DELETED", deletedIndex)
+                if (deletedIndex > this.state.dropdownIndex){
+                    console.log('deleted part of entity string')
+                } else if (deletedIndex == this.state.dropdownIndex){
+                    this.reInitializeDropdown();
+                }
+            }
         }
     }
+
+    findUpdatedIndex(text: string) : number {
+        let index: number = 0;
+        let current: string = this.state.payloadVal;
+        for (let i = 0; i < current.length; i++) {
+            console.log(current[i], text[i], i)
+            if (current[i] != text[i]) {
+                index = i;
+            }
+        }
+        return index;
+    }
+
     onFilterChanged(filterText: string, tagList: EntityPickerObject[]) {
         let entList = filterText ? this.state.availableRequiredEntities.filter((ent: EntityPickerObject) => ent.name.toLowerCase().indexOf(filterText.toLowerCase()) === 0).filter((item: EntityPickerObject) => !this.listContainsDocument(item, tagList)) : [];
         let usedEntities = this.state.reqEntitiesVal.concat(this.state.negEntitiesVal);
@@ -245,14 +291,21 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
         })
     }
     render() {
-        let pixels: string = this.state.displayDropdown === true ? this.state.dropdownIndex.toString().concat("px") : null;
-        let entitySuggestStyle = this.state.displayDropdown === true ? {
-            marginLeft: pixels,
-            marginTop: "-7px",
-            maxWidth: "12em"
-        } : {
-            display: "none"
-        };
+        let entitySuggestStyle: {};
+        let entitySuggestObjects: {}[] = [];
+        if (this.state.displayDropdown === true) {
+            console.log("Sugg", this.state.entitySuggestFilterText)
+            let pixels: string = this.state.dropdownIndex.toString().concat("px");
+            entitySuggestStyle = {
+                marginLeft: pixels,
+                marginTop: "-7px",
+                maxWidth: "12em"
+            }
+        } else {
+            entitySuggestStyle = {
+                display: "none"
+            }
+        }
         let actionTypeVals = Object.values(ActionTypes);
         let actionTypeOptions = actionTypeVals.map(v => {
             return {
