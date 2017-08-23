@@ -35,8 +35,9 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
     constructor(p: Props) {
         super(p);
         this.state = initState;
+        this.checkForSpecialCharacters = this.checkForSpecialCharacters.bind(this);
     }
-    componentDidMount(){
+    componentDidMount() {
         this.reInitializeDropdown();
     }
     componentWillReceiveProps(p: Props) {
@@ -120,10 +121,8 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
     reInitializeDropdown() {
         this.setState({
             displayDropdown: false,
-            filterLength: null,
-            filterText: null,
-            requiredEntity: null,
-            filterStartIndex: null
+            dropdownIndex: null,
+            requiredEntity: true
         });
     }
     handleClose() {
@@ -178,36 +177,29 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
         })
     }
     payloadChanged(text: string) {
-        this.checkLastLetterTyped(text)
+        this.checkForSpecialCharacters(text)
         this.setState({
             payloadVal: text
         })
     }
-    checkLastLetterTyped(text: string) {
-        let current: string = this.state.payloadVal;
-        let added: boolean = text.length > current.length;
-        for (let i = 0; i < text.length; i++) {
-            if (current[i] !== text[i]) {
-                if (added == true) {
-                    let letter: string = text[i];
-                    if (letter == "$") {
-                        this.setState({
-                            displayDropdown: true,
-                            filterLength: 0,
-                            filterText: "",
-                            requiredEntity: true,
-                            filterStartIndex: i
-                        })
-                    } else if (letter == "*") {
-                        this.setState({
-                            displayDropdown: true,
-                            filterLength: 0,
-                            filterText: "",
-                            requiredEntity: false,
-                            filterStartIndex: i
-                        })
-                    }
+    checkForSpecialCharacters(text: string) {
+        let pixels: number = 0;
+        if (this.state.displayDropdown === false) {
+            for (let letter of text) {
+                if (letter === "$") {
+                    this.setState({
+                        displayDropdown: true,
+                        dropdownIndex: pixels,
+                        requiredEntity: true
+                    })
+                } else if (letter === "*") {
+                    this.setState({
+                        displayDropdown: true,
+                        dropdownIndex: pixels,
+                        requiredEntity: false
+                    })
                 }
+                pixels++;
             }
         }
     }
