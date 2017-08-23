@@ -7,6 +7,7 @@
     "axios": "^0.16.2",
     "blis-models": "^0.29.0",
     "botframework-webchat": "^0.10.8",
+    "jquery": "^3.2.1",
     "office-ui-fabric-react": "^4.23.0",
     "react": "^15.5.4",
     "react-dom": "^15.5.4",

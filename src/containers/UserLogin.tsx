@@ -11,6 +11,8 @@ import { fetchAllActionsAsync, fetchAllEntitiesAsync, fetchAllTrainDialogsAsync 
 import { BlisAppBase, BlisAppMetaData } from 'blis-models'
 import { developmentSubKeyLUIS } from '../secrets'
 import { State } from '../types'
+import * as $ from 'jquery';
+
 type CultureObject = {
     CultureCode: string;
     CultureName: string;
@@ -20,8 +22,24 @@ class UserLogin extends React.Component<Props, any> {
         super(p);
         this.state = {
             userName: '',
-            userPassword: ''
+            userPassword: '',
+            loadedUser: false
         }
+    }
+    componentDidMount() {
+        let self = this;
+        $(document).keypress(function (e) {
+            if (e.which == 13) {
+                if (self.state.loadedUser == false) {
+                    let userId = self.generateUserId(self.state.userName, self.state.userPassword);
+                    self.props.setUser(self.state.userName, self.state.userPassword, userId);
+                    self.setState({
+                        loadedUser: true
+                    })
+                    self.handleClose();
+                }
+            }
+        });
     }
     handleClose() {
         this.props.setLoginDisplay(false);
@@ -40,7 +58,7 @@ class UserLogin extends React.Component<Props, any> {
             userPassword: text
         })
     }
-    generateUserId(name : string, password : string) {
+    generateUserId(name: string, password: string) {
         if (!name || !password) {
             return;
         }
@@ -49,6 +67,9 @@ class UserLogin extends React.Component<Props, any> {
     createUser() {
         let userId = this.generateUserId(this.state.userName, this.state.userPassword);
         this.props.setUser(this.state.userName, this.state.userPassword, userId);
+        this.setState({
+            loadedUser: true
+        })
         this.handleClose();
     }
     logout() {
@@ -56,47 +77,45 @@ class UserLogin extends React.Component<Props, any> {
     }
     render() {
         let isBlocking, title, input, button = null;
-        if (this.props.user.id == null) 
-        {
+        if (this.props.user.id == null) {
             isBlocking = true;
             title = "Log In";
             input =
-                    <div>
-                        <TextFieldPlaceholder onChanged={this.nameChanged.bind(this)} label="Name" placeholder="User Name..." value={this.state.userName} />
-                        <TextFieldPlaceholder onChanged={this.passwordChanged.bind(this)} label="Password" placeholder="Password..." value={this.state.userPassword} />
-                    </div>;
+                <div>
+                    <TextFieldPlaceholder onChanged={this.nameChanged.bind(this)} label="Name" placeholder="User Name..." value={this.state.userName} />
+                    <TextFieldPlaceholder onChanged={this.passwordChanged.bind(this)} label="Password" placeholder="Password..." value={this.state.userPassword} />
+                </div>;
             button =
                 <CommandButton
-                            data-automation-id='randomID2'
-                            disabled={false}
-                            onClick={this.createUser.bind(this)}  
-                            className='goldButton'
-                            ariaDescription='Log In'
-                            text='Log In'
-                        />
+                    data-automation-id='randomID2'
+                    disabled={false}
+                    onClick={this.createUser.bind(this)}
+                    className='goldButton'
+                    ariaDescription='Log In'
+                    text='Log In'
+                />
         }
-        else
-        {
+        else {
             isBlocking = false;
             title = "Log Out";
             button =
                 <div>
-                <CommandButton
-                            data-automation-id='randomID2'
-                            disabled={false}
-                            onClick={this.logout.bind(this)}  
-                            className='goldButton'
-                            ariaDescription='Log Out'
-                            text='Log Out'
-                        />
-                <CommandButton
-                            data-automation-id='randomID3'
-                            className="grayButton"
-                            disabled={false}
-                            onClick={this.handleClose.bind(this)}
-                            ariaDescription='Cancel'
-                            text='Cancel'
-                        />
+                    <CommandButton
+                        data-automation-id='randomID2'
+                        disabled={false}
+                        onClick={this.logout.bind(this)}
+                        className='goldButton'
+                        ariaDescription='Log Out'
+                        text='Log Out'
+                    />
+                    <CommandButton
+                        data-automation-id='randomID3'
+                        className="grayButton"
+                        disabled={false}
+                        onClick={this.handleClose.bind(this)}
+                        ariaDescription='Cancel'
+                        text='Cancel'
+                    />
                 </div>
         }
         return (
