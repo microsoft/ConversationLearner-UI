@@ -184,8 +184,16 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
             payloadVal: text
         })
     }
-    findWordFollowingSpecialCharacter(text: string){
-
+    findWordFollowingSpecialCharacter(text: string) {
+        let word: string = "";
+        let current: string = this.state.payloadVal;
+        for (let i = this.state.dropdownIndex; i < text.length; i++) {
+            if (text[i] !== " ") {
+                word += text[i]
+            }
+        }
+        console.log('word', word)
+        return word;
     }
     checkForSpecialCharacters(text: string) {
         let pixels: number = 0;
@@ -213,40 +221,52 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                 //if it is, we need to add it to the filter text
                 //if it isnt, do nothing
                 let addedIndex = this.findUpdatedIndex(text);
-                let filterText = this.findWordFollowingSpecialCharacter(text);
-                for (let letter of text) {
-                    if (letter !== " ") {
-                        this.setState({
-                            entitySuggestFilterText: this.state.entitySuggestFilterText.concat(letter)
-                        })
-                    }
-                    pixels++;
+                if (addedIndex > this.state.dropdownIndex) {
+                    let filterText = this.findWordFollowingSpecialCharacter(text);
+                    this.setState({
+                        entitySuggestFilterText: filterText
+                    })
+                } else {
+                    console.log('new index', this.state.dropdownIndex + 1)
+                    this.setState({
+                        dropdownIndex: this.state.dropdownIndex + 1
+                    })
+                    //something was added before the dropdown index. it needs to be incremented by 1
                 }
             } else {
                 //we've deleted a letter and the dropdown is displayed. Need to determine if the letter was deleted from the entity string or not
                 //if it is, we need to remove it from the filter text
                 //if it isnt, do nothing
-                let deletedIndex: number = this.findUpdatedIndex(text);
-                console.log("DELETED", deletedIndex)
-                if (deletedIndex > this.state.dropdownIndex){
-                    console.log('deleted part of entity string')
-                } else if (deletedIndex == this.state.dropdownIndex){
+                let deletedIndex = this.findUpdatedIndex(text);
+                if (deletedIndex > this.state.dropdownIndex) {
+                    let filterText = this.findWordFollowingSpecialCharacter(text);
+                    this.setState({
+                        entitySuggestFilterText: filterText
+                    })
+                } else if (deletedIndex == this.state.dropdownIndex) {
+                    //need to determine if there is another $ or * in front of the deleted one. Initialize if not, re run this if so.
                     this.reInitializeDropdown();
+                } else {
+                    console.log('new index', this.state.dropdownIndex - 1)
+                    this.setState({
+                        dropdownIndex: this.state.dropdownIndex - 1
+                    })
+                    //something was deleted before the dropdown index. it needs to be decremented by 1
                 }
             }
         }
     }
 
-    findUpdatedIndex(text: string) : number {
-        let index: number = 0;
+    findUpdatedIndex(text: string): number {
         let current: string = this.state.payloadVal;
-        for (let i = 0; i < current.length; i++) {
-            console.log(current[i], text[i], i)
-            if (current[i] != text[i]) {
-                index = i;
+        let length = current.length > text.length ? current.length : text.length;
+        for (let i = 0; i < length; i++) {
+            console.log(current[i], text[i])
+            if (current[i] !== text[i]) {
+                console.log('updated index', i)
+                return i;
             }
         }
-        return index;
     }
 
     onFilterChanged(filterText: string, tagList: EntityPickerObject[]) {
@@ -294,7 +314,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
         let entitySuggestStyle: {};
         let entitySuggestObjects: {}[] = [];
         if (this.state.displayDropdown === true) {
-            console.log("Sugg", this.state.entitySuggestFilterText)
+            console.log("Filter Text", this.state.entitySuggestFilterText)
             let pixels: string = this.state.dropdownIndex.toString().concat("px");
             entitySuggestStyle = {
                 marginLeft: pixels,
