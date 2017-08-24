@@ -187,12 +187,11 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
     findWordFollowingSpecialCharacter(text: string) {
         let word: string = "";
         let current: string = this.state.payloadVal;
-        for (let i = this.state.dropdownIndex; i < text.length; i++) {
+        for (let i = this.state.dropdownIndex + 1; i < text.length; i++) {
             if (text[i] !== " ") {
                 word += text[i]
             }
         }
-        console.log('word', word)
         return word;
     }
     checkForSpecialCharacters(text: string) {
@@ -227,7 +226,6 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                         entitySuggestFilterText: filterText
                     })
                 } else {
-                    console.log('new index', this.state.dropdownIndex + 1)
                     this.setState({
                         dropdownIndex: this.state.dropdownIndex + 1
                     })
@@ -247,7 +245,6 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                     //need to determine if there is another $ or * in front of the deleted one. Initialize if not, re run this if so.
                     this.reInitializeDropdown();
                 } else {
-                    console.log('new index', this.state.dropdownIndex - 1)
                     this.setState({
                         dropdownIndex: this.state.dropdownIndex - 1
                     })
@@ -261,9 +258,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
         let current: string = this.state.payloadVal;
         let length = current.length > text.length ? current.length : text.length;
         for (let i = 0; i < length; i++) {
-            console.log(current[i], text[i])
             if (current[i] !== text[i]) {
-                console.log('updated index', i)
                 return i;
             }
         }
@@ -312,15 +307,22 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
     }
     render() {
         let entitySuggestStyle: {};
-        let entitySuggestObjects: {}[] = [];
+        let entitySuggestOptions: {}[] = [];
         if (this.state.displayDropdown === true) {
-            console.log("Filter Text", this.state.entitySuggestFilterText)
-            let pixels: string = this.state.dropdownIndex.toString().concat("px");
+            let index = this.state.dropdownIndex * 5;
+            let pixels: string = index.toString().concat("px");
             entitySuggestStyle = {
                 marginLeft: pixels,
                 marginTop: "-7px",
                 maxWidth: "12em"
             }
+            let entities: EntityBase[] = this.props.entities.filter((e: EntityBase) => e.entityName.toLowerCase().includes(this.state.entitySuggestFilterText.toLowerCase()));
+            entitySuggestOptions = entities.map((e: EntityBase) => {
+                return {
+                    key: e.entityName,
+                    text: e.entityName
+                }
+            })
         } else {
             entitySuggestStyle = {
                 display: "none"
@@ -378,7 +380,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                             placeholder="Payload..."
                             value={this.state.payloadVal} />
                         <Dropdown
-                            options={actionTypeOptions}
+                            options={entitySuggestOptions}
                             selectedKey={this.state.actionTypeVal}
                             style={entitySuggestStyle}
                         />
