@@ -195,42 +195,41 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
         })
     }
     payloadChanged(text: string) {
-        this.updateSpecialCharIndexesToDisregard(text);
-        this.checkForSpecialCharacters(text)
+        let specialIndexes = this.updateSpecialCharIndexesToDisregard(text);
+        this.checkForSpecialCharacters(text, specialIndexes);
         this.setState({
             payloadVal: text
         })
     }
-    updateSpecialCharIndexesToDisregard(newPayload: string){
+    updateSpecialCharIndexesToDisregard(newPayload: string): number[] {
+        let indexesToSet: number[];
         let updatedIndex = this.findUpdatedIndex(newPayload);
-        if(newPayload.length > this.state.payloadVal.length){
+        if (newPayload.length > this.state.payloadVal.length) {
             //we added a letter. Find which index was updated. Increment every index in the current special indexes array >= to the updated index
-            let indexesToSet: number[] = this.state.specialCharIndexesToDisregard.map((i: number) => {
-                if(i >= updatedIndex){
+            indexesToSet = this.state.specialCharIndexesToDisregard.map((i: number) => {
+                if (i >= updatedIndex) {
                     return i + 1;
                 } else {
                     return i;
                 }
             })
-            this.setState({
-                specialCharIndexesToDisregard: indexesToSet
-            }) 
         } else {
             //we deleted a letter. Find which index was updated. Decrement every index in the current special indexes array <= to the updated index
             //If the character deleted was actually one of the special characters, remove it from the array.
-            let indexesToSet: number[] = this.state.specialCharIndexesToDisregard.map((i: number) => {
-                if(i >= updatedIndex){
+            indexesToSet = this.state.specialCharIndexesToDisregard.map((i: number) => {
+                if (i >= updatedIndex) {
                     return i - 1;
-                } else if (i == updatedIndex){
+                } else if (i == updatedIndex) {
                     //do nothing. We dont want this number anymore
                 } else {
                     return i
                 }
             })
-            this.setState({
-                specialCharIndexesToDisregard: indexesToSet
-            })
         }
+        this.setState({
+            specialCharIndexesToDisregard: indexesToSet
+        })
+        return indexesToSet;
     }
     findWordFollowingSpecialCharacter(text: string): string {
         let word: string = "";
@@ -244,13 +243,16 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
         }
         return word;
     }
-    checkForSpecialCharacters(text: string) {
+    checkForSpecialCharacters(text: string, specialIndexes: number[]) {
+        console.log('checking')
         let pixels: number = 0;
         if (this.state.displayDropdown === false) {
+            console.log('no dropdown')
             //we only care about $ and * if dropdown isnt displayed yet
             for (let letter of text) {
                 if (letter === "$") {
-                    let indexFound: number = this.state.specialCharIndexesToDisregard.find(i => i == pixels);
+                    console.log('found $', pixels, specialIndexes)
+                    let indexFound: number = specialIndexes.find(i => i == pixels);
                     if (!indexFound) {
                         this.setState({
                             displayDropdown: true,
@@ -259,7 +261,8 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                         })
                     }
                 } else if (letter === "*") {
-                    let indexFound: number = this.state.specialCharIndexesToDisregard.find(i => i == pixels);
+                    console.log('found *', pixels, specialIndexes)
+                    let indexFound: number = specialIndexes.find(i => i == pixels);
                     if (!indexFound) {
                         this.setState({
                             displayDropdown: true,
@@ -386,12 +389,14 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
         return word;
     }
     entitySuggestionSelected(obj: { text: string }) {
+        let specialIndexes: number[] = [];
         if (this.state.requiredEntity == true) {
             //dont add the entity if weve already manually entered it into the required picker
             let foundEntityPickerObj: EntityPickerObject = this.state.reqEntitiesVal.find((e: EntityPickerObject) => e.name == obj.text);
-            let newRequiredEntities =  foundEntityPickerObj ? this.state.reqEntitiesVal : [...this.state.reqEntitiesVal, obj];
+            let newRequiredEntities = foundEntityPickerObj ? this.state.reqEntitiesVal : [...this.state.reqEntitiesVal, obj];
+            specialIndexes = [...this.state.specialCharIndexesToDisregard, this.state.dropdownIndex]
             this.setState({
-                specialCharIndexesToDisregard: [...this.state.specialCharIndexesToDisregard, this.state.dropdownIndex],
+                specialCharIndexesToDisregard: specialIndexes,
                 reqEntitiesVal: newRequiredEntities,
                 defaultRequiredEntities: newRequiredEntities,
                 entitySuggestFilterText: "",
@@ -402,9 +407,10 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
         } else {
             //dont add the entity if weve already manually entered it into the negative picker
             let foundEntityPickerObj: EntityPickerObject = this.state.negEntitiesVal.find((e: EntityPickerObject) => e.name == obj.text);
-            let newNegativeEntities =  foundEntityPickerObj ? this.state.negEntitiesVal : [...this.state.negEntitiesVal, obj];
+            let newNegativeEntities = foundEntityPickerObj ? this.state.negEntitiesVal : [...this.state.negEntitiesVal, obj];
+            specialIndexes = [...this.state.specialCharIndexesToDisregard, this.state.dropdownIndex]
             this.setState({
-                specialCharIndexesToDisregard: [...this.state.specialCharIndexesToDisregard, this.state.dropdownIndex],
+                specialCharIndexesToDisregard: specialIndexes,
                 negEntitiesVal: newNegativeEntities,
                 defaultNegativeEntities: newNegativeEntities,
                 entitySuggestFilterText: "",
@@ -415,7 +421,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
         }
         let newPayload = this.updatePayloadWithEntitySuggestion(obj.text);
         this.reInitializeDropdown();
-        this.checkForSpecialCharacters(newPayload);
+        this.checkForSpecialCharacters(newPayload, specialIndexes);
 
     }
     render() {
