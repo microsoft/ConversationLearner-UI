@@ -184,12 +184,14 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
             payloadVal: text
         })
     }
-    findWordFollowingSpecialCharacter(text: string) {
+    findWordFollowingSpecialCharacter(text: string): string {
         let word: string = "";
         let current: string = this.state.payloadVal;
         for (let i = this.state.dropdownIndex + 1; i < text.length; i++) {
-            if (text[i] !== " ") {
+            if (text[i] !== " " && text[i] !== "") {
                 word += text[i]
+            } else {
+                break;
             }
         }
         return word;
@@ -305,8 +307,32 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
             entityModalOpen: true
         })
     }
-    entitySuggestionSelected(obj: { text: string }){
-        if(this.state.requiredEntity == true){
+    findIndexOfLastCharacterFollowingSpecialCharacterPreSpace(): number {
+        let word: string = "";
+        let text: string = this.state.payloadVal;
+        let index: number = this.state.dropdownIndex;
+        for (let i = this.state.dropdownIndex + 1; i < text.length + 1; i++) {
+            if (text[i] !== " ") {
+                index = i;
+            } else {
+                break;
+            }
+        }
+        return index;
+    }
+    updatePayloadWithEntitySuggestion(entityName: string): string {
+        let charsPreSpecialCharacter: string = this.state.payloadVal.slice(0, this.state.dropdownIndex);
+        let newCharsWithSpecialChar: string = this.state.payloadVal[this.state.dropdownIndex] + entityName;
+        let lastCharFilterTextIndex = this.findIndexOfLastCharacterFollowingSpecialCharacterPreSpace()
+        let charsPostEntitySuggest: string = lastCharFilterTextIndex == (this.state.payloadVal.length - 1) ? "" : this.state.payloadVal.slice(lastCharFilterTextIndex + 1, this.state.payloadVal.length);
+        let word: string = charsPreSpecialCharacter.concat(newCharsWithSpecialChar).concat(charsPostEntitySuggest)
+        this.setState({
+            payloadVal: word
+        })
+        return word;
+    }
+    entitySuggestionSelected(obj: { text: string }) {
+        if (this.state.requiredEntity == true) {
             let newRequiredEntities = [...this.state.reqEntitiesVal, obj];
             this.setState({
                 reqEntitiesVal: newRequiredEntities
@@ -317,15 +343,16 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                 negEntitiesVal: newNegativeEntities
             })
         }
-        //replace the text after $ or * and before the next space, with text
-        //recheck for other special characters
+        let newPayload = this.updatePayloadWithEntitySuggestion(obj.text);
         this.reInitializeDropdown();
+        this.checkForSpecialCharacters(newPayload);
 
     }
     render() {
         let entitySuggestStyle: {};
         let entitySuggestOptions: {}[] = [];
         if (this.state.displayDropdown === true) {
+            console.log(this.state.entitySuggestFilterText)
             let index = this.state.dropdownIndex * 4;
             //we need to write some method that dynamically sets index depending on the letters before $ or * and the pixels each letter takes up
             let pixels: string = index.toString().concat("px");
