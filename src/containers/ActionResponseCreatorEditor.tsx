@@ -387,7 +387,9 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
     }
     entitySuggestionSelected(obj: { text: string }) {
         if (this.state.requiredEntity == true) {
-            let newRequiredEntities = [...this.state.reqEntitiesVal, obj];
+            //dont add the entity if weve already manually entered it into the required picker
+            let foundEntityPickerObj: EntityPickerObject = this.state.reqEntitiesVal.find((e: EntityPickerObject) => e.name == obj.text);
+            let newRequiredEntities =  foundEntityPickerObj ? this.state.reqEntitiesVal : [...this.state.reqEntitiesVal, obj];
             this.setState({
                 specialCharIndexesToDisregard: [...this.state.specialCharIndexesToDisregard, this.state.dropdownIndex],
                 reqEntitiesVal: newRequiredEntities,
@@ -398,7 +400,9 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                 negativeTagPickerKey: this.state.negativeTagPickerKey + 1
             })
         } else {
-            let newNegativeEntities = [...this.state.negEntitiesVal, obj];
+            //dont add the entity if weve already manually entered it into the negative picker
+            let foundEntityPickerObj: EntityPickerObject = this.state.negEntitiesVal.find((e: EntityPickerObject) => e.name == obj.text);
+            let newNegativeEntities =  foundEntityPickerObj ? this.state.negEntitiesVal : [...this.state.negEntitiesVal, obj];
             this.setState({
                 specialCharIndexesToDisregard: [...this.state.specialCharIndexesToDisregard, this.state.dropdownIndex],
                 negEntitiesVal: newNegativeEntities,
