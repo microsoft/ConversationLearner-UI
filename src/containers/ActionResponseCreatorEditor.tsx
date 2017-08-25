@@ -39,7 +39,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
         this.findWordFollowingSpecialCharacter = this.findWordFollowingSpecialCharacter.bind(this)
     }
     componentDidMount() {
-        this.reInitializeDropdown();
+        this.initializeDropdown();
     }
     componentWillReceiveProps(p: Props) {
         if (p.open === true && this.state.open === true) {
@@ -125,6 +125,15 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
             dropdownIndex: null,
             requiredEntity: true,
             entitySuggestFilterText: ""
+        });
+    }
+    initializeDropdown() {
+        this.setState({
+            displayDropdown: false,
+            dropdownIndex: null,
+            requiredEntity: true,
+            entitySuggestFilterText: "",
+            specialCharIndexesToDisregard:[]
         });
     }
     handleClose() {
@@ -335,11 +344,13 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
         if (this.state.requiredEntity == true) {
             let newRequiredEntities = [...this.state.reqEntitiesVal, obj];
             this.setState({
+                specialCharIndexesToDisregard: [...this.state.specialCharIndexesToDisregard, this.state.dropdownIndex],
                 reqEntitiesVal: newRequiredEntities
             })
         } else {
             let newNegativeEntities = [...this.state.negEntitiesVal, obj];
             this.setState({
+                specialCharIndexesToDisregard: [...this.state.specialCharIndexesToDisregard, this.state.dropdownIndex],
                 negEntitiesVal: newNegativeEntities
             })
         }
