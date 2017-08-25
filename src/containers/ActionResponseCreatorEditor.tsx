@@ -131,6 +131,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
         });
     }
     initializeDropdown() {
+        console.log("initializing")
         this.setState({
             displayDropdown: false,
             dropdownIndex: null,
@@ -140,8 +141,10 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
         });
     }
     handleClose() {
+        console.log("handleClose")
         this.setState({ ...initState });
         this.initializeDropdown();
+        this.props.handleClose(null);
     }
     createAction() {
         let currentAppId: string = this.props.blisApps.current.appId;
@@ -412,6 +415,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
 
     }
     render() {
+        console.log("STATE", this.state)
         let entitySuggestStyle: {};
         let entitySuggestOptions: {}[] = [];
         if (this.state.displayDropdown === true) {
@@ -541,7 +545,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                             data-automation-id='randomID7'
                             className="grayButton"
                             disabled={false}
-                            onClick={() => this.props.handleClose(null)}
+                            onClick={this.handleClose.bind(this)}
                             ariaDescription='Cancel'
                             text='Cancel'
                         />
