@@ -29,6 +29,8 @@ const initState = {
     defaultRequiredEntities: [] as EntityPickerObject[],
     entityModalOpen: false,
     open: false,
+    requiredTagPickerKey: 1,
+    negativeTagPickerKey: 100
 };
 
 class ActionResponseCreatorEditor extends React.Component<Props, any> {
@@ -133,7 +135,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
             dropdownIndex: null,
             requiredEntity: true,
             entitySuggestFilterText: "",
-            specialCharIndexesToDisregard:[]
+            specialCharIndexesToDisregard: []
         });
     }
     handleClose() {
@@ -343,15 +345,24 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
     entitySuggestionSelected(obj: { text: string }) {
         if (this.state.requiredEntity == true) {
             let newRequiredEntities = [...this.state.reqEntitiesVal, obj];
+            console.log('new', newRequiredEntities)
             this.setState({
                 specialCharIndexesToDisregard: [...this.state.specialCharIndexesToDisregard, this.state.dropdownIndex],
-                reqEntitiesVal: newRequiredEntities
+                reqEntitiesVal: newRequiredEntities,
+                defaultRequiredEntities: newRequiredEntities,
+                requiredTagPickerKey: this.state.requiredTagPickerKey + 1,
+                defaultNegativeEntities: this.state.negEntitiesVal,
+                negativeTagPickerKey: this.state.negativeTagPickerKey + 1
             })
         } else {
             let newNegativeEntities = [...this.state.negEntitiesVal, obj];
             this.setState({
                 specialCharIndexesToDisregard: [...this.state.specialCharIndexesToDisregard, this.state.dropdownIndex],
-                negEntitiesVal: newNegativeEntities
+                negEntitiesVal: newNegativeEntities,
+                defaultNegativeEntities: newNegativeEntities,
+                negativeTagPickerKey: this.state.negativeTagPickerKey + 1,
+                defaultRequiredEntities: this.state.reqEntitiesVal,
+                requiredTagPickerKey: this.state.requiredTagPickerKey + 1,
             })
         }
         let newPayload = this.updatePayloadWithEntitySuggestion(obj.text);
@@ -360,10 +371,10 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
 
     }
     render() {
+        console.log('STATE',this.state)
         let entitySuggestStyle: {};
         let entitySuggestOptions: {}[] = [];
         if (this.state.displayDropdown === true) {
-            console.log(this.state.entitySuggestFilterText)
             let index = this.state.dropdownIndex * 4;
             //we need to write some method that dynamically sets index depending on the letters before $ or * and the pixels each letter takes up
             let pixels: string = index.toString().concat("px");
@@ -446,6 +457,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                             onResolveSuggestions={this.onFilterChanged.bind(this)}
                             getTextFromItem={(item) => { return item.name; }}
                             onChange={this.handleChangeRequiredEntities.bind(this)}
+                            key={this.state.requiredTagPickerKey}
                             pickerSuggestionsProps={
                                 {
                                     suggestionsHeaderText: 'Entities',
@@ -459,6 +471,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                             onResolveSuggestions={this.onFilterChanged.bind(this)}
                             getTextFromItem={(item) => { return item.name; }}
                             onChange={this.handleChangeNegativeEntities.bind(this)}
+                            key={this.state.negativeTagPickerKey}
                             pickerSuggestionsProps={
                                 {
                                     suggestionsHeaderText: 'Entities',
