@@ -122,6 +122,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
         }
     }
     reInitializeDropdown() {
+        //this is used while the modal is still being edited, so we dont want to edit the special chars
         this.setState({
             displayDropdown: false,
             dropdownIndex: null,
@@ -140,6 +141,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
     }
     handleClose() {
         this.setState({ ...initState });
+        this.initializeDropdown();
     }
     createAction() {
         let currentAppId: string = this.props.blisApps.current.appId;
@@ -190,10 +192,42 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
         })
     }
     payloadChanged(text: string) {
+        this.updateSpecialCharIndexesToDisregard(text);
         this.checkForSpecialCharacters(text)
         this.setState({
             payloadVal: text
         })
+    }
+    updateSpecialCharIndexesToDisregard(newPayload: string){
+        let updatedIndex = this.findUpdatedIndex(newPayload);
+        if(newPayload.length > this.state.payloadVal.length){
+            //we added a letter. Find which index was updated. Increment every index in the current special indexes array >= to the updated index
+            let indexesToSet: number[] = this.state.specialCharIndexesToDisregard.map((i: number) => {
+                if(i >= updatedIndex){
+                    return i + 1;
+                } else {
+                    return i;
+                }
+            })
+            this.setState({
+                specialCharIndexesToDisregard: indexesToSet
+            }) 
+        } else {
+            //we deleted a letter. Find which index was updated. Decrement every index in the current special indexes array <= to the updated index
+            //If the character deleted was actually one of the special characters, remove it from the array.
+            let indexesToSet: number[] = this.state.specialCharIndexesToDisregard.map((i: number) => {
+                if(i >= updatedIndex){
+                    return i - 1;
+                } else if (i == updatedIndex){
+                    //do nothing. We dont want this number anymore
+                } else {
+                    return i
+                }
+            })
+            this.setState({
+                specialCharIndexesToDisregard: indexesToSet
+            })
+        }
     }
     findWordFollowingSpecialCharacter(text: string): string {
         let word: string = "";
