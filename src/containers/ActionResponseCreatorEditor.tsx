@@ -213,17 +213,23 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
             //we only care about $ and * if dropdown isnt displayed yet
             for (let letter of text) {
                 if (letter === "$") {
-                    this.setState({
-                        displayDropdown: true,
-                        dropdownIndex: pixels,
-                        requiredEntity: true
-                    })
+                    let indexFound: number = this.state.specialCharIndexesToDisregard.find(i => i == pixels);
+                    if (!indexFound) {
+                        this.setState({
+                            displayDropdown: true,
+                            dropdownIndex: pixels,
+                            requiredEntity: true
+                        })
+                    }
                 } else if (letter === "*") {
-                    this.setState({
-                        displayDropdown: true,
-                        dropdownIndex: pixels,
-                        requiredEntity: false
-                    })
+                    let indexFound: number = this.state.specialCharIndexesToDisregard.find(i => i == pixels);
+                    if (!indexFound) {
+                        this.setState({
+                            displayDropdown: true,
+                            dropdownIndex: pixels,
+                            requiredEntity: false
+                        })
+                    }
                 }
                 pixels++;
             }
@@ -345,11 +351,11 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
     entitySuggestionSelected(obj: { text: string }) {
         if (this.state.requiredEntity == true) {
             let newRequiredEntities = [...this.state.reqEntitiesVal, obj];
-            console.log('new', newRequiredEntities)
             this.setState({
                 specialCharIndexesToDisregard: [...this.state.specialCharIndexesToDisregard, this.state.dropdownIndex],
                 reqEntitiesVal: newRequiredEntities,
                 defaultRequiredEntities: newRequiredEntities,
+                entitySuggestFilterText: "",
                 requiredTagPickerKey: this.state.requiredTagPickerKey + 1,
                 defaultNegativeEntities: this.state.negEntitiesVal,
                 negativeTagPickerKey: this.state.negativeTagPickerKey + 1
@@ -360,6 +366,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                 specialCharIndexesToDisregard: [...this.state.specialCharIndexesToDisregard, this.state.dropdownIndex],
                 negEntitiesVal: newNegativeEntities,
                 defaultNegativeEntities: newNegativeEntities,
+                entitySuggestFilterText: "",
                 negativeTagPickerKey: this.state.negativeTagPickerKey + 1,
                 defaultRequiredEntities: this.state.reqEntitiesVal,
                 requiredTagPickerKey: this.state.requiredTagPickerKey + 1,
@@ -371,11 +378,10 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
 
     }
     render() {
-        console.log('STATE',this.state)
         let entitySuggestStyle: {};
         let entitySuggestOptions: {}[] = [];
         if (this.state.displayDropdown === true) {
-            let index = this.state.dropdownIndex * 4;
+            let index = this.state.dropdownIndex * 0;
             //we need to write some method that dynamically sets index depending on the letters before $ or * and the pixels each letter takes up
             let pixels: string = index.toString().concat("px");
             entitySuggestStyle = {
