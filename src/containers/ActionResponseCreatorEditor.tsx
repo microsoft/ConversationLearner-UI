@@ -305,11 +305,29 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
             entityModalOpen: true
         })
     }
+    entitySuggestionSelected(obj: { text: string }){
+        if(this.state.requiredEntity == true){
+            let newRequiredEntities = [...this.state.reqEntitiesVal, obj];
+            this.setState({
+                reqEntitiesVal: newRequiredEntities
+            })
+        } else {
+            let newNegativeEntities = [...this.state.negEntitiesVal, obj];
+            this.setState({
+                negEntitiesVal: newNegativeEntities
+            })
+        }
+        //replace the text after $ or * and before the next space, with text
+        //recheck for other special characters
+        this.reInitializeDropdown();
+
+    }
     render() {
         let entitySuggestStyle: {};
         let entitySuggestOptions: {}[] = [];
         if (this.state.displayDropdown === true) {
-            let index = this.state.dropdownIndex * 5;
+            let index = this.state.dropdownIndex * 4;
+            //we need to write some method that dynamically sets index depending on the letters before $ or * and the pixels each letter takes up
             let pixels: string = index.toString().concat("px");
             entitySuggestStyle = {
                 marginLeft: pixels,
@@ -383,6 +401,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                             options={entitySuggestOptions}
                             selectedKey={this.state.actionTypeVal}
                             style={entitySuggestStyle}
+                            onChanged={this.entitySuggestionSelected.bind(this)}
                         />
                         <Label>Required Entities</Label>
                         <TagPicker
