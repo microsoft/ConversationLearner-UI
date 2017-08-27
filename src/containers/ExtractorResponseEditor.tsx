@@ -37,9 +37,6 @@ const styles = {
     normal: {
         display: "block"
     },
-    labelDisplayed: {
-        display: "block"
-    },
     rightBracketDisplayedBlack: {
         display: "inline-block",
         marginLeft: "2px",
@@ -66,12 +63,10 @@ const styles = {
         marginLeft: "5px",
         textAlign: "center"
     },
-    textBlockDiv: {
-        display: "inline-block",
-        verticalAlign: "bottom"
-    },
     dropdownNormal: {
-        display: "block"
+        position: "absolute",
+        minWidth: "10em",
+        float: "left"
     }
 }
 
@@ -104,8 +99,7 @@ class ExtractorResponseEditor extends React.Component<any, any> {
     componentWillMount() {
         this.setInitialValues(this.props)
     }
-    componentDidUpdate()
-    {
+    componentDidUpdate() {
         this.setInitialValues(this.props)
     }
     setInitialValues(props: any) {
@@ -133,8 +127,8 @@ class ExtractorResponseEditor extends React.Component<any, any> {
                 predictions.push(predictedEntity);
             }
         })
-        let newExtractResponse = new ExtractResponse({text: this.state.input, predictedEntities: predictions});
-;
+        let newExtractResponse = new ExtractResponse({ text: this.state.input, predictedEntities: predictions });
+        ;
         this.props.updateExtractResponse(newExtractResponse)
         this.setState({
             predictedEntities: predictions
@@ -340,7 +334,7 @@ class ExtractorResponseEditor extends React.Component<any, any> {
                     leftBracketStyle: styles.leftBracketDisplayedBlack,
                     //dropdown Style is going to have to depend on some state object. When you click an substring group with an entity it needs to go from styles.hidden to styles.normal
                     dropdownStyle: styles.hidden,
-                    labelStyle: styles.labelDisplayed,
+                    labelStyle: styles.normal,
                     startIndex: i.start
                 }
                 substringObjects.push(substringObj)
@@ -592,7 +586,7 @@ class ExtractorResponseEditor extends React.Component<any, any> {
         if (substringClicked.entityId === null) {
             let currentlyClickedSubstrings = this.state.substringsClicked;
             if (this.state.substringsClicked.length == 1) {
-                let newClickedSubstringObject: SubstringObject = { ...substringClicked, entityName: entitySelected.entityName, entityId: entitySelected.entityId, dropdownStyle: styles.hidden, labelStyle: styles.labelDisplayed }
+                let newClickedSubstringObject: SubstringObject = { ...substringClicked, entityName: entitySelected.entityName, entityId: entitySelected.entityId, dropdownStyle: styles.hidden, labelStyle: styles.normal }
                 allObjects[indexOfClickedSubstring] = newClickedSubstringObject;
                 this.setState({
                     substringObjects: allObjects
@@ -614,7 +608,7 @@ class ExtractorResponseEditor extends React.Component<any, any> {
                     }
                 })
                 let newText = this.getFullStringBetweenSubstrings(left, right);
-                let newClickedSubstringObject = { ...left, rightBracketStyle: styles.rightBracketDisplayedBlack, entityName: entitySelected.entityName, entityId: entitySelected.entityId, dropdownStyle: styles.hidden, labelStyle: styles.labelDisplayed, text: newText };
+                let newClickedSubstringObject = { ...left, rightBracketStyle: styles.rightBracketDisplayedBlack, entityName: entitySelected.entityName, entityId: entitySelected.entityId, dropdownStyle: styles.hidden, labelStyle: styles.normal, text: newText };
                 allObjects = [...allObjectsBeforeLeftmost, newClickedSubstringObject, ...allObjectsAfterRightmost];
                 this.setState({
                     substringObjects: allObjects
@@ -656,23 +650,24 @@ class ExtractorResponseEditor extends React.Component<any, any> {
         return (
             <div key={key} style={styles.containerDiv}>
                 <span style={s.labelStyle} className='ms-font-s'>{s.entityName}</span>
-                <div style={styles.textBlockDiv}>
+                <div style={styles.normal}>
                     <span style={s.leftBracketStyle} className='ms-font-xxl'>[</span>
                     <span className='ms-font-xl' onClick={() => this.handleClick(s)} onMouseOver={() => this.handleHover(s)} onMouseLeave={() => this.handleHoverOut(s)}>{s.text}</span>
                     <span style={s.rightBracketStyle} className='ms-font-xxl'>]</span>
                 </div>
-                <Dropdown
-                    style={s.dropdownStyle}
-                    options={options}
-                    onChanged={(obj) => {
-                        this.entitySelected(obj, s)
-                    }}
-                />
+                <div style={s.dropdownStyle}>
+                    <Dropdown
+                        options={options}
+                        onChanged={(obj) => {
+                            this.entitySelected(obj, s)
+                        }}
+                    />
+                </div>
             </div>
         )
     }
     handleDeleteVariation() {
-        let removedResponse = new ExtractResponse({text: this.state.input, predictedEntities: []});
+        let removedResponse = new ExtractResponse({ text: this.state.input, predictedEntities: [] });
         this.props.removeExtractResponse(removedResponse);
         this.setState({
             variationValue: ''
