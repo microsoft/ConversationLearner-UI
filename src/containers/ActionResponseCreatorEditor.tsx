@@ -131,7 +131,6 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
         });
     }
     initializeDropdown() {
-        console.log("initializing")
         this.setState({
             displayDropdown: false,
             dropdownIndex: null,
@@ -141,7 +140,6 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
         });
     }
     handleClose() {
-        console.log("handleClose")
         this.setState({ ...initState });
         this.initializeDropdown();
         this.props.handleClose(null);

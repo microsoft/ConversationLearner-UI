@@ -375,7 +375,7 @@
   width: 100%
 }
 .teachVariationBox{
-  margin-top: 10px;
+  margin-top: 2em;
 }
 .teachAddVariation{
   overflow: hidden;
@@ -429,4 +429,7 @@
   width: 400px !important;
   bottom: 0;
   position: absolute;
+}
+.extractDiv:hover{
+  cursor: pointer
 }
