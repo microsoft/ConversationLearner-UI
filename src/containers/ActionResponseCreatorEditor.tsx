@@ -241,15 +241,12 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
         }
         return word;
     }
-    checkForSpecialCharacters(text: string, specialIndexes: number[]) {
-        console.log('checking')
+    checkForSpecialCharacters(text: string, specialIndexes: number[], dropdownRemoved?: boolean) {
         let pixels: number = 0;
-        if (this.state.displayDropdown === false) {
-            console.log('no dropdown')
+        if (this.state.displayDropdown === false || (dropdownRemoved && dropdownRemoved === true)) {
             //we only care about $ and * if dropdown isnt displayed yet
             for (let letter of text) {
                 if (letter === "$") {
-                    console.log('found $', pixels, specialIndexes)
                     let indexFound: number = specialIndexes.find(i => i == pixels);
                     if (!indexFound) {
                         this.setState({
@@ -259,7 +256,6 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                         })
                     }
                 } else if (letter === "*") {
-                    console.log('found *', pixels, specialIndexes)
                     let indexFound: number = specialIndexes.find(i => i == pixels);
                     if (!indexFound) {
                         this.setState({
@@ -419,11 +415,10 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
         }
         let newPayload = this.updatePayloadWithEntitySuggestion(obj.text);
         this.reInitializeDropdown();
-        this.checkForSpecialCharacters(newPayload, specialIndexes);
+        this.checkForSpecialCharacters(newPayload, specialIndexes, true);
 
     }
     render() {
-        console.log("STATE", this.state)
         let entitySuggestStyle: {};
         let entitySuggestOptions: {}[] = [];
         if (this.state.displayDropdown === true) {
