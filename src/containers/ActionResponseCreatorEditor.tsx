@@ -122,6 +122,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
         }
     }
     reInitializeDropdown() {
+        console.log("reinit")
         //this is used while the modal is still being edited, so we dont want to edit the special chars
         this.setState({
             displayDropdown: false,
@@ -241,15 +242,14 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
         }
         return word;
     }
-    checkForSpecialCharacters(text: string, specialIndexes: number[]) {
+    checkForSpecialCharacters(text: string, specialIndexes: number[], dropdownRemoved?: boolean) {
         console.log('checking')
         let pixels: number = 0;
-        if (this.state.displayDropdown === false) {
-            console.log('no dropdown')
+        if (this.state.displayDropdown === false || (dropdownRemoved && dropdownRemoved === true)) {
+            console.log('dropdown is NOT displayed')
             //we only care about $ and * if dropdown isnt displayed yet
             for (let letter of text) {
                 if (letter === "$") {
-                    console.log('found $', pixels, specialIndexes)
                     let indexFound: number = specialIndexes.find(i => i == pixels);
                     if (!indexFound) {
                         this.setState({
@@ -259,7 +259,6 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                         })
                     }
                 } else if (letter === "*") {
-                    console.log('found *', pixels, specialIndexes)
                     let indexFound: number = specialIndexes.find(i => i == pixels);
                     if (!indexFound) {
                         this.setState({
@@ -272,6 +271,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                 pixels++;
             }
         } else {
+            console.log('dropdown is displayed')
             if (this.state.payloadVal.length < text.length) {
                 //the dropdown is displayed and we've added a letter. We need to see if the letter added was after the $ or *
                 //if it is, we need to add it to the filter text
@@ -389,6 +389,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
     entitySuggestionSelected(obj: { text: string }) {
         let specialIndexes: number[] = [];
         if (this.state.requiredEntity == true) {
+            console.log('setting $')
             //dont add the entity if weve already manually entered it into the required picker
             let foundEntityPickerObj: EntityPickerObject = this.state.reqEntitiesVal.find((e: EntityPickerObject) => e.name == obj.text);
             let newRequiredEntities = foundEntityPickerObj ? this.state.reqEntitiesVal : [...this.state.reqEntitiesVal, obj];
@@ -403,6 +404,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                 negativeTagPickerKey: this.state.negativeTagPickerKey + 1
             })
         } else {
+            console.log('setting *')
             //dont add the entity if weve already manually entered it into the negative picker
             let foundEntityPickerObj: EntityPickerObject = this.state.negEntitiesVal.find((e: EntityPickerObject) => e.name == obj.text);
             let newNegativeEntities = foundEntityPickerObj ? this.state.negEntitiesVal : [...this.state.negEntitiesVal, obj];
@@ -419,7 +421,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
         }
         let newPayload = this.updatePayloadWithEntitySuggestion(obj.text);
         this.reInitializeDropdown();
-        this.checkForSpecialCharacters(newPayload, specialIndexes);
+        this.checkForSpecialCharacters(newPayload, specialIndexes, true);
 
     }
     render() {
