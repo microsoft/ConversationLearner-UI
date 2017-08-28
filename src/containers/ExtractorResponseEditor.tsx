@@ -64,9 +64,11 @@ const styles = {
         textAlign: "center"
     },
     dropdownNormal: {
+        marginTop:"5px",
         position: "absolute",
         minWidth: "10em",
-        float: "left"
+        float: "left",
+        textAlign: "left"
     }
 }
 
@@ -648,7 +650,7 @@ class ExtractorResponseEditor extends React.Component<any, any> {
             })
         }
         return (
-            <div key={key} style={styles.containerDiv}>
+            <div key={key} className="extractDiv" style={styles.containerDiv}>
                 <span style={s.labelStyle} className='ms-font-s'>{s.entityName}</span>
                 <div style={styles.normal}>
                     <span style={s.leftBracketStyle} className='ms-font-xxl'>[</span>
