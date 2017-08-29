@@ -136,7 +136,8 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
             dropdownIndex: null,
             requiredEntity: true,
             entitySuggestFilterText: "",
-            specialCharIndexesToDisregard: []
+            specialCharIndexesToDisregard: [],
+            numStars: 0
         });
     }
     handleClose() {
@@ -257,7 +258,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                     }
                 } else if (letter === "*") {
                     let indexFound: number = specialIndexes.find(i => i == pixels);
-                    if (!indexFound) {
+                    if (!indexFound && this.state.numStars == 0) {
                         this.setState({
                             displayDropdown: true,
                             dropdownIndex: pixels,
@@ -411,6 +412,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                 negativeTagPickerKey: this.state.negativeTagPickerKey + 1,
                 defaultRequiredEntities: this.state.reqEntitiesVal,
                 requiredTagPickerKey: this.state.requiredTagPickerKey + 1,
+                numStars: this.state.numStars + 1
             })
         }
         let newPayload = this.updatePayloadWithEntitySuggestion(obj.text);
