@@ -644,9 +644,9 @@ class ExtractorResponseEditor extends React.Component<any, any> {
             }
         })
         if (s.entityId !== null) {
-            options.push({
+            options.unshift({
                 key: "Remove",
-                text: "Remove"
+                text: "REMOVE"
             })
         }
         return (
