@@ -620,7 +620,7 @@ class ExtractorResponseEditor extends React.Component<any, any> {
                 substringsClicked: null
             })
         } else {
-            if (obj.text == 'Remove') {
+            if (obj.text.toLowerCase() == 'remove') {
                 let newClickedSubstringObject: SubstringObject = { ...substringClicked, entityName: null, entityId: null, dropdownStyle: styles.hidden, leftBracketStyle: styles.hidden, rightBracketStyle: styles.hidden }
                 allObjects[indexOfClickedSubstring] = newClickedSubstringObject;
                 this.setState({
