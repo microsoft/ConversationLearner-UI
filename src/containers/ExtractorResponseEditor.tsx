@@ -6,7 +6,7 @@ import { ExtractResponse, TrainExtractorStep, PredictedEntity, LabeledEntity, En
 import { updateExtractResponse, removeExtractResponse } from '../actions/teachActions';
 import { CommandButton } from 'office-ui-fabric-react';
 import { State } from '../types';
-import { TextField, Dropdown, Label } from 'office-ui-fabric-react'
+import { TextField, Dropdown, Label, IDropdownOption } from 'office-ui-fabric-react'
 
 interface PassedProps {
     extractResponse: ExtractResponse;
@@ -64,7 +64,7 @@ const styles = {
         textAlign: "center"
     },
     dropdownNormal: {
-        marginTop:"5px",
+        marginTop: "5px",
         position: "absolute",
         minWidth: "10em",
         float: "left",
@@ -636,13 +636,22 @@ class ExtractorResponseEditor extends React.Component<any, any> {
         }
         this.updateCurrentPredictedEntities(allObjects)
     }
-    renderSubstringObject(s: SubstringObject, key: number) {
-        let options = this.props.entities.map((e: EntityBase) => {
+    getAlphabetizedEntityOptions(): IDropdownOption[]{
+        let names: string[] = this.props.entities.map((e: EntityBase) => {
+            return e.entityName;
+        })
+        let ordered = names.sort();
+        let options: IDropdownOption[] = names.map((name: string) => {
+            let ent: EntityBase = this.props.entities.find((e: EntityBase) => e.entityName == name);
             return {
-                key: e.entityName,
-                text: e.entityName
+                key: ent.entityName,
+                text: ent.entityName
             }
         })
+        return options;
+    }
+    renderSubstringObject(s: SubstringObject, key: number) {
+        let options: IDropdownOption[] = this.getAlphabetizedEntityOptions();
         if (s.entityId !== null) {
             options.unshift({
                 key: "Remove",
