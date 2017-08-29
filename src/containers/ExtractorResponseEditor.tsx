@@ -6,7 +6,7 @@ import { ExtractResponse, TrainExtractorStep, PredictedEntity, LabeledEntity, En
 import { updateExtractResponse, removeExtractResponse } from '../actions/teachActions';
 import { CommandButton } from 'office-ui-fabric-react';
 import { State } from '../types';
-import { TextField, Dropdown, Label, IDropdownOption } from 'office-ui-fabric-react'
+import { TextField, Dropdown, Label, IDropdownOption, DropdownMenuItemType } from 'office-ui-fabric-react'
 
 interface PassedProps {
     extractResponse: ExtractResponse;
@@ -653,6 +653,11 @@ class ExtractorResponseEditor extends React.Component<any, any> {
     renderSubstringObject(s: SubstringObject, key: number) {
         let options: IDropdownOption[] = this.getAlphabetizedEntityOptions();
         if (s.entityId !== null) {
+            options.unshift({
+                key: "Divider",
+                text: "",
+                itemType: DropdownMenuItemType.Divider
+            })
             options.unshift({
                 key: "Remove",
                 text: "REMOVE"
