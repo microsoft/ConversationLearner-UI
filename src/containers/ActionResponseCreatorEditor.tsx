@@ -401,7 +401,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
         if (this.state.requiredEntity == true) {
             //dont add the entity if weve already manually entered it into the required picker
             let foundEntityPickerObj: EntityPickerObject = this.state.reqEntitiesVal.find((e: EntityPickerObject) => e.name == obj.text);
-            let newRequiredEntities = foundEntityPickerObj ? this.state.reqEntitiesVal : [...this.state.reqEntitiesVal, obj];
+            let newRequiredEntities: EntityPickerObject[] = foundEntityPickerObj ? this.state.reqEntitiesVal : [...this.state.reqEntitiesVal, {key: obj.text, name: obj.text}];
             specialIndexes = [...this.state.specialCharIndexesToDisregard, this.state.dropdownIndex]
             this.setState({
                 specialCharIndexesToDisregard: specialIndexes,
@@ -415,7 +415,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
         } else {
             //dont add the entity if weve already manually entered it into the negative picker
             let foundEntityPickerObj: EntityPickerObject = this.state.negEntitiesVal.find((e: EntityPickerObject) => e.name == obj.text);
-            let newNegativeEntities = foundEntityPickerObj ? this.state.negEntitiesVal : [...this.state.negEntitiesVal, obj];
+            let newNegativeEntities: EntityPickerObject[] = foundEntityPickerObj ? this.state.negEntitiesVal : [...this.state.negEntitiesVal, {key: obj.text, name: obj.text}];
             specialIndexes = [...this.state.specialCharIndexesToDisregard, this.state.dropdownIndex]
             this.setState({
                 specialCharIndexesToDisregard: specialIndexes,
