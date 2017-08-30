@@ -3,7 +3,7 @@ import { BlisAppBase, BlisAppMetaData, BlisAppList,
     ActionBase, ActionMetaData, ActionList, ActionTypes, 
     TrainDialog, LogDialog, Session, Teach,
     UserInput, TrainExtractorStep, ExtractResponse, UIExtractResponse, TrainScorerStep,
-    TeachResponse, UIScoreResponse } from 'blis-models'
+    TeachResponse, UIScoreInput, UIScoreResponse } from 'blis-models'
 import { DisplayMode } from '../types/const'
 import { AT } from '../types/ActionTypes'
 
@@ -294,24 +294,12 @@ export type TeachAction = {
 } | {
     type: AT.REMOVE_EXTRACT_RESPONSE,
     extractResponse: ExtractResponse
-}| {
-    type: AT.POST_EXTACT_FEEDBACK_ASYNC,
-    key: string,
-    appId: string,
-    teachId: string,
-    trainExtractorStep: TrainExtractorStep
-} | {
-    type: AT.POST_EXTACT_FEEDBACK_FULFILLED,
-    key: string,
-    appId: string,
-    teachId: string,
-    teachResponse: TeachResponse
 } | {
     type: AT.RUN_SCORER_ASYNC,
     key: string,
     appId: string,
     teachId: string,
-    extractResponse: ExtractResponse
+    uiScoreInput: UIScoreInput
 } | {
     type: AT.RUN_SCORER_FULFILLED,
     key: string,

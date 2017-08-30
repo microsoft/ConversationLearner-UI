@@ -71,7 +71,6 @@ const displayReducer: Reducer<DisplayState> =  (state = initialState, action: Ac
         case AT.FETCH_TEACH_SESSIONS_ASYNC:
 
         case AT.RUN_EXTRACTOR_ASYNC:
-        case AT.POST_EXTACT_FEEDBACK_ASYNC:
         case AT.RUN_SCORER_ASYNC:
         case AT.POST_SCORE_FEEDBACK_ASYNC:
             return {...state, displaySpinner: addSpinner(state.displaySpinner, action.type) };
@@ -98,7 +97,6 @@ const displayReducer: Reducer<DisplayState> =  (state = initialState, action: Ac
         case AT.FETCH_TEACH_SESSIONS_FULFILLED:
 
         case AT.RUN_EXTRACTOR_FULFILLED:
-        case AT.POST_EXTACT_FEEDBACK_FULFILLED:
         case AT.RUN_SCORER_FULFILLED:
         case AT.POST_SCORE_FEEDBACK_FULFILLED:
             return {...state, displaySpinner: removeSpinner(state.displaySpinner, action.type) };

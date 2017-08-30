@@ -7,7 +7,7 @@ import {
   UserInput,
   TrainDialog, LogDialog,
 	TrainExtractorStep, ExtractResponse, TrainScorerStep,
-	Session, Teach, UIExtractResponse, UIScoreResponse
+	Session, Teach, UIExtractResponse, UIScoreResponse, UIScoreInput
 } from 'blis-models'
 import * as Rx from 'rxjs';
 import { Observable, Observer } from 'rxjs'
@@ -15,7 +15,7 @@ import { fetchApplicationsFulfilled, fetchAllEntitiesFulfilled, fetchAllActionsF
 import { createApplicationFulfilled, createEntityFulfilled, createPositiveEntityFulfilled, createNegativeEntityFulfilled, createActionFulfilled, createChatSessionFulfilled, createTeachSessionFulfilled } from '../actions/createActions'
 import { deleteBLISApplicationFulfilled, deleteReverseEntityAsnyc, deleteEntityFulfilled, deleteActionFulfilled, deleteChatSessionFulfilled, deleteTeachSessionFulfilled, deleteLogDialogFulFilled, deleteTrainDialogFulfilled } from '../actions/deleteActions'
 import { editBLISApplicationFulfilled, editEntityFulfilled, editActionFulfilled } from '../actions/updateActions'
-import { runExtractorFulfilled, postExtractorFeedbackFulfilled, runScorerFulfilled, postScorerFeedbackFulfilled } from '../actions/teachActions'
+import { runExtractorFulfilled, runScorerFulfilled, postScorerFeedbackFulfilled } from '../actions/teachActions'
 import { setErrorDisplay, setCurrentBLISAppFulfilled } from '../actions/displayActions'
 import { ActionObject } from '../types'
 import { AT } from '../types/ActionTypes'
@@ -388,28 +388,18 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
             .catch(err => handleError(obs, err,  AT.RUN_EXTRACTOR_ASYNC)));
   };
 
-  /** EXTRACTION FEEDBACK: Uploads a labeled entity extraction instance
+  /** RUN SCORER: 
+   * 1) Uploads a labeled entity extraction instance
    * ie "commits" an entity extraction label, appending it to the teach session's
    * trainDialog, and advancing the dialog. This may yield produce a new package.
-   */
-  export const postExtraction = (key : string, appId : string, teachId: string, trainExtractorStep : TrainExtractorStep): Observable<ActionObject> => {
-    let addAppRoute: string = makeRoute(key, `app/${appId}/teach/${teachId}/extractor`);
-    return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.post(addAppRoute, trainExtractorStep, config)		
-      .then(response => {
-              obs.next(postExtractorFeedbackFulfilled(key, appId, teachId, response.data)); 
-              obs.complete();
-            })
-            .catch(err => handleError(obs, err,  AT.POST_EXTACT_FEEDBACK_ASYNC)));
-  };
-
-  /** RUN SCORER: Takes a turn and return distribution over actions.
+   * 2) Takes a turn and return distribution over actions.
    * If a more recent version of the package is 
    * available on the server, the session will first migrate to that newer version.  
    * This doesn't affect the trainDialog maintained by the teaching session.
    */
-  export const putScore = (key : string, appId: string, teachId: string, extractResponse: ExtractResponse): Observable<ActionObject> => {
+  export const putScore = (key : string, appId: string, teachId: string, uiScoreInput: UIScoreInput): Observable<ActionObject> => {
     let editAppRoute: string = makeRoute(key, `app/${appId}/teach/${teachId}/scorer`);
-    return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.put(editAppRoute, extractResponse, config)	
+    return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.put(editAppRoute, uiScoreInput, config)	
         .then(response => {
               obs.next(runScorerFulfilled(key, appId, teachId, response.data)); 
               obs.complete();
