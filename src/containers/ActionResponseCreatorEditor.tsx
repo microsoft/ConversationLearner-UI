@@ -10,6 +10,7 @@ import { TextFieldPlaceholder } from './TextFieldPlaceholder';
 import { ActionBase, ActionMetaData, ActionTypes, EntityBase, EntityMetaData } from 'blis-models'
 import { State } from '../types';
 import EntityCreatorEditor from './EntityCreatorEditor'
+import * as $ from 'jquery';
 
 interface EntityPickerObject {
     key: string
@@ -30,7 +31,8 @@ const initState = {
     entityModalOpen: false,
     open: false,
     requiredTagPickerKey: 1,
-    negativeTagPickerKey: 100
+    negativeTagPickerKey: 100,
+    focusedOnPayload: false
 };
 
 class ActionResponseCreatorEditor extends React.Component<Props, any> {
@@ -42,6 +44,17 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
     }
     componentDidMount() {
         this.initializeDropdown();
+    }
+    componentWillUpdate() {
+        let self = this;
+        $(document).ready(() => {
+            if (self.state.focusedOnPayload == false && self.state.open == true) {
+                $('#actionPayload').focus();
+                self.setState({
+                    focusedOnPayload: true
+                })
+            }
+        });
     }
     componentWillReceiveProps(p: Props) {
         if (p.open === true && this.state.open === true) {
@@ -136,7 +149,8 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
             dropdownIndex: null,
             requiredEntity: true,
             entitySuggestFilterText: "",
-            specialCharIndexesToDisregard: []
+            specialCharIndexesToDisregard: [],
+            numStars: 0
         });
     }
     handleClose() {
@@ -257,7 +271,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                     }
                 } else if (letter === "*") {
                     let indexFound: number = specialIndexes.find(i => i == pixels);
-                    if (!indexFound) {
+                    if (!indexFound && this.state.numStars == 0) {
                         this.setState({
                             displayDropdown: true,
                             dropdownIndex: pixels,
@@ -387,7 +401,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
         if (this.state.requiredEntity == true) {
             //dont add the entity if weve already manually entered it into the required picker
             let foundEntityPickerObj: EntityPickerObject = this.state.reqEntitiesVal.find((e: EntityPickerObject) => e.name == obj.text);
-            let newRequiredEntities = foundEntityPickerObj ? this.state.reqEntitiesVal : [...this.state.reqEntitiesVal, obj];
+            let newRequiredEntities: EntityPickerObject[] = foundEntityPickerObj ? this.state.reqEntitiesVal : [...this.state.reqEntitiesVal, {key: obj.text, name: obj.text}];
             specialIndexes = [...this.state.specialCharIndexesToDisregard, this.state.dropdownIndex]
             this.setState({
                 specialCharIndexesToDisregard: specialIndexes,
@@ -401,7 +415,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
         } else {
             //dont add the entity if weve already manually entered it into the negative picker
             let foundEntityPickerObj: EntityPickerObject = this.state.negEntitiesVal.find((e: EntityPickerObject) => e.name == obj.text);
-            let newNegativeEntities = foundEntityPickerObj ? this.state.negEntitiesVal : [...this.state.negEntitiesVal, obj];
+            let newNegativeEntities: EntityPickerObject[] = foundEntityPickerObj ? this.state.negEntitiesVal : [...this.state.negEntitiesVal, {key: obj.text, name: obj.text}];
             specialIndexes = [...this.state.specialCharIndexesToDisregard, this.state.dropdownIndex]
             this.setState({
                 specialCharIndexesToDisregard: specialIndexes,
@@ -411,6 +425,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                 negativeTagPickerKey: this.state.negativeTagPickerKey + 1,
                 defaultRequiredEntities: this.state.reqEntitiesVal,
                 requiredTagPickerKey: this.state.requiredTagPickerKey + 1,
+                numStars: this.state.numStars + 1
             })
         }
         let newPayload = this.updatePayloadWithEntitySuggestion(obj.text);
@@ -488,6 +503,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                             disabled={this.state.editing}
                         />
                         <TextFieldPlaceholder
+                            id={"actionPayload"}
                             onGetErrorMessage={this.checkPayload.bind(this)}
                             onChanged={this.payloadChanged.bind(this)}
                             label="Payload"

@@ -8,6 +8,6 @@ export interface TextFieldPlacehoderProps extends ITextFieldProps {
 
 export class TextFieldPlaceholder extends React.Component<TextFieldPlacehoderProps, any>{
     render() {
-        return <TextField {...this.props} />
+        return <TextField {...this.props}/>
     }
 }
