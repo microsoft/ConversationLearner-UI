@@ -4,7 +4,7 @@ import { ActionsObservable, Epic } from 'redux-observable'
 import { State, ActionObject } from '../types'
 import { AT } from '../types/ActionTypes'
 import { UserInput, TrainExtractorStep, ExtractResponse } from 'blis-models';
-import { putExtract, postExtraction, putScore, postScore } from "./apiHelpers";
+import { putExtract, putScore, postScore } from "./apiHelpers";
 
 export const runExtractorEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
     return action$.ofType(AT.RUN_EXTRACTOR_ASYNC)
@@ -13,17 +13,10 @@ export const runExtractorEpic: Epic<ActionObject, State> = (action$: ActionsObse
         );
 }
 
-export const extractorFeedbackEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
-    return action$.ofType(AT.POST_EXTACT_FEEDBACK_ASYNC)
-        .flatMap((action: any) =>
-            postExtraction(action.key, action.appId, action.teachId, action.trainExtractorStep)
-        );
-}
-
 export const runScorerEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
     return action$.ofType(AT.RUN_SCORER_ASYNC)
         .flatMap((action: any) =>
-            putScore(action.key, action.appId, action.teachId, action.extractResponse)
+            putScore(action.key, action.appId, action.teachId, action.uiScoreInput)
         );
 }
 

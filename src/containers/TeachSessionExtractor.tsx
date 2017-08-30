@@ -3,8 +3,8 @@ import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../types'
-import { ExtractResponse, TrainExtractorStep, PredictedEntity, LabeledEntity, TextVariation } from 'blis-models'
-import { postExtractorFeedbackAsync, runScorerAsync } from '../actions/teachActions';
+import { UIScoreInput, ExtractResponse, TrainExtractorStep, PredictedEntity, LabeledEntity, TextVariation } from 'blis-models'
+import { runScorerAsync } from '../actions/teachActions';
 import { CommandButton } from 'office-ui-fabric-react';
 import ExtractorTextVariationCreator from './ExtractorTextVariationCreator';
 import ExtractorResponseEditor from './ExtractorResponseEditor';
@@ -28,7 +28,7 @@ class TeachSessionExtractor extends React.Component<any, any> {
             entityModalOpen: true
         })
     }
-    sendFeedback() {
+    runScorer() {
         let textVariations : TextVariation[] = [];
         for (let extractResponse of this.props.teachSession.extractResponses)
             {
@@ -38,14 +38,11 @@ class TeachSessionExtractor extends React.Component<any, any> {
             textVariations: textVariations
         });
 
+        let uiScoreInput = new UIScoreInput({trainExtractorStep : trainExtractorStep, extractResponse : this.props.teachSession.extractResponses[0]});
+
         let appId: string = this.props.apps.current.appId;
         let teachId: string = this.props.teachSession.current.teachId;
-        this.props.postExtractorFeedback(this.props.user.key, appId, teachId, trainExtractorStep);
-    }
-    runScorer() {
-        let appId: string = this.props.apps.current.appId;
-        let teachId: string = this.props.teachSession.current.teachId;
-        this.props.runScorer(this.props.user.key, appId, teachId, this.props.teachSession.extractResponses[0]);
+        this.props.runScorer(this.props.user.key, appId, teachId, uiScoreInput);
     }
     render() {
         let extractDisplay = [];
@@ -63,14 +60,6 @@ class TeachSessionExtractor extends React.Component<any, any> {
                 </div>
 
                 <div>
-                    <CommandButton
-                        data-automation-id='randomID16'
-                        disabled={false}
-                        onClick={this.sendFeedback.bind(this)}
-                        className='ms-font-su goldButton teachSessionHeaderButton'
-                        ariaDescription='Send Extract Feedback'
-                        text='Send Extract Feedback'
-                    />
                     <CommandButton
                         data-automation-id='randomID16'
                         disabled={false}
@@ -96,7 +85,6 @@ class TeachSessionExtractor extends React.Component<any, any> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        postExtractorFeedback: postExtractorFeedbackAsync,
         runScorer: runScorerAsync
     }, dispatch);
 }
