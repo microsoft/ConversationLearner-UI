@@ -139,7 +139,7 @@ class ExtractorResponseEditor extends React.Component<any, any> {
             }
         })
         let newExtractResponse = new ExtractResponse({ text: this.state.input, predictedEntities: predictions });
-        ;
+        this.createSubstringObjects(this.state.input, predictions)
         this.props.updateExtractResponse(newExtractResponse)
         this.setState({
             predictedEntities: predictions
