@@ -161,7 +161,6 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
         this.props.handleClose(null);
     }
     createAction() {
-        console.log(this.state)
         let currentAppId: string = this.props.blisApps.current.appId;
         let requiredEntities = this.state.reqEntitiesVal.map((req: EntityPickerObject) => {
             let found: EntityBase = this.props.entities.find((e: EntityBase) => e.entityName == req.key)
