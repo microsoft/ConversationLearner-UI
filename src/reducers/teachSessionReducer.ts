@@ -1,6 +1,6 @@
 import { ActionObject, TeachSessionState } from '../types'
 import { Reducer } from 'redux'
-import { Teach, ExtractResponse } from 'blis-models'
+import { Teach, ExtractResponse, UnscoredAction, ScoreReason } from 'blis-models'
 import { TeachMode } from '../types/const'
 import { AT } from '../types/ActionTypes'
 
@@ -46,10 +46,28 @@ const teachSessionReducer: Reducer<any> = (state = initialState, action: ActionO
             // Remove existing extract response
             let remainingResponses : ExtractResponse[] = state.extractResponses.filter((e : ExtractResponse) => e.text != action.extractResponse.text);
             return {...state, mode: TeachMode.Extractor, extractResponses: remainingResponses};
-       case AT.RUN_SCORER_FULFILLED:
+        case AT.RUN_SCORER_FULFILLED:
             return {...state, mode: TeachMode.Scorer, memories: action.uiScoreResponse.memories, scoreInput: action.uiScoreResponse.scoreInput, scoreResponse: action.uiScoreResponse.scoreResponse};
         case AT.POST_SCORE_FEEDBACK_FULFILLED:
             return {...state, mode: TeachMode.Wait, scoreInput: null, scoreResponse: null, extractResponses: []};
+        case AT.CREATE_ACTION_FULFILLED:
+            // If action was created during scoring update available actions
+            if (state.scoreResponse)
+            {
+                let unscoredAction = new UnscoredAction({
+                    actionId : action.actionId,
+                    payload: action.action.payload,
+                    isTerminal : action.action.isTerminal,
+                    metadata: action.action.metadata,
+                    reason: ScoreReason.NotCalculated
+                });
+                let unscoredActions = [...state.scoreResponse.unscoredActions, unscoredAction];
+                let scoreResponse = {...state.scoreResponse, unscoredActions : unscoredActions};
+                return {...state, scoreResponse: scoreResponse};
+            }
+            else {
+                return state;
+            }
          default:
             return state;
     }
