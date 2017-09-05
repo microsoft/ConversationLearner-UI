@@ -207,6 +207,21 @@ class ExtractorResponseEditor extends React.Component<any, any> {
                 }
             }
         })
+        let substringObjects: SubstringObject[] = [];
+        if (indexGroups.length == 0 && input.length == 1) {
+            //single letter, would not be picked up by the loop below
+            let substringObj: SubstringObject = {
+                text: input,
+                entityName: null,
+                entityId: null,
+                rightBracketStyle: styles.rightBracketDisplayedWhite,
+                leftBracketStyle: styles.leftBracketDisplayedWhite,
+                dropdownStyle: styles.hidden,
+                labelStyle: styles.hidden,
+                startIndex: 0
+            }
+            substringObjects.push(substringObj)
+        }
         if (predictedEntities.length == 0) {
             let i: IndexGroup = {
                 start: 0,
@@ -215,7 +230,6 @@ class ExtractorResponseEditor extends React.Component<any, any> {
             }
             indexGroups.push(i)
         }
-        let substringObjects: SubstringObject[] = [];
         // run through the index groups but handle the entities and strings differently
         indexGroups.map((i: IndexGroup) => {
             if (i.entity === null) {
@@ -659,7 +673,6 @@ class ExtractorResponseEditor extends React.Component<any, any> {
         return options;
     }
     renderSubstringObject(s: SubstringObject, key: number) {
-        console.log(s)
         let options: IDropdownOption[] = this.getAlphabetizedEntityOptions();
         if (s.entityId !== null) {
             options.unshift({
