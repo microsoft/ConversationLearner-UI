@@ -143,7 +143,6 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
         this.setState({
             displayDropdown: false,
             dropdownIndex: null,
-            requiredEntity: true,
             entitySuggestFilterText: ""
         });
     }
@@ -151,7 +150,6 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
         this.setState({
             displayDropdown: false,
             dropdownIndex: null,
-            requiredEntity: true,
             entitySuggestFilterText: "",
             specialCharIndexesToDisregard: [],
             numStars: 0
@@ -163,6 +161,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
         this.props.handleClose(null);
     }
     createAction() {
+        console.log(this.state)
         let currentAppId: string = this.props.blisApps.current.appId;
         let requiredEntities = this.state.reqEntitiesVal.map((req: EntityPickerObject) => {
             let found: EntityBase = this.props.entities.find((e: EntityBase) => e.entityName == req.key)
@@ -262,24 +261,14 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
     checkForSpecialCharacters(text: string, specialIndexes: number[], dropdownRemoved?: boolean) {
         let pixels: number = 0;
         if (this.state.displayDropdown === false || (dropdownRemoved && dropdownRemoved === true)) {
-            //we only care about $ and * if dropdown isnt displayed yet
+            //we only care about $ if dropdown isnt displayed yet
             for (let letter of text) {
                 if (letter === "$") {
                     let indexFound: number = specialIndexes.find(i => i == pixels);
                     if (!indexFound) {
                         this.setState({
                             displayDropdown: true,
-                            dropdownIndex: pixels,
-                            requiredEntity: true
-                        })
-                    }
-                } else if (letter === "*") {
-                    let indexFound: number = specialIndexes.find(i => i == pixels);
-                    if (!indexFound && this.state.numStars == 0) {
-                        this.setState({
-                            displayDropdown: true,
-                            dropdownIndex: pixels,
-                            requiredEntity: false
+                            dropdownIndex: pixels
                         })
                     }
                 }
@@ -287,7 +276,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
             }
         } else {
             if (this.state.payloadVal.length < text.length) {
-                //the dropdown is displayed and we've added a letter. We need to see if the letter added was after the $ or *
+                //the dropdown is displayed and we've added a letter. We need to see if the letter added was after the $ 
                 //if it is, we need to add it to the filter text
                 //if it isnt, do nothing
                 let addedIndex = this.findUpdatedIndex(text);
@@ -313,7 +302,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                         entitySuggestFilterText: filterText
                     })
                 } else if (deletedIndex == this.state.dropdownIndex) {
-                    //need to determine if there is another $ or * in front of the deleted one. Initialize if not, re run this if so.
+                    //need to determine if there is another $ in front of the deleted one. Initialize if not, re run this if so.
                     this.reInitializeDropdown();
                 } else {
                     this.setState({
@@ -407,47 +396,29 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
     }
     entitySuggestionSelected(obj: { text: string }) {
         let specialIndexes: number[] = [];
-        if (this.state.requiredEntity == true) {
-            //dont add the entity if weve already manually entered it into the required picker
-            let foundEntityPickerObj: EntityPickerObject = this.state.reqEntitiesVal.find((e: EntityPickerObject) => e.name == obj.text);
-            let newRequiredEntities: EntityPickerObject[] = foundEntityPickerObj ? this.state.reqEntitiesVal : [...this.state.reqEntitiesVal, {key: obj.text, name: obj.text}];
-            specialIndexes = [...this.state.specialCharIndexesToDisregard, this.state.dropdownIndex]
-            this.setState({
-                specialCharIndexesToDisregard: specialIndexes,
-                reqEntitiesVal: newRequiredEntities,
-                defaultRequiredEntities: newRequiredEntities,
-                entitySuggestFilterText: "",
-                requiredTagPickerKey: this.state.requiredTagPickerKey + 1,
-                defaultNegativeEntities: this.state.negEntitiesVal,
-                negativeTagPickerKey: this.state.negativeTagPickerKey + 1
-            })
-        } else {
-            //dont add the entity if weve already manually entered it into the negative picker
-            let foundEntityPickerObj: EntityPickerObject = this.state.negEntitiesVal.find((e: EntityPickerObject) => e.name == obj.text);
-            let newNegativeEntities: EntityPickerObject[] = foundEntityPickerObj ? this.state.negEntitiesVal : [...this.state.negEntitiesVal, {key: obj.text, name: obj.text}];
-            specialIndexes = [...this.state.specialCharIndexesToDisregard, this.state.dropdownIndex]
-            this.setState({
-                specialCharIndexesToDisregard: specialIndexes,
-                negEntitiesVal: newNegativeEntities,
-                defaultNegativeEntities: newNegativeEntities,
-                entitySuggestFilterText: "",
-                negativeTagPickerKey: this.state.negativeTagPickerKey + 1,
-                defaultRequiredEntities: this.state.reqEntitiesVal,
-                requiredTagPickerKey: this.state.requiredTagPickerKey + 1,
-                numStars: this.state.numStars + 1
-            })
-        }
+        //dont add the entity if weve already manually entered it into the required picker
+        let foundEntityPickerObj: EntityPickerObject = this.state.reqEntitiesVal.find((e: EntityPickerObject) => e.name == obj.text);
+        let newRequiredEntities: EntityPickerObject[] = foundEntityPickerObj ? this.state.reqEntitiesVal : [...this.state.reqEntitiesVal, { key: obj.text, name: obj.text }];
+        specialIndexes = [...this.state.specialCharIndexesToDisregard, this.state.dropdownIndex]
+        this.setState({
+            specialCharIndexesToDisregard: specialIndexes,
+            reqEntitiesVal: newRequiredEntities,
+            defaultRequiredEntities: newRequiredEntities,
+            entitySuggestFilterText: "",
+            requiredTagPickerKey: this.state.requiredTagPickerKey + 1,
+            defaultNegativeEntities: this.state.negEntitiesVal,
+            negativeTagPickerKey: this.state.negativeTagPickerKey + 1
+        })
         let newPayload = this.updatePayloadWithEntitySuggestion(obj.text);
         this.reInitializeDropdown();
         this.checkForSpecialCharacters(newPayload, specialIndexes, true);
-
     }
     render() {
         let entitySuggestStyle: {};
         let entitySuggestOptions: {}[] = [];
         if (this.state.displayDropdown === true) {
             let index = this.state.dropdownIndex * 0;
-            //we need to write some method that dynamically sets index depending on the letters before $ or * and the pixels each letter takes up
+            //we need to write some method that dynamically sets index depending on the letters before $ and the pixels each letter takes up
             let pixels: string = index.toString().concat("px");
             entitySuggestStyle = {
                 marginLeft: pixels,
