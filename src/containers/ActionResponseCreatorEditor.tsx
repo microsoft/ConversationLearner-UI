@@ -29,12 +29,11 @@ const initState = {
     editing: false,
     defaultNegativeEntities: [] as EntityPickerObject[],
     defaultRequiredEntities: [] as EntityPickerObject[],
-    defaultSuggestedEntities: [] as EntityPickerObject[],
     entityModalOpen: false,
     open: false,
     requiredTagPickerKey: 1,
     negativeTagPickerKey: 100,
-    suggestedTagPickerKey: 100,
+    suggestedTagPickerKey: 200,
     focusedOnPayload: false
 };
 
@@ -565,7 +564,6 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                                     noResultsFoundText: 'No Entities Found'
                                 }
                             }
-                            defaultSelectedItems={this.state.defaultSuggestedEntities}
                         />
                         <Checkbox
                             label='Wait For Response?'
