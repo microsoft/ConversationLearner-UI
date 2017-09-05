@@ -11,6 +11,7 @@ import { TextField, Dropdown, Label, IDropdownOption, DropdownMenuItemType } fro
 interface PassedProps {
     extractResponse: ExtractResponse;
     isPrimary: boolean;
+    isValid: boolean;
 }
 
 interface SubstringObject {
@@ -715,6 +716,7 @@ class ExtractorResponseEditor extends React.Component<any, any> {
     }
     render() {
         let key: number = 0;
+        let boxClass = this.props.isValid ? 'extractorResponseBox' : 'extractorResponseBox extractorResponseBoxInvalid';
         let button = this.props.isPrimary ? null :
             <CommandButton
                 data-automation-id='randomID8'
@@ -728,7 +730,7 @@ class ExtractorResponseEditor extends React.Component<any, any> {
             <div className='teachVariationBox'>
                 {button}
                 <div className='teachAddVariation'>
-                    <div className="extractorResponseBox">
+                    <div className={boxClass}>
                         {this.state.substringObjects.map((s: SubstringObject) => {
                             return this.renderSubstringObject(s, ++key)
                         })}

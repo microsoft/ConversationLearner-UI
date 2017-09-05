@@ -38,9 +38,14 @@ const teachSessionReducer: Reducer<any> = (state = initialState, action: ActionO
             extractResponses.push(action.uiExtractResponse.extractResponse);
             return {...state, mode: TeachMode.Extractor, memories: action.uiExtractResponse.memories, extractResponses: extractResponses};
         case AT.UPDATE_EXTRACT_RESPONSE:
-            // Replace existing extract response (if any) with new one
-            let editedResponses : ExtractResponse[] = state.extractResponses.filter((e : ExtractResponse) => e.text != action.extractResponse.text);
-            editedResponses.push(action.extractResponse);
+            // Replace existing extract response (if any) with new one and maintain ordering
+            let index = state.extractResponses.findIndex((e : ExtractResponse) => e.text == action.extractResponse.text);
+            // Should never happen, but protect just in case
+            if (index < 0) {
+                return {...state};
+            }
+            let editedResponses = state.extractResponses.slice();
+            editedResponses[index] = action.extractResponse;
             return {...state, mode: TeachMode.Extractor, extractResponses: editedResponses};
         case AT.REMOVE_EXTRACT_RESPONSE:
             // Remove existing extract response

@@ -10,12 +10,14 @@ import ExtractorTextVariationCreator from './ExtractorTextVariationCreator';
 import ExtractorResponseEditor from './ExtractorResponseEditor';
 import EntityCreatorEditor from './EntityCreatorEditor';
 import { generateGUID } from '../Util'
+import PopUpMessage from '../components/PopUpMessage';
 
 class TeachSessionExtractor extends React.Component<any, any> {
     constructor(p: any) {
         super(p)
         this.state = {
-            entityModalOpen: false
+            entityModalOpen: false,
+            popUpOpen: false
         }
     }
     handleCloseEntityModal() {
@@ -28,7 +30,50 @@ class TeachSessionExtractor extends React.Component<any, any> {
             entityModalOpen: true
         })
     }
+    handleClosePopUpModal() {
+        this.setState({
+            popUpOpen: false
+        })
+    }
+    handleOpenPopUpModal() {
+        this.setState({
+            popUpOpen: true
+        })
+    }
+    /** Returns true is predicted entities match */
+    isValid(extractResponse : ExtractResponse) : boolean {
+        let primaryResponse = this.props.teachSession.extractResponses[0] as ExtractResponse;
+        let missing = primaryResponse.predictedEntities.filter(item => 
+            !extractResponse.predictedEntities.find(er => { return item.entityName == er.entityName }));
+
+        if (missing.length > 0) { 
+            return false;
+        }
+        missing = extractResponse.predictedEntities.filter(item => 
+            !primaryResponse.predictedEntities.find(er => { return item.entityName == er.entityName }));
+        if (missing.length > 0) { 
+            return false;
+        }
+        return true;
+    }
+    allValid() : boolean
+    {
+        for (let extractResponse of this.props.teachSession.extractResponses) {
+            if (extractResponse != this.props.teachSession.extractResponses[0])
+            {
+                if (!this.isValid(extractResponse))
+                    {
+                        return false;
+                    }
+            }
+        }
+        return true;
+    }
     runScorer() {
+        if (!this.allValid()) {
+            this.handleOpenPopUpModal();
+            return;
+        }
         let textVariations : TextVariation[] = [];
         for (let extractResponse of this.props.teachSession.extractResponses)
             {
@@ -49,7 +94,13 @@ class TeachSessionExtractor extends React.Component<any, any> {
         let key = 0;
         for (let extractResponse of this.props.teachSession.extractResponses)
             {
-                extractDisplay.push(<ExtractorResponseEditor key={key++} isPrimary={key==1} extractResponse={extractResponse}/>);
+                let isValid = true;
+                if (extractResponse != this.props.teachSession.extractResponses[0])
+                {
+                    isValid = this.isValid(extractResponse);
+                }
+                
+                extractDisplay.push(<ExtractorResponseEditor key={key++} isPrimary={key==1} isValid={isValid} extractResponse={extractResponse}/>);
             }
         return (
             <div className="content">
@@ -79,7 +130,8 @@ class TeachSessionExtractor extends React.Component<any, any> {
                     />
                     <EntityCreatorEditor open={this.state.entityModalOpen} entity={null} handleClose={this.handleCloseEntityModal.bind(this)} />
                 </div>
-            </div>
+                <PopUpMessage open={this.state.popUpOpen} onConfirm={() => this.handleClosePopUpModal()} title="Text variations must all have same tagged entities." />  
+            </div>                          
         )
     }
 }

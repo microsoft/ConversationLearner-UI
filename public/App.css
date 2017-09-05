@@ -424,6 +424,11 @@
     padding: 10px;
     margin-bottom: 10px;
 }
+.extractorResponseBoxInvalid{
+  border-style: solid;
+  border-width: 1px;
+  border-color: #ff0000;
+}
 .webchatwindow{
   height: 550px !important;
   width: 400px !important;
