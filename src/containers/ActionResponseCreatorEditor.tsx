@@ -10,7 +10,6 @@ import { TextFieldPlaceholder } from './TextFieldPlaceholder';
 import { ActionBase, ActionMetaData, ActionTypes, EntityBase, EntityMetaData } from 'blis-models'
 import { State } from '../types';
 import EntityCreatorEditor from './EntityCreatorEditor'
-import * as $ from 'jquery';
 
 interface EntityPickerObject {
     key: string
@@ -48,17 +47,6 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
     }
     componentDidMount() {
         this.initializeDropdown();
-    }
-    componentWillUpdate() {
-        let self = this;
-        $(document).ready(() => {
-            if (self.state.focusedOnPayload == false && self.state.open == true) {
-                $('#actionPayload').focus();
-                self.setState({
-                    focusedOnPayload: true
-                })
-            }
-        });
     }
     componentWillReceiveProps(p: Props) {
         if (p.open === true && this.state.open === true) {

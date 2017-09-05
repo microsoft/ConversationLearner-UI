@@ -84,13 +84,14 @@ export const deleteChatSessionFulfilled = (sessionGUID: string): ActionObject =>
     }
 }
 
-export const deleteTeachSessionAsync = (key: string, teachSession: Teach, currentAppId: string): ActionObject => {
+export const deleteTeachSessionAsync = (key: string, teachSession: Teach, currentAppId: string, save: boolean): ActionObject => {
     
     return {
         type: AT.DELETE_TEACH_SESSION_ASYNC,
         key: key,
         teachSession: teachSession,
-        currentAppId: currentAppId
+        currentAppId: currentAppId, 
+        save: save
     }
 }
 

@@ -44,7 +44,7 @@ export const deleteSessionEpic: Epic<ActionObject, State> = (action$: ActionsObs
 export const deleteTeachEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
     return action$.ofType(AT.DELETE_TEACH_SESSION_ASYNC)
         .flatMap((actionObject: any) =>
-            deleteTeachSession(actionObject.key, actionObject.currentAppId, actionObject.teachSession)
+            deleteTeachSession(actionObject.key, actionObject.currentAppId, actionObject.teachSession, actionObject.save)
         );
 }
 

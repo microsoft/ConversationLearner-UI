@@ -268,7 +268,8 @@ export type DeleteAction = {
         type: AT.DELETE_TEACH_SESSION_ASYNC,
         key: string,
         teachSession: Teach,
-        currentAppId: string
+        currentAppId: string,
+        save: boolean
     } | {
         type: AT.DELETE_TEACH_SESSION_FULFILLED,
         teachSessionGUID: string,
