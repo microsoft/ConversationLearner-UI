@@ -24,7 +24,7 @@ class SessionWindow extends React.Component<Props, any> {
     }
     handleAbandon() {
         let currentAppId: string = this.props.apps.current.appId;
-        this.props.deleteTeachSession(this.props.userKey, this.state.teachSession, currentAppId)
+        this.props.deleteTeachSession(this.props.userKey, this.state.teachSession, currentAppId, false)
     }
     render() {
         return (

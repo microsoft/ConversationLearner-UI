@@ -347,8 +347,8 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
             .catch(err => handleError(obs, err,  AT.CREATE_TEACH_SESSION)));;
   };
 
-  export const deleteTeachSession = (key : string, appId: string, teachSession: Teach): Observable<ActionObject> => {
-    let deleteTeachSessionRoute: string = makeRoute(key, `app/${appId}/teach/${teachSession.teachId}`);
+  export const deleteTeachSession = (key : string, appId: string, teachSession: Teach, save: boolean): Observable<ActionObject> => {
+    let deleteTeachSessionRoute: string = makeRoute(key, `app/${appId}/teach/${teachSession.teachId}?save=${save}`);
     return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.delete(deleteTeachSessionRoute, config)
       .then(response => {
               obs.next(deleteTeachSessionFulfilled(teachSession.teachId));

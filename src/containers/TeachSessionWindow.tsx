@@ -29,13 +29,12 @@ class TeachWindow extends React.Component<Props, any> {
     handleAbandon() {
         this.props.setDisplayMode(DisplayMode.AppAdmin);
         let currentAppId: string = this.props.apps.current.appId;
-        this.props.deleteTeachSession(this.props.user.key, this.props.teachSession.current, currentAppId);
-        // TODO: Still need to delete the associated training dialog.  This needs to be two steps
+        this.props.deleteTeachSession(this.props.user.key, this.props.teachSession.current, currentAppId, false); // False = abandon
     }
     handleSave() {
         this.props.setDisplayMode(DisplayMode.AppAdmin);
         let currentAppId: string = this.props.apps.current.appId;
-        this.props.deleteTeachSession(this.props.user.key, this.props.teachSession.current, currentAppId);
+        this.props.deleteTeachSession(this.props.user.key, this.props.teachSession.current, currentAppId, true); // True = save to train dialog
     }
     confirmDelete() {
         this.setState({

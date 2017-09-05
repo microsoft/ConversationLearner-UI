@@ -3,17 +3,11 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { returntypeof } from 'react-redux-typescript';
 import { State } from '../types'
-import { TrainScorerStep, ScoredBase, ActionBase, EntityBase, Memory, ScoreInput, ScoredAction, UnscoredAction } from 'blis-models';
+import { TrainScorerStep, ScoredBase, ActionBase, EntityBase, Memory, ScoreInput, ScoredAction, UnscoredAction, ScoreReason } from 'blis-models';
 import { postScorerFeedbackAsync } from '../actions/teachActions'
 import { CommandButton } from 'office-ui-fabric-react';
 import { IColumn, DetailsList, CheckboxVisibility } from 'office-ui-fabric-react';
 import ActionResponseCreatorEditor from './ActionResponseCreatorEditor'
-
-enum Reason 
-{
-    NotAvailable = "notAvailable",
-    NotScorable = "notScorable"
-}
 
 let columns: IColumn[] = [
     {
@@ -68,10 +62,6 @@ class TeachSessionScorer extends React.Component<Props, any> {
         this.setState({
             actionModalOpen: false
         })
-        if (newAction)
-        {
-            this.handleActionSelection(newAction.actionId);
-        }
     }
     handleOpenActionModal() {
         this.setState({
@@ -104,7 +94,7 @@ class TeachSessionScorer extends React.Component<Props, any> {
     getValue(memory: any, col: IColumn): any {
         let value = memory[col.fieldName]
         if (col.fieldName == "score" && !memory[col.fieldName]) {
-                if (memory["reason"] == Reason.NotAvailable) {
+                if (memory["reason"] == ScoreReason.NotAvailable) {
                     return -100;
                 }
                 else {  // notScorable
@@ -179,11 +169,38 @@ class TeachSessionScorer extends React.Component<Props, any> {
         }
         return response;
     }
+    calculateReason(actionId: string) {
+        let action = this.props.actions.filter((a : ActionBase) => a.actionId == actionId)[0];
+
+        // If action is null - there's a bug somewhere
+        if (!action) {
+            return ScoreReason.NotAvailable;
+        }
+
+        for (let entityId of action.requiredEntities) {
+            let found = this.entityInMemory(entityId);
+            if (!found.match) {
+                return ScoreReason.NotAvailable;
+            }
+        }
+        for (let entityId of action.negativeEntities) {
+            let found = this.entityInMemory(entityId);
+            let key = `${actionId}_${found.name}`
+            if (found.match) {
+                return ScoreReason.NotAvailable;
+            }
+        }
+        return ScoreReason.NotScorable;
+    }
     renderItemColumn(item?: any, index?: number, column?: IColumn) {
         let fieldContent = item[column.fieldName];
         switch (column.key) {
             case 'select':
-                if (item["reason"] == Reason.NotAvailable) {
+                let reason = item["reason"];
+                if (reason == ScoreReason.NotCalculated) {
+                    reason = this.calculateReason(item[column.fieldName]);
+                }
+                if (reason == ScoreReason.NotAvailable) {
                     return (
                         <div>
                             <a><span className="actionUnavailable ms-Icon ms-Icon--ChromeClose"></span></a>
