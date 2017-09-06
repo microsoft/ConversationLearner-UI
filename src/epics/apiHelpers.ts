@@ -175,7 +175,7 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
   export const createBlisAction = (key: string, action: ActionBase, appId: string): Observable<ActionObject> => {
     let addActionRoute: string = makeRoute(key, `app/${appId}/action`);
     //remove property from the object that the route will not accept
-    const { actionId, version, packageCreationId, packageDeletionId, ...actionToSend } = action
+    const { actionId, version, packageCreationId, packageDeletionId, ...actionToSend } = action;
     return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.post(addActionRoute, actionToSend, config).then(response => {
         let newActionId = response.data;
         obs.next(createActionFulfilled(action, newActionId));
