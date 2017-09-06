@@ -75,7 +75,7 @@ const styles = {
     dropdownNormal: {
         marginTop: "5px",
         position: "absolute",
-        minWidth: "10em",
+        minWidth: "12em",
         float: "left",
         textAlign: "left"
     }
@@ -690,7 +690,7 @@ class ExtractorResponseEditor extends React.Component<any, any> {
             })
             options.unshift({
                 key: "Remove",
-                text: "REMOVE"
+                text: "Remove"
             })
         }
         if (s.text != " ") {
@@ -704,7 +704,10 @@ class ExtractorResponseEditor extends React.Component<any, any> {
                     </div>
                     <div style={s.dropdownStyle}>
                         <Dropdown
+                            className='ms-font-m'
+                            placeHolder="Select an Entity"
                             options={options}
+                            selectedKey={null}
                             onChanged={(obj) => {
                                 this.entitySelected(obj, s)
                             }}
