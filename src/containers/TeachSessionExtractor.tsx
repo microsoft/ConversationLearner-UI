@@ -74,11 +74,11 @@ class TeachSessionExtractor extends React.Component<any, any> {
             this.handleOpenPopUpModal();
             return;
         }
+
         let textVariations : TextVariation[] = [];
-        for (let extractResponse of this.props.teachSession.extractResponses)
-            {
-                textVariations.push(new TextVariation({text : extractResponse.text, labelEntities: extractResponse.predictedEntity}));
-            }
+        for (let extractResponse of this.props.teachSession.extractResponses) {
+            textVariations.push(new TextVariation({text : extractResponse.text, labelEntities:extractResponse.predictedEntities}));
+        }
         let trainExtractorStep = new TrainExtractorStep({
             textVariations: textVariations
         });
