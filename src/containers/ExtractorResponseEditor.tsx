@@ -677,7 +677,7 @@ class ExtractorResponseEditor extends React.Component<any, any> {
         let allOptions: IDropdownOption[] = this.getAlphabetizedEntityOptions();
         let options: IDropdownOption[] = allOptions.filter((o: IDropdownOption) => {
             let found: PredictedEntity = this.state.predictedEntities.find((p: PredictedEntity) => p.entityName == o.text);
-            if (found && found.metadata.isBucket == false) {
+            if (found && (!found.metadata || found.metadata.isBucket == false)) {
                 return false;
             }
             return true;

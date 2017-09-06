@@ -175,11 +175,16 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
             let found: EntityBase = this.props.entities.find((e: EntityBase) => e.entityName == neg.key)
             return found.entityId
         })
-        let suggestedEntity = this.props.entities.find((e: EntityBase) => e.entityName == this.state.suggEntitiesVal[0].name);
+        let entitySuggestion = null;
+        if (this.state.suggEntitiesVal[0])
+        {
+            let suggestedEntity = this.props.entities.find((e: EntityBase) => e.entityName == this.state.suggEntitiesVal[0].name);
+            entitySuggestion =  new EntitySuggestion({entityId: suggestedEntity.entityId, entityName: suggestedEntity.entityName});
+        }
 
         let meta = new ActionMetaData({
             actionType: this.state.actionTypeVal,
-            entitySuggestion: new EntitySuggestion({entityId: suggestedEntity.entityId, entityName: suggestedEntity.entityName})
+            entitySuggestion: entitySuggestion
         })
         let actionToAdd = new ActionBase({
             payload: this.state.payloadVal,
