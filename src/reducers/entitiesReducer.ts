@@ -18,7 +18,7 @@ const entitiesReducer: Reducer<EntityState> =  (state = initialState, action: Ac
         case AT.CREATE_ENTITY_FULFILLED:
             let newEntity = {...action.entity, entityId: action.entityId};
             return [...state, newEntity];
-        case AT.CREATE_NEGATIVE_ENTITY_FULFILLED:
+        case AT.CREATE_ENTITY_FULFILLEDNEGATIVE:
             let entities: EntityBase[] = [action.positiveEntity, action.negativeEntity];
             return [...state, ...entities]
         case AT.DELETE_ENTITY_FULFILLED:
