@@ -46,6 +46,14 @@ let columns: IColumn[] = [
         isResizable: true
     },
     {
+        key: 'suggestedEntity',
+        name: 'Suggested Entity',
+        fieldName: 'metadata',
+        minWidth: 100,
+        maxWidth: 200,
+        isResizable: true
+    },
+    {
         key: 'wait',
         name: 'Wait',
         fieldName: 'isTerminal',
@@ -67,7 +75,7 @@ class ActionResponsesHomepage extends React.Component<Props, any> {
             createEditModalOpen: false,
             actionSelected: null,
             columns: columns,
-            sortColumn : null
+            sortColumn: null
         }
         this.renderEntityList = this.renderEntityList.bind(this)
     }
@@ -100,7 +108,7 @@ class ActionResponsesHomepage extends React.Component<Props, any> {
             createEditModalOpen: true
         })
     }
-    onColumnClick(event: any, column : any) {
+    onColumnClick(event: any, column: any) {
         let { sortedItems, columns } = this.state;
         let isSortedDescending = column.isSortedDescending;
 
@@ -120,7 +128,7 @@ class ActionResponsesHomepage extends React.Component<Props, any> {
 
                 return col;
             }),
-            sortColumn : column
+            sortColumn: column
         });
     }
     renderItemColumn(item?: any, index?: number, column?: IColumn) {
@@ -146,13 +154,20 @@ class ActionResponsesHomepage extends React.Component<Props, any> {
                 } else {
                     return <span className="ms-Icon ms-Icon--Remove notFoundIcon" aria-hidden="true"></span>;
                 }
+            case 'suggestedEntity':
+                let name = fieldContent.entitySuggestion.entityName ? fieldContent.entitySuggestion.entityName : "";
+                return (
+                    <div className='ms-ListItem is-selectable'>
+                        <span className='ms-ListItem-primaryText'>{name}</span>
+                    </div>
+                )
             case 'payload':
                 return <span className='ms-font-m-plus'><Link onClick={() => this.editSelectedAction(item)}>{fieldContent}</Link></span>;
             default:
                 return <span className='ms-font-m-plus'>{fieldContent}</span>;
         }
     }
-     renderEntityList(entityIDs: string[]) {
+    renderEntityList(entityIDs: string[]) {
         let entityObjects: EntityBase[];
         entityObjects = entityIDs.map((id: string) => {
             return this.props.entities.find((e: EntityBase) => e.entityId == id)
@@ -166,16 +181,15 @@ class ActionResponsesHomepage extends React.Component<Props, any> {
             />
         )
     }
-    getValue(entity: any, col: IColumn) : any
-    {
+    getValue(entity: any, col: IColumn): any {
         let value;
-        if(col.key == 'actionType') {
+        if (col.key == 'actionType') {
             value = entity.metadata.actionType;
         }
         else {
             value = entity[col.fieldName];
         }
-        
+
         if (typeof value == 'string' || value instanceof String) {
             return value.toLowerCase();
         }
@@ -204,8 +218,7 @@ class ActionResponsesHomepage extends React.Component<Props, any> {
             return match;
         })
 
-        if (this.state.sortColumn)
-        {
+        if (this.state.sortColumn) {
             // Sort the items.
             filteredActions = filteredActions.concat([]).sort((a: any, b: any) => {
                 let firstValue = this.getValue(a, this.state.sortColumn);
@@ -213,7 +226,7 @@ class ActionResponsesHomepage extends React.Component<Props, any> {
 
                 if (this.state.sortColumn.isSortedDescending) {
                     return firstValue > secondValue ? -1 : 1;
-                } 
+                }
                 else {
                     return firstValue > secondValue ? 1 : -1;
                 }
@@ -269,7 +282,7 @@ class ActionResponsesHomepage extends React.Component<Props, any> {
                     checkboxVisibility={CheckboxVisibility.hidden}
                     onRenderItemColumn={this.renderItemColumn}
                     onActiveItemChanged={(item) => this.editSelectedAction(item)}
-                    onColumnHeaderClick={ this.onColumnClick.bind(this) }
+                    onColumnHeaderClick={this.onColumnClick.bind(this)}
                 />
                 <ConfirmDeleteModal open={this.state.confirmDeleteActionModalOpen} onCancel={() => this.handleCloseDeleteModal()} onConfirm={() => this.deleteSelectedAction()} title="Are you sure you want to delete this action?" />
 
