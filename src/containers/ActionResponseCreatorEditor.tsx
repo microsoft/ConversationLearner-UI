@@ -29,11 +29,10 @@ const initState = {
     editing: false,
     defaultNegativeEntities: [] as EntityPickerObject[],
     defaultRequiredEntities: [] as EntityPickerObject[],
+    defaultSuggestedEntities: [] as EntityPickerObject[],
     entityModalOpen: false,
     open: false,
-    requiredTagPickerKey: 1,
-    negativeTagPickerKey: 100,
-    suggestedTagPickerKey: 200,
+    requiredTagPickerKey: 1000,
     focusedOnPayload: false
 };
 
@@ -84,16 +83,19 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                         name: found.entityName
                     }
                 })
-                let suggestedEntity = { 
-                    key: p.blisAction.metadata.entitySuggestion.entityName,
-                    name: p.blisAction.metadata.entitySuggestion.entityName,
+                let suggestedEntities: EntityPickerObject[] = []
+                if (p.blisAction.metadata.entitySuggestion && p.blisAction.metadata.entitySuggestion.entityName) {
+                    suggestedEntities.push({
+                        key: p.blisAction.metadata.entitySuggestion.entityName,
+                        name: p.blisAction.metadata.entitySuggestion.entityName,
+                    })
                 }
                 this.setState({
                     actionTypeVal: p.blisAction.metadata.actionType,
-                    suggEntitiesVal: [suggestedEntity],
                     payloadVal: p.blisAction.payload,
                     reqEntitiesVal: requiredEntities,
                     negEntitiesVal: negativeEntities,
+                    suggEntitiesVal: suggestedEntities,
                     waitVal: p.blisAction.isTerminal,
                     availableRequiredEntities: entities,
                     availableNegativeEntities: entities,
@@ -101,6 +103,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                     editing: true,
                     defaultNegativeEntities: negativeEntities,
                     defaultRequiredEntities: requiredEntities,
+                    defaultSuggestedEntities: suggestedEntities,
                     entityModalOpen: false,
                     open: p.open
                 })
@@ -175,16 +178,11 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
             let found: EntityBase = this.props.entities.find((e: EntityBase) => e.entityName == neg.key)
             return found.entityId
         })
-        let entitySuggestion = null;
-        if (this.state.suggEntitiesVal[0])
-        {
-            let suggestedEntity = this.props.entities.find((e: EntityBase) => e.entityName == this.state.suggEntitiesVal[0].name);
-            entitySuggestion =  new EntitySuggestion({entityId: suggestedEntity.entityId, entityName: suggestedEntity.entityName});
-        }
+        let suggestedEntity: EntityBase = this.state.suggEntitiesVal[0] ? this.props.entities.find((e: EntityBase) => e.entityName == this.state.suggEntitiesVal[0].name) : null;
 
         let meta = new ActionMetaData({
             actionType: this.state.actionTypeVal,
-            entitySuggestion: entitySuggestion
+            entitySuggestion: suggestedEntity ? new EntitySuggestion({ entityId: suggestedEntity.entityId, entityName: suggestedEntity.entityName }) : null
         })
         let actionToAdd = new ActionBase({
             payload: this.state.payloadVal,
@@ -350,6 +348,23 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
         })
         return entListToReturn;
     }
+    onFilterChangedSuggestedEntity(filterText: string, tagList: EntityPickerObject[]) {
+        if (this.state.suggEntitiesVal.length > 0) {
+            return [];
+        }
+        let entList = filterText ? this.state.availableRequiredEntities.filter((ent: EntityPickerObject) => ent.name.toLowerCase().indexOf(filterText.toLowerCase()) === 0).filter((item: EntityPickerObject) => !this.listContainsDocument(item, tagList)) : [];
+        let usedEntities = this.state.reqEntitiesVal.concat(this.state.negEntitiesVal).concat(this.state.suggEntitiesVal)
+        let entListToReturn = entList.filter((e: EntityPickerObject) => {
+            let decision: boolean = true;
+            usedEntities.map((u: EntityPickerObject) => {
+                if (e.key == u.key) {
+                    decision = false;
+                }
+            })
+            return decision;
+        })
+        return entListToReturn;
+    }
 
     listContainsDocument(tag: EntityPickerObject, tagList: EntityPickerObject[]) {
         if (!tagList || !tagList.length || tagList.length === 0) {
@@ -417,9 +432,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
             reqEntitiesVal: newRequiredEntities,
             defaultRequiredEntities: newRequiredEntities,
             entitySuggestFilterText: "",
-            requiredTagPickerKey: this.state.requiredTagPickerKey + 1,
-            defaultNegativeEntities: this.state.negEntitiesVal,
-            negativeTagPickerKey: this.state.negativeTagPickerKey + 1
+            requiredTagPickerKey: this.state.requiredTagPickerKey + 1
         })
         let newPayload = this.updatePayloadWithEntitySuggestion(obj.text);
         this.reInitializeDropdown();
@@ -526,7 +539,6 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                             onResolveSuggestions={this.onFilterChanged.bind(this)}
                             getTextFromItem={(item) => { return item.name; }}
                             onChange={this.handleChangeNegativeEntities.bind(this)}
-                            key={this.state.negativeTagPickerKey}
                             pickerSuggestionsProps={
                                 {
                                     suggestionsHeaderText: 'Entities',
@@ -537,7 +549,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                         />
                         <Label>Suggested Entities</Label>
                         <TagPicker
-                            onResolveSuggestions={this.onFilterChanged.bind(this)}
+                            onResolveSuggestions={this.onFilterChangedSuggestedEntity.bind(this)}
                             getTextFromItem={(item) => { return item.name; }}
                             onChange={this.handleChangeSuggestedEntities.bind(this)}
                             key={this.state.suggestedTagPickerKey}
@@ -547,6 +559,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                                     noResultsFoundText: 'No Entities Found'
                                 }
                             }
+                            defaultSelectedItems={this.state.defaultSuggestedEntities}
                         />
                         <Checkbox
                             label='Wait For Response?'
