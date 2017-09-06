@@ -7,7 +7,7 @@ import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { CommandButton, Dialog, DialogFooter, DialogType, ChoiceGroup, DefaultButton, Dropdown, TagPicker, Label, Checkbox } from 'office-ui-fabric-react';
 import { TextFieldPlaceholder } from './TextFieldPlaceholder';
-import { ActionBase, ActionMetaData, ActionTypes, EntityBase, EntityMetaData } from 'blis-models'
+import { ActionBase, ActionMetaData, ActionTypes, EntityBase, EntityMetaData, EntitySuggestion } from 'blis-models'
 import { State } from '../types';
 import EntityCreatorEditor from './EntityCreatorEditor'
 
@@ -84,8 +84,13 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                         name: found.entityName
                     }
                 })
+                let suggestedEntity = { 
+                    key: p.blisAction.metadata.entitySuggestion.entityName,
+                    name: p.blisAction.metadata.entitySuggestion.entityName,
+                }
                 this.setState({
                     actionTypeVal: p.blisAction.metadata.actionType,
+                    suggEntitiesVal: [suggestedEntity],
                     payloadVal: p.blisAction.payload,
                     reqEntitiesVal: requiredEntities,
                     negEntitiesVal: negativeEntities,
@@ -170,8 +175,11 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
             let found: EntityBase = this.props.entities.find((e: EntityBase) => e.entityName == neg.key)
             return found.entityId
         })
+        let suggestedEntity = this.props.entities.find((e: EntityBase) => e.entityName == this.state.suggEntitiesVal[0].name);
+
         let meta = new ActionMetaData({
-            actionType: this.state.actionTypeVal
+            actionType: this.state.actionTypeVal,
+            entitySuggestion: new EntitySuggestion({entityId: suggestedEntity.entityId, entityName: suggestedEntity.entityName})
         })
         let actionToAdd = new ActionBase({
             payload: this.state.payloadVal,
