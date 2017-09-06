@@ -167,9 +167,9 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
         else {
           obs.next(createPositiveEntityFulfilled(key, entity, newEntityId, appId));
         }
-              obs.complete();
-            })
-            .catch(err => handleError(obs, err,  AT.CREATE_ENTITY_ASYNC)));
+        obs.complete();
+      })
+      .catch(err => handleError(obs, err,  AT.CREATE_ENTITY_ASYNC)));
   };
 
   export const createBlisAction = (key: string, action: ActionBase, appId: string): Observable<ActionObject> => {

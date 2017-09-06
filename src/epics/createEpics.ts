@@ -29,7 +29,7 @@ export const createNewEntityEpic: Epic<ActionObject, State> = (action$: ActionsO
 }
 
 export const createNegativeEntity: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
-    return action$.ofType(AT.CREATE_POSITIVE_ENTITY_FULFILLED)
+    return action$.ofType(AT.CREATE_ENTITY_FULFILLEDPOSITIVE)
         .flatMap((action: any) =>
             createBlisEntity(action.key, action.negativeEntity, action.currentAppId, action.positiveEntity)
         );

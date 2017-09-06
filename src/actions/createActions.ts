@@ -42,7 +42,7 @@ export const createEntityFulfilled = (entity: EntityBase, entityId: string): Act
 export const createPositiveEntityFulfilled = (key: string, positiveEntity: EntityBase, positiveEntityId: string, currentAppId: string): ActionObject => {
     let negativeEntity: EntityBase = {...positiveEntity, entityName: `~${positiveEntity.entityName}`, metadata: {...positiveEntity.metadata, positiveId: positiveEntityId}} as EntityBase;
     return { 
-        type: AT.CREATE_POSITIVE_ENTITY_FULFILLED,
+        type: AT.CREATE_ENTITY_FULFILLEDPOSITIVE,
         key: key,
         negativeEntity: negativeEntity,
         positiveEntity: positiveEntity,
@@ -57,7 +57,7 @@ export const createNegativeEntityFulfilled = (key: string, positiveEntity: Entit
     negativeEntity.entityId = negativeEntityId;
     //send both to store to be saved locally, and send the positive entity back to the service to update its metadata
     return {
-        type: AT.CREATE_NEGATIVE_ENTITY_FULFILLED,
+        type: AT.CREATE_ENTITY_FULFILLEDNEGATIVE,
         key: key,
         positiveEntity: posEntity,
         negativeEntity: negativeEntity,

@@ -57,7 +57,6 @@ const displayReducer: Reducer<DisplayState> =  (state = initialState, action: Ac
         case AT.DELETE_BLIS_APPLICATION_ASYNC:
         case AT.DELETE_CHAT_SESSION_ASYNC:
         case AT.DELETE_ENTITY_ASYNC:
-        case AT.DELETE_REVERSE_ENTITY_ASYNC:
         case AT.DELETE_TEACH_SESSION_ASYNC:
 
         case AT.EDIT_ACTION_ASYNC:
@@ -79,6 +78,8 @@ const displayReducer: Reducer<DisplayState> =  (state = initialState, action: Ac
         //case AT.CREATE_BLIS_APPLICATION_FULFILLED: Handled above
         case AT.CREATE_CHAT_SESSION_FULFILLED:
         case AT.CREATE_ENTITY_FULFILLED:
+        //case AT.CREATE_ENTITY_FULFILLEDNEGATIVE: Do not clear spinner until positive is complete
+        case AT.CREATE_ENTITY_FULFILLEDPOSITIVE:
 
         case AT.DELETE_ACTION_FULFILLED:
         case AT.DELETE_BLIS_APPLICATION_FULFILLED:

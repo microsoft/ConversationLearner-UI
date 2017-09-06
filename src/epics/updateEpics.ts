@@ -21,7 +21,7 @@ export const editActionEpic: Epic<ActionObject, State> = (action$: ActionsObserv
 }
 
 export const editEntityEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
-    return action$.ofType(AT.CREATE_NEGATIVE_ENTITY_FULFILLED)
+    return action$.ofType(AT.CREATE_ENTITY_FULFILLEDNEGATIVE)
         .flatMap((action: any) =>
             editBlisEntity(action.key, action.currentAppId, action.positiveEntity)
         );

@@ -182,13 +182,13 @@ export type CreateAction = {
         blisApp: BlisAppBase,
         blisAppId: string
     } | {
-        type: AT.CREATE_POSITIVE_ENTITY_FULFILLED,
+        type: AT.CREATE_ENTITY_FULFILLEDPOSITIVE,
         key: string,
         negativeEntity: EntityBase,
         positiveEntity: EntityBase,
         currentAppId: string
     } | {
-        type: AT.CREATE_NEGATIVE_ENTITY_FULFILLED,
+        type: AT.CREATE_ENTITY_FULFILLEDNEGATIVE,
         negativeEntity: EntityBase,
         positiveEntity: EntityBase,
         currentAppId: string
