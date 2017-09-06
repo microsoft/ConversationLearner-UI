@@ -75,7 +75,7 @@ const styles = {
     dropdownNormal: {
         marginTop: "5px",
         position: "absolute",
-        minWidth: "10em",
+        minWidth: "12em",
         float: "left",
         textAlign: "left"
     }
@@ -139,7 +139,7 @@ class ExtractorResponseEditor extends React.Component<any, any> {
             }
         })
         let newExtractResponse = new ExtractResponse({ text: this.state.input, predictedEntities: predictions });
-        ;
+        this.createSubstringObjects(this.state.input, predictions)
         this.props.updateExtractResponse(newExtractResponse)
         this.setState({
             predictedEntities: predictions
@@ -674,7 +674,14 @@ class ExtractorResponseEditor extends React.Component<any, any> {
         return options;
     }
     renderSubstringObject(s: SubstringObject, key: number) {
-        let options: IDropdownOption[] = this.getAlphabetizedEntityOptions();
+        let allOptions: IDropdownOption[] = this.getAlphabetizedEntityOptions();
+        let options: IDropdownOption[] = allOptions.filter((o: IDropdownOption) => {
+            let found: PredictedEntity = this.state.predictedEntities.find((p: PredictedEntity) => p.entityName == o.text);
+            if (found && found.metadata.isBucket == false) {
+                return false;
+            }
+            return true;
+        })
         if (s.entityId !== null) {
             options.unshift({
                 key: "Divider",
@@ -683,7 +690,7 @@ class ExtractorResponseEditor extends React.Component<any, any> {
             })
             options.unshift({
                 key: "Remove",
-                text: "REMOVE"
+                text: "Remove"
             })
         }
         if (s.text != " ") {
@@ -692,12 +699,15 @@ class ExtractorResponseEditor extends React.Component<any, any> {
                     <span style={s.labelStyle} className='ms-font-xs'>{s.entityName}</span>
                     <div style={styles.normal}>
                         <span style={s.leftBracketStyle} className='ms-font-xl'>[</span>
-                        <span className='ms-font-m-plus' onClick={() => this.handleClick(s)} onMouseOver={() => this.handleHover(s)} onMouseLeave={() => this.handleHoverOut(s)}>{s.text}</span>
+                        <span className='ms-font-m' onClick={() => this.handleClick(s)} onMouseOver={() => this.handleHover(s)} onMouseLeave={() => this.handleHoverOut(s)}>{s.text}</span>
                         <span style={s.rightBracketStyle} className='ms-font-xl'>]</span>
                     </div>
                     <div style={s.dropdownStyle}>
                         <Dropdown
+                            className='ms-font-m'
+                            placeHolder="Select an Entity"
                             options={options}
+                            selectedKey={null}
                             onChanged={(obj) => {
                                 this.entitySelected(obj, s)
                             }}
