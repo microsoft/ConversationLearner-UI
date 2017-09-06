@@ -345,6 +345,23 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
         })
         return entListToReturn;
     }
+    onFilterChangedSuggestedEntity(filterText: string, tagList: EntityPickerObject[]) {
+        if(this.state.suggEntitiesVal.length > 0){
+            return [];
+        }
+        let entList = filterText ? this.state.availableRequiredEntities.filter((ent: EntityPickerObject) => ent.name.toLowerCase().indexOf(filterText.toLowerCase()) === 0).filter((item: EntityPickerObject) => !this.listContainsDocument(item, tagList)) : [];
+        let usedEntities = this.state.reqEntitiesVal.concat(this.state.negEntitiesVal).concat(this.state.suggEntitiesVal)
+        let entListToReturn = entList.filter((e: EntityPickerObject) => {
+            let decision: boolean = true;
+            usedEntities.map((u: EntityPickerObject) => {
+                if (e.key == u.key) {
+                    decision = false;
+                }
+            })
+            return decision;
+        })
+        return entListToReturn;
+    }
 
     listContainsDocument(tag: EntityPickerObject, tagList: EntityPickerObject[]) {
         if (!tagList || !tagList.length || tagList.length === 0) {
@@ -532,7 +549,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                         />
                         <Label>Suggested Entities</Label>
                         <TagPicker
-                            onResolveSuggestions={this.onFilterChanged.bind(this)}
+                            onResolveSuggestions={this.onFilterChangedSuggestedEntity.bind(this)}
                             getTextFromItem={(item) => { return item.name; }}
                             onChange={this.handleChangeSuggestedEntities.bind(this)}
                             key={this.state.suggestedTagPickerKey}
