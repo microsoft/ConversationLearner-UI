@@ -344,7 +344,7 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
         obs.next(createTeachSessionFulfilled(teachSession, newTeachSessionId));
               obs.complete();
             })
-            .catch(err => handleError(obs, err,  AT.CREATE_TEACH_SESSION)));;
+            .catch(err => handleError(obs, err,  AT.CREATE_TEACH_SESSION_ASYNC)));;
   };
 
   export const deleteTeachSession = (key : string, appId: string, teachSession: Teach, save: boolean): Observable<ActionObject> => {

@@ -29,7 +29,7 @@ const teachSessionReducer: Reducer<any> = (state = initialState, action: ActionO
             return newState;
         case AT.DELETE_TEACH_SESSION_FULFILLED:
             return { ...initialState, all: state.all.filter((t: Teach) => t.teachId !== action.teachSessionGUID) }
-        case AT.SET_CURRENT_TEACH_SESSION:
+        case AT.SET_CURRENT_TEACH_SESSION: // TODO - doesn't appear to do anything
             return { ...state, current: action.currentTeachSession };
         case AT.TEACH_MESSAGE_RECEIVED:
             return {...state, currentConversationStack: [...state.currentConversationStack, action.message], input: action.message, scoreInput: null, scoreResponse: null, extractResponses: []};

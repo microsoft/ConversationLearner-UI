@@ -21,10 +21,7 @@ class TeachWindow extends React.Component<Props, any> {
             teachSession: new Teach({})
         }
         let currentAppId: string = this.props.apps.current.appId;
-        this.props.createTeachSession(this.props.userKey, this.state.teachSession, currentAppId)
-        // this.props.deleteTeachSession(this.props.userKey, testTeachSession, currentAppId)
-        // this.props.setCurrentTeachSession(this.props.teachSessions.all.find((t: Teach) => t.teachId == ""))
-        //need to create a new teach session
+        this.props.createTeachSession(this.props.user.key, this.state.teachSession, currentAppId)
     }
     handleAbandon() {
         this.props.setDisplayMode(DisplayMode.AppAdmin);
@@ -68,8 +65,7 @@ class TeachWindow extends React.Component<Props, any> {
             <Modal
                 isOpen={this.props.error == null}
                 isBlocking={true}
-                containerClassName='teachModal'
-            >
+                containerClassName='teachModal'>
                 <div className="wc-gridContainer">
                     <div className="wc-gridWebchat">
                         <Webchat sessionType={"teach"} />
@@ -108,7 +104,6 @@ const mapDispatchToProps = (dispatch: any) => {
 const mapStateToProps = (state: State) => {
     return {
         teachSession: state.teachSessions,
-        userKey: state.user.key,
         apps: state.apps,
         user: state.user,
         error: state.error.error
