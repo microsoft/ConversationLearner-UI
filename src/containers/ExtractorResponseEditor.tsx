@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { ExtractResponse, TrainExtractorStep, PredictedEntity, LabeledEntity, EntityBase } from 'blis-models'
 import { updateExtractResponse, removeExtractResponse } from '../actions/teachActions';
-import { CommandButton } from 'office-ui-fabric-react';
+import { IconButton } from 'office-ui-fabric-react';
 import { State } from '../types';
 import { TextField, Dropdown, Label, IDropdownOption, DropdownMenuItemType } from 'office-ui-fabric-react'
 
@@ -728,12 +728,11 @@ class ExtractorResponseEditor extends React.Component<any, any> {
         let key: number = 0;
         let boxClass = this.props.isValid ? 'extractorResponseBox' : 'extractorResponseBox extractorResponseBoxInvalid';
         let button = this.props.isPrimary ? null :
-            <CommandButton
+            <IconButton
                 data-automation-id='randomID8'
                 className="orangeButton teachVariationButton"
                 onClick={this.handleDeleteVariation.bind(this)}
                 ariaDescription='Delete Variation'
-                text='Delete'
                 iconProps={{ iconName: 'ErrorBadge' }}
             />
         return (

@@ -14,7 +14,7 @@ const initialState: TeachSessionState = {
     extractResponses: [],
     scoreResponse: null,
     currentConversationStack: [], 
-    autoMode: false // TEMP
+    autoMode: false
 };
 
 const teachSessionReducer: Reducer<any> = (state = initialState, action: ActionObject) => {
@@ -32,7 +32,7 @@ const teachSessionReducer: Reducer<any> = (state = initialState, action: ActionO
         case AT.SET_CURRENT_TEACH_SESSION:
             return { ...state, current: action.currentTeachSession };
         case AT.TEACH_MESSAGE_RECEIVED:
-            return {...state, currentConversationStack: [...state.currentConversationStack, action.message], input: action.message};
+            return {...state, currentConversationStack: [...state.currentConversationStack, action.message], input: action.message, scoreInput: null, scoreResponse: null, extractResponses: []};
         case AT.RUN_EXTRACTOR_FULFILLED:
             // Replace existing extract response (if any) with new one
             let extractResponses : ExtractResponse[] = state.extractResponses.filter((e : ExtractResponse) => e.text != action.uiExtractResponse.extractResponse.text);
@@ -55,7 +55,7 @@ const teachSessionReducer: Reducer<any> = (state = initialState, action: ActionO
         case AT.RUN_SCORER_FULFILLED:
             return {...state, mode: TeachMode.Scorer, memories: action.uiScoreResponse.memories, scoreInput: action.uiScoreResponse.scoreInput, scoreResponse: action.uiScoreResponse.scoreResponse};
         case AT.POST_SCORE_FEEDBACK_FULFILLED:
-            return {...state, mode: TeachMode.Wait, scoreInput: null, scoreResponse: null, extractResponses: []};
+            return {...state, mode: TeachMode.Wait};
         case AT.CREATE_ACTION_FULFILLED:
             // If action was created during scoring update available actions
             if (state.scoreResponse)

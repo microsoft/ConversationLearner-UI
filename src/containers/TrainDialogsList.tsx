@@ -23,17 +23,17 @@ let columns: IColumn[] = [
         isResizable: true
     },
     {
-        key: 'turns',
-        name: 'Turns',
-        fieldName: 'dialog',
+        key: 'firstUtterance',
+        name: 'Last Utterance',
+        fieldName: 'firstUtterance',
         minWidth: 100,
         maxWidth: 200,
         isResizable: true
     },
     {
-        key: 'lastEdit',
-        name: 'Last Edit',
-        fieldName: 'lastEdit',
+        key: 'turns',
+        name: 'Turns',
+        fieldName: 'dialog',
         minWidth: 100,
         maxWidth: 200,
         isResizable: true
@@ -56,12 +56,36 @@ class TrainDialogsList extends React.Component<Props, any> {
         }
         this.handleSelection = this.handleSelection.bind(this)
     }
+    firstUtterance(item: any)
+    {
+        try {
+            return  item.rounds[0].extractorStep.textVariations[0].text;
+        }
+        catch (err) {
+            return "??";
+        }
+    }
+    lastUtterance(item: any)
+    {
+        try {
+            return  item.rounds[item.rounds.lenght-1].extractorStep.textVariations[0].text;
+        }
+        catch (err) {
+            return "??";
+        }
+    }
     renderItemColumn(item?: any, index?: number, column?: IColumn) {
         let self = this;
         let fieldContent = item[column.fieldName];
         switch (column.key) {
+            case 'firstUtterance': 
+                return <span className='ms-font-m-plus'>{this.firstUtterance(item)}</span>;
+            case 'lastUtterance': 
+                return <span className='ms-font-m-plus'>{this.lastUtterance(item)}</span>;
             case 'turns':
-                return <span className='ms-font-m-plus'>{fieldContent.turns.length}</span>;
+                return <span className='ms-font-m-plus'>{item.rounds.length}</span>;
+            case 'id':
+                return <span className='ms-font-m-plus'>{item.trainDialogId}</span>;
             default:
                 return <span className='ms-font-m-plus'>{fieldContent}</span>;
         }

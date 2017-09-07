@@ -239,6 +239,10 @@ class TeachSessionScorer extends React.Component<Props, any> {
         return <span className='ms-font-m-plus'>{fieldContent}</span>
     }
     renderScores(): ScoredBase[] {
+        if (!this.props.teachSession.scoreResponse) {
+            return null;
+        }
+
         let filteredScores = (this.props.teachSession.scoreResponse.scoredActions as ScoredBase[]).concat(this.props.teachSession.scoreResponse.unscoredActions) || [];
 
         if (this.state.sortColumn) {
@@ -260,9 +264,27 @@ class TeachSessionScorer extends React.Component<Props, any> {
     }
     render() {
         let scores = this.renderScores();
+        if (!scores) {
+            return null;
+        }
+
+        let noEdit =  (this.props.teachSession.autoMode || this.props.teachSession.mode != TeachMode.Scorer);    
+        let addAction = noEdit ? null : 
+            <CommandButton
+                data-automation-id='randomID8'
+                className="goldButton teachCreateButton"
+                disabled={false}
+                onClick={this.handleOpenActionModal.bind(this)}
+                ariaDescription='Cancel'
+                text='Action'
+                iconProps={{ iconName: 'CirclePlus' }}
+            />
         return (
             <div className='content'>
-                <div className='ms-font-xl'>Action Selection</div>
+                <div className='teachTitleBox'>
+                    <div className='ms-font-xl teachTitle'>Action Selection</div>
+                    {addAction}
+                </div>
                     <DetailsList
                         className="ms-font-m-plus"
                         items={scores}
@@ -271,17 +293,6 @@ class TeachSessionScorer extends React.Component<Props, any> {
                         onRenderItemColumn={this.renderItemColumn.bind(this)}
                         onColumnHeaderClick={ this.onColumnClick.bind(this) }
                     />
-                    <div className="modalFooter">
-                        <CommandButton
-                            data-automation-id='randomID8'
-                            className="goldButton scorerCreateActionButton"
-                            disabled={false}
-                            onClick={this.handleOpenActionModal.bind(this)}
-                            ariaDescription='Cancel'
-                            text='Action'
-                            iconProps={{ iconName: 'CirclePlus' }}
-                        />
-                    </div>
                     <ActionResponseCreatorEditor open={this.state.actionModalOpen} blisAction={null} handleClose={this.handleCloseActionModal.bind(this)} />
             </div>
         )

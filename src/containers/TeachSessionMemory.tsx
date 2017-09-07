@@ -106,17 +106,22 @@ class TeachSessionMemory extends React.Component<Props, any> {
     }
     render() {
         let memories = this.renderMemories();
+        let details = memories.length == 0 ? 
+            <div className='ms-font-l teachEmptyMemory'>Empty</div> :
+            <DetailsList
+                className="ms-font-m-plus"
+                items={memories}
+                columns={this.state.columns}
+                onColumnHeaderClick={ this.onColumnClick.bind(this)}
+                onRenderItemColumn={this.renderItemColumn.bind(this)}
+                checkboxVisibility={CheckboxVisibility.hidden}
+            />
         return (
             <div className='content'>
-                <div className='ms-font-xl'>Memory</div>
-                <DetailsList
-                        className="ms-font-m-plus"
-                        items={memories}
-                        columns={this.state.columns}
-                        onColumnHeaderClick={ this.onColumnClick.bind(this)}
-                        onRenderItemColumn={this.renderItemColumn.bind(this)}
-                        checkboxVisibility={CheckboxVisibility.hidden}
-                />
+                <div className='teachTitleBox'>
+                    <div className='ms-font-xl teachTitle'>Memory</div>
+                </div>
+                {details}
             </div>
         )
     }

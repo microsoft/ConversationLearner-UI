@@ -26,8 +26,17 @@ class TeachSessionAdmin extends React.Component<Props, any> {
                 )
                 break;
             case TeachMode.Scorer:
-                // If in auto mode show all windows
-                if (this.props.teachSession.autoMode) {
+                userWindow = (
+                    <div className="teachSessionModeContainer">
+                        <TeachSessionMemory className="teachSessionWindow" />
+                        <TeachSessionExtractor className="teachSessionWindow" />
+                        <TeachSessionScorer className="teachSessionWindow"  />
+                    </div>
+                    )
+                break;
+            default:
+                // If in auto mode show all windows as long as there's at least one round
+                if (this.props.teachSession.autoMode && this.props.teachSession.currentConversationStack.length > 0) {
                     userWindow = (
                         <div className="teachSessionModeContainer">
                             <TeachSessionMemory className="teachSessionWindow" />
@@ -40,17 +49,9 @@ class TeachSessionAdmin extends React.Component<Props, any> {
                     userWindow = (
                         <div className="teachSessionModeContainer">
                             <TeachSessionMemory className="teachSessionWindow" />
-                            <TeachSessionScorer className="teachSessionWindow"  />
                         </div>
                     )
                 }
-                break;
-            default:
-                userWindow = (
-                    <div className="teachSessionModeContainer">
-                        <TeachSessionMemory className="teachSessionWindow" />
-                    </div>
-                )
                 break;
         }
         return (
