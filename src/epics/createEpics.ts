@@ -43,7 +43,7 @@ export const createNewChatSessionEpic: Epic<ActionObject, State> = (action$: Act
 }
 
 export const createNewTeachSessionEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
-    return action$.ofType(AT.CREATE_TEACH_SESSION)
+    return action$.ofType(AT.CREATE_TEACH_SESSION_ASYNC)
         .flatMap((actionObject: any) =>
             createTeachSession(actionObject.key, actionObject.teachSession, actionObject.currentAppId)
         );

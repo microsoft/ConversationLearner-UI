@@ -2,15 +2,16 @@ import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Nav, INavLink, INavLinkGroup, Link } from 'office-ui-fabric-react';
+import { Nav, INavLink, INavLinkGroup, Link, CommandButton } from 'office-ui-fabric-react';
+import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { State } from '../types';
 import { DisplayMode } from '../types/const';
 import Webchat from './Webchat'
 import ChatSessionAdmin from './ChatSessionAdmin'
 import { Session } from 'blis-models'
-import { deleteTeachSessionAsync } from '../actions/deleteActions'
+import { deleteChatSessionAsync } from '../actions/deleteActions'
 import { createChatSessionAsync } from '../actions/createActions'
-import { setCurrentTrainDialog, setCurrentTeachSession } from '../actions/displayActions'
+import { setCurrentTrainDialog, setCurrentTeachSession, setDisplayMode } from '../actions/displayActions'
 
 
 class SessionWindow extends React.Component<Props, any> {
@@ -22,36 +23,54 @@ class SessionWindow extends React.Component<Props, any> {
         let currentAppId: string = this.props.apps.current.appId;
         this.props.createChatSession(this.props.userKey, this.state.chatSession, currentAppId);
     }
-    handleAbandon() {
+    handleQuit() {
+        this.props.setDisplayMode(DisplayMode.AppAdmin);
         let currentAppId: string = this.props.apps.current.appId;
-        this.props.deleteTeachSession(this.props.userKey, this.state.teachSession, currentAppId, false)
+        this.props.deleteChatSession(this.props.userKey, this.props.chatSession.current, currentAppId)
     }
     render() {
         return (
-            <div className="ms-Grid">
-                <div className="ms-Grid-row">
-                    <div className="ms-Grid-col webchat">
-                        <Webchat sessionType={"chat"}/>
+            <Modal
+                isOpen={this.props.error == null}
+                isBlocking={true}
+                containerClassName='teachModal'>
+                <div className="wc-gridContainer">
+                    <div className="wc-gridWebchat">
+                        <Webchat sessionType={"chat"} />
                     </div>
-                    <div className="ms-Grid-col sessionAdmin">
-                        <ChatSessionAdmin/>
+                    <div className="wc-gridAdmin">
+                        <div className="wc-gridAdminContent">
+                            <ChatSessionAdmin />
+                        </div>
+                        <div className="wc-gridFooter">
+                        <CommandButton
+                            data-automation-id='randomID16'
+                            disabled={false}
+                            onClick={this.handleQuit.bind(this)}
+                            className='ms-font-su goldButton teachSessionHeaderButton'
+                            ariaDescription='Done Testing'
+                            text='Done Testing'
+                        />
+                        </div>    
                     </div>
                 </div>
-            </div>
+            </Modal>
         );
     }
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         createChatSession: createChatSessionAsync,
-        deleteTeachSession: deleteTeachSessionAsync
+        deleteChatSession: deleteChatSessionAsync,
+        setDisplayMode: setDisplayMode
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {
     return {
-        teachSession: state.teachSessions.current,
+        chatSession: state.chatSessions,
         userKey: state.user.key,
-        apps: state.apps
+        apps: state.apps,
+        error: state.error.error
     }
 }
 // Props types inferred from mapStateToProps & dispatchToProps

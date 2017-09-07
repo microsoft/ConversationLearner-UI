@@ -202,7 +202,7 @@ export type CreateAction = {
         sessionId: string,
         session: Session
     } | {
-        type: AT.CREATE_TEACH_SESSION,
+        type: AT.CREATE_TEACH_SESSION_ASYNC,
         key: string,
         currentAppId: string,
         teachSession: Teach

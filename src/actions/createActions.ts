@@ -104,7 +104,7 @@ export const createChatSessionFulfilled = (session: Session, sessionId: string):
 export const createTeachSessionAsync = (key: string, teachSession: Teach, currentAppId: string): ActionObject => {
     
     return {
-        type: AT.CREATE_TEACH_SESSION,
+        type: AT.CREATE_TEACH_SESSION_ASYNC,
         key: key,
         teachSession: teachSession,
         currentAppId: currentAppId

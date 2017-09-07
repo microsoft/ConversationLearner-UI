@@ -38,16 +38,6 @@ class ChatSessionAdmin extends React.Component<Props, any> {
     render() {
         return (
             <div className="container">
-                <span className="ms-font-su goldText">
-                    <CommandButton
-                        data-automation-id='randomID16'
-                        disabled={false}
-                        onClick={this.confirmDelete.bind(this)}
-                        className='goldButton buttonWithTextField'
-                        ariaDescription='End Session'
-                        text='End Session'
-                    />
-                </span>
                 <ConfirmDeleteModal open={this.state.open} onCancel={() => this.handleCloseModal()} onConfirm={() => this.handleAbandon()} title="Are you sure you want to abandon this chat session?" />
             </div>
         );
