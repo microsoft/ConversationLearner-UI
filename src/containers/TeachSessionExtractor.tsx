@@ -9,7 +9,7 @@ import { CommandButton } from 'office-ui-fabric-react';
 import ExtractorTextVariationCreator from './ExtractorTextVariationCreator';
 import ExtractorResponseEditor from './ExtractorResponseEditor';
 import EntityCreatorEditor from './EntityCreatorEditor';
-import { generateGUID } from '../Util'
+import { TeachMode } from '../types/const'
 import PopUpMessage from '../components/PopUpMessage';
 
 class TeachSessionExtractor extends React.Component<any, any> {
@@ -18,6 +18,13 @@ class TeachSessionExtractor extends React.Component<any, any> {
         this.state = {
             entityModalOpen: false,
             popUpOpen: false
+        }
+    }
+    componentDidMount() {
+        // If not in interactive mode run scorer automatically
+        if (this.props.teachSession.autoMode && this.props.teachSession.mode == TeachMode.Extractor)
+        {
+            this.runScorer();
         }
     }
     handleCloseEntityModal() {
@@ -92,16 +99,37 @@ class TeachSessionExtractor extends React.Component<any, any> {
     render() {
         let extractDisplay = [];
         let key = 0;
-        for (let extractResponse of this.props.teachSession.extractResponses)
+        for (let extractResponse of this.props.teachSession.extractResponses) {
+            let isValid = true;
+            if (extractResponse != this.props.teachSession.extractResponses[0])
             {
-                let isValid = true;
-                if (extractResponse != this.props.teachSession.extractResponses[0])
-                {
-                    isValid = this.isValid(extractResponse);
-                }
-                
-                extractDisplay.push(<ExtractorResponseEditor key={key++} isPrimary={key==1} isValid={isValid} extractResponse={extractResponse}/>);
+                isValid = this.isValid(extractResponse);
             }
+            
+            extractDisplay.push(<ExtractorResponseEditor key={key++} isPrimary={key==1} isValid={isValid} extractResponse={extractResponse}/>);
+        }
+        // Don't show edit components when in automode
+        let editComponents = this.props.teachSession.autoMode ? null :
+            <div>
+                <CommandButton
+                    data-automation-id='randomID16'
+                    disabled={false}
+                    onClick={this.runScorer.bind(this)}
+                    className='ms-font-su goldButton teachSessionHeaderButton'
+                    ariaDescription='Run Scorer'
+                    text='Run Scorer'
+                />
+                <CommandButton
+                    data-automation-id='randomID8'
+                    className="goldButton teachSessionHeaderButton actionCreatorCreateEntityButton"
+                    disabled={false}
+                    onClick={this.handleOpenEntityModal.bind(this)}
+                    ariaDescription='Cancel'
+                    text='Entity'
+                    iconProps={{ iconName: 'CirclePlus' }}
+                />
+                <EntityCreatorEditor open={this.state.entityModalOpen} entity={null} handleClose={this.handleCloseEntityModal.bind(this)} />
+            </div>
         return (
             <div className="content">
                 <div>
@@ -109,27 +137,7 @@ class TeachSessionExtractor extends React.Component<any, any> {
                     {extractDisplay}
                     <ExtractorTextVariationCreator/>
                 </div>
-
-                <div>
-                    <CommandButton
-                        data-automation-id='randomID16'
-                        disabled={false}
-                        onClick={this.runScorer.bind(this)}
-                        className='ms-font-su goldButton teachSessionHeaderButton'
-                        ariaDescription='Run Scorer'
-                        text='Run Scorer'
-                    />
-                    <CommandButton
-                        data-automation-id='randomID8'
-                        className="goldButton teachSessionHeaderButton actionCreatorCreateEntityButton"
-                        disabled={false}
-                        onClick={this.handleOpenEntityModal.bind(this)}
-                        ariaDescription='Cancel'
-                        text='Entity'
-                        iconProps={{ iconName: 'CirclePlus' }}
-                    />
-                    <EntityCreatorEditor open={this.state.entityModalOpen} entity={null} handleClose={this.handleCloseEntityModal.bind(this)} />
-                </div>
+                {editComponents}
                 <PopUpMessage open={this.state.popUpOpen} onConfirm={() => this.handleClosePopUpModal()} title="Text variations must all have same tagged entities." />  
             </div>                          
         )

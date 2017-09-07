@@ -26,12 +26,24 @@ class TeachSessionAdmin extends React.Component<Props, any> {
                 )
                 break;
             case TeachMode.Scorer:
-                userWindow = (
-                    <div className="teachSessionModeContainer">
-                        <TeachSessionMemory className="teachSessionWindow" />
-                        <TeachSessionScorer className="teachSessionWindow"  />
-                    </div>
-                )
+                // If in auto mode show all windows
+                if (this.props.teachSession.autoMode) {
+                    userWindow = (
+                        <div className="teachSessionModeContainer">
+                            <TeachSessionMemory className="teachSessionWindow" />
+                            <TeachSessionExtractor className="teachSessionWindow" />
+                            <TeachSessionScorer className="teachSessionWindow"  />
+                        </div>
+                    )
+                }
+                else {
+                    userWindow = (
+                        <div className="teachSessionModeContainer">
+                            <TeachSessionMemory className="teachSessionWindow" />
+                            <TeachSessionScorer className="teachSessionWindow"  />
+                        </div>
+                    )
+                }
                 break;
             default:
                 userWindow = (

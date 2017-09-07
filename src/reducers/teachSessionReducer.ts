@@ -13,7 +13,8 @@ const initialState: TeachSessionState = {
     scoreInput: null,
     extractResponses: [],
     scoreResponse: null,
-    currentConversationStack: []
+    currentConversationStack: [], 
+    autoMode: false // TEMP
 };
 
 const teachSessionReducer: Reducer<any> = (state = initialState, action: ActionObject) => {
