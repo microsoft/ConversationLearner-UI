@@ -9,7 +9,7 @@ import { CommandButton } from 'office-ui-fabric-react';
 import ExtractorTextVariationCreator from './ExtractorTextVariationCreator';
 import ExtractorResponseEditor from './ExtractorResponseEditor';
 import EntityCreatorEditor from './EntityCreatorEditor';
-import { generateGUID } from '../Util'
+import { TeachMode } from '../types/const'
 import PopUpMessage from '../components/PopUpMessage';
 
 class TeachSessionExtractor extends React.Component<any, any> {
@@ -18,6 +18,13 @@ class TeachSessionExtractor extends React.Component<any, any> {
         this.state = {
             entityModalOpen: false,
             popUpOpen: false
+        }
+    }
+    componentDidUpdate() {
+        // If not in interactive mode run scorer automatically
+        if (this.props.teachSession.autoMode && this.props.teachSession.mode == TeachMode.Extractor)
+        {
+            this.runScorer();
         }
     }
     handleCloseEntityModal() {
@@ -90,46 +97,72 @@ class TeachSessionExtractor extends React.Component<any, any> {
         this.props.runScorer(this.props.user.key, appId, teachId, uiScoreInput);
     }
     render() {
-        let extractDisplay = [];
-        let key = 0;
-        for (let extractResponse of this.props.teachSession.extractResponses)
-            {
+        if (!this.props.teachSession.extractResponses[0])  {
+            return null;
+        }
+
+        // Don't show edit components when in automode or on score step
+        let canEdit =  (!this.props.teachSession.autoMode && this.props.teachSession.mode == TeachMode.Extractor);    
+
+        let variationCreator = null;
+        let addEntity = null;
+        let editComponents = null;
+        let extractDisplay = null;
+        if (canEdit)      
+        {
+            variationCreator = <ExtractorTextVariationCreator/>
+            addEntity =
+                <CommandButton
+                    data-automation-id='randomID8'
+                    className="goldButton teachCreateButton"
+                    disabled={false}
+                    onClick={this.handleOpenEntityModal.bind(this)}
+                    ariaDescription='Cancel'
+                    text='Entity'
+                    iconProps={{ iconName: 'CirclePlus' }}
+                />
+            editComponents = 
+                 <div>
+                     <CommandButton
+                         data-automation-id='randomID16'
+                         disabled={false}
+                         onClick={this.runScorer.bind(this)}
+                         className='ms-font-su goldButton teachSessionScoreButton'
+                         ariaDescription='Score Actions'
+                         text='Score Actions'
+                     />
+     
+                     <EntityCreatorEditor open={this.state.entityModalOpen} entity={null} handleClose={this.handleCloseEntityModal.bind(this)} />
+                 </div>
+            
+            let key = 0;
+            extractDisplay = [];
+            for (let extractResponse of this.props.teachSession.extractResponses) {
                 let isValid = true;
                 if (extractResponse != this.props.teachSession.extractResponses[0])
                 {
                     isValid = this.isValid(extractResponse);
                 }
                 
-                extractDisplay.push(<ExtractorResponseEditor key={key++} isPrimary={key==1} isValid={isValid} extractResponse={extractResponse}/>);
+                extractDisplay.push(<ExtractorResponseEditor key={key++} isPrimary={key==1} isValid={isValid} extractResponse={extractResponse}/>);   
             }
+        }
+        else {
+            // Only display primary response if not in edit mode
+            extractDisplay = <ExtractorResponseEditor key={0} isPrimary={true} isValid={true} extractResponse={this.props.teachSession.extractResponses[0]}/>
+        }
+        
         return (
             <div className="content">
                 <div>
-                    <span className='ms-font-xl extractorTitle'>Entities</span>
+                    <div className='teachTitleBox'>
+                        <div className='ms-font-xl teachTitle'>Entity Detection</div>
+                        {addEntity}
+                    </div>
                     {extractDisplay}
-                    <ExtractorTextVariationCreator/>
+                    {variationCreator}
                 </div>
-
-                <div>
-                    <CommandButton
-                        data-automation-id='randomID16'
-                        disabled={false}
-                        onClick={this.runScorer.bind(this)}
-                        className='ms-font-su goldButton teachSessionHeaderButton'
-                        ariaDescription='Run Scorer'
-                        text='Run Scorer'
-                    />
-                    <CommandButton
-                        data-automation-id='randomID8'
-                        className="goldButton teachSessionHeaderButton actionCreatorCreateEntityButton"
-                        disabled={false}
-                        onClick={this.handleOpenEntityModal.bind(this)}
-                        ariaDescription='Cancel'
-                        text='Entity'
-                        iconProps={{ iconName: 'CirclePlus' }}
-                    />
-                    <EntityCreatorEditor open={this.state.entityModalOpen} entity={null} handleClose={this.handleCloseEntityModal.bind(this)} />
-                </div>
+                {editComponents}
                 <PopUpMessage open={this.state.popUpOpen} onConfirm={() => this.handleClosePopUpModal()} title="Text variations must all have same tagged entities." />  
             </div>                          
         )

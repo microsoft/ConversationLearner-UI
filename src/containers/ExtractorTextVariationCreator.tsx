@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { UserInput } from 'blis-models'
 import { State } from '../types';
-import { CommandButton } from 'office-ui-fabric-react';
+import { IconButton } from 'office-ui-fabric-react';
 import { TextFieldPlaceholder } from './TextFieldPlaceholder';
 import { returntypeof } from 'react-redux-typescript';
 import { runExtractorAsync } from '../actions/teachActions';
@@ -36,13 +36,12 @@ class ExtractorTextVariationCreator extends React.Component<Props, any> {
     render() {
         return (
             <div className='teachVariationBox'>
-                <CommandButton
+                <IconButton
                         data-automation-id='randomID8'
                         className="goldButton teachVariationButton"
                         disabled={!this.state.variationValue}
                         onClick={this.handleAddVariation.bind(this)}
                         ariaDescription='Add Variation'
-                        text='Add'
                         iconProps={{ iconName: 'CirclePlus' }}
                     />
                 <div className='teachAddVariation'>

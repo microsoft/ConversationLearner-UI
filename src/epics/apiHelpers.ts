@@ -348,7 +348,7 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
   };
 
   export const deleteTeachSession = (key : string, appId: string, teachSession: Teach, save: boolean): Observable<ActionObject> => {
-    let deleteTeachSessionRoute: string = makeRoute(key, `app/${appId}/teach/${teachSession.teachId}?save=${save}`);
+    let deleteTeachSessionRoute: string = makeRoute(key, `app/${appId}/teach/${teachSession.teachId}`,`save=${save}`);
     return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.delete(deleteTeachSessionRoute, config)
       .then(response => {
               obs.next(deleteTeachSessionFulfilled(teachSession.teachId));

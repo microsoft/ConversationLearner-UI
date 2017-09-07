@@ -83,7 +83,7 @@ class UserLogin extends React.Component<Props, any> {
             input =
                 <div>
                     <TextFieldPlaceholder onChanged={this.nameChanged.bind(this)} label="Name" placeholder="User Name..." value={this.state.userName} />
-                    <TextFieldPlaceholder onChanged={this.passwordChanged.bind(this)} label="Password" placeholder="Password..." value={this.state.userPassword} />
+                    <TextFieldPlaceholder onChanged={this.passwordChanged.bind(this)} type="Password" label="Password" placeholder="Password..." value={this.state.userPassword} />
                 </div>;
             button =
                 <CommandButton

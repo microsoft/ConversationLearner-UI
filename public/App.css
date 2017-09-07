@@ -43,6 +43,10 @@
 .teachSessionHeaderButton{
   margin: 20px;
 }
+.teachSessionScoreButton{
+  margin: 0px;
+  float: right;
+}
 .selectedHeaderElementDiv{
   height: 100%;
   display: inline-block;
@@ -269,13 +273,7 @@
   width: 100%;
   display: block;
   margin-top: 1em;
-}
-.actionCreatorCreateEntityButton {
-  float: right;
-}
-.scorerCreateActionButton {
-  float: left;
-}
+} 
 .wc-gridWebchat{
   grid-column: 1;
   grid-row: 1;
@@ -375,11 +373,11 @@
   width: 100%
 }
 .teachVariationBox{
-  margin-top: 2em;
+  margin-top: 5px;
+  margin-left: 10px;
 }
 .teachAddVariation{
   overflow: hidden;
-  padding-right: 0.5em;
 }
 .teachVariationButton {
   float: right;
@@ -389,6 +387,11 @@
 .teachModal{
   width: 90%;
   height: 90%;
+}
+.teachEmptyMemory
+{
+  font-style: italic;
+  margin: 10px 10px 10px 20px;
 }
 .abandonTeach{
   float: right;
@@ -414,8 +417,22 @@
   width: 49.5%;
   height: 100%;
 }
-.extractorTitle{
- display: block;
+.teachTitleBox{
+  display: inline-block;
+  margin-top: 15px;
+  font-weight: bold;
+  border-width: 0px 0px 1px 0px;
+  border-color: #333333;
+  border-style: solid;
+  width: 100%
+}
+.teachTitle{
+  float: left;
+  font-weight: bold;
+}
+.teachCreateButton { 
+  float: right;
+  height: 30px !important;
 }
 .extractorResponseBox{
     border-style: solid;
