@@ -395,10 +395,50 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
             reqEntitiesVal: items
         })
     }
-    handleChangeNegativeEntities(items: EntityPickerObject[]) {
-        this.setState({
-            negEntitiesVal: items
+    findDeletedEntity(items: EntityPickerObject[], oldItems: EntityPickerObject[]): EntityPickerObject {
+        let deletedEntity: EntityPickerObject;
+        oldItems.map((o: EntityPickerObject) => {
+            let found: boolean = false;
+            items.map((i: EntityPickerObject) => {
+                if (o.name === i.name) {
+                    found = true
+                }
+            })
+            if (found === false) {
+                deletedEntity = o;
+            }
         })
+        return deletedEntity;
+    }
+    handleChangeNegativeEntities(items: EntityPickerObject[]) {
+        if (items.length < this.state.negEntitiesVal.length) {
+            //we deleted one, need to make sure it isnt a suggested entity;
+            if (this.state.suggEntitiesVal.length == 1) {
+                let suggestedEntity: EntityPickerObject = this.state.suggEntitiesVal[0];
+                let deletedNegativeEntity: EntityPickerObject = this.findDeletedEntity(items, this.state.negEntitiesVal);
+                if (suggestedEntity.name == deletedNegativeEntity.name) {
+                    let negativeEntities: EntityPickerObject = this.state.negEntitiesVal;
+                    //do nothing. Picker will internally update so we need to overwrite that
+                    this.setState({
+                        negEntitiesVal: negativeEntities,
+                        defaultNegativeEntities: negativeEntities,
+                        negativeTagPickerKey: this.state.negativeTagPickerKey + 1
+                    })
+                } else {
+                    this.setState({
+                        negEntitiesVal: items
+                    })
+                }
+            } else {
+                this.setState({
+                    negEntitiesVal: items
+                })
+            }
+        } else {
+            this.setState({
+                negEntitiesVal: items
+            })
+        }
     }
     handleChangeSuggestedEntities(items: EntityPickerObject[]) {
         let negativeEntities: EntityPickerObject[] = this.state.negEntitiesVal;
