@@ -542,7 +542,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                 borderLeft: "1px solid lightgrey",
                 borderRight: "1px solid lightgrey"
             }
-            let entities: EntityBase[] = this.props.entities.filter((e: EntityBase) => e.entityName.toLowerCase().includes(this.state.entitySuggestFilterText.toLowerCase()));
+            let entities: EntityBase[] = this.props.entities.filter((e: EntityBase) => e.entityName.toLowerCase().includes(this.state.entitySuggestFilterText.toLowerCase()) && e.metadata.positiveId == null);
             entitySuggestOptions = entities.map((e: EntityBase) => {
                 return {
                     key: e.entityName,
