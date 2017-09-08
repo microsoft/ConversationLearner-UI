@@ -14,7 +14,7 @@ const initialState: TeachSessionState = {
     extractResponses: [],
     scoreResponse: null,
     currentConversationStack: [], 
-    autoMode: false
+    autoTeach: false
 };
 
 const teachSessionReducer: Reducer<any> = (state = initialState, action: ActionObject) => {
@@ -56,6 +56,8 @@ const teachSessionReducer: Reducer<any> = (state = initialState, action: ActionO
             return {...state, mode: TeachMode.Scorer, memories: action.uiScoreResponse.memories, scoreInput: action.uiScoreResponse.scoreInput, scoreResponse: action.uiScoreResponse.scoreResponse};
         case AT.POST_SCORE_FEEDBACK_FULFILLED:
             return {...state, mode: TeachMode.Wait};
+        case AT.TOGGLE_AUTO_TEACH:
+            return {...state, autoTeach: action.autoTeach}
         case AT.CREATE_ACTION_FULFILLED:
             // If action was created during scoring update available actions
             if (state.scoreResponse)

@@ -35,7 +35,7 @@ export type TeachSessionState = {
     extractResponses: ExtractResponse[],
     scoreResponse: ScoreResponse,
     currentConversationStack: {}[],
-    autoMode: boolean
+    autoTeach: boolean
 }
 export type ChatSessionState = {
     all: Session[],

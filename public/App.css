@@ -393,6 +393,12 @@
   font-style: italic;
   margin: 10px 10px 10px 20px;
 }
+.teachAuto
+{
+  color: #ffffff;
+  margin: 30px 20px 20px 20px !important;
+  float: right;
+}
 .abandonTeach{
   float: right;
 }

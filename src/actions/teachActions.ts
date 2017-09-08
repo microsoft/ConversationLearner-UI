@@ -77,3 +77,10 @@ export const postScorerFeedbackFulfilled = (key: string, appId: string, teachId:
         teachResponse: teachResponse
     }
 }
+
+export const toggleAutoTeach = (autoTeach: boolean): ActionObject => {
+    return {
+        type: AT.TOGGLE_AUTO_TEACH,
+        autoTeach: autoTeach
+    }
+}

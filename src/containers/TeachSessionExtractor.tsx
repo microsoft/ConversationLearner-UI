@@ -22,7 +22,7 @@ class TeachSessionExtractor extends React.Component<any, any> {
     }
     componentDidUpdate() {
         // If not in interactive mode run scorer automatically
-        if (this.props.teachSession.autoMode && this.props.teachSession.mode == TeachMode.Extractor)
+        if (this.props.teachSession.autoTeach && this.props.teachSession.mode == TeachMode.Extractor)
         {
             this.runScorer();
         }
@@ -101,8 +101,8 @@ class TeachSessionExtractor extends React.Component<any, any> {
             return null;
         }
 
-        // Don't show edit components when in automode or on score step
-        let canEdit =  (!this.props.teachSession.autoMode && this.props.teachSession.mode == TeachMode.Extractor);    
+        // Don't show edit components when in auto TACH or on score step
+        let canEdit =  (!this.props.teachSession.autoTeach && this.props.teachSession.mode == TeachMode.Extractor);    
 
         let variationCreator = null;
         let addEntity = null;
@@ -156,7 +156,7 @@ class TeachSessionExtractor extends React.Component<any, any> {
             <div className="content">
                 <div>
                     <div className='teachTitleBox'>
-                        <div className='ms-font-xl teachTitle'>Entity Detection</div>
+                        <div className='ms-font-l teachTitle'>Entity Detection</div>
                         {addEntity}
                     </div>
                     {extractDisplay}
