@@ -428,17 +428,20 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                     })
                 } else {
                     this.setState({
-                        negEntitiesVal: items
+                        negEntitiesVal: items,
+                        defaultNegativeEntities: items
                     })
                 }
             } else {
                 this.setState({
-                    negEntitiesVal: items
+                    negEntitiesVal: items,
+                    defaultNegativeEntities: items
                 })
             }
         } else {
             this.setState({
-                negEntitiesVal: items
+                negEntitiesVal: items,
+                defaultNegativeEntities: items
             })
         }
     }
@@ -446,7 +449,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
         let negativeEntities: EntityPickerObject[] = this.state.negEntitiesVal;
         if (items.length > 0) {
             // we added one. Need to check if its already in negative entities. If it is not, add it to that as well.
-            let suggestedEntity = items[0];
+            let suggestedEntity: EntityPickerObject = items[0];
             let found: EntityPickerObject = negativeEntities.find((n: EntityPickerObject) => n.name == suggestedEntity.name);
             if (!found) {
                 negativeEntities.push(suggestedEntity)
@@ -609,7 +612,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                             items={entitySuggestOptions}
                             style={entitySuggestStyle}
                             onRenderCell={(item, index: number) => (
-                                <AutocompleteListItem onClick={() => this.entitySuggestionSelected(item)} item={item}/>
+                                <AutocompleteListItem onClick={() => this.entitySuggestionSelected(item)} item={item} />
                             )}
                         />
                         <Label>Required Entities</Label>
