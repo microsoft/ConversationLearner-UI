@@ -33,6 +33,7 @@ const initState = {
     entityModalOpen: false,
     open: false,
     requiredTagPickerKey: 1000,
+    negativeTagPickerKey: 2000,
     focusedOnPayload: false
 };
 
@@ -335,6 +336,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
     }
 
     onFilterChanged(filterText: string, tagList: EntityPickerObject[]) {
+        //required entites available should exclude all saved entities
         let entList = filterText ? this.state.availableRequiredEntities.filter((ent: EntityPickerObject) => ent.name.toLowerCase().indexOf(filterText.toLowerCase()) === 0).filter((item: EntityPickerObject) => !this.listContainsDocument(item, tagList)) : [];
         let usedEntities = this.state.reqEntitiesVal.concat(this.state.negEntitiesVal).concat(this.state.suggEntitiesVal)
         let entListToReturn = entList.filter((e: EntityPickerObject) => {
@@ -348,12 +350,28 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
         })
         return entListToReturn;
     }
+    onFilterChangedNegative(filterText: string, tagList: EntityPickerObject[]) {
+        //negative entites available should exclude those in required entities, and its own saved entities, but not suggested ones
+        let entList = filterText ? this.state.availableRequiredEntities.filter((ent: EntityPickerObject) => ent.name.toLowerCase().indexOf(filterText.toLowerCase()) === 0).filter((item: EntityPickerObject) => !this.listContainsDocument(item, tagList)) : [];
+        let usedEntities = this.state.reqEntitiesVal.concat(this.state.negEntitiesVal)
+        let entListToReturn = entList.filter((e: EntityPickerObject) => {
+            let decision: boolean = true;
+            usedEntities.map((u: EntityPickerObject) => {
+                if (e.key == u.key) {
+                    decision = false;
+                }
+            })
+            return decision;
+        })
+        return entListToReturn;
+    }
     onFilterChangedSuggestedEntity(filterText: string, tagList: EntityPickerObject[]) {
+        //suggested entites available should exclude those in required entities, and its own saved entities, but not negative ones
         if (this.state.suggEntitiesVal.length > 0) {
             return [];
         }
         let entList = filterText ? this.state.availableRequiredEntities.filter((ent: EntityPickerObject) => ent.name.toLowerCase().indexOf(filterText.toLowerCase()) === 0).filter((item: EntityPickerObject) => !this.listContainsDocument(item, tagList)) : [];
-        let usedEntities = this.state.reqEntitiesVal.concat(this.state.negEntitiesVal).concat(this.state.suggEntitiesVal)
+        let usedEntities = this.state.reqEntitiesVal.concat(this.state.suggEntitiesVal)
         let entListToReturn = entList.filter((e: EntityPickerObject) => {
             let decision: boolean = true;
             usedEntities.map((u: EntityPickerObject) => {
@@ -383,9 +401,30 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
         })
     }
     handleChangeSuggestedEntities(items: EntityPickerObject[]) {
-        this.setState({
-            suggEntitiesVal: items
-        })
+        let negativeEntities: EntityPickerObject[] = this.state.negEntitiesVal;
+        if (items.length > 0) {
+            // we added one. Need to check if its already in negative entities. If it is not, add it to that as well.
+            let suggestedEntity = items[0];
+            let found: EntityPickerObject = negativeEntities.find((n: EntityPickerObject) => n.name == suggestedEntity.name);
+            if (!found) {
+                negativeEntities.push(suggestedEntity)
+                this.setState({
+                    suggEntitiesVal: items,
+                    negEntitiesVal: negativeEntities,
+                    defaultNegativeEntities: negativeEntities,
+                    negativeTagPickerKey: this.state.negativeTagPickerKey + 1
+                })
+            } else {
+                this.setState({
+                    suggEntitiesVal: items
+                })
+            }
+
+        } else {
+            this.setState({
+                suggEntitiesVal: items
+            })
+        }
     }
     handleCloseEntityModal() {
         this.setState({
@@ -536,7 +575,8 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                         />
                         <Label>Negative Entities</Label>
                         <TagPicker
-                            onResolveSuggestions={this.onFilterChanged.bind(this)}
+                            key={this.state.negativeTagPickerKey}
+                            onResolveSuggestions={this.onFilterChangedNegative.bind(this)}
                             getTextFromItem={(item) => { return item.name; }}
                             onChange={this.handleChangeNegativeEntities.bind(this)}
                             pickerSuggestionsProps={
