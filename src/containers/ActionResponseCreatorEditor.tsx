@@ -461,9 +461,22 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
             }
 
         } else {
-            this.setState({
-                suggEntitiesVal: items
-            })
+            // we deleted one. Need to check if its already in negative entities. If it is, delete it to that as well.
+            let deletedSuggesedEntity: EntityPickerObject = this.findDeletedEntity(items, this.state.suggEntitiesVal);
+            let found: EntityPickerObject = negativeEntities.find((n: EntityPickerObject) => n.name == deletedSuggesedEntity.name);
+            if (found) {
+                let filteredNegativeEntities = negativeEntities.filter((neg: EntityPickerObject) => neg.name !== deletedSuggesedEntity.name)
+                this.setState({
+                    suggEntitiesVal: items,
+                    negEntitiesVal: filteredNegativeEntities,
+                    defaultNegativeEntities: filteredNegativeEntities,
+                    negativeTagPickerKey: this.state.negativeTagPickerKey + 1
+                })
+            } else {
+                this.setState({
+                    suggEntitiesVal: items
+                })
+            }
         }
     }
     handleCloseEntityModal() {
