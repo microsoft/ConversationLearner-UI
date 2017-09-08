@@ -461,3 +461,17 @@
 .extractDiv:hover{
   cursor: pointer
 }
+.autoCompleteListItem{
+  border-top: 1px solid lightgrey;
+  color: #004b50;
+  padding: .25em;
+  padding-left: 1em;
+}
+.autoCompleteListItem:hover{
+  border-top: 1px solid #004b50;
+  padding: .25em;
+  padding-left: 1em;
+  background-color: #004b50;
+  color: white;
+  cursor: pointer;
+}

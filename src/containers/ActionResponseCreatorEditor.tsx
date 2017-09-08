@@ -5,11 +5,12 @@ import { editActionAsync } from '../actions/updateActions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
-import { CommandButton, Dialog, DialogFooter, DialogType, ChoiceGroup, DefaultButton, Dropdown, TagPicker, Label, Checkbox } from 'office-ui-fabric-react';
+import { CommandButton, Dialog, DialogFooter, DialogType, ChoiceGroup, DefaultButton, Dropdown, TagPicker, Label, Checkbox, List } from 'office-ui-fabric-react';
 import { TextFieldPlaceholder } from './TextFieldPlaceholder';
 import { ActionBase, ActionMetaData, ActionTypes, EntityBase, EntityMetaData, EntitySuggestion } from 'blis-models'
 import { State } from '../types';
-import EntityCreatorEditor from './EntityCreatorEditor'
+import EntityCreatorEditor from './EntityCreatorEditor';
+import AutocompleteListItem from '../components/AutocompleteListItem';
 
 interface EntityPickerObject {
     key: string
@@ -33,6 +34,7 @@ const initState = {
     entityModalOpen: false,
     open: false,
     requiredTagPickerKey: 1000,
+    negativeTagPickerKey: 2000,
     focusedOnPayload: false
 };
 
@@ -41,7 +43,8 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
         super(p);
         this.state = initState;
         this.checkForSpecialCharacters = this.checkForSpecialCharacters.bind(this);
-        this.findWordFollowingSpecialCharacter = this.findWordFollowingSpecialCharacter.bind(this)
+        this.findWordFollowingSpecialCharacter = this.findWordFollowingSpecialCharacter.bind(this);
+        this.entitySuggestionSelected = this.entitySuggestionSelected.bind(this)
     }
     componentDidMount() {
         this.initializeDropdown();
@@ -149,14 +152,14 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
     reInitializeDropdown() {
         //this is used while the modal is still being edited, so we dont want to edit the special chars
         this.setState({
-            displayDropdown: false,
+            displayAutocomplete: false,
             dropdownIndex: null,
             entitySuggestFilterText: ""
         });
     }
     initializeDropdown() {
         this.setState({
-            displayDropdown: false,
+            displayAutocomplete: false,
             dropdownIndex: null,
             entitySuggestFilterText: "",
             specialCharIndexesToDisregard: [],
@@ -270,14 +273,14 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
     }
     checkForSpecialCharacters(text: string, specialIndexes: number[], dropdownRemoved?: boolean) {
         let pixels: number = 0;
-        if (this.state.displayDropdown === false || (dropdownRemoved && dropdownRemoved === true)) {
+        if (this.state.displayAutocomplete === false || (dropdownRemoved && dropdownRemoved === true)) {
             //we only care about $ if dropdown isnt displayed yet
             for (let letter of text) {
                 if (letter === "$") {
                     let indexFound: number = specialIndexes.find(i => i == pixels);
                     if (!indexFound) {
                         this.setState({
-                            displayDropdown: true,
+                            displayAutocomplete: true,
                             dropdownIndex: pixels
                         })
                     }
@@ -335,6 +338,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
     }
 
     onFilterChanged(filterText: string, tagList: EntityPickerObject[]) {
+        //required entites available should exclude all saved entities
         let entList = filterText ? this.state.availableRequiredEntities.filter((ent: EntityPickerObject) => ent.name.toLowerCase().indexOf(filterText.toLowerCase()) === 0).filter((item: EntityPickerObject) => !this.listContainsDocument(item, tagList)) : [];
         let usedEntities = this.state.reqEntitiesVal.concat(this.state.negEntitiesVal).concat(this.state.suggEntitiesVal)
         let entListToReturn = entList.filter((e: EntityPickerObject) => {
@@ -348,12 +352,28 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
         })
         return entListToReturn;
     }
+    onFilterChangedNegative(filterText: string, tagList: EntityPickerObject[]) {
+        //negative entites available should exclude those in required entities, and its own saved entities, but not suggested ones
+        let entList = filterText ? this.state.availableRequiredEntities.filter((ent: EntityPickerObject) => ent.name.toLowerCase().indexOf(filterText.toLowerCase()) === 0).filter((item: EntityPickerObject) => !this.listContainsDocument(item, tagList)) : [];
+        let usedEntities = this.state.reqEntitiesVal.concat(this.state.negEntitiesVal)
+        let entListToReturn = entList.filter((e: EntityPickerObject) => {
+            let decision: boolean = true;
+            usedEntities.map((u: EntityPickerObject) => {
+                if (e.key == u.key) {
+                    decision = false;
+                }
+            })
+            return decision;
+        })
+        return entListToReturn;
+    }
     onFilterChangedSuggestedEntity(filterText: string, tagList: EntityPickerObject[]) {
+        //suggested entites available should exclude those in required entities, and its own saved entities, but not negative ones
         if (this.state.suggEntitiesVal.length > 0) {
             return [];
         }
         let entList = filterText ? this.state.availableRequiredEntities.filter((ent: EntityPickerObject) => ent.name.toLowerCase().indexOf(filterText.toLowerCase()) === 0).filter((item: EntityPickerObject) => !this.listContainsDocument(item, tagList)) : [];
-        let usedEntities = this.state.reqEntitiesVal.concat(this.state.negEntitiesVal).concat(this.state.suggEntitiesVal)
+        let usedEntities = this.state.reqEntitiesVal.concat(this.state.suggEntitiesVal)
         let entListToReturn = entList.filter((e: EntityPickerObject) => {
             let decision: boolean = true;
             usedEntities.map((u: EntityPickerObject) => {
@@ -377,15 +397,89 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
             reqEntitiesVal: items
         })
     }
-    handleChangeNegativeEntities(items: EntityPickerObject[]) {
-        this.setState({
-            negEntitiesVal: items
+    findDeletedEntity(items: EntityPickerObject[], oldItems: EntityPickerObject[]): EntityPickerObject {
+        let deletedEntity: EntityPickerObject;
+        oldItems.map((o: EntityPickerObject) => {
+            let found: boolean = false;
+            items.map((i: EntityPickerObject) => {
+                if (o.name === i.name) {
+                    found = true
+                }
+            })
+            if (found === false) {
+                deletedEntity = o;
+            }
         })
+        return deletedEntity;
+    }
+    handleChangeNegativeEntities(items: EntityPickerObject[]) {
+        if (items.length < this.state.negEntitiesVal.length) {
+            //we deleted one, need to make sure it isnt a suggested entity;
+            if (this.state.suggEntitiesVal.length == 1) {
+                let suggestedEntity: EntityPickerObject = this.state.suggEntitiesVal[0];
+                let deletedNegativeEntity: EntityPickerObject = this.findDeletedEntity(items, this.state.negEntitiesVal);
+                if (suggestedEntity.name == deletedNegativeEntity.name) {
+                    let negativeEntities: EntityPickerObject = this.state.negEntitiesVal;
+                    //do nothing. Picker will internally update so we need to overwrite that
+                    this.setState({
+                        negEntitiesVal: negativeEntities,
+                        defaultNegativeEntities: negativeEntities,
+                        negativeTagPickerKey: this.state.negativeTagPickerKey + 1
+                    })
+                } else {
+                    this.setState({
+                        negEntitiesVal: items
+                    })
+                }
+            } else {
+                this.setState({
+                    negEntitiesVal: items
+                })
+            }
+        } else {
+            this.setState({
+                negEntitiesVal: items
+            })
+        }
     }
     handleChangeSuggestedEntities(items: EntityPickerObject[]) {
-        this.setState({
-            suggEntitiesVal: items
-        })
+        let negativeEntities: EntityPickerObject[] = this.state.negEntitiesVal;
+        if (items.length > 0) {
+            // we added one. Need to check if its already in negative entities. If it is not, add it to that as well.
+            let suggestedEntity = items[0];
+            let found: EntityPickerObject = negativeEntities.find((n: EntityPickerObject) => n.name == suggestedEntity.name);
+            if (!found) {
+                negativeEntities.push(suggestedEntity)
+                this.setState({
+                    suggEntitiesVal: items,
+                    negEntitiesVal: negativeEntities,
+                    defaultNegativeEntities: negativeEntities,
+                    negativeTagPickerKey: this.state.negativeTagPickerKey + 1
+                })
+            } else {
+                this.setState({
+                    suggEntitiesVal: items
+                })
+            }
+
+        } else {
+            // we deleted one. Need to check if its already in negative entities. If it is, delete it to that as well.
+            let deletedSuggesedEntity: EntityPickerObject = this.findDeletedEntity(items, this.state.suggEntitiesVal);
+            let found: EntityPickerObject = negativeEntities.find((n: EntityPickerObject) => n.name == deletedSuggesedEntity.name);
+            if (found) {
+                let filteredNegativeEntities = negativeEntities.filter((neg: EntityPickerObject) => neg.name !== deletedSuggesedEntity.name)
+                this.setState({
+                    suggEntitiesVal: items,
+                    negEntitiesVal: filteredNegativeEntities,
+                    defaultNegativeEntities: filteredNegativeEntities,
+                    negativeTagPickerKey: this.state.negativeTagPickerKey + 1
+                })
+            } else {
+                this.setState({
+                    suggEntitiesVal: items
+                })
+            }
+        }
     }
     handleCloseEntityModal() {
         this.setState({
@@ -441,16 +535,14 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
     render() {
         let entitySuggestStyle: {};
         let entitySuggestOptions: {}[] = [];
-        if (this.state.displayDropdown === true) {
-            let index = this.state.dropdownIndex * 0;
-            //we need to write some method that dynamically sets index depending on the letters before $ and the pixels each letter takes up
-            let pixels: string = index.toString().concat("px");
+        if (this.state.displayAutocomplete === true) {
             entitySuggestStyle = {
-                marginLeft: pixels,
-                marginTop: "-7px",
-                maxWidth: "12em"
+                marginTop: "-8px",
+                borderBottom: "1px solid lightgrey",
+                borderLeft: "1px solid lightgrey",
+                borderRight: "1px solid lightgrey"
             }
-            let entities: EntityBase[] = this.props.entities.filter((e: EntityBase) => e.entityName.toLowerCase().includes(this.state.entitySuggestFilterText.toLowerCase()));
+            let entities: EntityBase[] = this.props.entities.filter((e: EntityBase) => e.entityName.toLowerCase().includes(this.state.entitySuggestFilterText.toLowerCase()) && e.metadata.positiveId == null);
             entitySuggestOptions = entities.map((e: EntityBase) => {
                 return {
                     key: e.entityName,
@@ -508,17 +600,17 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                             disabled={this.state.editing}
                         />
                         <TextFieldPlaceholder
-                            id={"actionPayload"}
                             onGetErrorMessage={this.checkPayload.bind(this)}
                             onChanged={this.payloadChanged.bind(this)}
                             label="Payload"
                             placeholder="Payload..."
                             value={this.state.payloadVal} />
-                        <Dropdown
-                            options={entitySuggestOptions}
-                            selectedKey={this.state.actionTypeVal}
+                        <List
+                            items={entitySuggestOptions}
                             style={entitySuggestStyle}
-                            onChanged={this.entitySuggestionSelected.bind(this)}
+                            onRenderCell={(item, index: number) => (
+                                <AutocompleteListItem onClick={() => this.entitySuggestionSelected(item)} item={item}/>
+                            )}
                         />
                         <Label>Required Entities</Label>
                         <TagPicker
@@ -536,7 +628,8 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                         />
                         <Label>Negative Entities</Label>
                         <TagPicker
-                            onResolveSuggestions={this.onFilterChanged.bind(this)}
+                            key={this.state.negativeTagPickerKey}
+                            onResolveSuggestions={this.onFilterChangedNegative.bind(this)}
                             getTextFromItem={(item) => { return item.name; }}
                             onChange={this.handleChangeNegativeEntities.bind(this)}
                             pickerSuggestionsProps={
@@ -547,7 +640,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                             }
                             defaultSelectedItems={this.state.defaultNegativeEntities}
                         />
-                        <Label>Suggested Entities</Label>
+                        <Label>Suggested Entity</Label>
                         <TagPicker
                             onResolveSuggestions={this.onFilterChangedSuggestedEntity.bind(this)}
                             getTextFromItem={(item) => { return item.name; }}
