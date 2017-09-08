@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { returntypeof } from 'react-redux-typescript';
 import { State } from '../types'
 import { TrainScorerStep, ScoredBase, ActionBase, EntityBase, Memory, ScoreInput, ScoredAction, UnscoredAction, ScoreReason } from 'blis-models';
-import { postScorerFeedbackAsync } from '../actions/teachActions'
+import { postScorerFeedbackAsync, toggleAutoTeach } from '../actions/teachActions'
 import { CommandButton } from 'office-ui-fabric-react';
 import { TeachMode } from '../types/const'
 import { IColumn, DetailsList, CheckboxVisibility } from 'office-ui-fabric-react';
@@ -67,13 +67,21 @@ class TeachSessionScorer extends React.Component<Props, any> {
     }
     autoSelect() {
         // If not in interactive mode select action automatically
-        if (this.props.teachSession.autoTeach && this.props.teachSession.mode == TeachMode.Scorer)
+        if (this.props.teachSession.autoTeach && this.props.teachSession.mode == TeachMode.Scorer) {
+
+            let actions = (this.props.teachSession.scoreResponse.scoredActions as ScoredBase[]).concat(this.props.teachSession.scoreResponse.unscoredActions) || [];
+            let bestAction = actions[0];
+
+            // Make sure there is an available aciont
+            if (bestAction['reason'] == ScoreReason.NotAvailable)
             {
-                // TODO handle case of no valid action
-                let actions = (this.props.teachSession.scoreResponse.scoredActions as ScoredBase[]).concat(this.props.teachSession.scoreResponse.unscoredActions) || [];
-                let selectedActionId = actions[0].actionId;
-                this.handleActionSelection(selectedActionId);
+                // If none available auto teach isn't possible.  User must create a new action
+                this.props.toggleAutoTeach(false);
+                return;
             }
+            let selectedActionId = bestAction.actionId;
+            this.handleActionSelection(selectedActionId);
+        }
     }
     handleCloseActionModal(newAction: ActionBase) {
         this.setState({
@@ -307,6 +315,7 @@ class TeachSessionScorer extends React.Component<Props, any> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         postScorerFeedback: postScorerFeedbackAsync,
+        toggleAutoTeach: toggleAutoTeach
     }, dispatch);
 }
 const mapStateToProps = (state: State, ownProps: any) => {
