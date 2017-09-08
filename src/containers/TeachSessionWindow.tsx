@@ -94,7 +94,7 @@ class TeachWindow extends React.Component<Props, any> {
                             />
                             <Checkbox
                                 label='Auto Teach?'
-                                defaultChecked={false}
+                                checked={this.props.teachSession.autoTeach}
                                 onChange={this.autoTeachChanged.bind(this)}
                                 className='teachAuto'
                                 disabled={this.state.editing}
