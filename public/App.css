@@ -295,7 +295,11 @@
 }
 .wc-gridAdminContent{
   display: block;
-  width: 95%;
+  padding-right: 20px;
+  max-height: calc(100% - 100px);
+  max-height: -moz-calc(100% - 100px);
+  max-height: -webkit-calc(100% - 100px);
+  overflow-y: auto;
 }
 .wc-gridFooter{
   grid-column: 2;
