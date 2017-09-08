@@ -10,6 +10,7 @@
     "jquery": "^3.2.1",
     "office-ui-fabric-react": "^4.23.0",
     "react": "^15.5.4",
+    "react-autocomplete-input": "^1.0.4",
     "react-dom": "^15.5.4",
     "react-redux": "^5.0.5",
     "react-redux-typescript": "^2.3.0",

@@ -5,11 +5,12 @@ import { editActionAsync } from '../actions/updateActions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
-import { CommandButton, Dialog, DialogFooter, DialogType, ChoiceGroup, DefaultButton, Dropdown, TagPicker, Label, Checkbox } from 'office-ui-fabric-react';
+import { CommandButton, Dialog, DialogFooter, DialogType, ChoiceGroup, DefaultButton, Dropdown, TagPicker, Label, Checkbox, List } from 'office-ui-fabric-react';
 import { TextFieldPlaceholder } from './TextFieldPlaceholder';
 import { ActionBase, ActionMetaData, ActionTypes, EntityBase, EntityMetaData, EntitySuggestion } from 'blis-models'
 import { State } from '../types';
-import EntityCreatorEditor from './EntityCreatorEditor'
+import EntityCreatorEditor from './EntityCreatorEditor';
+import AutocompleteListItem from '../components/AutocompleteListItem';
 
 interface EntityPickerObject {
     key: string
@@ -42,7 +43,8 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
         super(p);
         this.state = initState;
         this.checkForSpecialCharacters = this.checkForSpecialCharacters.bind(this);
-        this.findWordFollowingSpecialCharacter = this.findWordFollowingSpecialCharacter.bind(this)
+        this.findWordFollowingSpecialCharacter = this.findWordFollowingSpecialCharacter.bind(this);
+        this.entitySuggestionSelected = this.entitySuggestionSelected.bind(this)
     }
     componentDidMount() {
         this.initializeDropdown();
@@ -150,14 +152,14 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
     reInitializeDropdown() {
         //this is used while the modal is still being edited, so we dont want to edit the special chars
         this.setState({
-            displayDropdown: false,
+            displayAutocomplete: false,
             dropdownIndex: null,
             entitySuggestFilterText: ""
         });
     }
     initializeDropdown() {
         this.setState({
-            displayDropdown: false,
+            displayAutocomplete: false,
             dropdownIndex: null,
             entitySuggestFilterText: "",
             specialCharIndexesToDisregard: [],
@@ -271,14 +273,14 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
     }
     checkForSpecialCharacters(text: string, specialIndexes: number[], dropdownRemoved?: boolean) {
         let pixels: number = 0;
-        if (this.state.displayDropdown === false || (dropdownRemoved && dropdownRemoved === true)) {
+        if (this.state.displayAutocomplete === false || (dropdownRemoved && dropdownRemoved === true)) {
             //we only care about $ if dropdown isnt displayed yet
             for (let letter of text) {
                 if (letter === "$") {
                     let indexFound: number = specialIndexes.find(i => i == pixels);
                     if (!indexFound) {
                         this.setState({
-                            displayDropdown: true,
+                            displayAutocomplete: true,
                             dropdownIndex: pixels
                         })
                     }
@@ -533,14 +535,12 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
     render() {
         let entitySuggestStyle: {};
         let entitySuggestOptions: {}[] = [];
-        if (this.state.displayDropdown === true) {
-            let index = this.state.dropdownIndex * 0;
-            //we need to write some method that dynamically sets index depending on the letters before $ and the pixels each letter takes up
-            let pixels: string = index.toString().concat("px");
+        if (this.state.displayAutocomplete === true) {
             entitySuggestStyle = {
-                marginLeft: pixels,
-                marginTop: "-7px",
-                maxWidth: "12em"
+                marginTop: "-8px",
+                borderBottom: "1px solid #999999",
+                borderLeft: "1px solid #999999",
+                borderRight: "1px solid #999999"
             }
             let entities: EntityBase[] = this.props.entities.filter((e: EntityBase) => e.entityName.toLowerCase().includes(this.state.entitySuggestFilterText.toLowerCase()));
             entitySuggestOptions = entities.map((e: EntityBase) => {
@@ -600,17 +600,17 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                             disabled={this.state.editing}
                         />
                         <TextFieldPlaceholder
-                            id={"actionPayload"}
                             onGetErrorMessage={this.checkPayload.bind(this)}
                             onChanged={this.payloadChanged.bind(this)}
                             label="Payload"
                             placeholder="Payload..."
                             value={this.state.payloadVal} />
-                        <Dropdown
-                            options={entitySuggestOptions}
-                            selectedKey={this.state.actionTypeVal}
+                        <List
+                            items={entitySuggestOptions}
                             style={entitySuggestStyle}
-                            onChanged={this.entitySuggestionSelected.bind(this)}
+                            onRenderCell={(item, index: number) => (
+                                <AutocompleteListItem onClick={() => this.entitySuggestionSelected(item)} item={item}/>
+                            )}
                         />
                         <Label>Required Entities</Label>
                         <TagPicker
