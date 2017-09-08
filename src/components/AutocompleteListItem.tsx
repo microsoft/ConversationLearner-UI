@@ -12,7 +12,7 @@ export interface Props {
 const AutocompleteListItem: React.SFC<Props> = (props: Props) => {
     return (
         <div data-is-focusable={true} onClick={() => props.onClick()} className='autoCompleteListItem'>
-            <span className='autoCompleteListItemText'>{props.item.text}</span>
+            <span className='ms-font-m'>{props.item.text}</span>
         </div>
     );
 }

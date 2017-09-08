@@ -538,9 +538,9 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
         if (this.state.displayAutocomplete === true) {
             entitySuggestStyle = {
                 marginTop: "-8px",
-                borderBottom: "1px solid #999999",
-                borderLeft: "1px solid #999999",
-                borderRight: "1px solid #999999"
+                borderBottom: "1px solid lightgrey",
+                borderLeft: "1px solid lightgrey",
+                borderRight: "1px solid lightgrey"
             }
             let entities: EntityBase[] = this.props.entities.filter((e: EntityBase) => e.entityName.toLowerCase().includes(this.state.entitySuggestFilterText.toLowerCase()));
             entitySuggestOptions = entities.map((e: EntityBase) => {
