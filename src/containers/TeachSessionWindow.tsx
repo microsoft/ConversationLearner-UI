@@ -3,13 +3,14 @@ import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
-import { Nav, INavLink, INavLinkGroup, Link, CommandButton } from 'office-ui-fabric-react';
+import { Nav, INavLink, INavLinkGroup, Link, CommandButton, Checkbox } from 'office-ui-fabric-react';
 import { State } from '../types';
 import { DisplayMode, TeachMode } from '../types/const';
 import Webchat from './Webchat'
 import TeachSessionAdmin from './TeachSessionAdmin'
 import { Teach } from 'blis-models'
 import { deleteTeachSessionAsync } from '../actions/deleteActions'
+import { toggleAutoTeach } from '../actions/teachActions'
 import { createTrainDialog, createTeachSessionAsync } from '../actions/createActions'
 import { setCurrentTrainDialog, setCurrentTeachSession, setDisplayMode } from '../actions/displayActions'
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
@@ -42,6 +43,9 @@ class TeachWindow extends React.Component<Props, any> {
         this.setState({
             open: false
         })
+    }
+    autoTeachChanged(ev: React.FormEvent<HTMLElement>, isChecked: boolean) {
+        this.props.toggleAutoTeach(isChecked);
     }
     render() {
         // Show done button if at least on round and at end of round
@@ -85,6 +89,13 @@ class TeachWindow extends React.Component<Props, any> {
                                 ariaDescription='Abandon Teach'
                                 text='Abandon Teach'
                             />
+                            <Checkbox
+                                label='Auto Teach?'
+                                defaultChecked={false}
+                                onChange={this.autoTeachChanged.bind(this)}
+                                className='teachAuto'
+                                disabled={this.state.editing}
+                            />
                         </div>
                     </div>
                 </div>
@@ -98,7 +109,8 @@ const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         createTeachSession: createTeachSessionAsync,
         deleteTeachSession: deleteTeachSessionAsync,
-        setDisplayMode: setDisplayMode
+        setDisplayMode: setDisplayMode,
+        toggleAutoTeach: toggleAutoTeach
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {

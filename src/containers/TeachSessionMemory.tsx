@@ -119,7 +119,7 @@ class TeachSessionMemory extends React.Component<Props, any> {
         return (
             <div className='content'>
                 <div className='teachTitleBox'>
-                    <div className='ms-font-xl teachTitle'>Memory</div>
+                    <div className='ms-font-l teachTitle'>Memory</div>
                 </div>
                 {details}
             </div>

@@ -59,15 +59,21 @@ class TeachSessionScorer extends React.Component<Props, any> {
         super(p);
         this.state = initState;
     }
+    componentDidUpdate() {
+        this.autoSelect();
+    }
     componentDidMount() {
+        this.autoSelect();
+    }
+    autoSelect() {
         // If not in interactive mode select action automatically
-        if (this.props.teachSession.autoMode && this.props.teachSession.mode == TeachMode.Scorer)
-        {
-            // TODO handle case of no valid action
-            let actions = (this.props.teachSession.scoreResponse.scoredActions as ScoredBase[]).concat(this.props.teachSession.scoreResponse.unscoredActions) || [];
-            let selectedActionId = actions[0].actionId;
-            this.handleActionSelection(selectedActionId);
-        }
+        if (this.props.teachSession.autoTeach && this.props.teachSession.mode == TeachMode.Scorer)
+            {
+                // TODO handle case of no valid action
+                let actions = (this.props.teachSession.scoreResponse.scoredActions as ScoredBase[]).concat(this.props.teachSession.scoreResponse.unscoredActions) || [];
+                let selectedActionId = actions[0].actionId;
+                this.handleActionSelection(selectedActionId);
+            }
     }
     handleCloseActionModal(newAction: ActionBase) {
         this.setState({
@@ -268,7 +274,7 @@ class TeachSessionScorer extends React.Component<Props, any> {
             return null;
         }
 
-        let noEdit =  (this.props.teachSession.autoMode || this.props.teachSession.mode != TeachMode.Scorer);    
+        let noEdit =  (this.props.teachSession.autoTeach || this.props.teachSession.mode != TeachMode.Scorer);    
         let addAction = noEdit ? null : 
             <CommandButton
                 data-automation-id='randomID8'
@@ -282,7 +288,7 @@ class TeachSessionScorer extends React.Component<Props, any> {
         return (
             <div className='content'>
                 <div className='teachTitleBox'>
-                    <div className='ms-font-xl teachTitle'>Action Selection</div>
+                    <div className='ms-font-l teachTitle'>Action Selection</div>
                     {addAction}
                 </div>
                     <DetailsList

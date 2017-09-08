@@ -36,7 +36,7 @@ class TeachSessionAdmin extends React.Component<Props, any> {
                 break;
             default:
                 // If in auto mode show all windows as long as there's at least one round
-                if (this.props.teachSession.autoMode && this.props.teachSession.currentConversationStack.length > 0) {
+                if (this.props.teachSession.autoTeach && this.props.teachSession.currentConversationStack.length > 0) {
                     userWindow = (
                         <div className="teachSessionModeContainer">
                             <TeachSessionMemory className="teachSessionWindow" />

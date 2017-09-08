@@ -322,6 +322,9 @@ export type TeachAction = {
 } | {
     type: AT.TEACH_MESSAGE_RECEIVED,
     message: string
+} | {
+    type: AT.TOGGLE_AUTO_TEACH,
+    autoTeach: boolean
 }
 
 export type ActionObject = 

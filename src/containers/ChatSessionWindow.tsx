@@ -18,7 +18,7 @@ class SessionWindow extends React.Component<Props, any> {
     constructor(p: any) {
         super(p);
         this.state = {
-            chatSession : new Session({saveToLog : null})
+            chatSession : new Session({saveToLog : true})
         }
         let currentAppId: string = this.props.apps.current.appId;
         this.props.createChatSession(this.props.userKey, this.state.chatSession, currentAppId);
