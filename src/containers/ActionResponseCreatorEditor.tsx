@@ -547,7 +547,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                             }
                             defaultSelectedItems={this.state.defaultNegativeEntities}
                         />
-                        <Label>Suggested Entities</Label>
+                        <Label>Suggested Entity</Label>
                         <TagPicker
                             onResolveSuggestions={this.onFilterChangedSuggestedEntity.bind(this)}
                             getTextFromItem={(item) => { return item.name; }}
