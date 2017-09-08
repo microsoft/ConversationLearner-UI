@@ -93,6 +93,7 @@ class ExtractorResponseEditor extends React.Component<any, any> {
         this.renderSubstringObject = this.renderSubstringObject.bind(this)
         this.createSubstringObjects = this.createSubstringObjects.bind(this)
         this.handleClick = this.handleClick.bind(this)
+        this.handleDeleteVariation = this.handleDeleteVariation.bind(this)
         this.handleHover = this.handleHover.bind(this)
         this.setInitialValues = this.setInitialValues.bind(this)
         this.findIndexOfHoveredSubstring = this.findIndexOfHoveredSubstring.bind(this)
@@ -728,17 +729,13 @@ class ExtractorResponseEditor extends React.Component<any, any> {
         let key: number = 0;
         let boxClass = this.props.isValid ? 'extractorResponseBox' : 'extractorResponseBox extractorResponseBoxInvalid';
         let button = this.props.isPrimary ? null :
-            <IconButton
-                data-automation-id='randomID8'
-                className="orangeButton teachVariationButton"
-                onClick={this.handleDeleteVariation.bind(this)}
-                ariaDescription='Delete Variation'
-                iconProps={{ iconName: 'ErrorBadge' }}
-            />
+            <div>
+                <a onClick={() => this.handleDeleteVariation()}><span className="teachDeleteVariation ms-Icon ms-Icon--Delete"></span></a>
+            </div>
         return (
             <div className='teachVariationBox'>
                 {button}
-                <div className='teachAddVariation'>
+                <div className='teachVariation'>
                     <div className={boxClass}>
                         {this.state.substringObjects.map((s: SubstringObject) => {
                             return this.renderSubstringObject(s, ++key)

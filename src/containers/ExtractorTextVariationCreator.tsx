@@ -18,6 +18,7 @@ class ExtractorTextVariationCreator extends React.Component<Props, any> {
     constructor(p: Props) {
         super(p);
         this.state = initState;
+        this.handleAddVariation = this.handleAddVariation.bind(this)
     }
     textChanged(text: string) {
         this.setState({
@@ -36,19 +37,17 @@ class ExtractorTextVariationCreator extends React.Component<Props, any> {
     render() {
         return (
             <div className='teachVariationBox'>
-                <IconButton
-                        data-automation-id='randomID8'
-                        className="goldButton teachVariationButton"
-                        disabled={!this.state.variationValue}
-                        onClick={this.handleAddVariation.bind(this)}
-                        ariaDescription='Add Variation'
-                        iconProps={{ iconName: 'CirclePlus' }}
-                    />
                 <div className='teachAddVariation'>
                     <TextFieldPlaceholder 
                         value={this.state.variationValue}
                         onChanged={this.textChanged.bind(this)}
-                        placeholder="Alternative input..." 
+                        placeholder="Add alternative input..." 
+                        onKeyPress={(ev) => {
+                            if (ev.key === 'Enter') {
+                                this.handleAddVariation();
+                                ev.preventDefault();
+                            }
+                        }}
                      />
                 </div>
             </div>
