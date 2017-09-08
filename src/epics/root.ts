@@ -4,7 +4,7 @@ import { combineEpics, ActionsObservable, Epic } from 'redux-observable'
 import { State, ActionObject } from '../types'
 import { fetchApplicationsEpic, fetchEntitiesEpic, fetchActionsEpic, fetchChatSessionsEpic, fetchTeachSessionsEpic, fetchTrainDialogsEpic, fetchLogDialogsEpic } from './fetchEpics'
 import { createNewApplicationEpic, createNewEntityEpic, createNewActionEpic, createNegativeEntity, createNewChatSessionEpic, createNewTeachSessionEpic } from './createEpics'
-import { deleteActionEpic, deleteApplicationEpic, deleteEntityEpic, deleteReverseEntityEpic, deleteSessionEpic, deleteTeachEpic } from './deleteEpics'
+import { deleteActionEpic, deleteApplicationEpic, deleteEntityEpic, deleteTrainDialogEpic, deleteLogDialogEpic, deleteReverseEntityEpic, deleteSessionEpic, deleteTeachEpic } from './deleteEpics'
 import { editActionEpic, editApplicationEpic, editEntityEpic, setBlisApplicationEpic } from './updateEpics'
 import { runExtractorEpic, runScorerEpic, scorerFeedbackEpic } from './teachEpics'
 
@@ -14,23 +14,29 @@ const rootEpic = combineEpics(
 	fetchActionsEpic,
 	fetchTrainDialogsEpic,
 	fetchLogDialogsEpic,
+	fetchChatSessionsEpic,
+	fetchTeachSessionsEpic,
+
 	createNewApplicationEpic,
 	createNewEntityEpic,
 	createNewActionEpic,
+	createNewChatSessionEpic,
 	createNegativeEntity,
+	createNewTeachSessionEpic,
+
+	deleteActionEpic,
 	deleteApplicationEpic,
 	deleteEntityEpic,
+	deleteLogDialogEpic,
 	deleteReverseEntityEpic,
-	deleteActionEpic,
+	deleteSessionEpic,
+	deleteTeachEpic,
+	deleteTrainDialogEpic,
+
 	editApplicationEpic,
 	editActionEpic,
 	editEntityEpic,
-	fetchChatSessionsEpic,
-	createNewChatSessionEpic,
-	deleteSessionEpic,
-	fetchTeachSessionsEpic,
-	createNewTeachSessionEpic,
-	deleteTeachEpic,
+
 	setBlisApplicationEpic,
 	runExtractorEpic,
 	runScorerEpic,
