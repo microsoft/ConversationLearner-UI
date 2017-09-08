@@ -51,13 +51,13 @@ export const deleteTeachEpic: Epic<ActionObject, State> = (action$: ActionsObser
 export const deleteTrainDialogEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
     return action$.ofType(AT.DELETE_TRAIN_DIALOG_ASYNC)
         .flatMap((actionObject: any) =>
-            deleteTrainDialog(actionObject.key, actionObject.currentAppId, actionObject.teachSession)
+            deleteTrainDialog(actionObject.key, actionObject.currentAppId, actionObject.trainDialog)
         );
 }
 
 export const deleteLogDialogEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
     return action$.ofType(AT.DELETE_LOG_DIALOG_ASYNC)
         .flatMap((actionObject: any) =>
-            deleteLogDialog(actionObject.key, actionObject.currentAppId, actionObject.teachSession)
+            deleteLogDialog(actionObject.key, actionObject.currentAppId, actionObject.logDialog)
         );
 }

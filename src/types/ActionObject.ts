@@ -246,13 +246,17 @@ export type DeleteAction = {
         actionGUID: string
     } | {
         type: AT.DELETE_TRAIN_DIALOG_ASYNC,
-        trainDialogGUID: string,
+        key: string,
+        currentAppId: string,
+        trainDialog: TrainDialog
     } | {
         type: AT.DELETE_TRAIN_DIALOG_FULFILLED,
         trainDialogGUID: string,
     }| {
         type: AT.DELETE_LOG_DIALOG_ASYNC,
-        logDialogGUID: string,
+        key: string,
+        currentAppId: string,
+        logDialog: LogDialog
     } | {
         type: AT.DELETE_LOG_DIALOG_FULFILLED,
         logDialogGUID: string,

@@ -1,6 +1,6 @@
 import { ActionObject } from '../types'
 import { AT } from '../types/ActionTypes'
-import { BlisAppBase, EntityBase, ActionBase, Session, Teach} from 'blis-models'
+import { BlisAppBase, EntityBase, ActionBase, Session, Teach, TrainDialog, LogDialog} from 'blis-models'
 
 export const deleteBLISApplicationAsync = (key: string, GUID: string, blisApp: BlisAppBase): ActionObject => {
     
@@ -103,11 +103,12 @@ export const deleteTeachSessionFulfilled = (teachSessionGUID: string): ActionObj
 }
 
 
-export const deleteTrainDialogAsync = (key: string, GUID: string): ActionObject => {
+export const deleteTrainDialogAsync = (key: string, trainDialog: TrainDialog, currentAppId: string): ActionObject => {
     return {
         type: AT.DELETE_TRAIN_DIALOG_ASYNC,
         key: key,
-        trainDialogGUID: GUID
+        currentAppId: currentAppId,
+        trainDialog: trainDialog
     }
 }
 
@@ -119,11 +120,12 @@ export const deleteTrainDialogFulfilled = (key: string, GUID: string): ActionObj
     }
 }
 
-export const deleteLogDialogAsync = (key: string, GUID: string): ActionObject => {
+export const deleteLogDialogAsync = (key: string, logDialog: LogDialog, currentAppId: string): ActionObject => {
     return {
         type: AT.DELETE_LOG_DIALOG_ASYNC,
         key: key,
-        logDialogGUID: GUID
+        currentAppId: currentAppId,
+        logDialog: logDialog
     }
 }
 

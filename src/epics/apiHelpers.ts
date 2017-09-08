@@ -226,7 +226,7 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
   };
 
   export const deleteLogDialog = (key : string, appId: string, logDialog: LogDialog): Observable<ActionObject> => {
-    let deleteActionRoute: string = makeRoute(key, `app/${appId}/logDialog/${logDialog.logDialogId}`); 
+    let deleteActionRoute: string = makeRoute(key, `app/${appId}/lodDialog/${logDialog.logDialogId}`); 
     const { logDialogId, ...dialogToSend } = logDialog
     let configWithBody = {...config, body: dialogToSend}
     return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.delete(deleteActionRoute, configWithBody)
@@ -238,7 +238,7 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
   };
 
   export const deleteTrainDialog = (key : string, appId: string, trainDialog: TrainDialog): Observable<ActionObject> => {
-    let deleteActionRoute: string = makeRoute(key, `app/${appId}/trainDialog/${trainDialog.trainDialogId}`); 
+    let deleteActionRoute: string = makeRoute(key, `app/${appId}/traindialog/${trainDialog.trainDialogId}`); 
     const { trainDialogId, version, packageCreationId, packageDeletionId, ...dialogToSend } = trainDialog
     let configWithBody = {...config, body: dialogToSend}
     return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.delete(deleteActionRoute, configWithBody)
