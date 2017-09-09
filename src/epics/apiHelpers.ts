@@ -17,6 +17,7 @@ import { deleteBLISApplicationFulfilled, deleteReverseEntityAsnyc, deleteEntityF
 import { editBLISApplicationFulfilled, editEntityFulfilled, editActionFulfilled } from '../actions/updateActions'
 import { runExtractorFulfilled, runScorerFulfilled, postScorerFeedbackFulfilled } from '../actions/teachActions'
 import { setErrorDisplay, setCurrentBLISAppFulfilled } from '../actions/displayActions'
+import { fetchAllTrainDialogsAsync } from '../actions/fetchActions';
 import { ActionObject } from '../types'
 import { AT } from '../types/ActionTypes'
 
@@ -351,7 +352,8 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
     let deleteTeachSessionRoute: string = makeRoute(key, `app/${appId}/teach/${teachSession.teachId}`,`save=${save}`);
     return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.delete(deleteTeachSessionRoute, config)
       .then(response => {
-              obs.next(deleteTeachSessionFulfilled(teachSession.teachId));
+              obs.next(deleteTeachSessionFulfilled(key, teachSession.teachId, appId));
+              obs.next(fetchAllTrainDialogsAsync(key, appId));
               obs.complete();
             })
             .catch(err => handleError(obs, err,  AT.DELETE_TEACH_SESSION_ASYNC)));

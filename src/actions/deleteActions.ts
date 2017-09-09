@@ -95,9 +95,12 @@ export const deleteTeachSessionAsync = (key: string, teachSession: Teach, curren
     }
 }
 
-export const deleteTeachSessionFulfilled = (teachSessionGUID: string): ActionObject => {
+export const deleteTeachSessionFulfilled = (key: string, teachSessionGUID: string, currentAppId: string): ActionObject => {
+
     return {
         type: AT.DELETE_TEACH_SESSION_FULFILLED,
+        key: key,
+        currentAppId: currentAppId,
         teachSessionGUID: teachSessionGUID
     }
 }
