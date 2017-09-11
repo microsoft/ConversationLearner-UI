@@ -304,10 +304,30 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                 if (letter === "$") {
                     let indexFound: number = specialIndexes.find(i => i == pixels);
                     if (!indexFound) {
-                        this.setState({
-                            displayAutocomplete: true,
-                            dropdownIndex: pixels
-                        })
+                        //need to see if there is already text following the special character
+                        let isLastCharacter: boolean = text.length == (pixels + 1);
+                        let precedesSpace: boolean = text[pixels + 1] ? text[pixels + 1] == " " : false;
+                        if (isLastCharacter || precedesSpace){
+                            this.setState({
+                                displayAutocomplete: true,
+                                dropdownIndex: pixels
+                            })
+                        } else {
+                            //find the text following the special character and set it equal to the filter text so the dropdown doesnt have all options
+                            let filterText: string = ""
+                            for (let i = pixels + 1; i < text.length; i++) {
+                                if (text[i] != " ") {
+                                    filterText += text[i];
+                                } else {
+                                    break;
+                                }
+                            }
+                            this.setState({
+                                displayAutocomplete: true,
+                                dropdownIndex: pixels,
+                                entitySuggestFilterText: filterText
+                            })
+                        } 
                     }
                 }
                 pixels++;
