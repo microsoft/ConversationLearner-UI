@@ -446,7 +446,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
         }
     }
     handleChangeSuggestedEntities(items: EntityPickerObject[]) {
-        let negativeEntities: EntityPickerObject[] = this.state.negEntitiesVal;
+        let negativeEntities: EntityPickerObject[] = [...this.state.negEntitiesVal]
         if (items.length > 0) {
             // we added one. Need to check if its already in negative entities. If it is not, add it to that as well.
             let suggestedEntity: EntityPickerObject = items[0];
@@ -522,7 +522,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
         let specialIndexes: number[] = [];
         //dont add the entity if weve already manually entered it into the required picker
         let foundEntityPickerObj: EntityPickerObject = this.state.reqEntitiesVal.find((e: EntityPickerObject) => e.name == obj.text);
-        let newRequiredEntities: EntityPickerObject[] = foundEntityPickerObj ? this.state.reqEntitiesVal : [...this.state.reqEntitiesVal, { key: obj.text, name: obj.text }];
+        let newRequiredEntities: EntityPickerObject[] = foundEntityPickerObj ? [...this.state.reqEntitiesVal] : [...this.state.reqEntitiesVal, { key: obj.text, name: obj.text }];
         specialIndexes = [...this.state.specialCharIndexesToDisregard, this.state.dropdownIndex]
         this.setState({
             specialCharIndexesToDisregard: specialIndexes,
