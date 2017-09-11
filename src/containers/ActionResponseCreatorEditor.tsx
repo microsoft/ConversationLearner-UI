@@ -233,8 +233,22 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
             payloadVal: text
         })
     }
+    findEntityForDeletedSpecialChar(index: number, payload: string): EntityBase {
+        let name: string = ""
+        let removedEntity: EntityBase;
+        //start directly after the special character
+        for (let i = index + 1; i < payload.length; i++) {
+            if (payload[i] == " ") {
+                removedEntity = this.props.entities.find((e: EntityBase) => e.entityName == name);
+                return removedEntity;
+            } else {
+                name += payload[i];
+            }
+        }
+    }
     updateSpecialCharIndexesToDisregard(newPayload: string): number[] {
         let indexesToSet: number[];
+        let requiredEntities = [...this.state.reqEntitiesVal];
         let updatedIndex = this.findUpdatedIndex(newPayload);
         if (newPayload.length > this.state.payloadVal.length) {
             //we added a letter. Find which index was updated. Increment every index in the current special indexes array >= to the updated index
@@ -249,11 +263,17 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
             //we deleted a letter. Find which index was updated. Decrement every index in the current special indexes array <= to the updated index
             //If the character deleted was actually one of the special characters, remove it from the array.
             indexesToSet = this.state.specialCharIndexesToDisregard.map((i: number) => {
-                if (i >= updatedIndex) {
+                if (i > updatedIndex) {
                     return i - 1;
-                } else if (i == updatedIndex) {
-                    //we have deleted a special character. Need to remove it from the array and remove its corresponding entity from the required entities
-                    // console.log('deleted a special character', this.state.specialCharIndexesToDisregard)
+                } else if (i === updatedIndex) {
+                    //we have deleted a special character. Need to remove it from the array and remove its corresponding entity from the required entities picker
+                    let entityToRemove: EntityBase = this.findEntityForDeletedSpecialChar(i, this.state.payloadVal);
+                    let newRequiredEntities = this.state.reqEntitiesVal.filter((re: EntityPickerObject) => re.name !== entityToRemove.entityName);
+                    this.setState({
+                        reqEntitiesVal: newRequiredEntities,
+                        defaultRequiredEntities: newRequiredEntities,
+                        requiredTagPickerKey: this.state.requiredTagPickerKey + 1
+                    })
                 } else {
                     return i
                 }
