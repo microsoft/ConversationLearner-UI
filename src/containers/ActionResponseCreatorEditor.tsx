@@ -40,7 +40,8 @@ const initState = {
     entityModalOpen: false,
     open: false,
     requiredTagPickerKey: 1000,
-    negativeTagPickerKey: 2000
+    negativeTagPickerKey: 2000,
+    tabbed: false
 };
 
 class ActionResponseCreatorEditor extends React.Component<Props, any> {
@@ -307,7 +308,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                         //need to see if there is already text following the special character
                         let isLastCharacter: boolean = text.length == (pixels + 1);
                         let precedesSpace: boolean = text[pixels + 1] ? text[pixels + 1] == " " : false;
-                        if (isLastCharacter || precedesSpace){
+                        if (isLastCharacter || precedesSpace) {
                             this.setState({
                                 displayAutocomplete: true,
                                 dropdownIndex: pixels
@@ -327,7 +328,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                                 dropdownIndex: pixels,
                                 entitySuggestFilterText: filterText
                             })
-                        } 
+                        }
                     }
                 }
                 pixels++;
@@ -564,16 +565,26 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
         return word;
     }
     handleBlur() {
-        // let self = this;
-        // //this is for pressing tab. Is also triggered by clicking off the payload text field so we'll only handle tabs. Need JQuery to do so 
-        // $(window).keyup(function (e) {
-        //     var code = (e.keyCode ? e.keyCode : e.which);
-        //     if (code == 9) {
-        //         let entityOptions = self.getAlphabetizedFilteredEntityOptions();
-        //         let optionAtTopOfList = entityOptions[0];
-        //         self.entitySuggestionSelected(optionAtTopOfList);
-        //     }
-        // });
+        let self = this;
+        //this is for pressing tab. Is also triggered by clicking off the payload text field so we'll only handle tabs. Need JQuery to do so 
+        $(window).keyup((e: any) => {
+            var code = (e.keyCode ? e.keyCode : e.which);
+            if (code == 9) {
+                if (this.state.tabbed == true) {
+                    this.setState({
+                        tabbed: false
+                    })
+                } else {
+                    let entityOptions = self.getAlphabetizedFilteredEntityOptions();
+                    let optionAtTopOfList = entityOptions[0];
+                    self.entitySuggestionSelected(optionAtTopOfList);
+                    $("#actionPayload").focus()
+                    this.setState({
+                        tabbed: true
+                    })
+                }
+            }
+        });
     }
     entitySuggestionSelected(obj: { text: string }) {
         let specialIndexes: number[] = [];
@@ -669,6 +680,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                             disabled={this.state.editing}
                         />
                         <TextFieldPlaceholder
+                            id={"actionPayload"}
                             onGetErrorMessage={this.checkPayload.bind(this)}
                             onChanged={this.payloadChanged.bind(this)}
                             label="Payload"
@@ -678,6 +690,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                         <List
                             items={entitySuggestOptions}
                             style={entitySuggestStyle}
+                            renderCount={5}
                             onRenderCell={(item, index: number) => (
                                 <AutocompleteListItem onClick={() => this.entitySuggestionSelected(item)} item={item} />
                             )}
