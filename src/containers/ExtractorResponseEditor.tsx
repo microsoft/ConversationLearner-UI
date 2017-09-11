@@ -77,7 +77,8 @@ const styles = {
         position: "absolute",
         minWidth: "12em",
         float: "left",
-        textAlign: "left"
+        textAlign: "left",
+        zIndex: "5000"
     }
 }
 
