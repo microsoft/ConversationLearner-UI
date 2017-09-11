@@ -11,10 +11,16 @@ import { ActionBase, ActionMetaData, ActionTypes, EntityBase, EntityMetaData, En
 import { State } from '../types';
 import EntityCreatorEditor from './EntityCreatorEditor';
 import AutocompleteListItem from '../components/AutocompleteListItem';
+import * as $ from 'jquery';
 
 interface EntityPickerObject {
     key: string
     name: string
+}
+
+interface TextObject {
+    key: string
+    text: string
 }
 
 const initState = {
@@ -518,6 +524,18 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
         })
         return word;
     }
+    handleBlur() {
+        let self = this;
+        //this is for pressing tab. Is also triggered by clicking off the payload text field so we'll only handle tabs. Need JQuery to do so 
+        $(window).keyup(function (e) {
+            var code = (e.keyCode ? e.keyCode : e.which);
+            if (code == 9) {
+                let entityOptions = self.getAlphabetizedFilteredEntityOptions();
+                let optionAtTopOfList = entityOptions[0];
+                self.entitySuggestionSelected(optionAtTopOfList);
+            }
+        });
+    }
     entitySuggestionSelected(obj: { text: string }) {
         let specialIndexes: number[] = [];
         //dont add the entity if weve already manually entered it into the required picker
@@ -535,6 +553,21 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
         this.reInitializeDropdown();
         this.checkForSpecialCharacters(newPayload, specialIndexes, true);
     }
+    getAlphabetizedFilteredEntityOptions(): TextObject[] {
+        let filteredEntities: EntityBase[] = this.props.entities.filter((e: EntityBase) => e.entityName.toLowerCase().includes(this.state.entitySuggestFilterText.toLowerCase()) && e.metadata.positiveId == null);
+        let names: string[] = filteredEntities.map((e: EntityBase) => {
+            return e.entityName;
+        })
+        let ordered = names.sort();
+        let options: TextObject[] = names.map((name: string) => {
+            let ent: EntityBase = this.props.entities.find((e: EntityBase) => e.entityName == name);
+            return {
+                key: ent.entityName,
+                text: ent.entityName
+            }
+        })
+        return options;
+    }
     render() {
         let entitySuggestStyle: {};
         let entitySuggestOptions: {}[] = [];
@@ -545,13 +578,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                 borderLeft: "1px solid lightgrey",
                 borderRight: "1px solid lightgrey"
             }
-            let entities: EntityBase[] = this.props.entities.filter((e: EntityBase) => e.entityName.toLowerCase().includes(this.state.entitySuggestFilterText.toLowerCase()) && e.metadata.positiveId == null);
-            entitySuggestOptions = entities.map((e: EntityBase) => {
-                return {
-                    key: e.entityName,
-                    text: e.entityName
-                }
-            })
+            entitySuggestOptions = this.getAlphabetizedFilteredEntityOptions();
         } else {
             entitySuggestStyle = {
                 display: "none"
@@ -607,6 +634,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                             onChanged={this.payloadChanged.bind(this)}
                             label="Payload"
                             placeholder="Payload..."
+                            onBlur={this.handleBlur.bind(this)}
                             value={this.state.payloadVal} />
                         <List
                             items={entitySuggestOptions}
