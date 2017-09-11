@@ -40,8 +40,7 @@ const initState = {
     entityModalOpen: false,
     open: false,
     requiredTagPickerKey: 1000,
-    negativeTagPickerKey: 2000,
-    focusedOnPayload: false
+    negativeTagPickerKey: 2000
 };
 
 class ActionResponseCreatorEditor extends React.Component<Props, any> {
@@ -168,8 +167,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
             displayAutocomplete: false,
             dropdownIndex: null,
             entitySuggestFilterText: "",
-            specialCharIndexesToDisregard: [],
-            numStars: 0
+            specialCharIndexesToDisregard: []
         });
     }
     handleClose() {
@@ -254,7 +252,8 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                 if (i >= updatedIndex) {
                     return i - 1;
                 } else if (i == updatedIndex) {
-                    //do nothing. We dont want this number anymore
+                    //we have deleted a special character. Need to remove it from the array and remove its corresponding entity from the required entities
+                    // console.log('deleted a special character', this.state.specialCharIndexesToDisregard)
                 } else {
                     return i
                 }
@@ -525,16 +524,16 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
         return word;
     }
     handleBlur() {
-        let self = this;
-        //this is for pressing tab. Is also triggered by clicking off the payload text field so we'll only handle tabs. Need JQuery to do so 
-        $(window).keyup(function (e) {
-            var code = (e.keyCode ? e.keyCode : e.which);
-            if (code == 9) {
-                let entityOptions = self.getAlphabetizedFilteredEntityOptions();
-                let optionAtTopOfList = entityOptions[0];
-                self.entitySuggestionSelected(optionAtTopOfList);
-            }
-        });
+        // let self = this;
+        // //this is for pressing tab. Is also triggered by clicking off the payload text field so we'll only handle tabs. Need JQuery to do so 
+        // $(window).keyup(function (e) {
+        //     var code = (e.keyCode ? e.keyCode : e.which);
+        //     if (code == 9) {
+        //         let entityOptions = self.getAlphabetizedFilteredEntityOptions();
+        //         let optionAtTopOfList = entityOptions[0];
+        //         self.entitySuggestionSelected(optionAtTopOfList);
+        //     }
+        // });
     }
     entitySuggestionSelected(obj: { text: string }) {
         let specialIndexes: number[] = [];
