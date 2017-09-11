@@ -582,7 +582,16 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
             index: this.state.dropdownIndex,
             entityPickerObject: { key: obj.text, name: obj.text }
         }
-        specialIndexes = [...this.state.specialCharIndexesToDisregard, specialIndex]
+        let newPayload: string = this.updatePayloadWithEntitySuggestion(obj.text);
+        let charsAdded: number = newPayload.length - this.state.payloadVal.length;
+        specialIndexes = [...this.state.specialCharIndexesToDisregard, specialIndex].map((s: SpecialIndex) => {
+            if (s.index > this.state.dropdownIndex) {
+                return { ...s, index: s.index + charsAdded };
+            } else {
+                return s;
+            }
+        })
+        //need to add to each special index.index the amount of characters added
         this.setState({
             specialCharIndexesToDisregard: specialIndexes,
             reqEntitiesVal: newRequiredEntities,
@@ -590,7 +599,6 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
             entitySuggestFilterText: "",
             requiredTagPickerKey: this.state.requiredTagPickerKey + 1
         })
-        let newPayload = this.updatePayloadWithEntitySuggestion(obj.text);
         this.reInitializeDropdown();
         this.checkForSpecialCharacters(newPayload, specialIndexes, true);
     }
