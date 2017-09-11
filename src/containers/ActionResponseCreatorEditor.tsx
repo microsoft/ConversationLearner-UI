@@ -23,6 +23,11 @@ interface TextObject {
     text: string
 }
 
+interface SpecialIndex {
+    index: number,
+    entityPickerObject: EntityPickerObject
+}
+
 const initState = {
     actionTypeVal: 'TEXT',
     payloadVal: '',
@@ -40,7 +45,8 @@ const initState = {
     entityModalOpen: false,
     open: false,
     requiredTagPickerKey: 1000,
-    negativeTagPickerKey: 2000
+    negativeTagPickerKey: 2000,
+    tabbed: false
 };
 
 class ActionResponseCreatorEditor extends React.Component<Props, any> {
@@ -227,34 +233,21 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
         })
     }
     payloadChanged(text: string) {
-        let specialIndexes = this.updateSpecialCharIndexesToDisregard(text);
+        let specialIndexes: SpecialIndex[] = this.updateSpecialCharIndexesToDisregard(text);
         this.checkForSpecialCharacters(text, specialIndexes);
         this.setState({
             payloadVal: text
         })
     }
-    findEntityForDeletedSpecialChar(index: number, payload: string): EntityBase {
-        let name: string = ""
-        let removedEntity: EntityBase;
-        //start directly after the special character
-        for (let i = index + 1; i < payload.length; i++) {
-            if (payload[i] == " ") {
-                removedEntity = this.props.entities.find((e: EntityBase) => e.entityName == name);
-                return removedEntity;
-            } else {
-                name += payload[i];
-            }
-        }
-    }
-    updateSpecialCharIndexesToDisregard(newPayload: string): number[] {
-        let indexesToSet: number[];
+    updateSpecialCharIndexesToDisregard(newPayload: string): SpecialIndex[] {
+        let indexesToSet: SpecialIndex[] = [];
         let requiredEntities = [...this.state.reqEntitiesVal];
         let updatedIndex = this.findUpdatedIndex(newPayload);
         if (newPayload.length > this.state.payloadVal.length) {
             //we added a letter. Find which index was updated. Increment every index in the current special indexes array >= to the updated index
-            indexesToSet = this.state.specialCharIndexesToDisregard.map((i: number) => {
-                if (i >= updatedIndex) {
-                    return i + 1;
+            indexesToSet = this.state.specialCharIndexesToDisregard.map((i: SpecialIndex) => {
+                if (i.index >= updatedIndex) {
+                    return { ...i, index: i.index + 1 }
                 } else {
                     return i;
                 }
@@ -262,18 +255,22 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
         } else {
             //we deleted a letter. Find which index was updated. Decrement every index in the current special indexes array <= to the updated index
             //If the character deleted was actually one of the special characters, remove it from the array.
-            indexesToSet = this.state.specialCharIndexesToDisregard.map((i: number) => {
-                if (i > updatedIndex) {
-                    return i - 1;
-                } else if (i === updatedIndex) {
+            indexesToSet = this.state.specialCharIndexesToDisregard.filter((s: SpecialIndex) => {
+                if (s.index == updatedIndex) {
                     //we have deleted a special character. Need to remove it from the array and remove its corresponding entity from the required entities picker
-                    let entityToRemove: EntityBase = this.findEntityForDeletedSpecialChar(i, this.state.payloadVal);
-                    let newRequiredEntities = this.state.reqEntitiesVal.filter((re: EntityPickerObject) => re.name !== entityToRemove.entityName);
+                    let newRequiredEntities = this.state.reqEntitiesVal.filter((re: EntityPickerObject) => re.name !== s.entityPickerObject.name);
                     this.setState({
                         reqEntitiesVal: newRequiredEntities,
                         defaultRequiredEntities: newRequiredEntities,
                         requiredTagPickerKey: this.state.requiredTagPickerKey + 1
                     })
+                    return false;
+                } else {
+                    return true;
+                }
+            }).map((i: SpecialIndex) => {
+                if (i.index > updatedIndex) {
+                    return { ...i, index: i.index - 1 }
                 } else {
                     return i
                 }
@@ -296,18 +293,18 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
         }
         return word;
     }
-    checkForSpecialCharacters(text: string, specialIndexes: number[], dropdownRemoved?: boolean) {
+    checkForSpecialCharacters(text: string, specialIndexes: SpecialIndex[], dropdownRemoved?: boolean) {
         let pixels: number = 0;
         if (this.state.displayAutocomplete === false || (dropdownRemoved && dropdownRemoved === true)) {
             //we only care about $ if dropdown isnt displayed yet
             for (let letter of text) {
                 if (letter === "$") {
-                    let indexFound: number = specialIndexes.find(i => i == pixels);
+                    let indexFound: SpecialIndex = specialIndexes.find((i: SpecialIndex) => i.index == pixels);
                     if (!indexFound) {
                         //need to see if there is already text following the special character
                         let isLastCharacter: boolean = text.length == (pixels + 1);
                         let precedesSpace: boolean = text[pixels + 1] ? text[pixels + 1] == " " : false;
-                        if (isLastCharacter || precedesSpace){
+                        if (isLastCharacter || precedesSpace) {
                             this.setState({
                                 displayAutocomplete: true,
                                 dropdownIndex: pixels
@@ -327,7 +324,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                                 dropdownIndex: pixels,
                                 entitySuggestFilterText: filterText
                             })
-                        } 
+                        }
                     }
                 }
                 pixels++;
@@ -564,23 +561,28 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
         return word;
     }
     handleBlur() {
-        // let self = this;
-        // //this is for pressing tab. Is also triggered by clicking off the payload text field so we'll only handle tabs. Need JQuery to do so 
-        // $(window).keyup(function (e) {
+        let self = this;
+        //this is for pressing tab. Is also triggered by clicking off the payload text field so we'll only handle tabs. Need JQuery to do so 
+        // $(window).keyup((e: any) => {
         //     var code = (e.keyCode ? e.keyCode : e.which);
         //     if (code == 9) {
         //         let entityOptions = self.getAlphabetizedFilteredEntityOptions();
         //         let optionAtTopOfList = entityOptions[0];
         //         self.entitySuggestionSelected(optionAtTopOfList);
+        //         $("#actionPayload").focus()
         //     }
         // });
     }
     entitySuggestionSelected(obj: { text: string }) {
-        let specialIndexes: number[] = [];
+        let specialIndexes: SpecialIndex[] = [];
         //dont add the entity if weve already manually entered it into the required picker
         let foundEntityPickerObj: EntityPickerObject = this.state.reqEntitiesVal.find((e: EntityPickerObject) => e.name == obj.text);
         let newRequiredEntities: EntityPickerObject[] = foundEntityPickerObj ? [...this.state.reqEntitiesVal] : [...this.state.reqEntitiesVal, { key: obj.text, name: obj.text }];
-        specialIndexes = [...this.state.specialCharIndexesToDisregard, this.state.dropdownIndex]
+        let specialIndex: SpecialIndex = {
+            index: this.state.dropdownIndex,
+            entityPickerObject: { key: obj.text, name: obj.text }
+        }
+        specialIndexes = [...this.state.specialCharIndexesToDisregard, specialIndex]
         this.setState({
             specialCharIndexesToDisregard: specialIndexes,
             reqEntitiesVal: newRequiredEntities,
@@ -669,6 +671,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                             disabled={this.state.editing}
                         />
                         <TextFieldPlaceholder
+                            id={"actionPayload"}
                             onGetErrorMessage={this.checkPayload.bind(this)}
                             onChanged={this.payloadChanged.bind(this)}
                             label="Payload"
@@ -678,6 +681,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                         <List
                             items={entitySuggestOptions}
                             style={entitySuggestStyle}
+                            renderCount={5}
                             onRenderCell={(item, index: number) => (
                                 <AutocompleteListItem onClick={() => this.entitySuggestionSelected(item)} item={item} />
                             )}
