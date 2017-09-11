@@ -65,6 +65,8 @@ class TeachWindow extends React.Component<Props, any> {
                 <div className="wc-disable"></div>
                 : null;
 
+        // Mask controls if autoTeach is enabled
+        let mask = (this.props.teachSession.autoTeach) ? <div className="teachAutoMask"></div> : null;
         return (
             <Modal
                 isOpen={this.props.error == null}
@@ -76,6 +78,7 @@ class TeachWindow extends React.Component<Props, any> {
                         {chatDisable}
                     </div>
                     <div className="wc-gridAdmin">
+                        {mask}
                         <div className="wc-gridAdminContent">
                             <TeachSessionAdmin />
                         </div>
@@ -91,7 +94,7 @@ class TeachWindow extends React.Component<Props, any> {
                             />
                             <Checkbox
                                 label='Auto Teach?'
-                                defaultChecked={false}
+                                checked={this.props.teachSession.autoTeach}
                                 onChange={this.autoTeachChanged.bind(this)}
                                 className='teachAuto'
                                 disabled={this.state.editing}

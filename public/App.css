@@ -291,11 +291,15 @@
   border-style: none none none solid;
   border-width: 1px;
   border-color: #999999;
-  width: 95%;
+  width: 100%;
 }
 .wc-gridAdminContent{
   display: block;
-  width: 100%;
+  padding-right: 20px;
+  max-height: calc(100% - 100px);
+  max-height: -moz-calc(100% - 100px);
+  max-height: -webkit-calc(100% - 100px);
+  overflow-y: auto;
 }
 .wc-gridFooter{
   grid-column: 2;
@@ -304,6 +308,7 @@
   display: block;
   position: absolute;
   bottom: 0;
+  z-index: 2000;
   width: 100%;
 }
 .wc-gridContainer{
@@ -376,13 +381,23 @@
   margin-top: 5px;
   margin-left: 10px;
 }
+.teachVariation{
+  overflow: hidden;
+}
+.teachDeleteVariation {
+  font-size: 18px;
+  float: right;
+  position: relative;
+  margin-left: 3px;
+}
 .teachAddVariation{
   overflow: hidden;
+  opacity: 0.7;
 }
 .teachVariationButton {
   float: right;
-  height: 35px !important;
-  width: 120px;
+  height: 50px !important;
+  font-size: 8px !important;
 }
 .teachModal{
   width: 90%;
@@ -398,6 +413,16 @@
   color: #ffffff;
   margin: 30px 20px 20px 20px !important;
   float: right;
+}
+.teachAutoMask
+{
+  width: 100%;
+  height: 100%;
+  opacity: 0.19;
+  background-color: #000000;
+  position: absolute;
+  z-index: 1000;
+  visibility: visible !important
 }
 .abandonTeach{
   float: right;

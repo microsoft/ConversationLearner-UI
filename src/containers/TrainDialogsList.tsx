@@ -23,9 +23,9 @@ let columns: IColumn[] = [
         isResizable: true
     },
     {
-        key: 'firstUtterance',
+        key: 'lastUtterance',
         name: 'Last Utterance',
-        fieldName: 'firstUtterance',
+        fieldName: 'lastUtterance',
         minWidth: 100,
         maxWidth: 200,
         isResizable: true
@@ -98,7 +98,7 @@ class TrainDialogsList extends React.Component<Props, any> {
     lastUtterance(item: any)
     {
         try {
-            return  item.rounds[item.rounds.lenght-1].extractorStep.textVariations[0].text;
+            return  item.rounds[item.rounds.length-1].extractorStep.textVariations[0].text;
         }
         catch (err) {
             return "??";
