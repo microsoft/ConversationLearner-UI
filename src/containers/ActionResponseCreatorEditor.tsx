@@ -239,13 +239,16 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
         let removedEntity: EntityBase;
         //start directly after the special character
         for (let i = index + 1; i < payload.length; i++) {
-            if (payload[i] == " ") {
+            let p: string = payload[i];
+            if (p == " ") {
                 removedEntity = this.props.entities.find((e: EntityBase) => e.entityName == name);
                 return removedEntity;
             } else {
                 name += payload[i];
             }
         }
+        removedEntity = this.props.entities.find((e: EntityBase) => e.entityName == name);
+        return removedEntity;
     }
     updateSpecialCharIndexesToDisregard(newPayload: string): number[] {
         let indexesToSet: number[];
