@@ -5,10 +5,11 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State, TrainDialogState } from '../types';
 import { generateGUID } from '../util';
-import * as BotChat from 'botframework-webchat'
-import { Chat } from 'botframework-webchat'
+import * as BotChat from 'blis-webchat'
+import { Chat } from 'blis-webchat'
 import { UserInput } from 'blis-models'
 import { runExtractorAsync } from '../actions/teachActions';
+import { Activity } from 'botframework-directlinejs';
 
 class Webchat extends React.Component<Props, any> {
     render() {
@@ -48,6 +49,7 @@ class Webchat extends React.Component<Props, any> {
             user: { name: this.props.user.name, id: this.props.user.id },
             bot: { name: "BlisTrainer", id: "BlisTrainer" },
             resize: 'detect',
+            history: this.props.history
         }
         return (
             <div id="botchat" className="webchatwindow wc-app">
@@ -74,7 +76,8 @@ const mapStateToProps = (state: State, ownProps: any) => {
 }
 
 interface ReceivedProps {
-    sessionType: string
+    sessionType: string,
+    history: Activity[]
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps

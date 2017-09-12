@@ -2,6 +2,7 @@ import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
 import AppAdmin from './AppAdmin';
 import TeachSessionWindow from './TeachSessionWindow';
+import TrainDialogWindow from './TrainDialogWindow'
 import ChatSessionWindow from './ChatSessionWindow';
 import { fetchApplicationsAsync } from '../actions/fetchActions'
 import BLISAppsList from './BLISAppsList';
@@ -39,7 +40,10 @@ class BLISAppsHomepage extends React.Component<Props, any> {
                 display = [<AppAdmin />, <TeachSessionWindow />];
                 break;
             case DisplayMode.Session:
-                display = [<AppAdmin />,<ChatSessionWindow />];
+                display = [<AppAdmin />, <ChatSessionWindow />];
+                break;
+            case DisplayMode.TrainDialog:
+                display = [<AppAdmin />, <TrainDialogWindow />];
                 break;
          }
         return (
