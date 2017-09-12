@@ -628,7 +628,16 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                 text: ent.entityName
             }
         })
-        return options;
+        let optionsNotSelected: TextObject[] = options.filter((t: TextObject) => {
+            let found: boolean = true
+            this.state.reqEntitiesVal.map((r: EntityPickerObject) => {
+                if(r.name == t.text){
+                    found = false;
+                }
+            })
+            return found;
+        })
+        return optionsNotSelected;
     }
     render() {
         let entitySuggestStyle: {};
