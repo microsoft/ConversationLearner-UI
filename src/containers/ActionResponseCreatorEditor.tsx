@@ -630,6 +630,9 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                 let entityOptions = this.getAlphabetizedFilteredEntityOptions();
                 let optionAtTopOfList = entityOptions[0];
                 this.entitySuggestionSelected(optionAtTopOfList);
+                $(document).ready(() => {
+                    $('#actionPayload').focus();
+                })
             }
         }
     }
