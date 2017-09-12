@@ -46,7 +46,8 @@ const initState = {
     open: false,
     requiredTagPickerKey: 1000,
     negativeTagPickerKey: 2000,
-    tabbed: false
+    numTabs: 0,
+    numTabsNecessary: 0
 };
 
 class ActionResponseCreatorEditor extends React.Component<Props, any> {
@@ -562,16 +563,28 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
     }
     handleBlur() {
         let self = this;
-        //this is for pressing tab. Is also triggered by clicking off the payload text field so we'll only handle tabs. Need JQuery to do so 
-        // $(window).keyup((e: any) => {
-        //     var code = (e.keyCode ? e.keyCode : e.which);
-        //     if (code == 9) {
-        //         let entityOptions = self.getAlphabetizedFilteredEntityOptions();
-        //         let optionAtTopOfList = entityOptions[0];
-        //         self.entitySuggestionSelected(optionAtTopOfList);
-        //         $("#actionPayload").focus()
-        //     }
-        // });
+        // this is for pressing tab. Is also triggered by clicking off the payload text field so we'll only handle tabs. Need JQuery to do so 
+
+        //when you press tab the first time, key up runs once. The second, twice. Etc.
+        $(window).keyup((e: any) => {
+            var code = (e.keyCode ? e.keyCode : e.which);
+            if (code == 9) {
+                if (this.state.numTabs == this.state.numTabsNecessary) {
+                    let entityOptions = self.getAlphabetizedFilteredEntityOptions();
+                    let optionAtTopOfList = entityOptions[0];
+                    self.entitySuggestionSelected(optionAtTopOfList);
+                    $("#actionPayload").focus()
+                    this.setState({
+                        numTabs: 0,
+                        numTabsNecessary: this.state.numTabsNecessary + 1
+                    })
+                } else {
+                    this.setState({
+                        numTabs: this.state.numTabs + 1
+                    })
+                }
+            }
+        });
     }
     entitySuggestionSelected(obj: { text: string }) {
         let specialIndexes: SpecialIndex[] = [];
@@ -615,7 +628,16 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                 text: ent.entityName
             }
         })
-        return options;
+        let optionsNotSelected: TextObject[] = options.filter((t: TextObject) => {
+            let found: boolean = true
+            this.state.reqEntitiesVal.map((r: EntityPickerObject) => {
+                if(r.name == t.text){
+                    found = false;
+                }
+            })
+            return found;
+        })
+        return optionsNotSelected;
     }
     render() {
         let entitySuggestStyle: {};
