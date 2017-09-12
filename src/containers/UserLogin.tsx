@@ -9,8 +9,7 @@ import { TextFieldPlaceholder } from './TextFieldPlaceholder';
 import { setUser, logout, setLoginDisplay } from '../actions/displayActions'
 import { BlisAppBase, BlisAppMetaData } from 'blis-models'
 import { developmentSubKeyLUIS } from '../secrets'
-import { State } from '../types'
-import * as $ from 'jquery';
+import { State } from '../types';
 
 type CultureObject = {
     CultureCode: string;
@@ -25,27 +24,23 @@ class UserLogin extends React.Component<Props, any> {
             loadedUser: false
         }
     }
-    componentDidMount() {
-        let self = this;
-        $(document).keypress(function (e) {
-            if (e.which == 13) {
-                if (self.state.loadedUser == false) {
-                    let userId = self.generateUserId(self.state.userName, self.state.userPassword);
-                    self.props.setUser(self.state.userName, self.state.userPassword, userId);
-                    self.setState({
-                        loadedUser: true
-                    })
-                    self.handleClose();
-                }
-            }
-        });
-    }
     handleClose() {
         this.props.setLoginDisplay(false);
         this.setState({
             userName: '',
             userPassword: ''
         })
+    }
+    checkForEnter(key: KeyboardEvent) {
+        let code = key.keyCode;
+        if (code == 13) {
+            let userId = this.generateUserId(this.state.userName, this.state.userPassword);
+            this.props.setUser(this.state.userName, this.state.userPassword, userId);
+            this.setState({
+                loadedUser: true
+            })
+            this.handleClose();
+        }
     }
     nameChanged(text: string) {
         this.setState({
@@ -81,8 +76,8 @@ class UserLogin extends React.Component<Props, any> {
             title = "Log In";
             input =
                 <div>
-                    <TextFieldPlaceholder onChanged={this.nameChanged.bind(this)} label="Name" placeholder="User Name..." value={this.state.userName} />
-                    <TextFieldPlaceholder onChanged={this.passwordChanged.bind(this)} type="Password" label="Password" placeholder="Password..." value={this.state.userPassword} />
+                    <TextFieldPlaceholder onKeyDown={this.checkForEnter.bind(this)} onChanged={this.nameChanged.bind(this)} label="Name" placeholder="User Name..." value={this.state.userName} />
+                    <TextFieldPlaceholder onKeyDown={this.checkForEnter.bind(this)} onChanged={this.passwordChanged.bind(this)} type="Password" label="Password" placeholder="Password..." value={this.state.userPassword} />
                 </div>;
             button =
                 <CommandButton
