@@ -700,6 +700,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                             onChanged={this.payloadChanged.bind(this)}
                             label="Payload"
                             placeholder="Payload..."
+                            autoFocus={true}
                             onFocus={this.payloadIsFocused.bind(this)}
                             onKeyDown={this.payloadKeyDown.bind(this)}
                             onBlur={this.handleBlur.bind(this)}
