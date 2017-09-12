@@ -566,25 +566,25 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
         // this is for pressing tab. Is also triggered by clicking off the payload text field so we'll only handle tabs. Need JQuery to do so 
 
         //when you press tab the first time, key up runs once. The second, twice. Etc.
-        $(window).keyup((e: any) => {
-            var code = (e.keyCode ? e.keyCode : e.which);
-            if (code == 9) {
-                if (this.state.numTabs == this.state.numTabsNecessary) {
-                    let entityOptions = self.getAlphabetizedFilteredEntityOptions();
-                    let optionAtTopOfList = entityOptions[0];
-                    self.entitySuggestionSelected(optionAtTopOfList);
-                    $("#actionPayload").focus()
-                    this.setState({
-                        numTabs: 0,
-                        numTabsNecessary: this.state.numTabsNecessary + 1
-                    })
-                } else {
-                    this.setState({
-                        numTabs: this.state.numTabs + 1
-                    })
-                }
-            }
-        });
+        // $(window).keyup((e: any) => {
+        //     var code = (e.keyCode ? e.keyCode : e.which);
+        //     if (code == 9) {
+        //         if (this.state.numTabs == this.state.numTabsNecessary) {
+        //             let entityOptions = self.getAlphabetizedFilteredEntityOptions();
+        //             let optionAtTopOfList = entityOptions[0];
+        //             self.entitySuggestionSelected(optionAtTopOfList);
+        //             $("#actionPayload").focus()
+        //             this.setState({
+        //                 numTabs: 0,
+        //                 numTabsNecessary: this.state.numTabsNecessary + 1
+        //             })
+        //         } else {
+        //             this.setState({
+        //                 numTabs: this.state.numTabs + 1
+        //             })
+        //         }
+        //     }
+        // });
     }
     entitySuggestionSelected(obj: { text: string }) {
         let specialIndexes: SpecialIndex[] = [];
