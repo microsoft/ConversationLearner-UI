@@ -8,52 +8,83 @@ import { generateGUID } from '../util';
 import * as BotChat from 'blis-webchat'
 import { Chat } from 'blis-webchat'
 import { UserInput } from 'blis-models'
+import { BehaviorSubject } from 'rxjs';
 import { runExtractorAsync } from '../actions/teachActions';
 import { Activity } from 'botframework-directlinejs';
 
 class Webchat extends React.Component<Props, any> {
-    render() {
-        const dl = new BotChat.DirectLine({
-            secret: 'secret', //params['s'],
-            token: 'token', //params['t'],
-            domain: "http://localhost:3000/directline", //params['domain'],
-            webSocket: false // defaults to true,
-        });
+    private behaviorSubject : BehaviorSubject<any> = null;
+    private chatProps : BotChat.ChatProps = null;
 
-        const _dl = {
-            ...dl,
-            postActivity: (activity: any) => {
-                if (activity.type = "message")
-                {
-                    if (this.props.sessionType === 'teach') {
-                        this.props.addMessageToTeachConversationStack(activity.text)
+    constructor(p: any) {
+        super(p);
+        this.behaviorSubject = null;
+        this.selectedActivity$ = this.selectedActivity$.bind(this)
+    }
 
-                        let userInput = new UserInput({ text: activity.text});
-                        let appId: string = this.props.apps.current.appId;
-                        let teachId: string = this.props.teachSessions.current.teachId;
-                        this.props.runExtractor(this.props.user.key, appId, teachId, userInput);
+    selectedActivity$() : BehaviorSubject<any>
+    { 
+        if (!this.behaviorSubject) {
+            this.behaviorSubject = new BehaviorSubject<any>({});
+            this.behaviorSubject.subscribe((value) => {
+                value = 0;
+            })
+        } 
+        return this.behaviorSubject;
+    }
 
-                    } else {
-                        this.props.addMessageToChatConversationStack(activity)
+    GetChatProps() : BotChat.ChatProps {
+        if (!this.chatProps)
+        {
+            const dl = new BotChat.DirectLine({
+                secret: 'secret', //params['s'],
+                token: 'token', //params['t'],
+                domain: "http://localhost:3000/directline", //params['domain'],
+                webSocket: false // defaults to true,
+            });
+    
+            const _dl = {
+                ...dl,
+                postActivity: (activity: any) => {
+                    if (activity.type = "message")
+                    {
+                        if (this.props.sessionType === 'teach') {
+                            this.props.addMessageToTeachConversationStack(activity.text)
+    
+                            let userInput = new UserInput({ text: activity.text});
+                            let appId: string = this.props.apps.current.appId;
+                            let teachId: string = this.props.teachSessions.current.teachId;
+                            this.props.runExtractor(this.props.user.key, appId, teachId, userInput);
+    
+                        } else {
+                            this.props.addMessageToChatConversationStack(activity)
+                        }
                     }
-                }
-                return dl.postActivity(activity)
-            },
-        } as BotChat.DirectLine;
-
-        const props: BotChat.ChatProps = {
-            botConnection: _dl,
-            formatOptions: {
-                showHeader: false
-            },
-            user: { name: this.props.user.name, id: this.props.user.id },
-            bot: { name: "BlisTrainer", id: "BlisTrainer" },
-            resize: 'detect',
-            history: this.props.history
+                    return dl.postActivity(activity)
+                },
+            } as BotChat.DirectLine;
+    
+            this.chatProps = {
+                botConnection: _dl,
+                formatOptions: {
+                    showHeader: false
+                },
+                user: { name: this.props.user.name, id: this.props.user.id },
+                bot: { name: "BlisTrainer", id: "BlisTrainer" },
+                resize: 'detect'
+            }
+            // If viewing history, add history and listener
+            if (this.props.history) {
+                this.chatProps = {...this.chatProps, history: this.props.history,  selectedActivity: this.selectedActivity$() as any};
+            }
         }
+        return this.chatProps;
+    }
+    render() {
+        let chatProps = this.GetChatProps();
         return (
             <div id="botchat" className="webchatwindow wc-app">
-                <Chat {...props} />
+                <Chat {...chatProps} />
             </div>
         )
     }

@@ -117,7 +117,7 @@ class TrainDialogsList extends React.Component<Props, any> {
         }
     }
     handleClick() {
-        this.props.setDisplayMode(DisplayMode.TrainDialog);  //TODO  cut?
+        this.props.setDisplayMode(DisplayMode.Teach);  
     }
     handleSelection(selected: TrainDialog) {
        this.props.setCurrentTrainDialog(this.props.userKey, selected); 

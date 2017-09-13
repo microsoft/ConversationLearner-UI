@@ -26,10 +26,11 @@ class TrainDialogWindow extends React.Component<Props, any> {
     }
     handleQuit() {
         this.props.setDisplayMode(DisplayMode.AppAdmin);
-        let currentAppId: string = this.props.apps.current.appId;
-        this.props.deleteChatSession(this.props.userKey, this.props.chatSession.current, currentAppId)
     }
     generateHistory() : Activity[] {
+        if (!this.props.trainDialog) {
+            return null;
+        }
         let activities = [];
         let msgId = 0;
         for (let round of this.props.trainDialog.rounds)
@@ -46,7 +47,7 @@ class TrainDialogWindow extends React.Component<Props, any> {
                         activities.push(botActivity);
                     }
             }
-        return activities;//[{ id: "messageid", from: { id: "userid", name: "Ryan" }, type: "message", text: "The user said this in the past." }, { id: "Bot", from: { id: "botid", name: "Botterfly" }, type: "message", text: "The user said this in the past." }] as Activity[]
+        return activities;
     }
     render() {
         let history = this.generateHistory();
@@ -69,8 +70,8 @@ class TrainDialogWindow extends React.Component<Props, any> {
                             disabled={false}
                             onClick={this.handleQuit.bind(this)}
                             className='ms-font-su goldButton teachSessionHeaderButton'
-                            ariaDescription='Done Testing'
-                            text='Done Testing'
+                            ariaDescription='Done'
+                            text='Done'
                         />
                         </div>    
                     </div>
