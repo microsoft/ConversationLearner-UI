@@ -1,6 +1,7 @@
 {
     "compilerOptions": {
         "declaration": true,
+        "skipLibCheck": true,  
         "importHelpers": true,
         "jsx": "react",
         "lib": [

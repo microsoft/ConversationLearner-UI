@@ -296,10 +296,9 @@
 .wc-gridAdminContent{
   display: block;
   padding-right: 20px;
-  max-height: calc(100% - 100px);
-  max-height: -moz-calc(100% - 100px);
-  max-height: -webkit-calc(100% - 100px);
   overflow-y: auto;
+  height: calc(100% - 90px);
+  margin-bottom: 10px;
 }
 .wc-gridFooter{
   grid-column: 2;
@@ -373,6 +372,7 @@
   height: 100%;
   display: block;
   width: 100%;
+  margin-top: 0px;
 }
 .teachSessionWindow{
   width: 100%

@@ -39,14 +39,6 @@ let columns: IColumn[] = [
         isResizable: true
     },
     {
-        key: 'id',
-        name: 'DialogID',
-        fieldName: 'id',
-        minWidth: 100,
-        maxWidth: 200,
-        isResizable: true
-    },
-    {
         key: 'actions',
         name: 'Actions',
         fieldName: 'entityId',
@@ -114,8 +106,6 @@ class TrainDialogsList extends React.Component<Props, any> {
                 return <span className='ms-font-m-plus'>{this.lastUtterance(item)}</span>;
             case 'turns':
                 return <span className='ms-font-m-plus'>{item.rounds.length}</span>;
-            case 'id':
-                return <span className='ms-font-m-plus'>{item.trainDialogId}</span>;
             case 'actions':
                 return (
                     <div>
@@ -127,10 +117,11 @@ class TrainDialogsList extends React.Component<Props, any> {
         }
     }
     handleClick() {
-        this.props.setDisplayMode(DisplayMode.Teach);
+        this.props.setDisplayMode(DisplayMode.Teach);  
     }
     handleSelection(selected: TrainDialog) {
-        this.props.setCurrentTrainDialog(this.props.userKey, selected);
+       this.props.setCurrentTrainDialog(this.props.userKey, selected); 
+       this.props.setDisplayMode(DisplayMode.TrainDialog);
     }
     onChange(newValue: string) {
         let lcString = newValue.toLowerCase();
