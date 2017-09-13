@@ -23,6 +23,7 @@ interface TextObject {
     text: string
 }
 
+//$ENTITY is a SpecialIndex. Index is the position of the $ and entityPicker object is the entity it refers to. You can get the entity base from its name
 interface SpecialIndex {
     index: number,
     entityPickerObject: EntityPickerObject
@@ -77,6 +78,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
             if (p.blisAction === null) {
                 this.setState({ ...initState, open: p.open });
             } else {
+                // we are editing the action and need to load necessary properties
                 let entities = this.props.entities.map((e: EntityBase) => {
                     return {
                         key: e.entityName,
@@ -126,6 +128,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
 
     }
     componentDidUpdate() {
+        //this will run successfully when a user has created an entity while creating/editing an action and has returned to the action creator modal 
         if (this.state.availableRequiredEntities.length != this.props.entities.length) {
             let entities = this.props.entities.map((e: EntityBase) => {
                 return {
@@ -169,6 +172,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
         });
     }
     initializeDropdown() {
+        //these properties exist separately from those in initState and should be initialized separately.
         this.setState({
             displayAutocomplete: false,
             dropdownIndex: null,
@@ -232,6 +236,111 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
             actionTypeVal: obj.text,
         })
     }
+    onFilterChanged(filterText: string, tagList: EntityPickerObject[]) {
+        //required entites available should exclude all saved entities
+        let entList = filterText ? this.state.availableRequiredEntities.filter((ent: EntityPickerObject) => ent.name.toLowerCase().indexOf(filterText.toLowerCase()) === 0).filter((item: EntityPickerObject) => !this.listContainsDocument(item, tagList)) : [];
+        let usedEntities = this.state.reqEntitiesVal.concat(this.state.negEntitiesVal).concat(this.state.suggEntitiesVal)
+        let entListToReturn = entList.filter((e: EntityPickerObject) => {
+            let decision: boolean = true;
+            usedEntities.map((u: EntityPickerObject) => {
+                if (e.key == u.key) {
+                    decision = false;
+                }
+            })
+            return decision;
+        })
+        return entListToReturn;
+    }
+    onFilterChangedNegative(filterText: string, tagList: EntityPickerObject[]) {
+        //negative entites available should exclude those in required entities, and its own saved entities, but not suggested ones
+        let entList = filterText ? this.state.availableRequiredEntities.filter((ent: EntityPickerObject) => ent.name.toLowerCase().indexOf(filterText.toLowerCase()) === 0).filter((item: EntityPickerObject) => !this.listContainsDocument(item, tagList)) : [];
+        let usedEntities = this.state.reqEntitiesVal.concat(this.state.negEntitiesVal)
+        let entListToReturn = entList.filter((e: EntityPickerObject) => {
+            let decision: boolean = true;
+            usedEntities.map((u: EntityPickerObject) => {
+                if (e.key == u.key) {
+                    decision = false;
+                }
+            })
+            return decision;
+        })
+        return entListToReturn;
+    }
+    onFilterChangedSuggestedEntity(filterText: string, tagList: EntityPickerObject[]) {
+        //suggested entites available should exclude those in required entities, and its own saved entities, but not negative ones
+        if (this.state.suggEntitiesVal.length > 0) {
+            return [];
+        }
+        let entList = filterText ? this.state.availableRequiredEntities.filter((ent: EntityPickerObject) => ent.name.toLowerCase().indexOf(filterText.toLowerCase()) === 0).filter((item: EntityPickerObject) => !this.listContainsDocument(item, tagList)) : [];
+        let usedEntities = this.state.reqEntitiesVal.concat(this.state.suggEntitiesVal)
+        let entListToReturn = entList.filter((e: EntityPickerObject) => {
+            let decision: boolean = true;
+            usedEntities.map((u: EntityPickerObject) => {
+                if (e.key == u.key) {
+                    decision = false;
+                }
+            })
+            return decision;
+        })
+        return entListToReturn;
+    }
+
+    listContainsDocument(tag: EntityPickerObject, tagList: EntityPickerObject[]) {
+        if (!tagList || !tagList.length || tagList.length === 0) {
+            return false;
+        }
+        return tagList.filter(compareTag => compareTag.key === tag.key).length > 0;
+    }
+    handleChangeRequiredEntities(items: EntityPickerObject[]) {
+        this.setState({
+            reqEntitiesVal: items
+        })
+    }
+    handleChangeNegativeEntities(items: EntityPickerObject[]) {
+        if (items.length < this.state.negEntitiesVal.length) {
+            //we deleted one, need to make sure it isnt a suggested entity;
+            if (this.state.suggEntitiesVal.length == 1) {
+                let suggestedEntity: EntityPickerObject = this.state.suggEntitiesVal[0];
+                let deletedNegativeEntity: EntityPickerObject = this.findDeletedEntity(items, this.state.negEntitiesVal);
+                if (suggestedEntity.name == deletedNegativeEntity.name) {
+                    let negativeEntities: EntityPickerObject = this.state.negEntitiesVal;
+                    //do nothing. Picker will internally update so we need to overwrite that
+                    this.setState({
+                        negEntitiesVal: negativeEntities,
+                        defaultNegativeEntities: negativeEntities,
+                        negativeTagPickerKey: this.state.negativeTagPickerKey + 1
+                    })
+                } else {
+                    this.setState({
+                        negEntitiesVal: items,
+                        defaultNegativeEntities: items
+                    })
+                }
+            } else {
+                this.setState({
+                    negEntitiesVal: items,
+                    defaultNegativeEntities: items
+                })
+            }
+        } else {
+            this.setState({
+                negEntitiesVal: items,
+                defaultNegativeEntities: items
+            })
+        }
+    }
+    
+    handleCloseEntityModal() {
+        this.setState({
+            entityModalOpen: false
+        })
+    }
+    handleOpenEntityModal() {
+        this.setState({
+            entityModalOpen: true
+        })
+    }
+
     payloadChanged(text: string) {
         let specialIndexes: SpecialIndex[] = this.updateSpecialCharIndexesToDisregard(text);
         this.checkForSpecialCharacters(text, specialIndexes);
@@ -294,6 +403,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
         return word;
     }
     checkForSpecialCharacters(text: string, specialIndexes: SpecialIndex[], dropdownRemoved?: boolean) {
+        //this is the method that controls whether the dropdown displays, and sets the current dropdown index for later use
         let pixels: number = 0;
         if (this.state.displayAutocomplete === false || (dropdownRemoved && dropdownRemoved === true)) {
             //we only care about $ if dropdown isnt displayed yet
@@ -378,67 +488,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
             }
         }
     }
-
-    onFilterChanged(filterText: string, tagList: EntityPickerObject[]) {
-        //required entites available should exclude all saved entities
-        let entList = filterText ? this.state.availableRequiredEntities.filter((ent: EntityPickerObject) => ent.name.toLowerCase().indexOf(filterText.toLowerCase()) === 0).filter((item: EntityPickerObject) => !this.listContainsDocument(item, tagList)) : [];
-        let usedEntities = this.state.reqEntitiesVal.concat(this.state.negEntitiesVal).concat(this.state.suggEntitiesVal)
-        let entListToReturn = entList.filter((e: EntityPickerObject) => {
-            let decision: boolean = true;
-            usedEntities.map((u: EntityPickerObject) => {
-                if (e.key == u.key) {
-                    decision = false;
-                }
-            })
-            return decision;
-        })
-        return entListToReturn;
-    }
-    onFilterChangedNegative(filterText: string, tagList: EntityPickerObject[]) {
-        //negative entites available should exclude those in required entities, and its own saved entities, but not suggested ones
-        let entList = filterText ? this.state.availableRequiredEntities.filter((ent: EntityPickerObject) => ent.name.toLowerCase().indexOf(filterText.toLowerCase()) === 0).filter((item: EntityPickerObject) => !this.listContainsDocument(item, tagList)) : [];
-        let usedEntities = this.state.reqEntitiesVal.concat(this.state.negEntitiesVal)
-        let entListToReturn = entList.filter((e: EntityPickerObject) => {
-            let decision: boolean = true;
-            usedEntities.map((u: EntityPickerObject) => {
-                if (e.key == u.key) {
-                    decision = false;
-                }
-            })
-            return decision;
-        })
-        return entListToReturn;
-    }
-    onFilterChangedSuggestedEntity(filterText: string, tagList: EntityPickerObject[]) {
-        //suggested entites available should exclude those in required entities, and its own saved entities, but not negative ones
-        if (this.state.suggEntitiesVal.length > 0) {
-            return [];
-        }
-        let entList = filterText ? this.state.availableRequiredEntities.filter((ent: EntityPickerObject) => ent.name.toLowerCase().indexOf(filterText.toLowerCase()) === 0).filter((item: EntityPickerObject) => !this.listContainsDocument(item, tagList)) : [];
-        let usedEntities = this.state.reqEntitiesVal.concat(this.state.suggEntitiesVal)
-        let entListToReturn = entList.filter((e: EntityPickerObject) => {
-            let decision: boolean = true;
-            usedEntities.map((u: EntityPickerObject) => {
-                if (e.key == u.key) {
-                    decision = false;
-                }
-            })
-            return decision;
-        })
-        return entListToReturn;
-    }
-
-    listContainsDocument(tag: EntityPickerObject, tagList: EntityPickerObject[]) {
-        if (!tagList || !tagList.length || tagList.length === 0) {
-            return false;
-        }
-        return tagList.filter(compareTag => compareTag.key === tag.key).length > 0;
-    }
-    handleChangeRequiredEntities(items: EntityPickerObject[]) {
-        this.setState({
-            reqEntitiesVal: items
-        })
-    }
+    
     findDeletedEntity(items: EntityPickerObject[], oldItems: EntityPickerObject[]): EntityPickerObject {
         let deletedEntity: EntityPickerObject;
         oldItems.map((o: EntityPickerObject) => {
@@ -454,39 +504,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
         })
         return deletedEntity;
     }
-    handleChangeNegativeEntities(items: EntityPickerObject[]) {
-        if (items.length < this.state.negEntitiesVal.length) {
-            //we deleted one, need to make sure it isnt a suggested entity;
-            if (this.state.suggEntitiesVal.length == 1) {
-                let suggestedEntity: EntityPickerObject = this.state.suggEntitiesVal[0];
-                let deletedNegativeEntity: EntityPickerObject = this.findDeletedEntity(items, this.state.negEntitiesVal);
-                if (suggestedEntity.name == deletedNegativeEntity.name) {
-                    let negativeEntities: EntityPickerObject = this.state.negEntitiesVal;
-                    //do nothing. Picker will internally update so we need to overwrite that
-                    this.setState({
-                        negEntitiesVal: negativeEntities,
-                        defaultNegativeEntities: negativeEntities,
-                        negativeTagPickerKey: this.state.negativeTagPickerKey + 1
-                    })
-                } else {
-                    this.setState({
-                        negEntitiesVal: items,
-                        defaultNegativeEntities: items
-                    })
-                }
-            } else {
-                this.setState({
-                    negEntitiesVal: items,
-                    defaultNegativeEntities: items
-                })
-            }
-        } else {
-            this.setState({
-                negEntitiesVal: items,
-                defaultNegativeEntities: items
-            })
-        }
-    }
+
     handleChangeSuggestedEntities(items: EntityPickerObject[]) {
         let negativeEntities: EntityPickerObject[] = [...this.state.negEntitiesVal]
         if (items.length > 0) {
@@ -525,16 +543,6 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                 })
             }
         }
-    }
-    handleCloseEntityModal() {
-        this.setState({
-            entityModalOpen: false
-        })
-    }
-    handleOpenEntityModal() {
-        this.setState({
-            entityModalOpen: true
-        })
     }
     findIndexOfLastCharacterFollowingSpecialCharacterPreSpace(): number {
         let word: string = "";
