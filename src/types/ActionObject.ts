@@ -322,14 +322,22 @@ export type TeachAction = {
     key: string,
     appId: string,
     teachId: string,
-    trainScorerStep: TrainScorerStep
+    trainScorerStep: TrainScorerStep,
+    waitForUser: boolean
 } | {
-    type: AT.POST_SCORE_FEEDBACK_FULFILLED,
+    type: AT.POST_SCORE_FEEDBACK_FULFILLEDWAIT,
     key: string,
     appId: string,
-    teachId: string,
+    teachId: string
     teachResponse: TeachResponse
 } | {
+    type: AT.POST_SCORE_FEEDBACK_FULFILLEDNOWAIT,
+    key: string,
+    appId: string,
+    teachId: string
+    teachResponse: TeachResponse, 
+    uiScoreInput: UIScoreInput
+}| {
     type: AT.TEACH_MESSAGE_RECEIVED,
     message: string
 } | {

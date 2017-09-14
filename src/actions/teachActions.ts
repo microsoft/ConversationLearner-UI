@@ -58,25 +58,41 @@ export const runScorerFulfilled = (key: string, appId: string, teachId: string, 
     }
 }
 
-export const postScorerFeedbackAsync = (key: string, appId: string, teachId: string, trainScorerStep: TrainScorerStep) : ActionObject => { 
+export const postScorerFeedbackAsync = (key: string, appId: string, teachId: string, trainScorerStep: TrainScorerStep, waitForUser: boolean, uiScoreInput: UIScoreInput) : ActionObject => { 
     return {
         type: AT.POST_SCORE_FEEDBACK_ASYNC,
         key: key,
         appId: appId,
         teachId: teachId,
-        trainScorerStep: trainScorerStep
+        trainScorerStep: trainScorerStep,
+        waitForUser: waitForUser,
+        uiScoreInput: uiScoreInput
     }
 }
 
-export const postScorerFeedbackFulfilled = (key: string, appId: string, teachId: string, teachResponse: TeachResponse) : ActionObject => { 
+// Score has been posted.  Action is Terminal
+export const postScorerFeedbackWaitFulfilled = (key: string, appId: string, teachId: string, teachResponse: TeachResponse) : ActionObject => { 
     return {
-        type: AT.POST_SCORE_FEEDBACK_FULFILLED,
+        type: AT.POST_SCORE_FEEDBACK_FULFILLEDWAIT,
         key: key,
         appId: appId,
         teachId: teachId,
         teachResponse: teachResponse
     }
 }
+
+// Score has been posted.  Action is not Terminal
+export const postScorerFeedbackNoWaitFulfilled = (key: string, appId: string, teachId: string, teachResponse: TeachResponse, uiScoreInput: UIScoreInput) : ActionObject => { 
+    return {
+        type: AT.POST_SCORE_FEEDBACK_FULFILLEDNOWAIT,
+        key: key,
+        appId: appId,
+        teachId: teachId,
+        teachResponse: teachResponse, 
+        uiScoreInput: uiScoreInput
+    }
+}
+
 
 export const toggleAutoTeach = (autoTeach: boolean): ActionObject => {
     return {

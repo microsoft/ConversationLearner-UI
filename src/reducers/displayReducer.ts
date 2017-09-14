@@ -99,7 +99,8 @@ const displayReducer: Reducer<DisplayState> =  (state = initialState, action: Ac
 
         case AT.RUN_EXTRACTOR_FULFILLED:
         case AT.RUN_SCORER_FULFILLED:
-        case AT.POST_SCORE_FEEDBACK_FULFILLED:
+        case AT.POST_SCORE_FEEDBACK_FULFILLEDWAIT:
+        case AT.POST_SCORE_FEEDBACK_FULFILLEDNOWAIT:
             return {...state, displaySpinner: removeSpinner(state.displaySpinner, action.type) };
         default:
             return state;

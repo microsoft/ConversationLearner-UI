@@ -23,6 +23,14 @@ export const runScorerEpic: Epic<ActionObject, State> = (action$: ActionsObserva
 export const scorerFeedbackEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
     return action$.ofType(AT.POST_SCORE_FEEDBACK_ASYNC)
         .flatMap((action: any) =>
-            postScore(action.key, action.appId, action.teachId, action.trainScorerStep)
+            postScore(action.key, action.appId, action.teachId, action.trainScorerStep, action.waitForUser, action.uiScoreInput)
+        );
+}
+
+// Score has been put, action was not terminal so put new score
+export const postScoreFeedbackFulfilledWaitEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
+    return action$.ofType(AT.POST_SCORE_FEEDBACK_FULFILLEDNOWAIT)
+        .flatMap((action: any) =>
+            putScore(action.key, action.appId, action.teachId, action.uiScoreInput)
         );
 }

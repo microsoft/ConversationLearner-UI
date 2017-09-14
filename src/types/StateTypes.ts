@@ -2,7 +2,7 @@ import { BlisAppBase, BlisAppMetaData, BlisAppList,
     EntityBase, EntityMetaData, EntityList, 
     ActionBase, ActionMetaData, ActionList, ActionTypes, 
     TrainDialog, LogDialog, Teach, Session,
-    Memory, ScoreInput, ExtractResponse, ScoreResponse } from 'blis-models';
+    Memory, UIScoreInput, ScoreInput, ExtractResponse, ScoreResponse } from 'blis-models';
 import { DisplayMode, TeachMode } from '../types/const'
 import { AT } from '../types/ActionTypes'
 
@@ -34,7 +34,8 @@ export type TeachSessionState = {
     mode: TeachMode,
     input: string,
     memories: Memory[],
-    scoreInput: ScoreInput
+    scoreInput: ScoreInput,
+    uiScoreInput: UIScoreInput,
     extractResponses: ExtractResponse[],
     scoreResponse: ScoreResponse,
     currentConversationStack: {}[],
