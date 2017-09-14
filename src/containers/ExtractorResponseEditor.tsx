@@ -116,12 +116,14 @@ class ExtractorResponseEditor extends React.Component<any, any> {
         this.setInitialValues(this.props)
     }
     setInitialValues(props: any) {
-        if (props.extractResponse.text && props.extractResponse.predictedEntities && (props.extractResponse.text !== this.state.input)) {
+        // Could be rendering a prediction or a recorded dialog
+        let entities = props.extractResponse.predictedEntities ? props.extractResponse.predictedEntities : props.extractResponse.labelEntities;
+        if (props.extractResponse.text && entities && (props.extractResponse.text !== this.state.input)) {
             this.setState({
                 input: props.extractResponse.text,
-                predictedEntities: props.extractResponse.predictedEntities
+                predictedEntities: entities
             })
-            this.createSubstringObjects(props.extractResponse.text, props.extractResponse.predictedEntities)
+            this.createSubstringObjects(props.extractResponse.text, entities)
         }
     }
     updateCurrentPredictedEntities(substringObjects: SubstringObject[]) {

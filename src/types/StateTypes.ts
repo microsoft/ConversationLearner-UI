@@ -15,7 +15,10 @@ export type ErrorState = {
 };
 export type TrainDialogState = {
     all: TrainDialog[],
-    current: TrainDialog
+    current: TrainDialog,
+    roundNumber: number,
+    scoreNumber: number,
+    mode: TeachMode
 }
 export type LogDialogState = {
     all: LogDialog[],

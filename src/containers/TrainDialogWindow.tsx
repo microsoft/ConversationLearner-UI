@@ -7,7 +7,7 @@ import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { State } from '../types';
 import { DisplayMode } from '../types/const';
 import Webchat from './Webchat'
-import ChatSessionAdmin from './ChatSessionAdmin'
+import TrainDialogAdmin from './TrainDialogAdmin'
 import { Session, ActionBase } from 'blis-models'
 import { deleteChatSessionAsync } from '../actions/deleteActions'
 import { createChatSessionAsync } from '../actions/createActions'
@@ -32,21 +32,20 @@ class TrainDialogWindow extends React.Component<Props, any> {
             return null;
         }
         let activities = [];
-        let msgId = 0;
-        for (let round of this.props.trainDialog.rounds)
-            {
-                let userText = round.extractorStep.textVariations[0].text;
-                let userActivity = {id: (msgId).toString(), from: {id: this.props.user.id, name: this.props.user.name}, type: "message", text: userText} as Activity;
-                activities.push(userActivity);
+        let roundNum = 0;
+        for (let round of this.props.trainDialog.rounds) {
+            let userText = round.extractorStep.textVariations[0].text;
+            let userActivity = {id: roundNum.toString(), from: {id: this.props.user.id, name: this.props.user.name}, type: "message", text: userText} as Activity;
+            activities.push(userActivity);
 
-                for (let scorerStep of round.scorerSteps)
-                    {
-                        let labelAction = scorerStep.labelAction;
-                        let action = this.props.actions.filter((a: ActionBase) => a.actionId == labelAction)[0]; 
-                        let botActivity = {id: (msgId++).toString(), from: {id:"BlisTrainer", name: "BlisTrainer"}, type: "message", text: action.payload} as Activity;
-                        activities.push(botActivity);
-                    }
+            for (let scorerStep of round.scorerSteps) {
+                let labelAction = scorerStep.labelAction;
+                let action = this.props.actions.filter((a: ActionBase) => a.actionId == labelAction)[0]; 
+                let botActivity = {id: roundNum.toString(), from: {id:"BlisTrainer", name: "BlisTrainer"}, type: "message", text: action.payload} as Activity;
+                activities.push(botActivity);
             }
+            roundNum++;
+        }
         return activities;
     }
     render() {
@@ -62,7 +61,7 @@ class TrainDialogWindow extends React.Component<Props, any> {
                     </div>
                     <div className="wc-gridAdmin">
                         <div className="wc-gridAdminContent">
-                            <ChatSessionAdmin />
+                            <TrainDialogAdmin />
                         </div>
                         <div className="wc-gridFooter">
                         <CommandButton
