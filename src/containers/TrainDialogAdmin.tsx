@@ -26,7 +26,7 @@ class TrainDialogAdmin extends React.Component<Props, any> {
         let key = 0;
         let extractDisplay = [];
         for (let extractResponse of round.extractorStep.textVariations) {    
-            extractDisplay.push(<ExtractorResponseEditor key={key++} isPrimary={key==1} isValid={true} extractResponse={extractResponse}/>);   
+            extractDisplay.push(<ExtractorResponseEditor key={key++} isPrimary={true} isValid={true} extractResponse={extractResponse}/>);   
         }
         return (
             <div className='content'>

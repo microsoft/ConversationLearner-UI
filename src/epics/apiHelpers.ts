@@ -15,7 +15,7 @@ import { fetchApplicationsFulfilled, fetchAllEntitiesFulfilled, fetchAllActionsF
 import { createApplicationFulfilled, createEntityFulfilled, createPositiveEntityFulfilled, createNegativeEntityFulfilled, createActionFulfilled, createChatSessionFulfilled, createTeachSessionFulfilled } from '../actions/createActions'
 import { deleteBLISApplicationFulfilled, deleteReverseEntityAsnyc, deleteEntityFulfilled, deleteActionFulfilled, deleteChatSessionFulfilled, deleteTeachSessionFulfilled, deleteLogDialogFulFilled, deleteTrainDialogFulfilled } from '../actions/deleteActions'
 import { editBLISApplicationFulfilled, editEntityFulfilled, editActionFulfilled } from '../actions/updateActions'
-import { runExtractorFulfilled, runScorerFulfilled, postScorerFeedbackFulfilled } from '../actions/teachActions'
+import { runExtractorFulfilled, runScorerFulfilled, postScorerFeedbackWaitFulfilled, postScorerFeedbackNoWaitFulfilled } from '../actions/teachActions'
 import { setErrorDisplay, setCurrentBLISAppFulfilled } from '../actions/displayActions'
 import { fetchAllTrainDialogsAsync } from '../actions/fetchActions';
 import { ActionObject } from '../types'
@@ -413,11 +413,16 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
    * – ie "commits" a scorer label, appending it to the teach session's 
    * trainDialog, and advancing the dialog. This may yield produce a new package.
    */
-  export const postScore = (key : string, appId : string, teachId: string, trainScorerStep : TrainScorerStep): Observable<ActionObject> => {
+  export const postScore = (key : string, appId : string, teachId: string, trainScorerStep : TrainScorerStep, waitForUser : boolean, uiScoreInput: UIScoreInput): Observable<ActionObject> => {
     let addAppRoute: string = makeRoute(key, `app/${appId}/teach/${teachId}/scorer`);
     return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.post(addAppRoute, trainScorerStep, config)		
         .then(response => {
-              obs.next(postScorerFeedbackFulfilled(key, appId, teachId, response.data));
+              if (!waitForUser) {
+                obs.next(postScorerFeedbackNoWaitFulfilled(key, appId, teachId, response.data, uiScoreInput))
+              }
+              else {
+                obs.next(postScorerFeedbackWaitFulfilled(key, appId, teachId, response.data));
+              }
               obs.complete();
             })
             .catch(err => handleError(obs, err,  AT.POST_SCORE_FEEDBACK_ASYNC)));

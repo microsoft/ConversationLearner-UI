@@ -11,6 +11,7 @@ const initialState: TeachSessionState = {
     input: "",
     memories: [],
     scoreInput: null,
+    uiScoreInput: null,
     extractResponses: [],
     scoreResponse: null,
     currentConversationStack: [], 
@@ -52,10 +53,14 @@ const teachSessionReducer: Reducer<any> = (state = initialState, action: ActionO
             // Remove existing extract response
             let remainingResponses : ExtractResponse[] = state.extractResponses.filter((e : ExtractResponse) => e.text != action.extractResponse.text);
             return {...state, mode: TeachMode.Extractor, extractResponses: remainingResponses};
+        case AT.RUN_SCORER_ASYNC:
+            return {...state, uiScoreInput: action.uiScoreInput }
         case AT.RUN_SCORER_FULFILLED:
             return {...state, mode: TeachMode.Scorer, memories: action.uiScoreResponse.memories, scoreInput: action.uiScoreResponse.scoreInput, scoreResponse: action.uiScoreResponse.scoreResponse};
-        case AT.POST_SCORE_FEEDBACK_FULFILLED:
+        case AT.POST_SCORE_FEEDBACK_FULFILLEDWAIT:
             return {...state, mode: TeachMode.Wait};
+        case AT.POST_SCORE_FEEDBACK_FULFILLEDNOWAIT:
+            return {...state, mode: TeachMode.Scorer};
         case AT.TOGGLE_AUTO_TEACH:
             return {...state, autoTeach: action.autoTeach}
         case AT.CREATE_ACTION_FULFILLED:

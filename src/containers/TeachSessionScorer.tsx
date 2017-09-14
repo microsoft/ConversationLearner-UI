@@ -149,7 +149,12 @@ class TeachSessionScorer extends React.Component<Props, any> {
             });  
         let appId: string = this.props.apps.current.appId;
         let teachId: string = this.props.teachSession.current.teachId;
-        this.props.postScorerFeedback(this.props.user.key, appId, teachId, trainScorerStep);
+        let waitForUser = scoredAction.isTerminal;
+
+        // Pass score input (minus extractor step) for subsequent actions when this one is non-terminal
+        let uiScoreInput = {...this.props.teachSession.uiScoreInput, trainExtractorStep: null};
+
+        this.props.postScorerFeedback(this.props.user.key, appId, teachId, trainScorerStep, waitForUser, uiScoreInput);
     }
     /** Check if entity is in memory and return it's name */
     entityInMemory(entityId : string) : {match: boolean, name: string} {
