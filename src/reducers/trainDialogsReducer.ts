@@ -3,10 +3,14 @@ import { TrainDialogState } from '../types'
 import { AT } from '../types/ActionTypes'
 import { TrainDialog } from 'blis-models'
 import { Reducer } from 'redux'
+import { TeachMode } from '../types/const'
 
 const initialState: TrainDialogState = {
     all: [],
-    current: null
+    current: null,
+    roundNumber: 0,
+    scoreNumber: 0,
+    mode: TeachMode.Extractor
 };
 
 const trainDialogsReducer: Reducer<TrainDialogState> =  (state = initialState, action: ActionObject) => {
@@ -21,6 +25,9 @@ const trainDialogsReducer: Reducer<TrainDialogState> =  (state = initialState, a
             return { ...state, all: [...state.all, action.trainDialog], current: action.trainDialog };
         case AT.SET_CURRENT_TRAIN_DIALOG:
             return { ...state, current: action.currentTrainDialog };
+        case AT.SET_TRAIN_DIALOG_VIEW:
+            // Sets which part of train dialog to view
+            return { ...state, roundNumber: action.roundNumber, scoreNumber: action.scoreNumber };
         case AT.TOGGLE_TRAIN_DIALOG:
             let index: number = 0;
             for (let i = 0; i < state.all.length; i++) {

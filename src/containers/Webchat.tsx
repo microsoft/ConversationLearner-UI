@@ -10,6 +10,7 @@ import { Chat } from 'blis-webchat'
 import { UserInput } from 'blis-models'
 import { BehaviorSubject } from 'rxjs';
 import { runExtractorAsync } from '../actions/teachActions';
+import { setTrainDialogView } from '../actions/displayActions';
 import { Activity } from 'botframework-directlinejs';
 
 class Webchat extends React.Component<Props, any> {
@@ -27,7 +28,10 @@ class Webchat extends React.Component<Props, any> {
         if (!this.behaviorSubject) {
             this.behaviorSubject = new BehaviorSubject<any>({});
             this.behaviorSubject.subscribe((value) => {
-                value = 0;
+                if (value.activity) {
+                    // TODO: support for multiple scorersteps
+                    this.props.setTrainDialogView(value.activity.id,0);
+                }
             })
         } 
         return this.behaviorSubject;
@@ -92,6 +96,7 @@ class Webchat extends React.Component<Props, any> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         toggleTrainDialog: toggleTrainDialog,
+        setTrainDialogView: setTrainDialogView,
         addMessageToTeachConversationStack: addMessageToTeachConversationStack,
         addMessageToChatConversationStack: addMessageToChatConversationStack,
         runExtractor: runExtractorAsync

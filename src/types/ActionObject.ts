@@ -4,7 +4,7 @@ import { BlisAppBase, BlisAppMetaData, BlisAppList,
     TrainDialog, LogDialog, Session, Teach,
     UserInput, TrainExtractorStep, ExtractResponse, UIExtractResponse, TrainScorerStep,
     TeachResponse, UIScoreInput, UIScoreResponse } from 'blis-models'
-import { DisplayMode } from '../types/const'
+import { DisplayMode, TeachMode } from '../types/const'
 import { AT } from '../types/ActionTypes'
 
 export type UpdateAction = {
@@ -45,6 +45,10 @@ export type DisplayAction = {
     type: AT.SET_CURRENT_TRAIN_DIALOG,
     currentTrainDialog: TrainDialog,
 } | {
+    type: AT.SET_TRAIN_DIALOG_VIEW,
+    roundNumber: number,
+    scoreNumber: number
+}| {
     type: AT.SET_CURRENT_LOG_DIALOG,
     currentLogDialog: LogDialog,
 } | {
