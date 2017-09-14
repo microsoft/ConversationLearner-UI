@@ -56,14 +56,27 @@ class LogDialogsList extends React.Component<Props, any> {
         }
     }
     renderItemColumn(item?: any, index?: number, column?: IColumn) {
-        let self = this;
-        let fieldContent = item[column.fieldName];
+        let columnValue = 'unknown'
+
         switch (column.key) {
+            case 'id':
+                columnValue = item.logDialogId
+                break
+            case 'firstUtterance':
+                // TODO: Fix when real data is available
+                columnValue = 'Stub Value'
+                break
             case 'turns':
-                return <span className='ms-font-m-plus'>{fieldContent.turns.length}</span>;
+                columnValue = item.rounds.length
+                break
+            case 'lastEdit':
+                // TODO: Find actual last edit value?
+                columnValue = item.dialogEndDatetime
             default:
-                return <span className='ms-font-m-plus'>{fieldContent}</span>;
+                break
         }
+
+        return <span className='ms-font-m-plus'>{columnValue}</span>
     }
     handleClick() {
         this.props.setDisplayMode(DisplayMode.Session);
@@ -74,6 +87,11 @@ class LogDialogsList extends React.Component<Props, any> {
             searchValue: lcString
         })
     }
+
+    onActiveItemChanged(item: LogDialog) {
+        console.log('logDialog clicked', item)
+    }
+    
     renderLogDialogItems(): LogDialog[] {
         let lcString = this.state.searchValue.toLowerCase();
         let filteredLogDialogs = this.props.logDialogs.all.filter((logDialogItems: LogDialog) => {
@@ -82,7 +100,7 @@ class LogDialogsList extends React.Component<Props, any> {
         return filteredLogDialogs;
     }
     render() {
-        let logDialogItems: any[] = [];
+        const logDialogItems = this.props.logDialogs.all;
         return (
             <div>
                 <TrainingGroundArenaHeader title="Log Dialogs" description="Use this tool to test the current versions of your application, to check if you are progressing on the right track ..." />
@@ -106,8 +124,8 @@ class LogDialogsList extends React.Component<Props, any> {
                     items={logDialogItems}
                     columns={columns}
                     checkboxVisibility={CheckboxVisibility.hidden}
-                    onRenderItemColumn={this.renderItemColumn.bind(this)}
-                    onActiveItemChanged={() => console.log("we need to come up with some other view when looking at past sessions")}
+                    onRenderItemColumn={(...args) => this.renderItemColumn(...args)}
+                    onActiveItemChanged={(item) => this.onActiveItemChanged(item)}
                 />
             </div>
         );
