@@ -91,7 +91,7 @@ class LogDialogsList extends React.Component<Props, any> {
         })
     }
 
-    onActiveItemChanged(item: LogDialog) {
+    onLogDialogInvoked(item: LogDialog, index: number, e: MouseEvent) {
         console.log('logDialog clicked', item)
     }
     onDeleteLogDialog(logDialogId: string) {
@@ -131,8 +131,7 @@ class LogDialogsList extends React.Component<Props, any> {
                     columns={columns}
                     checkboxVisibility={CheckboxVisibility.hidden}
                     onRenderItemColumn={(...args) => this.renderItemColumn(...args)}
-                    onActiveItemChanged={(...args) => console.log(`active item changed`, ...args)}
-                    onItemInvoked={item => console.log(`item invoked: `, item)}
+                    onItemInvoked={(l, i, e) => this.onLogDialogInvoked(l,i, e as MouseEvent)}
                 />
             </div>
         );
