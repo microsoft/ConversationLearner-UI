@@ -70,7 +70,7 @@ class LogDialogsList extends React.Component<Props, any> {
                 break
             case 'actions':
                 return (
-                    <button onClick={e => {
+                    <button type="button" className="blis-action" onClick={e => {
                         e.stopPropagation()
                         this.onDeleteLogDialog(item.logDialogId)
                     }}><span className="ms-Icon ms-Icon--Delete"></span></button>
