@@ -20,6 +20,8 @@ class SessionWindow extends React.Component<Props, any> {
         this.state = {
             chatSession : new Session({saveToLog : true})
         }
+    }
+    componentWillMount() {
         let currentAppId: string = this.props.apps.current.appId;
         this.props.createChatSession(this.props.userKey, this.state.chatSession, currentAppId);
     }
