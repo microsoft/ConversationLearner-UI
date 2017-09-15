@@ -23,6 +23,14 @@ let columns: IColumn[] = [
         isResizable: true
     },
     {
+        key: 'lastUtterance',
+        name: 'Last Utterance',
+        fieldName: 'lastUtterance',
+        minWidth: 100,
+        maxWidth: 200,
+        isResizable: true
+    },
+    {
         key: 'turns',
         name: 'Turns',
         fieldName: 'dialog',
@@ -31,21 +39,13 @@ let columns: IColumn[] = [
         isResizable: true
     },
     {
-        key: 'lastEdit',
-        name: 'Last Edit',
-        fieldName: 'lastEdit',
+        key: 'actions',
+        name: 'Actions',
+        fieldName: 'entityId',
         minWidth: 100,
         maxWidth: 200,
         isResizable: true
-    },
-    {
-        key: 'id',
-        name: 'DialogID',
-        fieldName: 'id',
-        minWidth: 100,
-        maxWidth: 200,
-        isResizable: true
-    },
+    }
 ];
 
 class LogDialogsList extends React.Component<Props, any> {
@@ -59,19 +59,22 @@ class LogDialogsList extends React.Component<Props, any> {
         let columnValue = 'unknown'
 
         switch (column.key) {
-            case 'id':
-                columnValue = item.logDialogId
-                break
             case 'firstUtterance':
-                // TODO: Fix when real data is available
-                columnValue = 'Stub Value'
+                columnValue = item.rounds[0].extractorStep.text
+                break
+            case 'lastUtterance':
+                columnValue = item.rounds[item.rounds.length - 1].extractorStep.text
                 break
             case 'turns':
                 columnValue = item.rounds.length
                 break
-            case 'lastEdit':
-                // TODO: Find actual last edit value?
-                columnValue = item.dialogEndDatetime
+            case 'actions':
+                return (
+                    <button onClick={e => {
+                        e.stopPropagation()
+                        this.onDeleteLogDialog(item.logDialogId)
+                    }}><span className="ms-Icon ms-Icon--Delete"></span></button>
+                )
             default:
                 break
         }
@@ -91,7 +94,10 @@ class LogDialogsList extends React.Component<Props, any> {
     onActiveItemChanged(item: LogDialog) {
         console.log('logDialog clicked', item)
     }
-    
+    onDeleteLogDialog(logDialogId: string) {
+        console.log(`logDialog id: `, logDialogId)
+    }
+
     renderLogDialogItems(): LogDialog[] {
         let lcString = this.state.searchValue.toLowerCase();
         let filteredLogDialogs = this.props.logDialogs.all.filter((logDialogItems: LogDialog) => {
@@ -125,7 +131,8 @@ class LogDialogsList extends React.Component<Props, any> {
                     columns={columns}
                     checkboxVisibility={CheckboxVisibility.hidden}
                     onRenderItemColumn={(...args) => this.renderItemColumn(...args)}
-                    onActiveItemChanged={(item) => this.onActiveItemChanged(item)}
+                    onActiveItemChanged={(...args) => console.log(`active item changed`, ...args)}
+                    onItemInvoked={item => console.log(`item invoked: `, item)}
                 />
             </div>
         );
@@ -137,7 +144,7 @@ const mapDispatchToProps = (dispatch: any) => {
         createChatSession: createChatSessionAsync,
         deleteChatSession: deleteChatSessionAsync,
         setCurrentChatSession: setCurrentChatSession,
-        fetchAllLogDialogs : fetchAllLogDialogsAsync,
+        fetchAllLogDialogs: fetchAllLogDialogsAsync,
     }, dispatch)
 }
 const mapStateToProps = (state: State) => {

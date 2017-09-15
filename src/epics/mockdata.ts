@@ -12,6 +12,24 @@ export const logDialogs: models.LogDialog[] = [
                 extractorStep: new models.LogExtractorStep({
                     stepBeginDatetime: "2017-09-14T20:44:51.238Z",
                     stepEndDatetime: "2017-09-14T20:44:51.238Z",
+                    text: "Mock First Utterance"
+                }),
+                scorerSteps: [
+                    {
+                        input: new models.ScoreInput(),
+                        predictedAction: "predictedAction",
+                        predictionDetails: new models.ScoreResponse(),
+                        stepBeginDatetime: "stepBeginDatetime",
+                        stepEndDatetime: "stepEndDatetime",
+                        metrics: new models.Metrics()
+                    }
+                ]
+            },
+            {
+                extractorStep: new models.LogExtractorStep({
+                    stepBeginDatetime: "2017-09-14T20:44:51.238Z",
+                    stepEndDatetime: "2017-09-14T20:44:51.238Z",
+                    text: "Mock Last Utterance"
                 }),
                 scorerSteps: [
                     {
@@ -37,6 +55,24 @@ export const logDialogs: models.LogDialog[] = [
                 extractorStep: new models.LogExtractorStep({
                     stepBeginDatetime: "2017-09-14T20:44:51.238Z",
                     stepEndDatetime: "2017-09-14T20:44:51.238Z",
+                    text: "Mock First Utterance"
+                }),
+                scorerSteps: [
+                    {
+                        input: new models.ScoreInput(),
+                        predictedAction: "predictedAction",
+                        predictionDetails: new models.ScoreResponse(),
+                        stepBeginDatetime: "stepBeginDatetime",
+                        stepEndDatetime: "stepEndDatetime",
+                        metrics: new models.Metrics()
+                    }
+                ]
+            },
+            {
+                extractorStep: new models.LogExtractorStep({
+                    stepBeginDatetime: "2017-09-14T20:44:51.238Z",
+                    stepEndDatetime: "2017-09-14T20:44:51.238Z",
+                    text: "Mock Last Utterance"
                 }),
                 scorerSteps: [
                     {
