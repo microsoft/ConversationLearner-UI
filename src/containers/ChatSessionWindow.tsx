@@ -22,7 +22,8 @@ class SessionWindow extends React.Component<Props, any> {
         }
     }
     componentWillMount() {
-        this.props.createChatSession(this.props.userKey, this.state.chatSession, this.props.apps.current.appId);
+        let currentAppId: string = this.props.apps.current.appId;
+        this.props.createChatSession(this.props.userKey, this.state.chatSession, currentAppId);
     }
     handleQuit() {
         this.props.setDisplayMode(DisplayMode.AppAdmin);
