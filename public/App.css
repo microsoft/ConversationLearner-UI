@@ -132,6 +132,13 @@
 .orangeButton *{
   color: black !important;
 }
+.blis-action {
+  border: none;
+  background: none;
+  padding: 0.3em 0.2em 0.2em 0.2em;
+  margin: 0;
+  cursor: ponter;
+}
 .tgNavDiv{
   border-top: 1px solid lightgrey;
   border-bottom: 1px solid lightgrey;
