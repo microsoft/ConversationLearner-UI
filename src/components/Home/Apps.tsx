@@ -2,6 +2,7 @@ import * as React from 'react'
 import {
     NavLink
 } from 'react-router-dom'
+import './Apps.css'
 
 const apps = [
     {
@@ -17,8 +18,11 @@ const apps = [
 ]
 
 const component = ({ match }: any) => (
-    <div>
-        <h2>Index</h2>
+    <div className="blis-page">
+        <h1>Apps</h1>
+        <div>
+            <button type="button">Create New App</button>
+        </div>
         <ul>
             {apps.map(app => (
                 <li key={app.id}>

@@ -7,19 +7,14 @@ import App from './Home/App'
 import Apps from './Home/Apps'
 
 const component = ({ match }: any) => (
-    <div>
-        <h1>Home</h1>
-        <div>
-            <Switch>
-                <Route path={`${match.url}/:appid`} component={App} />
-                <Route
-                    exact={true}
-                    path={match.url}
-                    component={Apps}
-                />
-            </Switch>
-        </div>
-    </div>
+    <Switch>
+        <Route path={`${match.url}/:appid`} component={App} />
+        <Route
+            exact={true}
+            path={match.url}
+            component={Apps}
+        />
+    </Switch>
 )
 
 export default component

@@ -10,22 +10,30 @@ import Actions from './App/Actions'
 import Entities from './App/Entities'
 import TrainDialogs from './App/TrainDialogs'
 import LogDialogs from './App/LogDialogs'
+import './App.css'
 
 const component = ({ match, location }: any) => {
     const { app } = location.state
     return (
-        <div>
-            <h2>Single App</h2>
+        <div className="blis-app-page">
             <ul>
                 <li>
-                    <NavLink exact={true} to="/home">App List</NavLink>
+                    <NavLink exact={true} to="/home">&lt;- App List</NavLink>
                 </li>
                 <li>
                     <NavLink to={{ pathname: `${match.url}/settings`, state: { app } }}>Settings</NavLink>
+                </li>
+                <li>
                     <NavLink to={{ pathname: `${match.url}/entities`, state: { app } }}>Entities</NavLink>
+                </li>
+                <li>
                     <NavLink to={{ pathname: `${match.url}/actions`, state: { app } }}>Actions</NavLink>
-                    <NavLink to={{ pathname: `${match.url}/train`, state: { app } }}>Train</NavLink>
-                    <NavLink to={{ pathname: `${match.url}/logs`, state: { app } }}>logs</NavLink>
+                </li>
+                <li>
+                    <NavLink to={{ pathname: `${match.url}/train`, state: { app } }}>Train Dialogs</NavLink>
+                </li>
+                <li>
+                    <NavLink to={{ pathname: `${match.url}/logs`, state: { app } }}>Log Dialogs</NavLink>
                 </li>
             </ul>
             <Switch>

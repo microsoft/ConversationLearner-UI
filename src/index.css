@@ -1,5 +1,12 @@
 body {
   margin: 0;
   padding: 0;
-  font-family: sans-serif;
+  font-family: Helvetica, Tahoma, Arial, sans-serif;
+  font-size: 16px;
+}
+
+* {
+  box-shadow: border;
+  margin: 0;
+  padding: 0;
 }

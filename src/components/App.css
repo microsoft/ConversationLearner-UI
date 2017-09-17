@@ -1,3 +1,53 @@
-.active {
-    background-color: #a1a1a1;
+:root {
+    --gutter-width: 100px;
+    --nav-link-padding: 1.5em 2em;
+}
+.blis-app {
+    display: grid;
+    grid-template: min-content 1fr / var(--gutter-width) 1fr var(--gutter-width)
+}
+.blis-app_header-placeholder {
+    background-color: rgba(6, 61, 66, 0.71)
+}
+.blis-app_header {
+    background-color: rgba(6, 61, 66, 0.71)
+}
+.blis-app_content {
+    grid-column: 2;
+    padding: 2em 0;
+}
+
+
+.blis-header {
+    display: grid;
+    grid-template-columns: 1fr min-content;
+    color: white;
+    font-size: 1.2rem;
+}
+.blis-header a {
+    padding: var(--nav-link-padding);
+}
+.blis-header_links {
+    display: flex;
+    flex-direction: row;
+}
+.blis-header_links a {
+    text-decoration: none;
+    color: white;
+}
+.blis-header_links a:link,
+.blis-header_links a:visisted {
+}
+.blis-header_links a.active,
+.blis-header_links a:hover {
+    background-color: #FFD200;
+    color: black;
+}
+.blis-header_user {
+    text-decoration: none;
+    color: white;
+}
+.blis-header_user:hover {
+    background-color: #FFD200;
+    color: black;
 }
