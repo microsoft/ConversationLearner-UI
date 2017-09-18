@@ -12,15 +12,21 @@ import { fetchAllLogDialogsAsync } from '../actions/fetchActions';
 import { State } from '../types'
 import { LogDialog, Session } from 'blis-models'
 import { DisplayMode } from '../types/const';
+import LogDialogModal from './LogDialogModal';
 
-let columns: IColumn[] = [
+interface IRenderableColumn extends IColumn {
+    render: (x: LogDialog) => React.ReactNode
+}
+
+let columns: IRenderableColumn[] = [
     {
         key: 'firstUtterance',
         name: 'First Utterance',
         fieldName: 'firstUtterance',
         minWidth: 100,
         maxWidth: 200,
-        isResizable: true
+        isResizable: true,
+        render: logDialog => <span className='ms-font-m-plus'>{logDialog.rounds[0].extractorStep.text}</span>
     },
     {
         key: 'lastUtterance',
@@ -28,59 +34,35 @@ let columns: IColumn[] = [
         fieldName: 'lastUtterance',
         minWidth: 100,
         maxWidth: 200,
-        isResizable: true
+        isResizable: true,
+        render: logDialog => <span className='ms-font-m-plus'>{logDialog.rounds[logDialog.rounds.length - 1].extractorStep.text}</span>
     },
     {
         key: 'turns',
         name: 'Turns',
         fieldName: 'dialog',
-        minWidth: 100,
-        maxWidth: 200,
-        isResizable: true
-    },
-    {
-        key: 'actions',
-        name: 'Actions',
-        fieldName: 'entityId',
-        minWidth: 100,
-        maxWidth: 200,
-        isResizable: true
+        minWidth: 30,
+        maxWidth: 50,
+        render: logDialog => <span className='ms-font-m-plus'>{logDialog.rounds.length}</span>
     }
 ];
 
-class LogDialogsList extends React.Component<Props, any> {
-    constructor(p: any) {
+interface ComponentState {
+    isLogDialogWindowOpen: boolean,
+    currentLogDialog: LogDialog,
+    searchValue: string
+}
+
+class LogDialogsList extends React.Component<Props, ComponentState> {
+    constructor(p: Props) {
         super(p);
         this.state = {
+            isLogDialogWindowOpen: false,
+            currentLogDialog: null,
             searchValue: ''
         }
     }
-    renderItemColumn(item?: any, index?: number, column?: IColumn) {
-        let columnValue = 'unknown'
 
-        switch (column.key) {
-            case 'firstUtterance':
-                columnValue = item.rounds[0].extractorStep.text
-                break
-            case 'lastUtterance':
-                columnValue = item.rounds[item.rounds.length - 1].extractorStep.text
-                break
-            case 'turns':
-                columnValue = item.rounds.length
-                break
-            case 'actions':
-                return (
-                    <button type="button" className="blis-action" onClick={e => {
-                        e.stopPropagation()
-                        this.onDeleteLogDialog(item.logDialogId)
-                    }}><span className="ms-Icon ms-Icon--Delete"></span></button>
-                )
-            default:
-                break
-        }
-
-        return <span className='ms-font-m-plus'>{columnValue}</span>
-    }
     handleClick() {
         this.props.setDisplayMode(DisplayMode.Session);
     }
@@ -91,11 +73,22 @@ class LogDialogsList extends React.Component<Props, any> {
         })
     }
 
-    onLogDialogInvoked(item: LogDialog, index: number, e: MouseEvent) {
-        console.log('logDialog clicked', item)
+    onLogDialogInvoked(logDialog: LogDialog) {
+        this.setState({
+            isLogDialogWindowOpen: true,
+            currentLogDialog: logDialog
+        })
     }
     onDeleteLogDialog(logDialogId: string) {
         console.log(`logDialog id: `, logDialogId)
+    }
+
+    onCloseLogDialogModal() {
+        console.log(`logDialogModal closed`)
+        this.setState({
+            isLogDialogWindowOpen: false,
+            currentLogDialog: null
+        })
     }
 
     renderLogDialogItems(): LogDialog[] {
@@ -105,8 +98,10 @@ class LogDialogsList extends React.Component<Props, any> {
         })
         return filteredLogDialogs;
     }
+    
     render() {
         const logDialogItems = this.props.logDialogs.all;
+        const currentLogDialog = this.state.currentLogDialog;
         return (
             <div>
                 <TrainingGroundArenaHeader title="Log Dialogs" description="Use this tool to test the current versions of your application, to check if you are progressing on the right track ..." />
@@ -119,6 +114,11 @@ class LogDialogsList extends React.Component<Props, any> {
                         ariaDescription='Create a New Chat Session'
                         text='New Chat Session'
                     />
+                    <LogDialogModal
+                        open={this.state.isLogDialogWindowOpen}
+                        logDialog={currentLogDialog}
+                        onClose={() => this.onCloseLogDialogModal()}
+                    />
                 </div>
                 <SearchBox
                     className="ms-font-m-plus"
@@ -130,8 +130,8 @@ class LogDialogsList extends React.Component<Props, any> {
                     items={logDialogItems}
                     columns={columns}
                     checkboxVisibility={CheckboxVisibility.hidden}
-                    onRenderItemColumn={(...args) => this.renderItemColumn(...args)}
-                    onItemInvoked={(l, i, e) => this.onLogDialogInvoked(l,i, e as MouseEvent)}
+                    onRenderItemColumn={(logDialog, i, column: IRenderableColumn) => column.render(logDialog)}
+                    onActiveItemChanged={logDialog => this.onLogDialogInvoked(logDialog)}
                 />
             </div>
         );
