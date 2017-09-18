@@ -29,8 +29,8 @@ class Webchat extends React.Component<Props, any> {
             this.behaviorSubject = new BehaviorSubject<any>({});
             this.behaviorSubject.subscribe((value) => {
                 if (value.activity) {
-                    // TODO: support for multiple scorersteps
-                    this.props.setTrainDialogView(value.activity.id,0);
+                    let [roundNum, scoreNum] = value.activity.id.split(":");
+                    this.props.setTrainDialogView(roundNum, scoreNum);
                 }
             })
         } 

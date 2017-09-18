@@ -35,14 +35,18 @@ class TrainDialogWindow extends React.Component<Props, any> {
         let roundNum = 0;
         for (let round of this.props.trainDialog.rounds) {
             let userText = round.extractorStep.textVariations[0].text;
-            let userActivity = {id: roundNum.toString(), from: {id: this.props.user.id, name: this.props.user.name}, type: "message", text: userText} as Activity;
+            let id = `${roundNum}:0`;
+            let userActivity = {id: id, from: {id: this.props.user.id, name: this.props.user.name}, type: "message", text: userText} as Activity;
             activities.push(userActivity);
 
+            let scoreNum = 0;
             for (let scorerStep of round.scorerSteps) {
                 let labelAction = scorerStep.labelAction;
                 let action = this.props.actions.filter((a: ActionBase) => a.actionId == labelAction)[0]; 
-                let botActivity = {id: roundNum.toString(), from: {id:"BlisTrainer", name: "BlisTrainer"}, type: "message", text: action.payload} as Activity;
+                id = `${roundNum}:${scoreNum}`
+                let botActivity = {id: id, from: {id:"BlisTrainer", name: "BlisTrainer"}, type: "message", text: action.payload} as Activity;
                 activities.push(botActivity);
+                scoreNum++;
             }
             roundNum++;
         }
