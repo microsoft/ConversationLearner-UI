@@ -511,29 +511,7 @@
   cursor: pointer;
 }
 
-.modal {
-}
 .modal--large {
   width: 90%;
   height: 90%;
-}
-
-.modal > * {
-  padding: 1em;
-}
-
-.log-dialog {
-  display: grid;
-  grid-template-columns: 1fr min-content / 1fr 1fr;
-}
-.log-dialog__webchat {
-
-}
-.log-dialog__admin {
-
-}
-.log-dialog__controls {
-  grid-row: 2;
-  grid-column-start: 1;
-  grid-column-end: 2
 }
