@@ -76,7 +76,7 @@ class LogDialogModal extends React.Component<Props, any> {
                             <div className="wc-gridFooter">
                                 <CommandButton
                                     onClick={() => this.props.onClose()}
-                                    className='ms-font-su goldButton teachSessionHeaderButton'
+                                    className='ms-font-su goldButton'
                                     ariaDescription='Done'
                                     text='Done'
                                 />

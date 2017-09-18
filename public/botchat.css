@@ -51,7 +51,7 @@ body .wc-app, .wc-app button, .wc-app input, .wc-app textarea {
   padding: 10px;
   position: absolute;
   right: 0;
-  top: 38px;
+  top: 0;
   transition: transform 0.2s cubic-bezier(0, 0, 0.5, 1); }
 
 .wc-message-group-content {
