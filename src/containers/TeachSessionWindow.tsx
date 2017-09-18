@@ -21,6 +21,8 @@ class TeachWindow extends React.Component<Props, any> {
         this.state = {
             teachSession: new Teach({})
         }
+    }
+    componentWillMount() {
         let currentAppId: string = this.props.apps.current.appId;
         this.props.createTeachSession(this.props.user.key, this.state.teachSession, currentAppId)
     }

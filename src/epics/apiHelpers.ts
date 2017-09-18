@@ -20,6 +20,7 @@ import { setErrorDisplay, setCurrentBLISAppFulfilled } from '../actions/displayA
 import { fetchAllTrainDialogsAsync } from '../actions/fetchActions';
 import { ActionObject } from '../types'
 import { AT } from '../types/ActionTypes'
+import * as mockData from './mockdata'
 
 //=========================================================
 // CONFIG
@@ -116,7 +117,9 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
     let getActionsForAppRoute: string = makeRoute(key, `app/${appId}/logdialogs`);
     return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.get(getActionsForAppRoute, config)
       .then(response => {
-              obs.next(fetchAllLogDialogsFulfilled(response.data.logDialogs));
+              // Use mock data for now becuase service is returning empty response
+              // obs.next(fetchAllLogDialogsFulfilled(response.data.logDialogs));
+              obs.next(fetchAllLogDialogsFulfilled(mockData.logDialogs));
               obs.complete();
             })
             .catch(err => handleError(obs, err,  AT.FETCH_LOG_DIALOGS_ASYNC)));

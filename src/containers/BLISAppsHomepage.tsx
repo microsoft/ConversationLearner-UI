@@ -37,13 +37,13 @@ class BLISAppsHomepage extends React.Component<Props, any> {
                 display = <AppAdmin />
                 break;
             case DisplayMode.Teach:
-                display = [<AppAdmin />, <TeachSessionWindow />];
+                display = [<AppAdmin key={1} />, <TeachSessionWindow key={2} />];
                 break;
             case DisplayMode.Session:
-                display = [<AppAdmin />, <ChatSessionWindow />];
+                display = [<AppAdmin key={1} />, <ChatSessionWindow key={2} />];
                 break;
             case DisplayMode.TrainDialog:
-                display = [<AppAdmin />, <TrainDialogWindow />];
+                display = [<AppAdmin key={1} />, <TrainDialogWindow key={2} />];
                 break;
          }
         return (
