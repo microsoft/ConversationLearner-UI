@@ -276,6 +276,9 @@
   color: #cc0000;
   font-size: 24px;
 }
+.actionCreatorCreateEntityButton {
+  float: right;
+}
 .saveAppChangesButtonsDiv{
   width: 100%;
   display: block;
