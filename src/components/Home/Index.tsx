@@ -2,7 +2,7 @@ import * as React from 'react'
 import {
     withRouter
 } from 'react-router-dom'
-import './Apps.css'
+import './Index.css'
 import { DetailsList, CheckboxVisibility, CommandButton, IColumn } from 'office-ui-fabric-react';
 
 interface IApp {
@@ -63,27 +63,22 @@ let columns: IRenderableColumn[] = [
         key: 'locale',
         name: 'Locale',
         fieldName: 'locale',
-        minWidth: 100,
+        minWidth: 50,
         maxWidth: 200,
-        isResizable: true,
         render: app => <span className='ms-font-m-plus'>{app.locale}</span>
     },
     {
         key: 'bots',
         name: 'Linked Bots',
         fieldName: 'metadata',
-        minWidth: 100,
-        maxWidth: 200,
-        isResizable: true,
+        minWidth: 40,
         render: app => <span className='ms-font-m-plus'>{app.linkedBots.length}</span>
     },
     {
         key: 'actions',
         name: 'Actions',
         fieldName: 'appId',
-        minWidth: 100,
-        maxWidth: 200,
-        isResizable: true,
+        minWidth: 40,
         render: app => <span className='ms-font-m-plus'>{app.actions.length}</span>
     },
 ];

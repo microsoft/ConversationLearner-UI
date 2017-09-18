@@ -4,7 +4,7 @@ import {
     Switch
 } from 'react-router-dom'
 import App from './Home/App'
-import Apps from './Home/Apps'
+import Index from './Home/Index'
 
 const component = ({ match }: any) => (
     <Switch>
@@ -12,7 +12,7 @@ const component = ({ match }: any) => (
         <Route
             exact={true}
             path={match.url}
-            component={Apps}
+            component={Index}
         />
     </Switch>
 )
