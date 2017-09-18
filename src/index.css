@@ -20,12 +20,44 @@ a:visited {
   color: inherit
 }
 
+.blis-button {
+  padding: 0em 2em;
+}
+
 .blis-button--primary {
   background-color: #ffb900;
   color: black;
-  padding: 0em 2em;
 }
 .blis-button--primary:hover {
   background-color: #F4B307;
   color: black;
+}
+
+.blis-button--secondary {
+  background-color: #E4E2E2;
+  color: black;
+}
+.blis-button--secondary:hover {
+  background-color: #E2DFDF;
+  color: black;
+}
+
+/** Modals */
+.blis-modal {
+  padding: 2em;
+  display: grid;
+  grid-template-rows: min-content 1fr min-content;
+  grid-gap: 1rem;
+}
+.blis-modal--large {
+  width: 90vw;
+  height: 80vh;
+}
+.blis-modal__header {
+}
+.blis-modal__footer {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: min-content;
+  grid-gap: 1em;
 }
