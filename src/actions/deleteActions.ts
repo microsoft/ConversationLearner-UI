@@ -123,19 +123,17 @@ export const deleteTrainDialogFulfilled = (key: string, GUID: string): ActionObj
     }
 }
 
-export const deleteLogDialogAsync = (key: string, logDialog: LogDialog, currentAppId: string): ActionObject => {
+export const deleteLogDialogAsync = (appId: string, logDialogId: string): ActionObject => {
     return {
         type: AT.DELETE_LOG_DIALOG_ASYNC,
-        key: key,
-        currentAppId: currentAppId,
-        logDialog: logDialog
+        appId,
+        logDialogId
     }
 }
 
-export const deleteLogDialogFulFilled = (key: string, GUID: string): ActionObject => {
+export const deleteLogDialogFulFilled = (logDialogId: string): ActionObject => {
     return {
         type: AT.DELETE_LOG_DIALOG_FULFILLED,
-        key: key,
-        logDialogGUID: GUID
+        logDialogId
     }
 }

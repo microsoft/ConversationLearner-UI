@@ -9,10 +9,11 @@ import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import Webchat from './Webchat'
 import TrainDialogAdmin from './TrainDialogAdmin'
 import { Activity } from 'botframework-directlinejs'
-import { LogDialog } from 'blis-models'
+import { BlisAppBase, LogDialog } from 'blis-models'
+import { deleteLogDialogAsync } from '../actions/deleteActions'
 
 class LogDialogModal extends React.Component<Props, any> {
-
+    
     generateHistory() : Activity[] {
         if (!this.props.logDialog) {
             return [];
@@ -72,6 +73,13 @@ class LogDialogModal extends React.Component<Props, any> {
                                     ariaDescription='Done'
                                     text='Done'
                                 />
+
+                                <CommandButton
+                                    onClick={() => this.props.deleteLogDialogAsync(this.props.app.appId, this.props.logDialog.logDialogId)}
+                                    className='ms-font-su grayButton teachSessionHeaderButton'
+                                    ariaDescription='Delete'
+                                    text='Delete'
+                                />
                             </div>
                         </div>
                     </div>
@@ -82,6 +90,7 @@ class LogDialogModal extends React.Component<Props, any> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
+        deleteLogDialogAsync
     }, dispatch);
 }
 const mapStateToProps = (state: State, ownProps: ReceivedProps) => {
@@ -94,7 +103,8 @@ const mapStateToProps = (state: State, ownProps: ReceivedProps) => {
 export interface ReceivedProps {
     open: boolean,
     onClose: Function,
-    logDialog: LogDialog
+    logDialog: LogDialog,
+    app: BlisAppBase
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps

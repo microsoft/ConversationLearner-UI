@@ -46,7 +46,7 @@ const logDialogsReducer: Reducer<LogDialogState> =  (state = initialState, actio
             }
             return newState;
         case AT.DELETE_LOG_DIALOG_FULFILLED:
-            return { ...state, all: state.all.filter(dialog => dialog.logDialogId !== action.logDialogGUID) };
+            return { ...state, all: state.all.filter(dialog => dialog.logDialogId !== action.logDialogId) };
     /* TODO
         case AT.EDIT_LOG_DIALOG_FULFILLED:
             let index: number = 0;
