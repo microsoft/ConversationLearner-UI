@@ -12,6 +12,7 @@ import { fetchAllLogDialogsAsync } from '../actions/fetchActions';
 import { State } from '../types'
 import { LogDialog, Session } from 'blis-models'
 import { DisplayMode } from '../types/const';
+import LogDialogModal from './LogDialogModal';
 
 let columns: IColumn[] = [
     {
@@ -48,10 +49,18 @@ let columns: IColumn[] = [
     }
 ];
 
-class LogDialogsList extends React.Component<Props, any> {
-    constructor(p: any) {
+interface ComponentState {
+    isLogDialogWindowOpen: boolean,
+    currentLogDialog: LogDialog,
+    searchValue: string
+}
+
+class LogDialogsList extends React.Component<Props, ComponentState> {
+    constructor(p: Props) {
         super(p);
         this.state = {
+            isLogDialogWindowOpen: false,
+            currentLogDialog: null,
             searchValue: ''
         }
     }
@@ -91,11 +100,22 @@ class LogDialogsList extends React.Component<Props, any> {
         })
     }
 
-    onLogDialogInvoked(item: LogDialog, index: number, e: MouseEvent) {
-        console.log('logDialog clicked', item)
+    onLogDialogInvoked(logDialog: LogDialog, index: number, e: MouseEvent) {
+        this.setState({
+            isLogDialogWindowOpen: true,
+            currentLogDialog: logDialog
+        })
     }
     onDeleteLogDialog(logDialogId: string) {
         console.log(`logDialog id: `, logDialogId)
+    }
+
+    onCloseLogDialogModal() {
+        console.log(`logDialogModal closed`)
+        this.setState({
+            isLogDialogWindowOpen: false,
+            currentLogDialog: null
+        })
     }
 
     renderLogDialogItems(): LogDialog[] {
@@ -105,8 +125,10 @@ class LogDialogsList extends React.Component<Props, any> {
         })
         return filteredLogDialogs;
     }
+    
     render() {
         const logDialogItems = this.props.logDialogs.all;
+        const currentLogDialog = this.state.currentLogDialog;
         return (
             <div>
                 <TrainingGroundArenaHeader title="Log Dialogs" description="Use this tool to test the current versions of your application, to check if you are progressing on the right track ..." />
@@ -119,6 +141,9 @@ class LogDialogsList extends React.Component<Props, any> {
                         ariaDescription='Create a New Chat Session'
                         text='New Chat Session'
                     />
+                    <p>isLogDialogWindowOpen: {this.state.isLogDialogWindowOpen ? 'open' : 'closed'}</p>
+                    <p>currnetDialog: {currentLogDialog && currentLogDialog.logDialogId}</p>
+                    <LogDialogModal open={this.state.isLogDialogWindowOpen} onClose={() => this.onCloseLogDialogModal()} />
                 </div>
                 <SearchBox
                     className="ms-font-m-plus"
