@@ -1,4 +1,5 @@
 .blis-page {
     display: grid;
-    grid-gap: 1em;
+    grid-gap: 1rem;
+    grid-auto-rows: min-content;
 }

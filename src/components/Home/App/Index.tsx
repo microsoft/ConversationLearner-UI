@@ -1,14 +1,9 @@
 import * as React from 'react'
 
 const component = ({ app }: any) => (
-    <div>
-        <h1>App Index</h1>
-
-        <div>
-            Id: {app.id}<br />
-            Name: {app.name}<br />
-            Description: {app.description}<br />
-        </div>
+    <div className="blis-page">
+        <h1 className="ms-font-xxl">Overview</h1>
+        <p className="ms-font-m-plus">Facts & statistics about the app's data at any period of time...</p>
     </div>
 )
 

@@ -1,7 +1,7 @@
 import * as React from 'react'
 
 const component = () => (
-    <h1>Support</h1>
+    <h1 className="ms-font-su">Support</h1>
 )
 
 export default component

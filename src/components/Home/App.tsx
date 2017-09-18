@@ -16,26 +16,32 @@ const component = ({ match, location }: any) => {
     const { app } = location.state
     return (
         <div className="blis-app-page">
-            <ul>
-                <li>
-                    <NavLink exact={true} to="/home">&lt;- App List</NavLink>
-                </li>
-                <li>
-                    <NavLink to={{ pathname: `${match.url}/settings`, state: { app } }}>Settings</NavLink>
-                </li>
-                <li>
-                    <NavLink to={{ pathname: `${match.url}/entities`, state: { app } }}>Entities</NavLink>
-                </li>
-                <li>
-                    <NavLink to={{ pathname: `${match.url}/actions`, state: { app } }}>Actions</NavLink>
-                </li>
-                <li>
-                    <NavLink to={{ pathname: `${match.url}/train`, state: { app } }}>Train Dialogs</NavLink>
-                </li>
-                <li>
-                    <NavLink to={{ pathname: `${match.url}/logs`, state: { app } }}>Log Dialogs</NavLink>
-                </li>
-            </ul>
+            <div>
+                <h1 className="ms-font-xxl">{app.name}</h1>
+                <div className="ms-font-m-plus">
+                    <NavLink exact={true} to="/home"><span className="ms-Icon ms-Icon--Back"></span>&nbsp;&nbsp;App List</NavLink>
+                    <ul>
+                        <li>
+                            <NavLink to={{ pathname: `${match.url}/settings`, state: { app } }}><span className="ms-Icon ms-Icon--Settings"></span><span>Settings</span></NavLink>
+                        </li>
+                        <li>
+                            <NavLink to={{ pathname: `${match.url}`, state: { app } }}>Dashboard</NavLink>
+                        </li>
+                        <li>
+                            <NavLink to={{ pathname: `${match.url}/entities`, state: { app } }}>Entities</NavLink>
+                        </li>
+                        <li>
+                            <NavLink to={{ pathname: `${match.url}/actions`, state: { app } }}>Actions</NavLink>
+                        </li>
+                        <li>
+                            <NavLink to={{ pathname: `${match.url}/train`, state: { app } }}>Train Dialogs</NavLink>
+                        </li>
+                        <li>
+                            <NavLink to={{ pathname: `${match.url}/logs`, state: { app } }}>Log Dialogs</NavLink>
+                        </li>
+                    </ul>
+                </div>
+            </div>
             <Switch>
                 <Route path={`${match.url}/settings`} render={props => <Settings {...props} app={app} />} />
                 <Route path={`${match.url}/entities`} render={props => <Entities {...props} app={app} />} />

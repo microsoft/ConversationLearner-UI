@@ -1,4 +1,6 @@
 :root {
+    --color-primary: #004b50;
+    --color-tertiary: #ffb900;
     --gutter-width: 100px;
     --nav-link-padding: 1.5em 2em;
 }
@@ -7,10 +9,10 @@
     grid-template: min-content 1fr / var(--gutter-width) 1fr var(--gutter-width)
 }
 .blis-app_header-placeholder {
-    background-color: rgba(6, 61, 66, 0.71)
+    background-color: var(--color-primary)
 }
 .blis-app_header {
-    background-color: rgba(6, 61, 66, 0.71)
+    background-color: var(--color-primary)
 }
 .blis-app_content {
     grid-column: 2;
@@ -40,7 +42,7 @@
 }
 .blis-header_links a.active,
 .blis-header_links a:hover {
-    background-color: #FFD200;
+    background-color: var(--color-tertiary);
     color: black;
 }
 .blis-header_user {
@@ -48,6 +50,6 @@
     color: white;
 }
 .blis-header_user:hover {
-    background-color: #FFD200;
+    background-color: var(--color-tertiary);
     color: black;
 }

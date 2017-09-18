@@ -13,8 +13,8 @@ const component = () => (
   <Router>
     <div className="blis-app">
       <div className="blis-app_header-placeholder"></div>
-      <header className="blis-app_header blis-header">
-          <nav className="blis-header_links">
+      <header className="blis-app_header blis-header ms-font-m-plus">
+          <nav className="blis-header_links ">
             <NavLink to="/home">Home</NavLink>
             <NavLink to="/about">About</NavLink>
             <NavLink to="/docs">Docs</NavLink>

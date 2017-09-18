@@ -10,3 +10,22 @@ body {
   margin: 0;
   padding: 0;
 }
+
+
+a {
+  text-decoration: none;
+}
+a:link,
+a:visited {
+  color: inherit
+}
+
+.blis-button--primary {
+  background-color: #ffb900;
+  color: black;
+  padding: 0em 2em;
+}
+.blis-button--primary:hover {
+  background-color: #F4B307;
+  color: black;
+}

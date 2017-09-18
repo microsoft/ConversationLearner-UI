@@ -5,7 +5,7 @@ import {
 
 const component = () => (
     <div>
-        <div>404 Not Found</div>
+        <div className="ms-font-su">404 Not Found</div>
         <div>
             <NavLink to="/">Home</NavLink>
         </div>

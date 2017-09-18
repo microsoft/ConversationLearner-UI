@@ -1,36 +1,111 @@
 import * as React from 'react'
 import {
-    NavLink
+    withRouter
 } from 'react-router-dom'
 import './Apps.css'
+import { DetailsList, CheckboxVisibility, CommandButton, IColumn } from 'office-ui-fabric-react';
 
-const apps = [
+interface IApp {
+    id: string
+    name: string
+    description: string,
+    luisKey: string,
+    locale: string,
+    linkedBots: string[],
+    actions: string[]
+}
+
+const apps: IApp[] = [
     {
         id: 'app-id-1',
         name: 'App 1',
-        description: 'App 1 description'
+        description: 'App 1 description',
+        luisKey: 'abc123uvw456',
+        locale: 'en-US',
+        linkedBots: [],
+        actions: []
     },
     {
         id: 'app-id-2',
         name: 'App 2',
-        description: 'App 2 description'
-    }
+        description: 'App 2 description',
+        luisKey: 'XYZ21-0349sad20345',
+        locale: 'en-GB',
+        linkedBots: [],
+        actions: []
+    },
 ]
 
-const component = ({ match }: any) => (
+interface IRenderableColumn extends IColumn {
+    render: (a: IApp) => React.ReactNode
+}
+
+let columns: IRenderableColumn[] = [
+    {
+        key: 'appName',
+        name: 'App Name',
+        fieldName: 'appName',
+        minWidth: 100,
+        maxWidth: 200,
+        isResizable: true,
+        render: app => <span className='ms-font-m-plus'>{app.name}</span>
+    },
+    {
+        key: 'luisKey',
+        name: 'LUIS Key',
+        fieldName: 'luisKey',
+        minWidth: 100,
+        maxWidth: 200,
+        isResizable: true,
+        render: app => <span className='ms-font-m-plus'>{app.luisKey}</span>
+    },
+    {
+        key: 'locale',
+        name: 'Locale',
+        fieldName: 'locale',
+        minWidth: 100,
+        maxWidth: 200,
+        isResizable: true,
+        render: app => <span className='ms-font-m-plus'>{app.locale}</span>
+    },
+    {
+        key: 'bots',
+        name: 'Linked Bots',
+        fieldName: 'metadata',
+        minWidth: 100,
+        maxWidth: 200,
+        isResizable: true,
+        render: app => <span className='ms-font-m-plus'>{app.linkedBots.length}</span>
+    },
+    {
+        key: 'actions',
+        name: 'Actions',
+        fieldName: 'appId',
+        minWidth: 100,
+        maxWidth: 200,
+        isResizable: true,
+        render: app => <span className='ms-font-m-plus'>{app.actions.length}</span>
+    },
+];
+
+const component = ({ match, history }: any) => (
     <div className="blis-page">
-        <h1>Apps</h1>
+        <h1 className="ms-font-su">My Apps</h1>
+        <p className="ms-font-m-plus">Create and Manage your BLIS applications...</p>
         <div>
-            <button type="button">Create New App</button>
+            <CommandButton
+                className="blis-button blis-button--primary"
+            >Create New App</CommandButton>
         </div>
-        <ul>
-            {apps.map(app => (
-                <li key={app.id}>
-                    <NavLink to={{ pathname: `${match.url}/${app.id}`, state: { app } }}>App: {app.id}</NavLink>
-                </li>
-            ))}
-        </ul>
+        <DetailsList
+            className="ms-font-m-plus"
+            items={apps}
+            columns={columns}
+            checkboxVisibility={CheckboxVisibility.hidden}
+            onRenderItemColumn={(app, index, column: IRenderableColumn) => column.render(app)}
+            onItemInvoked={app => history.push(`${match.url}/${app.id}`, { app })}
+        />
     </div>
 )
 
-export default component
+export default withRouter(component)
