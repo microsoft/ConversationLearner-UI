@@ -512,8 +512,6 @@
 }
 
 .modal {
-  display: grid;
-  grid-template-rows: min-content 1fr min-content;
 }
 .modal--large {
   width: 90%;
