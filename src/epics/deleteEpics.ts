@@ -1,7 +1,7 @@
 import 'rxjs';
 import * as Rx from 'rxjs';
 import { ActionsObservable, Epic } from 'redux-observable'
-import { State, ActionObject } from '../types'
+import { State, ActionObject, DeleteLogDialogAsyncAction } from '../types'
 import { AT } from '../types/ActionTypes'
 import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, ActionMetaData, ActionList, ActionTypes } from 'blis-models';
 import { deleteBlisApp, deleteBlisEntity, deleteBlisAction, deleteChatSession, deleteTeachSession, deleteTrainDialog, deleteLogDialog } from "./apiHelpers";
@@ -57,7 +57,7 @@ export const deleteTrainDialogEpic: Epic<ActionObject, State> = (action$: Action
 
 export const deleteLogDialogEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
     return action$.ofType(AT.DELETE_LOG_DIALOG_ASYNC)
-        .flatMap((actionObject: any) =>
-            deleteLogDialog(actionObject.key, actionObject.currentAppId, actionObject.logDialog)
+        .flatMap((actionObject: DeleteLogDialogAsyncAction) =>
+            deleteLogDialog(actionObject.appId, actionObject.logDialogId)
         );
 }
