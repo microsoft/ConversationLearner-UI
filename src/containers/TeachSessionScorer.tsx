@@ -31,8 +31,8 @@ let columns: IColumn[] = [
         key: 'score',
         name: 'Score',
         fieldName: 'score',
-        minWidth: 100,
-        maxWidth: 200,
+        minWidth: 80,
+        maxWidth: 80,
         isResizable: true,
         isSorted: true,
         isSortedDescending: true
@@ -43,6 +43,26 @@ let columns: IColumn[] = [
         fieldName: 'entities',
         minWidth: 100,
         maxWidth: 200,
+        isResizable: true,
+        isSorted: true,
+        isSortedDescending: true
+    },
+    {
+        key: 'wait',
+        name: 'Wait',
+        fieldName: 'isTerminal',
+        minWidth: 50,
+        maxWidth: 50,
+        isResizable: true,
+        isSorted: true,
+        isSortedDescending: true
+    },
+    {
+        key: 'type',
+        name: 'Type',
+        fieldName: 'type',
+        minWidth: 80,
+        maxWidth: 80,
         isResizable: true,
         isSorted: true,
         isSortedDescending: true
@@ -252,6 +272,14 @@ class TeachSessionScorer extends React.Component<Props, any> {
                 break;
             case 'entities':
                 return this.renderEntityRequirements(item.actionId);
+            case 'type':
+                return item.metadata.actionType;
+            case 'wait':
+                if (fieldContent == true) {
+                    return <span className="ms-Icon ms-Icon--CheckMark checkIcon" aria-hidden="true"></span>;
+                } else {
+                    return <span className="ms-Icon ms-Icon--Remove notFoundIcon" aria-hidden="true"></span>;
+                }
             default:
                 break;
         }
