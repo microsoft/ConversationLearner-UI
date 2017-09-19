@@ -49,6 +49,13 @@ class LogDialogModal extends React.Component<Props, any> {
         }).reduce((a, b) => a.concat(b));
     }
 
+    onClickDelete() {
+        this.props.deleteLogDialogAsync(this.props.app.appId, this.props.logDialog.logDialogId)
+        // TODO: Would be better to close the dialog after it has been confirmed the delete was successful
+        // How do we wait until the promise above has been resolved?
+        this.props.onClose()
+    }
+
     render() {
         let history = this.generateHistory();
         return (
@@ -75,7 +82,7 @@ class LogDialogModal extends React.Component<Props, any> {
                                 />
 
                                 <CommandButton
-                                    onClick={() => this.props.deleteLogDialogAsync(this.props.app.appId, this.props.logDialog.logDialogId)}
+                                    onClick={() => this.onClickDelete()}
                                     className='ms-font-su grayButton teachSessionHeaderButton'
                                     ariaDescription='Delete'
                                     text='Delete'
