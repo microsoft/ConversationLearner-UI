@@ -18,12 +18,19 @@ const initialState: TeachSessionState = {
     autoTeach: false
 };
 
+const newTeachState = { 
+
+}
+
 const teachSessionReducer: Reducer<any> = (state = initialState, action: ActionObject) => {
     switch (action.type) {
         case AT.LOGOUT:
             return { ...initialState };
         case AT.FETCH_TEACH_SESSIONS_FULFILLED:
             return { ...state, all: action.allTeachSessions };
+        case AT.CREATE_TEACH_SESSION_ASYNC:
+            // Start with a clean slate
+            return {...initialState, all: state.all };
         case AT.CREATE_TEACH_SESSION_FULFILLED:
             let newSession = { ...action.teachSession, teachId: action.teachSessionId };
             let newState: TeachSessionState = {...state, all: [...state.all, newSession], current: newSession, mode: TeachMode.Wait }
