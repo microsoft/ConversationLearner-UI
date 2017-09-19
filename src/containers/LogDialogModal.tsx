@@ -65,15 +65,15 @@ class LogDialogModal extends React.Component<Props, any> {
                     isBlocking={true}
                     containerClassName='modal modal--large'
                 >
-                    <div className="wc-gridContainer">
-                        <div className="wc-gridWebchat">
+                    <div className="chatmodal">
+                        <div className="chatmodal_webchat">
                             <Webchat sessionType={"chat"} history={history} />
                         </div>
-                        <div className="wc-gridAdmin">
-                            <div className="wc-gridAdminContent">
+                        <div className="chatmodal_controls">
+                            <div className="chatmodal_admin-controls">
                                 {/* <TrainDialogAdmin /> */}
                             </div>
-                            <div className="wc-gridFooter">
+                            <div className="chatmodal_modal-controls">
                                 <CommandButton
                                     onClick={() => this.props.onClose()}
                                     className='ms-font-su goldButton'
