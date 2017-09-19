@@ -510,3 +510,8 @@
   color: white;
   cursor: pointer;
 }
+
+.modal--large {
+  width: 90%;
+  height: 90%;
+}
