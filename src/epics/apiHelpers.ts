@@ -227,7 +227,7 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
   };
 
   export const deleteLogDialog = (appId: string, logDialogId: string): Observable<ActionObject> => {
-    return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.delete(`${rootUrl}app/${appId}/logDialog/${logDialogId}`, config)
+    return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.delete(`${rootUrl}app/${appId}/logdialog/${logDialogId}`, config)
       .then(response => {
               obs.next(deleteLogDialogFulFilled(logDialogId));
               obs.complete();
