@@ -285,35 +285,6 @@
   margin-top: 1em;
 }
 
-/** Modals with WebChat */
-.chatmodal {
-  height: 100%;
-  display: grid;
-  grid-template-columns: 400px 1fr;
-}
-.chatmodal_webchat {
-  position: relative;
-}
-.chatmodal_controls {
-  border-left: 1px solid black;
-  display: grid;
-  grid-template-rows: 1fr min-content;
-}
-.chatmodal_admin-controls {
-}
-.chatmodal_modal-controls{
-  background-color: #004b50;
-  display: grid;
-  grid-auto-flow: column;
-  grid-gap: 1em;
-  grid-auto-columns: min-content;
-  padding: 0.3em;
-  justify-content: right;
-}
-
-
-
-
 .wc-gridWebchat{
   grid-column: 1;
   grid-row: 1;
@@ -541,7 +512,55 @@
   cursor: pointer;
 }
 
-.modal--large {
+/** New CSS using BEM to eventually replace above */
+:root {
+  --color-primary: #ffb900;
+  --color-primary-darker: #EEAC04;
+  --color-secondary: #004b50;
+  --color-tertiary: lightgrey;
+  --color-botchat-grey: #dbdee1;
+}
+
+.blis-modal--large {
   width: 90%;
   height: 90%;
+}
+
+/** Modals */
+.blis-chatmodal {
+  height: 100%;
+  display: grid;
+  grid-template-columns: 400px 1fr;
+}
+.blis-chatmodal_webchat {
+  position: relative;
+}
+.blis-chatmodal_controls {
+  border-left: 1px solid var(--color-botchat-grey);
+  display: grid;
+  grid-template-rows: 1fr min-content;
+}
+.blis-chatmodal_admin-controls {
+}
+.blis-chatmodal_modal-controls{
+  background-color: var(--color-secondary);
+  display: grid;
+  grid-auto-flow: column;
+  grid-gap: 1em;
+  grid-auto-columns: min-content;
+  padding: 0.635em;
+  justify-content: center;
+}
+
+
+/** Office UI Fabric Theme Overrides */
+.ms-Button {
+}
+/** TODO: Remove usage of !important */
+.ms-Button--primary{
+  background-color: var(--color-primary) !important;
+  color: black !important;
+}
+.ms-Button--primary:hover {
+  background-color: var(--color-primary-darker) !important;
 }

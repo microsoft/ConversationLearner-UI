@@ -3,7 +3,7 @@ import { returntypeof } from 'react-redux-typescript';
 import { editEntityAsync } from '../actions/updateActions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { CommandButton } from 'office-ui-fabric-react';
+import { PrimaryButton, DefaultButton } from 'office-ui-fabric-react';
 import { State } from '../types';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import Webchat from './Webchat'
@@ -63,27 +63,25 @@ class LogDialogModal extends React.Component<Props, any> {
                 <Modal
                     isOpen={this.props.open}
                     isBlocking={true}
-                    containerClassName='modal modal--large'
+                    containerClassName='blis-modal blis-modal--large'
                 >
-                    <div className="chatmodal">
-                        <div className="chatmodal_webchat">
+                    <div className="blis-chatmodal">
+                        <div className="blis-chatmodal_webchat">
                             <Webchat sessionType={"chat"} history={history} />
                         </div>
-                        <div className="chatmodal_controls">
-                            <div className="chatmodal_admin-controls">
+                        <div className="blis-chatmodal_controls">
+                            <div className="blis-chatmodal_admin-controls">
                                 {/* <TrainDialogAdmin /> */}
                             </div>
-                            <div className="chatmodal_modal-controls">
-                                <CommandButton
+                            <div className="blis-chatmodal_modal-controls">
+                                <PrimaryButton
                                     onClick={() => this.props.onClose()}
-                                    className='ms-font-su goldButton'
                                     ariaDescription='Done'
                                     text='Done'
                                 />
 
-                                <CommandButton
+                                <DefaultButton
                                     onClick={() => this.onClickDelete()}
-                                    className='ms-font-su grayButton teachSessionHeaderButton'
                                     ariaDescription='Delete'
                                     text='Delete'
                                 />
