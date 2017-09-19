@@ -5,10 +5,8 @@ import { connect } from 'react-redux';
 import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader'
 import { DetailsList, CommandButton, Link, CheckboxVisibility, IColumn, SearchBox } from 'office-ui-fabric-react';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
-import { setDisplayMode, setCurrentLogDialog, setCurrentChatSession } from '../actions/displayActions'
+import { setDisplayMode } from '../actions/displayActions'
 import { createLogDialog, createChatSessionAsync } from '../actions/createActions'
-import { deleteChatSessionAsync } from '../actions/deleteActions'
-import { fetchAllLogDialogsAsync } from '../actions/fetchActions';
 import { State } from '../types'
 import { LogDialog, Session } from 'blis-models'
 import { DisplayMode } from '../types/const';
@@ -79,12 +77,8 @@ class LogDialogsList extends React.Component<Props, ComponentState> {
             currentLogDialog: logDialog
         })
     }
-    onDeleteLogDialog(logDialogId: string) {
-        console.log(`logDialog id: `, logDialogId)
-    }
 
     onCloseLogDialogModal() {
-        console.log(`logDialogModal closed`)
         this.setState({
             isLogDialogWindowOpen: false,
             currentLogDialog: null
@@ -117,6 +111,7 @@ class LogDialogsList extends React.Component<Props, ComponentState> {
                     <LogDialogModal
                         open={this.state.isLogDialogWindowOpen}
                         logDialog={currentLogDialog}
+                        app={this.props.apps.current}
                         onClose={() => this.onCloseLogDialogModal()}
                     />
                 </div>
@@ -139,11 +134,7 @@ class LogDialogsList extends React.Component<Props, ComponentState> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        setDisplayMode: setDisplayMode,
-        createChatSession: createChatSessionAsync,
-        deleteChatSession: deleteChatSessionAsync,
-        setCurrentChatSession: setCurrentChatSession,
-        fetchAllLogDialogs: fetchAllLogDialogsAsync,
+        setDisplayMode
     }, dispatch)
 }
 const mapStateToProps = (state: State) => {

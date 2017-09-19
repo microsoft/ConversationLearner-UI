@@ -72,6 +72,7 @@ const displayReducer: Reducer<DisplayState> =  (state = initialState, action: Ac
         case AT.RUN_EXTRACTOR_ASYNC:
         case AT.RUN_SCORER_ASYNC:
         case AT.POST_SCORE_FEEDBACK_ASYNC:
+        case AT.DELETE_LOG_DIALOG_ASYNC:
             return {...state, displaySpinner: addSpinner(state.displaySpinner, action.type) };
 
         case AT.CREATE_ACTION_FULFILLED:
@@ -101,6 +102,7 @@ const displayReducer: Reducer<DisplayState> =  (state = initialState, action: Ac
         case AT.RUN_SCORER_FULFILLED:
         case AT.POST_SCORE_FEEDBACK_FULFILLEDWAIT:
         case AT.POST_SCORE_FEEDBACK_FULFILLEDNOWAIT:
+        case AT.DELETE_LOG_DIALOG_FULFILLED:
             return {...state, displaySpinner: removeSpinner(state.displaySpinner, action.type) };
         default:
             return state;

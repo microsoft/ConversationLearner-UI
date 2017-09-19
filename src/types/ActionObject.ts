@@ -256,15 +256,9 @@ export type DeleteAction = {
     } | {
         type: AT.DELETE_TRAIN_DIALOG_FULFILLED,
         trainDialogGUID: string,
-    }| {
-        type: AT.DELETE_LOG_DIALOG_ASYNC,
-        key: string,
-        currentAppId: string,
-        logDialog: LogDialog
-    } | {
-        type: AT.DELETE_LOG_DIALOG_FULFILLED,
-        logDialogGUID: string,
-    }| {
+    }| DeleteLogDialogAsyncAction
+     | DeleteLogDialogFulfilledAction
+     | {
         type: AT.DELETE_CHAT_SESSION_ASYNC,
         key: string,
         session: Session,
@@ -285,6 +279,16 @@ export type DeleteAction = {
         currentAppId: string,
     } | {
         type: AT.DELETE_OPERATION_FULFILLED
+}
+
+export type DeleteLogDialogAsyncAction = {
+    type: AT.DELETE_LOG_DIALOG_ASYNC,
+    appId: string,
+    logDialogId: string
+}
+export type DeleteLogDialogFulfilledAction = {
+    type: AT.DELETE_LOG_DIALOG_FULFILLED,
+    logDialogId: string,
 }
 
 export type TeachAction = {

@@ -226,13 +226,10 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
             .catch(err => handleError(obs, err,  AT.DELETE_ACTION_ASYNC)));
   };
 
-  export const deleteLogDialog = (key : string, appId: string, logDialog: LogDialog): Observable<ActionObject> => {
-    let deleteActionRoute: string = makeRoute(key, `app/${appId}/lodDialog/${logDialog.logDialogId}`); 
-    const { logDialogId, ...dialogToSend } = logDialog
-    let configWithBody = {...config, body: dialogToSend}
-    return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.delete(deleteActionRoute, configWithBody)
+  export const deleteLogDialog = (appId: string, logDialogId: string): Observable<ActionObject> => {
+    return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.delete(`${rootUrl}app/${appId}/logdialog/${logDialogId}`, config)
       .then(response => {
-              obs.next(deleteLogDialogFulFilled(key, logDialog.logDialogId));
+              obs.next(deleteLogDialogFulFilled(logDialogId));
               obs.complete();
             })
             .catch(err => handleError(obs, err,  AT.DELETE_LOG_DIALOG_ASYNC)));
