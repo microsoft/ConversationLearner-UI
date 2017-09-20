@@ -104,7 +104,7 @@ class LogDialogsList extends React.Component<Props, ComponentState> {
                         data-automation-id='randomID20'
                         disabled={false}
                         onClick={this.handleClick.bind(this)}
-                        className='goldButton'
+                        className='blis-button--gold'
                         ariaDescription='Create a New Chat Session'
                         text='New Chat Session'
                     />

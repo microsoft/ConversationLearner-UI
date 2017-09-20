@@ -676,7 +676,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
             deleteButton =
                 <CommandButton
                     data-automation-id='randomID9'
-                    className="grayButton"
+                    className="blis-button--gray"
                     disabled={false}
                     onClick={() => this.props.handleOpenDeleteModal(this.props.blisAction.actionId)}
                     ariaDescription='Delete'
@@ -779,13 +779,13 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                             data-automation-id='randomID6'
                             disabled={!this.state.payloadVal}
                             onClick={this.createAction.bind(this)}
-                            className='goldButton'
+                            className='blis-button--gold'
                             ariaDescription='Create'
                             text={createButtonText}
                         />
                         <CommandButton
                             data-automation-id='randomID7'
-                            className="grayButton"
+                            className="blis-button--gray"
                             disabled={false}
                             onClick={this.handleClose.bind(this)}
                             ariaDescription='Cancel'
@@ -793,10 +793,10 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                         />
                         <CommandButton
                             data-automation-id='randomID8'
-                            className="goldButton actionCreatorCreateEntityButton"
+                            className="blis-button--gold blis-button--right"
                             disabled={false}
                             onClick={this.handleOpenEntityModal.bind(this)}
-                            ariaDescription='Cancel'
+                            ariaDescription='Entity'
                             text='Entity'
                             iconProps={{ iconName: 'CirclePlus' }}
                         />

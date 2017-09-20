@@ -114,7 +114,7 @@ class TeachSessionExtractor extends React.Component<any, any> {
             addEntity =
                 <CommandButton
                     data-automation-id='randomID8'
-                    className="goldButton teachCreateButton"
+                    className="blis-button--gold teachCreateButton"
                     disabled={false}
                     onClick={this.handleOpenEntityModal.bind(this)}
                     ariaDescription='Cancel'
@@ -127,7 +127,7 @@ class TeachSessionExtractor extends React.Component<any, any> {
                          data-automation-id='randomID16'
                          disabled={false}
                          onClick={this.runScorer.bind(this)}
-                         className='ms-font-su goldButton teachSessionScoreButton'
+                         className='ms-font-su blis-button--gold teachSessionScoreButton'
                          ariaDescription='Score Actions'
                          text='Score Actions'
                      />

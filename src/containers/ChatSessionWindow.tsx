@@ -49,7 +49,7 @@ class SessionWindow extends React.Component<Props, any> {
                             data-automation-id='randomID16'
                             disabled={false}
                             onClick={this.handleQuit.bind(this)}
-                            className='ms-font-su goldButton teachSessionHeaderButton'
+                            className='ms-font-su blis-button--gold blis-button--widemargin'
                             ariaDescription='Done Testing'
                             text='Done Testing'
                         />

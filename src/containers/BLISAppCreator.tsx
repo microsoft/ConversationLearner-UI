@@ -108,7 +108,7 @@ class BLISAppCreator extends React.Component<Props, any> {
                     data-automation-id='randomID'
                     disabled={false}
                     onClick={this.handleOpen.bind(this)}
-                    className='goldButton'
+                    className='blis-button--gold'
                     ariaDescription='Create a New Application'
                     text='New App'
                 />
@@ -146,13 +146,13 @@ class BLISAppCreator extends React.Component<Props, any> {
                             data-automation-id='randomID2'
                             disabled={!this.state.appNameVal || !this.state.luisKeyVal}
                             onClick={this.createApplication.bind(this)}
-                            className='goldButton'
+                            className='blis-button--gold'
                             ariaDescription='Create'
                             text='Create'
                         />
                         <CommandButton
                             data-automation-id='randomID3'
-                            className="grayButton"
+                            className="blis-button--gray"
                             disabled={false}
                             onClick={this.handleClose.bind(this)}
                             ariaDescription='Cancel'

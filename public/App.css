@@ -40,9 +40,6 @@
   vertical-align: middle;
   width:17%;
 }
-.teachSessionHeaderButton{
-  margin: 20px;
-}
 .teachSessionScoreButton{
   margin: 0px;
   float: right;
@@ -91,21 +88,27 @@
   display: block;
   margin-bottom: 1%;
 }
-.goldButton:hover {
+.blis-button--gold:hover {
   border: 1px solid #004b50;
 }
-.goldButton{
+.blis-button--gold{
   background-color: #ffb900 !important;
   color: black !important;
   padding: 0em 2em !important;
 }
-.goldButton *{
+.blis-button--gold *{
   color: black !important;
 }
-.grayButton:hover {
+.blis-button--right {
+  float: right;
+}
+.blis-button--widemargin {
+  margin: 20px;
+}
+.blis-button--gray:hover {
   border: 1px solid #004b50;
 }
-.grayButton{
+.blis-button--gray{
   background-color: lightgrey !important;
   color:black !important;
   padding: 0em 2em !important;
@@ -276,9 +279,6 @@
   color: #cc0000;
   font-size: 24px;
 }
-.actionCreatorCreateEntityButton {
-  float: right;
-}
 .saveAppChangesButtonsDiv{
   width: 100%;
   display: block;
@@ -434,9 +434,6 @@
   position: absolute;
   z-index: 1000;
   visibility: visible !important
-}
-.abandonTeach{
-  float: right;
 }
 .fakeInputDiv{
   display: inline-block;

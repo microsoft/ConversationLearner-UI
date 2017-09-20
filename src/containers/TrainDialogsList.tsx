@@ -7,7 +7,6 @@ import { DetailsList, CommandButton, Link, CheckboxVisibility, IColumn, SearchBo
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import { setDisplayMode, setCurrentTrainDialog, setCurrentTeachSession } from '../actions/displayActions'
 import { createTrainDialog, createTeachSessionAsync } from '../actions/createActions'
-import { deleteTrainDialogAsync } from '../actions/deleteActions'
 import { fetchAllTrainDialogsAsync } from '../actions/fetchActions';
 import { State } from '../types'
 import { TrainDialog, Teach } from 'blis-models'
@@ -37,14 +36,6 @@ let columns: IColumn[] = [
         minWidth: 100,
         maxWidth: 200,
         isResizable: true
-    },
-    {
-        key: 'actions',
-        name: 'Actions',
-        fieldName: 'entityId',
-        minWidth: 100,
-        maxWidth: 200,
-        isResizable: true
     }
 ];
 
@@ -55,28 +46,6 @@ class TrainDialogsList extends React.Component<Props, any> {
             searchValue: ''
         }
         this.handleSelection = this.handleSelection.bind(this)
-    }
-    openDeleteModal(guid: string) {
-        this.setState({
-            confirmDeleteModalOpen: true,
-            dialogIDToDelete: guid
-        })
-    }
-    handleCloseDeleteModal() {
-        this.setState({
-            confirmDeleteModalOpen: false,
-            dialogIDToDelete: null
-        })
-    }
-    deleteSelectedDialog() {
-        let currentAppId: string = this.props.apps.current.appId;
-        let dialogToDelete: TrainDialog = this.props.trainDialogs.all.find((a: TrainDialog) => a.trainDialogId == this.state.dialogIDToDelete);
-        
-        this.props.deleteTrainDialog(this.props.userKey, dialogToDelete, currentAppId);
-        this.setState({
-            confirmDeleteModalOpen: false,
-            dialogIDToDelete: null
-        })
     }
     firstUtterance(item: any)
     {
@@ -106,12 +75,6 @@ class TrainDialogsList extends React.Component<Props, any> {
                 return <span className='ms-font-m-plus'>{this.lastUtterance(item)}</span>;
             case 'turns':
                 return <span className='ms-font-m-plus'>{item.rounds.length}</span>;
-            case 'actions':
-                return (
-                    <div>
-                        <a onClick={() => this.openDeleteModal(item.trainDialogId)}><span className="ms-Icon ms-Icon--Delete"></span></a>
-                    </div>
-                )
             default:
                 return <span className='ms-font-m-plus'>{fieldContent}</span>;
         }
@@ -146,7 +109,7 @@ class TrainDialogsList extends React.Component<Props, any> {
                         data-automation-id='randomID9'
                         disabled={false}
                         onClick={this.handleClick.bind(this)}
-                        className='goldButton'
+                        className='blis-button--gold'
                         ariaDescription='Create a New Teach Session'
                         text='New Teach Session'
                     />
@@ -164,7 +127,6 @@ class TrainDialogsList extends React.Component<Props, any> {
                     onRenderItemColumn={this.renderItemColumn.bind(this)}
                     onActiveItemChanged={(item) => this.handleSelection(item)}
                 />
-                <ConfirmDeleteModal open={this.state.confirmDeleteModalOpen} onCancel={() => this.handleCloseDeleteModal()} onConfirm={() => this.deleteSelectedDialog()} title="Are you sure you want to delete this Training Dialog?" />
             </div>
         );
     }
@@ -175,7 +137,6 @@ const mapDispatchToProps = (dispatch: any) => {
         setCurrentTrainDialog: setCurrentTrainDialog,
         setCurrentTeachSession: setCurrentTeachSession,
         createTrainDialog: createTrainDialog,
-        deleteTrainDialog: deleteTrainDialogAsync,
         fetchAllTrainDialogs : fetchAllTrainDialogsAsync,
     }, dispatch)
 }

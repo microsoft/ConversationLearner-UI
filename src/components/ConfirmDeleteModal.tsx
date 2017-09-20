@@ -23,12 +23,12 @@ const ConfirmDeleteModal: React.SFC<Props> = (props: Props) => {
                 <CommandButton
                     disabled={false}
                     onClick={() => props.onConfirm()}
-                    className='goldButton'
+                    className='blis-button--gold'
                     ariaDescription='Confirm'
                     text='Confirm'
                 />
                 <CommandButton
-                    className="grayButton"
+                    className="blis-button--gray"
                     disabled={false}
                     onClick={() => props.onCancel()}
                     ariaDescription='Cancel'

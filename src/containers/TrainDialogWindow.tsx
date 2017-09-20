@@ -9,8 +9,9 @@ import { DisplayMode } from '../types/const';
 import Webchat from './Webchat'
 import TrainDialogAdmin from './TrainDialogAdmin'
 import { Session, ActionBase } from 'blis-models'
-import { deleteChatSessionAsync } from '../actions/deleteActions'
+import { deleteChatSessionAsync, deleteTrainDialogAsync } from '../actions/deleteActions'
 import { createChatSessionAsync } from '../actions/createActions'
+import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import { setCurrentTrainDialog, setCurrentTeachSession, setDisplayMode } from '../actions/displayActions'
 import { Activity } from 'botframework-directlinejs';
 
@@ -28,6 +29,32 @@ class TrainDialogWindow extends React.Component<Props, any> {
     }
     handleQuit() {
         this.props.setDisplayMode(DisplayMode.AppAdmin);
+        this.setState({
+            display: "TrainDialogs"
+        })
+    }
+    openDeleteModal() {
+        let guid = this.props.trainDialog.trainDialogId;
+        this.setState({
+            confirmDeleteModalOpen: true,
+            dialogIDToDelete: guid
+        });
+    }
+    handleCloseDeleteModal() {
+        this.setState({
+            confirmDeleteModalOpen: false,
+            dialogIDToDelete: null
+        });
+    }
+    deleteSelectedDialog() {
+        let currentAppId: string = this.props.apps.current.appId;
+        this.props.deleteTrainDialog(this.props.userKey, this.props.trainDialog, currentAppId);
+        this.props.setDisplayMode(DisplayMode.AppAdmin);
+        this.setState({
+            confirmDeleteModalOpen: false,
+            dialogIDToDelete: null,
+            display: "TrainDialogs"
+        })
     }
     generateHistory() : Activity[] {
         if (!this.props.trainDialog) {
@@ -74,14 +101,23 @@ class TrainDialogWindow extends React.Component<Props, any> {
                             data-automation-id='randomID16'
                             disabled={false}
                             onClick={this.handleQuit.bind(this)}
-                            className='ms-font-su goldButton teachSessionHeaderButton'
+                            className='ms-font-su blis-button--gold blis-button--widemargin'
                             ariaDescription='Done'
                             text='Done'
+                        />
+                        <CommandButton
+                            data-automation-id='randomID16'
+                            disabled={false}
+                            onClick={this.openDeleteModal.bind(this)}
+                            className='ms-font-su blis-button--gold blis-button--right blis-button--widemargin'
+                            ariaDescription='Delete'
+                            text='Delete'
                         />
                         </div>    
                     </div>
                 </div>
-            </Modal>
+                <ConfirmDeleteModal open={this.state.confirmDeleteModalOpen} onCancel={() => this.handleCloseDeleteModal()} onConfirm={() => this.deleteSelectedDialog()} title="Are you sure you want to delete this Training Dialog?" />
+            </Modal>                
         );
     }
 }
@@ -89,6 +125,7 @@ const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         createChatSession: createChatSessionAsync,
         deleteChatSession: deleteChatSessionAsync,
+        deleteTrainDialog: deleteTrainDialogAsync,
         setDisplayMode: setDisplayMode
     }, dispatch);
 }
@@ -100,7 +137,8 @@ const mapStateToProps = (state: State) => {
         user: state.user,
         error: state.error.error,
         trainDialog: state.trainDialogs.current,
-        actions: state.actions
+        actions: state.actions,
+        display: state.display
     }
 }
 // Props types inferred from mapStateToProps & dispatchToProps
