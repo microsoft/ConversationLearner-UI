@@ -28,8 +28,6 @@ let columns: IColumn[] = [
         maxWidth: 500,
         isMultiline: true,
         isResizable: true,
-        isSorted: true,
-        isSortedDescending: true
     },
     {
         key: 'score',
@@ -37,7 +35,9 @@ let columns: IColumn[] = [
         fieldName: 'score',
         minWidth: 80,
         maxWidth: 80,
-        isResizable: true
+        isResizable: true,
+        isSorted: true,
+        isSortedDescending: true
     },
     {
         key: 'entities',
@@ -200,28 +200,23 @@ class TeachSessionScorer extends React.Component<Props, any> {
             return <div>ERROR: Missing Action</div>;
         }
 
-        let response = [];
+        let items = [];
         for (let entityId of action.requiredEntities) {
             let found = this.entityInMemory(entityId);
-            let key = `${actionId}_${found.name}`
-            if (found.match) {
-                response.push(<span key={key} className="entityMatch">{found.name}</span>);
-            }
-            else {
-                response.push(<span key={key} className="entityMismatch">{found.name}</span>);
-            }
+            items.push({name: found.name, type: found.match ? "entityMatch" : "entityMismatch", neg: false});
         }
         for (let entityId of action.negativeEntities) {
             let found = this.entityInMemory(entityId);
-            let key = `${actionId}_${found.name}`
-            if (found.match) {
-                response.push(<span key={key} className="entityMismatch"><del>{found.name}</del></span>);
-            }
-            else {
-                response.push(<span key={key} className="entityMatch"><del>{found.name}</del></span>);
-            }
+            items.push({name: found.name, type: found.match? "entityMismatch" : "entityMatch", neg: true});
         }
-        return response;
+        return (
+            <List
+                items={items}
+                onRenderCell={(item, index) => {
+                    return <span className={item.type}>{item.neg ? (<del>{item.name}</del>) : item.name}</span>
+                }}
+            />
+        )
     }
     calculateReason(actionId: string) {
         let action = this.props.actions.filter((a : ActionBase) => a.actionId == actionId)[0];

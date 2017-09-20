@@ -26,7 +26,7 @@ let columns: IColumn[] = [
         name: 'Action Type',
         fieldName: 'metadata',
         minWidth: 100,
-        maxWidth: 200,
+        maxWidth: 100,
         isResizable: true
     },
     {
@@ -50,7 +50,7 @@ let columns: IColumn[] = [
         name: 'Suggested Entity',
         fieldName: 'metadata',
         minWidth: 100,
-        maxWidth: 200,
+        maxWidth: 100,
         isResizable: true
     },
     {

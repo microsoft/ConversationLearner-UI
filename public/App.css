@@ -520,7 +520,6 @@
   --color-tertiary: lightgrey;
   --color-botchat-grey: #dbdee1;
 }
-
 .blis-modal--large {
   width: 90%;
   height: 90%;
@@ -555,6 +554,9 @@
 
 /** Office UI Fabric Theme Overrides */
 .ms-Button {
+}
+.ms-List-cell {
+  min-height: 0px !important;
 }
 /** TODO: Remove usage of !important */
 .ms-Button--primary{
