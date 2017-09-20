@@ -6,7 +6,7 @@ import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader';
 import { deleteActionAsync } from '../actions/deleteActions'
 import { DetailsList, CommandButton, Link, CheckboxVisibility, List, IColumn, SearchBox } from 'office-ui-fabric-react';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
-import { ActionBase, ActionMetaData, EntityBase, EntityMetaData } from 'blis-models'
+import { ActionBase, ActionMetaData, EntityBase, EntityMetaData, ModelUtils } from 'blis-models'
 import ActionResponseCreatorEditor from './ActionResponseCreatorEditor';
 import EntityTile from '../components/EntityTile';
 import { State } from '../types'
@@ -17,7 +17,7 @@ let columns: IColumn[] = [
         name: 'Payload',
         fieldName: 'payload',
         minWidth: 100,
-        maxWidth: 200,
+        maxWidth: 400,
         isResizable: true,
         isMultiline: true
     },
@@ -57,8 +57,16 @@ let columns: IColumn[] = [
         key: 'wait',
         name: 'Wait',
         fieldName: 'isTerminal',
-        minWidth: 100,
-        maxWidth: 200,
+        minWidth: 50,
+        maxWidth: 50,
+        isResizable: true
+    },
+    {
+        key: 'arguments',
+        name: 'Arguments',
+        fieldName: 'arguments',
+        minWidth: 80,
+        maxWidth: 300,
         isResizable: true
     }
 ];
@@ -155,14 +163,32 @@ class ActionResponsesHomepage extends React.Component<Props, any> {
                     return <span className="ms-Icon ms-Icon--Remove notFoundIcon" aria-hidden="true"></span>;
                 }
             case 'suggestedEntity':
-                let name = fieldContent.entitySuggestion.entityName ? fieldContent.entitySuggestion.entityName : "";
-                return (
-                    <div className='ms-ListItem is-selectable'>
-                        <span className='ms-ListItem-primaryText'>{name}</span>
-                    </div>
-                )
+                if (fieldContent.entitySuggestion) {
+                    return (
+                        <div className='ms-ListItem is-selectable'>
+                            <span className='ms-ListItem-primaryText'>{fieldContent.entitySuggestion.entityName}</span>
+                        </div>
+                    )
+                } else {
+                    return <span className="ms-Icon ms-Icon--Remove notFoundIcon" aria-hidden="true"></span>;
+                }
             case 'payload':
+                fieldContent = ModelUtils.GetPrimaryPayload(item);
                 return <span className='ms-font-m-plus'><Link onClick={() => this.editSelectedAction(item)}>{fieldContent}</Link></span>;
+            case 'arguments':  
+                let args = ModelUtils.GetArguments(item);
+                if (args)
+                {
+                    return (
+                        <List
+                            items={args}
+                            onRenderCell={(item, index) => (
+                                <span className='ms-ListItem-primaryText'>{item}</span>
+                            )}
+                        />
+                    )
+                }
+                return <span className="ms-Icon ms-Icon--Remove notFoundIcon" aria-hidden="true"></span>;
             default:
                 return <span className='ms-font-m-plus'>{fieldContent}</span>;
         }

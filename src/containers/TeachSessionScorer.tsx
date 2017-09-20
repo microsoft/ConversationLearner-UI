@@ -2,12 +2,13 @@ import * as React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { returntypeof } from 'react-redux-typescript';
+import { ActionTypes, ModelUtils } from 'blis-models';
 import { State } from '../types'
 import { TrainScorerStep, ScoredBase, ActionBase, EntityBase, Memory, ScoreInput, ScoredAction, UnscoredAction, ScoreReason } from 'blis-models';
 import { postScorerFeedbackAsync, toggleAutoTeach } from '../actions/teachActions'
 import { CommandButton } from 'office-ui-fabric-react';
 import { TeachMode } from '../types/const'
-import { IColumn, DetailsList, CheckboxVisibility } from 'office-ui-fabric-react';
+import { IColumn, DetailsList, CheckboxVisibility, List } from 'office-ui-fabric-react';
 import ActionResponseCreatorEditor from './ActionResponseCreatorEditor'
 
 let columns: IColumn[] = [
@@ -24,8 +25,11 @@ let columns: IColumn[] = [
         name: 'Payload',
         fieldName: 'payload',
         minWidth: 100,
-        maxWidth: 400,
-        isResizable: true
+        maxWidth: 500,
+        isMultiline: true,
+        isResizable: true,
+        isSorted: true,
+        isSortedDescending: true
     },
     {
         key: 'score',
@@ -33,19 +37,15 @@ let columns: IColumn[] = [
         fieldName: 'score',
         minWidth: 80,
         maxWidth: 80,
-        isResizable: true,
-        isSorted: true,
-        isSortedDescending: true
+        isResizable: true
     },
     {
         key: 'entities',
         name: 'Entities',
         fieldName: 'entities',
         minWidth: 100,
-        maxWidth: 200,
-        isResizable: true,
-        isSorted: true,
-        isSortedDescending: true
+        maxWidth: 300,
+        isResizable: true
     },
     {
         key: 'wait',
@@ -53,9 +53,7 @@ let columns: IColumn[] = [
         fieldName: 'isTerminal',
         minWidth: 50,
         maxWidth: 50,
-        isResizable: true,
-        isSorted: true,
-        isSortedDescending: true
+        isResizable: true
     },
     {
         key: 'type',
@@ -63,9 +61,15 @@ let columns: IColumn[] = [
         fieldName: 'type',
         minWidth: 80,
         maxWidth: 80,
-        isResizable: true,
-        isSorted: true,
-        isSortedDescending: true
+        isResizable: true
+    },
+    {
+        key: 'arguments',
+        name: 'Arguments',
+        fieldName: 'arguments',
+        minWidth: 80,
+        maxWidth: 300,
+        isResizable: true
     }
 ]
 
@@ -280,6 +284,22 @@ class TeachSessionScorer extends React.Component<Props, any> {
                 } else {
                     return <span className="ms-Icon ms-Icon--Remove notFoundIcon" aria-hidden="true"></span>;
                 }
+            case 'arguments':
+                let args = ModelUtils.GetArguments(item);
+                if (args)
+                {
+                    return (
+                        <List
+                            items={args}
+                            onRenderCell={(item, index) => (
+                                <span className='ms-ListItem-primaryText'>{item}</span>
+                            )}
+                        />
+                    )
+                }
+                return <span className="ms-Icon ms-Icon--Remove notFoundIcon" aria-hidden="true"></span>;
+            case 'payload': 
+                fieldContent = ModelUtils.GetPrimaryPayload(item);
             default:
                 break;
         }
