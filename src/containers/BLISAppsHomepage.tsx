@@ -4,7 +4,7 @@ import AppAdmin from './AppAdmin';
 import TeachSessionWindow from './TeachSessionWindow';
 import TrainDialogWindow from './TrainDialogWindow'
 import ChatSessionWindow from './ChatSessionWindow';
-import { fetchApplicationsAsync } from '../actions/fetchActions'
+import { fetchApplicationsAsync, fetchBotInfoAsync } from '../actions/fetchActions'
 import BLISAppsList from './BLISAppsList';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -25,6 +25,7 @@ class BLISAppsHomepage extends React.Component<Props, any> {
                 displayedUserId: this.props.userId
             })
             this.props.fetchApplications(this.props.userKey, this.props.userId);
+            this.props.fetchBotInfo();
         }
     }
     render() {
@@ -56,7 +57,8 @@ class BLISAppsHomepage extends React.Component<Props, any> {
 
 const mapDispatchToProps = (dispatch: any) => {
   return bindActionCreators({
-    fetchApplications: fetchApplicationsAsync
+    fetchApplications: fetchApplicationsAsync,
+    fetchBotInfo: fetchBotInfoAsync
   }, dispatch);
 }
 

@@ -1,5 +1,6 @@
 import { combineReducers, Reducer } from 'redux';
 import appsReducer from './appsReducer';
+import botReducer from './botReducer';
 import entitiesReducer from './entitiesReducer';
 import actionsReducer from './actionsReducer';
 import trainDialogsReducer from './trainDialogsReducer';
@@ -14,6 +15,7 @@ import { State } from '../types';
 const rootReducer = combineReducers<State>({
     user: userReducer,
     apps: appsReducer,
+    bot: botReducer,
     entities: entitiesReducer,
     actions: actionsReducer,
     trainDialogs: trainDialogsReducer,
