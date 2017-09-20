@@ -47,7 +47,7 @@ class TrainDialogAdmin extends React.Component<Props, any> {
             details = [];
             for (let entityId of entityIds) {
                 let entity: EntityBase = this.props.entities.find((a: EntityBase) => a.entityId == entityId);
-                details.push(<div className='ms-font-l'>{entity.entityName}</div>);     
+                details.push(<div className='ms-font-l' key={entity.entityName}>{entity.entityName}</div>);     
             }
         }
         return (
