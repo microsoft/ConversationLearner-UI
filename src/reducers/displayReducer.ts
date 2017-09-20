@@ -42,6 +42,7 @@ const displayReducer: Reducer<DisplayState> =  (state = initialState, action: Ac
             // If I fail to load critical data, return to home page
             switch (action.route) {
                 case AT.FETCH_APPLICATIONS_ASYNC :
+                case AT.FETCH_BOTINFO_ASYNC:
                 case AT.FETCH_ENTITIES_ASYNC:
                 case AT.FETCH_ACTIONS_ASYNC:
                     return {...initialState, displayLogin: false, displaySpinner: []};
@@ -65,6 +66,7 @@ const displayReducer: Reducer<DisplayState> =  (state = initialState, action: Ac
 
         case AT.FETCH_ACTIONS_ASYNC:
         case AT.FETCH_APPLICATIONS_ASYNC:
+        case AT.FETCH_BOTINFO_ASYNC:
         case AT.FETCH_CHAT_SESSIONS_ASYNC:
         case AT.FETCH_ENTITIES_ASYNC: 
         case AT.FETCH_TEACH_SESSIONS_ASYNC:
@@ -93,6 +95,7 @@ const displayReducer: Reducer<DisplayState> =  (state = initialState, action: Ac
         case AT.EDIT_ENTITY_FULFILLED:
 
         case AT.FETCH_ACTIONS_FULFILLED:
+        case AT.FETCH_BOTINFO_FULFILLED:
         case AT.FETCH_APPLICATIONS_FULFILLED:
         case AT.FETCH_CHAT_SESSIONS_FULFILLED:
         case AT.FETCH_ENTITIES_FULFILLED:

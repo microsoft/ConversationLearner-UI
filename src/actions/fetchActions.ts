@@ -1,6 +1,6 @@
 import { ActionObject } from '../types'
 import { AT } from '../types/ActionTypes'
-import { BlisAppBase, BlisAppMetaData, BlisAppList, 
+import { BlisAppBase, BlisAppMetaData, BlisAppList, BotInfo,
         EntityBase, EntityMetaData, EntityList, 
         ActionBase, ActionMetaData, ActionList, ActionTypes, 
         TrainDialog, LogDialog,
@@ -33,6 +33,21 @@ export const fetchAllLogDialogsFulfilled = (logDialogs: LogDialog[]): ActionObje
     return {
         type: AT.FETCH_LOG_DIALOGS_FULFILLED,
         allLogDialogs: logDialogs
+    }
+}
+
+export const fetchBotInfoAsync = (): ActionObject => {
+    //needs a fulfilled version to handle response from Epic
+    return {
+        type: AT.FETCH_BOTINFO_ASYNC
+    }
+}
+
+export const fetchBotInfoFulfilled = (botInfo: BotInfo): ActionObject => {
+    //needs a fulfilled version to handle response from Epic
+    return {
+        type: AT.FETCH_BOTINFO_FULFILLED,
+        botInfo: botInfo
     }
 }
 

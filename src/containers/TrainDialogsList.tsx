@@ -14,27 +14,35 @@ import { DisplayMode } from '../types/const';
 
 let columns: IColumn[] = [
     {
-        key: 'firstUtterance',
-        name: 'First Utterance',
-        fieldName: 'firstUtterance',
+        key: 'firstInput',
+        name: 'First Input',
+        fieldName: 'firstInput',
         minWidth: 100,
-        maxWidth: 200,
+        maxWidth: 500,
         isResizable: true
     },
     {
-        key: 'lastUtterance',
-        name: 'Last Utterance',
-        fieldName: 'lastUtterance',
+        key: 'lastInput',
+        name: 'Last Input',
+        fieldName: 'lastInput',
         minWidth: 100,
-        maxWidth: 200,
+        maxWidth: 500,
+        isResizable: true
+    },
+    {
+        key: 'lastResponse',
+        name: 'Last Response',
+        fieldName: 'lastResponse',
+        minWidth: 100,
+        maxWidth: 500,
         isResizable: true
     },
     {
         key: 'turns',
         name: 'Turns',
         fieldName: 'dialog',
-        minWidth: 100,
-        maxWidth: 200,
+        minWidth: 50,
+        maxWidth: 50,
         isResizable: true
     }
 ];
@@ -65,14 +73,35 @@ class TrainDialogsList extends React.Component<Props, any> {
             return "??";
         }
     }
+    lastResponse(item: any)
+    {
+        try {
+            let scorerSteps = item.rounds[item.rounds.length-1].scorerSteps;
+            if (scorerSteps.length > 0)
+            {
+                let actionId = scorerSteps[scorerSteps.length-1].labelAction;
+                let action = this.props.actions.find(a => a.actionId = actionId);
+                if (action)
+                {
+                    return  action.payload;
+                }
+            }
+            return "";
+        }
+        catch (err) {
+            return "??";
+        }
+    }
     renderItemColumn(item?: any, index?: number, column?: IColumn) {
         let self = this;
         let fieldContent = item[column.fieldName];
         switch (column.key) {
-            case 'firstUtterance': 
+            case 'firstInput': 
                 return <span className='ms-font-m-plus'>{this.firstUtterance(item)}</span>;
-            case 'lastUtterance': 
+            case 'lastInput': 
                 return <span className='ms-font-m-plus'>{this.lastUtterance(item)}</span>;
+            case 'lastResponse': 
+                return <span className='ms-font-m-plus'>{this.lastResponse(item)}</span>;
             case 'turns':
                 return <span className='ms-font-m-plus'>{item.rounds.length}</span>;
             default:
@@ -144,6 +173,7 @@ const mapStateToProps = (state: State) => {
     return {
         userKey: state.user.key,
         apps: state.apps,
+        actions: state.actions,
         trainDialogs: state.trainDialogs,
         teachSessions: state.teachSessions
     }
