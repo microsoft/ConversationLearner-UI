@@ -1,20 +1,48 @@
 import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
-import { editEntityAsync } from '../actions/updateActions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { PrimaryButton, DefaultButton } from 'office-ui-fabric-react';
 import { State } from '../types';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import Webchat from './Webchat'
-import TrainDialogAdmin from './TrainDialogAdmin'
+import LogDialogAdmin from './LogDialogAdmin'
 import { Activity } from 'botframework-directlinejs'
-import { BlisAppBase, LogDialog } from 'blis-models'
+import { createChatSessionAsync } from '../actions/createActions'
+import { BlisAppBase, LogDialog, Session } from 'blis-models'
 import { deleteLogDialogAsync } from '../actions/deleteActions'
 
-class LogDialogModal extends React.Component<Props, any> {
-    
-    generateHistory() : Activity[] {
+interface ComponentState {
+    selectedActivity: Activity | null,
+    chatSession: Session
+}
+
+class LogDialogModal extends React.Component<Props, ComponentState> {
+
+    componentWillMount() {
+        this.setState({
+            selectedActivity: null,
+            chatSession : new Session({saveToLog : true})
+        }, () => {
+            this.props.createChatSessionAsync(this.props.user.key, this.state.chatSession, this.props.apps.current.appId);
+        })
+    }
+
+    /**
+     * When modal is opened create a new session and reset the state.
+     */
+    componentWillReceiveProps(nextProps: Props) {
+        if (this.props.open === false && nextProps.open === true) {
+            this.setState({
+                selectedActivity: null,
+                chatSession : new Session({saveToLog : true})
+            }, () => {
+                this.props.createChatSessionAsync(this.props.user.key, this.state.chatSession, this.props.apps.current.appId);
+            })
+        }
+    }
+
+    generateHistory(): Activity[] {
         if (!this.props.logDialog) {
             return [];
         }
@@ -36,7 +64,7 @@ class LogDialogModal extends React.Component<Props, any> {
                 let action = actions.filter(a => a.actionId === scorerStep.predictedAction)[0]
                 return {
                     id: `${i}:${j}`,
-                    from:{
+                    from: {
                         id: "BlisTrainer",
                         name: "BlisTrainer"
                     },
@@ -56,6 +84,16 @@ class LogDialogModal extends React.Component<Props, any> {
         this.props.onClose()
     }
 
+    onSelectWebChatActivity(activity: Activity) {
+        this.setState({
+            selectedActivity: activity
+        })
+    }
+
+    onPostWebChatActivity(activity: Activity) {
+        console.log(`activity posted: `, activity)
+    }
+
     render() {
         let history = this.generateHistory();
         return (
@@ -67,11 +105,19 @@ class LogDialogModal extends React.Component<Props, any> {
                 >
                     <div className="blis-chatmodal">
                         <div className="blis-chatmodal_webchat">
-                            <Webchat sessionType={"chat"} history={history} />
+                            <Webchat
+                                sessionType={"chat"}
+                                history={history}
+                                onSelectActivity={activity => this.onSelectWebChatActivity(activity)}
+                                onPostActivity={activity => this.onPostWebChatActivity(activity)}
+                            />
                         </div>
                         <div className="blis-chatmodal_controls">
                             <div className="blis-chatmodal_admin-controls">
-                                {/* <TrainDialogAdmin /> */}
+                                <LogDialogAdmin
+                                    logDialog={this.props.logDialog}
+                                    selectedActivity={this.state.selectedActivity}
+                                />
                             </div>
                             <div className="blis-chatmodal_modal-controls">
                                 <PrimaryButton
@@ -95,11 +141,13 @@ class LogDialogModal extends React.Component<Props, any> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
+        createChatSessionAsync,
         deleteLogDialogAsync
     }, dispatch);
 }
 const mapStateToProps = (state: State, ownProps: ReceivedProps) => {
     return {
+        apps: state.apps,
         user: state.user,
         actions: state.actions
     }
@@ -117,4 +165,4 @@ const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
 type Props = typeof stateProps & typeof dispatchProps & ReceivedProps;
 
-export default connect(mapStateToProps, mapDispatchToProps)(LogDialogModal);
+export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(LogDialogModal);
