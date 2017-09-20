@@ -41,7 +41,7 @@ class UIError extends React.Component<Props, any> {
                             data-automation-id='randomID2'
                             disabled={false}
                             onClick={this.handleClose.bind(this)}  
-                            className='goldButton'
+                            className='blis-button--gold'
                             ariaDescription='Ok'
                             text='Ok'
                         />

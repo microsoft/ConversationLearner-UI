@@ -22,7 +22,7 @@ const PopUpMessage: React.SFC<Props> = (props: Props) => {
                 <CommandButton
                     disabled={false}
                     onClick={() => props.onConfirm()}
-                    className='goldButton'
+                    className='blis-button--gold'
                     ariaDescription='Ok'
                     text='Ok'
                 />

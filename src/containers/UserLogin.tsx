@@ -84,7 +84,7 @@ class UserLogin extends React.Component<Props, any> {
                     data-automation-id='randomID2'
                     disabled={false}
                     onClick={this.createUser.bind(this)}
-                    className='goldButton'
+                    className='blis-button--gold'
                     ariaDescription='Log In'
                     text='Log In'
                 />
@@ -98,13 +98,13 @@ class UserLogin extends React.Component<Props, any> {
                         data-automation-id='randomID2'
                         disabled={false}
                         onClick={this.logout.bind(this)}
-                        className='goldButton'
+                        className='blis-button--gold'
                         ariaDescription='Log Out'
                         text='Log Out'
                     />
                     <CommandButton
                         data-automation-id='randomID3'
-                        className="grayButton"
+                        className="blis-button--gray"
                         disabled={false}
                         onClick={this.handleClose.bind(this)}
                         ariaDescription='Cancel'

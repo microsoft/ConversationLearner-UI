@@ -290,7 +290,7 @@ class ActionResponsesHomepage extends React.Component<Props, any> {
                         data-automation-id='randomID4'
                         disabled={false}
                         onClick={this.handleOpenCreateModal.bind(this)}
-                        className='goldButton'
+                        className='blis-button--gold'
                         ariaDescription='Create a New Action'
                         text='New Action'
                     />

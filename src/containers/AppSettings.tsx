@@ -158,7 +158,7 @@ class AppSettings extends React.Component<Props, any> {
                             data-automation-id='randomID16'
                             disabled={false}
                             onClick={this.botAdded.bind(this)}
-                            className='goldButton buttonWithTextField'
+                            className='blis-button--gold buttonWithTextField'
                             ariaDescription='Add'
                             text='Add'
                         />
@@ -169,13 +169,13 @@ class AppSettings extends React.Component<Props, any> {
                         data-automation-id='randomID6'
                         disabled={false}
                         onClick={this.editApp.bind(this)}
-                        className='goldButton'
+                        className='blis-button--gold'
                         ariaDescription='Save Changes'
                         text='Save Changes'
                     />
                     <CommandButton
                         data-automation-id='randomID7'
-                        className="grayButton"
+                        className="blis-button--gray"
                         disabled={false}
                         onClick={this.discardChanges.bind(this)}
                         ariaDescription='Discard'

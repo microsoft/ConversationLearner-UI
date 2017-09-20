@@ -233,7 +233,7 @@ class EntitiesList extends React.Component<Props, any> {
                         data-automation-id='randomID4'
                         disabled={false}
                         onClick={this.handleOpenCreateModal.bind(this)}
-                        className='goldButton'
+                        className='blis-button--gold'
                         ariaDescription='Create a New Entity'
                         text='New Entity'
                     />
@@ -265,7 +265,7 @@ class EntitiesList extends React.Component<Props, any> {
                         <CommandButton
                             disabled={false}
                             onClick={() => this.handleCloseDeleteModal()}
-                            className='goldButton'
+                            className='blis-button--gold'
                             ariaDescription='Close'
                             text='Close'
                         />

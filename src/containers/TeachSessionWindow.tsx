@@ -57,7 +57,7 @@ class TeachWindow extends React.Component<Props, any> {
                 data-automation-id='randomID16'
                 disabled={false}
                 onClick={this.handleSave.bind(this)}
-                className='ms-font-su goldButton teachSessionHeaderButton'
+                className='ms-font-su blis-button--gold blis-button--widemargin'
                 ariaDescription='Done Teaching'
                 text='Done Teaching'
             /> : null;
@@ -90,7 +90,7 @@ class TeachWindow extends React.Component<Props, any> {
                                 data-automation-id='randomID16'
                                 disabled={false}
                                 onClick={this.confirmDelete.bind(this)}
-                                className='ms-font-su grayButton teachSessionHeaderButton abandonTeach'
+                                className='ms-font-su blis-button--gray blis-button--widemargin blis-button--right'
                                 ariaDescription='Abandon Teach'
                                 text='Abandon Teach'
                             />
