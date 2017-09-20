@@ -17,6 +17,11 @@ class Webchat extends React.Component<Props, any> {
     private behaviorSubject : BehaviorSubject<any> = null;
     private chatProps : BotChat.ChatProps = null;
 
+    static defaultProps = {
+        onSelectActivity: () => {},
+        onPostActivity: () => {}
+    }
+
     constructor(p: any) {
         super(p);
         this.behaviorSubject = null;
@@ -29,7 +34,15 @@ class Webchat extends React.Component<Props, any> {
             this.behaviorSubject = new BehaviorSubject<any>({});
             this.behaviorSubject.subscribe((value) => {
                 if (value.activity) {
+                    const activity: Activity = value.activity
+                    this.props.onSelectActivity(activity)
+
+                    // TODO: Remove split of id here.
+                    // This is coupling knowledge about how ID was constructed within the generateHistory function
+                    // Id should be an opaque and unique identifier.
                     let [roundNum, scoreNum] = value.activity.id.split(":");
+
+                    // TODO: Remove hard coding of train related actions from web chat
                     this.props.setTrainDialogView(roundNum, scoreNum);
                 }
             })
@@ -50,6 +63,8 @@ class Webchat extends React.Component<Props, any> {
             const _dl = {
                 ...dl,
                 postActivity: (activity: any) => {
+                    // TODO: Remove hard coding of adding message to stack
+                    // Webchat should not be aware of what happens when activity is posted, only that is is posted.
                     if (activity.type = "message")
                     {
                         if (this.props.sessionType === 'teach') {
@@ -63,6 +78,8 @@ class Webchat extends React.Component<Props, any> {
                         } else {
                             this.props.addMessageToChatConversationStack(activity)
                         }
+
+                        this.props.onPostActivity(activity)
                     }
                     return dl.postActivity(activity)
                 },
@@ -113,7 +130,9 @@ const mapStateToProps = (state: State, ownProps: any) => {
 
 interface ReceivedProps {
     sessionType: string,
-    history: Activity[]
+    history: Activity[],
+    onSelectActivity: (a: Activity) => void,
+    onPostActivity: (a: Activity) => void
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps

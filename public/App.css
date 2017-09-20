@@ -388,10 +388,10 @@
 .teachSessionWindow{
   width: 100%
 }
-.teachVariationBox{
+/* .teachVariationBox{
   margin-top: 5px;
   margin-left: 10px;
-}
+} */
 .teachVariation{
   overflow: hidden;
 }
@@ -481,7 +481,7 @@
     border-width: 1px;
     border-color: #999999;
     padding: 10px;
-    margin-bottom: 10px;
+    /* margin-bottom: 10px; */
 }
 .extractorResponseBoxInvalid{
   border-style: solid;
@@ -541,6 +541,7 @@
   grid-template-rows: 1fr min-content;
 }
 .blis-chatmodal_admin-controls {
+  padding: 1em;
 }
 .blis-chatmodal_modal-controls{
   background-color: var(--color-secondary);
@@ -563,4 +564,18 @@
 }
 .ms-Button--primary:hover {
   background-color: var(--color-primary-darker) !important;
+}
+
+
+/** Log Dialog Admin */
+.log-dialog-admin {
+  display: grid;
+  grid-gap: 1rem;
+}
+.log-dialog-admin__title {
+  font-weight: bold;
+  border-bottom: 1px solid black;
+}
+.log-dialog-admin__content {
+  padding-bottom: 1em;
 }
