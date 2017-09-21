@@ -72,8 +72,9 @@ class TrainDialogWindow extends React.Component<Props, any> {
             for (let scorerStep of round.scorerSteps) {
                 let labelAction = scorerStep.labelAction;
                 let action = this.props.actions.filter((a: ActionBase) => a.actionId == labelAction)[0]; 
+                let payload = action ?  action.payload : "ERROR: Missing Action";
                 id = `${roundNum}:${scoreNum}`
-                let botActivity = {id: id, from: {id:"BlisTrainer", name: "BlisTrainer"}, type: "message", text: action.payload} as Activity;
+                let botActivity = {id: id, from: {id:"BlisTrainer", name: "BlisTrainer"}, type: "message", text: payload} as Activity;
                 activities.push(botActivity);
                 scoreNum++;
             }
