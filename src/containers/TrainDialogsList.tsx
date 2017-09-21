@@ -57,51 +57,62 @@ class TrainDialogsList extends React.Component<Props, any> {
     firstUtterance(item: any)
     {
         try {
-            return  item.rounds[0].extractorStep.textVariations[0].text;
+            if (item.rounds && item.rounds.length > 0) {
+                let text = item.rounds[0].extractorStep.textVariations[0].text;
+                return <span className='ms-font-m-plus'>{text}</span>;
+            }
+            return <span className="ms-Icon ms-Icon--Remove notFoundIcon" aria-hidden="true"></span>;
         }
         catch (err) {
-            return "??";
+            return "ERR";
         }
     }
     lastUtterance(item: any)
     {
         try {
-            return  item.rounds[item.rounds.length-1].extractorStep.textVariations[0].text;
+            if (item.rounds && item.rounds.length > 0) {
+                let text = item.rounds[item.rounds.length-1].extractorStep.textVariations[0].text;
+                return <span className='ms-font-m-plus'>{text}</span>;
+            }
+            return <span className="ms-Icon ms-Icon--Remove notFoundIcon" aria-hidden="true"></span>;
         }
         catch (err) {
-            return "??";
+            return "ERR";
         }
     }
     lastResponse(item: any)
     {
         try {
-            let scorerSteps = item.rounds[item.rounds.length-1].scorerSteps;
-            if (scorerSteps.length > 0)
-            {
-                let actionId = scorerSteps[scorerSteps.length-1].labelAction;
-                let action = this.props.actions.find(a => a.actionId == actionId);
-                if (action)
+            if (item.rounds && item.rounds.length > 0) {
+                let scorerSteps = item.rounds[item.rounds.length-1].scorerSteps;
+                if (scorerSteps.length > 0)
                 {
-                    return  action.payload;
+                    let actionId = scorerSteps[scorerSteps.length-1].labelAction;
+                    let action = this.props.actions.find(a => a.actionId == actionId);
+                    if (action)
+                    {
+                        return <span className='ms-font-m-plus'>{action.payload}</span>;
+                    }
                 }
             }
-            return "";
+            return <span className="ms-Icon ms-Icon--Remove notFoundIcon" aria-hidden="true"></span>;
         }
         catch (err) {
-            return "??";
+            return "ERR";
         }
     }
     renderItemColumn(item?: any, index?: number, column?: IColumn) {
         let fieldContent = item[column.fieldName];
         switch (column.key) {
             case 'firstInput': 
-                return <span className='ms-font-m-plus'>{this.firstUtterance(item)}</span>;
+                return this.firstUtterance(item);
             case 'lastInput': 
-                return <span className='ms-font-m-plus'>{this.lastUtterance(item)}</span>;
+                return this.lastUtterance(item);
             case 'lastResponse': 
-                return <span className='ms-font-m-plus'>{this.lastResponse(item)}</span>;
+                return this.lastResponse(item);
             case 'turns':
-                return <span className='ms-font-m-plus'>{item.rounds.length}</span>;
+                let count = item.rounds ? item.rounds.length : 0;
+                return <span className='ms-font-m-plus'>{count}</span>;
             default:
                 return <span className='ms-font-m-plus'>{fieldContent}</span>;
         }
