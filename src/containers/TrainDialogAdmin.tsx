@@ -68,8 +68,9 @@ class TrainDialogAdmin extends React.Component<Props, any> {
     render() {
         let score = this.getScore();
         let extractResponses = this.getExtractResponses();
-        let actionPayload = this.getAction(score);
-        let memory = this.getMemory(score);
+        // Not all rounds will have a score
+        let actionPayload = score ? this.getAction(score) : "";
+        let memory = score ? this.getMemory(score) : "";
         return (
             <div className="container teachSessionAdmin">
                 {extractResponses}
