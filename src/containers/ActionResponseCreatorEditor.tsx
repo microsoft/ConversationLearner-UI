@@ -7,7 +7,7 @@ import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { CommandButton, Dropdown, TagPicker, Label, Checkbox, List } from 'office-ui-fabric-react';
 import { TextFieldPlaceholder } from './TextFieldPlaceholder';
-import { ActionBase, ActionMetaData, ActionTypes, EntityBase, EntitySuggestion } from 'blis-models'
+import { ActionBase, ActionMetaData, ActionTypes, EntityBase, EntitySuggestion, ModelUtils } from 'blis-models'
 import { State } from '../types';
 import EntityCreatorEditor from './EntityCreatorEditor';
 import AutocompleteListItem from '../components/AutocompleteListItem';
@@ -31,6 +31,7 @@ interface SpecialIndex {
 
 const initState = {
     actionTypeVal: 'TEXT',
+    apiVal: null,
     payloadVal: '',
     reqEntitiesVal: [] as EntityPickerObject[],
     negEntitiesVal: [] as EntityPickerObject[],
@@ -106,9 +107,20 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                         name: p.blisAction.metadata.entitySuggestion.entityName,
                     })
                 }
+
+                let payload = null;
+                let apiVal = null;
+                if (p.blisAction.metadata.actionType == ActionTypes.API_LOCAL) {
+                   payload = ModelUtils.GetArguments(p.blisAction);
+                   apiVal = ModelUtils.GetPrimaryPayload(p.blisAction);
+                }
+                else {
+                    payload = p.blisAction.payload;
+                }
                 this.setState({
                     actionTypeVal: p.blisAction.metadata.actionType,
-                    payloadVal: p.blisAction.payload,
+                    apiVal: apiVal,
+                    payloadVal: payload,
                     reqEntitiesVal: requiredEntities,
                     negEntitiesVal: negativeEntities,
                     suggEntitiesVal: suggestedEntities,
@@ -201,8 +213,16 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
             actionType: this.state.actionTypeVal,
             entitySuggestion: suggestedEntity ? new EntitySuggestion({ entityId: suggestedEntity.entityId, entityName: suggestedEntity.entityName }) : null
         })
+
+        let payload = null;
+        if (this.state.actionTypeVal == ActionTypes.API_LOCAL) {
+            payload = `${this.state.apiVal} ${this.state.payloadVal}`;
+        }
+        else {
+            payload = this.state.payloadVal
+        }
         let actionToAdd = new ActionBase({
-            payload: this.state.payloadVal,
+            payload: payload,
             negativeEntities: negativeEntities,
             requiredEntities: requiredEntities,
             isTerminal: this.state.waitVal,
@@ -234,6 +254,11 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
     actionTypeChanged(obj: { text: string }) {
         this.setState({
             actionTypeVal: obj.text,
+        })
+    }
+    apiChanged(obj: { text: string }) {
+        this.setState({
+            apiVal: obj.text,
         })
     }
     onFilterChanged(filterText: string, tagList: EntityPickerObject[]) {
@@ -665,6 +690,15 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                 display: "none"
             }
         }
+
+        let apiVals = Object.values(this.props.botInfo.callbacks);
+        let apiOptions = apiVals.map(v => {
+            return {
+                key: v,
+                text: v
+            }
+        })
+
         let actionTypeVals = Object.values(ActionTypes);
         let actionTypeOptions = actionTypeVals.map(v => {
             return {
@@ -691,6 +725,48 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
             title = "Create an Action"
             createButtonText = "Create"
         }
+
+        let apiDropDown = null;
+        let payloadTextField = null;
+        if (this.state.actionTypeVal == ActionTypes.API_LOCAL) {
+            apiDropDown = 
+            (
+                <Dropdown
+                    label='API'
+                    options={apiOptions}
+                    onChanged={this.apiChanged.bind(this)}
+                    selectedKey={this.state.apiVal}
+                    disabled={this.state.editing}
+                />
+            )
+            payloadTextField = (
+                <TextFieldPlaceholder
+                    id={"actionArguements"}
+                    onChanged={this.payloadChanged.bind(this)}
+                    label="Arguments (Comma Separated)"
+                    placeholder="Arguments..."
+                    autoFocus={true}
+                    onFocus={this.payloadIsFocused.bind(this)}
+                    onKeyDown={this.payloadKeyDown.bind(this)}
+                    onBlur={this.handleBlur.bind(this)}
+                    value={this.state.payloadVal} />
+                )
+        } else {
+            payloadTextField = (
+                <TextFieldPlaceholder
+                    id={"actionPayload"}
+                    onGetErrorMessage={this.checkPayload.bind(this)}
+                    onChanged={this.payloadChanged.bind(this)}
+                    label="Payload"
+                    placeholder="Payload..."
+                    autoFocus={true}
+                    onFocus={this.payloadIsFocused.bind(this)}
+                    onKeyDown={this.payloadKeyDown.bind(this)}
+                    onBlur={this.handleBlur.bind(this)}
+                    value={this.state.payloadVal} />
+                )
+        }
+
         return (
             <div>
                 <Modal
@@ -710,17 +786,8 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                             selectedKey={this.state.actionTypeVal}
                             disabled={this.state.editing}
                         />
-                        <TextFieldPlaceholder
-                            id={"actionPayload"}
-                            onGetErrorMessage={this.checkPayload.bind(this)}
-                            onChanged={this.payloadChanged.bind(this)}
-                            label="Payload"
-                            placeholder="Payload..."
-                            autoFocus={true}
-                            onFocus={this.payloadIsFocused.bind(this)}
-                            onKeyDown={this.payloadKeyDown.bind(this)}
-                            onBlur={this.handleBlur.bind(this)}
-                            value={this.state.payloadVal} />
+                        {apiDropDown}
+                        {payloadTextField}
                         <List
                             items={entitySuggestOptions}
                             style={entitySuggestStyle}
@@ -824,7 +891,8 @@ const mapStateToProps = (state: State, ownProps: any) => {
         userKey: state.user.key,
         actions: state.actions,
         blisApps: state.apps,
-        entities: state.entities
+        entities: state.entities,
+        botInfo: state.bot.botInfo
     }
 }
 

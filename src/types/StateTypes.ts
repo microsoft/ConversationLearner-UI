@@ -1,7 +1,7 @@
 import { BlisAppBase,
     BotInfo,
     EntityBase, 
-    ActionBase, 
+    ActionBase,
     TrainDialog, LogDialog, Teach, Session,
     Memory, UIScoreInput, ScoreInput, ExtractResponse, ScoreResponse } from 'blis-models';
 import { DisplayMode, TeachMode } from '../types/const'
@@ -72,6 +72,7 @@ export type TeachState =
 }
 export type State = {
     user: UserState,
+    bot: BotState
     apps: AppState,
     entities: EntityState,
     actions: ActionState,
