@@ -1,4 +1,5 @@
 import { BlisAppBase,
+    BotInfo,
     EntityBase,
     ActionBase,
     TrainDialog, LogDialog, Session, Teach,
@@ -40,7 +41,7 @@ export type DisplayAction = {
     currentBLISApp: BlisAppBase,
 } | {
     type: AT.SET_CURRENT_BLIS_APP_FULFILLED,
-    currentBLISApp: BlisAppBase,
+    currentBLISApp: BlisAppBase
 } | {
     type: AT.SET_CURRENT_TRAIN_DIALOG,
     currentTrainDialog: TrainDialog,
@@ -104,6 +105,11 @@ export type FetchAction = {
         type: AT.FETCH_APPLICATIONS_ASYNC,
         userId: string
     } | {
+        type: AT.FETCH_BOTINFO_ASYNC
+    } | {
+        type: AT.FETCH_BOTINFO_FULFILLED,
+        botInfo: BotInfo,
+    }| {
         type: AT.FETCH_ENTITIES_ASYNC,
         blisAppID: string
     } | {

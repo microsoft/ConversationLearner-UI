@@ -7,11 +7,13 @@ import {
   UserInput,
   TrainDialog,
 	TrainScorerStep,
-	Session, Teach, UIScoreInput
+  Session,
+  Teach,
+  UIScoreInput
 } from 'blis-models'
 import * as Rx from 'rxjs';
 import { Observable, Observer } from 'rxjs'
-import { fetchApplicationsFulfilled, fetchAllEntitiesFulfilled, fetchAllActionsFulfilled, fetchAllChatSessionsFulfilled, fetchAllTeachSessionsFulfilled, fetchAllTrainDialogsFulfilled, fetchAllLogDialogsFulfilled } from '../actions/fetchActions'
+import { fetchBotInfoFulfilled, fetchApplicationsFulfilled, fetchAllEntitiesFulfilled, fetchAllActionsFulfilled, fetchAllChatSessionsFulfilled, fetchAllTeachSessionsFulfilled, fetchAllTrainDialogsFulfilled, fetchAllLogDialogsFulfilled } from '../actions/fetchActions'
 import { createApplicationFulfilled, createEntityFulfilled, createPositiveEntityFulfilled, createNegativeEntityFulfilled, createActionFulfilled, createChatSessionFulfilled, createTeachSessionFulfilled } from '../actions/createActions'
 import { deleteBLISApplicationFulfilled, deleteReverseEntityAsnyc, deleteEntityFulfilled, deleteActionFulfilled, deleteChatSessionFulfilled, deleteTeachSessionFulfilled, deleteLogDialogFulFilled, deleteTrainDialogFulfilled } from '../actions/deleteActions'
 import { editBLISApplicationFulfilled, editEntityFulfilled, editActionFulfilled } from '../actions/updateActions'
@@ -71,6 +73,16 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
 //=========================================================
 // GET ROUTES
 //=========================================================
+
+  export const getBotInfo = (key : string): Observable<ActionObject> => {
+    const getBotRoute: string = makeRoute(key, `bot`);
+    return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.get(getBotRoute, config)
+            .then(response => {
+              obs.next(fetchBotInfoFulfilled(response.data));
+              obs.complete();
+            })
+            .catch(err => handleError(obs, err,  AT.FETCH_BOTINFO_ASYNC)));
+  };
 
   export const getAllBlisApps = (key : string, userId : string): Observable<ActionObject> => {
     const getAppsRoute: string = makeRoute(key, `apps`, `userId=${userId}`);

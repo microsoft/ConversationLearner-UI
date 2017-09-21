@@ -1,4 +1,5 @@
-import { BlisAppBase, 
+import { BlisAppBase,
+    BotInfo,
     EntityBase, 
     ActionBase, 
     TrainDialog, LogDialog, Teach, Session,
@@ -27,6 +28,9 @@ export type LogDialogState = {
 export type AppState = {
     all: BlisAppBase[],
     current: BlisAppBase
+}
+export type BotState = {
+    botInfo: BotInfo
 }
 export type TeachSessionState = {
     all: Teach[],
