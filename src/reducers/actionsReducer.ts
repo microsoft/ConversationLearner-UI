@@ -1,7 +1,6 @@
 import { ActionObject } from '../types'
 import { ActionState } from '../types'
 import { AT } from '../types/ActionTypes'
-import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, ActionMetaData, ActionList, ActionTypes } from 'blis-models';
 import { Reducer } from 'redux'
 
 const initialState: ActionState = [];

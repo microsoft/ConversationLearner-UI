@@ -5,9 +5,9 @@ import { editActionAsync } from '../actions/updateActions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
-import { CommandButton, Dialog, DialogFooter, DialogType, ChoiceGroup, DefaultButton, Dropdown, TagPicker, Label, Checkbox, List } from 'office-ui-fabric-react';
+import { CommandButton, Dropdown, TagPicker, Label, Checkbox, List } from 'office-ui-fabric-react';
 import { TextFieldPlaceholder } from './TextFieldPlaceholder';
-import { ActionBase, ActionMetaData, ActionTypes, EntityBase, EntityMetaData, EntitySuggestion } from 'blis-models'
+import { ActionBase, ActionMetaData, ActionTypes, EntityBase, EntitySuggestion } from 'blis-models'
 import { State } from '../types';
 import EntityCreatorEditor from './EntityCreatorEditor';
 import AutocompleteListItem from '../components/AutocompleteListItem';
@@ -350,7 +350,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
     }
     updateSpecialCharIndexesToDisregard(newPayload: string): SpecialIndex[] {
         let indexesToSet: SpecialIndex[] = [];
-        let requiredEntities = [...this.state.reqEntitiesVal];
+        // let requiredEntities = [...this.state.reqEntitiesVal];
         let updatedIndex = this.findUpdatedIndex(newPayload);
         if (newPayload.length > this.state.payloadVal.length) {
             //we added a letter. Find which index was updated. Increment every index in the current special indexes array >= to the updated index
@@ -392,7 +392,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
     }
     findWordFollowingSpecialCharacter(text: string): string {
         let word: string = "";
-        let current: string = this.state.payloadVal;
+        // let current: string = this.state.payloadVal;
         for (let i = this.state.dropdownIndex + 1; i < text.length; i++) {
             if (text[i] !== " " && text[i] !== "") {
                 word += text[i]
@@ -545,7 +545,6 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
         }
     }
     findIndexOfLastCharacterFollowingSpecialCharacterPreSpace(): number {
-        let word: string = "";
         let text: string = this.state.payloadVal;
         let index: number = this.state.dropdownIndex;
         for (let i = this.state.dropdownIndex + 1; i < text.length + 1; i++) {
@@ -602,7 +601,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
         let names: string[] = filteredEntities.map((e: EntityBase) => {
             return e.entityName;
         })
-        let ordered = names.sort();
+        names.sort();
         let options: TextObject[] = names.map((name: string) => {
             let ent: EntityBase = this.props.entities.find((e: EntityBase) => e.entityName == name);
             return {

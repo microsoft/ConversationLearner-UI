@@ -6,7 +6,7 @@ import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader';
 import { deleteActionAsync } from '../actions/deleteActions'
 import { DetailsList, CommandButton, Link, CheckboxVisibility, List, IColumn, SearchBox } from 'office-ui-fabric-react';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
-import { ActionBase, ActionMetaData, EntityBase, EntityMetaData, ModelUtils } from 'blis-models'
+import { ActionBase, EntityBase, ModelUtils } from 'blis-models'
 import ActionResponseCreatorEditor from './ActionResponseCreatorEditor';
 import EntityTile from '../components/EntityTile';
 import { State } from '../types'
@@ -117,7 +117,7 @@ class ActionResponsesHomepage extends React.Component<Props, any> {
         })
     }
     onColumnClick(event: any, column: any) {
-        let { sortedItems, columns } = this.state;
+        let { columns } = this.state;
         let isSortedDescending = column.isSortedDescending;
 
         // If we've sorted this column, flip it.

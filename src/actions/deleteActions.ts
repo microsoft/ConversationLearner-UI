@@ -1,9 +1,9 @@
 import { ActionObject } from '../types'
 import { AT } from '../types/ActionTypes'
-import { BlisAppBase, EntityBase, ActionBase, Session, Teach, TrainDialog, LogDialog} from 'blis-models'
+import { BlisAppBase, EntityBase, ActionBase, Session, Teach, TrainDialog } from 'blis-models'
 
 export const deleteBLISApplicationAsync = (key: string, GUID: string, blisApp: BlisAppBase): ActionObject => {
-    
+
     return {
         type: AT.DELETE_BLIS_APPLICATION_ASYNC,
         key: key,
@@ -20,7 +20,7 @@ export const deleteBLISApplicationFulfilled = (blisAppGUID: string): ActionObjec
 }
 
 export const deleteEntityAsync = (key: string, GUID: string, entity: EntityBase, currentAppId: string): ActionObject => {
-    
+
     return {
         type: AT.DELETE_ENTITY_ASYNC,
         key: key,
@@ -50,7 +50,7 @@ export const deleteEntityFulfilled = (key: string, deletedEntityId: string, curr
 }
 
 export const deleteActionAsync = (key: string, GUID: string, action: ActionBase, currentAppId: string): ActionObject => {
-    
+
     return {
         type: AT.DELETE_ACTION_ASYNC,
         key: key,
@@ -68,7 +68,7 @@ export const deleteActionFulfilled = (actionGUID: string): ActionObject => {
 }
 
 export const deleteChatSessionAsync = (key: string, session: Session, currentAppId: string): ActionObject => {
-    
+
     return {
         type: AT.DELETE_CHAT_SESSION_ASYNC,
         key: key,
@@ -85,12 +85,12 @@ export const deleteChatSessionFulfilled = (sessionGUID: string): ActionObject =>
 }
 
 export const deleteTeachSessionAsync = (key: string, teachSession: Teach, currentAppId: string, save: boolean): ActionObject => {
-    
+
     return {
         type: AT.DELETE_TEACH_SESSION_ASYNC,
         key: key,
         teachSession: teachSession,
-        currentAppId: currentAppId, 
+        currentAppId: currentAppId,
         save: save
     }
 }

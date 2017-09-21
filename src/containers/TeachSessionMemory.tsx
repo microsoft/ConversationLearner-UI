@@ -43,7 +43,7 @@ class TeachSessionMemory extends React.Component<Props, any> {
         }
     }
     onColumnClick(event: any, column : any) {
-        let { sortedItems, columns } = this.state;
+        let { columns } = this.state;
         let isSortedDescending = column.isSortedDescending;
 
         // If we've sorted this column, flip it.

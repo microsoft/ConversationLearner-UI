@@ -1,10 +1,15 @@
 import { ActionObject } from '../types'
 import { AT } from '../types/ActionTypes'
-import { BlisAppBase, BlisAppMetaData, BlisAppList, BotInfo,
-        EntityBase, EntityMetaData, EntityList, 
-        ActionBase, ActionMetaData, ActionList, ActionTypes, 
-        TrainDialog, LogDialog,
-        Session, Teach } from 'blis-models';
+import {
+    BlisAppBase,
+    BotInfo,
+    EntityBase,
+    ActionBase,
+    TrainDialog,
+    LogDialog,
+    Session,
+    Teach
+} from 'blis-models';
 
 export const fetchAllTrainDialogsAsync = (key: string, blisAppID: string): ActionObject => {
     return {
@@ -51,12 +56,12 @@ export const fetchBotInfoFulfilled = (botInfo: BotInfo): ActionObject => {
     }
 }
 
-export const fetchApplicationsAsync = (key: string, userId : string): ActionObject => {
+export const fetchApplicationsAsync = (key: string, userId: string): ActionObject => {
     //needs a fulfilled version to handle response from Epic
     return {
         type: AT.FETCH_APPLICATIONS_ASYNC,
         key: key,
-        userId : userId
+        userId: userId
     }
 }
 

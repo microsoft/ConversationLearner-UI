@@ -3,7 +3,7 @@ import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
-import { Nav, INavLink, INavLinkGroup, Link, CommandButton, Checkbox } from 'office-ui-fabric-react';
+import { CommandButton, Checkbox } from 'office-ui-fabric-react';
 import { State } from '../types';
 import { DisplayMode, TeachMode } from '../types/const';
 import Webchat from './Webchat'
@@ -11,8 +11,8 @@ import TeachSessionAdmin from './TeachSessionAdmin'
 import { Teach } from 'blis-models'
 import { deleteTeachSessionAsync } from '../actions/deleteActions'
 import { toggleAutoTeach } from '../actions/teachActions'
-import { createTrainDialog, createTeachSessionAsync } from '../actions/createActions'
-import { setCurrentTrainDialog, setCurrentTeachSession, setDisplayMode } from '../actions/displayActions'
+import { createTeachSessionAsync } from '../actions/createActions'
+import { setDisplayMode } from '../actions/displayActions'
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 
 class TeachWindow extends React.Component<Props, any> {

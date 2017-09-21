@@ -1,14 +1,13 @@
-import { editActionAsync } from '../actions/updateActions';
 import * as React from 'react';
 import { bindActionCreators } from 'redux';
+import { returntypeof } from 'react-redux-typescript';
 import { connect } from 'react-redux';
-import { ExtractResponse, TrainExtractorStep, PredictedEntity, LabeledEntity, EntityBase } from 'blis-models'
+import { ExtractResponse, PredictedEntity, EntityBase } from 'blis-models'
 import { updateExtractResponse, removeExtractResponse } from '../actions/teachActions';
-import { IconButton } from 'office-ui-fabric-react';
 import { State } from '../types';
-import { TextField, Dropdown, Label, IDropdownOption, DropdownMenuItemType } from 'office-ui-fabric-react'
+import { Dropdown, IDropdownOption, DropdownMenuItemType } from 'office-ui-fabric-react'
 
-interface PassedProps {
+export interface PassedProps {
     extractResponse: ExtractResponse;
     isPrimary: boolean;
     isValid: boolean;
@@ -82,7 +81,7 @@ const styles = {
     }
 }
 
-class ExtractorResponseEditor extends React.Component<any, any> {
+class ExtractorResponseEditor extends React.Component<Props, any> {
     constructor(p: any) {
         super(p);
         this.state = {
@@ -613,7 +612,7 @@ class ExtractorResponseEditor extends React.Component<any, any> {
         let allObjects = this.state.substringObjects;
 
         if (substringClicked.entityId === null) {
-            let currentlyClickedSubstrings = this.state.substringsClicked;
+            // let currentlyClickedSubstrings = this.state.substringsClicked;
             if (this.state.substringsClicked.length == 1) {
                 let newClickedSubstringObject: SubstringObject = { ...substringClicked, entityName: entitySelected.entityName, entityId: entitySelected.entityId, dropdownStyle: styles.hidden, labelStyle: styles.normal }
                 allObjects[indexOfClickedSubstring] = newClickedSubstringObject;
@@ -667,7 +666,7 @@ class ExtractorResponseEditor extends React.Component<any, any> {
         let names: string[] = this.props.entities.map((e: EntityBase) => {
             return e.entityName;
         })
-        let ordered = names.sort();
+        names.sort();
         let options: IDropdownOption[] = names.map((name: string) => {
             let ent: EntityBase = this.props.entities.find((e: EntityBase) => e.entityName == name);
             return {
@@ -760,4 +759,10 @@ const mapStateToProps = (state: State, ownProps: any) => {
         entities: state.entities
     }
 }
-export default connect(mapStateToProps, mapDispatchToProps)(ExtractorResponseEditor as React.ComponentClass<any>);
+
+// Props types inferred from mapStateToProps & dispatchToProps
+const stateProps = returntypeof(mapStateToProps);
+const dispatchProps = returntypeof(mapDispatchToProps);
+type Props = typeof stateProps & typeof dispatchProps & PassedProps;
+
+export default connect(mapStateToProps, mapDispatchToProps)(ExtractorResponseEditor);

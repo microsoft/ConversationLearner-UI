@@ -5,7 +5,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader'
 import { State } from '../types';
-import { CommandButton, ChoiceGroup, TextField, DefaultButton, Dropdown, Label, List } from 'office-ui-fabric-react';
+import { CommandButton, TextField, Dropdown, Label, List } from 'office-ui-fabric-react';
 import { TextFieldPlaceholder } from './TextFieldPlaceholder';
 import { BlisAppBase, BlisAppMetaData } from 'blis-models'
 

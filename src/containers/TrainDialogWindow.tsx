@@ -2,7 +2,7 @@ import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Nav, INavLink, INavLinkGroup, Link, CommandButton } from 'office-ui-fabric-react';
+import { CommandButton } from 'office-ui-fabric-react';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { State } from '../types';
 import { DisplayMode } from '../types/const';
@@ -12,7 +12,7 @@ import { Session, ActionBase } from 'blis-models'
 import { deleteChatSessionAsync, deleteTrainDialogAsync } from '../actions/deleteActions'
 import { createChatSessionAsync } from '../actions/createActions'
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
-import { setCurrentTrainDialog, setCurrentTeachSession, setDisplayMode } from '../actions/displayActions'
+import { setDisplayMode } from '../actions/displayActions'
 import { Activity } from 'botframework-directlinejs';
 
 

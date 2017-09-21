@@ -1,7 +1,6 @@
 import { ActionObject } from '../types'
 import { TrainDialogState } from '../types'
 import { AT } from '../types/ActionTypes'
-import { TrainDialog } from 'blis-models'
 import { Reducer } from 'redux'
 import { TeachMode } from '../types/const'
 

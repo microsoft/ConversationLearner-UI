@@ -1,7 +1,6 @@
 import { BotState } from '../types'
 import { AT } from '../types/ActionTypes'
 import { ActionObject } from '../types'
-import { BotInfo } from 'blis-models';
 import { Reducer } from 'redux'
 
 const initialState: BotState = {

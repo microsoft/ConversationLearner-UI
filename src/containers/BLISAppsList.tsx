@@ -6,13 +6,10 @@ import { deleteBLISApplicationAsync } from '../actions/deleteActions'
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import BLISAppCreator from './BLISAppCreator'
-import AppAdmin from './AppAdmin';
-import { DetailsList, CommandButton, Link, CheckboxVisibility, IColumn } from 'office-ui-fabric-react';
+import { DetailsList, Link, CheckboxVisibility, IColumn } from 'office-ui-fabric-react';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import { State } from '../types';
-import { BlisAppBase, BlisAppList, BlisAppMetaData } from 'blis-models'
-import { DisplayMode } from '../types/const'
-
+import { BlisAppBase } from 'blis-models'
 
 let columns: IColumn[] = [
     {
@@ -103,7 +100,7 @@ class BLISAppsList extends React.Component<Props, any> {
         // this.props.fetchAllTeachSessions(this.props.user.key, appSelected.appId);
     }
     onColumnClick(event: any, column : any) {
-        let { sortedItems, columns } = this.state;
+        let { columns } = this.state;
         let isSortedDescending = column.isSortedDescending;
 
         // If we've sorted this column, flip it.

@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../types'
 import ExtractorResponseEditor from './ExtractorResponseEditor';
-import { Activity, Message } from 'botframework-directlinejs'
+import { Activity } from 'botframework-directlinejs'
 import { LogDialog, LogRound, LogScorerStep, ActionBase, EntityBase } from 'blis-models'
 
 class LogDialogAdmin extends React.Component<Props, any> {
