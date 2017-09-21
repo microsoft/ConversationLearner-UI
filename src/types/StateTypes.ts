@@ -1,6 +1,7 @@
-import { BlisAppBase, BlisAppMetaData, BlisAppList, BotInfo,
-    EntityBase, EntityMetaData, EntityList, 
-    ActionBase, ActionMetaData, ActionList, ActionTypes, 
+import { BlisAppBase,
+    BotInfo,
+    EntityBase, 
+    ActionBase, 
     TrainDialog, LogDialog, Teach, Session,
     Memory, UIScoreInput, ScoreInput, ExtractResponse, ScoreResponse } from 'blis-models';
 import { DisplayMode, TeachMode } from '../types/const'

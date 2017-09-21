@@ -3,8 +3,7 @@ import { returntypeof } from 'react-redux-typescript';
 import { toggleTrainDialog, addMessageToTeachConversationStack, addMessageToChatConversationStack } from '../actions/displayActions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { State, TrainDialogState } from '../types';
-import { generateGUID } from '../util';
+import { State } from '../types';
 import * as BotChat from 'blis-webchat'
 import { Chat } from 'blis-webchat'
 import { UserInput } from 'blis-models'

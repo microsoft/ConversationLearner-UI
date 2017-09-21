@@ -2,7 +2,7 @@ import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Nav, INavLink, INavLinkGroup, Link, CommandButton } from 'office-ui-fabric-react';
+import { CommandButton } from 'office-ui-fabric-react';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { State } from '../types';
 import { DisplayMode } from '../types/const';
@@ -11,7 +11,7 @@ import ChatSessionAdmin from './ChatSessionAdmin'
 import { Session } from 'blis-models'
 import { deleteChatSessionAsync } from '../actions/deleteActions'
 import { createChatSessionAsync } from '../actions/createActions'
-import { setCurrentTrainDialog, setCurrentTeachSession, setDisplayMode } from '../actions/displayActions'
+import { setDisplayMode } from '../actions/displayActions'
 
 
 class SessionWindow extends React.Component<Props, any> {

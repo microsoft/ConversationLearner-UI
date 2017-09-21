@@ -3,7 +3,7 @@ import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../types'
-import { UIScoreInput, ExtractResponse, TrainExtractorStep, PredictedEntity, LabeledEntity, TextVariation } from 'blis-models'
+import { UIScoreInput, ExtractResponse, TrainExtractorStep, TextVariation } from 'blis-models'
 import { runScorerAsync } from '../actions/teachActions';
 import { CommandButton } from 'office-ui-fabric-react';
 import ExtractorTextVariationCreator from './ExtractorTextVariationCreator';
@@ -12,7 +12,7 @@ import EntityCreatorEditor from './EntityCreatorEditor';
 import { TeachMode } from '../types/const'
 import PopUpMessage from '../components/PopUpMessage';
 
-class TeachSessionExtractor extends React.Component<any, any> {
+class TeachSessionExtractor extends React.Component<Props, any> {
     constructor(p: any) {
         super(p)
         this.state = {

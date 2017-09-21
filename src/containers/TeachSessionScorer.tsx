@@ -2,9 +2,9 @@ import * as React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { returntypeof } from 'react-redux-typescript';
-import { ActionTypes, ModelUtils } from 'blis-models';
+import { ModelUtils } from 'blis-models';
 import { State } from '../types'
-import { TrainScorerStep, ScoredBase, ActionBase, EntityBase, Memory, ScoreInput, ScoredAction, UnscoredAction, ScoreReason } from 'blis-models';
+import { TrainScorerStep, ScoredBase, ActionBase, EntityBase, Memory, ScoredAction, UnscoredAction, ScoreReason } from 'blis-models';
 import { postScorerFeedbackAsync, toggleAutoTeach } from '../actions/teachActions'
 import { CommandButton } from 'office-ui-fabric-react';
 import { TeachMode } from '../types/const'
@@ -118,7 +118,7 @@ class TeachSessionScorer extends React.Component<Props, any> {
         })
     }
     onColumnClick(event: any, column : any) {
-        let { sortedItems, columns } = this.state;
+        let { columns } = this.state;
         let isSortedDescending = column.isSortedDescending;
 
         // If we've sorted this column, flip it.
@@ -159,7 +159,6 @@ class TeachSessionScorer extends React.Component<Props, any> {
     }
     handleActionSelection(actionId : string)
     {
-        let labelAction = actionId;
         let scoredAction = this.props.teachSession.scoreResponse.scoredActions.filter((a: ScoredAction) => a.actionId == actionId)[0]; 
         if (!scoredAction) {
             let unscoredAction = this.props.teachSession.scoreResponse.unscoredActions.filter((a: UnscoredAction) => a.actionId == actionId)[0]; 
@@ -234,7 +233,6 @@ class TeachSessionScorer extends React.Component<Props, any> {
         }
         for (let entityId of action.negativeEntities) {
             let found = this.entityInMemory(entityId);
-            let key = `${actionId}_${found.name}`
             if (found.match) {
                 return ScoreReason.NotAvailable;
             }

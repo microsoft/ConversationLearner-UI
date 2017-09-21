@@ -3,12 +3,10 @@ import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader'
-import { DetailsList, CommandButton, Link, CheckboxVisibility, IColumn, SearchBox } from 'office-ui-fabric-react';
-import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
+import { DetailsList, CommandButton, CheckboxVisibility, IColumn, SearchBox } from 'office-ui-fabric-react';
 import { setDisplayMode } from '../actions/displayActions'
-import { createLogDialog, createChatSessionAsync } from '../actions/createActions'
 import { State } from '../types'
-import { LogDialog, Session } from 'blis-models'
+import { LogDialog } from 'blis-models'
 import { DisplayMode } from '../types/const';
 import LogDialogModal from './LogDialogModal';
 
@@ -86,7 +84,7 @@ class LogDialogsList extends React.Component<Props, ComponentState> {
     }
 
     renderLogDialogItems(): LogDialog[] {
-        let lcString = this.state.searchValue.toLowerCase();
+        // let lcString = this.state.searchValue.toLowerCase();
         let filteredLogDialogs = this.props.logDialogs.all.filter((logDialogItems: LogDialog) => {
             return true
         })

@@ -1,10 +1,11 @@
-import { BlisAppBase, BlisAppMetaData, BlisAppList, BotInfo,
-    EntityBase, EntityMetaData, EntityList, 
-    ActionBase, ActionMetaData, ActionList, ActionTypes, 
+import { BlisAppBase,
+    BotInfo,
+    EntityBase,
+    ActionBase,
     TrainDialog, LogDialog, Session, Teach,
-    UserInput, TrainExtractorStep, ExtractResponse, UIExtractResponse, TrainScorerStep,
+    UserInput, ExtractResponse, UIExtractResponse, TrainScorerStep,
     TeachResponse, UIScoreInput, UIScoreResponse } from 'blis-models'
-import { DisplayMode, TeachMode } from '../types/const'
+import { DisplayMode } from '../types/const'
 import { AT } from '../types/ActionTypes'
 
 export type UpdateAction = {

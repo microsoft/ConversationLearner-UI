@@ -4,7 +4,7 @@ import { State } from './types'
 import rootEpic from './epics/root';
 import rootReducer from './reducers/root';
 
-export const createReduxStore = () =>
+export const createReduxStore = (): Store<State> =>
     createStore(rootReducer,
         applyMiddleware(createEpicMiddleware(rootEpic))
     );

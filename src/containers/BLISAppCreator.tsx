@@ -5,7 +5,7 @@ import { createBLISApplicationAsync } from '../actions/createActions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
-import { CommandButton, Dialog, DialogFooter, DialogType, ChoiceGroup, TextField, DefaultButton, Dropdown } from 'office-ui-fabric-react';
+import { CommandButton, Dropdown } from 'office-ui-fabric-react';
 import { TextFieldPlaceholder } from './TextFieldPlaceholder';
 import { setDisplayMode, emptyStateProperties } from '../actions/displayActions'
 import { fetchAllActionsAsync, fetchAllEntitiesAsync, fetchAllTrainDialogsAsync } from '../actions/fetchActions';
