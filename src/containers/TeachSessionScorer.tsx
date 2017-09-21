@@ -30,6 +30,14 @@ let columns: IColumn[] = [
         isResizable: true,
     },
     {
+        key: 'arguments',
+        name: 'Arguments',
+        fieldName: 'arguments',
+        minWidth: 80,
+        maxWidth: 300,
+        isResizable: true
+    },
+    {
         key: 'score',
         name: 'Score',
         fieldName: 'score',
@@ -61,14 +69,6 @@ let columns: IColumn[] = [
         fieldName: 'type',
         minWidth: 80,
         maxWidth: 80,
-        isResizable: true
-    },
-    {
-        key: 'arguments',
-        name: 'Arguments',
-        fieldName: 'arguments',
-        minWidth: 80,
-        maxWidth: 300,
         isResizable: true
     }
 ]

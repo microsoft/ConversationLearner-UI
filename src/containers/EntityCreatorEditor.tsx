@@ -36,6 +36,12 @@ class EntityCreatorEditor extends React.Component<Props, any> {
             })
         }
     }
+    nameKeyDown(key: KeyboardEvent) {
+        // On enter attempt to create the entity as long as name is set
+        if (key.keyCode == 13 && this.state.entityNameVal) {
+            this.createEntity();
+        }
+    }
     createEntity() {
         let currentAppId: string = this.props.blisApps.current.appId;
         let meta = new EntityMetaData({
@@ -132,6 +138,7 @@ class EntityCreatorEditor extends React.Component<Props, any> {
                         <TextFieldPlaceholder
                             onGetErrorMessage={ this.checkIfBlank.bind(this)}
                             onChanged={this.nameChanged.bind(this)}
+                            onKeyDown={this.nameKeyDown.bind(this)}
                             label="Entity Name"
                             placeholder="Name..."
                             value={this.state.entityNameVal} />
