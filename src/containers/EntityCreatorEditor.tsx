@@ -5,9 +5,9 @@ import { editEntityAsync } from '../actions/updateActions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
-import { CommandButton, Dialog, DialogFooter, DialogType, ChoiceGroup, TextField, DefaultButton, Dropdown, DropdownMenuItemType, Checkbox } from 'office-ui-fabric-react';
+import { CommandButton, Dropdown, DropdownMenuItemType, Checkbox } from 'office-ui-fabric-react';
 import { TextFieldPlaceholder } from './TextFieldPlaceholder';
-import { State, PreBuiltEntities, PreBuilts, LocalePreBuilts } from '../types';
+import { State, PreBuiltEntities, LocalePreBuilts } from '../types';
 import { EntityBase, EntityMetaData } from 'blis-models'
 
 const initState = {

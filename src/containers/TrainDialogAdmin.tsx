@@ -1,16 +1,9 @@
 import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
-import { createBLISApplicationAsync } from '../actions/createActions';
-import { CommandButton } from 'office-ui-fabric-react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../types'
-import { UserInput, ActionBase, TrainScorerStep, EntityBase } from 'blis-models'
-import { DisplayMode, TeachMode } from '../types/const';
-import TeachSessionScorer from './TeachSessionScorer';
-import TeachSessionExtractor from './TeachSessionExtractor';
-import TeachSessionMemory from './TeachSessionMemory';
-import { TextFieldPlaceholder } from './TextFieldPlaceholder';
+import { ActionBase, TrainScorerStep, EntityBase } from 'blis-models'
 import ExtractorResponseEditor from './ExtractorResponseEditor';
 
 class TrainDialogAdmin extends React.Component<Props, any> {

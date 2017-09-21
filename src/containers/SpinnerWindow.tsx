@@ -1,7 +1,5 @@
 import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
-import axios from 'axios';
-import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { Spinner, SpinnerSize } from 'office-ui-fabric-react/lib/Spinner';

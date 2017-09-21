@@ -3,13 +3,12 @@ import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader'
-import { DetailsList, CommandButton, Link, CheckboxVisibility, IColumn, SearchBox } from 'office-ui-fabric-react';
-import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
+import { DetailsList, CommandButton, CheckboxVisibility, IColumn, SearchBox } from 'office-ui-fabric-react';
 import { setDisplayMode, setCurrentTrainDialog, setCurrentTeachSession } from '../actions/displayActions'
-import { createTrainDialog, createTeachSessionAsync } from '../actions/createActions'
+import { createTrainDialog } from '../actions/createActions'
 import { fetchAllTrainDialogsAsync } from '../actions/fetchActions';
 import { State } from '../types'
-import { TrainDialog, Teach } from 'blis-models'
+import { TrainDialog } from 'blis-models'
 import { DisplayMode } from '../types/const';
 
 let columns: IColumn[] = [
@@ -66,7 +65,6 @@ class TrainDialogsList extends React.Component<Props, any> {
         }
     }
     renderItemColumn(item?: any, index?: number, column?: IColumn) {
-        let self = this;
         let fieldContent = item[column.fieldName];
         switch (column.key) {
             case 'firstUtterance': 
@@ -93,7 +91,7 @@ class TrainDialogsList extends React.Component<Props, any> {
         })
     }
     renderTrainDialogItems(): TrainDialog[] {
-        let lcString = this.state.searchValue.toLowerCase();
+        // let lcString = this.state.searchValue.toLowerCase();
         let filteredTrainDialogs = this.props.trainDialogs.all.filter((t: TrainDialog) => {
             return true
         })

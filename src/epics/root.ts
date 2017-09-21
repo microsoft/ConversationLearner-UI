@@ -1,6 +1,5 @@
 import 'rxjs';
-import * as Rx from 'rxjs';
-import { combineEpics, ActionsObservable, Epic } from 'redux-observable'
+import { combineEpics, Epic } from 'redux-observable'
 import { State, ActionObject } from '../types'
 import { fetchApplicationsEpic, fetchEntitiesEpic, fetchActionsEpic, fetchChatSessionsEpic, fetchTeachSessionsEpic, fetchTrainDialogsEpic, fetchLogDialogsEpic } from './fetchEpics'
 import { createNewApplicationEpic, createNewEntityEpic, createNewActionEpic, createNegativeEntity, createNewChatSessionEpic, createNewTeachSessionEpic } from './createEpics'
@@ -8,7 +7,7 @@ import { deleteActionEpic, deleteApplicationEpic, deleteEntityEpic, deleteTrainD
 import { editActionEpic, editApplicationEpic, editEntityEpic, setBlisApplicationEpic } from './updateEpics'
 import { runExtractorEpic, runScorerEpic, scorerFeedbackEpic, postScoreFeedbackFulfilledWaitEpic } from './teachEpics'
 
-const rootEpic = combineEpics(
+const rootEpic: Epic<ActionObject, State> = combineEpics(
 	fetchApplicationsEpic,
 	fetchEntitiesEpic,
 	fetchActionsEpic,

@@ -11,7 +11,8 @@
         "module": "commonjs",
         "outDir": "./dist/",
         "target": "es5",
-        "sourceMap": true
+        "sourceMap": true,
+        "noUnusedLocals": true
     },
     "files": [
         "src/index.tsx"

@@ -1,6 +1,6 @@
 import { ActionObject } from '../types'
 import { AT } from '../types/ActionTypes'
-import { BlisAppBase, BlisAppMetaData, BlisAppList, EntityBase, EntityMetaData, EntityList, ActionBase, ActionMetaData, ActionList, ActionTypes, TrainDialog, LogDialog, Session, Teach } from 'blis-models';
+import { BlisAppBase, EntityBase, ActionBase, TrainDialog, LogDialog, Session, Teach } from 'blis-models';
 
 export const createBLISApplicationAsync = (key : string, userId : string, application: BlisAppBase): ActionObject => {
     

@@ -1,7 +1,6 @@
 import { ActionObject } from '../types'
 import { LogDialogState } from '../types'
 import { AT } from '../types/ActionTypes'
-import { LogDialog } from 'blis-models'
 import { Reducer } from 'redux'
 
 const initialState: LogDialogState = {

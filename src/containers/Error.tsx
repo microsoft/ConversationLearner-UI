@@ -1,16 +1,17 @@
 import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
-import axios from 'axios';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
-import { CommandButton, Dialog, DialogFooter, DialogType, ChoiceGroup, TextField, DefaultButton, Dropdown } from 'office-ui-fabric-react';
+import { CommandButton } from 'office-ui-fabric-react';
 import { clearErrorDisplay } from '../actions/displayActions'
 import { State } from '../types'
-type CultureObject = {
-    CultureCode: string;
-    CultureName: string;
-}
+
+// TODO: This was unused, but interested what was this used for?
+// type CultureObject = {
+//     CultureCode: string;
+//     CultureName: string;
+// }
 class UIError extends React.Component<Props, any> {
     constructor(p: any) {
         super(p);

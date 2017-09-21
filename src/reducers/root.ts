@@ -11,7 +11,7 @@ import teachSessionReducer from './teachSessionReducer';
 import chatSessionReducer from './chatSessionReducer';
 import { State } from '../types';
 
-const rootReducer = combineReducers<State>({
+const rootReducer: Reducer<State> = combineReducers<State>({
     user: userReducer,
     apps: appsReducer,
     entities: entitiesReducer,

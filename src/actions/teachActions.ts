@@ -1,6 +1,6 @@
 import { ActionObject } from '../types'
 import { AT } from '../types/ActionTypes'
-import { UserInput, TrainExtractorStep, ExtractResponse, UIScoreInput, UIExtractResponse, UIScoreResponse, TrainScorerStep, TeachResponse } from 'blis-models'
+import { UserInput, ExtractResponse, UIScoreInput, UIExtractResponse, UIScoreResponse, TrainScorerStep, TeachResponse } from 'blis-models'
 
 export const runExtractorAsync = (key: string, appId: string, teachId: string, userInput: UserInput) : ActionObject => { 
     return {

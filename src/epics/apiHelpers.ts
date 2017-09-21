@@ -1,13 +1,13 @@
 import 'rxjs'
 import axios, { AxiosResponse, AxiosRequestConfig } from 'axios'
 import { 
-	BlisAppBase, BlisAppMetaData, BlisAppList, 
-	EntityBase, EntityMetaData, EntityList, 
-	ActionBase, ActionMetaData, ActionList, ActionTypes,
+	BlisAppBase,
+	EntityBase,
+	ActionBase,
   UserInput,
-  TrainDialog, LogDialog,
-	TrainExtractorStep, ExtractResponse, TrainScorerStep,
-	Session, Teach, UIExtractResponse, UIScoreResponse, UIScoreInput
+  TrainDialog,
+	TrainScorerStep,
+	Session, Teach, UIScoreInput
 } from 'blis-models'
 import * as Rx from 'rxjs';
 import { Observable, Observer } from 'rxjs'
@@ -288,7 +288,9 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
   /** START SESSION : Creates a new session and a corresponding logDialog */
   export const createChatSession = (key: string, session: Session, appId: string): Observable<ActionObject> => {
     let addSessionRoute: string = makeRoute(key, `app/${appId}/session`);
-    let configWithBody = {...config, body: session}
+
+    // TODO: It seems like this should be used instead of default config since it has the session object in the body, but yet the API works?
+    // let configWithBody = {...config, body: session}
     return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.post(addSessionRoute, config).then(response => {
         let newSessionId = response.data.sessionId;
         obs.next(createChatSessionFulfilled(session, newSessionId));
@@ -336,7 +338,9 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
   /** START SESSION : Creates a new session and a corresponding logDialog */
   export const createTeachSession = (key: string, teachSession: Teach, appId: string): Observable<ActionObject> => {
     let addTeachRoute: string = makeRoute(key, `app/${appId}/teach`);
-    let configWithBody = {...config, body: teachSession}
+
+    // TODO: It seems like this should be used instead of default config since it has the session object in the body, but yet the API works?
+    // let configWithBody = {...config, body: teachSession}
     return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.post(addTeachRoute, config).then(response => {
         let newTeachSessionId = response.data.teachId;
         obs.next(createTeachSessionFulfilled(teachSession, newTeachSessionId));

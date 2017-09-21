@@ -6,9 +6,9 @@ import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader';
 import EntityCreatorEditor from './EntityCreatorEditor';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import { deleteEntityAsync } from '../actions/deleteActions'
-import { DetailsList, CommandButton, Link, CheckboxVisibility, IColumn, SearchBox } from 'office-ui-fabric-react';
+import { DetailsList, CommandButton, CheckboxVisibility, IColumn, SearchBox } from 'office-ui-fabric-react';
 import { State } from '../types';
-import { EntityBase, EntityIdList, EntityList, EntityMetaData, ActionBase, ActionMetaData } from 'blis-models'
+import { EntityBase, ActionBase } from 'blis-models'
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 
 let columns: IColumn[] = [
@@ -106,7 +106,7 @@ class EntitiesList extends React.Component<Props, any> {
         }
     }
     onColumnClick(event: any, column : any) {
-        let { sortedItems, columns } = this.state;
+        let { columns } = this.state;
         let isSortedDescending = column.isSortedDescending;
 
         // If we've sorted this column, flip it.

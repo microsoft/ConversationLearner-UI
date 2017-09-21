@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
-import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader'
 import { State } from '../types'
