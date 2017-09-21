@@ -22,6 +22,14 @@ let columns: IColumn[] = [
         isMultiline: true
     },
     {
+        key: 'arguments',
+        name: 'Arguments',
+        fieldName: 'arguments',
+        minWidth: 80,
+        maxWidth: 300,
+        isResizable: true
+    },
+    {
         key: 'actionType',
         name: 'Action Type',
         fieldName: 'metadata',
@@ -59,14 +67,6 @@ let columns: IColumn[] = [
         fieldName: 'isTerminal',
         minWidth: 50,
         maxWidth: 50,
-        isResizable: true
-    },
-    {
-        key: 'arguments',
-        name: 'Arguments',
-        fieldName: 'arguments',
-        minWidth: 80,
-        maxWidth: 300,
         isResizable: true
     }
 ];

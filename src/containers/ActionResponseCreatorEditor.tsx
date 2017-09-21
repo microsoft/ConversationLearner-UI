@@ -642,6 +642,12 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                 })
             }
         }
+        else {
+            // On enter attempt to create the action as long as payload is set
+            if (key.keyCode == 13 && this.state.payloadVal) {
+                this.createAction();
+            }
+        }
     }
     render() {
         let entitySuggestStyle: {};
