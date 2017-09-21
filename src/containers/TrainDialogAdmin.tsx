@@ -54,21 +54,23 @@ class TrainDialogAdmin extends React.Component<Props, any> {
     }
     getAction(score : TrainScorerStep) : JSX.Element {
         let actionId = score.labelAction;
-        let action: ActionBase = this.props.actions.find((a: ActionBase) => a.actionId == actionId);     
+        let action: ActionBase = this.props.actions.find((a: ActionBase) => a.actionId == actionId);  
+        let payload = action ? action.payload : "ERROR: Missing Action"   ;
         return (
             <div className='content'>
                 <div className='teachTitleBox'>
                     <div className='ms-font-l teachTitle'>Action</div>
                 </div>
-                <div className='ms-font-l teachEmptyMemory'>{action.payload}</div>
+                <div className='ms-font-l teachEmptyMemory'>{payload}</div>
             </div>
         );
     }
     render() {
         let score = this.getScore();
         let extractResponses = this.getExtractResponses();
-        let actionPayload = this.getAction(score);
-        let memory = this.getMemory(score);
+        // Not all rounds will have a score
+        let actionPayload = score ? this.getAction(score) : "";
+        let memory = score ? this.getMemory(score) : "";
         return (
             <div className="container teachSessionAdmin">
                 {extractResponses}

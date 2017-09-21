@@ -79,7 +79,7 @@ class TrainDialogsList extends React.Component<Props, any> {
             if (scorerSteps.length > 0)
             {
                 let actionId = scorerSteps[scorerSteps.length-1].labelAction;
-                let action = this.props.actions.find(a => a.actionId = actionId);
+                let action = this.props.actions.find(a => a.actionId == actionId);
                 if (action)
                 {
                     return  action.payload;
