@@ -9,12 +9,24 @@ import ExtractorResponseEditor from './ExtractorResponseEditor';
 class TrainDialogAdmin extends React.Component<Props, any> {
     getScore() {
         let trainDialog = this.props.trainDialog.current;
+        if (!trainDialog.rounds || trainDialog.rounds.length == 0) { 
+            return null;
+        }
         let round = trainDialog.rounds[this.props.trainDialog.roundNumber];
+
+        if (!round.scorerSteps || round.scorerSteps.length == 0) { 
+            return null;
+        }
         let score = round.scorerSteps[this.props.trainDialog.scoreNumber];
         return score;
     }
     getExtractResponses() {
         let trainDialog = this.props.trainDialog.current;
+
+        if (!trainDialog.rounds || trainDialog.rounds.length == 0) { 
+            return null;
+        }
+        
         let round = trainDialog.rounds[this.props.trainDialog.roundNumber];
         let key = 0;
         let extractDisplay = [];

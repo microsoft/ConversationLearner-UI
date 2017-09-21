@@ -57,8 +57,8 @@ class TrainDialogWindow extends React.Component<Props, any> {
         })
     }
     generateHistory() : Activity[] {
-        if (!this.props.trainDialog) {
-            return null;
+        if (!this.props.trainDialog || !this.props.trainDialog.rounds) {
+            return [];
         }
         let activities = [];
         let roundNum = 0;
