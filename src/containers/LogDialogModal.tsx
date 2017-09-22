@@ -18,14 +18,9 @@ interface ComponentState {
 }
 
 class LogDialogModal extends React.Component<Props, ComponentState> {
-
-    componentWillMount() {
-        this.setState({
-            selectedActivity: null,
-            chatSession : new Session({saveToLog : true})
-        }, () => {
-            this.props.createChatSessionAsync(this.props.user.key, this.state.chatSession, this.props.apps.current.appId);
-        })
+    state = {
+        selectedActivity: null,
+        chatSession : new Session({saveToLog : true})
     }
 
     /**
