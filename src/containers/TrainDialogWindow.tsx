@@ -83,7 +83,7 @@ class TrainDialogWindow extends React.Component<Props, any> {
         return activities;
     }
     render() {
-        let history = this.generateHistory();
+        let webchat = (this.props.trainDialog) ? <Webchat sessionType={"chat"} history={this.generateHistory()} /> : null;
         return (
             <Modal
                 isOpen={this.props.error == null}
@@ -91,7 +91,7 @@ class TrainDialogWindow extends React.Component<Props, any> {
                 containerClassName='teachModal'>
                 <div className="wc-gridContainer">
                     <div className="wc-gridWebchat">
-                        <Webchat sessionType={"chat"} history={history} />
+                        {webchat}
                     </div>
                     <div className="wc-gridAdmin">
                         <div className="wc-gridAdminContent">

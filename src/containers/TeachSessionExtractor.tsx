@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { findDOMNode } from 'react-dom';
 import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -19,6 +20,9 @@ class TeachSessionExtractor extends React.Component<Props, any> {
             entityModalOpen: false,
             popUpOpen: false
         }
+    }
+    componentDidMount() {
+        findDOMNode<HTMLButtonElement>(this.refs.scoreActions).focus();
     }
     componentDidUpdate() {
         // If not in interactive mode run scorer automatically
@@ -127,9 +131,10 @@ class TeachSessionExtractor extends React.Component<Props, any> {
                          data-automation-id='randomID16'
                          disabled={false}
                          onClick={this.runScorer.bind(this)}
-                         className='ms-font-su blis-button--gold teachSessionScoreButton'
+                         className='ms-font-su blis-button--gold'
                          ariaDescription='Score Actions'
                          text='Score Actions'
+                         ref="scoreActions"
                      />
      
                      <EntityCreatorEditor open={this.state.entityModalOpen} entity={null} handleClose={this.handleCloseEntityModal.bind(this)} />

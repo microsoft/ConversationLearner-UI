@@ -40,10 +40,6 @@
   vertical-align: middle;
   width:17%;
 }
-.teachSessionScoreButton{
-  margin: 0px;
-  float: right;
-}
 .selectedHeaderElementDiv{
   height: 100%;
   display: inline-block;
@@ -91,6 +87,9 @@
 .blis-button--gold:hover {
   border: 1px solid #004b50;
 }
+.blis-button--gold:focus {
+  border: 1px solid #004b50;
+}
 .blis-button--gold{
   background-color: #ffb900 !important;
   color: black !important;
@@ -108,10 +107,18 @@
 .blis-button--gray:hover {
   border: 1px solid #004b50;
 }
+.blis-button--gray:focus {
+  border: 1px solid #004b50;
+}
 .blis-button--gray{
   background-color: lightgrey !important;
   color:black !important;
   padding: 0em 2em !important;
+}
+.blis-button--hidden {
+  width: 1px;
+  height: 1px;
+  opacity: 0.0;
 }
 .trainingGroundArena{
   width: 80%;

@@ -10,6 +10,7 @@ import { DetailsList, CommandButton, CheckboxVisibility, IColumn, SearchBox } fr
 import { State } from '../types';
 import { EntityBase, ActionBase } from 'blis-models'
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
+import { findDOMNode } from 'react-dom';
 
 let columns: IColumn[] = [
     {
@@ -69,6 +70,12 @@ class EntitiesList extends React.Component<Props, any> {
             sortColumn : null
         }
     }
+    componentDidMount() {
+        this.focusNewEntityButton();
+    }
+    focusNewEntityButton() : void {
+        findDOMNode<HTMLButtonElement>(this.refs.newEntity).focus();
+    }
     deleteSelectedEntity() {
         let currentAppId: string = this.props.apps.current.appId;
         let entityToDelete: EntityBase = this.props.entities.find((a: EntityBase) => a.entityId == this.state.entityIDToDelete)
@@ -85,6 +92,20 @@ class EntitiesList extends React.Component<Props, any> {
             entityIDToDelete: null,
             errorModalOpen: false
         })
+    }
+    handleOpenCreateModal() {
+        this.setState({
+            createEditModalOpen: true
+        })
+    }
+    handleCloseCreateModal() {
+        this.setState({
+            createEditModalOpen: false,
+            entitySelected: null
+        })
+        setTimeout(() => {
+            this.focusNewEntityButton();
+        }, 500);
     }
     openDeleteModal(guid: string) {
         let tiedToAction: boolean;
@@ -211,17 +232,6 @@ class EntitiesList extends React.Component<Props, any> {
             searchValue: lcString
         })
     }
-    handleOpenCreateModal() {
-        this.setState({
-            createEditModalOpen: true
-        })
-    }
-    handleCloseCreateModal() {
-        this.setState({
-            createEditModalOpen: false,
-            entitySelected: null
-        })
-    }
     render() {
         let entityItems = this.renderEntityItems(); 
 
@@ -236,6 +246,7 @@ class EntitiesList extends React.Component<Props, any> {
                         className='blis-button--gold'
                         ariaDescription='Create a New Entity'
                         text='New Entity'
+                        ref='newEntity'
                     />
                     <EntityCreatorEditor open={this.state.createEditModalOpen} entity={this.state.entitySelected} handleClose={this.handleCloseCreateModal.bind(this)} />
                 </div>

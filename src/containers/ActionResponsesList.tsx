@@ -10,6 +10,7 @@ import { ActionBase, EntityBase, ModelUtils } from 'blis-models'
 import ActionResponseCreatorEditor from './ActionResponseCreatorEditor';
 import EntityTile from '../components/EntityTile';
 import { State } from '../types'
+import { findDOMNode } from 'react-dom';
 
 let columns: IColumn[] = [
     {
@@ -47,7 +48,7 @@ let columns: IColumn[] = [
     },
     {
         key: 'negativeEntities',
-        name: 'Negative Entities',
+        name: 'Blocking Entities',
         fieldName: 'negativeEntities',
         minWidth: 100,
         maxWidth: 200,
@@ -55,7 +56,7 @@ let columns: IColumn[] = [
     },
     {
         key: 'suggestedEntity',
-        name: 'Suggested Entity',
+        name: 'Expected Entity',
         fieldName: 'metadata',
         minWidth: 100,
         maxWidth: 100,
@@ -87,6 +88,9 @@ class ActionResponsesHomepage extends React.Component<Props, any> {
         }
         this.renderEntityList = this.renderEntityList.bind(this)
     }
+    componentDidMount() {
+        this.focusNewActionButton();
+    }
     deleteSelectedAction() {
         let currentAppId: string = this.props.apps.current.appId;
         let actionToDelete: ActionBase = this.props.actions.find((a: ActionBase) => a.actionId == this.state.actionIDToDelete)
@@ -97,6 +101,9 @@ class ActionResponsesHomepage extends React.Component<Props, any> {
             actionIDToDelete: null
         })
 
+    }
+    focusNewActionButton() : void {
+        findDOMNode<HTMLButtonElement>(this.refs.newAction).focus();
     }
     handleCloseDeleteModal() {
         this.setState({
@@ -109,6 +116,21 @@ class ActionResponsesHomepage extends React.Component<Props, any> {
             confirmDeleteActionModalOpen: true,
             actionIDToDelete: guid
         })
+    }
+    handleOpenCreateModal() {
+        this.setState({
+            createEditModalOpen: true,
+            actionSelected: null
+        })
+    }
+    handleCloseCreateModal() {
+        this.setState({
+            createEditModalOpen: false,
+            actionSelected: null
+        })
+        setTimeout(() => {
+            this.focusNewActionButton();
+        }, 500);
     }
     editSelectedAction(action: ActionBase) {
         this.setState({
@@ -268,18 +290,6 @@ class ActionResponsesHomepage extends React.Component<Props, any> {
             searchValue: lcString
         })
     }
-    handleOpenCreateModal() {
-        this.setState({
-            createEditModalOpen: true,
-            actionSelected: null
-        })
-    }
-    handleCloseCreateModal() {
-        this.setState({
-            createEditModalOpen: false,
-            actionSelected: null
-        })
-    }
     render() {
         let actionItems = this.renderActionItems();
         return (
@@ -293,6 +303,7 @@ class ActionResponsesHomepage extends React.Component<Props, any> {
                         className='blis-button--gold'
                         ariaDescription='Create a New Action'
                         text='New Action'
+                        ref='newAction'
                     />
                     <ActionResponseCreatorEditor open={this.state.createEditModalOpen} blisAction={this.state.actionSelected} handleClose={this.handleCloseCreateModal.bind(this)} handleOpenDeleteModal={this.handleOpenDeleteModal.bind(this)} />
                 </div>

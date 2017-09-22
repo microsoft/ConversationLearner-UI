@@ -98,6 +98,12 @@ class BLISAppCreator extends React.Component<Props, any> {
         this.props.emptyStateProperties();
         this.handleClose();
     }
+    onKeyDown(key: KeyboardEvent) {
+        // On enter attempt to create the app if required fields are set
+        if (key.keyCode == 13 && this.state.appNameVal && this.state.luisKeyVal) {
+            this.createApplication();
+        }
+    }
     checkIfBlank(value :string): string {
         return value ? "" : "Required Value";
     }
@@ -127,12 +133,14 @@ class BLISAppCreator extends React.Component<Props, any> {
                             onChanged={this.nameChanged.bind(this)} 
                             label="Name" 
                             placeholder="Application Name..." 
+                            onKeyDown={this.onKeyDown.bind(this)}
                             value={this.state.appNameVal} />
                         <TextFieldPlaceholder 
                             onGetErrorMessage={ this.checkIfBlank.bind(this)}
                             onChanged={this.luisKeyChanged.bind(this)} 
                             label="LUIS Key" 
                             placeholder="Key..." 
+                            onKeyDown={this.onKeyDown.bind(this)}
                             value={this.state.luisKeyVal} />
                         <Dropdown
                             label='Locale'
