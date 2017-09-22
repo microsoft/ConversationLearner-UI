@@ -14,24 +14,72 @@ interface IRenderableColumn extends IColumn {
     render: (x: LogDialog) => React.ReactNode
 }
 
+const returnStringWhenError = (s: string) => {
+    return (f: Function) => {
+        try {
+            return f()
+        }
+        catch
+        {
+            return s
+        }
+    }
+}
+
+const returnErrorStringWhenError = returnStringWhenError("ERR")
+
 let columns: IRenderableColumn[] = [
     {
-        key: 'firstUtterance',
-        name: 'First Utterance',
-        fieldName: 'firstUtterance',
+        key: 'firstInput',
+        name: 'First Input',
+        fieldName: 'firstInput',
         minWidth: 100,
-        maxWidth: 200,
+        maxWidth: 500,
         isResizable: true,
-        render: logDialog => <span className='ms-font-m-plus'>{logDialog.rounds[0].extractorStep.text}</span>
+        render: logDialog => {
+            if (logDialog.rounds && logDialog.rounds.length > 0) {
+                let text = logDialog.rounds[0].extractorStep.text;
+                return <span className='ms-font-m-plus'>{text}</span>;
+            }
+            return <span className="ms-Icon ms-Icon--Remove notFoundIcon" aria-hidden="true"></span>;
+        }
     },
     {
-        key: 'lastUtterance',
-        name: 'Last Utterance',
-        fieldName: 'lastUtterance',
+        key: 'lastInput',
+        name: 'Last Input',
+        fieldName: 'lastInput',
         minWidth: 100,
-        maxWidth: 200,
+        maxWidth: 500,
         isResizable: true,
-        render: logDialog => <span className='ms-font-m-plus'>{logDialog.rounds[logDialog.rounds.length - 1].extractorStep.text}</span>
+        render: logDialog => {
+            if (logDialog.rounds && logDialog.rounds.length > 0) {
+                let text = logDialog.rounds[logDialog.rounds.length - 1].extractorStep.text;
+                return <span className='ms-font-m-plus'>{text}</span>;
+            }
+            return <span className="ms-Icon ms-Icon--Remove notFoundIcon"></span>;
+        }
+    },
+    {
+        key: 'lastResponse',
+        name: 'Last Response',
+        fieldName: 'lastResponse',
+        minWidth: 100,
+        maxWidth: 500,
+        isResizable: true,
+        render: logDialog => {
+            if (logDialog.rounds && logDialog.rounds.length > 0) {
+                let scorerSteps = logDialog.rounds[logDialog.rounds.length - 1].scorerSteps;
+                if (scorerSteps.length > 0) {
+                    let actionId = scorerSteps[scorerSteps.length - 1].predictedAction;
+                    let action = this.props.actions.find(a => a.actionId == actionId);
+                    if (action) {
+                        return <span className='ms-font-m-plus'>{action.payload}</span>;
+                    }
+                }
+            }
+
+            return <span className="ms-Icon ms-Icon--Remove notFoundIcon"></span>;
+        }
     },
     {
         key: 'turns',
@@ -90,7 +138,7 @@ class LogDialogsList extends React.Component<Props, ComponentState> {
         })
         return filteredLogDialogs;
     }
-    
+
     render() {
         const logDialogItems = this.props.logDialogs.all;
         const currentLogDialog = this.state.currentLogDialog;
@@ -123,7 +171,7 @@ class LogDialogsList extends React.Component<Props, ComponentState> {
                     items={logDialogItems}
                     columns={columns}
                     checkboxVisibility={CheckboxVisibility.hidden}
-                    onRenderItemColumn={(logDialog, i, column: IRenderableColumn) => column.render(logDialog)}
+                    onRenderItemColumn={(logDialog, i, column: IRenderableColumn) => returnErrorStringWhenError(() => column.render(logDialog))}
                     onActiveItemChanged={logDialog => this.onLogDialogInvoked(logDialog)}
                 />
             </div>
