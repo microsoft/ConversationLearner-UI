@@ -742,6 +742,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
             payloadTextField = (
                 <TextFieldPlaceholder
                     id={"actionArguements"}
+                    key="0"
                     onChanged={this.payloadChanged.bind(this)}
                     label="Arguments (Comma Separated)"
                     placeholder="Arguments..."
@@ -755,6 +756,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
             payloadTextField = (
                 <TextFieldPlaceholder
                     id={"actionPayload"}
+                    key='1'
                     onGetErrorMessage={this.checkPayload.bind(this)}
                     onChanged={this.payloadChanged.bind(this)}
                     label="Payload"
@@ -796,7 +798,21 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                                 <AutocompleteListItem onClick={() => this.entitySuggestionSelected(item)} item={item} />
                             )}
                         />
-                        <Label>Required Entities</Label>
+                        <Label>Expected Entity in Response...</Label>
+                        <TagPicker
+                            onResolveSuggestions={this.onFilterChangedSuggestedEntity.bind(this)}
+                            getTextFromItem={(item) => { return item.name; }}
+                            onChange={this.handleChangeSuggestedEntities.bind(this)}
+                            key={this.state.suggestedTagPickerKey}
+                            pickerSuggestionsProps={
+                                {
+                                    suggestionsHeaderText: 'Entities',
+                                    noResultsFoundText: 'No Entities Found'
+                                }
+                            }
+                            defaultSelectedItems={this.state.defaultSuggestedEntities}
+                        />
+                        <Label>Disallow Action when Entities are <b>NOT</b> in Memory...</Label>
                         <TagPicker
                             onResolveSuggestions={this.onFilterChanged.bind(this)}
                             getTextFromItem={(item) => { return item.name; }}
@@ -810,7 +826,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                             }
                             defaultSelectedItems={this.state.defaultRequiredEntities}
                         />
-                        <Label>Negative Entities</Label>
+                        <Label>Disallow Action when Entities <b>ARE</b> in Memory...</Label>
                         <TagPicker
                             key={this.state.negativeTagPickerKey}
                             onResolveSuggestions={this.onFilterChangedNegative.bind(this)}
@@ -823,20 +839,6 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                                 }
                             }
                             defaultSelectedItems={this.state.defaultNegativeEntities}
-                        />
-                        <Label>Suggested Entity</Label>
-                        <TagPicker
-                            onResolveSuggestions={this.onFilterChangedSuggestedEntity.bind(this)}
-                            getTextFromItem={(item) => { return item.name; }}
-                            onChange={this.handleChangeSuggestedEntities.bind(this)}
-                            key={this.state.suggestedTagPickerKey}
-                            pickerSuggestionsProps={
-                                {
-                                    suggestionsHeaderText: 'Entities',
-                                    noResultsFoundText: 'No Entities Found'
-                                }
-                            }
-                            defaultSelectedItems={this.state.defaultSuggestedEntities}
                         />
                         <Checkbox
                             label='Wait For Response?'

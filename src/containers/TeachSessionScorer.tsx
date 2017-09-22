@@ -10,6 +10,7 @@ import { CommandButton } from 'office-ui-fabric-react';
 import { TeachMode } from '../types/const'
 import { IColumn, DetailsList, CheckboxVisibility, List } from 'office-ui-fabric-react';
 import ActionResponseCreatorEditor from './ActionResponseCreatorEditor'
+import { findDOMNode } from 'react-dom';
 
 let columns: IColumn[] = [
     {
@@ -105,6 +106,9 @@ class TeachSessionScorer extends React.Component<Props, any> {
             }
             let selectedActionId = bestAction.actionId;
             this.handleActionSelection(selectedActionId);
+        } else {
+            // Put focus on first result so can select by pressing enter
+            findDOMNode<HTMLButtonElement>(this.refs.acceptDefault).focus();
         }
     }
     handleCloseActionModal(newAction: ActionBase) {
@@ -156,6 +160,10 @@ class TeachSessionScorer extends React.Component<Props, any> {
             return value.toUpperCase();
         }
         return value;
+    }
+    handleDefaultSelection() {
+        let actionId = this.props.teachSession.scoreResponse.scoredActions[0].actionId;
+        this.handleActionSelection(actionId);
     }
     handleActionSelection(actionId : string)
     {
@@ -254,7 +262,6 @@ class TeachSessionScorer extends React.Component<Props, any> {
                         </div>
                         )
                     }
-
                 return (
                     <div>
                         <a onClick={() => this.handleActionSelection(fieldContent)}><span className="actionSelect ms-Icon ms-Icon--CompletedSolid"></span></a>
@@ -329,16 +336,28 @@ class TeachSessionScorer extends React.Component<Props, any> {
         }
 
         let noEdit =  (this.props.teachSession.autoTeach || this.props.teachSession.mode != TeachMode.Scorer);    
-        let addAction = noEdit ? null : 
-            <CommandButton
-                data-automation-id='randomID8'
-                className="blis-button--gold teachCreateButton"
-                disabled={false}
-                onClick={this.handleOpenActionModal.bind(this)}
-                ariaDescription='Cancel'
-                text='Action'
-                iconProps={{ iconName: 'CirclePlus' }}
-            />
+        let addAction = noEdit ? null : (
+            <div>
+                <CommandButton
+                    data-automation-id='randomID8'
+                    className="blis-button--hidden"
+                    disabled={false}
+                    onClick={this.handleDefaultSelection.bind(this)}
+                    ariaDescription='Accept'
+                    text=''
+                    ref="acceptDefault"
+                />
+                <CommandButton
+                    data-automation-id='randomID9'
+                    className="blis-button--gold teachCreateButton"
+                    disabled={false}
+                    onClick={this.handleOpenActionModal.bind(this)}
+                    ariaDescription='Cancel'
+                    text='Action'
+                    iconProps={{ iconName: 'CirclePlus' }}
+                />
+            </div>
+        )
         return (
             <div className='content'>
                 <div className='teachTitleBox'>
@@ -352,6 +371,7 @@ class TeachSessionScorer extends React.Component<Props, any> {
                         checkboxVisibility={CheckboxVisibility.hidden}
                         onRenderItemColumn={this.renderItemColumn.bind(this)}
                         onColumnHeaderClick={ this.onColumnClick.bind(this) }
+                        ref='scoreList'
                     />
                     <ActionResponseCreatorEditor open={this.state.actionModalOpen} blisAction={null} handleClose={this.handleCloseActionModal.bind(this)} />
             </div>
