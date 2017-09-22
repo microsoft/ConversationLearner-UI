@@ -10,6 +10,7 @@ import { fetchAllTrainDialogsAsync } from '../actions/fetchActions';
 import { State } from '../types'
 import { TrainDialog } from 'blis-models'
 import { DisplayMode } from '../types/const';
+import { findDOMNode } from 'react-dom';
 
 let columns: IColumn[] = [
     {
@@ -53,6 +54,12 @@ class TrainDialogsList extends React.Component<Props, any> {
             searchValue: ''
         }
         this.handleSelection = this.handleSelection.bind(this)
+    }
+    componentDidMount() {
+        this.focusNewEntityButton();
+    }
+    focusNewEntityButton() : void {
+        findDOMNode<HTMLButtonElement>(this.refs.newSession).focus();
     }
     firstUtterance(item: any)
     {
@@ -150,6 +157,7 @@ class TrainDialogsList extends React.Component<Props, any> {
                         className='blis-button--gold'
                         ariaDescription='Create a New Teach Session'
                         text='New Teach Session'
+                        ref="newSession"
                     />
                 </div>
                 <SearchBox

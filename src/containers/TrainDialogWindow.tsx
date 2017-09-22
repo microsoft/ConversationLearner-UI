@@ -8,7 +8,7 @@ import { State } from '../types';
 import { DisplayMode } from '../types/const';
 import Webchat from './Webchat'
 import TrainDialogAdmin from './TrainDialogAdmin'
-import { Session, ActionBase } from 'blis-models'
+import { ActionBase } from 'blis-models'
 import { deleteChatSessionAsync, deleteTrainDialogAsync } from '../actions/deleteActions'
 import { createChatSessionAsync } from '../actions/createActions'
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
@@ -17,16 +17,6 @@ import { Activity } from 'botframework-directlinejs';
 
 
 class TrainDialogWindow extends React.Component<Props, any> {
-    constructor(p: any) {
-        super(p);
-        this.state = {
-            chatSession : new Session({saveToLog : true})
-        }
-    }
-    componentWillMount() {
-        let currentAppId: string = this.props.apps.current.appId;
-        this.props.createChatSession(this.props.userKey, this.state.chatSession, currentAppId);
-    }
     handleQuit() {
         this.props.setDisplayMode(DisplayMode.AppAdmin);
         this.setState({
@@ -132,7 +122,6 @@ const mapDispatchToProps = (dispatch: any) => {
 }
 const mapStateToProps = (state: State) => {
     return {
-        chatSession: state.chatSessions,
         userKey: state.user.key,
         apps: state.apps,
         user: state.user,
