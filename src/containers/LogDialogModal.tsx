@@ -8,38 +8,16 @@ import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import Webchat from './Webchat'
 import LogDialogAdmin from './LogDialogAdmin'
 import { Activity } from 'botframework-directlinejs'
-import { createChatSessionAsync } from '../actions/createActions'
-import { BlisAppBase, LogDialog, Session } from 'blis-models'
+import { BlisAppBase, LogDialog } from 'blis-models'
 import { deleteLogDialogAsync } from '../actions/deleteActions'
 
 interface ComponentState {
-    selectedActivity: Activity | null,
-    chatSession: Session
+    selectedActivity: Activity | null
 }
 
 class LogDialogModal extends React.Component<Props, ComponentState> {
-
-    componentWillMount() {
-        this.setState({
-            selectedActivity: null,
-            chatSession : new Session({saveToLog : true})
-        }, () => {
-            this.props.createChatSessionAsync(this.props.user.key, this.state.chatSession, this.props.apps.current.appId);
-        })
-    }
-
-    /**
-     * When modal is opened create a new session and reset the state.
-     */
-    componentWillReceiveProps(nextProps: Props) {
-        if (this.props.open === false && nextProps.open === true) {
-            this.setState({
-                selectedActivity: null,
-                chatSession : new Session({saveToLog : true})
-            }, () => {
-                this.props.createChatSessionAsync(this.props.user.key, this.state.chatSession, this.props.apps.current.appId);
-            })
-        }
+    state = {
+        selectedActivity: null
     }
 
     generateHistory(): Activity[] {
@@ -141,7 +119,6 @@ class LogDialogModal extends React.Component<Props, ComponentState> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        createChatSessionAsync,
         deleteLogDialogAsync
     }, dispatch);
 }
