@@ -10,13 +10,23 @@ import Webchat from './Webchat'
 import TrainDialogAdmin from './TrainDialogAdmin'
 import { ActionBase } from 'blis-models'
 import { deleteChatSessionAsync, deleteTrainDialogAsync } from '../actions/deleteActions'
-import { createChatSessionAsync } from '../actions/createActions'
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import { setDisplayMode } from '../actions/displayActions'
 import { Activity } from 'botframework-directlinejs';
 
+interface ComponentState {
+    confirmDeleteModalOpen: boolean,
+    display: string
+    dialogIDToDelete: string
+}
 
-class TrainDialogWindow extends React.Component<Props, any> {
+class TrainDialogWindow extends React.Component<Props, ComponentState> {
+    state = {
+        confirmDeleteModalOpen: false,
+        display: null,
+        dialogIDToDelete: null
+    }
+
     handleQuit() {
         this.props.setDisplayMode(DisplayMode.AppAdmin);
         this.setState({
@@ -107,14 +117,18 @@ class TrainDialogWindow extends React.Component<Props, any> {
                         </div>    
                     </div>
                 </div>
-                <ConfirmDeleteModal open={this.state.confirmDeleteModalOpen} onCancel={() => this.handleCloseDeleteModal()} onConfirm={() => this.deleteSelectedDialog()} title="Are you sure you want to delete this Training Dialog?" />
+                <ConfirmDeleteModal
+                    open={this.state.confirmDeleteModalOpen}
+                    onCancel={() => this.handleCloseDeleteModal()}
+                    onConfirm={() => this.deleteSelectedDialog()}
+                    title="Are you sure you want to delete this Training Dialog?"
+                />
             </Modal>                
         );
     }
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        createChatSession: createChatSessionAsync,
         deleteChatSession: deleteChatSessionAsync,
         deleteTrainDialog: deleteTrainDialogAsync,
         setDisplayMode: setDisplayMode
