@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { Modal } from 'office-ui-fabric-react/lib/Modal'
-import { CommandButton } from 'office-ui-fabric-react'
+import { PrimaryButton } from 'office-ui-fabric-react'
 
 interface IProps {
     open: boolean
@@ -22,14 +22,12 @@ const component = (props: IProps) => (
         <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas lorem nulla, malesuada ut sagittis sit amet, vulputate in leo. Maecenas vulputate congue sapien eu tincidunt. Etiam eu sem turpis. Fusce tempor sagittis nunc, ut interdum ipsum vestibulum non. Proin dolor elit, aliquam eget tincidunt non, vestibulum ut turpis. In hac habitasse platea dictumst. In a odio eget enim porttitor maximus. Aliquam nulla nibh, ullamcorper aliquam placerat eu, viverra et dui. Phasellus ex lectus, maximus in mollis ac, luctus vel eros. Vivamus ultrices, turpis sed malesuada gravida, eros ipsum venenatis elit, et volutpat eros dui et ante. Quisque ultricies mi nec leo ultricies mollis. Vivamus egestas volutpat lacinia. Quisque pharetra eleifend efficitur. </p>
 
         <footer className="blis-modal__footer">
-            <CommandButton
-                className="blis-button blis-button--primary"
+            <PrimaryButton
                 onClick={() => props.close()}
-            >Close</CommandButton>
-            <CommandButton
-                className="blis-button blis-button--secondary"
+            >Close</PrimaryButton>
+            <PrimaryButton
                 onClick={() => props.cancel()}
-            >Cancel</CommandButton>
+            >Cancel</PrimaryButton>
         </footer>
     </Modal>
 )

@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { CommandButton, CheckboxVisibility, SearchBox, DetailsList, IColumn } from 'office-ui-fabric-react'
+import { PrimaryButton, CheckboxVisibility, SearchBox, DetailsList, IColumn } from 'office-ui-fabric-react'
 import ActionCreateModal from './../../modals/ActionCreateModal'
 
 interface IAction {
@@ -118,7 +118,7 @@ class component extends React.Component<any, any> {
                 <h1 className="ms-font-xxl">Actions</h1>
                 <p className="ms-font-m-plus">Manage a list of actions that your application can take given it's state and user input...</p>
                 <div>
-                    <CommandButton
+                    <PrimaryButton
                         data-automation-id='randomID20'
                         disabled={false}
                         onClick={() => this.onClickCreateAction()}

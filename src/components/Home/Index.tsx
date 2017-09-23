@@ -3,7 +3,7 @@ import {
     withRouter
 } from 'react-router-dom'
 import './Index.css'
-import { DetailsList, CheckboxVisibility, CommandButton, IColumn } from 'office-ui-fabric-react';
+import { DetailsList, CheckboxVisibility, PrimaryButton, IColumn } from 'office-ui-fabric-react';
 
 interface IApp {
     id: string
@@ -88,9 +88,9 @@ const component = ({ match, history }: any) => (
         <h1 className="ms-font-su">My Apps</h1>
         <p className="ms-font-m-plus">Create and Manage your BLIS applications...</p>
         <div>
-            <CommandButton
+            <PrimaryButton
                 className="blis-button blis-button--primary"
-            >Create New App</CommandButton>
+            >Create New App</PrimaryButton>
         </div>
         <DetailsList
             className="ms-font-m-plus"
