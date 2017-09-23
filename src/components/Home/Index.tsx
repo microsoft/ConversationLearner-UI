@@ -98,7 +98,7 @@ const component = ({ match, history }: any) => (
             columns={columns}
             checkboxVisibility={CheckboxVisibility.hidden}
             onRenderItemColumn={(app, index, column: IRenderableColumn) => column.render(app)}
-            onItemInvoked={app => history.push(`${match.url}/${app.id}`, { app })}
+            onActiveItemChanged={app => history.push(`${match.url}/${app.id}`, { app })}
         />
     </div>
 )
