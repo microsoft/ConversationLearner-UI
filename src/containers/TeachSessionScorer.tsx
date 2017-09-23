@@ -77,7 +77,7 @@ let columns: IColumn[] = [
 const initState = {
     actionModalOpen: false,
     columns: columns,
-    sortColumn : columns[2] // "score"
+    sortColumn : columns[3] // "score"
 }
 class TeachSessionScorer extends React.Component<Props, any> {
     constructor(p: any) {
@@ -173,7 +173,7 @@ class TeachSessionScorer extends React.Component<Props, any> {
         else if (scoreResponse.unscoredActions)
         {
             for (let unscoredAction of scoreResponse.unscoredActions) {
-                if (unscoredAction.reason == ScoreReason.NotCalculated) {
+                if (unscoredAction.reason == ScoreReason.NotScorable) {
                     actionId = unscoredAction.actionId;
                     break;
                 }
