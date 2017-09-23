@@ -1,4 +1,33 @@
 .blis-app-page {
     display: grid;
-    grid-template-columns: 200px 1fr;
+    grid-template-columns: minmax(160px, min-content) 1fr;
+    grid-gap: 3rem;
 }
+.blis-app-title {
+    padding-bottom: 1rem;
+}
+
+.blis-nav_section {
+    border-top: 1px solid lightgrey;
+    padding: 0.5rem 0;
+}
+.blis-nav_section:first-of-type {
+    padding: 0;
+}
+
+.blis-nav-link {
+    display: block;
+    padding: 0.5em 0;
+}
+.blis-nav-link:link,
+.blis-nav-link:visited {
+    color: grey;
+}
+.blis-nav-link.active,
+.blis-nav-link:hover {
+    color: rgba(0,0,0,0.8);
+}
+.blis-nav-link.active {
+    font-weight: bold;
+}
+

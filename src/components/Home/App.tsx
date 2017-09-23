@@ -17,29 +17,21 @@ const component = ({ match, location }: any) => {
     return (
         <div className="blis-app-page">
             <div>
-                <h1 className="ms-font-xxl">{app.name}</h1>
-                <div className="ms-font-m-plus">
-                    <NavLink exact={true} to="/home"><span className="ms-Icon ms-Icon--Back"></span>&nbsp;&nbsp;App List</NavLink>
-                    <ul>
-                        <li>
-                            <NavLink to={{ pathname: `${match.url}/settings`, state: { app } }}><span className="ms-Icon ms-Icon--Settings"></span><span>Settings</span></NavLink>
-                        </li>
-                        <li>
-                            <NavLink to={{ pathname: `${match.url}`, state: { app } }}>Dashboard</NavLink>
-                        </li>
-                        <li>
-                            <NavLink to={{ pathname: `${match.url}/entities`, state: { app } }}>Entities</NavLink>
-                        </li>
-                        <li>
-                            <NavLink to={{ pathname: `${match.url}/actions`, state: { app } }}>Actions</NavLink>
-                        </li>
-                        <li>
-                            <NavLink to={{ pathname: `${match.url}/train`, state: { app } }}>Train Dialogs</NavLink>
-                        </li>
-                        <li>
-                            <NavLink to={{ pathname: `${match.url}/logs`, state: { app } }}>Log Dialogs</NavLink>
-                        </li>
-                    </ul>
+                <h1 className="blis-app-title ms-font-xxl">{app.name}</h1>
+                <div className="blis-nav ms-font-m-plus">
+                    <div className="blis-nav_section">
+                        <NavLink className="blis-nav-link" to={{ pathname: `${match.url}/settings`, state: { app } }}><span className="ms-Icon ms-Icon--Settings"></span>&nbsp;&nbsp;Settings</NavLink>
+                    </div>
+                    <div className="blis-nav_section">
+                        <NavLink className="blis-nav-link" exact to={{ pathname: `${match.url}`, state: { app } }}>Dashboard</NavLink>
+                        <NavLink className="blis-nav-link" to={{ pathname: `${match.url}/entities`, state: { app } }}>Entities</NavLink>
+                        <NavLink className="blis-nav-link" to={{ pathname: `${match.url}/actions`, state: { app } }}>Actions</NavLink>
+                        <NavLink className="blis-nav-link" to={{ pathname: `${match.url}/train`, state: { app } }}>Train Dialogs</NavLink>
+                        <NavLink className="blis-nav-link" to={{ pathname: `${match.url}/logs`, state: { app } }}>Log Dialogs</NavLink>
+                    </div>
+                    <div className="blis-nav_section">
+                        <NavLink className="blis-nav-link" exact={true} to="/home"><span className="ms-Icon ms-Icon--Back"></span>&nbsp;&nbsp;App List</NavLink>
+                    </div>
                 </div>
             </div>
             <Switch>
