@@ -20,28 +20,6 @@ a:visited {
   color: inherit
 }
 
-.blis-button {
-  padding: 0em 2em;
-}
-
-.blis-button--primary {
-  background-color: #ffb900;
-  color: black;
-}
-.blis-button--primary:hover {
-  background-color: #F4B307;
-  color: black;
-}
-
-.blis-button--secondary {
-  background-color: #E4E2E2;
-  color: black;
-}
-.blis-button--secondary:hover {
-  background-color: #E2DFDF;
-  color: black;
-}
-
 /** Modals */
 .blis-modal {
   padding: 2em;
