@@ -162,8 +162,26 @@ class TeachSessionScorer extends React.Component<Props, any> {
         return value;
     }
     handleDefaultSelection() {
-        let actionId = this.props.teachSession.scoreResponse.scoredActions[0].actionId;
-        this.handleActionSelection(actionId);
+        // Look for a valid action
+        let actionId = null;
+        let scoreResponse = this.props.teachSession.scoreResponse;
+        if (scoreResponse.scoredActions && scoreResponse.scoredActions.length > 0)
+        {
+            actionId = scoreResponse.scoredActions[0].actionId;
+            this.handleActionSelection(actionId);
+        }
+        else if (scoreResponse.unscoredActions)
+        {
+            for (let unscoredAction of scoreResponse.unscoredActions) {
+                if (unscoredAction.reason == ScoreReason.NotCalculated) {
+                    actionId = unscoredAction.actionId;
+                    break;
+                }
+            }
+        }
+        if (actionId) {
+            this.handleActionSelection(actionId);
+        }
     }
     handleActionSelection(actionId : string)
     {
