@@ -377,7 +377,7 @@ class TeachSessionScorer extends React.Component<Props, any> {
             </div>
         )
         return (
-            <div className='content'>
+            <div>
                 <div className='teachTitleBox'>
                     <div className='ms-font-l teachTitle'>Action Selection</div>
                     {addAction}

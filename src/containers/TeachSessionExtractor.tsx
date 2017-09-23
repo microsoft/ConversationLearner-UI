@@ -158,7 +158,7 @@ class TeachSessionExtractor extends React.Component<Props, any> {
         }
         
         return (
-            <div className="content">
+            <div>
                 <div>
                     <div className='teachTitleBox'>
                         <div className='ms-font-l teachTitle'>Entity Detection</div>

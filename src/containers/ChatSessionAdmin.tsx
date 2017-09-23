@@ -35,7 +35,7 @@ class ChatSessionAdmin extends React.Component<Props, any> {
     }
     render() {
         return (
-            <div className="container">
+            <div>
                 <ConfirmDeleteModal open={this.state.open} onCancel={() => this.handleCloseModal()} onConfirm={() => this.handleAbandon()} title="Are you sure you want to abandon this chat session?" />
             </div>
         );

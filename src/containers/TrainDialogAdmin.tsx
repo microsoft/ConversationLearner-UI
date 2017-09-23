@@ -34,7 +34,7 @@ class TrainDialogAdmin extends React.Component<Props, any> {
             extractDisplay.push(<ExtractorResponseEditor key={key++} isPrimary={true} isValid={true} extractResponse={extractResponse}/>);   
         }
         return (
-            <div className='content'>
+            <div>
                 <div className='teachTitleBox'>
                     <div className='ms-font-l teachTitle'>Entity Detection</div>
                 </div>
@@ -56,7 +56,7 @@ class TrainDialogAdmin extends React.Component<Props, any> {
             }
         }
         return (
-            <div className='content'>
+            <div>
                 <div className='teachTitleBox'>
                     <div className='ms-font-l teachTitle'>Memory</div>
                 </div>
@@ -69,7 +69,7 @@ class TrainDialogAdmin extends React.Component<Props, any> {
         let action: ActionBase = this.props.actions.find((a: ActionBase) => a.actionId == actionId);  
         let payload = action ? action.payload : "ERROR: Missing Action"   ;
         return (
-            <div className='content'>
+            <div>
                 <div className='teachTitleBox'>
                     <div className='ms-font-l teachTitle'>Action</div>
                 </div>
@@ -84,7 +84,7 @@ class TrainDialogAdmin extends React.Component<Props, any> {
         let actionPayload = score ? this.getAction(score) : "";
         let memory = score ? this.getMemory(score) : "";
         return (
-            <div className="container teachSessionAdmin">
+            <div>
                 {extractResponses}
                 {memory}
                 {actionPayload}
