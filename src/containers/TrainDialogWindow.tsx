@@ -2,7 +2,7 @@ import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { CommandButton } from 'office-ui-fabric-react';
+import { PrimaryButton, DefaultButton } from 'office-ui-fabric-react';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { State } from '../types';
 import { DisplayMode } from '../types/const';
@@ -56,7 +56,7 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
             display: "TrainDialogs"
         })
     }
-    generateHistory() : Activity[] {
+    generateHistory(): Activity[] {
         if (!this.props.trainDialog || !this.props.trainDialog.rounds) {
             return [];
         }
@@ -65,16 +65,16 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
         for (let round of this.props.trainDialog.rounds) {
             let userText = round.extractorStep.textVariations[0].text;
             let id = `${roundNum}:0`;
-            let userActivity = {id: id, from: {id: this.props.user.id, name: this.props.user.name}, type: "message", text: userText} as Activity;
+            let userActivity = { id: id, from: { id: this.props.user.id, name: this.props.user.name }, type: "message", text: userText } as Activity;
             activities.push(userActivity);
 
             let scoreNum = 0;
             for (let scorerStep of round.scorerSteps) {
                 let labelAction = scorerStep.labelAction;
-                let action = this.props.actions.filter((a: ActionBase) => a.actionId == labelAction)[0]; 
-                let payload = action ?  action.payload : "ERROR: Missing Action";
+                let action = this.props.actions.filter((a: ActionBase) => a.actionId == labelAction)[0];
+                let payload = action ? action.payload : "ERROR: Missing Action";
                 id = `${roundNum}:${scoreNum}`
-                let botActivity = {id: id, from: {id:"BlisTrainer", name: "BlisTrainer"}, type: "message", text: payload} as Activity;
+                let botActivity = { id: id, from: { id: "BlisTrainer", name: "BlisTrainer" }, type: "message", text: payload } as Activity;
                 activities.push(botActivity);
                 scoreNum++;
             }
@@ -83,38 +83,35 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
         return activities;
     }
     render() {
-        let webchat = (this.props.trainDialog) ? <Webchat sessionType={"chat"} history={this.generateHistory()} /> : null;
         return (
             <Modal
                 isOpen={this.props.error == null}
                 isBlocking={true}
-                containerClassName='teachModal'>
-                <div className="wc-gridContainer">
-                    <div className="wc-gridWebchat">
-                        {webchat}
+                containerClassName='blis-modal blis-modal--large'>
+                <div className="blis-chatmodal">
+                    <div className="blis-chatmodal_webchat">
+                        {this.props.trainDialog &&
+                            <Webchat
+                                sessionType={"chat"}
+                                history={this.generateHistory()}
+                            />}
                     </div>
-                    <div className="wc-gridAdmin">
-                        <div className="wc-gridAdminContent">
+                    <div className="blis-chatmodal_controls">
+                        <div className="blis-chatmodal_admin-controls">
                             <TrainDialogAdmin />
                         </div>
-                        <div className="wc-gridFooter">
-                        <CommandButton
-                            data-automation-id='randomID16'
-                            disabled={false}
-                            onClick={this.handleQuit.bind(this)}
-                            className='ms-font-su blis-button--gold blis-button--widemargin'
-                            ariaDescription='Done'
-                            text='Done'
-                        />
-                        <CommandButton
-                            data-automation-id='randomID16'
-                            disabled={false}
-                            onClick={this.openDeleteModal.bind(this)}
-                            className='ms-font-su blis-button--gold blis-button--right blis-button--widemargin'
-                            ariaDescription='Delete'
-                            text='Delete'
-                        />
-                        </div>    
+                        <div className="blis-chatmodal_modal-controls">
+                            <PrimaryButton
+                                onClick={this.handleQuit.bind(this)}
+                                ariaDescription='Done'
+                                text='Done'
+                            />
+                            <DefaultButton
+                                onClick={this.openDeleteModal.bind(this)}
+                                ariaDescription='Delete'
+                                text='Delete'
+                            />
+                        </div>
                     </div>
                 </div>
                 <ConfirmDeleteModal
@@ -123,7 +120,7 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
                     onConfirm={() => this.deleteSelectedDialog()}
                     title="Are you sure you want to delete this Training Dialog?"
                 />
-            </Modal>                
+            </Modal>
         );
     }
 }

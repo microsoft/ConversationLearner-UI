@@ -2,7 +2,7 @@ import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { CommandButton } from 'office-ui-fabric-react';
+import { PrimaryButton } from 'office-ui-fabric-react';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { State } from '../types';
 import { DisplayMode } from '../types/const';
@@ -38,21 +38,19 @@ class SessionWindow extends React.Component<Props, any> {
             <Modal
                 isOpen={this.props.error == null}
                 isBlocking={true}
-                containerClassName='teachModal'>
-                <div className="wc-gridContainer">
-                    <div className="wc-gridWebchat">
+                containerClassName='blis-modal blis-modal--large'
+            >
+                <div className="blis-chatmodal">
+                    <div className="blis-chatmodal_webchat">
                         <Webchat sessionType={"chat"} />
                     </div>
-                    <div className="wc-gridAdmin">
-                        <div className="wc-gridAdminContent">
+                    <div className="blis-chatmodal_controls">
+                        <div className="blis-chatmodal_admin-controls">
                             <ChatSessionAdmin />
                         </div>
-                        <div className="wc-gridFooter">
-                        <CommandButton
-                            data-automation-id='randomID16'
-                            disabled={false}
-                            onClick={this.handleQuit.bind(this)}
-                            className='ms-font-su blis-button--gold blis-button--widemargin'
+                        <div className="blis-chatmodal_modal-controls">
+                        <PrimaryButton
+                            onClick={() => this.handleQuit()}
                             ariaDescription='Done Testing'
                             text='Done Testing'
                         />

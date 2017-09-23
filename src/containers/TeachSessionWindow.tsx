@@ -3,7 +3,7 @@ import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
-import { CommandButton, Checkbox } from 'office-ui-fabric-react';
+import { PrimaryButton, DefaultButton, Checkbox } from 'office-ui-fabric-react';
 import { State } from '../types';
 import { DisplayMode, TeachMode } from '../types/const';
 import Webchat from './Webchat'
@@ -52,20 +52,11 @@ class TeachWindow extends React.Component<Props, any> {
     render() {
         // Show done button if at least on round and at end of round
         let showDone = this.props.teachSession.currentConversationStack.length > 0 && this.props.teachSession.mode == TeachMode.Wait;
-        let doneButton = (showDone) ?
-            <CommandButton
-                data-automation-id='randomID16'
-                disabled={false}
-                onClick={this.handleSave.bind(this)}
-                className='ms-font-su blis-button--gold blis-button--widemargin'
-                ariaDescription='Done Teaching'
-                text='Done Teaching'
-            /> : null;
 
         // Put mask of webchat if not in input mode
         let chatDisable = (this.props.teachSession.mode != TeachMode.Wait) ?
-                <div className="wc-disable"></div>
-                : null;
+            <div className="wc-disable"></div>
+            : null;
 
         // Mask controls if autoTeach is enabled
         let mask = (this.props.teachSession.autoTeach) ? <div className="teachAutoMask"></div> : null;
@@ -73,24 +64,27 @@ class TeachWindow extends React.Component<Props, any> {
             <Modal
                 isOpen={this.props.error == null}
                 isBlocking={true}
-                containerClassName='teachModal'>
-                <div className="wc-gridContainer">
-                    <div className="wc-gridWebchat">
+                containerClassName='blis-modal blis-modal--large'
+            >
+                <div className="blis-chatmodal">
+                    <div className="blis-chatmodal_webchat">
                         <Webchat sessionType={"teach"} />
                         {chatDisable}
                     </div>
-                    <div className="wc-gridAdmin">
-                        {mask}
-                        <div className="wc-gridAdminContent">
+                    <div className="blis-chatmodal_controls">
+                        <div className="blis-chatmodal_admin-controls">
                             <TeachSessionAdmin />
+                            {mask}
                         </div>
-                        <div className="wc-gridFooter">
-                            {doneButton}
-                            <CommandButton
-                                data-automation-id='randomID16'
-                                disabled={false}
+                        <div className="blis-chatmodal_modal-controls">
+                            <PrimaryButton
+                                disabled={!showDone}
+                                onClick={this.handleSave.bind(this)}
+                                ariaDescription='Done Teaching'
+                                text='Done Teaching'
+                            />
+                            <DefaultButton
                                 onClick={this.confirmDelete.bind(this)}
-                                className='ms-font-su blis-button--gray blis-button--widemargin blis-button--right'
                                 ariaDescription='Abandon Teach'
                                 text='Abandon Teach'
                             />
@@ -98,7 +92,6 @@ class TeachWindow extends React.Component<Props, any> {
                                 label='Auto Teach?'
                                 checked={this.props.teachSession.autoTeach}
                                 onChange={this.autoTeachChanged.bind(this)}
-                                className='teachAuto'
                                 disabled={this.state.editing}
                             />
                         </div>
