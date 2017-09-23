@@ -28,7 +28,10 @@ class SessionWindow extends React.Component<Props, any> {
     handleQuit() {
         this.props.setDisplayMode(DisplayMode.AppAdmin);
         let currentAppId: string = this.props.apps.current.appId;
-        this.props.deleteChatSession(this.props.userKey, this.props.chatSession.current, currentAppId)
+
+        if (this.props.chatSession.current !== null) {
+            this.props.deleteChatSession(this.props.userKey, this.props.chatSession.current, currentAppId)
+        }
     }
     render() {
         return (
