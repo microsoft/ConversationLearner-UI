@@ -292,49 +292,6 @@
   margin-top: 1em;
 }
 
-.wc-gridWebchat{
-  grid-column: 1;
-  grid-row: 1;
-  display: inline-block;
-  vertical-align: top;
-  position: relative;
-  width: 400px;
-}
-.wc-gridAdmin{
-  display: inline-block;
-  vertical-align: top;
-  position: relative;
-  grid-column: 2;
-  grid-row: 1;
-  border-style: none none none solid;
-  border-width: 1px;
-  border-color: #999999;
-  width: 100%;
-}
-.wc-gridAdminContent{
-  display: block;
-  padding-right: 20px;
-  overflow-y: auto;
-  height: calc(100% - 90px);
-  margin-bottom: 10px;
-}
-.wc-gridFooter{
-  grid-column: 2;
-  grid-row: 2;
-  background-color: #004b50;
-  display: block;
-  position: absolute;
-  bottom: 0;
-  z-index: 2000;
-  width: 100%;
-}
-.wc-gridContainer{
-  width: 100%;
-  height: 100%;
-  display: grid;
-  grid-template-columns: 400px minmax(min-content, 1fr);
-  grid-template-rows: auto 60px;
-}
 .wc-disable{
   width: 100%;
   height: 100%;
@@ -386,19 +343,7 @@
   width: 100%;
   height: 92%;
 }
-.teachSessionModeContainer{
-  height: 100%;
-  display: block;
-  width: 100%;
-  margin-top: 0px;
-}
-.teachSessionWindow{
-  width: 100%
-}
-/* .teachVariationBox{
-  margin-top: 5px;
-  margin-left: 10px;
-} */
+
 .teachVariation{
   overflow: hidden;
 }
@@ -416,10 +361,6 @@
   float: right;
   height: 50px !important;
   font-size: 8px !important;
-}
-.teachModal{
-  width: 90%;
-  height: 90%;
 }
 .teachEmptyMemory
 {
@@ -553,7 +494,8 @@
   grid-gap: 1em;
   grid-auto-columns: min-content;
   padding: 0.635em;
-  justify-content: center;
+  justify-content: space-between;
+  white-space: nowrap;
 }
 
 
@@ -564,11 +506,11 @@
   min-height: 0px !important;
 }
 /** TODO: Remove usage of !important */
-.ms-Button--primary{
+.ms-Button--primary:not(:disabled) {
   background-color: var(--color-primary) !important;
   color: black !important;
 }
-.ms-Button--primary:hover {
+.ms-Button--primary:not(:disabled):hover {
   background-color: var(--color-primary-darker) !important;
 }
 

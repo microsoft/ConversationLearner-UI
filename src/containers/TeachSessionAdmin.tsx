@@ -14,18 +14,18 @@ class TeachSessionAdmin extends React.Component<Props, any> {
         switch (this.props.teachSession.mode) {
             case TeachMode.Extractor:
                 userWindow = (
-                    <div className="teachSessionModeContainer">
-                        <TeachSessionMemory className="teachSessionWindow" />
-                        <TeachSessionExtractor className="teachSessionWindow" />
+                    <div>
+                        <TeachSessionMemory />
+                        <TeachSessionExtractor />
                     </div>
                 )
                 break;
             case TeachMode.Scorer:
                 userWindow = (
-                    <div className="teachSessionModeContainer">
-                        <TeachSessionMemory className="teachSessionWindow" />
-                        <TeachSessionExtractor className="teachSessionWindow" />
-                        <TeachSessionScorer className="teachSessionWindow"  />
+                    <div>
+                        <TeachSessionMemory />
+                        <TeachSessionExtractor />
+                        <TeachSessionScorer  />
                     </div>
                     )
                 break;
@@ -33,24 +33,24 @@ class TeachSessionAdmin extends React.Component<Props, any> {
                 // If in auto mode show all windows as long as there's at least one round
                 if (this.props.teachSession.autoTeach && this.props.teachSession.currentConversationStack.length > 0) {
                     userWindow = (
-                        <div className="teachSessionModeContainer">
-                            <TeachSessionMemory className="teachSessionWindow" />
-                            <TeachSessionExtractor className="teachSessionWindow" />
-                            <TeachSessionScorer className="teachSessionWindow"  />
+                        <div>
+                            <TeachSessionMemory />
+                            <TeachSessionExtractor />
+                            <TeachSessionScorer  />
                         </div>
                     )
                 }
                 else {
                     userWindow = (
-                        <div className="teachSessionModeContainer">
-                            <TeachSessionMemory className="teachSessionWindow" />
+                        <div>
+                            <TeachSessionMemory />
                         </div>
                     )
                 }
                 break;
         }
         return (
-            <div className="container teachSessionAdmin">
+            <div>
                 {userWindow}
             </div>
         );

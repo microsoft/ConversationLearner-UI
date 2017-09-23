@@ -117,7 +117,7 @@ class TeachSessionMemory extends React.Component<Props, any> {
                 checkboxVisibility={CheckboxVisibility.hidden}
             />
         return (
-            <div className='content'>
+            <div>
                 <div className='teachTitleBox'>
                     <div className='ms-font-l teachTitle'>Memory</div>
                 </div>
