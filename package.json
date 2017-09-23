@@ -3,15 +3,17 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@types/jest": "^20.0.8",
-    "@types/node": "^8.0.28",
-    "@types/react": "^16.0.5",
-    "@types/react-dom": "^15.5.4",
+    "axios": "^0.16.2",
     "office-ui-fabric-react": "^4.47.0",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
+    "react-redux": "^5.0.6",
+    "react-redux-typescript": "^2.3.0",
     "react-router-dom": "^4.2.2",
-    "react-scripts-ts": "2.6.0"
+    "react-scripts-ts": "2.6.0",
+    "redux": "^3.7.2",
+    "redux-observable": "^0.16.0",
+    "rxjs": "^5.4.3"
   },
   "scripts": {
     "start": "react-scripts-ts start",
@@ -20,6 +22,12 @@
     "eject": "react-scripts-ts eject"
   },
   "devDependencies": {
+    "@types/jest": "^20.0.8",
+    "@types/node": "^8.0.28",
+    "@types/prop-types": "^15.5.1",
+    "@types/react": "^16.0.5",
+    "@types/react-dom": "^15.5.4",
+    "@types/react-redux": "^5.0.9",
     "@types/react-router-dom": "^4.0.7"
   }
 }

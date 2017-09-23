@@ -1,0 +1,6 @@
+export enum AT {
+    COUNTER_ADD = "COUNTER_ADD",
+    COUNTER_DECREMENT = "COUNTER_DECREMENT"
+} 
+
+
