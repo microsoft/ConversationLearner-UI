@@ -87,6 +87,7 @@ class ExtractorResponseEditor extends React.Component<Props, any> {
         this.state = {
             input: "",
             predictedEntities: [],
+            definitions : null,
             substringObjects: null,
             substringsClicked: null,
         }
@@ -120,7 +121,8 @@ class ExtractorResponseEditor extends React.Component<Props, any> {
         if (props.extractResponse.text && entities && (props.extractResponse.text !== this.state.input)) {
             this.setState({
                 input: props.extractResponse.text,
-                predictedEntities: entities
+                predictedEntities: entities,
+                definitions: props.extractResponse.definitions
             })
             this.createSubstringObjects(props.extractResponse.text, entities)
         }
@@ -141,7 +143,7 @@ class ExtractorResponseEditor extends React.Component<Props, any> {
                 predictions.push(predictedEntity);
             }
         })
-        let newExtractResponse = new ExtractResponse({ text: this.state.input, predictedEntities: predictions });
+        let newExtractResponse = new ExtractResponse({ text: this.state.input, predictedEntities: predictions, definitions: this.state.definitions });
         this.createSubstringObjects(this.state.input, predictions)
         this.props.updateExtractResponse(newExtractResponse)
         this.setState({

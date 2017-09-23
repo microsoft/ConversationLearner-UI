@@ -168,7 +168,6 @@ class TeachSessionScorer extends React.Component<Props, any> {
         if (scoreResponse.scoredActions && scoreResponse.scoredActions.length > 0)
         {
             actionId = scoreResponse.scoredActions[0].actionId;
-            this.handleActionSelection(actionId);
         }
         else if (scoreResponse.unscoredActions)
         {
