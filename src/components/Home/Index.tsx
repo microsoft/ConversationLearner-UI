@@ -4,40 +4,16 @@ import {
 } from 'react-router-dom'
 import './Index.css'
 import { DetailsList, CheckboxVisibility, PrimaryButton, IColumn } from 'office-ui-fabric-react';
-
-interface IApp {
-    id: string
-    name: string
-    description: string,
-    luisKey: string,
-    locale: string,
-    linkedBots: string[],
-    actions: string[]
-}
-
-const apps: IApp[] = [
-    {
-        id: 'app-id-1',
-        name: 'App 1',
-        description: 'App 1 description',
-        luisKey: 'abc123uvw456',
-        locale: 'en-US',
-        linkedBots: [],
-        actions: []
-    },
-    {
-        id: 'app-id-2',
-        name: 'App 2',
-        description: 'App 2 description',
-        luisKey: 'XYZ21-0349sad20345',
-        locale: 'en-GB',
-        linkedBots: [],
-        actions: []
-    },
-]
+import { BlisAppBase } from 'blis-models'
+import { returntypeof } from 'react-redux-typescript';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { createApp } from '../../actions/appActions';
+import { State } from '../../types';
+import { RouteComponentProps } from 'react-router'
 
 interface IRenderableColumn extends IColumn {
-    render: (a: IApp) => React.ReactNode
+    render: (a: BlisAppBase) => JSX.Element
 }
 
 let columns: IRenderableColumn[] = [
@@ -48,7 +24,7 @@ let columns: IRenderableColumn[] = [
         minWidth: 100,
         maxWidth: 200,
         isResizable: true,
-        render: app => <span className='ms-font-m-plus'>{app.name}</span>
+        render: app => <span className='ms-font-m-plus'>{app.appName}</span>
     },
     {
         key: 'luisKey',
@@ -72,35 +48,66 @@ let columns: IRenderableColumn[] = [
         name: 'Linked Bots',
         fieldName: 'metadata',
         minWidth: 40,
-        render: app => <span className='ms-font-m-plus'>{app.linkedBots.length}</span>
-    },
-    {
-        key: 'actions',
-        name: 'Actions',
-        fieldName: 'appId',
-        minWidth: 40,
-        render: app => <span className='ms-font-m-plus'>{app.actions.length}</span>
+        render: app => <span className='ms-font-m-plus'>{app.metadata.botFrameworkApps.length}</span>
     },
 ];
 
-const component = ({ match, history }: any) => (
-    <div className="blis-page">
-        <h1 className="ms-font-su">My Apps</h1>
-        <p className="ms-font-m-plus">Create and Manage your BLIS applications...</p>
-        <div>
-            <PrimaryButton
-                className="blis-button blis-button--primary"
-            >Create New App</PrimaryButton>
-        </div>
-        <DetailsList
-            className="ms-font-m-plus"
-            items={apps}
-            columns={columns}
-            checkboxVisibility={CheckboxVisibility.hidden}
-            onRenderItemColumn={(app, index, column: IRenderableColumn) => column.render(app)}
-            onActiveItemChanged={app => history.push(`${match.url}/${app.id}`, { app })}
-        />
-    </div>
-)
+class component extends React.Component<Props, any> {
+    onClickCreateApp() {
+        var randomNumber = Math.floor(Math.random() * 10000)
+        console.log('create app', randomNumber)
+        const app: BlisAppBase = {
+            appId: `random-id-${randomNumber}`,
+            appName: `New App ${randomNumber}`,
+            luisKey: "key",
+            locale: "en-us",
+            metadata: {
+                botFrameworkApps: []
+            }
+        };
 
-export default withRouter(component)
+        this.props.createApp(app)
+    }
+
+    render() {
+        const { match, history } = this.props;
+        return (
+            <div className="blis-page">
+                <h1 className="ms-font-su">My Apps</h1>
+                <p className="ms-font-m-plus">Create and Manage your BLIS applications...</p>
+                <div>
+                    <PrimaryButton
+                        className="blis-button blis-button--primary"
+                        onClick={() => this.onClickCreateApp()}
+                    >Create New App</PrimaryButton>
+                </div>
+                <DetailsList
+                    className="ms-font-m-plus"
+                    items={this.props.apps.list}
+                    columns={columns}
+                    checkboxVisibility={CheckboxVisibility.hidden}
+                    onRenderItemColumn={(app, index, column: IRenderableColumn) => column.render(app)}
+                    onActiveItemChanged={(app: BlisAppBase) => history.push(`${match.url}/${app.appId}`, { app })}
+                />
+            </div>
+        )
+    }
+}
+
+const mapDispatchToProps = (dispatch: any) => {
+    return bindActionCreators({
+        createApp
+    }, dispatch);
+}
+const mapStateToProps = (state: State) => {
+    return {
+        apps: state.apps
+    }
+}
+
+// Props types inferred from mapStateToProps & dispatchToProps
+const stateProps = returntypeof(mapStateToProps);
+const dispatchProps = returntypeof(mapDispatchToProps);
+type Props = typeof stateProps & typeof dispatchProps & RouteComponentProps<any>;
+
+export default connect<typeof stateProps, typeof dispatchProps, RouteComponentProps<any>>(mapStateToProps, mapDispatchToProps)(withRouter(component));

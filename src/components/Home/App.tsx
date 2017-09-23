@@ -10,14 +10,15 @@ import Actions from './App/Actions'
 import Entities from './App/Entities'
 import TrainDialogs from './App/TrainDialogs'
 import LogDialogs from './App/LogDialogs'
+import { BlisAppBase } from 'blis-models'
 import './App.css'
 
 const component = ({ match, location }: any) => {
-    const { app } = location.state
+    const app: BlisAppBase = location.state.app
     return (
         <div className="blis-app-page">
             <div>
-                <h1 className="blis-app-title ms-font-xxl">{app.name}</h1>
+                <h1 className="blis-app-title ms-font-xxl">{app.appName}</h1>
                 <div className="blis-nav ms-font-m-plus">
                     <div className="blis-nav_section">
                         <NavLink className="blis-nav-link" to={{ pathname: `${match.url}/settings`, state: { app } }}><span className="ms-Icon ms-Icon--Settings"></span>&nbsp;&nbsp;Settings</NavLink>
