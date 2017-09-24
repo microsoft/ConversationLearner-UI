@@ -5,6 +5,7 @@
   "dependencies": {
     "axios": "^0.16.2",
     "blis-models": "^0.44.2",
+    "blis-webchat": "^0.12.1",
     "office-ui-fabric-react": "^4.47.0",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
