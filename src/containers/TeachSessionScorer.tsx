@@ -6,7 +6,7 @@ import { ModelUtils } from 'blis-models';
 import { State } from '../types'
 import { TrainScorerStep, ScoredBase, ActionBase, EntityBase, Memory, ScoredAction, UnscoredAction, ScoreReason } from 'blis-models';
 import { postScorerFeedbackAsync, toggleAutoTeach } from '../actions/teachActions'
-import { CommandButton } from 'office-ui-fabric-react';
+import { CommandButton, PrimaryButton } from 'office-ui-fabric-react';
 import { TeachMode } from '../types/const'
 import { IColumn, DetailsList, CheckboxVisibility, List } from 'office-ui-fabric-react';
 import ActionResponseCreatorEditor from './ActionResponseCreatorEditor'
@@ -17,8 +17,8 @@ let columns: IColumn[] = [
         key: 'select',
         name: '',
         fieldName: 'actionId',
-        minWidth: 35,
-        maxWidth: 35,
+        minWidth: 80,
+        maxWidth: 80,
         isResizable: true
     },
     {
@@ -83,6 +83,7 @@ class TeachSessionScorer extends React.Component<Props, any> {
     constructor(p: any) {
         super(p);
         this.state = initState;
+        this.handleActionSelection = this.handleActionSelection.bind(this);
     }
     componentDidUpdate() {
         this.autoSelect();
@@ -274,15 +275,19 @@ class TeachSessionScorer extends React.Component<Props, any> {
                 }
                 if (reason == ScoreReason.NotAvailable) {
                     return (
-                        <div>
-                            <a><span className="actionUnavailable ms-Icon ms-Icon--ChromeClose"></span></a>
-                        </div>
+                        <PrimaryButton
+                            disabled={true}
+                            ariaDescription='Select'
+                            text='Select'
+                        />
                         )
                     }
                 return (
-                    <div>
-                        <a onClick={() => this.handleActionSelection(fieldContent)}><span className="actionSelect ms-Icon ms-Icon--CompletedSolid"></span></a>
-                    </div>
+                    <PrimaryButton
+                        onClick={() => this.handleActionSelection(fieldContent)}  
+                        ariaDescription='Select'
+                        text='Select'
+                    />
                 )
             case 'score':
                 if (fieldContent) {
