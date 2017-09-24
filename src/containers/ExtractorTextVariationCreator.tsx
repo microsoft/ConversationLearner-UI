@@ -27,7 +27,7 @@ class ExtractorTextVariationCreator extends React.Component<Props, any> {
         let appId: string = this.props.apps.current.appId;
         let teachId: string = this.props.teachSessions.current.teachId;
         let userInput = new UserInput({text: this.state.variationValue})
-        this.props.runExtractor(this.props.user.key, appId, teachId, userInput);
+        this.props.runExtractorAsync(this.props.user.key, appId, teachId, userInput);
         this.setState({
             variationValue: ''
         })
@@ -54,7 +54,7 @@ class ExtractorTextVariationCreator extends React.Component<Props, any> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        runExtractor: runExtractorAsync
+        runExtractorAsync
     }, dispatch);
 }
 const mapStateToProps = (state: State, ownProps: any) => {

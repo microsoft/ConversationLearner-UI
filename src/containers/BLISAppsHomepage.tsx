@@ -24,8 +24,8 @@ class BLISAppsHomepage extends React.Component<Props, any> {
             this.setState({
                 displayedUserId: this.props.userId
             })
-            this.props.fetchApplications(this.props.userKey, this.props.userId);
-            this.props.fetchBotInfo();
+            this.props.fetchApplicationsAsync(this.props.userKey, this.props.userId);
+            this.props.fetchBotInfoAsync();
         }
     }
     render() {
@@ -57,8 +57,8 @@ class BLISAppsHomepage extends React.Component<Props, any> {
 
 const mapDispatchToProps = (dispatch: any) => {
   return bindActionCreators({
-    fetchApplications: fetchApplicationsAsync,
-    fetchBotInfo: fetchBotInfoAsync
+    fetchApplicationsAsync,
+    fetchBotInfoAsync
   }, dispatch);
 }
 

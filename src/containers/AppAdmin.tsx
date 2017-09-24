@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
-import { fetchApplicationsAsync } from '../actions/fetchActions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import EntitiesList from './EntitiesList';
@@ -148,8 +147,7 @@ class AppAdmin extends React.Component<Props, any> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        fetchApplications: fetchApplicationsAsync,
-        setDisplayMode: setDisplayMode
+        setDisplayMode
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {

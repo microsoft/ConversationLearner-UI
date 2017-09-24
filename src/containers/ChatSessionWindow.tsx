@@ -23,14 +23,14 @@ class SessionWindow extends React.Component<Props, any> {
     }
     componentWillMount() {
         let currentAppId: string = this.props.apps.current.appId;
-        this.props.createChatSession(this.props.userKey, this.state.chatSession, currentAppId);
+        this.props.createChatSessionAsync(this.props.userKey, this.state.chatSession, currentAppId);
     }
     handleQuit() {
         this.props.setDisplayMode(DisplayMode.AppAdmin);
         let currentAppId: string = this.props.apps.current.appId;
 
         if (this.props.chatSession.current !== null) {
-            this.props.deleteChatSession(this.props.userKey, this.props.chatSession.current, currentAppId)
+            this.props.deleteChatSessionAsync(this.props.userKey, this.props.chatSession.current, currentAppId)
         }
     }
     render() {
@@ -63,9 +63,9 @@ class SessionWindow extends React.Component<Props, any> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        createChatSession: createChatSessionAsync,
-        deleteChatSession: deleteChatSessionAsync,
-        setDisplayMode: setDisplayMode
+        createChatSessionAsync,
+        deleteChatSessionAsync,
+        setDisplayMode
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {

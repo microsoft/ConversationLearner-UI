@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
-import { fetchAllActionsAsync, fetchAllEntitiesAsync, fetchApplicationsAsync, fetchAllTrainDialogsAsync, fetchAllLogDialogsAsync, fetchAllChatSessionsAsync, fetchAllTeachSessionsAsync } from '../actions/fetchActions';
-import { setCurrentBLISApp, setDisplayMode } from '../actions/displayActions';
+import { fetchAllActionsAsync, fetchAllEntitiesAsync, fetchAllTrainDialogsAsync, fetchAllLogDialogsAsync, fetchAllChatSessionsAsync } from '../actions/fetchActions';
+import { setCurrentBLISApp } from '../actions/displayActions';
 import { deleteBLISApplicationAsync } from '../actions/deleteActions'
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -70,7 +70,7 @@ class BLISAppsList extends React.Component<Props, any> {
     }
     deleteApp() {
         let blisAppToDelete: BlisAppBase = this.props.blisApps.all.find((app: BlisAppBase) => app.appId == this.state.appIDToDelete);
-        this.props.deleteBLISApplication(this.props.user.key, this.state.appIDToDelete, blisAppToDelete);
+        this.props.deleteBLISApplicationAsync(this.props.user.key, this.state.appIDToDelete, blisAppToDelete);
         this.setState({
             confirmDeleteAppModalOpen: false,
             appIDToDelete: null,
@@ -92,11 +92,11 @@ class BLISAppsList extends React.Component<Props, any> {
     BLISAppSelected(appName: string) {
         let appSelected = this.props.blisApps.all.find((app: BlisAppBase) => app.appName == appName);
         this.props.setCurrentBLISApp(this.props.user.key, appSelected);
-        this.props.fetchAllActions(this.props.user.key, appSelected.appId);
-        this.props.fetchAllEntities(this.props.user.key, appSelected.appId);
-        this.props.fetchAllTrainDialogs(this.props.user.key, appSelected.appId);
-        this.props.fetchAllLogDialogs(this.props.user.key, appSelected.appId);
-        this.props.fetchAllChatSessions(this.props.user.key, appSelected.appId);
+        this.props.fetchAllActionsAsync(this.props.user.key, appSelected.appId);
+        this.props.fetchAllEntitiesAsync(this.props.user.key, appSelected.appId);
+        this.props.fetchAllTrainDialogsAsync(this.props.user.key, appSelected.appId);
+        this.props.fetchAllLogDialogsAsync(this.props.user.key, appSelected.appId);
+        this.props.fetchAllChatSessionsAsync(this.props.user.key, appSelected.appId);
         // this.props.fetchAllTeachSessions(this.props.user.key, appSelected.appId);
     }
     onColumnClick(event: any, column : any) {
@@ -201,16 +201,13 @@ class BLISAppsList extends React.Component<Props, any> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        fetchApplications: fetchApplicationsAsync,
-        fetchAllActions: fetchAllActionsAsync,
-        fetchAllEntities: fetchAllEntitiesAsync,
-        fetchAllTrainDialogs: fetchAllTrainDialogsAsync,
-        fetchAllLogDialogs: fetchAllLogDialogsAsync,
-        setCurrentBLISApp: setCurrentBLISApp,
-        setDisplayMode: setDisplayMode,
-        deleteBLISApplication: deleteBLISApplicationAsync,
-        fetchAllChatSessions: fetchAllChatSessionsAsync,
-        fetchAllTeachSessions: fetchAllTeachSessionsAsync
+        fetchAllActionsAsync,
+        fetchAllEntitiesAsync,
+        fetchAllTrainDialogsAsync,
+        fetchAllLogDialogsAsync,
+        setCurrentBLISApp,
+        deleteBLISApplicationAsync,
+        fetchAllChatSessionsAsync
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {

@@ -24,17 +24,17 @@ class TeachWindow extends React.Component<Props, any> {
     }
     componentWillMount() {
         let currentAppId: string = this.props.apps.current.appId;
-        this.props.createTeachSession(this.props.user.key, this.state.teachSession, currentAppId)
+        this.props.createTeachSessionAsync(this.props.user.key, this.state.teachSession, currentAppId)
     }
     handleAbandon() {
         this.props.setDisplayMode(DisplayMode.AppAdmin);
         let currentAppId: string = this.props.apps.current.appId;
-        this.props.deleteTeachSession(this.props.user.key, this.props.teachSession.current, currentAppId, false); // False = abandon
+        this.props.deleteTeachSessionAsync(this.props.user.key, this.props.teachSession.current, currentAppId, false); // False = abandon
     }
     handleSave() {
         this.props.setDisplayMode(DisplayMode.AppAdmin);
         let currentAppId: string = this.props.apps.current.appId;
-        this.props.deleteTeachSession(this.props.user.key, this.props.teachSession.current, currentAppId, true); // True = save to train dialog
+        this.props.deleteTeachSessionAsync(this.props.user.key, this.props.teachSession.current, currentAppId, true); // True = save to train dialog
     }
     confirmDelete() {
         this.setState({
@@ -105,10 +105,10 @@ class TeachWindow extends React.Component<Props, any> {
 
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        createTeachSession: createTeachSessionAsync,
-        deleteTeachSession: deleteTeachSessionAsync,
-        setDisplayMode: setDisplayMode,
-        toggleAutoTeach: toggleAutoTeach
+        createTeachSessionAsync,
+        deleteTeachSessionAsync,
+        setDisplayMode,
+        toggleAutoTeach
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {
