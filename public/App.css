@@ -101,6 +101,9 @@
 .blis-button--right {
   float: right;
 }
+.blis-button--narrow {
+  padding: 5px;
+}
 .blis-button--widemargin {
   margin: 20px;
 }
@@ -513,7 +516,6 @@
 .ms-Button--primary:not(:disabled):hover {
   background-color: var(--color-primary-darker) !important;
 }
-
 
 /** Log Dialog Admin */
 .log-dialog-admin {
