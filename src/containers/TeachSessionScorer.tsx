@@ -276,7 +276,6 @@ class TeachSessionScorer extends React.Component<Props, any> {
                 if (reason == ScoreReason.NotAvailable) {
                     return (
                         <PrimaryButton
-                            className='blis-button--narrow'
                             disabled={true}
                             ariaDescription='Select'
                             text='Select'
@@ -285,7 +284,6 @@ class TeachSessionScorer extends React.Component<Props, any> {
                     }
                 return (
                     <PrimaryButton
-                        className='blis-button--narrow'
                         onClick={() => this.handleActionSelection(fieldContent)}  
                         ariaDescription='Select'
                         text='Select'
