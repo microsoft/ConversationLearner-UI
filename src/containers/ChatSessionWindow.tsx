@@ -5,38 +5,43 @@ import { connect } from 'react-redux';
 import { PrimaryButton } from 'office-ui-fabric-react';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { State } from '../types';
-import { DisplayMode } from '../types/const';
 import Webchat from './Webchat'
 import ChatSessionAdmin from './ChatSessionAdmin'
 import { Session } from 'blis-models'
 import { deleteChatSessionAsync } from '../actions/deleteActions'
 import { createChatSessionAsync } from '../actions/createActions'
-import { setDisplayMode } from '../actions/displayActions'
 
+interface ComponentState {
+    chatSession: Session
+}
 
-class SessionWindow extends React.Component<Props, any> {
-    constructor(p: any) {
-        super(p);
-        this.state = {
-            chatSession : new Session({saveToLog : true})
+class SessionWindow extends React.Component<Props, ComponentState> {
+    state = {
+        chatSession: null
+    }
+
+    componentWillReceiveProps(nextProps: Props) {
+        if (this.props.open === false && nextProps.open === true) {
+            this.state.chatSession = new Session({ saveToLog: true })
+            let currentAppId: string = this.props.apps.current.appId;
+            this.props.createChatSession(this.props.userKey, this.state.chatSession, currentAppId);
         }
     }
-    componentWillMount() {
-        let currentAppId: string = this.props.apps.current.appId;
-        this.props.createChatSession(this.props.userKey, this.state.chatSession, currentAppId);
-    }
-    handleQuit() {
-        this.props.setDisplayMode(DisplayMode.AppAdmin);
+
+    onClickDone() {
         let currentAppId: string = this.props.apps.current.appId;
 
         if (this.props.chatSession.current !== null) {
             this.props.deleteChatSession(this.props.userKey, this.props.chatSession.current, currentAppId)
         }
+
+        this.props.onClose();
     }
+
     render() {
         return (
             <Modal
-                isOpen={this.props.error == null}
+                isOpen={this.props.open && this.props.error == null}
                 isBlocking={true}
                 containerClassName='blis-modal blis-modal--large'
             >
@@ -49,12 +54,12 @@ class SessionWindow extends React.Component<Props, any> {
                             <ChatSessionAdmin />
                         </div>
                         <div className="blis-chatmodal_modal-controls">
-                        <PrimaryButton
-                            onClick={() => this.handleQuit()}
-                            ariaDescription='Done Testing'
-                            text='Done Testing'
-                        />
-                        </div>    
+                            <PrimaryButton
+                                onClick={() => this.onClickDone()}
+                                ariaDescription='Done Testing'
+                                text='Done Testing'
+                            />
+                        </div>
                     </div>
                 </div>
             </Modal>
@@ -64,8 +69,7 @@ class SessionWindow extends React.Component<Props, any> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         createChatSession: createChatSessionAsync,
-        deleteChatSession: deleteChatSessionAsync,
-        setDisplayMode: setDisplayMode
+        deleteChatSession: deleteChatSessionAsync
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {
@@ -76,9 +80,15 @@ const mapStateToProps = (state: State) => {
         error: state.error.error
     }
 }
+
+export interface ReceivedProps {
+    open: boolean
+    onClose: () => void
+}
+
 // Props types inferred from mapStateToProps & dispatchToProps
 const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
-type Props = typeof stateProps & typeof dispatchProps;
+type Props = typeof stateProps & typeof dispatchProps & ReceivedProps;
 
-export default connect(mapStateToProps, mapDispatchToProps)(SessionWindow);
+export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(SessionWindow);

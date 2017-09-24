@@ -5,13 +5,11 @@ import { connect } from 'react-redux';
 import { PrimaryButton, DefaultButton } from 'office-ui-fabric-react';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { State } from '../types';
-import { DisplayMode } from '../types/const';
 import Webchat from './Webchat'
 import TrainDialogAdmin from './TrainDialogAdmin'
 import { ActionBase } from 'blis-models'
 import { deleteChatSessionAsync, deleteTrainDialogAsync } from '../actions/deleteActions'
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
-import { setDisplayMode } from '../actions/displayActions'
 import { Activity } from 'botframework-directlinejs';
 
 interface ComponentState {
@@ -27,35 +25,32 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
         dialogIDToDelete: null
     }
 
-    handleQuit() {
-        this.props.setDisplayMode(DisplayMode.AppAdmin);
+    onClickDone() {
+        this.props.onClose()
+    }
+
+    onClickDelete() {
         this.setState({
-            display: "TrainDialogs"
+            confirmDeleteModalOpen: true
         })
     }
-    openDeleteModal() {
-        let guid = this.props.trainDialog.trainDialogId;
+
+    onClickCancelDelete() {
         this.setState({
-            confirmDeleteModalOpen: true,
-            dialogIDToDelete: guid
-        });
-    }
-    handleCloseDeleteModal() {
-        this.setState({
-            confirmDeleteModalOpen: false,
-            dialogIDToDelete: null
-        });
-    }
-    deleteSelectedDialog() {
-        let currentAppId: string = this.props.apps.current.appId;
-        this.props.deleteTrainDialog(this.props.userKey, this.props.trainDialog, currentAppId);
-        this.props.setDisplayMode(DisplayMode.AppAdmin);
-        this.setState({
-            confirmDeleteModalOpen: false,
-            dialogIDToDelete: null,
-            display: "TrainDialogs"
+            confirmDeleteModalOpen: false
         })
     }
+
+    onClickConfirmDelete() {
+        this.setState({
+            confirmDeleteModalOpen: false
+        }, () => {
+            let currentAppId: string = this.props.apps.current.appId;
+            this.props.deleteTrainDialog(this.props.userKey, this.props.trainDialog, currentAppId)
+            this.props.onClose()
+        })
+    }
+
     generateHistory(): Activity[] {
         if (!this.props.trainDialog || !this.props.trainDialog.rounds) {
             return [];
@@ -85,7 +80,7 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
     render() {
         return (
             <Modal
-                isOpen={this.props.error == null}
+                isOpen={this.props.open && this.props.error == null}
                 isBlocking={true}
                 containerClassName='blis-modal blis-modal--large'>
                 <div className="blis-chatmodal">
@@ -102,12 +97,12 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
                         </div>
                         <div className="blis-chatmodal_modal-controls">
                             <PrimaryButton
-                                onClick={this.handleQuit.bind(this)}
+                                onClick={() => this.onClickDone()}
                                 ariaDescription='Done'
                                 text='Done'
                             />
                             <DefaultButton
-                                onClick={this.openDeleteModal.bind(this)}
+                                onClick={() => this.onClickDelete()}
                                 ariaDescription='Delete'
                                 text='Delete'
                             />
@@ -116,8 +111,8 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
                 </div>
                 <ConfirmDeleteModal
                     open={this.state.confirmDeleteModalOpen}
-                    onCancel={() => this.handleCloseDeleteModal()}
-                    onConfirm={() => this.deleteSelectedDialog()}
+                    onCancel={() => this.onClickCancelDelete()}
+                    onConfirm={() => this.onClickConfirmDelete()}
                     title="Are you sure you want to delete this Training Dialog?"
                 />
             </Modal>
@@ -127,8 +122,7 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         deleteChatSession: deleteChatSessionAsync,
-        deleteTrainDialog: deleteTrainDialogAsync,
-        setDisplayMode: setDisplayMode
+        deleteTrainDialog: deleteTrainDialogAsync
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {
@@ -142,9 +136,15 @@ const mapStateToProps = (state: State) => {
         display: state.display
     }
 }
+
+export interface ReceivedProps {
+    open: boolean,
+    onClose: () => void
+}
+
 // Props types inferred from mapStateToProps & dispatchToProps
 const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
-type Props = typeof stateProps & typeof dispatchProps;
+type Props = typeof stateProps & typeof dispatchProps & ReceivedProps;
 
-export default connect(mapStateToProps, mapDispatchToProps)(TrainDialogWindow);
+export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(TrainDialogWindow);
