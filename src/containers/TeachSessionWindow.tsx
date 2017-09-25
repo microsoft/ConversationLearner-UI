@@ -14,6 +14,7 @@ import { toggleAutoTeach } from '../actions/teachActions'
 import { createTeachSessionAsync } from '../actions/createActions'
 import { setDisplayMode } from '../actions/displayActions'
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
+import { findDOMNode } from 'react-dom';
 
 class TeachWindow extends React.Component<Props, any> {
     constructor(p: any) {
@@ -25,6 +26,18 @@ class TeachWindow extends React.Component<Props, any> {
     componentWillMount() {
         let currentAppId: string = this.props.apps.current.appId;
         this.props.createTeachSession(this.props.user.key, this.state.teachSession, currentAppId)
+    }
+    componentDidUpdate() {
+        this.focusWebchat();
+    }
+    componentDidMount() {
+        this.focusWebchat();
+    }
+    focusWebchat() : void {
+        if (this.props.teachSession.mode == TeachMode.Wait) {
+            // Put focus on webchat
+            findDOMNode<HTMLElement>(this.refs.webChat).focus();
+        }
     }
     handleAbandon() {
         this.props.setDisplayMode(DisplayMode.AppAdmin);
@@ -68,8 +81,11 @@ class TeachWindow extends React.Component<Props, any> {
             >
                 <div className="blis-chatmodal">
                     <div className="blis-chatmodal_webchat">
-                        <Webchat sessionType={"teach"} />
+                        <Webchat 
+                        sessionType={"teach"}
+                        ref="webChat" />
                         {chatDisable}
+                        
                     </div>
                     <div className="blis-chatmodal_controls">
                         <div className="blis-chatmodal_admin-controls">

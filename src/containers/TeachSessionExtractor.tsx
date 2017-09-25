@@ -149,12 +149,12 @@ class TeachSessionExtractor extends React.Component<Props, any> {
                     isValid = this.isValid(extractResponse);
                 }
                 
-                extractDisplay.push(<ExtractorResponseEditor key={key++} isPrimary={key==1} isValid={isValid} extractResponse={extractResponse}/>);   
+                extractDisplay.push(<ExtractorResponseEditor key={key++} canEdit={canEdit} isPrimary={key==1} isValid={isValid} extractResponse={extractResponse}/>);   
             }
         }
         else {
             // Only display primary response if not in edit mode
-            extractDisplay = <ExtractorResponseEditor key={0} isPrimary={true} isValid={true} extractResponse={this.props.teachSession.extractResponses[0]}/>
+            extractDisplay = <ExtractorResponseEditor key={0} canEdit={canEdit} isPrimary={true} isValid={true} extractResponse={this.props.teachSession.extractResponses[0]}/>
         }
         
         return (

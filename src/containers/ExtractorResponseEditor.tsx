@@ -11,6 +11,7 @@ export interface PassedProps {
     extractResponse: ExtractResponse;
     isPrimary: boolean;
     isValid: boolean;
+    canEdit: boolean;
 }
 
 interface SubstringObject {
@@ -444,6 +445,9 @@ class ExtractorResponseEditor extends React.Component<Props, any> {
         })
     }
     handleClick(s: SubstringObject) {
+        if (!this.props.canEdit) {
+            return;
+        }
         let indexOfHoveredSubstring: number = this.findIndexOfHoveredSubstring(s);
         let allObjects = this.state.substringObjects;
         let updateClickedSubstrings: boolean = true;
@@ -514,6 +518,9 @@ class ExtractorResponseEditor extends React.Component<Props, any> {
         }
     }
     handleHover(s: SubstringObject) {
+        if (!this.props.canEdit) {
+            return;
+        }
         let indexOfHoveredSubstring: number = this.findIndexOfHoveredSubstring(s);
         let allObjects = this.state.substringObjects;
         let currentHoverIsPreviouslyClickedSubstring = this.substringHasBeenClicked(s)
@@ -699,6 +706,20 @@ class ExtractorResponseEditor extends React.Component<Props, any> {
             })
         }
         if (s.text != " ") {
+            let dropdown = this.props.canEdit ?
+                (<div style={s.dropdownStyle}>
+                    <Dropdown
+                        className='ms-font-m'
+                        placeHolder="Select an Entity"
+                        options={options}
+                        selectedKey={null}
+                        onChanged={(obj) => {
+                            this.entitySelected(obj, s)
+                        }}
+                    />
+                    </div>
+                ) 
+                : null;
             return (
                 <div key={key} className="extractDiv" style={styles.containerDiv}>
                     <span style={s.labelStyle} className='ms-font-xs'>{s.entityName}</span>
@@ -707,17 +728,7 @@ class ExtractorResponseEditor extends React.Component<Props, any> {
                         <span className='ms-font-m' onClick={() => this.handleClick(s)} onMouseOver={() => this.handleHover(s)} onMouseLeave={() => this.handleHoverOut(s)}>{s.text}</span>
                         <span style={s.rightBracketStyle} className='ms-font-xl'>]</span>
                     </div>
-                    <div style={s.dropdownStyle}>
-                        <Dropdown
-                            className='ms-font-m'
-                            placeHolder="Select an Entity"
-                            options={options}
-                            selectedKey={null}
-                            onChanged={(obj) => {
-                                this.entitySelected(obj, s)
-                            }}
-                        />
-                    </div>
+                    {dropdown}
                 </div>
             )
         }
