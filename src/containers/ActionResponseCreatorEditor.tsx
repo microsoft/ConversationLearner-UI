@@ -11,7 +11,6 @@ import { ActionBase, ActionMetaData, ActionTypes, EntityBase, EntitySuggestion, 
 import { State } from '../types';
 import EntityCreatorEditor from './EntityCreatorEditor';
 import AutocompleteListItem from '../components/AutocompleteListItem';
-import * as $ from 'jquery';
 
 interface EntityPickerObject {
     key: string
@@ -52,6 +51,7 @@ const initState = {
 };
 
 class ActionResponseCreatorEditor extends React.Component<Props, any> {
+
     constructor(p: Props) {
         super(p);
         this.state = initState;
@@ -662,9 +662,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                 let entityOptions = this.getAlphabetizedFilteredEntityOptions();
                 let optionAtTopOfList = entityOptions[0];
                 this.entitySuggestionSelected(optionAtTopOfList);
-                $(document).ready(() => {
-                    $('#actionPayload').focus();
-                })
+                key.preventDefault();
             }
         }
         else {
@@ -750,8 +748,8 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                     onFocus={this.payloadIsFocused.bind(this)}
                     onKeyDown={this.payloadKeyDown.bind(this)}
                     onBlur={this.handleBlur.bind(this)}
-                    value={this.state.payloadVal} />
-                )
+                    value={this.state.payloadVal} 
+                    />)
         } else {
             payloadTextField = (
                 <TextFieldPlaceholder
@@ -765,7 +763,8 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                     onFocus={this.payloadIsFocused.bind(this)}
                     onKeyDown={this.payloadKeyDown.bind(this)}
                     onBlur={this.handleBlur.bind(this)}
-                    value={this.state.payloadVal} />
+                    value={this.state.payloadVal} 
+                    />
                 )
         }
 
