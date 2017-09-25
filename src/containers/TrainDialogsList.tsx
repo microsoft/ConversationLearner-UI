@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader'
 import { DetailsList, CommandButton, CheckboxVisibility, IColumn, SearchBox } from 'office-ui-fabric-react';
-import { setDisplayMode, setCurrentTrainDialog, setCurrentTeachSession } from '../actions/displayActions'
+import { setDisplayMode, setCurrentTrainDialog } from '../actions/displayActions'
 import { createTrainDialog } from '../actions/createActions'
 import { fetchAllTrainDialogsAsync } from '../actions/fetchActions';
 import { State } from '../types'
@@ -212,11 +212,10 @@ class TrainDialogsList extends React.Component<Props, ComponentState> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        setDisplayMode: setDisplayMode,
-        setCurrentTrainDialog: setCurrentTrainDialog,
-        setCurrentTeachSession: setCurrentTeachSession,
-        createTrainDialog: createTrainDialog,
-        fetchAllTrainDialogs : fetchAllTrainDialogsAsync,
+        setDisplayMode,
+        setCurrentTrainDialog,
+        createTrainDialog,
+        fetchAllTrainDialogsAsync,
     }, dispatch)
 }
 const mapStateToProps = (state: State) => {

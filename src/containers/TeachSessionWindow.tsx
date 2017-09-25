@@ -32,7 +32,7 @@ class TeachWindow extends React.Component<Props, ComponentState> {
         if (this.props.open === false && nextProps.open === true) {
             this.state.teachSession = new Teach({})
             let currentAppId: string = this.props.apps.current.appId;
-            this.props.createTeachSession(this.props.user.key, this.state.teachSession, currentAppId)
+            this.props.createTeachSessionAsync(this.props.user.key, this.state.teachSession, currentAppId)
         }
     }
 
@@ -44,7 +44,7 @@ class TeachWindow extends React.Component<Props, ComponentState> {
 
     onClickSave() {
         let currentAppId: string = this.props.apps.current.appId;
-        this.props.deleteTeachSession(this.props.user.key, this.props.teachSession.current, currentAppId, true); // True = save to train dialog
+        this.props.deleteTeachSessionAsync(this.props.user.key, this.props.teachSession.current, currentAppId, true); // True = save to train dialog
         this.props.onClose()
     }
 
@@ -53,7 +53,7 @@ class TeachWindow extends React.Component<Props, ComponentState> {
             isConfirmDeleteOpen: false
         }, () => {
             let currentAppId: string = this.props.apps.current.appId;
-            this.props.deleteTeachSession(this.props.user.key, this.props.teachSession.current, currentAppId, false); // False = abandon
+            this.props.deleteTeachSessionAsync(this.props.user.key, this.props.teachSession.current, currentAppId, false); // False = abandon
             this.props.onClose()
         })
     }
@@ -67,7 +67,7 @@ class TeachWindow extends React.Component<Props, ComponentState> {
     autoTeachChanged(ev: React.FormEvent<HTMLElement>, isChecked: boolean) {
         this.props.toggleAutoTeach(isChecked);
     }
-    
+
     render() {
         // Show done button if at least on round and at end of round
         let showDone = this.props.teachSession.currentConversationStack.length > 0 && this.props.teachSession.mode == TeachMode.Wait;
@@ -129,10 +129,10 @@ class TeachWindow extends React.Component<Props, ComponentState> {
 
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        createTeachSession: createTeachSessionAsync,
-        deleteTeachSession: deleteTeachSessionAsync,
-        setDisplayMode: setDisplayMode,
-        toggleAutoTeach: toggleAutoTeach
+        createTeachSessionAsync,
+        deleteTeachSessionAsync,
+        setDisplayMode,
+        toggleAutoTeach
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {

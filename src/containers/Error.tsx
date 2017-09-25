@@ -54,7 +54,7 @@ class UIError extends React.Component<Props, any> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        clearErrorDisplay: clearErrorDisplay
+        clearErrorDisplay
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {

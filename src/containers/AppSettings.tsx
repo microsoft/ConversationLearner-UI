@@ -117,7 +117,7 @@ class AppSettings extends React.Component<Props, any> {
             locale: current.locale,
             metadata: meta
         })
-        this.props.editBLISApplication(this.props.userKey, appToAdd);
+        this.props.editBLISApplicationAsync(this.props.userKey, appToAdd);
         this.setState({
             localeVal: current.locale,
             appIdVal: current.appId,
@@ -188,7 +188,7 @@ class AppSettings extends React.Component<Props, any> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        editBLISApplication: editBLISApplicationAsync,
+        editBLISApplicationAsync
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {

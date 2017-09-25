@@ -79,7 +79,7 @@ class EntitiesList extends React.Component<Props, any> {
     deleteSelectedEntity() {
         let currentAppId: string = this.props.apps.current.appId;
         let entityToDelete: EntityBase = this.props.entities.find((a: EntityBase) => a.entityId == this.state.entityIDToDelete)
-        this.props.deleteEntity(this.props.userKey, this.state.entityIDToDelete, entityToDelete, currentAppId)
+        this.props.deleteEntityAsync(this.props.userKey, this.state.entityIDToDelete, entityToDelete, currentAppId)
         this.setState({
             confirmDeleteEntityModalOpen: false,
             entityIDToDelete: null
@@ -288,7 +288,7 @@ class EntitiesList extends React.Component<Props, any> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        deleteEntity: deleteEntityAsync
+        deleteEntityAsync
     }, dispatch)
 }
 const mapStateToProps = (state: State) => {

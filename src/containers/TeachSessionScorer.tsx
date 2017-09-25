@@ -203,7 +203,7 @@ class TeachSessionScorer extends React.Component<Props, any> {
         // Pass score input (minus extractor step) for subsequent actions when this one is non-terminal
         let uiScoreInput = {...this.props.teachSession.uiScoreInput, trainExtractorStep: null};
 
-        this.props.postScorerFeedback(this.props.user.key, appId, teachId, trainScorerStep, waitForUser, uiScoreInput);
+        this.props.postScorerFeedbackAsync(this.props.user.key, appId, teachId, trainScorerStep, waitForUser, uiScoreInput);
     }
     /** Check if entity is in memory and return it's name */
     entityInMemory(entityId : string) : {match: boolean, name: string} {
@@ -402,8 +402,8 @@ class TeachSessionScorer extends React.Component<Props, any> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        postScorerFeedback: postScorerFeedbackAsync,
-        toggleAutoTeach: toggleAutoTeach
+        postScorerFeedbackAsync,
+        toggleAutoTeach
     }, dispatch);
 }
 const mapStateToProps = (state: State, ownProps: any) => {
