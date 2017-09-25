@@ -232,7 +232,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
             packageDeletionId: null
         })
         if (this.state.editing === false) {
-            this.props.createAction(this.props.userKey, actionToAdd, currentAppId);
+            this.props.createActionAsync(this.props.userKey, actionToAdd, currentAppId);
         } else {
             this.editAction(actionToAdd, currentAppId);
         }
@@ -241,7 +241,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
     }
     editAction(actionToAdd: ActionBase, currentAppId: string) {
         actionToAdd.actionId = this.props.blisAction.actionId;
-        this.props.editAction(this.props.userKey, actionToAdd, currentAppId);
+        this.props.editActionAsync(this.props.userKey, actionToAdd, currentAppId);
     }
     checkPayload(value: string): string {
         return value ? "" : "Payload is required";
@@ -884,8 +884,8 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        createAction: createActionAsync,
-        editAction: editActionAsync
+        createActionAsync,
+        editActionAsync
     }, dispatch);
 }
 const mapStateToProps = (state: State, ownProps: any) => {

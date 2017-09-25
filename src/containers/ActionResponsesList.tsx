@@ -94,7 +94,7 @@ class ActionResponsesHomepage extends React.Component<Props, any> {
     deleteSelectedAction() {
         let currentAppId: string = this.props.apps.current.appId;
         let actionToDelete: ActionBase = this.props.actions.find((a: ActionBase) => a.actionId == this.state.actionIDToDelete)
-        this.props.deleteAction(this.props.userKey, this.state.actionIDToDelete, actionToDelete, currentAppId);
+        this.props.deleteActionAsync(this.props.userKey, this.state.actionIDToDelete, actionToDelete, currentAppId);
         this.setState({
             confirmDeleteActionModalOpen: false,
             createEditModalOpen: false,
@@ -329,7 +329,7 @@ class ActionResponsesHomepage extends React.Component<Props, any> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        deleteAction: deleteActionAsync
+        deleteActionAsync
     }, dispatch)
 }
 const mapStateToProps = (state: State) => {

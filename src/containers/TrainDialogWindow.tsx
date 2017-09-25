@@ -9,7 +9,7 @@ import { DisplayMode } from '../types/const';
 import Webchat from './Webchat'
 import TrainDialogAdmin from './TrainDialogAdmin'
 import { ActionBase } from 'blis-models'
-import { deleteChatSessionAsync, deleteTrainDialogAsync } from '../actions/deleteActions'
+import { deleteTrainDialogAsync } from '../actions/deleteActions'
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import { setDisplayMode } from '../actions/displayActions'
 import { Activity } from 'botframework-directlinejs';
@@ -48,7 +48,7 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
     }
     deleteSelectedDialog() {
         let currentAppId: string = this.props.apps.current.appId;
-        this.props.deleteTrainDialog(this.props.userKey, this.props.trainDialog, currentAppId);
+        this.props.deleteTrainDialogAsync(this.props.userKey, this.props.trainDialog, currentAppId);
         this.props.setDisplayMode(DisplayMode.AppAdmin);
         this.setState({
             confirmDeleteModalOpen: false,
@@ -126,9 +126,8 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        deleteChatSession: deleteChatSessionAsync,
-        deleteTrainDialog: deleteTrainDialogAsync,
-        setDisplayMode: setDisplayMode
+        deleteTrainDialogAsync,
+        setDisplayMode
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {

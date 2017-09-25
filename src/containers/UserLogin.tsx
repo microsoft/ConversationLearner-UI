@@ -132,9 +132,9 @@ class UserLogin extends React.Component<Props, any> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        setUser: setUser,
-        logout: logout,
-        setLoginDisplay: setLoginDisplay
+        setUser,
+        logout,
+        setLoginDisplay
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {

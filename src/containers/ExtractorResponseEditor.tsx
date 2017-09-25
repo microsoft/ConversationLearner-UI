@@ -752,8 +752,8 @@ class ExtractorResponseEditor extends React.Component<Props, any> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        updateExtractResponse: updateExtractResponse,
-        removeExtractResponse: removeExtractResponse
+        updateExtractResponse,
+        removeExtractResponse
     }, dispatch);
 }
 const mapStateToProps = (state: State, ownProps: any) => {

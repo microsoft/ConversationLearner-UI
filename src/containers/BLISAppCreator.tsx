@@ -7,8 +7,7 @@ import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { CommandButton, Dropdown } from 'office-ui-fabric-react';
 import { TextFieldPlaceholder } from './TextFieldPlaceholder';
-import { setDisplayMode, emptyStateProperties } from '../actions/displayActions'
-import { fetchAllActionsAsync, fetchAllEntitiesAsync, fetchAllTrainDialogsAsync } from '../actions/fetchActions';
+import { emptyStateProperties } from '../actions/displayActions'
 import { BlisAppBase, BlisAppMetaData } from 'blis-models'
 import { developmentSubKeyLUIS } from '../secrets'
 import { State } from '../types'
@@ -93,7 +92,7 @@ class BLISAppCreator extends React.Component<Props, any> {
             locale: this.state.localeVal,
             metadata: meta
         })
-        this.props.createBLISApplication(this.props.userKey, this.props.userId, appToAdd);
+        this.props.createBLISApplicationAsync(this.props.userKey, this.props.userId, appToAdd);
         //need to empty entities, actions, and trainDialogs arrays
         this.props.emptyStateProperties();
         this.handleClose();
@@ -174,12 +173,8 @@ class BLISAppCreator extends React.Component<Props, any> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        createBLISApplication: createBLISApplicationAsync,
-        fetchAllActions: fetchAllActionsAsync,
-        fetchAllEntities: fetchAllEntitiesAsync,
-        fetchAllTrainDialogs: fetchAllTrainDialogsAsync,
-        setDisplayMode: setDisplayMode,
-        emptyStateProperties: emptyStateProperties
+        createBLISApplicationAsync,
+        emptyStateProperties
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {

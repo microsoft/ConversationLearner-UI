@@ -3,7 +3,6 @@ import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../types'
-import { setDisplayMode } from '../actions/displayActions'
 import { IColumn, DetailsList, CheckboxVisibility } from 'office-ui-fabric-react';
 import { Memory, EntityBase } from 'blis-models'
 
@@ -128,7 +127,6 @@ class TeachSessionMemory extends React.Component<Props, any> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        setDisplayMode: setDisplayMode
     }, dispatch);
 }
 const mapStateToProps = (state: State, ownProps: any) => {
