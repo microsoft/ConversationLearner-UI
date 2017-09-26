@@ -50,13 +50,14 @@ class TrainDialogAdmin extends React.Component<Props, any> {
                 <div className="log-dialog-admin__title">Entity Detection</div>
                 <div className="log-dialog-admin__content">
                     {round
-                        ? <ExtractorResponseEditor
-                            isPrimary={true}
-                            isValid={true}
-                            // TODO: Fix ExtractorResponseEditor to use text and entities base.
-                            extractResponse={(round.extractorStep.textVariations[0] as any) as ExtractResponse }
-                            canEdit={false}
-                        />
+                        ? round.extractorStep.textVariations.map(textVariaion => 
+                            <ExtractorResponseEditor
+                                isPrimary={true}
+                                isValid={true}
+                                // TODO: Fix ExtractorResponseEditor to use text and entities base.
+                                extractResponse={(textVariaion as any) as ExtractResponse }
+                                canEdit={false}
+                            />)
                         : "Select an activity"}
                 </div>
                 <div className="log-dialog-admin__title">Memory</div>
