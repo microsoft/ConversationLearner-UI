@@ -71,9 +71,12 @@ class TeachWindow extends React.Component<Props, ComponentState> {
             this.props.addMessageToTeachConversationStack(activity.text)
 
             let userInput = new UserInput({ text: activity.text });
-            let appId: string = this.props.apps.current.appId;
-            let teachId: string = this.props.teachSessions.current.teachId;
-            this.props.runExtractorAsync(this.props.user.key, appId, teachId, userInput);
+            const teachSession = this.props.teachSessions.current
+            if (!teachSession) {
+                throw new Error(`Current teach session is not defined. This may be due to race condition where you attempted to chat with the bot before the teach session has been created.`)
+            }
+
+            this.props.runExtractorAsync(this.props.user.key, this.props.app.appId, teachSession.teachId, userInput);
         }
     }
 
@@ -155,7 +158,6 @@ const mapDispatchToProps = (dispatch: any) => {
 const mapStateToProps = (state: State) => {
     return {
         teachSessions: state.teachSessions,
-        apps: state.apps,
         user: state.user,
         error: state.error.error
     }
