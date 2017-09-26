@@ -14,7 +14,6 @@ import { toggleAutoTeach } from '../actions/teachActions'
 import { createTeachSessionAsync } from '../actions/createActions'
 import { setDisplayMode } from '../actions/displayActions'
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
-import { findDOMNode } from 'react-dom';
 
 interface ComponentState {
     isConfirmDeleteOpen: boolean
