@@ -27,6 +27,14 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
         dialogIDToDelete: null
     }
 
+    componentWillReceiveProps(nextProps: Props) {
+        if (this.props.open === false && nextProps.open === true) {
+            // TODO: Replace with local state of selected activity like LogDialogModal
+            // Reset round and score step on open.
+            this.props.setTrainDialogView(0, 0);
+        }
+    }
+
     onClickDone() {
         this.props.onClose()
     }
@@ -67,7 +75,7 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
         // TODO: Remove split of id here.
         // This is coupling knowledge about how ID was constructed within the generateHistory function
         // Id should be an opaque and unique identifier.
-        const [roundNum, scoreNum] = activity.id.split(":").map(s => parseInt(s));
+        const [roundNum, scoreNum] = activity.id.split(":").map(s => parseInt(s))
 
         // TODO: Move to local state instead of global
         this.props.setTrainDialogView(roundNum, scoreNum);
