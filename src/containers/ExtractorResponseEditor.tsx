@@ -2,7 +2,7 @@ import * as React from 'react';
 import { bindActionCreators } from 'redux';
 import { returntypeof } from 'react-redux-typescript';
 import { connect } from 'react-redux';
-import { ExtractResponse, PredictedEntity, EntityBase } from 'blis-models'
+import { ExtractResponse, PredictedEntity, EntityBase, AppDefinition } from 'blis-models'
 import { updateExtractResponse, removeExtractResponse } from '../actions/teachActions';
 import { State } from '../types';
 import { Dropdown, IDropdownOption, DropdownMenuItemType } from 'office-ui-fabric-react'
@@ -11,6 +11,7 @@ export interface PassedProps {
     extractResponse: ExtractResponse;
     isPrimary: boolean;
     isValid: boolean;
+    canEdit: boolean;
 }
 
 interface SubstringObject {
@@ -81,7 +82,15 @@ const styles = {
     }
 }
 
-class ExtractorResponseEditor extends React.Component<Props, any> {
+interface ComponentState  {
+    input: string,
+    predictedEntities: PredictedEntity[],
+    definitions : AppDefinition,
+    substringObjects: SubstringObject[],
+    substringsClicked: SubstringObject[],
+};
+
+class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
     constructor(p: any) {
         super(p);
         this.state = {
@@ -444,6 +453,9 @@ class ExtractorResponseEditor extends React.Component<Props, any> {
         })
     }
     handleClick(s: SubstringObject) {
+        if (!this.props.canEdit) {
+            return;
+        }
         let indexOfHoveredSubstring: number = this.findIndexOfHoveredSubstring(s);
         let allObjects = this.state.substringObjects;
         let updateClickedSubstrings: boolean = true;
@@ -514,6 +526,9 @@ class ExtractorResponseEditor extends React.Component<Props, any> {
         }
     }
     handleHover(s: SubstringObject) {
+        if (!this.props.canEdit) {
+            return;
+        }
         let indexOfHoveredSubstring: number = this.findIndexOfHoveredSubstring(s);
         let allObjects = this.state.substringObjects;
         let currentHoverIsPreviouslyClickedSubstring = this.substringHasBeenClicked(s)
@@ -699,6 +714,20 @@ class ExtractorResponseEditor extends React.Component<Props, any> {
             })
         }
         if (s.text != " ") {
+            let dropdown = this.props.canEdit ?
+                (<div style={s.dropdownStyle}>
+                    <Dropdown
+                        className='ms-font-m'
+                        placeHolder="Select an Entity"
+                        options={options}
+                        selectedKey={null}
+                        onChanged={(obj) => {
+                            this.entitySelected(obj, s)
+                        }}
+                    />
+                    </div>
+                ) 
+                : null;
             return (
                 <div key={key} className="extractDiv" style={styles.containerDiv}>
                     <span style={s.labelStyle} className='ms-font-xs'>{s.entityName}</span>
@@ -707,17 +736,7 @@ class ExtractorResponseEditor extends React.Component<Props, any> {
                         <span className='ms-font-m' onClick={() => this.handleClick(s)} onMouseOver={() => this.handleHover(s)} onMouseLeave={() => this.handleHoverOut(s)}>{s.text}</span>
                         <span style={s.rightBracketStyle} className='ms-font-xl'>]</span>
                     </div>
-                    <div style={s.dropdownStyle}>
-                        <Dropdown
-                            className='ms-font-m'
-                            placeHolder="Select an Entity"
-                            options={options}
-                            selectedKey={null}
-                            onChanged={(obj) => {
-                                this.entitySelected(obj, s)
-                            }}
-                        />
-                    </div>
+                    {dropdown}
                 </div>
             )
         }
@@ -725,9 +744,6 @@ class ExtractorResponseEditor extends React.Component<Props, any> {
     handleDeleteVariation() {
         let removedResponse = new ExtractResponse({ text: this.state.input, predictedEntities: [] });
         this.props.removeExtractResponse(removedResponse);
-        this.setState({
-            variationValue: ''
-        })
     }
     render() {
         let key: number = 0;

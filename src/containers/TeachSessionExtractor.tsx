@@ -13,13 +13,21 @@ import EntityCreatorEditor from './EntityCreatorEditor';
 import { TeachMode } from '../types/const'
 import PopUpMessage from '../components/PopUpMessage';
 
-class TeachSessionExtractor extends React.Component<Props, any> {
+interface ComponentState  {
+    entityModalOpen: boolean,
+    popUpOpen: boolean
+};
+
+class TeachSessionExtractor extends React.Component<Props, ComponentState> {
     constructor(p: any) {
         super(p)
         this.state = {
             entityModalOpen: false,
             popUpOpen: false
         }
+        this.entityButtonOnClick = this.entityButtonOnClick.bind(this);
+        this.scoreButtonOnClick = this.scoreButtonOnClick.bind(this);
+        this.entityEditorHandleClose = this.entityEditorHandleClose.bind(this);
     }
     componentDidMount() {
         findDOMNode<HTMLButtonElement>(this.refs.scoreActions).focus();
@@ -28,15 +36,15 @@ class TeachSessionExtractor extends React.Component<Props, any> {
         // If not in interactive mode run scorer automatically
         if (this.props.teachSession.autoTeach && this.props.teachSession.mode == TeachMode.Extractor)
         {
-            this.runScorer();
+            this.scoreButtonOnClick();
         }
     }
-    handleCloseEntityModal() {
+    entityEditorHandleClose() {
         this.setState({
             entityModalOpen: false
         })
     }
-    handleOpenEntityModal() {
+    entityButtonOnClick() {
         this.setState({
             entityModalOpen: true
         })
@@ -80,7 +88,7 @@ class TeachSessionExtractor extends React.Component<Props, any> {
         }
         return true;
     }
-    runScorer() {
+    scoreButtonOnClick() {
         if (!this.allValid()) {
             this.handleOpenPopUpModal();
             return;
@@ -120,7 +128,7 @@ class TeachSessionExtractor extends React.Component<Props, any> {
                     data-automation-id='randomID8'
                     className="blis-button--gold teachCreateButton"
                     disabled={false}
-                    onClick={this.handleOpenEntityModal.bind(this)}
+                    onClick={this.entityButtonOnClick}
                     ariaDescription='Cancel'
                     text='Entity'
                     iconProps={{ iconName: 'CirclePlus' }}
@@ -130,14 +138,17 @@ class TeachSessionExtractor extends React.Component<Props, any> {
                      <CommandButton
                          data-automation-id='randomID16'
                          disabled={false}
-                         onClick={this.runScorer.bind(this)}
+                         onClick={this.scoreButtonOnClick}
                          className='ms-font-su blis-button--gold'
                          ariaDescription='Score Actions'
                          text='Score Actions'
                          ref="scoreActions"
                      />
      
-                     <EntityCreatorEditor open={this.state.entityModalOpen} entity={null} handleClose={this.handleCloseEntityModal.bind(this)} />
+                     <EntityCreatorEditor 
+                        open={this.state.entityModalOpen} 
+                        entity={null} 
+                        handleClose={this.entityEditorHandleClose} />
                  </div>
             
             let key = 0;
@@ -149,12 +160,12 @@ class TeachSessionExtractor extends React.Component<Props, any> {
                     isValid = this.isValid(extractResponse);
                 }
                 
-                extractDisplay.push(<ExtractorResponseEditor key={key++} isPrimary={key==1} isValid={isValid} extractResponse={extractResponse}/>);   
+                extractDisplay.push(<ExtractorResponseEditor key={key++} canEdit={canEdit} isPrimary={key==1} isValid={isValid} extractResponse={extractResponse}/>);   
             }
         }
         else {
             // Only display primary response if not in edit mode
-            extractDisplay = <ExtractorResponseEditor key={0} isPrimary={true} isValid={true} extractResponse={this.props.teachSession.extractResponses[0]}/>
+            extractDisplay = <ExtractorResponseEditor key={0} canEdit={canEdit} isPrimary={true} isValid={true} extractResponse={this.props.teachSession.extractResponses[0]}/>
         }
         
         return (

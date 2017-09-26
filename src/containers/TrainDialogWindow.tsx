@@ -132,7 +132,8 @@ const mapStateToProps = (state: State) => {
         error: state.error.error,
         trainDialog: state.trainDialogs.current,
         actions: state.actions,
-        display: state.display
+        display: state.display,
+        teachSession : state.teachSessions
     }
 }
 
