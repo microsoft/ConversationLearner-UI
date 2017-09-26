@@ -2,7 +2,7 @@ import * as React from 'react';
 import { bindActionCreators } from 'redux';
 import { returntypeof } from 'react-redux-typescript';
 import { connect } from 'react-redux';
-import { ExtractResponse, PredictedEntity, EntityBase } from 'blis-models'
+import { ExtractResponse, PredictedEntity, EntityBase, AppDefinition } from 'blis-models'
 import { updateExtractResponse, removeExtractResponse } from '../actions/teachActions';
 import { State } from '../types';
 import { Dropdown, IDropdownOption, DropdownMenuItemType } from 'office-ui-fabric-react'
@@ -82,7 +82,15 @@ const styles = {
     }
 }
 
-class ExtractorResponseEditor extends React.Component<Props, any> {
+interface ComponentState  {
+    input: string,
+    predictedEntities: PredictedEntity[],
+    definitions : AppDefinition,
+    substringObjects: SubstringObject[],
+    substringsClicked: SubstringObject[],
+};
+
+class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
     constructor(p: any) {
         super(p);
         this.state = {
@@ -736,9 +744,6 @@ class ExtractorResponseEditor extends React.Component<Props, any> {
     handleDeleteVariation() {
         let removedResponse = new ExtractResponse({ text: this.state.input, predictedEntities: [] });
         this.props.removeExtractResponse(removedResponse);
-        this.setState({
-            variationValue: ''
-        })
     }
     render() {
         let key: number = 0;

@@ -48,7 +48,7 @@ class TeachWindow extends React.Component<Props, ComponentState> {
             findDOMNode<HTMLElement>(this.refs.webChat).focus();
         }
     }
-    handleAbandon() {
+    onClickAbandonTeach() {
         this.setState({
             isConfirmDeleteOpen: true
         })
