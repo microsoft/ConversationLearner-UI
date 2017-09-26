@@ -472,6 +472,9 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
       if (!error || !error.data) {
         return "";
       }
+      else if (error.data.message) {
+        return error.data.message;
+      }
       else if (error.data.errorMessages) {
         return error.data.errorMessages.join();
       }
