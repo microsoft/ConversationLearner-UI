@@ -8,7 +8,7 @@ const initialState: AppState = {
     current: null
 };
 
-const appsReducer: Reducer<AppState> = (state = initialState, action: ActionObject) => {
+const appsReducer: Reducer<AppState> = (state = initialState, action: ActionObject): AppState => {
     switch (action.type) {
         case AT.LOGOUT:
             return { ...initialState };

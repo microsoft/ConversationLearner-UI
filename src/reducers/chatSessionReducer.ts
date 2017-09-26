@@ -9,7 +9,7 @@ const initialState: ChatSessionState = {
     currentConversationStack: []
 };
 
-const chatSessionReducer: Reducer<ChatSessionState> = (state = initialState, action: ActionObject) => {
+const chatSessionReducer: Reducer<ChatSessionState> = (state = initialState, action: ActionObject): ChatSessionState => {
     switch (action.type) {
         case AT.LOGOUT:
             return { ...initialState };

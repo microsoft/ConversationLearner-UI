@@ -18,7 +18,7 @@ const initialState: TeachSessionState = {
     autoTeach: false
 };
 
-const teachSessionReducer: Reducer<any> = (state = initialState, action: ActionObject) => {
+const teachSessionReducer: Reducer<TeachSessionState> = (state = initialState, action: ActionObject): TeachSessionState => {
     switch (action.type) {
         case AT.LOGOUT:
             return { ...initialState };
