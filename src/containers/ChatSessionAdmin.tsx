@@ -21,7 +21,7 @@ class ChatSessionAdmin extends React.Component<Props, any> {
         // TODO: Add confirmation modal
         this.props.setDisplayMode(DisplayMode.AppAdmin);
         let currentAppId: string = this.props.apps.current.appId;
-        this.props.deleteChatSession(this.props.userKey, this.props.chatSession, currentAppId);
+        this.props.deleteChatSessionAsync(this.props.userKey, this.props.chatSession, currentAppId);
     }
     handleCloseModal() {
         this.setState({
@@ -43,8 +43,8 @@ class ChatSessionAdmin extends React.Component<Props, any> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        setDisplayMode: setDisplayMode,
-        deleteChatSession: deleteChatSessionAsync
+        setDisplayMode,
+        deleteChatSessionAsync
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {

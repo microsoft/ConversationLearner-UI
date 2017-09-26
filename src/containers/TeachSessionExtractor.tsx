@@ -98,7 +98,7 @@ class TeachSessionExtractor extends React.Component<Props, any> {
 
         let appId: string = this.props.apps.current.appId;
         let teachId: string = this.props.teachSession.current.teachId;
-        this.props.runScorer(this.props.user.key, appId, teachId, uiScoreInput);
+        this.props.runScorerAsync(this.props.user.key, appId, teachId, uiScoreInput);
     }
     render() {
         if (!this.props.teachSession.extractResponses[0])  {
@@ -175,7 +175,7 @@ class TeachSessionExtractor extends React.Component<Props, any> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        runScorer: runScorerAsync
+        runScorerAsync
     }, dispatch);
 }
 const mapStateToProps = (state: State, ownProps: any) => {

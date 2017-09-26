@@ -59,7 +59,7 @@ class EntityCreatorEditor extends React.Component<Props, any> {
             packageDeletionId: null
         })
         if (this.state.editing === false) {
-            this.props.createEntity(this.props.userKey, entityToAdd, currentAppId);
+            this.props.createEntityAsync(this.props.userKey, entityToAdd, currentAppId);
         } else {
             this.editEntity(entityToAdd);
         }
@@ -68,7 +68,7 @@ class EntityCreatorEditor extends React.Component<Props, any> {
     }
     editEntity(ent: EntityBase) {
         ent.entityId = this.props.entity.entityId;
-        this.props.editEntity(this.props.userKey, ent);
+        this.props.editEntityAsync(this.props.userKey, ent);
     }
     nameChanged(text: string) {
         this.setState({
@@ -187,8 +187,8 @@ class EntityCreatorEditor extends React.Component<Props, any> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        createEntity: createEntityAsync,
-        editEntity: editEntityAsync
+        createEntityAsync,
+        editEntityAsync
     }, dispatch);
 }
 const mapStateToProps = (state: State, ownProps: any) => {

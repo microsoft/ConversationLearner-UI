@@ -7,8 +7,8 @@ import { DetailsList, CommandButton, CheckboxVisibility, IColumn, SearchBox } fr
 import { setDisplayMode } from '../actions/displayActions'
 import { State } from '../types'
 import { LogDialog } from 'blis-models'
-import { DisplayMode } from '../types/const';
-import LogDialogModal from './LogDialogModal';
+import ChatSessionWindow from './ChatSessionWindow'
+import LogDialogModal from './LogDialogModal'
 
 interface IRenderableColumn extends IColumn {
     render: (x: LogDialog) => React.ReactNode
@@ -92,24 +92,32 @@ let columns: IRenderableColumn[] = [
 ];
 
 interface ComponentState {
+    isChatSessionWindowOpen: boolean,
     isLogDialogWindowOpen: boolean,
     currentLogDialog: LogDialog,
     searchValue: string
 }
 
 class LogDialogsList extends React.Component<Props, ComponentState> {
-    constructor(p: Props) {
-        super(p);
-        this.state = {
-            isLogDialogWindowOpen: false,
-            currentLogDialog: null,
-            searchValue: ''
-        }
+    state = {
+        isChatSessionWindowOpen: false,
+        isLogDialogWindowOpen: false,
+        currentLogDialog: null,
+        searchValue: ''
     }
 
-    handleClick() {
-        this.props.setDisplayMode(DisplayMode.Session);
+    onClickNewChatSession() {
+        this.setState({
+            isChatSessionWindowOpen: true
+        })
     }
+
+    onCloseChatSessionWindow() {
+        this.setState({
+            isChatSessionWindowOpen: false
+        })
+    }
+
     onChange(newValue: string) {
         let lcString = newValue.toLowerCase();
         this.setState({
@@ -131,14 +139,6 @@ class LogDialogsList extends React.Component<Props, ComponentState> {
         })
     }
 
-    renderLogDialogItems(): LogDialog[] {
-        // let lcString = this.state.searchValue.toLowerCase();
-        let filteredLogDialogs = this.props.logDialogs.all.filter((logDialogItems: LogDialog) => {
-            return true
-        })
-        return filteredLogDialogs;
-    }
-
     render() {
         const logDialogItems = this.props.logDialogs.all;
         const currentLogDialog = this.state.currentLogDialog;
@@ -147,19 +147,15 @@ class LogDialogsList extends React.Component<Props, ComponentState> {
                 <TrainingGroundArenaHeader title="Log Dialogs" description="Use this tool to test the current versions of your application, to check if you are progressing on the right track ..." />
                 <div className="entityCreator">
                     <CommandButton
-                        data-automation-id='randomID20'
-                        disabled={false}
-                        onClick={this.handleClick.bind(this)}
+                        onClick={() => this.onClickNewChatSession()}
                         className='blis-button--gold'
                         ariaDescription='Create a New Chat Session'
                         text='New Chat Session'
                     />
-                    <LogDialogModal
-                        open={this.state.isLogDialogWindowOpen}
-                        logDialog={currentLogDialog}
-                        app={this.props.apps.current}
-                        onClose={() => this.onCloseLogDialogModal()}
-                    />
+                    <ChatSessionWindow
+                        open={this.state.isChatSessionWindowOpen}
+                        onClose={() => this.onCloseChatSessionWindow()}
+                     />
                 </div>
                 <SearchBox
                     className="ms-font-m-plus"
@@ -173,6 +169,12 @@ class LogDialogsList extends React.Component<Props, ComponentState> {
                     checkboxVisibility={CheckboxVisibility.hidden}
                     onRenderItemColumn={(logDialog, i, column: IRenderableColumn) => returnErrorStringWhenError(() => column.render(logDialog))}
                     onActiveItemChanged={logDialog => this.onLogDialogInvoked(logDialog)}
+                />
+                <LogDialogModal
+                    open={this.state.isLogDialogWindowOpen}
+                    logDialog={currentLogDialog}
+                    app={this.props.apps.current}
+                    onClose={() => this.onCloseLogDialogModal()}
                 />
             </div>
         );

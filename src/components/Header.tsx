@@ -97,8 +97,8 @@ class Header extends React.Component<Props, any> {
 
 const mapDispatchToProps = (dispatch: any) => {
   return bindActionCreators({
-    setDisplayMode: setDisplayMode,
-    setLoginDisplay: setLoginDisplay,
+    setDisplayMode,
+    setLoginDisplay,
   }, dispatch);
 }
 

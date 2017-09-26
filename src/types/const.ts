@@ -1,9 +1,7 @@
 export enum DisplayMode {
     AppList,
     AppAdmin,
-    Teach,
-    Session,
-    TrainDialog
+    Session
 }
 
 export enum TeachMode {

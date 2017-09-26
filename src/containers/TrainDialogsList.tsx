@@ -4,13 +4,14 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader'
 import { DetailsList, CommandButton, CheckboxVisibility, IColumn, SearchBox } from 'office-ui-fabric-react';
-import { setDisplayMode, setCurrentTrainDialog, setCurrentTeachSession } from '../actions/displayActions'
+import { setDisplayMode, setCurrentTrainDialog } from '../actions/displayActions'
 import { createTrainDialog } from '../actions/createActions'
 import { fetchAllTrainDialogsAsync } from '../actions/fetchActions';
 import { State } from '../types'
 import { TrainDialog } from 'blis-models'
-import { DisplayMode } from '../types/const';
 import { findDOMNode } from 'react-dom';
+import TeachSessionWindow from './TeachSessionWindow'
+import TrainDialogWindow from './TrainDialogWindow'
 
 let columns: IColumn[] = [
     {
@@ -47,13 +48,17 @@ let columns: IColumn[] = [
     }
 ];
 
-class TrainDialogsList extends React.Component<Props, any> {
-    constructor(p: any) {
-        super(p);
-        this.state = {
-            searchValue: ''
-        }
-        this.handleSelection = this.handleSelection.bind(this)
+interface ComponentState {
+    isTeachDialogModalOpen: boolean
+    isTrainDialogModalOpen: boolean
+    searchValue: string
+}
+
+class TrainDialogsList extends React.Component<Props, ComponentState> {
+    state = {
+        isTeachDialogModalOpen: false,
+        isTrainDialogModalOpen: false,
+        searchValue: ''
     }
     componentDidMount() {
         this.focusNewEntityButton();
@@ -124,19 +129,39 @@ class TrainDialogsList extends React.Component<Props, any> {
                 return <span className='ms-font-m-plus'>{fieldContent}</span>;
         }
     }
-    handleClick() {
-        this.props.setDisplayMode(DisplayMode.Teach);  
+
+    onClickNewTeachSession() {
+        this.setState({
+            isTeachDialogModalOpen: true
+        })
     }
-    handleSelection(selected: TrainDialog) {
-       this.props.setCurrentTrainDialog(this.props.userKey, selected); 
-       this.props.setDisplayMode(DisplayMode.TrainDialog);
+
+    onCloseTeachSession() {
+        this.setState({
+            isTeachDialogModalOpen: false
+        })
     }
-    onChange(newValue: string) {
+
+    onClickTrainDialogItem(trainDialog: TrainDialog) {
+       this.props.setCurrentTrainDialog(this.props.userKey, trainDialog);
+       this.setState({
+            isTrainDialogModalOpen: true
+        })
+    }
+
+    onCoseTrainDialogWindow() {
+        this.setState({
+            isTrainDialogModalOpen: false
+        })
+    }
+
+    onChangeSearchString(newValue: string) {
         let lcString = newValue.toLowerCase();
         this.setState({
             searchValue: lcString
         })
     }
+
     renderTrainDialogItems(): TrainDialog[] {
         // let lcString = this.state.searchValue.toLowerCase();
         let filteredTrainDialogs = this.props.trainDialogs.all.filter((t: TrainDialog) => {
@@ -144,6 +169,7 @@ class TrainDialogsList extends React.Component<Props, any> {
         })
         return filteredTrainDialogs;
     }
+    
     render() {
         let trainDialogItems = this.renderTrainDialogItems()
         return (
@@ -151,19 +177,22 @@ class TrainDialogsList extends React.Component<Props, any> {
                 <TrainingGroundArenaHeader title="Train Dialogs" description="Use this tool to train and improve the current versions of your application ..." />
                 <div className="entityCreator">
                     <CommandButton
-                        data-automation-id='randomID9'
-                        disabled={false}
-                        onClick={this.handleClick.bind(this)}
+                        onClick={() => this.onClickNewTeachSession()}
                         className='blis-button--gold'
                         ariaDescription='Create a New Teach Session'
                         text='New Teach Session'
                         ref="newSession"
                     />
+                    <TeachSessionWindow
+                        open={this.state.isTeachDialogModalOpen}
+                        onClose={() => this.onCloseTeachSession()}
+                        app={this.props.apps.current}
+                    />
                 </div>
                 <SearchBox
                     className="ms-font-m-plus"
-                    onChange={(newValue) => this.onChange(newValue)}
-                    onSearch={(newValue) => this.onChange(newValue)}
+                    onChange={(newValue) => this.onChangeSearchString(newValue)}
+                    onSearch={(newValue) => this.onChangeSearchString(newValue)}
                 />
                 <DetailsList
                     className="ms-font-m-plus"
@@ -171,7 +200,11 @@ class TrainDialogsList extends React.Component<Props, any> {
                     columns={columns}
                     checkboxVisibility={CheckboxVisibility.hidden}
                     onRenderItemColumn={this.renderItemColumn.bind(this)}
-                    onActiveItemChanged={(item) => this.handleSelection(item)}
+                    onActiveItemChanged={trainDialog => this.onClickTrainDialogItem(trainDialog)}
+                />
+                <TrainDialogWindow
+                    open={this.state.isTrainDialogModalOpen}
+                    onClose={() => this.onCoseTrainDialogWindow()}
                 />
             </div>
         );
@@ -179,11 +212,10 @@ class TrainDialogsList extends React.Component<Props, any> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        setDisplayMode: setDisplayMode,
-        setCurrentTrainDialog: setCurrentTrainDialog,
-        setCurrentTeachSession: setCurrentTeachSession,
-        createTrainDialog: createTrainDialog,
-        fetchAllTrainDialogs : fetchAllTrainDialogsAsync,
+        setDisplayMode,
+        setCurrentTrainDialog,
+        createTrainDialog,
+        fetchAllTrainDialogsAsync,
     }, dispatch)
 }
 const mapStateToProps = (state: State) => {

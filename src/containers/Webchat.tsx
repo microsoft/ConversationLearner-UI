@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
-import { toggleTrainDialog, addMessageToTeachConversationStack, addMessageToChatConversationStack } from '../actions/displayActions';
+import { addMessageToTeachConversationStack, addMessageToChatConversationStack } from '../actions/displayActions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../types';
@@ -72,7 +72,7 @@ class Webchat extends React.Component<Props, any> {
                             let userInput = new UserInput({ text: activity.text});
                             let appId: string = this.props.apps.current.appId;
                             let teachId: string = this.props.teachSessions.current.teachId;
-                            this.props.runExtractor(this.props.user.key, appId, teachId, userInput);
+                            this.props.runExtractorAsync(this.props.user.key, appId, teachId, userInput);
     
                         } else {
                             this.props.addMessageToChatConversationStack(activity)
@@ -111,11 +111,10 @@ class Webchat extends React.Component<Props, any> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        toggleTrainDialog: toggleTrainDialog,
-        setTrainDialogView: setTrainDialogView,
-        addMessageToTeachConversationStack: addMessageToTeachConversationStack,
-        addMessageToChatConversationStack: addMessageToChatConversationStack,
-        runExtractor: runExtractorAsync
+        setTrainDialogView,
+        addMessageToTeachConversationStack,
+        addMessageToChatConversationStack,
+        runExtractorAsync
     }, dispatch);
 }
 const mapStateToProps = (state: State, ownProps: any) => {

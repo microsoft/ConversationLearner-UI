@@ -1,9 +1,6 @@
 import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
 import AppAdmin from './AppAdmin';
-import TeachSessionWindow from './TeachSessionWindow';
-import TrainDialogWindow from './TrainDialogWindow'
-import ChatSessionWindow from './ChatSessionWindow';
 import { fetchApplicationsAsync, fetchBotInfoAsync } from '../actions/fetchActions'
 import BLISAppsList from './BLISAppsList';
 import { bindActionCreators } from 'redux';
@@ -18,35 +15,25 @@ class BLISAppsHomepage extends React.Component<Props, any> {
             displayedUserId: null
         }
     }
-    componentDidUpdate()
-    {
+    componentDidUpdate() {
         if (this.state.displayedUserId != this.props.userId) {
             this.setState({
                 displayedUserId: this.props.userId
             })
-            this.props.fetchApplications(this.props.userKey, this.props.userId);
-            this.props.fetchBotInfo();
+            this.props.fetchApplicationsAsync(this.props.userKey, this.props.userId);
+            this.props.fetchBotInfoAsync();
         }
     }
     render() {
         var display = null;
-         switch (this.props.display.displayMode) {
+        switch (this.props.display.displayMode) {
             case DisplayMode.AppList:
-                display = <BLISAppsList  />
+                display = <BLISAppsList />
                 break;
             case DisplayMode.AppAdmin:
                 display = <AppAdmin />
                 break;
-            case DisplayMode.Teach:
-                display = [<AppAdmin key={1} />, <TeachSessionWindow key={2} />];
-                break;
-            case DisplayMode.Session:
-                display = [<AppAdmin key={1} />, <ChatSessionWindow key={2} />];
-                break;
-            case DisplayMode.TrainDialog:
-                display = [<AppAdmin key={1} />, <TrainDialogWindow key={2} />];
-                break;
-         }
+        }
         return (
             <div className="fluidCont">
                 {display}
@@ -56,10 +43,10 @@ class BLISAppsHomepage extends React.Component<Props, any> {
 }
 
 const mapDispatchToProps = (dispatch: any) => {
-  return bindActionCreators({
-    fetchApplications: fetchApplicationsAsync,
-    fetchBotInfo: fetchBotInfoAsync
-  }, dispatch);
+    return bindActionCreators({
+        fetchApplicationsAsync,
+        fetchBotInfoAsync
+    }, dispatch);
 }
 
 const mapStateToProps = (state: State) => {
