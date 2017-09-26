@@ -11,6 +11,8 @@ import { ActionBase } from 'blis-models'
 import { deleteTrainDialogAsync } from '../actions/deleteActions'
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import { Activity } from 'botframework-directlinejs';
+// TODO: Investigate if this can be removed in favor of local state
+import { addMessageToChatConversationStack, setTrainDialogView } from '../actions/displayActions';
 
 interface ComponentState {
     confirmDeleteModalOpen: boolean,
@@ -51,6 +53,26 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
         })
     }
 
+    // TODO: Investigate if this can be removed.
+    // Lars mentioned people shouldn't be able to / expected to chat when viewing existing dialogs
+    // which means this should not ever be called and whatever it's doing now is likely unnecessary
+    onWebChatPostActivity(activity: Activity) {
+        console.log(`post activity: `, activity)
+        if (activity.type === "message") {
+            this.props.addMessageToChatConversationStack(activity)
+        }
+    }
+
+    onWebChatSelectActivity(activity: Activity) {
+        // TODO: Remove split of id here.
+        // This is coupling knowledge about how ID was constructed within the generateHistory function
+        // Id should be an opaque and unique identifier.
+        const [roundNum, scoreNum] = activity.id.split(":").map(s => parseInt(s));
+
+        // TODO: Move to local state instead of global
+        this.props.setTrainDialogView(roundNum, scoreNum);
+    }
+
     generateHistory(): Activity[] {
         if (!this.props.trainDialog || !this.props.trainDialog.rounds) {
             return [];
@@ -87,8 +109,9 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
                     <div className="blis-chatmodal_webchat">
                         {this.props.trainDialog &&
                             <Webchat
-                                sessionType={"chat"}
                                 history={this.generateHistory()}
+                                onPostActivity={activity => this.onWebChatPostActivity(activity)}
+                                onSelectActivity={activity => this.onWebChatSelectActivity(activity)}
                             />}
                     </div>
                     <div className="blis-chatmodal_controls">
@@ -121,7 +144,9 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        deleteTrainDialogAsync
+        addMessageToChatConversationStack,
+        deleteTrainDialogAsync,
+        setTrainDialogView
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {
@@ -133,7 +158,7 @@ const mapStateToProps = (state: State) => {
         trainDialog: state.trainDialogs.current,
         actions: state.actions,
         display: state.display,
-        teachSession : state.teachSessions
+        teachSession: state.teachSessions
     }
 }
 
