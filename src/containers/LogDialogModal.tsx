@@ -84,7 +84,6 @@ class LogDialogModal extends React.Component<Props, ComponentState> {
                     <div className="blis-chatmodal">
                         <div className="blis-chatmodal_webchat">
                             <Webchat
-                                sessionType={"chat"}
                                 history={history}
                                 onSelectActivity={activity => this.onSelectWebChatActivity(activity)}
                                 onPostActivity={activity => this.onPostWebChatActivity(activity)}

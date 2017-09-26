@@ -1,22 +1,19 @@
 import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
-import { addMessageToTeachConversationStack, addMessageToChatConversationStack } from '../actions/displayActions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../types';
 import * as BotChat from 'blis-webchat'
 import { Chat } from 'blis-webchat'
-import { UserInput } from 'blis-models'
 import { BehaviorSubject } from 'rxjs';
-import { runExtractorAsync } from '../actions/teachActions';
-import { setTrainDialogView } from '../actions/displayActions';
 import { Activity } from 'botframework-directlinejs';
 
 class Webchat extends React.Component<Props, any> {
     private behaviorSubject : BehaviorSubject<any> = null;
     private chatProps : BotChat.ChatProps = null;
 
-    static defaultProps = {
+    static defaultProps: ReceivedProps = {
+        history: null,
         onSelectActivity: () => {},
         onPostActivity: () => {}
     }
@@ -33,16 +30,7 @@ class Webchat extends React.Component<Props, any> {
             this.behaviorSubject = new BehaviorSubject<any>({});
             this.behaviorSubject.subscribe((value) => {
                 if (value.activity) {
-                    const activity: Activity = value.activity
-                    this.props.onSelectActivity(activity)
-
-                    // TODO: Remove split of id here.
-                    // This is coupling knowledge about how ID was constructed within the generateHistory function
-                    // Id should be an opaque and unique identifier.
-                    let [roundNum, scoreNum] = value.activity.id.split(":");
-
-                    // TODO: Remove hard coding of train related actions from web chat
-                    this.props.setTrainDialogView(roundNum, scoreNum);
+                    this.props.onSelectActivity(value.activity as Activity)
                 }
             })
         } 
@@ -62,24 +50,7 @@ class Webchat extends React.Component<Props, any> {
             const _dl = {
                 ...dl,
                 postActivity: (activity: any) => {
-                    // TODO: Remove hard coding of adding message to stack
-                    // Webchat should not be aware of what happens when activity is posted, only that is is posted.
-                    if (activity.type = "message")
-                    {
-                        if (this.props.sessionType === 'teach') {
-                            this.props.addMessageToTeachConversationStack(activity.text)
-    
-                            let userInput = new UserInput({ text: activity.text});
-                            let appId: string = this.props.apps.current.appId;
-                            let teachId: string = this.props.teachSessions.current.teachId;
-                            this.props.runExtractorAsync(this.props.user.key, appId, teachId, userInput);
-    
-                        } else {
-                            this.props.addMessageToChatConversationStack(activity)
-                        }
-
-                        this.props.onPostActivity(activity)
-                    }
+                    this.props.onPostActivity(activity)
                     return dl.postActivity(activity)
                 },
             } as BotChat.DirectLine;
@@ -111,10 +82,6 @@ class Webchat extends React.Component<Props, any> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        setTrainDialogView,
-        addMessageToTeachConversationStack,
-        addMessageToChatConversationStack,
-        runExtractorAsync
     }, dispatch);
 }
 const mapStateToProps = (state: State, ownProps: any) => {
@@ -126,9 +93,8 @@ const mapStateToProps = (state: State, ownProps: any) => {
     }
 }
 
-interface ReceivedProps {
-    sessionType: string,
-    history: Activity[],
+export interface ReceivedProps {
+    history: Activity[] | null,
     onSelectActivity: (a: Activity) => void,
     onPostActivity: (a: Activity) => void
 }
@@ -138,4 +104,4 @@ const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
 type Props = typeof stateProps & typeof dispatchProps & ReceivedProps;
 
-export default connect(mapStateToProps, mapDispatchToProps)(Webchat as React.ComponentClass<any>);
+export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(Webchat);

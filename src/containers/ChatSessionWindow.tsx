@@ -10,6 +10,9 @@ import ChatSessionAdmin from './ChatSessionAdmin'
 import { Session } from 'blis-models'
 import { deleteChatSessionAsync } from '../actions/deleteActions'
 import { createChatSessionAsync } from '../actions/createActions'
+import { Activity } from 'botframework-directlinejs';
+// TODO: Investigate if this can be removed in favor of local state
+import { addMessageToChatConversationStack } from '../actions/displayActions';
 
 interface ComponentState {
     chatSession: Session
@@ -38,6 +41,12 @@ class SessionWindow extends React.Component<Props, ComponentState> {
         this.props.onClose();
     }
 
+    onWebChatPostActivity(activity: Activity) {
+        if (activity.type === "message") {
+            this.props.addMessageToChatConversationStack(activity)
+        }
+    }
+
     render() {
         return (
             <Modal
@@ -47,7 +56,11 @@ class SessionWindow extends React.Component<Props, ComponentState> {
             >
                 <div className="blis-chatmodal">
                     <div className="blis-chatmodal_webchat">
-                        <Webchat sessionType={"chat"} />
+                        <Webchat
+                            history={null}
+                            onPostActivity={activity => this.onWebChatPostActivity(activity)}
+                            onSelectActivity={() => {}}
+                        />
                     </div>
                     <div className="blis-chatmodal_controls">
                         <div className="blis-chatmodal_admin-controls">
@@ -68,6 +81,7 @@ class SessionWindow extends React.Component<Props, ComponentState> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
+        addMessageToChatConversationStack,
         createChatSessionAsync,
         deleteChatSessionAsync
     }, dispatch);
