@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import { State } from '../types';
 import * as BotChat from 'blis-webchat'
 import { Chat } from 'blis-webchat'
+import { BlisAppBase } from 'blis-models'
 import { BehaviorSubject } from 'rxjs';
 import { Activity } from 'botframework-directlinejs';
 
@@ -13,6 +14,7 @@ class Webchat extends React.Component<Props, any> {
     private chatProps : BotChat.ChatProps = null;
 
     static defaultProps: ReceivedProps = {
+        app: null,
         history: null,
         onSelectActivity: () => {},
         onPostActivity: () => {}
@@ -88,12 +90,12 @@ const mapStateToProps = (state: State, ownProps: any) => {
     return {
         teachSessions: state.teachSessions,
         chatSessions: state.chatSessions,
-        user: state.user,
-        apps: state.apps
+        user: state.user
     }
 }
 
 export interface ReceivedProps {
+    app: BlisAppBase,
     history: Activity[] | null,
     onSelectActivity: (a: Activity) => void,
     onPostActivity: (a: Activity) => void

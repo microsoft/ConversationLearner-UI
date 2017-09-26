@@ -15,15 +15,10 @@ export type ErrorState = {
     route: AT
 };
 export type TrainDialogState = {
-    all: TrainDialog[],
-    current: TrainDialog,
-    roundNumber: number,
-    scoreNumber: number,
-    mode: TeachMode
+    all: TrainDialog[]
 }
 export type LogDialogState = {
-    all: LogDialog[],
-    current: LogDialog
+    all: LogDialog[]
 }
 export type AppState = {
     all: BlisAppBase[],

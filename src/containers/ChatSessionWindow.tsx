@@ -7,13 +7,12 @@ import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { State } from '../types';
 import Webchat from './Webchat'
 import ChatSessionAdmin from './ChatSessionAdmin'
-import { Session } from 'blis-models'
+import { BlisAppBase, Session } from 'blis-models'
 import { deleteChatSessionAsync } from '../actions/deleteActions'
 import { createChatSessionAsync } from '../actions/createActions'
 import { Activity } from 'botframework-directlinejs';
 // TODO: Investigate if this can be removed in favor of local state
 import { addMessageToChatConversationStack } from '../actions/displayActions';
-
 interface ComponentState {
     chatSession: Session
 }
@@ -26,16 +25,13 @@ class SessionWindow extends React.Component<Props, ComponentState> {
     componentWillReceiveProps(nextProps: Props) {
         if (this.props.open === false && nextProps.open === true) {
             this.state.chatSession = new Session({ saveToLog: true })
-            let currentAppId: string = this.props.apps.current.appId;
-            this.props.createChatSessionAsync(this.props.userKey, this.state.chatSession, currentAppId);
+            this.props.createChatSessionAsync(this.props.userKey, this.state.chatSession, this.props.app.appId);
         }
     }
 
     onClickDone() {
-        let currentAppId: string = this.props.apps.current.appId;
-
         if (this.props.chatSession.current !== null) {
-            this.props.deleteChatSessionAsync(this.props.userKey, this.props.chatSession.current, currentAppId)
+            this.props.deleteChatSessionAsync(this.props.userKey, this.props.chatSession.current, this.props.app.appId)
         }
 
         this.props.onClose();
@@ -57,6 +53,7 @@ class SessionWindow extends React.Component<Props, ComponentState> {
                 <div className="blis-chatmodal">
                     <div className="blis-chatmodal_webchat">
                         <Webchat
+                            app={this.props.app}
                             history={null}
                             onPostActivity={activity => this.onWebChatPostActivity(activity)}
                             onSelectActivity={() => {}}
@@ -90,7 +87,6 @@ const mapStateToProps = (state: State) => {
     return {
         chatSession: state.chatSessions,
         userKey: state.user.key,
-        apps: state.apps,
         error: state.error.error
     }
 }
@@ -98,6 +94,7 @@ const mapStateToProps = (state: State) => {
 export interface ReceivedProps {
     open: boolean
     onClose: () => void
+    app: BlisAppBase
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps

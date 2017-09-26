@@ -13,7 +13,7 @@ import { Activity } from 'botframework-directlinejs'
 import { deleteTeachSessionAsync } from '../actions/deleteActions'
 import { toggleAutoTeach, runExtractorAsync } from '../actions/teachActions'
 import { createTeachSessionAsync } from '../actions/createActions'
-import { addMessageToTeachConversationStack, setDisplayMode } from '../actions/displayActions'
+import { addMessageToTeachConversationStack } from '../actions/displayActions'
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 
 interface ComponentState {
@@ -32,8 +32,7 @@ class TeachWindow extends React.Component<Props, ComponentState> {
     componentWillReceiveProps(nextProps: Props) {
         if (this.props.open === false && nextProps.open === true) {
             this.state.teachSession = new Teach({})
-            let currentAppId: string = this.props.apps.current.appId;
-            this.props.createTeachSessionAsync(this.props.user.key, this.state.teachSession, currentAppId)
+            this.props.createTeachSessionAsync(this.props.user.key, this.state.teachSession, this.props.app.appId)
         }
     }
 
@@ -44,8 +43,7 @@ class TeachWindow extends React.Component<Props, ComponentState> {
     }
 
     onClickSave() {
-        let currentAppId: string = this.props.apps.current.appId;
-        this.props.deleteTeachSessionAsync(this.props.user.key, this.props.teachSessions.current, currentAppId, true); // True = save to train dialog
+        this.props.deleteTeachSessionAsync(this.props.user.key, this.props.teachSessions.current, this.props.app.appId, true); // True = save to train dialog
         this.props.onClose()
     }
 
@@ -53,8 +51,7 @@ class TeachWindow extends React.Component<Props, ComponentState> {
         this.setState({
             isConfirmDeleteOpen: false
         }, () => {
-            let currentAppId: string = this.props.apps.current.appId;
-            this.props.deleteTeachSessionAsync(this.props.user.key, this.props.teachSessions.current, currentAppId, false); // False = abandon
+            this.props.deleteTeachSessionAsync(this.props.user.key, this.props.teachSessions.current, this.props.app.appId, false); // False = abandon
             this.props.onClose()
         })
     }
@@ -74,9 +71,12 @@ class TeachWindow extends React.Component<Props, ComponentState> {
             this.props.addMessageToTeachConversationStack(activity.text)
 
             let userInput = new UserInput({ text: activity.text });
-            let appId: string = this.props.apps.current.appId;
-            let teachId: string = this.props.teachSessions.current.teachId;
-            this.props.runExtractorAsync(this.props.user.key, appId, teachId, userInput);
+            const teachSession = this.props.teachSessions.current
+            if (!teachSession) {
+                throw new Error(`Current teach session is not defined. This may be due to race condition where you attempted to chat with the bot before the teach session has been created.`)
+            }
+
+            this.props.runExtractorAsync(this.props.user.key, this.props.app.appId, teachSession.teachId, userInput);
         }
     }
 
@@ -100,6 +100,7 @@ class TeachWindow extends React.Component<Props, ComponentState> {
                 <div className="blis-chatmodal">
                     <div className="blis-chatmodal_webchat">
                         <Webchat
+                            app={this.props.app}
                             history={null}
                             onPostActivity={activity => this.onWebChatPostActivity(activity)}
                             onSelectActivity={() => {}}
@@ -108,7 +109,9 @@ class TeachWindow extends React.Component<Props, ComponentState> {
                     </div>
                     <div className="blis-chatmodal_controls">
                         <div className="blis-chatmodal_admin-controls">
-                            <TeachSessionAdmin />
+                            <TeachSessionAdmin
+                                app={this.props.app}
+                            />
                             {mask}
                         </div>
                         <div className="blis-chatmodal_modal-controls">
@@ -149,14 +152,12 @@ const mapDispatchToProps = (dispatch: any) => {
         createTeachSessionAsync,
         deleteTeachSessionAsync,
         runExtractorAsync,
-        setDisplayMode,
         toggleAutoTeach
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {
     return {
         teachSessions: state.teachSessions,
-        apps: state.apps,
         user: state.user,
         error: state.error.error
     }

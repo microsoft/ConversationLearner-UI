@@ -43,16 +43,6 @@ export type DisplayAction = {
     type: AT.SET_CURRENT_BLIS_APP_FULFILLED,
     currentBLISApp: BlisAppBase
 } | {
-    type: AT.SET_CURRENT_TRAIN_DIALOG,
-    currentTrainDialog: TrainDialog,
-} | {
-    type: AT.SET_TRAIN_DIALOG_VIEW,
-    roundNumber: number,
-    scoreNumber: number
-}| {
-    type: AT.SET_CURRENT_LOG_DIALOG,
-    currentLogDialog: LogDialog,
-} | {
     type: AT.SET_CURRENT_CHAT_SESSION,
     currentSession: Session,
 } | {
