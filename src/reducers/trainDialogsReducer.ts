@@ -12,7 +12,7 @@ const initialState: TrainDialogState = {
     mode: TeachMode.Extractor
 };
 
-const trainDialogsReducer: Reducer<TrainDialogState> =  (state = initialState, action: ActionObject) => {
+const trainDialogsReducer: Reducer<TrainDialogState> =  (state = initialState, action: ActionObject): TrainDialogState => {
     switch (action.type) {
         case AT.LOGOUT:
             return { ...initialState };

@@ -11,7 +11,7 @@ const initialState: UserState = {
     key: null
 };
 
-const userReducer: Reducer<UserState> =  (state = initialState, action: ActionObject) => {
+const userReducer: Reducer<UserState> =  (state = initialState, action: ActionObject): UserState => {
     switch(action.type) {
         case AT.LOGOUT:
             return { ...initialState };

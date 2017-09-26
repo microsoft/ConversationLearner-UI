@@ -26,7 +26,7 @@ const removeSpinner = function(spinners : string[], oldSpinner: string) : string
     return spinners.filter(o=>o !== spinnerName(oldSpinner));
 }
 
-const displayReducer: Reducer<DisplayState> =  (state = initialState, action: ActionObject) => {
+const displayReducer: Reducer<DisplayState> =  (state = initialState, action: ActionObject): DisplayState => {
     switch(action.type) {
         case AT.LOGOUT:
             return { ...initialState };

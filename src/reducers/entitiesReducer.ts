@@ -6,7 +6,7 @@ import { Reducer } from 'redux'
 
 const initialState: EntityState = [];
 
-const entitiesReducer: Reducer<EntityState> =  (state = initialState, action: ActionObject) => {
+const entitiesReducer: Reducer<EntityState> =  (state = initialState, action: ActionObject): EntityState => {
     switch(action.type) {
         case AT.LOGOUT:
             return { ...initialState };

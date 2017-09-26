@@ -8,7 +8,7 @@ const initialState: LogDialogState = {
     current: null
 };
 
-const logDialogsReducer: Reducer<LogDialogState> =  (state = initialState, action: ActionObject) => {
+const logDialogsReducer: Reducer<LogDialogState> =  (state = initialState, action: ActionObject): LogDialogState => {
     switch (action.type) {
         case AT.LOGOUT:
             return { ...initialState };
