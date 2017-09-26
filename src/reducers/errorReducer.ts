@@ -9,7 +9,7 @@ const initialState: ErrorState = {
     route: AT.NO_OP
 };
 
-const errorReducer: Reducer<ErrorState> =  (state = initialState, action: ActionObject) => {
+const errorReducer: Reducer<ErrorState> =  (state = initialState, action: ActionObject): ErrorState => {
     switch(action.type) {
         case AT.CLEAR_ERROR_DISPLAY:
             return { ...initialState };
