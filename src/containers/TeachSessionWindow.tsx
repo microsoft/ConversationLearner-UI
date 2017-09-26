@@ -36,18 +36,7 @@ class TeachWindow extends React.Component<Props, ComponentState> {
             this.props.createTeachSessionAsync(this.props.user.key, this.state.teachSession, currentAppId)
         }
     }
-    componentDidUpdate() {
-        this.focusWebchat();
-    }
-    componentDidMount() {
-        this.focusWebchat();
-    }
-    focusWebchat() : void {
-        if (this.props.teachSession.mode == TeachMode.Wait) {
-            // Put focus on webchat
-            findDOMNode<HTMLElement>(this.refs.webChat).focus();
-        }
-    }
+
     onClickAbandonTeach() {
         this.setState({
             isConfirmDeleteOpen: true
