@@ -4,9 +4,8 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader'
 import { DetailsList, CommandButton, CheckboxVisibility, IColumn, SearchBox } from 'office-ui-fabric-react';
-import { setDisplayMode, setCurrentTrainDialog } from '../actions/displayActions'
+import { setCurrentTeachSession } from '../actions/displayActions'
 import { createTrainDialog } from '../actions/createActions'
-import { fetchAllTrainDialogsAsync } from '../actions/fetchActions';
 import { State } from '../types'
 import { TrainDialog } from 'blis-models'
 import { findDOMNode } from 'react-dom';
@@ -51,6 +50,7 @@ let columns: IColumn[] = [
 interface ComponentState {
     isTeachDialogModalOpen: boolean
     isTrainDialogModalOpen: boolean
+    trainDialog: TrainDialog
     searchValue: string
 }
 
@@ -58,6 +58,7 @@ class TrainDialogsList extends React.Component<Props, ComponentState> {
     state = {
         isTeachDialogModalOpen: false,
         isTrainDialogModalOpen: false,
+        trainDialog: null,
         searchValue: ''
     }
     componentDidMount() {
@@ -143,9 +144,9 @@ class TrainDialogsList extends React.Component<Props, ComponentState> {
     }
 
     onClickTrainDialogItem(trainDialog: TrainDialog) {
-       this.props.setCurrentTrainDialog(this.props.userKey, trainDialog);
        this.setState({
-            isTrainDialogModalOpen: true
+            isTrainDialogModalOpen: true,
+            trainDialog
         })
     }
 
@@ -184,9 +185,9 @@ class TrainDialogsList extends React.Component<Props, ComponentState> {
                         ref="newSession"
                     />
                     <TeachSessionWindow
+                        app={this.props.apps.current}
                         open={this.state.isTeachDialogModalOpen}
                         onClose={() => this.onCloseTeachSession()}
-                        app={this.props.apps.current}
                     />
                 </div>
                 <SearchBox
@@ -203,8 +204,10 @@ class TrainDialogsList extends React.Component<Props, ComponentState> {
                     onActiveItemChanged={trainDialog => this.onClickTrainDialogItem(trainDialog)}
                 />
                 <TrainDialogWindow
+                    app={this.props.apps.current}
                     open={this.state.isTrainDialogModalOpen}
                     onClose={() => this.onCoseTrainDialogWindow()}
+                    trainDialog={this.state.trainDialog}
                 />
             </div>
         );
@@ -212,10 +215,8 @@ class TrainDialogsList extends React.Component<Props, ComponentState> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        setDisplayMode,
-        setCurrentTrainDialog,
         createTrainDialog,
-        fetchAllTrainDialogsAsync,
+        setCurrentTeachSession
     }, dispatch)
 }
 const mapStateToProps = (state: State) => {
@@ -223,8 +224,7 @@ const mapStateToProps = (state: State) => {
         userKey: state.user.key,
         apps: state.apps,
         actions: state.actions,
-        trainDialogs: state.trainDialogs,
-        teachSessions: state.teachSessions
+        trainDialogs: state.trainDialogs
     }
 }
 // Props types inferred from mapStateToProps & dispatchToProps

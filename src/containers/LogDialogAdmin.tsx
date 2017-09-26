@@ -17,7 +17,7 @@ class LogDialogAdmin extends React.Component<Props, any> {
         }
 
         const round = logDialog.rounds[roundIndex]
-        
+
         if (scoreIndex > round.scorerSteps.length) {
             throw new Error(`Index out of range: You are attempting to access scorer step by index: ${scoreIndex} but there are only: ${round.scorerSteps.length} scorere steps.`)
         }
@@ -49,7 +49,12 @@ class LogDialogAdmin extends React.Component<Props, any> {
                 <div className="log-dialog-admin__title">Entity Detection</div>
                 <div className="log-dialog-admin__content">
                     {round
-                        ? <ExtractorResponseEditor isPrimary={true} isValid={true} extractResponse={round.extractorStep} />
+                        ? <ExtractorResponseEditor
+                            isPrimary={true}
+                            isValid={true}
+                            extractResponse={round.extractorStep}
+                            canEdit={false}
+                        />
                         : "Select an activity"}
                 </div>
                 <div className="log-dialog-admin__title">Memory</div>

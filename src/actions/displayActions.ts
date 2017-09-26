@@ -2,7 +2,7 @@
 import { ActionObject } from '../types'
 import { AT } from '../types/ActionTypes'
 import { DisplayMode } from '../types/const'
-import { BlisAppBase, TrainDialog, LogDialog, Session, Teach } from 'blis-models';
+import { BlisAppBase, Session, Teach } from 'blis-models';
 
 
 export const setCurrentBLISApp = (key: string, app: BlisAppBase) : ActionObject => { 
@@ -23,28 +23,6 @@ export const setCurrentBLISAppFulfilled = (app: BlisAppBase) : ActionObject => {
 export const emptyStateProperties = () : ActionObject => { 
     return {
         type: AT.EMPTY_STATE_PROPERTIES
-    }
-}
-
-export const setCurrentTrainDialog = (key: string, trainDialog: TrainDialog) : ActionObject => { 
-    return {
-        type: AT.SET_CURRENT_TRAIN_DIALOG,
-        currentTrainDialog: trainDialog
-    }
-}
-
-export const setTrainDialogView = (roundNumber: number, scoreNumber: number) : ActionObject => { 
-    return {
-        type: AT.SET_TRAIN_DIALOG_VIEW,
-        roundNumber: roundNumber,
-        scoreNumber: scoreNumber
-    }
-}
-
-export const setCurrentLogDialog = (key: string, logDialog: LogDialog) : ActionObject => { 
-    return {
-        type: AT.SET_CURRENT_LOG_DIALOG,
-        currentLogDialog: logDialog
     }
 }
 

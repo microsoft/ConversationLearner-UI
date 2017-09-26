@@ -7,32 +7,22 @@ import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { State } from '../types';
 import Webchat from './Webchat'
 import TrainDialogAdmin from './TrainDialogAdmin'
-import { ActionBase } from 'blis-models'
+import { BlisAppBase, ActionBase, TrainDialog } from 'blis-models'
 import { deleteTrainDialogAsync } from '../actions/deleteActions'
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import { Activity } from 'botframework-directlinejs';
 // TODO: Investigate if this can be removed in favor of local state
-import { addMessageToChatConversationStack, setTrainDialogView } from '../actions/displayActions';
+import { addMessageToChatConversationStack } from '../actions/displayActions';
 
 interface ComponentState {
     confirmDeleteModalOpen: boolean,
-    display: string
-    dialogIDToDelete: string
+    selectedActivity: Activity | null
 }
 
 class TrainDialogWindow extends React.Component<Props, ComponentState> {
     state = {
         confirmDeleteModalOpen: false,
-        display: null,
-        dialogIDToDelete: null
-    }
-
-    componentWillReceiveProps(nextProps: Props) {
-        if (this.props.open === false && nextProps.open === true) {
-            // TODO: Replace with local state of selected activity like LogDialogModal
-            // Reset round and score step on open.
-            this.props.setTrainDialogView(0, 0);
-        }
+        selectedActivity: null
     }
 
     onClickDone() {
@@ -55,8 +45,7 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
         this.setState({
             confirmDeleteModalOpen: false
         }, () => {
-            let currentAppId: string = this.props.apps.current.appId;
-            this.props.deleteTrainDialogAsync(this.props.userKey, this.props.trainDialog, currentAppId);
+            this.props.deleteTrainDialogAsync(this.props.user.key, this.props.trainDialog, this.props.app.appId)
             this.props.onClose()
         })
     }
@@ -72,13 +61,9 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
     }
 
     onWebChatSelectActivity(activity: Activity) {
-        // TODO: Remove split of id here.
-        // This is coupling knowledge about how ID was constructed within the generateHistory function
-        // Id should be an opaque and unique identifier.
-        const [roundNum, scoreNum] = activity.id.split(":").map(s => parseInt(s))
-
-        // TODO: Move to local state instead of global
-        this.props.setTrainDialogView(roundNum, scoreNum);
+        this.setState({
+            selectedActivity: activity
+        })
     }
 
     generateHistory(): Activity[] {
@@ -115,16 +100,19 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
                 containerClassName='blis-modal blis-modal--large'>
                 <div className="blis-chatmodal">
                     <div className="blis-chatmodal_webchat">
-                        {this.props.trainDialog &&
-                            <Webchat
-                                history={this.generateHistory()}
-                                onPostActivity={activity => this.onWebChatPostActivity(activity)}
-                                onSelectActivity={activity => this.onWebChatSelectActivity(activity)}
-                            />}
+                        <Webchat
+                            app={this.props.app}
+                            history={this.generateHistory()}
+                            onPostActivity={activity => this.onWebChatPostActivity(activity)}
+                            onSelectActivity={activity => this.onWebChatSelectActivity(activity)}
+                        />
                     </div>
                     <div className="blis-chatmodal_controls">
                         <div className="blis-chatmodal_admin-controls">
-                            <TrainDialogAdmin />
+                            <TrainDialogAdmin 
+                                trainDialog={this.props.trainDialog}
+                                selectedActivity={this.state.selectedActivity}
+                            />
                         </div>
                         <div className="blis-chatmodal_modal-controls">
                             <PrimaryButton
@@ -153,26 +141,22 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         addMessageToChatConversationStack,
-        deleteTrainDialogAsync,
-        setTrainDialogView
+        deleteTrainDialogAsync
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {
     return {
-        userKey: state.user.key,
-        apps: state.apps,
         user: state.user,
         error: state.error.error,
-        trainDialog: state.trainDialogs.current,
-        actions: state.actions,
-        display: state.display,
-        teachSession: state.teachSessions
+        actions: state.actions
     }
 }
 
 export interface ReceivedProps {
-    open: boolean,
+    app: BlisAppBase
     onClose: () => void
+    open: boolean
+    trainDialog: TrainDialog
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps

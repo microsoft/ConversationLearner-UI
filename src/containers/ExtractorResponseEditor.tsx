@@ -97,8 +97,8 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
             input: "",
             predictedEntities: [],
             definitions : null,
-            substringObjects: null,
-            substringsClicked: null,
+            substringObjects: [],
+            substringsClicked: [],
         }
         this.renderSubstringObject = this.renderSubstringObject.bind(this)
         this.createSubstringObjects = this.createSubstringObjects.bind(this)
@@ -124,6 +124,9 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
     componentDidUpdate() {
         this.setInitialValues(this.props)
     }
+
+    // TODO: Fix props, Should not be any here. Related to issue
+    // with ambiguout input from TextVariation, ExtractResponse or LogExtractResponse
     setInitialValues(props: any) {
         // Could be rendering a prediction or a recorded dialog
         let entities = props.extractResponse.predictedEntities ? props.extractResponse.predictedEntities : props.extractResponse.labelEntities;
@@ -783,4 +786,4 @@ const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
 type Props = typeof stateProps & typeof dispatchProps & PassedProps;
 
-export default connect(mapStateToProps, mapDispatchToProps)(ExtractorResponseEditor);
+export default connect<typeof stateProps, typeof dispatchProps, PassedProps>(mapStateToProps, mapDispatchToProps)(ExtractorResponseEditor);

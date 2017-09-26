@@ -153,6 +153,7 @@ class LogDialogsList extends React.Component<Props, ComponentState> {
                         text='New Chat Session'
                     />
                     <ChatSessionWindow
+                        app={this.props.apps.current}
                         open={this.state.isChatSessionWindowOpen}
                         onClose={() => this.onCloseChatSessionWindow()}
                      />
@@ -172,9 +173,9 @@ class LogDialogsList extends React.Component<Props, ComponentState> {
                 />
                 <LogDialogModal
                     open={this.state.isLogDialogWindowOpen}
-                    logDialog={currentLogDialog}
                     app={this.props.apps.current}
                     onClose={() => this.onCloseLogDialogModal()}
+                    logDialog={currentLogDialog}
                 />
             </div>
         );
