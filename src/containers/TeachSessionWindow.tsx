@@ -40,8 +40,6 @@ class TeachWindow extends React.Component<Props, ComponentState> {
         this.setState({
             isConfirmDeleteOpen: true
         })
-        let currentAppId: string = this.props.apps.current.appId;
-        this.props.deleteTeachSessionAsync(this.props.user.key, this.props.teachSession.current, currentAppId, false); // False = abandon
     }
 
     onClickSave() {
