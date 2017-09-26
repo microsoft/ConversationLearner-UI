@@ -113,6 +113,12 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                 if (p.blisAction.metadata.actionType == ActionTypes.API_LOCAL) {
                    payload = ModelUtils.GetArguments(p.blisAction);
                    apiVal = ModelUtils.GetPrimaryPayload(p.blisAction);
+
+                    // Default to first api if none selected
+                   if (!apiVal && this.props.botInfo.callbacks && this.props.botInfo.callbacks.length > 0)
+                   {
+                       apiVal = this.props.botInfo.callbacks[0];
+                   }
                 }
                 else {
                     payload = p.blisAction.payload;
@@ -689,14 +695,6 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
             }
         }
 
-        let apiVals = Object.values(this.props.botInfo.callbacks);
-        let apiOptions = apiVals.map(v => {
-            return {
-                key: v,
-                text: v
-            }
-        })
-
         let actionTypeVals = Object.values(ActionTypes);
         let actionTypeOptions = actionTypeVals.map(v => {
             return {
@@ -727,6 +725,25 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
         let apiDropDown = null;
         let payloadTextField = null;
         if (this.state.actionTypeVal == ActionTypes.API_LOCAL) {
+
+            let placeholder = "API name...";
+            let disabled = this.state.editing;
+            let apiOptions = [];
+            let haveCallbacks = this.props.botInfo.callbacks && this.props.botInfo.callbacks.length > 0;
+            if (haveCallbacks) {
+                let apiVals = Object.values(this.props.botInfo.callbacks);
+                apiOptions = apiVals.map(v => {
+                    return {
+                        key: v,
+                        text: v
+                    }
+                })
+
+            } else {
+                disabled = true;
+                placeholder = "NONE DEFINED";
+            }
+
             apiDropDown = 
             (
                 <Dropdown
@@ -734,7 +751,8 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                     options={apiOptions}
                     onChanged={this.apiChanged.bind(this)}
                     selectedKey={this.state.apiVal}
-                    disabled={this.state.editing}
+                    disabled={disabled}
+                    placeHolder={placeholder}
                 />
             )
             payloadTextField = (
@@ -749,6 +767,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                     onKeyDown={this.payloadKeyDown.bind(this)}
                     onBlur={this.handleBlur.bind(this)}
                     value={this.state.payloadVal} 
+                    disabled={disabled}
                     />)
         } else {
             payloadTextField = (
@@ -767,7 +786,9 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                     />
                 )
         }
-
+        let createDisabled = 
+            (this.state.actionTypeVal == ActionTypes.API_LOCAL) ?
+                !this.state.apiVal : !this.state.payloadVal;
         return (
             <div>
                 <Modal
@@ -850,7 +871,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, any> {
                     <div className="modalFooter">
                         <CommandButton
                             data-automation-id='randomID6'
-                            disabled={!this.state.payloadVal}
+                            disabled={createDisabled}
                             onClick={this.createAction.bind(this)}
                             className='blis-button--gold'
                             ariaDescription='Create'
