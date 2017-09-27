@@ -13,7 +13,7 @@ import {
 } from 'blis-models'
 import * as Rx from 'rxjs';
 import { Observable, Observer } from 'rxjs'
-import { fetchBotInfoFulfilled, fetchApplicationsFulfilled, fetchAllEntitiesFulfilled, fetchAllActionsFulfilled, fetchAllChatSessionsFulfilled, fetchAllTeachSessionsFulfilled, fetchAllTrainDialogsFulfilled, fetchAllLogDialogsFulfilled } from '../actions/fetchActions'
+import { fetchBotInfoFulfilled, fetchApplicationsFulfilled, fetchAllEntitiesFulfilled, fetchAllActionsFulfilled, fetchAllChatSessionsFulfilled, fetchAllTeachSessionsFulfilled, fetchAllTrainDialogsFulfilled, fetchAllLogDialogsFulfilled, fetchAllLogDialogsAsync } from '../actions/fetchActions'
 import { createApplicationFulfilled, createEntityFulfilled, createPositiveEntityFulfilled, createNegativeEntityFulfilled, createActionFulfilled, createChatSessionFulfilled, createTeachSessionFulfilled } from '../actions/createActions'
 import { deleteBLISApplicationFulfilled, deleteReverseEntityAsnyc, deleteEntityFulfilled, deleteActionFulfilled, deleteChatSessionFulfilled, deleteTeachSessionFulfilled, deleteLogDialogFulFilled, deleteTrainDialogFulfilled } from '../actions/deleteActions'
 import { editBLISApplicationFulfilled, editEntityFulfilled, editActionFulfilled } from '../actions/updateActions'
@@ -304,11 +304,11 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
     // TODO: It seems like this should be used instead of default config since it has the session object in the body, but yet the API works?
     // let configWithBody = {...config, body: session}
     return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.post(addSessionRoute, config).then(response => {
-        let newSessionId = response.data.sessionId;
-        obs.next(createChatSessionFulfilled(session, newSessionId));
-              obs.complete();
-            })
-            .catch(err => handleError(obs, err,  AT.CREATE_CHAT_SESSION_ASYNC)));
+      let newSessionId = response.data.sessionId;
+      obs.next(createChatSessionFulfilled(session, newSessionId));
+      obs.complete();
+    })
+      .catch(err => handleError(obs, err,  AT.CREATE_CHAT_SESSION_ASYNC)));
   };
 
   export const deleteChatSession = (key : string, appId: string, session: Session): Observable<ActionObject> => {
@@ -316,6 +316,7 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
     return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.delete(deleteAppRoute, config)
       .then(response => {
               obs.next(deleteChatSessionFulfilled(session.sessionId));
+              obs.next(fetchAllLogDialogsAsync(key, appId));
               obs.complete();
             })
             .catch(err => handleError(obs, err,  AT.DELETE_CHAT_SESSION_ASYNC)));
@@ -366,6 +367,8 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
     return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.delete(deleteTeachSessionRoute, config)
       .then(response => {
               obs.next(deleteTeachSessionFulfilled(key, teachSession.teachId, appId));
+              // TODO: Change to fetch single dialog by id
+              // Maybe the delete teach session api could return the id of the corresponding train dialog this would be much more efficient than reloading everything
               obs.next(fetchAllTrainDialogsAsync(key, appId));
               obs.complete();
             })
