@@ -261,11 +261,15 @@ class TeachSessionScorer extends React.Component<Props, any> {
         }
         return ScoreReason.NotScorable;
     }
+    isMasked(actionId: string): boolean {
+        return (this.props.teachSession.scoreInput.maskedActions && this.props.teachSession.scoreInput.maskedActions.indexOf(actionId) > -1);
+    }
     renderItemColumn(item?: any, index?: number, column?: IColumn) {
-        let fieldContent = item[column.fieldName];
+        let action = item as ScoredBase;
+        let fieldContent = action[column.fieldName];
         switch (column.key) {
             case 'select':
-                let reason = item["reason"];
+                let reason = action["reason"];
                 if (reason == ScoreReason.NotCalculated) {
                     reason = this.calculateReason(item[column.fieldName]);
                 }
@@ -288,14 +292,17 @@ class TeachSessionScorer extends React.Component<Props, any> {
             case 'score':
                 if (fieldContent) {
                     fieldContent = (fieldContent * 100).toFixed(1) + "%"
-                } else {
-                    fieldContent = (item["reason"] == "notAvailable") ? "Disqualified" : "Training...";
+                } else if (this.isMasked(action.actionId)) {
+                    fieldContent = "Masked"
+                }    
+                else {
+                    fieldContent = (action["reason"] == "notAvailable") ? "Disqualified" : "Training...";
                 }
                 break;
             case 'entities':
-                return this.renderEntityRequirements(item.actionId);
+                return this.renderEntityRequirements(action.actionId);
             case 'type':
-                return item.metadata.actionType;
+                return action.metadata.actionType;
             case 'wait':
                 if (fieldContent == true) {
                     return <span className="ms-Icon ms-Icon--CheckMark checkIcon" aria-hidden="true"></span>;
