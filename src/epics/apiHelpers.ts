@@ -346,7 +346,6 @@ export const getSessionIds = (key: string, appId: string): Observable<AxiosRespo
 // Teach
 //========================================================
 
-<<<<<<< HEAD
   /** START SESSION : Creates a new session and a corresponding logDialog */
   export const createTeachSession = (key: string, teachSession: Teach, appId: string): Observable<ActionObject> => {
     let addTeachRoute: string = makeRoute(key, `app/${appId}/teach`);
@@ -356,30 +355,30 @@ export const getSessionIds = (key: string, appId: string): Observable<AxiosRespo
     return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.post(addTeachRoute, config).then(response => {
         let newTeachSessionId = response.data.teachId;
         obs.next(createTeachSessionFulfilled(teachSession, newTeachSessionId));
-              obs.complete();
-            })
-            .catch(err => handleError(obs, err,  AT.CREATE_TEACH_SESSION_ASYNC)));;
+          obs.complete();
+        })
+        .catch(err => handleError(obs, err,  AT.CREATE_TEACH_SESSION_ASYNC)));;
   };
 
   export const deleteTeachSession = (key : string, appId: string, teachSession: Teach, save: boolean): Observable<ActionObject> => {
     let deleteTeachSessionRoute: string = makeRoute(key, `app/${appId}/teach/${teachSession.teachId}`,`save=${save}`);
     return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.delete(deleteTeachSessionRoute, config)
       .then(response => {
-              obs.next(deleteTeachSessionFulfilled(key, teachSession.teachId, appId));
-              obs.next(fetchAllTrainDialogsAsync(key, appId));
-              obs.complete();
-            })
-            .catch(err => handleError(obs, err,  AT.DELETE_TEACH_SESSION_ASYNC)));
+        obs.next(deleteTeachSessionFulfilled(key, teachSession.teachId, appId));
+        obs.next(fetchAllTrainDialogsAsync(key, appId));
+        obs.complete();
+      })
+      .catch(err => handleError(obs, err,  AT.DELETE_TEACH_SESSION_ASYNC)));
   };
 
   export const getAllTeachSessionsForBlisApp = (key: string, appId: string): Observable<ActionObject> => {
     let getTeachSessionsForAppRoute: string = makeRoute(key, `app/${appId}/teaches`);
     return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.get(getTeachSessionsForAppRoute, config)
       .then(response => {
-              obs.next(fetchAllTeachSessionsFulfilled(response.data.teaches));
-              obs.complete();
-            })
-            .catch(err => handleError(obs, err,  AT.FETCH_TEACH_SESSIONS_ASYNC)));
+        obs.next(fetchAllTeachSessionsFulfilled(response.data.teaches));
+        obs.complete();
+      })
+      .catch(err => handleError(obs, err,  AT.FETCH_TEACH_SESSIONS_ASYNC)));
   };
 
   /** GET TEACH: Retrieves information about the specified teach */
@@ -397,10 +396,10 @@ export const getSessionIds = (key: string, appId: string): Observable<AxiosRespo
     let editAppRoute: string = makeRoute(key, `app/${appId}/teach/${teachId}/extractor`);
     return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.put(editAppRoute, userInput, config)		
       .then(response => {
-              obs.next(runExtractorFulfilled(key, appId, teachId, response.data));
-              obs.complete();
-            })
-            .catch(err => handleError(obs, err,  AT.RUN_EXTRACTOR_ASYNC)));
+        obs.next(runExtractorFulfilled(key, appId, teachId, response.data));
+        obs.complete();
+      })
+      .catch(err => handleError(obs, err,  AT.RUN_EXTRACTOR_ASYNC)));
   };
 
   /** RUN SCORER: 
@@ -415,11 +414,11 @@ export const getSessionIds = (key: string, appId: string): Observable<AxiosRespo
   export const putScore = (key : string, appId: string, teachId: string, uiScoreInput: UIScoreInput): Observable<ActionObject> => {
     let editAppRoute: string = makeRoute(key, `app/${appId}/teach/${teachId}/scorer`);
     return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.put(editAppRoute, uiScoreInput, config)	
-        .then(response => {
-              obs.next(runScorerFulfilled(key, appId, teachId, response.data)); 
-              obs.complete();
-            })
-            .catch(err => handleError(obs, err,  AT.RUN_SCORER_ASYNC)));
+      .then(response => {
+        obs.next(runScorerFulfilled(key, appId, teachId, response.data)); 
+        obs.complete();
+      })
+      .catch(err => handleError(obs, err,  AT.RUN_SCORER_ASYNC)));
   };
 
   /** SCORE FEEDBACK: Uploads a labeled scorer step instance 
@@ -429,18 +428,18 @@ export const getSessionIds = (key: string, appId: string): Observable<AxiosRespo
   export const postScore = (key : string, appId : string, teachId: string, trainScorerStep : TrainScorerStep, waitForUser : boolean, uiScoreInput: UIScoreInput): Observable<ActionObject> => {
     let addAppRoute: string = makeRoute(key, `app/${appId}/teach/${teachId}/scorer`);
     return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.post(addAppRoute, trainScorerStep, config)		
-        .then(response => {
-              if (!waitForUser) {
-                // Don't re-send predicted entities on subsequent score call -todo on non train path
-                uiScoreInput.extractResponse.predictedEntities = [];
-                obs.next(postScorerFeedbackNoWaitFulfilled(key, appId, teachId, response.data, uiScoreInput))
-              }
-              else {
-                obs.next(postScorerFeedbackWaitFulfilled(key, appId, teachId, response.data));
-              }
-              obs.complete();
-            })
-            .catch(err => handleError(obs, err,  AT.POST_SCORE_FEEDBACK_ASYNC)));
+      .then(response => {
+        if (!waitForUser) {
+          // Don't re-send predicted entities on subsequent score call -todo on non train path
+          uiScoreInput.extractResponse.predictedEntities = [];
+          obs.next(postScorerFeedbackNoWaitFulfilled(key, appId, teachId, response.data, uiScoreInput))
+        }
+        else {
+          obs.next(postScorerFeedbackWaitFulfilled(key, appId, teachId, response.data));
+        }
+        obs.complete();
+      })
+      .catch(err => handleError(obs, err,  AT.POST_SCORE_FEEDBACK_ASYNC)));
   };
 
   /** END TEACH: Ends a teach.   
@@ -454,121 +453,6 @@ export const getSessionIds = (key: string, appId: string): Observable<AxiosRespo
     let getAppRoute: string = makeRoute(key, `app/${appId}/teach`);
     return Rx.Observable.fromPromise(axios.get(getAppRoute, config))
   };
-
-  let handleError = function(obs : Observer<ActionObject>, err: any, route : AT)
-  {
-    if (!obs.closed) {
-      // Service call failure
-      obs.next(setErrorDisplay(err.message, toErrorString(err.response), route));
-=======
-/** START SESSION : Creates a new session and a corresponding logDialog */
-export const createTeachSession = (key: string, teachSession: Teach, appId: string): Observable<ActionObject> => {
-  let addTeachRoute: string = makeRoute(key, `app/${appId}/teach`);
-
-  // TODO: It seems like this should be used instead of default config since it has the session object in the body, but yet the API works?
-  // let configWithBody = {...config, body: teachSession}
-  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => axios.post(addTeachRoute, config).then(response => {
-    let newTeachSessionId = response.data.teachId;
-    obs.next(createTeachSessionFulfilled(teachSession, newTeachSessionId));
-    obs.complete();
-  })
-    .catch(err => handleError(obs, err, AT.CREATE_TEACH_SESSION_ASYNC)));;
-};
-
-export const deleteTeachSession = (key: string, appId: string, teachSession: Teach, save: boolean): Observable<ActionObject> => {
-  let deleteTeachSessionRoute: string = makeRoute(key, `app/${appId}/teach/${teachSession.teachId}`, `save=${save}`);
-  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => axios.delete(deleteTeachSessionRoute, config)
-    .then(response => {
-      obs.next(deleteTeachSessionFulfilled(key, teachSession.teachId, appId));
-      // TODO: Change to fetch single dialog by id
-      // Maybe the delete teach session api could return the id of the corresponding train dialog this would be much more efficient than reloading everything
-      obs.next(fetchAllTrainDialogsAsync(key, appId));
->>>>>>> master
-      obs.complete();
-    })
-    .catch(err => handleError(obs, err, AT.DELETE_TEACH_SESSION_ASYNC)));
-};
-
-export const getAllTeachSessionsForBlisApp = (key: string, appId: string): Observable<ActionObject> => {
-  let getTeachSessionsForAppRoute: string = makeRoute(key, `app/${appId}/teaches`);
-  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => axios.get(getTeachSessionsForAppRoute, config)
-    .then(response => {
-      obs.next(fetchAllTeachSessionsFulfilled(response.data.teaches));
-      obs.complete();
-    })
-    .catch(err => handleError(obs, err, AT.FETCH_TEACH_SESSIONS_ASYNC)));
-};
-
-/** GET TEACH: Retrieves information about the specified teach */
-export const getTeach = (key: string, appId: string, teachId: string): Observable<AxiosResponse> => {
-  let getAppRoute: string = makeRoute(key, `app/${appId}/teach/${teachId}`);
-  return Rx.Observable.fromPromise(axios.get(getAppRoute, config))
-};
-
-/** RUN EXTRACTOR: Runs entity extraction (prediction). 
- * If a more recent version of the package is available on 
- * the server, the session will first migrate to that newer version.  This 
- * doesn't affect the trainDialog maintained.
- */
-export const putExtract = (key: string, appId: string, teachId: string, userInput: UserInput): Observable<ActionObject> => {
-  let editAppRoute: string = makeRoute(key, `app/${appId}/teach/${teachId}/extractor`);
-  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => axios.put(editAppRoute, userInput, config)
-    .then(response => {
-      obs.next(runExtractorFulfilled(key, appId, teachId, response.data));
-      obs.complete();
-    })
-    .catch(err => handleError(obs, err, AT.RUN_EXTRACTOR_ASYNC)));
-};
-
-/** RUN SCORER: 
- * 1) Uploads a labeled entity extraction instance
- * ie "commits" an entity extraction label, appending it to the teach session's
- * trainDialog, and advancing the dialog. This may yield produce a new package.
- * 2) Takes a turn and return distribution over actions.
- * If a more recent version of the package is 
- * available on the server, the session will first migrate to that newer version.  
- * This doesn't affect the trainDialog maintained by the teaching session.
- */
-export const putScore = (key: string, appId: string, teachId: string, uiScoreInput: UIScoreInput): Observable<ActionObject> => {
-  let editAppRoute: string = makeRoute(key, `app/${appId}/teach/${teachId}/scorer`);
-  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => axios.put(editAppRoute, uiScoreInput, config)
-    .then(response => {
-      obs.next(runScorerFulfilled(key, appId, teachId, response.data));
-      obs.complete();
-    })
-    .catch(err => handleError(obs, err, AT.RUN_SCORER_ASYNC)));
-};
-
-/** SCORE FEEDBACK: Uploads a labeled scorer step instance 
- * – ie "commits" a scorer label, appending it to the teach session's 
- * trainDialog, and advancing the dialog. This may yield produce a new package.
- */
-export const postScore = (key: string, appId: string, teachId: string, trainScorerStep: TrainScorerStep, waitForUser: boolean, uiScoreInput: UIScoreInput): Observable<ActionObject> => {
-  let addAppRoute: string = makeRoute(key, `app/${appId}/teach/${teachId}/scorer`);
-  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => axios.post(addAppRoute, trainScorerStep, config)
-    .then(response => {
-      if (!waitForUser) {
-        obs.next(postScorerFeedbackNoWaitFulfilled(key, appId, teachId, response.data, uiScoreInput))
-      }
-      else {
-        obs.next(postScorerFeedbackWaitFulfilled(key, appId, teachId, response.data));
-      }
-      obs.complete();
-    })
-    .catch(err => handleError(obs, err, AT.POST_SCORE_FEEDBACK_ASYNC)));
-};
-
-/** END TEACH: Ends a teach.   
- * For Teach sessions, does NOT delete the associated trainDialog.
- * To delete the associated trainDialog, call DELETE on the trainDialog.
- */
-
-
-/** GET TEACH SESSION IDS: Retrieves a list of teach session IDs */
-export const getTeachIds = (key: string, appId: string): Observable<AxiosResponse> => {
-  let getAppRoute: string = makeRoute(key, `app/${appId}/teach`);
-  return Rx.Observable.fromPromise(axios.get(getAppRoute, config))
-};
 
 let handleError = function (obs: Observer<ActionObject>, err: any, route: AT) {
   if (!obs.closed) {
