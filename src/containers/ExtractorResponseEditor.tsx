@@ -388,7 +388,7 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
     }
     substringHasBeenClicked(s: SubstringObject): boolean {
         let result: boolean = false;
-        if (this.state.substringsClicked !== null) {
+        if (this.state.substringsClicked.length > 0) {
             this.state.substringsClicked.map((sub: SubstringObject) => {
                 if (sub.startIndex == s.startIndex) {
                     result = true
@@ -429,7 +429,7 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
     }
     isDefinedEntityBetweenClickedSubstrings(startIndex: number, endIndex: number): boolean {
         let result: boolean = false;
-        if (this.state.substringsClicked !== null) {
+        if (this.state.substringsClicked.length > 0) {
             let entityStartIndexes: number[] = this.state.substringObjects.map((s: SubstringObject) => {
                 if (s.entityId !== null) {
                     return s.startIndex;
@@ -464,7 +464,7 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
         let updateClickedSubstrings: boolean = true;
         //hovering over a specified entity does nothing
         if (s.entityId === null) {
-            if (this.state.substringsClicked === null) {
+            if (this.state.substringsClicked.length == 0) {
                 //havent clicked any strings yet
                 let newSubstringObj = { ...s, leftBracketStyle: styles.leftBracketDisplayedBlack, rightBracketStyle: styles.rightBracketDisplayedBlack, dropdownStyle: styles.dropdownNormal }
                 allObjects[indexOfHoveredSubstring] = newSubstringObj;
@@ -476,7 +476,7 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
                     //user has clicked into the already clicked string/group of strings. We need to remove the brackets around all clicked but not set strings, and remove the dropwdowns currently displayed underneath them
                     this.removeBracketsFromAllSelectedSubstrings();
                     this.setState({
-                        substringsClicked: null
+                        substringsClicked: []
                     })
                     updateClickedSubstrings = false
                 } else {
@@ -510,7 +510,7 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
                 }
             }
             if (updateClickedSubstrings === true) {
-                let currentlyClicked: SubstringObject[] = this.state.substringsClicked === null ? [] : this.state.substringsClicked;
+                let currentlyClicked: SubstringObject[] = this.state.substringsClicked.length == 0 ? [] : this.state.substringsClicked;
                 this.setState({
                     substringsClicked: [...currentlyClicked, s]
                 })
@@ -538,7 +538,7 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
 
         //hovering over a specified entity does nothing, similarly hovering over a clicked substring should maintain the black brackets
         if (s.entityId === null && currentHoverIsPreviouslyClickedSubstring === false) {
-            if (this.state.substringsClicked === null) {
+            if (this.state.substringsClicked.length == 0) {
                 //havent clicked any strings yet
                 let newSubstringObj = { ...s, leftBracketStyle: styles.leftBracketDisplayedGray, rightBracketStyle: styles.rightBracketDisplayedGray }
                 allObjects[indexOfHoveredSubstring] = newSubstringObj;
@@ -580,7 +580,7 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
         let allObjects = this.state.substringObjects;
         let currentHoverIsPreviouslyClickedSubstring = this.substringHasBeenClicked(s)
         if (s.entityId === null && currentHoverIsPreviouslyClickedSubstring == false) {
-            if (this.state.substringsClicked === null) {
+            if (this.state.substringsClicked.length == 0) {
                 //havent clicked any string yet
                 let newSubstringObj = { ...s, leftBracketStyle: styles.leftBracketDisplayedWhite, rightBracketStyle: styles.rightBracketDisplayedWhite }
                 allObjects[indexOfHoveredSubstring] = newSubstringObj;
@@ -663,7 +663,7 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
                 })
             }
             this.setState({
-                substringsClicked: null
+                substringsClicked: []
             })
         } else {
             if (obj.text.toLowerCase() == 'remove') {
