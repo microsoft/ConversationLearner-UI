@@ -5,7 +5,6 @@ import { connect } from 'react-redux';
 import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader'
 import { DetailsList, CommandButton, CheckboxVisibility, IColumn, SearchBox } from 'office-ui-fabric-react';
 import { setCurrentTeachSession } from '../actions/displayActions'
-import { createTrainDialog } from '../actions/createActions'
 import { State } from '../types'
 import { TrainDialog } from 'blis-models'
 import { findDOMNode } from 'react-dom';
@@ -215,7 +214,6 @@ class TrainDialogsList extends React.Component<Props, ComponentState> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        createTrainDialog,
         setCurrentTeachSession
     }, dispatch)
 }

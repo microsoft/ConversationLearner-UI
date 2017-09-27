@@ -4,7 +4,6 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader'
 import { DetailsList, CommandButton, CheckboxVisibility, IColumn, SearchBox } from 'office-ui-fabric-react';
-import { setDisplayMode } from '../actions/displayActions'
 import { State } from '../types'
 import { LogDialog } from 'blis-models'
 import ChatSessionWindow from './ChatSessionWindow'
@@ -183,7 +182,6 @@ class LogDialogsList extends React.Component<Props, ComponentState> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        setDisplayMode
     }, dispatch)
 }
 const mapStateToProps = (state: State) => {
