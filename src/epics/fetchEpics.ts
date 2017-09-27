@@ -7,13 +7,13 @@ import { getBotInfo, getAllBlisApps, getAllEntitiesForBlisApp, getAllActionsForB
 
 export const fetchBotInfoEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
     return action$.ofType(AT.FETCH_BOTINFO_ASYNC)
-        .flatMap((action: any) => 
+        .flatMap((action: any) =>
             getBotInfo(action.key));
 }
 
 export const fetchApplicationsEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
     return action$.ofType(AT.FETCH_APPLICATIONS_ASYNC)
-        .flatMap((action: any) => 
+        .flatMap((action: any) =>
             getAllBlisApps(action.key, action.userId));
 }
 
@@ -21,7 +21,7 @@ export const fetchEntitiesEpic: Epic<ActionObject, State> = (action$: ActionsObs
     return action$.ofType(AT.FETCH_ENTITIES_ASYNC)
         .flatMap((action: any) =>
             getAllEntitiesForBlisApp(action.key, action.blisAppID)
-        );       
+        );
 }
 
 export const fetchActionsEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {

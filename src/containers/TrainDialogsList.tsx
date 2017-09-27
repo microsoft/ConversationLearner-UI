@@ -63,11 +63,10 @@ class TrainDialogsList extends React.Component<Props, ComponentState> {
     componentDidMount() {
         this.focusNewEntityButton();
     }
-    focusNewEntityButton() : void {
+    focusNewEntityButton(): void {
         findDOMNode<HTMLButtonElement>(this.refs.newSession).focus();
     }
-    firstUtterance(item: any)
-    {
+    firstUtterance(item: any) {
         try {
             if (item.rounds && item.rounds.length > 0) {
                 let text = item.rounds[0].extractorStep.textVariations[0].text;
@@ -79,11 +78,10 @@ class TrainDialogsList extends React.Component<Props, ComponentState> {
             return "ERR";
         }
     }
-    lastUtterance(item: any)
-    {
+    lastUtterance(item: any) {
         try {
             if (item.rounds && item.rounds.length > 0) {
-                let text = item.rounds[item.rounds.length-1].extractorStep.textVariations[0].text;
+                let text = item.rounds[item.rounds.length - 1].extractorStep.textVariations[0].text;
                 return <span className='ms-font-m-plus'>{text}</span>;
             }
             return <span className="ms-Icon ms-Icon--Remove notFoundIcon" aria-hidden="true"></span>;
@@ -92,17 +90,14 @@ class TrainDialogsList extends React.Component<Props, ComponentState> {
             return "ERR";
         }
     }
-    lastResponse(item: any)
-    {
+    lastResponse(item: any) {
         try {
             if (item.rounds && item.rounds.length > 0) {
-                let scorerSteps = item.rounds[item.rounds.length-1].scorerSteps;
-                if (scorerSteps.length > 0)
-                {
-                    let actionId = scorerSteps[scorerSteps.length-1].labelAction;
+                let scorerSteps = item.rounds[item.rounds.length - 1].scorerSteps;
+                if (scorerSteps.length > 0) {
+                    let actionId = scorerSteps[scorerSteps.length - 1].labelAction;
                     let action = this.props.actions.find(a => a.actionId == actionId);
-                    if (action)
-                    {
+                    if (action) {
                         return <span className='ms-font-m-plus'>{action.payload}</span>;
                     }
                 }
@@ -116,11 +111,11 @@ class TrainDialogsList extends React.Component<Props, ComponentState> {
     renderItemColumn(item?: any, index?: number, column?: IColumn) {
         let fieldContent = item[column.fieldName];
         switch (column.key) {
-            case 'firstInput': 
+            case 'firstInput':
                 return this.firstUtterance(item);
-            case 'lastInput': 
+            case 'lastInput':
                 return this.lastUtterance(item);
-            case 'lastResponse': 
+            case 'lastResponse':
                 return this.lastResponse(item);
             case 'turns':
                 let count = item.rounds ? item.rounds.length : 0;
@@ -143,7 +138,7 @@ class TrainDialogsList extends React.Component<Props, ComponentState> {
     }
 
     onClickTrainDialogItem(trainDialog: TrainDialog) {
-       this.setState({
+        this.setState({
             isTrainDialogModalOpen: true,
             trainDialog
         })
@@ -169,7 +164,7 @@ class TrainDialogsList extends React.Component<Props, ComponentState> {
         })
         return filteredTrainDialogs;
     }
-    
+
     render() {
         let trainDialogItems = this.renderTrainDialogItems()
         return (

@@ -14,15 +14,15 @@ export const deleteApplicationEpic: Epic<ActionObject, State> = (action$: Action
 
 export const deleteEntityEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
     return action$.ofType(AT.DELETE_ENTITY_ASYNC)
-        .flatMap((action: any) => 
-                deleteBlisEntity(action.key, action.currentAppId, action.entity.entityId, action.entity.metadata.negativeId || action.entity.metadata.positiveId)    
+        .flatMap((action: any) =>
+            deleteBlisEntity(action.key, action.currentAppId, action.entity.entityId, action.entity.metadata.negativeId || action.entity.metadata.positiveId)
         );
 }
 
 export const deleteReverseEntityEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
     return action$.ofType(AT.DELETE_REVERSE_ENTITY_ASYNC)
         .flatMap((action: any) =>
-                deleteBlisEntity(action.key, action.currentAppId, action.reverseEntityId, null)
+            deleteBlisEntity(action.key, action.currentAppId, action.reverseEntityId, null)
         );
 }
 

@@ -10,14 +10,14 @@ import { BehaviorSubject } from 'rxjs';
 import { Activity } from 'botframework-directlinejs';
 
 class Webchat extends React.Component<Props, any> {
-    private behaviorSubject : BehaviorSubject<any> = null;
-    private chatProps : BotChat.ChatProps = null;
+    private behaviorSubject: BehaviorSubject<any> = null;
+    private chatProps: BotChat.ChatProps = null;
 
     static defaultProps: ReceivedProps = {
         app: null,
         history: null,
-        onSelectActivity: () => {},
-        onPostActivity: () => {}
+        onSelectActivity: () => { },
+        onPostActivity: () => { }
     }
 
     constructor(p: any) {
@@ -26,8 +26,7 @@ class Webchat extends React.Component<Props, any> {
         this.selectedActivity$ = this.selectedActivity$.bind(this)
     }
 
-    selectedActivity$() : BehaviorSubject<any>
-    { 
+    selectedActivity$(): BehaviorSubject<any> {
         if (!this.behaviorSubject) {
             this.behaviorSubject = new BehaviorSubject<any>({});
             this.behaviorSubject.subscribe((value) => {
@@ -35,20 +34,19 @@ class Webchat extends React.Component<Props, any> {
                     this.props.onSelectActivity(value.activity as Activity)
                 }
             })
-        } 
+        }
         return this.behaviorSubject;
     }
 
-    GetChatProps() : BotChat.ChatProps {
-        if (!this.chatProps)
-        {
+    GetChatProps(): BotChat.ChatProps {
+        if (!this.chatProps) {
             const dl = new BotChat.DirectLine({
                 secret: 'secret', //params['s'],
                 token: 'token', //params['t'],
                 domain: "http://localhost:3000/directline", //params['domain'],
                 webSocket: false // defaults to true,
             });
-    
+
             const _dl = {
                 ...dl,
                 postActivity: (activity: any) => {
@@ -56,7 +54,7 @@ class Webchat extends React.Component<Props, any> {
                     return dl.postActivity(activity)
                 },
             } as BotChat.DirectLine;
-    
+
             this.chatProps = {
                 botConnection: _dl,
                 formatOptions: {
@@ -68,7 +66,7 @@ class Webchat extends React.Component<Props, any> {
             }
             // If viewing history, add history and listener
             if (this.props.history) {
-                this.chatProps = {...this.chatProps, history: this.props.history,  selectedActivity: this.selectedActivity$() as any};
+                this.chatProps = { ...this.chatProps, history: this.props.history, selectedActivity: this.selectedActivity$() as any };
             }
         }
         return this.chatProps;

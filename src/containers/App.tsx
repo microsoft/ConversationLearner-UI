@@ -11,7 +11,7 @@ export default class App extends React.Component<any, any> {
     return (
       <Router>
         <div className="app">
-          <Header/>
+          <Header />
           <Route exact path="/" component={BLISAppsHomepage as React.ComponentClass<any>} />
           <Route path="/myApps" component={BLISAppsHomepage as React.ComponentClass<any>} />
           <Route path="/about" component={About} />
