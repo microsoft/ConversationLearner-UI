@@ -431,6 +431,8 @@ const makeRoute = (key: string, actionRoute : string, qstring? : string) =>
     return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.post(addAppRoute, trainScorerStep, config)		
         .then(response => {
               if (!waitForUser) {
+                // Don't re-send predicted entities on subsequent score call -todo on non train path
+                uiScoreInput.extractResponse.predictedEntities = [];
                 obs.next(postScorerFeedbackNoWaitFulfilled(key, appId, teachId, response.data, uiScoreInput))
               }
               else {
