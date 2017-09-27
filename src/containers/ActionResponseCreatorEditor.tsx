@@ -55,7 +55,7 @@ const initState = {
     payloadFocused: false
 };
 
-interface ComponentState  {
+interface ComponentState {
     actionTypeVal: string,
     apiVal: string,
     displayAutocomplete: boolean,
@@ -161,14 +161,13 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
                 let payload = null;
                 let apiVal = null;
                 if (p.blisAction.metadata.actionType == ActionTypes.API_LOCAL) {
-                   payload = ModelUtils.GetArguments(p.blisAction);
-                   apiVal = ModelUtils.GetPrimaryPayload(p.blisAction);
+                    payload = ModelUtils.GetArguments(p.blisAction);
+                    apiVal = ModelUtils.GetPrimaryPayload(p.blisAction);
 
                     // Default to first api if none selected
-                   if (!apiVal && this.props.botInfo.callbacks && this.props.botInfo.callbacks.length > 0)
-                   {
-                       apiVal = this.props.botInfo.callbacks[0];
-                   }
+                    if (!apiVal && this.props.botInfo.callbacks && this.props.botInfo.callbacks.length > 0) {
+                        apiVal = this.props.botInfo.callbacks[0];
+                    }
                 }
                 else {
                     payload = p.blisAction.payload;
@@ -410,7 +409,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
             })
         }
     }
-    
+
     entityCreatorHandleClose() {
         this.setState({
             entityModalOpen: false
@@ -569,7 +568,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
             }
         }
     }
-    
+
     findDeletedEntity(items: EntityPickerObject[], oldItems: EntityPickerObject[]): EntityPickerObject {
         let deletedEntity: EntityPickerObject;
         oldItems.map((o: EntityPickerObject) => {
@@ -795,17 +794,17 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
                 placeholder = "NONE DEFINED";
             }
 
-            apiDropDown = 
-            (
-                <Dropdown
-                    label='API'
-                    options={apiOptions}
-                    onChanged={this.apiChanged}
-                    selectedKey={this.state.apiVal}
-                    disabled={disabled}
-                    placeHolder={placeholder}
-                />
-            )
+            apiDropDown =
+                (
+                    <Dropdown
+                        label='API'
+                        options={apiOptions}
+                        onChanged={this.apiChanged}
+                        selectedKey={this.state.apiVal}
+                        disabled={disabled}
+                        placeHolder={placeholder}
+                    />
+                )
             payloadTextField = (
                 <TextFieldPlaceholder
                     id={"actionArguements"}
@@ -817,9 +816,9 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
                     onFocus={this.payloadIsFocused}
                     onKeyDown={this.payloadKeyDown}
                     onBlur={this.payloadBlur}
-                    value={this.state.payloadVal} 
+                    value={this.state.payloadVal}
                     disabled={disabled}
-                    />)
+                />)
         } else {
             payloadTextField = (
                 <TextFieldPlaceholder
@@ -833,11 +832,11 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
                     onFocus={this.payloadIsFocused}
                     onKeyDown={this.payloadKeyDown}
                     onBlur={this.payloadBlur}
-                    value={this.state.payloadVal} 
-                    />
-                )
+                    value={this.state.payloadVal}
+                />
+            )
         }
-        let createDisabled = 
+        let createDisabled =
             (this.state.actionTypeVal == ActionTypes.API_LOCAL) ?
                 !this.state.apiVal : !this.state.payloadVal;
         return (
@@ -947,9 +946,9 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
                         />
                         {deleteButton}
                     </div>
-                    <EntityCreatorEditor 
-                        open={this.state.entityModalOpen} 
-                        entity={null} 
+                    <EntityCreatorEditor
+                        open={this.state.entityModalOpen}
+                        entity={null}
                         handleClose={this.entityCreatorHandleClose} />
                 </Modal>
             </div>

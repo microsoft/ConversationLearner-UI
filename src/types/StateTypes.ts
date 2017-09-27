@@ -1,9 +1,11 @@
-import { BlisAppBase,
+import {
+    BlisAppBase,
     BotInfo,
-    EntityBase, 
+    EntityBase,
     ActionBase,
     TrainDialog, LogDialog, Teach, Session,
-    Memory, UIScoreInput, ScoreInput, ExtractResponse, ScoreResponse } from 'blis-models';
+    Memory, UIScoreInput, ScoreInput, ExtractResponse, ScoreResponse
+} from 'blis-models';
 import { DisplayMode, TeachMode } from '../types/const'
 import { AT } from '../types/ActionTypes'
 
@@ -13,17 +15,12 @@ export type ErrorState = {
     error: string,
     message: string,
     route: AT
-};
+}
 export type TrainDialogState = {
-    all: TrainDialog[],
-    current: TrainDialog,
-    roundNumber: number,
-    scoreNumber: number,
-    mode: TeachMode
+    all: TrainDialog[]
 }
 export type LogDialogState = {
-    all: LogDialog[],
-    current: LogDialog
+    all: LogDialog[]
 }
 export type AppState = {
     all: BlisAppBase[],
@@ -55,16 +52,14 @@ export type DisplayState = {
     displayWebchat: boolean,   // TOOD this can go away
     displayLogin: boolean,
     displaySpinner: string[]
-};
-export type UserState =
-{
+}
+export type UserState = {
     name: string,
     password: string,
     id: string,
     key: string
 }
-export type TeachState =
-{
+export type TeachState = {
     name: string,
     password: string,
     id: string,

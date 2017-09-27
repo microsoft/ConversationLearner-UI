@@ -38,7 +38,7 @@ class LogDialogModal extends React.Component<Props, ComponentState> {
                 text: round.extractorStep.text
             }
 
-            const botActivities: Activity[] = round.scorerSteps.map((scorerStep, j) => {
+            const botActivities = round.scorerSteps.map<Activity>((scorerStep, j) => {
                 let action = actions.filter(a => a.actionId === scorerStep.predictedAction)[0]
                 return {
                     id: `${i}:${j}`,
@@ -48,7 +48,7 @@ class LogDialogModal extends React.Component<Props, ComponentState> {
                     },
                     type: "message",
                     text: action.payload
-                } as Activity;
+                };
             })
 
             return [userActivity, ...botActivities]
@@ -84,7 +84,7 @@ class LogDialogModal extends React.Component<Props, ComponentState> {
                     <div className="blis-chatmodal">
                         <div className="blis-chatmodal_webchat">
                             <Webchat
-                                sessionType={"chat"}
+                                app={this.props.app}
                                 history={history}
                                 onSelectActivity={activity => this.onSelectWebChatActivity(activity)}
                                 onPostActivity={activity => this.onPostWebChatActivity(activity)}
@@ -124,7 +124,6 @@ const mapDispatchToProps = (dispatch: any) => {
 }
 const mapStateToProps = (state: State, ownProps: ReceivedProps) => {
     return {
-        apps: state.apps,
         user: state.user,
         actions: state.actions
     }
@@ -132,7 +131,7 @@ const mapStateToProps = (state: State, ownProps: ReceivedProps) => {
 
 export interface ReceivedProps {
     open: boolean,
-    onClose: Function,
+    onClose: () => void,
     logDialog: LogDialog,
     app: BlisAppBase
 }

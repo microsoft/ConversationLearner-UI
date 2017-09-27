@@ -1,4 +1,4 @@
-import { ActionObject} from '../types'
+import { ActionObject } from '../types'
 import { EntityState } from '../types'
 import { AT } from '../types/ActionTypes'
 import { EntityBase } from 'blis-models';
@@ -6,17 +6,17 @@ import { Reducer } from 'redux'
 
 const initialState: EntityState = [];
 
-const entitiesReducer: Reducer<EntityState> =  (state = initialState, action: ActionObject) => {
-    switch(action.type) {
+const entitiesReducer: Reducer<EntityState> = (state = initialState, action: ActionObject): EntityState => {
+    switch (action.type) {
         case AT.LOGOUT:
             return { ...initialState };
         case AT.FETCH_ENTITIES_FULFILLED:
             return action.allEntities;
-        case AT.EMPTY_STATE_PROPERTIES: 
+        case AT.EMPTY_STATE_PROPERTIES:
             let empty: EntityState = []
             return empty;
         case AT.CREATE_ENTITY_FULFILLED:
-            let newEntity = {...action.entity, entityId: action.entityId};
+            let newEntity = { ...action.entity, entityId: action.entityId };
             return [...state, newEntity];
         case AT.CREATE_ENTITY_FULFILLEDNEGATIVE:
             let entities: EntityBase[] = [action.positiveEntity, action.negativeEntity];
@@ -26,8 +26,8 @@ const entitiesReducer: Reducer<EntityState> =  (state = initialState, action: Ac
             return state.filter(ent => ent.entityId !== action.deletedEntityId);
         case AT.EDIT_ENTITY_FULFILLED:
             let index: number = 0;
-            for(let i = 0; i < state.length; i++){
-                if(state[i].entityId == action.entity.entityId){
+            for (let i = 0; i < state.length; i++) {
+                if (state[i].entityId == action.entity.entityId) {
                     index = i
                 }
             }

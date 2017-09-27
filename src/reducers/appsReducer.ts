@@ -8,15 +8,15 @@ const initialState: AppState = {
     current: null
 };
 
-const appsReducer: Reducer<AppState> = (state = initialState, action: ActionObject) => {
+const appsReducer: Reducer<AppState> = (state = initialState, action: ActionObject): AppState => {
     switch (action.type) {
         case AT.LOGOUT:
             return { ...initialState };
         case AT.FETCH_APPLICATIONS_FULFILLED:
             return { ...state, all: action.allBlisApps };
         case AT.CREATE_BLIS_APPLICATION_FULFILLED:
-            let newApp = {...action.blisApp, appId: action.blisAppId};
-            return { ...state, current: newApp, all: [...state.all, newApp]};
+            let newApp = { ...action.blisApp, appId: action.blisAppId };
+            return { ...state, current: newApp, all: [...state.all, newApp] };
         case AT.SET_CURRENT_BLIS_APP_FULFILLED:
             return { ...state, current: action.currentBLISApp };
         case AT.DELETE_BLIS_APPLICATION_FULFILLED:

@@ -9,7 +9,7 @@ const initialState: ChatSessionState = {
     currentConversationStack: []
 };
 
-const chatSessionReducer: Reducer<ChatSessionState> = (state = initialState, action: ActionObject) => {
+const chatSessionReducer: Reducer<ChatSessionState> = (state = initialState, action: ActionObject): ChatSessionState => {
     switch (action.type) {
         case AT.LOGOUT:
             return { ...initialState };
@@ -17,14 +17,14 @@ const chatSessionReducer: Reducer<ChatSessionState> = (state = initialState, act
             return { ...state, all: action.allSessions };
         case AT.CREATE_CHAT_SESSION_FULFILLED:
             let newSession = { ...action.session, sessionId: action.sessionId };
-            let newState: ChatSessionState = {...state, all: [...state.all, newSession ], current: newSession }
+            let newState: ChatSessionState = { ...state, all: [...state.all, newSession], current: newSession }
             return newState;
         case AT.DELETE_CHAT_SESSION_FULFILLED:
             return { ...state, all: state.all.filter((s: Session) => s.sessionId !== action.sessionGUID) }
         case AT.SET_CURRENT_CHAT_SESSION:
             return { ...state, current: action.currentSession };
         case AT.CHAT_MESSAGE_RECEIVED:
-            return {...state, currentConversationStack: [...state.currentConversationStack, action.message]};
+            return { ...state, currentConversationStack: [...state.currentConversationStack, action.message] };
         default:
             return state;
     }

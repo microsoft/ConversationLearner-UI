@@ -3,91 +3,72 @@ import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../types'
-import { ActionBase, TrainScorerStep, EntityBase } from 'blis-models'
 import ExtractorResponseEditor from './ExtractorResponseEditor';
+import { Activity } from 'botframework-directlinejs'
+import { ActionBase, TrainDialog, TrainRound, TrainScorerStep, EntityBase, ExtractResponse } from 'blis-models'
 
 class TrainDialogAdmin extends React.Component<Props, any> {
-    getScore() {
-        let trainDialog = this.props.trainDialog.current;
-        if (!trainDialog.rounds || trainDialog.rounds.length == 0) { 
-            return null;
-        }
-        let round = trainDialog.rounds[this.props.trainDialog.roundNumber];
 
-        if (!round.scorerSteps || round.scorerSteps.length == 0) { 
-            return null;
-        }
-        let score = round.scorerSteps[this.props.trainDialog.scoreNumber];
-        return score;
-    }
-    getExtractResponses() {
-        let trainDialog = this.props.trainDialog.current;
+    findRoundAndScorerStep(trainDialog: TrainDialog, activity: Activity): { round: TrainRound, scorerStep: TrainScorerStep } {
+        // TODO: Add roundIndex and scoreIndex to activity instead of hiding within id if these are needed as first class properties.
+        const [roundIndex, scoreIndex] = activity.id.split(":").map(s => parseInt(s))
 
-        if (!trainDialog.rounds || trainDialog.rounds.length == 0) { 
-            return null;
+        if (roundIndex > trainDialog.rounds.length) {
+            throw new Error(`Index out of range: You are attempting to access round by index: ${roundIndex} but there are only: ${trainDialog.rounds.length} rounds.`)
         }
-        
-        let round = trainDialog.rounds[this.props.trainDialog.roundNumber];
-        let key = 0;
-        let extractDisplay = [];
-        for (let extractResponse of round.extractorStep.textVariations) {    
-            extractDisplay.push(<ExtractorResponseEditor key={key++} isPrimary={true} isValid={true} extractResponse={extractResponse}/>);   
+
+        const round = trainDialog.rounds[roundIndex]
+
+        if (scoreIndex > round.scorerSteps.length) {
+            throw new Error(`Index out of range: You are attempting to access scorer step by index: ${scoreIndex} but there are only: ${round.scorerSteps.length} scorere steps.`)
         }
-        return (
-            <div>
-                <div className='teachTitleBox'>
-                    <div className='ms-font-l teachTitle'>Entity Detection</div>
-                </div>
-                {extractDisplay}
-            </div>
-        );
+
+        const scorerStep = round.scorerSteps[scoreIndex]
+
+        return {
+            round,
+            scorerStep
+        }
     }
-    getMemory(score : TrainScorerStep) : JSX.Element {
-        let entityIds = score.input.filledEntities;
-        let details;
-        if (entityIds.length == 0) {
-            <div className='ms-font-l teachEmptyMemory'>Empty</div>;
-        }
-        else {
-            details = [];
-            for (let entityId of entityIds) {
-                let entity: EntityBase = this.props.entities.find((a: EntityBase) => a.entityId == entityId);
-                details.push(<div className='ms-font-l' key={entity.entityName}>{entity.entityName}</div>);     
-            }
-        }
-        return (
-            <div>
-                <div className='teachTitleBox'>
-                    <div className='ms-font-l teachTitle'>Memory</div>
-                </div>
-                {details}
-            </div>
-        );
-    }
-    getAction(score : TrainScorerStep) : JSX.Element {
-        let actionId = score.labelAction;
-        let action: ActionBase = this.props.actions.find((a: ActionBase) => a.actionId == actionId);  
-        let payload = action ? action.payload : "ERROR: Missing Action"   ;
-        return (
-            <div>
-                <div className='teachTitleBox'>
-                    <div className='ms-font-l teachTitle'>Action</div>
-                </div>
-                <div className='ms-font-l teachEmptyMemory'>{payload}</div>
-            </div>
-        );
-    }
+
     render() {
-        let score = this.getScore();
-        let extractResponses = this.getExtractResponses();
-        // Not all rounds will have a score
-        let actionPayload = score ? this.getAction(score) : "";
-        let memory = score ? this.getMemory(score) : "";
+        let round: TrainRound = null
+        let scorerStep: TrainScorerStep = null
+        let action: ActionBase = null
+        let entities: EntityBase[] = []
+
+        if (this.props.trainDialog && this.props.selectedActivity) {
+            const result = this.findRoundAndScorerStep(this.props.trainDialog, this.props.selectedActivity)
+            round = result.round
+            scorerStep = result.scorerStep
+            action = this.props.actions.find(action => action.actionId == scorerStep.labelAction)
+            entities = this.props.entities.filter(entity => scorerStep.input.filledEntities.includes(entity.entityId))
+        }
+
         return (
-            <div>
-                {extractResponses}
-                {memory}
-                {actionPayload}
+            <div className="log-dialog-admin ms-font-l">
+                <div className="log-dialog-admin__title">Entity Detection</div>
+                <div className="log-dialog-admin__content">
+                    {round
+                        ? round.extractorStep.textVariations.map((textVariaion, i) =>
+                            <ExtractorResponseEditor
+                                key={i}
+                                isPrimary={true}
+                                isValid={true}
+                                // TODO: Fix ExtractorResponseEditor to use text and entities base.
+                                extractResponse={(textVariaion as any) as ExtractResponse}
+                                canEdit={false}
+                            />)
+                        : "Select an activity"}
+                </div>
+                <div className="log-dialog-admin__title">Memory</div>
+                <div className="log-dialog-admin__content">
+                    {entities.length !== 0 && entities.map(entity => <div key={entity.entityName}>{entity.entityName}</div>)}
+                </div>
+                <div className="log-dialog-admin__title">Action</div>
+                <div className="log-dialog-admin__content">
+                    {action && action.payload}
+                </div>
             </div>
         );
     }
@@ -98,14 +79,19 @@ const mapDispatchToProps = (dispatch: any) => {
 }
 const mapStateToProps = (state: State) => {
     return {
-        trainDialog: state.trainDialogs,
         actions: state.actions,
         entities: state.entities
     }
 }
+
+export interface ReceivedProps {
+    trainDialog: TrainDialog,
+    selectedActivity: Activity
+}
+
 // Props types inferred from mapStateToProps & dispatchToProps
 const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
-type Props = typeof stateProps & typeof dispatchProps;
+type Props = typeof stateProps & typeof dispatchProps & ReceivedProps;
 
-export default connect(mapStateToProps, mapDispatchToProps)(TrainDialogAdmin);
+export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(TrainDialogAdmin);

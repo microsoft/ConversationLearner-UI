@@ -4,9 +4,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader'
 import { DetailsList, CommandButton, CheckboxVisibility, IColumn, SearchBox } from 'office-ui-fabric-react';
-import { setDisplayMode, setCurrentTrainDialog } from '../actions/displayActions'
-import { createTrainDialog } from '../actions/createActions'
-import { fetchAllTrainDialogsAsync } from '../actions/fetchActions';
+import { setCurrentTeachSession } from '../actions/displayActions'
 import { State } from '../types'
 import { TrainDialog } from 'blis-models'
 import { findDOMNode } from 'react-dom';
@@ -51,6 +49,7 @@ let columns: IColumn[] = [
 interface ComponentState {
     isTeachDialogModalOpen: boolean
     isTrainDialogModalOpen: boolean
+    trainDialog: TrainDialog
     searchValue: string
 }
 
@@ -58,16 +57,16 @@ class TrainDialogsList extends React.Component<Props, ComponentState> {
     state = {
         isTeachDialogModalOpen: false,
         isTrainDialogModalOpen: false,
+        trainDialog: null,
         searchValue: ''
     }
     componentDidMount() {
         this.focusNewEntityButton();
     }
-    focusNewEntityButton() : void {
+    focusNewEntityButton(): void {
         findDOMNode<HTMLButtonElement>(this.refs.newSession).focus();
     }
-    firstUtterance(item: any)
-    {
+    firstUtterance(item: any) {
         try {
             if (item.rounds && item.rounds.length > 0) {
                 let text = item.rounds[0].extractorStep.textVariations[0].text;
@@ -79,11 +78,10 @@ class TrainDialogsList extends React.Component<Props, ComponentState> {
             return "ERR";
         }
     }
-    lastUtterance(item: any)
-    {
+    lastUtterance(item: any) {
         try {
             if (item.rounds && item.rounds.length > 0) {
-                let text = item.rounds[item.rounds.length-1].extractorStep.textVariations[0].text;
+                let text = item.rounds[item.rounds.length - 1].extractorStep.textVariations[0].text;
                 return <span className='ms-font-m-plus'>{text}</span>;
             }
             return <span className="ms-Icon ms-Icon--Remove notFoundIcon" aria-hidden="true"></span>;
@@ -92,17 +90,14 @@ class TrainDialogsList extends React.Component<Props, ComponentState> {
             return "ERR";
         }
     }
-    lastResponse(item: any)
-    {
+    lastResponse(item: any) {
         try {
             if (item.rounds && item.rounds.length > 0) {
-                let scorerSteps = item.rounds[item.rounds.length-1].scorerSteps;
-                if (scorerSteps.length > 0)
-                {
-                    let actionId = scorerSteps[scorerSteps.length-1].labelAction;
+                let scorerSteps = item.rounds[item.rounds.length - 1].scorerSteps;
+                if (scorerSteps.length > 0) {
+                    let actionId = scorerSteps[scorerSteps.length - 1].labelAction;
                     let action = this.props.actions.find(a => a.actionId == actionId);
-                    if (action)
-                    {
+                    if (action) {
                         return <span className='ms-font-m-plus'>{action.payload}</span>;
                     }
                 }
@@ -116,11 +111,11 @@ class TrainDialogsList extends React.Component<Props, ComponentState> {
     renderItemColumn(item?: any, index?: number, column?: IColumn) {
         let fieldContent = item[column.fieldName];
         switch (column.key) {
-            case 'firstInput': 
+            case 'firstInput':
                 return this.firstUtterance(item);
-            case 'lastInput': 
+            case 'lastInput':
                 return this.lastUtterance(item);
-            case 'lastResponse': 
+            case 'lastResponse':
                 return this.lastResponse(item);
             case 'turns':
                 let count = item.rounds ? item.rounds.length : 0;
@@ -143,9 +138,9 @@ class TrainDialogsList extends React.Component<Props, ComponentState> {
     }
 
     onClickTrainDialogItem(trainDialog: TrainDialog) {
-       this.props.setCurrentTrainDialog(this.props.userKey, trainDialog);
-       this.setState({
-            isTrainDialogModalOpen: true
+        this.setState({
+            isTrainDialogModalOpen: true,
+            trainDialog
         })
     }
 
@@ -169,7 +164,7 @@ class TrainDialogsList extends React.Component<Props, ComponentState> {
         })
         return filteredTrainDialogs;
     }
-    
+
     render() {
         let trainDialogItems = this.renderTrainDialogItems()
         return (
@@ -184,9 +179,9 @@ class TrainDialogsList extends React.Component<Props, ComponentState> {
                         ref="newSession"
                     />
                     <TeachSessionWindow
+                        app={this.props.apps.current}
                         open={this.state.isTeachDialogModalOpen}
                         onClose={() => this.onCloseTeachSession()}
-                        app={this.props.apps.current}
                     />
                 </div>
                 <SearchBox
@@ -203,8 +198,10 @@ class TrainDialogsList extends React.Component<Props, ComponentState> {
                     onActiveItemChanged={trainDialog => this.onClickTrainDialogItem(trainDialog)}
                 />
                 <TrainDialogWindow
+                    app={this.props.apps.current}
                     open={this.state.isTrainDialogModalOpen}
                     onClose={() => this.onCoseTrainDialogWindow()}
+                    trainDialog={this.state.trainDialog}
                 />
             </div>
         );
@@ -212,10 +209,7 @@ class TrainDialogsList extends React.Component<Props, ComponentState> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        setDisplayMode,
-        setCurrentTrainDialog,
-        createTrainDialog,
-        fetchAllTrainDialogsAsync,
+        setCurrentTeachSession
     }, dispatch)
 }
 const mapStateToProps = (state: State) => {
@@ -223,8 +217,7 @@ const mapStateToProps = (state: State) => {
         userKey: state.user.key,
         apps: state.apps,
         actions: state.actions,
-        trainDialogs: state.trainDialogs,
-        teachSessions: state.teachSessions
+        trainDialogs: state.trainDialogs
     }
 }
 // Props types inferred from mapStateToProps & dispatchToProps

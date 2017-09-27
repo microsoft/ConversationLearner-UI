@@ -7,7 +7,7 @@ export interface Item {
 
 export interface Props {
     item: Item;
-	onClick: Function;
+    onClick: Function;
 }
 const AutocompleteListItem: React.SFC<Props> = (props: Props) => {
     return (

@@ -8,11 +8,12 @@ import { State } from '../types';
 import { TeachMode } from '../types/const';
 import Webchat from './Webchat'
 import TeachSessionAdmin from './TeachSessionAdmin'
-import { Teach, BlisAppBase } from 'blis-models'
+import { Teach, BlisAppBase, UserInput } from 'blis-models'
+import { Activity } from 'botframework-directlinejs'
 import { deleteTeachSessionAsync } from '../actions/deleteActions'
-import { toggleAutoTeach } from '../actions/teachActions'
+import { toggleAutoTeach, runExtractorAsync } from '../actions/teachActions'
 import { createTeachSessionAsync } from '../actions/createActions'
-import { setDisplayMode } from '../actions/displayActions'
+import { addMessageToTeachConversationStack } from '../actions/displayActions'
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 
 interface ComponentState {
@@ -31,8 +32,7 @@ class TeachWindow extends React.Component<Props, ComponentState> {
     componentWillReceiveProps(nextProps: Props) {
         if (this.props.open === false && nextProps.open === true) {
             this.state.teachSession = new Teach({})
-            let currentAppId: string = this.props.apps.current.appId;
-            this.props.createTeachSessionAsync(this.props.user.key, this.state.teachSession, currentAppId)
+            this.props.createTeachSessionAsync(this.props.user.key, this.state.teachSession, this.props.app.appId)
         }
     }
 
@@ -43,8 +43,7 @@ class TeachWindow extends React.Component<Props, ComponentState> {
     }
 
     onClickSave() {
-        let currentAppId: string = this.props.apps.current.appId;
-        this.props.deleteTeachSessionAsync(this.props.user.key, this.props.teachSession.current, currentAppId, true); // True = save to train dialog
+        this.props.deleteTeachSessionAsync(this.props.user.key, this.props.teachSessions.current, this.props.app.appId, true); // True = save to train dialog
         this.props.onClose()
     }
 
@@ -52,8 +51,7 @@ class TeachWindow extends React.Component<Props, ComponentState> {
         this.setState({
             isConfirmDeleteOpen: false
         }, () => {
-            let currentAppId: string = this.props.apps.current.appId;
-            this.props.deleteTeachSessionAsync(this.props.user.key, this.props.teachSession.current, currentAppId, false); // False = abandon
+            this.props.deleteTeachSessionAsync(this.props.user.key, this.props.teachSessions.current, this.props.app.appId, false); // False = abandon
             this.props.onClose()
         })
     }
@@ -68,17 +66,31 @@ class TeachWindow extends React.Component<Props, ComponentState> {
         this.props.toggleAutoTeach(isChecked);
     }
 
+    onWebChatPostActivity(activity: Activity) {
+        if (activity.type === "message") {
+            this.props.addMessageToTeachConversationStack(activity.text)
+
+            let userInput = new UserInput({ text: activity.text });
+            const teachSession = this.props.teachSessions.current
+            if (!teachSession) {
+                throw new Error(`Current teach session is not defined. This may be due to race condition where you attempted to chat with the bot before the teach session has been created.`)
+            }
+
+            this.props.runExtractorAsync(this.props.user.key, this.props.app.appId, teachSession.teachId, userInput);
+        }
+    }
+
     render() {
         // Show done button if at least on round and at end of round
-        let showDone = this.props.teachSession.currentConversationStack.length > 0 && this.props.teachSession.mode == TeachMode.Wait;
+        let showDone = this.props.teachSessions.currentConversationStack.length > 0 && this.props.teachSessions.mode == TeachMode.Wait;
 
         // Put mask of webchat if not in input mode
-        let chatDisable = (this.props.teachSession.mode != TeachMode.Wait) ?
+        let chatDisable = (this.props.teachSessions.mode != TeachMode.Wait) ?
             <div className="wc-disable"></div>
             : null;
 
         // Mask controls if autoTeach is enabled
-        let mask = (this.props.teachSession.autoTeach) ? <div className="teachAutoMask"></div> : null;
+        let mask = (this.props.teachSessions.autoTeach) ? <div className="teachAutoMask"></div> : null;
         return (
             <Modal
                 isOpen={this.props.open && this.props.error === null}
@@ -87,15 +99,19 @@ class TeachWindow extends React.Component<Props, ComponentState> {
             >
                 <div className="blis-chatmodal">
                     <div className="blis-chatmodal_webchat">
-                        <Webchat 
-                        sessionType={"teach"}
-                        ref="webChat" />
+                        <Webchat
+                            app={this.props.app}
+                            history={null}
+                            onPostActivity={activity => this.onWebChatPostActivity(activity)}
+                            onSelectActivity={() => { }}
+                        />
                         {chatDisable}
-                        
                     </div>
                     <div className="blis-chatmodal_controls">
                         <div className="blis-chatmodal_admin-controls">
-                            <TeachSessionAdmin />
+                            <TeachSessionAdmin
+                                app={this.props.app}
+                            />
                             {mask}
                         </div>
                         <div className="blis-chatmodal_modal-controls">
@@ -112,7 +128,7 @@ class TeachWindow extends React.Component<Props, ComponentState> {
                             />
                             <Checkbox
                                 label='Auto Teach?'
-                                checked={this.props.teachSession.autoTeach}
+                                checked={this.props.teachSessions.autoTeach}
                                 onChange={(e, value) => this.autoTeachChanged(e, value)}
                                 disabled={this.state.editing}
                             />
@@ -132,16 +148,16 @@ class TeachWindow extends React.Component<Props, ComponentState> {
 
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
+        addMessageToTeachConversationStack,
         createTeachSessionAsync,
         deleteTeachSessionAsync,
-        setDisplayMode,
+        runExtractorAsync,
         toggleAutoTeach
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {
     return {
-        teachSession: state.teachSessions,
-        apps: state.apps,
+        teachSessions: state.teachSessions,
         user: state.user,
         error: state.error.error
     }

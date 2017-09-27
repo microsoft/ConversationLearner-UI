@@ -4,7 +4,6 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader'
 import { DetailsList, CommandButton, CheckboxVisibility, IColumn, SearchBox } from 'office-ui-fabric-react';
-import { setDisplayMode } from '../actions/displayActions'
 import { State } from '../types'
 import { LogDialog } from 'blis-models'
 import ChatSessionWindow from './ChatSessionWindow'
@@ -153,9 +152,10 @@ class LogDialogsList extends React.Component<Props, ComponentState> {
                         text='New Chat Session'
                     />
                     <ChatSessionWindow
+                        app={this.props.apps.current}
                         open={this.state.isChatSessionWindowOpen}
                         onClose={() => this.onCloseChatSessionWindow()}
-                     />
+                    />
                 </div>
                 <SearchBox
                     className="ms-font-m-plus"
@@ -172,9 +172,9 @@ class LogDialogsList extends React.Component<Props, ComponentState> {
                 />
                 <LogDialogModal
                     open={this.state.isLogDialogWindowOpen}
-                    logDialog={currentLogDialog}
                     app={this.props.apps.current}
                     onClose={() => this.onCloseLogDialogModal()}
+                    logDialog={currentLogDialog}
                 />
             </div>
         );
@@ -182,7 +182,6 @@ class LogDialogsList extends React.Component<Props, ComponentState> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        setDisplayMode
     }, dispatch)
 }
 const mapStateToProps = (state: State) => {

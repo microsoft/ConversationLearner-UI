@@ -20,9 +20,9 @@ class UIError extends React.Component<Props, any> {
         this.props.clearErrorDisplay();
     }
     render() {
-        let message = this.props.error.message ? 
-             <div className='ms-font-m ms-fontWeight-semilight'>{this.props.error.message}</div> :
-             null;
+        let message = this.props.error.message ?
+            <div className='ms-font-m ms-fontWeight-semilight'>{this.props.error.message}</div> :
+            null;
         return (
             <div>
                 <Modal
@@ -41,7 +41,7 @@ class UIError extends React.Component<Props, any> {
                         <CommandButton
                             data-automation-id='randomID2'
                             disabled={false}
-                            onClick={this.handleClose.bind(this)}  
+                            onClick={this.handleClose.bind(this)}
                             className='blis-button--gold'
                             ariaDescription='Ok'
                             text='Ok'

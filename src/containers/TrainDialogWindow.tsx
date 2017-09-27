@@ -7,22 +7,22 @@ import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { State } from '../types';
 import Webchat from './Webchat'
 import TrainDialogAdmin from './TrainDialogAdmin'
-import { ActionBase } from 'blis-models'
+import { BlisAppBase, ActionBase, TrainDialog } from 'blis-models'
 import { deleteTrainDialogAsync } from '../actions/deleteActions'
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import { Activity } from 'botframework-directlinejs';
+// TODO: Investigate if this can be removed in favor of local state
+import { addMessageToChatConversationStack } from '../actions/displayActions';
 
 interface ComponentState {
     confirmDeleteModalOpen: boolean,
-    display: string
-    dialogIDToDelete: string
+    selectedActivity: Activity | null
 }
 
 class TrainDialogWindow extends React.Component<Props, ComponentState> {
     state = {
         confirmDeleteModalOpen: false,
-        display: null,
-        dialogIDToDelete: null
+        selectedActivity: null
     }
 
     onClickDone() {
@@ -45,9 +45,24 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
         this.setState({
             confirmDeleteModalOpen: false
         }, () => {
-            let currentAppId: string = this.props.apps.current.appId;
-            this.props.deleteTrainDialogAsync(this.props.userKey, this.props.trainDialog, currentAppId);
+            this.props.deleteTrainDialogAsync(this.props.user.key, this.props.trainDialog, this.props.app.appId)
             this.props.onClose()
+        })
+    }
+
+    // TODO: Investigate if this can be removed.
+    // Lars mentioned people shouldn't be able to / expected to chat when viewing existing dialogs
+    // which means this should not ever be called and whatever it's doing now is likely unnecessary
+    onWebChatPostActivity(activity: Activity) {
+        console.log(`post activity: `, activity)
+        if (activity.type === "message") {
+            this.props.addMessageToChatConversationStack(activity)
+        }
+    }
+
+    onWebChatSelectActivity(activity: Activity) {
+        this.setState({
+            selectedActivity: activity
         })
     }
 
@@ -85,15 +100,19 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
                 containerClassName='blis-modal blis-modal--large'>
                 <div className="blis-chatmodal">
                     <div className="blis-chatmodal_webchat">
-                        {this.props.trainDialog &&
-                            <Webchat
-                                sessionType={"chat"}
-                                history={this.generateHistory()}
-                            />}
+                        <Webchat
+                            app={this.props.app}
+                            history={this.generateHistory()}
+                            onPostActivity={activity => this.onWebChatPostActivity(activity)}
+                            onSelectActivity={activity => this.onWebChatSelectActivity(activity)}
+                        />
                     </div>
                     <div className="blis-chatmodal_controls">
                         <div className="blis-chatmodal_admin-controls">
-                            <TrainDialogAdmin />
+                            <TrainDialogAdmin
+                                trainDialog={this.props.trainDialog}
+                                selectedActivity={this.state.selectedActivity}
+                            />
                         </div>
                         <div className="blis-chatmodal_modal-controls">
                             <PrimaryButton
@@ -121,25 +140,23 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
+        addMessageToChatConversationStack,
         deleteTrainDialogAsync
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {
     return {
-        userKey: state.user.key,
-        apps: state.apps,
         user: state.user,
         error: state.error.error,
-        trainDialog: state.trainDialogs.current,
-        actions: state.actions,
-        display: state.display,
-        teachSession : state.teachSessions
+        actions: state.actions
     }
 }
 
 export interface ReceivedProps {
-    open: boolean,
+    app: BlisAppBase
     onClose: () => void
+    open: boolean
+    trainDialog: TrainDialog
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps

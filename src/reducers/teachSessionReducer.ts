@@ -14,11 +14,11 @@ const initialState: TeachSessionState = {
     uiScoreInput: null,
     extractResponses: [],
     scoreResponse: null,
-    currentConversationStack: [], 
+    currentConversationStack: [],
     autoTeach: false
 };
 
-const teachSessionReducer: Reducer<any> = (state = initialState, action: ActionObject) => {
+const teachSessionReducer: Reducer<TeachSessionState> = (state = initialState, action: ActionObject): TeachSessionState => {
     switch (action.type) {
         case AT.LOGOUT:
             return { ...initialState };
@@ -26,65 +26,64 @@ const teachSessionReducer: Reducer<any> = (state = initialState, action: ActionO
             return { ...state, all: action.allTeachSessions };
         case AT.CREATE_TEACH_SESSION_ASYNC:
             // Start with a clean slate
-            return {...initialState, all: state.all };
+            return { ...initialState, all: state.all };
         case AT.CREATE_TEACH_SESSION_FULFILLED:
             let newSession = { ...action.teachSession, teachId: action.teachSessionId };
-            let newState: TeachSessionState = {...state, all: [...state.all, newSession], current: newSession, mode: TeachMode.Wait }
+            let newState: TeachSessionState = { ...state, all: [...state.all, newSession], current: newSession, mode: TeachMode.Wait }
             return newState;
         case AT.DELETE_TEACH_SESSION_FULFILLED:
             return { ...initialState, all: state.all.filter((t: Teach) => t.teachId !== action.teachSessionGUID) }
         case AT.SET_CURRENT_TEACH_SESSION: // TODO - doesn't appear to do anything
             return { ...state, current: action.currentTeachSession };
         case AT.TEACH_MESSAGE_RECEIVED:
-            return {...state, currentConversationStack: [...state.currentConversationStack, action.message], input: action.message, scoreInput: null, scoreResponse: null, extractResponses: []};
+            return { ...state, currentConversationStack: [...state.currentConversationStack, action.message], input: action.message, scoreInput: null, scoreResponse: null, extractResponses: [] };
         case AT.RUN_EXTRACTOR_FULFILLED:
             // Replace existing extract response (if any) with new one
-            let extractResponses : ExtractResponse[] = state.extractResponses.filter((e : ExtractResponse) => e.text != action.uiExtractResponse.extractResponse.text);
+            let extractResponses: ExtractResponse[] = state.extractResponses.filter((e: ExtractResponse) => e.text != action.uiExtractResponse.extractResponse.text);
             extractResponses.push(action.uiExtractResponse.extractResponse);
-            return {...state, mode: TeachMode.Extractor, memories: action.uiExtractResponse.memories, extractResponses: extractResponses};
+            return { ...state, mode: TeachMode.Extractor, memories: action.uiExtractResponse.memories, extractResponses: extractResponses };
         case AT.UPDATE_EXTRACT_RESPONSE:
             // Replace existing extract response (if any) with new one and maintain ordering
-            let index = state.extractResponses.findIndex((e : ExtractResponse) => e.text == action.extractResponse.text);
+            let index = state.extractResponses.findIndex((e: ExtractResponse) => e.text == action.extractResponse.text);
             // Should never happen, but protect just in case
             if (index < 0) {
-                return {...state};
+                return { ...state };
             }
             let editedResponses = state.extractResponses.slice();
             editedResponses[index] = action.extractResponse;
-            return {...state, mode: TeachMode.Extractor, extractResponses: editedResponses};
+            return { ...state, mode: TeachMode.Extractor, extractResponses: editedResponses };
         case AT.REMOVE_EXTRACT_RESPONSE:
             // Remove existing extract response
-            let remainingResponses : ExtractResponse[] = state.extractResponses.filter((e : ExtractResponse) => e.text != action.extractResponse.text);
-            return {...state, mode: TeachMode.Extractor, extractResponses: remainingResponses};
+            let remainingResponses: ExtractResponse[] = state.extractResponses.filter((e: ExtractResponse) => e.text != action.extractResponse.text);
+            return { ...state, mode: TeachMode.Extractor, extractResponses: remainingResponses };
         case AT.RUN_SCORER_ASYNC:
-            return {...state, uiScoreInput: action.uiScoreInput }
+            return { ...state, uiScoreInput: action.uiScoreInput }
         case AT.RUN_SCORER_FULFILLED:
-            return {...state, mode: TeachMode.Scorer, memories: action.uiScoreResponse.memories, scoreInput: action.uiScoreResponse.scoreInput, scoreResponse: action.uiScoreResponse.scoreResponse};
+            return { ...state, mode: TeachMode.Scorer, memories: action.uiScoreResponse.memories, scoreInput: action.uiScoreResponse.scoreInput, scoreResponse: action.uiScoreResponse.scoreResponse };
         case AT.POST_SCORE_FEEDBACK_FULFILLEDWAIT:
-            return {...state, mode: TeachMode.Wait};
+            return { ...state, mode: TeachMode.Wait };
         case AT.POST_SCORE_FEEDBACK_FULFILLEDNOWAIT:
-            return {...state, mode: TeachMode.Scorer};
+            return { ...state, mode: TeachMode.Scorer };
         case AT.TOGGLE_AUTO_TEACH:
-            return {...state, autoTeach: action.autoTeach}
+            return { ...state, autoTeach: action.autoTeach }
         case AT.CREATE_ACTION_FULFILLED:
             // If action was created during scoring update available actions
-            if (state.scoreResponse)
-            {
+            if (state.scoreResponse) {
                 let unscoredAction = new UnscoredAction({
-                    actionId : action.actionId,
+                    actionId: action.actionId,
                     payload: action.action.payload,
-                    isTerminal : action.action.isTerminal,
+                    isTerminal: action.action.isTerminal,
                     metadata: action.action.metadata,
                     reason: ScoreReason.NotCalculated
                 });
                 let unscoredActions = [...state.scoreResponse.unscoredActions, unscoredAction];
-                let scoreResponse = {...state.scoreResponse, unscoredActions : unscoredActions};
-                return {...state, scoreResponse: scoreResponse};
+                let scoreResponse = { ...state.scoreResponse, unscoredActions: unscoredActions };
+                return { ...state, scoreResponse: scoreResponse };
             }
             else {
                 return state;
             }
-         default:
+        default:
             return state;
     }
 }
