@@ -2,7 +2,7 @@ import * as React from 'react';
 import { bindActionCreators } from 'redux';
 import { returntypeof } from 'react-redux-typescript';
 import { connect } from 'react-redux';
-import { ExtractResponse, PredictedEntity, EntityBase, AppDefinition } from 'blis-models'
+import { ExtractResponse, PredictedEntity, EntityBase, AppDefinition, EntityType } from 'blis-models'
 import { updateExtractResponse, removeExtractResponse } from '../actions/teachActions';
 import { State } from '../types';
 import { Dropdown, IDropdownOption, DropdownMenuItemType } from 'office-ui-fabric-react'
@@ -683,7 +683,8 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
         this.updateCurrentPredictedEntities(allObjects)
     }
     getAlphabetizedEntityOptions(): IDropdownOption[] {
-        let names: string[] = this.props.entities.map((e: EntityBase) => {
+        let luisEntities = this.props.entities.filter((e: EntityBase) => e.entityType == EntityType.LUIS);
+        let names: string[] = luisEntities.map((e: EntityBase) => {
             return e.entityName;
         })
         names.sort();

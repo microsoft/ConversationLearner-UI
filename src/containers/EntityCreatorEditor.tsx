@@ -8,11 +8,11 @@ import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { CommandButton, Dropdown, DropdownMenuItemType, Checkbox } from 'office-ui-fabric-react';
 import { TextFieldPlaceholder } from './TextFieldPlaceholder';
 import { State, PreBuiltEntities, LocalePreBuilts } from '../types';
-import { EntityBase, EntityMetaData } from 'blis-models'
+import { EntityBase, EntityMetaData, EntityType } from 'blis-models'
 
 const initState = {
     entityNameVal: '',
-    entityTypeVal: 'LUIS',
+    entityTypeVal: EntityType.LUIS,
     isBucketableVal: false,
     isNegatableVal: false,
     editing: false
@@ -94,7 +94,7 @@ class EntityCreatorEditor extends React.Component<Props, any> {
         return value ? "" : "Required Value";
     }
     render() {
-        let vals: string[] = ["LOCAL", "LUIS"]
+        let vals: string[] = [EntityType.LOCAL, EntityType.LUIS]
         let options: {}[] = vals.map(v => {
             return {
                 key: v,
