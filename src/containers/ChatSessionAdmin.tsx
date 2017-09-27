@@ -9,7 +9,7 @@ import { deleteChatSessionAsync } from '../actions/deleteActions'
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 
 class ChatSessionAdmin extends React.Component<Props, any> {
-    constructor(p: any){
+    constructor(p: any) {
         super(p)
         this.state = {
             open: false

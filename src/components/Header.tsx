@@ -64,9 +64,9 @@ class Header extends React.Component<Props, any> {
         return (
             <div className='header'>
                 <div className="myAppsHeaderContentBlock myAppsButtonsDiv">
-                    <UIError/>
-                    <UserLogin/>
-                    <SpinnerWindow/>
+                    <UIError />
+                    <UserLogin />
+                    <SpinnerWindow />
                 </div>
                 <div className='headerListDiv'>
                     <div className={this.state.myAppsClass}>
@@ -96,10 +96,10 @@ class Header extends React.Component<Props, any> {
 }
 
 const mapDispatchToProps = (dispatch: any) => {
-  return bindActionCreators({
-    setDisplayMode,
-    setLoginDisplay,
-  }, dispatch);
+    return bindActionCreators({
+        setDisplayMode,
+        setLoginDisplay,
+    }, dispatch);
 }
 
 const mapStateToProps = (state: State) => {

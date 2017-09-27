@@ -26,7 +26,7 @@ class ExtractorTextVariationCreator extends React.Component<Props, any> {
     handleAddVariation() {
         let appId: string = this.props.apps.current.appId;
         let teachId: string = this.props.teachSessions.current.teachId;
-        let userInput = new UserInput({text: this.state.variationValue})
+        let userInput = new UserInput({ text: this.state.variationValue })
         this.props.runExtractorAsync(this.props.user.key, appId, teachId, userInput);
         this.setState({
             variationValue: ''
@@ -36,17 +36,17 @@ class ExtractorTextVariationCreator extends React.Component<Props, any> {
         return (
             <div className='teachVariationBox'>
                 <div className='teachAddVariation'>
-                    <TextFieldPlaceholder 
+                    <TextFieldPlaceholder
                         value={this.state.variationValue}
                         onChanged={this.textChanged.bind(this)}
-                        placeholder="Add alternative input..." 
+                        placeholder="Add alternative input..."
                         onKeyPress={(ev) => {
                             if (ev.key === 'Enter') {
                                 this.handleAddVariation();
                                 ev.preventDefault();
                             }
                         }}
-                     />
+                    />
                 </div>
             </div>
         )

@@ -26,9 +26,9 @@ class TeachSessionAdmin extends React.Component<Props, any> {
                     <div>
                         <TeachSessionMemory />
                         <TeachSessionExtractor />
-                        <TeachSessionScorer  />
+                        <TeachSessionScorer />
                     </div>
-                    )
+                )
                 break;
             default:
                 // If in auto mode show all windows as long as there's at least one round
@@ -37,7 +37,7 @@ class TeachSessionAdmin extends React.Component<Props, any> {
                         <div>
                             <TeachSessionMemory />
                             <TeachSessionExtractor />
-                            <TeachSessionScorer  />
+                            <TeachSessionScorer />
                         </div>
                     )
                 }

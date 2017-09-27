@@ -11,12 +11,12 @@ import { State, PreBuiltEntities, LocalePreBuilts } from '../types';
 import { EntityBase, EntityMetaData } from 'blis-models'
 
 const initState = {
-            entityNameVal: '',
-            entityTypeVal: 'LUIS',
-            isBucketableVal: false,
-            isNegatableVal: false,
-            editing: false
-        };
+    entityNameVal: '',
+    entityTypeVal: 'LUIS',
+    isBucketableVal: false,
+    isNegatableVal: false,
+    editing: false
+};
 
 class EntityCreatorEditor extends React.Component<Props, any> {
     constructor(p: Props) {
@@ -25,7 +25,7 @@ class EntityCreatorEditor extends React.Component<Props, any> {
     }
     componentWillReceiveProps(p: Props) {
         if (p.entity === null) {
-            this.setState({...initState});
+            this.setState({ ...initState });
         } else {
             this.setState({
                 entityNameVal: p.entity.entityName,
@@ -63,7 +63,7 @@ class EntityCreatorEditor extends React.Component<Props, any> {
         } else {
             this.editEntity(entityToAdd);
         }
-        this.setState({...initState});
+        this.setState({ ...initState });
         this.props.handleClose();
     }
     editEntity(ent: EntityBase) {
@@ -90,7 +90,7 @@ class EntityCreatorEditor extends React.Component<Props, any> {
             isNegatableVal: !this.state.isNegatableVal,
         })
     }
-    checkIfBlank(value :string): string {
+    checkIfBlank(value: string): string {
         return value ? "" : "Required Value";
     }
     render() {
@@ -136,7 +136,7 @@ class EntityCreatorEditor extends React.Component<Props, any> {
                     </div>
                     <div>
                         <TextFieldPlaceholder
-                            onGetErrorMessage={ this.checkIfBlank.bind(this)}
+                            onGetErrorMessage={this.checkIfBlank.bind(this)}
                             onChanged={this.nameChanged.bind(this)}
                             onKeyDown={this.nameKeyDown.bind(this)}
                             label="Entity Name"

@@ -103,7 +103,7 @@ class TeachWindow extends React.Component<Props, ComponentState> {
                             app={this.props.app}
                             history={null}
                             onPostActivity={activity => this.onWebChatPostActivity(activity)}
-                            onSelectActivity={() => {}}
+                            onSelectActivity={() => { }}
                         />
                         {chatDisable}
                     </div>

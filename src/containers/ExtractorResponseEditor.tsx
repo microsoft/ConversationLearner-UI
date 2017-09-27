@@ -82,10 +82,10 @@ const styles = {
     }
 }
 
-interface ComponentState  {
+interface ComponentState {
     input: string,
     predictedEntities: PredictedEntity[],
-    definitions : AppDefinition,
+    definitions: AppDefinition,
     substringObjects: SubstringObject[],
     substringsClicked: SubstringObject[],
 };
@@ -96,7 +96,7 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
         this.state = {
             input: "",
             predictedEntities: [],
-            definitions : null,
+            definitions: null,
             substringObjects: [],
             substringsClicked: [],
         }
@@ -728,8 +728,8 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
                             this.entitySelected(obj, s)
                         }}
                     />
-                    </div>
-                ) 
+                </div>
+                )
                 : null;
             return (
                 <div key={key} className="extractDiv" style={styles.containerDiv}>

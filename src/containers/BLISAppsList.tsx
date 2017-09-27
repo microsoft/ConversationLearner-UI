@@ -65,7 +65,7 @@ class BLISAppsList extends React.Component<Props, any> {
             confirmDeleteAppModalOpen: false,
             appIDToDelete: null,
             columns: columns,
-            sortColumn : null
+            sortColumn: null
         }
     }
     deleteApp() {
@@ -99,7 +99,7 @@ class BLISAppsList extends React.Component<Props, any> {
         this.props.fetchAllChatSessionsAsync(this.props.user.key, appSelected.appId);
         // this.props.fetchAllTeachSessions(this.props.user.key, appSelected.appId);
     }
-    onColumnClick(event: any, column : any) {
+    onColumnClick(event: any, column: any) {
         let { columns } = this.state;
         let isSortedDescending = column.isSortedDescending;
 
@@ -114,12 +114,12 @@ class BLISAppsList extends React.Component<Props, any> {
                 col.isSorted = (col.key === column.key);
 
                 if (col.isSorted) {
-                col.isSortedDescending = isSortedDescending;
+                    col.isSortedDescending = isSortedDescending;
                 }
 
                 return col;
             }),
-            sortColumn : column
+            sortColumn: column
         });
     }
     renderItemColumn(item?: any, index?: number, column?: IColumn) {
@@ -128,7 +128,7 @@ class BLISAppsList extends React.Component<Props, any> {
             case 'appName':
                 return <span className='ms-font-m-plus'><Link onClick={() => this.BLISAppSelected(fieldContent)}>{fieldContent}</Link></span>;
             case 'bots':
-                let botsCount = fieldContent? fieldContent.botFrameworkApps.length : 0;
+                let botsCount = fieldContent ? fieldContent.botFrameworkApps.length : 0;
                 return <span className='ms-font-m-plus'>{botsCount}</span>;
             case 'actions':
                 return (
@@ -140,11 +140,10 @@ class BLISAppsList extends React.Component<Props, any> {
                 return <span className='ms-font-m-plus'>{fieldContent}</span>;
         }
     }
-     renderAppItems(): BlisAppBase[] {
+    renderAppItems(): BlisAppBase[] {
         let filteredApps = this.props.blisApps.all || [];
 
-        if (this.state.sortColumn)
-        {
+        if (this.state.sortColumn) {
             // Sort the items.
             filteredApps = filteredApps.concat([]).sort((a: any, b: any) => {
                 let firstValue = this.getValue(a, this.state.sortColumn);
@@ -152,7 +151,7 @@ class BLISAppsList extends React.Component<Props, any> {
 
                 if (this.state.sortColumn.isSortedDescending) {
                     return firstValue > secondValue ? -1 : 1;
-                } 
+                }
                 else {
                     return firstValue > secondValue ? 1 : -1;
                 }
@@ -161,10 +160,9 @@ class BLISAppsList extends React.Component<Props, any> {
 
         return filteredApps;
     }
-    getValue(entity: any, col: IColumn) : any
-    {
+    getValue(entity: any, col: IColumn): any {
         let value;
-        if(col.key == 'bots') {
+        if (col.key == 'bots') {
             value = entity.metadata.bots;
         }
         else {
@@ -192,7 +190,7 @@ class BLISAppsList extends React.Component<Props, any> {
                     columns={this.state.columns}
                     checkboxVisibility={CheckboxVisibility.hidden}
                     onRenderItemColumn={this.renderItemColumn}
-                    onColumnHeaderClick={ this.onColumnClick.bind(this) }
+                    onColumnHeaderClick={this.onColumnClick.bind(this)}
                 />
                 <ConfirmDeleteModal open={this.state.confirmDeleteAppModalOpen} onCancel={() => this.handleCloseModal()} onConfirm={() => this.deleteApp()} title="Are you sure you want to delete this application?" />
             </div>

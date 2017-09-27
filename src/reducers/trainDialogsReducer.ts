@@ -7,14 +7,14 @@ const initialState: TrainDialogState = {
     all: []
 };
 
-const trainDialogsReducer: Reducer<TrainDialogState> =  (state = initialState, action: ActionObject): TrainDialogState => {
+const trainDialogsReducer: Reducer<TrainDialogState> = (state = initialState, action: ActionObject): TrainDialogState => {
     switch (action.type) {
         case AT.LOGOUT:
             return { ...initialState };
         case AT.FETCH_TRAIN_DIALOGS_FULFILLED:
             return { ...state, all: action.allTrainDialogs };
-        case AT.EMPTY_STATE_PROPERTIES: 
-            return {...state, all: []};
+        case AT.EMPTY_STATE_PROPERTIES:
+            return { ...state, all: [] };
         case AT.CREATE_TRAIN_DIALOG:
             return { ...state, all: [...state.all, action.trainDialog] };
         // case AT.TOGGLE_TRAIN_DIALOG:
@@ -43,22 +43,22 @@ const trainDialogsReducer: Reducer<TrainDialogState> =  (state = initialState, a
         //     return newState;
         case AT.DELETE_TRAIN_DIALOG_FULFILLED:
             return { ...state, all: state.all.filter(dialog => dialog.trainDialogId !== action.trainDialogGUID) };
-    /* TODO
-        case AT.EDIT_TRAIN_DIALOG_FULFILLED:
-            let index: number = 0;
-            for (let i = 0; i < state.all.length; i++) {
-                if (state.all[i].trainDialogId == action.trainDialog.trainDialogId) {
-                    index = i
+        /* TODO
+            case AT.EDIT_TRAIN_DIALOG_FULFILLED:
+                let index: number = 0;
+                for (let i = 0; i < state.all.length; i++) {
+                    if (state.all[i].trainDialogId == action.trainDialog.trainDialogId) {
+                        index = i
+                    }
                 }
-            }
-            let newAll = Object.assign([], state.all);
-            newAll[index] = action.trainDialog;
-            let stateToReturn: AppState = {
-                all: newAll,
-                current: action.trainDialog
-            }
-            return stateToReturn
-    */ 
+                let newAll = Object.assign([], state.all);
+                newAll[index] = action.trainDialog;
+                let stateToReturn: AppState = {
+                    all: newAll,
+                    current: action.trainDialog
+                }
+                return stateToReturn
+        */
         default:
             return state;
     }

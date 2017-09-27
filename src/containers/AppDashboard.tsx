@@ -8,7 +8,7 @@ class AppDashboard extends React.Component<Props, any> {
     render() {
         return (
             <div>
-                <TrainingGroundArenaHeader title="Overview" description="Facts & statistics about the app's data at any period of time..."/>
+                <TrainingGroundArenaHeader title="Overview" description="Facts & statistics about the app's data at any period of time..." />
             </div>
         );
     }

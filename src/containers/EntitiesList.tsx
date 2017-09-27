@@ -67,13 +67,13 @@ class EntitiesList extends React.Component<Props, any> {
             entitySelected: null,
             errorModalOpen: false,
             columns: columns,
-            sortColumn : null
+            sortColumn: null
         }
     }
     componentDidMount() {
         this.focusNewEntityButton();
     }
-    focusNewEntityButton() : void {
+    focusNewEntityButton(): void {
         findDOMNode<HTMLButtonElement>(this.refs.newEntity).focus();
     }
     deleteSelectedEntity() {
@@ -110,7 +110,7 @@ class EntitiesList extends React.Component<Props, any> {
     openDeleteModal(guid: string) {
         let tiedToAction: boolean;
         this.props.actions.map((a: ActionBase) => {
-            if(a.negativeEntities.includes(guid) || a.requiredEntities.includes(guid)){
+            if (a.negativeEntities.includes(guid) || a.requiredEntities.includes(guid)) {
                 tiedToAction = true;
                 return;
             }
@@ -126,7 +126,7 @@ class EntitiesList extends React.Component<Props, any> {
             })
         }
     }
-    onColumnClick(event: any, column : any) {
+    onColumnClick(event: any, column: any) {
         let { columns } = this.state;
         let isSortedDescending = column.isSortedDescending;
 
@@ -141,15 +141,15 @@ class EntitiesList extends React.Component<Props, any> {
                 col.isSorted = (col.key === column.key);
 
                 if (col.isSorted) {
-                col.isSortedDescending = isSortedDescending;
+                    col.isSortedDescending = isSortedDescending;
                 }
 
                 return col;
             }),
-            sortColumn : column
+            sortColumn: column
         });
     }
-    
+
     renderItemColumn(item?: any, index?: number, column?: IColumn) {
         let fieldContent = item[column.fieldName];
         switch (column.key) {
@@ -185,8 +185,7 @@ class EntitiesList extends React.Component<Props, any> {
             return match;
         })
 
-        if (!this.state.sortColumn)
-        {
+        if (!this.state.sortColumn) {
             return filteredEntities;
         }
 
@@ -197,7 +196,7 @@ class EntitiesList extends React.Component<Props, any> {
 
             if (this.state.sortColumn.isSortedDescending) {
                 return firstValue > secondValue ? -1 : 1;
-            } 
+            }
             else {
                 return firstValue > secondValue ? 1 : -1;
             }
@@ -206,19 +205,18 @@ class EntitiesList extends React.Component<Props, any> {
         return sortedItems;
     }
 
-    getValue(entity: any, col: IColumn) : any
-    {
+    getValue(entity: any, col: IColumn): any {
         let value;
-        if(col.key == 'isBucketable') {
+        if (col.key == 'isBucketable') {
             value = entity.metadata.isBucket;
         }
-        else if (col.key == 'isNegatable')  {
+        else if (col.key == 'isNegatable') {
             value = entity.metadata.isReversable;
         }
         else {
             value = entity[col.fieldName];
         }
-              
+
         if (typeof value == 'string' || value instanceof String) {
             return value.toLowerCase();
         }
@@ -233,7 +231,7 @@ class EntitiesList extends React.Component<Props, any> {
         })
     }
     render() {
-        let entityItems = this.renderEntityItems(); 
+        let entityItems = this.renderEntityItems();
 
         return (
             <div>
@@ -261,7 +259,7 @@ class EntitiesList extends React.Component<Props, any> {
                     columns={this.state.columns}
                     checkboxVisibility={CheckboxVisibility.hidden}
                     onRenderItemColumn={this.renderItemColumn}
-                    onColumnHeaderClick={ this.onColumnClick.bind(this) }
+                    onColumnHeaderClick={this.onColumnClick.bind(this)}
                 />
                 <ConfirmDeleteModal open={this.state.confirmDeleteEntityModalOpen} onCancel={() => this.handleCloseDeleteModal()} onConfirm={() => this.deleteSelectedEntity()} title="Are you sure you want to delete this entity?" />
                 <Modal

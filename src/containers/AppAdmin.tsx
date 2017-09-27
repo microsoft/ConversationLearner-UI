@@ -77,9 +77,9 @@ class AppAdmin extends React.Component<Props, any> {
                                 selectedKey={this.state.selectedKey}
                                 groups={[{
                                     links: [
-                                        { name: 'Dashboard', key: 'Dash', url: null,  onClick: () => this.setArenaDisplay('Dash') },
-                                        { name: 'Entities', key: 'Entities', url: null,  onClick: () => this.setArenaDisplay('Entities') },
-                                        { name: 'Actions', key: 'Actions',  url: null, onClick: () => this.setArenaDisplay('Actions') },
+                                        { name: 'Dashboard', key: 'Dash', url: null, onClick: () => this.setArenaDisplay('Dash') },
+                                        { name: 'Entities', key: 'Entities', url: null, onClick: () => this.setArenaDisplay('Entities') },
+                                        { name: 'Actions', key: 'Actions', url: null, onClick: () => this.setArenaDisplay('Actions') },
                                         { name: 'Train Dialogs', key: 'TrainDialogs', url: null, onClick: () => this.setArenaDisplay('TrainDialogs') },
                                         { name: 'Log Dialogs', key: 'LogDialogs', url: null, onClick: () => this.setArenaDisplay('LogDialogs') }
                                     ]
@@ -116,9 +116,9 @@ class AppAdmin extends React.Component<Props, any> {
                                 selectedKey={this.state.selectedKey}
                                 groups={[{
                                     links: [
-                                        { name: 'Dashboard', key: 'Dash',  url: null, onClick: () => this.setArenaDisplay('Dash') },
-                                        { name: 'Entities', key: 'Entities', url: null,  onClick: () => this.setArenaDisplay('Entities') },
-                                        { name: 'Actions', key: 'Actions',  url: null, onClick: () => this.setArenaDisplay('Actions') },
+                                        { name: 'Dashboard', key: 'Dash', url: null, onClick: () => this.setArenaDisplay('Dash') },
+                                        { name: 'Entities', key: 'Entities', url: null, onClick: () => this.setArenaDisplay('Entities') },
+                                        { name: 'Actions', key: 'Actions', url: null, onClick: () => this.setArenaDisplay('Actions') },
                                         { name: 'Train Dialogs', key: 'TrainDialogs', url: null, onClick: () => this.setArenaDisplay('TrainDialogs') },
                                         { name: 'Log Dialogs', key: 'LogDialogs', url: null, onClick: () => this.setArenaDisplay('LogDialogs') }
                                     ]

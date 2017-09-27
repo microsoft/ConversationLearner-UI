@@ -155,7 +155,7 @@ class LogDialogsList extends React.Component<Props, ComponentState> {
                         app={this.props.apps.current}
                         open={this.state.isChatSessionWindowOpen}
                         onClose={() => this.onCloseChatSessionWindow()}
-                     />
+                    />
                 </div>
                 <SearchBox
                     className="ms-font-m-plus"

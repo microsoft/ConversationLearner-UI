@@ -34,14 +34,14 @@ let columns: IColumn[] = [
 ]
 
 class TeachSessionMemory extends React.Component<Props, any> {
-        constructor(p: any) {
+    constructor(p: any) {
         super(p);
         this.state = {
             columns: columns,
-            sortColumn : null
+            sortColumn: null
         }
     }
-    onColumnClick(event: any, column : any) {
+    onColumnClick(event: any, column: any) {
         let { columns } = this.state;
         let isSortedDescending = column.isSortedDescending;
 
@@ -56,16 +56,15 @@ class TeachSessionMemory extends React.Component<Props, any> {
                 col.isSorted = (col.key === column.key);
 
                 if (col.isSorted) {
-                col.isSortedDescending = isSortedDescending;
+                    col.isSortedDescending = isSortedDescending;
                 }
 
                 return col;
             }),
-            sortColumn : column
+            sortColumn: column
         });
     }
-    getValue(memory: any, col: IColumn) : any
-    {
+    getValue(memory: any, col: IColumn): any {
         let value = memory[col.fieldName];
 
         if (typeof value == 'string' || value instanceof String) {
@@ -85,8 +84,7 @@ class TeachSessionMemory extends React.Component<Props, any> {
     renderMemories(): Memory[] {
         let filteredMemories = this.props.teachSessions.memories || [];
 
-        if (this.state.sortColumn)
-        {
+        if (this.state.sortColumn) {
             // Sort the items.
             filteredMemories = filteredMemories.concat([]).sort((a: any, b: any) => {
                 let firstValue = this.getValue(a, this.state.sortColumn);
@@ -94,7 +92,7 @@ class TeachSessionMemory extends React.Component<Props, any> {
 
                 if (this.state.sortColumn.isSortedDescending) {
                     return firstValue > secondValue ? -1 : 1;
-                } 
+                }
                 else {
                     return firstValue > secondValue ? 1 : -1;
                 }
@@ -105,13 +103,13 @@ class TeachSessionMemory extends React.Component<Props, any> {
     }
     render() {
         let memories = this.renderMemories();
-        let details = memories.length == 0 ? 
+        let details = memories.length == 0 ?
             <div className='ms-font-l teachEmptyMemory'>Empty</div> :
             <DetailsList
                 className="ms-font-m-plus"
                 items={memories}
                 columns={this.state.columns}
-                onColumnHeaderClick={ this.onColumnClick.bind(this)}
+                onColumnHeaderClick={this.onColumnClick.bind(this)}
                 onRenderItemColumn={this.renderItemColumn.bind(this)}
                 checkboxVisibility={CheckboxVisibility.hidden}
             />

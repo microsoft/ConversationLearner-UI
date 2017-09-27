@@ -77,7 +77,7 @@ let columns: IColumn[] = [
 const initState = {
     actionModalOpen: false,
     columns: columns,
-    sortColumn : columns[3] // "score"
+    sortColumn: columns[3] // "score"
 }
 class TeachSessionScorer extends React.Component<Props, any> {
     constructor(p: any) {
@@ -99,8 +99,7 @@ class TeachSessionScorer extends React.Component<Props, any> {
             let bestAction = actions[0];
 
             // Make sure there is an available aciont
-            if (bestAction['reason'] == ScoreReason.NotAvailable)
-            {
+            if (bestAction['reason'] == ScoreReason.NotAvailable) {
                 // If none available auto teach isn't possible.  User must create a new action
                 this.props.toggleAutoTeach(false);
                 return;
@@ -122,7 +121,7 @@ class TeachSessionScorer extends React.Component<Props, any> {
             actionModalOpen: true
         })
     }
-    onColumnClick(event: any, column : any) {
+    onColumnClick(event: any, column: any) {
         let { columns } = this.state;
         let isSortedDescending = column.isSortedDescending;
 
@@ -148,12 +147,12 @@ class TeachSessionScorer extends React.Component<Props, any> {
     getValue(memory: any, col: IColumn): any {
         let value = memory[col.fieldName]
         if (col.fieldName == "score" && !memory[col.fieldName]) {
-                if (memory["reason"] == ScoreReason.NotAvailable) {
-                    return -100;
-                }
-                else {  // notScorable
-                    return -1;
-                }
+            if (memory["reason"] == ScoreReason.NotAvailable) {
+                return -100;
+            }
+            else {  // notScorable
+                return -1;
+            }
         }
         if (!value) value = "";
 
@@ -166,12 +165,10 @@ class TeachSessionScorer extends React.Component<Props, any> {
         // Look for a valid action
         let actionId = null;
         let scoreResponse = this.props.teachSession.scoreResponse;
-        if (scoreResponse.scoredActions && scoreResponse.scoredActions.length > 0)
-        {
+        if (scoreResponse.scoredActions && scoreResponse.scoredActions.length > 0) {
             actionId = scoreResponse.scoredActions[0].actionId;
         }
-        else if (scoreResponse.unscoredActions)
-        {
+        else if (scoreResponse.unscoredActions) {
             for (let unscoredAction of scoreResponse.unscoredActions) {
                 if (unscoredAction.reason == ScoreReason.NotScorable) {
                     actionId = unscoredAction.actionId;
@@ -183,11 +180,10 @@ class TeachSessionScorer extends React.Component<Props, any> {
             this.handleActionSelection(actionId);
         }
     }
-    handleActionSelection(actionId : string)
-    {
-        let scoredAction = this.props.teachSession.scoreResponse.scoredActions.filter((a: ScoredAction) => a.actionId == actionId)[0]; 
+    handleActionSelection(actionId: string) {
+        let scoredAction = this.props.teachSession.scoreResponse.scoredActions.filter((a: ScoredAction) => a.actionId == actionId)[0];
         if (!scoredAction) {
-            let unscoredAction = this.props.teachSession.scoreResponse.unscoredActions.filter((a: UnscoredAction) => a.actionId == actionId)[0]; 
+            let unscoredAction = this.props.teachSession.scoreResponse.unscoredActions.filter((a: UnscoredAction) => a.actionId == actionId)[0];
             scoredAction = new ScoredAction(unscoredAction);
         }
         let trainScorerStep = new TrainScorerStep(
@@ -195,30 +191,30 @@ class TeachSessionScorer extends React.Component<Props, any> {
                 input: this.props.teachSession.scoreInput,
                 labelAction: actionId,
                 scoredAction: scoredAction
-            });  
+            });
         let appId: string = this.props.apps.current.appId;
         let teachId: string = this.props.teachSession.current.teachId;
         let waitForUser = scoredAction.isTerminal;
 
         // Pass score input (minus extractor step) for subsequent actions when this one is non-terminal
-        let uiScoreInput = {...this.props.teachSession.uiScoreInput, trainExtractorStep: null};
+        let uiScoreInput = { ...this.props.teachSession.uiScoreInput, trainExtractorStep: null };
 
         this.props.postScorerFeedbackAsync(this.props.user.key, appId, teachId, trainScorerStep, waitForUser, uiScoreInput);
     }
     /** Check if entity is in memory and return it's name */
-    entityInMemory(entityId : string) : {match: boolean, name: string} {
+    entityInMemory(entityId: string): { match: boolean, name: string } {
         let entity = this.props.entities.filter((e: EntityBase) => e.entityId == entityId)[0];
 
         // If entity is null - there's a bug somewhere
         if (!entity) {
-            return {match: false, name: "ERROR"};
+            return { match: false, name: "ERROR" };
         }
 
-        let memory = this.props.teachSession.memories.filter((m : Memory) => m.entityName == entity.entityName)[0];
-        return {match: (memory != null), name: entity.entityName};
+        let memory = this.props.teachSession.memories.filter((m: Memory) => m.entityName == entity.entityName)[0];
+        return { match: (memory != null), name: entity.entityName };
     }
     renderEntityRequirements(actionId: string) {
-        let action = this.props.actions.filter((a : ActionBase) => a.actionId == actionId)[0];
+        let action = this.props.actions.filter((a: ActionBase) => a.actionId == actionId)[0];
 
         // If action is null - there's a bug somewhere
         if (!action) {
@@ -228,11 +224,11 @@ class TeachSessionScorer extends React.Component<Props, any> {
         let items = [];
         for (let entityId of action.requiredEntities) {
             let found = this.entityInMemory(entityId);
-            items.push({name: found.name, type: found.match ? "entityMatch" : "entityMismatch", neg: false});
+            items.push({ name: found.name, type: found.match ? "entityMatch" : "entityMismatch", neg: false });
         }
         for (let entityId of action.negativeEntities) {
             let found = this.entityInMemory(entityId);
-            items.push({name: found.name, type: found.match? "entityMismatch" : "entityMatch", neg: true});
+            items.push({ name: found.name, type: found.match ? "entityMismatch" : "entityMatch", neg: true });
         }
         return (
             <List
@@ -244,7 +240,7 @@ class TeachSessionScorer extends React.Component<Props, any> {
         )
     }
     calculateReason(actionId: string) {
-        let action = this.props.actions.filter((a : ActionBase) => a.actionId == actionId)[0];
+        let action = this.props.actions.filter((a: ActionBase) => a.actionId == actionId)[0];
 
         // If action is null - there's a bug somewhere
         if (!action) {
@@ -280,11 +276,11 @@ class TeachSessionScorer extends React.Component<Props, any> {
                             ariaDescription='Select'
                             text='Select'
                         />
-                        )
-                    }
+                    )
+                }
                 return (
                     <PrimaryButton
-                        onClick={() => this.handleActionSelection(fieldContent)}  
+                        onClick={() => this.handleActionSelection(fieldContent)}
                         ariaDescription='Select'
                         text='Select'
                     />
@@ -308,8 +304,7 @@ class TeachSessionScorer extends React.Component<Props, any> {
                 }
             case 'arguments':
                 let args = ModelUtils.GetArguments(item);
-                if (args)
-                {
+                if (args) {
                     return (
                         <List
                             items={args}
@@ -320,7 +315,7 @@ class TeachSessionScorer extends React.Component<Props, any> {
                     )
                 }
                 return <span className="ms-Icon ms-Icon--Remove notFoundIcon" aria-hidden="true"></span>;
-            case 'payload': 
+            case 'payload':
                 fieldContent = ModelUtils.GetPrimaryPayload(item);
             default:
                 break;
@@ -357,7 +352,7 @@ class TeachSessionScorer extends React.Component<Props, any> {
             return null;
         }
 
-        let noEdit =  (this.props.teachSession.autoTeach || this.props.teachSession.mode != TeachMode.Scorer);    
+        let noEdit = (this.props.teachSession.autoTeach || this.props.teachSession.mode != TeachMode.Scorer);
         let addAction = noEdit ? null : (
             <div>
                 <CommandButton
@@ -386,16 +381,16 @@ class TeachSessionScorer extends React.Component<Props, any> {
                     <div className='ms-font-l teachTitle'>Action Selection</div>
                     {addAction}
                 </div>
-                    <DetailsList
-                        className="ms-font-m-plus"
-                        items={scores}
-                        columns={this.state.columns}
-                        checkboxVisibility={CheckboxVisibility.hidden}
-                        onRenderItemColumn={this.renderItemColumn.bind(this)}
-                        onColumnHeaderClick={ this.onColumnClick.bind(this) }
-                        ref='scoreList'
-                    />
-                    <ActionResponseCreatorEditor open={this.state.actionModalOpen} blisAction={null} handleClose={this.handleCloseActionModal.bind(this)} />
+                <DetailsList
+                    className="ms-font-m-plus"
+                    items={scores}
+                    columns={this.state.columns}
+                    checkboxVisibility={CheckboxVisibility.hidden}
+                    onRenderItemColumn={this.renderItemColumn.bind(this)}
+                    onColumnHeaderClick={this.onColumnClick.bind(this)}
+                    ref='scoreList'
+                />
+                <ActionResponseCreatorEditor open={this.state.actionModalOpen} blisAction={null} handleClose={this.handleCloseActionModal.bind(this)} />
             </div>
         )
     }
@@ -409,7 +404,7 @@ const mapDispatchToProps = (dispatch: any) => {
 const mapStateToProps = (state: State, ownProps: any) => {
     return {
         user: state.user,
-        teachSession : state.teachSessions,
+        teachSession: state.teachSessions,
         apps: state.apps,
         entities: state.entities,
         actions: state.actions

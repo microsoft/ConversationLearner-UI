@@ -13,7 +13,7 @@ import EntityCreatorEditor from './EntityCreatorEditor';
 import { TeachMode } from '../types/const'
 import PopUpMessage from '../components/PopUpMessage';
 
-interface ComponentState  {
+interface ComponentState {
     entityModalOpen: boolean,
     popUpOpen: boolean
 };
@@ -34,8 +34,7 @@ class TeachSessionExtractor extends React.Component<Props, ComponentState> {
     }
     componentDidUpdate() {
         // If not in interactive mode run scorer automatically
-        if (this.props.teachSession.autoTeach && this.props.teachSession.mode == TeachMode.Extractor)
-        {
+        if (this.props.teachSession.autoTeach && this.props.teachSession.mode == TeachMode.Extractor) {
             this.scoreButtonOnClick();
         }
     }
@@ -60,30 +59,27 @@ class TeachSessionExtractor extends React.Component<Props, ComponentState> {
         })
     }
     /** Returns true is predicted entities match */
-    isValid(extractResponse : ExtractResponse) : boolean {
+    isValid(extractResponse: ExtractResponse): boolean {
         let primaryResponse = this.props.teachSession.extractResponses[0] as ExtractResponse;
-        let missing = primaryResponse.predictedEntities.filter(item => 
+        let missing = primaryResponse.predictedEntities.filter(item =>
             !extractResponse.predictedEntities.find(er => { return item.entityName == er.entityName }));
 
-        if (missing.length > 0) { 
+        if (missing.length > 0) {
             return false;
         }
-        missing = extractResponse.predictedEntities.filter(item => 
+        missing = extractResponse.predictedEntities.filter(item =>
             !primaryResponse.predictedEntities.find(er => { return item.entityName == er.entityName }));
-        if (missing.length > 0) { 
+        if (missing.length > 0) {
             return false;
         }
         return true;
     }
-    allValid() : boolean
-    {
+    allValid(): boolean {
         for (let extractResponse of this.props.teachSession.extractResponses) {
-            if (extractResponse != this.props.teachSession.extractResponses[0])
-            {
-                if (!this.isValid(extractResponse))
-                    {
-                        return false;
-                    }
+            if (extractResponse != this.props.teachSession.extractResponses[0]) {
+                if (!this.isValid(extractResponse)) {
+                    return false;
+                }
             }
         }
         return true;
@@ -94,35 +90,34 @@ class TeachSessionExtractor extends React.Component<Props, ComponentState> {
             return;
         }
 
-        let textVariations : TextVariation[] = [];
+        let textVariations: TextVariation[] = [];
         for (let extractResponse of this.props.teachSession.extractResponses) {
-            textVariations.push(new TextVariation({text : extractResponse.text, labelEntities:extractResponse.predictedEntities}));
+            textVariations.push(new TextVariation({ text: extractResponse.text, labelEntities: extractResponse.predictedEntities }));
         }
         let trainExtractorStep = new TrainExtractorStep({
             textVariations: textVariations
         });
 
-        let uiScoreInput = new UIScoreInput({trainExtractorStep : trainExtractorStep, extractResponse : this.props.teachSession.extractResponses[0]});
+        let uiScoreInput = new UIScoreInput({ trainExtractorStep: trainExtractorStep, extractResponse: this.props.teachSession.extractResponses[0] });
 
         let appId: string = this.props.apps.current.appId;
         let teachId: string = this.props.teachSession.current.teachId;
         this.props.runScorerAsync(this.props.user.key, appId, teachId, uiScoreInput);
     }
     render() {
-        if (!this.props.teachSession.extractResponses[0])  {
+        if (!this.props.teachSession.extractResponses[0]) {
             return null;
         }
 
         // Don't show edit components when in auto TACH or on score step
-        let canEdit =  (!this.props.teachSession.autoTeach && this.props.teachSession.mode == TeachMode.Extractor);    
+        let canEdit = (!this.props.teachSession.autoTeach && this.props.teachSession.mode == TeachMode.Extractor);
 
         let variationCreator = null;
         let addEntity = null;
         let editComponents = null;
         let extractDisplay = null;
-        if (canEdit)      
-        {
-            variationCreator = <ExtractorTextVariationCreator/>
+        if (canEdit) {
+            variationCreator = <ExtractorTextVariationCreator />
             addEntity =
                 <CommandButton
                     data-automation-id='randomID8'
@@ -133,41 +128,40 @@ class TeachSessionExtractor extends React.Component<Props, ComponentState> {
                     text='Entity'
                     iconProps={{ iconName: 'CirclePlus' }}
                 />
-            editComponents = 
-                 <div>
-                     <CommandButton
-                         data-automation-id='randomID16'
-                         disabled={false}
-                         onClick={this.scoreButtonOnClick}
-                         className='ms-font-su blis-button--gold'
-                         ariaDescription='Score Actions'
-                         text='Score Actions'
-                         ref="scoreActions"
-                     />
-     
-                     <EntityCreatorEditor 
-                        open={this.state.entityModalOpen} 
-                        entity={null} 
+            editComponents =
+                <div>
+                    <CommandButton
+                        data-automation-id='randomID16'
+                        disabled={false}
+                        onClick={this.scoreButtonOnClick}
+                        className='ms-font-su blis-button--gold'
+                        ariaDescription='Score Actions'
+                        text='Score Actions'
+                        ref="scoreActions"
+                    />
+
+                    <EntityCreatorEditor
+                        open={this.state.entityModalOpen}
+                        entity={null}
                         handleClose={this.entityEditorHandleClose} />
-                 </div>
-            
+                </div>
+
             let key = 0;
             extractDisplay = [];
             for (let extractResponse of this.props.teachSession.extractResponses) {
                 let isValid = true;
-                if (extractResponse != this.props.teachSession.extractResponses[0])
-                {
+                if (extractResponse != this.props.teachSession.extractResponses[0]) {
                     isValid = this.isValid(extractResponse);
                 }
-                
-                extractDisplay.push(<ExtractorResponseEditor key={key++} canEdit={canEdit} isPrimary={key==1} isValid={isValid} extractResponse={extractResponse}/>);   
+
+                extractDisplay.push(<ExtractorResponseEditor key={key++} canEdit={canEdit} isPrimary={key == 1} isValid={isValid} extractResponse={extractResponse} />);
             }
         }
         else {
             // Only display primary response if not in edit mode
-            extractDisplay = <ExtractorResponseEditor key={0} canEdit={canEdit} isPrimary={true} isValid={true} extractResponse={this.props.teachSession.extractResponses[0]}/>
+            extractDisplay = <ExtractorResponseEditor key={0} canEdit={canEdit} isPrimary={true} isValid={true} extractResponse={this.props.teachSession.extractResponses[0]} />
         }
-        
+
         return (
             <div>
                 <div>
@@ -179,8 +173,8 @@ class TeachSessionExtractor extends React.Component<Props, ComponentState> {
                     {variationCreator}
                 </div>
                 {editComponents}
-                <PopUpMessage open={this.state.popUpOpen} onConfirm={() => this.handleClosePopUpModal()} title="Text variations must all have same tagged entities." />  
-            </div>                          
+                <PopUpMessage open={this.state.popUpOpen} onConfirm={() => this.handleClosePopUpModal()} title="Text variations must all have same tagged entities." />
+            </div>
         )
     }
 }

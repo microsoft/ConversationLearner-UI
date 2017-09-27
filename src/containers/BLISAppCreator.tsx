@@ -103,7 +103,7 @@ class BLISAppCreator extends React.Component<Props, any> {
             this.createApplication();
         }
     }
-    checkIfBlank(value :string): string {
+    checkIfBlank(value: string): string {
         return value ? "" : "Required Value";
     }
     render() {
@@ -127,18 +127,18 @@ class BLISAppCreator extends React.Component<Props, any> {
                         <span className='ms-font-xxl ms-fontWeight-semilight'>Create a BLIS App</span>
                     </div>
                     <div>
-                        <TextFieldPlaceholder 
-                            onGetErrorMessage={ this.checkIfBlank.bind(this)}
-                            onChanged={this.nameChanged.bind(this)} 
-                            label="Name" 
-                            placeholder="Application Name..." 
+                        <TextFieldPlaceholder
+                            onGetErrorMessage={this.checkIfBlank.bind(this)}
+                            onChanged={this.nameChanged.bind(this)}
+                            label="Name"
+                            placeholder="Application Name..."
                             onKeyDown={this.onKeyDown.bind(this)}
                             value={this.state.appNameVal} />
-                        <TextFieldPlaceholder 
-                            onGetErrorMessage={ this.checkIfBlank.bind(this)}
-                            onChanged={this.luisKeyChanged.bind(this)} 
-                            label="LUIS Key" 
-                            placeholder="Key..." 
+                        <TextFieldPlaceholder
+                            onGetErrorMessage={this.checkIfBlank.bind(this)}
+                            onChanged={this.luisKeyChanged.bind(this)}
+                            label="LUIS Key"
+                            placeholder="Key..."
                             onKeyDown={this.onKeyDown.bind(this)}
                             value={this.state.luisKeyVal} />
                         <Dropdown
