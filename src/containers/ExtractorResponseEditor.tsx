@@ -441,11 +441,8 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
     isDefinedEntityBetweenClickedSubstrings(startIndex: number, endIndex: number): boolean {
         let result: boolean = false;
         if (this.state.substringsClicked.length > 0) {
-            let entityStartIndexes: number[] = this.state.substringObjects.map((s: SubstringObject) => {
-                if (s.entityId !== null) {
-                    return s.startIndex;
-                }
-            })
+            // TODO: This array may have holes of undefined in it, how can it be iterated without filtring?
+            let entityStartIndexes: number[] = this.state.substringObjects.map(s => (s.entityId !== null) ? s.startIndex : undefined)
             entityStartIndexes.map((entityStartIndex: number) => {
                 if (startIndex < entityStartIndex && endIndex > entityStartIndex) {
                     result = true
@@ -755,6 +752,8 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
                 </div>
             )
         }
+
+        return undefined
     }
     handleDeleteVariation() {
         let removedResponse = new ExtractResponse({ text: this.state.input, predictedEntities: [] });

@@ -12,6 +12,12 @@
         "outDir": "./dist/",
         "target": "es5",
         "sourceMap": true,
+        "forceConsistentCasingInFileNames": true,
+        "noImplicitReturns": true,
+        "noImplicitThis": true,
+        "noImplicitAny": true,
+        "strictNullChecks": false, // TODO: Enable
+        "suppressImplicitAnyIndexErrors": true,
         "noUnusedLocals": true
     },
     "files": [

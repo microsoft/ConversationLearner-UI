@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { returntypeof } from 'react-redux-typescript';
 import { ModelUtils } from 'blis-models';
 import { State } from '../types'
-import { TrainScorerStep, ScoredBase, ActionBase, EntityBase, Memory, ScoredAction, UnscoredAction, ScoreReason } from 'blis-models';
+import { TrainScorerStep, ScoredBase, ActionBase, EntityBase, Memory, ScoredAction, UnscoredAction, ScoreReason, UIScoreInput } from 'blis-models';
 import { postScorerFeedbackAsync, toggleAutoTeach } from '../actions/teachActions'
 import { CommandButton, PrimaryButton } from 'office-ui-fabric-react';
 import { TeachMode } from '../types/const'
@@ -103,10 +103,11 @@ class TeachSessionScorer extends React.Component<Props, ComponentState> {
         if (this.props.teachSession.autoTeach && this.props.teachSession.mode == TeachMode.Scorer) {
 
             let actions = (this.props.teachSession.scoreResponse.scoredActions as ScoredBase[]).concat(this.props.teachSession.scoreResponse.unscoredActions) || [];
+            // Since actions are sorted by score descending (max first), assume first scored action is the "best" action
             let bestAction = actions[0];
 
             // Make sure there is an available aciont
-            if (bestAction['reason'] == ScoreReason.NotAvailable) {
+            if ((bestAction as UnscoredAction).reason == ScoreReason.NotAvailable) {
                 // If none available auto teach isn't possible.  User must create a new action
                 this.props.toggleAutoTeach(false);
                 return;
@@ -204,7 +205,7 @@ class TeachSessionScorer extends React.Component<Props, ComponentState> {
         let waitForUser = scoredAction.isTerminal;
 
         // Pass score input (minus extractor step) for subsequent actions when this one is non-terminal
-        let uiScoreInput = { ...this.props.teachSession.uiScoreInput, trainExtractorStep: null };
+        let uiScoreInput: UIScoreInput = { ...this.props.teachSession.uiScoreInput, trainExtractorStep: null };
 
         this.props.postScorerFeedbackAsync(this.props.user.key, appId, teachId, trainScorerStep, waitForUser, uiScoreInput);
     }
@@ -276,7 +277,7 @@ class TeachSessionScorer extends React.Component<Props, ComponentState> {
         let fieldContent = action[column.fieldName];
         switch (column.key) {
             case 'select':
-                let reason = action["reason"];
+                let reason = (action as UnscoredAction).reason;
                 if (reason == ScoreReason.NotCalculated) {
                     reason = this.calculateReason(item[column.fieldName]);
                 }
@@ -303,7 +304,7 @@ class TeachSessionScorer extends React.Component<Props, ComponentState> {
                     fieldContent = "Masked"
                 }    
                 else {
-                    fieldContent = (action["reason"] == "notAvailable") ? "Disqualified" : "Training...";
+                    fieldContent = ((action as UnscoredAction).reason == "notAvailable") ? "Disqualified" : "Training...";
                 }
                 break;
             case 'entities':
