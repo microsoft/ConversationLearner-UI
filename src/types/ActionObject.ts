@@ -38,12 +38,12 @@ export type UpdateAction = {
 }
 
 export type DisplayAction = {
-    type: AT.SET_CURRENT_BLIS_APP,
+    type: AT.SET_CURRENT_BLIS_APP_ASYNC,
     key: string,
-    currentBLISApp: BlisAppBase,
+    app: BlisAppBase,
 } | {
     type: AT.SET_CURRENT_BLIS_APP_FULFILLED,
-    currentBLISApp: BlisAppBase
+    app: BlisAppBase
 } | {
     type: AT.SET_CURRENT_CHAT_SESSION,
     currentSession: Session,

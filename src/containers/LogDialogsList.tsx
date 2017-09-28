@@ -5,12 +5,12 @@ import { connect } from 'react-redux';
 import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader'
 import { DetailsList, CommandButton, CheckboxVisibility, IColumn, SearchBox } from 'office-ui-fabric-react';
 import { State } from '../types'
-import { LogDialog } from 'blis-models'
+import { BlisAppBase, LogDialog } from 'blis-models'
 import ChatSessionWindow from './ChatSessionWindow'
 import LogDialogModal from './LogDialogModal'
 
 interface IRenderableColumn extends IColumn {
-    render: (x: LogDialog) => React.ReactNode
+    render: (x: LogDialog, component: LogDialogsList) => React.ReactNode
 }
 
 const returnStringWhenError = (s: string) => {
@@ -65,12 +65,14 @@ let columns: IRenderableColumn[] = [
         minWidth: 100,
         maxWidth: 500,
         isResizable: true,
-        render: logDialog => {
+        render: (logDialog, component) => {
+            // Find last action of last scorer step of last round
+            // If found, return payload, otherwise return not found icon
             if (logDialog.rounds && logDialog.rounds.length > 0) {
                 let scorerSteps = logDialog.rounds[logDialog.rounds.length - 1].scorerSteps;
                 if (scorerSteps.length > 0) {
                     let actionId = scorerSteps[scorerSteps.length - 1].predictedAction;
-                    let action = this.props.actions.find(a => a.actionId == actionId);
+                    let action = component.props.actions.find(a => a.actionId == actionId);
                     if (action) {
                         return <span className='ms-font-m-plus'>{action.payload}</span>;
                     }
@@ -98,7 +100,7 @@ interface ComponentState {
 }
 
 class LogDialogsList extends React.Component<Props, ComponentState> {
-    state = {
+    state: ComponentState = {
         isChatSessionWindowOpen: false,
         isLogDialogWindowOpen: false,
         currentLogDialog: null,
@@ -152,7 +154,7 @@ class LogDialogsList extends React.Component<Props, ComponentState> {
                         text='New Chat Session'
                     />
                     <ChatSessionWindow
-                        app={this.props.apps.current}
+                        app={this.props.app}
                         open={this.state.isChatSessionWindowOpen}
                         onClose={() => this.onCloseChatSessionWindow()}
                     />
@@ -167,12 +169,12 @@ class LogDialogsList extends React.Component<Props, ComponentState> {
                     items={logDialogItems}
                     columns={columns}
                     checkboxVisibility={CheckboxVisibility.hidden}
-                    onRenderItemColumn={(logDialog, i, column: IRenderableColumn) => returnErrorStringWhenError(() => column.render(logDialog))}
+                    onRenderItemColumn={(logDialog, i, column: IRenderableColumn) => returnErrorStringWhenError(() => column.render(logDialog, this))}
                     onActiveItemChanged={logDialog => this.onLogDialogInvoked(logDialog)}
                 />
                 <LogDialogModal
                     open={this.state.isLogDialogWindowOpen}
-                    app={this.props.apps.current}
+                    app={this.props.app}
                     onClose={() => this.onCloseLogDialogModal()}
                     logDialog={currentLogDialog}
                 />
@@ -180,6 +182,7 @@ class LogDialogsList extends React.Component<Props, ComponentState> {
         );
     }
 }
+
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
     }, dispatch)
@@ -187,14 +190,18 @@ const mapDispatchToProps = (dispatch: any) => {
 const mapStateToProps = (state: State) => {
     return {
         logDialogs: state.logDialogs,
-        userKey: state.user.key,
-        apps: state.apps,
-        chatSessions: state.chatSessions
+        user: state.user,
+        actions: state.actions
     }
 }
+
+export interface ReceivedProps {
+    app: BlisAppBase
+}
+
 // Props types inferred from mapStateToProps & dispatchToProps
 const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
-type Props = typeof stateProps & typeof dispatchProps;
+type Props = typeof stateProps & typeof dispatchProps & ReceivedProps;
 
-export default connect(mapStateToProps, mapDispatchToProps)(LogDialogsList);
+export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(LogDialogsList);

@@ -2,12 +2,12 @@ import { ActionObject } from '../types'
 import { AT } from '../types/ActionTypes'
 import { BlisAppBase, EntityBase, ActionBase, Session, Teach, TrainDialog } from 'blis-models'
 
-export const deleteBLISApplicationAsync = (key: string, GUID: string, blisApp: BlisAppBase): ActionObject => {
+export const deleteBLISApplicationAsync = (key: string, blisApp: BlisAppBase): ActionObject => {
 
     return {
         type: AT.DELETE_BLIS_APPLICATION_ASYNC,
         key: key,
-        blisAppGUID: GUID,
+        blisAppGUID: blisApp.appId,
         blisApp: blisApp
     }
 }

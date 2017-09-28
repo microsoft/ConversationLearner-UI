@@ -56,11 +56,8 @@ class UserLogin extends React.Component<Props, ComponentState> {
             userPassword: text
         })
     }
-    generateUserId(name: string, password: string) {
-        if (!name || !password) {
-            return;
-        }
-        return name + "_" + password
+    generateUserId(name: string, password: string): string | undefined {
+        return (!name || !password) ? undefined : name + "_" + password
     }
     createUser() {
         let userId = this.generateUserId(this.state.userName, this.state.userPassword);
