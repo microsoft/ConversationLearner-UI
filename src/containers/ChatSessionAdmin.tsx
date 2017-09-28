@@ -8,7 +8,11 @@ import { setDisplayMode } from '../actions/displayActions'
 import { deleteChatSessionAsync } from '../actions/deleteActions'
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 
-class ChatSessionAdmin extends React.Component<Props, any> {
+interface ComponentState {
+    open: boolean
+}
+
+class ChatSessionAdmin extends React.Component<Props, ComponentState> {
     constructor(p: any) {
         super(p)
         this.state = {
@@ -59,4 +63,4 @@ const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
 type Props = typeof stateProps & typeof dispatchProps;
 
-export default connect(mapStateToProps, mapDispatchToProps)(ChatSessionAdmin);
+export default connect<typeof stateProps, typeof dispatchProps, {}>(mapStateToProps, mapDispatchToProps)(ChatSessionAdmin);

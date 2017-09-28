@@ -13,15 +13,17 @@ import { State } from '../types';
 import LogDialogsList from './LogDialogsList';
 import { DisplayMode } from '../types/const';
 
-class AppAdmin extends React.Component<Props, any> {
-    constructor(p: any) {
-        super(p);
-        this.state = {
-            display: 'Dash',
-            selectedKey: 'Dash',
-        }
-        this.setArenaDisplay = this.setArenaDisplay.bind(this);
+interface ComponentState {
+    display: string
+    selectedKey: string
+}
+
+class AppAdmin extends React.Component<Props, ComponentState> {
+    state: ComponentState = {
+        display: 'Dash',
+        selectedKey: 'Dash',
     }
+    
     renderChosenNavLink() {
         switch (this.state.display) {
             case "Settings":
@@ -164,4 +166,4 @@ const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
 type Props = typeof stateProps & typeof dispatchProps;
 
-export default connect(mapStateToProps, mapDispatchToProps)(AppAdmin);
+export default connect<typeof stateProps, typeof dispatchProps, {}>(mapStateToProps, mapDispatchToProps)(AppAdmin);

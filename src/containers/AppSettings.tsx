@@ -18,7 +18,17 @@ const styles = {
     }
 }
 
-class AppSettings extends React.Component<Props, any> {
+interface ComponentState {
+    localeVal: string
+    appIdVal: string
+    appNameVal: string
+    luisKeyVal: string
+    edited: boolean
+    botFrameworkAppsVal: any[],
+    newBotVal: string
+}
+
+class AppSettings extends React.Component<Props, ComponentState> {
     constructor(p: any) {
         super(p);
         this.state = {
@@ -202,4 +212,4 @@ const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
 type Props = typeof stateProps & typeof dispatchProps;
 
-export default connect(mapStateToProps, mapDispatchToProps)(AppSettings);
+export default connect<typeof stateProps, typeof dispatchProps, {}>(mapStateToProps, mapDispatchToProps)(AppSettings);

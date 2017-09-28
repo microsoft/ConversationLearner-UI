@@ -11,8 +11,11 @@ const initState = {
     variationValue: '',
 };
 
+interface ComponentState {
+    variationValue: string
+}
 
-class ExtractorTextVariationCreator extends React.Component<Props, any> {
+class ExtractorTextVariationCreator extends React.Component<Props, ComponentState> {
     constructor(p: Props) {
         super(p);
         this.state = initState;
@@ -70,4 +73,4 @@ const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
 type Props = typeof stateProps & typeof dispatchProps;
 
-export default connect(mapStateToProps, mapDispatchToProps)(ExtractorTextVariationCreator as React.ComponentClass<any>);
+export default connect<typeof stateProps, typeof dispatchProps, {}>(mapStateToProps, mapDispatchToProps)(ExtractorTextVariationCreator as React.ComponentClass<any>);

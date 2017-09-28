@@ -13,7 +13,13 @@ import { State } from '../types';
 //     CultureName: string;
 // }
 
-class UserLogin extends React.Component<Props, any> {
+interface ComponentState {
+    userName: string
+    userPassword: string
+    loadedUser: boolean
+}
+
+class UserLogin extends React.Component<Props, ComponentState> {
     constructor(p: any) {
         super(p);
         this.state = {
@@ -149,4 +155,4 @@ const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
 type Props = typeof stateProps & typeof dispatchProps;
 
-export default connect(mapStateToProps, mapDispatchToProps)(UserLogin);
+export default connect<typeof stateProps, typeof dispatchProps, {}>(mapStateToProps, mapDispatchToProps)(UserLogin);

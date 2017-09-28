@@ -71,29 +71,42 @@ let columns: IColumn[] = [
         isResizable: true
     }
 ];
-class ActionResponsesHomepage extends React.Component<Props, any> {
+
+interface ComponentState {
+    actionSelected: ActionBase | null
+    actionIDToDelete: string
+    columns: IColumn[]
+    confirmDeleteActionModalOpen: boolean
+    createEditModalOpen: boolean
+    searchValue: string
+    sortColumn: IColumn
+}
+
+class ActionResponsesHomepage extends React.Component<Props, ComponentState> {
     constructor(p: any) {
         super(p);
+        this.state = {
+            actionIDToDelete: null,
+            actionSelected: null,
+            searchValue: '',
+            confirmDeleteActionModalOpen: false,
+            createEditModalOpen: false,
+            columns: columns,
+            sortColumn: null
+        }
         this.deleteSelectedAction = this.deleteSelectedAction.bind(this);
         this.editSelectedAction = this.editSelectedAction.bind(this)
         this.renderItemColumn = this.renderItemColumn.bind(this)
         this.onChange = this.onChange.bind(this)
         this.renderActionItems = this.renderActionItems.bind(this)
-        this.state = {
-            searchValue: '',
-            createEditModalOpen: false,
-            actionSelected: null,
-            columns: columns,
-            sortColumn: null
-        }
         this.renderEntityList = this.renderEntityList.bind(this)
     }
     componentDidMount() {
         this.focusNewActionButton();
     }
     deleteSelectedAction() {
-        let currentAppId: string = this.props.apps.current.appId;
-        let actionToDelete: ActionBase = this.props.actions.find((a: ActionBase) => a.actionId == this.state.actionIDToDelete)
+        let currentAppId = this.props.apps.current.appId;
+        let actionToDelete = this.props.actions.find(a => a.actionId == this.state.actionIDToDelete)
         this.props.deleteActionAsync(this.props.userKey, this.state.actionIDToDelete, actionToDelete, currentAppId);
         this.setState({
             confirmDeleteActionModalOpen: false,
@@ -345,4 +358,4 @@ const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
 type Props = typeof stateProps & typeof dispatchProps;
 
-export default connect(mapStateToProps, mapDispatchToProps)(ActionResponsesHomepage);
+export default connect<typeof stateProps, typeof dispatchProps, {}>(mapStateToProps, mapDispatchToProps)(ActionResponsesHomepage);
