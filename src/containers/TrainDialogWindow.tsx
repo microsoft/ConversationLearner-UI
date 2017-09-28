@@ -19,10 +19,18 @@ interface ComponentState {
     selectedActivity: Activity | null
 }
 
+const initialState: ComponentState = {
+    confirmDeleteModalOpen: false,
+    selectedActivity: null
+}
+
 class TrainDialogWindow extends React.Component<Props, ComponentState> {
-    state = {
-        confirmDeleteModalOpen: false,
-        selectedActivity: null
+    state = initialState
+
+    componentWillReceiveProps(nextProps: Props) {
+        if (this.props.open === false && nextProps.open === true) {
+            this.setState(initialState)
+        }
     }
 
     onClickDone() {

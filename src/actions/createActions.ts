@@ -120,15 +120,19 @@ export const createTeachSessionFulfilled = (teachSession: Teach, teachSessionId:
     }
 }
 
-// TODO: should be async with fulfillment
-export const createTrainDialog = (key: string, trainDialog: TrainDialog): ActionObject => {
+export const createTrainDialogAsync = (key: string, appId: string, trainDialog: TrainDialog): ActionObject =>
+    ({
+        type: AT.CREATE_TRAIN_DIALOG_ASYNC,
+        key,
+        appId,
+        trainDialog
+    })
 
-    return {
-        type: AT.CREATE_TRAIN_DIALOG,
-        key: key,
-        trainDialog: trainDialog
-    }
-}
+export const createTrainDialogFulfilled = (trainDialog: TrainDialog): ActionObject =>
+    ({
+        type: AT.CREATE_TRAIN_DIALOG_FULFILLED,
+        trainDialog
+    })
 
 // TODO: should be async with fulfillment
 export const createLogDialog = (key: string, logDialog: LogDialog): ActionObject => {

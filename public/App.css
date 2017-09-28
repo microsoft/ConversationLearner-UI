@@ -500,10 +500,10 @@
 
 
 /** Office UI Fabric Theme Overrides */
-.ms-Button {
-}
 .ms-List-cell {
   min-height: 0px !important;
+}
+.ms-Button {
 }
 /** TODO: Remove usage of !important */
 .ms-Button--primary:not(:disabled) {
@@ -525,4 +525,46 @@
 }
 .log-dialog-admin__content {
   padding-bottom: 1em;
+}
+.log-dialog-admin__chosen-action {
+  padding: 1em 0;
+  font-weight: bold
+}
+
+/** Scorer Classes */
+.ms-Icon--Action {
+  font-size: 24px;
+}
+.ms-Icon--Action.ms-Icon--ChromeClose {
+  color: #cc0000;
+}
+.ms-Icon--Action.ms-Icon--CompletedSolid {
+  color: #ffb900;
+}
+.ms-Icon--Action.ms-Icon--Remove {
+    color: lightgrey;
+    font-size: 18px
+}
+
+.table-cell {
+  font-family: Segoe UI WestEuropean,Segoe UI,-apple-system,BlinkMacSystemFont,Roboto,Helvetica Neue,sans-serif;
+  -webkit-font-smoothing: antialiased;
+  font-weight: 400;
+  font-size: 15px;
+}
+
+.blis-entity {
+  flex-shrink: 1;
+  margin: 1px;
+  display: inline-block;
+  -ms-flex-wrap: nowrap;
+  flex-wrap: nowrap;
+  padding: 4px;
+  text-align: center;
+}
+.blis-entity--match {
+  background: #e0ffe0;
+}
+.blis-entity--mismatch {
+  background: #ffe0e0;
 }

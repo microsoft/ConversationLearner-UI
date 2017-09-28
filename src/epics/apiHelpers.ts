@@ -14,7 +14,7 @@ import {
 import * as Rx from 'rxjs';
 import { Observable, Observer } from 'rxjs'
 import { fetchBotInfoFulfilled, fetchApplicationsFulfilled, fetchAllEntitiesFulfilled, fetchAllActionsFulfilled, fetchAllChatSessionsFulfilled, fetchAllTeachSessionsFulfilled, fetchAllTrainDialogsFulfilled, fetchAllLogDialogsFulfilled, fetchAllLogDialogsAsync } from '../actions/fetchActions'
-import { createApplicationFulfilled, createEntityFulfilled, createPositiveEntityFulfilled, createNegativeEntityFulfilled, createActionFulfilled, createChatSessionFulfilled, createTeachSessionFulfilled } from '../actions/createActions'
+import { createApplicationFulfilled, createEntityFulfilled, createPositiveEntityFulfilled, createNegativeEntityFulfilled, createActionFulfilled, createChatSessionFulfilled, createTeachSessionFulfilled, createTrainDialogFulfilled } from '../actions/createActions'
 import { deleteBLISApplicationFulfilled, deleteReverseEntityAsnyc, deleteEntityFulfilled, deleteActionFulfilled, deleteChatSessionFulfilled, deleteTeachSessionFulfilled, deleteLogDialogFulFilled, deleteTrainDialogFulfilled } from '../actions/deleteActions'
 import { editBLISApplicationFulfilled, editEntityFulfilled, editActionFulfilled } from '../actions/updateActions'
 import { runExtractorFulfilled, runScorerFulfilled, postScorerFeedbackWaitFulfilled, postScorerFeedbackNoWaitFulfilled } from '../actions/teachActions'
@@ -455,7 +455,16 @@ export interface BlisAppForUpdate extends BlisAppBase {
     return Rx.Observable.fromPromise(axios.get(getAppRoute, config))
   };
 
-
+// Train
+export const createTrainDialog = (key: string, appId: string, trainDialog: TrainDialog): Observable<ActionObject> => {
+  const configWithBody = {...config, body: trainDialog}
+  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => axios.post(makeRoute(key, `app/${appId}/traindialog`), configWithBody).then(response => {
+    trainDialog.trainDialogId = response.data.trainDialogId;
+    obs.next(createTrainDialogFulfilled(trainDialog));
+    obs.complete();
+  })
+    .catch(err => handleError(obs, err, AT.CREATE_TRAIN_DIALOG_ASYNC)));
+};
 
 let handleError = function (obs: Observer<ActionObject>, err: any, route: AT) {
   if (!obs.closed) {

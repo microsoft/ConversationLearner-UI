@@ -174,7 +174,11 @@ export type CreateAction = {
     actionId: string,
     action: ActionBase
 } | {
-    type: AT.CREATE_TRAIN_DIALOG,
+    type: AT.CREATE_TRAIN_DIALOG_ASYNC,
+    trainDialog: TrainDialog,
+    appId: string
+} | {
+    type: AT.CREATE_TRAIN_DIALOG_FULFILLED,
     trainDialog: TrainDialog,
 } | {
     type: AT.CREATE_LOG_DIALOG,
