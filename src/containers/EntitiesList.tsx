@@ -8,7 +8,7 @@ import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import { deleteEntityAsync } from '../actions/deleteActions'
 import { DetailsList, CommandButton, CheckboxVisibility, IColumn, SearchBox } from 'office-ui-fabric-react';
 import { State } from '../types';
-import { EntityBase, ActionBase } from 'blis-models'
+import { BlisAppBase, EntityBase, ActionBase } from 'blis-models'
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { findDOMNode } from 'react-dom';
 
@@ -91,9 +91,8 @@ class EntitiesList extends React.Component<Props, ComponentState> {
         findDOMNode<HTMLButtonElement>(this.refs.newEntity).focus();
     }
     deleteSelectedEntity() {
-        let currentAppId: string = this.props.apps.current.appId;
         let entityToDelete: EntityBase = this.props.entities.find((a: EntityBase) => a.entityId == this.state.entityIDToDelete)
-        this.props.deleteEntityAsync(this.props.userKey, this.state.entityIDToDelete, entityToDelete, currentAppId)
+        this.props.deleteEntityAsync(this.props.user.key, this.state.entityIDToDelete, entityToDelete, this.props.app.appId)
         this.setState({
             confirmDeleteEntityModalOpen: false,
             entityIDToDelete: null
@@ -305,15 +304,19 @@ const mapDispatchToProps = (dispatch: any) => {
 }
 const mapStateToProps = (state: State) => {
     return {
-        userKey: state.user.key,
+        user: state.user,
         entities: state.entities,
-        apps: state.apps,
         actions: state.actions
     }
 }
+
+export interface ReceivedProps {
+    app: BlisAppBase
+}
+
 // Props types inferred from mapStateToProps & dispatchToProps
 const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
-type Props = typeof stateProps & typeof dispatchProps;
+type Props = typeof stateProps & typeof dispatchProps & ReceivedProps;
 
-export default connect<typeof stateProps, typeof dispatchProps, {}>(mapStateToProps, mapDispatchToProps)(EntitiesList);
+export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(EntitiesList);

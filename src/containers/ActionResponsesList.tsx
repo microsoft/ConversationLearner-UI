@@ -6,7 +6,7 @@ import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader';
 import { deleteActionAsync } from '../actions/deleteActions'
 import { DetailsList, CommandButton, Link, CheckboxVisibility, List, IColumn, SearchBox } from 'office-ui-fabric-react';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
-import { ActionBase, EntityBase, ModelUtils } from 'blis-models'
+import { BlisAppBase, ActionBase, EntityBase, ModelUtils } from 'blis-models'
 import ActionResponseCreatorEditor from './ActionResponseCreatorEditor';
 import EntityTile from '../components/EntityTile';
 import { State } from '../types'
@@ -105,9 +105,8 @@ class ActionResponsesHomepage extends React.Component<Props, ComponentState> {
         this.focusNewActionButton();
     }
     deleteSelectedAction() {
-        let currentAppId = this.props.apps.current.appId;
         let actionToDelete = this.props.actions.find(a => a.actionId == this.state.actionIDToDelete)
-        this.props.deleteActionAsync(this.props.userKey, this.state.actionIDToDelete, actionToDelete, currentAppId);
+        this.props.deleteActionAsync(this.props.user.key, this.state.actionIDToDelete, actionToDelete, this.props.app.appId);
         this.setState({
             confirmDeleteActionModalOpen: false,
             createEditModalOpen: false,
@@ -347,15 +346,19 @@ const mapDispatchToProps = (dispatch: any) => {
 }
 const mapStateToProps = (state: State) => {
     return {
-        userKey: state.user.key,
+        user: state.user,
         actions: state.actions,
-        entities: state.entities,
-        apps: state.apps
+        entities: state.entities
     }
 }
+
+export interface ReceivedProps {
+    app: BlisAppBase
+}
+
 // Props types inferred from mapStateToProps & dispatchToProps
 const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
-type Props = typeof stateProps & typeof dispatchProps;
+type Props = typeof stateProps & typeof dispatchProps & ReceivedProps;
 
-export default connect<typeof stateProps, typeof dispatchProps, {}>(mapStateToProps, mapDispatchToProps)(ActionResponsesHomepage);
+export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(ActionResponsesHomepage);

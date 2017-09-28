@@ -7,16 +7,16 @@ import { BlisAppBase, Session, Teach } from 'blis-models';
 
 export const setCurrentBLISApp = (key: string, app: BlisAppBase) : ActionObject => { 
     return {
-        type: AT.SET_CURRENT_BLIS_APP,
-        key: key,
-        currentBLISApp: app
+        type: AT.SET_CURRENT_BLIS_APP_ASYNC,
+        key,
+        app
     }
 }
 
 export const setCurrentBLISAppFulfilled = (app: BlisAppBase) : ActionObject => { 
     return {
         type: AT.SET_CURRENT_BLIS_APP_FULFILLED,
-        currentBLISApp: app
+        app
     }
 }
 

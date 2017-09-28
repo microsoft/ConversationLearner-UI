@@ -27,8 +27,8 @@ export const editEntityEpic: Epic<ActionObject, State> = (action$: ActionsObserv
 }
 
 export const setBlisApplicationEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
-    return action$.ofType(AT.SET_CURRENT_BLIS_APP)
+    return action$.ofType(AT.SET_CURRENT_BLIS_APP_ASYNC)
         .flatMap((action: any) =>
-            setBlisApp(action.key, action.currentBLISApp)
+            setBlisApp(action.key, action.app)
         );
 }

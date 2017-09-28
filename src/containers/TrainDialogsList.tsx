@@ -6,7 +6,7 @@ import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader'
 import { DetailsList, CommandButton, CheckboxVisibility, IColumn, SearchBox } from 'office-ui-fabric-react';
 import { setCurrentTeachSession } from '../actions/displayActions'
 import { State } from '../types'
-import { TrainDialog } from 'blis-models'
+import { BlisAppBase, TrainDialog } from 'blis-models'
 import { findDOMNode } from 'react-dom';
 import TeachSessionWindow from './TeachSessionWindow'
 import TrainDialogWindow from './TrainDialogWindow'
@@ -179,7 +179,7 @@ class TrainDialogsList extends React.Component<Props, ComponentState> {
                         ref="newSession"
                     />
                     <TeachSessionWindow
-                        app={this.props.apps.current}
+                        app={this.props.app}
                         open={this.state.isTeachDialogModalOpen}
                         onClose={() => this.onCloseTeachSession()}
                     />
@@ -198,7 +198,7 @@ class TrainDialogsList extends React.Component<Props, ComponentState> {
                     onActiveItemChanged={trainDialog => this.onClickTrainDialogItem(trainDialog)}
                 />
                 <TrainDialogWindow
-                    app={this.props.apps.current}
+                    app={this.props.app}
                     open={this.state.isTrainDialogModalOpen}
                     onClose={() => this.onCoseTrainDialogWindow()}
                     trainDialog={this.state.trainDialog}
@@ -214,15 +214,19 @@ const mapDispatchToProps = (dispatch: any) => {
 }
 const mapStateToProps = (state: State) => {
     return {
-        userKey: state.user.key,
-        apps: state.apps,
+        user: state.user,
         actions: state.actions,
         trainDialogs: state.trainDialogs
     }
 }
+
+export interface ReceivedProps {
+    app: BlisAppBase
+}
+
 // Props types inferred from mapStateToProps & dispatchToProps
 const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
-type Props = typeof stateProps & typeof dispatchProps;
+type Props = typeof stateProps & typeof dispatchProps & ReceivedProps;
 
-export default connect<typeof stateProps, typeof dispatchProps, {}>(mapStateToProps, mapDispatchToProps)(TrainDialogsList);
+export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(TrainDialogsList);
