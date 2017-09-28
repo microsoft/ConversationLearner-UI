@@ -4,7 +4,7 @@ import {
     EntityBase,
     ActionBase,
     TrainDialog, LogDialog, Session, Teach,
-    UserInput, ExtractResponse, UIExtractResponse, TrainScorerStep,
+    UserInput, ExtractResponse, UIExtractResponse, UITrainScorerStep,
     TeachResponse, UIScoreInput, UIScoreResponse
 } from 'blis-models'
 import { DisplayMode } from '../types/const'
@@ -327,7 +327,7 @@ export type TeachAction = {
     key: string,
     appId: string,
     teachId: string,
-    trainScorerStep: TrainScorerStep,
+    uiTrainScorerStep: UITrainScorerStep,
     waitForUser: boolean
 } | {
     type: AT.POST_SCORE_FEEDBACK_FULFILLEDWAIT,

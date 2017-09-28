@@ -6,7 +6,7 @@ import {
   ActionBase,
   UserInput,
   TrainDialog,
-  TrainScorerStep,
+  UITrainScorerStep,
   Session,
   Teach,
   UIScoreInput
@@ -59,8 +59,8 @@ export interface BlisAppForUpdate extends BlisAppBase {
 
   /* Tell SDK what the currently selected AppId is */
   export const setBlisApp = (key: string, blisApp: BlisAppBase): Observable<ActionObject> => {
-    let setBlisAppRoute: string = makeRoute(key, `state/app/${blisApp.appId}`);
-    return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => axios.put(setBlisAppRoute, null, config)
+    let setBlisAppRoute: string = makeRoute(key, `state/app`);
+    return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => axios.put(setBlisAppRoute, blisApp, config)
       .then(response => {
         obs.next(setCurrentBLISAppFulfilled(blisApp));
         obs.complete();
@@ -426,9 +426,9 @@ export interface BlisAppForUpdate extends BlisAppBase {
    * – ie "commits" a scorer label, appending it to the teach session's 
    * trainDialog, and advancing the dialog. This may yield produce a new package.
    */
-  export const postScore = (key : string, appId : string, teachId: string, trainScorerStep : TrainScorerStep, waitForUser : boolean, uiScoreInput: UIScoreInput): Observable<ActionObject> => {
+  export const postScore = (key : string, appId : string, teachId: string, uiTrainScorerStep : UITrainScorerStep, waitForUser : boolean, uiScoreInput: UIScoreInput): Observable<ActionObject> => {
     let addAppRoute: string = makeRoute(key, `app/${appId}/teach/${teachId}/scorer`);
-    return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.post(addAppRoute, trainScorerStep, config)		
+    return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.post(addAppRoute, uiTrainScorerStep, config)		
       .then(response => {
         if (!waitForUser) {
           // Don't re-send predicted entities on subsequent score call -todo on non train path

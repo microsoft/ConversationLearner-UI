@@ -22,7 +22,7 @@ export const runScorerEpic: Epic<ActionObject, State> = (action$: ActionsObserva
 export const scorerFeedbackEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
     return action$.ofType(AT.POST_SCORE_FEEDBACK_ASYNC)
         .flatMap((action: any) =>
-            postScore(action.key, action.appId, action.teachId, action.trainScorerStep, action.waitForUser, action.uiScoreInput)
+            postScore(action.key, action.appId, action.teachId, action.uiTrainScorerStep, action.waitForUser, action.uiScoreInput)
         );
 }
 

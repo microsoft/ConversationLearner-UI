@@ -1,6 +1,6 @@
 import { ActionObject } from '../types'
 import { AT } from '../types/ActionTypes'
-import { UserInput, ExtractResponse, UIScoreInput, UIExtractResponse, UIScoreResponse, TrainScorerStep, TeachResponse } from 'blis-models'
+import { UserInput, ExtractResponse, UIScoreInput, UIExtractResponse, UIScoreResponse, UITrainScorerStep, TeachResponse } from 'blis-models'
 
 export const runExtractorAsync = (key: string, appId: string, teachId: string, userInput: UserInput) : ActionObject => { 
     return {
@@ -58,13 +58,13 @@ export const runScorerFulfilled = (key: string, appId: string, teachId: string, 
     }
 }
 
-export const postScorerFeedbackAsync = (key: string, appId: string, teachId: string, trainScorerStep: TrainScorerStep, waitForUser: boolean, uiScoreInput: UIScoreInput) : ActionObject => { 
+export const postScorerFeedbackAsync = (key: string, appId: string, teachId: string, uiTrainScorerStep: UITrainScorerStep, waitForUser: boolean, uiScoreInput: UIScoreInput) : ActionObject => { 
     return {
         type: AT.POST_SCORE_FEEDBACK_ASYNC,
         key: key,
         appId: appId,
         teachId: teachId,
-        trainScorerStep: trainScorerStep,
+        uiTrainScorerStep: uiTrainScorerStep,
         waitForUser: waitForUser,
         uiScoreInput: uiScoreInput
     }

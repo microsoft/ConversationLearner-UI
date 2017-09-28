@@ -18,7 +18,7 @@ const returnStringWhenError = (s: string) => {
         try {
             return f()
         }
-        catch
+        catch (err)
         {
             return s
         }
