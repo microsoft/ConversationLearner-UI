@@ -16,17 +16,29 @@ type CultureObject = {
     CultureCode: string;
     CultureName: string;
 }
-class BLISAppCreator extends React.Component<Props, any> {
-    constructor(p: any) {
-        super(p);
-        this.state = {
-            open: false,
-            appNameVal: '',
-            localeVal: '',
-            luisKeyVal: '',
-            localeOptions: []
-        }
+
+interface ComponentState {
+    isCreateAppModalOpen: boolean
+    appNameVal: string
+    localeVal: string
+    luisKeyVal: string
+    localeOptions: IOption[]
+}
+
+interface IOption {
+    key: string
+    text: string
+}
+
+class BLISAppCreator extends React.Component<Props, ComponentState> {
+    state: ComponentState = {
+        isCreateAppModalOpen: false,
+        appNameVal: '',
+        localeVal: '',
+        luisKeyVal: '',
+        localeOptions: []
     }
+
     componentWillMount() {
         let url = 'https://westus.api.cognitive.microsoft.com/luis/v1.0/prog/apps/applicationcultures?';
         const subscriptionKey: string = developmentSubKeyLUIS;
@@ -37,7 +49,7 @@ class BLISAppCreator extends React.Component<Props, any> {
             .then((response) => {
                 if (response.data) {
                     let cultures: CultureObject[] = response.data;
-                    let cultureOptions = cultures.map((c: CultureObject) => {
+                    let cultureOptions = cultures.map(c => {
                         return {
                             key: c.CultureCode,
                             text: c.CultureCode,
@@ -48,19 +60,17 @@ class BLISAppCreator extends React.Component<Props, any> {
                         localeVal: cultureOptions[0].text
                     })
                 }
-
-
             })
     }
-    handleOpen() {
+    onClickCreateNewApp() {
         this.setState({
-            open: true
+            isCreateAppModalOpen: true
         })
     }
-    handleClose() {
+    onDismissCreateNewApp() {
         let firstValue = this.state.localeOptions[0].text
         this.setState({
-            open: false,
+            isCreateAppModalOpen: false,
             appNameVal: '',
             localeVal: firstValue,
             luisKeyVal: ''
@@ -95,9 +105,9 @@ class BLISAppCreator extends React.Component<Props, any> {
         this.props.createBLISApplicationAsync(this.props.userKey, this.props.userId, appToAdd);
         //need to empty entities, actions, and trainDialogs arrays
         this.props.emptyStateProperties();
-        this.handleClose();
+        this.onDismissCreateNewApp();
     }
-    onKeyDown(key: KeyboardEvent) {
+    onKeyDown(key: React.KeyboardEvent<HTMLElement>) {
         // On enter attempt to create the app if required fields are set
         if (key.keyCode == 13 && this.state.appNameVal && this.state.luisKeyVal) {
             this.createApplication();
@@ -110,16 +120,14 @@ class BLISAppCreator extends React.Component<Props, any> {
         return (
             <div>
                 <CommandButton
-                    data-automation-id='randomID'
-                    disabled={false}
-                    onClick={this.handleOpen.bind(this)}
+                    onClick={() => this.onClickCreateNewApp()}
                     className='blis-button--gold'
                     ariaDescription='Create a New Application'
                     text='New App'
                 />
                 <Modal
-                    isOpen={this.state.open}
-                    onDismiss={this.handleClose.bind(this)}
+                    isOpen={this.state.isCreateAppModalOpen}
+                    onDismiss={() => this.onDismissCreateNewApp()}
                     isBlocking={false}
                     containerClassName='createModal'
                 >
@@ -128,11 +136,11 @@ class BLISAppCreator extends React.Component<Props, any> {
                     </div>
                     <div>
                         <TextFieldPlaceholder
-                            onGetErrorMessage={this.checkIfBlank.bind(this)}
-                            onChanged={this.nameChanged.bind(this)}
+                            onGetErrorMessage={value => this.checkIfBlank(value)}
+                            onChanged={text => this.nameChanged(text)}
                             label="Name"
                             placeholder="Application Name..."
-                            onKeyDown={this.onKeyDown.bind(this)}
+                            onKeyDown={key => this.onKeyDown(key)}
                             value={this.state.appNameVal} />
                         <TextFieldPlaceholder
                             onGetErrorMessage={this.checkIfBlank.bind(this)}
@@ -161,7 +169,7 @@ class BLISAppCreator extends React.Component<Props, any> {
                             data-automation-id='randomID3'
                             className="blis-button--gray"
                             disabled={false}
-                            onClick={this.handleClose.bind(this)}
+                            onClick={this.onDismissCreateNewApp.bind(this)}
                             ariaDescription='Cancel'
                             text='Cancel'
                         />
@@ -189,4 +197,4 @@ const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
 type Props = typeof stateProps & typeof dispatchProps;
 
-export default connect(mapStateToProps, mapDispatchToProps)(BLISAppCreator);
+export default connect<typeof stateProps, typeof dispatchProps, {}>(mapStateToProps, mapDispatchToProps)(BLISAppCreator);

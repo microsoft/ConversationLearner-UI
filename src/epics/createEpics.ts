@@ -3,7 +3,7 @@ import * as Rx from 'rxjs';
 import { ActionsObservable, Epic } from 'redux-observable'
 import { State, ActionObject } from '../types'
 import { AT } from '../types/ActionTypes'
-import { createBlisApp, createBlisAction, createBlisEntity, createChatSession, createTeachSession } from "./apiHelpers";
+import { createBlisApp, createBlisAction, createBlisEntity, createChatSession, createTeachSession, createTrainDialog } from "./apiHelpers";
 
 export const createNewApplicationEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
     return action$.ofType(AT.CREATE_BLIS_APPLICATION_ASYNC)
@@ -43,5 +43,12 @@ export const createNewTeachSessionEpic: Epic<ActionObject, State> = (action$: Ac
     return action$.ofType(AT.CREATE_TEACH_SESSION_ASYNC)
         .flatMap((actionObject: any) =>
             createTeachSession(actionObject.key, actionObject.teachSession, actionObject.currentAppId)
+        );
+}
+
+export const createNewTrainDialogEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
+    return action$.ofType(AT.CREATE_TRAIN_DIALOG_ASYNC)
+        .flatMap((actionObject: any) =>
+            createTrainDialog(actionObject.key, actionObject.appId, actionObject.trainDialog)
         );
 }

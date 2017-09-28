@@ -54,7 +54,19 @@ let columns: IColumn[] = [
         isResizable: true
     },
 ];
-class EntitiesList extends React.Component<Props, any> {
+
+interface ComponentState {
+    searchValue: string
+    confirmDeleteEntityModalOpen: boolean
+    createEditModalOpen: boolean
+    entitySelected: EntityBase | null
+    entityIDToDelete: string
+    errorModalOpen: boolean
+    columns: IColumn[]
+    sortColumn: IColumn
+}
+
+class EntitiesList extends React.Component<Props, ComponentState> {
     constructor(p: any) {
         super(p);
         this.deleteSelectedEntity = this.deleteSelectedEntity.bind(this);
@@ -63,8 +75,10 @@ class EntitiesList extends React.Component<Props, any> {
         this.renderEntityItems = this.renderEntityItems.bind(this)
         this.state = {
             searchValue: '',
+            confirmDeleteEntityModalOpen: false,
             createEditModalOpen: false,
             entitySelected: null,
+            entityIDToDelete: null,
             errorModalOpen: false,
             columns: columns,
             sortColumn: null
@@ -302,4 +316,4 @@ const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
 type Props = typeof stateProps & typeof dispatchProps;
 
-export default connect(mapStateToProps, mapDispatchToProps)(EntitiesList);
+export default connect<typeof stateProps, typeof dispatchProps, {}>(mapStateToProps, mapDispatchToProps)(EntitiesList);

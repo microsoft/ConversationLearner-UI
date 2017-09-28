@@ -34,7 +34,12 @@ let columns: IColumn[] = [
     }
 ]
 
-class TeachSessionMemory extends React.Component<Props, any> {
+interface ComponentState {
+    columns: IColumn[],
+    sortColumn: IColumn
+}
+
+class TeachSessionMemory extends React.Component<Props, ComponentState> {
     constructor(p: any) {
         super(p);
         this.state = {
@@ -233,4 +238,4 @@ const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
 type Props = typeof stateProps & typeof dispatchProps;
 
-export default connect(mapStateToProps, mapDispatchToProps)(TeachSessionMemory as React.ComponentClass<any>);
+export default connect<typeof stateProps, typeof dispatchProps, {}>(mapStateToProps, mapDispatchToProps)(TeachSessionMemory);

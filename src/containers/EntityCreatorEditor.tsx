@@ -10,7 +10,7 @@ import { TextFieldPlaceholder } from './TextFieldPlaceholder';
 import { State, PreBuiltEntities, LocalePreBuilts } from '../types';
 import { EntityBase, EntityMetaData, EntityType } from 'blis-models'
 
-const initState = {
+const initState: ComponentState = {
     entityNameVal: '',
     entityTypeVal: EntityType.LUIS,
     isBucketableVal: false,
@@ -18,11 +18,22 @@ const initState = {
     editing: false
 };
 
-class EntityCreatorEditor extends React.Component<Props, any> {
-    constructor(p: Props) {
-        super(p);
-        this.state = initState;
-    }
+interface ComponentState {
+    entityNameVal: string
+    entityTypeVal: string,
+    isBucketableVal: boolean
+    isNegatableVal: boolean
+    editing: boolean
+}
+
+interface IOption {
+    key: string
+    text: string
+}
+
+class EntityCreatorEditor extends React.Component<Props, ComponentState> {
+    state = initState
+
     componentWillReceiveProps(p: Props) {
         if (p.entity === null) {
             this.setState({ ...initState });
@@ -75,7 +86,7 @@ class EntityCreatorEditor extends React.Component<Props, any> {
             entityNameVal: text
         })
     }
-    typeChanged(obj: { text: string }) {
+    typeChanged(obj: IOption) {
         this.setState({
             entityTypeVal: obj.text
         })
@@ -95,7 +106,7 @@ class EntityCreatorEditor extends React.Component<Props, any> {
     }
     render() {
         let vals: string[] = [EntityType.LOCAL, EntityType.LUIS]
-        let options: {}[] = vals.map(v => {
+        let options: {}[] = vals.map<IOption>(v => {
             return {
                 key: v,
                 text: v
@@ -199,7 +210,7 @@ const mapStateToProps = (state: State, ownProps: any) => {
     }
 }
 
-interface ReceivedProps {
+export interface ReceivedProps {
     open: boolean,
     entity: EntityBase | null,
     handleClose: Function
@@ -210,4 +221,4 @@ const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
 type Props = typeof stateProps & typeof dispatchProps & ReceivedProps;
 
-export default connect(mapStateToProps, mapDispatchToProps)(EntityCreatorEditor as React.ComponentClass<any>);
+export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(EntityCreatorEditor);

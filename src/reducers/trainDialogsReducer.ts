@@ -15,7 +15,7 @@ const trainDialogsReducer: Reducer<TrainDialogState> = (state = initialState, ac
             return { ...state, all: action.allTrainDialogs };
         case AT.EMPTY_STATE_PROPERTIES:
             return { ...state, all: [] };
-        case AT.CREATE_TRAIN_DIALOG:
+        case AT.CREATE_TRAIN_DIALOG_FULFILLED:
             return { ...state, all: [...state.all, action.trainDialog] };
         // case AT.TOGGLE_TRAIN_DIALOG:
         //     let index: number = 0;

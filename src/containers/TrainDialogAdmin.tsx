@@ -3,7 +3,8 @@ import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../types'
-import ExtractorResponseEditor from './ExtractorResponseEditor';
+import { updateExtractResponse, removeExtractResponse } from '../actions/teachActions'
+import ExtractorResponseEditor from './ExtractorResponseEditor'
 import { Activity } from 'botframework-directlinejs'
 import { ActionBase, TrainDialog, TrainRound, TrainScorerStep, EntityBase, ExtractResponse } from 'blis-models'
 
@@ -58,6 +59,8 @@ class TrainDialogAdmin extends React.Component<Props, any> {
                                 // TODO: Fix ExtractorResponseEditor to use text and entities base.
                                 extractResponse={(textVariaion as any) as ExtractResponse}
                                 canEdit={false}
+                                updateExtractResponse={() => {}}
+                                removeExtractResponse={() => {}}
                             />)
                         : "Select an activity"}
                 </div>
@@ -75,6 +78,8 @@ class TrainDialogAdmin extends React.Component<Props, any> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
+        updateExtractResponse,
+        removeExtractResponse
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {

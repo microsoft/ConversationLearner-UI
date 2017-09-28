@@ -74,12 +74,19 @@ let columns: IColumn[] = [
     }
 ]
 
-const initState = {
+const initState: ComponentState = {
     actionModalOpen: false,
     columns: columns,
     sortColumn: columns[3] // "score"
 }
-class TeachSessionScorer extends React.Component<Props, any> {
+
+interface ComponentState {
+    actionModalOpen: boolean
+    columns: IColumn[]
+    sortColumn: IColumn
+}
+
+class TeachSessionScorer extends React.Component<Props, ComponentState> {
     constructor(p: any) {
         super(p);
         this.state = initState;
@@ -422,4 +429,4 @@ const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
 type Props = typeof stateProps & typeof dispatchProps;
 
-export default connect(mapStateToProps, mapDispatchToProps)(TeachSessionScorer as React.ComponentClass<any>);
+export default connect<typeof stateProps, typeof dispatchProps, {}>(mapStateToProps, mapDispatchToProps)(TeachSessionScorer);
