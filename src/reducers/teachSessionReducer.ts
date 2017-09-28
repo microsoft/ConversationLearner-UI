@@ -9,6 +9,7 @@ const initialState: TeachSessionState = {
     current: null,
     mode: TeachMode.Wait,
     input: "",
+    prevMemories: [],
     memories: [],
     scoreInput: null,
     uiScoreInput: null,
@@ -41,7 +42,7 @@ const teachSessionReducer: Reducer<TeachSessionState> = (state = initialState, a
             // Replace existing extract response (if any) with new one
             let extractResponses: ExtractResponse[] = state.extractResponses.filter((e: ExtractResponse) => e.text != action.uiExtractResponse.extractResponse.text);
             extractResponses.push(action.uiExtractResponse.extractResponse);
-            return { ...state, mode: TeachMode.Extractor, memories: action.uiExtractResponse.memories, extractResponses: extractResponses };
+            return { ...state, mode: TeachMode.Extractor, memories: action.uiExtractResponse.memories, prevMemories: action.uiExtractResponse.memories, extractResponses: extractResponses };
         case AT.UPDATE_EXTRACT_RESPONSE:
             // Replace existing extract response (if any) with new one and maintain ordering
             let index = state.extractResponses.findIndex((e: ExtractResponse) => e.text == action.extractResponse.text);
@@ -59,7 +60,7 @@ const teachSessionReducer: Reducer<TeachSessionState> = (state = initialState, a
         case AT.RUN_SCORER_ASYNC:
             return { ...state, uiScoreInput: action.uiScoreInput }
         case AT.RUN_SCORER_FULFILLED:
-            return { ...state, mode: TeachMode.Scorer, memories: action.uiScoreResponse.memories, scoreInput: action.uiScoreResponse.scoreInput, scoreResponse: action.uiScoreResponse.scoreResponse };
+            return { ...state, mode: TeachMode.Scorer, memories: action.uiScoreResponse.memories, prevMemories: state.memories, scoreInput: action.uiScoreResponse.scoreInput, scoreResponse: action.uiScoreResponse.scoreResponse };
         case AT.POST_SCORE_FEEDBACK_FULFILLEDWAIT:
             return { ...state, mode: TeachMode.Wait };
         case AT.POST_SCORE_FEEDBACK_FULFILLEDNOWAIT:
