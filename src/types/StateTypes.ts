@@ -34,6 +34,7 @@ export type TeachSessionState = {
     current: Teach,
     mode: TeachMode,
     input: string,
+    prevMemories: Memory[],
     memories: Memory[],
     scoreInput: ScoreInput,
     uiScoreInput: UIScoreInput,

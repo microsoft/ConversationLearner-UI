@@ -252,6 +252,15 @@
   margin-top: 2%;
   height: 100%;
 }
+.blis-font--emphasis 
+{
+  font-weight: bold;
+  color: #000000;
+}
+.blis-font--deleted
+{
+  text-decoration: line-through;
+}
 .entityMatch
 {
     flex-shrink: 1;

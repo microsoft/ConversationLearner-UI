@@ -4,7 +4,8 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../types'
 import { IColumn, DetailsList, CheckboxVisibility } from 'office-ui-fabric-react';
-import { Memory, EntityBase } from 'blis-models'
+import { EntityBase } from 'blis-models'
+import { TeachMode } from '../types/const';
 
 let columns: IColumn[] = [
     {
@@ -16,9 +17,9 @@ let columns: IColumn[] = [
         isResizable: true
     },
     {
-        key: 'entityValue',
+        key: 'entityValues',
         name: 'Value',
-        fieldName: 'entityValue',
+        fieldName: 'entityValues',
         minWidth: 200,
         maxWidth: 400,
         isResizable: true
@@ -72,21 +73,112 @@ class TeachSessionMemory extends React.Component<Props, any> {
         }
         return value;
     }
-    renderItemColumn(item?: any, index?: number, column?: IColumn) {
-        let fieldContent = item[column.fieldName];
+    previousMemory(entityName: string) {
+        let prevMemories = this.props.teachSessions.prevMemories || [];
+        return prevMemories.find(m => m.entityName == entityName);
+    }
+    renderEntityName(entityName: string) {
+
+        let curEntity = this.props.teachSessions.memories.find(m => m.entityName == entityName);
+        let prevEntity = this.props.teachSessions.prevMemories.find(m => m.entityName == entityName);
+        let entityClass = "ms-font-m-plus";
+
+        // Show changes when editing
+        if (this.props.teachMode != TeachMode.Wait) {
+            // In old but not new
+            if (prevEntity && !curEntity) {
+                entityClass += " blis-font--deleted";
+            }
+            // In new but not old
+            else if (!prevEntity && curEntity) {
+                entityClass += " blis-font--emphasis";
+            }
+        }
+        return <span className={entityClass}>{entityName}</span>;            
+    }
+    renderEntityValues(entityName : string) {
+
+        // Current entity values
+        let curMemory = this.props.teachSessions.memories.find(m => m.entityName == entityName);
+        let curValues = curMemory ? curMemory.entityValues : [];
+
+        // Corresponding old memory values
+        let prevMemory = this.props.teachSessions.prevMemories.find(m => m.entityName == entityName);
+        let prevValues = prevMemory ? prevMemory.entityValues : [];
+        
+        // Find union and remove duplicates
+        let unionValues = [...curValues, ...prevValues];
+        unionValues = Array.from(new Set(unionValues));
+
+        // Print out list in friendly manner
+        let display = [];
+        let index = 0;
+        for (let value of unionValues)
+        {
+            let entityClass = "";
+
+            // Calculate prefix
+            let prefix = "";
+            if (unionValues.length != 1 && index == unionValues.length-1) {
+                prefix = " and ";
+            }
+            else if (index != 0) {
+                prefix = ", ";
+            }
+
+            // Show changes when editing
+            if (this.props.teachMode != TeachMode.Wait) {
+                // In old but not new
+                if (prevValues.indexOf(value) >= 0  && curValues.indexOf(value) < 0) {
+                    entityClass = "blis-font--deleted";
+                }
+                // In new but not old
+                else if (prevValues.indexOf(value) < 0  && curValues.indexOf(value) >= 0) {
+                    entityClass = "blis-font--emphasis";
+                }
+            }
+            display.push(<span className='ms-font-m-plus'>{prefix}<span className={entityClass}>{value}</span></span>);
+
+            index++;
+        }
+        return display; 
+
+    }
+    renderItemColumn(entityName?: any, index?: number, column?: IColumn) {
+
         if (column.key == 'entityType') {
             // Lookup entity type
-            let entity = this.props.entities.filter((e: EntityBase) => e.entityName == item.entityName)[0];
-            fieldContent = entity ? entity.entityType : "ERROR";
+            let entity = this.props.entities.filter((e: EntityBase) => e.entityName == entityName)[0];
+            let type = entity ? entity.entityType : "ERROR";
+            return <span className="ms-font-m-plus">{type}</span>;  
         }
-        return <span className='ms-font-m-plus'>{fieldContent}</span>;
+        else if (column.key == 'entityValues') {
+            return this.renderEntityValues(entityName);
+        }
+        else if (column.key == 'entityName')
+        {
+            return this.renderEntityName(entityName);
+        }
+        return null;
     }
-    renderMemories(): Memory[] {
-        let filteredMemories = this.props.teachSessions.memories || [];
+    getMemoryNames(): string[] {
+
+         let unionMemoryNames = this.props.teachMode == TeachMode.Wait ?
+            // If waiting for user input just show current entities
+            [
+                ...this.props.teachSessions.memories.map(m => m.entityName)
+            ] :
+            // Find union or old and new remove duplicates
+            [
+                ...this.props.teachSessions.memories.map(m => m.entityName), 
+                ...this.props.teachSessions.prevMemories.map(m => m.entityName)
+            ];
+         
+        unionMemoryNames = Array.from(new Set(unionMemoryNames));
 
         if (this.state.sortColumn) {
             // Sort the items.
-            filteredMemories = filteredMemories.concat([]).sort((a: any, b: any) => {
+            unionMemoryNames = unionMemoryNames.concat([]).sort((a: any, b: any) => {
                 let firstValue = this.getValue(a, this.state.sortColumn);
                 let secondValue = this.getValue(b, this.state.sortColumn);
 
@@ -99,15 +191,15 @@ class TeachSessionMemory extends React.Component<Props, any> {
             });
         }
 
-        return filteredMemories;
+        return unionMemoryNames;
     }
     render() {
-        let memories = this.renderMemories();
-        let details = memories.length == 0 ?
+        let memoryNames = this.getMemoryNames();
+        let details = memoryNames.length == 0 ?
             <div className='ms-font-l teachEmptyMemory'>Empty</div> :
             <DetailsList
                 className="ms-font-m-plus"
-                items={memories}
+                items={memoryNames}
                 columns={this.state.columns}
                 onColumnHeaderClick={this.onColumnClick.bind(this)}
                 onRenderItemColumn={this.renderItemColumn.bind(this)}
@@ -131,7 +223,8 @@ const mapStateToProps = (state: State, ownProps: any) => {
     return {
         teachSessions: state.teachSessions,
         entities: state.entities,
-        user: state.user
+        user: state.user,
+        teachMode: state.teachSessions.mode
     }
 }
 
