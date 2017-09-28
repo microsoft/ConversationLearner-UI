@@ -12,6 +12,7 @@ import ExtractorResponseEditor from './ExtractorResponseEditor';
 import EntityCreatorEditor from './EntityCreatorEditor';
 import { TeachMode } from '../types/const'
 import PopUpMessage from '../components/PopUpMessage';
+import { updateExtractResponse, removeExtractResponse } from '../actions/teachActions'
 
 interface ComponentState {
     entityModalOpen: boolean,
@@ -154,12 +155,29 @@ class TeachSessionExtractor extends React.Component<Props, ComponentState> {
                     isValid = this.isValid(extractResponse);
                 }
 
-                extractDisplay.push(<ExtractorResponseEditor key={key++} canEdit={canEdit} isPrimary={key == 1} isValid={isValid} extractResponse={extractResponse} />);
+                extractDisplay.push(<ExtractorResponseEditor
+                    canEdit={canEdit}
+                    key={key++}
+                    isPrimary={key == 1}
+                    isValid={isValid}
+                    extractResponse={extractResponse}
+                    updateExtractResponse={extractResponse => this.props.updateExtractResponse(extractResponse)}
+                    removeExtractResponse={extractResponse => this.props.removeExtractResponse(extractResponse)}
+                />);
             }
         }
         else {
             // Only display primary response if not in edit mode
-            extractDisplay = <ExtractorResponseEditor key={0} canEdit={canEdit} isPrimary={true} isValid={true} extractResponse={this.props.teachSession.extractResponses[0]} />
+            const extractResponse = this.props.teachSession.extractResponses[0]
+            extractDisplay = <ExtractorResponseEditor
+                canEdit={canEdit}
+                key={0}
+                isPrimary={true}
+                isValid={true}
+                extractResponse={extractResponse}
+                updateExtractResponse={extractResponse => this.props.updateExtractResponse(extractResponse)}
+                removeExtractResponse={extractResponse => this.props.removeExtractResponse(extractResponse)}
+            />
         }
 
         return (
@@ -180,6 +198,8 @@ class TeachSessionExtractor extends React.Component<Props, ComponentState> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
+        updateExtractResponse,
+        removeExtractResponse,
         runScorerAsync
     }, dispatch);
 }

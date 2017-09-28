@@ -8,25 +8,34 @@ import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import Webchat from './Webchat'
 import LogDialogAdmin from './LogDialogAdmin'
 import { Activity } from 'botframework-directlinejs'
-import { BlisAppBase, LogDialog } from 'blis-models'
+import { createTrainDialogAsync } from '../actions/createActions'
+import { BlisAppBase, TrainDialog, LogDialog } from 'blis-models'
 import { deleteLogDialogAsync } from '../actions/deleteActions'
 
 interface ComponentState {
     selectedActivity: Activity | null
 }
 
+const initialState: ComponentState = {
+    selectedActivity: null
+}
+
 class LogDialogModal extends React.Component<Props, ComponentState> {
-    state = {
-        selectedActivity: null
+    state = initialState
+
+    componentWillReceiveProps(nextProps: Props) {
+        if (this.props.open === false && nextProps.open === true) {
+            this.setState(initialState)
+        }
     }
 
-    generateHistory(): Activity[] {
-        if (!this.props.logDialog) {
+    generateHistory(props: Props): Activity[] {
+        const { actions, logDialog, user } = props;
+
+        if (!logDialog || !logDialog.rounds) {
             return [];
         }
-
-        const { actions, logDialog, user } = this.props;
-
+        
         return logDialog.rounds.map((round, i) => {
             const userActivity: Activity = {
                 id: `${i}:0`,
@@ -39,7 +48,11 @@ class LogDialogModal extends React.Component<Props, ComponentState> {
             }
 
             const botActivities = round.scorerSteps.map<Activity>((scorerStep, j) => {
-                let action = actions.filter(a => a.actionId === scorerStep.predictedAction)[0]
+                if (scorerStep.predictedAction === null) {
+                    return null
+                }
+
+                let action = actions.find(action => action.actionId === scorerStep.predictedAction)
                 return {
                     id: `${i}:${j}`,
                     from: {
@@ -49,7 +62,7 @@ class LogDialogModal extends React.Component<Props, ComponentState> {
                     type: "message",
                     text: action.payload
                 };
-            })
+            }).filter(x => x)
 
             return [userActivity, ...botActivities]
         }).reduce((a, b) => a.concat(b));
@@ -59,6 +72,12 @@ class LogDialogModal extends React.Component<Props, ComponentState> {
         this.props.deleteLogDialogAsync(this.props.app.appId, this.props.logDialog.logDialogId)
         // TODO: Would be better to close the dialog after it has been confirmed the delete was successful
         // How do we wait until the promise above has been resolved?
+        this.props.onClose()
+    }
+
+    onSaveDialogChanges(trainDialog: TrainDialog) {
+        console.log(`onSaveDialogChanges: `, trainDialog)
+        this.props.createTrainDialogAsync(this.props.user.key, this.props.app.appId, trainDialog)
         this.props.onClose()
     }
 
@@ -73,7 +92,7 @@ class LogDialogModal extends React.Component<Props, ComponentState> {
     }
 
     render() {
-        let history = this.generateHistory();
+        let history = this.generateHistory(this.props);
         return (
             <div>
                 <Modal
@@ -95,6 +114,7 @@ class LogDialogModal extends React.Component<Props, ComponentState> {
                                 <LogDialogAdmin
                                     logDialog={this.props.logDialog}
                                     selectedActivity={this.state.selectedActivity}
+                                    onSaveChanges={trainDialog => this.onSaveDialogChanges(trainDialog)}
                                 />
                             </div>
                             <div className="blis-chatmodal_modal-controls">
@@ -119,6 +139,7 @@ class LogDialogModal extends React.Component<Props, ComponentState> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
+        createTrainDialogAsync,
         deleteLogDialogAsync
     }, dispatch);
 }
