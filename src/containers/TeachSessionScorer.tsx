@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { returntypeof } from 'react-redux-typescript';
 import { ModelUtils } from 'blis-models';
 import { State } from '../types'
-import { TrainScorerStep, ScoredBase, ActionBase, EntityBase, Memory, ScoredAction, UnscoredAction, ScoreReason, UIScoreInput } from 'blis-models';
+import { UITrainScorerStep, TrainScorerStep, ScoredBase, ActionBase, EntityBase, Memory, ScoredAction, UnscoredAction, ScoreReason, UIScoreInput } from 'blis-models';
 import { postScorerFeedbackAsync, toggleAutoTeach } from '../actions/teachActions'
 import { CommandButton, PrimaryButton } from 'office-ui-fabric-react';
 import { TeachMode } from '../types/const'
@@ -200,6 +200,13 @@ class TeachSessionScorer extends React.Component<Props, ComponentState> {
                 labelAction: actionId,
                 scoredAction: scoredAction
             });
+        
+        let uiTrainScorerStep = new UITrainScorerStep(
+            {
+                trainScorerStep,
+                entities : this.props.entities
+            });
+        
         let appId: string = this.props.apps.current.appId;
         let teachId: string = this.props.teachSession.current.teachId;
         let waitForUser = scoredAction.isTerminal;
@@ -207,7 +214,7 @@ class TeachSessionScorer extends React.Component<Props, ComponentState> {
         // Pass score input (minus extractor step) for subsequent actions when this one is non-terminal
         let uiScoreInput: UIScoreInput = { ...this.props.teachSession.uiScoreInput, trainExtractorStep: null };
 
-        this.props.postScorerFeedbackAsync(this.props.user.key, appId, teachId, trainScorerStep, waitForUser, uiScoreInput);
+        this.props.postScorerFeedbackAsync(this.props.user.key, appId, teachId, uiTrainScorerStep, waitForUser, uiScoreInput);
     }
     /** Check if entity is in memory and return it's name */
     entityInMemory(entityId: string): { match: boolean, name: string } {
