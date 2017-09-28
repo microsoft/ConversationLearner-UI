@@ -10,7 +10,7 @@ import ChatSessionWindow from './ChatSessionWindow'
 import LogDialogModal from './LogDialogModal'
 
 interface IRenderableColumn extends IColumn {
-    render: (x: LogDialog) => React.ReactNode
+    render: (x: LogDialog, component: LogDialogsList) => React.ReactNode
 }
 
 const returnStringWhenError = (s: string) => {
@@ -65,12 +65,14 @@ let columns: IRenderableColumn[] = [
         minWidth: 100,
         maxWidth: 500,
         isResizable: true,
-        render: logDialog => {
+        render: (logDialog, component) => {
+            // Find last action of last scorer step of last round
+            // If found, return payload, otherwise return not found icon
             if (logDialog.rounds && logDialog.rounds.length > 0) {
                 let scorerSteps = logDialog.rounds[logDialog.rounds.length - 1].scorerSteps;
                 if (scorerSteps.length > 0) {
                     let actionId = scorerSteps[scorerSteps.length - 1].predictedAction;
-                    let action = this.props.actions.find(a => a.actionId == actionId);
+                    let action = component.props.actions.find(a => a.actionId == actionId);
                     if (action) {
                         return <span className='ms-font-m-plus'>{action.payload}</span>;
                     }
@@ -98,7 +100,7 @@ interface ComponentState {
 }
 
 class LogDialogsList extends React.Component<Props, ComponentState> {
-    state = {
+    state: ComponentState = {
         isChatSessionWindowOpen: false,
         isLogDialogWindowOpen: false,
         currentLogDialog: null,
@@ -167,7 +169,7 @@ class LogDialogsList extends React.Component<Props, ComponentState> {
                     items={logDialogItems}
                     columns={columns}
                     checkboxVisibility={CheckboxVisibility.hidden}
-                    onRenderItemColumn={(logDialog, i, column: IRenderableColumn) => returnErrorStringWhenError(() => column.render(logDialog))}
+                    onRenderItemColumn={(logDialog, i, column: IRenderableColumn) => returnErrorStringWhenError(() => column.render(logDialog, this))}
                     onActiveItemChanged={logDialog => this.onLogDialogInvoked(logDialog)}
                 />
                 <LogDialogModal
@@ -188,7 +190,8 @@ const mapDispatchToProps = (dispatch: any) => {
 const mapStateToProps = (state: State) => {
     return {
         logDialogs: state.logDialogs,
-        user: state.user
+        user: state.user,
+        actions: state.actions
     }
 }
 

@@ -13,12 +13,13 @@ import { createChatSessionAsync } from '../actions/createActions'
 import { Activity } from 'botframework-directlinejs';
 // TODO: Investigate if this can be removed in favor of local state
 import { addMessageToChatConversationStack } from '../actions/displayActions';
+
 interface ComponentState {
     chatSession: Session
 }
 
 class SessionWindow extends React.Component<Props, ComponentState> {
-    state = {
+    state: ComponentState = {
         chatSession: null
     }
 

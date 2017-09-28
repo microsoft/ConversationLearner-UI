@@ -28,7 +28,7 @@ interface SpecialIndex {
     entityPickerObject: EntityPickerObject
 }
 
-const initState = {
+const initState: ComponentState = {
     actionTypeVal: 'TEXT',
     apiVal: null,
     displayAutocomplete: false,
@@ -145,6 +145,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
                 })
                 let negativeEntities: EntityPickerObject[] = p.blisAction.negativeEntities.map((entityId: string) => {
                     let found: EntityBase = this.props.entities.find((e: EntityBase) => e.entityId == entityId);
+
                     return {
                         key: found.entityName,
                         name: found.entityName
@@ -161,7 +162,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
                 let payload = null;
                 let apiVal = null;
                 if (p.blisAction.metadata.actionType == ActionTypes.API_LOCAL) {
-                    payload = ModelUtils.GetArguments(p.blisAction);
+                    payload = ModelUtils.GetArguments(p.blisAction).join(' ');
                     apiVal = ModelUtils.GetPrimaryPayload(p.blisAction);
 
                     // Default to first api if none selected
@@ -559,14 +560,16 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
         }
     }
 
-    findUpdatedIndex(text: string): number {
-        let current: string = this.state.payloadVal;
+    findUpdatedIndex(text: string): number | undefined {
+        let current = this.state.payloadVal;
         let length = current.length > text.length ? current.length : text.length;
         for (let i = 0; i < length; i++) {
             if (current[i] !== text[i]) {
                 return i;
             }
         }
+
+        return undefined
     }
 
     findDeletedEntity(items: EntityPickerObject[], oldItems: EntityPickerObject[]): EntityPickerObject {
@@ -778,11 +781,11 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
 
             let placeholder = "API name...";
             let disabled = this.state.editing;
-            let apiOptions = [];
+            let apiOptions: TextObject[] = [];
             let haveCallbacks = this.props.botInfo.callbacks && this.props.botInfo.callbacks.length > 0;
             if (haveCallbacks) {
                 let apiVals = Object.values(this.props.botInfo.callbacks);
-                apiOptions = apiVals.map(v => {
+                apiOptions = apiVals.map<TextObject>(v => {
                     return {
                         key: v,
                         text: v

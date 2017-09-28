@@ -54,7 +54,7 @@ interface ComponentState {
 }
 
 class TrainDialogsList extends React.Component<Props, ComponentState> {
-    state = {
+    state: ComponentState = {
         isTeachDialogModalOpen: false,
         isTrainDialogModalOpen: false,
         trainDialog: null,
