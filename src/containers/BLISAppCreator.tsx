@@ -68,6 +68,10 @@ class BLISAppCreator extends React.Component<Props, ComponentState> {
         })
     }
     onDismissCreateNewApp() {
+        this.resetState()
+    }
+
+    resetState() {
         let firstValue = this.state.localeOptions[0].text
         this.setState({
             isCreateAppModalOpen: false,
@@ -92,30 +96,33 @@ class BLISAppCreator extends React.Component<Props, ComponentState> {
         })
     }
     createApplication() {
-        let meta = new BlisAppMetaData({
-            botFrameworkApps: []
-        })
         let appToAdd = new BlisAppBase({
-            appId: null,
             appName: this.state.appNameVal,
             luisKey: this.state.luisKeyVal,
             locale: this.state.localeVal,
-            metadata: meta
+            metadata: new BlisAppMetaData({
+                botFrameworkApps: []
+            })
         })
         this.props.createBLISApplicationAsync(this.props.userKey, this.props.userId, appToAdd);
         //need to empty entities, actions, and trainDialogs arrays
         this.props.emptyStateProperties();
-        this.onDismissCreateNewApp();
+        this.resetState();
     }
+
+    // TODO: Refactor to use default form submission instead of manually listening for keys
+    // Also has benefit of native browser validation for required fields
     onKeyDown(key: React.KeyboardEvent<HTMLElement>) {
         // On enter attempt to create the app if required fields are set
         if (key.keyCode == 13 && this.state.appNameVal && this.state.luisKeyVal) {
             this.createApplication();
         }
     }
+
     checkIfBlank(value: string): string {
         return value ? "" : "Required Value";
     }
+
     render() {
         return (
             <div>

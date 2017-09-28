@@ -65,7 +65,7 @@ export interface BlisAppForUpdate extends BlisAppBase {
         obs.next(setCurrentBLISAppFulfilled(blisApp));
         obs.complete();
       })
-      .catch(err => handleError(obs, err, AT.SET_CURRENT_BLIS_APP)));
+      .catch(err => handleError(obs, err, AT.SET_CURRENT_BLIS_APP_ASYNC)));
   };
 
 //=========================================================
@@ -199,17 +199,15 @@ export interface BlisAppForUpdate extends BlisAppBase {
 // DELETE ROUTES
 //=========================================================
 
-  export const deleteBlisApp = (key: string, blisAppId: string, blisApp: BlisAppForUpdate): Observable<ActionObject> => {
-    let deleteAppRoute: string = makeRoute(key, `app/${blisAppId}`); //takes an app in the body
-    const { appId, latestPackageId, metadata, trainingRequired, trainingStatus, trainingFailureMessage, ...appToSend } = blisApp
-    let configWithBody = { ...config, body: appToSend }
-    return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => axios.delete(deleteAppRoute, configWithBody)
+  export const deleteBlisApp = (key: string, blisApp: BlisAppForUpdate): Observable<ActionObject> => {
+    return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => axios.delete(makeRoute(key, `app/${blisApp.appId}`))
       .then(response => {
-        obs.next(deleteBLISApplicationFulfilled(blisAppId));
+        obs.next(deleteBLISApplicationFulfilled(blisApp.appId));
         obs.complete();
       })
       .catch(err => handleError(obs, err, AT.DELETE_BLIS_APPLICATION_ASYNC)));
   };
+  
   export const deleteBlisEntity = (key: string, appId: string, deleteEntityId: string, reverseEntityId: string): Observable<ActionObject> => {
     let deleteEntityRoute: string = makeRoute(key, `app/${appId}/entity/${deleteEntityId}`);
     return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => axios.delete(deleteEntityRoute)

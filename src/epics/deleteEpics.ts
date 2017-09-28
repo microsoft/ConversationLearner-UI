@@ -8,7 +8,7 @@ import { deleteBlisApp, deleteBlisEntity, deleteBlisAction, deleteChatSession, d
 export const deleteApplicationEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
     return action$.ofType(AT.DELETE_BLIS_APPLICATION_ASYNC)
         .flatMap((action: any) =>
-            deleteBlisApp(action.key, action.blisAppGUID, action.blisApp)
+            deleteBlisApp(action.key, action.blisApp)
         );
 }
 

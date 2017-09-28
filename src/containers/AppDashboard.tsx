@@ -3,6 +3,7 @@ import { returntypeof } from 'react-redux-typescript';
 import { connect } from 'react-redux';
 import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader'
 import { State } from '../types'
+import { BlisAppBase } from 'blis-models'
 
 class AppDashboard extends React.Component<Props, any> {
     render() {
@@ -13,6 +14,7 @@ class AppDashboard extends React.Component<Props, any> {
         );
     }
 }
+
 const mapStateToProps = (state: State) => {
     return {
         entities: state.entities,
@@ -20,8 +22,13 @@ const mapStateToProps = (state: State) => {
         trainDialogs: state.trainDialogs
     }
 }
+
+export interface ReceivedProps {
+    app: BlisAppBase
+}
+
 // Props types inferred from mapStateToProps & dispatchToProps
 const stateProps = returntypeof(mapStateToProps);
-type Props = typeof stateProps;
+type Props = typeof stateProps & ReceivedProps;
 
-export default connect(mapStateToProps, null)(AppDashboard);
+export default connect<typeof stateProps, {}, ReceivedProps>(mapStateToProps, null)(AppDashboard)

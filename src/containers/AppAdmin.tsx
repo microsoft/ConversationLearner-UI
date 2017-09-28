@@ -12,6 +12,7 @@ import { setDisplayMode } from '../actions/displayActions';
 import { State } from '../types';
 import LogDialogsList from './LogDialogsList';
 import { DisplayMode } from '../types/const';
+import { BlisAppBase } from 'blis-models'
 
 interface ComponentState {
     display: string
@@ -21,38 +22,38 @@ interface ComponentState {
 class AppAdmin extends React.Component<Props, ComponentState> {
     state: ComponentState = {
         display: 'Dash',
-        selectedKey: 'Dash',
+        selectedKey: 'Dash'
     }
     
     renderChosenNavLink() {
         switch (this.state.display) {
             case "Settings":
                 return (
-                    <AppSettings />
+                    <AppSettings app={this.props.app} />
                 )
             case "Dash":
                 return (
-                    <AppDashboard />
+                    <AppDashboard app={this.props.app} />
                 )
             case "Entities":
                 return (
-                    <EntitiesList />
+                    <EntitiesList app={this.props.app} />
                 )
             case "Actions":
                 return (
-                    <ActionResponsesList />
+                    <ActionResponsesList app={this.props.app} />
                 )
             case "TrainDialogs":
                 return (
-                    <TrainDialogsList />
+                    <TrainDialogsList app={this.props.app} />
                 )
             case "LogDialogs":
                 return (
-                    <LogDialogsList />
+                    <LogDialogsList app={this.props.app} />
                 )
             default:
                 return (
-                    <AppDashboard />
+                    <AppDashboard app={this.props.app} />
                 )
         }
     }
@@ -67,7 +68,7 @@ class AppAdmin extends React.Component<Props, ComponentState> {
             <div className="container">
                 <div className="content">
                     <div className='trainingGroundNavigationArea'>
-                        <span className="ms-font-xxl">{this.props.blisApps.current.appName}</span>
+                        <span className="ms-font-xxl">{this.props.app.appName}</span>
                         <div className="tgSettingsDiv">
                             <a onClick={() => this.setArenaDisplay('Settings')}><span className="ms-Icon ms-Icon--Settings" aria-hidden="true"></span>&nbsp;&nbsp;</a>
                             <span className="ms-font-m-plus"><a onClick={() => this.setArenaDisplay('Settings')}>Settings</a></span>
@@ -106,7 +107,7 @@ class AppAdmin extends React.Component<Props, ComponentState> {
             <div className="container">
                 <div className="emulatorContent">
                     <div className='trainingGroundNavigationArea'>
-                        <span className="ms-font-xxl">{this.props.blisApps.current.appName}</span>
+                        <span className="ms-font-xxl">{this.props.app.appName}</span>
                         <div className="tgSettingsDiv">
                             <a onClick={() => this.setArenaDisplay('Settings')}><span className="ms-Icon ms-Icon--Settings" aria-hidden="true"></span>&nbsp;&nbsp;</a>
                             <span className="ms-font-m-plus"><a onClick={() => this.setArenaDisplay('Settings')}>Settings</a></span>
@@ -154,16 +155,20 @@ const mapDispatchToProps = (dispatch: any) => {
 }
 const mapStateToProps = (state: State) => {
     return {
-        blisApps: state.apps,
         entities: state.entities,
         actions: state.actions,
         trainDialogs: state.trainDialogs,
         display: state.display
     }
 }
+
+export interface ReceivedProps {
+    app: BlisAppBase
+}
+
 // Props types inferred from mapStateToProps & dispatchToProps
 const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
-type Props = typeof stateProps & typeof dispatchProps;
+type Props = typeof stateProps & typeof dispatchProps & ReceivedProps;
 
-export default connect<typeof stateProps, typeof dispatchProps, {}>(mapStateToProps, mapDispatchToProps)(AppAdmin);
+export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(AppAdmin);

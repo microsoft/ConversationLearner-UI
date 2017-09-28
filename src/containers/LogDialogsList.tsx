@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader'
 import { DetailsList, CommandButton, CheckboxVisibility, IColumn, SearchBox } from 'office-ui-fabric-react';
 import { State } from '../types'
-import { LogDialog } from 'blis-models'
+import { BlisAppBase, LogDialog } from 'blis-models'
 import ChatSessionWindow from './ChatSessionWindow'
 import LogDialogModal from './LogDialogModal'
 
@@ -152,7 +152,7 @@ class LogDialogsList extends React.Component<Props, ComponentState> {
                         text='New Chat Session'
                     />
                     <ChatSessionWindow
-                        app={this.props.apps.current}
+                        app={this.props.app}
                         open={this.state.isChatSessionWindowOpen}
                         onClose={() => this.onCloseChatSessionWindow()}
                     />
@@ -172,7 +172,7 @@ class LogDialogsList extends React.Component<Props, ComponentState> {
                 />
                 <LogDialogModal
                     open={this.state.isLogDialogWindowOpen}
-                    app={this.props.apps.current}
+                    app={this.props.app}
                     onClose={() => this.onCloseLogDialogModal()}
                     logDialog={currentLogDialog}
                 />
@@ -180,6 +180,7 @@ class LogDialogsList extends React.Component<Props, ComponentState> {
         );
     }
 }
+
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
     }, dispatch)
@@ -187,14 +188,17 @@ const mapDispatchToProps = (dispatch: any) => {
 const mapStateToProps = (state: State) => {
     return {
         logDialogs: state.logDialogs,
-        userKey: state.user.key,
-        apps: state.apps,
-        chatSessions: state.chatSessions
+        user: state.user
     }
 }
+
+export interface ReceivedProps {
+    app: BlisAppBase
+}
+
 // Props types inferred from mapStateToProps & dispatchToProps
 const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
-type Props = typeof stateProps & typeof dispatchProps;
+type Props = typeof stateProps & typeof dispatchProps & ReceivedProps;
 
-export default connect(mapStateToProps, mapDispatchToProps)(LogDialogsList);
+export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(LogDialogsList);

@@ -207,9 +207,14 @@ const mapStateToProps = (state: State) => {
         blisApps: state.apps
     }
 }
+
+export interface ReceivedProps {
+    app: BlisAppBase
+}
+
 // Props types inferred from mapStateToProps & dispatchToProps
 const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
-type Props = typeof stateProps & typeof dispatchProps;
+type Props = typeof stateProps & typeof dispatchProps & ReceivedProps;
 
-export default connect<typeof stateProps, typeof dispatchProps, {}>(mapStateToProps, mapDispatchToProps)(AppSettings);
+export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(AppSettings);
