@@ -53,7 +53,15 @@ let columns: IColumn[] = [
         isResizable: true
     },
 ];
-class BLISAppsList extends React.Component<Props, any> {
+
+interface ComponentState {
+    confirmDeleteAppModalOpen: boolean,
+    appIDToDelete: string
+    columns: IColumn[]
+    sortColumn: IColumn
+}
+
+class BLISAppsList extends React.Component<Props, ComponentState> {
     constructor(p: any) {
         super(p);
         this.renderItemColumn = this.renderItemColumn.bind(this);
@@ -219,4 +227,4 @@ const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
 type Props = typeof stateProps & typeof dispatchProps;
 
-export default connect(mapStateToProps, mapDispatchToProps)(BLISAppsList);
+export default connect<typeof stateProps, typeof dispatchProps, {}>(mapStateToProps, mapDispatchToProps)(BLISAppsList);

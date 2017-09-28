@@ -10,17 +10,21 @@ import { State } from '../types'
 import { bindActionCreators } from 'redux';
 import { DisplayMode } from '../types/const'
 
-class Header extends React.Component<Props, any> {
-    constructor(p: any) {
-        super(p);
-        this.state = {
-            myAppsClass: 'selectedHeaderElementDiv',
-            docsClass: 'headerElementDiv',
-            aboutClass: 'headerElementDiv',
-            supportClass: 'headerElementDiv',
-        }
-        this.tabSelected = this.tabSelected.bind(this)
+interface ComponentState {
+    myAppsClass: string
+    docsClass: string
+    aboutClass: string
+    supportClass: string
+}
+
+class Header extends React.Component<Props, ComponentState> {
+    state: ComponentState = {
+        myAppsClass: 'selectedHeaderElementDiv',
+        docsClass: 'headerElementDiv',
+        aboutClass: 'headerElementDiv',
+        supportClass: 'headerElementDiv',
     }
+    
     tabSelected(tab: string) {
         switch (tab) {
             case "myApps":
@@ -114,4 +118,4 @@ const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
 type Props = typeof stateProps & typeof dispatchProps;
 
-export default connect(mapStateToProps, mapDispatchToProps)(Header);
+export default connect<typeof stateProps, typeof dispatchProps, {}>(mapStateToProps, mapDispatchToProps)(Header);
