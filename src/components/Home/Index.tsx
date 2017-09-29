@@ -8,7 +8,7 @@ import { BlisAppBase } from 'blis-models'
 import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { createApp } from '../../actions/appActions';
+import { createBLISApplicationAsync } from '../../actions/createActions';
 import { State } from '../../types';
 import { RouteComponentProps } from 'react-router'
 
@@ -66,7 +66,7 @@ class component extends React.Component<Props, any> {
             }
         };
 
-        this.props.createApp(app)
+        this.props.createBLISApplicationAsync("", "", app)
     }
 
     render() {
@@ -83,7 +83,7 @@ class component extends React.Component<Props, any> {
                 </div>
                 <DetailsList
                     className="ms-font-m-plus"
-                    items={this.props.apps.list}
+                    items={[]}
                     columns={columns}
                     checkboxVisibility={CheckboxVisibility.hidden}
                     onRenderItemColumn={(app, index, column: IRenderableColumn) => column.render(app)}
@@ -96,7 +96,7 @@ class component extends React.Component<Props, any> {
 
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        createApp
+        createBLISApplicationAsync
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {
