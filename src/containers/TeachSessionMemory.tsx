@@ -47,7 +47,7 @@ class TeachSessionMemory extends React.Component<Props, ComponentState> {
             sortColumn: null
         }
     }
-    onColumnClick(event: any, column: any) {
+    onColumnClick(event: any, column: IColumn) {
         let { columns } = this.state;
         let isSortedDescending = column.isSortedDescending;
 
@@ -58,7 +58,7 @@ class TeachSessionMemory extends React.Component<Props, ComponentState> {
 
         // Reset the items and columns to match the state.
         this.setState({
-            columns: columns.map((col: any) => {
+            columns: columns.map(col => {
                 col.isSorted = (col.key === column.key);
 
                 if (col.isSorted) {

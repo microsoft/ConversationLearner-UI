@@ -6,7 +6,7 @@ import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader';
 import { deleteActionAsync } from '../actions/deleteActions'
 import { DetailsList, CommandButton, Link, CheckboxVisibility, List, IColumn, SearchBox } from 'office-ui-fabric-react';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
-import { BlisAppBase, ActionBase, EntityBase, ModelUtils } from 'blis-models'
+import { BlisAppBase, ActionBase, ModelUtils } from 'blis-models'
 import ActionResponseCreatorEditor from './ActionResponseCreatorEditor';
 import EntityTile from '../components/EntityTile';
 import { State } from '../types'
@@ -150,7 +150,7 @@ class ActionResponsesHomepage extends React.Component<Props, ComponentState> {
             createEditModalOpen: true
         })
     }
-    onColumnClick(event: any, column: any) {
+    onColumnClick(event: any, column: IColumn) {
         let { columns } = this.state;
         let isSortedDescending = column.isSortedDescending;
 
@@ -161,7 +161,7 @@ class ActionResponsesHomepage extends React.Component<Props, ComponentState> {
 
         // Reset the items and columns to match the state.
         this.setState({
-            columns: columns.map((col: any) => {
+            columns: columns.map(col => {
                 col.isSorted = (col.key === column.key);
 
                 if (col.isSorted) {
@@ -173,7 +173,7 @@ class ActionResponsesHomepage extends React.Component<Props, ComponentState> {
             sortColumn: column
         });
     }
-    renderItemColumn(item?: any, index?: number, column?: IColumn) {
+    renderItemColumn(item?: ActionBase, index?: number, column?: IColumn) {
         let fieldContent = item[column.fieldName];
         switch (column.key) {
             case 'wait':
@@ -228,10 +228,7 @@ class ActionResponsesHomepage extends React.Component<Props, ComponentState> {
         }
     }
     renderEntityList(entityIDs: string[]) {
-        let entityObjects: EntityBase[];
-        entityObjects = entityIDs.map((id: string) => {
-            return this.props.entities.find((e: EntityBase) => e.entityId == id)
-        })
+        let entityObjects = entityIDs.map(id => this.props.entities.find(e => e.entityId == id))
         return (
             <List
                 items={entityObjects}
@@ -241,13 +238,13 @@ class ActionResponsesHomepage extends React.Component<Props, ComponentState> {
             />
         )
     }
-    getValue(entity: any, col: IColumn): any {
+    getValue(action: ActionBase, col: IColumn): any {
         let value;
         if (col.key == 'actionType') {
-            value = entity.metadata.actionType;
+            value = action.metadata.actionType;
         }
         else {
-            value = entity[col.fieldName];
+            value = action[col.fieldName];
         }
 
         if (typeof value == 'string' || value instanceof String) {
@@ -259,15 +256,15 @@ class ActionResponsesHomepage extends React.Component<Props, ComponentState> {
     renderActionItems(): ActionBase[] {
         //runs when user changes the text 
         let lcString = this.state.searchValue.toLowerCase();
-        let filteredActions = this.props.actions.filter((a: ActionBase) => {
+        let filteredActions = this.props.actions.filter(a => {
             let nameMatch = a.payload.toLowerCase().includes(lcString);
             let typeMatch = a.metadata.actionType ? a.metadata.actionType.toLowerCase().includes(lcString) : true;
-            let negativeEntities: string[] = a.negativeEntities.map((entityId: string) => {
-                let found: EntityBase = this.props.entities.find((e: EntityBase) => e.entityId == entityId);
+            let negativeEntities = a.negativeEntities.map(entityId => {
+                let found = this.props.entities.find(e => e.entityId == entityId);
                 return found.entityName;
             })
-            let positiveEntities: string[] = a.requiredEntities.map((entityId: string) => {
-                let found: EntityBase = this.props.entities.find((e: EntityBase) => e.entityId == entityId);
+            let positiveEntities = a.requiredEntities.map(entityId => {
+                let found = this.props.entities.find(e => e.entityId == entityId);
                 return found.entityName;
             })
             let requiredEnts = positiveEntities.join('');
