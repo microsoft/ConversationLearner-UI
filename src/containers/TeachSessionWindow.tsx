@@ -23,7 +23,7 @@ interface ComponentState {
 }
 
 class TeachWindow extends React.Component<Props, ComponentState> {
-    state = {
+    state: ComponentState = {
         isConfirmDeleteOpen: false,
         teachSession: null,
         editing: false

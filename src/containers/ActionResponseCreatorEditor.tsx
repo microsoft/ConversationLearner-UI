@@ -28,7 +28,7 @@ interface SpecialIndex {
     entityPickerObject: EntityPickerObject
 }
 
-const initState = {
+const initState: ComponentState = {
     actionTypeVal: 'TEXT',
     apiVal: null,
     displayAutocomplete: false,
@@ -114,7 +114,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
     }
     componentWillReceiveProps(p: Props) {
         if (p.open === true && this.state.open === true) {
-            let entities = this.props.entities.map((e: EntityBase) => {
+            let entities = this.props.entities.map(e => {
                 return {
                     key: e.entityName,
                     name: e.entityName
@@ -130,21 +130,20 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
                 this.setState({ ...initState, open: p.open });
             } else {
                 // we are editing the action and need to load necessary properties
-                let entities = this.props.entities.map((e: EntityBase) => {
-                    return {
+                let entities = this.props.entities.map<EntityPickerObject>(e =>
+                    ({
                         key: e.entityName,
                         name: e.entityName
-                    }
-                })
-                let requiredEntities: EntityPickerObject[] = p.blisAction.requiredEntities.map((entityId: string) => {
-                    let found: EntityBase = this.props.entities.find((e: EntityBase) => e.entityId == entityId);
+                    }))
+                let requiredEntities = p.blisAction.requiredEntities.map<EntityPickerObject>(entityId => {
+                    let found = this.props.entities.find(e => e.entityId == entityId);
                     return {
                         key: found.entityName,
                         name: found.entityName
                     }
                 })
-                let negativeEntities: EntityPickerObject[] = p.blisAction.negativeEntities.map((entityId: string) => {
-                    let found: EntityBase = this.props.entities.find((e: EntityBase) => e.entityId == entityId);
+                let negativeEntities: EntityPickerObject[] = p.blisAction.negativeEntities.map(entityId => {
+                    let found = this.props.entities.find(e => e.entityId == entityId);
                     return {
                         key: found.entityName,
                         name: found.entityName
@@ -161,7 +160,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
                 let payload = null;
                 let apiVal = null;
                 if (p.blisAction.metadata.actionType == ActionTypes.API_LOCAL) {
-                    payload = ModelUtils.GetArguments(p.blisAction);
+                    payload = ModelUtils.GetArguments(p.blisAction).join(' ');
                     apiVal = ModelUtils.GetPrimaryPayload(p.blisAction);
 
                     // Default to first api if none selected
@@ -254,15 +253,15 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
     }
     createOnClick() {
         let currentAppId: string = this.props.blisApps.current.appId;
-        let requiredEntities = this.state.reqEntitiesVal.map((req: EntityPickerObject) => {
-            let found: EntityBase = this.props.entities.find((e: EntityBase) => e.entityName == req.key)
+        let requiredEntities = this.state.reqEntitiesVal.map(req => {
+            let found = this.props.entities.find(e => e.entityName == req.key)
             return found.entityId
         })
-        let negativeEntities = this.state.negEntitiesVal.map((neg: EntityPickerObject) => {
-            let found: EntityBase = this.props.entities.find((e: EntityBase) => e.entityName == neg.key)
+        let negativeEntities = this.state.negEntitiesVal.map(neg => {
+            let found = this.props.entities.find(e => e.entityName == neg.key)
             return found.entityId
         })
-        let suggestedEntity: EntityBase = this.state.suggEntitiesVal[0] ? this.props.entities.find((e: EntityBase) => e.entityName == this.state.suggEntitiesVal[0].name) : null;
+        let suggestedEntity = this.state.suggEntitiesVal[0] ? this.props.entities.find(e => e.entityName == this.state.suggEntitiesVal[0].name) : null;
 
         let meta = new ActionMetaData({
             actionType: this.state.actionTypeVal,
@@ -306,63 +305,36 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
             waitVal: !this.state.waitVal,
         })
     }
-    actionTypeChanged(obj: { text: string }) {
+    actionTypeChanged(obj: TextObject) {
         this.setState({
             actionTypeVal: obj.text,
         })
     }
-    apiChanged(obj: { text: string }) {
+    apiChanged(obj: TextObject) {
         this.setState({
             apiVal: obj.text,
         })
     }
-    requiredEntityOnResolve(filterText: string, tagList: EntityPickerObject[]) {
+    requiredEntityOnResolve(filterText: string, tagList: EntityPickerObject[]): EntityPickerObject[] {
         //required entites available should exclude all saved entities
-        let entList = filterText ? this.state.availableRequiredEntities.filter((ent: EntityPickerObject) => ent.name.toLowerCase().indexOf(filterText.toLowerCase()) === 0).filter((item: EntityPickerObject) => !this.listContainsDocument(item, tagList)) : [];
+        let entList = filterText ? this.state.availableRequiredEntities.filter(ent => ent.name.toLowerCase().indexOf(filterText.toLowerCase()) === 0).filter(item => !this.listContainsDocument(item, tagList)) : [];
         let usedEntities = this.state.reqEntitiesVal.concat(this.state.negEntitiesVal).concat(this.state.suggEntitiesVal)
-        let entListToReturn = entList.filter((e: EntityPickerObject) => {
-            let decision: boolean = true;
-            usedEntities.map((u: EntityPickerObject) => {
-                if (e.key == u.key) {
-                    decision = false;
-                }
-            })
-            return decision;
-        })
-        return entListToReturn;
+        return entList.filter(e => !usedEntities.some(u => e.key === u.key))
     }
-    negativeEntityOnResolve(filterText: string, tagList: EntityPickerObject[]) {
+    negativeEntityOnResolve(filterText: string, tagList: EntityPickerObject[]): EntityPickerObject[] {
         //negative entites available should exclude those in required entities, and its own saved entities, but not suggested ones
-        let entList = filterText ? this.state.availableRequiredEntities.filter((ent: EntityPickerObject) => ent.name.toLowerCase().indexOf(filterText.toLowerCase()) === 0).filter((item: EntityPickerObject) => !this.listContainsDocument(item, tagList)) : [];
+        let entList = filterText ? this.state.availableRequiredEntities.filter(ent => ent.name.toLowerCase().indexOf(filterText.toLowerCase()) === 0).filter(item => !this.listContainsDocument(item, tagList)) : [];
         let usedEntities = this.state.reqEntitiesVal.concat(this.state.negEntitiesVal)
-        let entListToReturn = entList.filter((e: EntityPickerObject) => {
-            let decision: boolean = true;
-            usedEntities.map((u: EntityPickerObject) => {
-                if (e.key == u.key) {
-                    decision = false;
-                }
-            })
-            return decision;
-        })
-        return entListToReturn;
+        return entList.filter(e => !usedEntities.some(u => e.key === u.key))
     }
-    suggestedEntityOnResolve(filterText: string, tagList: EntityPickerObject[]) {
+    suggestedEntityOnResolve(filterText: string, tagList: EntityPickerObject[]): EntityPickerObject[] {
         //suggested entites available should exclude those in required entities, and its own saved entities, but not negative ones
         if (this.state.suggEntitiesVal.length > 0) {
             return [];
         }
         let entList = filterText ? this.state.availableRequiredEntities.filter((ent: EntityPickerObject) => ent.name.toLowerCase().indexOf(filterText.toLowerCase()) === 0).filter((item: EntityPickerObject) => !this.listContainsDocument(item, tagList)) : [];
         let usedEntities = this.state.reqEntitiesVal.concat(this.state.suggEntitiesVal)
-        let entListToReturn = entList.filter((e: EntityPickerObject) => {
-            let decision: boolean = true;
-            usedEntities.map((u: EntityPickerObject) => {
-                if (e.key == u.key) {
-                    decision = false;
-                }
-            })
-            return decision;
-        })
-        return entListToReturn;
+        return entList.filter(e => !usedEntities.some(u => e.key === u.key))
     }
 
     listContainsDocument(tag: EntityPickerObject, tagList: EntityPickerObject[]) {
@@ -380,10 +352,10 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
         if (items.length < this.state.negEntitiesVal.length) {
             //we deleted one, need to make sure it isnt a suggested entity;
             if (this.state.suggEntitiesVal.length == 1) {
-                let suggestedEntity: EntityPickerObject = this.state.suggEntitiesVal[0];
-                let deletedNegativeEntity: EntityPickerObject = this.findDeletedEntity(items, this.state.negEntitiesVal);
+                let suggestedEntity = this.state.suggEntitiesVal[0];
+                let deletedNegativeEntity = this.findDeletedEntity(items, this.state.negEntitiesVal);
                 if (suggestedEntity.name == deletedNegativeEntity.name) {
-                    let negativeEntities: EntityPickerObject[] = this.state.negEntitiesVal;
+                    let negativeEntities = this.state.negEntitiesVal;
                     //do nothing. Picker will internally update so we need to overwrite that
                     this.setState({
                         negEntitiesVal: negativeEntities,
@@ -422,7 +394,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
     }
 
     payloadChanged(text: string) {
-        let specialIndexes: SpecialIndex[] = this.updateSpecialCharIndexesToDisregard(text);
+        let specialIndexes = this.updateSpecialCharIndexesToDisregard(text);
         this.checkForSpecialCharacters(text, specialIndexes);
         this.setState({
             payloadVal: text
@@ -434,7 +406,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
         let updatedIndex = this.findUpdatedIndex(newPayload);
         if (newPayload.length > this.state.payloadVal.length) {
             //we added a letter. Find which index was updated. Increment every index in the current special indexes array >= to the updated index
-            indexesToSet = this.state.specialCharIndexesToDisregard.map((i: SpecialIndex) => {
+            indexesToSet = this.state.specialCharIndexesToDisregard.map(i => {
                 if (i.index >= updatedIndex) {
                     return { ...i, index: i.index + 1 }
                 } else {
@@ -444,10 +416,10 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
         } else {
             //we deleted a letter. Find which index was updated. Decrement every index in the current special indexes array <= to the updated index
             //If the character deleted was actually one of the special characters, remove it from the array.
-            indexesToSet = this.state.specialCharIndexesToDisregard.filter((s: SpecialIndex) => {
-                if (s.index == updatedIndex) {
+            indexesToSet = this.state.specialCharIndexesToDisregard.filter(specialCharIndex => {
+                if (specialCharIndex.index == updatedIndex) {
                     //we have deleted a special character. Need to remove it from the array and remove its corresponding entity from the required entities picker
-                    let newRequiredEntities = this.state.reqEntitiesVal.filter((re: EntityPickerObject) => re.name !== s.entityPickerObject.name);
+                    let newRequiredEntities = this.state.reqEntitiesVal.filter(re => re.name !== specialCharIndex.entityPickerObject.name);
                     this.setState({
                         reqEntitiesVal: newRequiredEntities,
                         defaultRequiredEntities: newRequiredEntities,
@@ -457,11 +429,11 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
                 } else {
                     return true;
                 }
-            }).map((i: SpecialIndex) => {
-                if (i.index > updatedIndex) {
-                    return { ...i, index: i.index - 1 }
+            }).map(specialCharIndex => {
+                if (specialCharIndex.index > updatedIndex) {
+                    return { ...specialCharIndex, index: specialCharIndex.index - 1 }
                 } else {
-                    return i
+                    return specialCharIndex
                 }
             })
         }
@@ -489,11 +461,11 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
             //we only care about $ if dropdown isnt displayed yet
             for (let letter of text) {
                 if (letter === "$") {
-                    let indexFound: SpecialIndex = specialIndexes.find((i: SpecialIndex) => i.index == pixels);
+                    let indexFound = specialIndexes.find(specialIndex => specialIndex.index == pixels);
                     if (!indexFound) {
                         //need to see if there is already text following the special character
-                        let isLastCharacter: boolean = text.length == (pixels + 1);
-                        let precedesSpace: boolean = text[pixels + 1] ? text[pixels + 1] == " " : false;
+                        let isLastCharacter = text.length == (pixels + 1);
+                        let precedesSpace = text[pixels + 1] ? text[pixels + 1] === " " : false;
                         if (isLastCharacter || precedesSpace) {
                             this.setState({
                                 displayAutocomplete: true,
@@ -559,14 +531,16 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
         }
     }
 
-    findUpdatedIndex(text: string): number {
-        let current: string = this.state.payloadVal;
+    findUpdatedIndex(text: string): number | undefined {
+        let current = this.state.payloadVal;
         let length = current.length > text.length ? current.length : text.length;
         for (let i = 0; i < length; i++) {
             if (current[i] !== text[i]) {
                 return i;
             }
         }
+
+        return undefined
     }
 
     findDeletedEntity(items: EntityPickerObject[], oldItems: EntityPickerObject[]): EntityPickerObject {
@@ -778,11 +752,11 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
 
             let placeholder = "API name...";
             let disabled = this.state.editing;
-            let apiOptions = [];
+            let apiOptions: TextObject[] = [];
             let haveCallbacks = this.props.botInfo.callbacks && this.props.botInfo.callbacks.length > 0;
             if (haveCallbacks) {
                 let apiVals = Object.values(this.props.botInfo.callbacks);
-                apiOptions = apiVals.map(v => {
+                apiOptions = apiVals.map<TextObject>(v => {
                     return {
                         key: v,
                         text: v

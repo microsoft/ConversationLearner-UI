@@ -94,12 +94,12 @@ const styles = {
 }
 
 interface ComponentState {
-    input: string,
-    predictedEntities: PredictedEntity[],
-    definitions: AppDefinition,
-    substringObjects: SubstringObject[],
-    substringsClicked: SubstringObject[],
-};
+    input: string
+    predictedEntities: PredictedEntity[]
+    definitions: AppDefinition
+    substringObjects: SubstringObject[]
+    substringsClicked: SubstringObject[]
+}
 
 class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
     constructor(p: any) {
@@ -109,7 +109,7 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
             predictedEntities: [],
             definitions: null,
             substringObjects: [],
-            substringsClicked: [],
+            substringsClicked: []
         }
         this.renderSubstringObject = this.renderSubstringObject.bind(this)
         this.createSubstringObjects = this.createSubstringObjects.bind(this)
@@ -152,15 +152,15 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
     }
     updateCurrentPredictedEntities(substringObjects: SubstringObject[]) {
         let predictions: PredictedEntity[] = [];
-        substringObjects.map((s: SubstringObject) => {
+        substringObjects.map(s => {
             if (s.entityId !== null) {
-                let predictedEntity: PredictedEntity = new PredictedEntity({
+                let predictedEntity = new PredictedEntity({
                     startCharIndex: s.startIndex,
                     endCharIndex: (s.startIndex + (s.text.length - 1)),
                     entityId: s.entityId,
                     entityName: s.entityName,
                     entityText: s.text,
-                    metadata: this.props.entities.find((e: EntityBase) => e.entityName == s.entityName).metadata,
+                    metadata: this.props.entities.find(e => e.entityName == s.entityName).metadata,
                     score: 1.0
                 });
                 predictions.push(predictedEntity);
@@ -181,11 +181,11 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
             end: null,
             entity: null
         }
-        predictedEntities.map((p: PredictedEntity) => {
+        predictedEntities.map(p => {
             if (count == 0) {
                 if (p.startCharIndex == 0) {
                     //handle the case where the first character of the input is part of an entity
-                    currentIndexGroup = { ...currentIndexGroup, end: p.endCharIndex + 1, entity: this.props.entities.find((e: EntityBase) => e.entityId == p.entityId) }
+                    currentIndexGroup = { ...currentIndexGroup, end: p.endCharIndex + 1, entity: this.props.entities.find(e => e.entityId == p.entityId) }
                     indexGroups.push(currentIndexGroup);
                     currentIndexGroup = {
                         start: p.endCharIndex + 1,
@@ -196,7 +196,7 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
                     //handle the case where the first character of the input is part of a piece of regular text
                     currentIndexGroup = { ...currentIndexGroup, end: p.startCharIndex }
                     indexGroups.push(currentIndexGroup);
-                    currentIndexGroup = { ...currentIndexGroup, start: p.startCharIndex, end: p.endCharIndex + 1, entity: this.props.entities.find((e: EntityBase) => e.entityId == p.entityId) }
+                    currentIndexGroup = { ...currentIndexGroup, start: p.startCharIndex, end: p.endCharIndex + 1, entity: this.props.entities.find(e => e.entityId == p.entityId) }
                     indexGroups.push(currentIndexGroup);
                     currentIndexGroup = {
                         start: p.endCharIndex + 1,
@@ -207,7 +207,7 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
             } else {
                 if (currentIndexGroup.start == p.startCharIndex) {
                     //handle the case where the first character after the last entity is part of another entity
-                    currentIndexGroup = { ...currentIndexGroup, end: p.endCharIndex, entity: this.props.entities.find((e: EntityBase) => e.entityId == p.entityId) }
+                    currentIndexGroup = { ...currentIndexGroup, end: p.endCharIndex, entity: this.props.entities.find(e => e.entityId == p.entityId) }
                     indexGroups.push(currentIndexGroup);
                     currentIndexGroup = {
                         start: p.endCharIndex + 1,
@@ -218,7 +218,7 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
                     //handle the case where the first character after the last entity is part of a piece of regular text
                     currentIndexGroup = { ...currentIndexGroup, end: p.startCharIndex }
                     indexGroups.push(currentIndexGroup);
-                    currentIndexGroup = { ...currentIndexGroup, start: p.startCharIndex, end: p.endCharIndex + 1, entity: this.props.entities.find((e: EntityBase) => e.entityId == p.entityId) }
+                    currentIndexGroup = { ...currentIndexGroup, start: p.startCharIndex, end: p.endCharIndex + 1, entity: this.props.entities.find(e => e.entityId == p.entityId) }
                     indexGroups.push(currentIndexGroup);
                     currentIndexGroup = {
                         start: p.endCharIndex + 1,
@@ -374,7 +374,7 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
                         }
                     }
                 }
-                nonEntities.map((s: SubstringObject) => {
+                nonEntities.map(s => {
                     substringObjects.push(s)
                 })
             } else {
@@ -400,7 +400,7 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
     substringHasBeenClicked(s: SubstringObject): boolean {
         let result: boolean = false;
         if (this.state.substringsClicked.length > 0) {
-            this.state.substringsClicked.map((sub: SubstringObject) => {
+            this.state.substringsClicked.map(sub => {
                 if (sub.startIndex == s.startIndex) {
                     result = true
                 }
@@ -410,22 +410,22 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
     }
     findLeftMostClickedSubstring(): SubstringObject {
         let min: SubstringObject = this.state.substringsClicked[0];
-        this.state.substringsClicked.map((sub: SubstringObject) => {
+        this.state.substringsClicked.map(sub => {
             if (sub.startIndex < min.startIndex) {
                 min = sub
             }
         })
-        let objWithPersistentClassInfo = this.state.substringObjects.find((s: SubstringObject) => s.startIndex == min.startIndex)
+        let objWithPersistentClassInfo = this.state.substringObjects.find(s => s.startIndex == min.startIndex)
         return objWithPersistentClassInfo;
     }
     findRightMostClickedSubstring(): SubstringObject {
         let min: SubstringObject = this.state.substringsClicked[0];
-        this.state.substringsClicked.map((sub: SubstringObject) => {
+        this.state.substringsClicked.map(sub => {
             if (sub.startIndex > min.startIndex) {
                 min = sub
             }
         })
-        let objWithPersistentClassInfo = this.state.substringObjects.find((s: SubstringObject) => s.startIndex == min.startIndex)
+        let objWithPersistentClassInfo = this.state.substringObjects.find(s => s.startIndex == min.startIndex)
         return objWithPersistentClassInfo;
     }
     findIndexOfHoveredSubstring(hovered: SubstringObject): number {
@@ -439,14 +439,11 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
         return index;
     }
     isDefinedEntityBetweenClickedSubstrings(startIndex: number, endIndex: number): boolean {
-        let result: boolean = false;
+        let result = false;
         if (this.state.substringsClicked.length > 0) {
-            let entityStartIndexes: number[] = this.state.substringObjects.map((s: SubstringObject) => {
-                if (s.entityId !== null) {
-                    return s.startIndex;
-                }
-            })
-            entityStartIndexes.map((entityStartIndex: number) => {
+            // TODO: This array may have holes of undefined in it, how can it be iterated without filtring?
+            let entityStartIndexes: number[] = this.state.substringObjects.map(s => (s.entityId !== null) ? s.startIndex : undefined)
+            entityStartIndexes.map(entityStartIndex => {
                 if (startIndex < entityStartIndex && endIndex > entityStartIndex) {
                     result = true
                 }
@@ -457,7 +454,7 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
     removeBracketsFromAllSelectedSubstrings() {
         let allObjects = this.state.substringObjects;
         let clickedObjects = this.state.substringsClicked;
-        clickedObjects.map((c: SubstringObject) => {
+        clickedObjects.map(c => {
             let indexOfClickedSubstring: number = this.findIndexOfHoveredSubstring(c);
             let newClickedSubstringObject = { ...c, leftBracketStyle: styles.leftBracketDisplayedWhite, rightBracketStyle: styles.rightBracketDisplayedWhite, dropdownStyle: styles.hidden }
             allObjects[indexOfClickedSubstring] = newClickedSubstringObject;
@@ -470,9 +467,9 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
         if (!this.props.canEdit) {
             return;
         }
-        let indexOfHoveredSubstring: number = this.findIndexOfHoveredSubstring(s);
+        let indexOfHoveredSubstring = this.findIndexOfHoveredSubstring(s);
         let allObjects = this.state.substringObjects;
-        let updateClickedSubstrings: boolean = true;
+        let updateClickedSubstrings = true;
         //hovering over a specified entity does nothing
         if (s.entityId === null) {
             if (this.state.substringsClicked.length == 0) {
@@ -492,14 +489,14 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
                     updateClickedSubstrings = false
                 } else {
                     //we already have an entity clicked but not set, and this is a different string than has previously been clicked
-                    let left: SubstringObject = this.findLeftMostClickedSubstring();
-                    let right: SubstringObject = this.findRightMostClickedSubstring();
+                    let left = this.findLeftMostClickedSubstring();
+                    let right = this.findRightMostClickedSubstring();
                     if (s.startIndex < left.startIndex && (this.isDefinedEntityBetweenClickedSubstrings(s.startIndex, left.startIndex) == false)) {
                         //place a gray bracket to left of hovered substring
                         let newSubstringObj = { ...s, leftBracketStyle: styles.leftBracketDisplayedBlack }
                         allObjects[indexOfHoveredSubstring] = newSubstringObj;
                         //now remove the left bracket for the leftmost clicked substring object
-                        let indexOfClickedSubstring: number = this.findIndexOfHoveredSubstring(left);
+                        let indexOfClickedSubstring = this.findIndexOfHoveredSubstring(left);
                         let newClickedSubstringObject = { ...left, leftBracketStyle: styles.leftBracketDisplayedWhite, rightBracketStyle: styles.rightBracketDisplayedBlack };
                         allObjects[indexOfClickedSubstring] = newClickedSubstringObject;
                         this.setState({
@@ -510,7 +507,7 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
                         let newSubstringObj = { ...s, rightBracketStyle: styles.rightBracketDisplayedBlack }
                         allObjects[indexOfHoveredSubstring] = newSubstringObj;
                         //now remove the right bracket for the rightmost clicked substring object
-                        let indexOfClickedSubstring: number = this.findIndexOfHoveredSubstring(right);
+                        let indexOfClickedSubstring = this.findIndexOfHoveredSubstring(right);
                         let newClickedSubstringObject = { ...right, rightBracketStyle: styles.rightBracketDisplayedWhite, leftBracketStyle: styles.leftBracketDisplayedBlack, }
                         allObjects[indexOfClickedSubstring] = newClickedSubstringObject;
                         this.setState({
@@ -543,7 +540,7 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
         if (!this.props.canEdit) {
             return;
         }
-        let indexOfHoveredSubstring: number = this.findIndexOfHoveredSubstring(s);
+        let indexOfHoveredSubstring = this.findIndexOfHoveredSubstring(s);
         let allObjects = this.state.substringObjects;
         let currentHoverIsPreviouslyClickedSubstring = this.substringHasBeenClicked(s)
 
@@ -558,14 +555,14 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
                 })
             } else {
                 //weve clicked a string and need to extend the bracket
-                let left: SubstringObject = this.findLeftMostClickedSubstring();
-                let right: SubstringObject = this.findRightMostClickedSubstring();
+                let left = this.findLeftMostClickedSubstring();
+                let right = this.findRightMostClickedSubstring();
                 if (s.startIndex < left.startIndex && (this.isDefinedEntityBetweenClickedSubstrings(s.startIndex, left.startIndex) == false)) {
                     //place a gray bracket to left of hovered substring
                     let newSubstringObj = { ...s, leftBracketStyle: styles.leftBracketDisplayedGray }
                     allObjects[indexOfHoveredSubstring] = newSubstringObj;
                     //now remove the left bracket for the clicked substring object
-                    let indexOfClickedSubstring: number = this.findIndexOfHoveredSubstring(left);
+                    let indexOfClickedSubstring = this.findIndexOfHoveredSubstring(left);
                     let newClickedSubstringObject = { ...left, leftBracketStyle: styles.leftBracketDisplayedWhite, rightBracketStyle: styles.rightBracketDisplayedBlack };
                     allObjects[indexOfClickedSubstring] = newClickedSubstringObject;
                     this.setState({
@@ -576,7 +573,7 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
                     let newSubstringObj = { ...s, rightBracketStyle: styles.rightBracketDisplayedGray }
                     allObjects[indexOfHoveredSubstring] = newSubstringObj;
                     //now remove the right bracket for the clicked substring object
-                    let indexOfClickedSubstring: number = this.findIndexOfHoveredSubstring(right);
+                    let indexOfClickedSubstring = this.findIndexOfHoveredSubstring(right);
                     let newClickedSubstringObject = { ...right, rightBracketStyle: styles.rightBracketDisplayedWhite, leftBracketStyle: styles.leftBracketDisplayedBlack, }
                     allObjects[indexOfClickedSubstring] = newClickedSubstringObject;
                     this.setState({
@@ -587,7 +584,7 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
         }
     }
     handleHoverOut(s: SubstringObject) {
-        let indexOfHoveredSubstring: number = this.findIndexOfHoveredSubstring(s);
+        let indexOfHoveredSubstring = this.findIndexOfHoveredSubstring(s);
         let allObjects = this.state.substringObjects;
         let currentHoverIsPreviouslyClickedSubstring = this.substringHasBeenClicked(s)
         if (s.entityId === null && currentHoverIsPreviouslyClickedSubstring == false) {
@@ -599,14 +596,14 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
                     substringObjects: allObjects
                 })
             } else {
-                let left: SubstringObject = this.findLeftMostClickedSubstring();
-                let right: SubstringObject = this.findRightMostClickedSubstring();
+                let left = this.findLeftMostClickedSubstring();
+                let right = this.findRightMostClickedSubstring();
                 if (s.startIndex < left.startIndex && (this.isDefinedEntityBetweenClickedSubstrings(s.startIndex, left.startIndex) == false)) {
                     //place a gray bracket to left of hovered substring
                     let newSubstringObj = { ...s, leftBracketStyle: styles.leftBracketDisplayedWhite }
                     allObjects[indexOfHoveredSubstring] = newSubstringObj;
                     //now remove the left bracket for the clicked substring object
-                    let indexOfClickedSubstring: number = this.findIndexOfHoveredSubstring(left);
+                    let indexOfClickedSubstring = this.findIndexOfHoveredSubstring(left);
                     let newClickedSubstringObject = { ...left, leftBracketStyle: styles.leftBracketDisplayedBlack };
                     allObjects[indexOfClickedSubstring] = newClickedSubstringObject;
                     this.setState({
@@ -617,7 +614,7 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
                     let newSubstringObj = { ...s, rightBracketStyle: styles.rightBracketDisplayedWhite }
                     allObjects[indexOfHoveredSubstring] = newSubstringObj;
                     //now remove the right bracket for the clicked substring object
-                    let indexOfClickedSubstring: number = this.findIndexOfHoveredSubstring(right);
+                    let indexOfClickedSubstring = this.findIndexOfHoveredSubstring(right);
                     let newClickedSubstringObject = { ...right, rightBracketStyle: styles.rightBracketDisplayedBlack }
                     allObjects[indexOfClickedSubstring] = newClickedSubstringObject;
                     this.setState({
@@ -629,7 +626,7 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
     }
     getFullStringBetweenSubstrings(left: SubstringObject, right: SubstringObject): string {
         let fullString: string = "";
-        this.state.substringObjects.map((s: SubstringObject) => {
+        this.state.substringObjects.map(s => {
             if ((s.startIndex >= left.startIndex) && (s.startIndex <= right.startIndex)) {
                 fullString += s.text;
             }
@@ -639,7 +636,7 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
     entitySelected(obj: { text: string }, substringClicked: SubstringObject) {
         //is this thing already an entity or was it a string before?
         let indexOfClickedSubstring: number = this.findIndexOfHoveredSubstring(substringClicked);
-        let entitySelected: EntityBase = this.props.entities.find((e: EntityBase) => e.entityName == obj.text)
+        let entitySelected = this.props.entities.find(e => e.entityName == obj.text)
         let allObjects = this.state.substringObjects;
 
         if (substringClicked.entityId === null) {
@@ -659,7 +656,7 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
                 let allObjectsBeforeLeftmost: SubstringObject[] = []
                 let allObjectsAfterRightmost: SubstringObject[] = [];
 
-                this.state.substringObjects.map((s: SubstringObject) => {
+                this.state.substringObjects.map(s => {
                     if (s.startIndex < left.startIndex) {
                         allObjectsBeforeLeftmost.push(s);
                     } else if (s.startIndex > right.startIndex) {
@@ -694,24 +691,22 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
         this.updateCurrentPredictedEntities(allObjects)
     }
     getAlphabetizedEntityOptions(): IDropdownOption[] {
-        let luisEntities = this.props.entities.filter((e: EntityBase) => e.entityType == EntityType.LUIS);
-        let names: string[] = luisEntities.map((e: EntityBase) => {
-            return e.entityName;
-        })
+        let luisEntities = this.props.entities.filter(e => e.entityType == EntityType.LUIS);
+        let names: string[] = luisEntities.map(e => e.entityName)
         names.sort();
-        let options: IDropdownOption[] = names.map((name: string) => {
-            let ent: EntityBase = this.props.entities.find((e: EntityBase) => e.entityName == name);
+        return names.map<IDropdownOption>(name => {
+            let ent = this.props.entities.find(e => e.entityName == name);
             return {
                 key: ent.entityName,
                 text: ent.entityName
             }
         })
-        return options;
     }
     renderSubstringObject(s: SubstringObject, key: number) {
-        let allOptions: IDropdownOption[] = this.getAlphabetizedEntityOptions();
-        let options: IDropdownOption[] = allOptions.filter((o: IDropdownOption) => {
-            let found: PredictedEntity = this.state.predictedEntities.find((p: PredictedEntity) => p.entityName == o.text);
+        let allOptions = this.getAlphabetizedEntityOptions();
+        let options = allOptions.filter(o => {
+            // TODO: Entities are label entities, but here we depend on properties from PredictedEntity
+            let found = this.state.predictedEntities.find(p => p.entityName == o.text) as PredictedEntity;
             if (found && (!found.metadata || found.metadata.isBucket == false)) {
                 return false;
             }
@@ -755,13 +750,15 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
                 </div>
             )
         }
+
+        return undefined
     }
     handleDeleteVariation() {
         let removedResponse = new ExtractResponse({ text: this.state.input, predictedEntities: [] });
         this.props.removeExtractResponse(removedResponse);
     }
     render() {
-        let key: number = 0;
+        let key = 0;
         let boxClass = this.props.isValid ? 'extractorResponseBox' : 'extractorResponseBox extractorResponseBoxInvalid';
         let button = this.props.isPrimary ? null :
             <div>
@@ -772,9 +769,7 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
                 {button}
                 <div className='teachVariation'>
                     <div className={boxClass}>
-                        {this.state.substringObjects.map((s: SubstringObject) => {
-                            return this.renderSubstringObject(s, ++key)
-                        })}
+                        {this.state.substringObjects.map(s => this.renderSubstringObject(s, ++key))}
                     </div>
                 </div>
             </div>

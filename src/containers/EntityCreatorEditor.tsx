@@ -5,9 +5,9 @@ import { editEntityAsync } from '../actions/updateActions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
-import { CommandButton, Dropdown, DropdownMenuItemType, Checkbox } from 'office-ui-fabric-react';
+import { CommandButton, IDropdownOption, Dropdown, DropdownMenuItemType, Checkbox } from 'office-ui-fabric-react';
 import { TextFieldPlaceholder } from './TextFieldPlaceholder';
-import { State, PreBuiltEntities, LocalePreBuilts } from '../types';
+import { State, PreBuiltEntities } from '../types';
 import { EntityBase, EntityMetaData, EntityType } from 'blis-models'
 
 const initState: ComponentState = {
@@ -24,11 +24,6 @@ interface ComponentState {
     isBucketableVal: boolean
     isNegatableVal: boolean
     editing: boolean
-}
-
-interface IOption {
-    key: string
-    text: string
 }
 
 class EntityCreatorEditor extends React.Component<Props, ComponentState> {
@@ -54,7 +49,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
         }
     }
     createEntity() {
-        let currentAppId: string = this.props.blisApps.current.appId;
+        let currentAppId = this.props.blisApps.current.appId;
         let meta = new EntityMetaData({
             isBucket: this.state.isBucketableVal,
             isReversable: this.state.isNegatableVal,
@@ -86,7 +81,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
             entityNameVal: text
         })
     }
-    typeChanged(obj: IOption) {
+    typeChanged(obj: IDropdownOption) {
         this.setState({
             entityTypeVal: obj.text
         })
@@ -105,22 +100,18 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
         return value ? "" : "Required Value";
     }
     render() {
-        let vals: string[] = [EntityType.LOCAL, EntityType.LUIS]
-        let options: {}[] = vals.map<IOption>(v => {
-            return {
+        let options = [EntityType.LOCAL, EntityType.LUIS].map<IDropdownOption>(v =>
+            ({
                 key: v,
                 text: v
-            }
-        })
+            }))
+
         options.unshift({ key: 'BlisHeader', text: 'BLIS Entity Types', itemType: DropdownMenuItemType.Header })
         options.push({ key: 'divider', text: '-', itemType: DropdownMenuItemType.Divider })
         options.push({ key: 'LuisHeader', text: 'LUIS Pre-Built Entity Types', itemType: DropdownMenuItemType.Header })
 
-        let localePreBuilts: LocalePreBuilts = PreBuiltEntities.find((obj: LocalePreBuilts) => obj.locale == this.props.blisApps.current.locale)
-        let prebuiltVals: string[] = localePreBuilts.preBuiltEntities.map((entityName: string) => {
-            return entityName
-        })
-        prebuiltVals.map((entityName: string) => {
+        let localePreBuilts = PreBuiltEntities.find(obj => obj.locale === this.props.blisApps.current.locale)
+        localePreBuilts.preBuiltEntities.forEach(entityName => {
             options.push({
                 key: entityName,
                 text: entityName

@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { returntypeof } from 'react-redux-typescript';
 import { ModelUtils } from 'blis-models';
 import { State } from '../types'
-import { TrainScorerStep, ScoredBase, ActionBase, EntityBase, Memory, ScoredAction, UnscoredAction, ScoreReason } from 'blis-models';
+import { UITrainScorerStep, TrainScorerStep, ScoredBase, ActionBase, ScoredAction, UnscoredAction, ScoreReason, UIScoreInput } from 'blis-models';
 import { postScorerFeedbackAsync, toggleAutoTeach } from '../actions/teachActions'
 import { CommandButton, PrimaryButton } from 'office-ui-fabric-react';
 import { TeachMode } from '../types/const'
@@ -103,10 +103,11 @@ class TeachSessionScorer extends React.Component<Props, ComponentState> {
         if (this.props.teachSession.autoTeach && this.props.teachSession.mode == TeachMode.Scorer) {
 
             let actions = (this.props.teachSession.scoreResponse.scoredActions as ScoredBase[]).concat(this.props.teachSession.scoreResponse.unscoredActions) || [];
+            // Since actions are sorted by score descending (max first), assume first scored action is the "best" action
             let bestAction = actions[0];
 
             // Make sure there is an available aciont
-            if (bestAction['reason'] == ScoreReason.NotAvailable) {
+            if ((bestAction as UnscoredAction).reason == ScoreReason.NotAvailable) {
                 // If none available auto teach isn't possible.  User must create a new action
                 this.props.toggleAutoTeach(false);
                 return;
@@ -188,9 +189,9 @@ class TeachSessionScorer extends React.Component<Props, ComponentState> {
         }
     }
     handleActionSelection(actionId: string) {
-        let scoredAction = this.props.teachSession.scoreResponse.scoredActions.filter((a: ScoredAction) => a.actionId == actionId)[0];
+        let scoredAction = this.props.teachSession.scoreResponse.scoredActions.find(a => a.actionId == actionId);
         if (!scoredAction) {
-            let unscoredAction = this.props.teachSession.scoreResponse.unscoredActions.filter((a: UnscoredAction) => a.actionId == actionId)[0];
+            let unscoredAction = this.props.teachSession.scoreResponse.unscoredActions.find(a => a.actionId == actionId);
             scoredAction = new ScoredAction(unscoredAction);
         }
         let trainScorerStep = new TrainScorerStep(
@@ -199,29 +200,36 @@ class TeachSessionScorer extends React.Component<Props, ComponentState> {
                 labelAction: actionId,
                 scoredAction: scoredAction
             });
+        
+        let uiTrainScorerStep = new UITrainScorerStep(
+            {
+                trainScorerStep,
+                entities : this.props.entities
+            });
+        
         let appId: string = this.props.apps.current.appId;
         let teachId: string = this.props.teachSession.current.teachId;
         let waitForUser = scoredAction.isTerminal;
 
         // Pass score input (minus extractor step) for subsequent actions when this one is non-terminal
-        let uiScoreInput = { ...this.props.teachSession.uiScoreInput, trainExtractorStep: null };
+        let uiScoreInput: UIScoreInput = { ...this.props.teachSession.uiScoreInput, trainExtractorStep: null };
 
-        this.props.postScorerFeedbackAsync(this.props.user.key, appId, teachId, trainScorerStep, waitForUser, uiScoreInput);
+        this.props.postScorerFeedbackAsync(this.props.user.key, appId, teachId, uiTrainScorerStep, waitForUser, uiScoreInput);
     }
     /** Check if entity is in memory and return it's name */
     entityInMemory(entityId: string): { match: boolean, name: string } {
-        let entity = this.props.entities.filter((e: EntityBase) => e.entityId == entityId)[0];
+        let entity = this.props.entities.filter(e => e.entityId == entityId)[0];
 
         // If entity is null - there's a bug somewhere
         if (!entity) {
             return { match: false, name: "ERROR" };
         }
 
-        let memory = this.props.teachSession.memories.filter((m: Memory) => m.entityName == entity.entityName)[0];
+        let memory = this.props.teachSession.memories.filter(m => m.entityName == entity.entityName)[0];
         return { match: (memory != null), name: entity.entityName };
     }
     renderEntityRequirements(actionId: string) {
-        let action = this.props.actions.filter((a: ActionBase) => a.actionId == actionId)[0];
+        let action = this.props.actions.filter(a => a.actionId == actionId)[0];
 
         // If action is null - there's a bug somewhere
         if (!action) {
@@ -276,7 +284,7 @@ class TeachSessionScorer extends React.Component<Props, ComponentState> {
         let fieldContent = action[column.fieldName];
         switch (column.key) {
             case 'select':
-                let reason = action["reason"];
+                let reason = (action as UnscoredAction).reason;
                 if (reason == ScoreReason.NotCalculated) {
                     reason = this.calculateReason(item[column.fieldName]);
                 }
@@ -303,7 +311,7 @@ class TeachSessionScorer extends React.Component<Props, ComponentState> {
                     fieldContent = "Masked"
                 }    
                 else {
-                    fieldContent = (action["reason"] == "notAvailable") ? "Disqualified" : "Training...";
+                    fieldContent = ((action as UnscoredAction).reason == "notAvailable") ? "Disqualified" : "Training...";
                 }
                 break;
             case 'entities':
