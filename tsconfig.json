@@ -3,7 +3,10 @@
     "outDir": "build/dist",
     "module": "esnext",
     "target": "es5",
-    "lib": ["es6", "dom"],
+    "lib": [
+        "es2017",
+        "dom"
+    ],
     "sourceMap": true,
     "allowJs": true,
     "jsx": "react",
@@ -13,9 +16,13 @@
     "noImplicitReturns": true,
     "noImplicitThis": true,
     "noImplicitAny": true,
-    "strictNullChecks": true,
+    // TODO: Enable after app is building and working
+    "strictNullChecks": false,
     "suppressImplicitAnyIndexErrors": true,
-    "noUnusedLocals": true
+    "noUnusedLocals": true,
+    // TODO: Enable after blis-webchat is fixed
+    // Needs to remove @types from dependencies, and needs to update RxJs to latest version
+    "noStrictGenericChecks": true
   },
   "exclude": [
     "node_modules",
