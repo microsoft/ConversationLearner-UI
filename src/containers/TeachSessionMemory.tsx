@@ -99,7 +99,7 @@ class TeachSessionMemory extends React.Component<Props, ComponentState> {
                 entityClass += " blis-font--emphasis";
             }
         }
-        return <span className={entityClass}>{entityName}</span>;            
+        return <span className={entityClass}>{entityName}</span>
     }
     renderEntityValues(entityName : string) {
 
@@ -142,7 +142,7 @@ class TeachSessionMemory extends React.Component<Props, ComponentState> {
                     entityClass = "blis-font--emphasis";
                 }
             }
-            display.push(<span className='ms-font-m-plus'>{prefix}<span className={entityClass}>{value}</span></span>);
+            display.push(<span className='ms-font-m-plus' key={value}>{prefix}<span className={entityClass}>{value}</span></span>);
 
             index++;
         }
