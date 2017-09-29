@@ -27,8 +27,8 @@ class ExtractorTextVariationCreator extends React.Component<Props, ComponentStat
         })
     }
     handleAddVariation() {
-        let appId: string = this.props.apps.current.appId;
-        let teachId: string = this.props.teachSessions.current.teachId;
+        let appId = this.props.apps.current.appId;
+        let teachId = this.props.teachSessions.current.teachId;
         let userInput = new UserInput({ text: this.state.variationValue })
         this.props.runExtractorAsync(this.props.user.key, appId, teachId, userInput);
         this.setState({

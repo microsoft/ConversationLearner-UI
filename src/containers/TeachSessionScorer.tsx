@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { returntypeof } from 'react-redux-typescript';
 import { ModelUtils } from 'blis-models';
 import { State } from '../types'
-import { UITrainScorerStep, TrainScorerStep, ScoredBase, ActionBase, EntityBase, Memory, ScoredAction, UnscoredAction, ScoreReason, UIScoreInput } from 'blis-models';
+import { UITrainScorerStep, TrainScorerStep, ScoredBase, ActionBase, ScoredAction, UnscoredAction, ScoreReason, UIScoreInput } from 'blis-models';
 import { postScorerFeedbackAsync, toggleAutoTeach } from '../actions/teachActions'
 import { CommandButton, PrimaryButton } from 'office-ui-fabric-react';
 import { TeachMode } from '../types/const'
@@ -189,9 +189,9 @@ class TeachSessionScorer extends React.Component<Props, ComponentState> {
         }
     }
     handleActionSelection(actionId: string) {
-        let scoredAction = this.props.teachSession.scoreResponse.scoredActions.filter((a: ScoredAction) => a.actionId == actionId)[0];
+        let scoredAction = this.props.teachSession.scoreResponse.scoredActions.find(a => a.actionId == actionId);
         if (!scoredAction) {
-            let unscoredAction = this.props.teachSession.scoreResponse.unscoredActions.filter((a: UnscoredAction) => a.actionId == actionId)[0];
+            let unscoredAction = this.props.teachSession.scoreResponse.unscoredActions.find(a => a.actionId == actionId);
             scoredAction = new ScoredAction(unscoredAction);
         }
         let trainScorerStep = new TrainScorerStep(
@@ -218,18 +218,18 @@ class TeachSessionScorer extends React.Component<Props, ComponentState> {
     }
     /** Check if entity is in memory and return it's name */
     entityInMemory(entityId: string): { match: boolean, name: string } {
-        let entity = this.props.entities.filter((e: EntityBase) => e.entityId == entityId)[0];
+        let entity = this.props.entities.filter(e => e.entityId == entityId)[0];
 
         // If entity is null - there's a bug somewhere
         if (!entity) {
             return { match: false, name: "ERROR" };
         }
 
-        let memory = this.props.teachSession.memories.filter((m: Memory) => m.entityName == entity.entityName)[0];
+        let memory = this.props.teachSession.memories.filter(m => m.entityName == entity.entityName)[0];
         return { match: (memory != null), name: entity.entityName };
     }
     renderEntityRequirements(actionId: string) {
-        let action = this.props.actions.filter((a: ActionBase) => a.actionId == actionId)[0];
+        let action = this.props.actions.filter(a => a.actionId == actionId)[0];
 
         // If action is null - there's a bug somewhere
         if (!action) {

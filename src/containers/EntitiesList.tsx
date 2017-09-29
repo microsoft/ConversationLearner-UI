@@ -8,7 +8,7 @@ import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import { deleteEntityAsync } from '../actions/deleteActions'
 import { DetailsList, CommandButton, CheckboxVisibility, IColumn, SearchBox } from 'office-ui-fabric-react';
 import { State } from '../types';
-import { BlisAppBase, EntityBase, ActionBase } from 'blis-models'
+import { BlisAppBase, EntityBase } from 'blis-models'
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { findDOMNode } from 'react-dom';
 
@@ -91,7 +91,7 @@ class EntitiesList extends React.Component<Props, ComponentState> {
         findDOMNode<HTMLButtonElement>(this.refs.newEntity).focus();
     }
     deleteSelectedEntity() {
-        let entityToDelete: EntityBase = this.props.entities.find((a: EntityBase) => a.entityId == this.state.entityIDToDelete)
+        let entityToDelete = this.props.entities.find(entity => entity.entityId == this.state.entityIDToDelete)
         this.props.deleteEntityAsync(this.props.user.key, this.state.entityIDToDelete, entityToDelete, this.props.app.appId)
         this.setState({
             confirmDeleteEntityModalOpen: false,
@@ -121,14 +121,8 @@ class EntitiesList extends React.Component<Props, ComponentState> {
         }, 500);
     }
     openDeleteModal(guid: string) {
-        let tiedToAction: boolean;
-        this.props.actions.map((a: ActionBase) => {
-            if (a.negativeEntities.includes(guid) || a.requiredEntities.includes(guid)) {
-                tiedToAction = true;
-                return;
-            }
-        })
-        if (tiedToAction && tiedToAction === true) {
+        let tiedToAction = this.props.actions.some(a => a.negativeEntities.includes(guid) || a.requiredEntities.includes(guid))
+        if (tiedToAction === true) {
             this.setState({
                 errorModalOpen: true
             })
@@ -139,7 +133,7 @@ class EntitiesList extends React.Component<Props, ComponentState> {
             })
         }
     }
-    onColumnClick(event: any, column: any) {
+    onColumnClick(event: any, column: IColumn) {
         let { columns } = this.state;
         let isSortedDescending = column.isSortedDescending;
 
@@ -150,7 +144,7 @@ class EntitiesList extends React.Component<Props, ComponentState> {
 
         // Reset the items and columns to match the state.
         this.setState({
-            columns: columns.map((col: any) => {
+            columns: columns.map(col => {
                 col.isSorted = (col.key === column.key);
 
                 if (col.isSorted) {
@@ -163,7 +157,7 @@ class EntitiesList extends React.Component<Props, ComponentState> {
         });
     }
 
-    renderItemColumn(item?: any, index?: number, column?: IColumn) {
+    renderItemColumn(item?: EntityBase, index?: number, column?: IColumn) {
         let fieldContent = item[column.fieldName];
         switch (column.key) {
             case 'isBucketable':
@@ -191,7 +185,7 @@ class EntitiesList extends React.Component<Props, ComponentState> {
     renderEntityItems(): EntityBase[] {
         //runs when user changes the text or sort
         let lcString = this.state.searchValue.toLowerCase();
-        let filteredEntities = this.props.entities.filter((e: EntityBase) => {
+        let filteredEntities = this.props.entities.filter(e => {
             let nameMatch = e.entityName.toLowerCase().includes(lcString);
             let typeMatch = e.entityType.toLowerCase().includes(lcString);
             let match = nameMatch || typeMatch

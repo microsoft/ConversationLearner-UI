@@ -7,11 +7,6 @@ import { CommandButton } from 'office-ui-fabric-react';
 import { clearErrorDisplay } from '../actions/displayActions'
 import { State } from '../types'
 
-// TODO: This was unused, but interested what was this used for?
-// type CultureObject = {
-//     CultureCode: string;
-//     CultureName: string;
-// }
 class UIError extends React.Component<Props, any> {
     constructor(p: any) {
         super(p);

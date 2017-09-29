@@ -63,13 +63,13 @@ class TeachSessionExtractor extends React.Component<Props, ComponentState> {
     isValid(extractResponse: ExtractResponse): boolean {
         let primaryResponse = this.props.teachSession.extractResponses[0] as ExtractResponse;
         let missing = primaryResponse.predictedEntities.filter(item =>
-            !extractResponse.predictedEntities.find(er => { return item.entityName == er.entityName }));
+            !extractResponse.predictedEntities.find(er => item.entityName == er.entityName));
 
         if (missing.length > 0) {
             return false;
         }
         missing = extractResponse.predictedEntities.filter(item =>
-            !primaryResponse.predictedEntities.find(er => { return item.entityName == er.entityName }));
+            !primaryResponse.predictedEntities.find(er => item.entityName == er.entityName));
         if (missing.length > 0) {
             return false;
         }
@@ -101,8 +101,8 @@ class TeachSessionExtractor extends React.Component<Props, ComponentState> {
 
         let uiScoreInput = new UIScoreInput({ trainExtractorStep: trainExtractorStep, extractResponse: this.props.teachSession.extractResponses[0] });
 
-        let appId: string = this.props.apps.current.appId;
-        let teachId: string = this.props.teachSession.current.teachId;
+        let appId = this.props.apps.current.appId;
+        let teachId = this.props.teachSession.current.teachId;
         this.props.runScorerAsync(this.props.user.key, appId, teachId, uiScoreInput);
     }
     render() {
