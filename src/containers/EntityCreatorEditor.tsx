@@ -166,7 +166,6 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                     </div>
                     <div className='blis-modal_footer'>
                         <CommandButton
-                            data-automation-id='randomID2'
                             disabled={!this.state.entityNameVal}
                             onClick={this.createEntity.bind(this)}
                             className='blis-button--gold'
@@ -174,9 +173,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                             text={createButtonText}
                         />
                         <CommandButton
-                            data-automation-id='randomID3'
                             className="blis-button--gray"
-                            disabled={false}
                             onClick={() => this.props.handleClose()}
                             ariaDescription='Cancel'
                             text='Cancel'

@@ -121,9 +121,7 @@ class TeachSessionExtractor extends React.Component<Props, ComponentState> {
             variationCreator = <ExtractorTextVariationCreator />
             addEntity =
                 <CommandButton
-                    data-automation-id='randomID8'
                     className="blis-button--gold teachCreateButton"
-                    disabled={false}
                     onClick={this.entityButtonOnClick}
                     ariaDescription='Cancel'
                     text='Entity'
@@ -132,8 +130,6 @@ class TeachSessionExtractor extends React.Component<Props, ComponentState> {
             editComponents =
                 <div>
                     <CommandButton
-                        data-automation-id='randomID16'
-                        disabled={false}
                         onClick={this.scoreButtonOnClick}
                         className='ms-font-su blis-button--gold'
                         ariaDescription='Score Actions'

@@ -308,8 +308,6 @@ class ActionResponsesHomepage extends React.Component<Props, ComponentState> {
                 <span className="ms-font-m-plus">Manage a list of actions that your application can take given it's state and user input...</span>
                 <div>
                     <CommandButton
-                        data-automation-id='randomID4'
-                        disabled={false}
                         onClick={this.handleOpenCreateModal.bind(this)}
                         className='blis-button--gold'
                         ariaDescription='Create a New Action'

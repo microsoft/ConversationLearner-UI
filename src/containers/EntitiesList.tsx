@@ -245,8 +245,6 @@ class EntitiesList extends React.Component<Props, ComponentState> {
                 <span className="ms-font-m-plus">Manage a list of entities in your application and track and control their instances within actions...</span>
                 <div>
                     <CommandButton
-                        data-automation-id='randomID4'
-                        disabled={false}
                         onClick={this.handleOpenCreateModal.bind(this)}
                         className='blis-button--gold'
                         ariaDescription='Create a New Entity'
@@ -279,7 +277,6 @@ class EntitiesList extends React.Component<Props, ComponentState> {
                     </div>
                     <div className='blis-modal_footer'>
                         <CommandButton
-                            disabled={false}
                             onClick={() => this.handleCloseDeleteModal()}
                             className='blis-button--gold'
                             ariaDescription='Close'

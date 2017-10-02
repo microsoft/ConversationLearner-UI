@@ -378,18 +378,14 @@ class TeachSessionScorer extends React.Component<Props, ComponentState> {
         let addAction = noEdit ? null : (
             <div>
                 <CommandButton
-                    data-automation-id='randomID8'
                     className="blis-button--hidden"
-                    disabled={false}
                     onClick={this.handleDefaultSelection.bind(this)}
                     ariaDescription='Accept'
                     text=''
                     ref="acceptDefault"
                 />
                 <CommandButton
-                    data-automation-id='randomID9'
                     className="blis-button--gold teachCreateButton"
-                    disabled={false}
                     onClick={this.handleOpenActionModal.bind(this)}
                     ariaDescription='Cancel'
                     text='Action'

@@ -119,8 +119,6 @@ class component extends React.Component<any, any> {
                 <p className="ms-font-m-plus">Manage a list of actions that your application can take given it's state and user input...</p>
                 <div>
                     <PrimaryButton
-                        data-automation-id='randomID20'
-                        disabled={false}
                         onClick={() => this.onClickCreateAction()}
                         className='blis-button blis-button--primary'
                         ariaDescription='Create a New Action'
