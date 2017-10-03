@@ -46,6 +46,9 @@ class TeachSessionMemory extends React.Component<Props, ComponentState> {
             columns: columns,
             sortColumn: null
         }
+
+        this.onColumnClick = this.onColumnClick.bind(this)
+        this.renderItemColumn = this.renderItemColumn.bind(this)
     }
     onColumnClick(event: any, column: IColumn) {
         let { columns } = this.state;
@@ -206,8 +209,8 @@ class TeachSessionMemory extends React.Component<Props, ComponentState> {
                 className="ms-font-m-plus"
                 items={memoryNames}
                 columns={this.state.columns}
-                onColumnHeaderClick={this.onColumnClick.bind(this)}
-                onRenderItemColumn={this.renderItemColumn.bind(this)}
+                onColumnHeaderClick={this.onColumnClick}
+                onRenderItemColumn={this.renderItemColumn}
                 checkboxVisibility={CheckboxVisibility.hidden}
             />
         return (

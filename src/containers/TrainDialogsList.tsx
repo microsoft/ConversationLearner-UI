@@ -59,6 +59,13 @@ class TrainDialogsList extends React.Component<Props, ComponentState> {
         trainDialog: null,
         searchValue: ''
     }
+
+    constructor(p: Props) {
+        super(p)
+
+        this.renderItemColumn = this.renderItemColumn.bind(this)
+    }
+
     componentDidMount() {
         this.focusNewEntityButton();
     }
@@ -194,7 +201,7 @@ class TrainDialogsList extends React.Component<Props, ComponentState> {
                     items={trainDialogItems}
                     columns={columns}
                     checkboxVisibility={CheckboxVisibility.hidden}
-                    onRenderItemColumn={this.renderItemColumn.bind(this)}
+                    onRenderItemColumn={this.renderItemColumn}
                     onActiveItemChanged={trainDialog => this.onClickTrainDialogItem(trainDialog)}
                 />
                 <TrainDialogWindow

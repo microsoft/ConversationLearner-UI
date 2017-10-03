@@ -66,23 +66,29 @@ interface ComponentState {
 }
 
 class EntitiesList extends React.Component<Props, ComponentState> {
+    state: ComponentState = {
+        searchValue: '',
+        confirmDeleteEntityModalOpen: false,
+        createEditModalOpen: false,
+        entitySelected: null,
+        entityIDToDelete: null,
+        errorModalOpen: false,
+        columns: columns,
+        sortColumn: null
+    }
+
     constructor(p: any) {
         super(p);
+    
         this.deleteSelectedEntity = this.deleteSelectedEntity.bind(this);
         this.renderItemColumn = this.renderItemColumn.bind(this)
         this.onChange = this.onChange.bind(this)
+        this.onColumnClick = this.onColumnClick.bind(this)
         this.renderEntityItems = this.renderEntityItems.bind(this)
-        this.state = {
-            searchValue: '',
-            confirmDeleteEntityModalOpen: false,
-            createEditModalOpen: false,
-            entitySelected: null,
-            entityIDToDelete: null,
-            errorModalOpen: false,
-            columns: columns,
-            sortColumn: null
-        }
+        this.handleOpenCreateModal = this.handleOpenCreateModal.bind(this)
+        this.handleCloseCreateModal = this.handleCloseCreateModal.bind(this)
     }
+
     componentDidMount() {
         this.focusNewEntityButton();
     }
@@ -245,13 +251,17 @@ class EntitiesList extends React.Component<Props, ComponentState> {
                 <span className="ms-font-m-plus">Manage a list of entities in your application and track and control their instances within actions...</span>
                 <div>
                     <CommandButton
-                        onClick={this.handleOpenCreateModal.bind(this)}
+                        onClick={this.handleOpenCreateModal}
                         className='blis-button--gold'
                         ariaDescription='Create a New Entity'
                         text='New Entity'
                         ref='newEntity'
                     />
-                    <EntityCreatorEditor open={this.state.createEditModalOpen} entity={this.state.entitySelected} handleClose={this.handleCloseCreateModal.bind(this)} />
+                    <EntityCreatorEditor
+                        open={this.state.createEditModalOpen}
+                        entity={this.state.entitySelected}
+                        handleClose={this.handleCloseCreateModal}
+                    />
                 </div>
                 <SearchBox
                     className="ms-font-m-plus"
@@ -264,9 +274,14 @@ class EntitiesList extends React.Component<Props, ComponentState> {
                     columns={this.state.columns}
                     checkboxVisibility={CheckboxVisibility.hidden}
                     onRenderItemColumn={this.renderItemColumn}
-                    onColumnHeaderClick={this.onColumnClick.bind(this)}
+                    onColumnHeaderClick={this.onColumnClick}
                 />
-                <ConfirmDeleteModal open={this.state.confirmDeleteEntityModalOpen} onCancel={() => this.handleCloseDeleteModal()} onConfirm={() => this.deleteSelectedEntity()} title="Are you sure you want to delete this entity?" />
+                <ConfirmDeleteModal
+                    open={this.state.confirmDeleteEntityModalOpen}
+                    onCancel={() => this.handleCloseDeleteModal()}
+                    onConfirm={() => this.deleteSelectedEntity()}
+                    title="Are you sure you want to delete this entity?"
+                />
                 <Modal
                     isOpen={this.state.errorModalOpen}
                     isBlocking={false}

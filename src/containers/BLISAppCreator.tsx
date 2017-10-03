@@ -39,6 +39,17 @@ class BLISAppCreator extends React.Component<Props, ComponentState> {
         localeOptions: []
     }
 
+    constructor(p: Props) {
+        super(p)
+
+        this.checkIfBlank = this.checkIfBlank.bind(this)
+        this.luisKeyChanged = this.luisKeyChanged.bind(this)
+        this.onKeyDown = this.onKeyDown.bind(this)
+        this.localeChanged = this.localeChanged.bind(this)
+        this.createApplication = this.createApplication.bind(this)
+        this.onDismissCreateNewApp = this.onDismissCreateNewApp.bind(this)
+    }
+
     componentWillMount() {
         let url = 'https://westus.api.cognitive.microsoft.com/luis/v1.0/prog/apps/applicationcultures?';
         const subscriptionKey: string = developmentSubKeyLUIS;
@@ -150,30 +161,30 @@ class BLISAppCreator extends React.Component<Props, ComponentState> {
                             onKeyDown={key => this.onKeyDown(key)}
                             value={this.state.appNameVal} />
                         <TextFieldPlaceholder
-                            onGetErrorMessage={this.checkIfBlank.bind(this)}
-                            onChanged={this.luisKeyChanged.bind(this)}
+                            onGetErrorMessage={this.checkIfBlank}
+                            onChanged={this.luisKeyChanged}
                             label="LUIS Key"
                             placeholder="Key..."
-                            onKeyDown={this.onKeyDown.bind(this)}
+                            onKeyDown={this.onKeyDown}
                             value={this.state.luisKeyVal} />
                         <Dropdown
                             label='Locale'
                             defaultSelectedKey={this.state.localeVal}
                             options={this.state.localeOptions}
-                            onChanged={this.localeChanged.bind(this)}
+                            onChanged={this.localeChanged}
                         />
                     </div>
                     <div className='blis-modal_footer'>
                         <CommandButton
                             disabled={!this.state.appNameVal || !this.state.luisKeyVal}
-                            onClick={this.createApplication.bind(this)}
+                            onClick={this.createApplication}
                             className='blis-button--gold'
                             ariaDescription='Create'
                             text='Create'
                         />
                         <CommandButton
                             className="blis-button--gray"
-                            onClick={this.onDismissCreateNewApp.bind(this)}
+                            onClick={this.onDismissCreateNewApp}
                             ariaDescription='Cancel'
                             text='Cancel'
                         />

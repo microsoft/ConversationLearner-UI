@@ -97,8 +97,12 @@ class ActionResponsesHomepage extends React.Component<Props, ComponentState> {
         this.editSelectedAction = this.editSelectedAction.bind(this)
         this.renderItemColumn = this.renderItemColumn.bind(this)
         this.onChange = this.onChange.bind(this)
+        this.onColumnClick = this.onColumnClick.bind(this)
         this.renderActionItems = this.renderActionItems.bind(this)
         this.renderEntityList = this.renderEntityList.bind(this)
+        this.handleOpenCreateModal = this.handleOpenCreateModal.bind(this)
+        this.handleCloseCreateModal = this.handleCloseCreateModal.bind(this)
+        this.handleOpenDeleteModal = this.handleOpenDeleteModal.bind(this)
     }
     componentDidMount() {
         this.focusNewActionButton();
@@ -308,13 +312,18 @@ class ActionResponsesHomepage extends React.Component<Props, ComponentState> {
                 <span className="ms-font-m-plus">Manage a list of actions that your application can take given it's state and user input...</span>
                 <div>
                     <CommandButton
-                        onClick={this.handleOpenCreateModal.bind(this)}
+                        onClick={this.handleOpenCreateModal}
                         className='blis-button--gold'
                         ariaDescription='Create a New Action'
                         text='New Action'
                         ref='newAction'
                     />
-                    <ActionResponseCreatorEditor open={this.state.createEditModalOpen} blisAction={this.state.actionSelected} handleClose={this.handleCloseCreateModal.bind(this)} handleOpenDeleteModal={this.handleOpenDeleteModal.bind(this)} />
+                    <ActionResponseCreatorEditor
+                        open={this.state.createEditModalOpen}
+                        blisAction={this.state.actionSelected}
+                        handleClose={this.handleCloseCreateModal}
+                        handleOpenDeleteModal={this.handleOpenDeleteModal}
+                    />
                 </div>
                 <SearchBox
                     className="ms-font-m-plus"
@@ -328,7 +337,7 @@ class ActionResponsesHomepage extends React.Component<Props, ComponentState> {
                     checkboxVisibility={CheckboxVisibility.hidden}
                     onRenderItemColumn={this.renderItemColumn}
                     onActiveItemChanged={(item) => this.editSelectedAction(item)}
-                    onColumnHeaderClick={this.onColumnClick.bind(this)}
+                    onColumnHeaderClick={this.onColumnClick}
                 />
                 <ConfirmDeleteModal open={this.state.confirmDeleteActionModalOpen} onCancel={() => this.handleCloseDeleteModal()} onConfirm={() => this.deleteSelectedAction()} title="Are you sure you want to delete this action?" />
             </div>

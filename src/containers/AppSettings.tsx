@@ -42,6 +42,10 @@ class AppSettings extends React.Component<Props, ComponentState> {
         this.luisKeyChanged = this.luisKeyChanged.bind(this)
         this.botIdChanged = this.botIdChanged.bind(this)
         this.appNameChanged = this.appNameChanged.bind(this)
+        this.onRenderBotListRow = this.onRenderBotListRow.bind(this)
+        this.botAdded = this.botAdded.bind(this)
+        this.editApp = this.editApp.bind(this)
+        this.discardChanges = this.discardChanges.bind(this)
     }
     componentWillMount() {
         let current: BlisAppBase = this.props.blisApps.current
@@ -161,7 +165,7 @@ class AppSettings extends React.Component<Props, ComponentState> {
                         <Label className="ms-font-m-plus">Bot Framework Apps</Label>
                         <List
                             items={this.state.botFrameworkAppsVal}
-                            onRenderCell={this.onRenderBotListRow.bind(this)}
+                            onRenderCell={this.onRenderBotListRow}
                         />
                         <div>
                             <TextFieldPlaceholder
@@ -171,7 +175,7 @@ class AppSettings extends React.Component<Props, ComponentState> {
                                 value={this.state.newBotVal}
                             />
                             <CommandButton
-                                onClick={this.botAdded.bind(this)}
+                                onClick={this.botAdded}
                                 className='blis-button--gold buttonWithTextField'
                                 ariaDescription='Add'
                                 text='Add'
@@ -180,14 +184,14 @@ class AppSettings extends React.Component<Props, ComponentState> {
                     </div>
                     <div style={buttonsDivStyle}>
                         <CommandButton
-                            onClick={this.editApp.bind(this)}
+                            onClick={this.editApp}
                             className='blis-button--gold'
                             ariaDescription='Save Changes'
                             text='Save Changes'
                         />
                         <CommandButton
                             className="blis-button--gray"
-                            onClick={this.discardChanges.bind(this)}
+                            onClick={this.discardChanges}
                             ariaDescription='Discard'
                             text='Discard'
                         />
