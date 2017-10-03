@@ -28,33 +28,19 @@ class AppAdmin extends React.Component<Props, ComponentState> {
     renderChosenNavLink() {
         switch (this.state.display) {
             case "Settings":
-                return (
-                    <AppSettings app={this.props.app} />
-                )
+                return <AppSettings app={this.props.app} />
             case "Dash":
-                return (
-                    <AppDashboard app={this.props.app} />
-                )
+                return <AppDashboard app={this.props.app} />
             case "Entities":
-                return (
-                    <EntitiesList app={this.props.app} />
-                )
+                return <EntitiesList app={this.props.app} />
             case "Actions":
-                return (
-                    <ActionResponsesList app={this.props.app} />
-                )
+                return <ActionResponsesList app={this.props.app} />
             case "TrainDialogs":
-                return (
-                    <TrainDialogsList app={this.props.app} />
-                )
+                return <TrainDialogsList app={this.props.app} />
             case "LogDialogs":
-                return (
-                    <LogDialogsList app={this.props.app} />
-                )
+                return <LogDialogsList app={this.props.app} />
             default:
-                return (
-                    <AppDashboard app={this.props.app} />
-                )
+                return <AppDashboard app={this.props.app} />
         }
     }
     setArenaDisplay(page: string) {
@@ -63,83 +49,41 @@ class AppAdmin extends React.Component<Props, ComponentState> {
             selectedKey: page
         })
     }
-    renderWithoutEmulator() {
-        return (
-            <div>
-                <div className='trainingGroundNavigationArea'>
-                    <span className="ms-font-xxl">{this.props.app.appName}</span>
-                    <div className="tgSettingsDiv">
-                        <a onClick={() => this.setArenaDisplay('Settings')}><span className="ms-Icon ms-Icon--Settings" aria-hidden="true"></span>&nbsp;&nbsp;</a>
-                        <span className="ms-font-m-plus"><a onClick={() => this.setArenaDisplay('Settings')}>Settings</a></span>
-                    </div>
-                    <div className="tgNavDiv">
-                        <Nav
-                            className="ms-font-m-plus trainingGroundNav"
-                            initialSelectedKey="Dash"
-                            selectedKey={this.state.selectedKey}
-                            groups={[{
-                                links: [
-                                    { name: 'Dashboard', key: 'Dash', url: null, onClick: () => this.setArenaDisplay('Dash') },
-                                    { name: 'Entities', key: 'Entities', url: null, onClick: () => this.setArenaDisplay('Entities') },
-                                    { name: 'Actions', key: 'Actions', url: null, onClick: () => this.setArenaDisplay('Actions') },
-                                    { name: 'Train Dialogs', key: 'TrainDialogs', url: null, onClick: () => this.setArenaDisplay('TrainDialogs') },
-                                    { name: 'Log Dialogs', key: 'LogDialogs', url: null, onClick: () => this.setArenaDisplay('LogDialogs') }
-                                ]
-                            }]}
-                        />
-                    </div>
-                    <div className="tgbackToAppsDiv">
-                        <Link className="backToApps" onClick={() => this.props.setDisplayMode(DisplayMode.AppList)}><span className="ms-Icon ms-Icon--Back backToApps backToAppsIcon" aria-hidden="true"></span>&nbsp;&nbsp;App List</Link>
-                    </div>
-                </div>
 
-                <div className='trainingGroundArena'>
-                    {this.renderChosenNavLink()}
-                </div>
-            </div>
-        )
-
-    }
-    renderWithEmulator() {
-        return (
-            <div>
-                <span className="ms-font-xxl">{this.props.app.appName}</span>
-                <div className="tgSettingsDiv">
-                    <a onClick={() => this.setArenaDisplay('Settings')}><span className="ms-Icon ms-Icon--Settings" aria-hidden="true"></span>&nbsp;&nbsp;</a>
-                    <span className="ms-font-m-plus"><a onClick={() => this.setArenaDisplay('Settings')}>Settings</a></span>
-                </div>
-                <div className="tgNavDiv">
-                    <Nav
-                        className="ms-font-m-plus trainingGroundNav"
-                        initialSelectedKey="Dash"
-                        selectedKey={this.state.selectedKey}
-                        groups={[{
-                            links: [
-                                { name: 'Dashboard', key: 'Dash', url: null, onClick: () => this.setArenaDisplay('Dash') },
-                                { name: 'Entities', key: 'Entities', url: null, onClick: () => this.setArenaDisplay('Entities') },
-                                { name: 'Actions', key: 'Actions', url: null, onClick: () => this.setArenaDisplay('Actions') },
-                                { name: 'Train Dialogs', key: 'TrainDialogs', url: null, onClick: () => this.setArenaDisplay('TrainDialogs') },
-                                { name: 'Log Dialogs', key: 'LogDialogs', url: null, onClick: () => this.setArenaDisplay('LogDialogs') }
-                            ]
-                        }]}
-                    />
-                </div>
-                <div className="tgbackToAppsDiv">
-                    <Link className="backToApps" onClick={() => this.props.setDisplayMode(DisplayMode.AppList)}><span className="ms-Icon ms-Icon--Back backToApps backToAppsIcon" aria-hidden="true"></span>&nbsp;&nbsp;App List</Link>
-                </div>
-            </div>
-        )
-
-    }
     render() {
         return (
-            <div>
-                {this.props.display.displayWebchat == true
-                    ? this.renderWithEmulator()
-                    : this.renderWithoutEmulator()
-                }
+            <div className="blis-app-page">
+                <div>
+                    <div className="blis-app-title ms-font-xxl">{this.props.app.appName}</div>
+                    <div className="blis-nav ms-font-m-plus">
+                        <div className="blis-nav_section">
+                            <a onClick={() => this.setArenaDisplay('Settings')}><span className="ms-Icon ms-Icon--Settings" aria-hidden="true"></span>&nbsp;&nbsp;</a>
+                            <span className="ms-font-m-plus"><a onClick={() => this.setArenaDisplay('Settings')}>Settings</a></span>
+                        </div>
+                        <div className="blis-nav_section">
+                            <Nav
+                                className="ms-font-m-plus blis-nav-links"
+                                initialSelectedKey="Dash"
+                                selectedKey={this.state.selectedKey}
+                                groups={[{
+                                    links: [
+                                        { name: 'Dashboard', key: 'Dash', url: null, onClick: () => this.setArenaDisplay('Dash') },
+                                        { name: 'Entities', key: 'Entities', url: null, onClick: () => this.setArenaDisplay('Entities') },
+                                        { name: 'Actions', key: 'Actions', url: null, onClick: () => this.setArenaDisplay('Actions') },
+                                        { name: 'Train Dialogs', key: 'TrainDialogs', url: null, onClick: () => this.setArenaDisplay('TrainDialogs') },
+                                        { name: 'Log Dialogs', key: 'LogDialogs', url: null, onClick: () => this.setArenaDisplay('LogDialogs') }
+                                    ]
+                                }]}
+                            />
+                        </div>
+                        <div className="blis-nav_section">
+                            <Link className="backToApps" onClick={() => this.props.setDisplayMode(DisplayMode.AppList)}><span className="ms-Icon ms-Icon--Back backToApps backToAppsIcon" aria-hidden="true"></span>&nbsp;&nbsp;App List</Link>
+                        </div>
+                    </div>
+                </div>
+                {this.renderChosenNavLink()}
             </div>
-        );
+        )
     }
 }
 const mapDispatchToProps = (dispatch: any) => {

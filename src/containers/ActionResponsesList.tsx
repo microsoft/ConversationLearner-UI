@@ -2,7 +2,6 @@ import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader';
 import { deleteActionAsync } from '../actions/deleteActions'
 import { DetailsList, CommandButton, Link, CheckboxVisibility, List, IColumn, SearchBox } from 'office-ui-fabric-react';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
@@ -304,9 +303,10 @@ class ActionResponsesHomepage extends React.Component<Props, ComponentState> {
     render() {
         let actionItems = this.renderActionItems();
         return (
-            <div>
-                <TrainingGroundArenaHeader title="Actions" description="Manage a list of actions that your application can take given it's state and user input.." />
-                <div className='actionResponseCreator'>
+            <div className="blis-page">
+                <span className="ms-font-xxl">Actions</span>
+                <span className="ms-font-m-plus">Manage a list of actions that your application can take given it's state and user input...</span>
+                <div>
                     <CommandButton
                         data-automation-id='randomID4'
                         disabled={false}
@@ -333,7 +333,6 @@ class ActionResponsesHomepage extends React.Component<Props, ComponentState> {
                     onColumnHeaderClick={this.onColumnClick.bind(this)}
                 />
                 <ConfirmDeleteModal open={this.state.confirmDeleteActionModalOpen} onCancel={() => this.handleCloseDeleteModal()} onConfirm={() => this.deleteSelectedAction()} title="Are you sure you want to delete this action?" />
-
             </div>
         );
     }

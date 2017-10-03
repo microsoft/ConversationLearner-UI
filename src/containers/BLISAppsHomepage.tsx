@@ -10,6 +10,8 @@ import { connect } from 'react-redux';
 import { State } from '../types'
 import { DisplayMode } from '../types/const'
 import { BlisAppBase } from 'blis-models'
+import '../components/Home/App.css'
+import '../components/Home/Index.css'
 
 interface ComponentState {
     displayedUserId: string
@@ -51,17 +53,15 @@ class BLISAppsHomepage extends React.Component<Props, ComponentState> {
 
     render() {
         return (
-            <div>
-                {this.props.display.displayMode === DisplayMode.AppAdmin && this.state.selectedApp !== null
-                    ? <AppAdmin
-                        app={this.state.selectedApp}
-                    />
-                    : <BLISAppsList
-                        onSelectedAppChanged={app => this.onSelectedAppChanged(app)}
-                        onClickDeleteApp={app => this.onClickDeleteApp(app)}
-                    />}
-            </div>
-        );
+            this.props.display.displayMode === DisplayMode.AppAdmin && this.state.selectedApp !== null
+                ? <AppAdmin
+                    app={this.state.selectedApp}
+                />
+                : <BLISAppsList
+                    onSelectedAppChanged={app => this.onSelectedAppChanged(app)}
+                    onClickDeleteApp={app => this.onClickDeleteApp(app)}
+                />
+        )
     }
 }
 

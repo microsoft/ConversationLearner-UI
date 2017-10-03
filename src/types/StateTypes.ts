@@ -50,7 +50,6 @@ export type ChatSessionState = {
 }
 export type DisplayState = {
     displayMode: DisplayMode,
-    displayWebchat: boolean,   // TOOD this can go away
     displayLogin: boolean,
     displaySpinner: string[]
 }

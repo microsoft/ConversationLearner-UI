@@ -43,7 +43,7 @@ class App extends React.Component<Props, {}> {
               <Route component={NoMatch} />
             </Switch>
           </div>
-          <div>
+          <div className="blis-app_modals">
             <UIError />
             <UserLogin />
             <SpinnerWindow />
@@ -56,14 +56,14 @@ class App extends React.Component<Props, {}> {
 
 const mapDispatchToProps = (dispatch: any) => {
   return bindActionCreators({
-      setLoginDisplay
+    setLoginDisplay
   }, dispatch);
 }
 
 const mapStateToProps = (state: State) => {
   return {
-      userName: state.user.name,
-      displayMode: state.display.displayMode
+    userName: state.user.name,
+    displayMode: state.display.displayMode
   }
 }
 

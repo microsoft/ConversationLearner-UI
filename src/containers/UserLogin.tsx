@@ -114,22 +114,20 @@ class UserLogin extends React.Component<Props, ComponentState> {
                 </div>
         }
         return (
-            <div>
-                <Modal
-                    isOpen={(this.props.displayLogin || !this.props.user.key) && !this.props.displayError}
-                    onDismiss={this.handleClose.bind(this)}
-                    isBlocking={isBlocking}
-                    containerClassName='createModal'
-                >
-                    <div className='modalHeader'>
-                        <span className='ms-font-xxl ms-fontWeight-semilight'>{title}</span>
-                    </div>
-                    {input}
-                    <div className='modalFooter'>
-                        {button}
-                    </div>
-                </Modal>
-            </div>
+            <Modal
+                isOpen={(this.props.displayLogin || !this.props.user.key) && !this.props.displayError}
+                onDismiss={this.handleClose.bind(this)}
+                isBlocking={isBlocking}
+                containerClassName='createModal'
+            >
+                <div className='modalHeader'>
+                    <span className='ms-font-xxl ms-fontWeight-semilight'>{title}</span>
+                </div>
+                {input}
+                <div className='modalFooter'>
+                    {button}
+                </div>
+            </Modal>
         );
     }
 }

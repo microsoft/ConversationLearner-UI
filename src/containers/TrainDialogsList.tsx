@@ -2,7 +2,6 @@ import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader'
 import { DetailsList, CommandButton, CheckboxVisibility, IColumn, SearchBox } from 'office-ui-fabric-react';
 import { setCurrentTeachSession } from '../actions/displayActions'
 import { State } from '../types'
@@ -168,9 +167,10 @@ class TrainDialogsList extends React.Component<Props, ComponentState> {
     render() {
         let trainDialogItems = this.renderTrainDialogItems()
         return (
-            <div>
-                <TrainingGroundArenaHeader title="Train Dialogs" description="Use this tool to train and improve the current versions of your application ..." />
-                <div className="entityCreator">
+            <div className="blis-page">
+                <span className="ms-font-xxl">Train Dialogs</span>
+                <span className="ms-font-m-plus">Use this tool to train and improve the current versions of your application...</span>
+                <div>
                     <CommandButton
                         onClick={() => this.onClickNewTeachSession()}
                         className='blis-button--gold'
