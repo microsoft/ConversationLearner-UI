@@ -7,7 +7,7 @@ import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { CommandButton, Dropdown, TagPicker, Label, Checkbox, List } from 'office-ui-fabric-react';
 import { TextFieldPlaceholder } from './TextFieldPlaceholder';
-import { ActionBase, ActionMetaData, ActionTypes, EntityBase, EntitySuggestion, ModelUtils } from 'blis-models'
+import { ActionBase, ActionMetaData, ActionTypes, EntityBase, ModelUtils } from 'blis-models'
 import { State } from '../types';
 import EntityCreatorEditor from './EntityCreatorEditor';
 import AutocompleteListItem from '../components/AutocompleteListItem';
@@ -150,10 +150,11 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
                     }
                 })
                 let suggestedEntities: EntityPickerObject[] = []
-                if (p.blisAction.metadata.entitySuggestion && p.blisAction.metadata.entitySuggestion.entityName) {
+                if (p.blisAction.suggestedEntity) {
+                    let found = this.props.entities.find(e => e.entityId == p.blisAction.suggestedEntity);
                     suggestedEntities.push({
-                        key: p.blisAction.metadata.entitySuggestion.entityName,
-                        name: p.blisAction.metadata.entitySuggestion.entityName,
+                        key: found.entityName,
+                        name: found.entityName,
                     })
                 }
 
@@ -261,11 +262,11 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
             let found = this.props.entities.find(e => e.entityName == neg.key)
             return found.entityId
         })
-        let suggestedEntity = this.state.suggEntitiesVal[0] ? this.props.entities.find(e => e.entityName == this.state.suggEntitiesVal[0].name) : null;
+        let suggestedEntity = this.state.suggEntitiesVal[0] ? this.props.entities.find(e => e.entityName == this.state.suggEntitiesVal[0].key) : null;
+        let suggestedId = suggestedEntity ? suggestedEntity.entityId : null;
 
         let meta = new ActionMetaData({
             actionType: this.state.actionTypeVal,
-            entitySuggestion: suggestedEntity ? new EntitySuggestion({ entityId: suggestedEntity.entityId, entityName: suggestedEntity.entityName }) : null
         })
 
         let payload = null;
@@ -279,6 +280,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
             payload: payload,
             negativeEntities: negativeEntities,
             requiredEntities: requiredEntities,
+            suggestedEntity: suggestedId,
             isTerminal: this.state.waitVal,
             metadata: meta,
             version: null,
