@@ -3,7 +3,6 @@ import { returntypeof } from 'react-redux-typescript';
 import { editBLISApplicationAsync } from '../actions/updateActions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader'
 import { State } from '../types';
 import { CommandButton, TextField, Dropdown, Label, List } from 'office-ui-fabric-react';
 import { TextFieldPlaceholder } from './TextFieldPlaceholder';
@@ -144,8 +143,9 @@ class AppSettings extends React.Component<Props, ComponentState> {
         }]
         let buttonsDivStyle = this.state.edited == true ? styles.shown : styles.hidden;
         return (
-            <div>
-                <TrainingGroundArenaHeader title="Settings" description="Control your application versions, who has access to it and whether it is public or private...." />
+            <div className="blis-page">
+                <span className="ms-font-xxl">Settings</span>
+                <span className="ms-font-m-plus">Control your application versions, who has access to it and whether it is public or private....</span>
                 <TextField className="ms-font-m-plus" onChanged={(text) => this.appNameChanged(text)} label="Name" value={this.state.appNameVal} />
                 <TextField className="ms-font-m-plus" disabled={true} label="App ID" value={this.state.appIdVal} />
                 <TextField className="ms-font-m-plus" onChanged={(text) => this.luisKeyChanged(text)} label="LUIS Key" value={this.state.luisKeyVal} />
@@ -162,7 +162,7 @@ class AppSettings extends React.Component<Props, ComponentState> {
                         items={this.state.botFrameworkAppsVal}
                         onRenderCell={this.onRenderBotListRow.bind(this)}
                     />
-                    <div className="textFieldInlineButtonDiv">
+                    <div>
                         <TextFieldPlaceholder className="ms-font-m-plus textFieldWithButton" onChanged={(text) => this.botIdChanged(text)} placeholder="Application ID" value={this.state.newBotVal} />
                         <CommandButton
                             data-automation-id='randomID16'

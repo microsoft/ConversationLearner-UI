@@ -19,31 +19,29 @@ class UIError extends React.Component<Props, any> {
             <div className='ms-font-m ms-fontWeight-semilight'>{this.props.error.message}</div> :
             null;
         return (
-            <div>
-                <Modal
-                    isOpen={this.props.error.error != null}
-                    onDismiss={this.handleClose.bind(this)}
-                    isBlocking={false}
-                    containerClassName='createModal'
-                >
-                    <div className='modalHeader'>
-                        <span className='ms-font-xxl ms-fontWeight-semilight'>Error</span>
-                    </div>
-                    <div className='ms-font-l ms-fontWeight-semilight'>{this.props.error.route} Failed</div>
-                    <div className='ms-font-m ms-fontWeight-semilight'>{this.props.error.error}</div>
-                    {message}
-                    <div className='modalFooter'>
-                        <CommandButton
-                            data-automation-id='randomID2'
-                            disabled={false}
-                            onClick={this.handleClose.bind(this)}
-                            className='blis-button--gold'
-                            ariaDescription='Ok'
-                            text='Ok'
-                        />
-                    </div>
-                </Modal>
-            </div>
+            <Modal
+                isOpen={this.props.error.error != null}
+                onDismiss={this.handleClose.bind(this)}
+                isBlocking={false}
+                containerClassName='createModal'
+            >
+                <div className='modalHeader'>
+                    <span className='ms-font-xxl ms-fontWeight-semilight'>Error</span>
+                </div>
+                <div className='ms-font-l ms-fontWeight-semilight'>{this.props.error.route} Failed</div>
+                <div className='ms-font-m ms-fontWeight-semilight'>{this.props.error.error}</div>
+                {message}
+                <div className='modalFooter'>
+                    <CommandButton
+                        data-automation-id='randomID2'
+                        disabled={false}
+                        onClick={this.handleClose.bind(this)}
+                        className='blis-button--gold'
+                        ariaDescription='Ok'
+                        text='Ok'
+                    />
+                </div>
+            </Modal>
         );
     }
 }

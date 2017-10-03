@@ -2,7 +2,6 @@ import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader'
 import { DetailsList, CommandButton, CheckboxVisibility, IColumn, SearchBox } from 'office-ui-fabric-react';
 import { State } from '../types'
 import { BlisAppBase, LogDialog } from 'blis-models'
@@ -144,9 +143,10 @@ class LogDialogsList extends React.Component<Props, ComponentState> {
         const logDialogItems = this.props.logDialogs.all;
         const currentLogDialog = this.state.currentLogDialog;
         return (
-            <div>
-                <TrainingGroundArenaHeader title="Log Dialogs" description="Use this tool to test the current versions of your application, to check if you are progressing on the right track ..." />
-                <div className="entityCreator">
+            <div className="blis-page">
+                <span className="ms-font-xxl">Log Dialogs</span>
+                <span className="ms-font-m-plus">Use this tool to test the current versions of your application, to check if you are progressing on the right track...</span>
+                <div>
                     <CommandButton
                         onClick={() => this.onClickNewChatSession()}
                         className='blis-button--gold'

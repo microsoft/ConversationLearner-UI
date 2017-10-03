@@ -1,15 +1,15 @@
 import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
 import { connect } from 'react-redux';
-import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader'
 import { State } from '../types'
 import { BlisAppBase } from 'blis-models'
 
 class AppDashboard extends React.Component<Props, any> {
     render() {
         return (
-            <div>
-                <TrainingGroundArenaHeader title="Overview" description="Facts & statistics about the app's data at any period of time..." />
+            <div className="blis-page">
+                <span className="ms-font-xxl">Overview</span>
+                <span className="ms-font-m-plus">Facts & statistics about the app's data at any period of time...</span>
             </div>
         );
     }

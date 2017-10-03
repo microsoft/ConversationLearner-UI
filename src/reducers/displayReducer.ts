@@ -6,7 +6,6 @@ import { DisplayMode } from '../types/const'
 
 const initialState: DisplayState = {
     displayMode: DisplayMode.AppList,
-    displayWebchat: false,
     displayLogin: true,
     displaySpinner: []
 };

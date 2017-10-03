@@ -10,9 +10,26 @@
 .blis-nav_section {
     border-top: 1px solid lightgrey;
     padding: 0.5rem 0;
+    color: grey;
 }
-.blis-nav_section:first-of-type {
-    padding: 0;
+.blis-nav_section *:hover {
+    color: lightgrey !important;
+    cursor: pointer !important;
+}
+.blis-nav-section .ms-Nav-groupContent {
+    margin-bottom: 0 !important;
+}
+
+.blis-nav-links *{
+  color: gray !important;
+}
+.blis-nav-links *:hover{
+  color: lightgrey !important;
+}
+
+.blis-nav-links * {
+    margin-left: -.1em !important;
+    margin: 0 0 0 0;
 }
 
 .blis-nav-link {

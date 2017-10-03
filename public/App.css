@@ -80,10 +80,7 @@
   margin-left: 5%;
   margin-top: 2%;
 }
-.myAppsHeaderContentBlock{
-  display: block;
-  margin-bottom: 1%;
-}
+
 .blis-button--gold:hover {
   border: 1px solid #004b50;
 }
@@ -182,14 +179,7 @@
   color: lightgrey !important;
   cursor: pointer !important;
 }
-.trainingGroundHeaderContent{
-  display:block;
-  margin-bottom: .5em;
-}
-.trainingGroundArenaHeader, .entityCreator, .actionResponseCreator{
-  display: block;
-  margin-bottom: 1em;
-}
+
 .checkIcon{
   color: green;
   font-size: 20px;
@@ -467,13 +457,6 @@
 }
 
 /** New CSS using BEM to eventually replace above */
-:root {
-  --color-primary: #ffb900;
-  --color-primary-darker: #EEAC04;
-  --color-secondary: #004b50;
-  --color-tertiary: lightgrey;
-  --color-botchat-grey: #dbdee1;
-}
 .blis-modal--large {
   width: 90%;
   height: 90%;

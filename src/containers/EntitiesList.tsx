@@ -2,7 +2,6 @@ import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import TrainingGroundArenaHeader from '../components/TrainingGroundArenaHeader';
 import EntityCreatorEditor from './EntityCreatorEditor';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import { deleteEntityAsync } from '../actions/deleteActions'
@@ -241,9 +240,10 @@ class EntitiesList extends React.Component<Props, ComponentState> {
         let entityItems = this.renderEntityItems();
 
         return (
-            <div>
-                <TrainingGroundArenaHeader title="Entities" description="Manage a list of entities in your application and track and control their instances within actions..." />
-                <div className='entityCreator'>
+            <div className="blis-page">
+                <span className="ms-font-xxl">Entities</span>
+                <span className="ms-font-m-plus">Manage a list of entities in your application and track and control their instances within actions...</span>
+                <div>
                     <CommandButton
                         data-automation-id='randomID4'
                         disabled={false}
