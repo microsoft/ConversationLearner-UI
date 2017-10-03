@@ -16,7 +16,7 @@ class SpinnerWindow extends React.Component<Props, any> {
             <Modal
                 isOpen={this.props.displaySpinner.length > 0}
                 isBlocking={true}
-                containerClassName='spinnerBox'>
+                containerClassName='blis-spinner'>
                 <Spinner size={SpinnerSize.large} />
             </Modal>
         );

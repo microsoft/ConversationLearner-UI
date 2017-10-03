@@ -97,7 +97,7 @@ class AppSettings extends React.Component<Props, ComponentState> {
     }
     onRenderBotListRow(item?: any, index?: number) {
         return (
-            <div className="textFieldInlineButtonDiv">
+            <div>
                 <TextField className="ms-font-m-plus textFieldWithButton" disabled={true} value={item} />
             </div>
         )
@@ -146,51 +146,54 @@ class AppSettings extends React.Component<Props, ComponentState> {
             <div className="blis-page">
                 <span className="ms-font-xxl">Settings</span>
                 <span className="ms-font-m-plus">Control your application versions, who has access to it and whether it is public or private....</span>
-                <TextField className="ms-font-m-plus" onChanged={(text) => this.appNameChanged(text)} label="Name" value={this.state.appNameVal} />
-                <TextField className="ms-font-m-plus" disabled={true} label="App ID" value={this.state.appIdVal} />
-                <TextField className="ms-font-m-plus" onChanged={(text) => this.luisKeyChanged(text)} label="LUIS Key" value={this.state.luisKeyVal} />
-                <Label className="ms-font-m-plus">Locale</Label>
-                <Dropdown
-                    className="ms-font-m-plus"
-                    options={options}
-                    selectedKey={this.state.localeVal}
-                    disabled={true}
-                />
                 <div>
-                    <Label className="ms-font-m-plus">Bot Framework Apps</Label>
-                    <List
-                        items={this.state.botFrameworkAppsVal}
-                        onRenderCell={this.onRenderBotListRow.bind(this)}
+                    <TextField className="ms-font-m-plus" onChanged={(text) => this.appNameChanged(text)} label="Name" value={this.state.appNameVal} />
+                    <TextField className="ms-font-m-plus" disabled={true} label="App ID" value={this.state.appIdVal} />
+                    <TextField className="ms-font-m-plus" onChanged={(text) => this.luisKeyChanged(text)} label="LUIS Key" value={this.state.luisKeyVal} />
+                    <Label className="ms-font-m-plus">Locale</Label>
+                    <Dropdown
+                        className="ms-font-m-plus"
+                        options={options}
+                        selectedKey={this.state.localeVal}
+                        disabled={true}
                     />
                     <div>
-                        <TextFieldPlaceholder className="ms-font-m-plus textFieldWithButton" onChanged={(text) => this.botIdChanged(text)} placeholder="Application ID" value={this.state.newBotVal} />
+                        <Label className="ms-font-m-plus">Bot Framework Apps</Label>
+                        <List
+                            items={this.state.botFrameworkAppsVal}
+                            onRenderCell={this.onRenderBotListRow.bind(this)}
+                        />
+                        <div>
+                            <TextFieldPlaceholder
+                                className="ms-font-m-plus textFieldWithButton"
+                                onChanged={(text) => this.botIdChanged(text)}
+                                placeholder="Application ID"
+                                value={this.state.newBotVal}
+                            />
+                            <CommandButton
+                                data-automation-id='randomID16'
+                                disabled={false}
+                                onClick={this.botAdded.bind(this)}
+                                className='blis-button--gold buttonWithTextField'
+                                ariaDescription='Add'
+                                text='Add'
+                            />
+                        </div>
+                    </div>
+                    <div style={buttonsDivStyle}>
                         <CommandButton
-                            data-automation-id='randomID16'
-                            disabled={false}
-                            onClick={this.botAdded.bind(this)}
-                            className='blis-button--gold buttonWithTextField'
-                            ariaDescription='Add'
-                            text='Add'
+                            onClick={this.editApp.bind(this)}
+                            className='blis-button--gold'
+                            ariaDescription='Save Changes'
+                            text='Save Changes'
+                        />
+                        <CommandButton
+                            className="blis-button--gray"
+                            onClick={this.discardChanges.bind(this)}
+                            ariaDescription='Discard'
+                            text='Discard'
                         />
                     </div>
-                </div>
-                <div style={buttonsDivStyle} className="saveAppChangesButtonsDiv">
-                    <CommandButton
-                        data-automation-id='randomID6'
-                        disabled={false}
-                        onClick={this.editApp.bind(this)}
-                        className='blis-button--gold'
-                        ariaDescription='Save Changes'
-                        text='Save Changes'
-                    />
-                    <CommandButton
-                        data-automation-id='randomID7'
-                        className="blis-button--gray"
-                        disabled={false}
-                        onClick={this.discardChanges.bind(this)}
-                        ariaDescription='Discard'
-                        text='Discard'
-                    />
                 </div>
             </div>
         );

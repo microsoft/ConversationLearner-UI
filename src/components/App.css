@@ -45,6 +45,7 @@
 }
 .blis-header_links a:link,
 .blis-header_links a:visisted {
+    color: white;
 }
 .blis-header_links a.active,
 .blis-header_links a:hover {

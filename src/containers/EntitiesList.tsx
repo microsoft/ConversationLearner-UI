@@ -272,12 +272,12 @@ class EntitiesList extends React.Component<Props, ComponentState> {
                 <Modal
                     isOpen={this.state.errorModalOpen}
                     isBlocking={false}
-                    containerClassName='createModal'
+                    containerClassName='blis-modal blis-modal--small blis-modal--border'
                 >
-                    <div className='modalHeader'>
+                    <div className='blis-modal_header'>
                         <span className='ms-font-xl ms-fontWeight-semilight'>You cannot delete this entity because it is being used in an action.</span>
                     </div>
-                    <div className='modalFooter'>
+                    <div className='blis-modal_footer'>
                         <CommandButton
                             disabled={false}
                             onClick={() => this.handleCloseDeleteModal()}

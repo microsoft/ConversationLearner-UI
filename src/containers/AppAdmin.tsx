@@ -76,8 +76,8 @@ class AppAdmin extends React.Component<Props, ComponentState> {
                                 }]}
                             />
                         </div>
-                        <div className="blis-nav_section">
-                            <Link className="backToApps" onClick={() => this.props.setDisplayMode(DisplayMode.AppList)}><span className="ms-Icon ms-Icon--Back backToApps backToAppsIcon" aria-hidden="true"></span>&nbsp;&nbsp;App List</Link>
+                        <div className="blis-nav_section backToApps">
+                            <Link onClick={() => this.props.setDisplayMode(DisplayMode.AppList)}><span className="ms-Icon ms-Icon--Back" aria-hidden="true"></span>&nbsp;&nbsp;App List</Link>
                         </div>
                     </div>
                 </div>
