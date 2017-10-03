@@ -57,7 +57,7 @@ let columns: IColumn[] = [
     {
         key: 'suggestedEntity',
         name: 'Expected Entity',
-        fieldName: 'metadata',
+        fieldName: 'suggestedEntity',
         minWidth: 100,
         maxWidth: 100,
         isResizable: true
@@ -197,10 +197,12 @@ class ActionResponsesHomepage extends React.Component<Props, ComponentState> {
                     return <span className="ms-Icon ms-Icon--Remove notFoundIcon" aria-hidden="true"></span>;
                 }
             case 'suggestedEntity':
-                if (fieldContent.entitySuggestion) {
+                if (fieldContent != null) {
+                    let entity = this.props.entities.find(e => e.entityId == fieldContent);
+                    let name = entity ? entity.entityName : "!! MISSING ENTITY !!";
                     return (
                         <div className='ms-ListItem is-selectable'>
-                            <span className='ms-ListItem-primaryText'>{fieldContent.entitySuggestion.entityName}</span>
+                            <span className='ms-ListItem-primaryText'>{name}</span>
                         </div>
                     )
                 } else {
