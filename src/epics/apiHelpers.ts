@@ -487,7 +487,12 @@ let toErrorString = function (error: any): string {
     else if (error.data.errorMessages) {
       return error.data.errorMessages.join();
     }
-    return error.data.stringify();
+    else if (typeof error.data == 'string') {
+      return error.data;
+    }
+    else {
+      return error.data.stringify();
+    }
   }
   catch (e) {
     return "Unknown Error";
