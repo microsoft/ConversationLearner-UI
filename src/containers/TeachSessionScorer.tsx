@@ -91,6 +91,11 @@ class TeachSessionScorer extends React.Component<Props, ComponentState> {
         super(p);
         this.state = initState;
         this.handleActionSelection = this.handleActionSelection.bind(this);
+        this.handleDefaultSelection = this.handleDefaultSelection.bind(this)
+        this.handleOpenActionModal = this.handleOpenActionModal.bind(this)
+        this.handleCloseActionModal = this.handleCloseActionModal.bind(this)
+        this.renderItemColumn = this.renderItemColumn.bind(this)
+        this.onColumnClick = this.onColumnClick.bind(this)
     }
     componentDidUpdate() {
         this.autoSelect();
@@ -379,14 +384,14 @@ class TeachSessionScorer extends React.Component<Props, ComponentState> {
             <div>
                 <CommandButton
                     className="blis-button--hidden"
-                    onClick={this.handleDefaultSelection.bind(this)}
+                    onClick={this.handleDefaultSelection}
                     ariaDescription='Accept'
                     text=''
                     ref="acceptDefault"
                 />
                 <CommandButton
                     className="blis-button--gold teachCreateButton"
-                    onClick={this.handleOpenActionModal.bind(this)}
+                    onClick={this.handleOpenActionModal}
                     ariaDescription='Cancel'
                     text='Action'
                     iconProps={{ iconName: 'CirclePlus' }}
@@ -404,11 +409,15 @@ class TeachSessionScorer extends React.Component<Props, ComponentState> {
                     items={scores}
                     columns={this.state.columns}
                     checkboxVisibility={CheckboxVisibility.hidden}
-                    onRenderItemColumn={this.renderItemColumn.bind(this)}
-                    onColumnHeaderClick={this.onColumnClick.bind(this)}
+                    onRenderItemColumn={this.renderItemColumn}
+                    onColumnHeaderClick={this.onColumnClick}
                     ref='scoreList'
                 />
-                <ActionResponseCreatorEditor open={this.state.actionModalOpen} blisAction={null} handleClose={this.handleCloseActionModal.bind(this)} />
+                <ActionResponseCreatorEditor
+                    open={this.state.actionModalOpen}
+                    blisAction={null}
+                    handleClose={this.handleCloseActionModal}
+                />
             </div>
         )
     }

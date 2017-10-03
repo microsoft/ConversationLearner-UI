@@ -20,6 +20,7 @@ class ExtractorTextVariationCreator extends React.Component<Props, ComponentStat
         super(p);
         this.state = initState;
         this.handleAddVariation = this.handleAddVariation.bind(this)
+        this.textChanged = this.textChanged.bind(this)
     }
     textChanged(text: string) {
         this.setState({
@@ -41,7 +42,7 @@ class ExtractorTextVariationCreator extends React.Component<Props, ComponentStat
                 <div className='teachAddVariation'>
                     <TextFieldPlaceholder
                         value={this.state.variationValue}
-                        onChanged={this.textChanged.bind(this)}
+                        onChanged={this.textChanged}
                         placeholder="Add alternative input..."
                         onKeyPress={(ev) => {
                             if (ev.key === 'Enter') {

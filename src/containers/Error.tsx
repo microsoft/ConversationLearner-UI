@@ -10,6 +10,8 @@ import { State } from '../types'
 class UIError extends React.Component<Props, any> {
     constructor(p: any) {
         super(p);
+
+        this.handleClose = this.handleClose.bind(this)
     }
     handleClose() {
         this.props.clearErrorDisplay();
@@ -21,7 +23,7 @@ class UIError extends React.Component<Props, any> {
         return (
             <Modal
                 isOpen={this.props.error.error != null}
-                onDismiss={this.handleClose.bind(this)}
+                onDismiss={this.handleClose}
                 isBlocking={false}
                 containerClassName='blis-modal blis-modal--small blis-modal--border'
             >
@@ -33,7 +35,7 @@ class UIError extends React.Component<Props, any> {
                 {message}
                 <div className='blis-modal_footer'>
                     <CommandButton
-                        onClick={this.handleClose.bind(this)}
+                        onClick={this.handleClose}
                         className='blis-button--gold'
                         ariaDescription='Ok'
                         text='Ok'

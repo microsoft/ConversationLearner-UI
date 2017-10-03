@@ -85,6 +85,12 @@ class BLISAppsList extends React.Component<Props, ComponentState> {
         sortColumn: null
     }
 
+    constructor(p: Props) {
+        super(p)
+
+        this.onColumnClick = this.onColumnClick.bind(this)
+    }
+
     onConfirmDeleteModal() {
         this.props.onClickDeleteApp(this.state.appToDelete)
         this.setState({
@@ -166,7 +172,7 @@ class BLISAppsList extends React.Component<Props, ComponentState> {
                     columns={this.state.columns}
                     checkboxVisibility={CheckboxVisibility.hidden}
                     onRenderItemColumn={(app, i, column: ISortableRenderableColumn) => column.render(app, this)}
-                    onColumnHeaderClick={this.onColumnClick.bind(this)}
+                    onColumnHeaderClick={this.onColumnClick}
                 />
                 <BLISAppCreator />
                 <ConfirmDeleteModal

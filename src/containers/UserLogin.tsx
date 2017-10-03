@@ -27,6 +27,13 @@ class UserLogin extends React.Component<Props, ComponentState> {
             userPassword: '',
             loadedUser: false
         }
+
+        this.checkForEnter = this.checkForEnter.bind(this)
+        this.nameChanged = this.nameChanged.bind(this)
+        this.passwordChanged = this.passwordChanged.bind(this)
+        this.createUser = this.createUser.bind(this)
+        this.logout = this.logout.bind(this)
+        this.handleClose = this.handleClose.bind(this)
     }
     handleClose() {
         this.props.setLoginDisplay(false);
@@ -35,7 +42,7 @@ class UserLogin extends React.Component<Props, ComponentState> {
             userPassword: ''
         })
     }
-    checkForEnter(key: KeyboardEvent) {
+    checkForEnter(key: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) {
         let code = key.keyCode;
         if (code == 13) {
             let userId = this.generateUserId(this.state.userName, this.state.userPassword);
@@ -77,12 +84,25 @@ class UserLogin extends React.Component<Props, ComponentState> {
             title = "Log In";
             input =
                 <div>
-                    <TextFieldPlaceholder onKeyDown={this.checkForEnter.bind(this)} onChanged={this.nameChanged.bind(this)} label="Name" placeholder="User Name..." value={this.state.userName} />
-                    <TextFieldPlaceholder onKeyDown={this.checkForEnter.bind(this)} onChanged={this.passwordChanged.bind(this)} type="Password" label="Password" placeholder="Password..." value={this.state.userPassword} />
+                    <TextFieldPlaceholder
+                        onKeyDown={this.checkForEnter}
+                        onChanged={this.nameChanged}
+                        label="Name"
+                        placeholder="User Name..."
+                        value={this.state.userName}
+                    />
+                    <TextFieldPlaceholder
+                        onKeyDown={this.checkForEnter}
+                        onChanged={this.passwordChanged}
+                        type="Password"
+                        label="Password"
+                        placeholder="Password..."
+                        value={this.state.userPassword}
+                    />
                 </div>;
             button =
                 <CommandButton
-                    onClick={this.createUser.bind(this)}
+                    onClick={this.createUser}
                     className='blis-button--gold'
                     ariaDescription='Log In'
                     text='Log In'
@@ -94,14 +114,14 @@ class UserLogin extends React.Component<Props, ComponentState> {
             button =
                 <div>
                     <CommandButton
-                        onClick={this.logout.bind(this)}
+                        onClick={this.logout}
                         className='blis-button--gold'
                         ariaDescription='Log Out'
                         text='Log Out'
                     />
                     <CommandButton
                         className="blis-button--gray"
-                        onClick={this.handleClose.bind(this)}
+                        onClick={this.handleClose}
                         ariaDescription='Cancel'
                         text='Cancel'
                     />
@@ -110,7 +130,7 @@ class UserLogin extends React.Component<Props, ComponentState> {
         return (
             <Modal
                 isOpen={(this.props.displayLogin || !this.props.user.key) && !this.props.displayError}
-                onDismiss={this.handleClose.bind(this)}
+                onDismiss={this.handleClose}
                 isBlocking={isBlocking}
                 containerClassName='blis-modal blis-modal--small blis-modal--border'
             >

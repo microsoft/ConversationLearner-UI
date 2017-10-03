@@ -29,6 +29,18 @@ interface ComponentState {
 class EntityCreatorEditor extends React.Component<Props, ComponentState> {
     state = initState
 
+    constructor(p: Props) {
+        super(p)
+
+        this.checkIfBlank = this.checkIfBlank.bind(this)
+        this.createEntity = this.createEntity.bind(this)
+        this.nameChanged = this.nameChanged.bind(this)
+        this.nameKeyDown = this.nameKeyDown.bind(this)
+        this.typeChanged = this.typeChanged.bind(this)
+        this.handleCheckBucketable = this.handleCheckBucketable.bind(this)
+        this.handleCheckReversible = this.handleCheckReversible.bind(this)
+    }
+
     componentWillReceiveProps(p: Props) {
         if (p.entity === null) {
             this.setState({ ...initState });
@@ -42,7 +54,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
             })
         }
     }
-    nameKeyDown(key: KeyboardEvent) {
+    nameKeyDown(key: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) {
         // On enter attempt to create the entity as long as name is set
         if (key.keyCode == 13 && this.state.entityNameVal) {
             this.createEntity();
@@ -138,36 +150,36 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                     </div>
                     <div>
                         <TextFieldPlaceholder
-                            onGetErrorMessage={this.checkIfBlank.bind(this)}
-                            onChanged={this.nameChanged.bind(this)}
-                            onKeyDown={this.nameKeyDown.bind(this)}
+                            onGetErrorMessage={this.checkIfBlank}
+                            onChanged={this.nameChanged}
+                            onKeyDown={this.nameKeyDown}
                             label="Entity Name"
                             placeholder="Name..."
                             value={this.state.entityNameVal} />
                         <Dropdown
                             label='Entity Type'
                             options={options}
-                            onChanged={this.typeChanged.bind(this)}
+                            onChanged={this.typeChanged}
                             selectedKey={this.state.entityTypeVal}
                             disabled={this.state.editing}
                         />
                         <Checkbox
                             label='Bucketable'
                             defaultChecked={false}
-                            onChange={this.handleCheckBucketable.bind(this)}
+                            onChange={this.handleCheckBucketable}
                             style={{ marginTop: "1em", marginRight: "3em", display: "inline-block" }}
                         />
                         <Checkbox
                             label='Reversible'
                             defaultChecked={false}
-                            onChange={this.handleCheckReversible.bind(this)}
+                            onChange={this.handleCheckReversible}
                             style={{ marginTop: "1em", display: "inline-block" }}
                         />
                     </div>
                     <div className='blis-modal_footer'>
                         <CommandButton
                             disabled={!this.state.entityNameVal}
-                            onClick={this.createEntity.bind(this)}
+                            onClick={this.createEntity}
                             className='blis-button--gold'
                             ariaDescription='Create'
                             text={createButtonText}
