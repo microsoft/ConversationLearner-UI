@@ -7,8 +7,6 @@ const component = (props: any) => (
         <p className="ms-font-m-plus">Use this tool to test the current versions of your application, to check if you are progressing on the right track ...</p>
         <div>
             <PrimaryButton
-                data-automation-id='randomID20'
-                disabled={false}
                 className='blis-button blis-button--primary'
                 ariaDescription='Create a New Chat Session'
                 text='New Chat Session'

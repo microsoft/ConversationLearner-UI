@@ -171,8 +171,6 @@ class AppSettings extends React.Component<Props, ComponentState> {
                                 value={this.state.newBotVal}
                             />
                             <CommandButton
-                                data-automation-id='randomID16'
-                                disabled={false}
                                 onClick={this.botAdded.bind(this)}
                                 className='blis-button--gold buttonWithTextField'
                                 ariaDescription='Add'

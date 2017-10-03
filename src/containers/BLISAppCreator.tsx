@@ -165,7 +165,6 @@ class BLISAppCreator extends React.Component<Props, ComponentState> {
                     </div>
                     <div className='blis-modal_footer'>
                         <CommandButton
-                            data-automation-id='randomID2'
                             disabled={!this.state.appNameVal || !this.state.luisKeyVal}
                             onClick={this.createApplication.bind(this)}
                             className='blis-button--gold'
@@ -173,9 +172,7 @@ class BLISAppCreator extends React.Component<Props, ComponentState> {
                             text='Create'
                         />
                         <CommandButton
-                            data-automation-id='randomID3'
                             className="blis-button--gray"
-                            disabled={false}
                             onClick={this.onDismissCreateNewApp.bind(this)}
                             ariaDescription='Cancel'
                             text='Cancel'

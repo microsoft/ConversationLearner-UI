@@ -736,9 +736,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
             createButtonText = "Save"
             deleteButton =
                 <CommandButton
-                    data-automation-id='randomID9'
                     className="blis-button--gray"
-                    disabled={false}
                     onClick={() => this.props.handleOpenDeleteModal(this.props.blisAction.actionId)}
                     ariaDescription='Delete'
                     text='Delete'
@@ -896,7 +894,6 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
                     </div>
                     <div className="blis-modal_footer">
                         <CommandButton
-                            data-automation-id='randomID6'
                             disabled={createDisabled}
                             onClick={this.createOnClick}
                             className='blis-button--gold'
@@ -904,17 +901,13 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
                             text={createButtonText}
                         />
                         <CommandButton
-                            data-automation-id='randomID7'
                             className="blis-button--gray"
-                            disabled={false}
                             onClick={this.cancelOnClick}
                             ariaDescription='Cancel'
                             text='Cancel'
                         />
                         <CommandButton
-                            data-automation-id='randomID8'
                             className="blis-button--gold blis-button--right"
-                            disabled={false}
                             onClick={this.entityOnClick}
                             ariaDescription='Entity'
                             text='Entity'

@@ -33,8 +33,6 @@ class UIError extends React.Component<Props, any> {
                 {message}
                 <div className='blis-modal_footer'>
                     <CommandButton
-                        data-automation-id='randomID2'
-                        disabled={false}
                         onClick={this.handleClose.bind(this)}
                         className='blis-button--gold'
                         ariaDescription='Ok'
