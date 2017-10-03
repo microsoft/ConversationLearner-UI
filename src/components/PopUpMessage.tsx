@@ -13,12 +13,12 @@ const PopUpMessage: React.SFC<Props> = (props: Props) => {
         <Modal
             isOpen={props.open}
             isBlocking={false}
-            containerClassName='createModal'
+            containerClassName='blis-modal blis-modal--small blis-modal--border'
         >
-            <div className='modalHeader'>
+            <div className='blis-modal_header'>
                 <span className='ms-font-xl ms-fontWeight-semilight'>{props.title}</span>
             </div>
-            <div className='modalFooter'>
+            <div className='blis-modal_footer'>
                 <CommandButton
                     disabled={false}
                     onClick={() => props.onConfirm()}

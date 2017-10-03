@@ -136,9 +136,9 @@ class BLISAppCreator extends React.Component<Props, ComponentState> {
                     isOpen={this.state.isCreateAppModalOpen}
                     onDismiss={() => this.onDismissCreateNewApp()}
                     isBlocking={false}
-                    containerClassName='createModal'
+                    containerClassName='blis-modal blis-modal--small blis-modal--border'
                 >
-                    <div className='modalHeader'>
+                    <div className='blis-modal_header'>
                         <span className='ms-font-xxl ms-fontWeight-semilight'>Create a BLIS App</span>
                     </div>
                     <div>
@@ -163,7 +163,7 @@ class BLISAppCreator extends React.Component<Props, ComponentState> {
                             onChanged={this.localeChanged.bind(this)}
                         />
                     </div>
-                    <div className='modalFooter'>
+                    <div className='blis-modal_footer'>
                         <CommandButton
                             data-automation-id='randomID2'
                             disabled={!this.state.appNameVal || !this.state.luisKeyVal}

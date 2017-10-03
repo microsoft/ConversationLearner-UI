@@ -66,7 +66,7 @@ let columns: IRenderableColumn[] = [
         isResizable: true,
         render: renderableAction => renderableAction.arguments
             ? <List items={renderableAction.arguments} onRenderCell={item => <span className='ms-ListItem-primaryText'>{item}</span>} />
-            : <span className="ms-Icon ms-Icon--Remove ms-Icon--Action"></span>
+            : <span className="ms-Icon ms-Icon--Remove blis-action-icon"></span>
     },
     {
         key: 'score',
@@ -415,9 +415,9 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
         }
 
         return (
-            <div className="log-dialog-admin ms-font-l">
-                <div className="log-dialog-admin__title">Entity Detection</div>
-                <div className="log-dialog-admin__content">
+            <div className="blis-log-dialog-admin ms-font-l">
+                <div className="blis-log-dialog-admin__title">Entity Detection</div>
+                <div className="blis-log-dialog-admin__content">
                     {round
                         ? <div>
                             <ExtractorResponseEditor
@@ -436,15 +436,15 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
                         : <span>Click on text from the dialog to the left to view how the bot interpretted the conversation.  You can then make corrections to the bots behavior.</span>
                     }
                 </div>
-                <div className="log-dialog-admin__title">Memory</div>
-                <div className="log-dialog-admin__content">
+                <div className="blis-log-dialog-admin__title">Memory</div>
+                <div className="blis-log-dialog-admin__content">
                     {filledEntities.length !== 0 && filledEntities.map(entity => <div key={entity.entityName}>{entity.entityName}</div>)}
                 </div>
-                <div className="log-dialog-admin__title">Action</div>
-                <div className="log-dialog-admin__content">
+                <div className="blis-log-dialog-admin__title">Action</div>
+                <div className="blis-log-dialog-admin__content">
                     {action && <div>
                         <div>Action the bot chose:</div>
-                        <div className="log-dialog-admin__chosen-action">
+                        <div className="blis-log-dialog-admin__chosen-action">
                             {action.payload}
                         </div>
                         <div>Alternate actions available to choose:</div>
@@ -456,7 +456,7 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
                         />
                     </div>}
                 </div>
-                <div className="log-dialog-admin__dialogs">
+                <div className="blis-log-dialog-admin__dialogs">
                     <Dialog
                         hidden={this.state.isSaveConfirmationDialogHidden}
                         onDismiss={() => this.onDismisSaveConfirmation()}

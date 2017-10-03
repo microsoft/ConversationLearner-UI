@@ -239,11 +239,11 @@ class TeachSessionScorer extends React.Component<Props, ComponentState> {
         let items = [];
         for (let entityId of action.requiredEntities) {
             let found = this.entityInMemory(entityId);
-            items.push({ name: found.name, type: found.match ? "entityMatch" : "entityMismatch", neg: false });
+            items.push({ name: found.name, type: found.match ? "blis-entity blis-entity--match" : "blis-entity--mismatch", neg: false });
         }
         for (let entityId of action.negativeEntities) {
             let found = this.entityInMemory(entityId);
-            items.push({ name: found.name, type: found.match ? "entityMismatch" : "entityMatch", neg: true });
+            items.push({ name: found.name, type: found.match ? "blis-entity blis-entity--mismatch" : "blis-entity blis-entity--match", neg: true });
         }
         return (
             <List

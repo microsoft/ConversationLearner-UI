@@ -47,9 +47,9 @@ class TrainDialogAdmin extends React.Component<Props, any> {
         }
 
         return (
-            <div className="log-dialog-admin ms-font-l">
-                <div className="log-dialog-admin__title">Entity Detection</div>
-                <div className="log-dialog-admin__content">
+            <div className="blis-log-dialog-admin ms-font-l">
+                <div className="blis-log-dialog-admin__title">Entity Detection</div>
+                <div className="blis-log-dialog-admin__content">
                     {round
                         ? round.extractorStep.textVariations.map((textVariaion, i) =>
                             <ExtractorResponseEditor
@@ -64,12 +64,12 @@ class TrainDialogAdmin extends React.Component<Props, any> {
                             />)
                         : "Select an activity"}
                 </div>
-                <div className="log-dialog-admin__title">Memory</div>
-                <div className="log-dialog-admin__content">
+                <div className="blis-log-dialog-admin__title">Memory</div>
+                <div className="blis-log-dialog-admin__content">
                     {entities.length !== 0 && entities.map(entity => <div key={entity.entityName}>{entity.entityName}</div>)}
                 </div>
-                <div className="log-dialog-admin__title">Action</div>
-                <div className="log-dialog-admin__content">
+                <div className="blis-log-dialog-admin__title">Action</div>
+                <div className="blis-log-dialog-admin__content">
                     {action && action.payload}
                 </div>
             </div>

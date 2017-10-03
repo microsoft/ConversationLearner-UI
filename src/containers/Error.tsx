@@ -23,15 +23,15 @@ class UIError extends React.Component<Props, any> {
                 isOpen={this.props.error.error != null}
                 onDismiss={this.handleClose.bind(this)}
                 isBlocking={false}
-                containerClassName='createModal'
+                containerClassName='blis-modal blis-modal--small blis-modal--border'
             >
-                <div className='modalHeader'>
+                <div className='blis-modal_header'>
                     <span className='ms-font-xxl ms-fontWeight-semilight'>Error</span>
                 </div>
                 <div className='ms-font-l ms-fontWeight-semilight'>{this.props.error.route} Failed</div>
                 <div className='ms-font-m ms-fontWeight-semilight'>{this.props.error.error}</div>
                 {message}
-                <div className='modalFooter'>
+                <div className='blis-modal_footer'>
                     <CommandButton
                         data-automation-id='randomID2'
                         disabled={false}

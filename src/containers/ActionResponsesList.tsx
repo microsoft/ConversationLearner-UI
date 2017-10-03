@@ -177,9 +177,9 @@ class ActionResponsesHomepage extends React.Component<Props, ComponentState> {
         switch (column.key) {
             case 'wait':
                 if (fieldContent == true) {
-                    return <span className="ms-Icon ms-Icon--CheckMark checkIcon" aria-hidden="true"></span>;
+                    return <span className="ms-Icon ms-Icon--CheckMark blis-icon" aria-hidden="true"></span>;
                 } else {
-                    return <span className="ms-Icon ms-Icon--Remove notFoundIcon" aria-hidden="true"></span>;
+                    return <span className="ms-Icon ms-Icon--Remove blis-icon" aria-hidden="true"></span>;
                 }
             case 'actionType':
                 return <span className='ms-font-m-plus'>{fieldContent.actionType}</span>;
@@ -187,13 +187,13 @@ class ActionResponsesHomepage extends React.Component<Props, ComponentState> {
                 if (fieldContent.length > 0) {
                     return this.renderEntityList(fieldContent)
                 } else {
-                    return <span className="ms-Icon ms-Icon--Remove notFoundIcon" aria-hidden="true"></span>;
+                    return <span className="ms-Icon ms-Icon--Remove blis-icon" aria-hidden="true"></span>;
                 }
             case 'negativeEntities':
                 if (fieldContent.length > 0) {
                     return this.renderEntityList(fieldContent)
                 } else {
-                    return <span className="ms-Icon ms-Icon--Remove notFoundIcon" aria-hidden="true"></span>;
+                    return <span className="ms-Icon ms-Icon--Remove blis-icon" aria-hidden="true"></span>;
                 }
             case 'suggestedEntity':
                 if (fieldContent != null) {
@@ -205,7 +205,7 @@ class ActionResponsesHomepage extends React.Component<Props, ComponentState> {
                         </div>
                     )
                 } else {
-                    return <span className="ms-Icon ms-Icon--Remove notFoundIcon" aria-hidden="true"></span>;
+                    return <span className="ms-Icon ms-Icon--Remove blis-icon" aria-hidden="true"></span>;
                 }
             case 'payload':
                 fieldContent = ModelUtils.GetPrimaryPayload(item);

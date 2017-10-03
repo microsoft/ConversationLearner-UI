@@ -821,9 +821,9 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
                     isOpen={this.props.open}
                     onDismiss={this.cancelOnClick}
                     isBlocking={false}
-                    containerClassName='createModal'
+                    containerClassName='blis-modal blis-modal--small blis-modal--border'
                 >
-                    <div className='modalHeader'>
+                    <div className='blis-modal_header'>
                         <span className='ms-font-xxl ms-fontWeight-semilight'>{title}</span>
                     </div>
                     <div>
@@ -894,7 +894,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
                             disabled={this.state.editing}
                         />
                     </div>
-                    <div className="modalFooter">
+                    <div className="blis-modal_footer">
                         <CommandButton
                             data-automation-id='randomID6'
                             disabled={createDisabled}

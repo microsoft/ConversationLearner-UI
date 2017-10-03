@@ -12,6 +12,12 @@
     padding: 0.5rem 0;
     color: grey;
 }
+.blis-nav_section:last-of-type {
+    border-bottom: 1px solid lightgrey;
+}
+.blis-nav_section * {
+    color: grey !important;
+}
 .blis-nav_section *:hover {
     color: lightgrey !important;
     cursor: pointer !important;

@@ -131,9 +131,9 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                 <Modal
                     isOpen={this.props.open}
                     isBlocking={false}
-                    containerClassName='createModal'
+                    containerClassName='blis-modal blis-modal--small blis-modal--border'
                 >
-                    <div className='modalHeader'>
+                    <div className='blis-modal_header'>
                         <span className='ms-font-xxl ms-fontWeight-semilight'>{title}</span>
                     </div>
                     <div>
@@ -164,7 +164,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                             style={{ marginTop: "1em", display: "inline-block" }}
                         />
                     </div>
-                    <div className='modalFooter'>
+                    <div className='blis-modal_footer'>
                         <CommandButton
                             data-automation-id='randomID2'
                             disabled={!this.state.entityNameVal}

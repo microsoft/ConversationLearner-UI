@@ -1,86 +1,3 @@
-/*
-  PRIMARY: #004b50
-  SECONDARY: #ffb900
-  TERTIARY: #
-*/
-
-.app{
-  width: 100%;
-  height: 100%;
-}
-.header{
-   height: 8%;
-   width: 100%;
-   background-color: #004b50;
-}
-.headerTitleDiv{
-  height: 100%;
-  width: 50%;
-  display: inline-block;
-}
-.headerListDiv{
-  height: 100%;
-  width: 44%;
-  margin-left: 5%;
-  display: inline-block;
-}
-.headerLink{
-  text-decoration: none;
-  color: white;
-  position: relative;
-  float: left;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-.headerElementDiv{
-  height: 100%;
-  display: inline-block;
-  text-align: center;
-  vertical-align: middle;
-  width:17%;
-}
-.selectedHeaderElementDiv{
-  height: 100%;
-  display: inline-block;
-  text-align: center;
-  vertical-align: middle;
-  width:17%;
-  background-color: #ffb900 !important;
-}
-.selectedHeaderElementDiv *{
-  color:black !important;
-}
-.headerTitle{
-  height: 100%;
-  display: inline-block;
-  text-align: center;
-  vertical-align: middle;
-  width: 13%;
-  margin-left: 60%;
-}
-.headerElementDiv:hover, .headerTitle:hover{ 
-    background-color: #ffb900;
-}
-.headerElementDiv:hover *{ 
-    color: black;
-}
-.headerTitle:hover *{ 
-    color: black;
-}
-.dummyContent *{
-  position: relative;
-  float: left;
-  top: 30%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  color: #004b50;
-}
-.content{
-  margin-left: 5%;
-  margin-top: 2%;
-}
-
 .blis-button--gold:hover {
   border: 1px solid #004b50;
 }
@@ -117,28 +34,7 @@
   height: 1px;
   opacity: 0.0;
 }
-.trainingGroundArena{
-  width: 80%;
-  margin-left: 5%;
-  display: inline-block;
-  vertical-align: top;
-}
-.trainingGroundNavigationArea{
-  width: 14%;
-  display: inline-block;
-  vertical-align: top;
-}
-.orangeButton:hover {
-  border: 1px solid #a80000;
-}
-.orangeButton{
-  background-color: #ea4300 !important;
-  color: black !important;
-  padding: 0em 2em !important;
-}
-.orangeButton *{
-  color: black !important;
-}
+
 .blis-action {
   border: none;
   background: none;
@@ -146,102 +42,22 @@
   margin: 0;
   cursor: ponter;
 }
-.tgNavDiv{
-  border-top: 1px solid lightgrey;
-  border-bottom: 1px solid lightgrey;
-  height: 13.5em;
-}
-.trainingGroundNav *{
-  color: gray !important;
-  margin-left: -.1em !important;
-}
-.trainingGroundNav *:hover{
-  color: lightgrey !important;
-}
-.tgSettingsDiv{
-  border-top: 1px solid lightgrey;
-  margin-top: 1em;
-  color: gray;
-  padding: .5em 0em;
-}
-.backToApps{
-  color: gray !important;
-  text-decoration: none;
-  margin-top: 1.2em;
-  font-size: 14px !important;
-}
-.backToAppsIcon{
-  text-decoration: none;
-  color:gray;
-  font-size: 14px;
-}
-.tgbackToAppsDiv *:hover, .tgSettingsDiv *:hover {
-  color: lightgrey !important;
-  cursor: pointer !important;
-}
 
-.checkIcon{
+.blis-icon.ms-Icon--CheckMark{
   color: green;
   font-size: 20px;
 }
-.notFoundIcon{
+.blis-icon.ms-Icon--Remove{
   color: lightgrey;
   font-size: 18px
 }
-.modalHeader{
-  display: block;
-  text-align: center;
-  padding: 1em;
-}
-.modalFooter{
-  margin-top: 1.5em;
-}
-.createModal{
-  border: 2px solid #004b50;
-  width: 40%;
-  padding: 1em;
-  position: relative
-}
-.spinnerBox
-{
-    width: 500px;
-    height: 500px;
-    background-color: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    position: relative
-}
-.container{
-  height: 100%;
-}
-.emulatorDisplay{
-  background: #323232;
-  border: 2px solid #ffb900;
-  height: 99.5%;
-  margin-top: -2.2%;
-  width:80.7%;
-  margin-left: 5%;
-  display: inline-block;
-  vertical-align: top;
-}
-.webchatContainer *{
-  position: relative;
-  float: left;
-  top: 30%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-.fluidCont{
-  height: 91.5%;
-}
+
+
 .ms-Icon--Delete:hover, .ms-Icon--Edit:hover{
   cursor: pointer;
 }
-.emulatorContent{
-  margin-left: 5%;
-  margin-top: 2%;
-  height: 100%;
-}
+
+
 .blis-font--emphasis 
 {
   font-weight: bold;
@@ -251,96 +67,24 @@
 {
   text-decoration: line-through;
 }
-.entityMatch
-{
-    flex-shrink: 1;
-    background: #e0ffe0;
-    margin: 1px;
-    display: inline-block;
-    -ms-flex-wrap: nowrap;
-    flex-wrap: nowrap;
-    padding: 4px;
-    text-align: center;
-}
-.entityMismatch
-{
-    flex-shrink: 1;
-    background: #ffe0e0;
-    margin: 1px;
-    display: inline-block;
-    -ms-flex-wrap: nowrap;
-    flex-wrap: nowrap;
-    padding: 4px;
-    text-align: center;
-}
 
-.goldText{
-  color: #ffb900
+.wc-chatview-panel:focus {
+  outline: 0;
 }
-.actionSelect{
-  color: #ffb900;
-  font-size: 24px;
-}
-.actionUnavailable{
-  color: #cc0000;
-  font-size: 24px;
-}
-.saveAppChangesButtonsDiv{
-  width: 100%;
-  display: block;
-  margin-top: 1em;
-}
-
 .wc-disable{
   width: 100%;
   height: 100%;
   opacity: 0.09;
   background-color: #000000;
 }
-.toggleTrainDialog{
-  background-color: #323232 !important;
-  padding: 0em 2em !important;
-  display: block !important;
-  margin-top: 20em;
-}
-.toggleTrainDialogForward{
-  height: 99.8%;
-  border-left: 1px solid #ffb900;
-  display: inline-block;
-  vertical-align: top;
-}
-.toggleTrainDialogBack{
-  border-right: 1px solid #ffb900;
-  height: 99.8%;
-  display: inline-block;
-  vertical-align: top;
-}
-.toggleTrainDialog *{
-  color: #ffb900 !important;
-}
-.textFieldInlineButtonDiv{
-  display: block;
-}
+
 .textFieldWithButton{
   display: inline-block;
   width: 85%;
 }
 .buttonWithTextField{
-  display: inline-block;
   float: right;
   margin-top: -.1em
-}
-.webchat, .sessionAdmin{
-  display: inline-block;
-  vertical-align: top;
-  padding: 0px;
-}
-.sessionAdmin{
-  width: 67%;
-}
-.teachBody{
-  width: 100%;
-  height: 92%;
 }
 
 .teachVariation{
@@ -366,12 +110,7 @@
   font-style: italic;
   margin: 10px 10px 10px 20px;
 }
-.teachAuto
-{
-  color: #ffffff;
-  margin: 30px 20px 20px 20px !important;
-  float: right;
-}
+
 .teachAutoMask
 {
   width: 100%;
@@ -382,27 +121,7 @@
   z-index: 1000;
   visibility: visible !important
 }
-.fakeInputDiv{
-  display: inline-block;
-  vertical-align: top;
-  float: right;
-}
-.fakeInputDiv *{
-  margin-left: 1em;
-  display: inline-block;
-  vertical-align: top;
-}
-.fakeInputText *{
-  width: 25em !important;
-}
-.teachSessionFullMode{
-  width: 100%;
-  height: 100%;
-}
-.teachSessionHalfMode{
-  width: 49.5%;
-  height: 100%;
-}
+
 .teachTitleBox{
   display: inline-block;
   margin-top: 15px;
@@ -457,12 +176,40 @@
 }
 
 /** New CSS using BEM to eventually replace above */
+
+/** Modals */
 .blis-modal--large {
   width: 90%;
   height: 90%;
 }
+.blis-modal--small{
+  width: 40%;
+  /* TODO: Remove padding here, it should be the content inside that decides padding, otherwise all modals should have padding */
+  padding: 1em;
+}
+.blis-modal--border {
+  border: 2px solid #004b50;
+}
 
-/** Modals */
+.blis-modal_header {
+  display: block;
+  text-align: center;
+  padding: 1em;
+}
+.blis-modal_footer{
+  margin-top: 1.5em;
+}
+
+.blis-spinner
+{
+    width: 500px;
+    height: 500px;
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    position: relative
+}
+
 .blis-chatmodal {
   height: 100%;
   display: grid;
@@ -507,33 +254,33 @@
 }
 
 /** Log Dialog Admin */
-.log-dialog-admin {
+.blis-log-dialog-admin {
   display: grid;
   grid-gap: 1rem;
 }
-.log-dialog-admin__title {
+.blis-log-dialog-admin__title {
   font-weight: bold;
   border-bottom: 1px solid black;
 }
-.log-dialog-admin__content {
+.blis-log-dialog-admin__content {
   padding-bottom: 1em;
 }
-.log-dialog-admin__chosen-action {
+.blis-log-dialog-admin__chosen-action {
   padding: 1em 0;
   font-weight: bold
 }
 
 /** Scorer Classes */
-.ms-Icon--Action {
+.blis-action-icon {
   font-size: 24px;
 }
-.ms-Icon--Action.ms-Icon--ChromeClose {
+.blis-action-icon.ms-Icon--ChromeClose {
   color: #cc0000;
 }
-.ms-Icon--Action.ms-Icon--CompletedSolid {
+.blis-action-icon.ms-Icon--CompletedSolid {
   color: #ffb900;
 }
-.ms-Icon--Action.ms-Icon--Remove {
+.blis-action-icon.ms-Icon--Remove {
     color: lightgrey;
     font-size: 18px
 }
