@@ -51,7 +51,7 @@ class BLISAppsHomepage extends React.Component<Props, ComponentState> {
 
     render() {
         return (
-            <div className="fluidCont">
+            <div>
                 {this.props.display.displayMode === DisplayMode.AppAdmin && this.state.selectedApp !== null
                     ? <AppAdmin
                         app={this.state.selectedApp}

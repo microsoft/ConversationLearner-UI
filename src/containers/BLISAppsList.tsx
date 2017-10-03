@@ -157,7 +157,7 @@ class BLISAppsList extends React.Component<Props, ComponentState> {
     render() {
         let apps = this.getSortedApplications();
         return (
-            <div className='content'>
+            <div>
                 <span className="ms-font-su myAppsHeaderContentBlock">My Apps</span>
                 <span className="ms-font-m-plus myAppsHeaderContentBlock">Create and Manage your BLIS applications...</span>
                 <DetailsList
