@@ -3,9 +3,9 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { UserInput } from 'blis-models'
 import { State } from '../types';
-import { TextFieldPlaceholder } from './TextFieldPlaceholder';
 import { returntypeof } from 'react-redux-typescript';
 import { runExtractorAsync } from '../actions/teachActions';
+import { TextField } from 'office-ui-fabric-react';
 
 const initState = {
     variationValue: '',
@@ -40,7 +40,7 @@ class ExtractorTextVariationCreator extends React.Component<Props, ComponentStat
         return (
             <div className='teachVariationBox'>
                 <div className='teachAddVariation'>
-                    <TextFieldPlaceholder
+                    <TextField
                         value={this.state.variationValue}
                         onChanged={this.textChanged}
                         placeholder="Add alternative input..."

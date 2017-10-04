@@ -5,8 +5,7 @@ import { editActionAsync } from '../actions/updateActions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
-import { CommandButton, Dropdown, TagPicker, Label, Checkbox, List } from 'office-ui-fabric-react';
-import { TextFieldPlaceholder } from './TextFieldPlaceholder';
+import { CommandButton, Dropdown, TagPicker, TextField, Label, Checkbox, List } from 'office-ui-fabric-react';
 import { ActionBase, ActionMetaData, ActionTypes, EntityBase, ModelUtils } from 'blis-models'
 import { State } from '../types';
 import EntityCreatorEditor from './EntityCreatorEditor';
@@ -780,7 +779,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
                     />
                 )
             payloadTextField = (
-                <TextFieldPlaceholder
+                <TextField
                     id={"actionArguements"}
                     key="0"
                     onChanged={this.payloadChanged}
@@ -795,7 +794,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
                 />)
         } else {
             payloadTextField = (
-                <TextFieldPlaceholder
+                <TextField
                     id={"actionPayload"}
                     key='1'
                     onGetErrorMessage={this.payloadCheck}
