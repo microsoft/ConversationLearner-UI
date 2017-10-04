@@ -139,8 +139,8 @@ class TeachSessionExtractor extends React.Component<Props, ComponentState> {
                     <CommandButton
                         onClick={this.onClickDoneExtracting}
                         className='ms-font-su blis-button--gold'
-                        ariaDescription='Score Actions'
-                        text='Score Actions'
+                        ariaDescription={this.props.extractButtonName}
+                        text={this.props.extractButtonName}
                         ref="doneExtractingButton"
                     />
 
@@ -218,6 +218,7 @@ export interface ReceivedProps {
     autoTeach: boolean
     teachMode: TeachMode
     extractResponses: ExtractResponse[],
+    extractButtonName: string,
     onTextVariationsExtracted: (extractResponse: ExtractResponse, textVariations: TextVariation[]) => void
 }
 

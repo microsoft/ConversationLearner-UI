@@ -36,6 +36,7 @@ class TeachSessionAdmin extends React.Component<Props, {}> {
                 autoTeach = {this.props.teachSession.autoTeach}
                 teachMode = {this.props.teachSession.mode}
                 extractResponses = {this.props.teachSession.extractResponses}
+                extractButtonName = "Score Actions"
                 onTextVariationsExtracted = {this.onTextVariationsExtracted}
             />
         )
