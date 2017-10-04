@@ -80,11 +80,10 @@
 
 .textFieldWithButton{
   display: inline-block;
-  width: 85%;
+  width: 80%;
 }
 .buttonWithTextField{
   float: right;
-  margin-top: -.1em
 }
 
 .teachVariation{
