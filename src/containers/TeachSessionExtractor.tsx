@@ -4,8 +4,7 @@ import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../types'
-import { UIScoreInput, PredictedEntity, LabeledEntity, ExtractResponse, TrainExtractorStep, TextVariation } from 'blis-models'
-import { runScorerAsync } from '../actions/teachActions';
+import { PredictedEntity, LabeledEntity, ExtractResponse, TextVariation } from 'blis-models'
 import { CommandButton } from 'office-ui-fabric-react';
 import ExtractorTextVariationCreator from './ExtractorTextVariationCreator';
 import ExtractorResponseEditor from './ExtractorResponseEditor';
@@ -27,16 +26,16 @@ class TeachSessionExtractor extends React.Component<Props, ComponentState> {
             popUpOpen: false
         }
         this.entityButtonOnClick = this.entityButtonOnClick.bind(this);
-        this.scoreButtonOnClick = this.scoreButtonOnClick.bind(this);
+        this.onClickDoneExtracting = this.onClickDoneExtracting.bind(this);
         this.entityEditorHandleClose = this.entityEditorHandleClose.bind(this);
     }
     componentDidMount() {
-        findDOMNode<HTMLButtonElement>(this.refs.scoreActions).focus();
+        findDOMNode<HTMLButtonElement>(this.refs.doneExtractingButton).focus();
     }
     componentDidUpdate() {
         // If not in interactive mode run scorer automatically
         if (this.props.autoTeach && this.props.teachMode == TeachMode.Extractor) {
-            this.scoreButtonOnClick();
+            this.onClickDoneExtracting();
         }
     }
     entityEditorHandleClose() {
@@ -100,7 +99,7 @@ class TeachSessionExtractor extends React.Component<Props, ComponentState> {
         }
         return labeledEntities;
     }
-    scoreButtonOnClick() {
+    onClickDoneExtracting() {
         if (!this.allValid()) {
             this.handleOpenPopUpModal();
             return;
@@ -110,16 +109,8 @@ class TeachSessionExtractor extends React.Component<Props, ComponentState> {
         for (let extractResponse of this.props.extractResponses) {
             let labeledEntities = this.toLabeledEntities(extractResponse.predictedEntities);
             textVariations.push(new TextVariation({ text: extractResponse.text, labelEntities: labeledEntities }));
-        }
-        let trainExtractorStep = new TrainExtractorStep({
-            textVariations: textVariations
-        });
-
-        let uiScoreInput = new UIScoreInput({ trainExtractorStep: trainExtractorStep, extractResponse: this.props.extractResponses[0] });
-
-        let appId = this.props.apps.current.appId;
-        let teachId = this.props.teachSessionId;
-        this.props.runScorerAsync(this.props.user.key, appId, teachId, uiScoreInput);
+        }     
+        this.props.onTextVariationsExtracted(this.props.extractResponses[0], textVariations);
     }
     render() {
         if (!this.props.extractResponses[0]) {
@@ -146,11 +137,11 @@ class TeachSessionExtractor extends React.Component<Props, ComponentState> {
             editComponents =
                 <div>
                     <CommandButton
-                        onClick={this.scoreButtonOnClick}
+                        onClick={this.onClickDoneExtracting}
                         className='ms-font-su blis-button--gold'
                         ariaDescription='Score Actions'
                         text='Score Actions'
-                        ref="scoreActions"
+                        ref="doneExtractingButton"
                     />
 
                     <EntityCreatorEditor
@@ -211,8 +202,7 @@ class TeachSessionExtractor extends React.Component<Props, ComponentState> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         updateExtractResponse,
-        removeExtractResponse,
-        runScorerAsync
+        removeExtractResponse
     }, dispatch);
 }
 const mapStateToProps = (state: State, ownProps: any) => {
@@ -227,7 +217,8 @@ export interface ReceivedProps {
     teachSessionId: string,
     autoTeach: boolean
     teachMode: TeachMode
-    extractResponses: ExtractResponse[]
+    extractResponses: ExtractResponse[],
+    onTextVariationsExtracted: (extractResponse: ExtractResponse, textVariations: TextVariation[]) => void
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps

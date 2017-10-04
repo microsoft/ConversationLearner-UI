@@ -4,12 +4,31 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../types'
 import { TeachMode } from '../types/const';
-import { BlisAppBase } from 'blis-models'
+import { runScorerAsync } from '../actions/teachActions';
+import { BlisAppBase, TextVariation, ExtractResponse, TrainExtractorStep, UIScoreInput } from 'blis-models'
 import TeachSessionScorer from './TeachSessionScorer';
 import TeachSessionExtractor from './TeachSessionExtractor';
 import TeachSessionMemory from './TeachSessionMemory';
 
 class TeachSessionAdmin extends React.Component<Props, {}> {
+
+    constructor(p: Props) {
+        super(p)
+        this.onTextVariationsExtracted = this.onTextVariationsExtracted.bind(this)
+    }
+
+    onTextVariationsExtracted(extractResponse: ExtractResponse, textVariations:TextVariation[]) : void {
+        let trainExtractorStep = new TrainExtractorStep({
+            textVariations: textVariations
+        });
+
+        let uiScoreInput = new UIScoreInput({ trainExtractorStep: trainExtractorStep, extractResponse: extractResponse });
+
+        let appId = this.props.app.appId;
+        let teachId = this.props.teachSession.current.teachId;
+        this.props.runScorerAsync(this.props.user.key, appId, teachId, uiScoreInput);
+
+    }
     renderTeachSessionExtractor() : JSX.Element {
         return (
             <TeachSessionExtractor 
@@ -17,6 +36,7 @@ class TeachSessionAdmin extends React.Component<Props, {}> {
                 autoTeach = {this.props.teachSession.autoTeach}
                 teachMode = {this.props.teachSession.mode}
                 extractResponses = {this.props.teachSession.extractResponses}
+                onTextVariationsExtracted = {this.onTextVariationsExtracted}
             />
         )
     }
@@ -69,6 +89,7 @@ class TeachSessionAdmin extends React.Component<Props, {}> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
+        runScorerAsync
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {
