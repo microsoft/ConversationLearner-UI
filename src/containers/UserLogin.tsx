@@ -3,8 +3,7 @@ import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
-import { CommandButton } from 'office-ui-fabric-react';
-import { TextFieldPlaceholder } from './TextFieldPlaceholder';
+import { CommandButton, TextField } from 'office-ui-fabric-react';
 import { setUser, logout, setLoginDisplay } from '../actions/displayActions'
 import { State } from '../types';
 
@@ -84,14 +83,14 @@ class UserLogin extends React.Component<Props, ComponentState> {
             title = "Log In";
             input =
                 <div>
-                    <TextFieldPlaceholder
+                    <TextField
                         onKeyDown={this.checkForEnter}
                         onChanged={this.nameChanged}
                         label="Name"
                         placeholder="User Name..."
                         value={this.state.userName}
                     />
-                    <TextFieldPlaceholder
+                    <TextField
                         onKeyDown={this.checkForEnter}
                         onChanged={this.passwordChanged}
                         type="Password"

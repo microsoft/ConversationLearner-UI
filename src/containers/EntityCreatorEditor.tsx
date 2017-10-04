@@ -5,8 +5,7 @@ import { editEntityAsync } from '../actions/updateActions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
-import { CommandButton, IDropdownOption, Dropdown, DropdownMenuItemType, Checkbox } from 'office-ui-fabric-react';
-import { TextFieldPlaceholder } from './TextFieldPlaceholder';
+import { CommandButton, IDropdownOption, Dropdown, DropdownMenuItemType, Checkbox, TextField } from 'office-ui-fabric-react';
 import { State, PreBuiltEntities } from '../types';
 import { EntityBase, EntityMetaData, EntityType } from 'blis-models'
 
@@ -149,7 +148,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                         <span className='ms-font-xxl ms-fontWeight-semilight'>{title}</span>
                     </div>
                     <div>
-                        <TextFieldPlaceholder
+                        <TextField
                             onGetErrorMessage={this.checkIfBlank}
                             onChanged={this.nameChanged}
                             onKeyDown={this.nameKeyDown}

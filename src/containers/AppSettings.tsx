@@ -5,7 +5,6 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../types';
 import { CommandButton, PrimaryButton, TextField, Dropdown, Label, List } from 'office-ui-fabric-react';
-import { TextFieldPlaceholder } from './TextFieldPlaceholder';
 import { BlisAppBase, BlisAppMetaData } from 'blis-models'
 import './AppSettings.css'
 
@@ -110,7 +109,7 @@ class AppSettings extends React.Component<Props, ComponentState> {
     onRenderBotListRow(item?: any, index?: number) {
         return (
             <div>
-                <TextField className="ms-font-m-plus blis-settings-textfield--partialwidth" disabled={true} value={item} />
+                <TextField className="ms-font-m-plus" disabled={true} value={item} />
             </div>
         )
     }
@@ -209,7 +208,7 @@ class AppSettings extends React.Component<Props, ComponentState> {
                             onRenderCell={this.onRenderBotListRow}
                         />
                         <div className="blis-settings-textfieldwithbutton">
-                            <TextFieldPlaceholder
+                            <TextField
                                 className="ms-font-m-plus"
                                 onChanged={(text) => this.botIdChanged(text)}
                                 placeholder="Application ID"

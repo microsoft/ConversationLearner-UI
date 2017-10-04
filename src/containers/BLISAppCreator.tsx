@@ -5,8 +5,7 @@ import { createBLISApplicationAsync } from '../actions/createActions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
-import { CommandButton, Dropdown } from 'office-ui-fabric-react';
-import { TextFieldPlaceholder } from './TextFieldPlaceholder';
+import { CommandButton, Dropdown, TextField } from 'office-ui-fabric-react';
 import { emptyStateProperties } from '../actions/displayActions'
 import { BlisAppBase, BlisAppMetaData } from 'blis-models'
 import { developmentSubKeyLUIS } from '../secrets'
@@ -153,14 +152,14 @@ class BLISAppCreator extends React.Component<Props, ComponentState> {
                         <span className='ms-font-xxl ms-fontWeight-semilight'>Create a BLIS App</span>
                     </div>
                     <div>
-                        <TextFieldPlaceholder
+                        <TextField
                             onGetErrorMessage={value => this.checkIfBlank(value)}
                             onChanged={text => this.nameChanged(text)}
                             label="Name"
                             placeholder="Application Name..."
                             onKeyDown={key => this.onKeyDown(key)}
                             value={this.state.appNameVal} />
-                        <TextFieldPlaceholder
+                        <TextField
                             onGetErrorMessage={this.checkIfBlank}
                             onChanged={this.luisKeyChanged}
                             label="LUIS Key"
