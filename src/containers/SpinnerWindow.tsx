@@ -33,4 +33,4 @@ const mapStateToProps = (state: State) => {
 const stateProps = returntypeof(mapStateToProps);
 type Props = typeof stateProps;
 
-export default connect(mapStateToProps, null)(SpinnerWindow);
+export default connect<typeof stateProps, {}, {}>(mapStateToProps, null)(SpinnerWindow);

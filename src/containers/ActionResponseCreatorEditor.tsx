@@ -940,15 +940,16 @@ const mapStateToProps = (state: State, ownProps: any) => {
     }
 }
 
-interface ReceiveProps {
+export interface ReceiveProps {
     open: boolean,
     blisAction: ActionBase | null,
-    handleClose: Function,
-    handleOpenDeleteModal: Function
+    handleClose: (action: ActionBase) => void,
+    handleOpenDeleteModal: (actionId: string) => void
 }
+
 // Props types inferred from mapStateToProps & dispatchToProps
 const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
 type Props = typeof stateProps & typeof dispatchProps & ReceiveProps;
 
-export default connect(mapStateToProps, mapDispatchToProps)(ActionResponseCreatorEditor as React.ComponentClass<any>)
+export default connect<typeof stateProps, typeof dispatchProps, ReceiveProps>(mapStateToProps, mapDispatchToProps)(ActionResponseCreatorEditor)
