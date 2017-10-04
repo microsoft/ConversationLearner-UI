@@ -165,6 +165,7 @@ class BLISAppCreator extends React.Component<Props, ComponentState> {
                             onChanged={this.luisKeyChanged}
                             label="LUIS Key"
                             placeholder="Key..."
+                            type="password"
                             onKeyDown={this.onKeyDown}
                             value={this.state.luisKeyVal} />
                         <Dropdown
