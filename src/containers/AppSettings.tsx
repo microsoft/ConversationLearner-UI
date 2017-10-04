@@ -4,7 +4,7 @@ import { editBLISApplicationAsync } from '../actions/updateActions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../types';
-import { CommandButton, TextField, Dropdown, Label, List } from 'office-ui-fabric-react';
+import { CommandButton, PrimaryButton, TextField, Dropdown, Label, List } from 'office-ui-fabric-react';
 import { TextFieldPlaceholder } from './TextFieldPlaceholder';
 import { BlisAppBase, BlisAppMetaData } from 'blis-models'
 
@@ -24,12 +24,15 @@ interface ComponentState {
     luisKeyVal: string
     edited: boolean
     botFrameworkAppsVal: any[],
-    newBotVal: string
+    newBotVal: string,
+    isPasswordVisible: boolean,
+    passwordShowHideText: string
 }
 
 class AppSettings extends React.Component<Props, ComponentState> {
-    constructor(p: any) {
-        super(p);
+    constructor(p: Props) {
+        super(p)
+
         this.state = {
             localeVal: '',
             appIdVal: '',
@@ -37,12 +40,16 @@ class AppSettings extends React.Component<Props, ComponentState> {
             luisKeyVal: '',
             edited: false,
             botFrameworkAppsVal: [],
-            newBotVal: ""
+            newBotVal: "",
+            isPasswordVisible: false,
+            passwordShowHideText: 'Show'
         }
+
         this.luisKeyChanged = this.luisKeyChanged.bind(this)
         this.botIdChanged = this.botIdChanged.bind(this)
         this.appNameChanged = this.appNameChanged.bind(this)
         this.onRenderBotListRow = this.onRenderBotListRow.bind(this)
+        this.onClickShowPassword = this.onClickShowPassword.bind(this)
         this.botAdded = this.botAdded.bind(this)
         this.editApp = this.editApp.bind(this)
         this.discardChanges = this.discardChanges.bind(this)
@@ -140,6 +147,14 @@ class AppSettings extends React.Component<Props, ComponentState> {
             newBotVal: ""
         })
     }
+
+    onClickShowPassword() {
+        this.setState((prevState: ComponentState) => ({
+            isPasswordVisible: !prevState.isPasswordVisible,
+            passwordShowHideText: !prevState.isPasswordVisible ? 'Show' : 'Hide'
+        }))
+    }
+
     render() {
         let options = [{
             key: this.state.localeVal,
@@ -151,9 +166,34 @@ class AppSettings extends React.Component<Props, ComponentState> {
                 <span className="ms-font-xxl">Settings</span>
                 <span className="ms-font-m-plus">Control your application versions, who has access to it and whether it is public or private....</span>
                 <div>
-                    <TextField className="ms-font-m-plus" onChanged={(text) => this.appNameChanged(text)} label="Name" value={this.state.appNameVal} />
-                    <TextField className="ms-font-m-plus" disabled={true} label="App ID" value={this.state.appIdVal} />
-                    <TextField className="ms-font-m-plus" onChanged={(text) => this.luisKeyChanged(text)} label="LUIS Key" value={this.state.luisKeyVal} />
+                    <TextField
+                        className="ms-font-m-plus"
+                        onChanged={(text) => this.appNameChanged(text)}
+                        label="Name"
+                        value={this.state.appNameVal}
+                    />
+                    <TextField
+                        className="ms-font-m-plus"
+                        disabled={true}
+                        label="App ID"
+                        value={this.state.appIdVal}
+                    />
+                    <Label className="ms-font-m-plus">LUIS Key</Label>
+                    <div>
+                        <TextField
+                            id="luis-key"
+                            className="ms-font-m-plus textFieldWithButton"
+                            onChanged={(text) => this.luisKeyChanged(text)}
+                            type={this.state.isPasswordVisible ? "text" : "password"}
+                            value={this.state.luisKeyVal}
+                        />
+                        <PrimaryButton
+                            onClick={this.onClickShowPassword}
+                            className='blis-button--gold buttonWithTextField'
+                            ariaDescription={this.state.passwordShowHideText}
+                            text={this.state.passwordShowHideText}
+                        />
+                    </div>
                     <Label className="ms-font-m-plus">Locale</Label>
                     <Dropdown
                         className="ms-font-m-plus"
@@ -174,7 +214,7 @@ class AppSettings extends React.Component<Props, ComponentState> {
                                 placeholder="Application ID"
                                 value={this.state.newBotVal}
                             />
-                            <CommandButton
+                            <PrimaryButton
                                 onClick={this.botAdded}
                                 className='blis-button--gold buttonWithTextField'
                                 ariaDescription='Add'

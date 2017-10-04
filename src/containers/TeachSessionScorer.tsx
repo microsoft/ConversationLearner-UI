@@ -87,7 +87,7 @@ interface ComponentState {
 }
 
 class TeachSessionScorer extends React.Component<Props, ComponentState> {
-    constructor(p: any) {
+    constructor(p: Props) {
         super(p);
         this.state = initState;
         this.handleActionSelection = this.handleActionSelection.bind(this);
@@ -96,6 +96,7 @@ class TeachSessionScorer extends React.Component<Props, ComponentState> {
         this.handleCloseActionModal = this.handleCloseActionModal.bind(this)
         this.renderItemColumn = this.renderItemColumn.bind(this)
         this.onColumnClick = this.onColumnClick.bind(this)
+        this.onClickOpenDeleteActionResponse = this.onClickOpenDeleteActionResponse.bind(this)
     }
     componentDidUpdate() {
         this.autoSelect();
@@ -373,6 +374,11 @@ class TeachSessionScorer extends React.Component<Props, ComponentState> {
 
         return filteredScores;
     }
+
+    onClickOpenDeleteActionResponse(actionId: string) {
+        console.log(`Not Implemented: onClickOpenDeleteActionResponse(${actionId})`)
+    }
+
     render() {
         let scores = this.renderScores();
         if (!scores) {
@@ -417,6 +423,7 @@ class TeachSessionScorer extends React.Component<Props, ComponentState> {
                     open={this.state.actionModalOpen}
                     blisAction={null}
                     handleClose={this.handleCloseActionModal}
+                    handleOpenDeleteModal={this.onClickOpenDeleteActionResponse}
                 />
             </div>
         )

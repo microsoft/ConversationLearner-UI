@@ -9,7 +9,7 @@ import TeachSessionScorer from './TeachSessionScorer';
 import TeachSessionExtractor from './TeachSessionExtractor';
 import TeachSessionMemory from './TeachSessionMemory';
 
-class TeachSessionAdmin extends React.Component<Props, any> {
+class TeachSessionAdmin extends React.Component<Props, {}> {
     renderTeachSessionExtractor() : JSX.Element {
         return (
             <TeachSessionExtractor 

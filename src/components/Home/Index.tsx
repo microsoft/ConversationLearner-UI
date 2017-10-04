@@ -33,7 +33,7 @@ let columns: IRenderableColumn[] = [
         minWidth: 100,
         maxWidth: 200,
         isResizable: true,
-        render: app => <span className='ms-font-m-plus'>{app.luisKey}</span>
+        render: app => <span className='ms-font-m-plus'>{app.luisKey.substr(0, 4) + '*'.repeat(app.luisKey.substring(4).length)}</span>
     },
     {
         key: 'locale',
@@ -52,7 +52,7 @@ let columns: IRenderableColumn[] = [
     },
 ];
 
-class component extends React.Component<Props, any> {
+class component extends React.Component<Props, {}> {
     onClickCreateApp() {
         var randomNumber = Math.floor(Math.random() * 10000)
         console.log('create app', randomNumber)

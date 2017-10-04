@@ -7,7 +7,7 @@ import { CommandButton } from 'office-ui-fabric-react';
 import { clearErrorDisplay } from '../actions/displayActions'
 import { State } from '../types'
 
-class UIError extends React.Component<Props, any> {
+class UIError extends React.Component<Props, {}> {
     constructor(p: any) {
         super(p);
 
@@ -60,4 +60,4 @@ const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
 type Props = typeof stateProps & typeof dispatchProps;
 
-export default connect(mapStateToProps, mapDispatchToProps)(UIError);
+export default connect<typeof stateProps, typeof dispatchProps, {}>(mapStateToProps, mapDispatchToProps)(UIError);

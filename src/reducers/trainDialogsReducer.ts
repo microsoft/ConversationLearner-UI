@@ -17,30 +17,6 @@ const trainDialogsReducer: Reducer<TrainDialogState> = (state = initialState, ac
             return { ...state, all: [] };
         case AT.CREATE_TRAIN_DIALOG_FULFILLED:
             return { ...state, all: [...state.all, action.trainDialog] };
-        // case AT.TOGGLE_TRAIN_DIALOG:
-        //     let index: number = 0;
-        //     for (let i = 0; i < state.all.length; i++) {
-        //         if (state.all[i].trainDialogId == state.current.trainDialogId) {
-        //             index = i
-        //         }
-        //     }
-        //     if (index == 0) {
-        //         if (action.forward === false) {
-        //             return { ...state, current: state.all[state.all.length - 1] }
-        //         }
-        //     }
-        //     if (index == state.all.length - 1) {
-        //         if (action.forward === true) {
-        //             return { ...state, current: state.all[0] }
-        //         }
-        //     }
-        //     let newState: TrainDialogState;
-        //     if (action.forward === true) {
-        //         newState = { ...state, current: state.all[index + 1] }
-        //     } else {
-        //         newState = { ...state, current: state.all[index - 1] }
-        //     }
-        //     return newState;
         case AT.DELETE_TRAIN_DIALOG_FULFILLED:
             return { ...state, all: state.all.filter(dialog => dialog.trainDialogId !== action.trainDialogGUID) };
         /* TODO
