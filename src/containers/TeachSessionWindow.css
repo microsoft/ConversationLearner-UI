@@ -1,0 +1,59 @@
+.wc-disable{
+    width: 100%;
+    height: 100%;
+    opacity: 0.09;
+    background-color: #000000;
+}
+
+.teachVariation{
+    overflow: hidden;
+}
+
+.teachDeleteVariation {
+    font-size: 18px;
+    float: right;
+    position: relative;
+    margin-left: 3px;
+}
+
+.teachAddVariation{
+    overflow: hidden;
+    opacity: 0.7;
+}
+
+.teachEmptyMemory
+{
+    font-style: italic;
+    margin: 10px 10px 10px 20px;
+}
+
+.teachAutoMask
+{
+    width: 100%;
+    height: 100%;
+    opacity: 0.19;
+    background-color: #000000;
+    position: absolute;
+    z-index: 1000;
+    visibility: visible !important
+}
+
+.teachTitleBox{
+    display: inline-block;
+    margin-top: 15px;
+    font-weight: bold;
+    border-width: 0px 0px 1px 0px;
+    border-color: #333333;
+    border-style: solid;
+    width: 100%
+}
+
+.teachTitle{
+    float: left;
+    font-weight: bold;
+}
+
+.teachCreateButton { 
+    float: right;
+    height: 30px !important;
+}
