@@ -7,7 +7,7 @@ import { CommandButton } from 'office-ui-fabric-react';
 import { clearErrorDisplay } from '../actions/displayActions'
 import { State } from '../types'
 
-class UIError extends React.Component<Props, any> {
+class UIError extends React.Component<Props, {}> {
     constructor(p: any) {
         super(p);
 
