@@ -42,8 +42,10 @@ class TrainDialogAdmin extends React.Component<Props, any> {
             const result = this.findRoundAndScorerStep(this.props.trainDialog, this.props.selectedActivity)
             round = result.round
             scorerStep = result.scorerStep
-            action = this.props.actions.find(action => action.actionId == scorerStep.labelAction)
-            entities = this.props.entities.filter(entity => scorerStep.input.filledEntities.includes(entity.entityId))
+            if (scorerStep != null) {
+                action = this.props.actions.find(action => action.actionId == scorerStep.labelAction)
+                entities = this.props.entities.filter(entity => scorerStep.input.filledEntities.includes(entity.entityId))
+            }
         }
 
         return (
