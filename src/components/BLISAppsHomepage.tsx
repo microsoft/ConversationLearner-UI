@@ -10,8 +10,8 @@ import { connect } from 'react-redux';
 import { State } from '../types'
 import { DisplayMode } from '../types/const'
 import { BlisAppBase } from 'blis-models'
-import '../components/Home/App.css'
-import '../components/Home/Index.css'
+import '../components/HomeApp.css'
+import '../components/HomeIndex.css'
 
 interface ComponentState {
     displayedUserId: string
