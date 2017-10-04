@@ -67,12 +67,6 @@ export type DisplayAction = {
 } | {
     type: AT.CLEAR_ERROR_DISPLAY
 } | {
-    type: AT.TOGGLE_TRAIN_DIALOG,
-    forward: boolean
-} | {
-    type: AT.TOGGLE_LOG_DIALOG,
-    forward: boolean
-} | {
     type: AT.UPDATE_OPERATION_FULFILLED
 } | {
     type: AT.SET_USER,

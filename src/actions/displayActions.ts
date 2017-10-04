@@ -26,20 +26,6 @@ export const emptyStateProperties = () : ActionObject => {
     }
 }
 
-export const toggleTrainDialog = (forward: boolean) => {
-    return {
-        type: AT.TOGGLE_TRAIN_DIALOG,
-        forward: forward
-    }
-}
-
-export const toggleLogDialog = (forward: boolean) => {
-    return {
-        type: AT.TOGGLE_LOG_DIALOG,
-        forward: forward
-    }
-}
-
 export const setDisplayMode = (displayMode: DisplayMode) : ActionObject => { 
     return {
         type: AT.SET_DISPLAY_MODE,
