@@ -10,6 +10,16 @@ import TeachSessionExtractor from './TeachSessionExtractor';
 import TeachSessionMemory from './TeachSessionMemory';
 
 class TeachSessionAdmin extends React.Component<Props, {}> {
+    renderTeachSessionExtractor() : JSX.Element {
+        return (
+            <TeachSessionExtractor 
+                teachSessionId = {this.props.teachSession.current.teachId}
+                autoTeach = {this.props.teachSession.autoTeach}
+                teachMode = {this.props.teachSession.mode}
+                extractResponses = {this.props.teachSession.extractResponses}
+            />
+        )
+    }
     render() {
         let userWindow = null;
         switch (this.props.teachSession.mode) {
@@ -17,7 +27,7 @@ class TeachSessionAdmin extends React.Component<Props, {}> {
                 userWindow = (
                     <div>
                         <TeachSessionMemory />
-                        <TeachSessionExtractor />
+                        {this.renderTeachSessionExtractor()}
                     </div>
                 )
                 break;
@@ -25,7 +35,7 @@ class TeachSessionAdmin extends React.Component<Props, {}> {
                 userWindow = (
                     <div>
                         <TeachSessionMemory />
-                        <TeachSessionExtractor />
+                        {this.renderTeachSessionExtractor()}
                         <TeachSessionScorer />
                     </div>
                 )
@@ -36,7 +46,7 @@ class TeachSessionAdmin extends React.Component<Props, {}> {
                     userWindow = (
                         <div>
                             <TeachSessionMemory />
-                            <TeachSessionExtractor />
+                            {this.renderTeachSessionExtractor()}
                             <TeachSessionScorer />
                         </div>
                     )
