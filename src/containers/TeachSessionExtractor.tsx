@@ -4,7 +4,7 @@ import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../types'
-import { UIScoreInput, ExtractResponse, TrainExtractorStep, TextVariation } from 'blis-models'
+import { UIScoreInput, PredictedEntity, LabeledEntity, ExtractResponse, TrainExtractorStep, TextVariation } from 'blis-models'
 import { runScorerAsync } from '../actions/teachActions';
 import { CommandButton } from 'office-ui-fabric-react';
 import ExtractorTextVariationCreator from './ExtractorTextVariationCreator';
@@ -35,7 +35,7 @@ class TeachSessionExtractor extends React.Component<Props, ComponentState> {
     }
     componentDidUpdate() {
         // If not in interactive mode run scorer automatically
-        if (this.props.teachSession.autoTeach && this.props.teachSession.mode == TeachMode.Extractor) {
+        if (this.props.autoTeach && this.props.teachMode == TeachMode.Extractor) {
             this.scoreButtonOnClick();
         }
     }
@@ -61,7 +61,7 @@ class TeachSessionExtractor extends React.Component<Props, ComponentState> {
     }
     /** Returns true is predicted entities match */
     isValid(extractResponse: ExtractResponse): boolean {
-        let primaryResponse = this.props.teachSession.extractResponses[0] as ExtractResponse;
+        let primaryResponse = this.props.extractResponses[0] as ExtractResponse;
         let missing = primaryResponse.predictedEntities.filter(item =>
             !extractResponse.predictedEntities.find(er => item.entityName == er.entityName));
 
@@ -76,14 +76,29 @@ class TeachSessionExtractor extends React.Component<Props, ComponentState> {
         return true;
     }
     allValid(): boolean {
-        for (let extractResponse of this.props.teachSession.extractResponses) {
-            if (extractResponse != this.props.teachSession.extractResponses[0]) {
+        for (let extractResponse of this.props.extractResponses) {
+            if (extractResponse != this.props.extractResponses[0]) {
                 if (!this.isValid(extractResponse)) {
                     return false;
                 }
             }
         }
         return true;
+    }
+    toLabeledEntities(predictedEntities : PredictedEntity[]) : LabeledEntity[] {
+        let labeledEntities : LabeledEntity[] = [];
+        for (let predictedEntity of predictedEntities)
+        {
+            let labelEntity = new LabeledEntity({
+                startCharIndex: predictedEntity.startCharIndex,
+                endCharIndex: predictedEntity.endCharIndex,
+                entityId: predictedEntity.entityId,
+                entityName: predictedEntity.entityName,
+                entityText: predictedEntity.entityText
+            });
+            labeledEntities.push(labelEntity);
+        }
+        return labeledEntities;
     }
     scoreButtonOnClick() {
         if (!this.allValid()) {
@@ -92,26 +107,27 @@ class TeachSessionExtractor extends React.Component<Props, ComponentState> {
         }
 
         let textVariations: TextVariation[] = [];
-        for (let extractResponse of this.props.teachSession.extractResponses) {
-            textVariations.push(new TextVariation({ text: extractResponse.text, labelEntities: extractResponse.predictedEntities }));
+        for (let extractResponse of this.props.extractResponses) {
+            let labeledEntities = this.toLabeledEntities(extractResponse.predictedEntities);
+            textVariations.push(new TextVariation({ text: extractResponse.text, labelEntities: labeledEntities }));
         }
         let trainExtractorStep = new TrainExtractorStep({
             textVariations: textVariations
         });
 
-        let uiScoreInput = new UIScoreInput({ trainExtractorStep: trainExtractorStep, extractResponse: this.props.teachSession.extractResponses[0] });
+        let uiScoreInput = new UIScoreInput({ trainExtractorStep: trainExtractorStep, extractResponse: this.props.extractResponses[0] });
 
         let appId = this.props.apps.current.appId;
-        let teachId = this.props.teachSession.current.teachId;
+        let teachId = this.props.teachSessionId;
         this.props.runScorerAsync(this.props.user.key, appId, teachId, uiScoreInput);
     }
     render() {
-        if (!this.props.teachSession.extractResponses[0]) {
+        if (!this.props.extractResponses[0]) {
             return null;
         }
 
         // Don't show edit components when in auto TACH or on score step
-        let canEdit = (!this.props.teachSession.autoTeach && this.props.teachSession.mode == TeachMode.Extractor);
+        let canEdit = (!this.props.autoTeach && this.props.teachMode == TeachMode.Extractor);
 
         let variationCreator = null;
         let addEntity = null;
@@ -145,9 +161,9 @@ class TeachSessionExtractor extends React.Component<Props, ComponentState> {
 
             let key = 0;
             extractDisplay = [];
-            for (let extractResponse of this.props.teachSession.extractResponses) {
+            for (let extractResponse of this.props.extractResponses) {
                 let isValid = true;
-                if (extractResponse != this.props.teachSession.extractResponses[0]) {
+                if (extractResponse != this.props.extractResponses[0]) {
                     isValid = this.isValid(extractResponse);
                 }
 
@@ -164,7 +180,7 @@ class TeachSessionExtractor extends React.Component<Props, ComponentState> {
         }
         else {
             // Only display primary response if not in edit mode
-            const extractResponse = this.props.teachSession.extractResponses[0]
+            const extractResponse = this.props.extractResponses[0]
             extractDisplay = <ExtractorResponseEditor
                 canEdit={canEdit}
                 key={0}
@@ -202,14 +218,21 @@ const mapDispatchToProps = (dispatch: any) => {
 const mapStateToProps = (state: State, ownProps: any) => {
     return {
         user: state.user,
-        teachSession: state.teachSessions,
         apps: state.apps,
         entities: state.entities
     }
 }
+
+export interface ReceivedProps {
+    teachSessionId: string,
+    autoTeach: boolean
+    teachMode: TeachMode
+    extractResponses: ExtractResponse[]
+}
+
 // Props types inferred from mapStateToProps & dispatchToProps
 const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
-type Props = typeof stateProps & typeof dispatchProps;
+type Props = typeof stateProps & typeof dispatchProps & ReceivedProps;
 
-export default connect<typeof stateProps, typeof dispatchProps, {}>(mapStateToProps, mapDispatchToProps)(TeachSessionExtractor as React.ComponentClass<any>);
+export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(TeachSessionExtractor);

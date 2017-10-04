@@ -10,3 +10,209 @@ html {
     height: 100%;
     width: 100%;
 }
+
+.blis-button--gold:hover {
+  border: 1px solid #004b50;
+}
+.blis-button--gold:focus {
+  border: 1px solid #004b50;
+}
+.blis-button--gold{
+  background-color: #ffb900 !important;
+  color: black !important;
+  padding: 0em 2em !important;
+}
+.blis-button--gold *{
+  color: black !important;
+}
+.blis-button--right {
+  float: right;
+}
+.blis-button--widemargin {
+  margin: 20px;
+}
+.blis-button--gray:hover,
+.blis-button--gray:focus {
+  border: 1px solid #004b50;
+}
+.blis-button--gray{
+  background-color: lightgrey !important;
+  color:black !important;
+  padding: 0em 2em !important;
+}
+.blis-button--hidden {
+  width: 1px;
+  height: 1px;
+  opacity: 0.0;
+}
+
+.blis-action {
+  border: none;
+  background: none;
+  padding: 0.3em 0.2em 0.2em 0.2em;
+  margin: 0;
+  cursor: ponter;
+}
+
+.blis-icon.ms-Icon--CheckMark{
+  color: green;
+  font-size: 20px;
+}
+.blis-icon.ms-Icon--Remove{
+  color: lightgrey;
+  font-size: 18px
+}
+
+
+.ms-Icon--Delete:hover, .ms-Icon--Edit:hover{
+  cursor: pointer;
+}
+
+
+.blis-font--emphasis 
+{
+  font-weight: bold;
+  color: #000000;
+}
+.blis-font--deleted
+{
+  text-decoration: line-through;
+}
+
+/* botframework-webchat component override */
+.wc-chatview-panel:focus {
+  outline: 0;
+}
+
+/** New CSS using BEM to eventually replace above */
+
+/** Modals */
+.blis-modal--large {
+  width: 90%;
+  height: 90%;
+}
+.blis-modal--small{
+  width: 40%;
+  /* TODO: Remove padding here, it should be the content inside that decides padding, otherwise all modals should have padding */
+  padding: 1em;
+}
+.blis-modal--border {
+  border: 2px solid #004b50;
+}
+
+.blis-modal_header {
+  display: block;
+  text-align: center;
+  padding: 1em;
+}
+.blis-modal_footer{
+  margin-top: 1.5em;
+}
+
+.blis-spinner
+{
+    width: 500px;
+    height: 500px;
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    position: relative
+}
+
+.blis-chatmodal {
+  height: 100%;
+  display: grid;
+  grid-template-columns: 400px 1fr;
+}
+.blis-chatmodal_webchat {
+  position: relative;
+}
+.blis-chatmodal_controls {
+  border-left: 1px solid var(--color-botchat-grey);
+  display: grid;
+  grid-template-rows: 1fr min-content;
+}
+.blis-chatmodal_admin-controls {
+  padding: 1em;
+}
+.blis-chatmodal_modal-controls{
+  background-color: var(--color-secondary);
+  display: grid;
+  grid-auto-flow: column;
+  grid-gap: 1em;
+  grid-auto-columns: min-content;
+  padding: 0.635em;
+  justify-content: space-between;
+  white-space: nowrap;
+}
+
+
+/** Office UI Fabric Theme Overrides */
+.ms-List-cell {
+  min-height: 0px !important;
+}
+.ms-Button {
+}
+/** TODO: Remove usage of !important */
+.ms-Button--primary:not(:disabled) {
+  background-color: var(--color-primary) !important;
+  color: black !important;
+}
+.ms-Button--primary:not(:disabled):hover {
+  background-color: var(--color-primary-darker) !important;
+}
+
+/** Log Dialog Admin */
+.blis-log-dialog-admin {
+  display: grid;
+  grid-gap: 1rem;
+}
+.blis-log-dialog-admin__title {
+  font-weight: bold;
+  border-bottom: 1px solid black;
+}
+.blis-log-dialog-admin__content {
+  padding-bottom: 1em;
+}
+.blis-log-dialog-admin__chosen-action {
+  padding: 1em 0;
+  font-weight: bold
+}
+
+/** Scorer Classes */
+.blis-action-icon {
+  font-size: 24px;
+}
+.blis-action-icon.ms-Icon--ChromeClose {
+  color: #cc0000;
+}
+.blis-action-icon.ms-Icon--CompletedSolid {
+  color: #ffb900;
+}
+.blis-action-icon.ms-Icon--Remove {
+    color: lightgrey;
+    font-size: 18px
+}
+
+.table-cell {
+  font-family: Segoe UI WestEuropean,Segoe UI,-apple-system,BlinkMacSystemFont,Roboto,Helvetica Neue,sans-serif;
+  -webkit-font-smoothing: antialiased;
+  font-weight: 400;
+  font-size: 15px;
+}
+
+.blis-entity {
+  flex-shrink: 1;
+  margin: 1px;
+  display: inline-block;
+  -ms-flex-wrap: nowrap;
+  flex-wrap: nowrap;
+  padding: 4px;
+  text-align: center;
+}
+.blis-entity--match {
+  background: #e0ffe0;
+}
+.blis-entity--mismatch {
+  background: #ffe0e0;
+}

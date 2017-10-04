@@ -6,6 +6,7 @@ import { connect } from 'react-redux';
 import { State } from '../types';
 import { CommandButton, PrimaryButton, TextField, Dropdown, Label, List } from 'office-ui-fabric-react';
 import { BlisAppBase, BlisAppMetaData } from 'blis-models'
+import './AppSettings.css'
 
 const styles = {
     shown: {
@@ -108,7 +109,7 @@ class AppSettings extends React.Component<Props, ComponentState> {
     onRenderBotListRow(item?: any, index?: number) {
         return (
             <div>
-                <TextField className="ms-font-m-plus textFieldWithButton" disabled={true} value={item} />
+                <TextField className="ms-font-m-plus" disabled={true} value={item} />
             </div>
         )
     }
@@ -178,17 +179,17 @@ class AppSettings extends React.Component<Props, ComponentState> {
                         value={this.state.appIdVal}
                     />
                     <Label className="ms-font-m-plus">LUIS Key</Label>
-                    <div>
+                    <div className="blis-settings-textfieldwithbutton">
                         <TextField
                             id="luis-key"
-                            className="ms-font-m-plus textFieldWithButton"
+                            className="ms-font-m-plus"
                             onChanged={(text) => this.luisKeyChanged(text)}
                             type={this.state.isPasswordVisible ? "text" : "password"}
                             value={this.state.luisKeyVal}
                         />
                         <PrimaryButton
                             onClick={this.onClickShowPassword}
-                            className='blis-button--gold buttonWithTextField'
+                            className='blis-button--gold'
                             ariaDescription={this.state.passwordShowHideText}
                             text={this.state.passwordShowHideText}
                         />
@@ -206,16 +207,16 @@ class AppSettings extends React.Component<Props, ComponentState> {
                             items={this.state.botFrameworkAppsVal}
                             onRenderCell={this.onRenderBotListRow}
                         />
-                        <div>
+                        <div className="blis-settings-textfieldwithbutton">
                             <TextField
-                                className="ms-font-m-plus textFieldWithButton"
+                                className="ms-font-m-plus"
                                 onChanged={(text) => this.botIdChanged(text)}
                                 placeholder="Application ID"
                                 value={this.state.newBotVal}
                             />
                             <PrimaryButton
                                 onClick={this.botAdded}
-                                className='blis-button--gold buttonWithTextField'
+                                className='blis-button--gold'
                                 ariaDescription='Add'
                                 text='Add'
                             />

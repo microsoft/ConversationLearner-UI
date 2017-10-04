@@ -32,7 +32,7 @@ let columns: ISortableRenderableColumn[] = [
         maxWidth: 300,
         isResizable: true,
         getSortValue: app => app.luisKey,
-        render: app => <span className='ms-font-m-plus'>{app.luisKey}</span>
+        render: app => <span className='ms-font-m-plus'>{app.luisKey.substr(0, 4) + '*'.repeat(app.luisKey.substring(4).length)}</span>
     },
     {
         key: 'locale',

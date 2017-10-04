@@ -5,7 +5,7 @@ import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { Spinner, SpinnerSize } from 'office-ui-fabric-react/lib/Spinner';
 import { State } from '../types'
 
-class SpinnerWindow extends React.Component<Props, any> {
+class SpinnerWindow extends React.Component<Props, {}> {
     /* Tool for debugging a stuck spinner
         <div>
             {this.props.displaySpinner.join("\n\n")}
@@ -33,4 +33,4 @@ const mapStateToProps = (state: State) => {
 const stateProps = returntypeof(mapStateToProps);
 type Props = typeof stateProps;
 
-export default connect(mapStateToProps, null)(SpinnerWindow);
+export default connect<typeof stateProps, {}, {}>(mapStateToProps, null)(SpinnerWindow);
