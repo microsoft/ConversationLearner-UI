@@ -52,7 +52,7 @@ let columns: IRenderableColumn[] = [
     },
 ];
 
-class component extends React.Component<Props, any> {
+class component extends React.Component<Props, {}> {
     onClickCreateApp() {
         var randomNumber = Math.floor(Math.random() * 10000)
         console.log('create app', randomNumber)

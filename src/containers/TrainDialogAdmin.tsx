@@ -8,7 +8,7 @@ import ExtractorResponseEditor from './ExtractorResponseEditor'
 import { Activity } from 'botframework-directlinejs'
 import { ActionBase, TrainDialog, TrainRound, TrainScorerStep, EntityBase, ExtractResponse } from 'blis-models'
 
-class TrainDialogAdmin extends React.Component<Props, any> {
+class TrainDialogAdmin extends React.Component<Props, {}> {
 
     findRoundAndScorerStep(trainDialog: TrainDialog, activity: Activity): { round: TrainRound, scorerStep: TrainScorerStep } {
         // TODO: Add roundIndex and scoreIndex to activity instead of hiding within id if these are needed as first class properties.

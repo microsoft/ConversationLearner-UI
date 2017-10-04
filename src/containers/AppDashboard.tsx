@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { State } from '../types'
 import { BlisAppBase } from 'blis-models'
 
-class AppDashboard extends React.Component<Props, any> {
+class AppDashboard extends React.Component<Props, {}> {
     render() {
         return (
             <div className="blis-page">
