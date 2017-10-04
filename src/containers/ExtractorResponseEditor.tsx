@@ -1,4 +1,5 @@
 import * as React from 'react';
+import "./ExtractorResponseEditor.css"
 import { bindActionCreators } from 'redux';
 import { returntypeof } from 'react-redux-typescript';
 import { connect } from 'react-redux';
