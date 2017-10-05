@@ -2,9 +2,10 @@ import {
     BlisAppBase,
     BotInfo,
     EntityBase,
-    ActionBase,
+    ActionBase, 
     TrainDialog, LogDialog, Session, Teach,
-    UserInput, ExtractResponse, UIExtractResponse, UITrainScorerStep,
+    UserInput, ExtractResponse, ExtractType,
+    UIExtractResponse, UITrainScorerStep,
     TeachResponse, UIScoreInput, UIScoreResponse
 } from 'blis-models'
 import { DisplayMode } from '../types/const'
@@ -290,13 +291,15 @@ export type TeachAction = {
     type: AT.RUN_EXTRACTOR_ASYNC,
     key: string,
     appId: string,
-    teachId: string,
+    extractType: ExtractType,
+    turnIndex: number,
+    sessionId: string,
     userInput: UserInput
 } | {
     type: AT.RUN_EXTRACTOR_FULFILLED,
     key: string,
     appId: string,
-    teachId: string,
+    sessionId: string,
     uiExtractResponse: UIExtractResponse
 } | {
     type: AT.UPDATE_EXTRACT_RESPONSE,
@@ -308,32 +311,32 @@ export type TeachAction = {
     type: AT.RUN_SCORER_ASYNC,
     key: string,
     appId: string,
-    teachId: string,
+    sessionId: string,
     uiScoreInput: UIScoreInput
 } | {
     type: AT.RUN_SCORER_FULFILLED,
     key: string,
     appId: string,
-    teachId: string,
+    sessionId: string,
     uiScoreResponse: UIScoreResponse
 } | {
     type: AT.POST_SCORE_FEEDBACK_ASYNC,
     key: string,
     appId: string,
-    teachId: string,
+    sessionId: string,
     uiTrainScorerStep: UITrainScorerStep,
     waitForUser: boolean
 } | {
     type: AT.POST_SCORE_FEEDBACK_FULFILLEDWAIT,
     key: string,
     appId: string,
-    teachId: string
+    sessionId: string
     teachResponse: TeachResponse
 } | {
     type: AT.POST_SCORE_FEEDBACK_FULFILLEDNOWAIT,
     key: string,
     appId: string,
-    teachId: string
+    sessionId: string
     teachResponse: TeachResponse,
     uiScoreInput: UIScoreInput
 } | {

@@ -24,16 +24,6 @@ let columns: ISortableRenderableColumn[] = [
         render: (app, component) => <span className='ms-font-m-plus'><Link onClick={() => component.onClickApp(app)}>{app.appName}</Link></span>
     },
     {
-        key: 'luisKey',
-        name: 'LUIS Key',
-        fieldName: 'luisKey',
-        minWidth: 100,
-        maxWidth: 300,
-        isResizable: true,
-        getSortValue: app => app.luisKey,
-        render: app => <span className='ms-font-m-plus'>{app.luisKey.substr(0, 4) + '*'.repeat(app.luisKey.substring(4).length)}</span>
-    },
-    {
         key: 'locale',
         name: 'Locale',
         fieldName: 'locale',

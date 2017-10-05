@@ -5,9 +5,10 @@ import { connect } from 'react-redux';
 import { State } from '../../types'
 import { TeachMode } from '../../types/const';
 import { updateExtractResponse, removeExtractResponse } from '../../actions/teachActions'
-import TeachSessionExtractor from './TeachSessionExtractor';
+import EntityExtractor from './EntityExtractor';
 import { Activity } from 'botframework-directlinejs'
-import { ActionBase, TrainDialog, TrainRound, TrainScorerStep, EntityBase, TextVariation, ExtractResponse } from 'blis-models'
+import { ActionBase, TrainDialog, TrainRound, TrainScorerStep, 
+    EntityBase, TextVariation, ExtractResponse, ExtractType } from 'blis-models'
 
 class TrainDialogAdmin extends React.Component<Props, {}> {
 
@@ -46,6 +47,9 @@ class TrainDialogAdmin extends React.Component<Props, {}> {
         this.props.runScorerAsync(this.props.user.key, appId, teachId, uiScoreInput);*/
     }
 
+    get turnIndex() : number {
+        return this.props.selectedActivity ? this.props.selectedActivity.id.split(":").map(s => parseInt(s))[0] : 0;
+    }
     render() {
         let round: TrainRound = null
         let scorerStep: TrainScorerStep = null
@@ -63,11 +67,13 @@ class TrainDialogAdmin extends React.Component<Props, {}> {
         }
 
         let extractor = round ?
-            <TeachSessionExtractor 
-                teachSessionId = {this.props.trainDialog.trainDialogId}
+            <EntityExtractor
+                appId = {this.props.appId}
+                extractType = {ExtractType.TRAINDIALOG}
+                sessionId = {this.props.trainDialog.trainDialogId}
+                turnIndex = {this.turnIndex}  
                 autoTeach = {false}
                 teachMode = {TeachMode.Extractor}
-                extractResponses = {[]}
                 textVariations = {round.extractorStep.textVariations}
                 extractButtonName = "Submit Changes"
                 onTextVariationsExtracted = {this.onTextVariationsExtracted}
@@ -100,6 +106,7 @@ const mapDispatchToProps = (dispatch: any) => {
 }
 const mapStateToProps = (state: State) => {
     return {
+        appId: state.apps.current.appId,
         actions: state.actions,
         entities: state.entities
     }

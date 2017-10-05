@@ -4,9 +4,9 @@ import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../../types'
-import { PredictedEntity, LabeledEntity, ExtractResponse, TextVariation } from 'blis-models'
+import { PredictedEntity, LabeledEntity, ExtractResponse, TextVariation, ExtractType } from 'blis-models'
 import { CommandButton } from 'office-ui-fabric-react';
-import ExtractorTextVariationCreator from '../ExtractorTextVariationCreator';
+import TextVariationCreator from '../TextVariationCreator';
 import ExtractorResponseEditor from '../ExtractorResponseEditor';
 import EntityCreatorEditor from './EntityCreatorEditor';
 import { TeachMode } from '../../types/const'
@@ -18,7 +18,7 @@ interface ComponentState {
     popUpOpen: boolean
 };
 
-class TeachSessionExtractor extends React.Component<Props, ComponentState> {
+class EntityExtractor extends React.Component<Props, ComponentState> {
     constructor(p: any) {
         super(p)
         this.state = {
@@ -61,13 +61,13 @@ class TeachSessionExtractor extends React.Component<Props, ComponentState> {
     /** Returns true is predicted entities match */
     isValid(primaryResponse: ExtractResponse, extractResponse: ExtractResponse): boolean {
         let missing = primaryResponse.predictedEntities.filter(item =>
-            !extractResponse.predictedEntities.find(er => item.entityName == er.entityName));
+            !extractResponse.predictedEntities.find(er => item.entityId == er.entityId));
 
         if (missing.length > 0) {
             return false;
         }
         missing = extractResponse.predictedEntities.filter(item =>
-            !primaryResponse.predictedEntities.find(er => item.entityName == er.entityName));
+            !primaryResponse.predictedEntities.find(er => item.entityId == er.entityId));
         if (missing.length > 0) {
             return false;
         }
@@ -129,11 +129,11 @@ class TeachSessionExtractor extends React.Component<Props, ComponentState> {
     // Return merge of extract responses and text variations
     allResponses() : ExtractResponse[] {
         let convertedVariations = this.toExtractResponses(this.props.textVariations);
-        let allResponses = [...this.props.extractResponses, ...convertedVariations];
+        let allResponses = [...convertedVariations, ...this.props.extractResponses];
         return allResponses;
     }
     onClickDoneExtracting() {
-        let allResponses = this.allResponses();;
+        let allResponses = this.allResponses();
 
         if (!this.allValid(allResponses)) {
             this.handleOpenPopUpModal();
@@ -161,7 +161,11 @@ class TeachSessionExtractor extends React.Component<Props, ComponentState> {
         let editComponents = null;
         let extractDisplay = null;
         if (canEdit) {
-            variationCreator = <ExtractorTextVariationCreator />
+            variationCreator = <TextVariationCreator
+                appId={this.props.appId}
+                sessionId={this.props.sessionId}
+                extractType={this.props.extractType}
+                turnIndex={this.props.turnIndex} />
             addEntity =
                 <CommandButton
                     className="blis-button--gold teachCreateButton"
@@ -244,16 +248,18 @@ const mapDispatchToProps = (dispatch: any) => {
 const mapStateToProps = (state: State, ownProps: any) => {
     return {
         user: state.user,
-        apps: state.apps,
-        entities: state.entities
+        entities: state.entities,
+        extractResponses: state.teachSessions.extractResponses
     }
 }
 
 export interface ReceivedProps {
-    teachSessionId: string,
+    appId: string,
+    extractType: ExtractType,
+    sessionId: string,
+    turnIndex: number,
     autoTeach: boolean
     teachMode: TeachMode
-    extractResponses: ExtractResponse[],
     textVariations: TextVariation[],
     extractButtonName: string,
     onTextVariationsExtracted: (extractResponse: ExtractResponse, textVariations: TextVariation[]) => void
@@ -264,4 +270,4 @@ const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
 type Props = typeof stateProps & typeof dispatchProps & ReceivedProps;
 
-export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(TeachSessionExtractor);
+export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(EntityExtractor);
