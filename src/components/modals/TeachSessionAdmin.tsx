@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../../types'
 import { TeachMode } from '../../types/const';
-import { runScorerAsync } from '../actions/teachActions';
+import { runScorerAsync } from '../../actions/teachActions';
 import { BlisAppBase, TextVariation, ExtractResponse, TrainExtractorStep, UIScoreInput } from 'blis-models'
 import TeachSessionScorer from './TeachSessionScorer';
 import TeachSessionExtractor from './TeachSessionExtractor';
