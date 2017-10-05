@@ -9,7 +9,7 @@ import ChatSessionWindow from '../../../components/ChatSessionWindow'
 import LogDialogModal from '../../../components/LogDialogModal'
 
 interface IRenderableColumn extends IColumn {
-    render: (x: LogDialog, component: LogDialogsList) => React.ReactNode
+    render: (x: LogDialog, component: LogDialogs) => React.ReactNode
 }
 
 const returnStringWhenError = (s: string) => {
@@ -98,7 +98,7 @@ interface ComponentState {
     searchValue: string
 }
 
-class LogDialogsList extends React.Component<Props, ComponentState> {
+class LogDialogs extends React.Component<Props, ComponentState> {
     state: ComponentState = {
         isChatSessionWindowOpen: false,
         isLogDialogWindowOpen: false,
@@ -204,4 +204,4 @@ const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
 type Props = typeof stateProps & typeof dispatchProps & ReceivedProps;
 
-export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(LogDialogsList);
+export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(LogDialogs);

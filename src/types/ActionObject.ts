@@ -51,7 +51,7 @@ export type DisplayAction = {
     type: AT.SET_CURRENT_TEACH_SESSION,
     currentTeachSession: Teach,
 } | {
-    //used for setting whether the app list or app homepage (AppAdmin) is displayed
+    //used for setting whether the app list or app homepage (Index) is displayed
     type: AT.SET_DISPLAY_MODE,
     setDisplay: DisplayMode,
 } | {

@@ -9,8 +9,8 @@ import { State } from '../../types';
 import { BlisAppBase } from 'blis-models'
 
 interface ISortableRenderableColumn extends IColumn {
-    render: (app: BlisAppBase, component: BLISAppsList) => JSX.Element
-    getSortValue: (app: BlisAppBase, component: BLISAppsList) => number | string
+    render: (app: BlisAppBase, component: AppsList) => JSX.Element
+    getSortValue: (app: BlisAppBase, component: AppsList) => number | string
 }
 
 let columns: ISortableRenderableColumn[] = [
@@ -77,7 +77,7 @@ const ifStringReturnLowerCase = (s: string | number) => {
     return (typeof s === "string") ? s.toLowerCase() : s
 }
 
-class BLISAppsList extends React.Component<Props, ComponentState> {
+class AppsList extends React.Component<Props, ComponentState> {
     state: ComponentState = {
         isConfirmDeleteAppModalOpen: false,
         appToDelete: null,
@@ -206,4 +206,4 @@ const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
 type Props = typeof stateProps & typeof dispatchProps & ReceivedProps;
 
-export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(BLISAppsList);
+export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(AppsList);

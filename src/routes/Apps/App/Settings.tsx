@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 import { State } from '../../../types';
 import { CommandButton, PrimaryButton, TextField, Dropdown, Label, List } from 'office-ui-fabric-react';
 import { BlisAppBase, BlisAppMetaData } from 'blis-models'
-import './AppSettings.css'
+import './Settings.css'
 
 const styles = {
     shown: {
@@ -29,7 +29,7 @@ interface ComponentState {
     passwordShowHideText: string
 }
 
-class AppSettings extends React.Component<Props, ComponentState> {
+class Settings extends React.Component<Props, ComponentState> {
     constructor(p: Props) {
         super(p)
 
@@ -262,4 +262,4 @@ const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
 type Props = typeof stateProps & typeof dispatchProps & ReceivedProps;
 
-export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(AppSettings);
+export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(Settings);

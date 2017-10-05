@@ -7,19 +7,19 @@ import { BlisAppBase } from 'blis-models'
 import { State } from '../../../types';
 import { DisplayMode } from '../../../types/const';
 import { setDisplayMode } from '../../../actions/displayActions';
-import EntitiesList from './EntitiesList'
-import TrainDialogsList from './TrainDialogsList'
-import ActionResponsesList from './ActionResponsesList'
-import AppDashboard from './AppDashboard'
-import AppSettings from './AppSettings'
-import LogDialogsList from './LogDialogsList'
+import Entities from './Entities'
+import TrainDialogs from './TrainDialogs'
+import Actions from './Actions'
+import Dashboard from './Dashboard'
+import Settings from './Settings'
+import LogDialogs from './LogDialogs'
 
 interface ComponentState {
     display: string
     selectedKey: string
 }
 
-class AppAdmin extends React.Component<Props, ComponentState> {
+class Index extends React.Component<Props, ComponentState> {
     state: ComponentState = {
         display: 'Dash',
         selectedKey: 'Dash'
@@ -28,19 +28,19 @@ class AppAdmin extends React.Component<Props, ComponentState> {
     renderChosenNavLink() {
         switch (this.state.display) {
             case "Settings":
-                return <AppSettings app={this.props.app} />
+                return <Settings app={this.props.app} />
             case "Dash":
-                return <AppDashboard app={this.props.app} />
+                return <Dashboard app={this.props.app} />
             case "Entities":
-                return <EntitiesList app={this.props.app} />
+                return <Entities app={this.props.app} />
             case "Actions":
-                return <ActionResponsesList app={this.props.app} />
+                return <Actions app={this.props.app} />
             case "TrainDialogs":
-                return <TrainDialogsList app={this.props.app} />
+                return <TrainDialogs app={this.props.app} />
             case "LogDialogs":
-                return <LogDialogsList app={this.props.app} />
+                return <LogDialogs app={this.props.app} />
             default:
-                return <AppDashboard app={this.props.app} />
+                return <Dashboard app={this.props.app} />
         }
     }
     setArenaDisplay(page: string) {
@@ -109,4 +109,4 @@ const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
 type Props = typeof stateProps & typeof dispatchProps & ReceivedProps;
 
-export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(AppAdmin);
+export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(Index);
