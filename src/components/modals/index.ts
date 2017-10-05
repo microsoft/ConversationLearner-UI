@@ -1,5 +1,5 @@
 import ActionResponseCreatorEditor from './ActionResponseCreatorEditor'
-import BLISAppCreator from './BLISAppCreator'
+import AppCreator from './AppCreator'
 import EntityCreatorEditor from './EntityCreatorEditor'
 import ConfirmDeleteModal from './ConfirmDeleteModal'
 import ChatSessionWindow from './ChatSessionWindow'
@@ -12,7 +12,7 @@ import UserLogin from './UserLogin'
 
 export {
     ActionResponseCreatorEditor,
-    BLISAppCreator,
+    AppCreator,
     EntityCreatorEditor,
     ConfirmDeleteModal,
     ChatSessionWindow,

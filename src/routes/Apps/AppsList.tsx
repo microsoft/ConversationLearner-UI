@@ -2,7 +2,7 @@ import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { BLISAppCreator, ConfirmDeleteModal } from '../../components/modals'
+import { AppCreator, ConfirmDeleteModal } from '../../components/modals'
 import { DetailsList, Link, CheckboxVisibility, IColumn } from 'office-ui-fabric-react';
 import { State } from '../../types';
 import { BlisAppBase } from 'blis-models'
@@ -173,7 +173,7 @@ class AppsList extends React.Component<Props, ComponentState> {
                     onRenderItemColumn={(app, i, column: ISortableRenderableColumn) => column.render(app, this)}
                     onColumnHeaderClick={this.onColumnClick}
                 />
-                <BLISAppCreator />
+                <AppCreator />
                 <ConfirmDeleteModal
                     open={this.state.isConfirmDeleteAppModalOpen}
                     onCancel={() => this.onCancelDeleteModal()}
