@@ -7,8 +7,7 @@ import { setCurrentTeachSession } from '../../../actions/displayActions'
 import { State } from '../../../types'
 import { BlisAppBase, TrainDialog } from 'blis-models'
 import { findDOMNode } from 'react-dom';
-import TeachSessionWindow from '../../../components/TeachSessionWindow'
-import TrainDialogWindow from '../../../components/TrainDialogWindow'
+import { TeachSessionWindow, TrainDialogWindow } from '../../../components/modals'
 
 let columns: IColumn[] = [
     {
@@ -52,7 +51,7 @@ interface ComponentState {
     searchValue: string
 }
 
-class TrainDialogsList extends React.Component<Props, ComponentState> {
+class TrainDialogs extends React.Component<Props, ComponentState> {
     state: ComponentState = {
         isTeachDialogModalOpen: false,
         isTrainDialogModalOpen: false,
@@ -236,4 +235,4 @@ const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
 type Props = typeof stateProps & typeof dispatchProps & ReceivedProps;
 
-export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(TrainDialogsList);
+export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(TrainDialogs);

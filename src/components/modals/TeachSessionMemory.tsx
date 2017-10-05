@@ -2,10 +2,10 @@ import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { State } from '../types'
+import { State } from '../../types'
 import { IColumn, DetailsList, CheckboxVisibility } from 'office-ui-fabric-react';
 import { EntityBase } from 'blis-models'
-import { TeachMode } from '../types/const';
+import { TeachMode } from '../../types/const'
 
 let columns: IColumn[] = [
     {

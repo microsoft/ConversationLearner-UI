@@ -2,11 +2,11 @@ import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { State } from '../types'
-import { DisplayMode } from '../types/const';
-import { setDisplayMode } from '../actions/displayActions'
-import { deleteChatSessionAsync } from '../actions/deleteActions'
-import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
+import { State } from '../../types'
+import { DisplayMode } from '../../types/const';
+import { setDisplayMode } from '../../actions/displayActions'
+import { deleteChatSessionAsync } from '../../actions/deleteActions'
+import ConfirmDeleteModal from './ConfirmDeleteModal'
 
 interface ComponentState {
     open: boolean

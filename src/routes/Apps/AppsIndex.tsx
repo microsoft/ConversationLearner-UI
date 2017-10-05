@@ -8,9 +8,8 @@ import { connect } from 'react-redux';
 import { State } from '../../types'
 import { DisplayMode } from '../../types/const'
 import { BlisAppBase } from 'blis-models'
-import '../../components/HomeApp.css'
+import './AppPage.css'
 import Index from './App/Index'
-import '../../components/HomeIndex.css'
 import AppsList from './AppsList'
 
 interface ComponentState {

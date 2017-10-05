@@ -3,7 +3,7 @@ import { returntypeof } from 'react-redux-typescript';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { Spinner, SpinnerSize } from 'office-ui-fabric-react/lib/Spinner';
-import { State } from '../types'
+import { State } from '../../types'
 
 class SpinnerWindow extends React.Component<Props, {}> {
     /* Tool for debugging a stuck spinner

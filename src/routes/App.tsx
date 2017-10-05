@@ -12,9 +12,7 @@ import About from './About'
 import Docs from './Docs'
 import Support from './Support'
 import NoMatch from './NoMatch'
-import UserLogin from '../components/UserLogin'
-import SpinnerWindow from '../components/SpinnerWindow'
-import UIError from '../components/Error'
+import { UserLogin, SpinnerWindow, Error } from '../components/modals'
 import './App.css'
 
 class App extends React.Component<Props, {}> {
@@ -44,7 +42,7 @@ class App extends React.Component<Props, {}> {
             </Switch>
           </div>
           <div className="blis-app_modals">
-            <UIError />
+            <Error />
             <UserLogin />
             <SpinnerWindow />
           </div>

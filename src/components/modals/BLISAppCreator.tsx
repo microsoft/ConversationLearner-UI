@@ -1,15 +1,15 @@
 import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
 import axios from 'axios';
-import { createBLISApplicationAsync } from '../actions/createActions';
+import { createBLISApplicationAsync } from '../../actions/createActions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { CommandButton, Dropdown, TextField } from 'office-ui-fabric-react';
-import { emptyStateProperties } from '../actions/displayActions'
+import { emptyStateProperties } from '../../actions/displayActions'
 import { BlisAppBase, BlisAppMetaData } from 'blis-models'
-import { developmentSubKeyLUIS } from '../secrets'
-import { State } from '../types'
+import { developmentSubKeyLUIS } from '../../secrets'
+import { State } from '../../types'
 
 type CultureObject = {
     CultureCode: string;

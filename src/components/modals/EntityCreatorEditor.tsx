@@ -1,12 +1,12 @@
 import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
-import { createEntityAsync } from '../actions/createActions';
-import { editEntityAsync } from '../actions/updateActions';
+import { createEntityAsync } from '../../actions/createActions';
+import { editEntityAsync } from '../../actions/updateActions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { CommandButton, IDropdownOption, Dropdown, DropdownMenuItemType, Checkbox, TextField } from 'office-ui-fabric-react';
-import { State, PreBuiltEntities } from '../types';
+import { State, PreBuiltEntities } from '../../types';
 import { EntityBase, EntityMetaData, EntityType } from 'blis-models'
 
 const initState: ComponentState = {

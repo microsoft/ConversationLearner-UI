@@ -1,15 +1,15 @@
 import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
-import { createActionAsync } from '../actions/createActions';
-import { editActionAsync } from '../actions/updateActions';
+import { createActionAsync } from '../../actions/createActions';
+import { editActionAsync } from '../../actions/updateActions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { CommandButton, Dropdown, TagPicker, TextField, Label, Checkbox, List } from 'office-ui-fabric-react';
 import { ActionBase, ActionMetaData, ActionTypes, EntityBase, ModelUtils } from 'blis-models'
-import { State } from '../types';
+import { State } from '../../types';
 import EntityCreatorEditor from './EntityCreatorEditor';
-import AutocompleteListItem from '../components/AutocompleteListItem';
+import AutocompleteListItem from '../../components/AutocompleteListItem';
 
 interface EntityPickerObject {
     key: string

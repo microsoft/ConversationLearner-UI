@@ -4,8 +4,8 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { CommandButton, TextField } from 'office-ui-fabric-react';
-import { setUser, logout, setLoginDisplay } from '../actions/displayActions'
-import { State } from '../types';
+import { setUser, logout, setLoginDisplay } from '../../actions/displayActions'
+import { State } from '../../types';
 
 // type CultureObject = {
 //     CultureCode: string;

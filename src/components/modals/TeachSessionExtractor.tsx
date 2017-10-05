@@ -3,15 +3,15 @@ import { findDOMNode } from 'react-dom';
 import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { State } from '../types'
+import { State } from '../../types'
 import { PredictedEntity, LabeledEntity, ExtractResponse, TextVariation } from 'blis-models'
 import { CommandButton } from 'office-ui-fabric-react';
-import ExtractorTextVariationCreator from './ExtractorTextVariationCreator';
-import ExtractorResponseEditor from './ExtractorResponseEditor';
+import ExtractorTextVariationCreator from '../ExtractorTextVariationCreator';
+import ExtractorResponseEditor from '../ExtractorResponseEditor';
 import EntityCreatorEditor from './EntityCreatorEditor';
-import { TeachMode } from '../types/const'
-import PopUpMessage from '../components/PopUpMessage';
-import { updateExtractResponse, removeExtractResponse } from '../actions/teachActions'
+import { TeachMode } from '../../types/const'
+import PopUpMessage from '../PopUpMessage';
+import { updateExtractResponse, removeExtractResponse } from '../../actions/teachActions'
 
 interface ComponentState {
     entityModalOpen: boolean,
