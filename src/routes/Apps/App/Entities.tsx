@@ -65,7 +65,7 @@ interface ComponentState {
     sortColumn: IColumn
 }
 
-class EntitiesList extends React.Component<Props, ComponentState> {
+class Entities extends React.Component<Props, ComponentState> {
     state: ComponentState = {
         searchValue: '',
         confirmDeleteEntityModalOpen: false,
@@ -325,4 +325,4 @@ const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
 type Props = typeof stateProps & typeof dispatchProps & ReceivedProps;
 
-export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(EntitiesList);
+export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(Entities);

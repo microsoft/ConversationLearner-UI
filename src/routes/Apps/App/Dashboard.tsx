@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { State } from '../../../types'
 import { BlisAppBase } from 'blis-models'
 
-class AppDashboard extends React.Component<Props, {}> {
+class Dashboard extends React.Component<Props, {}> {
     render() {
         return (
             <div className="blis-page">
@@ -31,4 +31,4 @@ export interface ReceivedProps {
 const stateProps = returntypeof(mapStateToProps);
 type Props = typeof stateProps & ReceivedProps;
 
-export default connect<typeof stateProps, {}, ReceivedProps>(mapStateToProps, null)(AppDashboard)
+export default connect<typeof stateProps, {}, ReceivedProps>(mapStateToProps, null)(Dashboard)

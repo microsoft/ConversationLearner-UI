@@ -7,7 +7,7 @@ import { setLoginDisplay } from '../actions/displayActions'
 import { connect } from 'react-redux'
 import { State } from '../types'
 import { bindActionCreators } from 'redux'
-import BLISAppsHomepage from './Apps/BLISAppsHomepage'
+import Index from './Apps/AppsIndex'
 import About from './About'
 import Docs from './Docs'
 import Support from './Support'
@@ -36,7 +36,7 @@ class App extends React.Component<Props, {}> {
           <div className="blis-app_content">
             <Switch>
               <Route exact path="/" render={() => <Redirect to="/home" />} />
-              <Route path="/home" component={BLISAppsHomepage} />
+              <Route path="/home" component={Index} />
               <Route path="/about" component={About} />
               <Route path="/docs" component={Docs} />
               <Route path="/support" component={Support} />

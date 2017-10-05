@@ -9,16 +9,16 @@ import { State } from '../../types'
 import { DisplayMode } from '../../types/const'
 import { BlisAppBase } from 'blis-models'
 import '../../components/HomeApp.css'
-import AppAdmin from './App/AppAdmin'
+import Index from './App/Index'
 import '../../components/HomeIndex.css'
-import BLISAppsList from './BLISAppsList'
+import AppsList from './AppsList'
 
 interface ComponentState {
     displayedUserId: string
     selectedApp: BlisAppBase | null
 }
 
-class BLISAppsHomepage extends React.Component<Props, ComponentState> {
+class AppsIndex extends React.Component<Props, ComponentState> {
     state: ComponentState = {
         displayedUserId: null,
         selectedApp: null
@@ -54,10 +54,10 @@ class BLISAppsHomepage extends React.Component<Props, ComponentState> {
     render() {
         return (
             this.props.display.displayMode === DisplayMode.AppAdmin && this.state.selectedApp !== null
-                ? <AppAdmin
+                ? <Index
                     app={this.state.selectedApp}
                 />
-                : <BLISAppsList
+                : <AppsList
                     onSelectedAppChanged={app => this.onSelectedAppChanged(app)}
                     onClickDeleteApp={app => this.onClickDeleteApp(app)}
                 />
@@ -92,4 +92,4 @@ const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
 type Props = typeof stateProps & typeof dispatchProps;
 
-export default connect<typeof stateProps, typeof dispatchProps, {}>(mapStateToProps, mapDispatchToProps)(BLISAppsHomepage);
+export default connect<typeof stateProps, typeof dispatchProps, {}>(mapStateToProps, mapDispatchToProps)(AppsIndex);
