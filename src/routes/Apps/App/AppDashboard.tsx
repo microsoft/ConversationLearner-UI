@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
 import { connect } from 'react-redux';
-import { State } from '../types'
+import { State } from '../../../types'
 import { BlisAppBase } from 'blis-models'
 
 class AppDashboard extends React.Component<Props, {}> {

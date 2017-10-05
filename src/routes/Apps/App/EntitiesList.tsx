@@ -2,11 +2,11 @@ import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import EntityCreatorEditor from './EntityCreatorEditor';
-import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
-import { deleteEntityAsync } from '../actions/deleteActions'
+import EntityCreatorEditor from '../../../components/EntityCreatorEditor';
+import ConfirmDeleteModal from '../../../components/ConfirmDeleteModal';
+import { deleteEntityAsync } from '../../../actions/deleteActions'
 import { DetailsList, CommandButton, CheckboxVisibility, IColumn, SearchBox } from 'office-ui-fabric-react';
-import { State } from '../types';
+import { State } from '../../../types';
 import { BlisAppBase, EntityBase } from 'blis-models'
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { findDOMNode } from 'react-dom';

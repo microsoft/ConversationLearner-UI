@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
-import { editBLISApplicationAsync } from '../actions/updateActions';
+import { editBLISApplicationAsync } from '../../../actions/updateActions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { State } from '../types';
+import { State } from '../../../types';
 import { CommandButton, PrimaryButton, TextField, Dropdown, Label, List } from 'office-ui-fabric-react';
 import { BlisAppBase, BlisAppMetaData } from 'blis-models'
 import './AppSettings.css'

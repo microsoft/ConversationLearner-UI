@@ -2,17 +2,17 @@ import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import EntitiesList from './EntitiesList';
-import TrainDialogsList from './TrainDialogsList';
-import ActionResponsesList from './ActionResponsesList';
-import AppDashboard from './AppDashboard';
-import AppSettings from './AppSettings';
 import { Nav, Link } from 'office-ui-fabric-react';
-import { setDisplayMode } from '../actions/displayActions';
-import { State } from '../types';
-import LogDialogsList from './LogDialogsList';
-import { DisplayMode } from '../types/const';
 import { BlisAppBase } from 'blis-models'
+import { State } from '../../../types';
+import { DisplayMode } from '../../../types/const';
+import { setDisplayMode } from '../../../actions/displayActions';
+import EntitiesList from './EntitiesList'
+import TrainDialogsList from './TrainDialogsList'
+import ActionResponsesList from './ActionResponsesList'
+import AppDashboard from './AppDashboard'
+import AppSettings from './AppSettings'
+import LogDialogsList from './LogDialogsList'
 
 interface ComponentState {
     display: string
