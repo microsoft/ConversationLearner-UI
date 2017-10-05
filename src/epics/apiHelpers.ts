@@ -9,7 +9,8 @@ import {
   UITrainScorerStep,
   Session,
   Teach,
-  UIScoreInput
+  UIScoreInput,
+  ExtractType
 } from 'blis-models'
 import * as Rx from 'rxjs';
 import { Observable, Observer } from 'rxjs'
@@ -391,11 +392,23 @@ export interface BlisAppForUpdate extends BlisAppBase {
    * the server, the session will first migrate to that newer version.  This 
    * doesn't affect the trainDialog maintained.
    */
-  export const putExtract = (key : string, appId: string, teachId: string, userInput: UserInput): Observable<ActionObject> => {
-    let editAppRoute: string = makeRoute(key, `app/${appId}/teach/${teachId}/extractor`);
+  export const putExtract = (key : string, appId: string, extractType: ExtractType, sessionId: string, turnIndex: number, userInput: UserInput): Observable<ActionObject> => {
+    let routeURI : string = null;
+    switch (extractType) {
+      case ExtractType.TEACH:
+        routeURI = `app/${appId}/teach/${sessionId}/extractor`;
+        break;
+      case ExtractType.TRAINDIALOG:
+        routeURI = `app/${appId}/traindialog/${sessionId}/extractor/${turnIndex}`;
+        break;
+      case ExtractType.LOGDIALOG:
+        routeURI = `app/${appId}/logdialog/${sessionId}/extractor/${turnIndex}`;
+        break;
+    }
+    let editAppRoute: string = makeRoute(key, routeURI);
     return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.put(editAppRoute, userInput, config)		
       .then(response => {
-        obs.next(runExtractorFulfilled(key, appId, teachId, response.data));
+        obs.next(runExtractorFulfilled(key, appId, sessionId, response.data));
         obs.complete();
       })
       .catch(err => handleError(obs, err,  AT.RUN_EXTRACTOR_ASYNC)));

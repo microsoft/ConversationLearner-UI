@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { UserInput } from 'blis-models'
+import { UserInput, ExtractType } from 'blis-models'
 import { State } from '../types';
 import { returntypeof } from 'react-redux-typescript';
 import { runExtractorAsync } from '../actions/teachActions';
@@ -15,7 +15,7 @@ interface ComponentState {
     variationValue: string
 }
 
-class ExtractorTextVariationCreator extends React.Component<Props, ComponentState> {
+class TextVariationCreator extends React.Component<Props, ComponentState> {
     constructor(p: Props) {
         super(p);
         this.state = initState;
@@ -28,10 +28,10 @@ class ExtractorTextVariationCreator extends React.Component<Props, ComponentStat
         })
     }
     handleAddVariation() {
-        let appId = this.props.apps.current.appId;
-        let teachId = this.props.teachSessions.current.teachId;
         let userInput = new UserInput({ text: this.state.variationValue })
-        this.props.runExtractorAsync(this.props.user.key, appId, teachId, userInput);
+        this.props.runExtractorAsync(
+            this.props.user.key, this.props.appId, this.props.extractType, 
+            this.props.sessionId, this.props.turnIndex, userInput);
         this.setState({
             variationValue: ''
         })
@@ -63,15 +63,20 @@ const mapDispatchToProps = (dispatch: any) => {
 }
 const mapStateToProps = (state: State, ownProps: any) => {
     return {
-        teachSessions: state.teachSessions,
         user: state.user,
-        apps: state.apps
     }
 }
+
+export interface ReceivedProps {
+    appId: string,
+    sessionId: string,
+    extractType: ExtractType
+    turnIndex: number,
+ }
 
 // Props types inferred from mapStateToProps & dispatchToProps
 const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
-type Props = typeof stateProps & typeof dispatchProps;
+type Props = typeof stateProps & typeof dispatchProps & ReceivedProps;
 
-export default connect<typeof stateProps, typeof dispatchProps, {}>(mapStateToProps, mapDispatchToProps)(ExtractorTextVariationCreator);
+export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(TextVariationCreator);

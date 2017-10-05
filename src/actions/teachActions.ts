@@ -1,23 +1,27 @@
 import { ActionObject } from '../types'
 import { AT } from '../types/ActionTypes'
-import { UserInput, ExtractResponse, UIScoreInput, UIExtractResponse, UIScoreResponse, UITrainScorerStep, TeachResponse } from 'blis-models'
+import { UserInput, ExtractResponse, UIScoreInput, UIExtractResponse, 
+    UIScoreResponse, UITrainScorerStep, TeachResponse,
+    ExtractType } from 'blis-models'
 
-export const runExtractorAsync = (key: string, appId: string, teachId: string, userInput: UserInput) : ActionObject => { 
+export const runExtractorAsync = (key: string, appId: string, extractType: ExtractType, sessionId: string, turnIndex: number, userInput: UserInput) : ActionObject => { 
     return {
         type: AT.RUN_EXTRACTOR_ASYNC,
         key: key,
         appId: appId,
-        teachId: teachId,
+        extractType: extractType,
+        sessionId: sessionId,
+        turnIndex: turnIndex,
         userInput: userInput
     }
 }
 
-export const runExtractorFulfilled = (key: string, appId: string, teachId: string, uiExtractResponse: UIExtractResponse) : ActionObject => { 
+export const runExtractorFulfilled = (key: string, appId: string, sessionId: string, uiExtractResponse: UIExtractResponse) : ActionObject => { 
     return {
         type: AT.RUN_EXTRACTOR_FULFILLED,
         key: key,
         appId: appId,
-        teachId: teachId,
+        sessionId: sessionId,
         uiExtractResponse: uiExtractResponse
     }
 }
@@ -43,7 +47,7 @@ export const runScorerAsync = (key: string, appId: string, teachId: string, uiSc
         type: AT.RUN_SCORER_ASYNC,
         key: key,
         appId: appId,
-        teachId: teachId,
+        sessionId: teachId,
         uiScoreInput: uiScoreInput
     }
 }
@@ -53,7 +57,7 @@ export const runScorerFulfilled = (key: string, appId: string, teachId: string, 
         type: AT.RUN_SCORER_FULFILLED,
         key: key,
         appId: appId,
-        teachId: teachId,
+        sessionId: teachId,
         uiScoreResponse: uiScoreResponse
     }
 }
@@ -63,7 +67,7 @@ export const postScorerFeedbackAsync = (key: string, appId: string, teachId: str
         type: AT.POST_SCORE_FEEDBACK_ASYNC,
         key: key,
         appId: appId,
-        teachId: teachId,
+        sessionId: teachId,
         uiTrainScorerStep: uiTrainScorerStep,
         waitForUser: waitForUser,
         uiScoreInput: uiScoreInput
@@ -76,7 +80,7 @@ export const postScorerFeedbackWaitFulfilled = (key: string, appId: string, teac
         type: AT.POST_SCORE_FEEDBACK_FULFILLEDWAIT,
         key: key,
         appId: appId,
-        teachId: teachId,
+        sessionId: teachId,
         teachResponse: teachResponse
     }
 }
@@ -87,7 +91,7 @@ export const postScorerFeedbackNoWaitFulfilled = (key: string, appId: string, te
         type: AT.POST_SCORE_FEEDBACK_FULFILLEDNOWAIT,
         key: key,
         appId: appId,
-        teachId: teachId,
+        sessionId: teachId,
         teachResponse: teachResponse, 
         uiScoreInput: uiScoreInput
     }

@@ -5,9 +5,10 @@ import { connect } from 'react-redux';
 import { State } from '../../types'
 import { TeachMode } from '../../types/const';
 import { runScorerAsync } from '../../actions/teachActions';
-import { BlisAppBase, TextVariation, ExtractResponse, TrainExtractorStep, UIScoreInput } from 'blis-models'
+import { BlisAppBase, TextVariation, ExtractResponse, 
+    ExtractType, TrainExtractorStep, UIScoreInput } from 'blis-models'
 import TeachSessionScorer from './TeachSessionScorer';
-import TeachSessionExtractor from './TeachSessionExtractor';
+import EntityExtractor from './EntityExtractor';
 import TeachSessionMemory from './TeachSessionMemory';
 
 class TeachSessionAdmin extends React.Component<Props, {}> {
@@ -29,13 +30,15 @@ class TeachSessionAdmin extends React.Component<Props, {}> {
         this.props.runScorerAsync(this.props.user.key, appId, teachId, uiScoreInput);
 
     }
-    renderTeachSessionExtractor() : JSX.Element {
+    renderEntityExtractor() : JSX.Element {
         return (
-            <TeachSessionExtractor 
-                teachSessionId = {this.props.teachSession.current.teachId}
+            <EntityExtractor 
+                appId = {this.props.app.appId}
+                extractType = {ExtractType.TEACH}
+                sessionId = {this.props.teachSession.current.teachId}
+                turnIndex = {null}  
                 autoTeach = {this.props.teachSession.autoTeach}
                 teachMode = {this.props.teachSession.mode}
-                extractResponses = {this.props.teachSession.extractResponses}
                 textVariations = {[]}
                 extractButtonName = "Score Actions"
                 onTextVariationsExtracted = {this.onTextVariationsExtracted}
@@ -43,13 +46,17 @@ class TeachSessionAdmin extends React.Component<Props, {}> {
         )
     }
     render() {
+        // Don't render if not in a teach session
+        if (!this.props.teachSession.current) {
+            return null;
+        }
         let userWindow = null;
         switch (this.props.teachSession.mode) {
             case TeachMode.Extractor:
                 userWindow = (
                     <div>
                         <TeachSessionMemory />
-                        {this.renderTeachSessionExtractor()}
+                        {this.renderEntityExtractor()}
                     </div>
                 )
                 break;
@@ -57,7 +64,7 @@ class TeachSessionAdmin extends React.Component<Props, {}> {
                 userWindow = (
                     <div>
                         <TeachSessionMemory />
-                        {this.renderTeachSessionExtractor()}
+                        {this.renderEntityExtractor()}
                         <TeachSessionScorer />
                     </div>
                 )
@@ -68,7 +75,7 @@ class TeachSessionAdmin extends React.Component<Props, {}> {
                     userWindow = (
                         <div>
                             <TeachSessionMemory />
-                            {this.renderTeachSessionExtractor()}
+                            {this.renderEntityExtractor()}
                             <TeachSessionScorer />
                         </div>
                     )
