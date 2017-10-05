@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "axios": "^0.16.2",
-    "blis-models": "^0.55.0",
+    "blis-models": "^0.58.0",
     "blis-webchat": "^0.12.2",
     "office-ui-fabric-react": "^4.47.0",
     "react": "^15.6.1",

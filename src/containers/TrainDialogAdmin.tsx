@@ -3,10 +3,11 @@ import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../types'
+import { TeachMode } from '../types/const';
 import { updateExtractResponse, removeExtractResponse } from '../actions/teachActions'
-import ExtractorResponseEditor from './ExtractorResponseEditor'
+import TeachSessionExtractor from './TeachSessionExtractor';
 import { Activity } from 'botframework-directlinejs'
-import { ActionBase, TrainDialog, TrainRound, TrainScorerStep, EntityBase, ExtractResponse } from 'blis-models'
+import { ActionBase, TrainDialog, TrainRound, TrainScorerStep, EntityBase, TextVariation, ExtractResponse } from 'blis-models'
 
 class TrainDialogAdmin extends React.Component<Props, {}> {
 
@@ -32,6 +33,19 @@ class TrainDialogAdmin extends React.Component<Props, {}> {
         }
     }
 
+    onTextVariationsExtracted(extractResponse: ExtractResponse, textVariations: TextVariation[]) : void {
+        // TODO
+       /* let trainExtractorStep = new TrainExtractorStep({
+            textVariations: textVariations
+        });
+
+        let uiScoreInput = new UIScoreInput({ trainExtractorStep: trainExtractorStep, extractResponse: extractResponse });
+
+        let appId = this.props.app.appId;
+        let teachId = this.props.teachSession.current.teachId;
+        this.props.runScorerAsync(this.props.user.key, appId, teachId, uiScoreInput);*/
+    }
+
     render() {
         let round: TrainRound = null
         let scorerStep: TrainScorerStep = null
@@ -48,23 +62,23 @@ class TrainDialogAdmin extends React.Component<Props, {}> {
             }
         }
 
+        let extractor = round ?
+            <TeachSessionExtractor 
+                teachSessionId = {this.props.trainDialog.trainDialogId}
+                autoTeach = {false}
+                teachMode = {TeachMode.Extractor}
+                extractResponses = {[]}
+                textVariations = {round.extractorStep.textVariations}
+                extractButtonName = "Submit Changes"
+                onTextVariationsExtracted = {this.onTextVariationsExtracted}
+            />
+            : "Select an activity";
+
         return (
             <div className="blis-log-dialog-admin ms-font-l">
                 <div className="blis-log-dialog-admin__title">Entity Detection</div>
                 <div className="blis-log-dialog-admin__content">
-                    {round
-                        ? round.extractorStep.textVariations.map((textVariaion, i) =>
-                            <ExtractorResponseEditor
-                                key={i}
-                                isPrimary={true}
-                                isValid={true}
-                                // TODO: Fix ExtractorResponseEditor to use text and entities base.
-                                extractResponse={(textVariaion as any) as ExtractResponse}
-                                canEdit={false}
-                                updateExtractResponse={() => {}}
-                                removeExtractResponse={() => {}}
-                            />)
-                        : "Select an activity"}
+                    {extractor}
                 </div>
                 <div className="blis-log-dialog-admin__title">Memory</div>
                 <div className="blis-log-dialog-admin__content">
