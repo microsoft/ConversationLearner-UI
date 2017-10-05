@@ -20,7 +20,11 @@ const chatSessionReducer: Reducer<ChatSessionState> = (state = initialState, act
             let newState: ChatSessionState = { ...state, all: [...state.all, newSession], current: newSession }
             return newState;
         case AT.DELETE_CHAT_SESSION_FULFILLED:
-            return { ...state, all: state.all.filter((s: Session) => s.sessionId !== action.sessionGUID) }
+            return {
+                ...state,
+                all: state.all.filter((s: Session) => s.sessionId !== action.sessionId),
+                current: state.current.sessionId === action.sessionId ? null : state.current
+            }
         case AT.SET_CURRENT_CHAT_SESSION:
             return { ...state, current: action.currentSession };
         case AT.CHAT_MESSAGE_RECEIVED:
