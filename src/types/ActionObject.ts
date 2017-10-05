@@ -261,7 +261,7 @@ export type DeleteAction = {
     currentAppId: string
 } | {
     type: AT.DELETE_CHAT_SESSION_FULFILLED,
-    sessionGUID: string,
+    sessionId: string,
 } | {
     type: AT.DELETE_TEACH_SESSION_ASYNC,
     key: string,

@@ -6,7 +6,6 @@ import { PrimaryButton } from 'office-ui-fabric-react';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { State } from '../../types';
 import Webchat from '../Webchat'
-import ChatSessionAdmin from './ChatSessionAdmin'
 import { BlisAppBase, Session } from 'blis-models'
 import { deleteChatSessionAsync } from '../../actions/deleteActions'
 import { createChatSessionAsync } from '../../actions/createActions'
@@ -62,7 +61,6 @@ class SessionWindow extends React.Component<Props, ComponentState> {
                     </div>
                     <div className="blis-chatmodal_controls">
                         <div className="blis-chatmodal_admin-controls">
-                            <ChatSessionAdmin />
                         </div>
                         <div className="blis-chatmodal_modal-controls">
                             <PrimaryButton
