@@ -77,10 +77,10 @@ export const deleteChatSessionAsync = (key: string, session: Session, currentApp
     }
 }
 
-export const deleteChatSessionFulfilled = (sessionGUID: string): ActionObject => {
+export const deleteChatSessionFulfilled = (sessionId: string): ActionObject => {
     return {
         type: AT.DELETE_CHAT_SESSION_FULFILLED,
-        sessionGUID: sessionGUID
+        sessionId
     }
 }
 
