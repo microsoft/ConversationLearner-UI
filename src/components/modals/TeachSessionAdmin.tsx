@@ -2,8 +2,8 @@ import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { State } from '../types'
-import { TeachMode } from '../types/const';
+import { State } from '../../types'
+import { TeachMode } from '../../types/const';
 import { runScorerAsync } from '../actions/teachActions';
 import { BlisAppBase, TextVariation, ExtractResponse, TrainExtractorStep, UIScoreInput } from 'blis-models'
 import TeachSessionScorer from './TeachSessionScorer';

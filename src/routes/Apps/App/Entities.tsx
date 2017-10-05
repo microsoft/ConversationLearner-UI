@@ -2,8 +2,7 @@ import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import EntityCreatorEditor from '../../../components/EntityCreatorEditor';
-import ConfirmDeleteModal from '../../../components/ConfirmDeleteModal';
+import { EntityCreatorEditor, ConfirmDeleteModal } from '../../../components/modals'
 import { deleteEntityAsync } from '../../../actions/deleteActions'
 import { DetailsList, CommandButton, CheckboxVisibility, IColumn, SearchBox } from 'office-ui-fabric-react';
 import { State } from '../../../types';

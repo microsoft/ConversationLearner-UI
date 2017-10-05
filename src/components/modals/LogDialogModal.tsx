@@ -3,14 +3,14 @@ import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { PrimaryButton, DefaultButton } from 'office-ui-fabric-react';
-import { State } from '../types';
+import { State } from '../../types';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
-import Webchat from './Webchat'
+import Webchat from '../Webchat'
 import LogDialogAdmin from './LogDialogAdmin'
 import { Activity } from 'botframework-directlinejs'
-import { createTrainDialogAsync } from '../actions/createActions'
+import { createTrainDialogAsync } from '../../actions/createActions'
 import { BlisAppBase, TrainDialog, LogDialog } from 'blis-models'
-import { deleteLogDialogAsync } from '../actions/deleteActions'
+import { deleteLogDialogAsync } from '../../actions/deleteActions'
 
 interface ComponentState {
     selectedActivity: Activity | null

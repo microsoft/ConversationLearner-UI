@@ -5,17 +5,17 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { PrimaryButton, DefaultButton, Checkbox } from 'office-ui-fabric-react';
-import { State } from '../types';
-import { TeachMode } from '../types/const';
-import Webchat from './Webchat'
+import { State } from '../../types';
+import { TeachMode } from '../../types/const';
+import Webchat from '../Webchat'
 import TeachSessionAdmin from './TeachSessionAdmin'
 import { Teach, BlisAppBase, UserInput } from 'blis-models'
 import { Activity } from 'botframework-directlinejs'
-import { deleteTeachSessionAsync } from '../actions/deleteActions'
-import { toggleAutoTeach, runExtractorAsync } from '../actions/teachActions'
-import { createTeachSessionAsync } from '../actions/createActions'
-import { addMessageToTeachConversationStack } from '../actions/displayActions'
-import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
+import { deleteTeachSessionAsync } from '../../actions/deleteActions'
+import { toggleAutoTeach, runExtractorAsync } from '../../actions/teachActions'
+import { createTeachSessionAsync } from '../../actions/createActions'
+import { addMessageToTeachConversationStack } from '../../actions/displayActions'
+import ConfirmDeleteModal from './ConfirmDeleteModal';
 
 interface ComponentState {
     isConfirmDeleteOpen: boolean

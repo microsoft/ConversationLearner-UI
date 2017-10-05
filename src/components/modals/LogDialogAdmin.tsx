@@ -2,8 +2,8 @@ import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { State } from '../types'
-import ExtractorResponseEditor from './ExtractorResponseEditor';
+import { State } from '../../types'
+import ExtractorResponseEditor from '../ExtractorResponseEditor';
 import { Dialog, DialogType, DialogFooter, List, DetailsList, IColumn, CheckboxVisibility, PrimaryButton, DefaultButton } from 'office-ui-fabric-react'
 import { Activity } from 'botframework-directlinejs'
 import { TrainExtractorStep, TrainScorerStep, TextVariation, LogExtractorStep, TrainDialog, TrainRound, LogDialog, LogRound, LogScorerStep, ActionBase, EntityBase, ExtractResponse, ScoreReason, ScoredAction, UnscoredAction, ModelUtils } from 'blis-models'

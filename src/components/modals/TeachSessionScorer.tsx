@@ -3,11 +3,11 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { returntypeof } from 'react-redux-typescript';
 import { ModelUtils } from 'blis-models';
-import { State } from '../types'
+import { State } from '../../types'
 import { UITrainScorerStep, TrainScorerStep, ScoredBase, ActionBase, ScoredAction, UnscoredAction, ScoreReason, UIScoreInput } from 'blis-models';
-import { postScorerFeedbackAsync, toggleAutoTeach } from '../actions/teachActions'
+import { postScorerFeedbackAsync, toggleAutoTeach } from '../../actions/teachActions'
 import { CommandButton, PrimaryButton } from 'office-ui-fabric-react';
-import { TeachMode } from '../types/const'
+import { TeachMode } from '../../types/const'
 import { IColumn, DetailsList, CheckboxVisibility, List } from 'office-ui-fabric-react';
 import ActionResponseCreatorEditor from './ActionResponseCreatorEditor'
 import { findDOMNode } from 'react-dom';

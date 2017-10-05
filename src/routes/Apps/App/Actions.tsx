@@ -4,9 +4,8 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { deleteActionAsync } from '../../../actions/deleteActions'
 import { DetailsList, CommandButton, Link, CheckboxVisibility, List, IColumn, SearchBox } from 'office-ui-fabric-react';
-import ConfirmDeleteModal from '../../../components/ConfirmDeleteModal';
 import { BlisAppBase, ActionBase, ModelUtils } from 'blis-models'
-import ActionResponseCreatorEditor from '../../../components/ActionResponseCreatorEditor';
+import { ConfirmDeleteModal, ActionResponseCreatorEditor } from '../../../components/modals'
 import EntityTile from '../../../components/EntityTile';
 import { State } from '../../../types'
 import { findDOMNode } from 'react-dom';

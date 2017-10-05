@@ -7,6 +7,12 @@
     padding-bottom: 1rem;
 }
 
+.blis-page {
+    display: grid;
+    grid-gap: 1rem;
+    grid-auto-rows: min-content;
+}
+
 .blis-nav_section {
     border-top: 1px solid lightgrey;
     padding: 0.5rem 0;
@@ -23,6 +29,10 @@
     cursor: pointer !important;
 }
 .blis-nav-section .ms-Nav-groupContent {
+    margin-bottom: 0 !important;
+}
+/* TODO: Why was above style not working? */
+.ms-Nav-groupContent {
     margin-bottom: 0 !important;
 }
 

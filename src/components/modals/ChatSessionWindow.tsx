@@ -4,15 +4,15 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { PrimaryButton } from 'office-ui-fabric-react';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
-import { State } from '../types';
-import Webchat from './Webchat'
+import { State } from '../../types';
+import Webchat from '../Webchat'
 import ChatSessionAdmin from './ChatSessionAdmin'
 import { BlisAppBase, Session } from 'blis-models'
-import { deleteChatSessionAsync } from '../actions/deleteActions'
-import { createChatSessionAsync } from '../actions/createActions'
+import { deleteChatSessionAsync } from '../../actions/deleteActions'
+import { createChatSessionAsync } from '../../actions/createActions'
 import { Activity } from 'botframework-directlinejs';
 // TODO: Investigate if this can be removed in favor of local state
-import { addMessageToChatConversationStack } from '../actions/displayActions';
+import { addMessageToChatConversationStack } from '../../actions/displayActions';
 
 interface ComponentState {
     chatSession: Session

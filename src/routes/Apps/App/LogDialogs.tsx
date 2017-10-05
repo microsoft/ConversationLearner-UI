@@ -5,8 +5,7 @@ import { connect } from 'react-redux';
 import { DetailsList, CommandButton, CheckboxVisibility, IColumn, SearchBox } from 'office-ui-fabric-react';
 import { State } from '../../../types'
 import { BlisAppBase, LogDialog } from 'blis-models'
-import ChatSessionWindow from '../../../components/ChatSessionWindow'
-import LogDialogModal from '../../../components/LogDialogModal'
+import { ChatSessionWindow, LogDialogModal } from '../../../components/modals'
 
 interface IRenderableColumn extends IColumn {
     render: (x: LogDialog, component: LogDialogs) => React.ReactNode

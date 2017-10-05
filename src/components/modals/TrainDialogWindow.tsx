@@ -4,15 +4,15 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { PrimaryButton, DefaultButton } from 'office-ui-fabric-react';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
-import { State } from '../types';
-import Webchat from './Webchat'
+import { State } from '../../types';
+import Webchat from '../Webchat'
 import TrainDialogAdmin from './TrainDialogAdmin'
 import { BlisAppBase, ActionBase, TrainDialog } from 'blis-models'
-import { deleteTrainDialogAsync } from '../actions/deleteActions'
-import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
+import { deleteTrainDialogAsync } from '../../actions/deleteActions'
+import ConfirmDeleteModal from './ConfirmDeleteModal';
 import { Activity } from 'botframework-directlinejs';
 // TODO: Investigate if this can be removed in favor of local state
-import { addMessageToChatConversationStack } from '../actions/displayActions';
+import { addMessageToChatConversationStack } from '../../actions/displayActions';
 
 interface ComponentState {
     confirmDeleteModalOpen: boolean,

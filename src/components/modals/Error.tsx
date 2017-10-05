@@ -4,8 +4,8 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { CommandButton } from 'office-ui-fabric-react';
-import { clearErrorDisplay } from '../actions/displayActions'
-import { State } from '../types'
+import { clearErrorDisplay } from '../../actions/displayActions'
+import { State } from '../../types'
 
 class UIError extends React.Component<Props, {}> {
     constructor(p: any) {
