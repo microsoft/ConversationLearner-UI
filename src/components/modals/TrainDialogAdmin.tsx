@@ -3,9 +3,8 @@ import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../../types'
-import { TeachMode } from '../types/const';
+import { TeachMode } from '../../types/const';
 import { updateExtractResponse, removeExtractResponse } from '../../actions/teachActions'
-import ExtractorResponseEditor from '../ExtractorResponseEditor'
 import TeachSessionExtractor from './TeachSessionExtractor';
 import { Activity } from 'botframework-directlinejs'
 import { ActionBase, TrainDialog, TrainRound, TrainScorerStep, EntityBase, TextVariation, ExtractResponse } from 'blis-models'
