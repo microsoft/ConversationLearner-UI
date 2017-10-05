@@ -59,8 +59,7 @@ class TeachSessionExtractor extends React.Component<Props, ComponentState> {
         })
     }
     /** Returns true is predicted entities match */
-    isValid(extractResponse: ExtractResponse): boolean {
-        let primaryResponse = this.props.extractResponses[0] as ExtractResponse;
+    isValid(primaryResponse: ExtractResponse, extractResponse: ExtractResponse): boolean {
         let missing = primaryResponse.predictedEntities.filter(item =>
             !extractResponse.predictedEntities.find(er => item.entityName == er.entityName));
 
@@ -73,11 +72,11 @@ class TeachSessionExtractor extends React.Component<Props, ComponentState> {
             return false;
         }
         return true;
-    }
-    allValid(): boolean {
-        for (let extractResponse of this.props.extractResponses) {
-            if (extractResponse != this.props.extractResponses[0]) {
-                if (!this.isValid(extractResponse)) {
+    } 
+    allValid(extractResponses : ExtractResponse[]): boolean {
+        for (let extractResponse of extractResponses) {
+            if (extractResponse != extractResponses[0]) {
+                if (!this.isValid(extractResponses[0], extractResponse)) {
                     return false;
                 }
             }
@@ -99,21 +98,58 @@ class TeachSessionExtractor extends React.Component<Props, ComponentState> {
         }
         return labeledEntities;
     }
+    toPredictedEntities(labeledEntities : LabeledEntity[]) : PredictedEntity[] {
+        let predictedEntities : PredictedEntity[] = [];
+        for (let labeledEntity of labeledEntities)
+        {
+            let predictedEntity = new PredictedEntity({
+                startCharIndex: labeledEntity.startCharIndex,
+                endCharIndex: labeledEntity.endCharIndex,
+                entityId: labeledEntity.entityId,
+                entityName: labeledEntity.entityName,
+                entityText: labeledEntity.entityText
+            });
+            predictedEntities.push(predictedEntity);
+        }
+        return predictedEntities;
+    }
+    toExtractResponses(textVariations: TextVariation[]) : ExtractResponse[] {
+        let extractResponses : ExtractResponse[] = [];
+        for (let textVariation of textVariations)
+        {
+            let predictedEntities = this.toPredictedEntities(textVariation.labelEntities);
+            let extractResponse = new ExtractResponse({
+                text: textVariation.text,
+                predictedEntities: predictedEntities
+            });
+            extractResponses.push(extractResponse);
+        }
+        return extractResponses;
+    }
+    // Return merge of extract responses and text variations
+    allResponses() : ExtractResponse[] {
+        let convertedVariations = this.toExtractResponses(this.props.textVariations);
+        let allResponses = [...this.props.extractResponses, ...convertedVariations];
+        return allResponses;
+    }
     onClickDoneExtracting() {
-        if (!this.allValid()) {
+        let allResponses = this.allResponses();;
+
+        if (!this.allValid(allResponses)) {
             this.handleOpenPopUpModal();
             return;
         }
 
         let textVariations: TextVariation[] = [];
-        for (let extractResponse of this.props.extractResponses) {
+        for (let extractResponse of allResponses) {
             let labeledEntities = this.toLabeledEntities(extractResponse.predictedEntities);
             textVariations.push(new TextVariation({ text: extractResponse.text, labelEntities: labeledEntities }));
         }     
-        this.props.onTextVariationsExtracted(this.props.extractResponses[0], textVariations);
+        this.props.onTextVariationsExtracted(allResponses[0], textVariations);
     }
     render() {
-        if (!this.props.extractResponses[0]) {
+        let allResponses = this.allResponses();
+        if (!allResponses[0]) {
             return null;
         }
 
@@ -152,10 +188,10 @@ class TeachSessionExtractor extends React.Component<Props, ComponentState> {
 
             let key = 0;
             extractDisplay = [];
-            for (let extractResponse of this.props.extractResponses) {
+            for (let extractResponse of allResponses) {
                 let isValid = true;
-                if (extractResponse != this.props.extractResponses[0]) {
-                    isValid = this.isValid(extractResponse);
+                if (extractResponse != allResponses[0]) {
+                    isValid = this.isValid(allResponses[0], extractResponse);
                 }
 
                 extractDisplay.push(<ExtractorResponseEditor
@@ -171,7 +207,7 @@ class TeachSessionExtractor extends React.Component<Props, ComponentState> {
         }
         else {
             // Only display primary response if not in edit mode
-            const extractResponse = this.props.extractResponses[0]
+            const extractResponse = allResponses[0]
             extractDisplay = <ExtractorResponseEditor
                 canEdit={canEdit}
                 key={0}
@@ -218,6 +254,7 @@ export interface ReceivedProps {
     autoTeach: boolean
     teachMode: TeachMode
     extractResponses: ExtractResponse[],
+    textVariations: TextVariation[],
     extractButtonName: string,
     onTextVariationsExtracted: (extractResponse: ExtractResponse, textVariations: TextVariation[]) => void
 }
