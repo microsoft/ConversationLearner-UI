@@ -3,12 +3,12 @@ import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { DetailsList, CommandButton, CheckboxVisibility, IColumn, SearchBox } from 'office-ui-fabric-react';
-import { setCurrentTeachSession } from '../actions/displayActions'
-import { State } from '../types'
+import { setCurrentTeachSession } from '../../../actions/displayActions'
+import { State } from '../../../types'
 import { BlisAppBase, TrainDialog } from 'blis-models'
 import { findDOMNode } from 'react-dom';
-import TeachSessionWindow from './TeachSessionWindow'
-import TrainDialogWindow from './TrainDialogWindow'
+import TeachSessionWindow from '../../../components/TeachSessionWindow'
+import TrainDialogWindow from '../../../components/TrainDialogWindow'
 
 let columns: IColumn[] = [
     {

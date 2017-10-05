@@ -2,10 +2,10 @@ import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import BLISAppCreator from './BLISAppCreator'
+import BLISAppCreator from '../../components/BLISAppCreator'
 import { DetailsList, Link, CheckboxVisibility, IColumn } from 'office-ui-fabric-react';
-import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
-import { State } from '../types';
+import ConfirmDeleteModal from '../../components/ConfirmDeleteModal';
+import { State } from '../../types';
 import { BlisAppBase } from 'blis-models'
 
 interface ISortableRenderableColumn extends IColumn {

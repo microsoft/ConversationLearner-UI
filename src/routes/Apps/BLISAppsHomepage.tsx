@@ -1,17 +1,17 @@
 import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
-import AppAdmin from './AppAdmin';
-import { fetchApplicationsAsync, fetchBotInfoAsync, fetchAllActionsAsync, fetchAllEntitiesAsync, fetchAllTrainDialogsAsync, fetchAllLogDialogsAsync, fetchAllChatSessionsAsync } from '../actions/fetchActions';
-import { setCurrentBLISApp } from '../actions/displayActions';
-import { deleteBLISApplicationAsync } from '../actions/deleteActions'
-import BLISAppsList from './BLISAppsList';
+import { fetchApplicationsAsync, fetchBotInfoAsync, fetchAllActionsAsync, fetchAllEntitiesAsync, fetchAllTrainDialogsAsync, fetchAllLogDialogsAsync, fetchAllChatSessionsAsync } from '../../actions/fetchActions';
+import { setCurrentBLISApp } from '../../actions/displayActions';
+import { deleteBLISApplicationAsync } from '../../actions/deleteActions'
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { State } from '../types'
-import { DisplayMode } from '../types/const'
+import { State } from '../../types'
+import { DisplayMode } from '../../types/const'
 import { BlisAppBase } from 'blis-models'
-import '../components/HomeApp.css'
-import '../components/HomeIndex.css'
+import '../../components/HomeApp.css'
+import AppAdmin from './App/AppAdmin'
+import '../../components/HomeIndex.css'
+import BLISAppsList from './BLISAppsList'
 
 interface ComponentState {
     displayedUserId: string

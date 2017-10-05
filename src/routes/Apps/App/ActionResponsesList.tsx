@@ -2,13 +2,13 @@ import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { deleteActionAsync } from '../actions/deleteActions'
+import { deleteActionAsync } from '../../../actions/deleteActions'
 import { DetailsList, CommandButton, Link, CheckboxVisibility, List, IColumn, SearchBox } from 'office-ui-fabric-react';
-import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
+import ConfirmDeleteModal from '../../../components/ConfirmDeleteModal';
 import { BlisAppBase, ActionBase, ModelUtils } from 'blis-models'
-import ActionResponseCreatorEditor from './ActionResponseCreatorEditor';
-import EntityTile from '../components/EntityTile';
-import { State } from '../types'
+import ActionResponseCreatorEditor from '../../../components/ActionResponseCreatorEditor';
+import EntityTile from '../../../components/EntityTile';
+import { State } from '../../../types'
 import { findDOMNode } from 'react-dom';
 
 let columns: IColumn[] = [
