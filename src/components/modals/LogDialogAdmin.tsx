@@ -416,8 +416,8 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
 
         return (
             <div className="blis-log-dialog-admin ms-font-l">
-                <div className="blis-log-dialog-admin__title">Entity Detection</div>
                 <div className="blis-log-dialog-admin__content">
+                    <div className="blis-log-dialog-admin-title">Entity Detection</div>
                     {round
                         ? <div>
                             <ExtractorResponseEditor
@@ -433,18 +433,20 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
                                 <DefaultButton onClick={() => this.onClickResetPendingEntityChanges()}>Reset</DefaultButton>
                             </div>}
                         </div>
-                        : <span>Click on text from the dialog to the left to view how the bot interpretted the conversation.  You can then make corrections to the bots behavior.</span>
+                        : <div>Click on text from the dialog to the left to view how the bot interpretted the conversation.  You can then make corrections to the bots behavior.</div>
                     }
                 </div>
-                <div className="blis-log-dialog-admin__title">Memory</div>
                 <div className="blis-log-dialog-admin__content">
-                    {filledEntities.length !== 0 && filledEntities.map(entity => <div key={entity.entityName}>{entity.entityName}</div>)}
+                    <div className="blis-log-dialog-admin-title">Memory</div>
+                    <div>
+                        {filledEntities.length !== 0 && filledEntities.map(entity => <div key={entity.entityName}>{entity.entityName}</div>)}
+                    </div>
                 </div>
-                <div className="blis-log-dialog-admin__title">Action</div>
                 <div className="blis-log-dialog-admin__content">
+                    <div className="blis-log-dialog-admin-title">Action</div>
                     {action && <div>
                         <div>Action the bot chose:</div>
-                        <div className="blis-log-dialog-admin__chosen-action">
+                        <div className="blis-log-dialog-admin-chosen-action">
                             {action.payload}
                         </div>
                         <div>Alternate actions available to choose:</div>

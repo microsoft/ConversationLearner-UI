@@ -5,8 +5,10 @@ import { connect } from 'react-redux';
 import { State } from '../../types'
 import { TeachMode } from '../../types/const';
 import { runScorerAsync } from '../../actions/teachActions';
-import { BlisAppBase, TextVariation, ExtractResponse, 
-    ExtractType, TrainExtractorStep, UIScoreInput } from 'blis-models'
+import {
+    BlisAppBase, TextVariation, ExtractResponse,
+    ExtractType, TrainExtractorStep, UIScoreInput
+} from 'blis-models'
 import TeachSessionScorer from './TeachSessionScorer';
 import EntityExtractor from './EntityExtractor';
 import TeachSessionMemory from './TeachSessionMemory';
@@ -18,7 +20,7 @@ class TeachSessionAdmin extends React.Component<Props, {}> {
         this.onTextVariationsExtracted = this.onTextVariationsExtracted.bind(this)
     }
 
-    onTextVariationsExtracted(extractResponse: ExtractResponse, textVariations:TextVariation[]) : void {
+    onTextVariationsExtracted(extractResponse: ExtractResponse, textVariations: TextVariation[]): void {
         let trainExtractorStep = new TrainExtractorStep({
             textVariations: textVariations
         });
@@ -30,19 +32,22 @@ class TeachSessionAdmin extends React.Component<Props, {}> {
         this.props.runScorerAsync(this.props.user.key, appId, teachId, uiScoreInput);
 
     }
-    renderEntityExtractor() : JSX.Element {
+    renderEntityExtractor(): JSX.Element {
         return (
-            <EntityExtractor 
-                appId = {this.props.app.appId}
-                extractType = {ExtractType.TEACH}
-                sessionId = {this.props.teachSession.current.teachId}
-                turnIndex = {null}  
-                autoTeach = {this.props.teachSession.autoTeach}
-                teachMode = {this.props.teachSession.mode}
-                textVariations = {[]}
-                extractButtonName = "Score Actions"
-                onTextVariationsExtracted = {this.onTextVariationsExtracted}
-            />
+            <div>
+                <div className="blis-log-dialog-admin-title ms-font-l">Entity Detection</div>
+                <EntityExtractor
+                    appId={this.props.app.appId}
+                    extractType={ExtractType.TEACH}
+                    sessionId={this.props.teachSession.current.teachId}
+                    turnIndex={null}
+                    autoTeach={this.props.teachSession.autoTeach}
+                    teachMode={this.props.teachSession.mode}
+                    textVariations={[]}
+                    extractButtonName="Score Actions"
+                    onTextVariationsExtracted={this.onTextVariationsExtracted}
+                />
+            </div>
         )
     }
     render() {

@@ -82,17 +82,23 @@ class TrainDialogAdmin extends React.Component<Props, {}> {
 
         return (
             <div className="blis-log-dialog-admin ms-font-l">
-                <div className="blis-log-dialog-admin__title">Entity Detection</div>
                 <div className="blis-log-dialog-admin__content">
+                    <div className="blis-log-dialog-admin-title">Entity Detection</div>
+                    <div>
                     {extractor}
+                    </div>
                 </div>
-                <div className="blis-log-dialog-admin__title">Memory</div>
                 <div className="blis-log-dialog-admin__content">
+                    <div className="blis-log-dialog-admin-title">Memory</div>
+                    <div>
                     {entities.length !== 0 && entities.map(entity => <div key={entity.entityName}>{entity.entityName}</div>)}
+                    </div>
                 </div>
-                <div className="blis-log-dialog-admin__title">Action</div>
                 <div className="blis-log-dialog-admin__content">
+                    <div className="blis-log-dialog-admin-title">Action</div>
+                    <div>
                     {action && action.payload}
+                    </div>
                 </div>
             </div>
         );

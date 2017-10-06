@@ -5,13 +5,14 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../../types'
 import { PredictedEntity, LabeledEntity, ExtractResponse, TextVariation, ExtractType } from 'blis-models'
-import { CommandButton } from 'office-ui-fabric-react';
+import { PrimaryButton, DefaultButton } from 'office-ui-fabric-react';
 import TextVariationCreator from '../TextVariationCreator';
 import ExtractorResponseEditor from '../ExtractorResponseEditor';
 import EntityCreatorEditor from './EntityCreatorEditor';
 import { TeachMode } from '../../types/const'
 import PopUpMessage from '../PopUpMessage';
 import { updateExtractResponse, removeExtractResponse } from '../../actions/teachActions'
+import './EntityExtractor.css'
 
 interface ComponentState {
     entityModalOpen: boolean,
@@ -25,7 +26,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
             entityModalOpen: false,
             popUpOpen: false
         }
-        this.entityButtonOnClick = this.entityButtonOnClick.bind(this);
+        this.onClickCreateEntity = this.onClickCreateEntity.bind(this);
         this.onClickDoneExtracting = this.onClickDoneExtracting.bind(this);
         this.entityEditorHandleClose = this.entityEditorHandleClose.bind(this);
     }
@@ -43,22 +44,23 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
             entityModalOpen: false
         })
     }
-    entityButtonOnClick() {
+    onClickCreateEntity() {
         this.setState({
             entityModalOpen: true
         })
     }
-    handleClosePopUpModal() {
+    onClickConfirmPopUpModal() {
         this.setState({
             popUpOpen: false
         })
     }
-    handleOpenPopUpModal() {
+    openPopUpModal() {
         this.setState({
             popUpOpen: true
         })
     }
-    /** Returns true is predicted entities match */
+
+    /** Returns true if predicted entities match */
     isValid(primaryResponse: ExtractResponse, extractResponse: ExtractResponse): boolean {
         let missing = primaryResponse.predictedEntities.filter(item =>
             !extractResponse.predictedEntities.find(er => item.entityId == er.entityId));
@@ -72,79 +74,49 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
             return false;
         }
         return true;
-    } 
-    allValid(extractResponses : ExtractResponse[]): boolean {
-        for (let extractResponse of extractResponses) {
-            if (extractResponse != extractResponses[0]) {
-                if (!this.isValid(extractResponses[0], extractResponse)) {
-                    return false;
-                }
-            }
-        }
-        return true;
     }
-    toLabeledEntities(predictedEntities : PredictedEntity[]) : LabeledEntity[] {
-        let labeledEntities : LabeledEntity[] = [];
-        for (let predictedEntity of predictedEntities)
-        {
-            let labelEntity = new LabeledEntity({
-                startCharIndex: predictedEntity.startCharIndex,
-                endCharIndex: predictedEntity.endCharIndex,
-                entityId: predictedEntity.entityId,
-                entityName: predictedEntity.entityName,
-                entityText: predictedEntity.entityText
-            });
-            labeledEntities.push(labelEntity);
-        }
-        return labeledEntities;
+
+    /**
+     * Ensure each extract response has the same types of predicted entities
+     * E.g. if Primary (response[0]) has name and color declared, all variations (1 through n) must also
+     * have name and color declared
+     */
+    allValid(extractResponses: ExtractResponse[]): boolean {
+        return extractResponses.every(extractResponse => (extractResponse === extractResponses[0]) ? true : this.isValid(extractResponses[0], extractResponse))
     }
-    toPredictedEntities(labeledEntities : LabeledEntity[]) : PredictedEntity[] {
-        let predictedEntities : PredictedEntity[] = [];
-        for (let labeledEntity of labeledEntities)
-        {
-            let predictedEntity = new PredictedEntity({
-                startCharIndex: labeledEntity.startCharIndex,
-                endCharIndex: labeledEntity.endCharIndex,
-                entityId: labeledEntity.entityId,
-                entityName: labeledEntity.entityName,
-                entityText: labeledEntity.entityText
-            });
-            predictedEntities.push(predictedEntity);
-        }
-        return predictedEntities;
+    toLabeledEntities(predictedEntities: PredictedEntity[]): LabeledEntity[] {
+        return predictedEntities.map<LabeledEntity>(predictedEntity => new LabeledEntity(predictedEntity))
     }
-    toExtractResponses(textVariations: TextVariation[]) : ExtractResponse[] {
-        let extractResponses : ExtractResponse[] = [];
-        for (let textVariation of textVariations)
-        {
-            let predictedEntities = this.toPredictedEntities(textVariation.labelEntities);
-            let extractResponse = new ExtractResponse({
-                text: textVariation.text,
-                predictedEntities: predictedEntities
-            });
-            extractResponses.push(extractResponse);
-        }
-        return extractResponses;
+    toPredictedEntities(labeledEntities: LabeledEntity[]): PredictedEntity[] {
+        return labeledEntities.map<PredictedEntity>(labeledEntity => new PredictedEntity(labeledEntity))
     }
+    toExtractResponses(textVariations: TextVariation[]): ExtractResponse[] {
+        return textVariations.map<ExtractResponse>(textVariation => new ExtractResponse({
+            text: textVariation.text,
+            predictedEntities: this.toPredictedEntities(textVariation.labelEntities)
+        }))
+    }
+
     // Return merge of extract responses and text variations
-    allResponses() : ExtractResponse[] {
+    allResponses(): ExtractResponse[] {
         let convertedVariations = this.toExtractResponses(this.props.textVariations);
         let allResponses = [...convertedVariations, ...this.props.extractResponses];
         return allResponses;
     }
+
     onClickDoneExtracting() {
         let allResponses = this.allResponses();
 
         if (!this.allValid(allResponses)) {
-            this.handleOpenPopUpModal();
+            this.openPopUpModal();
             return;
         }
 
-        let textVariations: TextVariation[] = [];
-        for (let extractResponse of allResponses) {
-            let labeledEntities = this.toLabeledEntities(extractResponse.predictedEntities);
-            textVariations.push(new TextVariation({ text: extractResponse.text, labelEntities: labeledEntities }));
-        }     
+        let textVariations = allResponses.map<TextVariation>(extractResponse => new TextVariation({
+            text: extractResponse.text,
+            labelEntities: this.toLabeledEntities(extractResponse.predictedEntities)
+        }))
+
         this.props.onTextVariationsExtracted(allResponses[0], textVariations);
     }
     render() {
@@ -153,88 +125,70 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
             return null;
         }
 
-        // Don't show edit components when in auto TACH or on score step
-        let canEdit = (!this.props.autoTeach && this.props.teachMode == TeachMode.Extractor);
-
-        let variationCreator = null;
-        let addEntity = null;
-        let editComponents = null;
-        let extractDisplay = null;
-        if (canEdit) {
-            variationCreator = <TextVariationCreator
-                appId={this.props.appId}
-                sessionId={this.props.sessionId}
-                extractType={this.props.extractType}
-                turnIndex={this.props.turnIndex} />
-            addEntity =
-                <CommandButton
-                    className="blis-button--gold teachCreateButton"
-                    onClick={this.entityButtonOnClick}
-                    ariaDescription='Cancel'
-                    text='Entity'
-                    iconProps={{ iconName: 'CirclePlus' }}
-                />
-            editComponents =
-                <div>
-                    <CommandButton
-                        onClick={this.onClickDoneExtracting}
-                        className='ms-font-su blis-button--gold'
-                        ariaDescription={this.props.extractButtonName}
-                        text={this.props.extractButtonName}
-                        ref="doneExtractingButton"
-                    />
-
-                    <EntityCreatorEditor
-                        open={this.state.entityModalOpen}
-                        entity={null}
-                        handleClose={this.entityEditorHandleClose} />
-                </div>
-
-            let key = 0;
-            extractDisplay = [];
-            for (let extractResponse of allResponses) {
-                let isValid = true;
-                if (extractResponse != allResponses[0]) {
-                    isValid = this.isValid(allResponses[0], extractResponse);
-                }
-
-                extractDisplay.push(<ExtractorResponseEditor
-                    canEdit={canEdit}
-                    key={key++}
-                    isPrimary={key == 1}
-                    isValid={isValid}
-                    extractResponse={extractResponse}
-                    updateExtractResponse={extractResponse => this.props.updateExtractResponse(extractResponse)}
-                    removeExtractResponse={extractResponse => this.props.removeExtractResponse(extractResponse)}
-                />);
-            }
-        }
-        else {
-            // Only display primary response if not in edit mode
-            const extractResponse = allResponses[0]
-            extractDisplay = <ExtractorResponseEditor
-                canEdit={canEdit}
-                key={0}
-                isPrimary={true}
-                isValid={true}
-                extractResponse={extractResponse}
-                updateExtractResponse={extractResponse => this.props.updateExtractResponse(extractResponse)}
-                removeExtractResponse={extractResponse => this.props.removeExtractResponse(extractResponse)}
-            />
-        }
+        // Don't show edit components when in auto TEACH or on score step
+        const canEdit = (!this.props.autoTeach && this.props.teachMode == TeachMode.Extractor);
+        const extractResponsesToRender = canEdit ? allResponses : [allResponses[0]]
 
         return (
             <div>
                 <div>
-                    <div className='teachTitleBox'>
-                        <div className='ms-font-l teachTitle'>Entity Detection</div>
-                        {addEntity}
-                    </div>
-                    {extractDisplay}
-                    {variationCreator}
+                    {extractResponsesToRender.map((extractResponse, key) => {
+                        let isValid = true;
+                        if (extractResponse !== allResponses[0]) {
+                            isValid = this.isValid(allResponses[0], extractResponse);
+                        }
+
+                        return <ExtractorResponseEditor
+                            canEdit={canEdit}
+                            key={key}
+                            isPrimary={key === 0}
+                            isValid={isValid}
+                            extractResponse={extractResponse}
+                            updateExtractResponse={extractResponse => this.props.updateExtractResponse(extractResponse)}
+                            removeExtractResponse={extractResponse => this.props.removeExtractResponse(extractResponse)}
+                        />
+                    })}
+                    {canEdit &&
+                        <TextVariationCreator
+                            appId={this.props.appId}
+                            sessionId={this.props.sessionId}
+                            extractType={this.props.extractType}
+                            turnIndex={this.props.turnIndex}
+                        />
+                    }
                 </div>
-                {editComponents}
-                <PopUpMessage open={this.state.popUpOpen} onConfirm={() => this.handleClosePopUpModal()} title="Text variations must all have same tagged entities." />
+                {canEdit &&
+                    <div className="blis-entity-extractor-buttons">
+                        <PrimaryButton
+                            onClick={this.onClickDoneExtracting}
+                            className='blis-button--gold'
+                            ariaDescription={this.props.extractButtonName}
+                            text={this.props.extractButtonName}
+                            ref="doneExtractingButton"
+                        />
+
+                        <DefaultButton
+                            className="blis-button--gold"
+                            onClick={this.onClickCreateEntity}
+                            ariaDescription='Cancel'
+                            text='Entity'
+                            iconProps={{ iconName: 'CirclePlus' }}
+                        />
+
+                    </div>
+                }
+
+                {/* Modals */}
+                <EntityCreatorEditor
+                    open={this.state.entityModalOpen}
+                    entity={null}
+                    handleClose={this.entityEditorHandleClose}
+                />
+                <PopUpMessage
+                    open={this.state.popUpOpen}
+                    onConfirm={() => this.onClickConfirmPopUpModal()}
+                    title="Text variations must all have same tagged entities."
+                />
             </div>
         )
     }

@@ -165,16 +165,19 @@ html {
 /** Log Dialog Admin */
 .blis-log-dialog-admin {
   display: grid;
-  grid-gap: 1rem;
-}
-.blis-log-dialog-admin__title {
-  font-weight: bold;
-  border-bottom: 1px solid black;
+  grid-gap: 2rem;
 }
 .blis-log-dialog-admin__content {
-  padding-bottom: 1em;
+  display: grid;
+  grid-gap: 1rem;
 }
-.blis-log-dialog-admin__chosen-action {
+
+.blis-log-dialog-admin-title {
+  font-weight: bold;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid black;
+}
+.blis-log-dialog-admin-chosen-action {
   padding: 1em 0;
   font-weight: bold
 }
