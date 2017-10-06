@@ -71,6 +71,18 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     focusNewEntityButton(): void {
         findDOMNode<HTMLButtonElement>(this.refs.newSession).focus();
     }
+    componentWillReceiveProps(newProps: Props) {
+        // If train dialogs have been updated, update selected trainDialog too
+        if (this.props.trainDialogs != newProps.trainDialogs) {
+            if (this.state.trainDialog) {
+                let newTrainDialog = newProps.trainDialogs.find(t => t.trainDialogId == this.state.trainDialog.trainDialogId);
+                this.setState({
+                    trainDialog : newTrainDialog
+                })
+            }
+            this.focusNewEntityButton();
+        }
+    }
     firstUtterance(item: any) {
         try {
             if (item.rounds && item.rounds.length > 0) {
@@ -164,7 +176,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
     renderTrainDialogItems(): TrainDialog[] {
         // let lcString = this.state.searchValue.toLowerCase();
-        let filteredTrainDialogs = this.props.trainDialogs.all.filter((t: TrainDialog) => {
+        let filteredTrainDialogs = this.props.trainDialogs.filter((t: TrainDialog) => {
             return true
         })
         return filteredTrainDialogs;

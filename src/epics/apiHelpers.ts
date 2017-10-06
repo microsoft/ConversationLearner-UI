@@ -17,7 +17,7 @@ import { Observable, Observer } from 'rxjs'
 import { fetchBotInfoFulfilled, fetchApplicationsFulfilled, fetchAllEntitiesFulfilled, fetchAllActionsFulfilled, fetchAllChatSessionsFulfilled, fetchAllTeachSessionsFulfilled, fetchAllTrainDialogsFulfilled, fetchAllLogDialogsFulfilled, fetchAllLogDialogsAsync } from '../actions/fetchActions'
 import { createApplicationFulfilled, createEntityFulfilled, createPositiveEntityFulfilled, createNegativeEntityFulfilled, createActionFulfilled, createChatSessionFulfilled, createTeachSessionFulfilled, createTrainDialogFulfilled } from '../actions/createActions'
 import { deleteBLISApplicationFulfilled, deleteReverseEntityAsnyc, deleteEntityFulfilled, deleteActionFulfilled, deleteChatSessionFulfilled, deleteTeachSessionFulfilled, deleteLogDialogFulFilled, deleteTrainDialogFulfilled } from '../actions/deleteActions'
-import { editBLISApplicationFulfilled, editEntityFulfilled, editActionFulfilled } from '../actions/updateActions'
+import { editBLISApplicationFulfilled, editEntityFulfilled, editActionFulfilled, editTrainDialogFulfilled } from '../actions/updateActions'
 import { runExtractorFulfilled, runScorerFulfilled, postScorerFeedbackWaitFulfilled, postScorerFeedbackNoWaitFulfilled } from '../actions/teachActions'
 import { setErrorDisplay, setCurrentBLISAppFulfilled } from '../actions/displayActions'
 import { fetchAllTrainDialogsAsync } from '../actions/fetchActions';
@@ -290,6 +290,16 @@ export interface BlisAppForUpdate extends BlisAppBase {
         })
         .catch(err => handleError(obs, err, AT.EDIT_ENTITY_ASYNC)));
     }
+    export const editTrainDialog = (key: string, appId: string, trainDialog: TrainDialog): Observable<ActionObject> => {
+      let editTrainDialogRoute: string = makeRoute(key, `app/${appId}/traindialog/${trainDialog.trainDialogId}`);
+      const { trainDialogId, ...trainDialogToSend } = trainDialog;
+      return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => axios.put(editTrainDialogRoute, trainDialogToSend, config)
+        .then(response => {
+          obs.next(editTrainDialogFulfilled(trainDialog));
+          obs.complete();
+        })
+        .catch(err => handleError(obs, err, AT.EDIT_TRAIN_DIALOG_ASYNC)));
+    };
 
 //========================================================
 // SESSION ROUTES

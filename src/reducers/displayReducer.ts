@@ -59,6 +59,7 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
         case AT.EDIT_ACTION_ASYNC:
         case AT.EDIT_BLIS_APPLICATION_ASYNC:
         case AT.EDIT_ENTITY_ASYNC:
+        case AT.EDIT_TRAIN_DIALOG_ASYNC:
 
         case AT.FETCH_ACTIONS_ASYNC:
         case AT.FETCH_APPLICATIONS_ASYNC:
@@ -89,6 +90,7 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
         case AT.EDIT_ACTION_FULFILLED:
         case AT.EDIT_BLIS_APPLICATION_FULFILLED:
         case AT.EDIT_ENTITY_FULFILLED:
+        case AT.EDIT_TRAIN_DIALOG_FULFILLED:
 
         case AT.FETCH_ACTIONS_FULFILLED:
         case AT.FETCH_BOTINFO_FULFILLED:

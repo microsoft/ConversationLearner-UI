@@ -31,7 +31,11 @@ export type UpdateAction = {
     type: AT.EDIT_ACTION_FULFILLED,
     blisAction: ActionBase
 } | {
-    type: AT.EDIT_TRAIN_DIALOG,
+    type: AT.EDIT_TRAIN_DIALOG_ASYNC,
+    trainDialog: TrainDialog,
+    currentAppId: string
+} | {
+    type: AT.EDIT_TRAIN_DIALOG_FULFILLED,
     trainDialog: TrainDialog,
 } | {
     type: AT.EDIT_LOG_DIALOG,
@@ -307,6 +311,8 @@ export type TeachAction = {
 } | {
     type: AT.REMOVE_EXTRACT_RESPONSE,
     extractResponse: ExtractResponse
+} | {
+    type: AT.CLEAR_EXTRACT_RESPONSES
 } | {
     type: AT.RUN_SCORER_ASYNC,
     key: string,

@@ -18,7 +18,7 @@ class TeachSessionAdmin extends React.Component<Props, {}> {
         this.onTextVariationsExtracted = this.onTextVariationsExtracted.bind(this)
     }
 
-    onTextVariationsExtracted(extractResponse: ExtractResponse, textVariations:TextVariation[]) : void {
+    onTextVariationsExtracted(extractResponse: ExtractResponse, textVariations: TextVariation[], turnIndex: number) : void {
         let trainExtractorStep = new TrainExtractorStep({
             textVariations: textVariations
         });

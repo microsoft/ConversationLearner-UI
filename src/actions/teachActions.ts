@@ -42,6 +42,13 @@ export const removeExtractResponse = (extractResponse: ExtractResponse) : Action
     }
 }
 
+// Clear extract responses
+export const clearExtractResponses = () : ActionObject => { 
+    return {
+        type: AT.CLEAR_EXTRACT_RESPONSES
+    }
+}
+
 export const runScorerAsync = (key: string, appId: string, teachId: string, uiScoreInput: UIScoreInput) : ActionObject => { 
     return {
         type: AT.RUN_SCORER_ASYNC,

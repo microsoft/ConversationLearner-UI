@@ -4,13 +4,19 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../../types'
 import { TeachMode } from '../../types/const';
-import { updateExtractResponse, removeExtractResponse } from '../../actions/teachActions'
+import { editTrainDialogAsync } from '../../actions/updateActions';
+import { clearExtractResponses } from '../../actions/teachActions'
 import EntityExtractor from './EntityExtractor';
 import { Activity } from 'botframework-directlinejs'
 import { ActionBase, TrainDialog, TrainRound, TrainScorerStep, 
     EntityBase, TextVariation, ExtractResponse, ExtractType } from 'blis-models'
 
 class TrainDialogAdmin extends React.Component<Props, {}> {
+
+    constructor(p: Props) {
+        super(p)
+        this.onTextVariationsExtracted = this.onTextVariationsExtracted.bind(this)
+    }
 
     findRoundAndScorerStep(trainDialog: TrainDialog, activity: Activity): { round: TrainRound, scorerStep: TrainScorerStep } {
         // TODO: Add roundIndex and scoreIndex to activity instead of hiding within id if these are needed as first class properties.
@@ -34,19 +40,22 @@ class TrainDialogAdmin extends React.Component<Props, {}> {
         }
     }
 
-    onTextVariationsExtracted(extractResponse: ExtractResponse, textVariations: TextVariation[]) : void {
-        // TODO
-       /* let trainExtractorStep = new TrainExtractorStep({
-            textVariations: textVariations
-        });
+    onTextVariationsExtracted(extractResponse: ExtractResponse, textVariations: TextVariation[], turnIndex: number) : void {
 
-        let uiScoreInput = new UIScoreInput({ trainExtractorStep: trainExtractorStep, extractResponse: extractResponse });
+        // TODO: Determine if extracted entities have changed.  If so, subsequent turns must be removed
 
-        let appId = this.props.app.appId;
-        let teachId = this.props.teachSession.current.teachId;
-        this.props.runScorerAsync(this.props.user.key, appId, teachId, uiScoreInput);*/
+
+        // Otherwise just update the text Variations
+        let round = this.props.trainDialog.rounds[turnIndex]; 
+        let newExtractorStep = {...round.extractorStep, textVariations: textVariations};
+        let newRound = {...round, extractorStep: newExtractorStep };
+        let newRounds = [...this.props.trainDialog.rounds];
+        newRounds[turnIndex] = newRound;
+        let updatedTrainDialog = {...this.props.trainDialog, rounds: newRounds};
+
+        this.props.editTrainDialogAsync(this.props.user.key, updatedTrainDialog, this.props.appId);
+        this.props.clearExtractResponses();
     }
-
     get turnIndex() : number {
         return this.props.selectedActivity ? this.props.selectedActivity.id.split(":").map(s => parseInt(s))[0] : 0;
     }
@@ -100,12 +109,13 @@ class TrainDialogAdmin extends React.Component<Props, {}> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        updateExtractResponse,
-        removeExtractResponse
+        editTrainDialogAsync,
+        clearExtractResponses
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {
     return {
+        user: state.user,
         appId: state.apps.current.appId,
         actions: state.actions,
         entities: state.entities

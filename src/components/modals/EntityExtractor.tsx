@@ -11,24 +11,34 @@ import ExtractorResponseEditor from '../ExtractorResponseEditor';
 import EntityCreatorEditor from './EntityCreatorEditor';
 import { TeachMode } from '../../types/const'
 import PopUpMessage from '../PopUpMessage';
-import { updateExtractResponse, removeExtractResponse } from '../../actions/teachActions'
+import { clearExtractResponses, updateExtractResponse, removeExtractResponse } from '../../actions/teachActions'
 
 interface ComponentState {
     entityModalOpen: boolean,
-    popUpOpen: boolean
+    popUpOpen: boolean, 
+    textVariations: TextVariation[]
 };
 
+// TODO: Need to re-define TextVariaion / ExtractResponse class defs so we don't need
+// to do all the messy conversion back and forth
 class EntityExtractor extends React.Component<Props, ComponentState> {
     constructor(p: any) {
         super(p)
         this.state = {
             entityModalOpen: false,
-            popUpOpen: false
+            popUpOpen: false,
+            textVariations: []
         }
         this.entityButtonOnClick = this.entityButtonOnClick.bind(this);
         this.onClickDoneExtracting = this.onClickDoneExtracting.bind(this);
         this.entityEditorHandleClose = this.entityEditorHandleClose.bind(this);
+        this.onRemoveExtractResponse = this.onRemoveExtractResponse.bind(this)
+        this.onUpdateExtractResponse = this.onUpdateExtractResponse.bind(this)
     }
+    componentWillMount() {
+        this.setState({textVariations : this.props.textVariations})
+    }
+
     componentDidMount() {
         findDOMNode<HTMLButtonElement>(this.refs.doneExtractingButton).focus();
     }
@@ -36,6 +46,15 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         // If not in interactive mode run scorer automatically
         if (this.props.autoTeach && this.props.teachMode == TeachMode.Extractor) {
             this.onClickDoneExtracting();
+        }
+    }
+    componentWillReceiveProps(newProps: Props) {
+        // If I'm swiching my round, clear any extracted responses
+        if (this.props.sessionId != newProps.sessionId || this.props.turnIndex != newProps.turnIndex) {
+           this.props.clearExtractResponses();
+        }
+        if (this.props.textVariations != this.state.textVariations) {
+            this.setState({textVariations : this.props.textVariations})
         }
     }
     entityEditorHandleClose() {
@@ -113,6 +132,15 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         }
         return predictedEntities;
     }
+    toTextVariation(extractResponse: ExtractResponse) : TextVariation {
+
+        let labeledEntities = this.toLabeledEntities(extractResponse.predictedEntities);
+        let textVariation = new TextVariation({
+            text: extractResponse.text,
+            labelEntities: labeledEntities
+        });
+        return textVariation;
+    }
     toExtractResponses(textVariations: TextVariation[]) : ExtractResponse[] {
         let extractResponses : ExtractResponse[] = [];
         for (let textVariation of textVariations)
@@ -128,7 +156,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
     }
     // Return merge of extract responses and text variations
     allResponses() : ExtractResponse[] {
-        let convertedVariations = this.toExtractResponses(this.props.textVariations);
+        let convertedVariations = this.toExtractResponses(this.state.textVariations as TextVariation[]);
         let allResponses = [...convertedVariations, ...this.props.extractResponses];
         return allResponses;
     }
@@ -145,7 +173,37 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
             let labeledEntities = this.toLabeledEntities(extractResponse.predictedEntities);
             textVariations.push(new TextVariation({ text: extractResponse.text, labelEntities: labeledEntities }));
         }     
-        this.props.onTextVariationsExtracted(allResponses[0], textVariations);
+        this.props.onTextVariationsExtracted(allResponses[0], textVariations, this.props.turnIndex);
+    }
+    onRemoveExtractResponse(extractResponse: ExtractResponse) : void {
+        // First look at extract reponses
+        let foundResponse = this.props.extractResponses.find(e => e.text == extractResponse.text);
+        if (foundResponse) {
+            this.props.removeExtractResponse(foundResponse);
+            return;
+        }
+        // Remove from text variations
+        let newVariations = this.state.textVariations.filter((v : TextVariation) => v.text != extractResponse.text);
+        this.setState({textVariations: newVariations});
+    }
+    onUpdateExtractResponse(extractResponse: ExtractResponse) : void {
+        // First look at extract reponses
+        let foundResponse = this.props.extractResponses.find(e => e.text == extractResponse.text);
+        if (foundResponse) {
+            this.props.updateExtractResponse(extractResponse);
+            return;
+        }
+        
+        // Replace existing text variation (if any) with new one and maintain ordering
+        let index = this.state.textVariations.findIndex((v : TextVariation) => v.text == extractResponse.text);
+        if (index < 0) {
+            // Should never happen, but protect just in case
+            return;
+        }
+        let newVariation = this.toTextVariation(extractResponse);
+        let newVariations = [...this.state.textVariations];
+        newVariations[index] = newVariation;
+        this.setState({textVariations: newVariations});
     }
     render() {
         let allResponses = this.allResponses();
@@ -204,8 +262,8 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                     isPrimary={key == 1}
                     isValid={isValid}
                     extractResponse={extractResponse}
-                    updateExtractResponse={extractResponse => this.props.updateExtractResponse(extractResponse)}
-                    removeExtractResponse={extractResponse => this.props.removeExtractResponse(extractResponse)}
+                    updateExtractResponse={extractResponse => this.onUpdateExtractResponse(extractResponse)}
+                    removeExtractResponse={extractResponse => this.onRemoveExtractResponse(extractResponse)}
                 />);
             }
         }
@@ -218,8 +276,8 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                 isPrimary={true}
                 isValid={true}
                 extractResponse={extractResponse}
-                updateExtractResponse={extractResponse => this.props.updateExtractResponse(extractResponse)}
-                removeExtractResponse={extractResponse => this.props.removeExtractResponse(extractResponse)}
+                updateExtractResponse={extractResponse => this.onUpdateExtractResponse(extractResponse)}
+                removeExtractResponse={extractResponse => this.onRemoveExtractResponse(extractResponse)}
             />
         }
 
@@ -242,7 +300,8 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         updateExtractResponse,
-        removeExtractResponse
+        removeExtractResponse,
+        clearExtractResponses
     }, dispatch);
 }
 const mapStateToProps = (state: State, ownProps: any) => {
@@ -262,7 +321,7 @@ export interface ReceivedProps {
     teachMode: TeachMode
     textVariations: TextVariation[],
     extractButtonName: string,
-    onTextVariationsExtracted: (extractResponse: ExtractResponse, textVariations: TextVariation[]) => void
+    onTextVariationsExtracted: (extractResponse: ExtractResponse, textVariations: TextVariation[], turnIndex: number) => void
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
