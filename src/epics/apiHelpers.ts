@@ -16,7 +16,7 @@ import * as Rx from 'rxjs';
 import { Observable, Observer } from 'rxjs'
 import { fetchBotInfoFulfilled, fetchApplicationsFulfilled, fetchAllEntitiesFulfilled, fetchAllActionsFulfilled, fetchAllChatSessionsFulfilled, fetchAllTeachSessionsFulfilled, fetchAllTrainDialogsFulfilled, fetchAllLogDialogsFulfilled, fetchAllLogDialogsAsync } from '../actions/fetchActions'
 import { createApplicationFulfilled, createEntityFulfilled, createPositiveEntityFulfilled, createNegativeEntityFulfilled, createActionFulfilled, createChatSessionFulfilled, createTeachSessionFulfilled, createTrainDialogFulfilled } from '../actions/createActions'
-import { deleteBLISApplicationFulfilled, deleteReverseEntityAsnyc, deleteEntityFulfilled, deleteActionFulfilled, deleteChatSessionFulfilled, deleteTeachSessionFulfilled, deleteLogDialogFulFilled, deleteTrainDialogFulfilled } from '../actions/deleteActions'
+import { deleteBLISApplicationFulfilled, deleteReverseEntityAsnyc, deleteEntityFulfilled, deleteActionFulfilled, deleteChatSessionFulfilled, deleteTeachSessionFulfilled, deleteLogDialogAsync, deleteLogDialogFulFilled, deleteTrainDialogFulfilled } from '../actions/deleteActions'
 import { editBLISApplicationFulfilled, editEntityFulfilled, editActionFulfilled } from '../actions/updateActions'
 import { runExtractorFulfilled, runScorerFulfilled, postScorerFeedbackWaitFulfilled, postScorerFeedbackNoWaitFulfilled } from '../actions/teachActions'
 import { setErrorDisplay, setCurrentBLISAppFulfilled } from '../actions/displayActions'
@@ -467,11 +467,12 @@ export interface BlisAppForUpdate extends BlisAppBase {
   };
 
 // Train
-export const createTrainDialog = (key: string, appId: string, trainDialog: TrainDialog): Observable<ActionObject> => {
+export const createTrainDialog = (key: string, appId: string, trainDialog: TrainDialog, logDialogId: string): Observable<ActionObject> => {
   const configWithBody = {...config, body: trainDialog}
   return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => axios.post(makeRoute(key, `app/${appId}/traindialog`), configWithBody).then(response => {
     trainDialog.trainDialogId = response.data.trainDialogId;
     obs.next(createTrainDialogFulfilled(trainDialog));
+    obs.next(deleteLogDialogAsync(appId, logDialogId))
     obs.complete();
   })
     .catch(err => handleError(obs, err, AT.CREATE_TRAIN_DIALOG_ASYNC)));

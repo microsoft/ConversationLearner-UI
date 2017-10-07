@@ -120,12 +120,13 @@ export const createTeachSessionFulfilled = (teachSession: Teach, teachSessionId:
     }
 }
 
-export const createTrainDialogAsync = (key: string, appId: string, trainDialog: TrainDialog): ActionObject =>
+export const createTrainDialogAsync = (key: string, appId: string, trainDialog: TrainDialog, logDialogId: string): ActionObject =>
     ({
         type: AT.CREATE_TRAIN_DIALOG_ASYNC,
         key,
         appId,
-        trainDialog
+        trainDialog,
+        logDialogId
     })
 
 export const createTrainDialogFulfilled = (trainDialog: TrainDialog): ActionObject =>

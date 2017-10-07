@@ -170,6 +170,8 @@ export type CreateAction = {
     action: ActionBase
 } | {
     type: AT.CREATE_TRAIN_DIALOG_ASYNC,
+    key: string,
+    logDialogId: string,
     trainDialog: TrainDialog,
     appId: string
 } | {
