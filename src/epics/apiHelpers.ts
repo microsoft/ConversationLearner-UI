@@ -14,13 +14,7 @@ import {
 } from 'blis-models'
 import * as Rx from 'rxjs';
 import { Observable, Observer } from 'rxjs'
-import { fetchBotInfoFulfilled, fetchApplicationsFulfilled, fetchAllEntitiesFulfilled, fetchAllActionsFulfilled, fetchAllChatSessionsFulfilled, fetchAllTeachSessionsFulfilled, fetchAllTrainDialogsFulfilled, fetchAllLogDialogsFulfilled, fetchAllLogDialogsAsync } from '../actions/fetchActions'
-import { createApplicationFulfilled, createEntityFulfilled, createPositiveEntityFulfilled, createNegativeEntityFulfilled, createActionFulfilled, createChatSessionFulfilled, createTeachSessionFulfilled, createTrainDialogFulfilled } from '../actions/createActions'
-import { deleteBLISApplicationFulfilled, deleteReverseEntityAsnyc, deleteEntityFulfilled, deleteActionFulfilled, deleteChatSessionFulfilled, deleteTeachSessionFulfilled, deleteLogDialogAsync, deleteLogDialogFulFilled, deleteTrainDialogFulfilled } from '../actions/deleteActions'
-import { editBLISApplicationFulfilled, editEntityFulfilled, editActionFulfilled } from '../actions/updateActions'
-import { runExtractorFulfilled, runScorerFulfilled, postScorerFeedbackWaitFulfilled, postScorerFeedbackNoWaitFulfilled } from '../actions/teachActions'
-import { setErrorDisplay, setCurrentBLISAppFulfilled } from '../actions/displayActions'
-import { fetchAllTrainDialogsAsync } from '../actions/fetchActions';
+import actions from '../actions'
 import { ActionObject } from '../types'
 import { AT } from '../types/ActionTypes'
 
@@ -63,7 +57,7 @@ export interface BlisAppForUpdate extends BlisAppBase {
     let setBlisAppRoute: string = makeRoute(key, `state/app`);
     return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => axios.put(setBlisAppRoute, blisApp, config)
       .then(response => {
-        obs.next(setCurrentBLISAppFulfilled(blisApp));
+        obs.next(actions.display.setCurrentBLISAppFulfilled(blisApp));
         obs.complete();
       })
       .catch(err => handleError(obs, err, AT.SET_CURRENT_BLIS_APP_ASYNC)));
@@ -77,7 +71,7 @@ export interface BlisAppForUpdate extends BlisAppBase {
     const getBotRoute: string = makeRoute(key, `bot`);
     return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => axios.get(getBotRoute, config)
       .then(response => {
-        obs.next(fetchBotInfoFulfilled(response.data));
+        obs.next(actions.fetch.fetchBotInfoFulfilled(response.data));
         obs.complete();
       })
       .catch(err => handleError(obs, err, AT.FETCH_BOTINFO_ASYNC)));
@@ -87,7 +81,7 @@ export interface BlisAppForUpdate extends BlisAppBase {
     const getAppsRoute: string = makeRoute(key, `apps`, `userId=${userId}`);
     return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => axios.get(getAppsRoute, config)
       .then(response => {
-        obs.next(fetchApplicationsFulfilled(response.data.apps));
+        obs.next(actions.fetch.fetchApplicationsFulfilled(response.data.apps));
         obs.complete();
       })
       .catch(err => handleError(obs, err, AT.FETCH_APPLICATIONS_ASYNC)));
@@ -97,7 +91,7 @@ export interface BlisAppForUpdate extends BlisAppBase {
     let getEntitiesForAppRoute: string = makeRoute(key, `app/${appId}/entities`);
     return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => axios.get(getEntitiesForAppRoute, config)
       .then(response => {
-        obs.next(fetchAllEntitiesFulfilled(response.data.entities));
+        obs.next(actions.fetch.fetchAllEntitiesFulfilled(response.data.entities));
         obs.complete();
       })
       .catch(err => handleError(obs, err, AT.FETCH_ENTITIES_ASYNC)));
@@ -107,7 +101,7 @@ export interface BlisAppForUpdate extends BlisAppBase {
     let getActionsForAppRoute: string = makeRoute(key, `app/${appId}/actions`);
     return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => axios.get(getActionsForAppRoute, config)
       .then(response => {
-        obs.next(fetchAllActionsFulfilled(response.data.actions));
+        obs.next(actions.fetch.fetchAllActionsFulfilled(response.data.actions));
         obs.complete();
       })
       .catch(err => handleError(obs, err, AT.FETCH_ACTIONS_ASYNC)));
@@ -117,7 +111,7 @@ export interface BlisAppForUpdate extends BlisAppBase {
     let getEntitiesForAppRoute: string = makeRoute(key, `app/${appId}/traindialogs`);
     return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => axios.get(getEntitiesForAppRoute, config)
       .then(response => {
-        obs.next(fetchAllTrainDialogsFulfilled(response.data.trainDialogs));
+        obs.next(actions.fetch.fetchAllTrainDialogsFulfilled(response.data.trainDialogs));
         obs.complete();
       })
       .catch(err => handleError(obs, err, AT.FETCH_TRAIN_DIALOGS_ASYNC)));
@@ -127,7 +121,7 @@ export interface BlisAppForUpdate extends BlisAppBase {
     let getActionsForAppRoute: string = makeRoute(key, `app/${appId}/logdialogs`);
     return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => axios.get(getActionsForAppRoute, config)
       .then(response => {
-        obs.next(fetchAllLogDialogsFulfilled(response.data.logDialogs));
+        obs.next(actions.fetch.fetchAllLogDialogsFulfilled(response.data.logDialogs));
         obs.complete();
       })
       .catch(err => handleError(obs, err, AT.FETCH_LOG_DIALOGS_ASYNC)));
@@ -159,7 +153,7 @@ export interface BlisAppForUpdate extends BlisAppBase {
     const { appId, ...appToSend } = blisApp
     return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => axios.post(addAppRoute, appToSend, config)
       .then(response => {
-        obs.next(createApplicationFulfilled(blisApp, response.data));
+        obs.next(actions.create.createApplicationFulfilled(blisApp, response.data));
         obs.complete();
       })
       .catch(err => handleError(obs, err, AT.CREATE_BLIS_APPLICATION_ASYNC)));
@@ -171,13 +165,13 @@ export interface BlisAppForUpdate extends BlisAppBase {
     return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => axios.post(addEntityRoute, entityToSend, config).then(response => {
       let newEntityId = response.data;
       if (!entity.metadata.isReversable) {
-        obs.next(createEntityFulfilled(entity, newEntityId));
+        obs.next(actions.create.createEntityFulfilled(entity, newEntityId));
       }
       else if (entity.metadata.positiveId) {
-        obs.next(createNegativeEntityFulfilled(key, reverseEntity, entity, newEntityId, appId));
+        obs.next(actions.create.createNegativeEntityFulfilled(key, reverseEntity, entity, newEntityId, appId));
       }
       else {
-        obs.next(createPositiveEntityFulfilled(key, entity, newEntityId, appId));
+        obs.next(actions.create.createPositiveEntityFulfilled(key, entity, newEntityId, appId));
       }
       obs.complete();
     })
@@ -190,7 +184,7 @@ export interface BlisAppForUpdate extends BlisAppBase {
     const { actionId, version, packageCreationId, packageDeletionId, ...actionToSend } = action;
     return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => axios.post(addActionRoute, actionToSend, config).then(response => {
       let newActionId = response.data;
-      obs.next(createActionFulfilled(action, newActionId));
+      obs.next(actions.create.createActionFulfilled(action, newActionId));
       obs.complete();
     })
       .catch(err => handleError(obs, err, AT.CREATE_ACTION_ASYNC)));
@@ -203,7 +197,7 @@ export interface BlisAppForUpdate extends BlisAppBase {
   export const deleteBlisApp = (key: string, blisApp: BlisAppForUpdate): Observable<ActionObject> => {
     return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => axios.delete(makeRoute(key, `app/${blisApp.appId}`))
       .then(response => {
-        obs.next(deleteBLISApplicationFulfilled(blisApp.appId));
+        obs.next(actions.delete.deleteBLISApplicationFulfilled(blisApp.appId));
         obs.complete();
       })
       .catch(err => handleError(obs, err, AT.DELETE_BLIS_APPLICATION_ASYNC)));
@@ -214,10 +208,10 @@ export interface BlisAppForUpdate extends BlisAppBase {
     return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => axios.delete(deleteEntityRoute)
       .then(response => {
         if (reverseEntityId) {
-          obs.next(deleteReverseEntityAsnyc(key, deleteEntityId, reverseEntityId, appId));
+          obs.next(actions.delete.deleteReverseEntityAsnyc(key, deleteEntityId, reverseEntityId, appId));
         }
         else {
-          obs.next(deleteEntityFulfilled(key, deleteEntityId, appId));
+          obs.next(actions.delete.deleteEntityFulfilled(key, deleteEntityId, appId));
         }
         obs.complete();
       })
@@ -229,7 +223,7 @@ export interface BlisAppForUpdate extends BlisAppBase {
     let configWithBody = { ...config, body: actionToSend }
     return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => axios.delete(deleteActionRoute, configWithBody)
       .then(response => {
-        obs.next(deleteActionFulfilled(action.actionId));
+        obs.next(actions.delete.deleteActionFulfilled(action.actionId));
         obs.complete();
       })
       .catch(err => handleError(obs, err, AT.DELETE_ACTION_ASYNC)));
@@ -238,7 +232,7 @@ export interface BlisAppForUpdate extends BlisAppBase {
   export const deleteLogDialog = (appId: string, logDialogId: string): Observable<ActionObject> => {
     return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => axios.delete(`${rootUrl}app/${appId}/logdialog/${logDialogId}`, config)
       .then(response => {
-        obs.next(deleteLogDialogFulFilled(logDialogId));
+        obs.next(actions.delete.deleteLogDialogFulFilled(logDialogId));
         obs.complete();
       })
       .catch(err => handleError(obs, err, AT.DELETE_LOG_DIALOG_ASYNC)));
@@ -250,7 +244,7 @@ export interface BlisAppForUpdate extends BlisAppBase {
     let configWithBody = { ...config, body: dialogToSend }
     return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => axios.delete(deleteActionRoute, configWithBody)
       .then(response => {
-        obs.next(deleteTrainDialogFulfilled(key, trainDialog.trainDialogId));
+        obs.next(actions.delete.deleteTrainDialogFulfilled(key, trainDialog.trainDialogId));
         obs.complete();
       })
       .catch(err => handleError(obs, err, AT.DELETE_TRAIN_DIALOG_ASYNC)));
@@ -265,7 +259,7 @@ export interface BlisAppForUpdate extends BlisAppBase {
       const { appId, latestPackageId, trainingRequired, trainingStatus, trainingFailureMessage, ...appToSend } = blisApp
       return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => axios.put(editAppRoute, appToSend, config)
         .then(response => {
-          obs.next(editBLISApplicationFulfilled(blisApp));
+          obs.next(actions.update.editBLISApplicationFulfilled(blisApp));
           obs.complete();
         })
         .catch(err => handleError(obs, err, AT.EDIT_BLIS_APPLICATION_ASYNC)));
@@ -275,7 +269,7 @@ export interface BlisAppForUpdate extends BlisAppBase {
       const { actionId, version, packageCreationId, packageDeletionId, ...actionToSend } = action
       return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => axios.put(editActionRoute, actionToSend, config)
         .then(response => {
-          obs.next(editActionFulfilled(action));
+          obs.next(actions.update.editActionFulfilled(action));
           obs.complete();
         })
         .catch(err => handleError(obs, err, AT.EDIT_ACTION_ASYNC)));
@@ -285,7 +279,7 @@ export interface BlisAppForUpdate extends BlisAppBase {
       const { version, packageCreationId, packageDeletionId, ...entityToSend } = entity;
       return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => axios.put(editActionRoute, entityToSend, config)
         .then(response => {
-          obs.next(editEntityFulfilled(entity));
+          obs.next(actions.update.editEntityFulfilled(entity));
           obs.complete();
         })
         .catch(err => handleError(obs, err, AT.EDIT_ENTITY_ASYNC)));
@@ -303,7 +297,7 @@ export interface BlisAppForUpdate extends BlisAppBase {
     // let configWithBody = {...config, body: session}
     return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => axios.post(addSessionRoute, config).then(response => {
       let newSessionId = response.data.sessionId;
-      obs.next(createChatSessionFulfilled(session, newSessionId));
+      obs.next(actions.create.createChatSessionFulfilled(session, newSessionId));
       obs.complete();
     })
       .catch(err => handleError(obs, err, AT.CREATE_CHAT_SESSION_ASYNC)));
@@ -313,8 +307,8 @@ export interface BlisAppForUpdate extends BlisAppBase {
     let deleteAppRoute: string = makeRoute(key, `app/${appId}/session/${session.sessionId}`);
     return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => axios.delete(deleteAppRoute, config)
       .then(response => {
-        obs.next(deleteChatSessionFulfilled(session.sessionId));
-        obs.next(fetchAllLogDialogsAsync(key, appId));
+        obs.next(actions.delete.deleteChatSessionFulfilled(session.sessionId));
+        obs.next(actions.fetch.fetchAllLogDialogsAsync(key, appId));
         obs.complete();
       })
       .catch(err => handleError(obs, err, AT.DELETE_CHAT_SESSION_ASYNC)));
@@ -324,7 +318,7 @@ export interface BlisAppForUpdate extends BlisAppBase {
     let getSessionsForAppRoute: string = makeRoute(key, `app/${appId}/sessions`);
     return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => axios.get(getSessionsForAppRoute, config)
       .then(response => {
-        obs.next(fetchAllChatSessionsFulfilled(response.data.sessions));
+        obs.next(actions.fetch.fetchAllChatSessionsFulfilled(response.data.sessions));
         obs.complete();
       })
       .catch(err => handleError(obs, err, AT.FETCH_CHAT_SESSIONS_ASYNC)));
@@ -354,7 +348,7 @@ export interface BlisAppForUpdate extends BlisAppBase {
     // let configWithBody = {...config, body: teachSession}
     return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.post(addTeachRoute, config).then(response => {
         let newTeachSessionId = response.data.teachId;
-        obs.next(createTeachSessionFulfilled(teachSession, newTeachSessionId));
+        obs.next(actions.create.createTeachSessionFulfilled(teachSession, newTeachSessionId));
           obs.complete();
         })
         .catch(err => handleError(obs, err,  AT.CREATE_TEACH_SESSION_ASYNC)));;
@@ -364,8 +358,8 @@ export interface BlisAppForUpdate extends BlisAppBase {
     let deleteTeachSessionRoute: string = makeRoute(key, `app/${appId}/teach/${teachSession.teachId}`,`save=${save}`);
     return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.delete(deleteTeachSessionRoute, config)
       .then(response => {
-        obs.next(deleteTeachSessionFulfilled(key, teachSession.teachId, appId));
-        obs.next(fetchAllTrainDialogsAsync(key, appId));
+        obs.next(actions.delete.deleteTeachSessionFulfilled(key, teachSession.teachId, appId));
+        obs.next(actions.fetch.fetchAllTrainDialogsAsync(key, appId));
         obs.complete();
       })
       .catch(err => handleError(obs, err,  AT.DELETE_TEACH_SESSION_ASYNC)));
@@ -375,7 +369,7 @@ export interface BlisAppForUpdate extends BlisAppBase {
     let getTeachSessionsForAppRoute: string = makeRoute(key, `app/${appId}/teaches`);
     return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.get(getTeachSessionsForAppRoute, config)
       .then(response => {
-        obs.next(fetchAllTeachSessionsFulfilled(response.data.teaches));
+        obs.next(actions.fetch.fetchAllTeachSessionsFulfilled(response.data.teaches));
         obs.complete();
       })
       .catch(err => handleError(obs, err,  AT.FETCH_TEACH_SESSIONS_ASYNC)));
@@ -408,7 +402,7 @@ export interface BlisAppForUpdate extends BlisAppBase {
     let editAppRoute: string = makeRoute(key, routeURI);
     return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.put(editAppRoute, userInput, config)		
       .then(response => {
-        obs.next(runExtractorFulfilled(key, appId, sessionId, response.data));
+        obs.next(actions.teach.runExtractorFulfilled(key, appId, sessionId, response.data));
         obs.complete();
       })
       .catch(err => handleError(obs, err,  AT.RUN_EXTRACTOR_ASYNC)));
@@ -427,7 +421,7 @@ export interface BlisAppForUpdate extends BlisAppBase {
     let editAppRoute: string = makeRoute(key, `app/${appId}/teach/${teachId}/scorer`);
     return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.put(editAppRoute, uiScoreInput, config)	
       .then(response => {
-        obs.next(runScorerFulfilled(key, appId, teachId, response.data)); 
+        obs.next(actions.teach.runScorerFulfilled(key, appId, teachId, response.data)); 
         obs.complete();
       })
       .catch(err => handleError(obs, err,  AT.RUN_SCORER_ASYNC)));
@@ -444,10 +438,10 @@ export interface BlisAppForUpdate extends BlisAppBase {
         if (!waitForUser) {
           // Don't re-send predicted entities on subsequent score call -todo on non train path
           uiScoreInput.extractResponse.predictedEntities = [];
-          obs.next(postScorerFeedbackNoWaitFulfilled(key, appId, teachId, response.data, uiScoreInput))
+          obs.next(actions.teach.postScorerFeedbackNoWaitFulfilled(key, appId, teachId, response.data, uiScoreInput))
         }
         else {
-          obs.next(postScorerFeedbackWaitFulfilled(key, appId, teachId, response.data));
+          obs.next(actions.teach.postScorerFeedbackWaitFulfilled(key, appId, teachId, response.data));
         }
         obs.complete();
       })
@@ -471,8 +465,8 @@ export const createTrainDialog = (key: string, appId: string, trainDialog: Train
   const configWithBody = {...config, body: trainDialog}
   return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => axios.post(makeRoute(key, `app/${appId}/traindialog`), configWithBody).then(response => {
     trainDialog.trainDialogId = response.data.trainDialogId;
-    obs.next(createTrainDialogFulfilled(trainDialog));
-    obs.next(deleteLogDialogAsync(appId, logDialogId))
+    obs.next(actions.create.createTrainDialogFulfilled(trainDialog));
+    obs.next(actions.delete.deleteLogDialogAsync(appId, logDialogId))
     obs.complete();
   })
     .catch(err => handleError(obs, err, AT.CREATE_TRAIN_DIALOG_ASYNC)));
@@ -481,7 +475,7 @@ export const createTrainDialog = (key: string, appId: string, trainDialog: Train
 let handleError = function (obs: Observer<ActionObject>, err: any, route: AT) {
   if (!obs.closed) {
     // Service call failure
-    obs.next(setErrorDisplay(err.message, toErrorString(err.response), route));
+    obs.next(actions.display.setErrorDisplay(err.message, toErrorString(err.response), route));
     obs.complete();
   }
   else {
