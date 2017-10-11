@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { createActionAsync } from '../../../actions/createActions'
 import { editActionAsync } from '../../../actions/updateActions'
 import { deleteActionAsync } from '../../../actions/deleteActions'
-import { DetailsList, CommandButton, CheckboxVisibility, List, IColumn, SearchBox } from 'office-ui-fabric-react';
+import { DetailsList, CommandButton, CheckboxVisibility, IColumn, SearchBox } from 'office-ui-fabric-react';
 import { BlisAppBase, ActionBase, ModelUtils } from 'blis-models'
 import { ConfirmDeleteModal, ActionResponseCreatorEditor } from '../../../components/modals'
 import { State } from '../../../types'
@@ -13,6 +13,7 @@ import { findDOMNode } from 'react-dom';
 
 interface IRenderableColumn extends IColumn {
     render: (action: ActionBase, component: Actions) => JSX.Element | JSX.Element[]
+    getSortValue: (action: ActionBase, component: Actions) => string
 }
 
 const columns: IRenderableColumn[] = [
@@ -24,6 +25,7 @@ const columns: IRenderableColumn[] = [
         maxWidth: 400,
         isResizable: true,
         isMultiline: true,
+        getSortValue: action => action.payload.toLowerCase(),
         render: (action, component) => <span className='ms-font-m-plus' onClick={() => component.onSelectAction(action)}>{ModelUtils.GetPrimaryPayload(action)}</span>
     },
     {
@@ -33,6 +35,8 @@ const columns: IRenderableColumn[] = [
         minWidth: 80,
         maxWidth: 300,
         isResizable: true,
+        // TODO: There was no value in previous implementation, what should it be?
+        getSortValue: action => ModelUtils.GetArguments(action).join('').toLowerCase(),
         render: action => {
             const args = ModelUtils.GetArguments(action);
             return (!args || args.length === 0)
@@ -47,6 +51,7 @@ const columns: IRenderableColumn[] = [
         minWidth: 100,
         maxWidth: 100,
         isResizable: true,
+        getSortValue: action => action.metadata.actionType.toLowerCase(),
         render: action => <span className='ms-font-m-plus'>{action.metadata.actionType}</span>
     },
     {
@@ -56,6 +61,10 @@ const columns: IRenderableColumn[] = [
         minWidth: 100,
         maxWidth: 200,
         isResizable: true,
+        // TODO: Previous implementation returned arrays for these which is incorrect.
+        // Should be action.negativeEntities.join('').toLowerCase(), but need entity names which requires lookup
+        // This lookup should be done ahead of time instead of on every render
+        getSortValue: action => '',
         render: (action, component) => action.requiredEntities.length === 0
             ? <span className="ms-Icon ms-Icon--Remove blis-icon" aria-hidden="true"></span>
             : action.requiredEntities.map(entityId => {
@@ -74,6 +83,10 @@ const columns: IRenderableColumn[] = [
         minWidth: 100,
         maxWidth: 200,
         isResizable: true,
+        // TODO: Previous implementation returned arrays for these which is incorrect.
+        // Should be action.negativeEntities.join('').toLowerCase(), but need entity names which requires lookup
+        // This lookup should be done ahead of time instead of on every render
+        getSortValue: action => '',
         render: (action, component) => action.negativeEntities.length === 0
             ? <span className="ms-Icon ms-Icon--Remove blis-icon" aria-hidden="true"></span>
             : action.negativeEntities.map(entityId => {
@@ -92,6 +105,7 @@ const columns: IRenderableColumn[] = [
         minWidth: 100,
         maxWidth: 100,
         isResizable: true,
+        getSortValue: action => '',
         render: action => {
             const entitySuggestion = (action.metadata as any).entitySuggestion
             if (!entitySuggestion) {
@@ -112,6 +126,7 @@ const columns: IRenderableColumn[] = [
         minWidth: 50,
         maxWidth: 50,
         isResizable: true,
+        getSortValue: action => action.isTerminal ? 'a' : 'b',
         render: action => <span className={"ms-Icon blis-icon " + (action.isTerminal ? 'ms-Icon--CheckMark' : 'ms-Icon--Remove')} aria-hidden="true"></span>
     }
 ];
@@ -119,11 +134,11 @@ const columns: IRenderableColumn[] = [
 interface ComponentState {
     actionSelected: ActionBase | null
     actionIDToDelete: string
-    columns: IColumn[]
+    columns: IRenderableColumn[]
     isConfirmDeleteActionModalOpen: boolean
-    createEditModalOpen: boolean
+    isActionEditorModalOpen: boolean
     searchValue: string
-    sortColumn: IColumn
+    sortColumn: IRenderableColumn
 }
 
 class Actions extends React.Component<Props, ComponentState> {
@@ -134,7 +149,7 @@ class Actions extends React.Component<Props, ComponentState> {
             actionSelected: null,
             searchValue: '',
             isConfirmDeleteActionModalOpen: false,
-            createEditModalOpen: false,
+            isActionEditorModalOpen: false,
             columns: columns,
             sortColumn: null
         }
@@ -160,7 +175,7 @@ class Actions extends React.Component<Props, ComponentState> {
         this.props.deleteActionAsync(this.props.user.key, this.state.actionIDToDelete, actionToDelete, this.props.app.appId);
         this.setState({
             isConfirmDeleteActionModalOpen: false,
-            createEditModalOpen: false,
+            isActionEditorModalOpen: false,
             actionIDToDelete: null
         })
 
@@ -180,74 +195,49 @@ class Actions extends React.Component<Props, ComponentState> {
     }
     onClickCreateAction() {
         this.setState({
-            createEditModalOpen: true,
+            isActionEditorModalOpen: true,
             actionSelected: null
         })
     }
     onClickCloseActionEditor() {
         this.setState({
-            createEditModalOpen: false,
+            isActionEditorModalOpen: false,
             actionSelected: null
         })
         setTimeout(() => {
             this.focusNewActionButton();
         }, 500);
     }
+
     onSelectAction(action: ActionBase) {
         this.setState({
             actionSelected: action,
-            createEditModalOpen: true
+            isActionEditorModalOpen: true
         })
     }
-    onClickColumnHeader(event: any, column: IColumn) {
+
+    onClickColumnHeader(event: any, clickedColumn: IRenderableColumn) {
         let { columns } = this.state;
-        let isSortedDescending = column.isSortedDescending;
+        let isSortedDescending = clickedColumn.isSortedDescending;
 
         // If we've sorted this column, flip it.
-        if (column.isSorted) {
+        if (clickedColumn.isSorted) {
             isSortedDescending = !isSortedDescending;
         }
 
         // Reset the items and columns to match the state.
         this.setState({
-            columns: columns.map(col => {
-                col.isSorted = (col.key === column.key);
+            columns: columns.map(column => {
+                column.isSorted = (column.key === clickedColumn.key);
 
-                if (col.isSorted) {
-                    col.isSortedDescending = isSortedDescending;
+                if (column.isSorted) {
+                    column.isSortedDescending = isSortedDescending;
                 }
 
-                return col;
+                return column;
             }),
-            sortColumn: column
+            sortColumn: clickedColumn
         });
-    }
-
-    renderEntityList(entityIds: string[]) {
-        const entities = entityIds.map(id => this.props.entities.find(e => e.entityId == id))
-        return (
-            <List
-                items={entities}
-                onRenderCell={(item, index) => (
-                    <EntityTile item={item} />
-                )}
-            />
-        )
-    }
-
-    getValue(action: ActionBase, col: IColumn): any {
-        let value;
-        if (col.key == 'actionType') {
-            value = action.metadata.actionType;
-        }
-        else {
-            value = action[col.fieldName];
-        }
-
-        if (typeof value == 'string' || value instanceof String) {
-            return value.toLowerCase();
-        }
-        return value;
     }
 
     getFilteredAndSortedActions(): ActionBase[] {
@@ -272,31 +262,30 @@ class Actions extends React.Component<Props, ComponentState> {
             return match;
         })
 
+        // If column header selected sort the items
         if (this.state.sortColumn) {
-            // Sort the items.
-            filteredActions = [...filteredActions].sort((a, b) => {
-                let firstValue = this.getValue(a, this.state.sortColumn);
-                let secondValue = this.getValue(b, this.state.sortColumn);
-
-                if (this.state.sortColumn.isSortedDescending) {
-                    return firstValue > secondValue ? -1 : 1;
-                }
-                else {
-                    return firstValue > secondValue ? 1 : -1;
-                }
-            });
+            filteredActions
+                .sort((a, b) => {
+                    const firstValue = this.state.sortColumn.getSortValue(a, this)
+                    const secondValue = this.state.sortColumn.getSortValue(b, this)
+                    const compareValue = firstValue.localeCompare(secondValue)
+                    return this.state.sortColumn.isSortedDescending
+                        ? compareValue
+                        : compareValue * -1
+                })
         }
 
         return filteredActions;
     }
-    onChangeSearchString(newValue: string) {
-        //runs when user changes the text 
-        let lcString = newValue.toLowerCase();
+
+    onChangeSearchString(searchString: string) {
         this.setState({
-            searchValue: lcString
+            searchValue: searchString.toLowerCase()
         })
     }
+
     render() {
+        // TODO: Look to move this up to the set state calls instead of forcing it to be on every render
         const actions = this.getFilteredAndSortedActions();
         return (
             <div className="blis-page">
@@ -332,7 +321,7 @@ class Actions extends React.Component<Props, ComponentState> {
                     title="Are you sure you want to delete this action?"
                 />
                 <ActionResponseCreatorEditor
-                    open={this.state.createEditModalOpen}
+                    open={this.state.isActionEditorModalOpen}
                     blisAction={this.state.actionSelected}
                     handleClose={this.onClickCloseActionEditor}
                     handleOpenDeleteModal={this.onClickDeleteAction}
@@ -341,6 +330,7 @@ class Actions extends React.Component<Props, ComponentState> {
         );
     }
 }
+
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         createActionAsync,
