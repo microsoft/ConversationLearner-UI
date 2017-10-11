@@ -13,7 +13,7 @@ const entitiesReducer: Reducer<EntityState> = (state = initialState, action: Act
         case AT.FETCH_ENTITIES_FULFILLED:
             return action.allEntities;
         case AT.EMPTY_STATE_PROPERTIES:
-            let empty: EntityState = []
+            let empty: EntityState = [];
             return empty;
         case AT.CREATE_ENTITY_FULFILLED:
             let newEntity = { ...action.entity, entityId: action.entityId };

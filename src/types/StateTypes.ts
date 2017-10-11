@@ -9,16 +9,15 @@ import {
 import { DisplayMode, TeachMode } from '../types/const'
 import { AT } from '../types/ActionTypes'
 
-export type ActionState = ActionBase[]
-export type EntityState = EntityBase[]
+export type ActionState = ActionBase[];
+export type EntityState = EntityBase[];
 export type ErrorState = {
     error: string,
     message: string,
     route: AT
 }
-export type TrainDialogState = {
-    all: TrainDialog[]
-}
+export type TrainDialogState = TrainDialog[];
+
 export type LogDialogState = {
     all: LogDialog[]
 }

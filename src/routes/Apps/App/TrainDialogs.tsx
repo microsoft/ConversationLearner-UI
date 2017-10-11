@@ -47,7 +47,7 @@ let columns: IColumn[] = [
 interface ComponentState {
     isTeachDialogModalOpen: boolean
     isTrainDialogModalOpen: boolean
-    trainDialog: TrainDialog
+    trainDialogId: string
     searchValue: string
 }
 
@@ -55,7 +55,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     state: ComponentState = {
         isTeachDialogModalOpen: false,
         isTrainDialogModalOpen: false,
-        trainDialog: null,
+        trainDialogId: null,
         searchValue: ''
     }
 
@@ -70,6 +70,18 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     }
     focusNewEntityButton(): void {
         findDOMNode<HTMLButtonElement>(this.refs.newSession).focus();
+    }
+    componentWillReceiveProps(newProps: Props) {
+        // If train dialogs have been updated, update selected trainDialog too
+        if (this.props.trainDialogs != newProps.trainDialogs) {
+            if (this.state.trainDialogId) {
+                let newTrainDialog = newProps.trainDialogs.find(t => t.trainDialogId == this.state.trainDialogId);
+                this.setState({
+                    trainDialogId : newTrainDialog ? newTrainDialog.trainDialogId : null
+                })
+            }
+            this.focusNewEntityButton();
+        }
     }
     firstUtterance(item: any) {
         try {
@@ -145,7 +157,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     onClickTrainDialogItem(trainDialog: TrainDialog) {
         this.setState({
             isTrainDialogModalOpen: true,
-            trainDialog
+            trainDialogId: trainDialog.trainDialogId
         })
     }
 
@@ -164,7 +176,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
     renderTrainDialogItems(): TrainDialog[] {
         // let lcString = this.state.searchValue.toLowerCase();
-        let filteredTrainDialogs = this.props.trainDialogs.all.filter((t: TrainDialog) => {
+        let filteredTrainDialogs = this.props.trainDialogs.filter((t: TrainDialog) => {
             return true
         })
         return filteredTrainDialogs;
@@ -172,6 +184,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
     render() {
         let trainDialogItems = this.renderTrainDialogItems()
+        let trainDialog = this.props.trainDialogs.find((td) => td.trainDialogId == this.state.trainDialogId);
         return (
             <div className="blis-page">
                 <span className="ms-font-xxl">Train Dialogs</span>
@@ -207,7 +220,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     app={this.props.app}
                     open={this.state.isTrainDialogModalOpen}
                     onClose={() => this.onCoseTrainDialogWindow()}
-                    trainDialog={this.state.trainDialog}
+                    trainDialog={trainDialog}
                 />
             </div>
         );

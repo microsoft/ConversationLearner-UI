@@ -57,6 +57,9 @@ const teachSessionReducer: Reducer<TeachSessionState> = (state = initialState, a
             // Remove existing extract response
             let remainingResponses: ExtractResponse[] = state.extractResponses.filter((e: ExtractResponse) => e.text != action.extractResponse.text);
             return { ...state, mode: TeachMode.Extractor, extractResponses: remainingResponses };
+        case AT.CLEAR_EXTRACT_RESPONSES:
+            // Remove existing extract responses
+             return { ...state, mode: TeachMode.Extractor, extractResponses: [] };
         case AT.RUN_SCORER_ASYNC:
             return { ...state, uiScoreInput: action.uiScoreInput }
         case AT.RUN_SCORER_FULFILLED:

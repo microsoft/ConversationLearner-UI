@@ -18,7 +18,7 @@ class TeachSessionAdmin extends React.Component<Props, {}> {
         this.onTextVariationsExtracted = this.onTextVariationsExtracted.bind(this)
     }
 
-    onTextVariationsExtracted(extractResponse: ExtractResponse, textVariations:TextVariation[]) : void {
+    onTextVariationsExtracted(extractResponse: ExtractResponse, textVariations: TextVariation[], turnIndex: number) : void {
         let trainExtractorStep = new TrainExtractorStep({
             textVariations: textVariations
         });
@@ -36,11 +36,11 @@ class TeachSessionAdmin extends React.Component<Props, {}> {
                 appId = {this.props.app.appId}
                 extractType = {ExtractType.TEACH}
                 sessionId = {this.props.teachSession.current.teachId}
-                turnIndex = {null}  
+                roundIndex = {null}  
                 autoTeach = {this.props.teachSession.autoTeach}
                 teachMode = {this.props.teachSession.mode}
-                textVariations = {[]}
-                extractButtonName = "Score Actions"
+                extractResponses = {this.props.teachSession.extractResponses}
+                originalTextVariations = {[]}
                 onTextVariationsExtracted = {this.onTextVariationsExtracted}
             />
         )

@@ -55,12 +55,20 @@ export const editActionFulfilled = (action: ActionBase) : ActionObject => {
     }
 }
 
-// TODO: should be async with fulfillment
-export const editTrainDialog = (key: string, trainDialog: TrainDialog) : ActionObject => { 
+export const editTrainDialogAsync = (key: string, trainDialog: TrainDialog, currentAppId: string) : ActionObject => { 
     
     return {
-        type: AT.EDIT_TRAIN_DIALOG,
+        type: AT.EDIT_TRAIN_DIALOG_ASYNC,
         key: key,
+        trainDialog: trainDialog,
+        currentAppId: currentAppId
+    }
+}
+
+export const editTrainDialogFulfilled = (trainDialog: TrainDialog) : ActionObject => { 
+    
+    return {
+        type: AT.EDIT_TRAIN_DIALOG_FULFILLED,
         trainDialog: trainDialog
     }
 }

@@ -284,6 +284,16 @@ export interface BlisAppForUpdate extends BlisAppBase {
         })
         .catch(err => handleError(obs, err, AT.EDIT_ENTITY_ASYNC)));
     }
+    export const editTrainDialog = (key: string, appId: string, trainDialog: TrainDialog): Observable<ActionObject> => {
+      let editTrainDialogRoute: string = makeRoute(key, `app/${appId}/traindialog/${trainDialog.trainDialogId}`);
+      const { trainDialogId, ...trainDialogToSend } = trainDialog;
+      return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => axios.put(editTrainDialogRoute, trainDialogToSend, config)
+        .then(response => {
+          obs.next(actions.update.editTrainDialogFulfilled(trainDialog));
+          obs.complete();
+        })
+        .catch(err => handleError(obs, err, AT.EDIT_TRAIN_DIALOG_ASYNC)));
+    };
 
 //========================================================
 // SESSION ROUTES
