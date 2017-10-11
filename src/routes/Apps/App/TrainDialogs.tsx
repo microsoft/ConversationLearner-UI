@@ -47,7 +47,7 @@ let columns: IColumn[] = [
 interface ComponentState {
     isTeachDialogModalOpen: boolean
     isTrainDialogModalOpen: boolean
-    trainDialog: TrainDialog
+    trainDialogId: string
     searchValue: string
 }
 
@@ -55,7 +55,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     state: ComponentState = {
         isTeachDialogModalOpen: false,
         isTrainDialogModalOpen: false,
-        trainDialog: null,
+        trainDialogId: null,
         searchValue: ''
     }
 
@@ -74,10 +74,10 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     componentWillReceiveProps(newProps: Props) {
         // If train dialogs have been updated, update selected trainDialog too
         if (this.props.trainDialogs != newProps.trainDialogs) {
-            if (this.state.trainDialog) {
-                let newTrainDialog = newProps.trainDialogs.find(t => t.trainDialogId == this.state.trainDialog.trainDialogId);
+            if (this.state.trainDialogId) {
+                let newTrainDialog = newProps.trainDialogs.find(t => t.trainDialogId == this.state.trainDialogId);
                 this.setState({
-                    trainDialog : newTrainDialog
+                    trainDialogId : newTrainDialog ? newTrainDialog.trainDialogId : null
                 })
             }
             this.focusNewEntityButton();
@@ -157,7 +157,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     onClickTrainDialogItem(trainDialog: TrainDialog) {
         this.setState({
             isTrainDialogModalOpen: true,
-            trainDialog
+            trainDialogId: trainDialog.trainDialogId
         })
     }
 
@@ -184,6 +184,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
     render() {
         let trainDialogItems = this.renderTrainDialogItems()
+        let trainDialog = this.props.trainDialogs.find((td) => td.trainDialogId == this.state.trainDialogId);
         return (
             <div className="blis-page">
                 <span className="ms-font-xxl">Train Dialogs</span>
@@ -219,7 +220,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     app={this.props.app}
                     open={this.state.isTrainDialogModalOpen}
                     onClose={() => this.onCoseTrainDialogWindow()}
-                    trainDialog={this.state.trainDialog}
+                    trainDialog={trainDialog}
                 />
             </div>
         );

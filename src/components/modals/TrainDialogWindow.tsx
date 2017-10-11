@@ -16,12 +16,16 @@ import { addMessageToChatConversationStack } from '../../actions/displayActions'
 
 interface ComponentState {
     confirmDeleteModalOpen: boolean,
-    selectedActivity: Activity | null
+    selectedActivity: Activity | null,
+    webchatKey: number,
+    currentTrainDialog: TrainDialog
 }
 
 const initialState: ComponentState = {
     confirmDeleteModalOpen: false,
-    selectedActivity: null
+    selectedActivity: null,
+    webchatKey: 0,
+    currentTrainDialog: null,
 }
 
 class TrainDialogWindow extends React.Component<Props, ComponentState> {
@@ -29,7 +33,15 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
 
     componentWillReceiveProps(nextProps: Props) {
         if (this.props.open === false && nextProps.open === true) {
-            this.setState(initialState)
+            this.setState(initialState);
+        }
+        if (this.state.currentTrainDialog != nextProps.trainDialog)
+        {
+            // Force webchat to re-mount as history prop can't be updated
+            this.setState({
+                currentTrainDialog: nextProps.trainDialog,
+                webchatKey: this.state.webchatKey+1
+            });
         }
     }
 
@@ -109,6 +121,7 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
                 <div className="blis-chatmodal">
                     <div className="blis-chatmodal_webchat">
                         <Webchat
+                            key={this.state.webchatKey}
                             app={this.props.app}
                             history={this.generateHistory()}
                             onPostActivity={activity => this.onWebChatPostActivity(activity)}

@@ -5,7 +5,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../../types'
 import { PredictedEntity, LabeledEntity, ExtractResponse, TextVariation, ExtractType } from 'blis-models'
-import { CommandButton } from 'office-ui-fabric-react';
+import { CommandButton, PrimaryButton, DefaultButton, Dialog, DialogType, DialogFooter } from 'office-ui-fabric-react';
 import TextVariationCreator from '../TextVariationCreator';
 import ExtractorResponseEditor from '../ExtractorResponseEditor';
 import EntityCreatorEditor from './EntityCreatorEditor';
@@ -14,47 +14,63 @@ import PopUpMessage from '../PopUpMessage';
 import { clearExtractResponses, updateExtractResponse, removeExtractResponse } from '../../actions/teachActions'
 
 interface ComponentState {
+    // Has the user made any changes
+    extractionChanged: boolean,
     entityModalOpen: boolean,
-    popUpOpen: boolean, 
-    textVariations: TextVariation[]
+    warningOpen: boolean, 
+    // Handle saves after round change
+    savedExtractResponses: ExtractResponse[],
+    savedRoundIndex: number
+    newTextVariations: TextVariation[]
 };
 
 // TODO: Need to re-define TextVariaion / ExtractResponse class defs so we don't need
 // to do all the messy conversion back and forth
 class EntityExtractor extends React.Component<Props, ComponentState> {
     constructor(p: any) {
-        super(p)
+        super(p);
         this.state = {
+            extractionChanged: false,
             entityModalOpen: false,
-            popUpOpen: false,
-            textVariations: []
+            warningOpen: false,
+            savedExtractResponses: null,
+            savedRoundIndex: 0,
+            newTextVariations: []
         }
         this.entityButtonOnClick = this.entityButtonOnClick.bind(this);
-        this.onClickDoneExtracting = this.onClickDoneExtracting.bind(this);
+        this.onClickSubmitExtractions = this.onClickSubmitExtractions.bind(this);
+        this.onClickUndoChanges = this.onClickUndoChanges.bind(this);
         this.entityEditorHandleClose = this.entityEditorHandleClose.bind(this);
         this.onRemoveExtractResponse = this.onRemoveExtractResponse.bind(this)
         this.onUpdateExtractResponse = this.onUpdateExtractResponse.bind(this)
     }
     componentWillMount() {
-        this.setState({textVariations : this.props.textVariations})
+        this.setState({newTextVariations : this.props.originalTextVariations})
     }
 
     componentDidMount() {
         findDOMNode<HTMLButtonElement>(this.refs.doneExtractingButton).focus();
     }
-    componentDidUpdate() {
-        // If not in interactive mode run scorer automatically
-        if (this.props.autoTeach && this.props.teachMode == TeachMode.Extractor) {
-            this.onClickDoneExtracting();
-        }
-    }
     componentWillReceiveProps(newProps: Props) {
-        // If I'm swiching my round, clear any extracted responses
-        if (this.props.sessionId != newProps.sessionId || this.props.turnIndex != newProps.turnIndex) {
+        // If I'm swiching my round or have added/removed text variations
+        if (this.props.sessionId != newProps.sessionId || 
+            this.props.roundIndex != newProps.roundIndex ||
+            this.props.originalTextVariations.length != newProps.originalTextVariations.length) {
+            // If I made an unsaved change, show save prompt before switching
+            if (this.state.extractionChanged) {
+                this.setState({
+                    newTextVariations: [...newProps.originalTextVariations],
+                    extractionChanged: false,
+                    savedExtractResponses: this.allResponses(),
+                    savedRoundIndex: this.props.roundIndex
+                });
+            } else {
+                this.setState({
+                    newTextVariations: [...newProps.originalTextVariations],
+                    extractionChanged: false
+                })
+            }
            this.props.clearExtractResponses();
-        }
-        if (this.props.textVariations != this.state.textVariations) {
-            this.setState({textVariations : this.props.textVariations})
         }
     }
     entityEditorHandleClose() {
@@ -67,14 +83,14 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
             entityModalOpen: true
         })
     }
-    handleClosePopUpModal() {
+    handleCloseWarning() {
         this.setState({
-            popUpOpen: false
+            warningOpen: false
         })
     }
-    handleOpenPopUpModal() {
+    handleOpenWarning() {
         this.setState({
-            popUpOpen: true
+            warningOpen: true
         })
     }
     /** Returns true is predicted entities match */
@@ -156,15 +172,33 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
     }
     // Return merge of extract responses and text variations
     allResponses() : ExtractResponse[] {
-        let convertedVariations = this.toExtractResponses(this.state.textVariations as TextVariation[]);
+        let convertedVariations = this.toExtractResponses(this.state.newTextVariations as TextVariation[]);
         let allResponses = [...convertedVariations, ...this.props.extractResponses];
         return allResponses;
     }
-    onClickDoneExtracting() {
-        let allResponses = this.allResponses();
+    onClickUndoChanges()
+    {
+        this.props.clearExtractResponses();
+        this.setState({
+            newTextVariations: [...this.props.originalTextVariations],
+            extractionChanged: false,
+        });
+    }
+    onClickSubmitExtractions()
+    {
+        this.submitExtractions(this.allResponses(), this.props.roundIndex);
+    }
+    submitExtractions(allResponses : ExtractResponse[], roundIndex: number) {
+
+        // Clear saved responses
+        this.setState({
+            savedExtractResponses: null,
+            savedRoundIndex: 0,
+            extractionChanged: false}
+        );
 
         if (!this.allValid(allResponses)) {
-            this.handleOpenPopUpModal();
+            this.handleOpenWarning();
             return;
         }
 
@@ -173,37 +207,70 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
             let labeledEntities = this.toLabeledEntities(extractResponse.predictedEntities);
             textVariations.push(new TextVariation({ text: extractResponse.text, labelEntities: labeledEntities }));
         }     
-        this.props.onTextVariationsExtracted(allResponses[0], textVariations, this.props.turnIndex);
+        this.props.onTextVariationsExtracted(allResponses[0], textVariations, roundIndex);
+
+    }
+    onAddExtractResponse() : void {
+        this.setState({extractionChanged: true});
     }
     onRemoveExtractResponse(extractResponse: ExtractResponse) : void {
-        // First look at extract reponses
+
+        // First look for match in extract reponses
         let foundResponse = this.props.extractResponses.find(e => e.text == extractResponse.text);
         if (foundResponse) {
             this.props.removeExtractResponse(foundResponse);
-            return;
+            this.setState({extractionChanged: true});
         }
-        // Remove from text variations
-        let newVariations = this.state.textVariations.filter((v : TextVariation) => v.text != extractResponse.text);
-        this.setState({textVariations: newVariations});
+        // Otherwise change is in text variation
+        else {
+            // Remove from text variations
+            let newVariations = this.state.newTextVariations.filter((v : TextVariation) => v.text != extractResponse.text);
+            this.setState({
+                newTextVariations: newVariations,
+                extractionChanged: true
+            });
+        }
     }
     onUpdateExtractResponse(extractResponse: ExtractResponse) : void {
-        // First look at extract reponses
+
+        // First for match in extract reponses
         let foundResponse = this.props.extractResponses.find(e => e.text == extractResponse.text);
         if (foundResponse) {
             this.props.updateExtractResponse(extractResponse);
-            return;
+            this.setState({
+                extractionChanged: true
+            });
         }
-        
-        // Replace existing text variation (if any) with new one and maintain ordering
-        let index = this.state.textVariations.findIndex((v : TextVariation) => v.text == extractResponse.text);
-        if (index < 0) {
-            // Should never happen, but protect just in case
-            return;
+        else {
+            // Replace existing text variation (if any) with new one and maintain ordering
+            let index = this.state.newTextVariations.findIndex((v : TextVariation) => v.text == extractResponse.text);
+            if (index < 0) {
+                // Should never happen, but protect just in case
+                return;
+            }
+            let newVariation = this.toTextVariation(extractResponse);
+            let newVariations = [...this.state.newTextVariations];
+            newVariations[index] = newVariation;
+            this.setState({
+                newTextVariations: newVariations,
+                extractionChanged: true
+            });
         }
-        let newVariation = this.toTextVariation(extractResponse);
-        let newVariations = [...this.state.textVariations];
-        newVariations[index] = newVariation;
-        this.setState({textVariations: newVariations});
+    }
+    onClickSaveCheckYes() {
+        // Submit saved extractions and clear saved responses
+        this.submitExtractions(this.state.savedExtractResponses, this.state.savedRoundIndex);
+        this.setState({
+            savedExtractResponses: null,
+            savedRoundIndex: 0
+        });
+    }
+    onClickSaveCheckNo() {
+        // Clear saved responses
+        this.setState({
+            savedExtractResponses: null,
+            savedRoundIndex: 0
+        });
     }
     render() {
         let allResponses = this.allResponses();
@@ -213,17 +280,19 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
 
         // Don't show edit components when in auto TACH or on score step
         let canEdit = (!this.props.autoTeach && this.props.teachMode == TeachMode.Extractor);
-
         let variationCreator = null;
         let addEntity = null;
         let editComponents = null;
         let extractDisplay = null;
         if (canEdit) {
+
             variationCreator = <TextVariationCreator
                 appId={this.props.appId}
                 sessionId={this.props.sessionId}
                 extractType={this.props.extractType}
-                turnIndex={this.props.turnIndex} />
+                roundIndex={this.props.roundIndex}
+                onAddVariation={() => this.onAddExtractResponse()} />
+
             addEntity =
                 <CommandButton
                     className="blis-button--gold teachCreateButton"
@@ -232,28 +301,17 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                     text='Entity'
                     iconProps={{ iconName: 'CirclePlus' }}
                 />
-            editComponents =
-                <div>
-                    <CommandButton
-                        onClick={this.onClickDoneExtracting}
-                        className='ms-font-su blis-button--gold'
-                        ariaDescription={this.props.extractButtonName}
-                        text={this.props.extractButtonName}
-                        ref="doneExtractingButton"
-                    />
 
-                    <EntityCreatorEditor
-                        open={this.state.entityModalOpen}
-                        entity={null}
-                        handleClose={this.entityEditorHandleClose} />
-                </div>
-
-            let key = 0;
             extractDisplay = [];
+            let allValid = true;
+            let key = 0;
             for (let extractResponse of allResponses) {
                 let isValid = true;
                 if (extractResponse != allResponses[0]) {
                     isValid = this.isValid(allResponses[0], extractResponse);
+                    if (!isValid) {
+                        allValid = false;
+                    }
                 }
 
                 extractDisplay.push(<ExtractorResponseEditor
@@ -266,6 +324,44 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                     removeExtractResponse={extractResponse => this.onRemoveExtractResponse(extractResponse)}
                 />);
             }
+
+            editComponents = (this.props.extractType != ExtractType.TEACH) ?  
+                (
+                    <div>
+                        <PrimaryButton 
+                            disabled={!this.state.extractionChanged || !allValid}
+                            onClick={this.onClickSubmitExtractions}
+                            ariaDescription={"Sumbit Changes"}
+                            text={"Submit Changes"}
+                            ref="doneExtractingButton"
+                        />
+                        <PrimaryButton 
+                            disabled={!this.state.extractionChanged}
+                            onClick={this.onClickUndoChanges}
+                            ariaDescription="Undo Changes"
+                            text="Undo"
+                        />
+                        <EntityCreatorEditor
+                            open={this.state.entityModalOpen}
+                            entity={null}
+                            handleClose={this.entityEditorHandleClose} />
+                    </div>
+                ) :(
+                    <div>
+                        <PrimaryButton 
+                            disabled={!allValid}
+                            onClick={this.onClickSubmitExtractions}
+                            ariaDescription={"Score Actions"}
+                            text={"Score Actions"}
+                            ref="doneExtractingButton"
+                        />
+                        <EntityCreatorEditor
+                            open={this.state.entityModalOpen}
+                            entity={null}
+                            handleClose={this.entityEditorHandleClose} />
+                    </div>
+                )
+
         }
         else {
             // Only display primary response if not in edit mode
@@ -292,7 +388,25 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                     {variationCreator}
                 </div>
                 {editComponents}
-                <PopUpMessage open={this.state.popUpOpen} onConfirm={() => this.handleClosePopUpModal()} title="Text variations must all have same tagged entities." />
+                <PopUpMessage open={this.state.warningOpen} onConfirm={() => this.handleCloseWarning()} title="Text variations must all have same tagged entities." />
+                <div className="blis-log-dialog-admin__dialogs">
+                    <Dialog
+                        hidden={this.state.savedExtractResponses === null}
+                        isBlocking={true}
+                        dialogContentProps={{
+                            type: DialogType.normal,
+                            title: 'Do you want to save your Entity Detection changes?'
+                        }}
+                        modalProps={{
+                            isBlocking: true
+                        }}
+                    >
+                        <DialogFooter>
+                            <PrimaryButton onClick={() => this.onClickSaveCheckYes()} text='Yes' />
+                            <DefaultButton onClick={() => this.onClickSaveCheckNo()} text='No' />
+                        </DialogFooter>
+                    </Dialog>
+                </div>
             </div>
         )
     }
@@ -307,8 +421,7 @@ const mapDispatchToProps = (dispatch: any) => {
 const mapStateToProps = (state: State, ownProps: any) => {
     return {
         user: state.user,
-        entities: state.entities,
-        extractResponses: state.teachSessions.extractResponses
+        entities: state.entities
     }
 }
 
@@ -316,12 +429,12 @@ export interface ReceivedProps {
     appId: string,
     extractType: ExtractType,
     sessionId: string,
-    turnIndex: number,
+    roundIndex: number,
     autoTeach: boolean
-    teachMode: TeachMode
-    textVariations: TextVariation[],
-    extractButtonName: string,
-    onTextVariationsExtracted: (extractResponse: ExtractResponse, textVariations: TextVariation[], turnIndex: number) => void
+    teachMode: TeachMode,
+    extractResponses: ExtractResponse[],
+    originalTextVariations: TextVariation[],
+    onTextVariationsExtracted: (extractResponse: ExtractResponse, textVariations: TextVariation[], roundIndex: number) => void,
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
