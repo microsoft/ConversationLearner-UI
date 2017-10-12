@@ -5,7 +5,7 @@ import { returntypeof } from 'react-redux-typescript';
 import { connect } from 'react-redux';
 import { ExtractResponse, PredictedEntity, EntityBase, AppDefinition, EntityType } from 'blis-models'
 import { State } from '../types';
-import { Dropdown, IDropdownOption, DropdownMenuItemType } from 'office-ui-fabric-react'
+import { Dropdown, IDropdownOption, DropdownMenuItemType } from 'office-ui-fabric-react';
 
 export interface PassedProps {
     /**
@@ -92,7 +92,8 @@ interface ComponentState {
     predictedEntities: PredictedEntity[]
     definitions: AppDefinition
     substringObjects: SubstringObject[]
-    substringsClicked: SubstringObject[]
+    substringsClicked: SubstringObject[],
+    insideExtractor: boolean
 }
 
 class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
@@ -103,7 +104,8 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
             predictedEntities: [],
             definitions: null,
             substringObjects: [],
-            substringsClicked: []
+            substringsClicked: [],
+            insideExtractor: false
         }
         this.renderSubstringObject = this.renderSubstringObject.bind(this)
         this.createSubstringObjects = this.createSubstringObjects.bind(this)
@@ -481,7 +483,13 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
                         allObjects[indexOfHoveredSubstring] = newSubstringObj;
                         //now remove the left bracket for the leftmost clicked substring object
                         let indexOfClickedSubstring = this.findIndexOfHoveredSubstring(left);
-                        let newClickedSubstringObject = { ...left, leftBracketStyle: styles.leftBracketDisplayedWhite, rightBracketStyle: styles.rightBracketDisplayedBlack };
+
+                        let newClickedSubstringObject: SubstringObject;
+                        if (this.state.substringsClicked.length < 2) {
+                            newClickedSubstringObject = { ...left, leftBracketStyle: styles.leftBracketDisplayedWhite, rightBracketStyle: styles.rightBracketDisplayedBlack };
+                        } else {
+                            newClickedSubstringObject = { ...left, leftBracketStyle: styles.leftBracketDisplayedWhite };
+                        }
                         allObjects[indexOfClickedSubstring] = newClickedSubstringObject;
                         this.setState({
                             substringObjects: allObjects
@@ -492,13 +500,17 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
                         allObjects[indexOfHoveredSubstring] = newSubstringObj;
                         //now remove the right bracket for the rightmost clicked substring object
                         let indexOfClickedSubstring = this.findIndexOfHoveredSubstring(right);
-                        let newClickedSubstringObject = { ...right, rightBracketStyle: styles.rightBracketDisplayedWhite, leftBracketStyle: styles.leftBracketDisplayedBlack, }
+                        let newClickedSubstringObject: SubstringObject;
+                        if (this.state.substringsClicked.length < 2) {
+                            newClickedSubstringObject = { ...right, rightBracketStyle: styles.rightBracketDisplayedWhite, leftBracketStyle: styles.leftBracketDisplayedBlack, }
+                        } else {
+                            newClickedSubstringObject = { ...right, rightBracketStyle: styles.rightBracketDisplayedWhite }
+                        }
                         allObjects[indexOfClickedSubstring] = newClickedSubstringObject;
                         this.setState({
                             substringObjects: allObjects
                         })
                     }
-
                 }
             }
             if (updateClickedSubstrings === true) {
@@ -547,7 +559,12 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
                     allObjects[indexOfHoveredSubstring] = newSubstringObj;
                     //now remove the left bracket for the clicked substring object
                     let indexOfClickedSubstring = this.findIndexOfHoveredSubstring(left);
-                    let newClickedSubstringObject = { ...left, leftBracketStyle: styles.leftBracketDisplayedWhite, rightBracketStyle: styles.rightBracketDisplayedBlack };
+                    let newClickedSubstringObject: SubstringObject;
+                    if (this.state.substringsClicked.length < 2) {
+                        newClickedSubstringObject = { ...left, leftBracketStyle: styles.leftBracketDisplayedWhite, rightBracketStyle: styles.rightBracketDisplayedBlack };
+                    } else {
+                        newClickedSubstringObject = { ...left, leftBracketStyle: styles.leftBracketDisplayedWhite };
+                    }
                     allObjects[indexOfClickedSubstring] = newClickedSubstringObject;
                     this.setState({
                         substringObjects: allObjects
@@ -558,7 +575,12 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
                     allObjects[indexOfHoveredSubstring] = newSubstringObj;
                     //now remove the right bracket for the clicked substring object
                     let indexOfClickedSubstring = this.findIndexOfHoveredSubstring(right);
-                    let newClickedSubstringObject = { ...right, rightBracketStyle: styles.rightBracketDisplayedWhite, leftBracketStyle: styles.leftBracketDisplayedBlack, }
+                    let newClickedSubstringObject: SubstringObject;
+                    if (this.state.substringsClicked.length < 2) {
+                        newClickedSubstringObject = { ...right, rightBracketStyle: styles.rightBracketDisplayedWhite, leftBracketStyle: styles.leftBracketDisplayedBlack, }
+                    } else {
+                        newClickedSubstringObject = { ...right, rightBracketStyle: styles.rightBracketDisplayedWhite }
+                    }
                     allObjects[indexOfClickedSubstring] = newClickedSubstringObject;
                     this.setState({
                         substringObjects: allObjects
@@ -675,7 +697,7 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
         this.updateCurrentPredictedEntities(allObjects)
     }
     getAlphabetizedEntityOptions(): IDropdownOption[] {
-        let luisEntities = this.props.entities.filter(e => e.entityType == EntityType.LUIS);
+        let luisEntities = this.props.entities.filter(e => e.entityType == EntityType.LUIS.toString());
         let names: string[] = luisEntities.map(e => e.entityName)
         names.sort();
         return names.map<IDropdownOption>(name => {
@@ -741,6 +763,19 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
         let removedResponse = new ExtractResponse({ text: this.state.input, predictedEntities: [] });
         this.props.removeExtractResponse(removedResponse);
     }
+    handleMousePosition(insideExtractor: boolean) {
+        this.setState({
+            insideExtractor: insideExtractor
+        })
+    }
+    handleGlobalClick() {
+        if (this.state.insideExtractor === false && this.state.substringsClicked.length > 0) {
+            this.removeBracketsFromAllSelectedSubstrings();
+            this.setState({
+                substringsClicked: []
+            })
+        }
+    }
     render() {
         let key = 0;
         let boxClass = this.props.isValid ? 'extractorResponseBox' : 'extractorResponseBox extractorResponseBoxInvalid';
@@ -749,11 +784,13 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
                 <a onClick={() => this.handleDeleteVariation()}><span className="teachDeleteVariation ms-Icon ms-Icon--Delete"></span></a>
             </div>
         return (
-            <div className='teachVariationBox'>
+            <div onClick={() => this.handleGlobalClick()} className='teachVariationBox'>
                 {button}
                 <div className='teachVariation'>
                     <div className={boxClass}>
-                        {this.state.substringObjects.map(s => this.renderSubstringObject(s, ++key))}
+                        <div onMouseLeave={() => this.handleMousePosition(false)} onMouseEnter={() => this.handleMousePosition(true)} className="extractContainer">
+                            {this.state.substringObjects.map(s => this.renderSubstringObject(s, ++key))}
+                        </div>
                     </div>
                 </div>
             </div>
