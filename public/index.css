@@ -51,7 +51,7 @@ html {
   background: none;
   padding: 0.3em 0.2em 0.2em 0.2em;
   margin: 0;
-  cursor: ponter;
+  cursor: pointer;
 }
 
 .blis-icon.ms-Icon--CheckMark{

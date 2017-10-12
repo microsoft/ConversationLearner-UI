@@ -5,7 +5,7 @@ import { returntypeof } from 'react-redux-typescript';
 import { connect } from 'react-redux';
 import { ExtractResponse, TextVariation, PredictedEntity, EntityBase, AppDefinition, EntityType } from 'blis-models'
 import { State } from '../types';
-import { Dropdown, IDropdownOption, DropdownMenuItemType } from 'office-ui-fabric-react'
+import { Dropdown, IDropdownOption, DropdownMenuItemType } from 'office-ui-fabric-react';
 
 export interface PassedProps {
     // TODO: Split this into entities and text as common demoninator types between the three different use cases
@@ -99,7 +99,8 @@ interface ComponentState {
     predictedEntities: PredictedEntity[]
     definitions: AppDefinition
     substringObjects: SubstringObject[]
-    substringsClicked: SubstringObject[]
+    substringsClicked: SubstringObject[],
+    insideExtractor: boolean
 }
 
 class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
@@ -110,7 +111,8 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
             predictedEntities: [],
             definitions: null,
             substringObjects: [],
-            substringsClicked: []
+            substringsClicked: [],
+            insideExtractor: false
         }
         this.renderSubstringObject = this.renderSubstringObject.bind(this)
         this.createSubstringObjects = this.createSubstringObjects.bind(this)
@@ -527,7 +529,7 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
                         })
                     }
                 }
-            } 
+            }
             if (updateClickedSubstrings === true) {
                 let currentlyClicked: SubstringObject[] = this.state.substringsClicked.length == 0 ? [] : this.state.substringsClicked;
                 this.setState({
@@ -778,8 +780,20 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
         let removedResponse = new ExtractResponse({ text: this.state.input, predictedEntities: [] });
         this.props.removeExtractResponse(removedResponse);
     }
+    handleMousePosition(insideExtractor: boolean) {
+        this.setState({
+            insideExtractor: insideExtractor
+        })
+    }
+    handleGlobalClick() {
+        if (this.state.insideExtractor === false && this.state.substringsClicked.length > 0) {
+            this.removeBracketsFromAllSelectedSubstrings();
+            this.setState({
+                substringsClicked: []
+            })
+        }
+    }
     render() {
-        console.log(this.state)
         let key = 0;
         let boxClass = this.props.isValid ? 'extractorResponseBox' : 'extractorResponseBox extractorResponseBoxInvalid';
         let button = this.props.isPrimary ? null :
@@ -787,11 +801,13 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
                 <a onClick={() => this.handleDeleteVariation()}><span className="teachDeleteVariation ms-Icon ms-Icon--Delete"></span></a>
             </div>
         return (
-            <div className='teachVariationBox'>
+            <div onClick={() => this.handleGlobalClick()} className='teachVariationBox'>
                 {button}
                 <div className='teachVariation'>
                     <div className={boxClass}>
-                        {this.state.substringObjects.map(s => this.renderSubstringObject(s, ++key))}
+                        <div onMouseLeave={() => this.handleMousePosition(false)} onMouseEnter={() => this.handleMousePosition(true)} className="extractContainer">
+                            {this.state.substringObjects.map(s => this.renderSubstringObject(s, ++key))}
+                        </div>
                     </div>
                 </div>
             </div>
