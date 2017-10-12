@@ -480,7 +480,7 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
                 this.setState({
                     substringObjects: allObjects
                 })
-            } else {
+            } else if (this.state.substringsClicked.length < 2) {
                 if (this.substringHasBeenClicked(s) === true) {
                     //user has clicked into the already clicked string/group of strings. We need to remove the brackets around all clicked but not set strings, and remove the dropwdowns currently displayed underneath them
                     this.removeBracketsFromAllSelectedSubstrings();
@@ -515,7 +515,42 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
                             substringObjects: allObjects
                         })
                     }
-
+                }
+            } else {
+                if (this.substringHasBeenClicked(s) === true) {
+                    //user has clicked into the already clicked string/group of strings. We need to remove the brackets around all clicked but not set strings, and remove the dropwdowns currently displayed underneath them
+                    this.removeBracketsFromAllSelectedSubstrings();
+                    this.setState({
+                        substringsClicked: []
+                    })
+                    updateClickedSubstrings = false
+                } else {
+                    //we already have an entity clicked but not set, and this is a different string than has previously been clicked
+                    let left = this.findLeftMostClickedSubstring();
+                    let right = this.findRightMostClickedSubstring();
+                    if (s.startIndex < left.startIndex && (this.isDefinedEntityBetweenClickedSubstrings(s.startIndex, left.startIndex) == false)) {
+                        //place a gray bracket to left of hovered substring
+                        let newSubstringObj = { ...s, leftBracketStyle: styles.leftBracketDisplayedBlack }
+                        allObjects[indexOfHoveredSubstring] = newSubstringObj;
+                        //now remove the left bracket for the leftmost clicked substring object
+                        let indexOfClickedSubstring = this.findIndexOfHoveredSubstring(left);
+                        let newClickedSubstringObject = { ...left, leftBracketStyle: styles.leftBracketDisplayedWhite };
+                        allObjects[indexOfClickedSubstring] = newClickedSubstringObject;
+                        this.setState({
+                            substringObjects: allObjects
+                        })
+                    } else if (s.startIndex > right.startIndex && (this.isDefinedEntityBetweenClickedSubstrings(right.startIndex, s.startIndex) == false)) {
+                        //place a gray bracket to right of hovered substring
+                        let newSubstringObj = { ...s, rightBracketStyle: styles.rightBracketDisplayedBlack }
+                        allObjects[indexOfHoveredSubstring] = newSubstringObj;
+                        //now remove the right bracket for the rightmost clicked substring object
+                        let indexOfClickedSubstring = this.findIndexOfHoveredSubstring(right);
+                        let newClickedSubstringObject = { ...right, rightBracketStyle: styles.rightBracketDisplayedWhite }
+                        allObjects[indexOfClickedSubstring] = newClickedSubstringObject;
+                        this.setState({
+                            substringObjects: allObjects
+                        })
+                    }
                 }
             }
             if (updateClickedSubstrings === true) {
@@ -554,7 +589,7 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
                 this.setState({
                     substringObjects: allObjects
                 })
-            } else {
+            } else if (this.state.substringsClicked.length < 2) {
                 //weve clicked a string and need to extend the bracket
                 let left = this.findLeftMostClickedSubstring();
                 let right = this.findRightMostClickedSubstring();
@@ -576,6 +611,33 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
                     //now remove the right bracket for the clicked substring object
                     let indexOfClickedSubstring = this.findIndexOfHoveredSubstring(right);
                     let newClickedSubstringObject = { ...right, rightBracketStyle: styles.rightBracketDisplayedWhite, leftBracketStyle: styles.leftBracketDisplayedBlack, }
+                    allObjects[indexOfClickedSubstring] = newClickedSubstringObject;
+                    this.setState({
+                        substringObjects: allObjects
+                    })
+                }
+            } else {
+                //weve clicked a string and need to extend the bracket
+                let left = this.findLeftMostClickedSubstring();
+                let right = this.findRightMostClickedSubstring();
+                if (s.startIndex < left.startIndex && (this.isDefinedEntityBetweenClickedSubstrings(s.startIndex, left.startIndex) == false)) {
+                    //place a gray bracket to left of hovered substring
+                    let newSubstringObj = { ...s, leftBracketStyle: styles.leftBracketDisplayedGray }
+                    allObjects[indexOfHoveredSubstring] = newSubstringObj;
+                    //now remove the left bracket for the clicked substring object
+                    let indexOfClickedSubstring = this.findIndexOfHoveredSubstring(left);
+                    let newClickedSubstringObject = { ...left, leftBracketStyle: styles.leftBracketDisplayedWhite };
+                    allObjects[indexOfClickedSubstring] = newClickedSubstringObject;
+                    this.setState({
+                        substringObjects: allObjects
+                    })
+                } else if (s.startIndex > right.startIndex && (this.isDefinedEntityBetweenClickedSubstrings(right.startIndex, s.startIndex) == false)) {
+                    //place a gray bracket to right of hovered substring
+                    let newSubstringObj = { ...s, rightBracketStyle: styles.rightBracketDisplayedGray }
+                    allObjects[indexOfHoveredSubstring] = newSubstringObj;
+                    //now remove the right bracket for the clicked substring object
+                    let indexOfClickedSubstring = this.findIndexOfHoveredSubstring(right);
+                    let newClickedSubstringObject = { ...right, rightBracketStyle: styles.rightBracketDisplayedWhite }
                     allObjects[indexOfClickedSubstring] = newClickedSubstringObject;
                     this.setState({
                         substringObjects: allObjects
@@ -692,7 +754,7 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
         this.updateCurrentPredictedEntities(allObjects)
     }
     getAlphabetizedEntityOptions(): IDropdownOption[] {
-        let luisEntities = this.props.entities.filter(e => e.entityType == EntityType.LUIS);
+        let luisEntities = this.props.entities.filter(e => e.entityType == EntityType.LUIS.toString());
         let names: string[] = luisEntities.map(e => e.entityName)
         names.sort();
         return names.map<IDropdownOption>(name => {
@@ -759,6 +821,7 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
         this.props.removeExtractResponse(removedResponse);
     }
     render() {
+        console.log(this.state)
         let key = 0;
         let boxClass = this.props.isValid ? 'extractorResponseBox' : 'extractorResponseBox extractorResponseBoxInvalid';
         let button = this.props.isPrimary ? null :
