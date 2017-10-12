@@ -130,7 +130,7 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
         this.setInitialValues(this.props)
     }
     setInitialValues(props: Props) {
-         this.setState({
+        this.setState({
             input: props.extractResponse.text,
             predictedEntities: props.extractResponse.predictedEntities,
             definitions: props.extractResponse.definitions
@@ -159,7 +159,19 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
             predictedEntities: predictions
         })
     }
-    createSubstringObjects(input: string, predictedEntities: PredictedEntity[]): void {
+    sortByStartIndexes(predictions: PredictedEntity[]): PredictedEntity[]{
+        let predictedEntities: PredictedEntity[] = [];
+        let indexes: number[] = predictions.map((p: PredictedEntity) => {
+            return p.startCharIndex
+        });
+        let sortedIndexes = indexes.sort();
+        predictedEntities = sortedIndexes.map((n: number) => {
+            return predictions.find((pe: PredictedEntity) => pe.startCharIndex === n);
+        })
+        return predictedEntities;
+    }
+    createSubstringObjects(input: string, predictions: PredictedEntity[]): void {
+        let predictedEntities: PredictedEntity[] = this.sortByStartIndexes(predictions);
         let indexGroups: IndexGroup[] = [];
         let count: number = 0;
         let currentIndexGroup: IndexGroup = {
