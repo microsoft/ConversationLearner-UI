@@ -15,7 +15,7 @@ html {
   border: 1px solid #004b50;
 }
 .blis-button--gold:focus {
-  border: 1px solid #004b50;
+  border: 2px solid var(--color-primary-darkest)
 }
 .blis-button--gold{
   background-color: #ffb900 !important;
@@ -152,6 +152,7 @@ html {
   min-height: 0px !important;
 }
 .ms-Button {
+  margin-right: 5px;
 }
 /** TODO: Remove usage of !important */
 .ms-Button--primary:not(:disabled) {
@@ -160,6 +161,9 @@ html {
 }
 .ms-Button--primary:not(:disabled):hover {
   background-color: var(--color-primary-darker) !important;
+}
+.ms-Button--primary:not(:disabled):focus {
+  border: 2px solid var(--color-primary-darkest) 
 }
 
 /** Log Dialog Admin */

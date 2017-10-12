@@ -31,10 +31,11 @@ class TextVariationCreator extends React.Component<Props, ComponentState> {
         let userInput = new UserInput({ text: this.state.variationValue })
         this.props.runExtractorAsync(
             this.props.user.key, this.props.appId, this.props.extractType, 
-            this.props.sessionId, this.props.turnIndex, userInput);
+            this.props.sessionId, this.props.roundIndex, userInput);
         this.setState({
             variationValue: ''
         })
+        this.props.onAddVariation();
     }
     render() {
         return (
@@ -71,7 +72,8 @@ export interface ReceivedProps {
     appId: string,
     sessionId: string,
     extractType: ExtractType
-    turnIndex: number,
+    roundIndex: number,
+    onAddVariation: ()=>void
  }
 
 // Props types inferred from mapStateToProps & dispatchToProps

@@ -3,20 +3,13 @@ import "./ExtractorResponseEditor.css"
 import { bindActionCreators } from 'redux';
 import { returntypeof } from 'react-redux-typescript';
 import { connect } from 'react-redux';
-import { ExtractResponse, TextVariation, PredictedEntity, EntityBase, AppDefinition, EntityType } from 'blis-models'
+import { ExtractResponse, PredictedEntity, EntityBase, AppDefinition, EntityType } from 'blis-models'
 import { State } from '../types';
 import { Dropdown, IDropdownOption, DropdownMenuItemType } from 'office-ui-fabric-react';
 
 export interface PassedProps {
-    // TODO: Split this into entities and text as common demoninator types between the three different use cases
     /**
-     * TrainDialogAdmin gives TextVariations
-     * TeachSessionAdmin gives ExtractResponse
-     * LogDialogAdmin gives LogExtractorStep
-     * These are not compatible, nor do they have common base type; however they all have LabeledEntities and text which I think we can use.
-     * However, part of this component test for properties on the PredictedEntity types
-     * (I tried to do this but there is blocking issue I did not have time to understand.
-     * Perhaps on it's internally comparing object references and expecting the ref to extract response?)
+     * Only operates on ExtractResponses.  TextVariations and LogExtactorSteps must be converted
      */
     extractResponse: ExtractResponse
     isPrimary: boolean
@@ -130,28 +123,19 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
         this.updateCurrentPredictedEntities = this.updateCurrentPredictedEntities.bind(this)
     }
 
-    // TODO: Remove componentDidMount call, I think it is unnecessary
-    // Why do we set initial values on both WillMount and DidMount? 
+    componentWillReceiveProps(newProps: Props) {
+        this.setInitialValues(newProps);
+    }
     componentDidMount() {
         this.setInitialValues(this.props)
     }
-    componentWillMount() {
-        this.setInitialValues(this.props)
-    }
-    componentDidUpdate() {
-        this.setInitialValues(this.props)
-    }
     setInitialValues(props: Props) {
-        // Could be rendering a prediction or a recorded dialog
-        let entities = (props.extractResponse.predictedEntities ? props.extractResponse.predictedEntities : ((props.extractResponse as any) as TextVariation).labelEntities) as PredictedEntity[]
-        if (props.extractResponse.text && entities && (props.extractResponse.text !== this.state.input)) {
-            this.setState({
-                input: props.extractResponse.text,
-                predictedEntities: entities,
-                definitions: props.extractResponse.definitions
-            })
-            this.createSubstringObjects(props.extractResponse.text, entities)
-        }
+         this.setState({
+            input: props.extractResponse.text,
+            predictedEntities: props.extractResponse.predictedEntities,
+            definitions: props.extractResponse.definitions
+        })
+        this.createSubstringObjects(props.extractResponse.text, props.extractResponse.predictedEntities);
     }
     updateCurrentPredictedEntities(substringObjects: SubstringObject[]) {
         let predictions: PredictedEntity[] = [];
@@ -170,7 +154,6 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
             }
         })
         let newExtractResponse = new ExtractResponse({ text: this.state.input, predictedEntities: predictions, definitions: this.state.definitions });
-        this.createSubstringObjects(this.state.input, predictions)
         this.props.updateExtractResponse(newExtractResponse)
         this.setState({
             predictedEntities: predictions

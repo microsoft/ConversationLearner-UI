@@ -178,7 +178,7 @@ body .wc-app, .wc-app button, .wc-app input, .wc-app textarea {
   cursor: pointer; }
 
 .wc-message-content.selected {
-  box-shadow: 0px 1px 1px 0px #ffa333; }
+  box-shadow: 5px 5px 5px 0px #ffa333; }
 
 .wc-message-content img {
   max-height: 320px;
