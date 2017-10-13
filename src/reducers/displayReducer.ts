@@ -33,7 +33,7 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
         case AT.CREATE_BLIS_APPLICATION_FULFILLED:
             return { ...state, displayMode: DisplayMode.AppAdmin, displaySpinner: removeSpinner(state.displaySpinner, action.type) }
         case AT.SET_CURRENT_BLIS_APP_FULFILLED:
-            return { ...state, displayMode: DisplayMode.AppAdmin };
+            return { ...state, displayMode: DisplayMode.AppAdmin, displaySpinner: removeSpinner(state.displaySpinner, action.type) }
         case AT.SET_ERROR_DISPLAY:
             // If I fail to load critical data, return to home page
             switch (action.route) {
@@ -45,6 +45,8 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
                 default:
                     return { ...state, displaySpinner: [] }
             }
+        case AT.SET_CURRENT_BLIS_APP_ASYNC:
+
         case AT.CREATE_ACTION_ASYNC:
         case AT.CREATE_BLIS_APPLICATION_ASYNC:
         case AT.CREATE_CHAT_SESSION_ASYNC:
