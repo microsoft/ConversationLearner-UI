@@ -418,7 +418,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         )
         return (
             <div>
-                <div>
+                <div className="blis-dialog-creation-buttons">
                     {addAction}
                 </div>
                 <DetailsList

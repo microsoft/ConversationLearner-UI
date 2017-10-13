@@ -328,7 +328,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         return (
             <div>
                 <div>
-                    <div className="blis-align-right">
+                    <div className="blis-dialog-creation-buttons">
                         {addEntity}
                     </div>
                     {extractDisplay}
@@ -336,7 +336,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                 </div>
                 {editComponents}
                 <PopUpMessage open={this.state.warningOpen} onConfirm={() => this.handleCloseWarning()} title="Text variations must all have same tagged entities." />
-                <div className="blis-log-dialog-admin__dialogs">
+                <div className="blis-dialog-admin__dialogs">
                     <OF.Dialog
                         hidden={this.state.savedExtractResponses === null}
                         isBlocking={true}

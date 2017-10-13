@@ -11,10 +11,7 @@ html {
     width: 100%;
 }
 
-/** TODO: Remove after find better pattern for consumers */
-.blis-align-right {
-  text-align: right;
-}
+
 
 .blis-button--gold:hover {
   border: 1px solid #004b50;
@@ -176,23 +173,28 @@ html {
 }
 
 /** Log Dialog Admin */
-.blis-log-dialog-admin {
+.blis-dialog-admin {
   display: grid;
   grid-gap: 2rem;
 }
-.blis-log-dialog-admin__content {
+.blis-dialog-admin__content {
   display: grid;
   grid-gap: 1rem;
 }
 
-.blis-log-dialog-admin-title {
+.blis-dialog-admin-title {
   font-weight: bold;
   padding: 0.5rem 0;
   border-bottom: 1px solid black;
 }
-.blis-log-dialog-admin-chosen-action {
+.blis-dialog-admin-chosen-action {
   padding: 1em 0;
   font-weight: bold
+}
+/** TODO: Remove after find better pattern for consumers */
+.blis-dialog-creation-buttons {
+  text-align: right;
+  padding-bottom: 0.5em;
 }
 
 /** Scorer Classes */

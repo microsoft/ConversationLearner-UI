@@ -59,9 +59,9 @@ class TeachSessionAdmin extends React.Component<Props, {}> {
         const autoTeachWithRound = this.props.teachSession.autoTeach && this.props.teachSession.currentConversationStack.length > 0
 
         return (
-            <div className="blis-log-dialog-admin ms-font-l">
-                <div className="blis-log-dialog-admin__content">
-                    <div className="blis-log-dialog-admin-title">Entity Detection</div>
+            <div className="blis-dialog-admin ms-font-l">
+                <div className="blis-dialog-admin__content">
+                    <div className="blis-dialog-admin-title">Entity Detection</div>
                     <div>
                         {(mode === TeachMode.Extractor || autoTeachWithRound) &&
                             <EntityExtractor
@@ -77,14 +77,14 @@ class TeachSessionAdmin extends React.Component<Props, {}> {
                             />}
                     </div>
                 </div>
-                <div className="blis-log-dialog-admin__content">
-                    <div className="blis-log-dialog-admin-title">Memory</div>
+                <div className="blis-dialog-admin__content">
+                    <div className="blis-dialog-admin-title">Memory</div>
                     <div>
                         <TeachSessionMemory />
                     </div>
                 </div>
-                <div className="blis-log-dialog-admin__content">
-                    <div className="blis-log-dialog-admin-title">Action</div>
+                <div className="blis-dialog-admin__content">
+                    <div className="blis-dialog-admin-title">Action</div>
                     <div>
                         {(mode === TeachMode.Scorer || autoTeachWithRound) &&
                             <ActionScorer

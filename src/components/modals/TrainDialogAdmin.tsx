@@ -204,9 +204,9 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
         }
 
         return (
-            <div className="blis-log-dialog-admin ms-font-l">
-                <div className="blis-log-dialog-admin__content">
-                    <div className="blis-log-dialog-admin-title">Entity Detection</div>
+            <div className="blis-dialog-admin ms-font-l">
+                <div className="blis-dialog-admin__content">
+                    <div className="blis-dialog-admin-title">Entity Detection</div>
                     <div>
                         {round ?
                             <EntityExtractor
@@ -223,14 +223,14 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                             : <span>Click on text from the dialog to the left.</span>}
                     </div>
                 </div>
-                <div className="blis-log-dialog-admin__content">
-                    <div className="blis-log-dialog-admin-title">Memory</div>
+                <div className="blis-dialog-admin__content">
+                    <div className="blis-dialog-admin-title">Memory</div>
                     <div>
                         {filledEntities.length !== 0 && filledEntities.map(entity => <div key={entity.entityName}>{entity.entityName}</div>)}
                     </div>
                 </div>
-                <div className="blis-log-dialog-admin__content">
-                    <div className="blis-log-dialog-admin-title">Action</div>
+                <div className="blis-dialog-admin__content">
+                    <div className="blis-dialog-admin-title">Action</div>
                     <div>
                         {selectedAction &&
                             <ActionScorer
@@ -247,7 +247,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                         }
                     </div>
                 </div>
-                <div className="blis-log-dialog-admin__dialogs">
+                <div className="blis-dialog-admin__dialogs">
                     <OF.Dialog
                         hidden={this.state.saveTrainDialog === null}
                         isBlocking={true}
