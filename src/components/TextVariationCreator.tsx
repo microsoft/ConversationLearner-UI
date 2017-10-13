@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { UserInput, ExtractType } from 'blis-models'
+import { UserInput, DialogType } from 'blis-models'
 import { State } from '../types';
 import { returntypeof } from 'react-redux-typescript';
 import { runExtractorAsync } from '../actions/teachActions';
@@ -71,7 +71,7 @@ const mapStateToProps = (state: State, ownProps: any) => {
 export interface ReceivedProps {
     appId: string,
     sessionId: string,
-    extractType: ExtractType
+    extractType: DialogType
     roundIndex: number,
     onAddVariation: ()=>void
  }

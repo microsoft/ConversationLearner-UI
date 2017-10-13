@@ -4,13 +4,12 @@ import { connect } from 'react-redux';
 import { returntypeof } from 'react-redux-typescript';
 import { ModelUtils } from 'blis-models';
 import { State } from '../../types'
-import { UITrainScorerStep, TrainScorerStep, ScoredBase, ActionBase, ScoredAction, UnscoredAction, ScoreReason, UIScoreInput } from 'blis-models';
-import { postScorerFeedbackAsync, toggleAutoTeach } from '../../actions/teachActions'
+import { TrainScorerStep, Memory, ScoredBase, ScoreInput, ScoreResponse, ActionBase, ScoredAction, UnscoredAction, ScoreReason, DialogType } from 'blis-models';
+import { toggleAutoTeach } from '../../actions/teachActions'
 import { CommandButton, PrimaryButton } from 'office-ui-fabric-react';
 import { TeachMode } from '../../types/const'
 import { IColumn, DetailsList, CheckboxVisibility, List } from 'office-ui-fabric-react';
 import ActionResponseCreatorEditor from './ActionResponseCreatorEditor'
-import { findDOMNode } from 'react-dom';
 
 let columns: IColumn[] = [
     {
@@ -86,17 +85,23 @@ interface ComponentState {
     sortColumn: IColumn
 }
 
-class TeachSessionScorer extends React.Component<Props, ComponentState> {
+class ActionScorer extends React.Component<Props, ComponentState> {
+    private primaryScoreButton : any = null;
+
     constructor(p: Props) {
         super(p);
         this.state = initState;
         this.handleActionSelection = this.handleActionSelection.bind(this);
-        this.handleDefaultSelection = this.handleDefaultSelection.bind(this)
-        this.handleOpenActionModal = this.handleOpenActionModal.bind(this)
-        this.handleCloseActionModal = this.handleCloseActionModal.bind(this)
-        this.renderItemColumn = this.renderItemColumn.bind(this)
-        this.onColumnClick = this.onColumnClick.bind(this)
+        this.handleDefaultSelection = this.handleDefaultSelection.bind(this);
+        this.handleOpenActionModal = this.handleOpenActionModal.bind(this);
+        this.handleCloseActionModal = this.handleCloseActionModal.bind(this);
+        this.renderItemColumn = this.renderItemColumn.bind(this);
+        this.onColumnClick = this.onColumnClick.bind(this);
+        this.focusPrimaryButton = this.focusPrimaryButton.bind(this);
         this.onClickOpenDeleteActionResponse = this.onClickOpenDeleteActionResponse.bind(this)
+    }
+    componentUpdate() {
+        this.autoSelect();
     }
     componentDidUpdate() {
         this.autoSelect();
@@ -106,9 +111,9 @@ class TeachSessionScorer extends React.Component<Props, ComponentState> {
     }
     autoSelect() {
         // If not in interactive mode select action automatically
-        if (this.props.teachSession.autoTeach && this.props.teachSession.mode == TeachMode.Scorer) {
+        if (this.props.autoTeach && this.props.teachMode == TeachMode.Scorer) {
 
-            let actions = (this.props.teachSession.scoreResponse.scoredActions as ScoredBase[]).concat(this.props.teachSession.scoreResponse.unscoredActions) || [];
+            let actions = (this.props.scoreResponse.scoredActions as ScoredBase[]).concat(this.props.scoreResponse.unscoredActions) || [];
             // Since actions are sorted by score descending (max first), assume first scored action is the "best" action
             let bestAction = actions[0];
 
@@ -121,8 +126,12 @@ class TeachSessionScorer extends React.Component<Props, ComponentState> {
             let selectedActionId = bestAction.actionId;
             this.handleActionSelection(selectedActionId);
         } else {
-            // Put focus on first result so can select by pressing enter
-            findDOMNode<HTMLButtonElement>(this.refs.acceptDefault).focus();
+            setTimeout(this.focusPrimaryButton, 500);            
+        }
+    }
+    focusPrimaryButton() : void {
+        if (this.primaryScoreButton) {
+            this.primaryScoreButton.focus();
         }
     }
     handleCloseActionModal(newAction: ActionBase) {
@@ -178,7 +187,7 @@ class TeachSessionScorer extends React.Component<Props, ComponentState> {
     handleDefaultSelection() {
         // Look for a valid action
         let actionId = null;
-        let scoreResponse = this.props.teachSession.scoreResponse;
+        let scoreResponse = this.props.scoreResponse;
         if (scoreResponse.scoredActions && scoreResponse.scoredActions.length > 0) {
             actionId = scoreResponse.scoredActions[0].actionId;
         }
@@ -195,33 +204,22 @@ class TeachSessionScorer extends React.Component<Props, ComponentState> {
         }
     }
     handleActionSelection(actionId: string) {
-        let scoredAction = this.props.teachSession.scoreResponse.scoredActions.find(a => a.actionId == actionId);
+        
+        let scoredAction = this.props.scoreResponse.scoredActions.find(a => a.actionId == actionId);
         if (!scoredAction) {
-            let unscoredAction = this.props.teachSession.scoreResponse.unscoredActions.find(a => a.actionId == actionId);
+            let unscoredAction = this.props.scoreResponse.unscoredActions.find(a => a.actionId == actionId);
             scoredAction = new ScoredAction(unscoredAction);
         }
         let trainScorerStep = new TrainScorerStep(
             {
-                input: this.props.teachSession.scoreInput,
+                input: this.props.scoreInput,
                 labelAction: actionId,
                 scoredAction: scoredAction
             });
         
-        let uiTrainScorerStep = new UITrainScorerStep(
-            {
-                trainScorerStep,
-                entities : this.props.entities
-            });
-        
-        let appId: string = this.props.apps.current.appId;
-        let teachId: string = this.props.teachSession.current.teachId;
-        let waitForUser = scoredAction.isTerminal;
+        this.props.onActionSelected(trainScorerStep);
+     }
 
-        // Pass score input (minus extractor step) for subsequent actions when this one is non-terminal
-        let uiScoreInput: UIScoreInput = { ...this.props.teachSession.uiScoreInput, trainExtractorStep: null };
-
-        this.props.postScorerFeedbackAsync(this.props.user.key, appId, teachId, uiTrainScorerStep, waitForUser, uiScoreInput);
-    }
     /** Check if entity is in memory and return it's name */
     entityInMemory(entityId: string): { match: boolean, name: string } {
         let entity = this.props.entities.filter(e => e.entityId == entityId)[0];
@@ -231,7 +229,7 @@ class TeachSessionScorer extends React.Component<Props, ComponentState> {
             return { match: false, name: "ERROR" };
         }
 
-        let memory = this.props.teachSession.memories.filter(m => m.entityName == entity.entityName)[0];
+        let memory = this.props.memories.filter(m => m.entityName == entity.entityName)[0];
         return { match: (memory != null), name: entity.entityName };
     }
     renderEntityRequirements(actionId: string) {
@@ -260,54 +258,60 @@ class TeachSessionScorer extends React.Component<Props, ComponentState> {
             />
         )
     }
-    calculateReason(actionId: string) {
-        let action = this.props.actions.filter((a: ActionBase) => a.actionId == actionId)[0];
+    calculateReason(unscoredAction: UnscoredAction) {
 
-        // If action is null - there's a bug somewhere
-        if (!action) {
-            return ScoreReason.NotAvailable;
-        }
+        if (!unscoredAction.reason || unscoredAction.reason == ScoreReason.NotCalculated) {
+    
+            let action = this.props.actions.filter((a: ActionBase) => a.actionId == unscoredAction.actionId)[0];
 
-        for (let entityId of action.requiredEntities) {
-            let found = this.entityInMemory(entityId);
-            if (!found.match) {
+            // If action is null - there's a bug somewhere
+            if (!action) {
                 return ScoreReason.NotAvailable;
             }
-        }
-        for (let entityId of action.negativeEntities) {
-            let found = this.entityInMemory(entityId);
-            if (found.match) {
-                return ScoreReason.NotAvailable;
+
+            for (let entityId of action.requiredEntities) {
+                let found = this.entityInMemory(entityId);
+                if (!found.match) {
+                    return ScoreReason.NotAvailable;
+                }
             }
+            for (let entityId of action.negativeEntities) {
+                let found = this.entityInMemory(entityId);
+                if (found.match) {
+                    return ScoreReason.NotAvailable;
+                }
+            }
+            return ScoreReason.NotScorable;
         }
-        return ScoreReason.NotScorable;
+        return unscoredAction.reason;
     }
     isMasked(actionId: string): boolean {
-        return (this.props.teachSession.scoreInput.maskedActions && this.props.teachSession.scoreInput.maskedActions.indexOf(actionId) > -1);
+        return (this.props.scoreInput.maskedActions && this.props.scoreInput.maskedActions.indexOf(actionId) > -1);
     }
     renderItemColumn(item?: any, index?: number, column?: IColumn) {
         let action = item as ScoredBase;
         let fieldContent = action[column.fieldName];
         switch (column.key) {
             case 'select':
+                let buttonText = (this.props.dialogType == DialogType.LOGDIALOG && index == 0) ? "Selected" : "Select";
                 let reason = (action as UnscoredAction).reason;
-                if (reason == ScoreReason.NotCalculated) {
-                    reason = this.calculateReason(item[column.fieldName]);
-                }
                 if (reason == ScoreReason.NotAvailable) {
                     return (
                         <PrimaryButton
                             disabled={true}
-                            ariaDescription='Select'
-                            text='Select'
+                            ariaDescription={buttonText}
+                            text={buttonText}
                         />
                     )
                 }
+                let ref = (index == 0) ? ((ref: any) => {this.primaryScoreButton = ref}) : null;
                 return (
+                    
                     <PrimaryButton
                         onClick={() => this.handleActionSelection(fieldContent)}
-                        ariaDescription='Select'
-                        text='Select'
+                        ariaDescription={buttonText}
+                        text={buttonText}
+                        componentRef={ref}
                     />
                 )
             case 'score':
@@ -317,7 +321,8 @@ class TeachSessionScorer extends React.Component<Props, ComponentState> {
                     fieldContent = "Masked"
                 }    
                 else {
-                    fieldContent = ((action as UnscoredAction).reason == "notAvailable") ? "Disqualified" : "Training...";
+                    let reason = (action as UnscoredAction).reason;
+                    fieldContent = (reason == "notAvailable") ? "Disqualified" : "Training...";
                 }
                 break;
             case 'entities':
@@ -350,16 +355,24 @@ class TeachSessionScorer extends React.Component<Props, ComponentState> {
         }
         return <span className='ms-font-m-plus'>{fieldContent}</span>
     }
-    renderScores(): ScoredBase[] {
-        if (!this.props.teachSession.scoreResponse) {
+    getScoredItems(): ScoredBase[] {
+        if (!this.props.scoreResponse) {
             return null;
         }
 
-        let filteredScores = (this.props.teachSession.scoreResponse.scoredActions as ScoredBase[]).concat(this.props.teachSession.scoreResponse.unscoredActions) || [];
+        let scoredItems = (this.props.scoreResponse.scoredActions as ScoredBase[]).concat(this.props.scoreResponse.unscoredActions) || [];
+
+        // Need to reassemble to scored item has full action info and reason
+        scoredItems = scoredItems.map(e => {
+            let action = this.props.actions.find(ee => ee.actionId == e.actionId);
+            let score = (e as ScoredAction).score;
+            let reason = score ? null : this.calculateReason(e as UnscoredAction);
+            return {...action, reason: reason, score: score}
+            });
 
         if (this.state.sortColumn) {
             // Sort the items.
-            filteredScores = filteredScores.sort((a: any, b: any) => {
+            scoredItems = scoredItems.sort((a: any, b: any) => {
                 let firstValue = this.getValue(a, this.state.sortColumn);
                 let secondValue = this.getValue(b, this.state.sortColumn);
 
@@ -372,7 +385,7 @@ class TeachSessionScorer extends React.Component<Props, ComponentState> {
             });
         }
 
-        return filteredScores;
+        return scoredItems;
     }
 
     onClickOpenDeleteActionResponse(actionId: string) {
@@ -380,21 +393,14 @@ class TeachSessionScorer extends React.Component<Props, ComponentState> {
     }
 
     render() {
-        let scores = this.renderScores();
+        let scores = this.getScoredItems();
         if (!scores) {
             return null;
         }
 
-        let noEdit = (this.props.teachSession.autoTeach || this.props.teachSession.mode != TeachMode.Scorer);
+        let noEdit = (this.props.autoTeach || this.props.teachMode != TeachMode.Scorer);
         let addAction = noEdit ? null : (
             <div>
-                <CommandButton
-                    className="blis-button--hidden"
-                    onClick={this.handleDefaultSelection}
-                    ariaDescription='Accept'
-                    text=''
-                    ref="acceptDefault"
-                />
                 <CommandButton
                     className="blis-button--gold teachCreateButton"
                     onClick={this.handleOpenActionModal}
@@ -417,8 +423,7 @@ class TeachSessionScorer extends React.Component<Props, ComponentState> {
                     checkboxVisibility={CheckboxVisibility.hidden}
                     onRenderItemColumn={this.renderItemColumn}
                     onColumnHeaderClick={this.onColumnClick}
-                    ref='scoreList'
-                />
+                 />
                 <ActionResponseCreatorEditor
                     open={this.state.actionModalOpen}
                     blisAction={null}
@@ -429,17 +434,27 @@ class TeachSessionScorer extends React.Component<Props, ComponentState> {
         )
     }
 }
+
+export interface ReceivedProps {
+    appId: string,
+    dialogType: DialogType,
+    sessionId: string
+    autoTeach: boolean
+    teachMode: TeachMode,
+    scoreResponse: ScoreResponse,
+    scoreInput: ScoreInput,
+    memories: Memory[],
+    onActionSelected: (trainScorerStep: TrainScorerStep) => void,
+}
+
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        postScorerFeedbackAsync,
         toggleAutoTeach
     }, dispatch);
 }
 const mapStateToProps = (state: State, ownProps: any) => {
     return {
         user: state.user,
-        teachSession: state.teachSessions,
-        apps: state.apps,
         entities: state.entities,
         actions: state.actions
     }
@@ -447,6 +462,6 @@ const mapStateToProps = (state: State, ownProps: any) => {
 // Props types inferred from mapStateToProps & dispatchToProps
 const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
-type Props = typeof stateProps & typeof dispatchProps;
+type Props = typeof stateProps & typeof dispatchProps & ReceivedProps;
 
-export default connect<typeof stateProps, typeof dispatchProps, {}>(mapStateToProps, mapDispatchToProps)(TeachSessionScorer);
+export default connect<typeof stateProps, typeof dispatchProps, {}>(mapStateToProps, mapDispatchToProps)(ActionScorer);
