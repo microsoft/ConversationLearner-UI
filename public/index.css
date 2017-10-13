@@ -11,6 +11,8 @@ html {
     width: 100%;
 }
 
+
+
 .blis-button--gold:hover {
   border: 1px solid #004b50;
 }
@@ -151,9 +153,13 @@ html {
 .ms-List-cell {
   min-height: 0px !important;
 }
-.ms-Button {
+/**
+ Should not use margins on components, this is external affect based on usage but the component should not know where it's used
+ the parents should define the spacing responsibilities of children, otherwise chil */
+/* .ms-Button {
   margin-right: 5px;
-}
+} */
+
 /** TODO: Remove usage of !important */
 .ms-Button--primary:not(:disabled) {
   background-color: var(--color-primary) !important;
@@ -167,20 +173,28 @@ html {
 }
 
 /** Log Dialog Admin */
-.blis-log-dialog-admin {
+.blis-dialog-admin {
+  display: grid;
+  grid-gap: 2rem;
+}
+.blis-dialog-admin__content {
   display: grid;
   grid-gap: 1rem;
 }
-.blis-log-dialog-admin__title {
+
+.blis-dialog-admin-title {
   font-weight: bold;
+  padding: 0.5rem 0;
   border-bottom: 1px solid black;
 }
-.blis-log-dialog-admin__content {
-  padding-bottom: 1em;
-}
-.blis-log-dialog-admin__chosen-action {
+.blis-dialog-admin-chosen-action {
   padding: 1em 0;
   font-weight: bold
+}
+/** TODO: Remove after find better pattern for consumers */
+.blis-dialog-creation-buttons {
+  text-align: right;
+  padding-bottom: 0.5em;
 }
 
 /** Scorer Classes */
