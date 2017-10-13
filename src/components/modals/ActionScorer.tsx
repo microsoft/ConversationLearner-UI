@@ -293,7 +293,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         let fieldContent = action[column.fieldName];
         switch (column.key) {
             case 'select':
-                let buttonText = (this.props.dialogType == DialogType.LOGDIALOG && index == 0) ? "Selected" : "Select";
+                let buttonText = (this.props.dialogType != DialogType.TEACH && index == 0) ? "Selected" : "Select";
                 let reason = (action as UnscoredAction).reason;
                 if (reason == ScoreReason.NotAvailable) {
                     return (
@@ -315,14 +315,23 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                     />
                 )
             case 'score':
-                if (fieldContent) {
-                    fieldContent = (fieldContent * 100).toFixed(1) + "%"
+                if (fieldContent) { 
+                    // No scores in TrainDialogs
+                    if (this.props.dialogType == DialogType.TRAINDIALOG) {
+                        fieldContent = "";
+                    } else {
+                        fieldContent = (fieldContent * 100).toFixed(1) + "%"
+                    }
                 } else if (this.isMasked(action.actionId)) {
                     fieldContent = "Masked"
                 }    
                 else {
                     let reason = (action as UnscoredAction).reason;
-                    fieldContent = (reason == "notAvailable") ? "Disqualified" : "Training...";
+                    fieldContent = (reason == ScoreReason.NotAvailable) ? 
+                        "Disqualified" : 
+                        (this.props.dialogType == DialogType.TRAINDIALOG) ?
+                            "" : 
+                            "Training...";
                 }
                 break;
             case 'entities':
@@ -438,8 +447,8 @@ class ActionScorer extends React.Component<Props, ComponentState> {
 export interface ReceivedProps {
     appId: string,
     dialogType: DialogType,
-    sessionId: string
-    autoTeach: boolean
+    sessionId: string,
+    autoTeach: boolean,
     teachMode: TeachMode,
     scoreResponse: ScoreResponse,
     scoreInput: ScoreInput,
