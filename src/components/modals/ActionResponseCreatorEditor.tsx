@@ -820,7 +820,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
                     isBlocking={false}
                     containerClassName='blis-modal blis-modal--small blis-modal--border'
                 >
-                    <div className='blis-modal_header'>
+                    <div className='blis-modal_title'>
                         <span className='ms-font-xxl ms-fontWeight-semilight'>{title}</span>
                     </div>
                     <div>
@@ -891,7 +891,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
                             disabled={this.state.editing}
                         />
                     </div>
-                    <div className="blis-modal_footer">
+                    <div className="blis-modal_buttonbox">
                         <CommandButton
                             disabled={createDisabled}
                             onClick={this.createOnClick}

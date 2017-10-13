@@ -98,39 +98,43 @@ class LogDialogModal extends React.Component<Props, ComponentState> {
                 <Modal
                     isOpen={this.props.open}
                     isBlocking={true}
-                    containerClassName='blis-modal blis-modal--large'
+                    containerClassName='blis-modal-container blis-modal blis-modal--large'
                 >
-                    <div className="blis-chatmodal">
-                        <div className="blis-chatmodal_webchat">
-                            <Webchat
-                                app={this.props.app}
-                                history={history}
-                                onSelectActivity={activity => this.onSelectWebChatActivity(activity)}
-                                onPostActivity={activity => this.onPostWebChatActivity(activity)}
-                            />
-                        </div>
-                        <div className="blis-chatmodal_controls">
-                            <div className="blis-chatmodal_admin-controls">
-                                <LogDialogAdmin
-                                    logDialog={this.props.logDialog}
-                                    selectedActivity={this.state.selectedActivity}
-                                    onSaveChanges={trainDialog => this.onSaveDialogChanges(trainDialog)}
+                    <div className="blis-modal-header blis-color-log"></div>
+                    <div className="blis-modal-body">
+                        <div className="blis-chatmodal">
+                            <div className="blis-chatmodal_webchat">
+                                <Webchat
+                                    app={this.props.app}
+                                    history={history}
+                                    onSelectActivity={activity => this.onSelectWebChatActivity(activity)}
+                                    onPostActivity={activity => this.onPostWebChatActivity(activity)}
                                 />
                             </div>
-                            <div className="blis-chatmodal_modal-controls">
-                                <PrimaryButton
-                                    onClick={() => this.props.onClose()}
-                                    ariaDescription='Done'
-                                    text='Done'
-                                />
-
-                                <DefaultButton
-                                    onClick={() => this.onClickDelete()}
-                                    ariaDescription='Delete'
-                                    text='Delete'
-                                />
+                            <div className="blis-chatmodal_controls">
+                                <div className="blis-chatmodal_admin-controls">
+                                    <LogDialogAdmin
+                                        logDialog={this.props.logDialog}
+                                        selectedActivity={this.state.selectedActivity}
+                                        onSaveChanges={trainDialog => this.onSaveDialogChanges(trainDialog)}
+                                    />
+                                </div>
                             </div>
                         </div>
+                    </div>
+                    <div className="blis-modal-footer blis-color-log">
+                        <DefaultButton
+                            className="blis-button--right"
+                            onClick={() => this.onClickDelete()}
+                            ariaDescription='Delete'
+                            text='Delete'
+                        />
+                        <PrimaryButton
+                            className="blis-button--right"
+                            onClick={() => this.props.onClose()}
+                            ariaDescription='Done'
+                            text='Done'
+                        />
                     </div>
                 </Modal>
             </div>

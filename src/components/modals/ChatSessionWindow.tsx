@@ -48,28 +48,33 @@ class SessionWindow extends React.Component<Props, ComponentState> {
             <Modal
                 isOpen={this.props.open && this.props.error == null}
                 isBlocking={true}
-                containerClassName='blis-modal blis-modal--large'
+                containerClassName='blis-modal-container blis-modal blis-modal--large'
             >
-                <div className="blis-chatmodal">
-                    <div className="blis-chatmodal_webchat">
-                        <Webchat
-                            app={this.props.app}
-                            history={null}
-                            onPostActivity={activity => this.onWebChatPostActivity(activity)}
-                            onSelectActivity={() => { }}
-                        />
-                    </div>
-                    <div className="blis-chatmodal_controls">
-                        <div className="blis-chatmodal_admin-controls">
-                        </div>
-                        <div className="blis-chatmodal_modal-controls">
-                            <PrimaryButton
-                                onClick={() => this.onClickDone()}
-                                ariaDescription='Done Testing'
-                                text='Done Testing'
+                <div className="blis-modal-header blis-color-log"></div>
+                <div className="blis-modal-body">
+                    <div className="blis-chatmodal">
+                    
+                        <div className="blis-chatmodal_webchat">
+                            <Webchat
+                                app={this.props.app}
+                                history={null}
+                                onPostActivity={activity => this.onWebChatPostActivity(activity)}
+                                onSelectActivity={() => { }}
                             />
                         </div>
+                        <div className="blis-chatmodal_controls">
+                            <div className="blis-chatmodal_admin-controls">
+                            </div>
+                        </div>
                     </div>
+                </div>
+                <div className="blis-modal-footer blis-color-log">
+                    <PrimaryButton
+                        className="blis-button--right"
+                        onClick={() => this.onClickDone()}
+                        ariaDescription='Done Testing'
+                        text='Done Testing'
+                    />
                 </div>
             </Modal>
         );

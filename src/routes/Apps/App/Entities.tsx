@@ -286,10 +286,10 @@ class Entities extends React.Component<Props, ComponentState> {
                     isBlocking={false}
                     containerClassName='blis-modal blis-modal--small blis-modal--border'
                 >
-                    <div className='blis-modal_header'>
+                    <div className='blis-modal_title'>
                         <span className='ms-font-xl ms-fontWeight-semilight'>You cannot delete this entity because it is being used in an action.</span>
                     </div>
-                    <div className='blis-modal_footer'>
+                    <div className='blis-modal_buttonbox'>
                         <CommandButton
                             onClick={() => this.handleCloseDeleteModal()}
                             className='blis-button--gold'

@@ -2,8 +2,11 @@
     --color-primary: #ffb900;
     --color-primary-darker: #EEAC04;
     --color-primary-darkest: #9E7203;
+    --color-primary-lighter: #FFE7A4;
     --color-secondary: #004b50;
     --color-tertiary: lightgrey;
+    --color-teach: #a80000;
+    --color-log: #00188f;
     --color-botchat-grey: #dbdee1;
     --gutter-width: 100px;
     --nav-link-padding: 1.5em 2em;
