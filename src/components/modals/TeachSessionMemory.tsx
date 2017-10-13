@@ -215,9 +215,6 @@ class TeachSessionMemory extends React.Component<Props, ComponentState> {
             />
         return (
             <div>
-                <div className='teachTitleBox'>
-                    <div className='ms-font-l teachTitle'>Memory</div>
-                </div>
                 {details}
             </div>
         )
