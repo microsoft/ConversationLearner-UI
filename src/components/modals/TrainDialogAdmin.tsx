@@ -9,9 +9,9 @@ import { editTrainDialogAsync } from '../../actions/updateActions';
 import { clearExtractResponses } from '../../actions/teachActions'
 import EntityExtractor from './EntityExtractor';
 import { Activity } from 'botframework-directlinejs'
-import { PrimaryButton, DefaultButton, Dialog, DialogType, DialogFooter } from 'office-ui-fabric-react';
+import * as OF from 'office-ui-fabric-react';
 import { ActionBase, TrainDialog, TrainRound, TrainScorerStep, 
-    EntityBase, TextVariation, ExtractResponse, ExtractType } from 'blis-models'
+    EntityBase, TextVariation, ExtractResponse, DialogType } from 'blis-models'
 
 class TrainDialogAdmin extends React.Component<Props, ComponentState> {
 
@@ -142,11 +142,10 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                 entities = this.props.entities.filter(entity => scorerStep.input.filledEntities.includes(entity.entityId))
             }
         }
-
         let extractor = round ?
             <EntityExtractor
                 appId = {this.props.appId}
-                extractType = {ExtractType.TRAINDIALOG}
+                extractType = {DialogType.TRAINDIALOG}
                 sessionId = {this.props.trainDialog.trainDialogId}
                 roundIndex = {this.state.roundIndex}  
                 autoTeach = {false}
@@ -155,7 +154,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                 originalTextVariations = {round.extractorStep.textVariations}
                 onTextVariationsExtracted = {this.onEntityExtractorSubmit}
             />
-            : "Select an activity";
+            : <span>Click on text from the dialog to the left.</span>;
 
         return (
             <div className="blis-log-dialog-admin ms-font-l">
@@ -172,11 +171,11 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                     {action && action.payload}
                 </div>
                 <div className="blis-log-dialog-admin__dialogs">
-                    <Dialog
+                    <OF.Dialog
                         hidden={this.state.saveTrainDialog === null}
                         isBlocking={true}
                         dialogContentProps={{
-                            type: DialogType.normal,
+                            type: OF.DialogType.normal,
                             subText: 'Your changes will invalidate the subsequent steps in the Train Dialog', 
                             title: 'Do you want to proceed and truncate the Train Dialog at this step?'
                         }}
@@ -184,11 +183,11 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                             isBlocking: true
                         }}
                     >
-                        <DialogFooter>
-                            <PrimaryButton onClick={() => this.onClickSaveCheckYes()} text='Yes' />
-                            <DefaultButton onClick={() => this.onClickSaveCheckNo()} text='No' />
-                        </DialogFooter>
-                    </Dialog>
+                        <OF.DialogFooter>
+                            <OF.PrimaryButton onClick={() => this.onClickSaveCheckYes()} text='Yes' />
+                            <OF.DefaultButton onClick={() => this.onClickSaveCheckNo()} text='No' />
+                        </OF.DialogFooter>
+                    </OF.Dialog>
                 </div>
             </div>
         );

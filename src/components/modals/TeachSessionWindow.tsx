@@ -9,7 +9,7 @@ import { State } from '../../types';
 import { TeachMode } from '../../types/const';
 import Webchat from '../Webchat'
 import TeachSessionAdmin from './TeachSessionAdmin'
-import { Teach, BlisAppBase, UserInput, ExtractType } from 'blis-models'
+import { Teach, BlisAppBase, UserInput, DialogType } from 'blis-models'
 import { Activity } from 'botframework-directlinejs'
 import { deleteTeachSessionAsync } from '../../actions/deleteActions'
 import { toggleAutoTeach, runExtractorAsync } from '../../actions/teachActions'
@@ -77,7 +77,7 @@ class TeachWindow extends React.Component<Props, ComponentState> {
                 throw new Error(`Current teach session is not defined. This may be due to race condition where you attempted to chat with the bot before the teach session has been created.`)
             }
 
-            this.props.runExtractorAsync(this.props.user.key, this.props.app.appId, ExtractType.TEACH, teachSession.teachId, null, userInput);
+            this.props.runExtractorAsync(this.props.user.key, this.props.app.appId, DialogType.TEACH, teachSession.teachId, null, userInput);
         }
     }
 

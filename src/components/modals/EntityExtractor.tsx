@@ -4,8 +4,8 @@ import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../../types'
-import { PredictedEntity, LabeledEntity, ExtractResponse, TextVariation, ExtractType } from 'blis-models'
-import { CommandButton, PrimaryButton, DefaultButton, Dialog, DialogType, DialogFooter } from 'office-ui-fabric-react';
+import { ModelUtils, ExtractResponse, TextVariation, DialogType } from 'blis-models'
+import * as OF from 'office-ui-fabric-react';
 import TextVariationCreator from '../TextVariationCreator';
 import ExtractorResponseEditor from '../ExtractorResponseEditor';
 import EntityCreatorEditor from './EntityCreatorEditor';
@@ -118,61 +118,9 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         }
         return true;
     }
-    toLabeledEntities(predictedEntities : PredictedEntity[]) : LabeledEntity[] {
-        let labeledEntities : LabeledEntity[] = [];
-        for (let predictedEntity of predictedEntities)
-        {
-            let labelEntity = new LabeledEntity({
-                startCharIndex: predictedEntity.startCharIndex,
-                endCharIndex: predictedEntity.endCharIndex,
-                entityId: predictedEntity.entityId,
-                entityName: predictedEntity.entityName,
-                entityText: predictedEntity.entityText
-            });
-            labeledEntities.push(labelEntity);
-        }
-        return labeledEntities;
-    }
-    toPredictedEntities(labeledEntities : LabeledEntity[]) : PredictedEntity[] {
-        let predictedEntities : PredictedEntity[] = [];
-        for (let labeledEntity of labeledEntities)
-        {
-            let predictedEntity = new PredictedEntity({
-                startCharIndex: labeledEntity.startCharIndex,
-                endCharIndex: labeledEntity.endCharIndex,
-                entityId: labeledEntity.entityId,
-                entityName: labeledEntity.entityName,
-                entityText: labeledEntity.entityText
-            });
-            predictedEntities.push(predictedEntity);
-        }
-        return predictedEntities;
-    }
-    toTextVariation(extractResponse: ExtractResponse) : TextVariation {
-
-        let labeledEntities = this.toLabeledEntities(extractResponse.predictedEntities);
-        let textVariation = new TextVariation({
-            text: extractResponse.text,
-            labelEntities: labeledEntities
-        });
-        return textVariation;
-    }
-    toExtractResponses(textVariations: TextVariation[]) : ExtractResponse[] {
-        let extractResponses : ExtractResponse[] = [];
-        for (let textVariation of textVariations)
-        {
-            let predictedEntities = this.toPredictedEntities(textVariation.labelEntities);
-            let extractResponse = new ExtractResponse({
-                text: textVariation.text,
-                predictedEntities: predictedEntities
-            });
-            extractResponses.push(extractResponse);
-        }
-        return extractResponses;
-    }
     // Return merge of extract responses and text variations
     allResponses() : ExtractResponse[] {
-        let convertedVariations = this.toExtractResponses(this.state.newTextVariations as TextVariation[]);
+        let convertedVariations = ModelUtils.ToExtractResponses(this.state.newTextVariations as TextVariation[]);
         let allResponses = [...convertedVariations, ...this.props.extractResponses];
         return allResponses;
     }
@@ -204,7 +152,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
 
         let textVariations: TextVariation[] = [];
         for (let extractResponse of allResponses) {
-            let labeledEntities = this.toLabeledEntities(extractResponse.predictedEntities);
+            let labeledEntities = ModelUtils.ToLabeledEntities(extractResponse.predictedEntities);
             textVariations.push(new TextVariation({ text: extractResponse.text, labelEntities: labeledEntities }));
         }     
         this.props.onTextVariationsExtracted(allResponses[0], textVariations, roundIndex);
@@ -248,7 +196,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                 // Should never happen, but protect just in case
                 return;
             }
-            let newVariation = this.toTextVariation(extractResponse);
+            let newVariation = ModelUtils.ToTextVariation(extractResponse);
             let newVariations = [...this.state.newTextVariations];
             newVariations[index] = newVariation;
             this.setState({
@@ -294,7 +242,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                 onAddVariation={() => this.onAddExtractResponse()} />
 
             addEntity =
-                <CommandButton
+                <OF.CommandButton
                     className="blis-button--gold teachCreateButton"
                     onClick={this.entityButtonOnClick}
                     ariaDescription='Cancel'
@@ -325,17 +273,17 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                 />);
             }
 
-            editComponents = (this.props.extractType != ExtractType.TEACH) ?  
+            editComponents = (this.props.extractType != DialogType.TEACH) ?  
                 (
                     <div>
-                        <PrimaryButton 
+                        <OF.PrimaryButton 
                             disabled={!this.state.extractionChanged || !allValid}
                             onClick={this.onClickSubmitExtractions}
                             ariaDescription={"Sumbit Changes"}
                             text={"Submit Changes"}
                             ref="doneExtractingButton"
                         />
-                        <PrimaryButton 
+                        <OF.PrimaryButton 
                             disabled={!this.state.extractionChanged}
                             onClick={this.onClickUndoChanges}
                             ariaDescription="Undo Changes"
@@ -348,7 +296,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                     </div>
                 ) :(
                     <div>
-                        <PrimaryButton 
+                        <OF.PrimaryButton 
                             disabled={!allValid}
                             onClick={this.onClickSubmitExtractions}
                             ariaDescription={"Score Actions"}
@@ -390,22 +338,22 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                 {editComponents}
                 <PopUpMessage open={this.state.warningOpen} onConfirm={() => this.handleCloseWarning()} title="Text variations must all have same tagged entities." />
                 <div className="blis-log-dialog-admin__dialogs">
-                    <Dialog
+                    <OF.Dialog
                         hidden={this.state.savedExtractResponses === null}
                         isBlocking={true}
                         dialogContentProps={{
-                            type: DialogType.normal,
+                            type: OF.DialogType.normal,
                             title: 'Do you want to save your Entity Detection changes?'
                         }}
                         modalProps={{
                             isBlocking: true
                         }}
                     >
-                        <DialogFooter>
-                            <PrimaryButton onClick={() => this.onClickSaveCheckYes()} text='Yes' />
-                            <DefaultButton onClick={() => this.onClickSaveCheckNo()} text='No' />
-                        </DialogFooter>
-                    </Dialog>
+                        <OF.DialogFooter>
+                            <OF.PrimaryButton onClick={() => this.onClickSaveCheckYes()} text='Yes' />
+                            <OF.DefaultButton onClick={() => this.onClickSaveCheckNo()} text='No' />
+                        </OF.DialogFooter>
+                    </OF.Dialog>
                 </div>
             </div>
         )
@@ -427,7 +375,7 @@ const mapStateToProps = (state: State, ownProps: any) => {
 
 export interface ReceivedProps {
     appId: string,
-    extractType: ExtractType,
+    extractType: DialogType,
     sessionId: string,
     roundIndex: number,
     autoTeach: boolean

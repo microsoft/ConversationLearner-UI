@@ -2,9 +2,9 @@ import { ActionObject } from '../types'
 import { AT } from '../types/ActionTypes'
 import { UserInput, ExtractResponse, UIScoreInput, UIExtractResponse, 
     UIScoreResponse, UITrainScorerStep, TeachResponse,
-    ExtractType } from 'blis-models'
+    DialogType } from 'blis-models'
 
-export const runExtractorAsync = (key: string, appId: string, extractType: ExtractType, sessionId: string, turnIndex: number, userInput: UserInput) : ActionObject => { 
+export const runExtractorAsync = (key: string, appId: string, extractType: DialogType, sessionId: string, turnIndex: number, userInput: UserInput) : ActionObject => { 
     return {
         type: AT.RUN_EXTRACTOR_ASYNC,
         key: key,

@@ -4,10 +4,11 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../../types'
 import { TeachMode } from '../../types/const';
-import { runScorerAsync } from '../../actions/teachActions';
+import { runScorerAsync, postScorerFeedbackAsync } from '../../actions/teachActions';
 import { BlisAppBase, TextVariation, ExtractResponse, 
-    ExtractType, TrainExtractorStep, UIScoreInput } from 'blis-models'
-import TeachSessionScorer from './TeachSessionScorer';
+    DialogType, TrainExtractorStep, TrainScorerStep,
+    UITrainScorerStep, UIScoreInput } from 'blis-models'
+import ActionScorer from './ActionScorer';
 import EntityExtractor from './EntityExtractor';
 import TeachSessionMemory from './TeachSessionMemory';
 
@@ -15,10 +16,11 @@ class TeachSessionAdmin extends React.Component<Props, {}> {
 
     constructor(p: Props) {
         super(p)
-        this.onTextVariationsExtracted = this.onTextVariationsExtracted.bind(this)
+        this.onEntityExtractorSubmit = this.onEntityExtractorSubmit.bind(this);
+        this.onActionScorerSubmit = this.onActionScorerSubmit.bind(this);
     }
 
-    onTextVariationsExtracted(extractResponse: ExtractResponse, textVariations: TextVariation[], turnIndex: number) : void {
+    onEntityExtractorSubmit(extractResponse: ExtractResponse, textVariations: TextVariation[], roundIndex: number) : void {
         let trainExtractorStep = new TrainExtractorStep({
             textVariations: textVariations
         });
@@ -30,18 +32,50 @@ class TeachSessionAdmin extends React.Component<Props, {}> {
         this.props.runScorerAsync(this.props.user.key, appId, teachId, uiScoreInput);
 
     }
+    onActionScorerSubmit(trainScorerStep: TrainScorerStep) : void {
+
+        let uiTrainScorerStep = new UITrainScorerStep(
+            {
+                trainScorerStep,
+                entities : this.props.entities
+            });
+        
+        let appId: string = this.props.app.appId;
+        let teachId: string = this.props.teachSession.current.teachId;
+        let waitForUser = trainScorerStep.scoredAction.isTerminal;
+
+        // Pass score input (minus extractor step) for subsequent actions when this one is non-terminal
+        let uiScoreInput: UIScoreInput = { ...this.props.teachSession.uiScoreInput, trainExtractorStep: null };
+
+        this.props.postScorerFeedbackAsync(this.props.user.key, appId, teachId, uiTrainScorerStep, waitForUser, uiScoreInput);
+    }
     renderEntityExtractor() : JSX.Element {
         return (
             <EntityExtractor 
                 appId = {this.props.app.appId}
-                extractType = {ExtractType.TEACH}
+                extractType = {DialogType.TEACH}
                 sessionId = {this.props.teachSession.current.teachId}
                 roundIndex = {null}  
                 autoTeach = {this.props.teachSession.autoTeach}
                 teachMode = {this.props.teachSession.mode}
                 extractResponses = {this.props.teachSession.extractResponses}
                 originalTextVariations = {[]}
-                onTextVariationsExtracted = {this.onTextVariationsExtracted}
+                onTextVariationsExtracted = {this.onEntityExtractorSubmit}
+            />
+        )
+    }
+    renderActionScorer() : JSX.Element {
+        return (
+            <ActionScorer 
+                appId = {this.props.app.appId}
+                dialogType = {DialogType.TEACH}
+                sessionId = {this.props.teachSession.current.teachId}
+                autoTeach = {this.props.teachSession.autoTeach}
+                teachMode = {this.props.teachSession.mode}
+                scoreResponse = {this.props.teachSession.scoreResponse}
+                scoreInput = {this.props.teachSession.scoreInput}
+                memories = {this.props.teachSession.memories}
+                onActionSelected = {this.onActionScorerSubmit}
             />
         )
     }
@@ -65,7 +99,7 @@ class TeachSessionAdmin extends React.Component<Props, {}> {
                     <div>
                         <TeachSessionMemory />
                         {this.renderEntityExtractor()}
-                        <TeachSessionScorer />
+                        {this.renderActionScorer()}
                     </div>
                 )
                 break;
@@ -76,7 +110,7 @@ class TeachSessionAdmin extends React.Component<Props, {}> {
                         <div>
                             <TeachSessionMemory />
                             {this.renderEntityExtractor()}
-                            <TeachSessionScorer />
+                            {this.renderActionScorer()}/>
                         </div>
                     )
                 }
@@ -98,13 +132,15 @@ class TeachSessionAdmin extends React.Component<Props, {}> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        runScorerAsync
+        runScorerAsync,
+        postScorerFeedbackAsync
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {
     return {
         user: state.user,
-        teachSession: state.teachSessions
+        teachSession: state.teachSessions,
+        entities: state.entities,
     }
 }
 

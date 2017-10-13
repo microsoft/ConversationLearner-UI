@@ -10,7 +10,7 @@ import {
   Session,
   Teach,
   UIScoreInput,
-  ExtractType
+  DialogType
 } from 'blis-models'
 import * as Rx from 'rxjs';
 import { Observable, Observer } from 'rxjs'
@@ -396,16 +396,16 @@ export interface BlisAppForUpdate extends BlisAppBase {
    * the server, the session will first migrate to that newer version.  This 
    * doesn't affect the trainDialog maintained.
    */
-  export const putExtract = (key : string, appId: string, extractType: ExtractType, sessionId: string, turnIndex: number, userInput: UserInput): Observable<ActionObject> => {
+  export const putExtract = (key : string, appId: string, extractType: DialogType, sessionId: string, turnIndex: number, userInput: UserInput): Observable<ActionObject> => {
     let routeURI : string = null;
     switch (extractType) {
-      case ExtractType.TEACH:
+      case DialogType.TEACH:
         routeURI = `app/${appId}/teach/${sessionId}/extractor`;
         break;
-      case ExtractType.TRAINDIALOG:
+      case DialogType.TRAINDIALOG:
         routeURI = `app/${appId}/traindialog/${sessionId}/extractor/${turnIndex}`;
         break;
-      case ExtractType.LOGDIALOG:
+      case DialogType.LOGDIALOG:
         routeURI = `app/${appId}/logdialog/${sessionId}/extractor/${turnIndex}`;
         break;
     }

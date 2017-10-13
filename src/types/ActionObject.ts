@@ -4,7 +4,7 @@ import {
     EntityBase,
     ActionBase, 
     TrainDialog, LogDialog, Session, Teach,
-    UserInput, ExtractResponse, ExtractType,
+    UserInput, ExtractResponse, DialogType,
     UIExtractResponse, UITrainScorerStep,
     TeachResponse, UIScoreInput, UIScoreResponse
 } from 'blis-models'
@@ -297,7 +297,7 @@ export type TeachAction = {
     type: AT.RUN_EXTRACTOR_ASYNC,
     key: string,
     appId: string,
-    extractType: ExtractType,
+    extractType: DialogType,
     turnIndex: number,
     sessionId: string,
     userInput: UserInput
