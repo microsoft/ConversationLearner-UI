@@ -12,6 +12,7 @@ import EntityCreatorEditor from './EntityCreatorEditor';
 import { TeachMode } from '../../types/const'
 import PopUpMessage from '../PopUpMessage';
 import { clearExtractResponses, updateExtractResponse, removeExtractResponse } from '../../actions/teachActions'
+import './EntityExtractor.css'
 
 interface ComponentState {
     // Has the user made any changes
@@ -119,7 +120,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         return true;
     }
     // Return merge of extract responses and text variations
-    allResponses() : ExtractResponse[] {
+    allResponses(): ExtractResponse[] {
         let convertedVariations = ModelUtils.ToExtractResponses(this.state.newTextVariations as TextVariation[]);
         let allResponses = [...convertedVariations, ...this.props.extractResponses];
         return allResponses;
@@ -226,7 +227,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
             return null;
         }
 
-        // Don't show edit components when in auto TACH or on score step
+        // Don't show edit components when in auto TEACH or on score step
         let canEdit = (!this.props.autoTeach && this.props.teachMode == TeachMode.Extractor);
         let variationCreator = null;
         let addEntity = null;
@@ -242,8 +243,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                 onAddVariation={() => this.onAddExtractResponse()} />
 
             addEntity =
-                <OF.CommandButton
-                    className="blis-button--gold teachCreateButton"
+                <OF.PrimaryButton
                     onClick={this.entityButtonOnClick}
                     ariaDescription='Cancel'
                     text='Entity'
@@ -328,8 +328,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         return (
             <div>
                 <div>
-                    <div className='teachTitleBox'>
-                        <div className='ms-font-l teachTitle'>Entity Detection</div>
+                    <div className="blis-dialog-creation-buttons">
                         {addEntity}
                     </div>
                     {extractDisplay}
@@ -337,7 +336,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                 </div>
                 {editComponents}
                 <PopUpMessage open={this.state.warningOpen} onConfirm={() => this.handleCloseWarning()} title="Text variations must all have same tagged entities." />
-                <div className="blis-log-dialog-admin__dialogs">
+                <div className="blis-dialog-admin__dialogs">
                     <OF.Dialog
                         hidden={this.state.savedExtractResponses === null}
                         isBlocking={true}
