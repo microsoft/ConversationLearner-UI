@@ -17,7 +17,8 @@ class Webchat extends React.Component<Props, {}> {
         app: null,
         history: null,
         onSelectActivity: () => { },
-        onPostActivity: () => { }
+        onPostActivity: () => { },
+        hideInput: false
     }
 
     constructor(p: any) {
@@ -62,7 +63,8 @@ class Webchat extends React.Component<Props, {}> {
                 },
                 user: { name: this.props.user.name, id: this.props.user.id },
                 bot: { name: "BlisTrainer", id: "BlisTrainer" },
-                resize: 'detect'
+                resize: 'detect',
+                hideInput: this.props.hideInput
             }
             // If viewing history, add history and listener
             if (this.props.history) {
@@ -95,6 +97,7 @@ const mapStateToProps = (state: State, ownProps: any) => {
 export interface ReceivedProps {
     app: BlisAppBase,
     history: Activity[] | null,
+    hideInput: boolean,
     onSelectActivity: (a: Activity) => void,
     onPostActivity: (a: Activity) => void
 }
