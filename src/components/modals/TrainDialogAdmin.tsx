@@ -8,9 +8,11 @@ import { TeachMode } from '../../types/const';
 import { editTrainDialogAsync } from '../../actions/updateActions';
 import { clearExtractResponses } from '../../actions/teachActions'
 import EntityExtractor from './EntityExtractor';
+import ActionScorer from './ActionScorer';
 import { Activity } from 'botframework-directlinejs'
 import * as OF from 'office-ui-fabric-react';
-import { ActionBase, TrainDialog, TrainRound, TrainScorerStep, 
+import { ActionBase, TrainDialog, TrainRound, ScoreReason, ScoredAction,
+    TrainScorerStep, Memory, UnscoredAction, ScoreResponse,
     EntityBase, TextVariation, ExtractResponse, DialogType } from 'blis-models'
 
 class TrainDialogAdmin extends React.Component<Props, ComponentState> {
@@ -24,6 +26,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
             scoreIndex: null
         }
         this.onEntityExtractorSubmit = this.onEntityExtractorSubmit.bind(this);
+        this.onActionScorerSubmit = this.onActionScorerSubmit.bind(this);
     }
 
     componentWillReceiveProps(newProps: Props) {
@@ -93,6 +96,12 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
 
         // Determine if extracted entities have changed.  If so, save and show prompt to user
         if (this.haveEntitiesChanged(extractResponse, roundIndex)) {
+
+            // Delete at steps after the current round and clear scorer steps
+            let newRounds = updatedTrainDialog.rounds.slice(0,roundIndex+1);
+            newRounds[roundIndex].scorerSteps = [];
+            updatedTrainDialog = {...updatedTrainDialog, rounds: newRounds};
+
             // Save prompt will be shown to user
             this.setState({
                 saveTrainDialog: updatedTrainDialog,
@@ -100,27 +109,52 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
             });
             return;
         }  
-        // Otherwise just save with new text variations 
+        // Otherwise just save with new text variations, remaining rounds are ok
         else {
             this.props.editTrainDialogAsync(this.props.user.key, updatedTrainDialog, this.props.appId);
             this.props.clearExtractResponses();
         }
-    }       
+    }    
+    
+    // User changed the selected action for a round
+    onActionScorerSubmit(trainScorerStep: TrainScorerStep) : void {
+
+        // Remove training rounds
+        const rounds = this.props.trainDialog.rounds.slice(0, this.state.roundIndex+1);       
+        let round = rounds[this.state.roundIndex]; 
+
+        // Remove trailing scorer steps
+        let newScorerSteps = round.scorerSteps.slice(0, this.state.scoreIndex+1);
+        newScorerSteps[this.state.scoreIndex] = trainScorerStep;
+        
+        // Create new train round
+        let newRound = new TrainRound({
+            extractorStep: round.extractorStep,
+            scorerSteps: newScorerSteps
+        })
+
+        // New rounds list with new round
+        let newRounds = [...rounds];
+        newRounds[this.state.roundIndex] = newRound;
+        let updatedTrainDialog = {...this.props.trainDialog, rounds: newRounds};
+
+        // Save prompt will be shown to user
+        this.setState({
+            saveTrainDialog: updatedTrainDialog,
+            saveSliceRound: this.state.roundIndex
+        });
+    }
+
     onClickSaveCheckYes() {
-        // Delete at steps after the current round
-        let newRounds = this.state.saveTrainDialog.rounds.slice(0,this.state.saveSliceRound+1);
-        newRounds[this.state.saveSliceRound].scorerSteps = [];
-        let trainDialog = {...this.state.saveTrainDialog, rounds: newRounds};
+        // Submit saved extractions
+        this.props.editTrainDialogAsync(this.props.user.key, this.state.saveTrainDialog, this.props.appId);
+        this.props.clearExtractResponses();
 
         this.setState({
             saveTrainDialog: null, 
             saveSliceRound: 0,
             roundIndex: this.state.saveSliceRound
         });
-
-        // Submit saved extractions
-        this.props.editTrainDialogAsync(this.props.user.key, trainDialog, this.props.appId);
-        this.props.clearExtractResponses();
     }
     onClickSaveCheckNo() {
         // Reset the entity extractor
@@ -128,47 +162,84 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
         this.props.clearExtractResponses();
     }
     render() {
-        let round: TrainRound = null
-        let scorerStep: TrainScorerStep = null
-        let action: ActionBase = null
-        let entities: EntityBase[] = []
+        let round: TrainRound = null;
+        let scorerStep: TrainScorerStep = null;
+        let selectedAction: ActionBase = null;
+        let memories: Memory[] = [];
+        let filledEntities: EntityBase[] = [];
+        let scoreResponse: ScoreResponse = null;
 
         if (this.props.trainDialog && this.props.selectedActivity) {
             const result = this.findRoundAndScorerStep(this.props.trainDialog, this.props.selectedActivity)
             round = result.round
             scorerStep = result.scorerStep
             if (scorerStep != null) {
-                action = this.props.actions.find(action => action.actionId == scorerStep.labelAction)
-                entities = this.props.entities.filter(entity => scorerStep.input.filledEntities.includes(entity.entityId))
+                selectedAction = this.props.actions.find(action => action.actionId == scorerStep.labelAction)
+                filledEntities = this.props.entities.filter(entity => scorerStep.input.filledEntities.includes(entity.entityId))
+                memories = filledEntities.map((e) => new Memory({entityName: e.entityName, entityValues: []}));     
+                       
+                let scoredAction = new ScoredAction({
+                    actionId : selectedAction.actionId,
+                    payload: selectedAction.payload,
+                    isTerminal: selectedAction.isTerminal,
+                    score: 1.0
+                })
+                // Generate list of all actions (apart from selected) for ScoreResponse as I have no scores
+                let unscoredActions = this.props.actions
+                    .filter(a => a.actionId != selectedAction.actionId)
+                    .map(action => {
+                        return new UnscoredAction({
+                            actionId : action.actionId,
+                            payload: action.payload,
+                            isTerminal: action.isTerminal,
+                            reason: ScoreReason.NotCalculated
+                        })
+                });
+
+                scoreResponse = new ScoreResponse({
+                    scoredActions: [scoredAction],
+                    unscoredActions: unscoredActions
+                })
             }
         }
-        let extractor = round ?
-            <EntityExtractor
-                appId = {this.props.appId}
-                extractType = {DialogType.TRAINDIALOG}
-                sessionId = {this.props.trainDialog.trainDialogId}
-                roundIndex = {this.state.roundIndex}  
-                autoTeach = {false}
-                teachMode = {TeachMode.Extractor}
-                extractResponses = {this.props.extractResponses}
-                originalTextVariations = {round.extractorStep.textVariations}
-                onTextVariationsExtracted = {this.onEntityExtractorSubmit}
-            />
-            : <span>Click on text from the dialog to the left.</span>;
 
         return (
             <div className="blis-log-dialog-admin ms-font-l">
                 <div className="blis-log-dialog-admin__title">Entity Detection</div>
                 <div className="blis-log-dialog-admin__content">
-                    {extractor}
+                    {round ?
+                        <EntityExtractor
+                            appId = {this.props.appId}
+                            extractType = {DialogType.TRAINDIALOG}
+                            sessionId = {this.props.trainDialog.trainDialogId}
+                            roundIndex = {this.state.roundIndex}  
+                            autoTeach = {false}
+                            teachMode = {TeachMode.Extractor}
+                            extractResponses = {this.props.extractResponses}
+                            originalTextVariations = {round.extractorStep.textVariations}
+                            onTextVariationsExtracted = {this.onEntityExtractorSubmit}
+                        />
+                        : <span>Click on text from the dialog to the left.</span>}
                 </div>
                 <div className="blis-log-dialog-admin__title">Memory</div>
                 <div className="blis-log-dialog-admin__content">
-                    {entities.length !== 0 && entities.map(entity => <div key={entity.entityName}>{entity.entityName}</div>)}
+                    {filledEntities.length !== 0 && filledEntities.map(entity => <div key={entity.entityName}>{entity.entityName}</div>)}
                 </div>
                 <div className="blis-log-dialog-admin__title">Action</div>
                 <div className="blis-log-dialog-admin__content">
-                    {action && action.payload}
+                    {selectedAction && 
+                        <ActionScorer 
+                            appId = {this.props.appId}
+                            dialogType = {DialogType.TRAINDIALOG}
+                            sessionId = {this.props.trainDialog.trainDialogId}
+                            autoTeach = {false}
+                            teachMode = {TeachMode.Scorer}
+                            scoreResponse = {scoreResponse}
+                            scoreInput = {scorerStep.input}
+                            memories = {memories}
+                            onActionSelected = {this.onActionScorerSubmit}
+                        />
+                    }
                 </div>
                 <div className="blis-log-dialog-admin__dialogs">
                     <OF.Dialog
