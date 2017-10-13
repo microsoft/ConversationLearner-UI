@@ -128,6 +128,7 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
                                 history={this.generateHistory()}
                                 onPostActivity={activity => this.onWebChatPostActivity(activity)}
                                 onSelectActivity={activity => this.onWebChatSelectActivity(activity)}
+                                hideInput={true}
                             />
                         </div>
                         <div className="blis-chatmodal_controls">
