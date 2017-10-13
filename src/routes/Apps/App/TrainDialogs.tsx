@@ -188,6 +188,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         return (
             <div className="blis-page">
                 <span className="ms-font-xxl">Train Dialogs</span>
+                <div className="blis-modal-header blis-color-teach"></div>
                 <span className="ms-font-m-plus">Use this tool to train and improve the current versions of your application...</span>
                 <div>
                     <CommandButton

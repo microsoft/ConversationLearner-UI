@@ -102,12 +102,12 @@ html {
   border: 2px solid #004b50;
 }
 
-.blis-modal_header {
+.blis-modal_title {
   display: block;
   text-align: center;
   padding: 1em;
 }
-.blis-modal_footer{
+.blis-modal_buttonbox{
   margin-top: 1.5em;
 }
 
@@ -121,6 +121,38 @@ html {
     position: relative
 }
 
+.blis-color-teach {
+  background-color: var(--color-teach);
+}
+.blis-color-log {
+  background-color: var(--color-log);
+}
+
+.blis-modal-header {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  padding: 0 28px;
+  min-height: 8px;
+}
+.blis-modal-container {
+  height: 80vh;
+  width: 80vw;
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: stretch;
+}
+.blis-modal-body {
+  flex: 4 4 auto;
+  overflow-y: auto;
+  height: 100%;
+}
+.blis-modal-footer {
+  align-items: center;
+  padding: 5px 5px 5px 5px;
+}
+
+
 .blis-chatmodal {
   height: 100%;
   display: grid;
@@ -133,21 +165,11 @@ html {
   border-left: 1px solid var(--color-botchat-grey);
   display: grid;
   grid-template-rows: 1fr min-content;
+  overflow-x: auto;
 }
 .blis-chatmodal_admin-controls {
   padding: 1em;
 }
-.blis-chatmodal_modal-controls{
-  background-color: var(--color-secondary);
-  display: grid;
-  grid-auto-flow: column;
-  grid-gap: 1em;
-  grid-auto-columns: min-content;
-  padding: 0.635em;
-  justify-content: space-between;
-  white-space: nowrap;
-}
-
 
 /** Office UI Fabric Theme Overrides */
 .ms-List-cell {
@@ -158,7 +180,12 @@ html {
  the parents should define the spacing responsibilities of children, otherwise chil */
 /* .ms-Button {
   margin-right: 5px;
-} */
+}
+*/
+
+.ms-Button.is-disabled, .ms-Button:disabled {
+  background-color: var(--color-primary-lighter) !important;
+}
 
 /** TODO: Remove usage of !important */
 .ms-Button--primary:not(:disabled) {

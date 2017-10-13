@@ -4,7 +4,7 @@ import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
-import { PrimaryButton, DefaultButton, Checkbox } from 'office-ui-fabric-react';
+import { PrimaryButton, DefaultButton } from 'office-ui-fabric-react';
 import { State } from '../../types';
 import { TeachMode } from '../../types/const';
 import Webchat from '../Webchat'
@@ -90,51 +90,60 @@ class TeachWindow extends React.Component<Props, ComponentState> {
             <div className="wc-disable"></div>
             : null;
 
+        
+        /* Disable auto advance for hackathon 
+            <Checkbox
+                    className="blis-button--right"
+                    label='Auto Advance'
+                    checked={this.props.teachSessions.autoTeach}
+                    onChange={(e, value) => this.autoTeachChanged(e, value)}
+                    disabled={this.state.editing}
+                />
+        */
+
         // Mask controls if autoTeach is enabled
         let mask = (this.props.teachSessions.autoTeach) ? <div className="teachAutoMask"></div> : null;
         return (
             <Modal
                 isOpen={this.props.open && this.props.error === null}
                 isBlocking={true}
-                containerClassName='blis-modal blis-modal--large'
-            >
-                <div className="blis-chatmodal">
-                    <div className="blis-chatmodal_webchat">
-                        <Webchat
-                            app={this.props.app}
-                            history={null}
-                            onPostActivity={activity => this.onWebChatPostActivity(activity)}
-                            onSelectActivity={() => { }}
-                        />
-                        {chatDisable}
-                    </div>
-                    <div className="blis-chatmodal_controls">
-                        <div className="blis-chatmodal_admin-controls">
-                            <TeachSessionAdmin
+                containerClassName='blis-modal-container blis-modal blis-modal--large'>
+                <div className="blis-modal-header blis-color-teach"></div>
+                <div className="blis-modal-body">
+                    <div className="blis-chatmodal">
+                        <div className="blis-chatmodal_webchat">
+                            <Webchat
                                 app={this.props.app}
+                                history={null}
+                                onPostActivity={activity => this.onWebChatPostActivity(activity)}
+                                onSelectActivity={() => { }}
                             />
-                            {mask}
+                            {chatDisable}
                         </div>
-                        <div className="blis-chatmodal_modal-controls">
-                            <PrimaryButton
-                                disabled={!showDone}
-                                onClick={() => this.onClickSave()}
-                                ariaDescription='Done Teaching'
-                                text='Done Teaching'
-                            />
-                            <DefaultButton
-                                onClick={() => this.onClickAbandonTeach()}
-                                ariaDescription='Abandon Teach'
-                                text='Abandon Teach'
-                            />
-                            <Checkbox
-                                label='Auto Teach?'
-                                checked={this.props.teachSessions.autoTeach}
-                                onChange={(e, value) => this.autoTeachChanged(e, value)}
-                                disabled={this.state.editing}
-                            />
-                        </div>
+                        <div className="blis-chatmodal_controls">
+                            <div className="blis-chatmodal_admin-controls">
+                                <TeachSessionAdmin
+                                    app={this.props.app}
+                                />
+                                {mask}
+                            </div>
+                        </div> 
                     </div>
+                </div>
+                <div className="blis-modal-footer blis-color-teach">
+                    <DefaultButton
+                        className="blis-button--right"
+                        onClick={() => this.onClickAbandonTeach()}
+                        ariaDescription='Abandon Teach'
+                        text='Abandon Teach'
+                    />
+                    <PrimaryButton
+                        className="blis-button--right"
+                        disabled={!showDone}
+                        onClick={() => this.onClickSave()}
+                        ariaDescription='Done Teaching'
+                        text='Done Teaching'
+                    />
                 </div>
                 <ConfirmDeleteModal
                     open={this.state.isConfirmDeleteOpen}

@@ -117,37 +117,42 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
             <Modal
                 isOpen={this.props.open && this.props.error == null}
                 isBlocking={true}
-                containerClassName='blis-modal blis-modal--large'>
-                <div className="blis-chatmodal">
-                    <div className="blis-chatmodal_webchat">
-                        <Webchat
-                            key={this.state.webchatKey}
-                            app={this.props.app}
-                            history={this.generateHistory()}
-                            onPostActivity={activity => this.onWebChatPostActivity(activity)}
-                            onSelectActivity={activity => this.onWebChatSelectActivity(activity)}
-                        />
-                    </div>
-                    <div className="blis-chatmodal_controls">
-                        <div className="blis-chatmodal_admin-controls">
-                            <TrainDialogAdmin
-                                trainDialog={this.props.trainDialog}
-                                selectedActivity={this.state.selectedActivity}
+                containerClassName='blis-modal-container blis-modal blis-modal--large'>
+                <div className="blis-modal-header blis-color-teach"></div>
+                <div className="blis-modal-body">
+                    <div className="blis-chatmodal">
+                        <div className="blis-chatmodal_webchat">
+                            <Webchat
+                                key={this.state.webchatKey}
+                                app={this.props.app}
+                                history={this.generateHistory()}
+                                onPostActivity={activity => this.onWebChatPostActivity(activity)}
+                                onSelectActivity={activity => this.onWebChatSelectActivity(activity)}
                             />
                         </div>
-                        <div className="blis-chatmodal_modal-controls">
-                            <PrimaryButton
-                                onClick={() => this.onClickDone()}
-                                ariaDescription='Done'
-                                text='Done'
-                            />
-                            <DefaultButton
-                                onClick={() => this.onClickDelete()}
-                                ariaDescription='Delete'
-                                text='Delete'
-                            />
+                        <div className="blis-chatmodal_controls">
+                            <div className="blis-chatmodal_admin-controls">
+                                <TrainDialogAdmin
+                                    trainDialog={this.props.trainDialog}
+                                    selectedActivity={this.state.selectedActivity}
+                                />
+                            </div>
                         </div>
                     </div>
+                </div>
+                <div className="blis-modal-footer blis-color-teach">
+                    <PrimaryButton
+                        className="blis-button--right"
+                        onClick={() => this.onClickDone()}
+                        ariaDescription='Done'
+                        text='Done'
+                    />
+                    <DefaultButton
+                        className="blis-button--right"
+                        onClick={() => this.onClickDelete()}
+                        ariaDescription='Delete'
+                        text='Delete'
+                    />
                 </div>
                 <ConfirmDeleteModal
                     open={this.state.confirmDeleteModalOpen}

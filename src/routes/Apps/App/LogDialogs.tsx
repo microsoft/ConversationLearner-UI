@@ -144,6 +144,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         return (
             <div className="blis-page">
                 <span className="ms-font-xxl">Log Dialogs</span>
+                <div className="blis-modal-header blis-color-log"></div>
                 <span className="ms-font-m-plus">Use this tool to test the current versions of your application, to check if you are progressing on the right track...</span>
                 <div>
                     <CommandButton

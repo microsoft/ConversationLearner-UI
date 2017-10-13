@@ -148,7 +148,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
                     isBlocking={false}
                     containerClassName='blis-modal blis-modal--small blis-modal--border'
                 >
-                    <div className='blis-modal_header'>
+                    <div className='blis-modal_title'>
                         <span className='ms-font-xxl ms-fontWeight-semilight'>Create a BLIS App</span>
                     </div>
                     <div>
@@ -174,7 +174,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
                             onChanged={this.localeChanged}
                         />
                     </div>
-                    <div className='blis-modal_footer'>
+                    <div className='blis-modal_buttonbox'>
                         <CommandButton
                             disabled={!this.state.appNameVal || !this.state.luisKeyVal}
                             onClick={this.createApplication}

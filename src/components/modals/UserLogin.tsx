@@ -133,11 +133,11 @@ class UserLogin extends React.Component<Props, ComponentState> {
                 isBlocking={isBlocking}
                 containerClassName='blis-modal blis-modal--small blis-modal--border'
             >
-                <div className='blis-modal_header'>
+                <div className='blis-modal_title'>
                     <span className='ms-font-xxl ms-fontWeight-semilight'>{title}</span>
                 </div>
                 {input}
-                <div className='blis-modal_footer'>
+                <div className='blis-modal_buttonbox'>
                     {button}
                 </div>
             </Modal>
