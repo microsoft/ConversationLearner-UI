@@ -128,6 +128,11 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
         this.props.handleClose();
     }
 
+    onClickCancel = () => {
+        this.setState({ ...initState });
+        this.props.handleClose();
+    }
+
     onChangedName = (text: string) => {
         this.setState({
             entityNameVal: text
@@ -220,7 +225,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                                 text={this.state.submitButtonText}
                             />
                             <DefaultButton
-                                onClick={() => this.props.handleClose()}
+                                onClick={this.onClickCancel}
                                 ariaDescription='Cancel'
                                 text='Cancel'
                             />
