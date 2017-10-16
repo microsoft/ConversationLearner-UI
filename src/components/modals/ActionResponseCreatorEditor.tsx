@@ -897,14 +897,14 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
                                     ariaDescription='Cancel'
                                     text='Cancel'
                                 />
-                            </div>
-                            <div className="blis-modal-buttons_secondary">
                                 {this.state.editing &&
                                     <DefaultButton
                                         onClick={() => this.props.handleOpenDeleteModal(this.props.blisAction.actionId)}
                                         ariaDescription='Delete'
                                         text='Delete'
                                     />}
+                            </div>
+                            <div className="blis-modal-buttons_secondary">
                                 <PrimaryButton
                                     onClick={this.entityOnClick}
                                     ariaDescription='Entity'
