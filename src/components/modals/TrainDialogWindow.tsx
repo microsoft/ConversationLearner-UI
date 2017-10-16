@@ -146,17 +146,15 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
                         <div className="blis-modal-buttons_primary">
                         </div>
                         <div className="blis-modal-buttons_secondary">
-                            <PrimaryButton
-                                className="blis-button--right"
-                                onClick={() => this.onClickDone()}
-                                ariaDescription='Done'
-                                text='Done'
-                            />
                             <DefaultButton
-                                className="blis-button--right"
                                 onClick={() => this.onClickDelete()}
                                 ariaDescription='Delete'
                                 text='Delete'
+                            />
+                            <PrimaryButton
+                                onClick={() => this.onClickDone()}
+                                ariaDescription='Done'
+                                text='Done'
                             />
                         </div>
                     </div>

@@ -138,13 +138,11 @@ class TeachWindow extends React.Component<Props, ComponentState> {
                         </div>
                         <div className="blis-modal-buttons_secondary">
                             <DefaultButton
-                                className="blis-button--right"
                                 onClick={() => this.onClickAbandonTeach()}
                                 ariaDescription='Abandon Teach'
                                 text='Abandon Teach'
                             />
                             <PrimaryButton
-                                className="blis-button--right"
                                 disabled={!showDone}
                                 onClick={() => this.onClickSave()}
                                 ariaDescription='Done Teaching'

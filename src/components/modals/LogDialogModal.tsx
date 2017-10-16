@@ -130,13 +130,11 @@ class LogDialogModal extends React.Component<Props, ComponentState> {
                             </div>
                             <div className="blis-modal-buttons_secondary">
                                 <DefaultButton
-                                    className="blis-button--right"
                                     onClick={() => this.onClickDelete()}
                                     ariaDescription='Delete'
                                     text='Delete'
                                 />
                                 <PrimaryButton
-                                    className="blis-button--right"
                                     onClick={() => this.props.onClose()}
                                     ariaDescription='Done'
                                     text='Done'

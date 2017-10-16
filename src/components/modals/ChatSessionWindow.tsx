@@ -75,7 +75,6 @@ class SessionWindow extends React.Component<Props, ComponentState> {
                         </div>
                         <div className="blis-modal-buttons_secondary">
                             <PrimaryButton
-                                className="blis-button--right"
                                 onClick={() => this.onClickDone()}
                                 ariaDescription='Done Testing'
                                 text='Done Testing'
