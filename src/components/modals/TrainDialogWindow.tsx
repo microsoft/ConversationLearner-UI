@@ -35,12 +35,11 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
         if (this.props.open === false && nextProps.open === true) {
             this.setState(initialState);
         }
-        if (this.state.currentTrainDialog != nextProps.trainDialog)
-        {
+        if (this.state.currentTrainDialog != nextProps.trainDialog) {
             // Force webchat to re-mount as history prop can't be updated
             this.setState({
                 currentTrainDialog: nextProps.trainDialog,
-                webchatKey: this.state.webchatKey+1
+                webchatKey: this.state.webchatKey + 1
             });
         }
     }
@@ -143,18 +142,25 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
                     </div>
                 </div>
                 <div className="blis-modal-footer blis-color-teach">
-                    <PrimaryButton
-                        className="blis-button--right"
-                        onClick={() => this.onClickDone()}
-                        ariaDescription='Done'
-                        text='Done'
-                    />
-                    <DefaultButton
-                        className="blis-button--right"
-                        onClick={() => this.onClickDelete()}
-                        ariaDescription='Delete'
-                        text='Delete'
-                    />
+                    <div className="blis-modal-buttons">
+                        <div className="blis-modal-buttons_primary">
+                        </div>
+                        <div className="blis-modal-buttons_secondary">
+                            <PrimaryButton
+                                className="blis-button--right"
+                                onClick={() => this.onClickDone()}
+                                ariaDescription='Done'
+                                text='Done'
+                            />
+                            <DefaultButton
+                                className="blis-button--right"
+                                onClick={() => this.onClickDelete()}
+                                ariaDescription='Delete'
+                                text='Delete'
+                            />
+                        </div>
+                    </div>
+
                 </div>
                 <ConfirmDeleteModal
                     open={this.state.confirmDeleteModalOpen}

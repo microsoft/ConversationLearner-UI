@@ -53,7 +53,6 @@ class SessionWindow extends React.Component<Props, ComponentState> {
                 <div className="blis-modal-header blis-color-log"></div>
                 <div className="blis-modal-body">
                     <div className="blis-chatmodal">
-                    
                         <div className="blis-chatmodal_webchat">
                             <Webchat
                                 app={this.props.app}
@@ -71,12 +70,18 @@ class SessionWindow extends React.Component<Props, ComponentState> {
                     </div>
                 </div>
                 <div className="blis-modal-footer blis-color-log">
-                    <PrimaryButton
-                        className="blis-button--right"
-                        onClick={() => this.onClickDone()}
-                        ariaDescription='Done Testing'
-                        text='Done Testing'
-                    />
+                    <div className="blis-modal-buttons">
+                        <div className="blis-modal-buttons_primary">
+                        </div>
+                        <div className="blis-modal-buttons_secondary">
+                            <PrimaryButton
+                                className="blis-button--right"
+                                onClick={() => this.onClickDone()}
+                                ariaDescription='Done Testing'
+                                text='Done Testing'
+                            />
+                        </div>
+                    </div>
                 </div>
             </Modal>
         );

@@ -69,6 +69,7 @@
     display: grid;
     grid-template-columns: 1fr min-content;
     grid-gap: 1em;
+    white-space: nowrap;
 }
 .blis-modal-buttons_primary,
 .blis-modal-buttons_secondary {
