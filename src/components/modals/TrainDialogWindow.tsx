@@ -129,6 +129,7 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
                                 onPostActivity={activity => this.onWebChatPostActivity(activity)}
                                 onSelectActivity={activity => this.onWebChatSelectActivity(activity)}
                                 hideInput={true}
+                                focusInput={false}
                             />
                         </div>
                         <div className="blis-chatmodal_controls">
