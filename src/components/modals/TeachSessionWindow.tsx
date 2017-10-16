@@ -118,6 +118,7 @@ class TeachWindow extends React.Component<Props, ComponentState> {
                                 onPostActivity={activity => this.onWebChatPostActivity(activity)}
                                 onSelectActivity={() => { }}
                                 hideInput={false}
+                                focusInput={this.props.teachSessions.mode == TeachMode.Wait}
                             />
                             {chatDisable}
                         </div>

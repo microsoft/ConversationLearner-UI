@@ -61,6 +61,7 @@ class SessionWindow extends React.Component<Props, ComponentState> {
                                 onPostActivity={activity => this.onWebChatPostActivity(activity)}
                                 onSelectActivity={() => { }}
                                 hideInput={false}
+                                focusInput={true}
                             />
                         </div>
                         <div className="blis-chatmodal_controls">

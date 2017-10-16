@@ -110,6 +110,7 @@ class LogDialogModal extends React.Component<Props, ComponentState> {
                                     onSelectActivity={activity => this.onSelectWebChatActivity(activity)}
                                     onPostActivity={activity => this.onPostWebChatActivity(activity)}
                                     hideInput={true}
+                                    focusInput={true}
                                 />
                             </div>
                             <div className="blis-chatmodal_controls">
