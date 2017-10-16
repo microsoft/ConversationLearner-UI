@@ -17,7 +17,6 @@ type CultureObject = {
 }
 
 interface ComponentState {
-    isCreateAppModalOpen: boolean
     appNameVal: string
     localeVal: string
     luisKeyVal: string
@@ -31,7 +30,6 @@ interface IOption {
 
 class AppCreator extends React.Component<Props, ComponentState> {
     state: ComponentState = {
-        isCreateAppModalOpen: false,
         appNameVal: '',
         localeVal: '',
         luisKeyVal: '',
@@ -45,8 +43,8 @@ class AppCreator extends React.Component<Props, ComponentState> {
         this.luisKeyChanged = this.luisKeyChanged.bind(this)
         this.onKeyDown = this.onKeyDown.bind(this)
         this.localeChanged = this.localeChanged.bind(this)
-        this.createApplication = this.createApplication.bind(this)
-        this.onDismissCreateNewApp = this.onDismissCreateNewApp.bind(this)
+        this.onClickCreate = this.onClickCreate.bind(this)
+        this.onClickCancel = this.onClickCancel.bind(this)
     }
 
     componentWillMount() {
@@ -72,19 +70,11 @@ class AppCreator extends React.Component<Props, ComponentState> {
                 }
             })
     }
-    onClickCreateNewApp() {
-        this.setState({
-            isCreateAppModalOpen: true
-        })
-    }
-    onDismissCreateNewApp() {
-        this.resetState()
-    }
+
 
     resetState() {
         let firstValue = this.state.localeOptions[0].text
         this.setState({
-            isCreateAppModalOpen: false,
             appNameVal: '',
             localeVal: firstValue,
             luisKeyVal: ''
@@ -105,8 +95,14 @@ class AppCreator extends React.Component<Props, ComponentState> {
             luisKeyVal: text
         })
     }
-    createApplication() {
-        let appToAdd = new BlisAppBase({
+        
+    onClickCancel() {
+        this.resetState()
+        this.props.onCancel()
+    }
+
+    onClickCreate() {
+        const appToAdd = new BlisAppBase({
             appName: this.state.appNameVal,
             luisKey: this.state.luisKeyVal,
             locale: this.state.localeVal,
@@ -118,6 +114,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
         //need to empty entities, actions, and trainDialogs arrays
         this.props.emptyStateProperties();
         this.resetState();
+        this.props.onSubmit()
     }
 
     // TODO: Refactor to use default form submission instead of manually listening for keys
@@ -125,7 +122,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
     onKeyDown(key: React.KeyboardEvent<HTMLElement>) {
         // On enter attempt to create the app if required fields are set
         if (key.keyCode == 13 && this.state.appNameVal && this.state.luisKeyVal) {
-            this.createApplication();
+            this.onClickCreate();
         }
     }
 
@@ -135,63 +132,55 @@ class AppCreator extends React.Component<Props, ComponentState> {
 
     render() {
         return (
-            <div>
-                <CommandButton
-                    onClick={() => this.onClickCreateNewApp()}
-                    className='blis-button--gold'
-                    ariaDescription='Create a New Application'
-                    text='New App'
-                />
-                <Modal
-                    isOpen={this.state.isCreateAppModalOpen}
-                    onDismiss={() => this.onDismissCreateNewApp()}
-                    isBlocking={false}
-                    containerClassName='blis-modal blis-modal--small blis-modal--border'
-                >
-                    <div className='blis-modal_title'>
-                        <span className='ms-font-xxl ms-fontWeight-semilight'>Create a BLIS App</span>
-                    </div>
-                    <div>
-                        <TextField
-                            onGetErrorMessage={value => this.checkIfBlank(value)}
-                            onChanged={text => this.nameChanged(text)}
-                            label="Name"
-                            placeholder="Application Name..."
-                            onKeyDown={key => this.onKeyDown(key)}
-                            value={this.state.appNameVal} />
-                        <TextField
-                            onGetErrorMessage={this.checkIfBlank}
-                            onChanged={this.luisKeyChanged}
-                            label="LUIS Key"
-                            placeholder="Key..."
-                            type="password"
-                            onKeyDown={this.onKeyDown}
-                            value={this.state.luisKeyVal} />
-                        <Dropdown
-                            label='Locale'
-                            defaultSelectedKey={this.state.localeVal}
-                            options={this.state.localeOptions}
-                            onChanged={this.localeChanged}
-                        />
-                    </div>
-                    <div className='blis-modal_buttonbox'>
-                        <CommandButton
-                            disabled={!this.state.appNameVal || !this.state.luisKeyVal}
-                            onClick={this.createApplication}
-                            className='blis-button--gold'
-                            ariaDescription='Create'
-                            text='Create'
-                        />
-                        <CommandButton
-                            className="blis-button--gray"
-                            onClick={this.onDismissCreateNewApp}
-                            ariaDescription='Cancel'
-                            text='Cancel'
-                        />
-                    </div>
-                </Modal>
-            </div>
-        );
+            <Modal
+                isOpen={this.props.open}
+                onDismiss={() => this.onClickCancel()}
+                isBlocking={false}
+                containerClassName='blis-modal blis-modal--small blis-modal--border'
+            >
+                <div className='blis-modal_title'>
+                    <span className='ms-font-xxl ms-fontWeight-semilight'>Create a BLIS App</span>
+                </div>
+                <div>
+                    <TextField
+                        onGetErrorMessage={value => this.checkIfBlank(value)}
+                        onChanged={text => this.nameChanged(text)}
+                        label="Name"
+                        placeholder="Application Name..."
+                        onKeyDown={key => this.onKeyDown(key)}
+                        value={this.state.appNameVal} />
+                    <TextField
+                        onGetErrorMessage={this.checkIfBlank}
+                        onChanged={this.luisKeyChanged}
+                        label="LUIS Key"
+                        placeholder="Key..."
+                        type="password"
+                        onKeyDown={this.onKeyDown}
+                        value={this.state.luisKeyVal} />
+                    <Dropdown
+                        label='Locale'
+                        defaultSelectedKey={this.state.localeVal}
+                        options={this.state.localeOptions}
+                        onChanged={this.localeChanged}
+                    />
+                </div>
+                <div className='blis-modal_buttonbox'>
+                    <CommandButton
+                        disabled={!this.state.appNameVal || !this.state.luisKeyVal}
+                        onClick={this.onClickCreate}
+                        className='blis-button--gold'
+                        ariaDescription='Create'
+                        text='Create'
+                    />
+                    <CommandButton
+                        className="blis-button--gray"
+                        onClick={this.onClickCancel}
+                        ariaDescription='Cancel'
+                        text='Cancel'
+                    />
+                </div>
+            </Modal>
+        )
     }
 }
 const mapDispatchToProps = (dispatch: any) => {
@@ -207,9 +196,16 @@ const mapStateToProps = (state: State) => {
         userKey: state.user.key
     }
 }
+
+export interface ReceivedProps {
+    open: boolean
+    onSubmit: () => void
+    onCancel: () => void
+}
+
 // Props types inferred from mapStateToProps & dispatchToProps
 const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
-type Props = typeof stateProps & typeof dispatchProps;
+type Props = typeof stateProps & typeof dispatchProps & ReceivedProps;
 
-export default connect<typeof stateProps, typeof dispatchProps, {}>(mapStateToProps, mapDispatchToProps)(AppCreator);
+export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(AppCreator);

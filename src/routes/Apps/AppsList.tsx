@@ -3,7 +3,7 @@ import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { AppCreator, ConfirmDeleteModal } from '../../components/modals'
-import { DetailsList, Link, CheckboxVisibility, IColumn } from 'office-ui-fabric-react';
+import { CommandButton, DetailsList, Link, CheckboxVisibility, IColumn } from 'office-ui-fabric-react';
 import { State } from '../../types';
 import { BlisAppBase } from 'blis-models'
 
@@ -56,7 +56,8 @@ let columns: ISortableRenderableColumn[] = [
 ];
 
 interface ComponentState {
-    isConfirmDeleteAppModalOpen: boolean,
+    isAppCreateModalOpen: boolean
+    isConfirmDeleteAppModalOpen: boolean
     appToDelete: BlisAppBase
     columns: ISortableRenderableColumn[]
     sortColumn: ISortableRenderableColumn
@@ -68,16 +69,11 @@ const ifStringReturnLowerCase = (s: string | number) => {
 
 class AppsList extends React.Component<Props, ComponentState> {
     state: ComponentState = {
+        isAppCreateModalOpen: false,
         isConfirmDeleteAppModalOpen: false,
         appToDelete: null,
         columns: columns,
         sortColumn: null
-    }
-
-    constructor(p: Props) {
-        super(p)
-
-        this.onColumnClick = this.onColumnClick.bind(this)
     }
 
     onConfirmDeleteModal() {
@@ -94,6 +90,12 @@ class AppsList extends React.Component<Props, ComponentState> {
             appToDelete: null
         })
     }
+
+    onClickCreateNewApp = () => {
+        this.setState({
+            isAppCreateModalOpen: true
+        })
+    }
     onClickDeleteApp(app: BlisAppBase) {
         this.setState({
             isConfirmDeleteAppModalOpen: true,
@@ -103,8 +105,8 @@ class AppsList extends React.Component<Props, ComponentState> {
     onClickApp(selectedApp: BlisAppBase) {
         this.props.onSelectedAppChanged(selectedApp)
     }
-    
-    onColumnClick(event: any, column: ISortableRenderableColumn) {
+
+    onColumnClick = (event: any, column: ISortableRenderableColumn) => {
         let { columns } = this.state;
         let isSortedDescending = column.isSortedDescending;
 
@@ -126,6 +128,18 @@ class AppsList extends React.Component<Props, ComponentState> {
             }),
             sortColumn: column
         });
+    }
+
+    onSubmitAppCreateModal = () => {
+        this.setState({
+            isAppCreateModalOpen: false
+        })
+    }
+
+    onCancelAppCreateModal = () => {
+        this.setState({
+            isAppCreateModalOpen: false
+        })
     }
 
     getSortedApplications(): BlisAppBase[] {
@@ -155,6 +169,14 @@ class AppsList extends React.Component<Props, ComponentState> {
             <div className="blis-page">
                 <span className="ms-font-su">My Apps</span>
                 <span className="ms-font-m-plus">Create and Manage your BLIS applications...</span>
+                <div>
+                    <CommandButton
+                        onClick={() => this.onClickCreateNewApp()}
+                        className='blis-button--gold'
+                        ariaDescription='Create a New Application'
+                        text='New App'
+                    />
+                </div>
                 <DetailsList
                     className="ms-font-m-plus"
                     items={apps}
@@ -163,7 +185,11 @@ class AppsList extends React.Component<Props, ComponentState> {
                     onRenderItemColumn={(app, i, column: ISortableRenderableColumn) => column.render(app, this)}
                     onColumnHeaderClick={this.onColumnClick}
                 />
-                <AppCreator />
+                <AppCreator
+                    open={this.state.isAppCreateModalOpen}
+                    onSubmit={this.onSubmitAppCreateModal}
+                    onCancel={this.onCancelAppCreateModal}
+                />
                 <ConfirmDeleteModal
                     open={this.state.isConfirmDeleteAppModalOpen}
                     onCancel={() => this.onCancelDeleteModal()}
