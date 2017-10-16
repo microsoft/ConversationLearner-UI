@@ -21,7 +21,7 @@ const initState: ComponentState = {
 
 interface ComponentState {
     entityNameVal: string
-    entityTypeVal: string,
+    entityTypeVal: string
     isBucketableVal: boolean
     isNegatableVal: boolean
     editing: boolean
@@ -29,11 +29,10 @@ interface ComponentState {
     submitButtonText: string
 }
 
-const blisEntityTypes = [EntityType.LOCAL, EntityType.LUIS].map<IDropdownOption>(v =>
+const blisEntityTypes = [EntityType.LUIS, EntityType.LOCAL].map<IDropdownOption>(value =>
     ({
-        key: v,
-        text: v,
-        itemType: DropdownMenuItemType.Normal
+        key: value,
+        text: value
     }))
 
 const staticEntityOptions: IDropdownOption[] = [
@@ -72,7 +71,6 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                     text: entityName,
                     itemType: DropdownMenuItemType.Normal
                 }))
-
 
         this.entityOptions = [...staticEntityOptions, ...localePreBuildOptions]
 
@@ -124,13 +122,11 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
             // this.props.editEntityAsync(this.props.userKey, entity);
         }
 
-        this.setState({ ...initState });
-        this.props.handleClose();
+        this.props.handleClose()
     }
 
     onClickCancel = () => {
-        this.setState({ ...initState });
-        this.props.handleClose();
+        this.props.handleClose()
     }
 
     onChangedName = (text: string) => {
@@ -174,7 +170,6 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
     }
 
     render() {
-
         return (
             <Modal
                 isOpen={this.props.open}
