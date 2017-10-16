@@ -3,7 +3,7 @@ import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../../types'
-import { TeachMode } from '../../types/const';
+import { SenderType, TeachMode } from '../../types/const';
 import EntityExtractor from './EntityExtractor';
 import ActionScorer from './ActionScorer';
 import * as OF from 'office-ui-fabric-react'
@@ -11,6 +11,7 @@ import { Activity } from 'botframework-directlinejs'
 import { TrainExtractorStep, TrainScorerStep, TextVariation, Memory, TrainDialog, TrainRound, LogDialog, LogRound, LogScorerStep, ActionBase, EntityBase, ExtractResponse, DialogType, ScoredAction, ModelUtils } from 'blis-models'
 
 interface ComponentState {
+    senderType: SenderType,
     roundIndex: number,
     scoreIndex: number,
     newTrainDialog: TrainDialog
@@ -21,6 +22,7 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
     constructor(p: Props) {
         super(p);
         this.state = {
+            senderType: null,
             roundIndex: null,
             scoreIndex: null,
             newTrainDialog: null,
@@ -32,8 +34,9 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
     componentWillReceiveProps(newProps: Props) {
         
         if (newProps.selectedActivity && newProps.logDialog) {
-            let [roundIndex, scoreIndex] = newProps.selectedActivity.id.split(":").map(s => parseInt(s));
+            let [senderType, roundIndex, scoreIndex] = newProps.selectedActivity.id.split(":").map(s => parseInt(s));
             this.setState({
+                senderType: senderType,
                 roundIndex: roundIndex,
                 scoreIndex: scoreIndex
             })
@@ -112,17 +115,13 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
         const { logDialog, selectedActivity } = this.props
         if (logDialog && selectedActivity) {
 
-            const [roundIndex, scoreIndex] = selectedActivity.id.split(":").map(s => parseInt(s))
-
-            if (roundIndex >= logDialog.rounds.length) {
-                throw new Error(`Index out of range: You are attempting to access round by index: ${roundIndex} but there are only: ${logDialog.rounds.length} rounds.`)
+            if (this.state.roundIndex >= logDialog.rounds.length) {
+                throw new Error(`Index out of range: You are attempting to access round by index: ${this.state.roundIndex} but there are only: ${logDialog.rounds.length} rounds.`)
             }
+            round = logDialog.rounds[this.state.roundIndex]
 
-            round = logDialog.rounds[roundIndex]
-
-
-            if (scoreIndex < round.scorerSteps.length) {
-                scorerStep = round.scorerSteps[scoreIndex]
+            if (this.state.scoreIndex < round.scorerSteps.length) {
+                scorerStep = round.scorerSteps[this.state.scoreIndex]
                 if (scorerStep && scorerStep.predictedAction) {
                     action = this.props.actions.find(action => action.actionId === scorerStep.predictedAction);
                     filledEntities = this.props.entities.filter(entity => scorerStep.input.filledEntities.includes(entity.entityId));
@@ -130,52 +129,64 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
                 }
             }
         }
-
+       
         return (
             <div className="blis-dialog-admin ms-font-l">
-                <div className="blis-dialog-admin__content">
-                    <div className="blis-dialog-admin-title">Entity Detection</div>
-                    <div>
-                        {round ?
-                            <EntityExtractor
-                                appId={this.props.appId}
-                                extractType={DialogType.LOGDIALOG}
-                                sessionId={this.props.logDialog.logDialogId}
-                                roundIndex={this.state.roundIndex}
-                                autoTeach={false}
-                                teachMode={TeachMode.Extractor}
-                                extractResponses={this.props.extractResponses}
-                                originalTextVariations={[ModelUtils.ToTextVariation(round.extractorStep)]}
-                                onTextVariationsExtracted={this.onEntityExtractorSubmit}
-                            />
-                            : <span>Click on text from the dialog to the left to view how the bot interpretted the conversation.  You can then make corrections to the bots behavior.</span>
-                        }
+                {logDialog && selectedActivity ?
+                    (<div className="blis-dialog-admin__content">
+                        <div className="blis-dialog-admin-title">Memory</div>
+                        <div>
+                            {filledEntities.length !== 0 && filledEntities.map(entity => <div key={entity.entityName}>{entity.entityName}</div>)}
+                        </div>
                     </div>
-                </div>
-                <div className="blis-dialog-admin__content">
-                    <div className="blis-dialog-admin-title">Memory</div>
-                    <div>
-                        {filledEntities.length !== 0 && filledEntities.map(entity => <div key={entity.entityName}>{entity.entityName}</div>)}
+                    ) : (
+                        <div className="blis-dialog-admin__content">
+                        <div className="blis-dialog-admin-title">Log Dialog</div>
+                            <div>Click on User or Bot dialogs to the left to view how the Bot handled the User's conversation.</div>
+                            <div>You can then make corrections to the Bot's behavior.</div>
+                        </div>
+                    )
+                }
+                {this.state.senderType == SenderType.User &&
+                    <div className="blis-dialog-admin__content">
+                        <div className="blis-dialog-admin-title">Entity Detection</div>
+                        <div>
+                            {round &&
+                                <EntityExtractor
+                                    appId={this.props.appId}
+                                    extractType={DialogType.LOGDIALOG}
+                                    sessionId={this.props.logDialog.logDialogId}
+                                    roundIndex={this.state.roundIndex}
+                                    autoTeach={false}
+                                    teachMode={TeachMode.Extractor}
+                                    extractResponses={this.props.extractResponses}
+                                    originalTextVariations={[ModelUtils.ToTextVariation(round.extractorStep)]}
+                                    onTextVariationsExtracted={this.onEntityExtractorSubmit}
+                                />
+                            }
+                        </div>
                     </div>
-                </div>
-                <div className="blis-dialog-admin__content">
-                    <div className="blis-dialog-admin-title">Action</div>
-                    <div>
-                        {action &&
-                            <ActionScorer
-                                appId={this.props.appId}
-                                dialogType={DialogType.LOGDIALOG}
-                                sessionId={this.props.logDialog.logDialogId}
-                                autoTeach={false}
-                                teachMode={TeachMode.Scorer}
-                                scoreResponse={scorerStep.predictionDetails}
-                                scoreInput={scorerStep.input}
-                                memories={memories}
-                                onActionSelected={this.onActionScorerSubmit}
-                            />
-                        }
+                }
+                {this.state.senderType == SenderType.Bot &&
+                    <div className="blis-dialog-admin__content">
+                        <div className="blis-dialog-admin-title">Action</div>
+                        <div>
+                            {action &&
+                                <ActionScorer
+                                    appId={this.props.appId}
+                                    dialogType={DialogType.LOGDIALOG}
+                                    sessionId={this.props.logDialog.logDialogId}
+                                    autoTeach={false}
+                                    teachMode={TeachMode.Scorer}
+                                    scoreResponse={scorerStep.predictionDetails}
+                                    scoreInput={scorerStep.input}
+                                    memories={memories}
+                                    onActionSelected={this.onActionScorerSubmit}
+                                />
+                            }
+                        </div>
                     </div>
-                </div>
+                }
                 <div className="blis-dialog-admin__dialogs">
                     <OF.Dialog
                         hidden={!this.state.newTrainDialog}

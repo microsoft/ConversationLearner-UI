@@ -61,45 +61,49 @@ class TeachSessionAdmin extends React.Component<Props, {}> {
         return (
             <div className="blis-dialog-admin ms-font-l">
                 <div className="blis-dialog-admin__content">
-                    <div className="blis-dialog-admin-title">Entity Detection</div>
-                    <div>
-                        {(mode === TeachMode.Extractor || autoTeachWithRound) &&
-                            <EntityExtractor
-                                appId={this.props.app.appId}
-                                extractType={DialogType.TEACH}
-                                sessionId={this.props.teachSession.current.teachId}
-                                roundIndex={null}
-                                autoTeach={this.props.teachSession.autoTeach}
-                                teachMode={this.props.teachSession.mode}
-                                extractResponses={this.props.teachSession.extractResponses}
-                                originalTextVariations={[]}
-                                onTextVariationsExtracted={this.onEntityExtractorSubmit}
-                            />}
-                    </div>
-                </div>
-                <div className="blis-dialog-admin__content">
                     <div className="blis-dialog-admin-title">Memory</div>
                     <div>
                         <TeachSessionMemory />
                     </div>
                 </div>
-                <div className="blis-dialog-admin__content">
-                    <div className="blis-dialog-admin-title">Action</div>
-                    <div>
-                        {(mode === TeachMode.Scorer || autoTeachWithRound) &&
-                            <ActionScorer
-                                appId={this.props.app.appId}
-                                dialogType={DialogType.TEACH}
-                                sessionId={this.props.teachSession.current.teachId}
-                                autoTeach={this.props.teachSession.autoTeach}
-                                teachMode={this.props.teachSession.mode}
-                                scoreResponse={this.props.teachSession.scoreResponse}
-                                scoreInput={this.props.teachSession.scoreInput}
-                                memories={this.props.teachSession.memories}
-                                onActionSelected={this.onActionScorerSubmit}
-                            />}
+                {this.props.teachSession.mode == TeachMode.Extractor && 
+                    <div className="blis-dialog-admin__content">
+                        <div className="blis-dialog-admin-title">Entity Detection</div>
+                        <div>
+                            {(mode === TeachMode.Extractor || autoTeachWithRound) &&
+                                <EntityExtractor
+                                    appId={this.props.app.appId}
+                                    extractType={DialogType.TEACH}
+                                    sessionId={this.props.teachSession.current.teachId}
+                                    roundIndex={null}
+                                    autoTeach={this.props.teachSession.autoTeach}
+                                    teachMode={this.props.teachSession.mode}
+                                    extractResponses={this.props.teachSession.extractResponses}
+                                    originalTextVariations={[]}
+                                    onTextVariationsExtracted={this.onEntityExtractorSubmit}
+                                />}
+                        </div>
                     </div>
-                </div>
+                }
+                {this.props.teachSession.mode == TeachMode.Scorer && 
+                    <div className="blis-dialog-admin__content">
+                        <div className="blis-dialog-admin-title">Action</div>
+                        <div>
+                            {(mode === TeachMode.Scorer || autoTeachWithRound) &&
+                                <ActionScorer
+                                    appId={this.props.app.appId}
+                                    dialogType={DialogType.TEACH}
+                                    sessionId={this.props.teachSession.current.teachId}
+                                    autoTeach={this.props.teachSession.autoTeach}
+                                    teachMode={this.props.teachSession.mode}
+                                    scoreResponse={this.props.teachSession.scoreResponse}
+                                    scoreInput={this.props.teachSession.scoreInput}
+                                    memories={this.props.teachSession.memories}
+                                    onActionSelected={this.onActionScorerSubmit}
+                                />}
+                        </div>
+                    </div>
+                }
             </div>
         )
     }
