@@ -275,7 +275,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
 
             editComponents = (this.props.extractType != DialogType.TEACH) ?  
                 (
-                    <div>
+                    <div className="blis-buttons-row">
                         <OF.PrimaryButton 
                             disabled={!this.state.extractionChanged || !allValid}
                             onClick={this.onClickSubmitExtractions}
@@ -289,13 +289,9 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                             ariaDescription="Undo Changes"
                             text="Undo"
                         />
-                        <EntityCreatorEditor
-                            open={this.state.entityModalOpen}
-                            entity={null}
-                            handleClose={this.entityEditorHandleClose} />
                     </div>
                 ) :(
-                    <div>
+                    <div className="blis-buttons-row">
                         <OF.PrimaryButton 
                             disabled={!allValid}
                             onClick={this.onClickSubmitExtractions}
@@ -303,10 +299,6 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                             text={"Score Actions"}
                             ref="doneExtractingButton"
                         />
-                        <EntityCreatorEditor
-                            open={this.state.entityModalOpen}
-                            entity={null}
-                            handleClose={this.entityEditorHandleClose} />
                     </div>
                 )
 
@@ -330,6 +322,10 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                 <div>
                     <div className="blis-dialog-creation-buttons">
                         {addEntity}
+                        <EntityCreatorEditor
+                            open={this.state.entityModalOpen}
+                            entity={null}
+                            handleClose={this.entityEditorHandleClose} />
                     </div>
                     {extractDisplay}
                     {variationCreator}

@@ -5,7 +5,7 @@ import { editActionAsync } from '../../actions/updateActions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
-import { CommandButton, Dropdown, TagPicker, TextField, Label, Checkbox, List } from 'office-ui-fabric-react';
+import { PrimaryButton, DefaultButton, Dropdown, TagPicker, TextField, Label, Checkbox, List } from 'office-ui-fabric-react'
 import { ActionBase, ActionMetaData, ActionTypes, EntityBase, ModelUtils } from 'blis-models'
 import { State } from '../../types';
 import EntityCreatorEditor from './EntityCreatorEditor';
@@ -729,17 +729,9 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
         })
         let title: string;
         let createButtonText: string;
-        let deleteButton = null;
         if (this.state.editing == true) {
             title = "Edit Action"
             createButtonText = "Save"
-            deleteButton =
-                <CommandButton
-                    className="blis-button--gray"
-                    onClick={() => this.props.handleOpenDeleteModal(this.props.blisAction.actionId)}
-                    ariaDescription='Delete'
-                    text='Delete'
-                />
         } else {
             title = "Create an Action"
             createButtonText = "Create"
@@ -892,27 +884,35 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
                         />
                     </div>
                     <div className="blis-modal_buttonbox">
-                        <CommandButton
-                            disabled={createDisabled}
-                            onClick={this.createOnClick}
-                            className='blis-button--gold'
-                            ariaDescription='Create'
-                            text={createButtonText}
-                        />
-                        <CommandButton
-                            className="blis-button--gray"
-                            onClick={this.cancelOnClick}
-                            ariaDescription='Cancel'
-                            text='Cancel'
-                        />
-                        <CommandButton
-                            className="blis-button--gold blis-button--right"
-                            onClick={this.entityOnClick}
-                            ariaDescription='Entity'
-                            text='Entity'
-                            iconProps={{ iconName: 'CirclePlus' }}
-                        />
-                        {deleteButton}
+                        <div className="blis-modal-buttons">
+                            <div className="blis-modal-buttons_primary">
+                                <PrimaryButton
+                                    disabled={createDisabled}
+                                    onClick={this.createOnClick}
+                                    ariaDescription='Create'
+                                    text={createButtonText}
+                                />
+                                <DefaultButton
+                                    onClick={this.cancelOnClick}
+                                    ariaDescription='Cancel'
+                                    text='Cancel'
+                                />
+                                {this.state.editing &&
+                                    <DefaultButton
+                                        onClick={() => this.props.handleOpenDeleteModal(this.props.blisAction.actionId)}
+                                        ariaDescription='Delete'
+                                        text='Delete'
+                                    />}
+                            </div>
+                            <div className="blis-modal-buttons_secondary">
+                                <PrimaryButton
+                                    onClick={this.entityOnClick}
+                                    ariaDescription='Entity'
+                                    text='Entity'
+                                    iconProps={{ iconName: 'CirclePlus' }}
+                                />
+                            </div>
+                        </div>
                     </div>
                     <EntityCreatorEditor
                         open={this.state.entityModalOpen}

@@ -35,7 +35,7 @@ class LogDialogModal extends React.Component<Props, ComponentState> {
         if (!logDialog || !logDialog.rounds) {
             return [];
         }
-        
+
         return logDialog.rounds.map((round, i) => {
             const userActivity: Activity = {
                 id: `${i}:0`,
@@ -125,18 +125,22 @@ class LogDialogModal extends React.Component<Props, ComponentState> {
                         </div>
                     </div>
                     <div className="blis-modal-footer blis-color-log">
-                        <DefaultButton
-                            className="blis-button--right"
-                            onClick={() => this.onClickDelete()}
-                            ariaDescription='Delete'
-                            text='Delete'
-                        />
-                        <PrimaryButton
-                            className="blis-button--right"
-                            onClick={() => this.props.onClose()}
-                            ariaDescription='Done'
-                            text='Done'
-                        />
+                        <div className="blis-modal-buttons">
+                            <div className="blis-modal-buttons_primary">
+                            </div>
+                            <div className="blis-modal-buttons_secondary">
+                                <DefaultButton
+                                    onClick={() => this.onClickDelete()}
+                                    ariaDescription='Delete'
+                                    text='Delete'
+                                />
+                                <PrimaryButton
+                                    onClick={() => this.props.onClose()}
+                                    ariaDescription='Done'
+                                    text='Done'
+                                />
+                            </div>
+                        </div>
                     </div>
                 </Modal>
             </div>

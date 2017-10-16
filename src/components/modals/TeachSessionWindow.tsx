@@ -90,7 +90,7 @@ class TeachWindow extends React.Component<Props, ComponentState> {
             <div className="wc-disable"></div>
             : null;
 
-        
+
         /* Disable auto advance for hackathon 
             <Checkbox
                     className="blis-button--right"
@@ -129,23 +129,27 @@ class TeachWindow extends React.Component<Props, ComponentState> {
                                 />
                                 {mask}
                             </div>
-                        </div> 
+                        </div>
                     </div>
                 </div>
                 <div className="blis-modal-footer blis-color-teach">
-                    <DefaultButton
-                        className="blis-button--right"
-                        onClick={() => this.onClickAbandonTeach()}
-                        ariaDescription='Abandon Teach'
-                        text='Abandon Teach'
-                    />
-                    <PrimaryButton
-                        className="blis-button--right"
-                        disabled={!showDone}
-                        onClick={() => this.onClickSave()}
-                        ariaDescription='Done Teaching'
-                        text='Done Teaching'
-                    />
+                    <div className="blis-modal-buttons">
+                        <div className="blis-modal-buttons_primary">
+                        </div>
+                        <div className="blis-modal-buttons_secondary">
+                            <DefaultButton
+                                onClick={() => this.onClickAbandonTeach()}
+                                ariaDescription='Abandon Teach'
+                                text='Abandon Teach'
+                            />
+                            <PrimaryButton
+                                disabled={!showDone}
+                                onClick={() => this.onClickSave()}
+                                ariaDescription='Done Teaching'
+                                text='Done Teaching'
+                            />
+                        </div>
+                    </div>
                 </div>
                 <ConfirmDeleteModal
                     open={this.state.isConfirmDeleteOpen}
