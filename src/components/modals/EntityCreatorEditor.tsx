@@ -5,7 +5,7 @@ import { editEntityAsync } from '../../actions/updateActions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
-import { CommandButton, IDropdownOption, Dropdown, DropdownMenuItemType, Checkbox, TextField } from 'office-ui-fabric-react';
+import { PrimaryButton, DefaultButton, IDropdownOption, Dropdown, DropdownMenuItemType, Checkbox, TextField } from 'office-ui-fabric-react';
 import { State, PreBuiltEntities } from '../../types';
 import { EntityBase, EntityMetaData, EntityType } from 'blis-models'
 
@@ -14,7 +14,9 @@ const initState: ComponentState = {
     entityTypeVal: EntityType.LUIS,
     isBucketableVal: false,
     isNegatableVal: false,
-    editing: false
+    editing: false,
+    title: '',
+    submitButtonText: ''
 };
 
 interface ComponentState {
@@ -23,175 +25,211 @@ interface ComponentState {
     isBucketableVal: boolean
     isNegatableVal: boolean
     editing: boolean
+    title: string
+    submitButtonText: string
 }
 
+const blisEntityTypes = [EntityType.LOCAL, EntityType.LUIS].map<IDropdownOption>(v =>
+    ({
+        key: v,
+        text: v,
+        itemType: DropdownMenuItemType.Normal
+    }))
+
+const staticEntityOptions: IDropdownOption[] = [
+    {
+        key: 'BlisHeader',
+        text: 'BLIS Entity Types',
+        itemType: DropdownMenuItemType.Header
+    },
+    ...blisEntityTypes,
+    {
+        key: 'divider',
+        text: '-',
+        itemType: DropdownMenuItemType.Divider
+    },
+    {
+        key: 'LuisHeader',
+        text: 'LUIS Pre-Built Entity Types',
+        itemType: DropdownMenuItemType.Header
+    }
+]
+
 class EntityCreatorEditor extends React.Component<Props, ComponentState> {
+    entityOptions: IDropdownOption[]
     state = initState
 
-    constructor(p: Props) {
-        super(p)
-
-        this.checkIfBlank = this.checkIfBlank.bind(this)
-        this.createEntity = this.createEntity.bind(this)
-        this.nameChanged = this.nameChanged.bind(this)
-        this.nameKeyDown = this.nameKeyDown.bind(this)
-        this.typeChanged = this.typeChanged.bind(this)
-        this.handleCheckBucketable = this.handleCheckBucketable.bind(this)
-        this.handleCheckReversible = this.handleCheckReversible.bind(this)
-    }
-
     componentWillReceiveProps(p: Props) {
+        // Build entity options based on current applicaiton locale
+        const currentAppLocale = this.props.blisApps.current.locale
+        const localePreBuiltEntities = PreBuiltEntities
+            .find(obj => obj.locale === currentAppLocale)
+
+        const localePreBuildOptions = localePreBuiltEntities.preBuiltEntities
+            .map<IDropdownOption>(entityName =>
+                ({
+                    key: entityName,
+                    text: entityName,
+                    itemType: DropdownMenuItemType.Normal
+                }))
+
+
+        this.entityOptions = [...staticEntityOptions, ...localePreBuildOptions]
+
         if (p.entity === null) {
-            this.setState({ ...initState });
+            this.setState({
+                ...initState,
+                title: 'Create an Entity',
+                submitButtonText: 'Create'
+            });
         } else {
             this.setState({
                 entityNameVal: p.entity.entityName,
                 entityTypeVal: p.entity.entityType,
                 isBucketableVal: p.entity.metadata.isBucket,
                 isNegatableVal: p.entity.metadata.isReversable,
-                editing: true
+                editing: true,
+                title: 'Edit Entity',
+                submitButtonText: 'Save'
             })
         }
     }
-    nameKeyDown(key: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) {
-        // On enter attempt to create the entity as long as name is set
-        if (key.keyCode == 13 && this.state.entityNameVal) {
-            this.createEntity();
-        }
-    }
-    createEntity() {
-        let currentAppId = this.props.blisApps.current.appId;
-        let meta = new EntityMetaData({
-            isBucket: this.state.isBucketableVal,
-            isReversable: this.state.isNegatableVal,
-            negativeId: null,
-            positiveId: null,
-        })
-        let entityToAdd = new EntityBase({
+
+    convertStateToEntity(state: ComponentState): EntityBase {
+        return new EntityBase({
             entityName: this.state.entityNameVal,
-            metadata: meta,
+            metadata: new EntityMetaData({
+                isBucket: this.state.isBucketableVal,
+                isReversable: this.state.isNegatableVal,
+                negativeId: null,
+                positiveId: null,
+            }),
             entityType: this.state.entityTypeVal,
             version: null,
             packageCreationId: null,
             packageDeletionId: null
         })
+    }
+
+    onClickSubmit = () => {
+        const entity = this.convertStateToEntity(this.state)
+        let currentAppId = this.props.blisApps.current.appId;
+
         if (this.state.editing === false) {
-            this.props.createEntityAsync(this.props.userKey, entityToAdd, currentAppId);
+            this.props.createEntityAsync(this.props.userKey, entity, currentAppId);
         } else {
-            this.editEntity(entityToAdd);
+            // TODO: Currently it's not possible to edit an entity, and the code below is incorrect because it doesn't pass the app id.
+            // Set entity id if we're editing existing id.
+            // entity.entityId = this.props.entity.entityId;
+            // this.props.editEntityAsync(this.props.userKey, entity);
         }
+
         this.setState({ ...initState });
         this.props.handleClose();
     }
-    editEntity(ent: EntityBase) {
-        ent.entityId = this.props.entity.entityId;
-        this.props.editEntityAsync(this.props.userKey, ent);
-    }
-    nameChanged(text: string) {
+
+    onChangedName = (text: string) => {
         this.setState({
             entityNameVal: text
         })
     }
-    typeChanged(obj: IDropdownOption) {
+    onChangedType = (obj: IDropdownOption) => {
         this.setState({
             entityTypeVal: obj.text
         })
     }
-    handleCheckBucketable() {
+    onChangeBucketable = () => {
         this.setState({
             isBucketableVal: !this.state.isBucketableVal,
         })
     }
-    handleCheckReversible() {
+    onChangeReversible = () => {
         this.setState({
             isNegatableVal: !this.state.isNegatableVal,
         })
     }
-    checkIfBlank(value: string): string {
-        return value ? "" : "Required Value";
-    }
-    render() {
-        let options = [EntityType.LOCAL, EntityType.LUIS].map<IDropdownOption>(v =>
-            ({
-                key: v,
-                text: v
-            }))
 
-        options.unshift({ key: 'BlisHeader', text: 'BLIS Entity Types', itemType: DropdownMenuItemType.Header })
-        options.push({ key: 'divider', text: '-', itemType: DropdownMenuItemType.Divider })
-        options.push({ key: 'LuisHeader', text: 'LUIS Pre-Built Entity Types', itemType: DropdownMenuItemType.Header })
-
-        let localePreBuilts = PreBuiltEntities.find(obj => obj.locale === this.props.blisApps.current.locale)
-        localePreBuilts.preBuiltEntities.forEach(entityName => {
-            options.push({
-                key: entityName,
-                text: entityName
-            })
-        })
-        let title: string;
-        let createButtonText: string;
-        if (this.state.editing == true) {
-            title = "Edit Entity"
-            createButtonText = "Save"
-        } else {
-            title = "Create an Entity"
-            createButtonText = "Create"
+    onGetNameErrorMessage = (value: string): string => {
+        if (value.length === 0) {
+            return "Required Value"
         }
+
+        if (!/^[a-zA-Z0-9-]+$/.test(value)) {
+            return "Entity name may only contain alphanumeric characters with no spaces."
+        }
+        
+        return ""
+    }
+
+    onKeyDownName = (key: React.KeyboardEvent<HTMLInputElement>) => {
+        // On enter attempt to create the entity as long as name is set
+        if (key.key === 'Enter' && this.onGetNameErrorMessage(this.state.entityNameVal) === '') {
+            this.onClickSubmit();
+        }
+    }
+
+    render() {
+
         return (
-            <div>
-                <Modal
-                    isOpen={this.props.open}
-                    isBlocking={false}
-                    containerClassName='blis-modal blis-modal--small blis-modal--border'
-                >
-                    <div className='blis-modal_title'>
-                        <span className='ms-font-xxl ms-fontWeight-semilight'>{title}</span>
+            <Modal
+                isOpen={this.props.open}
+                isBlocking={false}
+                containerClassName='blis-modal blis-modal--small blis-modal--border'
+            >
+                <div className='blis-modal_title'>
+                    <span className='ms-font-xxl ms-fontWeight-semilight'>{this.state.title}</span>
+                </div>
+                <div>
+                    <TextField
+                        onGetErrorMessage={this.onGetNameErrorMessage}
+                        onChanged={this.onChangedName}
+                        onKeyDown={this.onKeyDownName}
+                        label="Entity Name"
+                        placeholder="Name..."
+                        required={true}
+                        pattern="banana|cherry"
+                        value={this.state.entityNameVal}
+                    />
+                    <Dropdown
+                        label='Entity Type'
+                        options={this.entityOptions}
+                        onChanged={this.onChangedType}
+                        selectedKey={this.state.entityTypeVal}
+                        disabled={this.state.editing}
+                    />
+                    <Checkbox
+                        label='Bucketable'
+                        defaultChecked={false}
+                        onChange={this.onChangeBucketable}
+                        style={{ marginTop: "1em", marginRight: "3em", display: "inline-block" }}
+                    />
+                    <Checkbox
+                        label='Reversible'
+                        defaultChecked={false}
+                        onChange={this.onChangeReversible}
+                        style={{ marginTop: "1em", display: "inline-block" }}
+                    />
+                </div>
+                <div className='blis-modal_buttonbox'>
+                    <div className="blis-modal-buttons">
+                        <div className="blis-modal-buttons_primary">
+                            <PrimaryButton
+                                disabled={!this.state.entityNameVal}
+                                onClick={this.onClickSubmit}
+                                ariaDescription='Create'
+                                text={this.state.submitButtonText}
+                            />
+                            <DefaultButton
+                                onClick={() => this.props.handleClose()}
+                                ariaDescription='Cancel'
+                                text='Cancel'
+                            />
+                        </div>
+                        <div className="blis-modal-button_secondary">
+                        </div>
                     </div>
-                    <div>
-                        <TextField
-                            onGetErrorMessage={this.checkIfBlank}
-                            onChanged={this.nameChanged}
-                            onKeyDown={this.nameKeyDown}
-                            label="Entity Name"
-                            placeholder="Name..."
-                            value={this.state.entityNameVal} />
-                        <Dropdown
-                            label='Entity Type'
-                            options={options}
-                            onChanged={this.typeChanged}
-                            selectedKey={this.state.entityTypeVal}
-                            disabled={this.state.editing}
-                        />
-                        <Checkbox
-                            label='Bucketable'
-                            defaultChecked={false}
-                            onChange={this.handleCheckBucketable}
-                            style={{ marginTop: "1em", marginRight: "3em", display: "inline-block" }}
-                        />
-                        <Checkbox
-                            label='Reversible'
-                            defaultChecked={false}
-                            onChange={this.handleCheckReversible}
-                            style={{ marginTop: "1em", display: "inline-block" }}
-                        />
-                    </div>
-                    <div className='blis-modal_buttonbox'>
-                        <CommandButton
-                            disabled={!this.state.entityNameVal}
-                            onClick={this.createEntity}
-                            className='blis-button--gold'
-                            ariaDescription='Create'
-                            text={createButtonText}
-                        />
-                        <CommandButton
-                            className="blis-button--gray"
-                            onClick={() => this.props.handleClose()}
-                            ariaDescription='Cancel'
-                            text='Cancel'
-                        />
-                    </div>
-                </Modal>
-            </div>
+                </div>
+            </Modal>
         );
     }
 }
