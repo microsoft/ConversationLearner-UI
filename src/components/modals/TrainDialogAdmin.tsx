@@ -4,7 +4,7 @@ import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../../types'
-import { TeachMode } from '../../types/const';
+import { SenderType, TeachMode } from '../../types/const';
 import { editTrainDialogAsync } from '../../actions/updateActions';
 import { clearExtractResponses } from '../../actions/teachActions'
 import EntityExtractor from './EntityExtractor';
@@ -22,6 +22,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
         this.state = {
             saveTrainDialog: null,
             saveSliceRound: 0,
+            senderType: null,
             roundIndex: null,
             scoreIndex: null
         }
@@ -32,16 +33,18 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
     componentWillReceiveProps(newProps: Props) {
 
         if (newProps.selectedActivity && newProps.trainDialog) {
-            let [roundIndex, scoreIndex] = newProps.selectedActivity.id.split(":").map(s => parseInt(s));
+            let [senderType, roundIndex, scoreIndex] = newProps.selectedActivity.id.split(":").map(s => parseInt(s));
             // If rounds were trimmed, selectedActivity could have been in deleted rounds
             if (roundIndex > newProps.trainDialog.rounds.length-1) { 
                 this.setState({
+                    senderType: senderType,
                     roundIndex: newProps.trainDialog.rounds.length-1,
                     scoreIndex: 0
                 })
             }
             else {
                 this.setState({
+                    senderType: senderType,
                     roundIndex: roundIndex,
                     scoreIndex: scoreIndex
                 })
@@ -205,48 +208,60 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
 
         return (
             <div className="blis-dialog-admin ms-font-l">
-                <div className="blis-dialog-admin__content">
-                    <div className="blis-dialog-admin-title">Entity Detection</div>
-                    <div>
-                        {round ?
-                            <EntityExtractor
-                                appId={this.props.appId}
-                                extractType={DialogType.TRAINDIALOG}
-                                sessionId={this.props.trainDialog.trainDialogId}
-                                roundIndex={this.state.roundIndex}
-                                autoTeach={false}
-                                teachMode={TeachMode.Extractor}
-                                extractResponses={this.props.extractResponses}
-                                originalTextVariations={round.extractorStep.textVariations}
-                                onTextVariationsExtracted={this.onEntityExtractorSubmit}
-                            />
-                            : <span>Click on text from the dialog to the left.</span>}
+                {this.props.selectedActivity ?
+                    (<div className="blis-dialog-admin__content">
+                        <div className="blis-dialog-admin-title">Memory</div>
+                        <div>
+                            {filledEntities.length !== 0 && filledEntities.map(entity => <div key={entity.entityName}>{entity.entityName}</div>)}
+                        </div>
                     </div>
-                </div>
-                <div className="blis-dialog-admin__content">
-                    <div className="blis-dialog-admin-title">Memory</div>
-                    <div>
-                        {filledEntities.length !== 0 && filledEntities.map(entity => <div key={entity.entityName}>{entity.entityName}</div>)}
+                    ) : (
+                        <div className="blis-dialog-admin__content">
+                            <div className="blis-dialog-admin-title">Train Dialog</div>
+                            <div>Click on User or Bot dialogs to the left to view steps in the Train Dialog.</div>
+                            <div>You can then make changes to the Train Dialog.</div>
+                        </div>
+                    )
+                }
+                {this.state.senderType == SenderType.User &&
+                    <div className="blis-dialog-admin__content">
+                        <div className="blis-dialog-admin-title">Entity Detection</div>
+                        <div>
+                            {round ?
+                                <EntityExtractor
+                                    appId={this.props.appId}
+                                    extractType={DialogType.TRAINDIALOG}
+                                    sessionId={this.props.trainDialog.trainDialogId}
+                                    roundIndex={this.state.roundIndex}
+                                    autoTeach={false}
+                                    teachMode={TeachMode.Extractor}
+                                    extractResponses={this.props.extractResponses}
+                                    originalTextVariations={round.extractorStep.textVariations}
+                                    onTextVariationsExtracted={this.onEntityExtractorSubmit}
+                                />
+                                : <span>Click on text from the dialog to the left.</span>
+                            }
+                        </div>
                     </div>
-                </div>
-                <div className="blis-dialog-admin__content">
-                    <div className="blis-dialog-admin-title">Action</div>
-                    <div>
-                        {selectedAction &&
-                            <ActionScorer
-                                appId={this.props.appId}
-                                dialogType={DialogType.TRAINDIALOG}
-                                sessionId={this.props.trainDialog.trainDialogId}
-                                autoTeach={false}
-                                teachMode={TeachMode.Scorer}
-                                scoreResponse={scoreResponse}
-                                scoreInput={scorerStep.input}
-                                memories={memories}
-                                onActionSelected={this.onActionScorerSubmit}
-                            />
-                        }
+                }
+                {selectedAction && this.state.senderType == SenderType.Bot &&
+                    <div className="blis-dialog-admin__content">
+                        <div className="blis-dialog-admin-title">Action</div>
+                        <div>
+                                <ActionScorer
+                                    appId={this.props.appId}
+                                    dialogType={DialogType.TRAINDIALOG}
+                                    sessionId={this.props.trainDialog.trainDialogId}
+                                    autoTeach={false}
+                                    teachMode={TeachMode.Scorer}
+                                    scoreResponse={scoreResponse}
+                                    scoreInput={scorerStep.input}
+                                    memories={memories}
+                                    onActionSelected={this.onActionScorerSubmit}
+                                />
+                        </div>
                     </div>
-                </div>
+                }
                 <div className="blis-dialog-admin__dialogs">
                     <OF.Dialog
                         hidden={this.state.saveTrainDialog === null}
@@ -289,6 +304,7 @@ const mapStateToProps = (state: State) => {
 interface ComponentState {
     saveTrainDialog: TrainDialog,
     saveSliceRound: number,
+    senderType: SenderType,
     roundIndex: number,
     scoreIndex: number
 };

@@ -11,6 +11,7 @@ import { Activity } from 'botframework-directlinejs'
 import { createTrainDialogAsync } from '../../actions/createActions'
 import { BlisAppBase, TrainDialog, LogDialog } from 'blis-models'
 import { deleteLogDialogAsync } from '../../actions/deleteActions'
+import { SenderType } from '../../types/const';
 
 interface ComponentState {
     selectedActivity: Activity | null
@@ -38,7 +39,7 @@ class LogDialogModal extends React.Component<Props, ComponentState> {
 
         return logDialog.rounds.map((round, i) => {
             const userActivity: Activity = {
-                id: `${i}:0`,
+                id: `${SenderType.User}:${i}:0`,
                 from: {
                     id: user.id,
                     name: user.name
@@ -54,7 +55,7 @@ class LogDialogModal extends React.Component<Props, ComponentState> {
 
                 let action = actions.find(action => action.actionId === scorerStep.predictedAction)
                 return {
-                    id: `${i}:${j}`,
+                    id: `${SenderType.Bot}:${i}:${j}`,
                     from: {
                         id: "BlisTrainer",
                         name: "BlisTrainer"

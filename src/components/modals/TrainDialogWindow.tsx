@@ -11,6 +11,7 @@ import { BlisAppBase, ActionBase, TrainDialog } from 'blis-models'
 import { deleteTrainDialogAsync } from '../../actions/deleteActions'
 import ConfirmDeleteModal from './ConfirmDeleteModal';
 import { Activity } from 'botframework-directlinejs';
+import { SenderType } from '../../types/const';
 // TODO: Investigate if this can be removed in favor of local state
 import { addMessageToChatConversationStack } from '../../actions/displayActions';
 
@@ -93,7 +94,7 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
         let roundNum = 0;
         for (let round of this.props.trainDialog.rounds) {
             let userText = round.extractorStep.textVariations[0].text;
-            let id = `${roundNum}:0`;
+            let id = `${SenderType.User}:${roundNum}:0`;
             let userActivity = { id: id, from: { id: this.props.user.id, name: this.props.user.name }, type: "message", text: userText } as Activity;
             activities.push(userActivity);
 
@@ -102,7 +103,7 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
                 let labelAction = scorerStep.labelAction;
                 let action = this.props.actions.filter((a: ActionBase) => a.actionId == labelAction)[0];
                 let payload = action ? action.payload : "ERROR: Missing Action";
-                id = `${roundNum}:${scoreNum}`
+                id = `${SenderType.Bot}:${roundNum}:${scoreNum}`
                 let botActivity = { id: id, from: { id: "BlisTrainer", name: "BlisTrainer" }, type: "message", text: payload } as Activity;
                 activities.push(botActivity);
                 scoreNum++;

@@ -90,8 +90,8 @@ html {
 
 /** Modals */
 .blis-modal--large {
-  width: 90%;
-  height: 90%;
+  width: 95%;
+  height: 95%;
 }
 .blis-modal--small{
   width: 40%;
@@ -136,8 +136,8 @@ html {
   min-height: 8px;
 }
 .blis-modal-container {
-  height: 80vh;
-  width: 80vw;
+  height: 90vh;
+  width: 90vw;
   display: flex;
   flex-flow: column nowrap;
   align-items: stretch;
