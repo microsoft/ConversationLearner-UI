@@ -3,7 +3,6 @@ import { AT } from '../types/ActionTypes'
 import { BlisAppBase, EntityBase, ActionBase, TrainDialog, LogDialog, Session, Teach } from 'blis-models';
 
 export const createBLISApplicationAsync = (key: string, userId: string, application: BlisAppBase): ActionObject => {
-
     return {
         type: AT.CREATE_BLIS_APPLICATION_ASYNC,
         key: key,

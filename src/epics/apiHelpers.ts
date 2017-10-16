@@ -17,6 +17,7 @@ import { Observable, Observer } from 'rxjs'
 import actions from '../actions'
 import { ActionObject } from '../types'
 import { AT } from '../types/ActionTypes'
+import { developmentSubKeyLUIS } from '../secrets'
 
 //=========================================================
 // CONFIG
@@ -146,6 +147,21 @@ export interface BlisAppForUpdate extends BlisAppBase {
 //=========================================================
 // CREATE ROUTES
 //=========================================================
+export interface CultureObject {
+  CultureCode: string
+  CultureName: string
+}
+
+export const getLuisApplicationCultures = (): Promise<CultureObject[]> => {
+  let url = 'https://westus.api.cognitive.microsoft.com/luis/v1.0/prog/apps/applicationcultures?';
+  const subscriptionKey: string = developmentSubKeyLUIS;
+  const config = {
+      headers: { "Ocp-Apim-Subscription-Key": subscriptionKey }
+  };
+
+  return axios.get(url, config)
+      .then(response => response.data)
+}
 
   export const createBlisApp = (key: string, userId: string, blisApp: BlisAppBase): Observable<ActionObject> => {
     let addAppRoute: string = makeRoute(key, `app`, `userId=${userId}`);
@@ -481,6 +497,8 @@ export const createTrainDialog = (key: string, appId: string, trainDialog: Train
   })
     .catch(err => handleError(obs, err, AT.CREATE_TRAIN_DIALOG_ASYNC)));
 };
+
+// 
 
 let handleError = function (obs: Observer<ActionObject>, err: any, route: AT) {
   if (!obs.closed) {

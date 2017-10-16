@@ -1,31 +1,22 @@
 import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
-import axios from 'axios';
+import { getLuisApplicationCultures } from '../../epics/apiHelpers'
 import { createBLISApplicationAsync } from '../../actions/createActions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
-import { CommandButton, Dropdown, TextField } from 'office-ui-fabric-react';
+import { PrimaryButton, DefaultButton, Dropdown, IDropdownOption, TextField } from 'office-ui-fabric-react';
 import { emptyStateProperties } from '../../actions/displayActions'
 import { BlisAppBase, BlisAppMetaData } from 'blis-models'
-import { developmentSubKeyLUIS } from '../../secrets'
 import { State } from '../../types'
 
-type CultureObject = {
-    CultureCode: string;
-    CultureName: string;
-}
+
 
 interface ComponentState {
     appNameVal: string
     localeVal: string
     luisKeyVal: string
-    localeOptions: IOption[]
-}
-
-interface IOption {
-    key: string
-    text: string
+    localeOptions: IDropdownOption[]
 }
 
 class AppCreator extends React.Component<Props, ComponentState> {
@@ -48,29 +39,20 @@ class AppCreator extends React.Component<Props, ComponentState> {
     }
 
     componentWillMount() {
-        let url = 'https://westus.api.cognitive.microsoft.com/luis/v1.0/prog/apps/applicationcultures?';
-        const subscriptionKey: string = developmentSubKeyLUIS;
-        const config = {
-            headers: { "Ocp-Apim-Subscription-Key": subscriptionKey }
-        };
-        axios.get(url, config)
-            .then((response) => {
-                if (response.data) {
-                    let cultures: CultureObject[] = response.data;
-                    let cultureOptions = cultures.map(c => {
-                        return {
-                            key: c.CultureCode,
-                            text: c.CultureCode,
-                        }
-                    })
-                    this.setState({
-                        localeOptions: cultureOptions,
-                        localeVal: cultureOptions[0].text
-                    })
-                }
+        getLuisApplicationCultures()
+            .then(cultures => {
+                const cultureOptions = cultures.map<IDropdownOption>(c =>
+                    ({
+                        key: c.CultureCode,
+                        text: c.CultureCode,
+                    }))
+
+                this.setState({
+                    localeOptions: cultureOptions,
+                    localeVal: cultureOptions[0].text
+                })
             })
     }
-
 
     resetState() {
         let firstValue = this.state.localeOptions[0].text
@@ -85,7 +67,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
             appNameVal: text
         })
     }
-    localeChanged(obj: { text: string }) {
+    localeChanged(obj: IDropdownOption) {
         this.setState({
             localeVal: obj.text
         })
@@ -95,7 +77,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
             luisKeyVal: text
         })
     }
-        
+
     onClickCancel() {
         this.resetState()
         this.props.onCancel()
@@ -165,19 +147,21 @@ class AppCreator extends React.Component<Props, ComponentState> {
                     />
                 </div>
                 <div className='blis-modal_buttonbox'>
-                    <CommandButton
-                        disabled={!this.state.appNameVal || !this.state.luisKeyVal}
-                        onClick={this.onClickCreate}
-                        className='blis-button--gold'
-                        ariaDescription='Create'
-                        text='Create'
-                    />
-                    <CommandButton
-                        className="blis-button--gray"
-                        onClick={this.onClickCancel}
-                        ariaDescription='Cancel'
-                        text='Cancel'
-                    />
+                    <div className="blis-modal-buttons">
+                        <div className="blis-modal-buttons_primary">
+                            <PrimaryButton
+                                disabled={!this.state.appNameVal || !this.state.luisKeyVal}
+                                onClick={this.onClickCreate}
+                                ariaDescription='Create'
+                                text='Create'
+                            />
+                            <DefaultButton
+                                onClick={this.onClickCancel}
+                                ariaDescription='Cancel'
+                                text='Cancel'
+                            />
+                        </div>
+                    </div>
                 </div>
             </Modal>
         )
