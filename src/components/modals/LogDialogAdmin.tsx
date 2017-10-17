@@ -156,6 +156,16 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
          
         return (
             <div className="blis-dialog-admin ms-font-l">
+                {this.props.selectedActivity && (this.state.senderType == SenderType.User ? (
+                    <div className="blis-dialog-admin__content">
+                        <div className="blis-wc-message blis-wc-message--user">User Input</div>
+                    </div>
+                    ) : (
+                    <div className="blis-dialog-admin__content">
+                        <div className="blis-wc-message blis-wc-message--bot">Bot Response</div>
+                    </div>                       
+                    ))
+                }
                 {logDialog && selectedActivity ?
                     (<div className="blis-dialog-admin__content">
                         <div className="blis-dialog-admin-title">Memory</div>
