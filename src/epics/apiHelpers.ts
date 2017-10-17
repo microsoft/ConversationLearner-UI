@@ -17,7 +17,6 @@ import { Observable, Observer } from 'rxjs'
 import actions from '../actions'
 import { ActionObject } from '../types'
 import { AT } from '../types/ActionTypes'
-import { developmentSubKeyLUIS } from '../secrets'
 
 //=========================================================
 // CONFIG
@@ -148,18 +147,12 @@ export interface BlisAppForUpdate extends BlisAppBase {
 // CREATE ROUTES
 //=========================================================
 export interface CultureObject {
-  CultureCode: string
-  CultureName: string
+  cultureCode: string
+  cultureName: string
 }
 
 export const getLuisApplicationCultures = (): Promise<CultureObject[]> => {
-  let url = 'https://westus.api.cognitive.microsoft.com/luis/v1.0/prog/apps/applicationcultures?';
-  const subscriptionKey: string = developmentSubKeyLUIS;
-  const config = {
-      headers: { "Ocp-Apim-Subscription-Key": subscriptionKey }
-  };
-
-  return axios.get(url, config)
+  return axios.get('http://blis-service.azurewebsites.net/api/v1/applicationcultures')
       .then(response => response.data)
 }
 
