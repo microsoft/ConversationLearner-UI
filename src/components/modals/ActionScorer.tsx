@@ -11,6 +11,8 @@ import { TeachMode } from '../../types/const'
 import { IColumn, DetailsList, CheckboxVisibility, List } from 'office-ui-fabric-react';
 import ActionResponseCreatorEditor from './ActionResponseCreatorEditor'
 
+const ACTION_BUTTON = "action_button";
+
 let columns: IColumn[] = [
     {
         key: 'select',
@@ -289,6 +291,22 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         return (this.props.scoreInput.maskedActions && this.props.scoreInput.maskedActions.indexOf(actionId) > -1);
     }
     renderItemColumn(item?: any, index?: number, column?: IColumn) {
+
+        // Null is action create button
+        if (item == ACTION_BUTTON) {
+            if (column.key == 'select') {
+                return (
+                    <PrimaryButton
+                        onClick={this.handleOpenActionModal}
+                        ariaDescription='Cancel'
+                        text='Action'
+                        iconProps={{ iconName: 'CirclePlus' }}
+                    />
+                )
+            } else {
+                return "";
+            }
+        }
         let action = item as ScoredBase;
         let fieldContent = action[column.fieldName];
         switch (column.key) {
@@ -329,7 +347,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                     let reason = (action as UnscoredAction).reason;
                     fieldContent = (reason == ScoreReason.NotAvailable) ?
                         "Disqualified" :
-                        (this.props.dialogType == DialogType.TRAINDIALOG) ?
+                        (this.props.dialogType != DialogType.TEACH) ?
                             "" :
                             "Training...";
                 }
@@ -379,6 +397,18 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             return { ...action, reason: reason, score: score }
         });
 
+        // Add any new actions that weren't included in scores
+        // NOTE: This will go away when we always rescore the step
+        let missingActions = this.props.actions.filter(a => scoredItems.find(si => si.actionId == a.actionId) == null);
+        let missingItems = missingActions.map(a => {
+            let action = a;
+            let score = 0;
+            let reason = ScoreReason.NotCalculated;
+            return { ...action, reason: reason, score: score }
+        })
+        // Null is rendered as ActionCreat button
+        scoredItems = [...scoredItems, ...missingItems];
+
         if (this.state.sortColumn) {
             // Sort the items.
             scoredItems = scoredItems.sort((a: any, b: any) => {
@@ -394,6 +424,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             });
         }
 
+        // Add null for action createtion button at end
         return scoredItems;
     }
 
@@ -402,25 +433,15 @@ class ActionScorer extends React.Component<Props, ComponentState> {
     }
 
     render() {
-        let scores = this.getScoredItems();
-        if (!scores) {
-            return null;
+        let scores : (ScoredBase | string)[] = this.getScoredItems();
+
+        // If editing allowed and Action creation button
+        if (!this.props.autoTeach) {
+            scores.push(ACTION_BUTTON);
         }
 
-        let noEdit = (this.props.autoTeach || this.props.teachMode != TeachMode.Scorer);
-        let addAction = noEdit ? null : (
-            <PrimaryButton
-                onClick={this.handleOpenActionModal}
-                ariaDescription='Cancel'
-                text='Action'
-                iconProps={{ iconName: 'CirclePlus' }}
-            />
-        )
         return (
             <div>
-                <div className="blis-dialog-creation-buttons">
-                    {addAction}
-                </div>
                 <DetailsList
                     className="ms-font-m-plus"
                     items={scores}
