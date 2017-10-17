@@ -31,6 +31,9 @@ class AppsIndex extends React.Component<Props, ComponentState> {
             this.props.fetchApplicationsAsync(this.props.user.key, this.props.userId);
             this.props.fetchBotInfoAsync();
         }
+        if (this.props.blisApps.current && this.state.selectedApp != this.props.blisApps.current) {
+            this.onSelectedAppChanged(this.props.blisApps.current);
+        }
     }
 
     onSelectedAppChanged(selectedApp: BlisAppBase) {
