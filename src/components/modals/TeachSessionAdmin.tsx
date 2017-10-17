@@ -12,7 +12,7 @@ import {
 } from 'blis-models'
 import ActionScorer from './ActionScorer';
 import EntityExtractor from './EntityExtractor';
-import TeachSessionMemory from './TeachSessionMemory';
+import MemoryTable from './MemoryTable';
 
 class TeachSessionAdmin extends React.Component<Props, {}> {
     constructor(p: Props) {
@@ -63,7 +63,11 @@ class TeachSessionAdmin extends React.Component<Props, {}> {
                 <div className="blis-dialog-admin__content">
                     <div className="blis-dialog-admin-title">Memory</div>
                     <div>
-                        <TeachSessionMemory />
+                        <MemoryTable 
+                            teachMode={this.props.teachSession.mode}
+                            memories={this.props.teachSession.memories}
+                            prevMemories={this.props.teachSession.prevMemories}
+                            />
                     </div>
                 </div>
                 {this.props.teachSession.mode == TeachMode.Extractor && 

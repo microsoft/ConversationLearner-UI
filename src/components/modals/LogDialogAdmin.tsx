@@ -6,6 +6,7 @@ import { State } from '../../types'
 import { SenderType, TeachMode } from '../../types/const';
 import EntityExtractor from './EntityExtractor';
 import ActionScorer from './ActionScorer';
+import MemoryTable from 'MemoryTable';
 import * as OF from 'office-ui-fabric-react'
 import { Activity } from 'botframework-directlinejs'
 import { TrainExtractorStep, TrainScorerStep, TextVariation, Memory, TrainDialog, TrainRound, LogDialog, LogRound, LogScorerStep, ActionBase, EntityBase, ExtractResponse, DialogType, ScoredAction, ModelUtils } from 'blis-models'
@@ -105,12 +106,28 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
         this.setState({newTrainDialog: trainDialog});
     } 
 
+    getPrevMemories() : Memory[] {
+        let memories : Memory[] = [];
+        let prevIndex = this.state.roundIndex-1;
+        if (prevIndex >= 0) {
+            let round = this.props.logDialog.rounds[prevIndex];
+            if (round.scorerSteps.length > 0) {
+                let scorerStep = round.scorerSteps[0];
+                let filledEntities = this.props.entities.filter(entity => scorerStep.input.filledEntities.includes(entity.entityId))
+                memories = filledEntities.map((e) => new Memory({entityName: e.entityName, entityValues: []}));     
+            }
+        }
+        return memories;    
+    }
+
     render() {
-        let round: LogRound = null
-        let action: ActionBase = null
-        let filledEntities: EntityBase[] = []
-        let memories: Memory[] = []
+        let round: LogRound = null;
+        let action: ActionBase = null;
+        let filledEntities: EntityBase[] = [];
+        let memories: Memory[] = [];
+        let prevMemories: Memory[] = [];
         let scorerStep: LogScorerStep = null;
+        let teachMode = (this.state.senderType == SenderType.User) ? TeachMode.Extractor : TeachMode.Scorer;
 
         const { logDialog, selectedActivity } = this.props
         if (logDialog && selectedActivity) {
@@ -128,16 +145,19 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
                     memories = filledEntities.map((e) => new Memory({entityName: e.entityName, entityValues: []}));
                 }
             }
+            prevMemories = this.getPrevMemories();
         }
-       
+         
         return (
             <div className="blis-dialog-admin ms-font-l">
                 {logDialog && selectedActivity ?
                     (<div className="blis-dialog-admin__content">
                         <div className="blis-dialog-admin-title">Memory</div>
-                        <div>
-                            {filledEntities.length !== 0 && filledEntities.map(entity => <div key={entity.entityName}>{entity.entityName}</div>)}
-                        </div>
+                        <MemoryTable 
+                            teachMode={teachMode}
+                            memories={memories}
+                            prevMemories={prevMemories}
+                        />                        
                     </div>
                     ) : (
                         <div className="blis-dialog-admin__content">
@@ -158,7 +178,7 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
                                     sessionId={this.props.logDialog.logDialogId}
                                     roundIndex={this.state.roundIndex}
                                     autoTeach={false}
-                                    teachMode={TeachMode.Extractor}
+                                    teachMode={teachMode}
                                     extractResponses={this.props.extractResponses}
                                     originalTextVariations={[ModelUtils.ToTextVariation(round.extractorStep)]}
                                     onTextVariationsExtracted={this.onEntityExtractorSubmit}
@@ -177,7 +197,7 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
                                     dialogType={DialogType.LOGDIALOG}
                                     sessionId={this.props.logDialog.logDialogId}
                                     autoTeach={false}
-                                    teachMode={TeachMode.Scorer}
+                                    teachMode={teachMode}
                                     scoreResponse={scorerStep.predictionDetails}
                                     scoreInput={scorerStep.input}
                                     memories={memories}

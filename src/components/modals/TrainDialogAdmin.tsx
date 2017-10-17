@@ -9,11 +9,22 @@ import { editTrainDialogAsync } from '../../actions/updateActions';
 import { clearExtractResponses } from '../../actions/teachActions'
 import EntityExtractor from './EntityExtractor';
 import ActionScorer from './ActionScorer';
+import MemoryTable from './MemoryTable';
 import { Activity } from 'botframework-directlinejs'
 import * as OF from 'office-ui-fabric-react';
 import { ActionBase, TrainDialog, TrainRound, ScoreReason, ScoredAction,
     TrainScorerStep, Memory, UnscoredAction, ScoreResponse,
-    EntityBase, TextVariation, ExtractResponse, DialogType } from 'blis-models'
+    TextVariation, ExtractResponse, DialogType } from 'blis-models'
+
+interface RenderData {
+    teachMode: TeachMode,
+    selectedAction: ActionBase,
+    scorerStep: TrainScorerStep,
+    scoreResponse: ScoreResponse,
+    round: TrainRound,
+    memories: Memory[],
+    prevMemories: Memory[],
+};
 
 class TrainDialogAdmin extends React.Component<Props, ComponentState> {
 
@@ -49,27 +60,6 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                     scoreIndex: scoreIndex
                 })
             }
-        }
-    }
-
-    findRoundAndScorerStep(trainDialog: TrainDialog, activity: Activity): { round: TrainRound, scorerStep: TrainScorerStep } {
-
-        if (this.state.roundIndex > trainDialog.rounds.length-1) {
-            throw new Error(`Index out of range: You are attempting to access round by index: ${this.state.roundIndex} but there are only: ${trainDialog.rounds.length} rounds.`)
-        }
-
-        const round = trainDialog.rounds[this.state.roundIndex];
-        let scorerStep = null;
-        if (round.scorerSteps.length > 0) {
-            if (this.state.scoreIndex > round.scorerSteps.length-1) {
-                throw new Error(`Index out of range: You are attempting to access scorer step by index: ${this.state.scoreIndex} but there are only: ${round.scorerSteps.length} scorere steps.`) 
-            }
-            scorerStep = round.scorerSteps[this.state.scoreIndex];
-        }
-
-        return {
-            round,
-            scorerStep
         }
     }
 
@@ -164,23 +154,40 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
         this.setState({saveTrainDialog: null, saveSliceRound: 0});
         this.props.clearExtractResponses();
     }
-    render() {
-        let round: TrainRound = null;
-        let scorerStep: TrainScorerStep = null;
-        let selectedAction: ActionBase = null;
-        let memories: Memory[] = [];
-        let filledEntities: EntityBase[] = [];
-        let scoreResponse: ScoreResponse = null;
-
-        if (this.props.trainDialog && this.props.selectedActivity) {
-            const result = this.findRoundAndScorerStep(this.props.trainDialog, this.props.selectedActivity)
-            round = result.round
-            scorerStep = result.scorerStep
-            if (scorerStep != null) {
-                selectedAction = this.props.actions.find(action => action.actionId == scorerStep.labelAction)
-                filledEntities = this.props.entities.filter(entity => scorerStep.input.filledEntities.includes(entity.entityId))
+    getPrevMemories() : Memory[] {
+        let memories : Memory[] = [];
+        let prevIndex = this.state.roundIndex-1;
+        if (prevIndex >= 0) {
+            let round = this.props.trainDialog.rounds[prevIndex];
+            if (round.scorerSteps.length > 0) {
+                let scorerStep = round.scorerSteps[0];
+                let filledEntities = this.props.entities.filter(entity => scorerStep.input.filledEntities.includes(entity.entityId))
                 memories = filledEntities.map((e) => new Memory({entityName: e.entityName, entityValues: []}));     
-                       
+            }
+        }
+        return memories;    
+    }
+    getRenderData() : RenderData
+    {
+        let selectedAction : ActionBase = null;
+        let scorerStep : TrainScorerStep = null;
+        let scoreResponse: ScoreResponse = null;
+        let round : TrainRound = null;
+        let memories: Memory[] = [];
+        let prevMemories: Memory[] = [];
+
+        if (this.state.roundIndex !== null && this.state.roundIndex < this.props.trainDialog.rounds.length) {
+            round = this.props.trainDialog.rounds[this.state.roundIndex];
+            if (round.scorerSteps.length > 0) {
+                scorerStep = round.scorerSteps[this.state.scoreIndex];
+
+                selectedAction = this.props.actions.find(action => action.actionId == scorerStep.labelAction)
+                let filledEntities = this.props.entities.filter(entity => scorerStep.input.filledEntities.includes(entity.entityId))
+                memories = filledEntities.map((e) => new Memory({entityName: e.entityName, entityValues: []}));     
+                 
+                // Get prevmemories
+                prevMemories = this.getPrevMemories();
+
                 let scoredAction = new ScoredAction({
                     actionId : selectedAction.actionId,
                     payload: selectedAction.payload,
@@ -206,14 +213,31 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
             }
         }
 
+        let renderData : RenderData = {
+            teachMode: (this.state.senderType == SenderType.User) ? TeachMode.Extractor : TeachMode.Scorer,
+            selectedAction: selectedAction,
+            scorerStep: scorerStep,
+            scoreResponse: scoreResponse,
+            round: round,
+            memories: memories,
+            prevMemories: prevMemories
+        };
+
+        return renderData;
+    }
+    render() {
+        let renderData = this.getRenderData();
+     
         return (
             <div className="blis-dialog-admin ms-font-l">
                 {this.props.selectedActivity ?
                     (<div className="blis-dialog-admin__content">
                         <div className="blis-dialog-admin-title">Memory</div>
-                        <div>
-                            {filledEntities.length !== 0 && filledEntities.map(entity => <div key={entity.entityName}>{entity.entityName}</div>)}
-                        </div>
+                        <MemoryTable 
+                            teachMode={renderData.teachMode}
+                            memories={renderData.memories}
+                            prevMemories={renderData.prevMemories}
+                        />                        
                     </div>
                     ) : (
                         <div className="blis-dialog-admin__content">
@@ -227,16 +251,16 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                     <div className="blis-dialog-admin__content">
                         <div className="blis-dialog-admin-title">Entity Detection</div>
                         <div>
-                            {round ?
+                            {renderData.round ?
                                 <EntityExtractor
                                     appId={this.props.appId}
                                     extractType={DialogType.TRAINDIALOG}
                                     sessionId={this.props.trainDialog.trainDialogId}
                                     roundIndex={this.state.roundIndex}
                                     autoTeach={false}
-                                    teachMode={TeachMode.Extractor}
+                                    teachMode={renderData.teachMode}
                                     extractResponses={this.props.extractResponses}
-                                    originalTextVariations={round.extractorStep.textVariations}
+                                    originalTextVariations={renderData.round.extractorStep.textVariations}
                                     onTextVariationsExtracted={this.onEntityExtractorSubmit}
                                 />
                                 : <span>Click on text from the dialog to the left.</span>
@@ -244,7 +268,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                         </div>
                     </div>
                 }
-                {selectedAction && this.state.senderType == SenderType.Bot &&
+                {renderData.selectedAction && this.state.senderType == SenderType.Bot &&
                     <div className="blis-dialog-admin__content">
                         <div className="blis-dialog-admin-title">Action</div>
                         <div>
@@ -253,10 +277,10 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                                     dialogType={DialogType.TRAINDIALOG}
                                     sessionId={this.props.trainDialog.trainDialogId}
                                     autoTeach={false}
-                                    teachMode={TeachMode.Scorer}
-                                    scoreResponse={scoreResponse}
-                                    scoreInput={scorerStep.input}
-                                    memories={memories}
+                                    teachMode={renderData.teachMode}
+                                    scoreResponse={renderData.scoreResponse}
+                                    scoreInput={renderData.scorerStep.input}
+                                    memories={renderData.memories}
                                     onActionSelected={this.onActionScorerSubmit}
                                 />
                         </div>
