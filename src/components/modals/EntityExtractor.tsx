@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { findDOMNode } from 'react-dom';
 import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -28,6 +27,8 @@ interface ComponentState {
 // TODO: Need to re-define TextVariaion / ExtractResponse class defs so we don't need
 // to do all the messy conversion back and forth
 class EntityExtractor extends React.Component<Props, ComponentState> {
+    private doneExtractingButton: any = null;
+
     constructor(p: any) {
         super(p);
         this.state = {
@@ -44,13 +45,19 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         this.entityEditorHandleClose = this.entityEditorHandleClose.bind(this);
         this.onRemoveExtractResponse = this.onRemoveExtractResponse.bind(this)
         this.onUpdateExtractResponse = this.onUpdateExtractResponse.bind(this)
+        this.focusPrimaryButton = this.focusPrimaryButton.bind(this);
     }
     componentWillMount() {
         this.setState({newTextVariations : this.props.originalTextVariations})
     }
 
     componentDidMount() {
-        findDOMNode<HTMLButtonElement>(this.refs.doneExtractingButton).focus();
+        setTimeout(this.focusPrimaryButton, 500);
+    }
+    focusPrimaryButton(): void {
+        if (this.doneExtractingButton) {
+            this.doneExtractingButton.focus();
+        }
     }
     componentWillReceiveProps(newProps: Props) {
         // If I'm swiching my round or have added/removed text variations
@@ -281,7 +288,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                             onClick={this.onClickSubmitExtractions}
                             ariaDescription={"Sumbit Changes"}
                             text={"Submit Changes"}
-                            ref="doneExtractingButton"
+                            componentRef={(ref: any) => { this.doneExtractingButton = ref }}
                         />
                         <OF.PrimaryButton 
                             disabled={!this.state.extractionChanged}
@@ -297,7 +304,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                             onClick={this.onClickSubmitExtractions}
                             ariaDescription={"Score Actions"}
                             text={"Score Actions"}
-                            ref="doneExtractingButton"
+                            componentRef={(ref: any) => { this.doneExtractingButton = ref }}
                         />
                     </div>
                 )

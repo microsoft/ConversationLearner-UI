@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../../types'
 import { IColumn, DetailsList, CheckboxVisibility } from 'office-ui-fabric-react';
-import { EntityBase } from 'blis-models'
+import { EntityBase, Memory } from 'blis-models'
 import { TeachMode } from '../../types/const'
 
 let columns: IColumn[] = [
@@ -39,7 +39,7 @@ interface ComponentState {
     sortColumn: IColumn
 }
 
-class TeachSessionMemory extends React.Component<Props, ComponentState> {
+class MemoryTable extends React.Component<Props, ComponentState> {
     constructor(p: any) {
         super(p);
         this.state = {
@@ -82,13 +82,13 @@ class TeachSessionMemory extends React.Component<Props, ComponentState> {
         return value;
     }
     previousMemory(entityName: string) {
-        let prevMemories = this.props.teachSessions.prevMemories || [];
+        let prevMemories = this.props.prevMemories || [];
         return prevMemories.find(m => m.entityName == entityName);
     }
     renderEntityName(entityName: string) {
 
-        let curEntity = this.props.teachSessions.memories.find(m => m.entityName == entityName);
-        let prevEntity = this.props.teachSessions.prevMemories.find(m => m.entityName == entityName);
+        let curEntity = this.props.memories.find(m => m.entityName == entityName);
+        let prevEntity = this.props.prevMemories.find(m => m.entityName == entityName);
         let entityClass = "ms-font-m-plus";
 
         // Show changes when editing
@@ -107,11 +107,11 @@ class TeachSessionMemory extends React.Component<Props, ComponentState> {
     renderEntityValues(entityName : string) {
 
         // Current entity values
-        let curMemory = this.props.teachSessions.memories.find(m => m.entityName == entityName);
+        let curMemory = this.props.memories.find(m => m.entityName == entityName);
         let curValues = curMemory ? curMemory.entityValues : [];
 
         // Corresponding old memory values
-        let prevMemory = this.props.teachSessions.prevMemories.find(m => m.entityName == entityName);
+        let prevMemory = this.props.prevMemories.find(m => m.entityName == entityName);
         let prevValues = prevMemory ? prevMemory.entityValues : [];
         
         // Find union and remove duplicates
@@ -174,12 +174,12 @@ class TeachSessionMemory extends React.Component<Props, ComponentState> {
          let unionMemoryNames = this.props.teachMode == TeachMode.Wait ?
             // If waiting for user input just show current entities
             [
-                ...this.props.teachSessions.memories.map(m => m.entityName)
+                ...this.props.memories.map(m => m.entityName)
             ] :
             // Find union or old and new remove duplicates
             [
-                ...this.props.teachSessions.memories.map(m => m.entityName), 
-                ...this.props.teachSessions.prevMemories.map(m => m.entityName)
+                ...this.props.memories.map(m => m.entityName), 
+                ...this.props.prevMemories.map(m => m.entityName)
             ];
          
         unionMemoryNames = Array.from(new Set(unionMemoryNames));
@@ -226,16 +226,20 @@ const mapDispatchToProps = (dispatch: any) => {
 }
 const mapStateToProps = (state: State, ownProps: any) => {
     return {
-        teachSessions: state.teachSessions,
         entities: state.entities,
         user: state.user,
-        teachMode: state.teachSessions.mode
     }
+}
+
+export interface ReceivedProps {
+    teachMode: TeachMode,
+    memories: Memory[],
+    prevMemories: Memory[]
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
 const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
-type Props = typeof stateProps & typeof dispatchProps;
+type Props = typeof stateProps & typeof dispatchProps & ReceivedProps;
 
-export default connect<typeof stateProps, typeof dispatchProps, {}>(mapStateToProps, mapDispatchToProps)(TeachSessionMemory);
+export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(MemoryTable);
