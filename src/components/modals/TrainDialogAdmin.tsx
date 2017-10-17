@@ -112,6 +112,9 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
     // User changed the selected action for a round
     onActionScorerSubmit(trainScorerStep: TrainScorerStep) : void {
 
+        // Remove scoredAction, we only need labeledAction
+        delete trainScorerStep.scoredAction;
+        
         // Remove training rounds
         const rounds = this.props.trainDialog.rounds.slice(0, this.state.roundIndex+1);       
         let round = rounds[this.state.roundIndex]; 
