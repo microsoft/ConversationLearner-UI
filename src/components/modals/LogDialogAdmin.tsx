@@ -6,7 +6,7 @@ import { State } from '../../types'
 import { SenderType, TeachMode } from '../../types/const';
 import EntityExtractor from './EntityExtractor';
 import ActionScorer from './ActionScorer';
-import MemoryTable from 'MemoryTable';
+import MemoryTable from './MemoryTable';
 import * as OF from 'office-ui-fabric-react'
 import { Activity } from 'botframework-directlinejs'
 import { TrainExtractorStep, TrainScorerStep, TextVariation, Memory, TrainDialog, TrainRound, LogDialog, LogRound, LogScorerStep, ActionBase, EntityBase, ExtractResponse, DialogType, ScoredAction, ModelUtils } from 'blis-models'
