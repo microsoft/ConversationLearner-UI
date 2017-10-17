@@ -10,8 +10,6 @@ import { emptyStateProperties } from '../../actions/displayActions'
 import { BlisAppBase, BlisAppMetaData } from 'blis-models'
 import { State } from '../../types'
 
-
-
 interface ComponentState {
     appNameVal: string
     localeVal: string
@@ -43,8 +41,8 @@ class AppCreator extends React.Component<Props, ComponentState> {
             .then(cultures => {
                 const cultureOptions = cultures.map<IDropdownOption>(c =>
                     ({
-                        key: c.CultureCode,
-                        text: c.CultureCode,
+                        key: c.cultureCode,
+                        text: c.cultureCode,
                     }))
 
                 this.setState({

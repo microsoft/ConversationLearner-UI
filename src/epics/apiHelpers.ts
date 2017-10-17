@@ -147,8 +147,8 @@ export interface BlisAppForUpdate extends BlisAppBase {
 // CREATE ROUTES
 //=========================================================
 export interface CultureObject {
-  CultureCode: string
-  CultureName: string
+  cultureCode: string
+  cultureName: string
 }
 
 export const getLuisApplicationCultures = (): Promise<CultureObject[]> => {
