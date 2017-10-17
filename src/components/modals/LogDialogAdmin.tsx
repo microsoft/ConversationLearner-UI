@@ -9,7 +9,11 @@ import ActionScorer from './ActionScorer';
 import MemoryTable from './MemoryTable';
 import * as OF from 'office-ui-fabric-react'
 import { Activity } from 'botframework-directlinejs'
-import { TrainExtractorStep, TrainScorerStep, TextVariation, Memory, TrainDialog, TrainRound, LogDialog, LogRound, LogScorerStep, ActionBase, EntityBase, ExtractResponse, DialogType, ScoredAction, ModelUtils } from 'blis-models'
+import { TrainExtractorStep, TrainScorerStep, TextVariation, 
+        Memory, TrainDialog, TrainRound, 
+        LogDialog, LogRound, LogScorerStep, 
+        ActionBase, EntityBase, ExtractResponse, 
+        DialogType, ModelUtils } from 'blis-models'
 
 interface ComponentState {
     senderType: SenderType,
@@ -78,6 +82,9 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
     // User has submitted new entity extractions / text variations for a round
     onActionScorerSubmit(trainScorerStep: TrainScorerStep) : void {
 
+        // Remove scoredAction, we only need labeledAction
+        delete trainScorerStep.scoredAction;
+
         const roundsBeforeModification = this.props.logDialog.rounds.slice(0, this.state.roundIndex).map(ModelUtils.ToTrainRound)
 
         const logRound = this.props.logDialog.rounds[this.state.roundIndex];
@@ -85,8 +92,7 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
         const originalScorerStep = logRound.scorerSteps[this.state.scoreIndex]
         const modifiedScorerStep = new TrainScorerStep({
             input: originalScorerStep.input,
-            labelAction: trainScorerStep.scoredAction.actionId,
-            scoredAction: (trainScorerStep.scoredAction as ScoredAction)
+            labelAction: trainScorerStep.labelAction
         })
 
         let modifiedRound = new TrainRound({

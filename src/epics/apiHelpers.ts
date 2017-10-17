@@ -206,6 +206,18 @@ export const getLuisApplicationCultures = (): Promise<CultureObject[]> => {
       .catch(err => handleError(obs, err, AT.CREATE_ACTION_ASYNC)));
   };
 
+  // Train
+  export const createTrainDialog = (key: string, appId: string, trainDialog: TrainDialog, logDialogId: string): Observable<ActionObject> => {
+    let createTrainDialogRoute: string = makeRoute(key, `app/${appId}/traindialog`);
+    return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => axios.post(createTrainDialogRoute, trainDialog, config).then(response => {
+      trainDialog.trainDialogId = response.data.trainDialogId;
+      obs.next(actions.create.createTrainDialogFulfilled(trainDialog));
+      obs.next(actions.delete.deleteLogDialogAsync(appId, logDialogId))
+      obs.complete();
+    })
+      .catch(err => handleError(obs, err, AT.CREATE_TRAIN_DIALOG_ASYNC)));
+  };
+
 //=========================================================
 // DELETE ROUTES
 //=========================================================
@@ -486,17 +498,6 @@ export const getLuisApplicationCultures = (): Promise<CultureObject[]> => {
     return Rx.Observable.fromPromise(axios.get(getAppRoute, config))
   };
 
-// Train
-export const createTrainDialog = (key: string, appId: string, trainDialog: TrainDialog, logDialogId: string): Observable<ActionObject> => {
-  const configWithBody = {...config, body: trainDialog}
-  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => axios.post(makeRoute(key, `app/${appId}/traindialog`), configWithBody).then(response => {
-    trainDialog.trainDialogId = response.data.trainDialogId;
-    obs.next(actions.create.createTrainDialogFulfilled(trainDialog));
-    obs.next(actions.delete.deleteLogDialogAsync(appId, logDialogId))
-    obs.complete();
-  })
-    .catch(err => handleError(obs, err, AT.CREATE_TRAIN_DIALOG_ASYNC)));
-};
 
 // 
 
