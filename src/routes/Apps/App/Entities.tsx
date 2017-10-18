@@ -4,11 +4,10 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { EntityCreatorEditor, ConfirmDeleteModal } from '../../../components/modals'
 import { deleteEntityAsync } from '../../../actions/deleteActions'
-import { DetailsList, CommandButton, CheckboxVisibility, IColumn, SearchBox } from 'office-ui-fabric-react';
+import { IButton, DetailsList, CommandButton, CheckboxVisibility, IColumn, SearchBox } from 'office-ui-fabric-react';
 import { State } from '../../../types';
 import { BlisAppBase, EntityBase } from 'blis-models'
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
-import { findDOMNode } from 'react-dom';
 
 let columns: IColumn[] = [
     {
@@ -65,6 +64,8 @@ interface ComponentState {
 }
 
 class Entities extends React.Component<Props, ComponentState> {
+    newEntityButton: IButton
+
     state: ComponentState = {
         searchValue: '',
         confirmDeleteEntityModalOpen: false,
@@ -89,11 +90,9 @@ class Entities extends React.Component<Props, ComponentState> {
     }
 
     componentDidMount() {
-        this.focusNewEntityButton();
+        this.newEntityButton.focus()
     }
-    focusNewEntityButton(): void {
-        findDOMNode<HTMLButtonElement>(this.refs.newEntity).focus();
-    }
+
     deleteSelectedEntity() {
         let entityToDelete = this.props.entities.find(entity => entity.entityId == this.state.entityIDToDelete)
         this.props.deleteEntityAsync(this.props.user.key, this.state.entityIDToDelete, entityToDelete, this.props.app.appId)
@@ -121,7 +120,7 @@ class Entities extends React.Component<Props, ComponentState> {
             entitySelected: null
         })
         setTimeout(() => {
-            this.focusNewEntityButton();
+            this.newEntityButton.focus();
         }, 500);
     }
     openDeleteModal(guid: string) {
@@ -254,7 +253,7 @@ class Entities extends React.Component<Props, ComponentState> {
                         className='blis-button--gold'
                         ariaDescription='Create a New Entity'
                         text='New Entity'
-                        ref='newEntity'
+                        componentRef={component => this.newEntityButton = component}
                     />
                     <EntityCreatorEditor
                         open={this.state.createEditModalOpen}
