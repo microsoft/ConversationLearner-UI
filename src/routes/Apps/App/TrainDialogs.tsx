@@ -161,9 +161,10 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         })
     }
 
-    onCoseTrainDialogWindow() {
+    onCloseTrainDialogWindow() {
         this.setState({
-            isTrainDialogModalOpen: false
+            isTrainDialogModalOpen: false,
+            trainDialogId: null
         })
     }
 
@@ -220,7 +221,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 <TrainDialogWindow
                     app={this.props.app}
                     open={this.state.isTrainDialogModalOpen}
-                    onClose={() => this.onCoseTrainDialogWindow()}
+                    onClose={() => this.onCloseTrainDialogWindow()}
                     trainDialog={trainDialog}
                 />
             </div>
