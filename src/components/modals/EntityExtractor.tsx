@@ -145,7 +145,6 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         this.submitExtractions(this.allResponses(), this.props.roundIndex);
     }
     submitExtractions(allResponses : ExtractResponse[], roundIndex: number) {
-
         // Clear saved responses
         this.setState({
             savedExtractResponses: null,
