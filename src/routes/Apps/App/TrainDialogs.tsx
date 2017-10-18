@@ -2,11 +2,10 @@ import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { DetailsList, CommandButton, CheckboxVisibility, IColumn, SearchBox } from 'office-ui-fabric-react';
+import { IButton, DetailsList, CommandButton, CheckboxVisibility, IColumn, SearchBox } from 'office-ui-fabric-react';
 import { setCurrentTeachSession } from '../../../actions/displayActions'
 import { State } from '../../../types'
 import { BlisAppBase, TrainDialog } from 'blis-models'
-import { findDOMNode } from 'react-dom';
 import { TeachSessionWindow, TrainDialogWindow } from '../../../components/modals'
 
 let columns: IColumn[] = [
@@ -52,6 +51,8 @@ interface ComponentState {
 }
 
 class TrainDialogs extends React.Component<Props, ComponentState> {
+    newTeachSessionButton: IButton
+
     state: ComponentState = {
         isTeachDialogModalOpen: false,
         isTrainDialogModalOpen: false,
@@ -66,11 +67,9 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     }
 
     componentDidMount() {
-        this.focusNewEntityButton();
+        this.newTeachSessionButton.focus();
     }
-    focusNewEntityButton(): void {
-        findDOMNode<HTMLButtonElement>(this.refs.newSession).focus();
-    }
+
     componentWillReceiveProps(newProps: Props) {
         // If train dialogs have been updated, update selected trainDialog too
         if (this.props.trainDialogs != newProps.trainDialogs) {
@@ -80,7 +79,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     trainDialogId : newTrainDialog ? newTrainDialog.trainDialogId : null
                 })
             }
-            this.focusNewEntityButton();
+            this.newTeachSessionButton.focus();
         }
     }
     firstUtterance(item: any) {
@@ -196,7 +195,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         className='blis-button--gold'
                         ariaDescription='Create a New Teach Session'
                         text='New Teach Session'
-                        ref="newSession"
+                        componentRef={component => this.newTeachSessionButton = component}
                     />
                     <TeachSessionWindow
                         app={this.props.app}
