@@ -11,7 +11,9 @@ html {
     width: 100%;
 }
 
-
+* {
+  box-sizing: border-box;
+}
 
 .blis-button--gold:hover {
   border: 1px solid #004b50;
