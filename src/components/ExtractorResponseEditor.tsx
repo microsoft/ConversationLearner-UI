@@ -408,7 +408,6 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
                 substringObjects.push(substringObj)
             }
         })
-        console.log("SUB", substringObjects)
         this.setState({
             substringObjects: this.parsePunctuationFromSubstrings(substringObjects)
         })
