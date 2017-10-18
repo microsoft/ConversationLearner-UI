@@ -408,6 +408,7 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
                 substringObjects.push(substringObj)
             }
         })
+        console.log("SUB", substringObjects)
         this.setState({
             substringObjects: this.parsePunctuationFromSubstrings(substringObjects)
         })
@@ -747,7 +748,7 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
     parsePunctuationFromSubstrings(originals: SubstringObject[]): SubstringObject[] {
         let parsed: SubstringObject[] = [];
         originals.map((o: SubstringObject) => {
-            if (this.includesPunctuation(o.text) && o.entityId == null) {
+            if (this.includesPunctuation(o.text) && o.entityId == null && o.text.length !== 1) {
                 //punctuation will always appear at the end of the word (exs- Hi, | What? | name?)
                 //Note: If we ever want to handle quotes "X" ^ will not be true and we'll need to create 3 substring objects. For now, I'm assuming the quotes would be part of the string
                 let substringObjForPunctuation: SubstringObject = {
