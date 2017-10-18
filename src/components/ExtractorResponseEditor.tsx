@@ -164,7 +164,9 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
         let indexes: number[] = predictions.map((p: PredictedEntity) => {
             return p.startCharIndex
         });
-        let sortedIndexes = indexes.sort();
+        let sortedIndexes = indexes.sort((a: number, b: number) => {
+            return a - b;
+        });
         predictedEntities = sortedIndexes.map((n: number) => {
             return predictions.find((pe: PredictedEntity) => pe.startCharIndex === n);
         })
@@ -789,6 +791,15 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
             })
         }
         if (s.text != " ") {
+            if (s.text.length == 1 && this.includesPunctuation(s.text)) {
+                return (
+                    <div key={key} className="extractDiv" style={styles.containerDiv}>
+                        <div style={styles.normal}>
+                            <span className='ms-font-m' onClick={() => this.handleClick(s)} onMouseOver={() => this.handleHover(s)} onMouseLeave={() => this.handleHoverOut(s)}>{s.text}</span>
+                        </div>
+                    </div>
+                )
+            }
             let dropdown = this.props.canEdit ?
                 (<div style={s.dropdownStyle}>
                     <Dropdown
