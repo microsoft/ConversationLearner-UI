@@ -123,15 +123,14 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
         // If a new entity is present, one of the substrings might bewaiting for it
         if (newProps.entities.length > this.props.entities.length) {
             // Find the new entity
-            let newEntity = newProps.entities.filter(ne =>
-                {
-                    let fe = this.props.entities.find(e => e.entityId == ne.entityId );
-                    return fe == undefined;
-                })[0];
-          
+            let newEntity = newProps.entities.filter(ne => {
+                let fe = this.props.entities.find(e => e.entityId == ne.entityId);
+                return fe == undefined;
+            })[0];
+
             // If one is found and substring is waiting
             if (newEntity && this.state.newEntityText) {
-            
+
                 let predictedEntity = new PredictedEntity({
                     startCharIndex: this.state.newEntityIndex,
                     endCharIndex: (this.state.newEntityIndex + (this.state.newEntityText.length - 1)),
@@ -695,13 +694,13 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
     }
     onRenderOption = (option: BlisDropdownOption): JSX.Element => {
         return (
-          <div className='dropdownExample-option'>
-            <span className={option.style}>{ option.text }</span>
-          </div>
+            <div className='dropdownExample-option'>
+                <span className={option.style}>{option.text}</span>
+            </div>
         );
     }
     // Merge two substrings and return new substring list
-    mergeSubstrings(left: SubstringObject, right: SubstringObject, entity: EntityBase) : SubstringObject[] {
+    mergeSubstrings(left: SubstringObject, right: SubstringObject, entity: EntityBase): SubstringObject[] {
         let allObjectsBeforeLeftmost: SubstringObject[] = []
         let allObjectsAfterRightmost: SubstringObject[] = [];
 
@@ -713,15 +712,16 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
             }
         })
         let newText = this.getFullStringBetweenSubstrings(left, right);
-        let newClickedSubstringObject = { 
-            ...left, 
-            rightBracketStyle: styles.rightBracketDisplayedBlack, 
-            entityName: entity ? entity.entityName : null, 
+        let newClickedSubstringObject = {
+            ...left,
+            rightBracketStyle: styles.rightBracketDisplayedBlack,
+            entityName: entity ? entity.entityName : null,
             entityId: entity ? entity.entityId : null,
-            dropdownStyle: styles.hidden, 
-            labelStyle: styles.normal, 
-            text: newText };
-        return [...allObjectsBeforeLeftmost, newClickedSubstringObject, ...allObjectsAfterRightmost];  
+            dropdownStyle: styles.hidden,
+            labelStyle: styles.normal,
+            text: newText
+        };
+        return [...allObjectsBeforeLeftmost, newClickedSubstringObject, ...allObjectsAfterRightmost];
     }
     onDropdownEntitySelected(obj: { text: string }, substringClicked: SubstringObject) {
         //is this thing already an entity or was it a string before?
@@ -729,16 +729,17 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
         let entitySelected = this.props.entities.find(e => e.entityName == obj.text)
         let allObjects = this.state.substringObjects;
         let isNewEntity = obj.text.toLowerCase() == 'new entity';
-        
+
         if (substringClicked.entityId === null) {
             // let currentlyClickedSubstrings = this.state.substringsClicked;
             if (this.state.substringsClicked.length == 1) {
-                let newClickedSubstringObject: SubstringObject = { 
-                    ...substringClicked, 
+                let newClickedSubstringObject: SubstringObject = {
+                    ...substringClicked,
                     entityName: entitySelected ? entitySelected.entityName : null,
-                    entityId: entitySelected ? entitySelected.entityId : null, 
-                    dropdownStyle: styles.hidden, 
-                    labelStyle: styles.normal}
+                    entityId: entitySelected ? entitySelected.entityId : null,
+                    dropdownStyle: styles.hidden,
+                    labelStyle: styles.normal
+                }
                 allObjects[indexOfClickedSubstring] = newClickedSubstringObject;
 
                 if (isNewEntity) {
@@ -747,7 +748,7 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
                         newEntityText: substringClicked.text,
                         substringObjects: allObjects
                     })
-                } 
+                }
                 else {
                     this.setState({
                         substringObjects: allObjects
@@ -767,7 +768,7 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
                         newEntityText: newText,
                         substringObjects: allObjects
                     })
-                } 
+                }
                 else {
                     this.setState({
                         substringObjects: allObjects
@@ -779,23 +780,25 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
             })
         } else {
             if (obj.text.toLowerCase() == 'remove') {
-                let newClickedSubstringObject: SubstringObject = { 
-                    ...substringClicked, 
-                    entityName: null, 
-                    entityId: null, 
-                    dropdownStyle: styles.hidden, 
-                    leftBracketStyle: styles.leftBracketDisplayedWhite, 
-                    rightBracketStyle: styles.rightBracketDisplayedWhite }
+                let newClickedSubstringObject: SubstringObject = {
+                    ...substringClicked,
+                    entityName: null,
+                    entityId: null,
+                    dropdownStyle: styles.hidden,
+                    leftBracketStyle: styles.leftBracketDisplayedWhite,
+                    rightBracketStyle: styles.rightBracketDisplayedWhite
+                }
                 allObjects[indexOfClickedSubstring] = newClickedSubstringObject;
                 this.setState({
                     substringObjects: allObjects
                 })
             } else {
-                let newClickedSubstringObject: SubstringObject = { 
-                    ...substringClicked, 
-                    entityName: entitySelected ? entitySelected.entityName : null, 
-                    entityId: entitySelected ? entitySelected.entityId : null, 
-                    dropdownStyle: styles.hidden}
+                let newClickedSubstringObject: SubstringObject = {
+                    ...substringClicked,
+                    entityName: entitySelected ? entitySelected.entityName : null,
+                    entityId: entitySelected ? entitySelected.entityId : null,
+                    dropdownStyle: styles.hidden
+                }
                 allObjects[indexOfClickedSubstring] = newClickedSubstringObject;
                 this.setState({
                     substringObjects: allObjects
@@ -888,7 +891,7 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
                 return (
                     <div key={key} className="extractDiv" style={styles.containerDiv}>
                         <div style={styles.normal}>
-                            <span className='ms-font-m' onClick={() => this.handleClick(s)} onMouseOver={() => this.handleHover(s)} onMouseLeave={() => this.handleHoverOut(s)}>{s.text}</span>
+                            <span className='ms-font-m' onClick={() => this.onClickText(s)} onMouseOver={() => this.onHoverText(s)} onMouseLeave={() => this.onUnhoverText(s)}>{s.text}</span>
                         </div>
                     </div>
                 )
