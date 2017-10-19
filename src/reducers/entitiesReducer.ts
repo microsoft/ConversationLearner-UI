@@ -3,6 +3,7 @@ import { EntityState } from '../types'
 import { AT } from '../types/ActionTypes'
 import { EntityBase } from 'blis-models';
 import { Reducer } from 'redux'
+import { replace } from '../util'
 
 const initialState: EntityState = [];
 
@@ -24,15 +25,7 @@ const entitiesReducer: Reducer<EntityState> = (state = initialState, action: Act
         case AT.DELETE_REVERSE_ENTITY_ASYNC:
             return state.filter(ent => ent.entityId !== action.deletedEntityId);
         case AT.EDIT_ENTITY_FULFILLED:
-            let index: number = 0;
-            for (let i = 0; i < state.length; i++) {
-                if (state[i].entityId == action.entity.entityId) {
-                    index = i
-                }
-            }
-            let newState = Object.assign([], state);
-            newState[index] = action.entity;
-            return newState;
+            return replace(state, action.entity, e => e.entityId)
         default:
             return state;
     }

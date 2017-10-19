@@ -1,7 +1,6 @@
 import { ActionObject, ChatSessionState } from '../types'
 import { AT } from '../types/ActionTypes'
 import { Reducer } from 'redux'
-import { Session } from 'blis-models'
 
 const initialState: ChatSessionState = {
     all: [],
@@ -20,7 +19,7 @@ const chatSessionReducer: Reducer<ChatSessionState> = (state = initialState, act
         case AT.DELETE_CHAT_SESSION_FULFILLED:
             return {
                 ...state,
-                all: state.all.filter((s: Session) => s.sessionId !== action.sessionId),
+                all: state.all.filter(s => s.sessionId !== action.sessionId),
                 current: state.current.sessionId === action.sessionId ? null : state.current
             }
         case AT.SET_CURRENT_CHAT_SESSION:

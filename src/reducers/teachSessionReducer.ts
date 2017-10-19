@@ -3,6 +3,7 @@ import { Reducer } from 'redux'
 import { Teach, ExtractResponse, UnscoredAction, ScoreReason } from 'blis-models'
 import { DialogMode } from '../types/const'
 import { AT } from '../types/ActionTypes'
+import { replace } from '../util'
 
 const initialState: TeachSessionState = {
     all: [],
@@ -40,9 +41,8 @@ const teachSessionReducer: Reducer<TeachSessionState> = (state = initialState, a
             return { ...state, currentConversationStack: [...state.currentConversationStack, action.message], input: action.message, scoreInput: null, scoreResponse: null, extractResponses: [] };
         case AT.RUN_EXTRACTOR_FULFILLED:
             // Replace existing extract response (if any) with new one
-            let extractResponses: ExtractResponse[] = state.extractResponses.filter((e: ExtractResponse) => e.text != action.uiExtractResponse.extractResponse.text);
-            extractResponses.push(action.uiExtractResponse.extractResponse);
-            return { ...state, mode: DialogMode.Extractor, memories: action.uiExtractResponse.memories, prevMemories: action.uiExtractResponse.memories, extractResponses: extractResponses };
+            const updatedExtractResponses = replace(state.extractResponses, action.uiExtractResponse.extractResponse, e => e.text)
+            return { ...state, mode: DialogMode.Extractor, memories: action.uiExtractResponse.memories, prevMemories: action.uiExtractResponse.memories, extractResponses: updatedExtractResponses };
         case AT.UPDATE_EXTRACT_RESPONSE:
             // Replace existing extract response (if any) with new one and maintain ordering
             let index = state.extractResponses.findIndex((e: ExtractResponse) => e.text == action.extractResponse.text);

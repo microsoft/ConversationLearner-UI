@@ -2,6 +2,7 @@ import { AppState } from '../types'
 import { ActionObject } from '../types'
 import { AT } from '../types/ActionTypes'
 import { Reducer } from 'redux'
+import { replace } from '../util'
 
 const initialState: AppState = {
     all: [],
@@ -21,19 +22,10 @@ const appsReducer: Reducer<AppState> = (state = initialState, action: ActionObje
         case AT.DELETE_BLIS_APPLICATION_FULFILLED:
             return { ...state, all: state.all.filter(app => app.appId !== action.blisAppGUID) };
         case AT.EDIT_BLIS_APPLICATION_FULFILLED:
-            let index: number = 0;
-            for (let i = 0; i < state.all.length; i++) {
-                if (state.all[i].appId == action.blisApp.appId) {
-                    index = i
-                }
-            }
-            let newAll = Object.assign([], state.all);
-            newAll[index] = action.blisApp;
-            let stateToReturn: AppState = {
-                all: newAll,
+            return {
+                all: replace(state.all, action.blisApp, app => app.appId),
                 current: action.blisApp
             }
-            return stateToReturn
         default:
             return state;
     }
