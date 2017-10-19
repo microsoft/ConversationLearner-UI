@@ -132,26 +132,21 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
             // If one is found and substring is waiting
             if (newEntity && this.state.newEntityText) {
             
-                // Look for substring waiting for new entity
-                let substringIndex = this.state.substringObjects.findIndex(s => 
-                    (s.startIndex == this.state.newEntityIndex &&
-                    s.text == this.state.newEntityText));
-                if (substringIndex >= 0) {
-                    // Assign the new entity values to the substring
-                    let allObjects = [...this.state.substringObjects];
-                    let newSubstringObject: SubstringObject = { 
-                        ...this.state.substringObjects[substringIndex],
-                        entityName: newEntity.entityName,
-                        entityId: newEntity.entityId}
-                    allObjects[substringIndex] = newSubstringObject;
-                    this.setState({
-                        newEntityIndex: null,
-                        newEntityText: null,
-                        substringObjects: allObjects
-                    });
-                    // Save it
-                    this.updateCurrentPredictedEntities(allObjects, newProps.entities);
-                }
+                let predictedEntity = new PredictedEntity({
+                    startCharIndex: this.state.newEntityIndex,
+                    endCharIndex: (this.state.newEntityIndex + (this.state.newEntityText.length - 1)),
+                    entityId: newEntity.entityId,
+                    entityName: newEntity.entityName,
+                    entityText: this.state.newEntityText,
+                    metadata: newProps.entities.find(e => e.entityName == newEntity.entityName).metadata,
+                    score: 1.0
+                });
+                let newPredictions = [...this.props.extractResponse.predictedEntities, predictedEntity];
+                let newExtractResponse = new ExtractResponse({ text: this.state.input, predictedEntities: newPredictions, definitions: this.state.definitions });
+                this.props.updateExtractResponse(newExtractResponse)
+                this.setState({
+                    predictedEntities: newPredictions
+                });
             }
         }
         this.setInitialValues(newProps);
@@ -688,19 +683,35 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
           </div>
         );
     }
+    // Merge two substrings and return new substring list
+    mergeSubstrings(left: SubstringObject, right: SubstringObject, entity: EntityBase) : SubstringObject[] {
+        let allObjectsBeforeLeftmost: SubstringObject[] = []
+        let allObjectsAfterRightmost: SubstringObject[] = [];
+
+        this.state.substringObjects.map(s => {
+            if (s.startIndex < left.startIndex) {
+                allObjectsBeforeLeftmost.push(s);
+            } else if (s.startIndex > right.startIndex) {
+                allObjectsAfterRightmost.push(s)
+            }
+        })
+        let newText = this.getFullStringBetweenSubstrings(left, right);
+        let newClickedSubstringObject = { 
+            ...left, 
+            rightBracketStyle: styles.rightBracketDisplayedBlack, 
+            entityName: entity ? entity.entityName : null, 
+            entityId: entity ? entity.entityId : null,
+            dropdownStyle: styles.hidden, 
+            labelStyle: styles.normal, 
+            text: newText };
+        return [...allObjectsBeforeLeftmost, newClickedSubstringObject, ...allObjectsAfterRightmost];  
+    }
     onDropdownEntitySelected(obj: { text: string }, substringClicked: SubstringObject) {
         //is this thing already an entity or was it a string before?
         let indexOfClickedSubstring: number = this.findIndexOfHoveredSubstring(substringClicked);
         let entitySelected = this.props.entities.find(e => e.entityName == obj.text)
         let allObjects = this.state.substringObjects;
         let isNewEntity = obj.text.toLowerCase() == 'new entity';
-        if (isNewEntity) {
-            this.props.onNewEntitySelected();
-            this.setState({
-                newEntityIndex: substringClicked.startIndex,
-                newEntityText: substringClicked.text
-            })
-        } 
         
         if (substringClicked.entityId === null) {
             // let currentlyClickedSubstrings = this.state.substringsClicked;
@@ -712,39 +723,39 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
                     dropdownStyle: styles.hidden, 
                     labelStyle: styles.normal}
                 allObjects[indexOfClickedSubstring] = newClickedSubstringObject;
-                this.setState({
-                    substringObjects: allObjects
-                })
+
+                if (isNewEntity) {
+                    this.setState({
+                        newEntityIndex: substringClicked.startIndex,
+                        newEntityText: substringClicked.text,
+                        substringObjects: allObjects
+                    })
+                } 
+                else {
+                    this.setState({
+                        substringObjects: allObjects
+                    })
+                }
             } else if (this.state.substringsClicked.length > 1) {
                 //1. set the entity and styling for the leftmost substring object 
                 //2. remove all substring objects after the first one up to the second substring object 
                 //3. set the state
                 let left: SubstringObject = this.findLeftMostClickedSubstring();
                 let right: SubstringObject = this.findRightMostClickedSubstring();
-                let allObjectsBeforeLeftmost: SubstringObject[] = []
-                let allObjectsAfterRightmost: SubstringObject[] = [];
-
-                this.state.substringObjects.map(s => {
-                    if (s.startIndex < left.startIndex) {
-                        allObjectsBeforeLeftmost.push(s);
-                    } else if (s.startIndex > right.startIndex) {
-                        allObjectsAfterRightmost.push(s)
-                    }
-                })
-                let newText = this.getFullStringBetweenSubstrings(left, right);
-                let newClickedSubstringObject = { 
-                    ...left, 
-                    rightBracketStyle: styles.rightBracketDisplayedBlack, 
-                    entityName: entitySelected ? entitySelected.entityName : null, 
-                    entityId: entitySelected ? entitySelected.entityId : null,
-                    dropdownStyle: styles.hidden, 
-                    labelStyle: styles.normal, 
-                    text: newText,
-                    isNewEntity: isNewEntity };
-                allObjects = [...allObjectsBeforeLeftmost, newClickedSubstringObject, ...allObjectsAfterRightmost];
-                this.setState({
-                    substringObjects: allObjects
-                })
+                allObjects = this.mergeSubstrings(left, right, entitySelected);
+                if (isNewEntity) {
+                    let newText = this.getFullStringBetweenSubstrings(left, right);
+                    this.setState({
+                        newEntityIndex: left.startIndex,
+                        newEntityText: newText,
+                        substringObjects: allObjects
+                    })
+                } 
+                else {
+                    this.setState({
+                        substringObjects: allObjects
+                    })
+                }
             }
             this.setState({
                 substringsClicked: []
@@ -775,8 +786,10 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
             }
         }
 
-        // Update immediately unless createing a new entity
-        if (!isNewEntity) {
+        if (isNewEntity) {
+            this.props.onNewEntitySelected();
+        }
+        else {
             this.updateCurrentPredictedEntities(allObjects, this.props.entities);
         }
     }
