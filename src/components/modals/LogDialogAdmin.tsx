@@ -85,11 +85,12 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
         // Remove scoredAction, we only need labeledAction
         delete trainScorerStep.scoredAction;
 
-        const roundsBeforeModification = this.props.logDialog.rounds.slice(0, this.state.roundIndex).map(ModelUtils.ToTrainRound)
+        // Convert
+        const roundsBeforeModification = this.props.logDialog.rounds.slice(0, this.state.roundIndex).map(ModelUtils.ToTrainRound);
 
         const logRound = this.props.logDialog.rounds[this.state.roundIndex];
-        const scorerStepsBeforeModification = logRound.scorerSteps.slice(0, this.state.scoreIndex).map(ModelUtils.ToTrainScorerStep)
-        const originalScorerStep = logRound.scorerSteps[this.state.scoreIndex]
+        const scorerStepsBeforeModification = logRound.scorerSteps.slice(0, this.state.scoreIndex).map(ModelUtils.ToTrainScorerStep);
+        const originalScorerStep = logRound.scorerSteps[this.state.scoreIndex];
         const modifiedScorerStep = new TrainScorerStep({
             input: originalScorerStep.input,
             labelAction: trainScorerStep.labelAction
@@ -99,7 +100,7 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
             extractorStep: new TrainExtractorStep({
                 textVariations: [new TextVariation({
                     text: logRound.extractorStep.text,
-                    labelEntities: logRound.extractorStep.predictedEntities
+                    labelEntities: ModelUtils.ToLabeledEntities(logRound.extractorStep.predictedEntities)
                 })]
             }),
             scorerSteps: [...scorerStepsBeforeModification, modifiedScorerStep]
