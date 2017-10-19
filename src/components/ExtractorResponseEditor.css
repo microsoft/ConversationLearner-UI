@@ -18,3 +18,11 @@
 .extractContainer{
     display: inline-block;
 }
+
+.extractDropdown--command{
+    color: var(--color-log);
+    font-weight: bold;
+} 
+.extractDropdown--normal {
+    color: #000000;
+}
