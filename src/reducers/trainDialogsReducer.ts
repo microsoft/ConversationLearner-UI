@@ -8,12 +8,11 @@ const initialState: TrainDialogState = [];
 const trainDialogsReducer: Reducer<TrainDialogState> = (state = initialState, action: ActionObject): TrainDialogState => {
     switch (action.type) {
         case AT.LOGOUT:
-            return { ...initialState };
+            return [ ...initialState ]
         case AT.FETCH_TRAIN_DIALOGS_FULFILLED:
             return action.allTrainDialogs;
-        case AT.EMPTY_STATE_PROPERTIES:
-            let empty: TrainDialogState = []
-            return empty;
+        case AT.CREATE_BLIS_APPLICATION_FULFILLED:
+            return [ ...initialState ]
         case AT.CREATE_TRAIN_DIALOG_FULFILLED:
             return [...state, action.trainDialog];
         case AT.DELETE_TRAIN_DIALOG_FULFILLED:

@@ -1,12 +1,10 @@
 import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
 import { getLuisApplicationCultures } from '../../epics/apiHelpers'
-import { createBLISApplicationAsync } from '../../actions/createActions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { PrimaryButton, DefaultButton, Dropdown, IDropdownOption, TextField, Label } from 'office-ui-fabric-react';
-import { emptyStateProperties } from '../../actions/displayActions'
 import { BlisAppBase, BlisAppMetaData } from 'blis-models'
 import { State } from '../../types'
 
@@ -90,11 +88,9 @@ class AppCreator extends React.Component<Props, ComponentState> {
                 botFrameworkApps: []
             })
         })
-        this.props.createBLISApplicationAsync(this.props.userKey, this.props.userId, appToAdd);
-        //need to empty entities, actions, and trainDialogs arrays
-        this.props.emptyStateProperties();
-        this.resetState();
-        this.props.onSubmit()
+
+        this.resetState()
+        this.props.onSubmit(appToAdd)
     }
 
     // TODO: Refactor to use default form submission instead of manually listening for keys
@@ -165,23 +161,19 @@ class AppCreator extends React.Component<Props, ComponentState> {
         )
     }
 }
+
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        createBLISApplicationAsync,
-        emptyStateProperties
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {
     return {
-        blisApps: state.apps,
-        userId: state.user.id,
-        userKey: state.user.key
     }
 }
 
 export interface ReceivedProps {
     open: boolean
-    onSubmit: () => void
+    onSubmit: (app: BlisAppBase) => void
     onCancel: () => void
 }
 

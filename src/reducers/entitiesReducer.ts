@@ -9,12 +9,11 @@ const initialState: EntityState = [];
 const entitiesReducer: Reducer<EntityState> = (state = initialState, action: ActionObject): EntityState => {
     switch (action.type) {
         case AT.LOGOUT:
-            return { ...initialState };
+            return [ ...initialState ]
         case AT.FETCH_ENTITIES_FULFILLED:
             return action.allEntities;
-        case AT.EMPTY_STATE_PROPERTIES:
-            let empty: EntityState = [];
-            return empty;
+        case AT.CREATE_BLIS_APPLICATION_FULFILLED:
+            return []
         case AT.CREATE_ENTITY_FULFILLED:
             let newEntity = { ...action.entity, entityId: action.entityId };
             return [...state, newEntity];

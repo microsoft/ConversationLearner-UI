@@ -162,7 +162,8 @@ export const getLuisApplicationCultures = (): Promise<CultureObject[]> => {
     const { appId, ...appToSend } = blisApp
     return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => axios.post(addAppRoute, appToSend, config)
       .then(response => {
-        obs.next(actions.create.createApplicationFulfilled(blisApp, response.data));
+        blisApp.appId = response.data
+        obs.next(actions.create.createApplicationFulfilled(blisApp))
         obs.complete();
       })
       .catch(err => handleError(obs, err, AT.CREATE_BLIS_APPLICATION_ASYNC)));

@@ -11,11 +11,10 @@ export const createBLISApplicationAsync = (key: string, userId: string, applicat
     }
 }
 
-export const createApplicationFulfilled = (blisApp: BlisAppBase, appId: string): ActionObject => {
+export const createApplicationFulfilled = (blisApp: BlisAppBase): ActionObject => {
     return {
         type: AT.CREATE_BLIS_APPLICATION_FULFILLED,
-        blisApp: blisApp,
-        blisAppId: appId
+        blisApp: blisApp
     }
 }
 

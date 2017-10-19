@@ -8,12 +8,11 @@ const initialState: ActionState = [];
 const actionsReducer: Reducer<ActionState> = (state = initialState, actionObject: ActionObject): ActionState => {
     switch (actionObject.type) {
         case AT.LOGOUT:
-            return { ...initialState };
+            return [...initialState]
         case AT.FETCH_ACTIONS_FULFILLED:
-            return actionObject.allActions;
-        case AT.EMPTY_STATE_PROPERTIES:
-            let empty: ActionState = []
-            return empty;
+            return actionObject.allActions
+        case AT.CREATE_BLIS_APPLICATION_FULFILLED:
+            return []
         case AT.CREATE_ACTION_FULFILLED:
             let newAction = { ...actionObject.action, actionId: actionObject.actionId };
             return [...state, newAction];

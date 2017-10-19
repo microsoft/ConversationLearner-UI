@@ -82,8 +82,8 @@ class AppsList extends React.Component<Props, ComponentState> {
             isConfirmDeleteAppModalOpen: false,
             appToDelete: null,
         })
-
     }
+
     onCancelDeleteModal() {
         this.setState({
             isConfirmDeleteAppModalOpen: false,
@@ -130,7 +130,7 @@ class AppsList extends React.Component<Props, ComponentState> {
         });
     }
 
-    onSubmitAppCreateModal = () => {
+    onSubmitAppCreateModal = (app: BlisAppBase) => {
         this.setState({
             isAppCreateModalOpen: false
         })
@@ -143,7 +143,7 @@ class AppsList extends React.Component<Props, ComponentState> {
     }
 
     getSortedApplications(): BlisAppBase[] {
-        let sortedApps = this.props.blisApps.all || [];
+        let sortedApps = this.props.apps.all || [];
 
         if (this.state.sortColumn) {
             // Sort the items.
@@ -206,12 +206,12 @@ const mapDispatchToProps = (dispatch: any) => {
 }
 const mapStateToProps = (state: State) => {
     return {
-        user: state.user,
-        blisApps: state.apps
+        apps: state.apps
     }
 }
 
 export interface ReceivedProps {
+    onCreateApp: (app: BlisAppBase) => void
     onSelectedAppChanged: (app: BlisAppBase) => void
     onClickDeleteApp: (app: BlisAppBase) => void
 }
