@@ -134,6 +134,7 @@ class AppsList extends React.Component<Props, ComponentState> {
         this.setState({
             isAppCreateModalOpen: false
         })
+        this.props.onCreateApp(app)
     }
 
     onCancelAppCreateModal = () => {

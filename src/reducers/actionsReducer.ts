@@ -12,7 +12,7 @@ const actionsReducer: Reducer<ActionState> = (state = initialState, actionObject
         case AT.FETCH_ACTIONS_FULFILLED:
             return actionObject.allActions
         case AT.CREATE_BLIS_APPLICATION_FULFILLED:
-            return []
+            return [...initialState]
         case AT.CREATE_ACTION_FULFILLED:
             let newAction = { ...actionObject.action, actionId: actionObject.actionId };
             return [...state, newAction];
