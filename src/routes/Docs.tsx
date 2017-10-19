@@ -1,7 +1,10 @@
 import * as React from 'react'
 
 const component = () => (
-    <h1 className="ms-font-su">Docs</h1>
+    <div className="blis-page">
+        <div className="ms-font-su">Docs</div>
+        <div className="ms-font-m-plus">Coming soon...</div>
+    </div>
 )
 
 export default component

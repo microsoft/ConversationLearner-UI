@@ -5,11 +5,10 @@ import { connect } from 'react-redux';
 import { createActionAsync } from '../../../actions/createActions'
 import { editActionAsync } from '../../../actions/updateActions'
 import { deleteActionAsync } from '../../../actions/deleteActions'
-import { DetailsList, CommandButton, CheckboxVisibility, IColumn, SearchBox } from 'office-ui-fabric-react';
+import { IButton, DetailsList, CommandButton, CheckboxVisibility, IColumn, SearchBox } from 'office-ui-fabric-react';
 import { BlisAppBase, ActionBase, ModelUtils } from 'blis-models'
 import { ConfirmDeleteModal, ActionResponseCreatorEditor } from '../../../components/modals'
 import { State } from '../../../types'
-import { findDOMNode } from 'react-dom';
 
 interface IRenderableColumn extends IColumn {
     render: (action: ActionBase, component: Actions) => JSX.Element | JSX.Element[]
@@ -142,6 +141,8 @@ interface ComponentState {
 }
 
 class Actions extends React.Component<Props, ComponentState> {
+    newActionButton: IButton
+
     constructor(p: any) {
         super(p);
         this.state = {
@@ -163,11 +164,7 @@ class Actions extends React.Component<Props, ComponentState> {
     }
 
     componentDidMount() {
-        this.focusNewActionButton();
-    }
-
-    focusNewActionButton(): void {
-        findDOMNode<HTMLButtonElement>(this.refs.newAction).focus();
+        this.newActionButton.focus();
     }
 
     onClickConfirmDelete() {
@@ -205,7 +202,7 @@ class Actions extends React.Component<Props, ComponentState> {
             actionSelected: null
         })
         setTimeout(() => {
-            this.focusNewActionButton();
+            this.newActionButton.focus();
         }, 500);
     }
 
@@ -297,7 +294,7 @@ class Actions extends React.Component<Props, ComponentState> {
                         className='blis-button--gold'
                         ariaDescription='Create a New Action'
                         text='New Action'
-                        ref='newAction'
+                        componentRef={component => this.newActionButton = component}
                     />
                 </div>
                 <SearchBox

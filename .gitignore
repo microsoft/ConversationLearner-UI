@@ -5,6 +5,7 @@ secrets.ts
 
 # dependencies
 /node_modules
+/bower_components
 
 # testing
 /coverage
