@@ -285,7 +285,7 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
         }
         // run through the index groups but handle the entities and strings differently
         indexGroups.map((i: IndexGroup) => {
-            if (i.entity === null) {
+            if (i.entity == null) {
                 //is string
                 let nonEntities: SubstringObject[] = [];
                 let wordStartIndex: number;
