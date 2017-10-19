@@ -2,7 +2,7 @@ import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { PrimaryButton, DefaultButton } from 'office-ui-fabric-react';
+import { PrimaryButton, DefaultButton, Dialog, DialogType, DialogFooter } from 'office-ui-fabric-react';
 import { State } from '../../types';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import Webchat from '../Webchat'
@@ -11,13 +11,15 @@ import { Activity } from 'botframework-directlinejs'
 import { createTrainDialogAsync } from '../../actions/createActions'
 import { BlisAppBase, TrainDialog, LogDialog } from 'blis-models'
 import { deleteLogDialogAsync } from '../../actions/deleteActions'
-import { SenderType } from '../../types/const';
+import { SenderType } from '../../types/const'
 
 interface ComponentState {
+    isConfirmDeleteModalOpen: boolean
     selectedActivity: Activity | null
 }
 
 const initialState: ComponentState = {
+    isConfirmDeleteModalOpen: false,
     selectedActivity: null
 }
 
@@ -70,6 +72,18 @@ class LogDialogModal extends React.Component<Props, ComponentState> {
     }
 
     onClickDelete() {
+        this.setState({
+            isConfirmDeleteModalOpen: true
+        })
+    }
+
+    onClickCancelDelete = () => {
+        this.setState({
+            isConfirmDeleteModalOpen: false
+        })
+    }
+
+    onClickConfirmDelete = () => {
         this.props.deleteLogDialogAsync(this.props.app.appId, this.props.logDialog.logDialogId)
         // TODO: Would be better to close the dialog after it has been confirmed the delete was successful
         // How do we wait until the promise above has been resolved?
@@ -143,6 +157,22 @@ class LogDialogModal extends React.Component<Props, ComponentState> {
                             </div>
                         </div>
                     </div>
+                    <Dialog
+                        hidden={!this.state.isConfirmDeleteModalOpen}
+                        isBlocking={true}
+                        dialogContentProps={{
+                            type: DialogType.normal,
+                            title: 'Are you sure you want to delete this Log Dialog?'
+                        }}
+                        modalProps={{
+                            isBlocking: true
+                        }}
+                    >
+                        <DialogFooter>
+                            <DefaultButton onClick={this.onClickCancelDelete} text='Cancel' />
+                            <PrimaryButton onClick={this.onClickConfirmDelete} text='Yes' />
+                        </DialogFooter>
+                    </Dialog>
                 </Modal>
             </div>
         );
