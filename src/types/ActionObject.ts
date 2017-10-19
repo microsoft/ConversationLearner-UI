@@ -6,7 +6,7 @@ import {
     TrainDialog, LogDialog, Session, Teach,
     UserInput, ExtractResponse, DialogType,
     UIExtractResponse, UITrainScorerStep,
-    TeachResponse, UIScoreInput, UIScoreResponse
+    UITeachResponse, UIScoreInput, UIScoreResponse
 } from 'blis-models'
 import { DisplayMode } from '../types/const'
 import { AT } from '../types/ActionTypes'
@@ -339,13 +339,13 @@ export type TeachAction = {
     key: string,
     appId: string,
     sessionId: string
-    teachResponse: TeachResponse
+    uiTeachResponse: UITeachResponse
 } | {
     type: AT.POST_SCORE_FEEDBACK_FULFILLEDNOWAIT,
     key: string,
     appId: string,
     sessionId: string
-    teachResponse: TeachResponse,
+    uiTeachResponse: UITeachResponse,
     uiScoreInput: UIScoreInput
 } | {
     type: AT.TEACH_MESSAGE_RECEIVED,
