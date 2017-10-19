@@ -125,7 +125,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
                         placeholder="Application Name..."
                         onKeyDown={key => this.onKeyDown(key)}
                         value={this.state.appNameVal} />
-                    <Label>LUIS Key <a href="https://www.luis.ai/user/settings" className="ms-font-xs" target="_blank">(Find your key)</a></Label>
+                    <Label>LUIS Key <a href="https://www.luis.ai/user/settings" tabIndex={-1} className="ms-font-xs" target="_blank">(Find your key)</a></Label>
                     <TextField
                         onGetErrorMessage={this.checkIfBlank}
                         onChanged={this.luisKeyChanged}
