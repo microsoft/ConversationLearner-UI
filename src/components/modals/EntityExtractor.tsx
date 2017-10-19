@@ -39,7 +39,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
             savedRoundIndex: 0,
             newTextVariations: []
         }
-        this.entityButtonOnClick = this.entityButtonOnClick.bind(this);
+        this.onNewEntity = this.onNewEntity.bind(this);
         this.onClickSubmitExtractions = this.onClickSubmitExtractions.bind(this);
         this.onClickUndoChanges = this.onClickUndoChanges.bind(this);
         this.entityEditorHandleClose = this.entityEditorHandleClose.bind(this);
@@ -86,7 +86,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
             entityModalOpen: false
         })
     }
-    entityButtonOnClick() {
+    onNewEntity() {
         this.setState({
             entityModalOpen: true
         })
@@ -236,7 +236,6 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         // Don't show edit components when in auto TEACH or on score step
         let canEdit = (!this.props.autoTeach && this.props.teachMode == TeachMode.Extractor);
         let variationCreator = null;
-        let addEntity = null;
         let editComponents = null;
         let extractDisplay = null;
         if (canEdit) {
@@ -247,14 +246,6 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                 extractType={this.props.extractType}
                 roundIndex={this.props.roundIndex}
                 onAddVariation={() => this.onAddExtractResponse()} />
-
-            addEntity =
-                <OF.PrimaryButton
-                    onClick={this.entityButtonOnClick}
-                    ariaDescription='Cancel'
-                    text='Entity'
-                    iconProps={{ iconName: 'CirclePlus' }}
-                />
 
             extractDisplay = [];
             let allValid = true;
@@ -276,6 +267,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                     extractResponse={extractResponse}
                     updateExtractResponse={extractResponse => this.onUpdateExtractResponse(extractResponse)}
                     removeExtractResponse={extractResponse => this.onRemoveExtractResponse(extractResponse)}
+                    onNewEntitySelected={() =>this.onNewEntity()}
                 />);
             }
 
@@ -320,6 +312,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                 extractResponse={extractResponse}
                 updateExtractResponse={extractResponse => this.onUpdateExtractResponse(extractResponse)}
                 removeExtractResponse={extractResponse => this.onRemoveExtractResponse(extractResponse)}
+                onNewEntitySelected={() =>this.onNewEntity()}
             />
         }
 
@@ -327,7 +320,6 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
             <div>
                 <div>
                     <div className="blis-dialog-creation-buttons">
-                        {addEntity}
                         <EntityCreatorEditor
                             open={this.state.entityModalOpen}
                             entity={null}
