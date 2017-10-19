@@ -84,8 +84,6 @@ export type DisplayAction = {
 } | {
     type: AT.LOGOUT
 } | {
-    type: AT.EMPTY_STATE_PROPERTIES
-} | {
     type: AT.NO_OP
 } | {
     type: AT.CHAT_MESSAGE_RECEIVED,
@@ -186,8 +184,7 @@ export type CreateAction = {
     logDialog: LogDialog,
 } | {
     type: AT.CREATE_BLIS_APPLICATION_FULFILLED,
-    blisApp: BlisAppBase,
-    blisAppId: string
+    blisApp: BlisAppBase
 } | {
     type: AT.CREATE_ENTITY_FULFILLEDPOSITIVE,
     key: string,

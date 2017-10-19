@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
 import { fetchApplicationsAsync, fetchBotInfoAsync, fetchAllActionsAsync, fetchAllEntitiesAsync, fetchAllTrainDialogsAsync, fetchAllLogDialogsAsync, fetchAllChatSessionsAsync } from '../../actions/fetchActions';
+import { createBLISApplicationAsync } from '../../actions/createActions'
 import { setCurrentBLISApp } from '../../actions/displayActions';
 import { deleteBLISApplicationAsync } from '../../actions/deleteActions'
 import { bindActionCreators } from 'redux';
@@ -24,11 +25,11 @@ class AppsIndex extends React.Component<Props, ComponentState> {
     }
 
     componentDidUpdate() {
-        if (this.state.displayedUserId != this.props.userId) {
+        if (this.state.displayedUserId != this.props.user.id) {
             this.setState({
-                displayedUserId: this.props.userId
+                displayedUserId: this.props.user.id
             })
-            this.props.fetchApplicationsAsync(this.props.user.key, this.props.userId);
+            this.props.fetchApplicationsAsync(this.props.user.key, this.props.user.id);
             this.props.fetchBotInfoAsync();
         }
     }
@@ -50,6 +51,10 @@ class AppsIndex extends React.Component<Props, ComponentState> {
         this.props.deleteBLISApplicationAsync(this.props.user.key, appToDelete)
     }
 
+    onCreateApp = (appToCreate: BlisAppBase) => {
+        this.props.createBLISApplicationAsync(this.props.user.key, this.props.user.id, appToCreate)
+    }
+
     render() {
         return (
             this.props.display.displayMode === DisplayMode.AppAdmin && this.state.selectedApp !== null
@@ -57,6 +62,7 @@ class AppsIndex extends React.Component<Props, ComponentState> {
                     app={this.state.selectedApp}
                 />
                 : <AppsList
+                    onCreateApp={this.onCreateApp}
                     onSelectedAppChanged={app => this.onSelectedAppChanged(app)}
                     onClickDeleteApp={app => this.onClickDeleteApp(app)}
                 />
@@ -71,6 +77,7 @@ const mapDispatchToProps = (dispatch: any) => {
         fetchAllTrainDialogsAsync,
         fetchAllLogDialogsAsync,
         setCurrentBLISApp,
+        createBLISApplicationAsync,
         deleteBLISApplicationAsync,
         fetchAllChatSessionsAsync,
         fetchApplicationsAsync,
@@ -81,9 +88,7 @@ const mapDispatchToProps = (dispatch: any) => {
 const mapStateToProps = (state: State) => {
     return {
         display: state.display,
-        user: state.user,
-        userId: state.user.id,
-        blisApps: state.apps
+        user: state.user
     }
 }
 // Props types inferred from mapStateToProps & dispatchToProps

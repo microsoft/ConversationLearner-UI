@@ -20,12 +20,6 @@ export const setCurrentBLISAppFulfilled = (app: BlisAppBase) : ActionObject => {
     }
 }
 
-export const emptyStateProperties = () : ActionObject => { 
-    return {
-        type: AT.EMPTY_STATE_PROPERTIES
-    }
-}
-
 export const setDisplayMode = (displayMode: DisplayMode) : ActionObject => { 
     return {
         type: AT.SET_DISPLAY_MODE,
