@@ -31,7 +31,7 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
         case AT.SET_LOGIN_DISPLAY:
             return { ...state, displayLogin: action.setLoginDisplay };
         case AT.CREATE_BLIS_APPLICATION_FULFILLED:
-            return { ...state, displayMode: DisplayMode.AppAdmin, displaySpinner: removeSpinner(state.displaySpinner, action.type) }
+            return { ...state, displaySpinner: removeSpinner(state.displaySpinner, action.type) }
         case AT.SET_CURRENT_BLIS_APP_FULFILLED:
             return { ...state, displayMode: DisplayMode.AppAdmin, displaySpinner: removeSpinner(state.displaySpinner, action.type) }
         case AT.SET_ERROR_DISPLAY:
