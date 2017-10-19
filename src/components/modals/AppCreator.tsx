@@ -5,7 +5,7 @@ import { createBLISApplicationAsync } from '../../actions/createActions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
-import { PrimaryButton, DefaultButton, Dropdown, IDropdownOption, TextField } from 'office-ui-fabric-react';
+import { PrimaryButton, DefaultButton, Dropdown, IDropdownOption, TextField, Label } from 'office-ui-fabric-react';
 import { emptyStateProperties } from '../../actions/displayActions'
 import { BlisAppBase, BlisAppMetaData } from 'blis-models'
 import { State } from '../../types'
@@ -129,10 +129,10 @@ class AppCreator extends React.Component<Props, ComponentState> {
                         placeholder="Application Name..."
                         onKeyDown={key => this.onKeyDown(key)}
                         value={this.state.appNameVal} />
+                    <Label>LUIS Key <a href="https://www.luis.ai/user/settings" className="ms-font-xs" target="_blank">(Find your key)</a></Label>
                     <TextField
                         onGetErrorMessage={this.checkIfBlank}
                         onChanged={this.luisKeyChanged}
-                        label="LUIS Key"
                         placeholder="Key..."
                         type="password"
                         onKeyDown={this.onKeyDown}
