@@ -2,6 +2,7 @@ import { ActionObject } from '../types'
 import { ActionState } from '../types'
 import { AT } from '../types/ActionTypes'
 import { Reducer } from 'redux'
+import { replace } from '../util'
 
 const initialState: ActionState = [];
 
@@ -19,15 +20,7 @@ const actionsReducer: Reducer<ActionState> = (state = initialState, actionObject
         case AT.DELETE_ACTION_FULFILLED:
             return state.filter(a => a.actionId !== actionObject.actionGUID)
         case AT.EDIT_ACTION_FULFILLED:
-            let index: number = 0;
-            for (let i = 0; i < state.length; i++) {
-                if (state[i].actionId == actionObject.blisAction.actionId) {
-                    index = i
-                }
-            }
-            let newState = Object.assign([], state);
-            newState[index] = actionObject.blisAction;
-            return newState
+            return replace(state, actionObject.blisAction, a => a.actionId)
         default:
             return state;
     }

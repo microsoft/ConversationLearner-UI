@@ -18,23 +18,7 @@ const logDialogsReducer: Reducer<LogDialogState> = (state = initialState, action
         case AT.CREATE_LOG_DIALOG:
             return { ...state, all: [...state.all, action.logDialog] };
         case AT.DELETE_LOG_DIALOG_FULFILLED:
-            return { ...state, all: state.all.filter(dialog => dialog.logDialogId !== action.logDialogId) };
-        /* TODO
-            case AT.EDIT_LOG_DIALOG_FULFILLED:
-                let index: number = 0;
-                for (let i = 0; i < state.all.length; i++) {
-                    if (state.all[i].logDialogId == action.logDialog.logDialogId) {
-                        index = i
-                    }
-                }
-                let newAll = Object.assign([], state.all);
-                newAll[index] = action.logDialog;
-                let stateToReturn: AppState = {
-                    all: newAll,
-                    current: action.logDialog
-                }
-                return stateToReturn
-        */
+            return { ...state, all: state.all.filter(dialog => dialog.logDialogId !== action.logDialogId) }
         default:
             return state;
     }

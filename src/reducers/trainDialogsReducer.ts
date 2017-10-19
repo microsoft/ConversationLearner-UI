@@ -2,6 +2,7 @@ import { ActionObject } from '../types'
 import { TrainDialogState } from '../types'
 import { AT } from '../types/ActionTypes'
 import { Reducer } from 'redux'
+import { replace } from '../util'
 
 const initialState: TrainDialogState = [];
 
@@ -18,15 +19,7 @@ const trainDialogsReducer: Reducer<TrainDialogState> = (state = initialState, ac
         case AT.DELETE_TRAIN_DIALOG_FULFILLED:
             return state.filter(dialog => dialog.trainDialogId !== action.trainDialogGUID);
         case AT.EDIT_TRAIN_DIALOG_FULFILLED:
-            let index: number = 0;
-            for (let i = 0; i < state.length; i++) {
-                if (state[i].trainDialogId == action.trainDialog.trainDialogId) {
-                    index = i
-                }
-            }
-            let newState = Object.assign([], state);
-            newState[index] = action.trainDialog;
-            return newState;
+            return replace(state, action.trainDialog, trainDialog => trainDialog.trainDialogId)
         default:
             return state;
     }
