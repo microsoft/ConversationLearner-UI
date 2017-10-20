@@ -134,7 +134,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             }
             let selectedActionId = bestAction.actionId;
             this.handleActionSelection(selectedActionId);
-        } else {
+        } else if (!this.state.actionModalOpen) {
             setTimeout(this.focusPrimaryButton, 500);
         }
     }
@@ -303,12 +303,15 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         // Null is action create button
         if (item == ACTION_BUTTON) {
             if (column.key == 'select') {
+                // Will focus on new action button if no scores
+                let ref = (index == 0) ? ((ref: any) => { this.primaryScoreButton = ref }) : null;
                 return (
                     <PrimaryButton
                         onClick={this.handleOpenActionModal}
                         ariaDescription='Cancel'
                         text='Action'
                         iconProps={{ iconName: 'CirclePlus' }}
+                        componentRef={ref}
                     />
                 )
             } else {
