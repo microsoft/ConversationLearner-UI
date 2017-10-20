@@ -5,10 +5,13 @@ import { editActionAsync } from '../../actions/updateActions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
-import { PrimaryButton, DefaultButton, Dropdown, TagPicker, TextField, Label, Checkbox, List } from 'office-ui-fabric-react'
+import { PrimaryButton, DefaultButton, Dropdown, TagPicker, 
+    TextField, Label, Checkbox, List, TagItem,
+    IPickerItemProps, ITag } from 'office-ui-fabric-react'
 import { ActionBase, ActionMetaData, ActionTypes, EntityBase, ModelUtils } from 'blis-models'
 import { State } from '../../types';
 import EntityCreatorEditor from './EntityCreatorEditor';
+//import BlisTagItem from './BlisTagItem';
 import AutocompleteListItem from '../../components/AutocompleteListItem';
 
 interface EntityPickerObject {
@@ -106,6 +109,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
         this.cancelOnClick = this.cancelOnClick.bind(this);
         this.entityOnClick = this.entityOnClick.bind(this);
         this.waitOnChange = this.waitOnChange.bind(this);
+        this.onRenderTagItem = this.onRenderTagItem.bind(this);
         this.entityCreatorHandleClose = this.entityCreatorHandleClose.bind(this);
     }
     componentDidMount() {
@@ -703,6 +707,9 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
             }
         }
     }
+    onRenderTagItem(props: IPickerItemProps<ITag>) : JSX.Element {
+        return <TagItem { ...props }>{ props.item.name }</TagItem>;
+    }        
     render() {
         let entitySuggestStyle: {};
         let entitySuggestOptions: {}[] = [];
@@ -847,7 +854,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
                             }
                             defaultSelectedItems={this.state.defaultSuggestedEntities}
                         />
-                        <Label>Disallow Action when Entities are <b>NOT</b> in Memory...</Label>
+                        <Label>Required Entities: Disallow Action when <b>NOT</b> in Memory...</Label>
                         <TagPicker
                             onResolveSuggestions={this.requiredEntityOnResolve}
                             getTextFromItem={(item) => { return item.name; }}
@@ -861,10 +868,11 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
                             }
                             defaultSelectedItems={this.state.defaultRequiredEntities}
                         />
-                        <Label>Disallow Action when Entities <b>ARE</b> in Memory...</Label>
+                        <Label>Blocking Entities: Disallow Action when <b>ARE</b> in Memory...</Label>
                         <TagPicker
                             key={this.state.negativeTagPickerKey}
                             onResolveSuggestions={this.negativeEntityOnResolve}
+                            onRenderItem={this.onRenderTagItem}
                             getTextFromItem={(item) => { return item.name; }}
                             onChange={this.negativeEntityOnChange}
                             pickerSuggestionsProps={
