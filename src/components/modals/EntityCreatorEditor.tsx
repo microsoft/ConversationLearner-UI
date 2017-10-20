@@ -5,9 +5,10 @@ import { editEntityAsync } from '../../actions/updateActions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
-import { PrimaryButton, DefaultButton, IDropdownOption, Dropdown, DropdownMenuItemType, Checkbox, TextField } from 'office-ui-fabric-react';
+import { PrimaryButton, DefaultButton, IDropdownOption, Dropdown, DropdownMenuItemType, Checkbox, TextField, TooltipHost, TooltipDelay, DirectionalHint } from 'office-ui-fabric-react';
 import { State, PreBuiltEntities } from '../../types';
 import { EntityBase, EntityMetaData, EntityType } from 'blis-models'
+import './EntityCreatorEditor.css'
 
 const initState: ComponentState = {
     entityNameVal: '',
@@ -158,7 +159,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
         if (!/^[a-zA-Z0-9-]+$/.test(value)) {
             return "Entity name may only contain alphanumeric characters with no spaces."
         }
-        
+
         return ""
     }
 
@@ -197,18 +198,65 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                         selectedKey={this.state.entityTypeVal}
                         disabled={this.state.editing}
                     />
-                    <Checkbox
-                        label='Multi-Value'
-                        defaultChecked={false}
-                        onChange={this.onChangeBucketable}
-                        style={{ marginTop: "1em", marginRight: "3em", display: "inline-block" }}
-                    />
-                    <Checkbox
-                        label='Negatable'
-                        defaultChecked={false}
-                        onChange={this.onChangeReversible}
-                        style={{ marginTop: "1em", display: "inline-block" }}
-                    />
+                    <div className="blis-entity-creator-checkbox">
+                        <Checkbox
+                            label='Multi-valued'
+                            defaultChecked={false}
+                            onChange={this.onChangeBucketable}
+                        />
+                        <div className="ms-fontSize-s ms-fontColor-neutralSecondary">Entity may represent multiple values. &nbsp;
+                            <TooltipHost
+                                tooltipProps={{
+                                    onRenderContent: () => {
+                                        return (
+                                            <div>
+                                                Multiple occurences of the entity within text add to a list of values. For non multi-value entites the last value replaces previous values.<br />
+                                                <b>Example: Detect multiple toppings on a pizza</b>
+                                                <dl className="blis-entity-example">
+                                                    <dt>Entity:</dt><dd>toppings</dd>
+                                                    <dt>Phrase:</dt><dd>I would like <i>cheese</i> and <i>pepperoni</i>.</dd>
+                                                    <dt>Memory:</dt><dd>cheese, pepperoni</dd>
+                                                </dl>
+                                            </div>
+                                        );
+                                    }
+                                }}
+                                delay={TooltipDelay.zero}
+                                directionalHint={DirectionalHint.bottomCenter}
+                            ><span className="ms-fontColor-themeTertiary">More</span>
+                            </TooltipHost>
+                        </div>
+                    </div>
+                    <div className="blis-entity-creator-checkbox">
+                        <Checkbox
+                            label='Negatable'
+                            defaultChecked={false}
+                            onChange={this.onChangeReversible}
+                        />
+                        <div className="ms-fontSize-s ms-fontColor-neutralSecondary">Can remove or negate values in memory. &nbsp;
+                            <TooltipHost
+                                tooltipProps={{
+                                    onRenderContent: () => {
+                                        return (
+                                            <div>
+                                                When checked this creates a corresponding 'negatable' entity that can be used scenarios where the user intends to remove previous memory values.<br />
+                                                <b>Example: Changing existing pizza order</b>
+                                                <dl className="blis-entity-example">
+                                                    <dt>Entity:</dt><dd>toppings</dd>
+                                                    <dt>Memory:</dt><dd>cheese, pepperoni</dd>
+                                                    <dt>Phrase:</dt><dd>Actually, please add <i>sausage</i> instead of <i>pepperoni</i>.</dd>
+                                                    <dt>Memory:</dt><dd>cheese, <del>pepperoni</del> sausage</dd>
+                                                </dl>
+                                            </div>
+                                        );
+                                    }
+                                }}
+                                delay={TooltipDelay.zero}
+                                directionalHint={DirectionalHint.bottomCenter}
+                            ><span className="ms-fontColor-themeTertiary">More</span>
+                            </TooltipHost>
+                        </div>
+                    </div>
                 </div>
                 <div className='blis-modal_buttonbox'>
                     <div className="blis-modal-buttons">
