@@ -95,7 +95,7 @@ interface ComponentState {
     isLogDialogWindowOpen: boolean,
     currentLogDialog: LogDialog,
     searchValue: string,
-    dialogKey: number
+    dialogKey: number   // Allows user to re-open modal for same row ()
 }
 
 class LogDialogs extends React.Component<Props, ComponentState> {

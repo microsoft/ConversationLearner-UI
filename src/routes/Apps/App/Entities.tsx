@@ -28,7 +28,7 @@ let columns: IColumn[] = [
     },
     {
         key: 'isBucketable',
-        name: 'Bucketable',
+        name: 'Multi-Value',
         fieldName: 'metadata',
         minWidth: 100,
         maxWidth: 200,
@@ -36,7 +36,7 @@ let columns: IColumn[] = [
     },
     {
         key: 'isNegatable',
-        name: 'Reversible',
+        name: 'Negatable',
         fieldName: 'metadata',
         minWidth: 100,
         maxWidth: 200,
@@ -192,7 +192,7 @@ class Entities extends React.Component<Props, ComponentState> {
             let nameMatch = e.entityName.toLowerCase().includes(lcString);
             let typeMatch = e.entityType.toLowerCase().includes(lcString);
             let match = nameMatch || typeMatch
-            return match;
+            return match && !e.metadata.positiveId;
         })
 
         if (!this.state.sortColumn) {

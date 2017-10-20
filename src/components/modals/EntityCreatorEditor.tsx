@@ -198,13 +198,13 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                         disabled={this.state.editing}
                     />
                     <Checkbox
-                        label='Bucketable'
+                        label='Multi-Value'
                         defaultChecked={false}
                         onChange={this.onChangeBucketable}
                         style={{ marginTop: "1em", marginRight: "3em", display: "inline-block" }}
                     />
                     <Checkbox
-                        label='Reversible'
+                        label='Negatable'
                         defaultChecked={false}
                         onChange={this.onChangeReversible}
                         style={{ marginTop: "1em", display: "inline-block" }}
