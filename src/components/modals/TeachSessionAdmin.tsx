@@ -16,7 +16,7 @@ import MemoryTable from './MemoryTable';
 
 class TeachSessionAdmin extends React.Component<Props, {}> {
     constructor(p: Props) {
-        super(p)
+        super(p);
         this.onEntityExtractorSubmit = this.onEntityExtractorSubmit.bind(this);
         this.onActionScorerSubmit = this.onActionScorerSubmit.bind(this);
     }

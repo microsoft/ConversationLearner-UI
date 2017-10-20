@@ -229,8 +229,11 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
         return renderData;
     }
     render() {
+        if (!this.props.trainDialog) {
+            return null;
+        }
+
         let renderData = this.getRenderData();
-     
         return (
             <div className="blis-dialog-admin ms-font-l">
                 {this.props.selectedActivity && (this.state.senderType == SenderType.User ? (
