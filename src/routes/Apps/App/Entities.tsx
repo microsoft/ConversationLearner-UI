@@ -9,14 +9,21 @@ import { State } from '../../../types';
 import { BlisAppBase, EntityBase } from 'blis-models'
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 
-let columns: IColumn[] = [
+interface IRenderableColumn extends IColumn {
+    render: (entity: EntityBase, component: Entities) => JSX.Element | JSX.Element[]
+    getSortValue: (IRenderableColumn: EntityBase, component: Entities) => string
+}
+
+const columns: IRenderableColumn[] = [
     {
         key: 'entityName',
         name: 'Entity Name',
         fieldName: 'entityName',
         minWidth: 100,
         maxWidth: 200,
-        isResizable: true
+        isResizable: true,
+        getSortValue: entity => entity.entityName.toLowerCase(),
+        render: entity => <span className='ms-font-m-plus'>{entity.entityName}</span>
     },
     {
         key: 'entityType',
@@ -24,7 +31,9 @@ let columns: IColumn[] = [
         fieldName: 'entityType',
         minWidth: 100,
         maxWidth: 200,
-        isResizable: true
+        isResizable: true,
+        getSortValue: entity => entity.entityType.toLowerCase(),
+        render: entity => <span className='ms-font-m-plus'>{entity.entityType}</span>
     },
     {
         key: 'isBucketable',
@@ -32,7 +41,9 @@ let columns: IColumn[] = [
         fieldName: 'metadata',
         minWidth: 100,
         maxWidth: 200,
-        isResizable: true
+        isResizable: true,
+        getSortValue: entity => entity.metadata.isBucket ? 'a' : 'b',
+        render: entity => <span className={"ms-Icon blis-icon " + (entity.metadata.isBucket ? "ms-Icon--CheckMark" : "ms-Icon--Remove")} aria-hidden="true"></span>
     },
     {
         key: 'isNegatable',
@@ -40,7 +51,9 @@ let columns: IColumn[] = [
         fieldName: 'metadata',
         minWidth: 100,
         maxWidth: 200,
-        isResizable: true
+        isResizable: true,
+        getSortValue: entity => entity.metadata.isReversable ? 'a' : 'b',
+        render: entity => <span className={"ms-Icon blis-icon " + (entity.metadata.isReversable ? "ms-Icon--CheckMark" : "ms-Icon--Remove")} aria-hidden="true"></span>
     },
     {
         key: 'actions',
@@ -48,7 +61,9 @@ let columns: IColumn[] = [
         fieldName: 'entityId',
         minWidth: 100,
         maxWidth: 200,
-        isResizable: true
+        isResizable: true,
+        getSortValue: entity => '',
+        render: (entity, component) => <a onClick={() => component.openDeleteModal(entity.entityId)}><span className="ms-Icon ms-Icon--Delete"></span></a>
     },
 ];
 
@@ -59,8 +74,8 @@ interface ComponentState {
     entitySelected: EntityBase | null
     entityIDToDelete: string
     errorModalOpen: boolean
-    columns: IColumn[]
-    sortColumn: IColumn
+    columns: IRenderableColumn[]
+    sortColumn: IRenderableColumn
 }
 
 class Entities extends React.Component<Props, ComponentState> {
@@ -79,12 +94,11 @@ class Entities extends React.Component<Props, ComponentState> {
 
     constructor(p: any) {
         super(p);
-    
-        this.deleteSelectedEntity = this.deleteSelectedEntity.bind(this);
-        this.renderItemColumn = this.renderItemColumn.bind(this)
+
+        this.deleteSelectedEntity = this.deleteSelectedEntity.bind(this)
         this.onChange = this.onChange.bind(this)
-        this.onColumnClick = this.onColumnClick.bind(this)
-        this.renderEntityItems = this.renderEntityItems.bind(this)
+        this.onClickColumnHeader = this.onClickColumnHeader.bind(this)
+        this.getFilteredAndSortedEntities = this.getFilteredAndSortedEntities.bind(this)
         this.handleOpenCreateModal = this.handleOpenCreateModal.bind(this)
         this.handleCloseCreateModal = this.handleCloseCreateModal.bind(this)
     }
@@ -100,8 +114,8 @@ class Entities extends React.Component<Props, ComponentState> {
             confirmDeleteEntityModalOpen: false,
             entityIDToDelete: null
         })
-
     }
+
     handleCloseDeleteModal() {
         this.setState({
             confirmDeleteEntityModalOpen: false,
@@ -136,19 +150,19 @@ class Entities extends React.Component<Props, ComponentState> {
             })
         }
     }
-    onColumnClick(event: any, column: IColumn) {
+    onClickColumnHeader(event: any, clickedColumn: IRenderableColumn) {
         let { columns } = this.state;
-        let isSortedDescending = column.isSortedDescending;
+        let isSortedDescending = clickedColumn.isSortedDescending;
 
         // If we've sorted this column, flip it.
-        if (column.isSorted) {
+        if (clickedColumn.isSorted) {
             isSortedDescending = !isSortedDescending;
         }
 
         // Reset the items and columns to match the state.
         this.setState({
             columns: columns.map(col => {
-                col.isSorted = (col.key === column.key);
+                col.isSorted = (col.key === clickedColumn.key);
 
                 if (col.isSorted) {
                     col.isSortedDescending = isSortedDescending;
@@ -156,36 +170,11 @@ class Entities extends React.Component<Props, ComponentState> {
 
                 return col;
             }),
-            sortColumn: column
+            sortColumn: clickedColumn
         });
     }
 
-    renderItemColumn(item?: EntityBase, index?: number, column?: IColumn) {
-        let fieldContent = item[column.fieldName];
-        switch (column.key) {
-            case 'isBucketable':
-                if (fieldContent.isBucket == true) {
-                    return <span className="ms-Icon ms-Icon--CheckMark checkIcon" aria-hidden="true"></span>;
-                } else {
-                    return <span className="ms-Icon ms-Icon--Remove notFoundIcon" aria-hidden="true"></span>;
-                }
-            case 'isNegatable':
-                if (fieldContent.isReversable == true) {
-                    return <span className="ms-Icon ms-Icon--CheckMark checkIcon" aria-hidden="true"></span>;
-                } else {
-                    return <span className="ms-Icon ms-Icon--Remove notFoundIcon" aria-hidden="true"></span>;
-                }
-            case 'actions':
-                return (
-                    <div>
-                        <a onClick={() => this.openDeleteModal(fieldContent)}><span className="ms-Icon ms-Icon--Delete"></span></a>
-                    </div>
-                )
-            default:
-                return <span className='ms-font-m-plus'>{fieldContent}</span>;
-        }
-    }
-    renderEntityItems(): EntityBase[] {
+    getFilteredAndSortedEntities(): EntityBase[] {
         //runs when user changes the text or sort
         let lcString = this.state.searchValue.toLowerCase();
         let filteredEntities = this.props.entities.filter(e => {
@@ -200,37 +189,17 @@ class Entities extends React.Component<Props, ComponentState> {
         }
 
         // Sort the items.
-        let sortedItems = filteredEntities.concat([]).sort((a: any, b: any) => {
-            let firstValue = this.getValue(a, this.state.sortColumn);
-            let secondValue = this.getValue(b, this.state.sortColumn);
+        filteredEntities
+            .sort((a, b) => {
+                const firstValue = this.state.sortColumn.getSortValue(a, this)
+                const secondValue = this.state.sortColumn.getSortValue(b, this)
+                const compareValue = firstValue.localeCompare(secondValue)
+                return this.state.sortColumn.isSortedDescending
+                    ? compareValue
+                    : compareValue * -1
+            })
 
-            if (this.state.sortColumn.isSortedDescending) {
-                return firstValue > secondValue ? -1 : 1;
-            }
-            else {
-                return firstValue > secondValue ? 1 : -1;
-            }
-        });
-
-        return sortedItems;
-    }
-
-    getValue(entity: any, col: IColumn): any {
-        let value;
-        if (col.key == 'isBucketable') {
-            value = entity.metadata.isBucket;
-        }
-        else if (col.key == 'isNegatable') {
-            value = entity.metadata.isReversable;
-        }
-        else {
-            value = entity[col.fieldName];
-        }
-
-        if (typeof value == 'string' || value instanceof String) {
-            return value.toLowerCase();
-        }
-        return value;
+        return filteredEntities;
     }
 
     onChange(newValue: string) {
@@ -240,8 +209,9 @@ class Entities extends React.Component<Props, ComponentState> {
             searchValue: lcString
         })
     }
+
     render() {
-        let entityItems = this.renderEntityItems();
+        let entityItems = this.getFilteredAndSortedEntities()
 
         return (
             <div className="blis-page">
@@ -271,8 +241,8 @@ class Entities extends React.Component<Props, ComponentState> {
                     items={entityItems}
                     columns={this.state.columns}
                     checkboxVisibility={CheckboxVisibility.hidden}
-                    onRenderItemColumn={this.renderItemColumn}
-                    onColumnHeaderClick={this.onColumnClick}
+                    onRenderItemColumn={(entity: EntityBase, i, column: IRenderableColumn) => column.render(entity, this)}
+                    onColumnHeaderClick={this.onClickColumnHeader}
                 />
                 <ConfirmDeleteModal
                     open={this.state.confirmDeleteEntityModalOpen}
