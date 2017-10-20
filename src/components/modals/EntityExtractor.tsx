@@ -9,7 +9,6 @@ import TextVariationCreator from '../TextVariationCreator';
 import ExtractorResponseEditor from '../ExtractorResponseEditor';
 import EntityCreatorEditor from './EntityCreatorEditor';
 import { DialogMode } from '../../types/const'
-import PopUpMessage from '../PopUpMessage';
 import { clearExtractResponses, updateExtractResponse, removeExtractResponse } from '../../actions/teachActions'
 import './EntityExtractor.css'
 
@@ -331,8 +330,21 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                     {variationCreator}
                 </div>
                 {editComponents}
-                <PopUpMessage open={this.state.warningOpen} onConfirm={() => this.handleCloseWarning()} title="Text variations must all have same tagged entities." />
                 <div className="blis-dialog-admin__dialogs">
+                    <OF.Dialog
+                        hidden={!this.state.warningOpen}
+                        dialogContentProps={{
+                            type: OF.DialogType.normal,
+                            title: 'Text variations must all have same tagged entities.'
+                        }}
+                        modalProps={{
+                            isBlocking: false
+                        }}
+                    >
+                        <OF.DialogFooter>
+                            <OF.PrimaryButton onClick={() => this.handleCloseWarning()} text='Ok' />
+                        </OF.DialogFooter>
+                    </OF.Dialog>
                     <OF.Dialog
                         hidden={this.state.savedExtractResponses === null}
                         isBlocking={true}

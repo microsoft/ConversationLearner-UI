@@ -1,6 +1,5 @@
 import * as React from 'react';
-import { Modal } from 'office-ui-fabric-react/lib/Modal';
-import { CommandButton } from 'office-ui-fabric-react';
+import { PrimaryButton, DefaultButton, Dialog, DialogType, DialogFooter } from 'office-ui-fabric-react';
 
 export interface Props {
     onConfirm: Function;
@@ -11,29 +10,22 @@ export interface Props {
 
 const ConfirmDeleteModal: React.SFC<Props> = (props: Props) => {
     return (
-        <Modal
-            isOpen={props.open}
-            isBlocking={false}
-            containerClassName='blis-modal blis-modal--small blis-modal--border'
+        <Dialog
+            hidden={!props.open}
+            onDismiss={() => props.onCancel()}
+            dialogContentProps={{
+                type: DialogType.normal,
+                title: props.title
+            }}
+            modalProps={{
+                isBlocking: false
+            }}
         >
-            <div className='blis-modal_title'>
-                <span className='ms-font-xl ms-fontWeight-semilight'>{props.title}</span>
-            </div>
-            <div className='blis-modal_buttonbox'>
-                <CommandButton
-                    onClick={() => props.onConfirm()}
-                    className='blis-button--gold'
-                    ariaDescription='Confirm'
-                    text='Confirm'
-                />
-                <CommandButton
-                    className="blis-button--gray"
-                    onClick={() => props.onCancel()}
-                    ariaDescription='Cancel'
-                    text='Cancel'
-                />
-            </div>
-        </Modal>
+            <DialogFooter>
+                <PrimaryButton onClick={() => props.onConfirm()} text='Confirm' />
+                <DefaultButton onClick={() => props.onCancel()} text='Cancel' />
+            </DialogFooter>
+        </Dialog>
     )
 }
 export default ConfirmDeleteModal;

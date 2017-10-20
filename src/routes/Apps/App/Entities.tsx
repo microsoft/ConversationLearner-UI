@@ -4,10 +4,9 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { EntityCreatorEditor, ConfirmDeleteModal } from '../../../components/modals'
 import { deleteEntityAsync } from '../../../actions/deleteActions'
-import { IButton, DetailsList, CommandButton, CheckboxVisibility, IColumn, SearchBox } from 'office-ui-fabric-react';
+import { IButton, DetailsList, CommandButton, CheckboxVisibility, IColumn, PrimaryButton, SearchBox, Dialog, DialogType, DialogFooter } from 'office-ui-fabric-react';
 import { State } from '../../../types';
 import { BlisAppBase, EntityBase, EntityType } from 'blis-models'
-import { Modal } from 'office-ui-fabric-react/lib/Modal';
 
 interface IRenderableColumn extends IColumn {
     render: (entity: EntityBase, component: Entities) => JSX.Element | JSX.Element[]
@@ -267,23 +266,22 @@ class Entities extends React.Component<Props, ComponentState> {
                     onConfirm={() => this.onClickConfirmDelete()}
                     title="Are you sure you want to delete this entity?"
                 />
-                <Modal
-                    isOpen={this.state.errorModalOpen}
-                    isBlocking={false}
-                    containerClassName='blis-modal blis-modal--small blis-modal--border'
+                <Dialog
+                    hidden={!this.state.errorModalOpen}
+                    onDismiss={() => this.onClickCancelDelete()}
+                    dialogContentProps={{
+                        type: DialogType.normal,
+                        title: 'You cannot delete this entity because it is being used in an action.'
+                    }}
+                    modalProps={{
+                        isBlocking: false
+                    }}
                 >
-                    <div className='blis-modal_title'>
-                        <span className='ms-font-xl ms-fontWeight-semilight'>You cannot delete this entity because it is being used in an action.</span>
-                    </div>
-                    <div className='blis-modal_buttonbox'>
-                        <CommandButton
-                            onClick={() => this.onClickCancelDelete()}
-                            className='blis-button--gold'
-                            ariaDescription='Close'
-                            text='Close'
-                        />
-                    </div>
-                </Modal>
+                    <DialogFooter>
+                        <PrimaryButton onClick={() => this.onClickCancelDelete()} text='Close' />
+                    </DialogFooter>
+                </Dialog>
+
             </div>
         );
     }
