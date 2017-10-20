@@ -78,13 +78,15 @@ let columns: IColumn[] = [
 const initState: ComponentState = {
     actionModalOpen: false,
     columns: columns,
-    sortColumn: columns[3] // "score"
+    sortColumn: columns[3], // "score"
+    haveEdited: false
 }
 
 interface ComponentState {
     actionModalOpen: boolean
     columns: IColumn[]
-    sortColumn: IColumn
+    sortColumn: IColumn,
+    haveEdited: boolean
 }
 
 class ActionScorer extends React.Component<Props, ComponentState> {
@@ -101,6 +103,11 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         this.onColumnClick = this.onColumnClick.bind(this);
         this.focusPrimaryButton = this.focusPrimaryButton.bind(this);
         this.onClickOpenDeleteActionResponse = this.onClickOpenDeleteActionResponse.bind(this)
+    }
+    componentWillReceiveProps(newProps: Props) {
+        if (this.props.scoreResponse != newProps.scoreResponse) {
+            this.setState({haveEdited: false});
+        }
     }
     componentUpdate() {
         this.autoSelect();
@@ -219,6 +226,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                 scoredAction: scoredAction
             });
 
+        this.setState({haveEdited: true});
         this.props.onActionSelected(trainScorerStep);
     }
 
@@ -433,6 +441,12 @@ class ActionScorer extends React.Component<Props, ComponentState> {
     }
 
     render() {
+        // In teach mode, hide scores after selection
+        // so they can't be reselected for non-terminal actions
+        if (this.props.dialogType == DialogType.TEACH && this.state.haveEdited) {
+            return null;
+        }
+
         let scores : (ScoredBase | string)[] = this.getScoredItems();
 
         // If editing allowed and Action creation button
@@ -469,7 +483,7 @@ export interface ReceivedProps {
     teachMode: TeachMode,
     scoreResponse: ScoreResponse,
     scoreInput: ScoreInput,
-    memories: Memory[],
+    memories: Memory[]
     onActionSelected: (trainScorerStep: TrainScorerStep) => void,
 }
 
