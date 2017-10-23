@@ -153,14 +153,20 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
 
     onGetNameErrorMessage = (value: string): string => {
         if (value.length === 0) {
-            return "Required Value"
+            return "Required Value";
         }
 
         if (!/^[a-zA-Z0-9-]+$/.test(value)) {
-            return "Entity name may only contain alphanumeric characters with no spaces."
+            return "Entity name may only contain alphanumeric characters with no spaces.";
         }
 
-        return ""
+        // Check that name isn't in use
+        let foundEntity = this.props.entities.find(e => e.entityName == this.state.entityNameVal);
+        if (foundEntity) {
+            return "Name is already in use.";
+        }
+
+        return "";
     }
 
     onKeyDownName = (key: React.KeyboardEvent<HTMLInputElement>) => {
@@ -262,7 +268,8 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                     <div className="blis-modal-buttons">
                         <div className="blis-modal-buttons_primary">
                             <PrimaryButton
-                                disabled={!this.state.entityNameVal}
+                                disabled={this.onGetNameErrorMessage(this.state.entityNameVal) != ''
+                            }
                                 onClick={this.onClickSubmit}
                                 ariaDescription='Create'
                                 text={this.state.submitButtonText}
