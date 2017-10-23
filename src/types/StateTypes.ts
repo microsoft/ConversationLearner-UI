@@ -6,7 +6,7 @@ import {
     TrainDialog, LogDialog, Teach, Session,
     Memory, UIScoreInput, ScoreInput, ExtractResponse, ScoreResponse
 } from 'blis-models';
-import { DisplayMode, TeachMode } from '../types/const'
+import { DisplayMode, DialogMode } from '../types/const'
 import { AT } from '../types/ActionTypes'
 
 export type ActionState = ActionBase[];
@@ -31,7 +31,7 @@ export type BotState = {
 export type TeachSessionState = {
     all: Teach[],
     current: Teach,
-    mode: TeachMode,
+    mode: DialogMode,
     input: string,
     prevMemories: Memory[],
     memories: Memory[],

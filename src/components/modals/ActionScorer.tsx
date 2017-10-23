@@ -7,7 +7,7 @@ import { State } from '../../types'
 import { TrainScorerStep, Memory, ScoredBase, ScoreInput, ScoreResponse, ActionBase, ScoredAction, UnscoredAction, ScoreReason, DialogType } from 'blis-models';
 import { toggleAutoTeach } from '../../actions/teachActions'
 import { PrimaryButton } from 'office-ui-fabric-react';
-import { TeachMode } from '../../types/const'
+import { DialogMode } from '../../types/const'
 import { IColumn, DetailsList, CheckboxVisibility, List } from 'office-ui-fabric-react';
 import ActionResponseCreatorEditor from './ActionResponseCreatorEditor'
 
@@ -120,7 +120,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
     }
     autoSelect() {
         // If not in interactive mode select action automatically
-        if (this.props.autoTeach && this.props.teachMode == TeachMode.Scorer) {
+        if (this.props.autoTeach && this.props.dialogMode == DialogMode.Scorer) {
 
             let actions = (this.props.scoreResponse.scoredActions as ScoredBase[]).concat(this.props.scoreResponse.unscoredActions) || [];
             // Since actions are sorted by score descending (max first), assume first scored action is the "best" action
@@ -483,7 +483,7 @@ export interface ReceivedProps {
     dialogType: DialogType,
     sessionId: string,
     autoTeach: boolean,
-    teachMode: TeachMode,
+    dialogMode: DialogMode,
     scoreResponse: ScoreResponse,
     scoreInput: ScoreInput,
     memories: Memory[]
