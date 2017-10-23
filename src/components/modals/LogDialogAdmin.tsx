@@ -3,7 +3,7 @@ import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../../types'
-import { SenderType, TeachMode } from '../../types/const';
+import { SenderType, DialogMode } from '../../types/const';
 import EntityExtractor from './EntityExtractor';
 import ActionScorer from './ActionScorer';
 import MemoryTable from './MemoryTable';
@@ -134,7 +134,7 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
         let memories: Memory[] = [];
         let prevMemories: Memory[] = [];
         let scorerStep: LogScorerStep = null;
-        let teachMode = (this.state.senderType == SenderType.User) ? TeachMode.Extractor : TeachMode.Scorer;
+        let dialogMode = (this.state.senderType == SenderType.User) ? DialogMode.Extractor : DialogMode.Scorer;
 
         const { logDialog, selectedActivity } = this.props
         if (logDialog && selectedActivity) {
@@ -171,7 +171,7 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
                     (<div className="blis-dialog-admin__content">
                         <div className="blis-dialog-admin-title">Memory</div>
                         <MemoryTable 
-                            teachMode={teachMode}
+                            dialogMode={dialogMode}
                             memories={memories}
                             prevMemories={prevMemories}
                         />                        
@@ -195,7 +195,7 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
                                     sessionId={this.props.logDialog.logDialogId}
                                     roundIndex={this.state.roundIndex}
                                     autoTeach={false}
-                                    teachMode={teachMode}
+                                    dialogMode={dialogMode}
                                     extractResponses={this.props.extractResponses}
                                     originalTextVariations={[ModelUtils.ToTextVariation(round.extractorStep)]}
                                     onTextVariationsExtracted={this.onEntityExtractorSubmit}
@@ -214,7 +214,7 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
                                     dialogType={DialogType.LOGDIALOG}
                                     sessionId={this.props.logDialog.logDialogId}
                                     autoTeach={false}
-                                    teachMode={teachMode}
+                                    dialogMode={dialogMode}
                                     scoreResponse={scorerStep.predictionDetails}
                                     scoreInput={scorerStep.input}
                                     memories={memories}

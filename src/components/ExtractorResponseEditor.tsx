@@ -682,7 +682,7 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
         return fullString;
     }
     onRenderOption = (option: BlisDropdownOption): JSX.Element => {
-        let text = option.data ? this.renderEntityName(option.data) : option.text;
+        let text = option.data ? this.getEntityDisplayName(option.data) : option.text;
         return (
             <div className='dropdownExample-option'>
                 <span className={option.style}>{text}</span>
@@ -899,7 +899,7 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
                 )
                 : null;
 
-            let entityName = s.entity ? this.renderEntityName(s.entity) : null;
+            let entityName = s.entity ? this.getEntityDisplayName(s.entity) : null;
             return (
                 <div key={key} className="extractDiv" style={styles.containerDiv}>
                     <span style={s.labelStyle} className='ms-font-xs'>{entityName}</span>
@@ -932,7 +932,7 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
             })
         }
     }
-    renderEntityName(entity: EntityBase) : string {
+    getEntityDisplayName(entity: EntityBase) : string {
         if (entity.metadata) {
             if (entity.metadata.positiveId) {
                 return entity.entityName.replace("~","-");
