@@ -6,18 +6,13 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { PrimaryButton, DefaultButton, Dropdown, TagPicker, 
-    TextField, Label, Checkbox, List, TagItem,
-    IPickerItemProps, ITag } from 'office-ui-fabric-react'
+    TextField, Label, Checkbox, List, ITag
+    } from 'office-ui-fabric-react'
 import { ActionBase, ActionMetaData, ActionTypes, EntityBase, ModelUtils } from 'blis-models'
 import { State } from '../../types';
 import EntityCreatorEditor from './EntityCreatorEditor';
-//import BlisTagItem from './BlisTagItem';
+import {BlisTagItem, IBlisPickerItemProps, IBlisTag} from './BlisTagItem';
 import AutocompleteListItem from '../../components/AutocompleteListItem';
-
-interface EntityPickerObject {
-    key: string
-    name: string
-}
 
 interface TextObject {
     key: string
@@ -27,7 +22,7 @@ interface TextObject {
 //$ENTITY is a SpecialIndex. Index is the position of the $ and entityPicker object is the entity it refers to. You can get the entity base from its name
 interface SpecialIndex {
     index: number,
-    entityPickerObject: EntityPickerObject
+    entityPickerObject: IBlisTag
 }
 
 const initState: ComponentState = {
@@ -37,17 +32,17 @@ const initState: ComponentState = {
     dropdownIndex: null,
     entitySuggestFilterText: "",
     payloadVal: '',
-    reqEntitiesVal: [] as EntityPickerObject[],
-    negEntitiesVal: [] as EntityPickerObject[],
-    suggEntitiesVal: [] as EntityPickerObject[],
+    reqEntitiesVal: [] as IBlisTag[],
+    negEntitiesVal: [] as IBlisTag[],
+    suggEntitiesVal: [] as IBlisTag[],
     waitVal: true,
-    availableRequiredEntities: [] as EntityPickerObject[],
-    availableNegativeEntities: [] as EntityPickerObject[],
-    availableSuggestedEntities: [] as EntityPickerObject[],
+    availableRequiredEntities: [] as IBlisTag[],
+    availableNegativeEntities: [] as IBlisTag[],
+    availableSuggestedEntities: [] as IBlisTag[],
     editing: false,
-    defaultNegativeEntities: [] as EntityPickerObject[],
-    defaultRequiredEntities: [] as EntityPickerObject[],
-    defaultSuggestedEntities: [] as EntityPickerObject[],
+    defaultNegativeEntities: [] as IBlisTag[],
+    defaultRequiredEntities: [] as IBlisTag[],
+    defaultSuggestedEntities: [] as IBlisTag[],
     entityModalOpen: false,
     open: false,
     requiredTagPickerKey: 1000,
@@ -64,17 +59,17 @@ interface ComponentState {
     dropdownIndex: number,
     entitySuggestFilterText: string,
     payloadVal: string,
-    reqEntitiesVal: EntityPickerObject[],
-    negEntitiesVal: EntityPickerObject[],
-    suggEntitiesVal: EntityPickerObject[],
+    reqEntitiesVal: IBlisTag[],
+    negEntitiesVal: IBlisTag[],
+    suggEntitiesVal: IBlisTag[],
     waitVal: boolean,
-    availableRequiredEntities: EntityPickerObject[],
-    availableNegativeEntities: EntityPickerObject[],
-    availableSuggestedEntities: EntityPickerObject[],
+    availableRequiredEntities: IBlisTag[],
+    availableNegativeEntities: IBlisTag[],
+    availableSuggestedEntities: IBlisTag[],
     editing: boolean,
-    defaultNegativeEntities: EntityPickerObject[],
-    defaultRequiredEntities: EntityPickerObject[],
-    defaultSuggestedEntities: EntityPickerObject[],
+    defaultNegativeEntities: IBlisTag[],
+    defaultRequiredEntities: IBlisTag[],
+    defaultSuggestedEntities: IBlisTag[],
     entityModalOpen: boolean,
     open: boolean,
     requiredTagPickerKey: number,
@@ -133,26 +128,26 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
                 this.setState({ ...initState, open: p.open });
             } else {
                 // we are editing the action and need to load necessary properties
-                let entities = this.props.entities.map<EntityPickerObject>(e =>
+                let entities = this.props.entities.map<IBlisTag>(e =>
                     ({
                         key: e.entityName,
                         name: e.entityName
                     }))
-                let requiredEntities = p.blisAction.requiredEntities.map<EntityPickerObject>(entityId => {
+                let requiredEntities = p.blisAction.requiredEntities.map<IBlisTag>(entityId => {
                     let found = this.props.entities.find(e => e.entityId == entityId);
                     return {
                         key: found.entityName,
                         name: found.entityName
                     }
                 })
-                let negativeEntities: EntityPickerObject[] = p.blisAction.negativeEntities.map(entityId => {
+                let negativeEntities: IBlisTag[] = p.blisAction.negativeEntities.map(entityId => {
                     let found = this.props.entities.find(e => e.entityId == entityId);
                     return {
                         key: found.entityName,
                         name: found.entityName
                     }
                 })
-                let suggestedEntities: EntityPickerObject[] = []
+                let suggestedEntities: IBlisTag[] = []
                 if (p.blisAction.suggestedEntity) {
                     let found = this.props.entities.find(e => e.entityId == p.blisAction.suggestedEntity);
                     suggestedEntities.push({
@@ -320,40 +315,53 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
             apiVal: obj.text,
         })
     }
-    requiredEntityOnResolve(filterText: string, tagList: EntityPickerObject[]): EntityPickerObject[] {
+    requiredEntityOnResolve(filterText: string, tagList: IBlisTag[]): IBlisTag[] {
         //required entites available should exclude all saved entities
-        let entList = filterText ? this.state.availableRequiredEntities.filter(ent => ent.name.toLowerCase().indexOf(filterText.toLowerCase()) === 0).filter(item => !this.listContainsDocument(item, tagList)) : [];
+        let entList = filterText ? this.state.availableRequiredEntities
+            .filter(ent => ent.name.toLowerCase().indexOf(filterText.toLowerCase()) === 0)
+            .filter(item => !this.listContainsDocument(item, tagList)) : [];
         let usedEntities = this.state.reqEntitiesVal.concat(this.state.negEntitiesVal).concat(this.state.suggEntitiesVal)
         return entList.filter(e => !usedEntities.some(u => e.key === u.key))
     }
-    negativeEntityOnResolve(filterText: string, tagList: EntityPickerObject[]): EntityPickerObject[] {
+    negativeEntityOnResolve(filterText: string, tagList: IBlisTag[]): IBlisTag[] {
         //negative entites available should exclude those in required entities, and its own saved entities, but not suggested ones
-        let entList = filterText ? this.state.availableRequiredEntities.filter(ent => ent.name.toLowerCase().indexOf(filterText.toLowerCase()) === 0).filter(item => !this.listContainsDocument(item, tagList)) : [];
+        let entList = filterText ? this.state.availableRequiredEntities
+            .filter(ent => ent.name.toLowerCase().indexOf(filterText.toLowerCase()) === 0)
+            .filter(item => !this.listContainsDocument(item, tagList)) : [];
         let usedEntities = this.state.reqEntitiesVal.concat(this.state.negEntitiesVal)
+   //TEMP     let suggestedEntity = this.state.suggEntitiesVal[0];
         return entList.filter(e => !usedEntities.some(u => e.key === u.key))
+            .map(e => {return {
+                key: e.key, 
+                name: e.name, 
+               // strike: true, TEMP
+               // locked: (suggestedEntity && suggestedEntity.key == e.key)
+            }});
     }
-    suggestedEntityOnResolve(filterText: string, tagList: EntityPickerObject[]): EntityPickerObject[] {
+    suggestedEntityOnResolve(filterText: string, tagList: IBlisTag[]): IBlisTag[] {
         //suggested entites available should exclude those in required entities, and its own saved entities, but not negative ones
         if (this.state.suggEntitiesVal.length > 0) {
             return [];
         }
-        let entList = filterText ? this.state.availableRequiredEntities.filter((ent: EntityPickerObject) => ent.name.toLowerCase().indexOf(filterText.toLowerCase()) === 0).filter((item: EntityPickerObject) => !this.listContainsDocument(item, tagList)) : [];
+        let entList = filterText ? this.state.availableRequiredEntities
+            .filter((ent: IBlisTag) => ent.name.toLowerCase().indexOf(filterText.toLowerCase()) === 0)
+            .filter((item: IBlisTag) => !this.listContainsDocument(item, tagList)) : [];
         let usedEntities = this.state.reqEntitiesVal.concat(this.state.suggEntitiesVal)
         return entList.filter(e => !usedEntities.some(u => e.key === u.key))
     }
 
-    listContainsDocument(tag: EntityPickerObject, tagList: EntityPickerObject[]) {
+    listContainsDocument(tag: IBlisTag, tagList: IBlisTag[]) {
         if (!tagList || !tagList.length || tagList.length === 0) {
             return false;
         }
         return tagList.filter(compareTag => compareTag.key === tag.key).length > 0;
     }
-    requiredEntityOnChange(items: EntityPickerObject[]) {
+    requiredEntityOnChange(items: IBlisTag[]) {
         this.setState({
             reqEntitiesVal: items
         })
     }
-    negativeEntityOnChange(items: EntityPickerObject[]) {
+    negativeEntityOnChange(items: IBlisTag[]) {
         if (items.length < this.state.negEntitiesVal.length) {
             //we deleted one, need to make sure it isnt a suggested entity;
             if (this.state.suggEntitiesVal.length == 1) {
@@ -548,11 +556,11 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
         return undefined
     }
 
-    findDeletedEntity(items: EntityPickerObject[], oldItems: EntityPickerObject[]): EntityPickerObject {
-        let deletedEntity: EntityPickerObject;
-        oldItems.map((o: EntityPickerObject) => {
+    findDeletedEntity(items: IBlisTag[], oldItems: IBlisTag[]): IBlisTag {
+        let deletedEntity: IBlisTag;
+        oldItems.map((o: IBlisTag) => {
             let found: boolean = false;
-            items.map((i: EntityPickerObject) => {
+            items.map((i: IBlisTag) => {
                 if (o.name === i.name) {
                     found = true
                 }
@@ -564,14 +572,17 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
         return deletedEntity;
     }
 
-    suggestedEntityOnChange(items: EntityPickerObject[]) {
-        let negativeEntities: EntityPickerObject[] = [...this.state.negEntitiesVal]
+    suggestedEntityOnChange(items: IBlisTag[]) {
+        let negativeEntities: IBlisTag[] = [...this.state.negEntitiesVal]
         if (items.length > 0) {
             // we added one. Need to check if its already in negative entities. If it is not, add it to that as well.
-            let suggestedEntity: EntityPickerObject = items[0];
-            let found: EntityPickerObject = negativeEntities.find((n: EntityPickerObject) => n.name == suggestedEntity.name);
-            if (!found) {
-                negativeEntities.push(suggestedEntity)
+            let suggestedEntity: IBlisTag = items[0];
+            let foundIndex = negativeEntities.findIndex((n: IBlisTag) => n.name == suggestedEntity.name);
+            if (foundIndex < 0) {
+                negativeEntities.push({
+                    key: suggestedEntity.key, 
+                    name: suggestedEntity.name
+                });
                 this.setState({
                     suggEntitiesVal: items,
                     negEntitiesVal: negativeEntities,
@@ -586,10 +597,10 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
 
         } else {
             // we deleted one. Need to check if its already in negative entities. If it is, delete it to that as well.
-            let deletedSuggesedEntity: EntityPickerObject = this.findDeletedEntity(items, this.state.suggEntitiesVal);
-            let found: EntityPickerObject = negativeEntities.find((n: EntityPickerObject) => n.name == deletedSuggesedEntity.name);
+            let deletedSuggesedEntity: IBlisTag = this.findDeletedEntity(items, this.state.suggEntitiesVal);
+            let found: IBlisTag = negativeEntities.find((n: IBlisTag) => n.name == deletedSuggesedEntity.name);
             if (found) {
-                let filteredNegativeEntities = negativeEntities.filter((neg: EntityPickerObject) => neg.name !== deletedSuggesedEntity.name)
+                let filteredNegativeEntities = negativeEntities.filter((neg: IBlisTag) => neg.name !== deletedSuggesedEntity.name)
                 this.setState({
                     suggEntitiesVal: items,
                     negEntitiesVal: filteredNegativeEntities,
@@ -629,8 +640,8 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
     entitySuggestionSelected(obj: { text: string }) {
         let specialIndexes: SpecialIndex[] = [];
         //dont add the entity if weve already manually entered it into the required picker
-        let foundEntityPickerObj: EntityPickerObject = this.state.reqEntitiesVal.find((e: EntityPickerObject) => e.name == obj.text);
-        let newRequiredEntities: EntityPickerObject[] = foundEntityPickerObj ? [...this.state.reqEntitiesVal] : [...this.state.reqEntitiesVal, { key: obj.text, name: obj.text }];
+        let foundEntityPickerObj: IBlisTag = this.state.reqEntitiesVal.find((e: IBlisTag) => e.name == obj.text);
+        let newRequiredEntities: IBlisTag[] = foundEntityPickerObj ? [...this.state.reqEntitiesVal] : [...this.state.reqEntitiesVal, { key: obj.text, name: obj.text }];
         let specialIndex: SpecialIndex = {
             index: this.state.dropdownIndex,
             entityPickerObject: { key: obj.text, name: obj.text }
@@ -670,7 +681,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
         })
         let optionsNotSelected: TextObject[] = options.filter((t: TextObject) => {
             let found: boolean = true
-            this.state.reqEntitiesVal.map((r: EntityPickerObject) => {
+            this.state.reqEntitiesVal.map((r: IBlisTag) => {
                 if (r.name == t.text) {
                     found = false;
                 }
@@ -707,8 +718,16 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
             }
         }
     }
-    onRenderTagItem(props: IPickerItemProps<ITag>) : JSX.Element {
-        return <TagItem { ...props }>{ props.item.name }</TagItem>;
+    onRenderTagItem(props: IBlisPickerItemProps<ITag>) : JSX.Element {
+        let renderProps = {...props};
+        let suggestedEntityKey = this.state.suggEntitiesVal[0] ? this.state.suggEntitiesVal[0].key : null;
+
+        // If a negative entity strike it out, if suggested entity, lock it
+        if (this.state.negEntitiesVal.find(e => e.key == props.key)) {
+            renderProps.strike = true;
+            renderProps.locked = suggestedEntityKey == props.key;
+        }
+        return <BlisTagItem { ...renderProps }>{ props.item.name }</BlisTagItem>;
     }        
     render() {
         let entitySuggestStyle: {};
