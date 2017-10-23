@@ -84,11 +84,11 @@ const initState: ComponentState = {
 }
 
 interface ComponentState {
-    actionModalOpen: boolean
-    columns: IColumn[]
-    sortColumn: IColumn,
-    haveEdited: boolean,
-    newAction: ActionBase
+    actionModalOpen: boolean;
+    columns: IColumn[];
+    sortColumn: IColumn;
+    haveEdited: boolean;
+    newAction: ActionBase;
 }
 
 class ActionScorer extends React.Component<Props, ComponentState> {
