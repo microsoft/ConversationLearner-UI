@@ -225,6 +225,10 @@ html {
   text-decoration: line-through;
 }
 
+.ms-TagItem-text--highlight {
+  background-color: var(--color-tag-highlight);
+}
+
 .ms-TagItem-close {
   cursor: pointer;
   color: #666666;

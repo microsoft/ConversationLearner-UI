@@ -40,9 +40,6 @@ const initState: ComponentState = {
     availableNegativeEntities: [] as IBlisTag[],
     availableSuggestedEntities: [] as IBlisTag[],
     editing: false,
-    defaultNegativeEntities: [] as IBlisTag[],
-    defaultRequiredEntities: [] as IBlisTag[],
-    defaultSuggestedEntities: [] as IBlisTag[],
     entityModalOpen: false,
     open: false,
     requiredTagPickerKey: 1000,
@@ -67,9 +64,6 @@ interface ComponentState {
     availableNegativeEntities: IBlisTag[],
     availableSuggestedEntities: IBlisTag[],
     editing: boolean,
-    defaultNegativeEntities: IBlisTag[],
-    defaultRequiredEntities: IBlisTag[],
-    defaultSuggestedEntities: IBlisTag[],
     entityModalOpen: boolean,
     open: boolean,
     requiredTagPickerKey: number,
@@ -104,7 +98,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
         this.cancelOnClick = this.cancelOnClick.bind(this);
         this.entityOnClick = this.entityOnClick.bind(this);
         this.waitOnChange = this.waitOnChange.bind(this);
-        this.onRenderTagItem = this.onRenderTagItem.bind(this);
+        this.onRenderNegTagItem = this.onRenderNegTagItem.bind(this);
         this.entityCreatorHandleClose = this.entityCreatorHandleClose.bind(this);
     }
     componentDidMount() {
@@ -182,9 +176,6 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
                     availableNegativeEntities: entities,
                     availableSuggestedEntities: entities,
                     editing: true,
-                    defaultNegativeEntities: negativeEntities,
-                    defaultRequiredEntities: requiredEntities,
-                    defaultSuggestedEntities: suggestedEntities,
                     entityModalOpen: false,
                     open: p.open
                 })
@@ -329,14 +320,11 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
             .filter(ent => ent.name.toLowerCase().indexOf(filterText.toLowerCase()) === 0)
             .filter(item => !this.listContainsDocument(item, tagList)) : [];
         let usedEntities = this.state.reqEntitiesVal.concat(this.state.negEntitiesVal)
-   //TEMP     let suggestedEntity = this.state.suggEntitiesVal[0];
-        return entList.filter(e => !usedEntities.some(u => e.key === u.key))
+         return entList.filter(e => !usedEntities.some(u => e.key === u.key))
             .map(e => {return {
                 key: e.key, 
                 name: e.name, 
-               // strike: true, TEMP
-               // locked: (suggestedEntity && suggestedEntity.key == e.key)
-            }});
+             }});
     }
     suggestedEntityOnResolve(filterText: string, tagList: IBlisTag[]): IBlisTag[] {
         //suggested entites available should exclude those in required entities, and its own saved entities, but not negative ones
@@ -372,25 +360,21 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
                     //do nothing. Picker will internally update so we need to overwrite that
                     this.setState({
                         negEntitiesVal: negativeEntities,
-                        defaultNegativeEntities: negativeEntities,
                         negativeTagPickerKey: this.state.negativeTagPickerKey + 1
                     })
                 } else {
                     this.setState({
-                        negEntitiesVal: items,
-                        defaultNegativeEntities: items
+                        negEntitiesVal: items
                     })
                 }
             } else {
                 this.setState({
-                    negEntitiesVal: items,
-                    defaultNegativeEntities: items
+                    negEntitiesVal: items
                 })
             }
         } else {
             this.setState({
-                negEntitiesVal: items,
-                defaultNegativeEntities: items
+                negEntitiesVal: items
             })
         }
     }
@@ -435,7 +419,6 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
                     let newRequiredEntities = this.state.reqEntitiesVal.filter(re => re.name !== specialCharIndex.entityPickerObject.name);
                     this.setState({
                         reqEntitiesVal: newRequiredEntities,
-                        defaultRequiredEntities: newRequiredEntities,
                         requiredTagPickerKey: this.state.requiredTagPickerKey + 1
                     })
                     return false;
@@ -586,7 +569,6 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
                 this.setState({
                     suggEntitiesVal: items,
                     negEntitiesVal: negativeEntities,
-                    defaultNegativeEntities: negativeEntities,
                     negativeTagPickerKey: this.state.negativeTagPickerKey + 1
                 })
             } else {
@@ -604,7 +586,6 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
                 this.setState({
                     suggEntitiesVal: items,
                     negEntitiesVal: filteredNegativeEntities,
-                    defaultNegativeEntities: filteredNegativeEntities,
                     negativeTagPickerKey: this.state.negativeTagPickerKey + 1
                 })
             } else {
@@ -659,7 +640,6 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
         this.setState({
             specialCharIndexesToDisregard: specialIndexes,
             reqEntitiesVal: newRequiredEntities,
-            defaultRequiredEntities: newRequiredEntities,
             entitySuggestFilterText: "",
             requiredTagPickerKey: this.state.requiredTagPickerKey + 1
         })
@@ -718,17 +698,22 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
             }
         }
     }
-    onRenderTagItem(props: IBlisPickerItemProps<ITag>) : JSX.Element {
+    onRenderNegTagItem(props: IBlisPickerItemProps<ITag>) : JSX.Element {
         let renderProps = {...props};
         let suggestedEntityKey = this.state.suggEntitiesVal[0] ? this.state.suggEntitiesVal[0].key : null;
 
-        // If a negative entity strike it out, if suggested entity, lock it
-        if (this.state.negEntitiesVal.find(e => e.key == props.key)) {
-            renderProps.strike = true;
-            renderProps.locked = suggestedEntityKey == props.key;
-        }
+        // Strickout and lock/highlight if also the suggested entity
+        renderProps.strike = true;
+        renderProps.locked = suggestedEntityKey == props.key;
+        renderProps.highlight = suggestedEntityKey == props.key;
+
         return <BlisTagItem { ...renderProps }>{ props.item.name }</BlisTagItem>;
-    }        
+    }   
+    onRenderSugTagItem(props: IBlisPickerItemProps<ITag>) : JSX.Element {
+        let renderProps = {...props};
+        renderProps.highlight = true;
+        return <BlisTagItem { ...renderProps }>{ props.item.name }</BlisTagItem>;
+    }      
     render() {
         let entitySuggestStyle: {};
         let entitySuggestOptions: {}[] = [];
@@ -865,13 +850,14 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
                             getTextFromItem={(item) => { return item.name; }}
                             onChange={this.suggestedEntityOnChange}
                             key={this.state.suggestedTagPickerKey}
+                            onRenderItem={this.onRenderSugTagItem}
                             pickerSuggestionsProps={
                                 {
                                     suggestionsHeaderText: 'Entities',
                                     noResultsFoundText: 'No Entities Found'
                                 }
                             }
-                            defaultSelectedItems={this.state.defaultSuggestedEntities}
+                            defaultSelectedItems={this.state.suggEntitiesVal}
                         />
                         <Label>Required Entities: Disallow Action when <b>NOT</b> in Memory...</Label>
                         <TagPicker
@@ -885,13 +871,13 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
                                     noResultsFoundText: 'No Entities Found'
                                 }
                             }
-                            defaultSelectedItems={this.state.defaultRequiredEntities}
+                            defaultSelectedItems={this.state.reqEntitiesVal}
                         />
                         <Label>Blocking Entities: Disallow Action when <b>ARE</b> in Memory...</Label>
                         <TagPicker
                             key={this.state.negativeTagPickerKey}
                             onResolveSuggestions={this.negativeEntityOnResolve}
-                            onRenderItem={this.onRenderTagItem}
+                            onRenderItem={this.onRenderNegTagItem}
                             getTextFromItem={(item) => { return item.name; }}
                             onChange={this.negativeEntityOnChange}
                             pickerSuggestionsProps={
@@ -900,7 +886,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
                                     noResultsFoundText: 'No Entities Found'
                                 }
                             }
-                            defaultSelectedItems={this.state.defaultNegativeEntities}
+                            defaultSelectedItems={this.state.negEntitiesVal}
                         />
                         <Checkbox
                             label='Wait For Response?'
