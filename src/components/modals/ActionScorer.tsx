@@ -79,14 +79,16 @@ const initState: ComponentState = {
     actionModalOpen: false,
     columns: columns,
     sortColumn: columns[3], // "score"
-    haveEdited: false
+    haveEdited: false,
+    newAction: null
 }
 
 interface ComponentState {
     actionModalOpen: boolean
     columns: IColumn[]
     sortColumn: IColumn,
-    haveEdited: boolean
+    haveEdited: boolean,
+    newAction: ActionBase
 }
 
 class ActionScorer extends React.Component<Props, ComponentState> {
@@ -106,8 +108,22 @@ class ActionScorer extends React.Component<Props, ComponentState> {
     }
     componentWillReceiveProps(newProps: Props) {
         if (this.props.scoreResponse != newProps.scoreResponse) {
-            this.setState({haveEdited: false});
-        }
+
+            // Note any newly added action
+            let newAction = null;
+            if (newProps.actions.length > this.props.actions.length)
+            {
+                // Find the new action
+                newAction = newProps.actions.filter(na => {
+                    let fa = this.props.actions.find(a => a.actionId == na.actionId);
+                    return fa == undefined;
+                })[0];
+            }
+            this.setState({
+                haveEdited: false,
+                newAction: newAction
+            });
+        } 
     }
     componentUpdate() {
         this.autoSelect();
@@ -176,14 +192,21 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             sortColumn: column
         });
     }
-    getValue(memory: any, col: IColumn): any {
-        let value = memory[col.fieldName]
-        if (col.fieldName == "score" && !memory[col.fieldName]) {
-            if (memory["reason"] == ScoreReason.NotAvailable) {
-                return -100;
+    getValue(scoredBase: ScoredBase, col: IColumn): any {
+        let value = scoredBase[col.fieldName]
+        if (col.fieldName == "score") {
+            // Sort new actions to the top
+            if (this.state.newAction && this.state.newAction.actionId == scoredBase.actionId)
+            {
+                return 100;
             }
-            else {  // notScorable
-                return -1;
+            else if (!scoredBase[col.fieldName]) {
+                if (scoredBase["reason"] == ScoreReason.NotAvailable) {
+                    return -100;
+                }
+                else {  // notScorable
+                    return -1;
+                }
             }
         }
         if (!value) value = "";
@@ -422,7 +445,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
 
         if (this.state.sortColumn) {
             // Sort the items.
-            scoredItems = scoredItems.sort((a: any, b: any) => {
+            scoredItems = scoredItems.sort((a: ScoredBase, b: ScoredBase) => {
                 let firstValue = this.getValue(a, this.state.sortColumn);
                 let secondValue = this.getValue(b, this.state.sortColumn);
 
