@@ -1,5 +1,5 @@
 import 'rxjs'
-import axios, { AxiosResponse, AxiosRequestConfig } from 'axios'
+import axios, { AxiosRequestConfig } from 'axios'
 import {
   BlisAppBase,
   EntityBase,
@@ -125,22 +125,6 @@ export interface BlisAppForUpdate extends BlisAppBase {
         obs.complete();
       })
       .catch(err => handleError(obs, err, AT.FETCH_LOG_DIALOGS_ASYNC)));
-  };
-
-  // Not currently used
-  export const getBlisApp = (key: string, appId: string): Observable<AxiosResponse> => {
-    let getAppRoute: string = makeRoute(key, `app/${appId}`);
-    return Rx.Observable.fromPromise(axios.get(getAppRoute, config))
-  };
-  // Not currently used
-  export const getBlisEntity = (key: string, appId: string, entityId: string): Observable<AxiosResponse> => {
-    let getEntityRoute: string = makeRoute(key, `app/${appId}/entity/${entityId}`);
-    return Rx.Observable.fromPromise(axios.get(getEntityRoute, config))
-  };
-  // Not currently used
-  export const getBlisAction = (key: string, appId: string, actionId: string): Observable<AxiosResponse> => {
-    let getActionRoute: string = makeRoute(key, `app/${appId}/action/${actionId}`);
-    return Rx.Observable.fromPromise(axios.get(getActionRoute, config))
   };
 
 //=========================================================
@@ -356,18 +340,6 @@ export const getLuisApplicationCultures = (): Promise<CultureObject[]> => {
       .catch(err => handleError(obs, err, AT.FETCH_CHAT_SESSIONS_ASYNC)));
   };
 
-  /** GET SESSION : Retrieves information about the specified session */
-  export const getSession = (key: string, appId: string, sessionId: string): Observable<AxiosResponse> => {
-    let getAppRoute: string = makeRoute(key, `app/${appId}/session/${sessionId}`);
-    return Rx.Observable.fromPromise(axios.get(getAppRoute, config))
-  };
-
-  /** GET SESSION IDS : Retrieves a list of session IDs */
-  export const getSessionIds = (key: string, appId: string): Observable<AxiosResponse> => {
-    let getAppRoute: string = makeRoute(key, `app/${appId}/session`);
-    return Rx.Observable.fromPromise(axios.get(getAppRoute, config))
-  };
-
 //========================================================
 // Teach
 //========================================================
@@ -407,12 +379,6 @@ export const getLuisApplicationCultures = (): Promise<CultureObject[]> => {
         obs.complete();
       })
       .catch(err => handleError(obs, err,  AT.FETCH_TEACH_SESSIONS_ASYNC)));
-  };
-
-  /** GET TEACH: Retrieves information about the specified teach */
-  export const getTeach = (key : string, appId: string, teachId: string): Observable<AxiosResponse> => {
-    let getAppRoute: string = makeRoute(key, `app/${appId}/teach/${teachId}`);
-    return Rx.Observable.fromPromise(axios.get(getAppRoute, config))
   };
 
   /** RUN EXTRACTOR: Runs entity extraction (prediction). 
@@ -486,16 +452,6 @@ export const getLuisApplicationCultures = (): Promise<CultureObject[]> => {
    * For Teach sessions, does NOT delete the associated trainDialog.
    * To delete the associated trainDialog, call DELETE on the trainDialog.
    */
-
-
-  /** GET TEACH SESSION IDS: Retrieves a list of teach session IDs */
-  export const getTeachIds = (key : string, appId: string): Observable<AxiosResponse> => {
-    let getAppRoute: string = makeRoute(key, `app/${appId}/teach`);
-    return Rx.Observable.fromPromise(axios.get(getAppRoute, config))
-  };
-
-
-// 
 
 let handleError = function (obs: Observer<ActionObject>, err: any, route: AT) {
   if (!obs.closed) {
