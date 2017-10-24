@@ -161,9 +161,11 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
         }
 
         // Check that name isn't in use
-        let foundEntity = this.props.entities.find(e => e.entityName == this.state.entityNameVal);
-        if (foundEntity) {
-            return "Name is already in use.";
+        if (!this.state.editing) {
+            let foundEntity = this.props.entities.find(e => e.entityName == this.state.entityNameVal);
+            if (foundEntity) {
+                return "Name is already in use.";
+            }
         }
 
         return "";
@@ -196,6 +198,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                         required={true}
                         pattern="banana|cherry"
                         value={this.state.entityNameVal}
+                        disabled={this.state.editing}
                     />
                     <Dropdown
                         label='Entity Type'
@@ -209,6 +212,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                             label='Multi-valued'
                             defaultChecked={false}
                             onChange={this.onChangeBucketable}
+                            disabled={this.state.editing}
                         />
                         <div className="ms-fontSize-s ms-fontColor-neutralSecondary">Entity may represent multiple values. &nbsp;
                             <TooltipHost
@@ -238,6 +242,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                             label='Negatable'
                             defaultChecked={false}
                             onChange={this.onChangeReversible}
+                            disabled={this.state.editing}
                         />
                         <div className="ms-fontSize-s ms-fontColor-neutralSecondary">Can remove or negate values in memory. &nbsp;
                             <TooltipHost
@@ -268,8 +273,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                     <div className="blis-modal-buttons">
                         <div className="blis-modal-buttons_primary">
                             <PrimaryButton
-                                disabled={this.onGetNameErrorMessage(this.state.entityNameVal) != ''
-                            }
+                                disabled={this.onGetNameErrorMessage(this.state.entityNameVal) != ''}
                                 onClick={this.onClickSubmit}
                                 ariaDescription='Create'
                                 text={this.state.submitButtonText}
@@ -279,6 +283,12 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                                 ariaDescription='Cancel'
                                 text='Cancel'
                             />
+                            {this.state.editing && this.props.handleOpenDeleteModal &&
+                                <DefaultButton
+                                    onClick={() => this.props.handleOpenDeleteModal(this.props.entity.entityId)}
+                                    ariaDescription='Delete'
+                                    text='Delete'
+                                />}
                         </div>
                         <div className="blis-modal-button_secondary">
                         </div>
@@ -305,7 +315,8 @@ const mapStateToProps = (state: State, ownProps: any) => {
 export interface ReceivedProps {
     open: boolean,
     entity: EntityBase | null,
-    handleClose: Function
+    handleClose: Function,
+    handleOpenDeleteModal: (entityId: string) => void
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps

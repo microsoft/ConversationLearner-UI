@@ -54,17 +54,7 @@ const columns: IRenderableColumn[] = [
         isResizable: true,
         getSortValue: entity => entity.metadata.isReversable ? 'a' : 'b',
         render: entity => <span className={"ms-Icon blis-icon " + (entity.metadata.isReversable ? "ms-Icon--CheckMark" : "ms-Icon--Remove")} aria-hidden="true"></span>
-    },
-    {
-        key: 'actions',
-        name: 'Actions',
-        fieldName: 'entityId',
-        minWidth: 100,
-        maxWidth: 200,
-        isResizable: true,
-        getSortValue: entity => '',
-        render: (entity, component) => <a onClick={() => component.openDeleteModal(entity.entityId)}><span className="ms-Icon ms-Icon--Delete"></span></a>
-    },
+    }
 ];
 
 interface ComponentState {
@@ -95,28 +85,30 @@ class Entities extends React.Component<Props, ComponentState> {
     constructor(p: any) {
         super(p);
 
-        this.deleteSelectedEntity = this.deleteSelectedEntity.bind(this)
+        this.onClickConfirmDelete = this.onClickConfirmDelete.bind(this)
         this.onChange = this.onChange.bind(this)
         this.onClickColumnHeader = this.onClickColumnHeader.bind(this)
         this.getFilteredAndSortedEntities = this.getFilteredAndSortedEntities.bind(this)
         this.handleOpenCreateModal = this.handleOpenCreateModal.bind(this)
         this.handleCloseCreateModal = this.handleCloseCreateModal.bind(this)
+        this.openDeleteModal = this.openDeleteModal.bind(this)
     }
 
     componentDidMount() {
         this.newEntityButton.focus()
     }
 
-    deleteSelectedEntity() {
+    onClickConfirmDelete() {
         let entityToDelete = this.props.entities.find(entity => entity.entityId == this.state.entityIDToDelete)
         this.props.deleteEntityAsync(this.props.user.key, this.state.entityIDToDelete, entityToDelete, this.props.app.appId)
         this.setState({
             confirmDeleteEntityModalOpen: false,
+            createEditModalOpen: false,
             entityIDToDelete: null
         })
     }
 
-    handleCloseDeleteModal() {
+    onClickCancelDelete() {
         this.setState({
             confirmDeleteEntityModalOpen: false,
             entityIDToDelete: null,
@@ -149,6 +141,12 @@ class Entities extends React.Component<Props, ComponentState> {
                 entityIDToDelete: guid
             })
         }
+    }
+    onSelectEntity(entity: EntityBase) {
+        this.setState({
+            entitySelected: entity,
+            createEditModalOpen: true
+        })
     }
     onClickColumnHeader(event: any, clickedColumn: IRenderableColumn) {
         let { columns } = this.state;
@@ -229,6 +227,7 @@ class Entities extends React.Component<Props, ComponentState> {
                         open={this.state.createEditModalOpen}
                         entity={this.state.entitySelected}
                         handleClose={this.handleCloseCreateModal}
+                        handleOpenDeleteModal={this.openDeleteModal}
                     />
                 </div>
                 <SearchBox
@@ -243,11 +242,12 @@ class Entities extends React.Component<Props, ComponentState> {
                     checkboxVisibility={CheckboxVisibility.hidden}
                     onRenderItemColumn={(entity: EntityBase, i, column: IRenderableColumn) => column.render(entity, this)}
                     onColumnHeaderClick={this.onClickColumnHeader}
+                    onActiveItemChanged={entity => this.onSelectEntity(entity)}
                 />
                 <ConfirmDeleteModal
                     open={this.state.confirmDeleteEntityModalOpen}
-                    onCancel={() => this.handleCloseDeleteModal()}
-                    onConfirm={() => this.deleteSelectedEntity()}
+                    onCancel={() => this.onClickCancelDelete()}
+                    onConfirm={() => this.onClickConfirmDelete()}
                     title="Are you sure you want to delete this entity?"
                 />
                 <Modal
@@ -260,7 +260,7 @@ class Entities extends React.Component<Props, ComponentState> {
                     </div>
                     <div className='blis-modal_buttonbox'>
                         <CommandButton
-                            onClick={() => this.handleCloseDeleteModal()}
+                            onClick={() => this.onClickCancelDelete()}
                             className='blis-button--gold'
                             ariaDescription='Close'
                             text='Close'
