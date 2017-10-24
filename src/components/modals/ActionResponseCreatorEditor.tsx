@@ -931,7 +931,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
                         open={this.state.entityModalOpen}
                         entity={null}
                         handleClose={this.entityCreatorHandleClose}
-                        handleOpenDeleteModal={null} />
+                        handleOpenDeleteModal={()=>{}} />
                 </Modal>
             </div>
         );

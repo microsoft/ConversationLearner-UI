@@ -324,7 +324,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                             open={this.state.entityModalOpen}
                             entity={null}
                             handleClose={this.entityEditorHandleClose}
-                            handleOpenDeleteModal={null} />
+                            handleOpenDeleteModal={()=>{}}/>
                     </div>
                     {extractDisplay}
                     {variationCreator}
