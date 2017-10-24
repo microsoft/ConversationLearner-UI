@@ -111,6 +111,14 @@ html {
   width: 95%;
   height: 95%;
 }
+
+.blis-modal--medium{
+  width: 60%;
+  height: 45%;
+  /* TODO: Remove padding here, it should be the content inside that decides padding, otherwise all modals should have padding */
+  padding: 1em;
+}
+
 .blis-modal--small{
   width: 40%;
   /* TODO: Remove padding here, it should be the content inside that decides padding, otherwise all modals should have padding */
@@ -127,6 +135,11 @@ html {
 }
 .blis-modal_buttonbox{
   margin-top: 1.5em;
+}
+
+.blis-modal_buttonbox--bottom{
+  bottom: 10px;
+  position: absolute;
 }
 
 .blis-spinner
@@ -192,6 +205,10 @@ html {
 /** Office UI Fabric Theme Overrides */
 .ms-List-cell {
   min-height: 0px !important;
+}
+
+.ms-Pivot {
+  margin-bottom: 1.5em !important;
 }
 
 .ms-TagItem {
