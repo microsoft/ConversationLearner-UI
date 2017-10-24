@@ -6,6 +6,7 @@ import {
   ActionBase,
   UserInput,
   TrainDialog,
+  // UIExtractResponse,
   UITrainScorerStep,
   Session,
   Teach,
@@ -17,6 +18,7 @@ import { Observable, Observer } from 'rxjs'
 import actions from '../actions'
 import { ActionObject } from '../types'
 import { AT } from '../types/ActionTypes'
+import BlisClient from './blisClient'
 
 //=========================================================
 // CONFIG
@@ -36,6 +38,7 @@ const makeRoute = (key: string, actionRoute: string, qstring?: string) => {
   }
   return route;
 }
+const blisClient = new BlisClient("http://localhost:5000", () => '')
 
 //=========================================================
 // PARAMETER REQUIREMENTS
@@ -68,60 +71,54 @@ export interface BlisAppForUpdate extends BlisAppBase {
 //=========================================================
 
   export const getBotInfo = (key: string): Observable<ActionObject> => {
-    const getBotRoute: string = makeRoute(key, `bot`);
-    return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => axios.get(getBotRoute, config)
-      .then(response => {
-        obs.next(actions.fetch.fetchBotInfoFulfilled(response.data));
+    return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.getBotInfo()
+      .then(botInfo => {
+        obs.next(actions.fetch.fetchBotInfoFulfilled(botInfo));
         obs.complete();
       })
       .catch(err => handleError(obs, err, AT.FETCH_BOTINFO_ASYNC)));
   };
 
   export const getAllBlisApps = (key: string, userId: string): Observable<ActionObject> => {
-    const getAppsRoute: string = makeRoute(key, `apps`, `userId=${userId}`);
-    return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => axios.get(getAppsRoute, config)
+    return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.apps(userId)
       .then(response => {
-        obs.next(actions.fetch.fetchApplicationsFulfilled(response.data.apps));
+        obs.next(actions.fetch.fetchApplicationsFulfilled(response.data));
         obs.complete();
       })
       .catch(err => handleError(obs, err, AT.FETCH_APPLICATIONS_ASYNC)));
   };
 
   export const getAllEntitiesForBlisApp = (key: string, appId: string): Observable<ActionObject> => {
-    let getEntitiesForAppRoute: string = makeRoute(key, `app/${appId}/entities`);
-    return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => axios.get(getEntitiesForAppRoute, config)
+    return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.entities(appId)
       .then(response => {
-        obs.next(actions.fetch.fetchAllEntitiesFulfilled(response.data.entities));
+        obs.next(actions.fetch.fetchAllEntitiesFulfilled(response.data));
         obs.complete();
       })
       .catch(err => handleError(obs, err, AT.FETCH_ENTITIES_ASYNC)));
   };
 
   export const getAllActionsForBlisApp = (key: string, appId: string): Observable<ActionObject> => {
-    let getActionsForAppRoute: string = makeRoute(key, `app/${appId}/actions`);
-    return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => axios.get(getActionsForAppRoute, config)
+    return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.actions(appId)
       .then(response => {
-        obs.next(actions.fetch.fetchAllActionsFulfilled(response.data.actions));
+        obs.next(actions.fetch.fetchAllActionsFulfilled(response.data));
         obs.complete();
       })
       .catch(err => handleError(obs, err, AT.FETCH_ACTIONS_ASYNC)));
   };
 
   export const getAllTrainDialogsForBlisApp = (key: string, appId: string): Observable<ActionObject> => {
-    let getEntitiesForAppRoute: string = makeRoute(key, `app/${appId}/traindialogs`);
-    return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => axios.get(getEntitiesForAppRoute, config)
+    return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.trainDialogs(appId)
       .then(response => {
-        obs.next(actions.fetch.fetchAllTrainDialogsFulfilled(response.data.trainDialogs));
+        obs.next(actions.fetch.fetchAllTrainDialogsFulfilled(response.data));
         obs.complete();
       })
       .catch(err => handleError(obs, err, AT.FETCH_TRAIN_DIALOGS_ASYNC)));
   };
 
   export const getAllLogDialogsForBlisApp = (key: string, appId: string): Observable<ActionObject> => {
-    let getActionsForAppRoute: string = makeRoute(key, `app/${appId}/logdialogs`);
-    return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => axios.get(getActionsForAppRoute, config)
+    return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.logDialogs(appId)
       .then(response => {
-        obs.next(actions.fetch.fetchAllLogDialogsFulfilled(response.data.logDialogs));
+        obs.next(actions.fetch.fetchAllLogDialogsFulfilled(response.data));
         obs.complete();
       })
       .catch(err => handleError(obs, err, AT.FETCH_LOG_DIALOGS_ASYNC)));
