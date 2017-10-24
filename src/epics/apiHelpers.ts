@@ -1,5 +1,5 @@
 import 'rxjs'
-import axios, { AxiosRequestConfig } from 'axios'
+import axios from 'axios'
 import {
   BlisAppBase,
   EntityBase,
@@ -23,21 +23,6 @@ import BlisClient from './blisClient'
 //=========================================================
 // CONFIG
 //=========================================================
-
-const config: AxiosRequestConfig = {
-  headers: {
-    "Content-Type": "application/json"
-  }
-}
-const rootUrl: string = "http://localhost:5000/";
-
-const makeRoute = (key: string, actionRoute: string, qstring?: string) => {
-  let route = rootUrl.concat(actionRoute, `?key=${key}`);
-  if (qstring) {
-    route = route + `&${qstring}`;
-  }
-  return route;
-}
 const blisClient = new BlisClient("http://localhost:5000", () => '')
 
 //=========================================================
@@ -56,11 +41,11 @@ export interface BlisAppForUpdate extends BlisAppBase {
 //=========================================================
 
   /* Tell SDK what the currently selected AppId is */
-  export const setBlisApp = (key: string, blisApp: BlisAppBase): Observable<ActionObject> => {
-    let setBlisAppRoute: string = makeRoute(key, `state/app`);
-    return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => axios.put(setBlisAppRoute, blisApp, config)
+  export const setBlisApp = (key: string, app: BlisAppBase): Observable<ActionObject> => {
+    blisClient.key = key
+    return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.setBlisApp(app)
       .then(response => {
-        obs.next(actions.display.setCurrentBLISAppFulfilled(blisApp));
+        obs.next(actions.display.setCurrentBLISAppFulfilled(app));
         obs.complete();
       })
       .catch(err => handleError(obs, err, AT.SET_CURRENT_BLIS_APP_ASYNC)));
@@ -286,13 +271,10 @@ export const getLuisApplicationCultures = (): Promise<CultureObject[]> => {
 
   /** START SESSION : Creates a new session and a corresponding logDialog */
   export const createChatSession = (key: string, session: Session, appId: string): Observable<ActionObject> => {
-    let addSessionRoute: string = makeRoute(key, `app/${appId}/session`);
-
-    // TODO: It seems like this should be used instead of default config since it has the session object in the body, but yet the API works?
-    // let configWithBody = {...config, body: session}
-    return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => axios.post(addSessionRoute, config).then(response => {
-      let newSessionId = response.data.sessionId;
-      obs.next(actions.create.createChatSessionFulfilled(session, newSessionId));
+    blisClient.key = key
+    return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.chatSessionsCreate(appId)
+    .then(newSession => {
+      obs.next(actions.create.createChatSessionFulfilled(newSession, newSession.sessionId));
       obs.complete();
     })
       .catch(err => handleError(obs, err, AT.CREATE_CHAT_SESSION_ASYNC)));
@@ -321,18 +303,14 @@ export const getLuisApplicationCultures = (): Promise<CultureObject[]> => {
 // Teach
 //========================================================
 
-  /** START SESSION : Creates a new session and a corresponding logDialog */
   export const createTeachSession = (key: string, teachSession: Teach, appId: string): Observable<ActionObject> => {
-    let addTeachRoute: string = makeRoute(key, `app/${appId}/teach`);
-
-    // TODO: It seems like this should be used instead of default config since it has the session object in the body, but yet the API works?
-    // let configWithBody = {...config, body: teachSession}
-    return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.post(addTeachRoute, config).then(response => {
-        let newTeachSessionId = response.data.teachId;
-        obs.next(actions.create.createTeachSessionFulfilled(teachSession, newTeachSessionId));
-          obs.complete();
-        })
-        .catch(err => handleError(obs, err,  AT.CREATE_TEACH_SESSION_ASYNC)));
+    blisClient.key = key
+    return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => blisClient.teachSessionsCreate(appId)
+      .then(newTeachSession => {
+        obs.next(actions.create.createTeachSessionFulfilled(newTeachSession, newTeachSession.teachId));
+        obs.complete();
+      })
+      .catch(err => handleError(obs, err,  AT.CREATE_TEACH_SESSION_ASYNC)));
   };
 
   export const deleteTeachSession = (key : string, appId: string, teachSession: Teach, save: boolean): Observable<ActionObject> => {

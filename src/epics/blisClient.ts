@@ -31,7 +31,7 @@ export default class BlisClient {
         }
     }
 
-    // TODO: Remove after I find out where this is used
+    // TODO: Remove after I find out where this is used and why it's needed
     // Blis service doesn't use the key, but it seems the BLIS-SDK relies on it for certain operations
     // Removing it will break teach/chat sessions
     key: string
