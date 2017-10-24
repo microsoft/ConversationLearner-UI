@@ -286,22 +286,17 @@ export const getLuisApplicationCultures = (): Promise<CultureObject[]> => {
 
   /** START SESSION : Creates a new session and a corresponding logDialog */
   export const createChatSession = (key: string, session: Session, appId: string): Observable<ActionObject> => {
-    let addSessionRoute: string = makeRoute(key, `app/${appId}/session`);
-
-    // TODO: It seems like this should be used instead of default config since it has the session object in the body, but yet the API works?
-    // let configWithBody = {...config, body: session}
-    return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => axios.post(addSessionRoute, config).then(response => {
-      let newSessionId = response.data.sessionId;
-      obs.next(actions.create.createChatSessionFulfilled(session, newSessionId));
+    return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.chatSessionsCreate(appId)
+    .then(newSession => {
+      obs.next(actions.create.createChatSessionFulfilled(newSession, newSession.sessionId));
       obs.complete();
     })
       .catch(err => handleError(obs, err, AT.CREATE_CHAT_SESSION_ASYNC)));
   };
 
   export const deleteChatSession = (key: string, appId: string, session: Session): Observable<ActionObject> => {
-    let deleteAppRoute: string = makeRoute(key, `app/${appId}/session/${session.sessionId}`);
-    return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => axios.delete(deleteAppRoute, config)
-      .then(response => {
+    return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.chatSessionsDelete(appId, session.sessionId)
+      .then(() => {
         obs.next(actions.delete.deleteChatSessionFulfilled(session.sessionId));
         obs.next(actions.fetch.fetchAllLogDialogsAsync(key, appId));
         obs.complete();
@@ -310,10 +305,9 @@ export const getLuisApplicationCultures = (): Promise<CultureObject[]> => {
   };
 
   export const getAllSessionsForBlisApp = (key: string, appId: string): Observable<ActionObject> => {
-    let getSessionsForAppRoute: string = makeRoute(key, `app/${appId}/sessions`);
-    return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => axios.get(getSessionsForAppRoute, config)
-      .then(response => {
-        obs.next(actions.fetch.fetchAllChatSessionsFulfilled(response.data.sessions));
+    return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.chatSessions(appId)
+      .then(sessions => {
+        obs.next(actions.fetch.fetchAllChatSessionsFulfilled(sessions));
         obs.complete();
       })
       .catch(err => handleError(obs, err, AT.FETCH_CHAT_SESSIONS_ASYNC)));
