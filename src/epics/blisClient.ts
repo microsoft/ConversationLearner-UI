@@ -31,15 +31,23 @@ export default class BlisClient {
         }
     }
 
+    // TODO: Remove after I find out where this is used
+    // Blis service doesn't use the key, but it seems the BLIS-SDK relies on it for certain operations
+    // Removing it will break teach/chat sessions
+    key: string
+
     constructor(baseUrl: string, getAccessToken: () => string, defaultHeaders?: { [x: string]: string }) {
         this.baseUrl = baseUrl
         this.defaultConfig.headers = { ...this.defaultConfig.headers, ...defaultHeaders }
     }
 
     send<T = any>(config: AxiosRequestConfig) {
+        const joinCharacter = /\?/g.test(config.url) ? '&' : '?'
+        const urlWithKey = `${config.url}${joinCharacter}key=${this.key}`
         return axios({
             ...this.defaultConfig,
-            ...config
+            ...config,
+            url: urlWithKey
         }) as Promise<TypedAxiosResponse<T>>
     }
 
