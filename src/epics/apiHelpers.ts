@@ -286,9 +286,13 @@ export const getLuisApplicationCultures = (): Promise<CultureObject[]> => {
 
   /** START SESSION : Creates a new session and a corresponding logDialog */
   export const createChatSession = (key: string, session: Session, appId: string): Observable<ActionObject> => {
-    return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.chatSessionsCreate(appId)
-    .then(newSession => {
-      obs.next(actions.create.createChatSessionFulfilled(newSession, newSession.sessionId));
+    let addSessionRoute: string = makeRoute(key, `app/${appId}/session`);
+
+    // TODO: It seems like this should be used instead of default config since it has the session object in the body, but yet the API works?
+    // let configWithBody = {...config, body: session}
+    return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => axios.post(addSessionRoute, config).then(response => {
+      let newSessionId = response.data.sessionId;
+      obs.next(actions.create.createChatSessionFulfilled(session, newSessionId));
       obs.complete();
     })
       .catch(err => handleError(obs, err, AT.CREATE_CHAT_SESSION_ASYNC)));
