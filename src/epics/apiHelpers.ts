@@ -137,59 +137,56 @@ export const getLuisApplicationCultures = (): Promise<CultureObject[]> => {
       .then(response => response.data)
 }
 
-  export const createBlisApp = (key: string, userId: string, blisApp: BlisAppBase): Observable<ActionObject> => {
-    let addAppRoute: string = makeRoute(key, `app`, `userId=${userId}`);
+  export const createBlisApp = (key: string, userId: string, app: BlisAppBase): Observable<ActionObject> => {
     //remove the appId property from the object
-    const { appId, ...appToSend } = blisApp
-    return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => axios.post(addAppRoute, appToSend, config)
+    const { appId, ...appToSend } = app
+    return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.appsCreate(userId, appToSend as BlisAppBase)
       .then(response => {
-        blisApp.appId = response.data
-        obs.next(actions.create.createApplicationFulfilled(blisApp))
+        app.appId = response.data
+        obs.next(actions.create.createApplicationFulfilled(app))
         obs.complete();
       })
       .catch(err => handleError(obs, err, AT.CREATE_BLIS_APPLICATION_ASYNC)));
   };
   export const createBlisEntity = (key: string, entity: EntityBase, appId: string, reverseEntity?: EntityBase): Observable<ActionObject> => {
-    let addEntityRoute: string = makeRoute(key, `app/${appId}/entity`);
     //remove property from the object that the route will not accept
     const { version, packageCreationId, packageDeletionId, entityId, ...entityToSend } = entity;
-    return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => axios.post(addEntityRoute, entityToSend, config).then(response => {
-      let newEntityId = response.data;
-      if (!entity.metadata.isReversable) {
-        obs.next(actions.create.createEntityFulfilled(entity, newEntityId));
-      }
-      else if (entity.metadata.positiveId) {
-        obs.next(actions.create.createNegativeEntityFulfilled(key, reverseEntity, entity, newEntityId, appId));
-      }
-      else {
-        obs.next(actions.create.createPositiveEntityFulfilled(key, entity, newEntityId, appId));
-      }
-      obs.complete();
-    })
+    return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.entitiesCreate(appId, entityToSend as EntityBase)
+      .then(response => {
+        let newEntity = response.data;
+        if (!entity.metadata.isReversable) {
+          obs.next(actions.create.createEntityFulfilled(newEntity, newEntity.entityId));
+        }
+        else if (entity.metadata.positiveId) {
+          obs.next(actions.create.createNegativeEntityFulfilled(key, reverseEntity, newEntity, newEntity.entityId, appId));
+        }
+        else {
+          obs.next(actions.create.createPositiveEntityFulfilled(key, newEntity, newEntity.entityId, appId));
+        }
+        obs.complete();
+      })
       .catch(err => handleError(obs, err, AT.CREATE_ENTITY_ASYNC)));
   };
 
   export const createBlisAction = (key: string, action: ActionBase, appId: string): Observable<ActionObject> => {
-    let addActionRoute: string = makeRoute(key, `app/${appId}/action`);
     //remove property from the object that the route will not accept
     const { actionId, version, packageCreationId, packageDeletionId, ...actionToSend } = action;
-    return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => axios.post(addActionRoute, actionToSend, config).then(response => {
-      let newActionId = response.data;
-      obs.next(actions.create.createActionFulfilled(action, newActionId));
-      obs.complete();
-    })
+    return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.actionsCreate(appId, actionToSend as ActionBase)
+      .then(action => {
+        obs.next(actions.create.createActionFulfilled(action, action.actionId));
+        obs.complete();
+      })
       .catch(err => handleError(obs, err, AT.CREATE_ACTION_ASYNC)));
   };
 
   // Train
   export const createTrainDialog = (key: string, appId: string, trainDialog: TrainDialog, logDialogId: string): Observable<ActionObject> => {
-    let createTrainDialogRoute: string = makeRoute(key, `app/${appId}/traindialog`);
-    return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => axios.post(createTrainDialogRoute, trainDialog, config).then(response => {
-      trainDialog.trainDialogId = response.data.trainDialogId;
-      obs.next(actions.create.createTrainDialogFulfilled(trainDialog));
-      obs.next(actions.delete.deleteLogDialogAsync(appId, logDialogId))
-      obs.complete();
-    })
+    return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.trainDialogsCreate(appId, trainDialog)
+      .then(trainDialog => {
+        obs.next(actions.create.createTrainDialogFulfilled(trainDialog));
+        obs.next(actions.delete.deleteLogDialogAsync(appId, logDialogId))
+        obs.complete();
+      })
       .catch(err => handleError(obs, err, AT.CREATE_TRAIN_DIALOG_ASYNC)));
   };
 
@@ -250,40 +247,32 @@ export const getLuisApplicationCultures = (): Promise<CultureObject[]> => {
   // EDIT ROUTES
   //=========================================================
 
-    export const editBlisApp = (key: string, blisAppId: string, blisApp: BlisAppForUpdate): Observable<ActionObject> => {
-      let editAppRoute: string = makeRoute(key, `app/${blisAppId}`);
-      const { appId, latestPackageId, trainingRequired, trainingStatus, trainingFailureMessage, ...appToSend } = blisApp
-      return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => axios.put(editAppRoute, appToSend, config)
-        .then(response => {
-          obs.next(actions.update.editBLISApplicationFulfilled(blisApp));
+    export const editBlisApp = (key: string, blisAppId: string, blisApp: BlisAppBase): Observable<ActionObject> => {
+      return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.appsUpdate(blisAppId, blisApp)
+        .then(updatedApp => {
+          obs.next(actions.update.editBLISApplicationFulfilled(updatedApp));
           obs.complete();
         })
         .catch(err => handleError(obs, err, AT.EDIT_BLIS_APPLICATION_ASYNC)));
     }
     export const editBlisAction = (key: string, appId: string, blisActionId: string, action: ActionBase): Observable<ActionObject> => {
-      let editActionRoute: string = makeRoute(key, `app/${appId}/action/${blisActionId}`);
-      const { actionId, version, packageCreationId, packageDeletionId, ...actionToSend } = action
-      return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => axios.put(editActionRoute, actionToSend, config)
-        .then(response => {
-          obs.next(actions.update.editActionFulfilled(action));
+      return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.actionsUpdate(appId, action)
+        .then(updateAction => {
+          obs.next(actions.update.editActionFulfilled(updateAction));
           obs.complete();
         })
         .catch(err => handleError(obs, err, AT.EDIT_ACTION_ASYNC)));
     };
     export const editBlisEntity = (key: string, appId: string, entity: EntityBase): Observable<ActionObject> => {
-      let editActionRoute: string = makeRoute(key, `app/${appId}/entity/${entity.entityId}`);
-      const { version, packageCreationId, packageDeletionId, ...entityToSend } = entity;
-      return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => axios.put(editActionRoute, entityToSend, config)
-        .then(response => {
-          obs.next(actions.update.editEntityFulfilled(entity));
+      return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.entitiesUpdate(appId, entity)
+        .then(updatedEntity => {
+          obs.next(actions.update.editEntityFulfilled(updatedEntity));
           obs.complete();
         })
         .catch(err => handleError(obs, err, AT.EDIT_ENTITY_ASYNC)));
     }
     export const editTrainDialog = (key: string, appId: string, trainDialog: TrainDialog): Observable<ActionObject> => {
-      let editTrainDialogRoute: string = makeRoute(key, `app/${appId}/traindialog/${trainDialog.trainDialogId}`);
-      const { trainDialogId, ...trainDialogToSend } = trainDialog;
-      return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => axios.put(editTrainDialogRoute, trainDialogToSend, config)
+      return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.trainDialogsUpdate(appId, trainDialog)
         .then(response => {
           obs.next(actions.update.editTrainDialogFulfilled(trainDialog));
           obs.complete();
