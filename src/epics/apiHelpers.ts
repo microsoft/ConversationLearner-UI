@@ -336,23 +336,19 @@ export const getLuisApplicationCultures = (): Promise<CultureObject[]> => {
   };
 
   export const deleteTeachSession = (key : string, appId: string, teachSession: Teach, save: boolean): Observable<ActionObject> => {
-    return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => {
-      let deleteTeachSessionRoute: string = makeRoute(key, `app/${appId}/teach/${teachSession.teachId}`,`save=${save}`);
-      axios.delete(deleteTeachSessionRoute, config)
-        .then(response => {
+    return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => blisClient.teachSessionsDelete(appId, teachSession, save)
+        .then(() => {
           obs.next(actions.delete.deleteTeachSessionFulfilled(key, teachSession.teachId, appId));
           obs.next(actions.fetch.fetchAllTrainDialogsAsync(key, appId));
           obs.complete();
         })
-        .catch(err => handleError(obs, err,  AT.DELETE_TEACH_SESSION_ASYNC))
-      });
+        .catch(err => handleError(obs, err,  AT.DELETE_TEACH_SESSION_ASYNC)));
   };
 
   export const getAllTeachSessionsForBlisApp = (key: string, appId: string): Observable<ActionObject> => {
-    let getTeachSessionsForAppRoute: string = makeRoute(key, `app/${appId}/teaches`);
-    return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.get(getTeachSessionsForAppRoute, config)
-      .then(response => {
-        obs.next(actions.fetch.fetchAllTeachSessionsFulfilled(response.data.teaches));
+    return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => blisClient.teachSessions(appId)
+      .then(teachSessions => {
+        obs.next(actions.fetch.fetchAllTeachSessionsFulfilled(teachSessions));
         obs.complete();
       })
       .catch(err => handleError(obs, err,  AT.FETCH_TEACH_SESSIONS_ASYNC)));
@@ -364,22 +360,23 @@ export const getLuisApplicationCultures = (): Promise<CultureObject[]> => {
    * doesn't affect the trainDialog maintained.
    */
   export const putExtract = (key : string, appId: string, extractType: DialogType, sessionId: string, turnIndex: number, userInput: UserInput): Observable<ActionObject> => {
-    let routeURI : string = null;
+    let putExtractPromise: Promise<UIExtractResponse> = null
+    
     switch (extractType) {
       case DialogType.TEACH:
-        routeURI = `app/${appId}/teach/${sessionId}/extractor`;
+        putExtractPromise = blisClient.teachSessionsAddExtractStep(appId, sessionId, userInput)
         break;
       case DialogType.TRAINDIALOG:
-        routeURI = `app/${appId}/traindialog/${sessionId}/extractor/${turnIndex}`;
+        putExtractPromise = blisClient.trainDialogsUpdateExtractStep(appId, sessionId, turnIndex, userInput)
         break;
       case DialogType.LOGDIALOG:
-        routeURI = `app/${appId}/logdialog/${sessionId}/extractor/${turnIndex}`;
+        putExtractPromise = blisClient.logDialogsUpdateExtractStep(appId, sessionId, turnIndex, userInput)
         break;
     }
-    let editAppRoute: string = makeRoute(key, routeURI);
-    return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.put(editAppRoute, userInput, config)		
-      .then(response => {
-        obs.next(actions.teach.runExtractorFulfilled(key, appId, sessionId, response.data));
+
+    return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => putExtractPromise
+      .then(uiExtractResponse => {
+        obs.next(actions.teach.runExtractorFulfilled(key, appId, sessionId, uiExtractResponse));
         obs.complete();
       })
       .catch(err => handleError(obs, err,  AT.RUN_EXTRACTOR_ASYNC)));
@@ -395,10 +392,9 @@ export const getLuisApplicationCultures = (): Promise<CultureObject[]> => {
    * This doesn't affect the trainDialog maintained by the teaching session.
    */
   export const putScore = (key : string, appId: string, teachId: string, uiScoreInput: UIScoreInput): Observable<ActionObject> => {
-    let editAppRoute: string = makeRoute(key, `app/${appId}/teach/${teachId}/scorer`);
-    return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.put(editAppRoute, uiScoreInput, config)	
-      .then(response => {
-        obs.next(actions.teach.runScorerFulfilled(key, appId, teachId, response.data)); 
+    return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => blisClient.teachSessionUpdateScorerStep(appId, teachId, uiScoreInput)
+      .then(uiScoreResponse => {
+        obs.next(actions.teach.runScorerFulfilled(key, appId, teachId, uiScoreResponse));
         obs.complete();
       })
       .catch(err => handleError(obs, err,  AT.RUN_SCORER_ASYNC)));
@@ -409,16 +405,15 @@ export const getLuisApplicationCultures = (): Promise<CultureObject[]> => {
    * trainDialog, and advancing the dialog. This may yield produce a new package.
    */
   export const postScore = (key : string, appId : string, teachId: string, uiTrainScorerStep : UITrainScorerStep, waitForUser : boolean, uiScoreInput: UIScoreInput): Observable<ActionObject> => {
-    let addAppRoute: string = makeRoute(key, `app/${appId}/teach/${teachId}/scorer`);
-    return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.post(addAppRoute, uiTrainScorerStep, config)		
-      .then(response => {
+    return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => blisClient.teachSessionAddScorerStep(appId, teachId, uiTrainScorerStep)
+      .then(uiTeachResponse => {
         if (!waitForUser) {
           // Don't re-send predicted entities on subsequent score call -todo on non train path
           uiScoreInput.extractResponse.predictedEntities = [];
-          obs.next(actions.teach.postScorerFeedbackNoWaitFulfilled(key, appId, teachId, response.data, uiScoreInput))
+          obs.next(actions.teach.postScorerFeedbackNoWaitFulfilled(key, appId, teachId, uiTeachResponse, uiScoreInput))
         }
         else {
-          obs.next(actions.teach.postScorerFeedbackWaitFulfilled(key, appId, teachId, response.data));
+          obs.next(actions.teach.postScorerFeedbackWaitFulfilled(key, appId, teachId, uiTeachResponse));
         }
         obs.complete();
       })
