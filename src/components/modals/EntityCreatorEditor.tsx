@@ -5,7 +5,7 @@ import { editEntityAsync } from '../../actions/updateActions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
-import { PrimaryButton, DefaultButton, IDropdownOption, Dropdown, DropdownMenuItemType, Checkbox, TextField, TooltipHost, TooltipDelay, DirectionalHint } from 'office-ui-fabric-react';
+import * as OF from 'office-ui-fabric-react';
 import { State, PreBuiltEntities } from '../../types';
 import { EntityBase, EntityMetaData, EntityType } from 'blis-models'
 import './EntityCreatorEditor.css'
@@ -30,33 +30,33 @@ interface ComponentState {
     submitButtonText: string
 }
 
-const blisEntityTypes = [EntityType.LUIS, EntityType.LOCAL].map<IDropdownOption>(value =>
+const blisEntityTypes = [EntityType.LUIS, EntityType.LOCAL].map<OF.IDropdownOption>(value =>
     ({
         key: value,
         text: value
     }))
 
-const staticEntityOptions: IDropdownOption[] = [
+const staticEntityOptions: OF.IDropdownOption[] = [
     {
         key: 'BlisHeader',
         text: 'BLIS Entity Types',
-        itemType: DropdownMenuItemType.Header
+        itemType: OF.DropdownMenuItemType.Header
     },
     ...blisEntityTypes,
     {
         key: 'divider',
         text: '-',
-        itemType: DropdownMenuItemType.Divider
+        itemType: OF.DropdownMenuItemType.Divider
     },
     {
         key: 'LuisHeader',
         text: 'LUIS Pre-Built Entity Types',
-        itemType: DropdownMenuItemType.Header
+        itemType: OF.DropdownMenuItemType.Header
     }
 ]
 
 class EntityCreatorEditor extends React.Component<Props, ComponentState> {
-    entityOptions: IDropdownOption[]
+    entityOptions: OF.IDropdownOption[]
     state = initState
 
     componentWillReceiveProps(p: Props) {
@@ -66,11 +66,11 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
             .find(obj => obj.locale === currentAppLocale)
 
         const localePreBuildOptions = localePreBuiltEntities.preBuiltEntities
-            .map<IDropdownOption>(entityName =>
+            .map<OF.IDropdownOption>(entityName =>
                 ({
                     key: entityName,
                     text: entityName,
-                    itemType: DropdownMenuItemType.Normal
+                    itemType: OF.DropdownMenuItemType.Normal
                 }))
 
         this.entityOptions = [...staticEntityOptions, ...localePreBuildOptions]
@@ -135,7 +135,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
             entityNameVal: text
         })
     }
-    onChangedType = (obj: IDropdownOption) => {
+    onChangedType = (obj: OF.IDropdownOption) => {
         this.setState({
             entityTypeVal: obj.text
         })
@@ -178,18 +178,14 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
         }
     }
 
-    render() {
+    renderBlocked() {
+        
+    }
+    renderEdit() {
         return (
-            <Modal
-                isOpen={this.props.open}
-                isBlocking={false}
-                containerClassName='blis-modal blis-modal--small blis-modal--border'
-            >
-                <div className='blis-modal_title'>
-                    <span className='ms-font-xxl ms-fontWeight-semilight'>{this.state.title}</span>
-                </div>
+            <div>
                 <div>
-                    <TextField
+                    <OF.TextField
                         onGetErrorMessage={this.onGetNameErrorMessage}
                         onChanged={this.onChangedName}
                         onKeyDown={this.onKeyDownName}
@@ -200,7 +196,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                         value={this.state.entityNameVal}
                         disabled={this.state.editing}
                     />
-                    <Dropdown
+                    <OF.Dropdown
                         label='Entity Type'
                         options={this.entityOptions}
                         onChanged={this.onChangedType}
@@ -208,14 +204,14 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                         disabled={this.state.editing}
                     />
                     <div className="blis-entity-creator-checkbox">
-                        <Checkbox
+                        <OF.Checkbox
                             label='Multi-valued'
                             defaultChecked={false}
                             onChange={this.onChangeBucketable}
                             disabled={this.state.editing}
                         />
                         <div className="ms-fontSize-s ms-fontColor-neutralSecondary">Entity may represent multiple values. &nbsp;
-                            <TooltipHost
+                            <OF.TooltipHost
                                 tooltipProps={{
                                     onRenderContent: () => {
                                         return (
@@ -231,21 +227,21 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                                         );
                                     }
                                 }}
-                                delay={TooltipDelay.zero}
-                                directionalHint={DirectionalHint.bottomCenter}
+                                delay={OF.TooltipDelay.zero}
+                                directionalHint={OF.DirectionalHint.bottomCenter}
                             ><span className="ms-fontColor-themeTertiary">More</span>
-                            </TooltipHost>
+                            </OF.TooltipHost>
                         </div>
                     </div>
                     <div className="blis-entity-creator-checkbox">
-                        <Checkbox
+                        <OF.Checkbox
                             label='Negatable'
                             defaultChecked={false}
                             onChange={this.onChangeReversible}
                             disabled={this.state.editing}
                         />
                         <div className="ms-fontSize-s ms-fontColor-neutralSecondary">Can remove or negate values in memory. &nbsp;
-                            <TooltipHost
+                            <OF.TooltipHost
                                 tooltipProps={{
                                     onRenderContent: () => {
                                         return (
@@ -262,29 +258,29 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                                         );
                                     }
                                 }}
-                                delay={TooltipDelay.zero}
-                                directionalHint={DirectionalHint.bottomCenter}
+                                delay={OF.TooltipDelay.zero}
+                                directionalHint={OF.DirectionalHint.bottomCenter}
                             ><span className="ms-fontColor-themeTertiary">More</span>
-                            </TooltipHost>
+                            </OF.TooltipHost>
                         </div>
                     </div>
                 </div>
                 <div className='blis-modal_buttonbox'>
                     <div className="blis-modal-buttons">
                         <div className="blis-modal-buttons_primary">
-                            <PrimaryButton
+                            <OF.PrimaryButton
                                 disabled={this.onGetNameErrorMessage(this.state.entityNameVal) != ''}
                                 onClick={this.onClickSubmit}
                                 ariaDescription='Create'
                                 text={this.state.submitButtonText}
                             />
-                            <DefaultButton
+                            <OF.DefaultButton
                                 onClick={this.onClickCancel}
                                 ariaDescription='Cancel'
                                 text='Cancel'
                             />
                             {this.state.editing && this.props.handleOpenDeleteModal &&
-                                <DefaultButton
+                                <OF.DefaultButton
                                     onClick={() => this.props.handleOpenDeleteModal(this.props.entity.entityId)}
                                     ariaDescription='Delete'
                                     text='Delete'
@@ -294,6 +290,36 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                         </div>
                     </div>
                 </div>
+            </div>
+        )
+    }
+    render() {
+        return (
+            <Modal
+                isOpen={this.props.open}
+                isBlocking={false}
+                containerClassName='blis-modal blis-modal--small blis-modal--border'
+            >
+            {this.state.editing ? (
+                <OF.Pivot linkSize={ OF.PivotLinkSize.large }>
+                    <OF.PivotItem linkText='Edit Entity'>
+                        {this.renderEdit()}
+                    </OF.PivotItem>
+                    <OF.PivotItem linkText='Required For Actions'>
+                        <OF.Label>Pivot #2</OF.Label>
+                    </OF.PivotItem>
+                    <OF.PivotItem linkText='Blocked Actions'>
+                        <OF.Label>Pivot #3</OF.Label>
+                    </OF.PivotItem>
+                </OF.Pivot>        
+            ):(
+                <div>
+                    <div className='blis-modal_title'>
+                        <span className='ms-font-xxl ms-fontWeight-semilight'>{this.state.title}</span>
+                    </div>
+                    {this.renderEdit()}
+                </div>
+            )}
             </Modal>
         );
     }
