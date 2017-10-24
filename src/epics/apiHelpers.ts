@@ -198,7 +198,7 @@ export const getLuisApplicationCultures = (): Promise<CultureObject[]> => {
 //=========================================================
 
   export const deleteBlisApp = (key: string, blisApp: BlisAppForUpdate): Observable<ActionObject> => {
-    return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => axios.delete(makeRoute(key, `app/${blisApp.appId}`))
+    return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.appsDelete(blisApp.appId)
       .then(response => {
         obs.next(actions.delete.deleteBLISApplicationFulfilled(blisApp.appId));
         obs.complete();
@@ -207,9 +207,8 @@ export const getLuisApplicationCultures = (): Promise<CultureObject[]> => {
   };
   
   export const deleteBlisEntity = (key: string, appId: string, deleteEntityId: string, reverseEntityId: string): Observable<ActionObject> => {
-    let deleteEntityRoute: string = makeRoute(key, `app/${appId}/entity/${deleteEntityId}`);
-    return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => axios.delete(deleteEntityRoute)
-      .then(response => {
+    return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.entitiesDelete(appId, deleteEntityId)
+      .then(() => {
         if (reverseEntityId) {
           obs.next(actions.delete.deleteReverseEntityAsnyc(key, deleteEntityId, reverseEntityId, appId));
         }
@@ -221,11 +220,8 @@ export const getLuisApplicationCultures = (): Promise<CultureObject[]> => {
       .catch(err => handleError(obs, err, AT.DELETE_ENTITY_ASYNC)));
   };
   export const deleteBlisAction = (key: string, appId: string, action: ActionBase): Observable<ActionObject> => {
-    let deleteActionRoute: string = makeRoute(key, `app/${appId}/action/${action.actionId}`);
-    const { actionId, version, packageCreationId, packageDeletionId, ...actionToSend } = action
-    let configWithBody = { ...config, body: actionToSend }
-    return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => axios.delete(deleteActionRoute, configWithBody)
-      .then(response => {
+    return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.actionsDelete(appId, action.actionId)
+      .then(() => {
         obs.next(actions.delete.deleteActionFulfilled(action.actionId));
         obs.complete();
       })
@@ -233,8 +229,8 @@ export const getLuisApplicationCultures = (): Promise<CultureObject[]> => {
   };
 
   export const deleteLogDialog = (appId: string, logDialogId: string): Observable<ActionObject> => {
-    return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => axios.delete(`${rootUrl}app/${appId}/logdialog/${logDialogId}`, config)
-      .then(response => {
+    return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.logDialogsDelete(appId, logDialogId)
+      .then(() => {
         obs.next(actions.delete.deleteLogDialogFulFilled(logDialogId));
         obs.complete();
       })
@@ -242,11 +238,8 @@ export const getLuisApplicationCultures = (): Promise<CultureObject[]> => {
   };
 
   export const deleteTrainDialog = (key: string, appId: string, trainDialog: TrainDialog): Observable<ActionObject> => {
-    let deleteActionRoute: string = makeRoute(key, `app/${appId}/traindialog/${trainDialog.trainDialogId}`);
-    const { trainDialogId, version, packageCreationId, packageDeletionId, ...dialogToSend } = trainDialog
-    let configWithBody = { ...config, body: dialogToSend }
-    return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => axios.delete(deleteActionRoute, configWithBody)
-      .then(response => {
+    return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.trainDialogsDelete(appId, trainDialog.trainDialogId)
+      .then(() => {
         obs.next(actions.delete.deleteTrainDialogFulfilled(key, trainDialog.trainDialogId));
         obs.complete();
       })
