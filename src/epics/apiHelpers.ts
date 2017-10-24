@@ -6,7 +6,7 @@ import {
   ActionBase,
   UserInput,
   TrainDialog,
-  // UIExtractResponse,
+  UIExtractResponse,
   UITrainScorerStep,
   Session,
   Teach,
@@ -336,6 +336,7 @@ export const getLuisApplicationCultures = (): Promise<CultureObject[]> => {
   };
 
   export const deleteTeachSession = (key : string, appId: string, teachSession: Teach, save: boolean): Observable<ActionObject> => {
+    blisClient.key = key
     return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => blisClient.teachSessionsDelete(appId, teachSession, save)
         .then(() => {
           obs.next(actions.delete.deleteTeachSessionFulfilled(key, teachSession.teachId, appId));
@@ -346,6 +347,7 @@ export const getLuisApplicationCultures = (): Promise<CultureObject[]> => {
   };
 
   export const getAllTeachSessionsForBlisApp = (key: string, appId: string): Observable<ActionObject> => {
+    blisClient.key = key
     return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => blisClient.teachSessions(appId)
       .then(teachSessions => {
         obs.next(actions.fetch.fetchAllTeachSessionsFulfilled(teachSessions));
@@ -360,6 +362,7 @@ export const getLuisApplicationCultures = (): Promise<CultureObject[]> => {
    * doesn't affect the trainDialog maintained.
    */
   export const putExtract = (key : string, appId: string, extractType: DialogType, sessionId: string, turnIndex: number, userInput: UserInput): Observable<ActionObject> => {
+    blisClient.key = key
     let putExtractPromise: Promise<UIExtractResponse> = null
     
     switch (extractType) {
@@ -392,6 +395,7 @@ export const getLuisApplicationCultures = (): Promise<CultureObject[]> => {
    * This doesn't affect the trainDialog maintained by the teaching session.
    */
   export const putScore = (key : string, appId: string, teachId: string, uiScoreInput: UIScoreInput): Observable<ActionObject> => {
+    blisClient.key = key
     return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => blisClient.teachSessionUpdateScorerStep(appId, teachId, uiScoreInput)
       .then(uiScoreResponse => {
         obs.next(actions.teach.runScorerFulfilled(key, appId, teachId, uiScoreResponse));
@@ -405,6 +409,7 @@ export const getLuisApplicationCultures = (): Promise<CultureObject[]> => {
    * trainDialog, and advancing the dialog. This may yield produce a new package.
    */
   export const postScore = (key : string, appId : string, teachId: string, uiTrainScorerStep : UITrainScorerStep, waitForUser : boolean, uiScoreInput: UIScoreInput): Observable<ActionObject> => {
+    blisClient.key = key
     return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => blisClient.teachSessionAddScorerStep(appId, teachId, uiTrainScorerStep)
       .then(uiTeachResponse => {
         if (!waitForUser) {
