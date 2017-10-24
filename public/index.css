@@ -114,7 +114,7 @@ html {
 
 .blis-modal--medium{
   width: 60%;
-  height: 45%;
+  height: 60%;
   /* TODO: Remove padding here, it should be the content inside that decides padding, otherwise all modals should have padding */
   padding: 1em;
 }
