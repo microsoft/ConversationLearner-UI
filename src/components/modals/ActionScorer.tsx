@@ -9,7 +9,7 @@ import { toggleAutoTeach } from '../../actions/teachActions'
 import { PrimaryButton } from 'office-ui-fabric-react';
 import { DialogMode } from '../../types/const'
 import { IColumn, DetailsList, CheckboxVisibility, List } from 'office-ui-fabric-react';
-import ActionResponseCreatorEditor from './ActionResponseCreatorEditor'
+import ActionCreatorEditor from './ActionCreatorEditor'
 
 const ACTION_BUTTON = "action_button";
 
@@ -490,7 +490,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                     onRenderItemColumn={this.renderItemColumn}
                     onColumnHeaderClick={this.onColumnClick}
                 />
-                <ActionResponseCreatorEditor
+                <ActionCreatorEditor
                     open={this.state.actionModalOpen}
                     blisAction={null}
                     handleClose={this.handleCloseActionModal}

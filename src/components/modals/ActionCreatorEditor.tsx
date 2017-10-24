@@ -73,31 +73,31 @@ interface ComponentState {
     payloadFocused: boolean
 };
 
-class ActionResponseCreatorEditor extends React.Component<Props, ComponentState> {
+class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
     constructor(p: Props) {
         super(p);
         this.state = initState;
-        this.actionTypeChanged = this.actionTypeChanged.bind(this);
-        this.apiChanged = this.apiChanged.bind(this);
+        this.onChangedType = this.onChangedType.bind(this);
+        this.onChangedAPI = this.onChangedAPI.bind(this);
         this.checkForSpecialCharacters = this.checkForSpecialCharacters.bind(this);
         this.findWordFollowingSpecialCharacter = this.findWordFollowingSpecialCharacter.bind(this);
         this.entitySuggestionSelected = this.entitySuggestionSelected.bind(this);
-        this.payloadChanged = this.payloadChanged.bind(this);
-        this.payloadIsFocused = this.payloadIsFocused.bind(this);
-        this.payloadKeyDown = this.payloadKeyDown.bind(this);
-        this.payloadBlur = this.payloadBlur.bind(this);
-        this.payloadCheck = this.payloadCheck.bind(this);
-        this.suggestedEntityOnResolve = this.suggestedEntityOnResolve.bind(this);
-        this.suggestedEntityOnChange = this.suggestedEntityOnChange.bind(this);
-        this.requiredEntityOnResolve = this.requiredEntityOnResolve.bind(this);
-        this.requiredEntityOnChange = this.requiredEntityOnChange.bind(this);
-        this.negativeEntityOnResolve = this.negativeEntityOnResolve.bind(this);
-        this.negativeEntityOnChange = this.negativeEntityOnChange.bind(this);
-        this.createOnClick = this.createOnClick.bind(this);
-        this.cancelOnClick = this.cancelOnClick.bind(this);
-        this.entityOnClick = this.entityOnClick.bind(this);
-        this.waitOnChange = this.waitOnChange.bind(this);
+        this.onChangedPayload = this.onChangedPayload.bind(this);
+        this.onFocusPayload = this.onFocusPayload.bind(this);
+        this.onKeyDownPayload = this.onKeyDownPayload.bind(this);
+        this.onBlurPlayload = this.onBlurPlayload.bind(this);
+        this.onGetErrorMessagePayload = this.onGetErrorMessagePayload.bind(this);
+        this.onResolveSuggestedEntity = this.onResolveSuggestedEntity.bind(this);
+        this.onChangeSuggestedEntity = this.onChangeSuggestedEntity.bind(this);
+        this.onResolveRequiredEntity = this.onResolveRequiredEntity.bind(this);
+        this.onChangeRequiredEntity = this.onChangeRequiredEntity.bind(this);
+        this.onResolveNegativeEntity = this.onResolveNegativeEntity.bind(this);
+        this.onChangeNegativeEntity = this.onChangeNegativeEntity.bind(this);
+        this.onClickCreate = this.onClickCreate.bind(this);
+        this.onClickCancel = this.onClickCancel.bind(this);
+        this.onClickCreateEntity = this.onClickCreateEntity.bind(this);
+        this.onChangeWait = this.onChangeWait.bind(this);
         this.onRenderNegTagItem = this.onRenderNegTagItem.bind(this);
         this.entityCreatorHandleClose = this.entityCreatorHandleClose.bind(this);
     }
@@ -236,12 +236,12 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
             specialCharIndexesToDisregard: []
         });
     }
-    cancelOnClick() {
+    onClickCancel() {
         this.setState({ ...initState });
         this.initializeDropdown();
         this.props.handleClose(null);
     }
-    createOnClick() {
+    onClickCreate() {
         let currentAppId: string = this.props.blisApps.current.appId;
         let requiredEntities = this.state.reqEntitiesVal.map(req => {
             let found = this.props.entities.find(e => e.entityName == req.key)
@@ -281,32 +281,32 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
         } else {
             this.editAction(actionToAdd, currentAppId);
         }
-        this.cancelOnClick();
+        this.onClickCancel();
         this.props.handleClose(actionToAdd);
     }
     editAction(actionToAdd: ActionBase, currentAppId: string) {
         actionToAdd.actionId = this.props.blisAction.actionId;
         this.props.editActionAsync(this.props.userKey, actionToAdd, currentAppId);
     }
-    payloadCheck(value: string): string {
+    onGetErrorMessagePayload(value: string): string {
         return value ? "" : "Payload is required";
     }
-    waitOnChange() {
+    onChangeWait() {
         this.setState({
             waitVal: !this.state.waitVal,
         })
     }
-    actionTypeChanged(obj: TextObject) {
+    onChangedType(obj: TextObject) {
         this.setState({
             actionTypeVal: obj.text,
         })
     }
-    apiChanged(obj: TextObject) {
+    onChangedAPI(obj: TextObject) {
         this.setState({
             apiVal: obj.text,
         })
     }
-    requiredEntityOnResolve(filterText: string, tagList: IBlisTag[]): IBlisTag[] {
+    onResolveRequiredEntity(filterText: string, tagList: IBlisTag[]): IBlisTag[] {
         //required entites available should exclude all saved entities
         let entList = filterText ? this.state.availableRequiredEntities
             .filter(ent => ent.name.toLowerCase().indexOf(filterText.toLowerCase()) === 0)
@@ -314,7 +314,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
         let usedEntities = this.state.reqEntitiesVal.concat(this.state.negEntitiesVal).concat(this.state.suggEntitiesVal)
         return entList.filter(e => !usedEntities.some(u => e.key === u.key))
     }
-    negativeEntityOnResolve(filterText: string, tagList: IBlisTag[]): IBlisTag[] {
+    onResolveNegativeEntity(filterText: string, tagList: IBlisTag[]): IBlisTag[] {
         //negative entites available should exclude those in required entities, and its own saved entities, but not suggested ones
         let entList = filterText ? this.state.availableRequiredEntities
             .filter(ent => ent.name.toLowerCase().indexOf(filterText.toLowerCase()) === 0)
@@ -326,7 +326,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
                 name: e.name, 
              }});
     }
-    suggestedEntityOnResolve(filterText: string, tagList: IBlisTag[]): IBlisTag[] {
+    onResolveSuggestedEntity(filterText: string, tagList: IBlisTag[]): IBlisTag[] {
         //suggested entites available should exclude those in required entities, and its own saved entities, but not negative ones
         if (this.state.suggEntitiesVal.length > 0) {
             return [];
@@ -344,12 +344,12 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
         }
         return tagList.filter(compareTag => compareTag.key === tag.key).length > 0;
     }
-    requiredEntityOnChange(items: IBlisTag[]) {
+    onChangeRequiredEntity(items: IBlisTag[]) {
         this.setState({
             reqEntitiesVal: items
         })
     }
-    negativeEntityOnChange(items: IBlisTag[]) {
+    onChangeNegativeEntity(items: IBlisTag[]) {
         if (items.length < this.state.negEntitiesVal.length) {
             //we deleted one, need to make sure it isnt a suggested entity;
             if (this.state.suggEntitiesVal.length == 1) {
@@ -384,13 +384,13 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
             entityModalOpen: false
         })
     }
-    entityOnClick() {
+    onClickCreateEntity() {
         this.setState({
             entityModalOpen: true
         })
     }
 
-    payloadChanged(text: string) {
+    onChangedPayload(text: string) {
         let specialIndexes = this.updateSpecialCharIndexesToDisregard(text);
         this.checkForSpecialCharacters(text, specialIndexes);
         this.setState({
@@ -555,7 +555,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
         return deletedEntity;
     }
 
-    suggestedEntityOnChange(items: IBlisTag[]) {
+    onChangeSuggestedEntity(items: IBlisTag[]) {
         let negativeEntities: IBlisTag[] = [...this.state.negEntitiesVal]
         if (items.length > 0) {
             // we added one. Need to check if its already in negative entities. If it is not, add it to that as well.
@@ -670,17 +670,17 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
         })
         return optionsNotSelected;
     }
-    payloadBlur() {
+    onBlurPlayload() {
         this.setState({
             payloadFocused: false
         })
     }
-    payloadIsFocused() {
+    onFocusPayload() {
         this.setState({
             payloadFocused: true
         })
     }
-    payloadKeyDown(event: any) {
+    onKeyDownPayload(event: any) {
         let key = event as KeyboardEvent;
         if (this.state.displayAutocomplete === true && this.state.payloadFocused === true) {
             let code = key.keyCode;
@@ -694,7 +694,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
         else {
             // On enter attempt to create the action as long as payload is set
             if (key.keyCode == 13 && this.state.payloadVal) {
-                this.createOnClick();
+                this.onClickCreate();
             }
         }
     }
@@ -775,7 +775,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
                     <Dropdown
                         label='API'
                         options={apiOptions}
-                        onChanged={this.apiChanged}
+                        onChanged={this.onChangedAPI}
                         selectedKey={this.state.apiVal}
                         disabled={disabled}
                         placeHolder={placeholder}
@@ -785,13 +785,13 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
                 <TextField
                     id={"actionArguements"}
                     key="0"
-                    onChanged={this.payloadChanged}
+                    onChanged={this.onChangedPayload}
                     label="Arguments (Comma Separated)"
                     placeholder="Arguments..."
                     autoFocus={true}
-                    onFocus={this.payloadIsFocused}
-                    onKeyDown={this.payloadKeyDown}
-                    onBlur={this.payloadBlur}
+                    onFocus={this.onFocusPayload}
+                    onKeyDown={this.onKeyDownPayload}
+                    onBlur={this.onBlurPlayload}
                     value={this.state.payloadVal}
                     disabled={disabled}
                 />)
@@ -800,14 +800,14 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
                 <TextField
                     id={"actionPayload"}
                     key='1'
-                    onGetErrorMessage={this.payloadCheck}
-                    onChanged={this.payloadChanged}
+                    onGetErrorMessage={this.onGetErrorMessagePayload}
+                    onChanged={this.onChangedPayload}
                     label="Payload"
                     placeholder="Payload..."
                     autoFocus={true}
-                    onFocus={this.payloadIsFocused}
-                    onKeyDown={this.payloadKeyDown}
-                    onBlur={this.payloadBlur}
+                    onFocus={this.onFocusPayload}
+                    onKeyDown={this.onKeyDownPayload}
+                    onBlur={this.onBlurPlayload}
                     value={this.state.payloadVal}
                 />
             )
@@ -819,9 +819,9 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
             <div>
                 <Modal
                     isOpen={this.props.open}
-                    onDismiss={this.cancelOnClick}
+                    onDismiss={this.onClickCancel}
                     isBlocking={false}
-                    containerClassName='blis-modal blis-modal--small blis-modal--border'
+                    containerClassName='blis-modal blis-modal--medium blis-modal--border'
                 >
                     <div className='blis-modal_title'>
                         <span className='ms-font-xxl ms-fontWeight-semilight'>{title}</span>
@@ -830,7 +830,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
                         <Dropdown
                             label='Action Type'
                             options={actionTypeOptions}
-                            onChanged={this.actionTypeChanged}
+                            onChanged={this.onChangedType}
                             selectedKey={this.state.actionTypeVal}
                             disabled={this.state.editing}
                         />
@@ -846,9 +846,9 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
                         />
                         <Label>Expected Entity in Response...</Label>
                         <TagPicker
-                            onResolveSuggestions={this.suggestedEntityOnResolve}
+                            onResolveSuggestions={this.onResolveSuggestedEntity}
                             getTextFromItem={(item) => { return item.name; }}
-                            onChange={this.suggestedEntityOnChange}
+                            onChange={this.onChangeSuggestedEntity}
                             key={this.state.suggestedTagPickerKey}
                             onRenderItem={this.onRenderSugTagItem}
                             pickerSuggestionsProps={
@@ -861,9 +861,9 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
                         />
                         <Label>Required Entities: Disallow Action when <b>NOT</b> in Memory...</Label>
                         <TagPicker
-                            onResolveSuggestions={this.requiredEntityOnResolve}
+                            onResolveSuggestions={this.onResolveRequiredEntity}
                             getTextFromItem={(item) => { return item.name; }}
-                            onChange={this.requiredEntityOnChange}
+                            onChange={this.onChangeRequiredEntity}
                             key={this.state.requiredTagPickerKey}
                             pickerSuggestionsProps={
                                 {
@@ -876,10 +876,10 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
                         <Label>Blocking Entities: Disallow Action when <b>ARE</b> in Memory...</Label>
                         <TagPicker
                             key={this.state.negativeTagPickerKey}
-                            onResolveSuggestions={this.negativeEntityOnResolve}
+                            onResolveSuggestions={this.onResolveNegativeEntity}
                             onRenderItem={this.onRenderNegTagItem}
                             getTextFromItem={(item) => { return item.name; }}
-                            onChange={this.negativeEntityOnChange}
+                            onChange={this.onChangeNegativeEntity}
                             pickerSuggestionsProps={
                                 {
                                     suggestionsHeaderText: 'Entities',
@@ -891,22 +891,22 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
                         <Checkbox
                             label='Wait For Response?'
                             defaultChecked={true}
-                            onChange={this.waitOnChange}
+                            onChange={this.onChangeWait}
                             style={{ marginTop: "1em", display: "inline-block" }}
                             disabled={this.state.editing}
                         />
                     </div>
-                    <div className="blis-modal_buttonbox">
+                    <div className="blis-modal_buttonbox blis-modal_buttonbox--bottom">
                         <div className="blis-modal-buttons">
                             <div className="blis-modal-buttons_primary">
                                 <PrimaryButton
                                     disabled={createDisabled}
-                                    onClick={this.createOnClick}
+                                    onClick={this.onClickCreate}
                                     ariaDescription='Create'
                                     text={createButtonText}
                                 />
                                 <DefaultButton
-                                    onClick={this.cancelOnClick}
+                                    onClick={this.onClickCancel}
                                     ariaDescription='Cancel'
                                     text='Cancel'
                                 />
@@ -919,7 +919,7 @@ class ActionResponseCreatorEditor extends React.Component<Props, ComponentState>
                             </div>
                             <div className="blis-modal-buttons_secondary">
                                 <PrimaryButton
-                                    onClick={this.entityOnClick}
+                                    onClick={this.onClickCreateEntity}
                                     ariaDescription='Entity'
                                     text='Entity'
                                     iconProps={{ iconName: 'CirclePlus' }}
@@ -965,4 +965,4 @@ const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
 type Props = typeof stateProps & typeof dispatchProps & ReceiveProps;
 
-export default connect<typeof stateProps, typeof dispatchProps, ReceiveProps>(mapStateToProps, mapDispatchToProps)(ActionResponseCreatorEditor)
+export default connect<typeof stateProps, typeof dispatchProps, ReceiveProps>(mapStateToProps, mapDispatchToProps)(ActionCreatorEditor)

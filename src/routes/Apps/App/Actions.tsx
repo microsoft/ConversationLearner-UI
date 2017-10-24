@@ -8,7 +8,7 @@ import { deleteActionAsync } from '../../../actions/deleteActions'
 import ActionDetailsList from '../../../components/ActionDetailsList'
 import { IButton, CommandButton, SearchBox } from 'office-ui-fabric-react';
 import { BlisAppBase, ActionBase } from 'blis-models'
-import { ConfirmDeleteModal, ActionResponseCreatorEditor } from '../../../components/modals'
+import { ConfirmDeleteModal, ActionCreatorEditor } from '../../../components/modals'
 import { State } from '../../../types'
 
 interface ComponentState {
@@ -151,7 +151,7 @@ class Actions extends React.Component<Props, ComponentState> {
                     onConfirm={() => this.onClickConfirmDelete()}
                     title="Are you sure you want to delete this action?"
                 />
-                <ActionResponseCreatorEditor
+                <ActionCreatorEditor
                     open={this.state.isActionEditorModalOpen}
                     blisAction={this.state.actionSelected}
                     handleClose={this.onClickCloseActionEditor}
