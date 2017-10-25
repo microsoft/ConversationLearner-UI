@@ -105,7 +105,7 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
         this.renderSubstringObject = this.renderSubstringObject.bind(this)
         this.createSubstringObjects = this.createSubstringObjects.bind(this)
         this.onClickText = this.onClickText.bind(this)
-        this.handleDeleteVariation = this.handleDeleteVariation.bind(this)
+        this.onClickDeleteVariation = this.onClickDeleteVariation.bind(this)
         this.onHoverText = this.onHoverText.bind(this)
         this.setInitialValues = this.setInitialValues.bind(this)
         this.findIndexOfHoveredSubstring = this.findIndexOfHoveredSubstring.bind(this)
@@ -151,6 +151,11 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
     }
     componentDidMount() {
         this.setInitialValues(this.props)
+        document.addEventListener('click', this.onGlobalClick.bind(this), false);
+    }
+
+    componentWillUnmount() {
+        document.removeEventListener('click', this.onGlobalClick.bind(this), false);
     }
     setInitialValues(props: Props) {
         this.setState({
@@ -259,6 +264,14 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
                 }
             }
         })
+        if (predictedEntities.length == 0) {
+            let i: IndexGroup = {
+                start: 0,
+                end: input.length,
+                entity: null
+            }
+            indexGroups.push(i)
+        }
         let substringObjects: SubstringObject[] = [];
         if (indexGroups.length == 0 && input.length == 1) {
             //single letter, would not be picked up by the loop below
@@ -272,14 +285,6 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
                 startIndex: 0
             }
             substringObjects.push(substringObj)
-        }
-        if (predictedEntities.length == 0) {
-            let i: IndexGroup = {
-                start: 0,
-                end: input.length,
-                entity: null
-            }
-            indexGroups.push(i)
         }
         // run through the index groups but handle the entities and strings differently
         indexGroups.map((i: IndexGroup) => {
@@ -469,8 +474,7 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
     isDefinedEntityBetweenClickedSubstrings(startIndex: number, endIndex: number): boolean {
         let result = false;
         if (this.state.substringsClicked.length > 0) {
-            // TODO: This array may have holes of undefined in it, how can it be iterated without filtring?
-            let entityStartIndexes: number[] = this.state.substringObjects.map(s => (s.entity.entityId !== null) ? s.startIndex : undefined)
+            let entityStartIndexes: number[] = this.state.substringObjects.map(s => (s.entity !== null) ? s.startIndex : undefined)
             entityStartIndexes.map(entityStartIndex => {
                 if (startIndex < entityStartIndex && endIndex > entityStartIndex) {
                     result = true
@@ -705,8 +709,7 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
         let newClickedSubstringObject = {
             ...left,
             rightBracketStyle: styles.rightBracketDisplayedBlack,
-            entityName: entity ? entity.entityName : null,
-            entityId: entity ? entity.entityId : null,
+            entity: entity,
             dropdownStyle: styles.hidden,
             labelStyle: styles.normal,
             text: newText
@@ -889,7 +892,7 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
                         className='ms-font-m'
                         placeHolder="Select an Entity"
                         options={options}
-                        onRenderOption={(option) => this.onRenderOption(option as BlisDropdownOption)}
+                        onRenderOption={(option)=> this.onRenderOption(option as BlisDropdownOption)}
                         selectedKey={null}
                         onChanged={(obj) => {
                             this.onDropdownEntitySelected(obj, s)
@@ -915,16 +918,16 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
 
         return undefined
     }
-    handleDeleteVariation() {
+    onClickDeleteVariation() {
         let removedResponse = new ExtractResponse({ text: this.state.input, predictedEntities: [] });
         this.props.removeExtractResponse(removedResponse);
     }
-    handleMousePosition(insideExtractor: boolean) {
+    onMousePosition(insideExtractor: boolean) {
         this.setState({
             insideExtractor: insideExtractor
         })
     }
-    handleGlobalClick() {
+    onGlobalClick() {
         if (this.state.insideExtractor === false && this.state.substringsClicked.length > 0) {
             this.removeBracketsFromAllSelectedSubstrings();
             this.setState({
@@ -948,14 +951,15 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
         let boxClass = this.props.isValid ? 'extractorResponseBox' : 'extractorResponseBox extractorResponseBoxInvalid';
         let button = this.props.isPrimary ? null :
             <div>
-                <a onClick={() => this.handleDeleteVariation()}><span className="teachDeleteVariation ms-Icon ms-Icon--Delete"></span></a>
+                <a onClick={() => this.onClickDeleteVariation()}><span className="teachDeleteVariation ms-Icon ms-Icon--Delete"></span></a>
             </div>
         return (
-            <div onClick={() => this.handleGlobalClick()} className='teachVariationBox'>
+            <div onClick={() => this.onGlobalClick()} 
+                className='teachVariationBox'>
                 {button}
                 <div className='teachVariation'>
                     <div className={boxClass}>
-                        <div onMouseLeave={() => this.handleMousePosition(false)} onMouseEnter={() => this.handleMousePosition(true)} className="extractContainer">
+                        <div onMouseLeave={() => this.onMousePosition(false)} onMouseEnter={() => this.onMousePosition(true)} className="extractContainer">
                             {this.state.substringObjects.map(s => this.renderSubstringObject(s, ++key))}
                         </div>
                     </div>

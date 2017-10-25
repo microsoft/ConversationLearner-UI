@@ -3,7 +3,7 @@ import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../../types'
-import { ModelUtils, ExtractResponse, TextVariation, DialogType } from 'blis-models'
+import { ModelUtils, ExtractResponse, TextVariation, DialogType, EntityType } from 'blis-models'
 import * as OF from 'office-ui-fabric-react';
 import TextVariationCreator from '../TextVariationCreator';
 import ExtractorResponseEditor from '../ExtractorResponseEditor';
@@ -323,7 +323,9 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                         <EntityCreatorEditor
                             open={this.state.entityModalOpen}
                             entity={null}
-                            handleClose={this.entityEditorHandleClose} />
+                            handleClose={this.entityEditorHandleClose}
+                            handleOpenDeleteModal={()=>{}}
+                            entityTypeFilter={EntityType.LUIS}/>
                     </div>
                     {extractDisplay}
                     {variationCreator}

@@ -26,7 +26,6 @@ class AppCreator extends React.Component<Props, ComponentState> {
     constructor(p: Props) {
         super(p)
 
-        this.checkIfBlank = this.checkIfBlank.bind(this)
         this.luisKeyChanged = this.luisKeyChanged.bind(this)
         this.onKeyDown = this.onKeyDown.bind(this)
         this.localeChanged = this.localeChanged.bind(this)
@@ -102,7 +101,25 @@ class AppCreator extends React.Component<Props, ComponentState> {
         }
     }
 
-    checkIfBlank(value: string): string {
+    onGetNameErrorMessage(value: string): string {
+        if (value.length === 0) {
+            return "Required Value";
+        }
+
+        if (!/^[a-zA-Z0-9- ]+$/.test(value)) {
+            return "Application name may only contain alphanumeric characters";
+        }
+
+        // Check that name isn't in use
+        let foundApp = this.props.apps.all.find(a => a.appName == value);
+        if (foundApp) {
+            return "Name is already in use.";
+        }
+
+        return "";
+    }
+
+    onGetPasswordErrorMessage(value: string): string {
         return value ? "" : "Required Value";
     }
 
@@ -119,7 +136,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
                 </div>
                 <div>
                     <TextField
-                        onGetErrorMessage={value => this.checkIfBlank(value)}
+                        onGetErrorMessage={value => this.onGetNameErrorMessage(value)}
                         onChanged={text => this.nameChanged(text)}
                         label="Name"
                         placeholder="Application Name..."
@@ -127,7 +144,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
                         value={this.state.appNameVal} />
                     <Label>LUIS Key <a href="https://www.luis.ai/user/settings" tabIndex={-1} className="ms-font-xs" target="_blank">(Find your key)</a></Label>
                     <TextField
-                        onGetErrorMessage={this.checkIfBlank}
+                        onGetErrorMessage={value => this.onGetPasswordErrorMessage(value)}
                         onChanged={this.luisKeyChanged}
                         placeholder="Key..."
                         type="password"
@@ -168,6 +185,7 @@ const mapDispatchToProps = (dispatch: any) => {
 }
 const mapStateToProps = (state: State) => {
     return {
+        apps: state.apps
     }
 }
 

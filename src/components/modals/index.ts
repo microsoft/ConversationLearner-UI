@@ -1,4 +1,4 @@
-import ActionResponseCreatorEditor from './ActionResponseCreatorEditor'
+import ActionCreatorEditor from './ActionCreatorEditor'
 import AppCreator from './AppCreator'
 import EntityCreatorEditor from './EntityCreatorEditor'
 import ConfirmDeleteModal from './ConfirmDeleteModal'
@@ -11,7 +11,7 @@ import SpinnerWindow from './SpinnerWindow'
 import UserLogin from './UserLogin'
 
 export {
-    ActionResponseCreatorEditor,
+    ActionCreatorEditor,
     AppCreator,
     EntityCreatorEditor,
     ConfirmDeleteModal,
