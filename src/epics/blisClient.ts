@@ -80,12 +80,15 @@ export default class BlisClient {
             .then(response => response.data)
     }
 
-    appsCreate(userId: string, app: models.BlisAppBase): Promise<string> {
+    appsCreate(userId: string, app: models.BlisAppBase): Promise<models.BlisAppBase> {
         return this.send<string>({
             method: 'post',
             url: `${this.baseUrl}/app?userId=${userId}`,
             data: app
-        }).then(response => response.data)
+        }).then(response => {
+            app.appId = response.data
+            return app
+        })
     }
 
     appsDelete(appId: string): Promise<void> {
@@ -247,7 +250,7 @@ export default class BlisClient {
         })
             .then(response => { })
     }
-    
+
     logDialogsUpdateExtractStep(appId: string, logDialogId: string, turnIndex: number, userInput: models.UserInput): Promise<models.UIExtractResponse> {
         return this.send({
             method: 'put',
@@ -302,7 +305,7 @@ export default class BlisClient {
         })
             .then(response => { })
     }
-    
+
     teachSessionsAddExtractStep(appId: string, sessionId: string, userInput: models.UserInput): Promise<models.UIExtractResponse> {
         return this.send({
             method: 'put',

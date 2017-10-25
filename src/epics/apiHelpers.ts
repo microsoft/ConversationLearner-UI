@@ -126,8 +126,7 @@ export const getLuisApplicationCultures = (): Promise<CultureObject[]> => {
     //remove the appId property from the object
     const { appId, ...appToSend } = app
     return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.appsCreate(userId, appToSend as BlisAppBase)
-      .then(appId => {
-        app.appId = appId
+      .then(app => {
         obs.next(actions.create.createApplicationFulfilled(app))
         obs.complete();
       })
