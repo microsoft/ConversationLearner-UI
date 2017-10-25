@@ -204,13 +204,11 @@ export type CreateAction = {
     type: AT.CREATE_CHAT_SESSION_FULFILLED,
     session: Session
 } | {
-    type: AT.CREATE_TEACH_SESSION_ASYNC,
-    key: string,
-    currentAppId: string,
-    teachSession: Teach
+    type: AT.CREATE_TEACH_SESSION_ASYNC
 } | {
+    type: AT.CREATE_TEACH_SESSION_REJECTED
+}| {
     type: AT.CREATE_TEACH_SESSION_FULFILLED,
-    teachSessionId: string,
     teachSession: Teach
 }
 

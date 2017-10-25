@@ -5,8 +5,9 @@ import { connect } from 'react-redux';
 import { IButton, DetailsList, CommandButton, CheckboxVisibility, IColumn, SearchBox } from 'office-ui-fabric-react';
 import { setCurrentTeachSession } from '../../../actions/displayActions'
 import { State } from '../../../types'
-import { BlisAppBase, TrainDialog } from 'blis-models'
+import { BlisAppBase, Teach, TrainDialog } from 'blis-models'
 import { TeachSessionWindow, TrainDialogWindow } from '../../../components/modals'
+import { createTeachSessionThunkAsync } from '../../../actions/createActions'
 
 let columns: IColumn[] = [
     {
@@ -44,6 +45,7 @@ let columns: IColumn[] = [
 ];
 
 interface ComponentState {
+    teachSession: Teach,
     isTeachDialogModalOpen: boolean
     isTrainDialogModalOpen: boolean
     trainDialogId: string
@@ -55,6 +57,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     newTeachSessionButton: IButton
 
     state: ComponentState = {
+        teachSession: null,
         isTeachDialogModalOpen: false,
         isTrainDialogModalOpen: false,
         trainDialogId: null,
@@ -144,9 +147,17 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     }
 
     onClickNewTeachSession() {
-        this.setState({
-            isTeachDialogModalOpen: true
-        })
+        // TODO: Find cleaner solution for the types.  Thunks return functions but when using them on props they should be returning result of the promise.
+        ((this.props.createTeachSessionThunkAsync(this.props.user.key, this.props.app.appId) as any) as Promise<Teach>)
+            .then(teachSession => {
+                this.setState({
+                    teachSession,
+                    isTeachDialogModalOpen: true
+                })
+            })
+            .catch(error => {
+                console.warn(`Error when attempting to create teach session: `, error)
+            })
     }
 
     onCloseTeachSession() {
@@ -234,6 +245,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
+        createTeachSessionThunkAsync,
         setCurrentTeachSession
     }, dispatch)
 }

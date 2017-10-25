@@ -23,7 +23,6 @@ export const createApplicationFulfilled = (blisApp: BlisAppBase): ActionObject =
 }
 
 export const createEntityAsync = (key: string, entity: EntityBase, currentAppId: string): ActionObject => {
-
     return {
         type: AT.CREATE_ENTITY_ASYNC,
         key: key,
@@ -119,22 +118,36 @@ export const createChatSessionThunkAsync = (key: string, appId: string) => {
     }
 }
 
-export const createTeachSessionAsync = (key: string, teachSession: Teach, currentAppId: string): ActionObject => {
+export const createTeachSessionAsync = (): ActionObject =>
+    ({
+        type: AT.CREATE_TEACH_SESSION_ASYNC
+    })
 
-    return {
-        type: AT.CREATE_TEACH_SESSION_ASYNC,
-        key: key,
-        teachSession: teachSession,
-        currentAppId: currentAppId
-    }
-}
+export const createTeachSessionRejected = (): ActionObject =>
+    ({
+        type: AT.CREATE_TEACH_SESSION_REJECTED
+    })
 
-export const createTeachSessionFulfilled = (teachSession: Teach, teachSessionId: string): ActionObject => {
-
-    return {
+export const createTeachSessionFulfilled = (teachSession: Teach): ActionObject =>
+    ({
         type: AT.CREATE_TEACH_SESSION_FULFILLED,
-        teachSession: teachSession,
-        teachSessionId: teachSessionId
+        teachSession
+    })
+
+export const createTeachSessionThunkAsync = (key: string, appId: string) => {
+    return async (dispatch: Dispatch<any>) => {
+        blisClient.key = key
+        dispatch(createTeachSessionAsync())
+
+        try {
+            const session = await blisClient.teachSessionsCreate(appId)
+            dispatch(createTeachSessionFulfilled(session))
+            return session
+        }
+        catch (e) {
+            dispatch(createTeachSessionRejected())
+            throw e
+        }
     }
 }
 
