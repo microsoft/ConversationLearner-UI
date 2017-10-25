@@ -1,62 +1,80 @@
 import 'rxjs';
 import * as Rx from 'rxjs';
 import { ActionsObservable, Epic } from 'redux-observable'
-import { State, ActionObject, DeleteLogDialogAsyncAction } from '../types'
+import { State, ActionObject } from '../types'
 import { AT } from '../types/ActionTypes'
 import { deleteBlisApp, deleteBlisEntity, deleteBlisAction, deleteChatSession, deleteTeachSession, deleteTrainDialog, deleteLogDialog } from "./apiHelpers";
 
+const assertNever = () => { throw Error(`Should not reach here`) }
+
 export const deleteApplicationEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
     return action$.ofType(AT.DELETE_BLIS_APPLICATION_ASYNC)
-        .flatMap((action: any) =>
-            deleteBlisApp(action.key, action.blisApp)
-        );
+        .flatMap(action =>
+            (action.type === AT.DELETE_BLIS_APPLICATION_ASYNC)
+                ? deleteBlisApp('', action.blisApp)
+                : assertNever()
+        )
 }
 
 export const deleteEntityEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
     return action$.ofType(AT.DELETE_ENTITY_ASYNC)
-        .flatMap((action: any) =>
-            deleteBlisEntity(action.key, action.currentAppId, action.entity.entityId, action.entity.metadata.negativeId || action.entity.metadata.positiveId)
-        );
+        .flatMap(action =>
+            (action.type === AT.DELETE_ENTITY_ASYNC)
+                ? deleteBlisEntity('', action.currentAppId, action.entity.entityId, action.entity.metadata.negativeId || action.entity.metadata.positiveId)
+                : assertNever()
+        )
 }
 
 export const deleteReverseEntityEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
     return action$.ofType(AT.DELETE_REVERSE_ENTITY_ASYNC)
-        .flatMap((action: any) =>
-            deleteBlisEntity(action.key, action.currentAppId, action.reverseEntityId, null)
-        );
+        .flatMap(action =>
+            (action.type === AT.DELETE_REVERSE_ENTITY_ASYNC)
+                ? deleteBlisEntity(action.key, action.currentAppId, action.reverseEntityId, null)
+                : assertNever()
+        )
 }
 
 export const deleteActionEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
     return action$.ofType(AT.DELETE_ACTION_ASYNC)
-        .flatMap((actionObject: any) =>
-            deleteBlisAction(actionObject.key, actionObject.currentAppId, actionObject.action)
-        );
+        .flatMap(action =>
+            (action.type === AT.DELETE_ACTION_ASYNC)
+                ? deleteBlisAction('', action.currentAppId, action.action)
+                : assertNever()
+        )
 }
 
 export const deleteSessionEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
     return action$.ofType(AT.DELETE_CHAT_SESSION_ASYNC)
-        .flatMap((actionObject: any) =>
-            deleteChatSession(actionObject.key, actionObject.currentAppId, actionObject.session)
-        );
+        .flatMap(action =>
+            (action.type === AT.DELETE_CHAT_SESSION_ASYNC)
+                ? deleteChatSession(action.key, action.currentAppId, action.session)
+                : assertNever()
+        )
 }
 
 export const deleteTeachEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
     return action$.ofType(AT.DELETE_TEACH_SESSION_ASYNC)
-        .flatMap((actionObject: any) =>
-            deleteTeachSession(actionObject.key, actionObject.currentAppId, actionObject.teachSession, actionObject.save)
-        );
+        .flatMap(action =>
+            (action.type === AT.DELETE_TEACH_SESSION_ASYNC)
+                ? deleteTeachSession(action.key, action.currentAppId, action.teachSession, action.save)
+                : assertNever()
+        )
 }
 
 export const deleteTrainDialogEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
     return action$.ofType(AT.DELETE_TRAIN_DIALOG_ASYNC)
-        .flatMap((actionObject: any) =>
-            deleteTrainDialog(actionObject.key, actionObject.currentAppId, actionObject.trainDialog)
-        );
+        .flatMap(action =>
+            (action.type === AT.DELETE_TRAIN_DIALOG_ASYNC)
+                ? deleteTrainDialog(action.key, action.currentAppId, action.trainDialog)
+                : assertNever()
+        )
 }
 
 export const deleteLogDialogEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
     return action$.ofType(AT.DELETE_LOG_DIALOG_ASYNC)
-        .flatMap((actionObject: DeleteLogDialogAsyncAction) =>
-            deleteLogDialog(actionObject.appId, actionObject.logDialogId)
-        );
+        .flatMap(action =>
+            (action.type === AT.DELETE_LOG_DIALOG_ASYNC)
+                ? deleteLogDialog(action.appId, action.logDialogId)
+                : assertNever()
+        )
 }

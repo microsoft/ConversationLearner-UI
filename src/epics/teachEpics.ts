@@ -9,29 +9,33 @@ const assertNever = () => { throw Error(`Should not reach here`) }
 
 export const runExtractorEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
     return action$.ofType(AT.RUN_EXTRACTOR_ASYNC)
-        .flatMap(action => 
-            (action.type === AT.RUN_EXTRACTOR_ASYNC) ? putExtract(action.key, action.appId, action.extractType, action.sessionId, action.turnIndex, action.userInput) : assertNever()
-        );
+        .flatMap(action =>
+            (action.type === AT.RUN_EXTRACTOR_ASYNC)
+                ? putExtract(action.key, action.appId, action.extractType, action.sessionId, action.turnIndex, action.userInput)
+                : assertNever())
 }
 
 export const runScorerEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
     return action$.ofType(AT.RUN_SCORER_ASYNC)
-        .flatMap((action: any) =>
-            putScore(action.key, action.appId, action.sessionId, action.uiScoreInput)
-        );
+        .flatMap(action =>
+            (action.type === AT.RUN_SCORER_ASYNC)
+                ? putScore(action.key, action.appId, action.sessionId, action.uiScoreInput)
+                : assertNever())
 }
 
 export const scorerFeedbackEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
     return action$.ofType(AT.POST_SCORE_FEEDBACK_ASYNC)
-        .flatMap((action: any) =>
-            postScore(action.key, action.appId, action.sessionId, action.uiTrainScorerStep, action.waitForUser, action.uiScoreInput)
-        );
+        .flatMap(action =>
+            (action.type === AT.POST_SCORE_FEEDBACK_ASYNC)
+                ? postScore(action.key, action.appId, action.sessionId, action.uiTrainScorerStep, action.waitForUser, action.uiScoreInput)
+                : assertNever())
 }
 
 // Score has been put, action was not terminal so put new score
 export const postScoreFeedbackFulfilledWaitEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
     return action$.ofType(AT.POST_SCORE_FEEDBACK_FULFILLEDNOWAIT)
-        .flatMap((action: any) =>
-            putScore(action.key, action.appId, action.sessionId, action.uiScoreInput)
-        );
+        .flatMap(action =>
+            (action.type === AT.POST_SCORE_FEEDBACK_FULFILLEDNOWAIT)
+                ? putScore(action.key, action.appId, action.sessionId, action.uiScoreInput)
+                : assertNever())
 }
