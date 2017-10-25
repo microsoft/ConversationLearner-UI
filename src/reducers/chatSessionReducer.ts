@@ -16,9 +16,7 @@ const chatSessionReducer: Reducer<ChatSessionState> = (state = initialState, act
         case AT.FETCH_CHAT_SESSIONS_FULFILLED:
             return { ...state, all: action.allSessions };
         case AT.CREATE_CHAT_SESSION_FULFILLED:
-            let newSession = { ...action.session, sessionId: action.sessionId };
-            let newState: ChatSessionState = { ...state, all: [...state.all, newSession], current: newSession }
-            return newState;
+            return { ...state, all: [...state.all, action.session], current: action.session }
         case AT.DELETE_CHAT_SESSION_FULFILLED:
             return {
                 ...state,

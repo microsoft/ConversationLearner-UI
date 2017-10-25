@@ -6,29 +6,16 @@ import { PrimaryButton } from 'office-ui-fabric-react';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { State } from '../../types';
 import Webchat from '../Webchat'
-import { BlisAppBase, Session } from 'blis-models'
+import { BlisAppBase } from 'blis-models'
 import { deleteChatSessionAsync } from '../../actions/deleteActions'
-import { createChatSessionAsync } from '../../actions/createActions'
 import { Activity } from 'botframework-directlinejs';
 // TODO: Investigate if this can be removed in favor of local state
 import { addMessageToChatConversationStack } from '../../actions/displayActions';
 
 interface ComponentState {
-    chatSession: Session
 }
 
 class SessionWindow extends React.Component<Props, ComponentState> {
-    state: ComponentState = {
-        chatSession: null
-    }
-
-    componentWillReceiveProps(nextProps: Props) {
-        if (this.props.open === false && nextProps.open === true) {
-            this.state.chatSession = new Session({ saveToLog: true })
-            this.props.createChatSessionAsync(this.props.userKey, this.state.chatSession, this.props.app.appId);
-        }
-    }
-
     onClickDone() {
         if (this.props.chatSession.current !== null) {
             this.props.deleteChatSessionAsync(this.props.userKey, this.props.chatSession.current, this.props.app.appId)
@@ -89,7 +76,6 @@ class SessionWindow extends React.Component<Props, ComponentState> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         addMessageToChatConversationStack,
-        createChatSessionAsync,
         deleteChatSessionAsync
     }, dispatch);
 }

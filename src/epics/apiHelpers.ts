@@ -269,17 +269,6 @@ export const getLuisApplicationCultures = (): Promise<CultureObject[]> => {
 // SESSION ROUTES
 //========================================================
 
-  /** START SESSION : Creates a new session and a corresponding logDialog */
-  export const createChatSession = (key: string, session: Session, appId: string): Observable<ActionObject> => {
-    blisClient.key = key
-    return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.chatSessionsCreate(appId)
-    .then(newSession => {
-      obs.next(actions.create.createChatSessionFulfilled(newSession, newSession.sessionId));
-      obs.complete();
-    })
-      .catch(err => handleError(obs, err, AT.CREATE_CHAT_SESSION_ASYNC)));
-  };
-
   export const deleteChatSession = (key: string, appId: string, session: Session): Observable<ActionObject> => {
     return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.chatSessionsDelete(appId, session.sessionId)
       .then(() => {

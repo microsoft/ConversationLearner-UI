@@ -2,10 +2,11 @@ import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { DetailsList, CommandButton, CheckboxVisibility, IColumn, SearchBox } from 'office-ui-fabric-react';
+import { DetailsList, CommandButton, CheckboxVisibility, IColumn, SearchBox, Dialog, DialogType, DialogFooter, PrimaryButton } from 'office-ui-fabric-react';
 import { State } from '../../../types'
-import { BlisAppBase, LogDialog } from 'blis-models'
+import { BlisAppBase, LogDialog, Session } from 'blis-models'
 import { ChatSessionWindow, LogDialogModal } from '../../../components/modals'
+import { createChatSessionThunkAsync } from '../../../actions/createActions'
 
 interface IRenderableColumn extends IColumn {
     render: (x: LogDialog, component: LogDialogs) => React.ReactNode
@@ -91,15 +92,19 @@ let columns: IRenderableColumn[] = [
 ];
 
 interface ComponentState {
-    isChatSessionWindowOpen: boolean,
-    isLogDialogWindowOpen: boolean,
-    currentLogDialog: LogDialog,
-    searchValue: string,
+    chatSession: Session
+    isChatSessionWarningWindowOpen: boolean
+    isChatSessionWindowOpen: boolean
+    isLogDialogWindowOpen: boolean
+    currentLogDialog: LogDialog
+    searchValue: string
     dialogKey: number   // Allows user to re-open modal for same row ()
 }
 
 class LogDialogs extends React.Component<Props, ComponentState> {
     state: ComponentState = {
+        chatSession: null,
+        isChatSessionWarningWindowOpen: false,
         isChatSessionWindowOpen: false,
         isLogDialogWindowOpen: false,
         currentLogDialog: null,
@@ -108,9 +113,20 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     }
 
     onClickNewChatSession() {
-        this.setState({
-            isChatSessionWindowOpen: true
-        })
+        // TODO: Find cleaner solution for the types.  Thunks return functions but when using them on props they should be returning result of the promise.
+        ((this.props.createChatSessionThunkAsync(this.props.user.key, this.props.app.appId) as any) as Promise<Session>)
+            .then(chatSession => {
+                this.setState({
+                    chatSession,
+                    isChatSessionWindowOpen: true
+                })
+            })
+            .catch(error => {
+                console.warn(`Error when attempting to opening chat window: `, error)
+                this.setState({
+                    isChatSessionWarningWindowOpen: true
+                })
+            })
     }
 
     onCloseChatSessionWindow() {
@@ -139,6 +155,12 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             isLogDialogWindowOpen: false,
             currentLogDialog: null,
             dialogKey: this.state.dialogKey+1
+        })
+    }
+
+    onClickWarningWindowOk() {
+        this.setState({
+            isChatSessionWarningWindowOpen: false
         })
     }
 
@@ -183,6 +205,18 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     onClose={() => this.onCloseLogDialogModal()}
                     logDialog={currentLogDialog}
                 />
+                <Dialog
+                    hidden={!this.state.isChatSessionWarningWindowOpen}
+                    dialogContentProps={{
+                        type: DialogType.normal,
+                        title: 'You may not create chat session at this time. Please try again later.'
+                    }}
+                    onDismiss={() => this.onClickWarningWindowOk()}
+                >
+                    <DialogFooter>
+                        <PrimaryButton onClick={() => this.onClickWarningWindowOk()} text='Ok' />
+                    </DialogFooter>
+                </Dialog>
             </div>
         );
     }
@@ -190,6 +224,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
 
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
+        createChatSessionThunkAsync
     }, dispatch)
 }
 const mapStateToProps = (state: State) => {

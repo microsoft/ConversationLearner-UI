@@ -197,13 +197,11 @@ export type CreateAction = {
     positiveEntity: EntityBase,
     currentAppId: string
 } | {
-    type: AT.CREATE_CHAT_SESSION_ASYNC,
-    key: string,
-    currentAppId: string,
-    session: Session
+    type: AT.CREATE_CHAT_SESSION_ASYNC
+} | {
+    type: AT.CREATE_CHAT_SESSION_REJECTED
 } | {
     type: AT.CREATE_CHAT_SESSION_FULFILLED,
-    sessionId: string,
     session: Session
 } | {
     type: AT.CREATE_TEACH_SESSION_ASYNC,
