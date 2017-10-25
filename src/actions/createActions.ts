@@ -1,6 +1,10 @@
 import { ActionObject } from '../types'
 import { AT } from '../types/ActionTypes'
-import { BlisAppBase, EntityBase, ActionBase, TrainDialog, LogDialog, Session, Teach } from 'blis-models';
+import { BlisAppBase, EntityBase, ActionBase, TrainDialog, LogDialog, Teach, Session } from 'blis-models'
+import { Dispatch } from 'redux'
+import BlisClient from '../epics/blisClient'
+
+const blisClient = new BlisClient("http://localhost:5000", () => '')
 
 export const createBLISApplicationAsync = (key: string, userId: string, application: BlisAppBase): ActionObject => {
     return {
@@ -80,22 +84,38 @@ export const createActionFulfilled = (action: ActionBase, actionId: string): Act
     }
 }
 
-export const createChatSessionAsync = (key: string, session: Session, currentAppId: string): ActionObject => {
+export const createChatSessionAsync = (key: string): ActionObject =>
+    ({
+        type: AT.CREATE_CHAT_SESSION_ASYNC
+    })
 
-    return {
-        type: AT.CREATE_CHAT_SESSION_ASYNC,
-        key: key,
-        session: session,
-        currentAppId: currentAppId
-    }
-}
+export const createChatSessionRejected = (): ActionObject =>
+    ({
+        type: AT.CREATE_CHAT_SESSION_REJECTED
+    })
 
-export const createChatSessionFulfilled = (session: Session, sessionId: string): ActionObject => {
-
-    return {
+export const createChatSessionFulfilled = (session: Session): ActionObject =>
+    ({
         type: AT.CREATE_CHAT_SESSION_FULFILLED,
-        session: session,
-        sessionId: sessionId
+        session: session
+    })
+
+export const createChatSessionThunkAsync = (key: string, appId: string) => {
+    return async (dispatch: Dispatch<any>) => {
+        blisClient.key = key
+        dispatch(createChatSessionAsync(key))
+        const app = await blisClient.appGet(appId)
+        // TODO: Update blis-models to expose trainingStatus on app model
+        const trainingStatus = (app as any).trainingStatus
+        if (trainingStatus !== "completed") {
+            dispatch(createChatSessionRejected())
+            throw new Error(`Application is still training. You may not create chat session at this time. Please try again later.`)
+        }
+
+        const session = await blisClient.chatSessionsCreate(appId)
+        dispatch(createChatSessionFulfilled(session))
+
+        return session
     }
 }
 

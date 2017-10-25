@@ -16,6 +16,7 @@
     "react-scripts-ts": "2.6.0",
     "redux": "^3.7.2",
     "redux-observable": "^0.16.0",
+    "redux-thunk": "^2.2.0",
     "rxjs": "^5.4.3"
   },
   "scripts": {

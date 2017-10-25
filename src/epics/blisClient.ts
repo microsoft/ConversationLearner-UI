@@ -73,6 +73,13 @@ export default class BlisClient {
         }).then(response => ({ ...response, data: response.data.apps }))
     }
 
+    appGet(appId: string): Promise<models.BlisAppBase> {
+        return this.send<models.BlisAppBase>({
+            url: `${this.baseUrl}/app/${appId}`
+        })
+            .then(response => response.data)
+    }
+
     appsCreate(userId: string, app: models.BlisAppBase): Promise<TypedAxiosResponse<string>> {
         return this.send({
             method: 'post',

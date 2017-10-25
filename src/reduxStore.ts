@@ -1,10 +1,14 @@
 import { createStore, applyMiddleware, Store } from 'redux';
 import { createEpicMiddleware } from 'redux-observable';
+import thunkMiddleware from 'redux-thunk'
 import { State } from './types'
 import rootEpic from './epics/root';
 import rootReducer from './reducers/root';
 
 export const createReduxStore = (): Store<State> =>
     createStore(rootReducer,
-        applyMiddleware(createEpicMiddleware(rootEpic))
+        applyMiddleware(
+            thunkMiddleware,
+            createEpicMiddleware(rootEpic)
+        )
     );
