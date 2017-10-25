@@ -228,6 +228,7 @@ class Entities extends React.Component<Props, ComponentState> {
                         entity={this.state.entitySelected}
                         handleClose={this.handleCloseCreateModal}
                         handleOpenDeleteModal={this.openDeleteModal}
+                        entityTypeFilter={null}
                     />
                 </div>
                 <SearchBox

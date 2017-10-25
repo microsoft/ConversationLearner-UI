@@ -77,7 +77,8 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
         if (p.entity === null) {
             this.setState({
                 ...initState,
-                title: 'Create an Entity'
+                title: 'Create an Entity',
+                entityTypeVal: this.props.entityTypeFilter ? this.props.entityTypeFilter : EntityType.LUIS
             });
         } else {
             this.setState({
@@ -211,7 +212,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                         options={this.entityOptions}
                         onChanged={this.onChangedType}
                         selectedKey={this.state.entityTypeVal}
-                        disabled={this.state.editing}
+                        disabled={this.state.editing || this.props.entityTypeFilter != null}
                     />
                     <div className="blis-entity-creator-checkbox">
                         <OF.Checkbox
@@ -398,6 +399,7 @@ export interface ReceivedProps {
     open: boolean,
     entity: EntityBase | null,
     handleClose: Function,
+    entityTypeFilter: EntityType | null,
     handleOpenDeleteModal: (entityId: string) => void
 }
 
