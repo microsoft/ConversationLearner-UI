@@ -19,10 +19,10 @@
     display: inline-block;
 }
 
-.extractDropdown--command{
+.blisDropdown--command{
     color: var(--color-log);
     font-weight: bold;
 } 
-.extractDropdown--normal {
+.blisDropdown--normal {
     color: #000000;
 }

@@ -8,54 +8,49 @@ import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import * as OF from 'office-ui-fabric-react';
 import ActionDetailsList from '../ActionDetailsList'
 import { State, PreBuiltEntities } from '../../types';
+import { BlisDropdownOption } from './BlisDropDownOption'
 import { EntityBase, EntityMetaData, EntityType, ActionBase } from 'blis-models'
 import './EntityCreatorEditor.css'
 
+const NEW_ENTITY = "New Entity";
+
 const initState: ComponentState = {
     entityNameVal: '',
-    entityTypeVal: EntityType.LUIS,
+    entityTypeVal: NEW_ENTITY,
     isBucketableVal: false,
     isNegatableVal: false,
+    isProgrammaticVal: false,
     editing: false,
     title: ''
 };
 
 interface ComponentState {
-    entityNameVal: string
-    entityTypeVal: string
-    isBucketableVal: boolean
-    isNegatableVal: boolean
-    editing: boolean
-    title: string
+    entityNameVal: string;
+    entityTypeVal: string;
+    isBucketableVal: boolean;
+    isNegatableVal: boolean;
+    isProgrammaticVal: boolean;
+    editing: boolean;
+    title: string;
 }
 
-const blisEntityTypes = [EntityType.LUIS, EntityType.LOCAL].map<OF.IDropdownOption>(value =>
-    ({
-        key: value,
-        text: value
-    }))
-
-const staticEntityOptions: OF.IDropdownOption[] = [
+const staticEntityOptions: BlisDropdownOption[] = [
     {
-        key: 'BlisHeader',
-        text: 'BLIS Entity Types',
-        itemType: OF.DropdownMenuItemType.Header
+        key: NEW_ENTITY,
+        text: 'New Type',
+        itemType: OF.DropdownMenuItemType.Normal,
+        style: "blisDropdown--command" 
     },
-    ...blisEntityTypes,
     {
         key: 'divider',
         text: '-',
-        itemType: OF.DropdownMenuItemType.Divider
-    },
-    {
-        key: 'LuisHeader',
-        text: 'LUIS Pre-Built Entity Types',
-        itemType: OF.DropdownMenuItemType.Header
+        itemType: OF.DropdownMenuItemType.Divider,
+        style: "blisDropdown--normal" 
     }
 ]
 
 class EntityCreatorEditor extends React.Component<Props, ComponentState> {
-    entityOptions: OF.IDropdownOption[]
+    entityOptions: BlisDropdownOption[]
     state = initState
 
     componentWillReceiveProps(p: Props) {
@@ -65,11 +60,12 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
             .find(obj => obj.locale === currentAppLocale)
 
         const localePreBuildOptions = localePreBuiltEntities.preBuiltEntities
-            .map<OF.IDropdownOption>(entityName =>
+            .map<BlisDropdownOption>(entityName =>
                 ({
                     key: entityName,
                     text: entityName,
-                    itemType: OF.DropdownMenuItemType.Normal
+                    itemType: OF.DropdownMenuItemType.Normal,
+                    style: "blisDropdown--normal"
                 }))
 
         this.entityOptions = [...staticEntityOptions, ...localePreBuildOptions]
@@ -78,14 +74,24 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
             this.setState({
                 ...initState,
                 title: 'Create an Entity',
-                entityTypeVal: this.props.entityTypeFilter ? this.props.entityTypeFilter : EntityType.LUIS
+                entityTypeVal: this.props.entityTypeFilter ? this.props.entityTypeFilter : NEW_ENTITY
             });
         } else {
+            let entityType = p.entity.entityType;
+            let isProgrammatic = false;
+            if (entityType == EntityType.LUIS)
+            {
+                entityType = NEW_ENTITY;
+            } else if (entityType == EntityType.LOCAL) {
+                entityType = NEW_ENTITY;
+                isProgrammatic = true;
+            }
             this.setState({
                 entityNameVal: p.entity.entityName,
-                entityTypeVal: p.entity.entityType,
+                entityTypeVal: entityType,
                 isBucketableVal: p.entity.metadata.isBucket,
                 isNegatableVal: p.entity.metadata.isReversable,
+                isProgrammaticVal: isProgrammatic,
                 editing: true,
                 title: 'Edit Entity'
             })
@@ -93,6 +99,10 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
     }
 
     convertStateToEntity(state: ComponentState): EntityBase {
+        let entityType = this.state.entityTypeVal;
+        if (entityType == NEW_ENTITY ) {
+            entityType =  (this.state.isProgrammaticVal) ? EntityType.LOCAL : EntityType.LUIS;
+        }
         return new EntityBase({
             entityName: this.state.entityNameVal,
             metadata: new EntityMetaData({
@@ -101,7 +111,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                 negativeId: null,
                 positiveId: null,
             }),
-            entityType: this.state.entityTypeVal,
+            entityType: entityType,
             version: null,
             packageCreationId: null,
             packageDeletionId: null
@@ -133,9 +143,14 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
             entityNameVal: text
         })
     }
-    onChangedType = (obj: OF.IDropdownOption) => {
+    onChangedType = (obj: BlisDropdownOption) => {
         this.setState({
             entityTypeVal: obj.text
+        })
+    }
+    onChangeProgrammatic = () => {
+        this.setState({
+            isProgrammaticVal: !this.state.isProgrammaticVal,
         })
     }
     onChangeBucketable = () => {
@@ -192,6 +207,14 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
         return requiredActions;
     }
 
+    onRenderOption = (option: BlisDropdownOption): JSX.Element => {
+        return (
+            <div className='dropdownExample-option'>
+                <span className={option.style}>{option.text}</span>
+            </div>
+        );
+    }
+
     renderEdit() {
         return (
             <div>
@@ -211,24 +234,54 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                         label='Entity Type'
                         options={this.entityOptions}
                         onChanged={this.onChangedType}
+                        onRenderOption={(option)=> this.onRenderOption(option as BlisDropdownOption)}
                         selectedKey={this.state.entityTypeVal}
                         disabled={this.state.editing || this.props.entityTypeFilter != null}
                     />
                     <div className="blis-entity-creator-checkbox">
                         <OF.Checkbox
-                            label='Multi-valued'
-                            defaultChecked={false}
-                            onChange={this.onChangeBucketable}
-                            disabled={this.state.editing}
+                            label='Programmatic Only'
+                            defaultChecked={this.state.isProgrammaticVal}
+                            onChange={this.onChangeProgrammatic}
+                            disabled={this.state.editing || this.state.entityTypeVal != NEW_ENTITY}
                         />
-                        <div className="ms-fontSize-s ms-fontColor-neutralSecondary">Entity may represent multiple values. &nbsp;
+                        <div className="ms-fontSize-s ms-fontColor-neutralSecondary">Entity only set by code. &nbsp;
                             <OF.TooltipHost
                                 tooltipProps={{
                                     onRenderContent: () => {
                                         return (
                                             <div>
-                                                Multiple occurences of the entity within text add to a list of values. For non multi-value entites the last value replaces previous values.<br />
-                                                <b>Example: Detect multiple toppings on a pizza</b>
+                                                Programmatic Entities are not extracted from user utterances.  They are set in code you write for your Bot<br /><br />
+                                                <b>Example: Restrict Actions for authorized users</b>
+                                                <dl className="blis-entity-example">
+                                                    <dt>Entity:</dt><dd>isLoggedIn</dd>
+                                                </dl>
+                                                The "isLoggedIn" Entity is set in code. When not set, it can be used to block Actions that require authorized users
+                                            </div>
+                                        );
+                                    }
+                                }}
+                                delay={OF.TooltipDelay.zero}
+                                directionalHint={OF.DirectionalHint.bottomCenter}
+                            ><span className="ms-fontColor-themeTertiary">More</span>
+                            </OF.TooltipHost>
+                        </div>
+                    </div>
+                    <div className="blis-entity-creator-checkbox">
+                        <OF.Checkbox
+                            label='Multi-valued'
+                            defaultChecked={this.state.isBucketableVal}
+                            onChange={this.onChangeBucketable}
+                            disabled={this.state.editing}
+                        />
+                        <div className="ms-fontSize-s ms-fontColor-neutralSecondary">Entity may hold multiple values. &nbsp;
+                            <OF.TooltipHost
+                                tooltipProps={{
+                                    onRenderContent: () => {
+                                        return (
+                                            <div>
+                                                Additional occurences of the Entity add to list of previous values. For non multi-value entites new values replace previous values.<br /><br/>
+                                                <b>Example: Multiple toppings on a pizza</b>
                                                 <dl className="blis-entity-example">
                                                     <dt>Entity:</dt><dd>toppings</dd>
                                                     <dt>Phrase:</dt><dd>I would like <i>cheese</i> and <i>pepperoni</i>.</dd>
@@ -247,17 +300,17 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                     <div className="blis-entity-creator-checkbox">
                         <OF.Checkbox
                             label='Negatable'
-                            defaultChecked={false}
+                            defaultChecked={this.state.isNegatableVal}
                             onChange={this.onChangeReversible}
                             disabled={this.state.editing}
                         />
-                        <div className="ms-fontSize-s ms-fontColor-neutralSecondary">Can remove or negate values in memory. &nbsp;
+                        <div className="ms-fontSize-s ms-fontColor-neutralSecondary">Can remove or delete values in memory. &nbsp;
                             <OF.TooltipHost
                                 tooltipProps={{
                                     onRenderContent: () => {
                                         return (
                                             <div>
-                                                When checked this creates a corresponding 'negatable' entity that can be used scenarios where the user intends to remove previous memory values.<br />
+                                                When checked this creates a corresponding 'negatable' entity that can be used to remove or delete previous memory values.<br /><br />
                                                 <b>Example: Changing existing pizza order</b>
                                                 <dl className="blis-entity-example">
                                                     <dt>Entity:</dt><dd>toppings</dd>
