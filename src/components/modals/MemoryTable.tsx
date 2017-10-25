@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../../types'
 import { IColumn, DetailsList, CheckboxVisibility } from 'office-ui-fabric-react';
-import { EntityBase, Memory } from 'blis-models'
+import { EntityBase, EntityType, Memory } from 'blis-models'
 import { DialogMode } from '../../types/const'
 
 let columns: IColumn[] = [
@@ -31,6 +31,30 @@ let columns: IColumn[] = [
         minWidth: 100,
         maxWidth: 200,
         isResizable: true
+    },
+    {
+        key: 'isProgrammatic',
+        name: 'Programmatic',
+        fieldName: 'isProgrammatic',
+        minWidth: 100,
+        maxWidth: 100,
+        isResizable: true,
+    },
+    {
+        key: 'isBucketable',
+        name: 'Multi-Value',
+        fieldName: 'isBucketable',
+        minWidth: 80,
+        maxWidth: 100,
+        isResizable: true,
+    },
+    {
+        key: 'isNegatable',
+        name: 'Negatable',
+        fieldName: 'isNegatable',
+        minWidth: 80,
+        maxWidth: 100,
+        isResizable: true,
     }
 ]
 
@@ -154,14 +178,25 @@ class MemoryTable extends React.Component<Props, ComponentState> {
     }
     renderItemColumn(entityName?: any, index?: number, column?: IColumn) {
 
+        let entity = this.props.entities.filter((e: EntityBase) => e.entityName == entityName)[0];
+        if (!entity) {
+            return "ERROR";
+        }        
         if (column.key == 'entityType') {
-            // Lookup entity type
-            let entity = this.props.entities.filter((e: EntityBase) => e.entityName == entityName)[0];
-            let type = entity ? entity.entityType : "ERROR";
+            let type = (entity.entityType == EntityType.LOCAL || entity.entityType == EntityType.LUIS) ? "CUSTOM" : entity.entityType;
             return <span className="ms-font-m-plus">{type}</span>;  
         }
         else if (column.key == 'entityValues') {
             return this.renderEntityValues(entityName);
+        }
+        else if (column.key == 'isProgrammatic') {
+            return <span className={"ms-Icon blis-icon " + (entity.entityType == EntityType.LOCAL ? "ms-Icon--CheckMark" : "ms-Icon--Remove")} aria-hidden="true"></span>
+        }
+        else if (column.key == 'isBucketable') {
+            return <span className={"ms-Icon blis-icon " + (entity.metadata.isBucket ? "ms-Icon--CheckMark" : "ms-Icon--Remove")} aria-hidden="true"></span>
+        }
+        else if (column.key == 'isNegatable') {
+            return <span className={"ms-Icon blis-icon " + (entity.metadata.isReversable ? "ms-Icon--CheckMark" : "ms-Icon--Remove")} aria-hidden="true"></span>
         }
         else if (column.key == 'entityName')
         {
