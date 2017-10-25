@@ -3,7 +3,7 @@ import * as Rx from 'rxjs';
 import { ActionsObservable, Epic } from 'redux-observable'
 import { State, ActionObject } from '../types'
 import { AT } from '../types/ActionTypes'
-import { createBlisApp, createBlisAction, createBlisEntity, createChatSession, createTeachSession, createTrainDialog } from "./apiHelpers";
+import { createBlisApp, createBlisAction, createBlisEntity, createTeachSession, createTrainDialog } from "./apiHelpers";
 
 const assertNever = () => { throw Error(`Should not reach here`) }
 
@@ -31,13 +31,6 @@ export const createNegativeEntity: Epic<ActionObject, State> = (action$: Actions
     return action$.ofType(AT.CREATE_ENTITY_FULFILLEDPOSITIVE)
         .flatMap((action: any) =>
             createBlisEntity(action.key, action.negativeEntity, action.currentAppId, action.positiveEntity)
-        );
-}
-
-export const createNewChatSessionEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
-    return action$.ofType(AT.CREATE_CHAT_SESSION_ASYNC)
-        .flatMap((actionObject: any) =>
-            createChatSession(actionObject.key, actionObject.session, actionObject.currentAppId)
         );
 }
 
