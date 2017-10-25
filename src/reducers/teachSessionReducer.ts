@@ -1,13 +1,13 @@
 import { ActionObject, TeachSessionState } from '../types'
 import { Reducer } from 'redux'
 import { Teach, ExtractResponse, UnscoredAction, ScoreReason } from 'blis-models'
-import { TeachMode } from '../types/const'
+import { DialogMode } from '../types/const'
 import { AT } from '../types/ActionTypes'
 
 const initialState: TeachSessionState = {
     all: [],
     current: null,
-    mode: TeachMode.Wait,
+    mode: DialogMode.Wait,
     input: "",
     prevMemories: [],
     memories: [],
@@ -30,7 +30,7 @@ const teachSessionReducer: Reducer<TeachSessionState> = (state = initialState, a
             return { ...initialState, all: state.all };
         case AT.CREATE_TEACH_SESSION_FULFILLED:
             let newSession = { ...action.teachSession, teachId: action.teachSessionId };
-            let newState: TeachSessionState = { ...state, all: [...state.all, newSession], current: newSession, mode: TeachMode.Wait }
+            let newState: TeachSessionState = { ...state, all: [...state.all, newSession], current: newSession, mode: DialogMode.Wait }
             return newState;
         case AT.DELETE_TEACH_SESSION_FULFILLED:
             return { ...initialState, all: state.all.filter((t: Teach) => t.teachId !== action.teachSessionGUID) }
@@ -42,7 +42,7 @@ const teachSessionReducer: Reducer<TeachSessionState> = (state = initialState, a
             // Replace existing extract response (if any) with new one
             let extractResponses: ExtractResponse[] = state.extractResponses.filter((e: ExtractResponse) => e.text != action.uiExtractResponse.extractResponse.text);
             extractResponses.push(action.uiExtractResponse.extractResponse);
-            return { ...state, mode: TeachMode.Extractor, memories: action.uiExtractResponse.memories, prevMemories: action.uiExtractResponse.memories, extractResponses: extractResponses };
+            return { ...state, mode: DialogMode.Extractor, memories: action.uiExtractResponse.memories, prevMemories: action.uiExtractResponse.memories, extractResponses: extractResponses };
         case AT.UPDATE_EXTRACT_RESPONSE:
             // Replace existing extract response (if any) with new one and maintain ordering
             let index = state.extractResponses.findIndex((e: ExtractResponse) => e.text == action.extractResponse.text);
@@ -52,22 +52,22 @@ const teachSessionReducer: Reducer<TeachSessionState> = (state = initialState, a
             }
             let editedResponses = state.extractResponses.slice();
             editedResponses[index] = action.extractResponse;
-            return { ...state, mode: TeachMode.Extractor, extractResponses: editedResponses };
+            return { ...state, mode: DialogMode.Extractor, extractResponses: editedResponses };
         case AT.REMOVE_EXTRACT_RESPONSE:
             // Remove existing extract response
             let remainingResponses: ExtractResponse[] = state.extractResponses.filter((e: ExtractResponse) => e.text != action.extractResponse.text);
-            return { ...state, mode: TeachMode.Extractor, extractResponses: remainingResponses };
+            return { ...state, mode: DialogMode.Extractor, extractResponses: remainingResponses };
         case AT.CLEAR_EXTRACT_RESPONSES:
             // Remove existing extract responses
-             return { ...state, mode: TeachMode.Extractor, extractResponses: [] };
+             return { ...state, mode: DialogMode.Extractor, extractResponses: [] };
         case AT.RUN_SCORER_ASYNC:
             return { ...state, uiScoreInput: action.uiScoreInput }
         case AT.RUN_SCORER_FULFILLED:
-            return { ...state, mode: TeachMode.Scorer, memories: action.uiScoreResponse.memories, prevMemories: state.memories, scoreInput: action.uiScoreResponse.scoreInput, scoreResponse: action.uiScoreResponse.scoreResponse };
+            return { ...state, mode: DialogMode.Scorer, memories: action.uiScoreResponse.memories, prevMemories: state.memories, scoreInput: action.uiScoreResponse.scoreInput, scoreResponse: action.uiScoreResponse.scoreResponse };
         case AT.POST_SCORE_FEEDBACK_FULFILLEDWAIT:
-            return { ...state, mode: TeachMode.Wait };
+            return { ...state, mode: DialogMode.Wait, memories: action.uiTeachResponse.memories };
         case AT.POST_SCORE_FEEDBACK_FULFILLEDNOWAIT:
-            return { ...state, mode: TeachMode.Scorer };
+            return { ...state, mode: DialogMode.Scorer, memories: action.uiTeachResponse.memories };
         case AT.TOGGLE_AUTO_TEACH:
             return { ...state, autoTeach: action.autoTeach }
         case AT.CREATE_ACTION_FULFILLED:

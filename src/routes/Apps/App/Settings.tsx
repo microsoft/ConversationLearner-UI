@@ -45,14 +45,14 @@ class Settings extends React.Component<Props, ComponentState> {
             passwordShowHideText: 'Show'
         }
 
-        this.luisKeyChanged = this.luisKeyChanged.bind(this)
-        this.botIdChanged = this.botIdChanged.bind(this)
-        this.appNameChanged = this.appNameChanged.bind(this)
+        this.onChangedLuisKey = this.onChangedLuisKey.bind(this)
+        this.onChangedBotId = this.onChangedBotId.bind(this)
+        this.onChangedName = this.onChangedName.bind(this)
         this.onRenderBotListRow = this.onRenderBotListRow.bind(this)
         this.onClickShowPassword = this.onClickShowPassword.bind(this)
-        this.botAdded = this.botAdded.bind(this)
-        this.editApp = this.editApp.bind(this)
-        this.discardChanges = this.discardChanges.bind(this)
+        this.onClickAddBot = this.onClickAddBot.bind(this)
+        this.onClickSave = this.onClickSave.bind(this)
+        this.onClickDiscard = this.onClickDiscard.bind(this)
     }
     componentWillMount() {
         let current: BlisAppBase = this.props.blisApps.current
@@ -81,25 +81,25 @@ class Settings extends React.Component<Props, ComponentState> {
             })
         }
     }
-    appNameChanged(text: string) {
+    onChangedName(text: string) {
         this.setState({
             appNameVal: text,
             edited: true
         })
     }
-    botIdChanged(text: string) {
+    onChangedBotId(text: string) {
         this.setState({
             newBotVal: text,
             edited: true
         })
     }
-    luisKeyChanged(text: string) {
+    onChangedLuisKey(text: string) {
         this.setState({
             luisKeyVal: text,
             edited: true
         })
     }
-    botAdded() {
+    onClickAddBot() {
         let newBotApps = this.state.botFrameworkAppsVal.concat(this.state.newBotVal);
         this.setState({
             botFrameworkAppsVal: newBotApps,
@@ -113,7 +113,7 @@ class Settings extends React.Component<Props, ComponentState> {
             </div>
         )
     }
-    discardChanges() {
+    onClickDiscard() {
         let current: BlisAppBase = this.props.blisApps.current
         this.setState({
             localeVal: current.locale,
@@ -125,7 +125,7 @@ class Settings extends React.Component<Props, ComponentState> {
             newBotVal: ""
         })
     }
-    editApp() {
+    onClickSave() {
         let current: BlisAppBase = this.props.blisApps.current;
         let meta: BlisAppMetaData = new BlisAppMetaData({
             botFrameworkApps: this.state.botFrameworkAppsVal
@@ -148,6 +148,24 @@ class Settings extends React.Component<Props, ComponentState> {
         })
     }
 
+    onGetNameErrorMessage(value: string): string {
+        if (value.length === 0) {
+            return "Required Value";
+        }
+
+        if (!/^[a-zA-Z0-9- ]+$/.test(value)) {
+            return "Application name may only contain alphanumeric characters";
+        }
+
+        // Check that name isn't in use
+        let foundApp = this.props.blisApps.all.find(a => (a.appName == value && a.appId != this.props.app.appId));
+        if (foundApp) {
+            return "Name is already in use.";
+        }
+
+        return "";
+    }
+
     onClickShowPassword() {
         this.setState((prevState: ComponentState) => ({
             isPasswordVisible: !prevState.isPasswordVisible,
@@ -168,8 +186,9 @@ class Settings extends React.Component<Props, ComponentState> {
                 <div>
                     <TextField
                         className="ms-font-m-plus"
-                        onChanged={(text) => this.appNameChanged(text)}
+                        onChanged={(text) => this.onChangedName(text)}
                         label="Name"
+                        onGetErrorMessage={value => this.onGetNameErrorMessage(value)}
                         value={this.state.appNameVal}
                     />
                     <TextField
@@ -183,7 +202,7 @@ class Settings extends React.Component<Props, ComponentState> {
                         <TextField
                             id="luis-key"
                             className="ms-font-m-plus"
-                            onChanged={(text) => this.luisKeyChanged(text)}
+                            onChanged={(text) => this.onChangedLuisKey(text)}
                             type={this.state.isPasswordVisible ? "text" : "password"}
                             value={this.state.luisKeyVal}
                         />
@@ -210,12 +229,12 @@ class Settings extends React.Component<Props, ComponentState> {
                         <div className="blis-settings-textfieldwithbutton">
                             <TextField
                                 className="ms-font-m-plus"
-                                onChanged={(text) => this.botIdChanged(text)}
+                                onChanged={(text) => this.onChangedBotId(text)}
                                 placeholder="Application ID"
                                 value={this.state.newBotVal}
                             />
                             <PrimaryButton
-                                onClick={this.botAdded}
+                                onClick={this.onClickAddBot}
                                 className='blis-button--gold'
                                 ariaDescription='Add'
                                 text='Add'
@@ -224,14 +243,15 @@ class Settings extends React.Component<Props, ComponentState> {
                     </div>
                     <div style={buttonsDivStyle}>
                         <CommandButton
-                            onClick={this.editApp}
+                            disabled={this.onGetNameErrorMessage(this.state.appNameVal)!==""}
+                            onClick={this.onClickSave}
                             className='blis-button--gold'
                             ariaDescription='Save Changes'
                             text='Save Changes'
                         />
                         <CommandButton
                             className="blis-button--gray"
-                            onClick={this.discardChanges}
+                            onClick={this.onClickDiscard}
                             ariaDescription='Discard'
                             text='Discard'
                         />

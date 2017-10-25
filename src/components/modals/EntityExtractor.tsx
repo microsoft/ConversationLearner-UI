@@ -3,12 +3,12 @@ import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../../types'
-import { ModelUtils, ExtractResponse, TextVariation, DialogType } from 'blis-models'
+import { ModelUtils, ExtractResponse, TextVariation, DialogType, EntityType } from 'blis-models'
 import * as OF from 'office-ui-fabric-react';
 import TextVariationCreator from '../TextVariationCreator';
 import ExtractorResponseEditor from '../ExtractorResponseEditor';
 import EntityCreatorEditor from './EntityCreatorEditor';
-import { TeachMode } from '../../types/const'
+import { DialogMode } from '../../types/const'
 import PopUpMessage from '../PopUpMessage';
 import { clearExtractResponses, updateExtractResponse, removeExtractResponse } from '../../actions/teachActions'
 import './EntityExtractor.css'
@@ -234,7 +234,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         }
 
         // Don't show edit components when in auto TEACH or on score step
-        let canEdit = (!this.props.autoTeach && this.props.teachMode == TeachMode.Extractor);
+        let canEdit = (!this.props.autoTeach && this.props.dialogMode == DialogMode.Extractor);
         let variationCreator = null;
         let editComponents = null;
         let extractDisplay = null;
@@ -323,7 +323,9 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                         <EntityCreatorEditor
                             open={this.state.entityModalOpen}
                             entity={null}
-                            handleClose={this.entityEditorHandleClose} />
+                            handleClose={this.entityEditorHandleClose}
+                            handleOpenDeleteModal={()=>{}}
+                            entityTypeFilter={EntityType.LUIS}/>
                     </div>
                     {extractDisplay}
                     {variationCreator}
@@ -372,7 +374,7 @@ export interface ReceivedProps {
     sessionId: string,
     roundIndex: number,
     autoTeach: boolean
-    teachMode: TeachMode,
+    dialogMode: DialogMode,
     extractResponses: ExtractResponse[],
     originalTextVariations: TextVariation[],
     onTextVariationsExtracted: (extractResponse: ExtractResponse, textVariations: TextVariation[], roundIndex: number) => void,

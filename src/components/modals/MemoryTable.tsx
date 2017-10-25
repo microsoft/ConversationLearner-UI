@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { State } from '../../types'
 import { IColumn, DetailsList, CheckboxVisibility } from 'office-ui-fabric-react';
 import { EntityBase, Memory } from 'blis-models'
-import { TeachMode } from '../../types/const'
+import { DialogMode } from '../../types/const'
 
 let columns: IColumn[] = [
     {
@@ -92,7 +92,7 @@ class MemoryTable extends React.Component<Props, ComponentState> {
         let entityClass = "ms-font-m-plus";
 
         // Show changes when editing
-        if (this.props.teachMode != TeachMode.Wait) {
+        if (this.props.dialogMode != DialogMode.Wait) {
             // In old but not new
             if (prevEntity && !curEntity) {
                 entityClass += " blis-font--deleted";
@@ -135,7 +135,7 @@ class MemoryTable extends React.Component<Props, ComponentState> {
             }
 
             // Show changes when editing
-            if (this.props.teachMode != TeachMode.Wait) {
+            if (this.props.dialogMode != DialogMode.Wait) {
                 // In old but not new
                 if (prevValues.indexOf(value) >= 0  && curValues.indexOf(value) < 0) {
                     entityClass = "blis-font--deleted";
@@ -171,7 +171,7 @@ class MemoryTable extends React.Component<Props, ComponentState> {
     }
     getMemoryNames(): string[] {
 
-         let unionMemoryNames = this.props.teachMode == TeachMode.Wait ?
+         let unionMemoryNames = this.props.dialogMode == DialogMode.Wait ?
             // If waiting for user input just show current entities
             [
                 ...this.props.memories.map(m => m.entityName)
@@ -232,7 +232,7 @@ const mapStateToProps = (state: State, ownProps: any) => {
 }
 
 export interface ReceivedProps {
-    teachMode: TeachMode,
+    dialogMode: DialogMode,
     memories: Memory[],
     prevMemories: Memory[]
 }

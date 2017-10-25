@@ -111,6 +111,14 @@ html {
   width: 95%;
   height: 95%;
 }
+
+.blis-modal--medium{
+  width: 60%;
+  height: 60%;
+  /* TODO: Remove padding here, it should be the content inside that decides padding, otherwise all modals should have padding */
+  padding: 1em;
+}
+
 .blis-modal--small{
   width: 40%;
   /* TODO: Remove padding here, it should be the content inside that decides padding, otherwise all modals should have padding */
@@ -127,6 +135,11 @@ html {
 }
 .blis-modal_buttonbox{
   margin-top: 1.5em;
+}
+
+.blis-modal_buttonbox--bottom{
+  bottom: 10px;
+  position: absolute;
 }
 
 .blis-spinner
@@ -193,6 +206,59 @@ html {
 .ms-List-cell {
   min-height: 0px !important;
 }
+
+.ms-Pivot {
+  margin-bottom: 1.5em !important;
+}
+
+.ms-TagItem {
+  flex-shrink: 1;
+  background: #f4f4f4;
+  margin: 1px;
+  height: 26px;
+  line-height: 26px;
+  cursor: default;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: nowrap;
+  flex-wrap: nowrap;
+  max-width: 300px;
+}
+
+.ms-TagItem-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 30px;
+  margin: 0 8px;
+}
+
+.ms-TagItem-text--strike {
+  text-decoration: line-through;
+}
+
+.ms-TagItem-text--highlight {
+  background-color: var(--color-tag-highlight);
+}
+
+.ms-TagItem-close {
+  cursor: pointer;
+  color: #666666;
+  font-size: 12px;
+  display: inline-block;
+  text-align: center;
+  vertical-align: top;
+  width: 30px;
+  height: 100%;
+  -ms-flex-negative: 0;
+  flex-shrink: 0;
+}
+
 /**
  Should not use margins on components, this is external affect based on usage but the component should not know where it's used
  the parents should define the spacing responsibilities of children, otherwise chil */

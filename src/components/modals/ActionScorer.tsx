@@ -7,9 +7,9 @@ import { State } from '../../types'
 import { TrainScorerStep, Memory, ScoredBase, ScoreInput, ScoreResponse, ActionBase, ScoredAction, UnscoredAction, ScoreReason, DialogType } from 'blis-models';
 import { toggleAutoTeach } from '../../actions/teachActions'
 import { PrimaryButton } from 'office-ui-fabric-react';
-import { TeachMode } from '../../types/const'
+import { DialogMode } from '../../types/const'
 import { IColumn, DetailsList, CheckboxVisibility, List } from 'office-ui-fabric-react';
-import ActionResponseCreatorEditor from './ActionResponseCreatorEditor'
+import ActionCreatorEditor from './ActionCreatorEditor'
 
 const ACTION_BUTTON = "action_button";
 
@@ -78,13 +78,17 @@ let columns: IColumn[] = [
 const initState: ComponentState = {
     actionModalOpen: false,
     columns: columns,
-    sortColumn: columns[3] // "score"
+    sortColumn: columns[3], // "score"
+    haveEdited: false,
+    newAction: null
 }
 
 interface ComponentState {
-    actionModalOpen: boolean
-    columns: IColumn[]
-    sortColumn: IColumn
+    actionModalOpen: boolean;
+    columns: IColumn[];
+    sortColumn: IColumn;
+    haveEdited: boolean;
+    newAction: ActionBase;
 }
 
 class ActionScorer extends React.Component<Props, ComponentState> {
@@ -102,6 +106,25 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         this.focusPrimaryButton = this.focusPrimaryButton.bind(this);
         this.onClickOpenDeleteActionResponse = this.onClickOpenDeleteActionResponse.bind(this)
     }
+    componentWillReceiveProps(newProps: Props) {
+        if (this.props.scoreResponse != newProps.scoreResponse) {
+
+            // Note any newly added action
+            let newAction = null;
+            if (newProps.actions.length > this.props.actions.length)
+            {
+                // Find the new action
+                newAction = newProps.actions.filter(na => {
+                    let fa = this.props.actions.find(a => a.actionId == na.actionId);
+                    return fa == undefined;
+                })[0];
+            }
+            this.setState({
+                haveEdited: false,
+                newAction: newAction
+            });
+        } 
+    }
     componentUpdate() {
         this.autoSelect();
     }
@@ -113,7 +136,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
     }
     autoSelect() {
         // If not in interactive mode select action automatically
-        if (this.props.autoTeach && this.props.teachMode == TeachMode.Scorer) {
+        if (this.props.autoTeach && this.props.dialogMode == DialogMode.Scorer) {
 
             let actions = (this.props.scoreResponse.scoredActions as ScoredBase[]).concat(this.props.scoreResponse.unscoredActions) || [];
             // Since actions are sorted by score descending (max first), assume first scored action is the "best" action
@@ -127,7 +150,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             }
             let selectedActionId = bestAction.actionId;
             this.handleActionSelection(selectedActionId);
-        } else {
+        } else if (!this.state.actionModalOpen) {
             setTimeout(this.focusPrimaryButton, 500);
         }
     }
@@ -169,14 +192,21 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             sortColumn: column
         });
     }
-    getValue(memory: any, col: IColumn): any {
-        let value = memory[col.fieldName]
-        if (col.fieldName == "score" && !memory[col.fieldName]) {
-            if (memory["reason"] == ScoreReason.NotAvailable) {
-                return -100;
+    getValue(scoredBase: ScoredBase, col: IColumn): any {
+        let value = scoredBase[col.fieldName]
+        if (col.fieldName == "score") {
+            // Sort new actions to the top
+            if (this.state.newAction && this.state.newAction.actionId == scoredBase.actionId)
+            {
+                return 100;
             }
-            else {  // notScorable
-                return -1;
+            else if (!scoredBase[col.fieldName]) {
+                if (scoredBase["reason"] == ScoreReason.NotAvailable) {
+                    return -100;
+                }
+                else {  // notScorable
+                    return -1;
+                }
             }
         }
         if (!value) value = "";
@@ -219,6 +249,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                 scoredAction: scoredAction
             });
 
+        this.setState({haveEdited: true});
         this.props.onActionSelected(trainScorerStep);
     }
 
@@ -295,12 +326,15 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         // Null is action create button
         if (item == ACTION_BUTTON) {
             if (column.key == 'select') {
+                // Will focus on new action button if no scores
+                let ref = (index == 0) ? ((ref: any) => { this.primaryScoreButton = ref }) : null;
                 return (
                     <PrimaryButton
                         onClick={this.handleOpenActionModal}
                         ariaDescription='Cancel'
                         text='Action'
                         iconProps={{ iconName: 'CirclePlus' }}
+                        componentRef={ref}
                     />
                 )
             } else {
@@ -411,7 +445,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
 
         if (this.state.sortColumn) {
             // Sort the items.
-            scoredItems = scoredItems.sort((a: any, b: any) => {
+            scoredItems = scoredItems.sort((a: ScoredBase, b: ScoredBase) => {
                 let firstValue = this.getValue(a, this.state.sortColumn);
                 let secondValue = this.getValue(b, this.state.sortColumn);
 
@@ -433,6 +467,12 @@ class ActionScorer extends React.Component<Props, ComponentState> {
     }
 
     render() {
+        // In teach mode, hide scores after selection
+        // so they can't be reselected for non-terminal actions
+        if (this.props.dialogType == DialogType.TEACH && this.state.haveEdited) {
+            return null;
+        }
+
         let scores : (ScoredBase | string)[] = this.getScoredItems();
 
         // If editing allowed and Action creation button
@@ -450,7 +490,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                     onRenderItemColumn={this.renderItemColumn}
                     onColumnHeaderClick={this.onColumnClick}
                 />
-                <ActionResponseCreatorEditor
+                <ActionCreatorEditor
                     open={this.state.actionModalOpen}
                     blisAction={null}
                     handleClose={this.handleCloseActionModal}
@@ -466,10 +506,10 @@ export interface ReceivedProps {
     dialogType: DialogType,
     sessionId: string,
     autoTeach: boolean,
-    teachMode: TeachMode,
+    dialogMode: DialogMode,
     scoreResponse: ScoreResponse,
     scoreInput: ScoreInput,
-    memories: Memory[],
+    memories: Memory[]
     onActionSelected: (trainScorerStep: TrainScorerStep) => void,
 }
 

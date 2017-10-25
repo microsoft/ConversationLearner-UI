@@ -1,12 +1,10 @@
 import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
 import { getLuisApplicationCultures } from '../../epics/apiHelpers'
-import { createBLISApplicationAsync } from '../../actions/createActions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
-import { PrimaryButton, DefaultButton, Dropdown, IDropdownOption, TextField } from 'office-ui-fabric-react';
-import { emptyStateProperties } from '../../actions/displayActions'
+import { PrimaryButton, DefaultButton, Dropdown, IDropdownOption, TextField, Label } from 'office-ui-fabric-react';
 import { BlisAppBase, BlisAppMetaData } from 'blis-models'
 import { State } from '../../types'
 
@@ -28,7 +26,6 @@ class AppCreator extends React.Component<Props, ComponentState> {
     constructor(p: Props) {
         super(p)
 
-        this.checkIfBlank = this.checkIfBlank.bind(this)
         this.luisKeyChanged = this.luisKeyChanged.bind(this)
         this.onKeyDown = this.onKeyDown.bind(this)
         this.localeChanged = this.localeChanged.bind(this)
@@ -90,11 +87,9 @@ class AppCreator extends React.Component<Props, ComponentState> {
                 botFrameworkApps: []
             })
         })
-        this.props.createBLISApplicationAsync(this.props.userKey, this.props.userId, appToAdd);
-        //need to empty entities, actions, and trainDialogs arrays
-        this.props.emptyStateProperties();
-        this.resetState();
-        this.props.onSubmit()
+
+        this.resetState()
+        this.props.onSubmit(appToAdd)
     }
 
     // TODO: Refactor to use default form submission instead of manually listening for keys
@@ -106,7 +101,25 @@ class AppCreator extends React.Component<Props, ComponentState> {
         }
     }
 
-    checkIfBlank(value: string): string {
+    onGetNameErrorMessage(value: string): string {
+        if (value.length === 0) {
+            return "Required Value";
+        }
+
+        if (!/^[a-zA-Z0-9- ]+$/.test(value)) {
+            return "Application name may only contain alphanumeric characters";
+        }
+
+        // Check that name isn't in use
+        let foundApp = this.props.apps.all.find(a => a.appName == value);
+        if (foundApp) {
+            return "Name is already in use.";
+        }
+
+        return "";
+    }
+
+    onGetPasswordErrorMessage(value: string): string {
         return value ? "" : "Required Value";
     }
 
@@ -123,16 +136,16 @@ class AppCreator extends React.Component<Props, ComponentState> {
                 </div>
                 <div>
                     <TextField
-                        onGetErrorMessage={value => this.checkIfBlank(value)}
+                        onGetErrorMessage={value => this.onGetNameErrorMessage(value)}
                         onChanged={text => this.nameChanged(text)}
                         label="Name"
                         placeholder="Application Name..."
                         onKeyDown={key => this.onKeyDown(key)}
                         value={this.state.appNameVal} />
+                    <Label>LUIS Key <a href="https://www.luis.ai/user/settings" tabIndex={-1} className="ms-font-xs" target="_blank">(Find your key)</a></Label>
                     <TextField
-                        onGetErrorMessage={this.checkIfBlank}
+                        onGetErrorMessage={value => this.onGetPasswordErrorMessage(value)}
                         onChanged={this.luisKeyChanged}
-                        label="LUIS Key"
                         placeholder="Key..."
                         type="password"
                         onKeyDown={this.onKeyDown}
@@ -165,23 +178,20 @@ class AppCreator extends React.Component<Props, ComponentState> {
         )
     }
 }
+
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        createBLISApplicationAsync,
-        emptyStateProperties
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {
     return {
-        blisApps: state.apps,
-        userId: state.user.id,
-        userKey: state.user.key
+        apps: state.apps
     }
 }
 
 export interface ReceivedProps {
     open: boolean
-    onSubmit: () => void
+    onSubmit: (app: BlisAppBase) => void
     onCancel: () => void
 }
 

@@ -47,7 +47,8 @@ interface ComponentState {
     isTeachDialogModalOpen: boolean
     isTrainDialogModalOpen: boolean
     trainDialogId: string
-    searchValue: string
+    searchValue: string,
+    dialogKey: number
 }
 
 class TrainDialogs extends React.Component<Props, ComponentState> {
@@ -57,7 +58,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         isTeachDialogModalOpen: false,
         isTrainDialogModalOpen: false,
         trainDialogId: null,
-        searchValue: ''
+        searchValue: '',
+        dialogKey: 0
     }
 
     constructor(p: Props) {
@@ -149,7 +151,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
     onCloseTeachSession() {
         this.setState({
-            isTeachDialogModalOpen: false
+            isTeachDialogModalOpen: false,
+            dialogKey: this.state.dialogKey+1
         })
     }
 
@@ -163,7 +166,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     onCloseTrainDialogWindow() {
         this.setState({
             isTrainDialogModalOpen: false,
-            trainDialogId: null
+            trainDialogId: null,
+            dialogKey: this.state.dialogKey+1
         })
     }
 
@@ -210,6 +214,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     onSearch={(newValue) => this.onChangeSearchString(newValue)}
                 />
                 <DetailsList
+                    key={this.state.dialogKey}
                     className="ms-font-m-plus"
                     items={trainDialogItems}
                     columns={columns}

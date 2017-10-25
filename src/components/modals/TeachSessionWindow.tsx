@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { PrimaryButton, DefaultButton } from 'office-ui-fabric-react';
 import { State } from '../../types';
-import { TeachMode } from '../../types/const';
+import { DialogMode } from '../../types/const';
 import Webchat from '../Webchat'
 import TeachSessionAdmin from './TeachSessionAdmin'
 import { Teach, BlisAppBase, UserInput, DialogType } from 'blis-models'
@@ -83,10 +83,10 @@ class TeachWindow extends React.Component<Props, ComponentState> {
 
     render() {
         // Show done button if at least on round and at end of round
-        let showDone = this.props.teachSessions.currentConversationStack.length > 0 && this.props.teachSessions.mode == TeachMode.Wait;
+        let showDone = this.props.teachSessions.currentConversationStack.length > 0 && this.props.teachSessions.mode == DialogMode.Wait;
 
         // Put mask of webchat if not in input mode
-        let chatDisable = (this.props.teachSessions.mode != TeachMode.Wait) ?
+        let chatDisable = (this.props.teachSessions.mode != DialogMode.Wait) ?
             <div className="wc-disable"></div>
             : null;
 
@@ -118,7 +118,7 @@ class TeachWindow extends React.Component<Props, ComponentState> {
                                 onPostActivity={activity => this.onWebChatPostActivity(activity)}
                                 onSelectActivity={() => { }}
                                 hideInput={false}
-                                focusInput={this.props.teachSessions.mode == TeachMode.Wait}
+                                focusInput={this.props.teachSessions.mode == DialogMode.Wait}
                             />
                             {chatDisable}
                         </div>

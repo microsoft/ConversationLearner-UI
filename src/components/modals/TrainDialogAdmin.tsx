@@ -4,7 +4,7 @@ import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../../types'
-import { SenderType, TeachMode } from '../../types/const';
+import { SenderType, DialogMode } from '../../types/const';
 import { editTrainDialogAsync } from '../../actions/updateActions';
 import { clearExtractResponses } from '../../actions/teachActions'
 import EntityExtractor from './EntityExtractor';
@@ -17,7 +17,7 @@ import { ActionBase, TrainDialog, TrainRound, ScoreReason, ScoredAction,
     TextVariation, ExtractResponse, DialogType } from 'blis-models'
 
 interface RenderData {
-    teachMode: TeachMode,
+    dialogMode: DialogMode,
     selectedAction: ActionBase,
     scorerStep: TrainScorerStep,
     scoreResponse: ScoreResponse,
@@ -217,7 +217,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
         }
 
         let renderData : RenderData = {
-            teachMode: (this.state.senderType == SenderType.User) ? TeachMode.Extractor : TeachMode.Scorer,
+            dialogMode: (this.state.senderType == SenderType.User) ? DialogMode.Extractor : DialogMode.Scorer,
             selectedAction: selectedAction,
             scorerStep: scorerStep,
             scoreResponse: scoreResponse,
@@ -229,8 +229,11 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
         return renderData;
     }
     render() {
+        if (!this.props.trainDialog) {
+            return null;
+        }
+
         let renderData = this.getRenderData();
-     
         return (
             <div className="blis-dialog-admin ms-font-l">
                 {this.props.selectedActivity && (this.state.senderType == SenderType.User ? (
@@ -247,7 +250,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                     (<div className="blis-dialog-admin__content">
                         <div className="blis-dialog-admin-title">Memory</div>
                         <MemoryTable 
-                            teachMode={renderData.teachMode}
+                            dialogMode={renderData.dialogMode}
                             memories={renderData.memories}
                             prevMemories={renderData.prevMemories}
                         />                        
@@ -271,7 +274,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                                     sessionId={this.props.trainDialog.trainDialogId}
                                     roundIndex={this.state.roundIndex}
                                     autoTeach={false}
-                                    teachMode={renderData.teachMode}
+                                    dialogMode={renderData.dialogMode}
                                     extractResponses={this.props.extractResponses}
                                     originalTextVariations={renderData.round.extractorStep.textVariations}
                                     onTextVariationsExtracted={this.onEntityExtractorSubmit}
@@ -290,7 +293,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                                     dialogType={DialogType.TRAINDIALOG}
                                     sessionId={this.props.trainDialog.trainDialogId}
                                     autoTeach={false}
-                                    teachMode={renderData.teachMode}
+                                    dialogMode={renderData.dialogMode}
                                     scoreResponse={renderData.scoreResponse}
                                     scoreInput={renderData.scorerStep.input}
                                     memories={renderData.memories}

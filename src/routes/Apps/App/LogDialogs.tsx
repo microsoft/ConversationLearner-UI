@@ -94,7 +94,8 @@ interface ComponentState {
     isChatSessionWindowOpen: boolean,
     isLogDialogWindowOpen: boolean,
     currentLogDialog: LogDialog,
-    searchValue: string
+    searchValue: string,
+    dialogKey: number   // Allows user to re-open modal for same row ()
 }
 
 class LogDialogs extends React.Component<Props, ComponentState> {
@@ -102,7 +103,8 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         isChatSessionWindowOpen: false,
         isLogDialogWindowOpen: false,
         currentLogDialog: null,
-        searchValue: ''
+        searchValue: '',
+        dialogKey: 0
     }
 
     onClickNewChatSession() {
@@ -113,7 +115,8 @@ class LogDialogs extends React.Component<Props, ComponentState> {
 
     onCloseChatSessionWindow() {
         this.setState({
-            isChatSessionWindowOpen: false
+            isChatSessionWindowOpen: false,
+            dialogKey: this.state.dialogKey+1
         })
     }
 
@@ -134,7 +137,8 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     onCloseLogDialogModal() {
         this.setState({
             isLogDialogWindowOpen: false,
-            currentLogDialog: null
+            currentLogDialog: null,
+            dialogKey: this.state.dialogKey+1
         })
     }
 
@@ -165,6 +169,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     onSearch={(newValue) => this.onChange(newValue)}
                 />
                 <DetailsList
+                    key={this.state.dialogKey}
                     className="ms-font-m-plus"
                     items={logDialogItems}
                     columns={columns}

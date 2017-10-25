@@ -6,7 +6,7 @@ import {
     TrainDialog, LogDialog, Session, Teach,
     UserInput, ExtractResponse, DialogType,
     UIExtractResponse, UITrainScorerStep,
-    TeachResponse, UIScoreInput, UIScoreResponse
+    UITeachResponse, UIScoreInput, UIScoreResponse
 } from 'blis-models'
 import { DisplayMode } from '../types/const'
 import { AT } from '../types/ActionTypes'
@@ -83,8 +83,6 @@ export type DisplayAction = {
     key: string
 } | {
     type: AT.LOGOUT
-} | {
-    type: AT.EMPTY_STATE_PROPERTIES
 } | {
     type: AT.NO_OP
 } | {
@@ -186,8 +184,7 @@ export type CreateAction = {
     logDialog: LogDialog,
 } | {
     type: AT.CREATE_BLIS_APPLICATION_FULFILLED,
-    blisApp: BlisAppBase,
-    blisAppId: string
+    blisApp: BlisAppBase
 } | {
     type: AT.CREATE_ENTITY_FULFILLEDPOSITIVE,
     key: string,
@@ -339,13 +336,13 @@ export type TeachAction = {
     key: string,
     appId: string,
     sessionId: string
-    teachResponse: TeachResponse
+    uiTeachResponse: UITeachResponse
 } | {
     type: AT.POST_SCORE_FEEDBACK_FULFILLEDNOWAIT,
     key: string,
     appId: string,
     sessionId: string
-    teachResponse: TeachResponse,
+    uiTeachResponse: UITeachResponse,
     uiScoreInput: UIScoreInput
 } | {
     type: AT.TEACH_MESSAGE_RECEIVED,

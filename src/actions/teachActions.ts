@@ -1,7 +1,7 @@
 import { ActionObject } from '../types'
 import { AT } from '../types/ActionTypes'
 import { UserInput, ExtractResponse, UIScoreInput, UIExtractResponse, 
-    UIScoreResponse, UITrainScorerStep, TeachResponse,
+    UIScoreResponse, UITrainScorerStep, UITeachResponse,
     DialogType } from 'blis-models'
 
 export const runExtractorAsync = (key: string, appId: string, extractType: DialogType, sessionId: string, turnIndex: number, userInput: UserInput) : ActionObject => { 
@@ -82,24 +82,24 @@ export const postScorerFeedbackAsync = (key: string, appId: string, teachId: str
 }
 
 // Score has been posted.  Action is Terminal
-export const postScorerFeedbackWaitFulfilled = (key: string, appId: string, teachId: string, teachResponse: TeachResponse) : ActionObject => { 
+export const postScorerFeedbackWaitFulfilled = (key: string, appId: string, teachId: string, uiTeachResponse: UITeachResponse) : ActionObject => { 
     return {
         type: AT.POST_SCORE_FEEDBACK_FULFILLEDWAIT,
         key: key,
         appId: appId,
         sessionId: teachId,
-        teachResponse: teachResponse
+        uiTeachResponse: uiTeachResponse
     }
 }
 
 // Score has been posted.  Action is not Terminal
-export const postScorerFeedbackNoWaitFulfilled = (key: string, appId: string, teachId: string, teachResponse: TeachResponse, uiScoreInput: UIScoreInput) : ActionObject => { 
+export const postScorerFeedbackNoWaitFulfilled = (key: string, appId: string, teachId: string, uiTeachResponse: UITeachResponse, uiScoreInput: UIScoreInput) : ActionObject => { 
     return {
         type: AT.POST_SCORE_FEEDBACK_FULFILLEDNOWAIT,
         key: key,
         appId: appId,
         sessionId: teachId,
-        teachResponse: teachResponse, 
+        uiTeachResponse: uiTeachResponse, 
         uiScoreInput: uiScoreInput
     }
 }

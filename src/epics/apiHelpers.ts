@@ -162,7 +162,8 @@ export const getLuisApplicationCultures = (): Promise<CultureObject[]> => {
     const { appId, ...appToSend } = blisApp
     return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => axios.post(addAppRoute, appToSend, config)
       .then(response => {
-        obs.next(actions.create.createApplicationFulfilled(blisApp, response.data));
+        blisApp.appId = response.data
+        obs.next(actions.create.createApplicationFulfilled(blisApp))
         obs.complete();
       })
       .catch(err => handleError(obs, err, AT.CREATE_BLIS_APPLICATION_ASYNC)));
@@ -382,18 +383,20 @@ export const getLuisApplicationCultures = (): Promise<CultureObject[]> => {
         obs.next(actions.create.createTeachSessionFulfilled(teachSession, newTeachSessionId));
           obs.complete();
         })
-        .catch(err => handleError(obs, err,  AT.CREATE_TEACH_SESSION_ASYNC)));;
+        .catch(err => handleError(obs, err,  AT.CREATE_TEACH_SESSION_ASYNC)));
   };
 
   export const deleteTeachSession = (key : string, appId: string, teachSession: Teach, save: boolean): Observable<ActionObject> => {
-    let deleteTeachSessionRoute: string = makeRoute(key, `app/${appId}/teach/${teachSession.teachId}`,`save=${save}`);
-    return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => axios.delete(deleteTeachSessionRoute, config)
-      .then(response => {
-        obs.next(actions.delete.deleteTeachSessionFulfilled(key, teachSession.teachId, appId));
-        obs.next(actions.fetch.fetchAllTrainDialogsAsync(key, appId));
-        obs.complete();
-      })
-      .catch(err => handleError(obs, err,  AT.DELETE_TEACH_SESSION_ASYNC)));
+    return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => {
+      let deleteTeachSessionRoute: string = makeRoute(key, `app/${appId}/teach/${teachSession.teachId}`,`save=${save}`);
+      axios.delete(deleteTeachSessionRoute, config)
+        .then(response => {
+          obs.next(actions.delete.deleteTeachSessionFulfilled(key, teachSession.teachId, appId));
+          obs.next(actions.fetch.fetchAllTrainDialogsAsync(key, appId));
+          obs.complete();
+        })
+        .catch(err => handleError(obs, err,  AT.DELETE_TEACH_SESSION_ASYNC))
+      });
   };
 
   export const getAllTeachSessionsForBlisApp = (key: string, appId: string): Observable<ActionObject> => {
