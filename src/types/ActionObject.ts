@@ -328,6 +328,7 @@ export type TeachAction = {
     appId: string,
     sessionId: string,
     uiTrainScorerStep: UITrainScorerStep,
+    uiScoreInput: UIScoreInput
     waitForUser: boolean
 } | {
     type: AT.POST_SCORE_FEEDBACK_FULFILLEDWAIT,

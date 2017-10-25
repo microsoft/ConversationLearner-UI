@@ -9,35 +9,47 @@ const assertNever = () => { throw Error(`Should not reach here`) }
 
 export const createNewApplicationEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
     return action$.ofType(AT.CREATE_BLIS_APPLICATION_ASYNC)
-        .flatMap((action: any) =>
-            createBlisApp(action.key, action.userId, action.blisApp))
+        .flatMap(action =>
+            (action.type === AT.CREATE_BLIS_APPLICATION_ASYNC)
+                ? createBlisApp(action.key, action.userId, action.blisApp)
+                : assertNever()
+        )
 }
 
 export const createNewActionEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
     return action$.ofType(AT.CREATE_ACTION_ASYNC)
-        .flatMap((actionObject: any) =>
-            createBlisAction(actionObject.key, actionObject.action, actionObject.currentAppId)
-        );
+        .flatMap(action =>
+            (action.type === AT.CREATE_ACTION_ASYNC)
+                ? createBlisAction('', action.action, action.currentAppId)
+                : assertNever()
+        )
 }
 
 export const createNewEntityEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
     return action$.ofType(AT.CREATE_ENTITY_ASYNC)
-        .flatMap((action: any) =>
-            createBlisEntity(action.key, action.entity, action.currentAppId)
-        );
+        .flatMap(action =>
+            (action.type === AT.CREATE_ENTITY_ASYNC)
+                ? createBlisEntity(action.key, action.entity, action.currentAppId)
+                : assertNever()
+        )
 }
 
 export const createNegativeEntity: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
     return action$.ofType(AT.CREATE_ENTITY_FULFILLEDPOSITIVE)
-        .flatMap((action: any) =>
-            createBlisEntity(action.key, action.negativeEntity, action.currentAppId, action.positiveEntity)
-        );
+        .flatMap(action =>
+            (action.type === AT.CREATE_ENTITY_FULFILLEDPOSITIVE)
+                ? createBlisEntity(action.key, action.negativeEntity, action.currentAppId, action.positiveEntity)
+                : assertNever()
+        )
+
 }
 
 export const createNewTeachSessionEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
     return action$.ofType(AT.CREATE_TEACH_SESSION_ASYNC)
-        .flatMap((actionObject: any) =>
-            createTeachSession(actionObject.key, actionObject.teachSession, actionObject.currentAppId)
+        .flatMap(action =>
+            (action.type === AT.CREATE_TEACH_SESSION_ASYNC)
+                ? createTeachSession(action.key, action.teachSession, action.currentAppId)
+                : assertNever()
         );
 }
 
