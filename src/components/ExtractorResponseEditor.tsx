@@ -264,6 +264,14 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
                 }
             }
         })
+        if (predictedEntities.length == 0) {
+            let i: IndexGroup = {
+                start: 0,
+                end: input.length,
+                entity: null
+            }
+            indexGroups.push(i)
+        }
         let substringObjects: SubstringObject[] = [];
         if (indexGroups.length == 0 && input.length == 1) {
             //single letter, would not be picked up by the loop below
@@ -277,14 +285,6 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
                 startIndex: 0
             }
             substringObjects.push(substringObj)
-        }
-        if (predictedEntities.length == 0) {
-            let i: IndexGroup = {
-                start: 0,
-                end: input.length,
-                entity: null
-            }
-            indexGroups.push(i)
         }
         // run through the index groups but handle the entities and strings differently
         indexGroups.map((i: IndexGroup) => {
