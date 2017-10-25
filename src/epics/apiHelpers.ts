@@ -179,7 +179,7 @@ export const getLuisApplicationCultures = (): Promise<CultureObject[]> => {
 // DELETE ROUTES
 //=========================================================
 
-  export const deleteBlisApp = (key: string, blisApp: BlisAppForUpdate): Observable<ActionObject> => {
+  export const deleteBlisApp = (key: string, blisApp: BlisAppBase): Observable<ActionObject> => {
     return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.appsDelete(blisApp.appId)
       .then(response => {
         obs.next(actions.delete.deleteBLISApplicationFulfilled(blisApp.appId));
