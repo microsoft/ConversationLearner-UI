@@ -2,7 +2,7 @@ import { ActionObject } from '../types'
 import { AT } from '../types/ActionTypes'
 import { BlisAppBase, EntityBase, ActionBase, TrainDialog, LogDialog, Teach, Session } from 'blis-models'
 import { Dispatch } from 'redux'
-import BlisClient from '../epics/blisClient'
+import BlisClient from '../services/blisClient'
 
 const blisClient = new BlisClient("http://localhost:5000", () => '')
 
