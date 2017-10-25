@@ -18,7 +18,7 @@ import { Observable, Observer } from 'rxjs'
 import actions from '../actions'
 import { ActionObject } from '../types'
 import { AT } from '../types/ActionTypes'
-import BlisClient from './blisClient'
+import BlisClient from '../services/blisClient'
 
 //=========================================================
 // CONFIG
