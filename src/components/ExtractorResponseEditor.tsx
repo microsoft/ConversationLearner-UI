@@ -5,7 +5,8 @@ import { returntypeof } from 'react-redux-typescript';
 import { connect } from 'react-redux';
 import { ExtractResponse, PredictedEntity, EntityBase, AppDefinition, EntityType } from 'blis-models'
 import { State } from '../types';
-import { Dropdown, IDropdownOption, DropdownMenuItemType } from 'office-ui-fabric-react';
+import { BlisDropdownOption } from './modals/BlisDropDownOption'
+import { Dropdown, DropdownMenuItemType } from 'office-ui-fabric-react';
 
 interface SubstringObject {
     text: string,
@@ -21,10 +22,6 @@ interface IndexGroup {
     start: number,
     end: number,
     entity: EntityBase
-}
-
-export interface BlisDropdownOption extends IDropdownOption {
-    style: string
 }
 
 const styles = {
@@ -813,7 +810,7 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
                 data: ent,
                 key: ent.entityName,
                 text: ent.entityName,
-                style: "extractDropdown--normal"
+                style: "blisDropdown--normal"
             }
         })
     }
@@ -862,19 +859,19 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
             key: "Divider",
             text: "",
             itemType: DropdownMenuItemType.Divider,
-            style: "extractDropdown--normal"
+            style: "blisDropdown--normal"
         })
         if (s.entity !== null) {
             options.unshift({
                 key: "Remove",
                 text: "Remove",
-                style: "extractDropdown--command"
+                style: "blisDropdown--command"
             })
         }
         options.unshift({
             key: "New Entity",
             text: "New Entity",
-            style: "extractDropdown--command"
+            style: "blisDropdown--command"
         })
         if (s.text != " ") {
             if (s.text.length == 1 && this.includesPunctuation(s.text)) {

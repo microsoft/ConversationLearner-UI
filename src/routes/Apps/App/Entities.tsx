@@ -6,7 +6,7 @@ import { EntityCreatorEditor, ConfirmDeleteModal } from '../../../components/mod
 import { deleteEntityAsync } from '../../../actions/deleteActions'
 import { IButton, DetailsList, CommandButton, CheckboxVisibility, IColumn, SearchBox } from 'office-ui-fabric-react';
 import { State } from '../../../types';
-import { BlisAppBase, EntityBase } from 'blis-models'
+import { BlisAppBase, EntityBase, EntityType } from 'blis-models'
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 
 interface IRenderableColumn extends IColumn {
@@ -26,14 +26,29 @@ const columns: IRenderableColumn[] = [
         render: entity => <span className='ms-font-m-plus'>{entity.entityName}</span>
     },
     {
-        key: 'entityType',
-        name: 'Entity Type',
-        fieldName: 'entityType',
+        key: 'type',
+        name: 'Type',
+        fieldName: 'type',
         minWidth: 100,
         maxWidth: 200,
         isResizable: true,
-        getSortValue: entity => entity.entityType.toLowerCase(),
-        render: entity => <span className='ms-font-m-plus'>{entity.entityType}</span>
+        getSortValue: entity => {
+            let display = (entity.entityType == EntityType.LOCAL || entity.entityType == EntityType.LUIS) ? "CUSTOM" : entity.entityType;
+            return display.toLowerCase();
+            },
+        render: entity => <span className='ms-font-m-plus'>
+            {(entity.entityType == EntityType.LOCAL || entity.entityType == EntityType.LUIS) ? "CUSTOM" : entity.entityType }
+            </span>
+    },
+    {
+        key: 'isProgrammatic',
+        name: 'Programmatic',
+        fieldName: 'programmatic',
+        minWidth: 100,
+        maxWidth: 200,
+        isResizable: true,
+        getSortValue: entity => (entity.entityType == EntityType.LOCAL) ? 'a' : 'b',
+        render: entity => <span className={"ms-Icon blis-icon " + (entity.entityType == EntityType.LOCAL ? "ms-Icon--CheckMark" : "ms-Icon--Remove")} aria-hidden="true"></span>
     },
     {
         key: 'isBucketable',
