@@ -117,7 +117,8 @@ class Entities extends React.Component<Props, ComponentState> {
     }
     handleOpenCreateModal() {
         this.setState({
-            createEditModalOpen: true
+            createEditModalOpen: true,
+            entitySelected: null
         })
     }
     handleCloseCreateModal() {
