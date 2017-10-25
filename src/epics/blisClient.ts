@@ -67,10 +67,10 @@ export default class BlisClient {
             .then(response => response.data)
     }
 
-    apps(userId: string): Promise<TypedAxiosResponse<models.BlisAppBase[]>> {
+    apps(userId: string): Promise<models.BlisAppBase[]> {
         return this.send<models.BlisAppList>({
             url: `${this.baseUrl}/apps?userId=${userId}`
-        }).then(response => ({ ...response, data: response.data.apps }))
+        }).then(response => response.data.apps)
     }
 
     appGet(appId: string): Promise<models.BlisAppBase> {
@@ -80,12 +80,12 @@ export default class BlisClient {
             .then(response => response.data)
     }
 
-    appsCreate(userId: string, app: models.BlisAppBase): Promise<TypedAxiosResponse<string>> {
-        return this.send({
+    appsCreate(userId: string, app: models.BlisAppBase): Promise<string> {
+        return this.send<string>({
             method: 'post',
             url: `${this.baseUrl}/app?userId=${userId}`,
             data: app
-        })
+        }).then(response => response.data)
     }
 
     appsDelete(appId: string): Promise<void> {
@@ -105,13 +105,13 @@ export default class BlisClient {
             .then(response => app)
     }
 
-    entities(appId: string): Promise<TypedAxiosResponse<models.EntityBase[]>> {
+    entities(appId: string): Promise<models.EntityBase[]> {
         return this.send<models.EntityList>({
             url: `${this.baseUrl}/app/${appId}/entities`
-        }).then(response => ({ ...response, data: response.data.entities }))
+        }).then(response => response.data.entities)
     }
 
-    entitiesCreate(appId: string, entity: models.EntityBase): Promise<TypedAxiosResponse<models.EntityBase>> {
+    entitiesCreate(appId: string, entity: models.EntityBase): Promise<models.EntityBase> {
         return this.send<string>({
             method: 'post',
             url: `${this.baseUrl}/app/${appId}/entity`,
@@ -119,10 +119,7 @@ export default class BlisClient {
         })
             .then(response => {
                 entity.entityId = response.data
-                return {
-                    ...response,
-                    data: entity
-                }
+                return entity
             })
     }
 
@@ -144,10 +141,10 @@ export default class BlisClient {
             .then(response => entity)
     }
 
-    actions(appId: string): Promise<TypedAxiosResponse<models.ActionBase[]>> {
+    actions(appId: string): Promise<models.ActionBase[]> {
         return this.send<models.ActionList>({
             url: `${this.baseUrl}/app/${appId}/actions`
-        }).then(response => ({ ...response, data: response.data.actions }))
+        }).then(response => response.data.actions)
     }
 
     actionsCreate(appId: string, action: models.ActionBase): Promise<models.ActionBase> {
@@ -180,10 +177,10 @@ export default class BlisClient {
             .then(response => action)
     }
 
-    trainDialogs(appId: string): Promise<TypedAxiosResponse<models.TrainDialog[]>> {
+    trainDialogs(appId: string): Promise<models.TrainDialog[]> {
         return this.send<models.TrainDialogList>({
             url: `${this.baseUrl}/app/${appId}/traindialogs`
-        }).then(response => ({ ...response, data: response.data.trainDialogs }))
+        }).then(response => response.data.trainDialogs)
     }
 
     trainDialogsCreate(appId: string, trainDialog: models.TrainDialog): Promise<models.TrainDialog> {
@@ -225,10 +222,10 @@ export default class BlisClient {
             .then(response => response.data)
     }
 
-    logDialogs(appId: string): Promise<TypedAxiosResponse<models.LogDialog[]>> {
+    logDialogs(appId: string): Promise<models.LogDialog[]> {
         return this.send<models.LogDialogList>({
             url: `${this.baseUrl}/app/${appId}/logdialogs`
-        }).then(response => ({ ...response, data: response.data.logDialogs }))
+        }).then(response => response.data.logDialogs)
     }
 
     logDialogsCreate(appId: string, logDialog: models.LogDialog): Promise<models.LogDialog> {

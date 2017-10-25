@@ -66,8 +66,8 @@ export interface BlisAppForUpdate extends BlisAppBase {
 
   export const getAllBlisApps = (key: string, userId: string): Observable<ActionObject> => {
     return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.apps(userId)
-      .then(response => {
-        obs.next(actions.fetch.fetchApplicationsFulfilled(response.data));
+      .then(apps => {
+        obs.next(actions.fetch.fetchApplicationsFulfilled(apps));
         obs.complete();
       })
       .catch(err => handleError(obs, err, AT.FETCH_APPLICATIONS_ASYNC)));
@@ -75,8 +75,8 @@ export interface BlisAppForUpdate extends BlisAppBase {
 
   export const getAllEntitiesForBlisApp = (key: string, appId: string): Observable<ActionObject> => {
     return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.entities(appId)
-      .then(response => {
-        obs.next(actions.fetch.fetchAllEntitiesFulfilled(response.data));
+      .then(entities => {
+        obs.next(actions.fetch.fetchAllEntitiesFulfilled(entities));
         obs.complete();
       })
       .catch(err => handleError(obs, err, AT.FETCH_ENTITIES_ASYNC)));
@@ -84,8 +84,8 @@ export interface BlisAppForUpdate extends BlisAppBase {
 
   export const getAllActionsForBlisApp = (key: string, appId: string): Observable<ActionObject> => {
     return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.actions(appId)
-      .then(response => {
-        obs.next(actions.fetch.fetchAllActionsFulfilled(response.data));
+      .then(botActions => {
+        obs.next(actions.fetch.fetchAllActionsFulfilled(botActions));
         obs.complete();
       })
       .catch(err => handleError(obs, err, AT.FETCH_ACTIONS_ASYNC)));
@@ -93,8 +93,8 @@ export interface BlisAppForUpdate extends BlisAppBase {
 
   export const getAllTrainDialogsForBlisApp = (key: string, appId: string): Observable<ActionObject> => {
     return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.trainDialogs(appId)
-      .then(response => {
-        obs.next(actions.fetch.fetchAllTrainDialogsFulfilled(response.data));
+      .then(trainDialogs => {
+        obs.next(actions.fetch.fetchAllTrainDialogsFulfilled(trainDialogs));
         obs.complete();
       })
       .catch(err => handleError(obs, err, AT.FETCH_TRAIN_DIALOGS_ASYNC)));
@@ -102,8 +102,8 @@ export interface BlisAppForUpdate extends BlisAppBase {
 
   export const getAllLogDialogsForBlisApp = (key: string, appId: string): Observable<ActionObject> => {
     return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.logDialogs(appId)
-      .then(response => {
-        obs.next(actions.fetch.fetchAllLogDialogsFulfilled(response.data));
+      .then(logDialogs => {
+        obs.next(actions.fetch.fetchAllLogDialogsFulfilled(logDialogs));
         obs.complete();
       })
       .catch(err => handleError(obs, err, AT.FETCH_LOG_DIALOGS_ASYNC)));
@@ -126,8 +126,8 @@ export const getLuisApplicationCultures = (): Promise<CultureObject[]> => {
     //remove the appId property from the object
     const { appId, ...appToSend } = app
     return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.appsCreate(userId, appToSend as BlisAppBase)
-      .then(response => {
-        app.appId = response.data
+      .then(appId => {
+        app.appId = appId
         obs.next(actions.create.createApplicationFulfilled(app))
         obs.complete();
       })
@@ -137,8 +137,7 @@ export const getLuisApplicationCultures = (): Promise<CultureObject[]> => {
     //remove property from the object that the route will not accept
     const { version, packageCreationId, packageDeletionId, entityId, ...entityToSend } = entity;
     return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.entitiesCreate(appId, entityToSend as EntityBase)
-      .then(response => {
-        let newEntity = response.data;
+      .then(newEntity => {
         if (!entity.metadata.isReversable) {
           obs.next(actions.create.createEntityFulfilled(newEntity, newEntity.entityId));
         }
