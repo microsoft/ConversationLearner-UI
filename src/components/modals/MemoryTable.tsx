@@ -115,22 +115,21 @@ class MemoryTable extends React.Component<Props, ComponentState> {
         let prevEntity = this.props.prevMemories.find(m => m.entityName == entityName);
         let entityClass = "ms-font-m-plus";
 
-        // Show changes when editing
-        if (this.props.dialogMode != DialogMode.Wait) {
-            // In old but not new
-            if (prevEntity && !curEntity) {
-                entityClass += " blis-font--deleted";
-            }
-            // In new but not old
-            else if (!prevEntity && curEntity) {
-                entityClass += " blis-font--emphasis";
-            }
+        // In old but not new
+        if (prevEntity && !curEntity) {
+            entityClass += " blis-font--deleted";
         }
+        // In new but not old
+        else if (!prevEntity && curEntity) {
+            entityClass += " blis-font--emphasis";
+        }
+
         return <span className={entityClass}>{entityName}</span>
     }
     renderEntityValues(entityName : string) {
 
         // Current entity values
+        let entity = this.props.entities.find(e => e.entityName == entityName);
         let curMemory = this.props.memories.find(m => m.entityName == entityName);
         let curValues = curMemory ? curMemory.entityValues : [];
 
@@ -151,24 +150,25 @@ class MemoryTable extends React.Component<Props, ComponentState> {
 
             // Calculate prefix
             let prefix = "";
-            if (unionValues.length != 1 && index == unionValues.length-1) {
-                prefix = " and ";
+            if (!entity.metadata || !entity.metadata.isBucket) {
+                prefix  = " ";
+            }
+            else if (unionValues.length != 1 && index == unionValues.length-1) {
+                    prefix = " and ";
             }
             else if (index != 0) {
                 prefix = ", ";
             }
 
-            // Show changes when editing
-            if (this.props.dialogMode != DialogMode.Wait) {
-                // In old but not new
-                if (prevValues.indexOf(value) >= 0  && curValues.indexOf(value) < 0) {
-                    entityClass = "blis-font--deleted";
-                }
-                // In new but not old
-                else if (prevValues.indexOf(value) < 0  && curValues.indexOf(value) >= 0) {
-                    entityClass = "blis-font--emphasis";
-                }
+            // In old but not new
+            if (prevValues.indexOf(value) >= 0  && curValues.indexOf(value) < 0) {
+                entityClass = "blis-font--deleted";
             }
+            // In new but not old
+            else if (prevValues.indexOf(value) < 0  && curValues.indexOf(value) >= 0) {
+                entityClass = "blis-font--emphasis";
+            }
+            
             display.push(<span className='ms-font-m-plus' key={value}>{prefix}<span className={entityClass}>{value}</span></span>);
 
             index++;
@@ -206,11 +206,7 @@ class MemoryTable extends React.Component<Props, ComponentState> {
     }
     getMemoryNames(): string[] {
 
-         let unionMemoryNames = this.props.dialogMode == DialogMode.Wait ?
-            // If waiting for user input just show current entities
-            [
-                ...this.props.memories.map(m => m.entityName)
-            ] :
+         let unionMemoryNames = 
             // Find union or old and new remove duplicates
             [
                 ...this.props.memories.map(m => m.entityName), 
