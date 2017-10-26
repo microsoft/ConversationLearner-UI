@@ -22,14 +22,6 @@ const userReducer: Reducer<UserState> = (state = initialState, action: ActionObj
             return { ...state, name: action.name, password: action.password, id: action.id, key: key };
         case AT.SET_USER_KEY:
             return { ...state, key: action.key };
-        case AT.SET_ERROR_DISPLAY:
-            switch (action.route) {
-                case AT.FETCH_APPLICATIONS_ASYNC:
-                    return { ...initialState };
-                default:
-                    return { ...state }
-            }
-
         default:
             return state;
     }
