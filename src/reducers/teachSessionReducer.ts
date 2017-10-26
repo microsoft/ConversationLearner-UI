@@ -1,9 +1,8 @@
 import { ActionObject, TeachSessionState } from '../types'
 import { Reducer } from 'redux'
-import { Teach, ExtractResponse, UnscoredAction, ScoreReason } from 'blis-models'
+import { UnscoredAction, ScoreReason } from 'blis-models'
 import { DialogMode } from '../types/const'
 import { AT } from '../types/ActionTypes'
-import { replace } from '../util'
 
 const initialState: TeachSessionState = {
     all: [],
@@ -34,18 +33,19 @@ const teachSessionReducer: Reducer<TeachSessionState> = (state = initialState, a
             let newState: TeachSessionState = { ...state, all: [...state.all, newSession], current: newSession, mode: DialogMode.Wait }
             return newState;
         case AT.DELETE_TEACH_SESSION_FULFILLED:
-            return { ...initialState, all: state.all.filter((t: Teach) => t.teachId !== action.teachSessionGUID) }
+            return { ...initialState, all: state.all.filter(t => t.teachId !== action.teachSessionGUID) }
         case AT.SET_CURRENT_TEACH_SESSION: // TODO - doesn't appear to do anything
             return { ...state, current: action.currentTeachSession };
         case AT.TEACH_MESSAGE_RECEIVED:
             return { ...state, currentConversationStack: [...state.currentConversationStack, action.message], input: action.message, scoreInput: null, scoreResponse: null, extractResponses: [] };
         case AT.RUN_EXTRACTOR_FULFILLED:
             // Replace existing extract response (if any) with new one
-            const updatedExtractResponses = replace(state.extractResponses, action.uiExtractResponse.extractResponse, e => e.text)
-            return { ...state, mode: DialogMode.Extractor, memories: action.uiExtractResponse.memories, prevMemories: action.uiExtractResponse.memories, extractResponses: updatedExtractResponses };
+            const extractResponses = state.extractResponses.filter(e => e.text != action.uiExtractResponse.extractResponse.text);
+            extractResponses.push(action.uiExtractResponse.extractResponse);
+            return { ...state, mode: DialogMode.Extractor, memories: action.uiExtractResponse.memories, prevMemories: action.uiExtractResponse.memories, extractResponses: extractResponses };
         case AT.UPDATE_EXTRACT_RESPONSE:
             // Replace existing extract response (if any) with new one and maintain ordering
-            let index = state.extractResponses.findIndex((e: ExtractResponse) => e.text == action.extractResponse.text);
+            let index = state.extractResponses.findIndex(e => e.text == action.extractResponse.text);
             // Should never happen, but protect just in case
             if (index < 0) {
                 return { ...state };
@@ -55,7 +55,7 @@ const teachSessionReducer: Reducer<TeachSessionState> = (state = initialState, a
             return { ...state, mode: DialogMode.Extractor, extractResponses: editedResponses };
         case AT.REMOVE_EXTRACT_RESPONSE:
             // Remove existing extract response
-            let remainingResponses: ExtractResponse[] = state.extractResponses.filter((e: ExtractResponse) => e.text != action.extractResponse.text);
+            let remainingResponses = state.extractResponses.filter(e => e.text != action.extractResponse.text);
             return { ...state, mode: DialogMode.Extractor, extractResponses: remainingResponses };
         case AT.CLEAR_EXTRACT_RESPONSES:
             // Remove existing extract responses
