@@ -7,17 +7,17 @@
     "blis-models": "^0.66.0",
     "blis-webchat": "^0.18.0",
     "botframework-directlinejs": "^0.9.12",
-    "office-ui-fabric-react": "^4.47.0",
-    "react": "^15.6.1",
-    "react-dom": "^15.6.1",
+    "office-ui-fabric-react": "^4.51.1",
+    "react": "^15.6.2",
+    "react-dom": "^15.6.2",
     "react-redux": "^5.0.6",
     "react-redux-typescript": "^2.3.0",
     "react-router-dom": "^4.2.2",
-    "react-scripts-ts": "2.6.0",
+    "react-scripts-ts": "^2.6.0",
     "redux": "^3.7.2",
     "redux-observable": "^0.16.0",
     "redux-thunk": "^2.2.0",
-    "rxjs": "^5.4.3"
+    "rxjs": "^5.5.2"
   },
   "scripts": {
     "start": "react-scripts-ts start",
@@ -27,11 +27,11 @@
   },
   "devDependencies": {
     "@types/jest": "^20.0.8",
-    "@types/node": "^8.0.28",
+    "@types/node": "^8.0.47",
     "@types/prop-types": "^15.5.1",
-    "@types/react": "^16.0.5",
-    "@types/react-dom": "^15.5.4",
-    "@types/react-redux": "^5.0.9",
+    "@types/react": "^16.0.18",
+    "@types/react-dom": "^15.5.6",
+    "@types/react-redux": "^5.0.11",
     "@types/react-router-dom": "^4.0.7"
   }
 }

@@ -23,6 +23,7 @@ class TextVariationCreator extends React.Component<Props, ComponentState> {
         this.textChanged = this.textChanged.bind(this)
     }
     textChanged(text: string) {
+        this.props.onTextChanged(text);
         this.setState({
             variationValue: text
         })
@@ -74,6 +75,7 @@ export interface ReceivedProps {
     extractType: DialogType
     roundIndex: number,
     onAddVariation: ()=>void
+    onTextChanged: (text: string)=>void;
  }
 
 // Props types inferred from mapStateToProps & dispatchToProps
