@@ -50,12 +50,6 @@ export type DisplayAction = {
     type: AT.SET_CURRENT_BLIS_APP_FULFILLED,
     app: BlisAppBase
 } | {
-    type: AT.SET_CURRENT_CHAT_SESSION,
-    currentSession: Session,
-} | {
-    type: AT.SET_CURRENT_TEACH_SESSION,
-    currentTeachSession: Teach,
-} | {
     //used for setting whether the app list or app homepage (Index) is displayed
     type: AT.SET_DISPLAY_MODE,
     setDisplay: DisplayMode,

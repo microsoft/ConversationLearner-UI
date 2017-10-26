@@ -3,7 +3,6 @@ import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { IButton, DetailsList, CommandButton, CheckboxVisibility, IColumn, SearchBox } from 'office-ui-fabric-react';
-import { setCurrentTeachSession } from '../../../actions/displayActions'
 import { State } from '../../../types'
 import { BlisAppBase, Teach, TrainDialog } from 'blis-models'
 import { TeachSessionWindow, TrainDialogWindow } from '../../../components/modals'
@@ -162,6 +161,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
     onCloseTeachSession() {
         this.setState({
+            teachSession: null,
             isTeachDialogModalOpen: false,
             dialogKey: this.state.dialogKey+1
         })
@@ -245,8 +245,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        createTeachSessionThunkAsync,
-        setCurrentTeachSession
+        createTeachSessionThunkAsync
     }, dispatch)
 }
 const mapStateToProps = (state: State) => {

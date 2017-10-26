@@ -131,6 +131,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
 
     onCloseChatSessionWindow() {
         this.setState({
+            chatSession: null,
             isChatSessionWindowOpen: false,
             dialogKey: this.state.dialogKey+1
         })
