@@ -3,7 +3,6 @@ import {
   BrowserRouter as Router, Redirect, Route, NavLink, Switch
 } from 'react-router-dom'
 import { returntypeof } from 'react-redux-typescript'
-import { setLoginDisplay } from '../actions/displayActions'
 import { connect } from 'react-redux'
 import { State } from '../types'
 import { bindActionCreators } from 'redux'
@@ -12,10 +11,82 @@ import About from './About'
 import Docs from './Docs'
 import Support from './Support'
 import NoMatch from './NoMatch'
-import { UserLogin, SpinnerWindow, Error } from '../components/modals'
+import { UserLogin, SpinnerWindow, LogoutModal, Error } from '../components/modals'
+import { setUser, logout } from '../actions/displayActions'
 import './App.css'
 
-class App extends React.Component<Props, {}> {
+interface ComponentState {
+  isLoginWindowOpen: boolean
+  isLogoutWindowOpen: boolean
+}
+
+const initialState: ComponentState = {
+  isLoginWindowOpen: false,
+  isLogoutWindowOpen: false
+}
+
+class App extends React.Component<Props, ComponentState> {
+  state = initialState
+
+  componentWillMount() {
+    // If user is not logged in, show the login window
+    if(this.props.user.name.length === 0) {
+      this.setState({
+        isLoginWindowOpen: true
+      })
+    }
+  }
+
+  componentWillReceiveProps(nextProps: Props) {
+    // If user is not logged in, show the login window
+    if(nextProps.user.name.length === 0) {
+      this.setState({
+        isLoginWindowOpen: true
+      })
+    }
+  }
+
+  onClickLogin = (name: string, password: string, id: string) => {
+    this.props.setUser(name, password, id)
+    this.setState({
+      isLoginWindowOpen: false
+    })
+  }
+
+  onDismissLogin = () => {
+    this.setState({
+      isLoginWindowOpen: false
+    })
+  }
+  
+  onClickUsername = () => {
+    // If user is not logged in, show login window
+    // otherwise show logout window
+    if (!this.props.user) {
+      this.setState({
+        isLoginWindowOpen: true
+      })
+    }
+    else {
+      this.setState({
+        isLogoutWindowOpen: true
+      })
+    }
+  }
+
+  onClickConfirmLogout = () => {
+    this.props.logout()
+    this.setState({
+      isLogoutWindowOpen: false
+    })
+  }
+
+  onClickCancelLogout = () => {
+    this.setState({
+      isLogoutWindowOpen: false
+    })
+  }
+
   render() {
     return (
       <Router>
@@ -28,7 +99,7 @@ class App extends React.Component<Props, {}> {
               <NavLink to="/docs">Docs</NavLink>
               <NavLink to="/support">Support</NavLink>
             </nav>
-            <NavLink className="blis-header_user" to="/home" onClick={() => this.props.setLoginDisplay(true)}>{this.props.userName || "BLIS"}</NavLink>
+            <NavLink className="blis-header_user" to="/home" onClick={this.onClickUsername}>{this.props.user.name || "BLIS"}</NavLink>
           </header>
           <div className="blis-app_header-placeholder"></div>
           <div className="blis-app_content">
@@ -43,7 +114,17 @@ class App extends React.Component<Props, {}> {
           </div>
           <div className="blis-app_modals">
             <Error />
-            <UserLogin />
+            <UserLogin
+              open={this.state.isLoginWindowOpen}
+              onClickLogin={this.onClickLogin}
+              onDismiss={this.onDismissLogin}
+            />
+            <LogoutModal
+              open={this.state.isLogoutWindowOpen}
+              onClickLogout={this.onClickConfirmLogout}
+              onClickCancel={this.onClickCancelLogout}
+              onDismiss={this.onClickCancelLogout}
+            />
             <SpinnerWindow />
           </div>
         </div>
@@ -54,14 +135,14 @@ class App extends React.Component<Props, {}> {
 
 const mapDispatchToProps = (dispatch: any) => {
   return bindActionCreators({
-    setLoginDisplay
+    setUser,
+    logout
   }, dispatch);
 }
 
 const mapStateToProps = (state: State) => {
   return {
-    userName: state.user.name,
-    displayMode: state.display.displayMode
+    user: state.user
   }
 }
 

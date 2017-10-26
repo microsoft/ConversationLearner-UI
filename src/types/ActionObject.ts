@@ -54,10 +54,6 @@ export type DisplayAction = {
     type: AT.SET_DISPLAY_MODE,
     setDisplay: DisplayMode,
 } | {
-    //used for setting whether the login popup is displayed
-    type: AT.SET_LOGIN_DISPLAY,
-    setLoginDisplay: boolean,
-} | {
     //used for setting whether the error popup is displayed
     type: AT.SET_ERROR_DISPLAY,
     error: string,
@@ -72,9 +68,6 @@ export type DisplayAction = {
     name: string,
     password: string,
     id: string
-} | {
-    type: AT.SET_USER_KEY,
-    key: string
 } | {
     type: AT.LOGOUT
 } | {
