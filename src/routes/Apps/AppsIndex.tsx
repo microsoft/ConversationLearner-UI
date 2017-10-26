@@ -25,7 +25,7 @@ class AppsIndex extends React.Component<Props, ComponentState> {
     }
 
     componentDidUpdate() {
-        if (this.state.displayedUserId != this.props.user.id) {
+        if (this.props.user.id && this.props.user.id !== this.state.displayedUserId) {
             this.setState({
                 displayedUserId: this.props.user.id
             })
