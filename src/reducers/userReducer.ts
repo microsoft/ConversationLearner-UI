@@ -20,8 +20,6 @@ const userReducer: Reducer<UserState> = (state = initialState, action: ActionObj
             let userdata = { id: action.id, name: action.name };
             let key = KeyGen.MakeKey(JSON.stringify(userdata));
             return { ...state, name: action.name, password: action.password, id: action.id, key: key };
-        case AT.SET_USER_KEY:
-            return { ...state, key: action.key };
         default:
             return state;
     }

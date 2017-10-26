@@ -26,13 +26,6 @@ export const setDisplayMode = (displayMode: DisplayMode) : ActionObject => {
     }
 }
 
-export const setLoginDisplay = (isShown: boolean) : ActionObject => { 
-    return {
-        type: AT.SET_LOGIN_DISPLAY,
-        setLoginDisplay: isShown
-    }
-}
-
 export const setErrorDisplay = (error: string, message: string, route : AT) : ActionObject => { 
     return {
         type: AT.SET_ERROR_DISPLAY,
@@ -60,13 +53,6 @@ export const setUser = (name: string, password: string, id: string) : ActionObje
         name: name,
         password: password,
         id: id
-    }
-}
-
-export const setUserKey = (key: string) : ActionObject => { 
-    return {
-        type: AT.SET_USER_KEY,
-        key: key
     }
 }
 

@@ -6,7 +6,6 @@ import { DisplayMode } from '../types/const'
 
 const initialState: DisplayState = {
     displayMode: DisplayMode.AppList,
-    displayLogin: true,
     displaySpinner: []
 };
 
@@ -28,8 +27,6 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
             return { ...initialState };
         case AT.SET_DISPLAY_MODE:
             return { ...state, displayMode: action.setDisplay };
-        case AT.SET_LOGIN_DISPLAY:
-            return { ...state, displayLogin: action.setLoginDisplay };
         case AT.CREATE_BLIS_APPLICATION_FULFILLED:
             return { ...state, displaySpinner: removeSpinner(state.displaySpinner, action.type) }
         case AT.SET_CURRENT_BLIS_APP_FULFILLED:
@@ -41,7 +38,7 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
                 case AT.FETCH_BOTINFO_ASYNC:
                 case AT.FETCH_ENTITIES_ASYNC:
                 case AT.FETCH_ACTIONS_ASYNC:
-                    return { ...initialState, displayLogin: false, displaySpinner: [] };
+                    return { ...initialState, displaySpinner: [] };
                 default:
                     return { ...state, displaySpinner: [] }
             }

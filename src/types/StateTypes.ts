@@ -49,7 +49,6 @@ export type ChatSessionState = {
 }
 export type DisplayState = {
     displayMode: DisplayMode,
-    displayLogin: boolean,
     displaySpinner: string[]
 }
 export type UserState = {
