@@ -289,17 +289,6 @@ export const getLuisApplicationCultures = (): Promise<CultureObject[]> => {
 //========================================================
 // Teach
 //========================================================
-
-  export const createTeachSession = (key: string, teachSession: Teach, appId: string): Observable<ActionObject> => {
-    blisClient.key = key
-    return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => blisClient.teachSessionsCreate(appId)
-      .then(newTeachSession => {
-        obs.next(actions.create.createTeachSessionFulfilled(newTeachSession, newTeachSession.teachId));
-        obs.complete();
-      })
-      .catch(err => handleError(obs, err,  AT.CREATE_TEACH_SESSION_ASYNC)));
-  };
-
   export const deleteTeachSession = (key : string, appId: string, teachSession: Teach, save: boolean): Observable<ActionObject> => {
     blisClient.key = key
     return Rx.Observable.create((obs : Rx.Observer<ActionObject>) => blisClient.teachSessionsDelete(appId, teachSession, save)

@@ -29,13 +29,9 @@ const teachSessionReducer: Reducer<TeachSessionState> = (state = initialState, a
             // Start with a clean slate
             return { ...initialState, all: state.all };
         case AT.CREATE_TEACH_SESSION_FULFILLED:
-            let newSession = { ...action.teachSession, teachId: action.teachSessionId };
-            let newState: TeachSessionState = { ...state, all: [...state.all, newSession], current: newSession, mode: DialogMode.Wait }
-            return newState;
+            return { ...state, all: [...state.all, action.teachSession], current: action.teachSession, mode: DialogMode.Wait }
         case AT.DELETE_TEACH_SESSION_FULFILLED:
             return { ...initialState, all: state.all.filter(t => t.teachId !== action.teachSessionGUID) }
-        case AT.SET_CURRENT_TEACH_SESSION: // TODO - doesn't appear to do anything
-            return { ...state, current: action.currentTeachSession };
         case AT.TEACH_MESSAGE_RECEIVED:
             return { ...state, currentConversationStack: [...state.currentConversationStack, action.message], input: action.message, scoreInput: null, scoreResponse: null, extractResponses: [] };
         case AT.RUN_EXTRACTOR_FULFILLED:

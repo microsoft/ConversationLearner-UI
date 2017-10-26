@@ -50,12 +50,6 @@ export type DisplayAction = {
     type: AT.SET_CURRENT_BLIS_APP_FULFILLED,
     app: BlisAppBase
 } | {
-    type: AT.SET_CURRENT_CHAT_SESSION,
-    currentSession: Session,
-} | {
-    type: AT.SET_CURRENT_TEACH_SESSION,
-    currentTeachSession: Teach,
-} | {
     //used for setting whether the app list or app homepage (Index) is displayed
     type: AT.SET_DISPLAY_MODE,
     setDisplay: DisplayMode,
@@ -204,13 +198,11 @@ export type CreateAction = {
     type: AT.CREATE_CHAT_SESSION_FULFILLED,
     session: Session
 } | {
-    type: AT.CREATE_TEACH_SESSION_ASYNC,
-    key: string,
-    currentAppId: string,
-    teachSession: Teach
+    type: AT.CREATE_TEACH_SESSION_ASYNC
 } | {
+    type: AT.CREATE_TEACH_SESSION_REJECTED
+}| {
     type: AT.CREATE_TEACH_SESSION_FULFILLED,
-    teachSessionId: string,
     teachSession: Teach
 }
 

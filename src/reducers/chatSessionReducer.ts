@@ -22,8 +22,6 @@ const chatSessionReducer: Reducer<ChatSessionState> = (state = initialState, act
                 all: state.all.filter(s => s.sessionId !== action.sessionId),
                 current: state.current.sessionId === action.sessionId ? null : state.current
             }
-        case AT.SET_CURRENT_CHAT_SESSION:
-            return { ...state, current: action.currentSession };
         case AT.CHAT_MESSAGE_RECEIVED:
             return { ...state, currentConversationStack: [...state.currentConversationStack, action.message] };
         default:

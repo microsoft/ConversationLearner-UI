@@ -2,8 +2,7 @@
 import { ActionObject } from '../types'
 import { AT } from '../types/ActionTypes'
 import { DisplayMode } from '../types/const'
-import { BlisAppBase, Session, Teach } from 'blis-models';
-
+import { BlisAppBase } from 'blis-models';
 
 export const setCurrentBLISApp = (key: string, app: BlisAppBase) : ActionObject => { 
     return {
@@ -68,20 +67,6 @@ export const setUserKey = (key: string) : ActionObject => {
     return {
         type: AT.SET_USER_KEY,
         key: key
-    }
-}
-
-export const setCurrentChatSession = (session: Session) : ActionObject => { 
-    return {
-        type: AT.SET_CURRENT_CHAT_SESSION,
-        currentSession: session
-    }
-}
-
-export const setCurrentTeachSession = (teachSession: Teach) : ActionObject => { 
-    return {
-        type: AT.SET_CURRENT_TEACH_SESSION,
-        currentTeachSession: teachSession
     }
 }
 

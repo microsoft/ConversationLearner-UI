@@ -9,32 +9,22 @@ import { State } from '../../types';
 import { DialogMode } from '../../types/const';
 import Webchat from '../Webchat'
 import TeachSessionAdmin from './TeachSessionAdmin'
-import { Teach, BlisAppBase, UserInput, DialogType } from 'blis-models'
+import { BlisAppBase, UserInput, DialogType } from 'blis-models'
 import { Activity } from 'botframework-directlinejs'
 import { deleteTeachSessionAsync } from '../../actions/deleteActions'
 import { toggleAutoTeach, runExtractorAsync } from '../../actions/teachActions'
-import { createTeachSessionAsync } from '../../actions/createActions'
 import { addMessageToTeachConversationStack } from '../../actions/displayActions'
 import ConfirmDeleteModal from './ConfirmDeleteModal';
 
 interface ComponentState {
     isConfirmDeleteOpen: boolean
-    teachSession: Teach
     editing: boolean
 }
 
 class TeachWindow extends React.Component<Props, ComponentState> {
     state: ComponentState = {
         isConfirmDeleteOpen: false,
-        teachSession: null,
         editing: false
-    }
-
-    componentWillReceiveProps(nextProps: Props) {
-        if (this.props.open === false && nextProps.open === true) {
-            this.state.teachSession = new Teach({})
-            this.props.createTeachSessionAsync(this.props.user.key, this.state.teachSession, this.props.app.appId)
-        }
     }
 
     onClickAbandonTeach() {
@@ -165,7 +155,6 @@ class TeachWindow extends React.Component<Props, ComponentState> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         addMessageToTeachConversationStack,
-        createTeachSessionAsync,
         deleteTeachSessionAsync,
         runExtractorAsync,
         toggleAutoTeach
