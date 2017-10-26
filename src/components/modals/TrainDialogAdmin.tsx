@@ -305,7 +305,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                 <div className="blis-dialog-admin__dialogs">
                     <OF.Dialog
                         hidden={this.state.saveTrainDialog === null}
-                        isBlocking={true}
+                        onDismiss={() => this.onClickSaveCheckNo()}
                         dialogContentProps={{
                             type: OF.DialogType.normal,
                             subText: 'Your changes will invalidate the subsequent steps in the Train Dialog', 

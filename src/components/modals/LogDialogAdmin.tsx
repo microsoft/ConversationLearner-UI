@@ -227,6 +227,7 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
                 <div className="blis-dialog-admin__dialogs">
                     <OF.Dialog
                         hidden={!this.state.newTrainDialog}
+                        onDismiss={() => this.onClickCancelSaveConfirmation()}
                         dialogContentProps={{
                             type: OF.DialogType.normal,
                             title: 'Are you sure you want to save changes?',

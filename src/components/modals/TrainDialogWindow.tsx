@@ -2,7 +2,7 @@ import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { PrimaryButton, DefaultButton, Dialog, DialogType, DialogFooter } from 'office-ui-fabric-react';
+import { PrimaryButton, DefaultButton } from 'office-ui-fabric-react';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { State } from '../../types';
 import Webchat from '../Webchat'
@@ -11,6 +11,7 @@ import { BlisAppBase, ActionBase, TrainDialog } from 'blis-models'
 import { deleteTrainDialogAsync } from '../../actions/deleteActions'
 import { Activity } from 'botframework-directlinejs';
 import { SenderType } from '../../types/const';
+import ConfirmDeleteModal from './ConfirmDeleteModal'
 // TODO: Investigate if this can be removed in favor of local state
 import { addMessageToChatConversationStack } from '../../actions/displayActions';
 
@@ -160,22 +161,12 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
                     </div>
 
                 </div>
-                <Dialog
-                    hidden={!this.state.confirmDeleteModalOpen}
-                    isBlocking={true}
-                    dialogContentProps={{
-                        type: DialogType.normal,
-                        title: 'Are you sure you want to delete this Training Dialog?'
-                    }}
-                    modalProps={{
-                        isBlocking: true
-                    }}
-                >
-                    <DialogFooter>
-                        <DefaultButton onClick={this.onClickCancelDelete} text='Cancel' />
-                        <PrimaryButton onClick={this.onClickConfirmDelete} text='Confirm' />
-                    </DialogFooter>
-                </Dialog>
+                <ConfirmDeleteModal
+                    open={this.state.confirmDeleteModalOpen}
+                    onCancel={() => this.onClickCancelDelete()}
+                    onConfirm={() => this.onClickConfirmDelete()}
+                    title={`Are you sure you want to delete this Training Dialog?`}
+                />
             </Modal>
         );
     }

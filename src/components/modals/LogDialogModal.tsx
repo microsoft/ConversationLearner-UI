@@ -2,10 +2,11 @@ import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { PrimaryButton, DefaultButton, Dialog, DialogType, DialogFooter } from 'office-ui-fabric-react';
+import { PrimaryButton, DefaultButton } from 'office-ui-fabric-react';
 import { State } from '../../types';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import Webchat from '../Webchat'
+import ConfirmDeleteModal from './ConfirmDeleteModal'
 import LogDialogAdmin from './LogDialogAdmin'
 import { Activity } from 'botframework-directlinejs'
 import { createTrainDialogAsync } from '../../actions/createActions'
@@ -157,22 +158,12 @@ class LogDialogModal extends React.Component<Props, ComponentState> {
                             </div>
                         </div>
                     </div>
-                    <Dialog
-                        hidden={!this.state.isConfirmDeleteModalOpen}
-                        isBlocking={true}
-                        dialogContentProps={{
-                            type: DialogType.normal,
-                            title: 'Are you sure you want to delete this Log Dialog?'
-                        }}
-                        modalProps={{
-                            isBlocking: true
-                        }}
-                    >
-                        <DialogFooter>
-                            <DefaultButton onClick={this.onClickCancelDelete} text='Cancel' />
-                            <PrimaryButton onClick={this.onClickConfirmDelete} text='Yes' />
-                        </DialogFooter>
-                    </Dialog>
+                    <ConfirmDeleteModal
+                        open={this.state.isConfirmDeleteModalOpen}
+                        onCancel={() => this.onClickCancelDelete()}
+                        onConfirm={() => this.onClickConfirmDelete()}
+                        title={`Are you sure you want to delete this Log Dialog?`}
+                    />
                 </Modal>
             </div>
         );
