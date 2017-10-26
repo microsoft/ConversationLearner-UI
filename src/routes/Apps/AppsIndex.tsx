@@ -14,21 +14,16 @@ import Index from './App/Index'
 import AppsList from './AppsList'
 
 interface ComponentState {
-    displayedUserId: string
     selectedApp: BlisAppBase | null
 }
 
 class AppsIndex extends React.Component<Props, ComponentState> {
     state: ComponentState = {
-        displayedUserId: null,
         selectedApp: null
     }
 
-    componentDidUpdate() {
-        if (this.props.user.id && this.props.user.id !== this.state.displayedUserId) {
-            this.setState({
-                displayedUserId: this.props.user.id
-            })
+    componentDidUpdate(prevProps: Props, prevState: ComponentState) {
+        if (typeof(this.props.user.id) === 'string' && this.props.user.id !== prevProps.user.id) {
             this.props.fetchApplicationsAsync(this.props.user.key, this.props.user.id);
             this.props.fetchBotInfoAsync();
         }
