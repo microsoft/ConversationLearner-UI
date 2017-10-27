@@ -12,7 +12,7 @@ import { BlisDropdownOption } from './BlisDropDownOption'
 import { EntityBase, EntityMetaData, EntityType, ActionBase } from 'blis-models'
 import './EntityCreatorEditor.css'
 
-const NEW_ENTITY = "New Entity";
+const NEW_ENTITY = 'New Entity';
 
 const initState: ComponentState = {
     entityNameVal: '',
@@ -39,13 +39,13 @@ const staticEntityOptions: BlisDropdownOption[] = [
         key: NEW_ENTITY,
         text: 'New Type',
         itemType: OF.DropdownMenuItemType.Normal,
-        style: "blisDropdown--command" 
+        style: 'blisDropdown--command'
     },
     {
         key: 'divider',
         text: '-',
         itemType: OF.DropdownMenuItemType.Divider,
-        style: "blisDropdown--normal" 
+        style: 'blisDropdown--normal' 
     }
 ]
 
@@ -65,7 +65,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                     key: entityName,
                     text: entityName,
                     itemType: OF.DropdownMenuItemType.Normal,
-                    style: "blisDropdown--normal"
+                    style: 'blisDropdown--normal'
                 }))
 
         this.entityOptions = [...staticEntityOptions, ...localePreBuildOptions]
@@ -79,10 +79,10 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
         } else {
             let entityType = p.entity.entityType;
             let isProgrammatic = false;
-            if (entityType == EntityType.LUIS)
+            if (entityType === EntityType.LUIS)
             {
                 entityType = NEW_ENTITY;
-            } else if (entityType == EntityType.LOCAL) {
+            } else if (entityType === EntityType.LOCAL) {
                 entityType = NEW_ENTITY;
                 isProgrammatic = true;
             }
@@ -100,7 +100,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
 
     convertStateToEntity(state: ComponentState): EntityBase {
         let entityType = this.state.entityTypeVal;
-        if (entityType == NEW_ENTITY ) {
+        if (entityType === NEW_ENTITY ) {
             entityType =  (this.state.isProgrammaticVal) ? EntityType.LOCAL : EntityType.LUIS;
         }
         return new EntityBase({
@@ -125,7 +125,8 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
         if (this.state.editing === false) {
             this.props.createEntityAsync(this.props.userKey, entity, currentAppId);
         } else {
-            // TODO: Currently it's not possible to edit an entity, and the code below is incorrect because it doesn't pass the app id.
+            // TODO: Currently it's not possible to edit an entity, 
+            // and the code below is incorrect because it doesn't pass the app id.
             // Set entity id if we're editing existing id.
             // entity.entityId = this.props.entity.entityId;
             // this.props.editEntityAsync(this.props.userKey, entity);
@@ -166,22 +167,22 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
 
     onGetNameErrorMessage = (value: string): string => {
         if (value.length === 0) {
-            return "Required Value";
+            return 'Required Value';
         }
 
         if (!/^[a-zA-Z0-9-]+$/.test(value)) {
-            return "Entity name may only contain alphanumeric characters with no spaces.";
+            return 'Entity name may only contain alphanumeric characters with no spaces.';
         }
 
         // Check that name isn't in use
         if (!this.state.editing) {
-            let foundEntity = this.props.entities.find(e => e.entityName == this.state.entityNameVal);
+            let foundEntity = this.props.entities.find(e => e.entityName === this.state.entityNameVal);
             if (foundEntity) {
-                return "Name is already in use.";
+                return 'Name is already in use.';
             }
         }
 
-        return "";
+        return '';
     }
 
     onKeyDownName = (key: React.KeyboardEvent<HTMLInputElement>) => {
@@ -191,25 +192,24 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
         }
     }
 
-    getBlockedActions() : ActionBase[] {
+    getBlockedActions(): ActionBase[] {
         let blockedActions = this.props.actions.filter(a =>
             {
-                return a.negativeEntities.find(id => id == this.props.entity.entityId) != null;
+                return a.negativeEntities.find(id => id === this.props.entity.entityId) != null;
             });
         return blockedActions;
     }
 
-    getRequiredActions() : ActionBase[] {
-        let requiredActions = this.props.actions.filter(a =>
-            {
-                return a.requiredEntities.find(id => id == this.props.entity.entityId) != null;
+    getRequiredActions(): ActionBase[] {
+        let requiredActions = this.props.actions.filter(a => {
+                return a.requiredEntities.find(id => id === this.props.entity.entityId) != null;
             });
         return requiredActions;
     }
 
     onRenderOption = (option: BlisDropdownOption): JSX.Element => {
         return (
-            <div className='dropdownExample-option'>
+            <div className="dropdownExample-option">
                 <span className={option.style}>{option.text}</span>
             </div>
         );
@@ -231,7 +231,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                         disabled={this.state.editing}
                     />
                     <OF.Dropdown
-                        label='Entity Type'
+                        label="Entity Type"
                         options={this.entityOptions}
                         onChanged={this.onChangedType}
                         onRenderOption={(option)=> this.onRenderOption(option as BlisDropdownOption)}
@@ -240,7 +240,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                     />
                     <div className="blis-entity-creator-checkbox">
                         <OF.Checkbox
-                            label='Programmatic Only'
+                            label="Programmatic Only"
                             defaultChecked={this.state.isProgrammaticVal}
                             onChange={this.onChangeProgrammatic}
                             disabled={this.state.editing || this.state.entityTypeVal != NEW_ENTITY}
@@ -269,7 +269,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                     </div>
                     <div className="blis-entity-creator-checkbox">
                         <OF.Checkbox
-                            label='Multi-valued'
+                            label="Multi-valued"
                             defaultChecked={this.state.isBucketableVal}
                             onChange={this.onChangeBucketable}
                             disabled={this.state.editing}
@@ -299,7 +299,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                     </div>
                     <div className="blis-entity-creator-checkbox">
                         <OF.Checkbox
-                            label='Negatable'
+                            label="Negatable"
                             defaultChecked={this.state.isNegatableVal}
                             onChange={this.onChangeReversible}
                             disabled={this.state.editing}
@@ -329,41 +329,40 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                         </div>
                     </div>
                 </div>
-                <div className='blis-modal_buttonbox blis-modal_buttonbox--bottom'>
+                <div className="blis-modal_buttonbox blis-modal_buttonbox--bottom">
                     <div className="blis-modal-buttons">
                         <div className="blis-modal-buttons_primary">
                             {!this.state.editing &&
                                 <OF.PrimaryButton
                                     disabled={this.onGetNameErrorMessage(this.state.entityNameVal) != ''}
                                     onClick={this.onClickSubmit}
-                                    ariaDescription='Create'
-                                    text='Create'
+                                    ariaDescription="Create"
+                                    text="Create"
                               
                                 />
                             }
                             {!this.state.editing &&
                                 <OF.DefaultButton
                                     onClick={this.onClickCancel}
-                                    ariaDescription='Cancel'
-                                    text='Cancel'
+                                    ariaDescription="Cancel"
+                                    text="Cancel"
                                 />
                             }
                             {this.state.editing &&
                                 <OF.PrimaryButton
                                     onClick={this.onClickCancel}
-                                    ariaDescription='Done'
-                                    text='Done'
+                                    ariaDescription="Done"
+                                    text="Done"
                                 />
                             }
                             {this.state.editing && this.props.handleOpenDeleteModal &&
                                 <OF.DefaultButton
                                     onClick={() => this.props.handleOpenDeleteModal(this.props.entity.entityId)}
-                                    ariaDescription='Delete'
-                                    text='Delete'
+                                    ariaDescription="Delete"
+                                    text="Delete"
                                 />}
                         </div>
-                        <div className="blis-modal-button_secondary">
-                        </div>
+                        <div className="blis-modal-button_secondary"/>
                     </div>
                 </div>
             </div>
@@ -395,8 +394,8 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                                     <div className="blis-modal-buttons_primary">
                                         <OF.PrimaryButton
                                             onClick={this.onClickCancel}
-                                            ariaDescription='Done'
-                                            text='Done'
+                                            ariaDescription="Done"
+                                            text="Done"
                                         />
                                     </div>
                                 </div>
@@ -412,8 +411,8 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                                     <div className="blis-modal-buttons_primary">
                                         <OF.PrimaryButton
                                             onClick={this.onClickCancel}
-                                            ariaDescription='Done'
-                                            text='Done'
+                                            ariaDescription="Done"
+                                            text="Done"
                                     />
                                 </div>
                             </div>
