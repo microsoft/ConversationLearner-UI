@@ -1,0 +1,22 @@
+.blis-payload-editor_options-container {
+    position: relative;
+}
+.blis-payload-editor_options {
+    position: absolute;
+    padding: 0.5em 0.5em;
+    background: white;
+    bottom: 2px;
+    width: 100%;
+    box-shadow: 0px 2px 5px rgba(0,0,0,0.5);
+}
+
+.blis-payload-editor-option {
+    padding: 0.25em 0.5em;
+    cursor: pointer;
+}
+.blis-payload-editor-option:last-of-type {
+    background: rgba(9, 79, 92, 0.1);
+}
+.blis-payload-editor-option:hover {
+    background: #84C0BD;
+}

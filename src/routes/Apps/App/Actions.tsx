@@ -8,7 +8,7 @@ import { deleteActionAsync } from '../../../actions/deleteActions'
 import ActionDetailsList from '../../../components/ActionDetailsList'
 import * as OF from 'office-ui-fabric-react';
 import { BlisAppBase, ActionBase } from 'blis-models'
-import { ConfirmDeleteModal, ActionCreatorEditor } from '../../../components/modals'
+import { ConfirmDeleteModal, ActionCreatorEditor, ActionEditor } from '../../../components/modals'
 import { State } from '../../../types'
 import { FM } from '../../../react-intl-messages'
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
@@ -19,6 +19,7 @@ interface ComponentState {
     isConfirmDeleteActionModalOpen: boolean;
     isActionEditorModalOpen: boolean;
     searchValue: string;
+    isActionEditorOpen: boolean
 }
 
 class Actions extends React.Component<Props, ComponentState> {
@@ -31,7 +32,8 @@ class Actions extends React.Component<Props, ComponentState> {
             actionSelected: null,
             searchValue: '',
             isConfirmDeleteActionModalOpen: false,
-            isActionEditorModalOpen: false
+            isActionEditorModalOpen: false,
+            isActionEditorOpen: false
         }
         this.onClickConfirmDelete = this.onClickConfirmDelete.bind(this);
         this.onSelectAction = this.onSelectAction.bind(this);
@@ -53,7 +55,6 @@ class Actions extends React.Component<Props, ComponentState> {
             isActionEditorModalOpen: false,
             actionIDToDelete: null
         })
-
     }
 
     onClickCancelDelete() {
@@ -87,7 +88,51 @@ class Actions extends React.Component<Props, ComponentState> {
     onSelectAction(action: ActionBase) {
         this.setState({
             actionSelected: action,
-            isActionEditorModalOpen: true
+            isActionEditorOpen: true
+        })
+    }
+
+    onClickOpenActionEditor() {
+        this.setState({
+            isActionEditorOpen: true
+        })
+    }
+
+    onClickCancelActionEditor() {
+        this.setState({
+            isActionEditorOpen: false,
+            actionSelected: null
+        })
+    }
+
+    onClickDeleteActionEditor(action: ActionBase) {
+        this.setState({
+            isActionEditorOpen: false,
+            actionSelected: null
+        }, () => {
+            console.log(`Actions.onClickDeleteActionEditor`)
+            // this.props.deleteActionAsync(this.props.user.key, action.actionId, this.props.app.appId)
+        })
+        
+    }
+
+    onClickSubmitActionEditor(action: ActionBase) {
+        const wasEditing = this.state.actionSelected
+
+        this.setState({
+            isActionEditorOpen: false,
+            actionSelected: null
+        }, () => {
+            console.group(`Actions.onClickSubmitActionEditor`)
+            if (wasEditing) {
+                console.log(`editActionAsync`)
+                // this.props.editActionAsync(this.props.user.key, action, this.props.app.appId)
+            }
+            else {
+                console.log(`createActionAsync`)
+                // this.props.createActionAsync(this.props.user.key, action, this.props.app.appId)
+            }
+            console.groupEnd()
         })
     }
 
@@ -152,6 +197,12 @@ class Actions extends React.Component<Props, ComponentState> {
                         })}
                         componentRef={component => this.newActionButton = component}
                     />
+
+                    <OF.PrimaryButton
+                        onClick={() => this.onClickOpenActionEditor()}
+                        ariaDescription='Create a New Action'
+                        text='New Action (2.0)'
+                    />
                 </div>
                 <OF.SearchBox
                     className="ms-font-m-plus"
@@ -177,6 +228,14 @@ class Actions extends React.Component<Props, ComponentState> {
                     blisAction={this.state.actionSelected}
                     handleClose={this.onClickCloseActionEditor}
                     handleOpenDeleteModal={this.onClickDeleteAction}
+                />
+                <ActionEditor
+                    app={this.props.app}
+                    open={this.state.isActionEditorOpen}
+                    action={this.state.actionSelected}
+                    onClickCancel={() => this.onClickCancelActionEditor()}
+                    onClickDelete={action => this.onClickDeleteActionEditor(action)}
+                    onClickSubmit={action => this.onClickSubmitActionEditor(action)}
                 />
             </div>
         );
