@@ -5,7 +5,7 @@ interface TypedAxiosResponse<T> extends AxiosResponse {
     data: T
 }
 
-//shape of client
+// shape of client
 /*
 const blisClient = new BlisClient(getAccessToken, { ... })
 
@@ -27,7 +27,7 @@ export default class BlisClient {
     defaultConfig: AxiosRequestConfig = {
         method: 'get',
         headers: {
-            "Content-Type": "application/json"
+            'Content-Type': 'application/json'
         }
     }
 
@@ -189,7 +189,7 @@ export default class BlisClient {
     trainDialogsCreate(appId: string, trainDialog: models.TrainDialog): Promise<models.TrainDialog> {
         return this.send<string>({
             method: 'post',
-            url: `app/${appId}/traindialog`,
+            url: `${this.baseUrl}/app/${appId}/traindialog`,
             data: trainDialog
         })
             .then(response => {

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import "./TeachSessionWindow.css"
+import './TeachSessionWindow.css';
 import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -58,7 +58,7 @@ class TeachWindow extends React.Component<Props, ComponentState> {
     }
 
     onWebChatPostActivity(activity: Activity) {
-        if (activity.type === "message") {
+        if (activity.type === 'message') {
             this.props.addMessageToTeachConversationStack(activity.text)
 
             let userInput = new UserInput({ text: activity.text });
@@ -76,7 +76,7 @@ class TeachWindow extends React.Component<Props, ComponentState> {
         let showDone = this.props.teachSessions.currentConversationStack.length > 0 && this.props.teachSessions.mode == DialogMode.Wait;
 
         // Put mask of webchat if not in input mode
-        let chatDisable = (this.props.teachSessions.mode != DialogMode.Wait) ?
+        let chatDisable = (this.props.teachSessions.mode !== DialogMode.Wait) ?
             <div className="wc-disable"></div>
             : null;
 
@@ -97,7 +97,7 @@ class TeachWindow extends React.Component<Props, ComponentState> {
             <Modal
                 isOpen={this.props.open && this.props.error === null}
                 isBlocking={true}
-                containerClassName='blis-modal-container blis-modal blis-modal--large'>
+                containerClassName="blis-modal-container blis-modal blis-modal--large">
                 <div className="blis-modal-header blis-color-teach"></div>
                 <div className="blis-modal-body">
                     <div className="blis-chatmodal">
@@ -106,9 +106,9 @@ class TeachWindow extends React.Component<Props, ComponentState> {
                                 app={this.props.app}
                                 history={null}
                                 onPostActivity={activity => this.onWebChatPostActivity(activity)}
-                                onSelectActivity={() => { }}
+                                onSelectActivity={() => {}}
                                 hideInput={false}
-                                focusInput={this.props.teachSessions.mode == DialogMode.Wait}
+                                focusInput={this.props.teachSessions.mode === DialogMode.Wait}
                             />
                             {chatDisable}
                         </div>
@@ -129,14 +129,14 @@ class TeachWindow extends React.Component<Props, ComponentState> {
                         <div className="blis-modal-buttons_secondary">
                             <DefaultButton
                                 onClick={() => this.onClickAbandonTeach()}
-                                ariaDescription='Abandon Teach'
-                                text='Abandon Teach'
+                                ariaDescription="Abandon Teach"
+                                text="Abandon Teach"
                             />
                             <PrimaryButton
                                 disabled={!showDone}
                                 onClick={() => this.onClickSave()}
-                                ariaDescription='Done Teaching'
-                                text='Done Teaching'
+                                ariaDescription="Done Teaching"
+                                text="Done Teaching"
                             />
                         </div>
                     </div>
@@ -179,4 +179,5 @@ const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
 type Props = typeof stateProps & typeof dispatchProps & ReceivedProps;
 
-export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(TeachWindow);
+export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>
+    (mapStateToProps, mapDispatchToProps)(TeachWindow);
