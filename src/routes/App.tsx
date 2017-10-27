@@ -14,6 +14,7 @@ import NoMatch from './NoMatch'
 import { UserLogin, SpinnerWindow, LogoutModal, Error } from '../components/modals'
 import { setUser, logout } from '../actions/displayActions'
 import './App.css'
+import { FormattedMessage } from 'react-intl'
 
 interface ComponentState {
   isLoginWindowOpen: boolean
@@ -30,7 +31,7 @@ class App extends React.Component<Props, ComponentState> {
 
   componentWillMount() {
     // If user is not logged in, show the login window
-    if(this.props.user.name.length === 0) {
+    if (this.props.user.name.length === 0) {
       this.setState({
         isLoginWindowOpen: true
       })
@@ -39,7 +40,7 @@ class App extends React.Component<Props, ComponentState> {
 
   componentWillReceiveProps(nextProps: Props) {
     // If user is not logged in, show the login window
-    if(nextProps.user.name.length === 0) {
+    if (nextProps.user.name.length === 0) {
       this.setState({
         isLoginWindowOpen: true
       })
@@ -58,7 +59,7 @@ class App extends React.Component<Props, ComponentState> {
       isLoginWindowOpen: false
     })
   }
-  
+
   onClickUsername = () => {
     // If user is not logged in, show login window
     // otherwise show logout window
@@ -94,10 +95,30 @@ class App extends React.Component<Props, ComponentState> {
           <div className="blis-app_header-placeholder"></div>
           <header className="blis-app_header blis-header ms-font-m-plus">
             <nav className="blis-header_links ">
-              <NavLink to="/home">Home</NavLink>
-              <NavLink to="/about">About</NavLink>
-              <NavLink to="/docs">Docs</NavLink>
-              <NavLink to="/support">Support</NavLink>
+              <NavLink to="/home">
+                <FormattedMessage
+                  id="App.header.home"
+                  defaultMessage="Home"
+                />
+              </NavLink>
+              <NavLink to="/about">
+                <FormattedMessage
+                  id="App.header.about"
+                  defaultMessage="About"
+                />
+              </NavLink>
+              <NavLink to="/docs">
+                <FormattedMessage
+                  id="App.header.docs"
+                  defaultMessage="Docs"
+                />
+              </NavLink>
+              <NavLink to="/support">
+                <FormattedMessage
+                  id="App.header.support"
+                  defaultMessage="Support"
+                />
+              </NavLink>
             </nav>
             <NavLink className="blis-header_user" to="/home" onClick={this.onClickUsername}>{this.props.user.name || "BLIS"}</NavLink>
           </header>

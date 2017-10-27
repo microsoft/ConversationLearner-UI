@@ -1,9 +1,20 @@
 import * as React from 'react'
+import { FormattedMessage } from 'react-intl'
 
 const component = () => (
     <div className="blis-page">
-        <div className="ms-font-su">Docs</div>
-        <div className="ms-font-m-plus">Coming soon...</div>
+        <div className="ms-font-su">
+            <FormattedMessage
+                id="Docs.title"
+                defaultMessage="Docs"
+            />
+        </div>
+        <div className="ms-font-m-plus">
+            <FormattedMessage
+                id="page.comingsoon"
+                defaultMessage="Coming Soon..."
+            />
+        </div>
     </div>
 )
 
