@@ -55,6 +55,23 @@ export default {
         'LogDialogs.lastInput': 'Last Input',
         'LogDialogs.lastResponse': 'Last Response',
         'LogDialogs.turns': 'Turns',
+        // Settings
+        'Settings.title': 'Settings',
+        'Settings.subtitle': 'Control your application versions, who has access to it and whether it is public or private...',
+        'Settings.fieldError.requiredValue': 'Required Value',
+        'Settings.fieldError.alphanumeric': 'Application name may only contain alphanumeric characters',
+        'Settings.fieldError.distinct': 'Name is already in use.',
+        'Settings.fields.nameLabel': 'Name',
+        'Settings.fields.appIdLabel': 'App ID',
+        'Settings.passwordHidden': 'Show',
+        'Settings.passwordVisible': 'Hide',
+        'Settings.botFrameworkAppIdFieldLabel': 'Application ID',
+        'Settings.botFrameworkAddBotButtonText': 'Add',
+        'Settings.botFrameworkLuisKeyLabel': 'LUIS Key',
+        'Settings.botFrameworkLocaleLabel': 'Locale',
+        'Settings.botFrameworkListLabel': 'Bot Framework Apps',
+        'Settings.saveChanges': 'Save Changes',
+        'Settings.discard': 'Discard',
         // Modals
         // Login
         'UserLogin.title': 'Log In',
