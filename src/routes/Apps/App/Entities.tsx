@@ -8,78 +8,96 @@ import { deleteEntityAsync } from '../../../actions/deleteActions'
 import { State } from '../../../types';
 import { onRenderDetailsHeader } from '../../../components/ToolTips'
 import { BlisAppBase, EntityBase, EntityType } from 'blis-models'
+import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 
 interface IRenderableColumn extends OF.IColumn {
     render: (entity: EntityBase, component: Entities) => JSX.Element | JSX.Element[]
     getSortValue: (IRenderableColumn: EntityBase, component: Entities) => string
 }
 
-const columns: IRenderableColumn[] = [
-    {
-        key: 'entityName',
-        name: 'Entity Name',
-        fieldName: 'entityName',
-        minWidth: 100,
-        maxWidth: 200,
-        isResizable: true,
-        getSortValue: entity => entity.entityName.toLowerCase(),
-        render: entity => <span className='ms-font-m-plus'>{entity.entityName}</span>
-    },
-    {
-        key: 'entityType',
-        name: 'Type',
-        fieldName: 'entityType',
-        minWidth: 100,
-        maxWidth: 200,
-        isResizable: true,
-        getSortValue: entity => {
-            let display = (entity.entityType === EntityType.LOCAL || entity.entityType === EntityType.LUIS) 
-                ? 'CUSTOM' : entity.entityType;
-            return display.toLowerCase();
+function getColumns(intl: InjectedIntl): IRenderableColumn[] {
+    return [
+        {
+            key: 'entityName',
+            name: intl.formatMessage({
+                id: 'Entities.columns.name',
+                defaultMessage: 'Entity Name'
+            }),
+            fieldName: 'entityName',
+            minWidth: 100,
+            maxWidth: 200,
+            isResizable: true,
+            getSortValue: entity => entity.entityName.toLowerCase(),
+            render: entity => <span className='ms-font-m-plus'>{entity.entityName}</span>
+        },
+        {
+            key: 'entityType',
+            name: intl.formatMessage({
+                id: 'Entities.columns.type',
+                defaultMessage: 'Type'
+            }),
+            fieldName: 'entityType',
+            minWidth: 100,
+            maxWidth: 200,
+            isResizable: true,
+            getSortValue: entity => {
+                let display = (entity.entityType === EntityType.LOCAL || entity.entityType === EntityType.LUIS)
+                    ? 'CUSTOM' : entity.entityType;
+                return display.toLowerCase();
             },
-        render: entity => (
-            <span className='ms-font-m-plus'>
-                {(entity.entityType === EntityType.LOCAL || entity.entityType === EntityType.LUIS)
-                    ? 'CUSTOM' : entity.entityType }
-            </span>)
-    },
-    {
-        key: 'isProgrammatic',
-        name: 'Programmatic',
-        fieldName: 'programmatic',
-        minWidth: 100,
-        maxWidth: 200,
-        isResizable: true,
-        getSortValue: entity => (entity.entityType === EntityType.LOCAL) ? 'a' : 'b',
-        render: entity => (
-            <span className={"ms-Icon blis-icon " + (entity.entityType === EntityType.LOCAL 
-                ? "ms-Icon--CheckMark" : "ms-Icon--Remove")} aria-hidden="true"
-            />)
-    },
-    {
-        key: 'isBucketable',
-        name: 'Multi-Value',
-        fieldName: 'metadata',
-        minWidth: 100,
-        maxWidth: 200,
-        isResizable: true,
-        getSortValue: entity => entity.metadata.isBucket ? 'a' : 'b',
-        render: entity =>( 
-            <span className={"ms-Icon blis-icon " + (entity.metadata.isBucket 
-                ? "ms-Icon--CheckMark" : "ms-Icon--Remove")} aria-hidden="true"
-            />)
-    },
-    {
-        key: 'isNegatable',
-        name: 'Negatable',
-        fieldName: 'metadata',
-        minWidth: 100,
-        maxWidth: 200,
-        isResizable: true,
-        getSortValue: entity => entity.metadata.isReversable ? 'a' : 'b',
-        render: entity => <span className={"ms-Icon blis-icon " + (entity.metadata.isReversable ? "ms-Icon--CheckMark" : "ms-Icon--Remove")} aria-hidden="true"></span>
-    }
-];
+            render: entity => (
+                <span className='ms-font-m-plus'>
+                    {(entity.entityType === EntityType.LOCAL || entity.entityType === EntityType.LUIS)
+                        ? 'CUSTOM' : entity.entityType}
+                </span>)
+        },
+        {
+            key: 'isProgrammatic',
+            name: intl.formatMessage({
+                id: 'Entities.columns.isProgrammatic',
+                defaultMessage: 'Programmatic'
+            }),
+            fieldName: 'programmatic',
+            minWidth: 100,
+            maxWidth: 200,
+            isResizable: true,
+            getSortValue: entity => (entity.entityType === EntityType.LOCAL) ? 'a' : 'b',
+            render: entity => (
+                <span className={"ms-Icon blis-icon " + (entity.entityType === EntityType.LOCAL
+                    ? "ms-Icon--CheckMark" : "ms-Icon--Remove")} aria-hidden="true"
+                />)
+        },
+        {
+            key: 'isBucketable',
+            name: intl.formatMessage({
+                id: 'Entities.columns.isBucketable',
+                defaultMessage: 'Multi-Value'
+            }),
+            fieldName: 'metadata',
+            minWidth: 100,
+            maxWidth: 200,
+            isResizable: true,
+            getSortValue: entity => entity.metadata.isBucket ? 'a' : 'b',
+            render: entity => (
+                <span className={"ms-Icon blis-icon " + (entity.metadata.isBucket
+                    ? "ms-Icon--CheckMark" : "ms-Icon--Remove")} aria-hidden="true"
+                />)
+        },
+        {
+            key: 'isNegatable',
+            name: intl.formatMessage({
+                id: 'Entities.columns.isNegatable',
+                defaultMessage: 'Negatable'
+            }),
+            fieldName: 'metadata',
+            minWidth: 100,
+            maxWidth: 200,
+            isResizable: true,
+            getSortValue: entity => entity.metadata.isReversable ? 'a' : 'b',
+            render: entity => <span className={"ms-Icon blis-icon " + (entity.metadata.isReversable ? "ms-Icon--CheckMark" : "ms-Icon--Remove")} aria-hidden="true"></span>
+        }
+    ]
+}
 
 interface ComponentState {
     searchValue: string
@@ -102,7 +120,7 @@ class Entities extends React.Component<Props, ComponentState> {
         entitySelected: null,
         entityIDToDelete: null,
         errorModalOpen: false,
-        columns: columns,
+        columns: getColumns(this.props.intl),
         sortColumn: null
     }
 
@@ -238,14 +256,30 @@ class Entities extends React.Component<Props, ComponentState> {
 
         return (
             <div className="blis-page">
-                <span className="ms-font-xxl">Entities</span>
-                <span className="ms-font-m-plus">Manage a list of entities in your application and track and control their instances within actions...</span>
+                <span className="ms-font-xxl">
+                    <FormattedMessage
+                        id="Entities.title"
+                        defaultMessage="Entities"
+                    />
+                </span>
+                <span className="ms-font-m-plus">
+                    <FormattedMessage
+                        id="Entities.subtitle"
+                        defaultMessage="Manage a list of entities in your application and track and control their instances within actions..."
+                    />
+                </span>
                 <div>
                     <OF.CommandButton
                         onClick={this.handleOpenCreateModal}
                         className='blis-button--gold'
-                        ariaDescription='Create a New Entity'
-                        text='New Entity'
+                        ariaDescription={this.props.intl.formatMessage({
+                            id: 'Entities.createButtonAriaDescription',
+                            defaultMessage: 'Create a New Entity'
+                        })}
+                        text={this.props.intl.formatMessage({
+                            id: 'Entities.createButtonText',
+                            defaultMessage: 'New Entity'
+                        })}
                         componentRef={component => this.newEntityButton = component}
                     />
                     <EntityCreatorEditor
@@ -266,10 +300,10 @@ class Entities extends React.Component<Props, ComponentState> {
                     items={entityItems}
                     columns={this.state.columns}
                     checkboxVisibility={OF.CheckboxVisibility.hidden}
-                    onRenderItemColumn={(entity: EntityBase, i, column: IRenderableColumn) => 
+                    onRenderItemColumn={(entity: EntityBase, i, column: IRenderableColumn) =>
                         column.render(entity, this)}
-                    onRenderDetailsHeader={(detailsHeaderProps: OF.IDetailsHeaderProps, 
-                                            defaultRender: OF.IRenderFunction<OF.IDetailsHeaderProps>) => 
+                    onRenderDetailsHeader={(detailsHeaderProps: OF.IDetailsHeaderProps,
+                        defaultRender: OF.IRenderFunction<OF.IDetailsHeaderProps>) =>
                         onRenderDetailsHeader(detailsHeaderProps, defaultRender)}
                     onColumnHeaderClick={this.onClickColumnHeader}
                     onActiveItemChanged={entity => this.onSelectEntity(entity)}
@@ -278,24 +312,35 @@ class Entities extends React.Component<Props, ComponentState> {
                     open={this.state.confirmDeleteEntityModalOpen}
                     onCancel={() => this.onClickCancelDelete()}
                     onConfirm={() => this.onClickConfirmDelete()}
-                    title="Are you sure you want to delete this entity?"
+                    title={this.props.intl.formatMessage({
+                        id: 'Entities.confirmDeleteModalTitle',
+                        defaultMessage: 'Are you sure you want to delete this entity?'
+                    })}
                 />
                 <OF.Dialog
                     hidden={!this.state.errorModalOpen}
                     onDismiss={() => this.onClickCancelDelete()}
                     dialogContentProps={{
                         type: OF.DialogType.normal,
-                        title: 'You cannot delete this entity because it is being used in an action.'
+                        title: this.props.intl.formatMessage({
+                            id: 'Entities.deleteWarningTitle',
+                            defaultMessage: 'Are you sure you want to delete this entity?'
+                        })
                     }}
                     modalProps={{
                         isBlocking: false
                     }}
                 >
                     <OF.DialogFooter>
-                        <OF.PrimaryButton onClick={() => this.onClickCancelDelete()} text='Close' />
+                        <OF.PrimaryButton
+                            onClick={() => this.onClickCancelDelete()}
+                            text={this.props.intl.formatMessage({
+                                id: 'Entities.deleteWarningPrimaryButtonText',
+                                defaultMessage: 'Close'
+                            })}
+                        />
                     </OF.DialogFooter>
                 </OF.Dialog>
-
             </div>
         );
     }
@@ -320,6 +365,6 @@ export interface ReceivedProps {
 // Props types inferred from mapStateToProps & dispatchToProps
 const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
-type Props = typeof stateProps & typeof dispatchProps & ReceivedProps;
+type Props = typeof stateProps & typeof dispatchProps & ReceivedProps & InjectedIntlProps
 
-export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(Entities);
+export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(Entities))
