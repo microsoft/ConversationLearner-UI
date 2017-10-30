@@ -3,11 +3,12 @@ import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../../types'
-import { IColumn, DetailsList, CheckboxVisibility } from 'office-ui-fabric-react';
+import * as OF from 'office-ui-fabric-react';
+import { onRenderDetailsHeader } from '../ToolTips'
 import { EntityBase, EntityType, Memory } from 'blis-models'
 import { DialogMode } from '../../types/const'
 
-let columns: IColumn[] = [
+let columns: OF.IColumn[] = [
     {
         key: 'entityName',
         name: 'Name',
@@ -59,8 +60,8 @@ let columns: IColumn[] = [
 ]
 
 interface ComponentState {
-    columns: IColumn[],
-    sortColumn: IColumn
+    columns: OF.IColumn[],
+    sortColumn: OF.IColumn
 }
 
 class MemoryTable extends React.Component<Props, ComponentState> {
@@ -74,7 +75,7 @@ class MemoryTable extends React.Component<Props, ComponentState> {
         this.onColumnClick = this.onColumnClick.bind(this)
         this.renderItemColumn = this.renderItemColumn.bind(this)
     }
-    onColumnClick(event: any, column: IColumn) {
+    onColumnClick(event: any, column: OF.IColumn) {
         let { columns } = this.state;
         let isSortedDescending = column.isSortedDescending;
 
@@ -97,7 +98,7 @@ class MemoryTable extends React.Component<Props, ComponentState> {
             sortColumn: column
         });
     }
-    getValue(memory: any, col: IColumn): any {
+    getValue(memory: any, col: OF.IColumn): any {
         let value = memory[col.fieldName];
 
         if (typeof value == 'string' || value instanceof String) {
@@ -176,7 +177,7 @@ class MemoryTable extends React.Component<Props, ComponentState> {
         return display; 
 
     }
-    renderItemColumn(entityName?: any, index?: number, column?: IColumn) {
+    renderItemColumn(entityName?: any, index?: number, column?: OF.IColumn) {
 
         let entity = this.props.entities.filter((e: EntityBase) => e.entityName == entityName)[0];
         if (!entity) {
@@ -236,13 +237,17 @@ class MemoryTable extends React.Component<Props, ComponentState> {
         let memoryNames = this.getMemoryNames();
         let details = memoryNames.length == 0 ?
             <div className='ms-font-l teachEmptyMemory'>Empty</div> :
-            <DetailsList
+            <OF.DetailsList
                 className="ms-font-m-plus"
                 items={memoryNames}
                 columns={this.state.columns}
                 onColumnHeaderClick={this.onColumnClick}
                 onRenderItemColumn={this.renderItemColumn}
-                checkboxVisibility={CheckboxVisibility.hidden}
+                checkboxVisibility={OF.CheckboxVisibility.hidden}
+                onRenderDetailsHeader={(detailsHeaderProps: OF.IDetailsHeaderProps, 
+                                            defaultRender: OF.IRenderFunction<OF.IDetailsHeaderProps>) => 
+                        onRenderDetailsHeader(detailsHeaderProps, defaultRender)}
+                   
             />
         return (
             <div>

@@ -9,6 +9,7 @@ import * as OF from 'office-ui-fabric-react';
 import ActionDetailsList from '../ActionDetailsList'
 import { State, PreBuiltEntities } from '../../types';
 import { BlisDropdownOption } from './BlisDropDownOption'
+import { GetTip, TipType } from '../ToolTips'
 import { EntityBase, EntityMetaData, EntityType, ActionBase } from 'blis-models'
 import './EntityCreatorEditor.css'
 
@@ -248,18 +249,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                         <div className="ms-fontSize-s ms-fontColor-neutralSecondary">Entity only set by code. &nbsp;
                             <OF.TooltipHost
                                 tooltipProps={{
-                                    onRenderContent: () => {
-                                        return (
-                                            <div>
-                                                Programmatic Entities are not extracted from user utterances.  They are set in code you write for your Bot<br /><br />
-                                                <b>Example: Restrict Actions for authorized users</b>
-                                                <dl className="blis-entity-example">
-                                                    <dt>Entity:</dt><dd>isLoggedIn</dd>
-                                                </dl>
-                                                The "isLoggedIn" Entity is set in code. When not set, it can be used to block Actions that require authorized users
-                                            </div>
-                                        );
-                                    }
+                                    onRenderContent: () => {return GetTip(TipType.PROGAMMATIC)}
                                 }}
                                 delay={OF.TooltipDelay.zero}
                                 directionalHint={OF.DirectionalHint.bottomCenter}
@@ -277,19 +267,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                         <div className="ms-fontSize-s ms-fontColor-neutralSecondary">Entity may hold multiple values. &nbsp;
                             <OF.TooltipHost
                                 tooltipProps={{
-                                    onRenderContent: () => {
-                                        return (
-                                            <div>
-                                                Additional occurences of the Entity add to list of previous values. For non multi-value entites new values replace previous values.<br /><br/>
-                                                <b>Example: Multiple toppings on a pizza</b>
-                                                <dl className="blis-entity-example">
-                                                    <dt>Entity:</dt><dd>toppings</dd>
-                                                    <dt>Phrase:</dt><dd>I would like <i>cheese</i> and <i>pepperoni</i>.</dd>
-                                                    <dt>Memory:</dt><dd>cheese, pepperoni</dd>
-                                                </dl>
-                                            </div>
-                                        );
-                                    }
+                                    onRenderContent: () => {return GetTip(TipType.MULTIVALUE)}
                                 }}
                                 delay={OF.TooltipDelay.zero}
                                 directionalHint={OF.DirectionalHint.bottomCenter}
@@ -307,20 +285,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                         <div className="ms-fontSize-s ms-fontColor-neutralSecondary">Can remove or delete values in memory. &nbsp;
                             <OF.TooltipHost
                                 tooltipProps={{
-                                    onRenderContent: () => {
-                                        return (
-                                            <div>
-                                                When checked this creates a corresponding 'negatable' entity that can be used to remove or delete previous memory values.<br /><br />
-                                                <b>Example: Changing existing pizza order</b>
-                                                <dl className="blis-entity-example">
-                                                    <dt>Entity:</dt><dd>toppings</dd>
-                                                    <dt>Memory:</dt><dd>cheese, pepperoni</dd>
-                                                    <dt>Phrase:</dt><dd>Actually, please add <i>sausage</i> instead of <i>pepperoni</i>.</dd>
-                                                    <dt>Memory:</dt><dd>cheese, <del>pepperoni</del> sausage</dd>
-                                                </dl>
-                                            </div>
-                                        );
-                                    }
+                                    onRenderContent: () => {return GetTip(TipType.NEGATABLE)}
                                 }}
                                 delay={OF.TooltipDelay.zero}
                                 directionalHint={OF.DirectionalHint.bottomCenter}

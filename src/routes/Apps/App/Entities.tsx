@@ -2,14 +2,15 @@ import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import * as OF from 'office-ui-fabric-react';
 import { EntityCreatorEditor, ConfirmDeleteModal } from '../../../components/modals'
 import { deleteEntityAsync } from '../../../actions/deleteActions'
-import { IButton, DetailsList, CommandButton, CheckboxVisibility, IColumn, PrimaryButton, SearchBox, Dialog, DialogType, DialogFooter } from 'office-ui-fabric-react';
 import { State } from '../../../types';
+import { onRenderDetailsHeader } from '../../../components/ToolTips'
 import { BlisAppBase, EntityBase, EntityType } from 'blis-models'
 import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 
-interface IRenderableColumn extends IColumn {
+interface IRenderableColumn extends OF.IColumn {
     render: (entity: EntityBase, component: Entities) => JSX.Element | JSX.Element[]
     getSortValue: (IRenderableColumn: EntityBase, component: Entities) => string
 }
@@ -30,22 +31,25 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             render: entity => <span className='ms-font-m-plus'>{entity.entityName}</span>
         },
         {
-            key: 'type',
+            key: 'entityType',
             name: intl.formatMessage({
                 id: 'Entities.columns.type',
                 defaultMessage: 'Type'
             }),
-            fieldName: 'type',
+            fieldName: 'entityType',
             minWidth: 100,
             maxWidth: 200,
             isResizable: true,
             getSortValue: entity => {
-                let display = (entity.entityType == EntityType.LOCAL || entity.entityType == EntityType.LUIS) ? "CUSTOM" : entity.entityType;
+                let display = (entity.entityType === EntityType.LOCAL || entity.entityType === EntityType.LUIS)
+                    ? 'CUSTOM' : entity.entityType;
                 return display.toLowerCase();
             },
-            render: entity => <span className='ms-font-m-plus'>
-                {(entity.entityType == EntityType.LOCAL || entity.entityType == EntityType.LUIS) ? "CUSTOM" : entity.entityType}
-            </span>
+            render: entity => (
+                <span className='ms-font-m-plus'>
+                    {(entity.entityType === EntityType.LOCAL || entity.entityType === EntityType.LUIS)
+                        ? 'CUSTOM' : entity.entityType}
+                </span>)
         },
         {
             key: 'isProgrammatic',
@@ -57,8 +61,11 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             minWidth: 100,
             maxWidth: 200,
             isResizable: true,
-            getSortValue: entity => (entity.entityType == EntityType.LOCAL) ? 'a' : 'b',
-            render: entity => <span className={"ms-Icon blis-icon " + (entity.entityType == EntityType.LOCAL ? "ms-Icon--CheckMark" : "ms-Icon--Remove")} aria-hidden="true"></span>
+            getSortValue: entity => (entity.entityType === EntityType.LOCAL) ? 'a' : 'b',
+            render: entity => (
+                <span className={"ms-Icon blis-icon " + (entity.entityType === EntityType.LOCAL
+                    ? "ms-Icon--CheckMark" : "ms-Icon--Remove")} aria-hidden="true"
+                />)
         },
         {
             key: 'isBucketable',
@@ -71,7 +78,10 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             maxWidth: 200,
             isResizable: true,
             getSortValue: entity => entity.metadata.isBucket ? 'a' : 'b',
-            render: entity => <span className={"ms-Icon blis-icon " + (entity.metadata.isBucket ? "ms-Icon--CheckMark" : "ms-Icon--Remove")} aria-hidden="true"></span>
+            render: entity => (
+                <span className={"ms-Icon blis-icon " + (entity.metadata.isBucket
+                    ? "ms-Icon--CheckMark" : "ms-Icon--Remove")} aria-hidden="true"
+                />)
         },
         {
             key: 'isNegatable',
@@ -101,7 +111,7 @@ interface ComponentState {
 }
 
 class Entities extends React.Component<Props, ComponentState> {
-    newEntityButton: IButton
+    newEntityButton: OF.IButton
 
     state: ComponentState = {
         searchValue: '',
@@ -131,7 +141,7 @@ class Entities extends React.Component<Props, ComponentState> {
     }
 
     onClickConfirmDelete() {
-        let entityToDelete = this.props.entities.find(entity => entity.entityId == this.state.entityIDToDelete)
+        let entityToDelete = this.props.entities.find(entity => entity.entityId === this.state.entityIDToDelete)
         this.props.deleteEntityAsync(this.props.user.key, this.state.entityIDToDelete, entityToDelete, this.props.app.appId)
         this.setState({
             confirmDeleteEntityModalOpen: false,
@@ -163,7 +173,8 @@ class Entities extends React.Component<Props, ComponentState> {
         }, 500);
     }
     openDeleteModal(guid: string) {
-        let tiedToAction = this.props.actions.some(a => a.negativeEntities.includes(guid) || a.requiredEntities.includes(guid))
+        let tiedToAction = this.props.actions
+            .some(a => a.negativeEntities.includes(guid) || a.requiredEntities.includes(guid))
         if (tiedToAction === true) {
             this.setState({
                 errorModalOpen: true
@@ -234,13 +245,12 @@ class Entities extends React.Component<Props, ComponentState> {
     }
 
     onChange(newValue: string) {
-        //runs when user changes the text 
+        // runs when user changes the text 
         let lcString = newValue.toLowerCase();
         this.setState({
             searchValue: lcString
         })
     }
-
     render() {
         let entityItems = this.getFilteredAndSortedEntities()
 
@@ -259,7 +269,7 @@ class Entities extends React.Component<Props, ComponentState> {
                     />
                 </span>
                 <div>
-                    <CommandButton
+                    <OF.CommandButton
                         onClick={this.handleOpenCreateModal}
                         className='blis-button--gold'
                         ariaDescription={this.props.intl.formatMessage({
@@ -280,17 +290,21 @@ class Entities extends React.Component<Props, ComponentState> {
                         entityTypeFilter={null}
                     />
                 </div>
-                <SearchBox
+                <OF.SearchBox
                     className="ms-font-m-plus"
                     onChange={(newValue) => this.onChange(newValue)}
                     onSearch={(newValue) => this.onChange(newValue)}
                 />
-                <DetailsList
+                <OF.DetailsList
                     className="ms-font-m-plus"
                     items={entityItems}
                     columns={this.state.columns}
-                    checkboxVisibility={CheckboxVisibility.hidden}
-                    onRenderItemColumn={(entity: EntityBase, i, column: IRenderableColumn) => column.render(entity, this)}
+                    checkboxVisibility={OF.CheckboxVisibility.hidden}
+                    onRenderItemColumn={(entity: EntityBase, i, column: IRenderableColumn) =>
+                        column.render(entity, this)}
+                    onRenderDetailsHeader={(detailsHeaderProps: OF.IDetailsHeaderProps,
+                        defaultRender: OF.IRenderFunction<OF.IDetailsHeaderProps>) =>
+                        onRenderDetailsHeader(detailsHeaderProps, defaultRender)}
                     onColumnHeaderClick={this.onClickColumnHeader}
                     onActiveItemChanged={entity => this.onSelectEntity(entity)}
                 />
@@ -303,11 +317,11 @@ class Entities extends React.Component<Props, ComponentState> {
                         defaultMessage: 'Are you sure you want to delete this entity?'
                     })}
                 />
-                <Dialog
+                <OF.Dialog
                     hidden={!this.state.errorModalOpen}
                     onDismiss={() => this.onClickCancelDelete()}
                     dialogContentProps={{
-                        type: DialogType.normal,
+                        type: OF.DialogType.normal,
                         title: this.props.intl.formatMessage({
                             id: 'Entities.deleteWarningTitle',
                             defaultMessage: 'Are you sure you want to delete this entity?'
@@ -317,17 +331,16 @@ class Entities extends React.Component<Props, ComponentState> {
                         isBlocking: false
                     }}
                 >
-                    <DialogFooter>
-                        <PrimaryButton
+                    <OF.DialogFooter>
+                        <OF.PrimaryButton
                             onClick={() => this.onClickCancelDelete()}
                             text={this.props.intl.formatMessage({
                                 id: 'Entities.deleteWarningPrimaryButtonText',
                                 defaultMessage: 'Close'
                             })}
                         />
-                    </DialogFooter>
-                </Dialog>
-
+                    </OF.DialogFooter>
+                </OF.Dialog>
             </div>
         );
     }
