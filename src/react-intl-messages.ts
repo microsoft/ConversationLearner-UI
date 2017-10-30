@@ -72,6 +72,15 @@ export default {
         'Settings.botFrameworkListLabel': 'Bot Framework Apps',
         'Settings.saveChanges': 'Save Changes',
         'Settings.discard': 'Discard',
+        // Train Dialogs
+        'TrainDialogs.title': 'Train Dialogs',
+        'TrainDialogs.subtitle': 'Use this tool to train and improve the current versions of your application...',
+        'TrainDialogs.createButtonTitle': 'New Teach Session',
+        'TrainDialogs.createButtonAriaDescription': 'Create a New Teach Session',
+        'TrainDialogs.firstInput': 'First Input',
+        'TrainDialogs.lastInput': 'Last Input',
+        'TrainDialogs.lastResponse': 'Last Response',
+        'TrainDialogs.turns': 'Turns',
         // Modals
         // Login
         'UserLogin.title': 'Log In',
