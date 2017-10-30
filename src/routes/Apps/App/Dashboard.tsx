@@ -3,13 +3,24 @@ import { returntypeof } from 'react-redux-typescript';
 import { connect } from 'react-redux';
 import { State } from '../../../types'
 import { BlisAppBase } from 'blis-models'
+import { FormattedMessage } from 'react-intl'
 
 class Dashboard extends React.Component<Props, {}> {
     render() {
         return (
             <div className="blis-page">
-                <span className="ms-font-xxl">Overview</span>
-                <span className="ms-font-m-plus">Facts & statistics about the app's data at any period of time...</span>
+                <span className="ms-font-xxl">
+                    <FormattedMessage
+                        id="Dashboard.title"
+                        defaultMessage="Overview"
+                    />
+                </span>
+                <span className="ms-font-m-plus">
+                    <FormattedMessage
+                        id="Dashboard.subtitle"
+                        defaultMessage="Facts & statistics about the app's data at any period of time..."
+                    />
+                </span>
             </div>
         );
     }

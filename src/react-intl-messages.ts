@@ -22,6 +22,28 @@ export default {
         'AppsList.columns.locale': 'Locale',
         'AppsList.columns.linkedBots': 'Linked Bots',
         'AppsList.columns.actions': 'Actions',
+        // Actions
+        'Actions.title': 'Actions',
+        'Actions.subtitle': `Manage a list of actions that your application can take given it's state and user input...`,
+        'Actions.createButtonAriaDescription': 'Create a New Action',
+        'Actions.createButtonTitle': 'New Action',
+        'Actions.confirmDeleteModalTitle': 'Are you sure you want to delete this action?',
+        // Dashboard
+        'Dashboard.title': 'Overview',
+        'Dashboard.subtitle': `Facts & statistics about the app's data at any period of time...`,
+        // Entities
+        'Entities.title': 'Entities',
+        'Entities.subtitle': 'Manage a list of entities in your application and track and control their instances within actions...',
+        'Entities.createButtonAriaDescription': 'Create a New Entity',
+        'Entities.createButtonText': 'New Entity',
+        'Entities.columns.name': 'Name',
+        'Entities.columns.type': 'Type',
+        'Entities.columns.isProgrammatic': 'Programmatic',
+        'Entities.columns.isBucketable': 'Multi-Value',
+        'Entities.columns.isNegatable': 'Negatable',
+        'Entities.confirmDeleteModalTitle': 'Are you sure you want to delete this entity?',
+        'Entities.deleteWarningTitle': 'You cannot delete this entity because it is being used in an action.',
+        'Entities.deleteWarningPrimaryButtonText': 'Close',
         // Modals
         // Login
         'UserLogin.title': 'Log In',
