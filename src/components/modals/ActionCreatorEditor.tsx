@@ -6,13 +6,14 @@ import { fetchBotInfoAsync } from '../../actions/fetchActions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
-import { PrimaryButton, DefaultButton, Dropdown, TagPicker, 
+import {
+    PrimaryButton, DefaultButton, Dropdown, TagPicker,
     TextField, Label, Checkbox, List, ITag
-    } from 'office-ui-fabric-react'
+} from 'office-ui-fabric-react'
 import { ActionBase, ActionMetaData, ActionTypes, EntityBase, ModelUtils } from 'blis-models'
 import { State } from '../../types';
 import EntityCreatorEditor from './EntityCreatorEditor';
-import {BlisTagItem, IBlisPickerItemProps, IBlisTag} from './BlisTagItem';
+import { BlisTagItem, IBlisPickerItemProps, IBlisTag } from './BlisTagItem';
 import AutocompleteListItem from '../../components/AutocompleteListItem';
 
 interface TextObject {
@@ -253,7 +254,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             let found = this.props.entities.find(e => e.entityName === neg.key)
             return found.entityId
         })
-        let suggestedEntity = this.state.suggEntitiesVal[0] ? 
+        let suggestedEntity = this.state.suggEntitiesVal[0] ?
             this.props.entities.find(e => e.entityName === this.state.suggEntitiesVal[0].key) : null;
         let suggestedId = suggestedEntity ? suggestedEntity.entityId : null;
 
@@ -330,10 +331,12 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             .filter(item => !this.listContainsDocument(item, tagList)) : [];
         let usedEntities = this.state.reqEntitiesVal.concat(this.state.negEntitiesVal)
         return entList.filter(e => !usedEntities.some(u => e.key === u.key))
-            .map(e => {return {
-                key: e.key, 
-                name: e.name, 
-             }});
+            .map(e => {
+                return {
+                    key: e.key,
+                    name: e.name,
+                }
+            });
     }
     onResolveSuggestedEntity(filterText: string, tagList: IBlisTag[]): IBlisTag[] {
         // suggested entites available should exclude those in 
@@ -582,7 +585,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             let foundIndex = negativeEntities.findIndex((n: IBlisTag) => n.name == suggestedEntity.name);
             if (foundIndex < 0) {
                 negativeEntities.push({
-                    key: suggestedEntity.key, 
+                    key: suggestedEntity.key,
                     name: suggestedEntity.name
                 });
                 this.setState({
@@ -631,7 +634,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         let charsPreSpecialCharacter: string = this.state.payloadVal.slice(0, this.state.dropdownIndex);
         let newCharsWithSpecialChar: string = this.state.payloadVal[this.state.dropdownIndex] + entityName;
         let lastCharFilterTextIndex = this.findIndexOfLastCharacterFollowingSpecialCharacterPreSpace()
-        let charsPostEntitySuggest: string = lastCharFilterTextIndex === 
+        let charsPostEntitySuggest: string = lastCharFilterTextIndex ===
             (this.state.payloadVal.length - 1) ? '' : this.state.payloadVal
                 .slice(lastCharFilterTextIndex + 1, this.state.payloadVal.length);
         let word: string = charsPreSpecialCharacter.concat(newCharsWithSpecialChar).concat(charsPostEntitySuggest)
@@ -644,8 +647,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         let specialIndexes: SpecialIndex[] = [];
         // don't add the entity if weve already manually entered it into the required picker
         let foundEntityPickerObj: IBlisTag = this.state.reqEntitiesVal.find((e: IBlisTag) => e.name == obj.text);
-        let newRequiredEntities: IBlisTag[] = foundEntityPickerObj ? 
-            [...this.state.reqEntitiesVal] : 
+        let newRequiredEntities: IBlisTag[] = foundEntityPickerObj ?
+            [...this.state.reqEntitiesVal] :
             [...this.state.reqEntitiesVal, { key: obj.text, name: obj.text }];
         let specialIndex: SpecialIndex = {
             index: this.state.dropdownIndex,
@@ -673,7 +676,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     getAlphabetizedFilteredEntityOptions(): TextObject[] {
         let filteredEntities: EntityBase[] = this.props.entities
             .filter((e: EntityBase) => e.entityName.toLowerCase()
-            .includes(this.state.entitySuggestFilterText.toLowerCase()) && e.metadata.positiveId == null);
+                .includes(this.state.entitySuggestFilterText.toLowerCase()) && e.metadata.positiveId == null);
         let names: string[] = filteredEntities.map((e: EntityBase) => {
             return e.entityName;
         })
@@ -723,8 +726,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             }
         }
     }
-    onRenderNegTagItem(props: IBlisPickerItemProps<ITag>) : JSX.Element {
-        let renderProps = {...props};
+    onRenderNegTagItem(props: IBlisPickerItemProps<ITag>): JSX.Element {
+        let renderProps = { ...props };
         let suggestedEntityKey = this.state.suggEntitiesVal[0] ? this.state.suggEntitiesVal[0].key : null;
 
         // Strickout and lock/highlight if also the suggested entity
@@ -733,12 +736,12 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         renderProps.highlight = suggestedEntityKey === props.key;
 
         return <BlisTagItem {...renderProps}>{props.item.name}</BlisTagItem>;
-    }   
+    }
     onRenderSugTagItem(props: IBlisPickerItemProps<ITag>): JSX.Element {
-        let renderProps = {...props};
+        let renderProps = { ...props };
         renderProps.highlight = true;
-        return <BlisTagItem { ...renderProps }>{ props.item.name }</BlisTagItem>;
-    }      
+        return <BlisTagItem { ...renderProps }>{props.item.name}</BlisTagItem>;
+    }
     render() {
         let entitySuggestStyle: {};
         let entitySuggestOptions: {}[] = [];
@@ -808,13 +811,13 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                             placeHolder={placeholder}
                         />
                         <div className="blis-dropdownWithButton-buttoncontainer">
-                        <PrimaryButton
-                            className="blis-dropdownWithButton-button"
-                            onClick={() => this.onClickSyncAPI()}
-                            ariaDescription="Refresh"
-                            text=""
-                            iconProps={{ iconName: 'Sync' }}
-                        />
+                            <PrimaryButton
+                                className="blis-dropdownWithButton-button"
+                                onClick={() => this.onClickSyncAPI()}
+                                ariaDescription="Refresh"
+                                text=""
+                                iconProps={{ iconName: 'Sync' }}
+                            />
                         </div>
                     </div>
                 )
@@ -860,80 +863,82 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     isBlocking={false}
                     containerClassName='blis-modal blis-modal--medium blis-modal--border'
                 >
-                    <div className='blis-modal_title'>
+                    <div className='blis-modal_header'>
                         <span className='ms-font-xxl ms-fontWeight-semilight'>{title}</span>
                     </div>
-                    <div>
-                        <Dropdown
-                            label='Action Type'
-                            options={actionTypeOptions}
-                            onChanged={this.onChangedType}
-                            selectedKey={this.state.actionTypeVal}
-                            disabled={this.state.editing}
-                        />
-                        {apiDropDown}
-                        {payloadTextField}
-                        <List
-                            items={entitySuggestOptions}
-                            style={entitySuggestStyle}
-                            renderCount={5}
-                            onRenderCell={(item, index: number) => (
-                                <AutocompleteListItem onClick={() => this.entitySuggestionSelected(item)} item={item} />
-                            )}
-                        />
-                        <Label>Expected Entity in Response...</Label>
-                        <TagPicker
-                            onResolveSuggestions={this.onResolveSuggestedEntity}
-                            getTextFromItem={(item) => { return item.name; }}
-                            onChange={this.onChangeSuggestedEntity}
-                            key={this.state.suggestedTagPickerKey}
-                            onRenderItem={this.onRenderSugTagItem}
-                            pickerSuggestionsProps={
-                                {
-                                    suggestionsHeaderText: 'Entities',
-                                    noResultsFoundText: 'No Entities Found'
+                    <div className='blis-modal_body'>
+                        <div>
+                            <Dropdown
+                                label='Action Type'
+                                options={actionTypeOptions}
+                                onChanged={this.onChangedType}
+                                selectedKey={this.state.actionTypeVal}
+                                disabled={this.state.editing}
+                            />
+                            {apiDropDown}
+                            {payloadTextField}
+                            <List
+                                items={entitySuggestOptions}
+                                style={entitySuggestStyle}
+                                renderCount={5}
+                                onRenderCell={(item, index: number) => (
+                                    <AutocompleteListItem onClick={() => this.entitySuggestionSelected(item)} item={item} />
+                                )}
+                            />
+                            <Label>Expected Entity in Response...</Label>
+                            <TagPicker
+                                onResolveSuggestions={this.onResolveSuggestedEntity}
+                                getTextFromItem={(item) => { return item.name; }}
+                                onChange={this.onChangeSuggestedEntity}
+                                key={this.state.suggestedTagPickerKey}
+                                onRenderItem={this.onRenderSugTagItem}
+                                pickerSuggestionsProps={
+                                    {
+                                        suggestionsHeaderText: 'Entities',
+                                        noResultsFoundText: 'No Entities Found'
+                                    }
                                 }
-                            }
-                            defaultSelectedItems={this.state.suggEntitiesVal}
-                        />
-                        <Label>Required Entities: Disallow Action when <b>NOT</b> in Memory...</Label>
-                        <TagPicker
-                            onResolveSuggestions={this.onResolveRequiredEntity}
-                            getTextFromItem={(item) => { return item.name; }}
-                            onChange={this.onChangeRequiredEntity}
-                            key={this.state.requiredTagPickerKey}
-                            pickerSuggestionsProps={
-                                {
-                                    suggestionsHeaderText: 'Entities',
-                                    noResultsFoundText: 'No Entities Found'
+                                defaultSelectedItems={this.state.suggEntitiesVal}
+                            />
+                            <Label>Required Entities: Disallow Action when <b>NOT</b> in Memory...</Label>
+                            <TagPicker
+                                onResolveSuggestions={this.onResolveRequiredEntity}
+                                getTextFromItem={(item) => { return item.name; }}
+                                onChange={this.onChangeRequiredEntity}
+                                key={this.state.requiredTagPickerKey}
+                                pickerSuggestionsProps={
+                                    {
+                                        suggestionsHeaderText: 'Entities',
+                                        noResultsFoundText: 'No Entities Found'
+                                    }
                                 }
-                            }
-                            defaultSelectedItems={this.state.reqEntitiesVal}
-                        />
-                        <Label>Blocking Entities: Disallow Action when <b>ARE</b> in Memory...</Label>
-                        <TagPicker
-                            key={this.state.negativeTagPickerKey}
-                            onResolveSuggestions={this.onResolveNegativeEntity}
-                            onRenderItem={this.onRenderNegTagItem}
-                            getTextFromItem={(item) => { return item.name; }}
-                            onChange={this.onChangeNegativeEntity}
-                            pickerSuggestionsProps={
-                                {
-                                    suggestionsHeaderText: 'Entities',
-                                    noResultsFoundText: 'No Entities Found'
+                                defaultSelectedItems={this.state.reqEntitiesVal}
+                            />
+                            <Label>Blocking Entities: Disallow Action when <b>ARE</b> in Memory...</Label>
+                            <TagPicker
+                                key={this.state.negativeTagPickerKey}
+                                onResolveSuggestions={this.onResolveNegativeEntity}
+                                onRenderItem={this.onRenderNegTagItem}
+                                getTextFromItem={(item) => { return item.name; }}
+                                onChange={this.onChangeNegativeEntity}
+                                pickerSuggestionsProps={
+                                    {
+                                        suggestionsHeaderText: 'Entities',
+                                        noResultsFoundText: 'No Entities Found'
+                                    }
                                 }
-                            }
-                            defaultSelectedItems={this.state.negEntitiesVal}
-                        />
-                        <Checkbox
-                            label='Wait For Response?'
-                            defaultChecked={true}
-                            onChange={this.onChangeWait}
-                            style={{ marginTop: "1em", display: "inline-block" }}
-                            disabled={this.state.editing}
-                        />
+                                defaultSelectedItems={this.state.negEntitiesVal}
+                            />
+                            <Checkbox
+                                label='Wait For Response?'
+                                defaultChecked={true}
+                                onChange={this.onChangeWait}
+                                style={{ marginTop: "1em", display: "inline-block" }}
+                                disabled={this.state.editing}
+                            />
+                        </div>
                     </div>
-                    <div className="blis-modal_buttonbox blis-modal_buttonbox--bottom">
+                    <div className="blis-modal_footer">
                         <div className="blis-modal-buttons">
                             <div className="blis-modal-buttons_primary">
                                 <PrimaryButton
@@ -968,7 +973,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                         open={this.state.entityModalOpen}
                         entity={null}
                         handleClose={this.entityCreatorHandleClose}
-                        handleOpenDeleteModal={() => {}}
+                        handleOpenDeleteModal={() => { }}
                         entityTypeFilter={null}
                     />
                 </Modal>

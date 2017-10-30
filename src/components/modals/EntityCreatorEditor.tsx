@@ -46,7 +46,7 @@ const staticEntityOptions: BlisDropdownOption[] = [
         key: 'divider',
         text: '-',
         itemType: OF.DropdownMenuItemType.Divider,
-        style: 'blisDropdown--normal' 
+        style: 'blisDropdown--normal'
     }
 ]
 
@@ -80,8 +80,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
         } else {
             let entityType = p.entity.entityType;
             let isProgrammatic = false;
-            if (entityType === EntityType.LUIS)
-            {
+            if (entityType === EntityType.LUIS) {
                 entityType = NEW_ENTITY;
             } else if (entityType === EntityType.LOCAL) {
                 entityType = NEW_ENTITY;
@@ -101,8 +100,8 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
 
     convertStateToEntity(state: ComponentState): EntityBase {
         let entityType = this.state.entityTypeVal;
-        if (entityType === NEW_ENTITY ) {
-            entityType =  (this.state.isProgrammaticVal) ? EntityType.LOCAL : EntityType.LUIS;
+        if (entityType === NEW_ENTITY) {
+            entityType = (this.state.isProgrammaticVal) ? EntityType.LOCAL : EntityType.LUIS;
         }
         return new EntityBase({
             entityName: this.state.entityNameVal,
@@ -194,17 +193,16 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
     }
 
     getBlockedActions(): ActionBase[] {
-        let blockedActions = this.props.actions.filter(a =>
-            {
-                return a.negativeEntities.find(id => id === this.props.entity.entityId) != null;
-            });
+        let blockedActions = this.props.actions.filter(a => {
+            return a.negativeEntities.find(id => id === this.props.entity.entityId) != null;
+        });
         return blockedActions;
     }
 
     getRequiredActions(): ActionBase[] {
         let requiredActions = this.props.actions.filter(a => {
-                return a.requiredEntities.find(id => id === this.props.entity.entityId) != null;
-            });
+            return a.requiredEntities.find(id => id === this.props.entity.entityId) != null;
+        });
         return requiredActions;
     }
 
@@ -219,82 +217,118 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
     renderEdit() {
         return (
             <div>
-                <div>
-                    <OF.TextField
-                        onGetErrorMessage={this.onGetNameErrorMessage}
-                        onChanged={this.onChangedName}
-                        onKeyDown={this.onKeyDownName}
-                        label="Entity Name"
-                        placeholder="Name..."
-                        required={true}
-                        pattern="banana|cherry"
-                        value={this.state.entityNameVal}
-                        disabled={this.state.editing}
+                <OF.TextField
+                    onGetErrorMessage={this.onGetNameErrorMessage}
+                    onChanged={this.onChangedName}
+                    onKeyDown={this.onKeyDownName}
+                    label="Entity Name"
+                    placeholder="Name..."
+                    required={true}
+                    value={this.state.entityNameVal}
+                    disabled={this.state.editing}
+                />
+                <OF.Dropdown
+                    label="Entity Type"
+                    options={this.entityOptions}
+                    onChanged={this.onChangedType}
+                    onRenderOption={(option) => this.onRenderOption(option as BlisDropdownOption)}
+                    selectedKey={this.state.entityTypeVal}
+                    disabled={this.state.editing || this.props.entityTypeFilter != null}
+                />
+                <div className="blis-entity-creator-checkbox">
+                    <OF.Checkbox
+                        label="Programmatic Only"
+                        defaultChecked={this.state.isProgrammaticVal}
+                        onChange={this.onChangeProgrammatic}
+                        disabled={this.state.editing || this.state.entityTypeVal != NEW_ENTITY}
                     />
-                    <OF.Dropdown
-                        label="Entity Type"
-                        options={this.entityOptions}
-                        onChanged={this.onChangedType}
-                        onRenderOption={(option)=> this.onRenderOption(option as BlisDropdownOption)}
-                        selectedKey={this.state.entityTypeVal}
-                        disabled={this.state.editing || this.props.entityTypeFilter != null}
-                    />
-                    <div className="blis-entity-creator-checkbox">
-                        <OF.Checkbox
-                            label="Programmatic Only"
-                            defaultChecked={this.state.isProgrammaticVal}
-                            onChange={this.onChangeProgrammatic}
-                            disabled={this.state.editing || this.state.entityTypeVal != NEW_ENTITY}
-                        />
-                        <div className="ms-fontSize-s ms-fontColor-neutralSecondary">Entity only set by code. &nbsp;
+                    <div className="ms-fontSize-s ms-fontColor-neutralSecondary">Entity only set by code. &nbsp;
                             <OF.TooltipHost
-                                tooltipProps={{
-                                    onRenderContent: () => {return GetTip(TipType.PROGAMMATIC)}
-                                }}
-                                delay={OF.TooltipDelay.zero}
-                                directionalHint={OF.DirectionalHint.bottomCenter}
-                            ><span className="ms-fontColor-themeTertiary">More</span>
-                            </OF.TooltipHost>
-                        </div>
-                    </div>
-                    <div className="blis-entity-creator-checkbox">
-                        <OF.Checkbox
-                            label="Multi-valued"
-                            defaultChecked={this.state.isBucketableVal}
-                            onChange={this.onChangeBucketable}
-                            disabled={this.state.editing}
-                        />
-                        <div className="ms-fontSize-s ms-fontColor-neutralSecondary">Entity may hold multiple values. &nbsp;
-                            <OF.TooltipHost
-                                tooltipProps={{
-                                    onRenderContent: () => {return GetTip(TipType.MULTIVALUE)}
-                                }}
-                                delay={OF.TooltipDelay.zero}
-                                directionalHint={OF.DirectionalHint.bottomCenter}
-                            ><span className="ms-fontColor-themeTertiary">More</span>
-                            </OF.TooltipHost>
-                        </div>
-                    </div>
-                    <div className="blis-entity-creator-checkbox">
-                        <OF.Checkbox
-                            label="Negatable"
-                            defaultChecked={this.state.isNegatableVal}
-                            onChange={this.onChangeReversible}
-                            disabled={this.state.editing}
-                        />
-                        <div className="ms-fontSize-s ms-fontColor-neutralSecondary">Can remove or delete values in memory. &nbsp;
-                            <OF.TooltipHost
-                                tooltipProps={{
-                                    onRenderContent: () => {return GetTip(TipType.NEGATABLE)}
-                                }}
-                                delay={OF.TooltipDelay.zero}
-                                directionalHint={OF.DirectionalHint.bottomCenter}
-                            ><span className="ms-fontColor-themeTertiary">More</span>
-                            </OF.TooltipHost>
-                        </div>
+                            tooltipProps={{
+                                onRenderContent: () => { return GetTip(TipType.PROGAMMATIC) }
+                            }}
+                            delay={OF.TooltipDelay.zero}
+                            directionalHint={OF.DirectionalHint.bottomCenter}
+                        ><span className="ms-fontColor-themeTertiary">More</span>
+                        </OF.TooltipHost>
                     </div>
                 </div>
-                <div className="blis-modal_buttonbox blis-modal_buttonbox--bottom">
+                <div className="blis-entity-creator-checkbox">
+                    <OF.Checkbox
+                        label="Multi-valued"
+                        defaultChecked={this.state.isBucketableVal}
+                        onChange={this.onChangeBucketable}
+                        disabled={this.state.editing}
+                    />
+                    <div className="ms-fontSize-s ms-fontColor-neutralSecondary">Entity may hold multiple values. &nbsp;
+                            <OF.TooltipHost
+                            tooltipProps={{
+                                onRenderContent: () => { return GetTip(TipType.MULTIVALUE) }
+                            }}
+                            delay={OF.TooltipDelay.zero}
+                            directionalHint={OF.DirectionalHint.bottomCenter}
+                        ><span className="ms-fontColor-themeTertiary">More</span>
+                        </OF.TooltipHost>
+                    </div>
+                </div>
+                <div className="blis-entity-creator-checkbox">
+                    <OF.Checkbox
+                        label="Negatable"
+                        defaultChecked={this.state.isNegatableVal}
+                        onChange={this.onChangeReversible}
+                        disabled={this.state.editing}
+                    />
+                    <div className="ms-fontSize-s ms-fontColor-neutralSecondary">Can remove or delete values in memory. &nbsp;
+                        <OF.TooltipHost
+                            tooltipProps={{
+                                onRenderContent: () => { return GetTip(TipType.NEGATABLE) }
+                            }}
+                            delay={OF.TooltipDelay.zero}
+                            directionalHint={OF.DirectionalHint.bottomCenter}
+                        ><span className="ms-fontColor-themeTertiary">More</span>
+                        </OF.TooltipHost>
+                    </div>
+                </div>
+            </div>
+        )
+    }
+    render() {
+        return (
+            <Modal
+                isOpen={this.props.open}
+                isBlocking={false}
+                containerClassName='blis-modal blis-modal--medium blis-modal--border'
+            >
+                <div className='blis-modal_header'>
+                    <span className='ms-font-xxl ms-fontWeight-semilight'>{this.state.editing ? this.props.entity.entityName : this.state.title}</span>
+                </div>
+                <div className='blis-modal_body'>
+                    {this.state.editing
+                        ? (
+                            <div>
+                                <OF.Pivot linkSize={OF.PivotLinkSize.large}>
+                                    <OF.PivotItem linkText='Edit Entity'>
+                                        {this.renderEdit()}
+                                    </OF.PivotItem>
+                                    <OF.PivotItem linkText='Required For Actions'>
+                                        <ActionDetailsList
+                                            actions={this.getRequiredActions()}
+                                            onSelectAction={null}
+                                        />
+                                    </OF.PivotItem>
+                                    <OF.PivotItem linkText='Blocked Actions'>
+                                        <ActionDetailsList
+                                            actions={this.getBlockedActions()}
+                                            onSelectAction={null}
+                                        />
+                                    </OF.PivotItem>
+                                </OF.Pivot>
+                            </div>
+                        ) : (
+                            this.renderEdit()
+                        )}
+                </div>
+                <div className="blis-modal_footer">
                     <div className="blis-modal-buttons">
                         <div className="blis-modal-buttons_primary">
                             {!this.state.editing &&
@@ -303,7 +337,6 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                                     onClick={this.onClickSubmit}
                                     ariaDescription="Create"
                                     text="Create"
-                              
                                 />
                             }
                             {!this.state.editing &&
@@ -327,74 +360,11 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                                     text="Delete"
                                 />}
                         </div>
-                        <div className="blis-modal-button_secondary"/>
+                        <div className="blis-modal-button_secondary" />
                     </div>
                 </div>
-            </div>
-        )
-    }
-    render() {
-        return (
-            <Modal
-                isOpen={this.props.open}
-                isBlocking={false}
-                containerClassName='blis-modal blis-modal--medium blis-modal--border'
-            >
-            {this.state.editing ? (
-                <div>
-                    <div className='blis-modal_title'>
-                    <span className='ms-font-xxl ms-fontWeight-semilight'>{this.props.entity.entityName}</span>
-                    </div>
-                    <OF.Pivot linkSize={ OF.PivotLinkSize.large }>
-                        <OF.PivotItem linkText='Edit Entity'>
-                            {this.renderEdit()}
-                        </OF.PivotItem>
-                        <OF.PivotItem linkText='Required For Actions'>
-                            <ActionDetailsList
-                                actions={this.getRequiredActions()}
-                                onSelectAction={null}
-                            />
-                            <div className='blis-modal_buttonbox blis-modal_buttonbox--bottom'>
-                                <div className="blis-modal-buttons">
-                                    <div className="blis-modal-buttons_primary">
-                                        <OF.PrimaryButton
-                                            onClick={this.onClickCancel}
-                                            ariaDescription="Done"
-                                            text="Done"
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                        </OF.PivotItem>
-                        <OF.PivotItem linkText='Blocked Actions'>
-                            <ActionDetailsList
-                                actions={this.getBlockedActions()}
-                                onSelectAction={null}
-                            />
-                            <div className='blis-modal_buttonbox blis-modal_buttonbox--bottom'>
-                                <div className="blis-modal-buttons">
-                                    <div className="blis-modal-buttons_primary">
-                                        <OF.PrimaryButton
-                                            onClick={this.onClickCancel}
-                                            ariaDescription="Done"
-                                            text="Done"
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                        </OF.PivotItem>
-                    </OF.Pivot>  
-                </div>      
-            ):(
-                <div>
-                    <div className='blis-modal_title'>
-                        <span className='ms-font-xxl ms-fontWeight-semilight'>{this.state.title}</span>
-                    </div>
-                    {this.renderEdit()}
-                </div>
-            )}
             </Modal>
-        );
+        )
     }
 }
 const mapDispatchToProps = (dispatch: any) => {

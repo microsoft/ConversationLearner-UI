@@ -114,10 +114,9 @@ class LogDialogModal extends React.Component<Props, ComponentState> {
                 <Modal
                     isOpen={this.props.open}
                     isBlocking={true}
-                    containerClassName='blis-modal-container blis-modal blis-modal--large'
+                    containerClassName='blis-modal blis-modal--large blis-modal--log'
                 >
-                    <div className="blis-modal-header blis-color-log"></div>
-                    <div className="blis-modal-body">
+                    <div className="blis-modal_body">
                         <div className="blis-chatmodal">
                             <div className="blis-chatmodal_webchat">
                                 <Webchat
@@ -140,7 +139,7 @@ class LogDialogModal extends React.Component<Props, ComponentState> {
                             </div>
                         </div>
                     </div>
-                    <div className="blis-modal-footer blis-color-log">
+                    <div className="blis-modal_footer">
                         <div className="blis-modal-buttons">
                             <div className="blis-modal-buttons_primary">
                             </div>

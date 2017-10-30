@@ -27,13 +27,13 @@ class UIError extends React.Component<Props, {}> {
                 isBlocking={false}
                 containerClassName='blis-modal blis-modal--small blis-modal--border'
             >
-                <div className='blis-modal_title'>
+                <div className='blis-modal_header'>
                     <span className='ms-font-xxl ms-fontWeight-semilight'>Error</span>
                 </div>
                 <div className='ms-font-l ms-fontWeight-semilight'>{this.props.error.route} Failed</div>
                 <div className='ms-font-m ms-fontWeight-semilight'>{this.props.error.error}</div>
                 {message}
-                <div className='blis-modal_buttonbox'>
+                <div className='blis-modal_footer'>
                     <CommandButton
                         onClick={this.handleClose}
                         className='blis-button--gold'

@@ -1,12 +1,65 @@
 :root {
-    --color-primary: #ffb900;
-    --color-primary-darker: #EEAC04;
-    --color-primary-darkest: #9E7203;
-    --color-primary-lighter: #FFE7A4;
-    --color-secondary: #004b50;
-    --color-tertiary: lightgrey;
-    --color-teach: #5c005c;
-    --color-log: #00188f;
+    /* Office UI Fabric Colors */
+    --color-themeDarker: #004578;
+    --color-themeDark: #005a9e;
+    --color-themeDarkAlt: #106ebe;
+    --color-themePrimary: #0078d7;
+    --color-themeSecondary: #2b88d8;
+    --color-themeTertiary: #71afe5;
+    --color-themeLight: #c7e0f4;
+    --color-themeLighter: #deecf9;
+    --color-themeLighterAlt: #eff6fc;
+    --color-neutralDark: #212121;
+    --color-neutralPrimary: #333333;
+    --color-neutralSecondary: #666666;
+    --color-neutralSecondaryAlt: #767676;
+    --color-neutralTertiary: #a6a6a6;
+    --color-neutralTertiaryAlt: #c8c8c8;
+    --color-neutralQuaternary: #d0d0d0;
+    --color-neutralQuaternaryAlt: #dadada;
+    --color-neutralLight: #eaeaea;
+    --color-neutralLighter: #f4f4f4;
+    --color-neutralLighterAlt: #f8f8f8;
+    --color-alert: #d83b01;
+    --color-alertBackground: #deecf9;
+    --color-black: #000000;
+    --color-blackTranslucent40: rgba(0,0,0,.4);
+    --color-blue: #0078d7;
+    --color-blueDark: #002050;
+    --color-blueLight: #00bcf2;
+    --color-blueMid: #00188f;
+    --color-error: #a80000;
+    --color-errorBackground: #fde7e9;
+    --color-green: #107c10;
+    --color-greenDark: #004b1c;
+    --color-greenLight: #bad80a;
+    --color-info: #107c10;
+    --color-infoBackground: #f4f4f4;
+    --color-magenta: #b4009e;
+    --color-magentaDark: #5c005c;
+    --color-magentaLight: #e3008c;
+    --color-orange: #d83b01;
+    --color-orangeLight: #ff8c00;
+    --color-orangeLighter: #ea4300;
+    --color-purple: #5c2d91;
+    --color-purpleDark: #32145a;
+    --color-purpleLight: #b4a0ff;
+    --color-red: #e81123;
+    --color-redDark: #a80000;
+    --color-success: #107c10;
+    --color-successBackground: #dff6dd;
+    --color-teal: #008272;
+    --color-tealDark: #004b50;
+    --color-tealLight: #00b294;
+    --color-white: #ffffff;
+    --color-whiteTranslucent40: rgba(255,255,255,.4);
+    --color-yellow: #ffb900;
+    --color-yellowLight: #fff100;
+
+    /* Custom colors */
+    --color-yellow-darker: #EEAC04;
+    --color-yellow-darkest: #9E7203;
+    --color-yellow-lighter: #FFE7A4;
     --color-botchat-grey: #dbdee1;
     --color-wc-user: #3a96dd;
     --color-wc-bot: #eceff1;
@@ -19,10 +72,10 @@
     grid-template: min-content 1fr / var(--gutter-width) 1fr var(--gutter-width)
 }
 .blis-app_header-placeholder {
-    background-color: var(--color-secondary)
+    background-color: var(--color-tealDark)
 }
 .blis-app_header {
-    background-color: var(--color-secondary)
+    background-color: var(--color-tealDark)
 }
 .blis-app_content {
     grid-column: 2;
@@ -56,7 +109,7 @@
 }
 .blis-header_links a.active,
 .blis-header_links a:hover {
-    background-color: var(--color-primary);
+    background-color: var(--color-yellow);
     color: black;
 }
 .blis-header_user {
@@ -64,7 +117,7 @@
     color: white;
 }
 .blis-header_user:hover {
-    background-color: var(--color-primary);
+    background-color: var(--color-yellow);
     color: black;
 }
 

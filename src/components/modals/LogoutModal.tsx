@@ -33,7 +33,7 @@ class LogoutModal extends React.Component<Props, {}> {
                 onDismiss={this.onDismiss}
                 containerClassName='blis-modal blis-modal--small blis-modal--border'
             >
-                <div className='blis-modal_title'>
+                <div className='blis-modal_header'>
                     <span className='ms-font-xxl ms-fontWeight-semilight'>Log Out</span>
                 </div>
                 <div className="blis-modal-buttons">
@@ -52,7 +52,7 @@ class LogoutModal extends React.Component<Props, {}> {
                         />
                     </div>
                 </div>
-                <div className='blis-modal_buttonbox'>
+                <div className='blis-modal_footer'>
 
                 </div>
             </Modal>
