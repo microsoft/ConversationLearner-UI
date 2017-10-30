@@ -44,6 +44,17 @@ export default {
         'Entities.confirmDeleteModalTitle': 'Are you sure you want to delete this entity?',
         'Entities.deleteWarningTitle': 'You cannot delete this entity because it is being used in an action.',
         'Entities.deleteWarningPrimaryButtonText': 'Close',
+        // LogDialogs
+        'LogDialogs.title': 'Log Dialogs',
+        'LogDialogs.subtitle': 'Use this tool to test the current versions of your application, to check if you are progressing on the right track...',
+        'LogDialogs.createButtonTitle': 'New Chat Session',
+        'LogDialogs.createButtonAriaDescription': 'Create a New Chat Session',
+        'LogDialogs.sessionCreationWarning.title': 'You may not create chat session at this time. Please try again later.',
+        'LogDialogs.sessionCreationWarning.primaryButton': 'Ok',
+        'LogDialogs.firstInput': 'First Input',
+        'LogDialogs.lastInput': 'Last Input',
+        'LogDialogs.lastResponse': 'Last Response',
+        'LogDialogs.turns': 'Turns',
         // Modals
         // Login
         'UserLogin.title': 'Log In',
@@ -71,11 +82,11 @@ export default {
         'AppsList.columns.locale': '장소',
         'AppsList.columns.linkedBots': '연결된 봇',
         'AppsList.columns.actions': '행위',
-         // Apps List
-         'AppsList.title': '내 앱',
-         'AppsList.subtitle': 'BLIS 응용 프로그램 작성 및 관리 ...',
-         'AppsList.createButtonAriaDescription': '새 응용 프로그램 만들기',
-         'AppsList.createButtonText': '새 앱',
+        // Apps List
+        'AppsList.title': '내 앱',
+        'AppsList.subtitle': 'BLIS 응용 프로그램 작성 및 관리 ...',
+        'AppsList.createButtonAriaDescription': '새 응용 프로그램 만들기',
+        'AppsList.createButtonText': '새 앱',
         // Modals
         // Login
         'UserLogin.title': '로그인',
