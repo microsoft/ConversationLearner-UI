@@ -6,54 +6,69 @@ import { AppCreator, ConfirmDeleteModal } from '../../components/modals'
 import { CommandButton, DetailsList, Link, CheckboxVisibility, IColumn } from 'office-ui-fabric-react';
 import { State } from '../../types';
 import { BlisAppBase } from 'blis-models'
+import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 
 interface ISortableRenderableColumn extends IColumn {
     render: (app: BlisAppBase, component: AppsList) => JSX.Element
     getSortValue: (app: BlisAppBase, component: AppsList) => number | string
 }
 
-let columns: ISortableRenderableColumn[] = [
-    {
-        key: 'appName',
-        name: 'App Name',
-        fieldName: 'appName',
-        minWidth: 100,
-        maxWidth: 200,
-        isResizable: true,
-        getSortValue: app => app.appName,
-        render: (app, component) => <span className='ms-font-m-plus'><Link onClick={() => component.onClickApp(app)}>{app.appName}</Link></span>
-    },
-    {
-        key: 'locale',
-        name: 'Locale',
-        fieldName: 'locale',
-        minWidth: 100,
-        maxWidth: 100,
-        isResizable: false,
-        getSortValue: app => app.locale,
-        render: app => <span className='ms-font-m-plus'>{app.locale}</span>
-    },
-    {
-        key: 'bots',
-        name: 'Linked Bots',
-        fieldName: 'metadata',
-        minWidth: 100,
-        maxWidth: 100,
-        isResizable: false,
-        getSortValue: app => app.metadata.botFrameworkApps.length,
-        render: app => <span className='ms-font-m-plus'>{app.metadata.botFrameworkApps.length}</span>
-    },
-    {
-        key: 'actions',
-        name: 'Actions',
-        fieldName: 'appId',
-        minWidth: 100,
-        maxWidth: 100,
-        isResizable: false,
-        getSortValue: app => 0,
-        render: (app, component) => <a onClick={() => component.onClickDeleteApp(app)}><span className="ms-Icon ms-Icon--Delete"></span>&nbsp;&nbsp;</a>
-    },
-];
+function getColumns(intl: InjectedIntl): ISortableRenderableColumn[] {
+    return [
+        {
+            key: 'appName',
+            name: intl.formatMessage({
+                id: 'AppsList.columns.name',
+                defaultMessage: 'Name'
+            }),
+            fieldName: 'appName',
+            minWidth: 100,
+            maxWidth: 200,
+            isResizable: true,
+            getSortValue: app => app.appName,
+            render: (app, component) => <span className='ms-font-m-plus'><Link onClick={() => component.onClickApp(app)}>{app.appName}</Link></span>
+        },
+        {
+            key: 'locale',
+            name: intl.formatMessage({
+                id: 'AppsList.columns.locale',
+                defaultMessage: 'Locale'
+            }),
+            fieldName: 'locale',
+            minWidth: 100,
+            maxWidth: 100,
+            isResizable: false,
+            getSortValue: app => app.locale,
+            render: app => <span className='ms-font-m-plus'>{app.locale}</span>
+        },
+        {
+            key: 'bots',
+            name: intl.formatMessage({
+                id: 'AppsList.columns.linkedBots',
+                defaultMessage: 'Linked Bots'
+            }),
+            fieldName: 'metadata',
+            minWidth: 100,
+            maxWidth: 100,
+            isResizable: false,
+            getSortValue: app => app.metadata.botFrameworkApps.length,
+            render: app => <span className='ms-font-m-plus'>{app.metadata.botFrameworkApps.length}</span>
+        },
+        {
+            key: 'actions',
+            name: intl.formatMessage({
+                id: 'AppsList.columns.actions',
+                defaultMessage: 'Actions'
+            }),
+            fieldName: 'appId',
+            minWidth: 100,
+            maxWidth: 100,
+            isResizable: false,
+            getSortValue: app => 0,
+            render: (app, component) => <a onClick={() => component.onClickDeleteApp(app)}><span className="ms-Icon ms-Icon--Delete"></span>&nbsp;&nbsp;</a>
+        },
+    ]
+}
 
 interface ComponentState {
     isAppCreateModalOpen: boolean
@@ -72,7 +87,7 @@ class AppsList extends React.Component<Props, ComponentState> {
         isAppCreateModalOpen: false,
         isConfirmDeleteAppModalOpen: false,
         appToDelete: null,
-        columns: columns,
+        columns: getColumns(this.props.intl),
         sortColumn: null
     }
 
@@ -168,14 +183,30 @@ class AppsList extends React.Component<Props, ComponentState> {
         let apps = this.getSortedApplications();
         return (
             <div className="blis-page">
-                <span className="ms-font-su">My Apps</span>
-                <span className="ms-font-m-plus">Create and Manage your BLIS applications...</span>
+                <span className="ms-font-su">
+                    <FormattedMessage
+                        id="AppsList.title"
+                        defaultMessage="My Apps"
+                    />
+                </span>
+                <span className="ms-font-m-plus">
+                    <FormattedMessage
+                        id="AppsList.subtitle"
+                        defaultMessage="Create and Manage your BLIS applications..."
+                    />
+                </span>
                 <div>
                     <CommandButton
                         onClick={() => this.onClickCreateNewApp()}
                         className='blis-button--gold'
-                        ariaDescription='Create a New Application'
-                        text='New App'
+                        ariaDescription={this.props.intl.formatMessage({
+                            id: 'AppsList.createButtonAriaDescription',
+                            defaultMessage: 'Create a New Application'
+                        })}
+                        text={this.props.intl.formatMessage({
+                            id: 'AppsList.createButtonText',
+                            defaultMessage: 'New App'
+                        })}
                     />
                 </div>
                 <DetailsList
@@ -195,7 +226,10 @@ class AppsList extends React.Component<Props, ComponentState> {
                     open={this.state.isConfirmDeleteAppModalOpen}
                     onCancel={() => this.onCancelDeleteModal()}
                     onConfirm={() => this.onConfirmDeleteModal()}
-                    title={`Are you sure you want to delete this application?`}
+                    title={this.props.intl.formatMessage({
+                        id: 'AppsList.confirmDeleteModalTitle',
+                        defaultMessage: 'Are you sure you want to delete this application?'
+                    })}
                 />
             </div>
         );
@@ -220,6 +254,6 @@ export interface ReceivedProps {
 // Props types inferred from mapStateToProps & dispatchToProps
 const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
-type Props = typeof stateProps & typeof dispatchProps & ReceivedProps;
+type Props = typeof stateProps & typeof dispatchProps & ReceivedProps & InjectedIntlProps;
 
-export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(AppsList);
+export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(AppsList))
