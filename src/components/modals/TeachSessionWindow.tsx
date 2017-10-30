@@ -98,10 +98,9 @@ class TeachWindow extends React.Component<Props, ComponentState> {
             <Modal
                 isOpen={this.props.open && this.props.error === null}
                 isBlocking={true}
-                containerClassName="blis-modal-container blis-modal blis-modal--large"
+                containerClassName="blis-modal blis-modal--large blis-modal--teach"
             >
-                <div className="blis-modal-header blis-color-teach"/>
-                <div className="blis-modal-body">
+                <div className="blis-modal_body">
                     <div className="blis-chatmodal">
                         <div className="blis-chatmodal_webchat">
                             <Webchat
@@ -124,7 +123,7 @@ class TeachWindow extends React.Component<Props, ComponentState> {
                         </div>
                     </div>
                 </div>
-                <div className="blis-modal-footer blis-color-teach">
+                <div className="blis-modal_footer">
                     <div className="blis-modal-buttons">
                         <div className="blis-modal-buttons_primary"/>
                         <div className="blis-modal-buttons_secondary">

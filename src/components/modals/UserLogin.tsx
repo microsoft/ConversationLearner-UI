@@ -73,7 +73,7 @@ class UserLogin extends React.Component<Props, ComponentState> {
                 isBlocking={true}
                 containerClassName='blis-modal blis-modal--small blis-modal--border'
             >
-                <div className='blis-modal_title'>
+                <div className='blis-modal_header'>
                     <span className='ms-font-xxl ms-fontWeight-semilight'>
                         <FormattedMessage
                             id="UserLogin.title"
@@ -110,7 +110,7 @@ class UserLogin extends React.Component<Props, ComponentState> {
                         value={this.state.userPassword}
                     />
                 </div>
-                <div className='blis-modal_buttonbox'>
+                <div className='blis-modal_footer'>
                     <CommandButton
                         onClick={this.onClickLogin}
                         className='blis-button--gold'
