@@ -7,6 +7,47 @@ import { State } from '../../../types';
 import { CommandButton, PrimaryButton, TextField, Dropdown, Label, List } from 'office-ui-fabric-react';
 import { BlisAppBase, BlisAppMetaData } from 'blis-models'
 import './Settings.css'
+import { FM } from '../../../react-intl-messages'
+import { injectIntl, InjectedIntlProps, defineMessages, FormattedMessage } from 'react-intl'
+
+const messages = defineMessages({
+    fieldErrorRequired: {
+        id: "Settings.fieldError.requiredValue",
+        defaultMessage: "Required Value"
+    },
+    fieldErrorAlphanumeric: {
+        id: 'Settings.fieldError.alphanumeric',
+        defaultMessage: 'Application name may only contain alphanumeric characters'
+    },
+    fieldErrorDistinct: {
+        id: 'Settings.fieldError.distinct',
+        defaultMessage: 'Name is already in use.'
+    },
+    passwordHidden: {
+        id: 'Settings.passwordHidden',
+        defaultMessage: 'Show'
+    },
+    passwordVisible: {
+        id: 'Settings.passwordVisible',
+        defaultMessage: 'Hide'
+    },
+    botFrameworkAppIdFieldLabel: {
+        id: 'Settings.botFrameworkAppIdFieldLabel',
+        defaultMessage: 'Application ID'
+    },
+    botFrameworkAddBotButtonText: {
+        id: 'Settings.botFrameworkAddBotButtonText',
+        defaultMessage: 'Add'
+    },
+    saveChanges: {
+        id: 'Settings.saveChanges',
+        defaultMessage: 'Save Changes'
+    },
+    discard: {
+        id: 'Settings.discard',
+        defaultMessages: 'Discard'
+    }
+})
 
 const styles = {
     shown: {
@@ -42,7 +83,7 @@ class Settings extends React.Component<Props, ComponentState> {
             botFrameworkAppsVal: [],
             newBotVal: "",
             isPasswordVisible: false,
-            passwordShowHideText: 'Show'
+            passwordShowHideText: this.props.intl.formatMessage(messages.passwordHidden)
         }
 
         this.onChangedLuisKey = this.onChangedLuisKey.bind(this)
@@ -149,31 +190,35 @@ class Settings extends React.Component<Props, ComponentState> {
     }
 
     onGetNameErrorMessage(value: string): string {
+        const { intl } = this.props
         if (value.length === 0) {
-            return "Required Value";
+            return intl.formatMessage(messages.fieldErrorRequired)
         }
 
         if (!/^[a-zA-Z0-9- ]+$/.test(value)) {
-            return "Application name may only contain alphanumeric characters";
+            return intl.formatMessage(messages.fieldErrorAlphanumeric)
         }
 
         // Check that name isn't in use
         let foundApp = this.props.blisApps.all.find(a => (a.appName == value && a.appId != this.props.app.appId));
         if (foundApp) {
-            return "Name is already in use.";
+            return intl.formatMessage(messages.fieldErrorDistinct)
         }
 
-        return "";
+        return ""
     }
 
     onClickShowPassword() {
         this.setState((prevState: ComponentState) => ({
             isPasswordVisible: !prevState.isPasswordVisible,
-            passwordShowHideText: !prevState.isPasswordVisible ? 'Show' : 'Hide'
+            passwordShowHideText: !prevState.isPasswordVisible
+                ? this.props.intl.formatMessage(messages.passwordHidden)
+                : this.props.intl.formatMessage(messages.passwordVisible)
         }))
     }
 
     render() {
+        const { intl } = this.props
         let options = [{
             key: this.state.localeVal,
             text: this.state.localeVal,
@@ -181,23 +226,44 @@ class Settings extends React.Component<Props, ComponentState> {
         let buttonsDivStyle = this.state.edited == true ? styles.shown : styles.hidden;
         return (
             <div className="blis-page">
-                <span className="ms-font-xxl">Settings</span>
-                <span className="ms-font-m-plus">Control your application versions, who has access to it and whether it is public or private....</span>
+                <span className="ms-font-xxl">
+                    <FormattedMessage
+                        id={FM.SETTINGS_TITLE}
+                        defaultMessage="Settings"
+                    />
+                </span>
+                <span className="ms-font-m-plus">
+                    <FormattedMessage
+                        id={FM.SETTINGS_SUBTITLE}
+                        defaultMessage="Control your application versions, who has access to it and whether it is public or private..."
+                    />
+                </span>
                 <div>
                     <TextField
                         className="ms-font-m-plus"
                         onChanged={(text) => this.onChangedName(text)}
-                        label="Name"
+                        label={intl.formatMessage({
+                            id: FM.SETTINGS_FIELDS_NAMELABEL,
+                            defaultMessage: "Name"
+                        })}
                         onGetErrorMessage={value => this.onGetNameErrorMessage(value)}
                         value={this.state.appNameVal}
                     />
                     <TextField
                         className="ms-font-m-plus"
                         disabled={true}
-                        label="App ID"
+                        label={intl.formatMessage({
+                            id: FM.SETTINGS_FILEDS_APPIDLABEL,
+                            defaultMessage: "App ID"
+                        })}
                         value={this.state.appIdVal}
                     />
-                    <Label className="ms-font-m-plus">LUIS Key</Label>
+                    <Label className="ms-font-m-plus">
+                        <FormattedMessage
+                            id={FM.SETTINGS_BOTFRAMEWORKLUISKEYLABEL}
+                            defaultMessage="LUIS Key"
+                        />
+                    </Label>
                     <div className="blis-settings-textfieldwithbutton">
                         <TextField
                             id="luis-key"
@@ -208,12 +274,16 @@ class Settings extends React.Component<Props, ComponentState> {
                         />
                         <PrimaryButton
                             onClick={this.onClickShowPassword}
-                            className='blis-button--gold'
                             ariaDescription={this.state.passwordShowHideText}
                             text={this.state.passwordShowHideText}
                         />
                     </div>
-                    <Label className="ms-font-m-plus">Locale</Label>
+                    <Label className="ms-font-m-plus">
+                        <FormattedMessage
+                            id={FM.SETTINGS_BOTFRAMEWORKLOCALELABEL}
+                            defaultMessage="Locale"
+                        />
+                    </Label>
                     <Dropdown
                         className="ms-font-m-plus"
                         options={options}
@@ -221,7 +291,12 @@ class Settings extends React.Component<Props, ComponentState> {
                         disabled={true}
                     />
                     <div>
-                        <Label className="ms-font-m-plus">Bot Framework Apps</Label>
+                        <Label className="ms-font-m-plus">
+                            <FormattedMessage
+                                id={FM.SETTINGS_BOTFRAMEWORKLISTLABEL}
+                                defaultMessage="Bot Framework Apps"
+                            />
+                        </Label>
                         <List
                             items={this.state.botFrameworkAppsVal}
                             onRenderCell={this.onRenderBotListRow}
@@ -230,30 +305,29 @@ class Settings extends React.Component<Props, ComponentState> {
                             <TextField
                                 className="ms-font-m-plus"
                                 onChanged={(text) => this.onChangedBotId(text)}
-                                placeholder="Application ID"
+                                placeholder={intl.formatMessage(messages.botFrameworkAppIdFieldLabel)}
                                 value={this.state.newBotVal}
                             />
                             <PrimaryButton
                                 onClick={this.onClickAddBot}
-                                className='blis-button--gold'
-                                ariaDescription='Add'
-                                text='Add'
+                                ariaDescription={intl.formatMessage(messages.botFrameworkAddBotButtonText)}
+                                text={intl.formatMessage(messages.botFrameworkAddBotButtonText)}
                             />
                         </div>
                     </div>
                     <div style={buttonsDivStyle}>
                         <CommandButton
-                            disabled={this.onGetNameErrorMessage(this.state.appNameVal)!==""}
+                            disabled={this.onGetNameErrorMessage(this.state.appNameVal) !== ""}
                             onClick={this.onClickSave}
                             className='blis-button--gold'
-                            ariaDescription='Save Changes'
-                            text='Save Changes'
+                            ariaDescription={intl.formatMessage(messages.saveChanges)}
+                            text={intl.formatMessage(messages.saveChanges)}
                         />
                         <CommandButton
                             className="blis-button--gray"
                             onClick={this.onClickDiscard}
-                            ariaDescription='Discard'
-                            text='Discard'
+                            ariaDescription={intl.formatMessage(messages.discard)}
+                            text={intl.formatMessage(messages.discard)}
                         />
                     </div>
                 </div>
@@ -280,6 +354,6 @@ export interface ReceivedProps {
 // Props types inferred from mapStateToProps & dispatchToProps
 const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
-type Props = typeof stateProps & typeof dispatchProps & ReceivedProps;
+type Props = typeof stateProps & typeof dispatchProps & ReceivedProps & InjectedIntlProps;
 
-export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(Settings);
+export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(Settings))

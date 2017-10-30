@@ -10,6 +10,8 @@ import { IButton, CommandButton, SearchBox } from 'office-ui-fabric-react';
 import { BlisAppBase, ActionBase } from 'blis-models'
 import { ConfirmDeleteModal, ActionCreatorEditor } from '../../../components/modals'
 import { State } from '../../../types'
+import { FM } from '../../../react-intl-messages'
+import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 
 interface ComponentState {
     actionSelected: ActionBase | null;
@@ -125,14 +127,30 @@ class Actions extends React.Component<Props, ComponentState> {
         const actions = this.getFilteredActions();
         return (
             <div className="blis-page">
-                <span className="ms-font-xxl">Actions</span>
-                <span className="ms-font-m-plus">Manage a list of actions that your application can take given it's state and user input...</span>
+                <span className="ms-font-xxl">
+                    <FormattedMessage
+                        id={FM.ACTIONS_TITLE}
+                        defaultMessage="Actions"
+                    />
+                </span>
+                <span className="ms-font-m-plus">
+                    <FormattedMessage
+                        id={FM.ACTIONS_SUBTITLE}
+                        defaultMessage="Manage a list of actions that your application can take given it's state and user input..."
+                    />
+                </span>
                 <div>
                     <CommandButton
                         onClick={this.onClickCreateAction}
                         className='blis-button--gold'
-                        ariaDescription='Create a New Action'
-                        text='New Action'
+                        ariaDescription={this.props.intl.formatMessage({
+                            id: FM.ACTIONS_CREATEBUTTONARIALDESCRIPTION,
+                            defaultMessage: 'Create a New Action'
+                        })}
+                        text={this.props.intl.formatMessage({
+                            id: FM.ACTIONS_CREATEBUTTONTITLE,
+                            defaultMessage: 'New Action'
+                        })}
                         componentRef={component => this.newActionButton = component}
                     />
                 </div>
@@ -149,7 +167,10 @@ class Actions extends React.Component<Props, ComponentState> {
                     open={this.state.isConfirmDeleteActionModalOpen}
                     onCancel={() => this.onClickCancelDelete()}
                     onConfirm={() => this.onClickConfirmDelete()}
-                    title="Are you sure you want to delete this action?"
+                    title={this.props.intl.formatMessage({
+                        id: FM.ACTIONS_CONFIRMDELETEMODALTITLE,
+                        defaultMessage: 'Are you sure you want to delete this action?'
+                    })}
                 />
                 <ActionCreatorEditor
                     open={this.state.isActionEditorModalOpen}
@@ -184,6 +205,6 @@ export interface ReceivedProps {
 // Props types inferred from mapStateToProps & dispatchToProps
 const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
-type Props = typeof stateProps & typeof dispatchProps & ReceivedProps;
+type Props = typeof stateProps & typeof dispatchProps & ReceivedProps & InjectedIntlProps;
 
-export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(Actions);
+export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(Actions))

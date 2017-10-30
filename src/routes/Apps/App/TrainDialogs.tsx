@@ -7,43 +7,60 @@ import { State } from '../../../types'
 import { BlisAppBase, Teach, TrainDialog } from 'blis-models'
 import { TeachSessionWindow, TrainDialogWindow } from '../../../components/modals'
 import { createTeachSessionThunkAsync } from '../../../actions/createActions'
+import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
+import { FM } from '../../../react-intl-messages'
 
-let columns: IColumn[] = [
-    {
-        key: 'firstInput',
-        name: 'First Input',
-        fieldName: 'firstInput',
-        minWidth: 100,
-        maxWidth: 500,
-        isResizable: true
-    },
-    {
-        key: 'lastInput',
-        name: 'Last Input',
-        fieldName: 'lastInput',
-        minWidth: 100,
-        maxWidth: 500,
-        isResizable: true
-    },
-    {
-        key: 'lastResponse',
-        name: 'Last Response',
-        fieldName: 'lastResponse',
-        minWidth: 100,
-        maxWidth: 500,
-        isResizable: true
-    },
-    {
-        key: 'turns',
-        name: 'Turns',
-        fieldName: 'dialog',
-        minWidth: 50,
-        maxWidth: 50,
-        isResizable: true
-    }
-];
+function getColumns(intl: InjectedIntl): IColumn[] {
+    return [
+        {
+            key: 'firstInput',
+            name: intl.formatMessage({
+                id: FM.TRAINDIALOGS_FIRSTINPUT,
+                defaultMessage: 'First Input'
+            }),
+            fieldName: 'firstInput',
+            minWidth: 100,
+            maxWidth: 500,
+            isResizable: true
+        },
+        {
+            key: 'lastInput',
+            name: intl.formatMessage({
+                id: FM.TRAINDIALOGS_LASTINPUT,
+                defaultMessage: 'Last Input'
+            }),
+            fieldName: 'lastInput',
+            minWidth: 100,
+            maxWidth: 500,
+            isResizable: true
+        },
+        {
+            key: 'lastResponse',
+            name: intl.formatMessage({
+                id: FM.TRAINDIALOGS_LASTRESPONSE,
+                defaultMessage: 'Last Response'
+            }),
+            fieldName: 'lastResponse',
+            minWidth: 100,
+            maxWidth: 500,
+            isResizable: true
+        },
+        {
+            key: 'turns',
+            name: intl.formatMessage({
+                id: FM.TRAINDIALOGS_TURNS,
+                defaultMessage: 'Turns'
+            }),
+            fieldName: 'dialog',
+            minWidth: 50,
+            maxWidth: 50,
+            isResizable: true
+        }
+    ]
+}
 
 interface ComponentState {
+    columns: IColumn[],
     teachSession: Teach,
     isTeachDialogModalOpen: boolean
     isTrainDialogModalOpen: boolean
@@ -56,6 +73,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     newTeachSessionButton: IButton
 
     state: ComponentState = {
+        columns: getColumns(this.props.intl),
         teachSession: null,
         isTeachDialogModalOpen: false,
         isTrainDialogModalOpen: false,
@@ -80,7 +98,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             if (this.state.trainDialogId) {
                 let newTrainDialog = newProps.trainDialogs.find(t => t.trainDialogId == this.state.trainDialogId);
                 this.setState({
-                    trainDialogId : newTrainDialog ? newTrainDialog.trainDialogId : null
+                    trainDialogId: newTrainDialog ? newTrainDialog.trainDialogId : null
                 })
             }
             this.newTeachSessionButton.focus();
@@ -163,7 +181,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         this.setState({
             teachSession: null,
             isTeachDialogModalOpen: false,
-            dialogKey: this.state.dialogKey+1
+            dialogKey: this.state.dialogKey + 1
         })
     }
 
@@ -178,7 +196,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         this.setState({
             isTrainDialogModalOpen: false,
             trainDialogId: null,
-            dialogKey: this.state.dialogKey+1
+            dialogKey: this.state.dialogKey + 1
         })
     }
 
@@ -198,19 +216,36 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     }
 
     render() {
+        const { intl } = this.props
         let trainDialogItems = this.renderTrainDialogItems()
         let trainDialog = this.props.trainDialogs.find((td) => td.trainDialogId == this.state.trainDialogId);
         return (
             <div className="blis-page">
-                <span className="ms-font-xxl">Train Dialogs</span>
+                <span className="ms-font-xxl">
+                    <FormattedMessage
+                        id={FM.TRAINDIALOGS_TITLE}
+                        defaultMessage="Train Dialogs"
+                    />
+                </span>
                 <div className="blis-modal-header blis-color-teach"></div>
-                <span className="ms-font-m-plus">Use this tool to train and improve the current versions of your application...</span>
+                <span className="ms-font-m-plus">
+                    <FormattedMessage
+                        id={FM.TRAINDIALOGS_SUBTITLE}
+                        defaultMessage="Use this tool to train and improve the current versions of your application..."
+                    />
+                </span>
                 <div>
                     <CommandButton
                         onClick={() => this.onClickNewTeachSession()}
                         className='blis-button--gold'
-                        ariaDescription='Create a New Teach Session'
-                        text='New Teach Session'
+                        ariaDescription={intl.formatMessage({
+                            id: FM.TRAINDIALOGS_CREATEBUTTONARIALDESCRIPTION,
+                            defaultMessage: 'Create a New Teach Session'
+                        })}
+                        text={intl.formatMessage({
+                            id: FM.TRAINDIALOGS_CREATEBUTTONTITLE,
+                            defaultMessage: 'New Teach Session'
+                        })}
                         componentRef={component => this.newTeachSessionButton = component}
                     />
                     <TeachSessionWindow
@@ -228,7 +263,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     key={this.state.dialogKey}
                     className="ms-font-m-plus"
                     items={trainDialogItems}
-                    columns={columns}
+                    columns={this.state.columns}
                     checkboxVisibility={CheckboxVisibility.hidden}
                     onRenderItemColumn={this.renderItemColumn}
                     onActiveItemChanged={trainDialog => this.onClickTrainDialogItem(trainDialog)}
@@ -263,6 +298,6 @@ export interface ReceivedProps {
 // Props types inferred from mapStateToProps & dispatchToProps
 const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
-type Props = typeof stateProps & typeof dispatchProps & ReceivedProps;
+type Props = typeof stateProps & typeof dispatchProps & ReceivedProps & InjectedIntlProps;
 
-export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(TrainDialogs);
+export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(TrainDialogs))

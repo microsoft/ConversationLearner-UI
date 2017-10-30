@@ -87,11 +87,11 @@ class UserLogin extends React.Component<Props, ComponentState> {
                         onKeyDown={this.onKeyDown}
                         onChanged={this.onChangedName}
                         label={this.props.intl.formatMessage({
-                            id: 'UserLogin.usernameFieldLabel',
+                            id: FM.USERLOGIN_PASSWORDFIELDLABEL,
                             defaultMessage: "Name"
                         })}
                         placeholder={this.props.intl.formatMessage({
-                            id: 'UserLogin.usernameFieldPlaceholder',
+                            id: FM.USERLOGIN_PASSWORDFIELDPLACEHOLDER,
                             defaultMessage: "User Name..."
                         })}
                         value={this.state.userName}
@@ -101,11 +101,11 @@ class UserLogin extends React.Component<Props, ComponentState> {
                         onChanged={this.onChangedPassword}
                         type="Password"
                         label={this.props.intl.formatMessage({
-                            id: 'UserLogin.passwordFieldLabel',
+                            id: FM.USERLOGIN_PASSWORDFIELDLABEL,
                             defaultMessage: "Password..."
                         })}
                         placeholder={this.props.intl.formatMessage({
-                            id: 'UserLogin.passwordFieldPlaceholder',
+                            id: FM.USERLOGIN_PASSWORDFIELDPLACEHOLDER,
                             defaultMessage: "Password..."
                         })}
                         value={this.state.userPassword}
@@ -116,11 +116,11 @@ class UserLogin extends React.Component<Props, ComponentState> {
                         onClick={this.onClickLogin}
                         className='blis-button--gold'
                         ariaDescription={this.props.intl.formatMessage({
-                            id: 'UserLogin.loginButtonAriaDescription',
+                            id: FM.USERLOGIN_LOGINBUTTONARIADESCRPTION,
                             defaultMessage: "Log In"
                         })}
                         text={this.props.intl.formatMessage({
-                            id: 'UserLogin.loginButtonText',
+                            id: FM.USERLOGIN_LOGINBUTTONTEXT,
                             defaultMessage: "Log In"
                         })}
                     />
