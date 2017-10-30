@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { CommandButton, TextField } from 'office-ui-fabric-react';
 import { State } from '../../types';
+import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 
 interface ReceivedProps {
     open: boolean
@@ -47,7 +48,7 @@ class UserLogin extends React.Component<Props, ComponentState> {
         if (userName === '' || userPassword === '') {
             return
         }
-        
+
         const userId = this.generateUserId(this.state.userName, this.state.userPassword)
         this.props.onClickLogin(this.state.userName, this.state.userPassword, userId)
         this.reset()
@@ -73,22 +74,39 @@ class UserLogin extends React.Component<Props, ComponentState> {
                 containerClassName='blis-modal blis-modal--small blis-modal--border'
             >
                 <div className='blis-modal_title'>
-                    <span className='ms-font-xxl ms-fontWeight-semilight'>Log In</span>
+                    <span className='ms-font-xxl ms-fontWeight-semilight'>
+                        <FormattedMessage
+                            id="UserLogin.title"
+                            defaultMessage="Log In"
+                        />
+                    </span>
                 </div>
                 <div>
                     <TextField
                         onKeyDown={this.onKeyDown}
                         onChanged={this.onChangedName}
-                        label="Name"
-                        placeholder="User Name..."
+                        label={this.props.intl.formatMessage({
+                            id: 'UserLogin.usernameFieldLabel',
+                            defaultMessage: "Name"
+                        })}
+                        placeholder={this.props.intl.formatMessage({
+                            id: 'UserLogin.usernameFieldPlaceholder',
+                            defaultMessage: "User Name..."
+                        })}
                         value={this.state.userName}
                     />
                     <TextField
                         onKeyDown={this.onKeyDown}
                         onChanged={this.onChangedPassword}
                         type="Password"
-                        label="Password"
-                        placeholder="Password..."
+                        label={this.props.intl.formatMessage({
+                            id: 'UserLogin.passwordFieldLabel',
+                            defaultMessage: "Password..."
+                        })}
+                        placeholder={this.props.intl.formatMessage({
+                            id: 'UserLogin.passwordFieldPlaceholder',
+                            defaultMessage: "Password..."
+                        })}
                         value={this.state.userPassword}
                     />
                 </div>
@@ -96,8 +114,14 @@ class UserLogin extends React.Component<Props, ComponentState> {
                     <CommandButton
                         onClick={this.onClickLogin}
                         className='blis-button--gold'
-                        ariaDescription='Log In'
-                        text='Log In'
+                        ariaDescription={this.props.intl.formatMessage({
+                            id: 'UserLogin.loginButtonAriaDescription',
+                            defaultMessage: "Log In"
+                        })}
+                        text={this.props.intl.formatMessage({
+                            id: 'UserLogin.loginButtonText',
+                            defaultMessage: "Log In"
+                        })}
                     />
                 </div>
             </Modal>
@@ -116,6 +140,6 @@ const mapStateToProps = (state: State) => {
 // Props types inferred from mapStateToProps & dispatchToProps
 const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
-type Props = typeof stateProps & typeof dispatchProps & ReceivedProps;
+type Props = typeof stateProps & typeof dispatchProps & ReceivedProps & InjectedIntlProps;
 
-export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(UserLogin);
+export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(UserLogin));

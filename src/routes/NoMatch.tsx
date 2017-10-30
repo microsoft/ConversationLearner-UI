@@ -1,13 +1,22 @@
 import * as React from 'react'
-import {
-    NavLink
-} from 'react-router-dom'
+import { FormattedMessage } from 'react-intl'
+import { NavLink } from 'react-router-dom'
 
 const component = () => (
     <div>
-        <div className="ms-font-su">404 Not Found</div>
+        <div className="ms-font-su">
+            <FormattedMessage
+                id="NoMatch.title"
+                defaultMessage="404 Not Found"
+            />
+        </div>
         <div>
-            <NavLink to="/">Home</NavLink>
+            <NavLink to="/">
+                <FormattedMessage
+                    id="NoMatch.home"
+                    defaultMessage="Home"
+                />
+            </NavLink>
         </div>
     </div>
 )
