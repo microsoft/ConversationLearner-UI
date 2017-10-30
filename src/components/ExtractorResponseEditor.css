@@ -20,7 +20,7 @@
 }
 
 .blisDropdown--command{
-    color: var(--color-log);
+    color: var(--color-blueMid);
     font-weight: bold;
 } 
 .blisDropdown--normal {
