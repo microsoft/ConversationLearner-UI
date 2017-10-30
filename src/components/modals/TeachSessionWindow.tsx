@@ -73,7 +73,8 @@ class TeachWindow extends React.Component<Props, ComponentState> {
 
     render() {
         // Show done button if at least on round and at end of round
-        let showDone = this.props.teachSessions.currentConversationStack.length > 0 && this.props.teachSessions.mode == DialogMode.Wait;
+        let showDone = this.props.teachSessions.currentConversationStack.length > 0 
+            && this.props.teachSessions.mode == DialogMode.Wait;
 
         // Put mask of webchat if not in input mode
         let chatDisable = (this.props.teachSessions.mode !== DialogMode.Wait) ?
@@ -92,13 +93,14 @@ class TeachWindow extends React.Component<Props, ComponentState> {
         */
 
         // Mask controls if autoTeach is enabled
-        let mask = (this.props.teachSessions.autoTeach) ? <div className="teachAutoMask"></div> : null;
+        let mask = (this.props.teachSessions.autoTeach) ? <div className="teachAutoMask"/> : null;
         return (
             <Modal
                 isOpen={this.props.open && this.props.error === null}
                 isBlocking={true}
-                containerClassName="blis-modal-container blis-modal blis-modal--large">
-                <div className="blis-modal-header blis-color-teach"></div>
+                containerClassName="blis-modal-container blis-modal blis-modal--large"
+            >
+                <div className="blis-modal-header blis-color-teach"/>
                 <div className="blis-modal-body">
                     <div className="blis-chatmodal">
                         <div className="blis-chatmodal_webchat">
@@ -124,8 +126,7 @@ class TeachWindow extends React.Component<Props, ComponentState> {
                 </div>
                 <div className="blis-modal-footer blis-color-teach">
                     <div className="blis-modal-buttons">
-                        <div className="blis-modal-buttons_primary">
-                        </div>
+                        <div className="blis-modal-buttons_primary"/>
                         <div className="blis-modal-buttons_secondary">
                             <DefaultButton
                                 onClick={() => this.onClickAbandonTeach()}
