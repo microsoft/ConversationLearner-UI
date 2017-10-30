@@ -249,7 +249,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                         <div className="ms-fontSize-s ms-fontColor-neutralSecondary">Entity only set by code. &nbsp;
                             <OF.TooltipHost
                                 tooltipProps={{
-                                    onRenderContent: () => {return GetTip(TipType.PROGAMMATIC)}
+                                    onRenderContent: () => {return GetTip(TipType.ENTITY_PROGAMMATIC)}
                                 }}
                                 delay={OF.TooltipDelay.zero}
                                 directionalHint={OF.DirectionalHint.bottomCenter}
@@ -267,7 +267,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                         <div className="ms-fontSize-s ms-fontColor-neutralSecondary">Entity may hold multiple values. &nbsp;
                             <OF.TooltipHost
                                 tooltipProps={{
-                                    onRenderContent: () => {return GetTip(TipType.MULTIVALUE)}
+                                    onRenderContent: () => {return GetTip(TipType.ENTITY_MULTIVALUE)}
                                 }}
                                 delay={OF.TooltipDelay.zero}
                                 directionalHint={OF.DirectionalHint.bottomCenter}
@@ -285,7 +285,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                         <div className="ms-fontSize-s ms-fontColor-neutralSecondary">Can remove or delete values in memory. &nbsp;
                             <OF.TooltipHost
                                 tooltipProps={{
-                                    onRenderContent: () => {return GetTip(TipType.NEGATABLE)}
+                                    onRenderContent: () => {return GetTip(TipType.ENTITY_NEGATABLE)}
                                 }}
                                 delay={OF.TooltipDelay.zero}
                                 directionalHint={OF.DirectionalHint.bottomCenter}

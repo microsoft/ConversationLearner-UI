@@ -7,6 +7,7 @@ import { CommandButton, DetailsList, Link, CheckboxVisibility, IColumn } from 'o
 import { State } from '../../types';
 import { BlisAppBase } from 'blis-models'
 import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
+import { FM } from '../../react-intl-messages'
 
 interface ISortableRenderableColumn extends IColumn {
     render: (app: BlisAppBase, component: AppsList) => JSX.Element
@@ -185,13 +186,13 @@ class AppsList extends React.Component<Props, ComponentState> {
             <div className="blis-page">
                 <span className="ms-font-su">
                     <FormattedMessage
-                        id="AppsList.title"
+                        id={FM.APPSLIST_TITLE}
                         defaultMessage="My Apps"
                     />
                 </span>
                 <span className="ms-font-m-plus">
                     <FormattedMessage
-                        id="AppsList.subtitle"
+                        id={FM.APPSLIST_SUBTITLE}
                         defaultMessage="Create and Manage your BLIS applications..."
                     />
                 </span>

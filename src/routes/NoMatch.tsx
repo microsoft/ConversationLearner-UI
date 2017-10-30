@@ -1,19 +1,20 @@
 import * as React from 'react'
 import { FormattedMessage } from 'react-intl'
 import { NavLink } from 'react-router-dom'
+import { FM } from '../react-intl-messages'
 
 const component = () => (
     <div>
         <div className="ms-font-su">
             <FormattedMessage
-                id="NoMatch.title"
+                id={FM.NOMATCH_TITLE}
                 defaultMessage="404 Not Found"
             />
         </div>
         <div>
             <NavLink to="/">
                 <FormattedMessage
-                    id="NoMatch.home"
+                    id={FM.NOMATCH_HOME}
                     defaultMessage="Home"
                 />
             </NavLink>

@@ -6,6 +6,7 @@ import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { CommandButton, TextField } from 'office-ui-fabric-react';
 import { State } from '../../types';
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
+import { FM } from '../../react-intl-messages'
 
 interface ReceivedProps {
     open: boolean
@@ -76,7 +77,7 @@ class UserLogin extends React.Component<Props, ComponentState> {
                 <div className='blis-modal_title'>
                     <span className='ms-font-xxl ms-fontWeight-semilight'>
                         <FormattedMessage
-                            id="UserLogin.title"
+                            id={FM.USERLOGIN_TITLE}
                             defaultMessage="Log In"
                         />
                     </span>
