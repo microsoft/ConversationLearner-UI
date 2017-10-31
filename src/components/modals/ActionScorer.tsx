@@ -150,6 +150,15 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             }
             let selectedActionId = bestAction.actionId;
             this.handleActionSelection(selectedActionId);
+
+        } else if (this.state.newAction) {
+            // See if new action is available, then take it
+            let isAvailable = this.isAvailable(this.state.newAction);
+            if (isAvailable) {
+                this.handleActionSelection(this.state.newAction.actionId);
+                this.setState({newAction: null});
+            }
+
         } else if (!this.state.actionModalOpen) {
             setTimeout(this.focusPrimaryButton, 500);
         }
@@ -291,7 +300,24 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             />
         )
     }
-    calculateReason(unscoredAction: UnscoredAction) {
+    // Returns true if Action is available given Entities in Memory
+    isAvailable(action: ActionBase) : boolean {
+
+        for (let entityId of action.requiredEntities) {
+            let found = this.entityInMemory(entityId);
+            if (!found.match) {
+                return false;
+            }
+        }
+        for (let entityId of action.negativeEntities) {
+            let found = this.entityInMemory(entityId);
+            if (found.match) {
+                return false;
+            }
+        }
+        return true;
+    }
+    calculateReason(unscoredAction: UnscoredAction) : ScoreReason {
 
         if (!unscoredAction.reason || unscoredAction.reason == ScoreReason.NotCalculated) {
 
@@ -302,21 +328,10 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                 return ScoreReason.NotAvailable;
             }
 
-            for (let entityId of action.requiredEntities) {
-                let found = this.entityInMemory(entityId);
-                if (!found.match) {
-                    return ScoreReason.NotAvailable;
-                }
-            }
-            for (let entityId of action.negativeEntities) {
-                let found = this.entityInMemory(entityId);
-                if (found.match) {
-                    return ScoreReason.NotAvailable;
-                }
-            }
-            return ScoreReason.NotScorable;
+            let isAvailable = this.isAvailable(action);
+            return isAvailable ? ScoreReason.NotScorable : ScoreReason.NotAvailable;
         }
-        return unscoredAction.reason;
+        return unscoredAction.reason as ScoreReason;
     }
     isMasked(actionId: string): boolean {
         return (this.props.scoreInput.maskedActions && this.props.scoreInput.maskedActions.indexOf(actionId) > -1);
