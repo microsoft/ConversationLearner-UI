@@ -2,7 +2,7 @@ import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { IButton, DetailsList, CommandButton, CheckboxVisibility, IColumn, SearchBox } from 'office-ui-fabric-react';
+import * as OF from 'office-ui-fabric-react';
 import { State } from '../../../types'
 import { BlisAppBase, Teach, TrainDialog } from 'blis-models'
 import { TeachSessionWindow, TrainDialogWindow } from '../../../components/modals'
@@ -10,7 +10,7 @@ import { createTeachSessionThunkAsync } from '../../../actions/createActions'
 import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { FM } from '../../../react-intl-messages'
 
-function getColumns(intl: InjectedIntl): IColumn[] {
+function getColumns(intl: InjectedIntl): OF.IColumn[] {
     return [
         {
             key: 'firstInput',
@@ -60,7 +60,7 @@ function getColumns(intl: InjectedIntl): IColumn[] {
 }
 
 interface ComponentState {
-    columns: IColumn[],
+    columns: OF.IColumn[],
     teachSession: Teach,
     isTeachDialogModalOpen: boolean
     isTrainDialogModalOpen: boolean
@@ -70,7 +70,7 @@ interface ComponentState {
 }
 
 class TrainDialogs extends React.Component<Props, ComponentState> {
-    newTeachSessionButton: IButton
+    newTeachSessionButton: OF.IButton
 
     state: ComponentState = {
         columns: getColumns(this.props.intl),
@@ -146,7 +146,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             return "ERR";
         }
     }
-    renderItemColumn(item?: any, index?: number, column?: IColumn) {
+    renderItemColumn(item?: any, index?: number, column?: OF.IColumn) {
         let fieldContent = item[column.fieldName];
         switch (column.key) {
             case 'firstInput':
@@ -234,9 +234,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     />
                 </span>
                 <div>
-                    <CommandButton
+                    <OF.PrimaryButton
                         onClick={() => this.onClickNewTeachSession()}
-                        className='blis-button--gold'
                         ariaDescription={intl.formatMessage({
                             id: FM.TRAINDIALOGS_CREATEBUTTONARIALDESCRIPTION,
                             defaultMessage: 'Create a New Teach Session'
@@ -253,17 +252,17 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         onClose={() => this.onCloseTeachSession()}
                     />
                 </div>
-                <SearchBox
+                <OF.SearchBox
                     className="ms-font-m-plus"
                     onChange={(newValue) => this.onChangeSearchString(newValue)}
                     onSearch={(newValue) => this.onChangeSearchString(newValue)}
                 />
-                <DetailsList
+                <OF.DetailsList
                     key={this.state.dialogKey}
                     className="ms-font-m-plus"
                     items={trainDialogItems}
                     columns={this.state.columns}
-                    checkboxVisibility={CheckboxVisibility.hidden}
+                    checkboxVisibility={OF.CheckboxVisibility.hidden}
                     onRenderItemColumn={this.renderItemColumn}
                     onActiveItemChanged={trainDialog => this.onClickTrainDialogItem(trainDialog)}
                 />

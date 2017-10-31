@@ -3,7 +3,7 @@ import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
-import { CommandButton, TextField } from 'office-ui-fabric-react';
+import { PrimaryButton, TextField } from 'office-ui-fabric-react';
 import { State } from '../../types';
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { FM } from '../../react-intl-messages'
@@ -112,9 +112,8 @@ class UserLogin extends React.Component<Props, ComponentState> {
                     />
                 </div>
                 <div className='blis-modal_footer'>
-                    <CommandButton
+                    <PrimaryButton
                         onClick={this.onClickLogin}
-                        className='blis-button--gold'
                         ariaDescription={this.props.intl.formatMessage({
                             id: FM.USERLOGIN_LOGINBUTTONARIADESCRPTION,
                             defaultMessage: "Log In"

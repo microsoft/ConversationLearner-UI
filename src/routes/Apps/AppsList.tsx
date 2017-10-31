@@ -3,13 +3,13 @@ import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { AppCreator, ConfirmDeleteModal } from '../../components/modals'
-import { CommandButton, DetailsList, Link, CheckboxVisibility, IColumn } from 'office-ui-fabric-react';
+import * as OF from 'office-ui-fabric-react';
 import { State } from '../../types';
 import { BlisAppBase } from 'blis-models'
 import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { FM } from '../../react-intl-messages'
 
-interface ISortableRenderableColumn extends IColumn {
+interface ISortableRenderableColumn extends OF.IColumn {
     render: (app: BlisAppBase, component: AppsList) => JSX.Element
     getSortValue: (app: BlisAppBase, component: AppsList) => number | string
 }
@@ -27,7 +27,7 @@ function getColumns(intl: InjectedIntl): ISortableRenderableColumn[] {
             maxWidth: 200,
             isResizable: true,
             getSortValue: app => app.appName,
-            render: (app, component) => <span className='ms-font-m-plus'><Link onClick={() => component.onClickApp(app)}>{app.appName}</Link></span>
+            render: (app, component) => <span className='ms-font-m-plus'><OF.Link onClick={() => component.onClickApp(app)}>{app.appName}</OF.Link></span>
         },
         {
             key: 'locale',
@@ -197,9 +197,8 @@ class AppsList extends React.Component<Props, ComponentState> {
                     />
                 </span>
                 <div>
-                    <CommandButton
+                    <OF.PrimaryButton
                         onClick={() => this.onClickCreateNewApp()}
-                        className='blis-button--gold'
                         ariaDescription={this.props.intl.formatMessage({
                             id: FM.APPSLIST_CREATEBUTTONARIADESCRIPTION,
                             defaultMessage: 'Create a New Application'
@@ -210,11 +209,11 @@ class AppsList extends React.Component<Props, ComponentState> {
                         })}
                     />
                 </div>
-                <DetailsList
+                <OF.DetailsList
                     className="ms-font-m-plus"
                     items={apps}
                     columns={this.state.columns}
-                    checkboxVisibility={CheckboxVisibility.hidden}
+                    checkboxVisibility={OF.CheckboxVisibility.hidden}
                     onRenderItemColumn={(app, i, column: ISortableRenderableColumn) => column.render(app, this)}
                     onColumnHeaderClick={this.onColumnClick}
                 />
