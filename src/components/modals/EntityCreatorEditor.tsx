@@ -319,67 +319,67 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                             </span>
                         </OF.TooltipHost>
                     </div>
-                    <div className="blis-entity-creator-checkbox">
-                        <OF.Checkbox
-                            label={intl.formatMessage({
-                                id: FM.ENTITYCREATOREDITOR_FIELDS_MULTIVALUE_LABEL,
-                                defaultMessage: "Multi-valued"
-                            })}
-                            defaultChecked={this.state.isBucketableVal}
-                            onChange={this.onChangeBucketable}
-                            disabled={this.state.editing}
-                        />
-                        <div className="ms-fontSize-s ms-fontColor-neutralSecondary">
-                            <FormattedMessage
-                                id={FM.ENTITYCREATOREDITOR_FIELDS_MULTIVALUE_HELPTEXT}
-                                defaultMessage="Entity may hold multiple values."
-                            />&nbsp;
+                </div>
+                <div className="blis-entity-creator-checkbox">
+                    <OF.Checkbox
+                        label={intl.formatMessage({
+                            id: FM.ENTITYCREATOREDITOR_FIELDS_MULTIVALUE_LABEL,
+                            defaultMessage: "Multi-valued"
+                        })}
+                        defaultChecked={this.state.isBucketableVal}
+                        onChange={this.onChangeBucketable}
+                        disabled={this.state.editing}
+                    />
+                    <div className="ms-fontSize-s ms-fontColor-neutralSecondary">
+                        <FormattedMessage
+                            id={FM.ENTITYCREATOREDITOR_FIELDS_MULTIVALUE_HELPTEXT}
+                            defaultMessage="Entity may hold multiple values."
+                        />&nbsp;
                             <OF.TooltipHost
-                                tooltipProps={{
-                                    onRenderContent: () => { return GetTip(TipType.ENTITY_MULTIVALUE) }
-                                }}
-                                delay={OF.TooltipDelay.zero}
-                                directionalHint={OF.DirectionalHint.bottomCenter}
-                            >
-                                <span className="ms-fontColor-themeTertiary">
-                                    <FormattedMessage
-                                        id={FM.ENTITYCREATOREDITOR_FIELDS_TOOLTIPTARGET}
-                                        defaultMessage="More"
-                                    />
-                                </span>
-                            </OF.TooltipHost>
-                        </div>
+                            tooltipProps={{
+                                onRenderContent: () => { return GetTip(TipType.ENTITY_MULTIVALUE) }
+                            }}
+                            delay={OF.TooltipDelay.zero}
+                            directionalHint={OF.DirectionalHint.bottomCenter}
+                        >
+                            <span className="ms-fontColor-themeTertiary">
+                                <FormattedMessage
+                                    id={FM.ENTITYCREATOREDITOR_FIELDS_TOOLTIPTARGET}
+                                    defaultMessage="More"
+                                />
+                            </span>
+                        </OF.TooltipHost>
                     </div>
-                    <div className="blis-entity-creator-checkbox">
-                        <OF.Checkbox
-                            label={intl.formatMessage({
-                                id: FM.ENTITYCREATOREDITOR_FIELDS_NEGATAABLE_LABEL,
-                                defaultMessage: "Negatable"
-                            })}
-                            defaultChecked={this.state.isNegatableVal}
-                            onChange={this.onChangeReversible}
-                            disabled={this.state.editing}
-                        />
-                        <div className="ms-fontSize-s ms-fontColor-neutralSecondary">
-                            <FormattedMessage
-                                id={FM.ENTITYCREATOREDITOR_FIELDS_NEGATABLE_HELPTEXT}
-                                defaultMessage="Can remove or delete values in memory."
-                            /> &nbsp;
+                </div>
+                <div className="blis-entity-creator-checkbox">
+                    <OF.Checkbox
+                        label={intl.formatMessage({
+                            id: FM.ENTITYCREATOREDITOR_FIELDS_NEGATAABLE_LABEL,
+                            defaultMessage: "Negatable"
+                        })}
+                        defaultChecked={this.state.isNegatableVal}
+                        onChange={this.onChangeReversible}
+                        disabled={this.state.editing}
+                    />
+                    <div className="ms-fontSize-s ms-fontColor-neutralSecondary">
+                        <FormattedMessage
+                            id={FM.ENTITYCREATOREDITOR_FIELDS_NEGATABLE_HELPTEXT}
+                            defaultMessage="Can remove or delete values in memory."
+                        /> &nbsp;
                             <OF.TooltipHost
-                                tooltipProps={{
-                                    onRenderContent: () => { return GetTip(TipType.ENTITY_NEGATABLE) }
-                                }}
-                                delay={OF.TooltipDelay.zero}
-                                directionalHint={OF.DirectionalHint.bottomCenter}
-                            >
-                                <span className="ms-fontColor-themeTertiary">
-                                    <FormattedMessage
-                                        id={FM.ENTITYCREATOREDITOR_FIELDS_TOOLTIPTARGET}
-                                        defaultMessage="More"
-                                    />
-                                </span>
-                            </OF.TooltipHost>
-                        </div>
+                            tooltipProps={{
+                                onRenderContent: () => { return GetTip(TipType.ENTITY_NEGATABLE) }
+                            }}
+                            delay={OF.TooltipDelay.zero}
+                            directionalHint={OF.DirectionalHint.bottomCenter}
+                        >
+                            <span className="ms-fontColor-themeTertiary">
+                                <FormattedMessage
+                                    id={FM.ENTITYCREATOREDITOR_FIELDS_TOOLTIPTARGET}
+                                    defaultMessage="More"
+                                />
+                            </span>
+                        </OF.TooltipHost>
                     </div>
                 </div>
             </div>
