@@ -221,13 +221,12 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         let trainDialog = this.props.trainDialogs.find((td) => td.trainDialogId == this.state.trainDialogId);
         return (
             <div className="blis-page">
-                <span className="ms-font-xxl">
+                <div className="blis-dialog-title blis-dialog-title--teach ms-font-xxl">
                     <FormattedMessage
                         id={FM.TRAINDIALOGS_TITLE}
                         defaultMessage="Train Dialogs"
                     />
-                </span>
-                <div className="blis-modal-header blis-color-teach"></div>
+                </div>
                 <span className="ms-font-m-plus">
                     <FormattedMessage
                         id={FM.TRAINDIALOGS_SUBTITLE}

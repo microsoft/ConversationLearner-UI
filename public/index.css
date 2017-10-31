@@ -19,7 +19,7 @@ html {
   border: 1px solid #004b50;
 }
 .blis-button--gold:focus {
-  border: 2px solid var(--color-primary-darkest);
+  border: 2px solid var(--color-yellow-darkest);
   box-sizing: border-box;
 }
 .blis-button--gold{
@@ -109,39 +109,81 @@ html {
 /** New CSS using BEM to eventually replace above */
 
 /** Modals */
-.blis-modal--large {
-  width: 95%;
-  height: 95%;
+
+.blis-modal {
+  display: grid;
+  grid-template-rows: min-content 1fr min-content;
 }
 
-.blis-modal--medium{
+.blis-modal.blis-modal--teach {
+  grid-template-rows: 1fr min-content;
+  border-top: 8px solid var(--color-magentaDark);
+}
+
+.blis-modal.blis-modal--log {
+  grid-template-rows: 1fr min-content;
+  border-top: 8px solid var(--color-blueMid);
+}
+
+.blis-modal.blis-modal--large {
+  width: 90%;
+  height: 90%;
+}
+
+.blis-modal.blis-modal--medium{
   width: 60%;
   height: 60%;
   /* TODO: Remove padding here, it should be the content inside that decides padding, otherwise all modals should have padding */
   padding: 1em;
 }
 
-.blis-modal--small{
+.blis-modal.blis-modal--small{
   width: 40%;
   /* TODO: Remove padding here, it should be the content inside that decides padding, otherwise all modals should have padding */
   padding: 1em;
 }
-.blis-modal--border {
+.blis-modal.blis-modal--border {
   border: 2px solid #004b50;
 }
 
-.blis-modal_title {
+.blis-modal_header {
   display: block;
   text-align: center;
   padding: 1em;
 }
-.blis-modal_buttonbox{
-  margin-top: 1.5em;
+
+.blis-modal_body {
+  position: relative;
+  overflow-y: auto;
+}
+.blis-modal_body > * {
+  position: absolute;
+  width: 100%;
 }
 
-.blis-modal_buttonbox--bottom{
-  bottom: 10px;
-  position: absolute;
+.blis-modal_footer {
+  padding-top: 1em;
+}
+
+.blis-modal.blis-modal--teach .blis-modal_footer {
+  padding: 5px;
+  background-color: var(--color-magentaDark);
+}
+
+.blis-modal.blis-modal--log .blis-modal_footer{
+  padding: 5px;
+  background-color: var(--color-blueMid);
+}
+
+.blis-dialog-title {
+  padding-bottom: 0.6em;
+  border-bottom: 8px solid transparent;
+}
+.blis-dialog-title.blis-dialog-title--teach {
+  border-color: var(--color-magentaDark);
+}
+.blis-dialog-title.blis-dialog-title--log {
+  border-color: var(--color-blueMid);
 }
 
 .blis-dropdownWithButton-buttoncontainer {
@@ -166,40 +208,8 @@ html {
     background-color: transparent !important;
     border: none !important;
     box-shadow: none !important;
-    position: relative
+    position: relative;
 }
-
-.blis-color-teach {
-  background-color: var(--color-teach);
-}
-.blis-color-log {
-  background-color: var(--color-log);
-}
-
-.blis-modal-header {
-  flex: 1 1 auto;
-  display: flex;
-  align-items: center;
-  padding: 0 28px;
-  min-height: 8px;
-}
-.blis-modal-container {
-  height: 90vh;
-  width: 90vw;
-  display: flex;
-  flex-flow: column nowrap;
-  align-items: stretch;
-}
-.blis-modal-body {
-  flex: 4 4 auto;
-  overflow-y: auto;
-  height: 100%;
-}
-.blis-modal-footer {
-  align-items: center;
-  padding: 5px 5px 5px 5px;
-}
-
 
 .blis-chatmodal {
   height: 100%;
@@ -285,19 +295,19 @@ html {
 */
 
 .ms-Button.is-disabled, .ms-Button:disabled {
-  background-color: var(--color-primary-lighter) !important;
+  background-color: var(--color-yellow-lighter) !important;
 }
 
 /** TODO: Remove usage of !important */
 .ms-Button--primary:not(:disabled) {
-  background-color: var(--color-primary) !important;
+  background-color: var(--color-yellow) !important;
   color: black !important;
 }
 .ms-Button--primary:not(:disabled):hover {
-  background-color: var(--color-primary-darker) !important;
+  background-color: var(--color-yellow-darker) !important;
 }
 .ms-Button--primary:not(:disabled):focus {
-  border: 1px solid var(--color-primary-darkest);
+  border: 1px solid var(--color-yellow-darkest);
   box-sizing: border-box
 }
 

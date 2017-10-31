@@ -187,13 +187,12 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         const currentLogDialog = this.state.currentLogDialog;
         return (
             <div className="blis-page">
-                <span className="ms-font-xxl">
+                <div className="blis-dialog-title blis-dialog-title--log ms-font-xxl">
                     <FormattedMessage
                         id={FM.LOGDIALOGS_TITLE}
                         defaultMessage="Log Dialogs"
                     />
-                </span>
-                <div className="blis-modal-header blis-color-log"></div>
+                </div>
                 <span className="ms-font-m-plus">
                     <FormattedMessage
                         id={FM.LOGDIALOGS_SUBTITLE}
