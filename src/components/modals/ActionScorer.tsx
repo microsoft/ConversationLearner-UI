@@ -105,7 +105,6 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         this.renderItemColumn = this.renderItemColumn.bind(this);
         this.onColumnClick = this.onColumnClick.bind(this);
         this.focusPrimaryButton = this.focusPrimaryButton.bind(this);
-        this.onClickOpenDeleteActionResponse = this.onClickOpenDeleteActionResponse.bind(this)
     }
     componentWillReceiveProps(newProps: Props) {
         if (this.props.scoreResponse != newProps.scoreResponse) {
@@ -463,10 +462,6 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         return scoredItems;
     }
 
-    onClickOpenDeleteActionResponse(actionId: string) {
-        console.log(`Not Implemented: onClickOpenDeleteActionResponse(${actionId})`)
-    }
-
     render() {
         // In teach mode, hide scores after selection
         // so they can't be reselected for non-terminal actions
@@ -498,7 +493,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                     open={this.state.actionModalOpen}
                     blisAction={null}
                     handleClose={this.handleCloseActionModal}
-                    handleOpenDeleteModal={this.onClickOpenDeleteActionResponse}
+                    handleOpenDeleteModal={()=>{}}
                 />
             </div>
         )
