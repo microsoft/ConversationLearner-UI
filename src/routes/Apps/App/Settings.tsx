@@ -12,39 +12,39 @@ import { injectIntl, InjectedIntlProps, defineMessages, FormattedMessage } from 
 
 const messages = defineMessages({
     fieldErrorRequired: {
-        id: "Settings.fieldError.requiredValue",
+        id: FM.SETTINGS_FIELDERROR_REQUIREDVALUE,
         defaultMessage: "Required Value"
     },
     fieldErrorAlphanumeric: {
-        id: 'Settings.fieldError.alphanumeric',
+        id: FM.SETTINGS_FIELDERROR_ALPHANUMERIC,
         defaultMessage: 'Application name may only contain alphanumeric characters'
     },
     fieldErrorDistinct: {
-        id: 'Settings.fieldError.distinct',
+        id: FM.SETTINGS_FIELDERROR_DISTINCT,
         defaultMessage: 'Name is already in use.'
     },
     passwordHidden: {
-        id: 'Settings.passwordHidden',
+        id: FM.SETTINGS_PASSWORDHIDDEN,
         defaultMessage: 'Show'
     },
     passwordVisible: {
-        id: 'Settings.passwordVisible',
+        id: FM.SETTINGS_PASSWORDVISIBLE,
         defaultMessage: 'Hide'
     },
     botFrameworkAppIdFieldLabel: {
-        id: 'Settings.botFrameworkAppIdFieldLabel',
+        id: FM.SETTINGS_BOTFRAMEWORKAPPIDFIELDLABEL,
         defaultMessage: 'Application ID'
     },
     botFrameworkAddBotButtonText: {
-        id: 'Settings.botFrameworkAddBotButtonText',
+        id: FM.SETTINGS_BOTFRAMEWORKADDBOTBUTTONTEXT,
         defaultMessage: 'Add'
     },
     saveChanges: {
-        id: 'Settings.saveChanges',
+        id: FM.SETTINGS_SAVECHANGES,
         defaultMessage: 'Save Changes'
     },
     discard: {
-        id: 'Settings.discard',
+        id: FM.SETTINGS_DISCARD,
         defaultMessages: 'Discard'
     }
 })

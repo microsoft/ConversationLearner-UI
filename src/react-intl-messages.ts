@@ -122,6 +122,84 @@ export enum FM {
     USERLOGIN_PASSWORDFIELDPLACEHOLDER = "UserLogin.passwordFieldPlaceholder",
     USERLOGIN_LOGINBUTTONARIADESCRPTION = "UserLogin.loginButtonAriaDescription",
     USERLOGIN_LOGINBUTTONTEXT = "UserLogin.loginButtonText",
+
+    // ActionDetails
+    ACTIONDETAILSLIST_COLUMNS_RESPONSE = "ActionDetailsList.columns.response",
+    ACTIONDETAILSLIST_COLUMNS_ARGUMENTS = "ActionDetailsList.columns.arguments",
+    ACTIONDETAILSLIST_COLUMNS_TYPE = "ActionDetailsList.columns.type",
+    ACTIONDETAILSLIST_COLUMNS_REQUIREDENTITIES = "ActionDetailsList.columns.requiredEntities",
+    ACTIONDETAILSLIST_COLUMNS_BLOCKINGENTITIES = "ActionDetailsList.columns.blockingEntities",
+    ACTIONDETAILSLIST_COLUMNS_SUGGESTEDENTITY = "ActionDetailsList.columns.suggestedEntity",
+    ACTIONDETAILSLIST_COLUMNS_ISTERMINAL = "ActionDetailsList.columns.isTerminal",
+
+    // TextVariation
+    TEXTVARIATION_PLACEHOLDER = "TextVariationCreator.placeholder",
+
+    // ActionScorer
+    ACTIONSCORER_COLUMNS_RESPONSE = "ActionScorer.columns.response",
+    ACTIONSCORER_COLUMNS_ARGUMENTS = "ActionScorer.columns.arguments",
+    ACTIONSCORER_COLUMNS_SCORE = "ActionScorer.columns.score",
+    ACTIONSCORER_COLUMNS_ENTITIES = "ActionScorer.columns.entities",
+    ACTIONSCORER_COLUMNS_ISTERMINAL = "ActionScorer.columns.isTerminal",
+    ACTIONSCORER_COLUMNS_TYPE = "ActionScorer.columns.type",
+
+    // AppCreator
+    APPCREATOR_FIELDERROR_REQUIREDVALUE = "AppCreator.fieldError.requiredValue",
+    APPCREATOR_FIELDERROR_ALPHANUMERIC = "AppCreator.fieldError.alphanumeric",
+    APPCREATOR_FIELDERROR_DISTINCT = "AppCreator.fieldError.distinct",
+    APPCREATOR_TITLE = "AppCreator.title",
+    APPCREATOR_FIELDS_NAME_LABEL = "AppCreator.fields.name.label",
+    APPCREATOR_FIELDS_NAME_PLACEHOLDER = "AppCreator.fields.name.placeholder",
+    APPCREATOR_FIELDS_LUISKEY_LABEL = "AppCreator.fields.luisKey.label",
+    APPCREATOR_FIELDS_LUISKEY_HELPTEXT = "AppCreator.fields.luisKey.helptext",
+    APPCREATOR_FIELDS_LUISKEY_PLACEHOLDER = "AppCreator.fields.luisKey.placeholder",
+    APPCREATOR_FIELDS_LOCALE_LABEL = "AppCreator.fields.locale.label",
+    APPCREATOR_CREATEBUTTON_ARIADESCRIPTION = "AppCreator.createButton.ariaDescription",
+    APPCREATOR_CREATEBUTTON_TEXT = "AppCreator.createButton.text",
+    APPCREATOR_CANCELBUTTON_ARIADESCRIPTION = "AppCreator.cancelButton.ariaDescription",
+    APPCREATOR_CANCELBUTTON_TEXT = "AppCreator.cancelButton.text",
+
+    // ChatSessionWindow
+    CHATSESSIONWINDOW_PRIMARYBUTTON_ARIADESCRIPTION = "ChatSessionWindow.primaryButton.ariaDescription",
+    CHATSESSIONWINDOW_PRIMARYBUTTON_TEXT = "ChatSessionWindow.primaryButton.text",
+
+    // ConfirmDeleteModal
+    CONFIRMDELETEMODAL_PRIMARYBUTTON_TEXT = "ConfirmDeleteModal.primaryButton.text",
+    CONFIRMDELETEMODAL_DEFAULTBUTTON_TEXT = "ConfirmDeleteModal.defaultButton.text",
+
+    // EntityCreatorEditor
+    ENTITYCREATOREDITOR_FIELDERROR_REQUIREDVALUE = "EntityCreatorEditor.fieldError.requiredValue",
+    ENTITYCREATOREDITOR_FIELDERROR_ALPHANUMERIC = "EntityCreatorEditor.fieldsError.alphanumerica",
+    ENTITYCREATOREDITOR_FIELDERROR_DISTINCT = "EntityCreatorEditor.fields.distinct",
+    ENTITYCREATOREDITOR_ENTITYOPTION_NEW = "EntityCreatorEditor.entityOption.new",
+    ENTITYCREATOREDITOR_TITLE_CREATE = "EntityCreatorEditor.title.create",
+    ENTITYCREATOREDITOR_TITLE_EDIT = "EntityCreatorEditor.title.edit",
+    ENTITYCREATOREDITOR_FIELDS_NAME_LABEL = "EntityCreatorEditor.fields.name.label",
+    ENTITYCREATOREDITOR_FIELDS_NAME_PLACEHOLDER = "EntityCreatorEditor.fields.name.placeholder",
+    ENTITYCREATOREDITOR_FIELDS_TYPE_LABEL = "EntityCreatorEditor.fields.type.label",
+    ENTITYCREATOREDITOR_FIELDS_PROGRAMMATICONLY_LABEL = "EntityCreatorEditor.fields.programmatically.label",
+    ENTITYCREATOREDITOR_FIELDS_PROGRAMMATICONLY_HELPTEXT = "EntityCreatorEditor.fields.programmatically.helptext",
+    ENTITYCREATOREDITOR_FIELDS_TOOLTIPTARGET = "EntityCreatorEditor.fields.tooltiptarget",
+    ENTITYCREATOREDITOR_FIELDS_MULTIVALUE_LABEL = "EntityCreatorEditor.fields.multiValue.label",
+    ENTITYCREATOREDITOR_FIELDS_MULTIVALUE_HELPTEXT = "EntityCreatorEditor.fields.multiValue.helpText",
+    ENTITYCREATOREDITOR_FIELDS_NEGATAABLE_LABEL = "EntityCreatorEditor.fields.negatable.label",
+    ENTITYCREATOREDITOR_FIELDS_NEGATABLE_HELPTEXT = "EntityCreatorEditor.fields.negatable.helpText",
+    ENTITYCREATOREDITOR_PIVOT_EDIT = "EntityCreatorEditor.pivot.editEntity",
+    ENTITYCREATOREDITOR_PIVOT_REQUIREDFOR = "EntityCreatorEditor.pivot.requiredForActions",
+    ENTITYCREATOREDITOR_PIVOT_BLOCKEDACTIONS = "EntityCreatorEditor.pivot.blockedActions",
+    ENTITYCREATOREDITOR_CREATEBUTTON_ARIADESCRIPTION = "EntityCreatorEditor.createButton.ariaDescription",
+    ENTITYCREATOREDITOR_CREATEBUTTON_TEXT = "EntityCreatorEditor.createButton.text",
+    ENTITYCREATOREDITOR_CANCELBUTTON_ARIADESCRIPTION = "EntityCreatorEditor.cancelButton.ariaDescription",
+    ENTITYCREATOREDITOR_CANCELBUTTON_TEXT = "EntityCreatorEditor.cancelButton.text",
+    ENTITYCREATOREDITOR_DONEBUTTON_ARIADESCRIPTION = "EntityCreatorEditor.doneButton.ariaDescription",
+    ENTITYCREATOREDITOR_DONEBUTTON_TEXT = "EntityCreatorEditor.doneButton.text",
+    ENTITYCREATOREDITOR_DELETEBUTTON_ARIADESCRIPTION = "EntityCreatorEditor.deleteButton.ariaDescription",
+    ENTITYCREATOREDITOR_DELETEBUTTON_TEXT = "EntityCreatorEditor.deleteButton.text",
+
+    // Error
+    ERROR_TITLE = "Error.title",
+    ERROR_PRIMARYBUTTON_ARIADESCRIPTION = "Error.ariaDescription",
+    ERROR_PRIMARYBUTTON_TEXT = "Error.text",
 }
 
 // Message ids follow convention of "<componentname>.<area>[.<subarea>]*`
@@ -251,6 +329,84 @@ export default {
         [FM.USERLOGIN_PASSWORDFIELDPLACEHOLDER]: "Password...",
         [FM.USERLOGIN_LOGINBUTTONARIADESCRPTION]: "Log In",
         [FM.USERLOGIN_LOGINBUTTONTEXT]: "Log In",
+
+        // ActionDetailsList
+        [FM.ACTIONDETAILSLIST_COLUMNS_RESPONSE]: "Response",
+        [FM.ACTIONDETAILSLIST_COLUMNS_ARGUMENTS]: "Arguments",
+        [FM.ACTIONDETAILSLIST_COLUMNS_TYPE]: "Action Type",
+        [FM.ACTIONDETAILSLIST_COLUMNS_REQUIREDENTITIES]: "Required Entities",
+        [FM.ACTIONDETAILSLIST_COLUMNS_BLOCKINGENTITIES]: "Blocking Entities",
+        [FM.ACTIONDETAILSLIST_COLUMNS_SUGGESTEDENTITY]: "Expected Entity",
+        [FM.ACTIONDETAILSLIST_COLUMNS_ISTERMINAL]: "Wait",
+
+        // TextVariationCreator
+        [FM.TEXTVARIATION_PLACEHOLDER]: "Add alternative input...",
+
+        // ActionScorer
+        [FM.ACTIONSCORER_COLUMNS_RESPONSE]: "Response",
+        [FM.ACTIONSCORER_COLUMNS_ARGUMENTS]: "Arguments",
+        [FM.ACTIONSCORER_COLUMNS_SCORE]: "Score",
+        [FM.ACTIONSCORER_COLUMNS_ENTITIES]: "Entities",
+        [FM.ACTIONSCORER_COLUMNS_ISTERMINAL]: "Wait",
+        [FM.ACTIONSCORER_COLUMNS_TYPE]: "Type",
+
+        // AppCreator
+        [FM.APPCREATOR_FIELDERROR_REQUIREDVALUE]: "Required Value",
+        [FM.APPCREATOR_FIELDERROR_ALPHANUMERIC]: "Application name may only contain alphanumeric characters",
+        [FM.APPCREATOR_FIELDERROR_DISTINCT]: "Name is already in use.",
+        [FM.APPCREATOR_TITLE]: "Create a BLIS App",
+        [FM.APPCREATOR_FIELDS_NAME_LABEL]: "Name",
+        [FM.APPCREATOR_FIELDS_NAME_PLACEHOLDER]: "Application Name...",
+        [FM.APPCREATOR_FIELDS_LUISKEY_LABEL]: "LUIS Key",
+        [FM.APPCREATOR_FIELDS_LUISKEY_HELPTEXT]: "Find your key",
+        [FM.APPCREATOR_FIELDS_LUISKEY_PLACEHOLDER]: "Key...",
+        [FM.APPCREATOR_FIELDS_LOCALE_LABEL]: "Locale",
+        [FM.APPCREATOR_CREATEBUTTON_ARIADESCRIPTION]: "Create",
+        [FM.APPCREATOR_CREATEBUTTON_TEXT]: "Create",
+        [FM.APPCREATOR_CANCELBUTTON_ARIADESCRIPTION]: "Cancel",
+        [FM.APPCREATOR_CANCELBUTTON_TEXT]: "Cancel",
+
+        // ChatSessionWindow
+        [FM.CHATSESSIONWINDOW_PRIMARYBUTTON_ARIADESCRIPTION]: "Done Testing",
+        [FM.CHATSESSIONWINDOW_PRIMARYBUTTON_TEXT]: "Done Testing",
+
+        // ConfirmDeleteModal
+        [FM.CONFIRMDELETEMODAL_PRIMARYBUTTON_TEXT]: "Confirm",
+        [FM.CONFIRMDELETEMODAL_DEFAULTBUTTON_TEXT]: "Cancel",
+
+        // EntityCreatorEditor
+        [FM.ENTITYCREATOREDITOR_FIELDERROR_REQUIREDVALUE]: "Required Value",
+        [FM.ENTITYCREATOREDITOR_FIELDERROR_ALPHANUMERIC]: "Entity name may only contain alphanumeric characters with no spaces.",
+        [FM.ENTITYCREATOREDITOR_FIELDERROR_DISTINCT]: "Name is already in use.",
+        [FM.ENTITYCREATOREDITOR_ENTITYOPTION_NEW]: "New Type",
+        [FM.ENTITYCREATOREDITOR_TITLE_CREATE]: "Create an Entity",
+        [FM.ENTITYCREATOREDITOR_TITLE_EDIT]: "Edit Entity",
+        [FM.ENTITYCREATOREDITOR_FIELDS_NAME_LABEL]: "Entity Name",
+        [FM.ENTITYCREATOREDITOR_FIELDS_NAME_PLACEHOLDER]: "Name...",
+        [FM.ENTITYCREATOREDITOR_FIELDS_TYPE_LABEL]: "Entity Type",
+        [FM.ENTITYCREATOREDITOR_FIELDS_PROGRAMMATICONLY_LABEL]: "Programmatic Only",
+        [FM.ENTITYCREATOREDITOR_FIELDS_PROGRAMMATICONLY_HELPTEXT]: "Entity only set by code.",
+        [FM.ENTITYCREATOREDITOR_FIELDS_TOOLTIPTARGET]: "More",
+        [FM.ENTITYCREATOREDITOR_FIELDS_MULTIVALUE_LABEL]: "Multi-valued",
+        [FM.ENTITYCREATOREDITOR_FIELDS_MULTIVALUE_HELPTEXT]: "Entity may hold multiple values.",
+        [FM.ENTITYCREATOREDITOR_FIELDS_NEGATAABLE_LABEL]: "Negatable",
+        [FM.ENTITYCREATOREDITOR_FIELDS_NEGATABLE_HELPTEXT]: "Can remove or delete values in memory.",
+        [FM.ENTITYCREATOREDITOR_PIVOT_EDIT]: "Edit Entity",
+        [FM.ENTITYCREATOREDITOR_PIVOT_REQUIREDFOR]: "Required For Actions",
+        [FM.ENTITYCREATOREDITOR_PIVOT_BLOCKEDACTIONS]: "Blocked Actions",
+        [FM.ENTITYCREATOREDITOR_CREATEBUTTON_ARIADESCRIPTION]: "Create",
+        [FM.ENTITYCREATOREDITOR_CREATEBUTTON_TEXT]: "Create",
+        [FM.ENTITYCREATOREDITOR_CANCELBUTTON_ARIADESCRIPTION]: "Cancel",
+        [FM.ENTITYCREATOREDITOR_CANCELBUTTON_TEXT]: "Cancel",
+        [FM.ENTITYCREATOREDITOR_DONEBUTTON_ARIADESCRIPTION]: "Done",
+        [FM.ENTITYCREATOREDITOR_DONEBUTTON_TEXT]: "Done",
+        [FM.ENTITYCREATOREDITOR_DELETEBUTTON_ARIADESCRIPTION]: "Delete",
+        [FM.ENTITYCREATOREDITOR_DELETEBUTTON_TEXT]: "Delete",
+
+        // Error
+        [FM.ERROR_TITLE]: "Error",
+        [FM.ERROR_PRIMARYBUTTON_ARIADESCRIPTION]: "Ok",
+        [FM.ERROR_PRIMARYBUTTON_TEXT]: "Ok",
     },
     "ko": {
         [FM.ABOUT_TITLE]: "약",

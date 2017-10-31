@@ -1,14 +1,19 @@
 import * as React from 'react';
 import { PrimaryButton, DefaultButton, Dialog, DialogType, DialogFooter } from 'office-ui-fabric-react';
+import { FM } from '../../react-intl-messages'
+import { injectIntl, InjectedIntlProps } from 'react-intl'
 
-export interface Props {
+interface ReceivedProps {
     onConfirm: Function;
     onCancel: Function;
     open: boolean;
     title: string;
 }
 
+type Props = ReceivedProps & InjectedIntlProps
+
 const ConfirmDeleteModal: React.SFC<Props> = (props: Props) => {
+    const { intl } = props
     return (
         <Dialog
             hidden={!props.open}
@@ -22,10 +27,22 @@ const ConfirmDeleteModal: React.SFC<Props> = (props: Props) => {
             }}
         >
             <DialogFooter>
-                <PrimaryButton onClick={() => props.onConfirm()} text='Confirm' />
-                <DefaultButton onClick={() => props.onCancel()} text='Cancel' />
+                <PrimaryButton
+                    onClick={() => props.onConfirm()}
+                    text={intl.formatMessage({
+                        id: FM.CONFIRMDELETEMODAL_PRIMARYBUTTON_TEXT,
+                        defaultMessage: 'Confirm'
+                    })}
+                />
+                <DefaultButton
+                    onClick={() => props.onCancel()}
+                    text={intl.formatMessage({
+                        id: FM.CONFIRMDELETEMODAL_DEFAULTBUTTON_TEXT,
+                        defaultMessage: 'Cancel'
+                    })}
+                />
             </DialogFooter>
         </Dialog>
     )
 }
-export default ConfirmDeleteModal;
+export default injectIntl(ConfirmDeleteModal)
