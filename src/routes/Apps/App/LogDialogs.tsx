@@ -2,7 +2,7 @@ import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { DetailsList, CommandButton, CheckboxVisibility, IColumn, SearchBox, Dialog, DialogType, DialogFooter, PrimaryButton } from 'office-ui-fabric-react';
+import * as OF from 'office-ui-fabric-react';
 import { State } from '../../../types'
 import { BlisAppBase, LogDialog, Session } from 'blis-models'
 import { ChatSessionWindow, LogDialogModal } from '../../../components/modals'
@@ -10,7 +10,7 @@ import { createChatSessionThunkAsync } from '../../../actions/createActions'
 import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { FM } from '../../../react-intl-messages'
 
-interface IRenderableColumn extends IColumn {
+interface IRenderableColumn extends OF.IColumn {
     render: (x: LogDialog, component: LogDialogs) => React.ReactNode
 }
 
@@ -200,9 +200,8 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     />
                 </span>
                 <div>
-                    <CommandButton
+                    <OF.PrimaryButton
                         onClick={() => this.onClickNewChatSession()}
-                        className='blis-button--gold'
                         ariaDescription={this.props.intl.formatMessage({
                             id: FM.LOGDIALOGS_CREATEBUTTONARIALDESCRIPTION,
                             defaultMessage: 'Create a New Chat Session'
@@ -218,17 +217,17 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                         onClose={() => this.onCloseChatSessionWindow()}
                     />
                 </div>
-                <SearchBox
+                <OF.SearchBox
                     className="ms-font-m-plus"
                     onChange={(newValue) => this.onChange(newValue)}
                     onSearch={(newValue) => this.onChange(newValue)}
                 />
-                <DetailsList
+                <OF.DetailsList
                     key={this.state.dialogKey}
                     className="ms-font-m-plus"
                     items={logDialogItems}
                     columns={this.state.columns}
-                    checkboxVisibility={CheckboxVisibility.hidden}
+                    checkboxVisibility={OF.CheckboxVisibility.hidden}
                     onRenderItemColumn={(logDialog, i, column: IRenderableColumn) => returnErrorStringWhenError(() => column.render(logDialog, this))}
                     onActiveItemChanged={logDialog => this.onLogDialogInvoked(logDialog)}
                 />
@@ -238,10 +237,10 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     onClose={() => this.onCloseLogDialogModal()}
                     logDialog={currentLogDialog}
                 />
-                <Dialog
+                <OF.Dialog
                     hidden={!this.state.isChatSessionWarningWindowOpen}
                     dialogContentProps={{
-                        type: DialogType.normal,
+                        type: OF.DialogType.normal,
                         title: this.props.intl.formatMessage({
                             id: FM.LOGDIALOGS_SESSIONCREATIONWARNING_TITLE,
                             defaultMessage: 'You may not create chat session at this time. Please try again later.'
@@ -249,16 +248,16 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     }}
                     onDismiss={() => this.onClickWarningWindowOk()}
                 >
-                    <DialogFooter>
-                        <PrimaryButton
+                    <OF.DialogFooter>
+                        <OF.PrimaryButton
                             onClick={() => this.onClickWarningWindowOk()}
                             text={this.props.intl.formatMessage({
                                 id: FM.LOGDIALOGS_SESSIONCREATIONWARNING_PRIMARYBUTTON,
                                 defaultMessage: 'Ok'
                             })}
                         />
-                    </DialogFooter>
-                </Dialog>
+                    </OF.DialogFooter>
+                </OF.Dialog>
             </div>
         );
     }

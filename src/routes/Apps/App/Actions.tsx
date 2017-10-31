@@ -6,7 +6,7 @@ import { createActionAsync } from '../../../actions/createActions'
 import { editActionAsync } from '../../../actions/updateActions'
 import { deleteActionAsync } from '../../../actions/deleteActions'
 import ActionDetailsList from '../../../components/ActionDetailsList'
-import { IButton, CommandButton, SearchBox } from 'office-ui-fabric-react';
+import * as OF from 'office-ui-fabric-react';
 import { BlisAppBase, ActionBase } from 'blis-models'
 import { ConfirmDeleteModal, ActionCreatorEditor } from '../../../components/modals'
 import { State } from '../../../types'
@@ -22,7 +22,7 @@ interface ComponentState {
 }
 
 class Actions extends React.Component<Props, ComponentState> {
-    newActionButton: IButton
+    newActionButton: OF.IButton
 
     constructor(p: any) {
         super(p);
@@ -140,9 +140,8 @@ class Actions extends React.Component<Props, ComponentState> {
                     />
                 </span>
                 <div>
-                    <CommandButton
+                    <OF.PrimaryButton
                         onClick={this.onClickCreateAction}
-                        className='blis-button--gold'
                         ariaDescription={this.props.intl.formatMessage({
                             id: FM.ACTIONS_CREATEBUTTONARIALDESCRIPTION,
                             defaultMessage: 'Create a New Action'
@@ -154,7 +153,7 @@ class Actions extends React.Component<Props, ComponentState> {
                         componentRef={component => this.newActionButton = component}
                     />
                 </div>
-                <SearchBox
+                <OF.SearchBox
                     className="ms-font-m-plus"
                     onChange={searchString => this.onChangeSearchString(searchString)}
                     onSearch={searchString => this.onChangeSearchString(searchString)}

@@ -3,7 +3,7 @@ import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { Modal } from 'office-ui-fabric-react/lib/Modal'
-import { CommandButton } from 'office-ui-fabric-react'
+import * as OF from 'office-ui-fabric-react'
 import { State } from '../../types'
 
 interface ReceivedProps {
@@ -38,14 +38,12 @@ class LogoutModal extends React.Component<Props, {}> {
                 </div>
                 <div className="blis-modal-buttons">
                     <div className="blis-modal-buttons_primary">
-                        <CommandButton
+                        <OF.PrimaryButton
                             onClick={this.onClickLogout}
-                            className='blis-button--gold'
                             ariaDescription='Log Out'
                             text='Log Out'
                         />
-                        <CommandButton
-                            className="blis-button--gray"
+                        <OF.DefaultButton
                             onClick={this.onClickCancel}
                             ariaDescription='Cancel'
                             text='Cancel'
