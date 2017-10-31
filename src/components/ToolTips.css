@@ -1,0 +1,7 @@
+.blis-tooltip-example {
+    display: grid;
+    grid-template-columns: min-content 1fr;
+}
+.blis-tooltip-example dt {
+    margin: 0;
+}
