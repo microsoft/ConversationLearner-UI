@@ -118,7 +118,7 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
                 isOpen={this.props.open && this.props.error == null}
                 isBlocking={true}
                 containerClassName='blis-modal blis-modal--large blis-modal--teach'>
-                <div className="blis-modal-body">
+                <div className="blis-modal_body">
                     <div className="blis-chatmodal">
                         <div className="blis-chatmodal_webchat">
                             <Webchat
@@ -141,7 +141,7 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
                         </div>
                     </div>
                 </div>
-                <div className="blis-modal-footer">
+                <div className="blis-modal_footer">
                     <div className="blis-modal-buttons">
                         <div className="blis-modal-buttons_primary">
                         </div>
@@ -158,7 +158,6 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
                             />
                         </div>
                     </div>
-
                 </div>
                 <ConfirmDeleteModal
                     open={this.state.confirmDeleteModalOpen}
