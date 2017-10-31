@@ -5,7 +5,7 @@ import { returntypeof } from 'react-redux-typescript';
 import { ModelUtils } from 'blis-models';
 import { State } from '../../types'
 import { 
-    TrainScorerStep, Memory, ScoredBase, ScoreInput, ScoreResponse, 
+    BlisAppBase, TrainScorerStep, Memory, ScoredBase, ScoreInput, ScoreResponse, 
     ActionBase, ScoredAction, UnscoredAction, ScoreReason, DialogType } from 'blis-models';
 import { toggleAutoTeach } from '../../actions/teachActions'
 import { PrimaryButton } from 'office-ui-fabric-react';
@@ -509,6 +509,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                         onRenderDetailsHeader(detailsHeaderProps, defaultRender)}
                 />
                 <ActionCreatorEditor
+                    app={this.props.app}
                     open={this.state.actionModalOpen}
                     blisAction={null}
                     handleClose={this.handleCloseActionModal}
@@ -520,7 +521,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
 }
 
 export interface ReceivedProps {
-    appId: string,
+    app: BlisAppBase
     dialogType: DialogType,
     sessionId: string,
     autoTeach: boolean,
@@ -543,9 +544,10 @@ const mapStateToProps = (state: State, ownProps: any) => {
         actions: state.actions
     }
 }
+
 // Props types inferred from mapStateToProps & dispatchToProps
 const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
 type Props = typeof stateProps & typeof dispatchProps & ReceivedProps;
 
-export default connect<typeof stateProps, typeof dispatchProps, {}>(mapStateToProps, mapDispatchToProps)(ActionScorer);
+export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(ActionScorer);

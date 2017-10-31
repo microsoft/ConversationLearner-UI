@@ -57,6 +57,7 @@ class AppsIndex extends React.Component<Props, ComponentState> {
                     app={this.state.selectedApp}
                 />
                 : <AppsList
+                    apps={this.props.apps}
                     onCreateApp={this.onCreateApp}
                     onSelectedAppChanged={app => this.onSelectedAppChanged(app)}
                     onClickDeleteApp={app => this.onClickDeleteApp(app)}
@@ -82,6 +83,7 @@ const mapDispatchToProps = (dispatch: any) => {
 
 const mapStateToProps = (state: State) => {
     return {
+        apps: state.apps.all,
         display: state.display,
         user: state.user
     }

@@ -9,7 +9,7 @@ import ActionScorer from './ActionScorer';
 import MemoryTable from './MemoryTable';
 import * as OF from 'office-ui-fabric-react'
 import { Activity } from 'botframework-directlinejs'
-import { TrainExtractorStep, TrainScorerStep, TextVariation, 
+import { BlisAppBase, TrainExtractorStep, TrainScorerStep, TextVariation, 
         Memory, TrainDialog, TrainRound, 
         LogDialog, LogRound, LogScorerStep, 
         ActionBase, EntityBase, ExtractResponse, 
@@ -190,7 +190,7 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
                         <div>
                             {round &&
                                 <EntityExtractor
-                                    appId={this.props.appId}
+                                    app={this.props.app}
                                     extractType={DialogType.LOGDIALOG}
                                     sessionId={this.props.logDialog.logDialogId}
                                     roundIndex={this.state.roundIndex}
@@ -210,7 +210,7 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
                         <div>
                             {action &&
                                 <ActionScorer
-                                    appId={this.props.appId}
+                                    app={this.props.app}
                                     dialogType={DialogType.LOGDIALOG}
                                     sessionId={this.props.logDialog.logDialogId}
                                     autoTeach={false}
@@ -253,7 +253,6 @@ const mapDispatchToProps = (dispatch: any) => {
 }
 const mapStateToProps = (state: State) => {
     return {
-        appId: state.apps.current.appId,
         actions: state.actions,
         entities: state.entities,
         extractResponses: state.teachSessions.extractResponses,
@@ -261,6 +260,7 @@ const mapStateToProps = (state: State) => {
 }
 
 export interface ReceivedProps {
+    app: BlisAppBase
     logDialog: LogDialog
     selectedActivity: Activity
     onSaveChanges: (trainDialog: TrainDialog) => void

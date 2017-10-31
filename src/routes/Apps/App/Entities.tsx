@@ -283,6 +283,7 @@ class Entities extends React.Component<Props, ComponentState> {
                         componentRef={component => this.newEntityButton = component}
                     />
                     <EntityCreatorEditor
+                        app={this.props.app}
                         open={this.state.createEditModalOpen}
                         entity={this.state.entitySelected}
                         handleClose={this.handleCloseCreateModal}

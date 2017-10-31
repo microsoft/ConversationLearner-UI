@@ -10,7 +10,7 @@ import {
     PrimaryButton, DefaultButton, Dropdown, TagPicker,
     TextField, Label, Checkbox, List, ITag
 } from 'office-ui-fabric-react'
-import { ActionBase, ActionMetaData, ActionTypes, EntityBase, ModelUtils } from 'blis-models'
+import { ActionBase, ActionMetaData, ActionTypes, BlisAppBase, EntityBase, ModelUtils } from 'blis-models'
 import { State } from '../../types';
 import EntityCreatorEditor from './EntityCreatorEditor';
 import { BlisTagItem, IBlisPickerItemProps, IBlisTag } from './BlisTagItem';
@@ -245,7 +245,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         this.props.handleClose(null);
     }
     onClickCreate() {
-        let currentAppId: string = this.props.blisApps.current.appId;
+        let currentAppId: string = this.props.app.appId;
         let requiredEntities = this.state.reqEntitiesVal.map(req => {
             let found = this.props.entities.find(e => e.entityName === req.key)
             return found.entityId
@@ -970,6 +970,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                         </div>
                     </div>
                     <EntityCreatorEditor
+                        app={this.props.app}
                         open={this.state.entityModalOpen}
                         entity={null}
                         handleClose={this.entityCreatorHandleClose}
@@ -992,7 +993,6 @@ const mapStateToProps = (state: State, ownProps: any) => {
     return {
         userKey: state.user.key,
         actions: state.actions,
-        blisApps: state.apps,
         entities: state.entities,
         botInfo: state.bot.botInfo
     }
@@ -1002,6 +1002,7 @@ export interface ReceiveProps {
     open: boolean,
     blisAction: ActionBase | null,
     handleClose: (action: ActionBase) => void,
+    app: BlisAppBase
     handleOpenDeleteModal: (actionId: string) => void
 }
 

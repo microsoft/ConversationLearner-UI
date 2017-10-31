@@ -131,6 +131,7 @@ class LogDialogModal extends React.Component<Props, ComponentState> {
                             <div className="blis-chatmodal_controls">
                                 <div className="blis-chatmodal_admin-controls">
                                     <LogDialogAdmin
+                                        app={this.props.app}
                                         logDialog={this.props.logDialog}
                                         selectedActivity={this.state.selectedActivity}
                                         onSaveChanges={trainDialog => this.onSaveDialogChanges(trainDialog)}

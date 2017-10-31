@@ -96,29 +96,29 @@ class Settings extends React.Component<Props, ComponentState> {
         this.onClickDiscard = this.onClickDiscard.bind(this)
     }
     componentWillMount() {
-        let current: BlisAppBase = this.props.blisApps.current
+        let app = this.props.app
         this.setState({
-            localeVal: current.locale,
-            appIdVal: current.appId,
-            appNameVal: current.appName,
-            luisKeyVal: current.luisKey,
-            botFrameworkAppsVal: current.metadata.botFrameworkApps,
+            localeVal: app.locale,
+            appIdVal: app.appId,
+            appNameVal: app.appName,
+            luisKeyVal: app.luisKey,
+            botFrameworkAppsVal: app.metadata.botFrameworkApps,
             newBotVal: ""
         })
     }
     componentDidUpdate() {
-        let current: BlisAppBase = this.props.blisApps.current
-        if (this.state.edited == false && (this.state.localeVal !== current.locale ||
-            this.state.appIdVal !== current.appId ||
-            this.state.appNameVal !== current.appName ||
-            this.state.luisKeyVal !== current.luisKey ||
-            this.state.botFrameworkAppsVal !== current.metadata.botFrameworkApps)) {
+        let app = this.props.app
+        if (this.state.edited == false && (this.state.localeVal !== app.locale ||
+            this.state.appIdVal !== app.appId ||
+            this.state.appNameVal !== app.appName ||
+            this.state.luisKeyVal !== app.luisKey ||
+            this.state.botFrameworkAppsVal !== app.metadata.botFrameworkApps)) {
             this.setState({
-                localeVal: current.locale,
-                appIdVal: current.appId,
-                appNameVal: current.appName,
-                luisKeyVal: current.luisKey,
-                botFrameworkAppsVal: current.metadata.botFrameworkApps
+                localeVal: app.locale,
+                appIdVal: app.appId,
+                appNameVal: app.appName,
+                luisKeyVal: app.luisKey,
+                botFrameworkAppsVal: app.metadata.botFrameworkApps
             })
         }
     }
@@ -155,35 +155,34 @@ class Settings extends React.Component<Props, ComponentState> {
         )
     }
     onClickDiscard() {
-        let current: BlisAppBase = this.props.blisApps.current
+        let app = this.props.app
         this.setState({
-            localeVal: current.locale,
-            appIdVal: current.appId,
-            appNameVal: current.appName,
-            luisKeyVal: current.luisKey,
-            botFrameworkAppsVal: current.metadata.botFrameworkApps,
+            localeVal: app.locale,
+            appIdVal: app.appId,
+            appNameVal: app.appName,
+            luisKeyVal: app.luisKey,
+            botFrameworkAppsVal: app.metadata.botFrameworkApps,
             edited: false,
             newBotVal: ""
         })
     }
     onClickSave() {
-        let current: BlisAppBase = this.props.blisApps.current;
-        let meta: BlisAppMetaData = new BlisAppMetaData({
-            botFrameworkApps: this.state.botFrameworkAppsVal
-        })
-        let appToAdd = new BlisAppBase({
+        let app = this.props.app
+        let modifiedApp = new BlisAppBase({
             appName: this.state.appNameVal,
-            appId: current.appId,
+            appId: app.appId,
             luisKey: this.state.luisKeyVal,
-            locale: current.locale,
-            metadata: meta
+            locale: app.locale,
+            metadata: new BlisAppMetaData({
+                botFrameworkApps: this.state.botFrameworkAppsVal
+            })
         })
-        this.props.editBLISApplicationAsync(this.props.userKey, appToAdd);
+        this.props.editBLISApplicationAsync(this.props.userKey, modifiedApp);
         this.setState({
-            localeVal: current.locale,
-            appIdVal: current.appId,
-            appNameVal: current.appName,
-            luisKeyVal: current.luisKey,
+            localeVal: app.locale,
+            appIdVal: app.appId,
+            appNameVal: app.appName,
+            luisKeyVal: app.luisKey,
             edited: false,
             newBotVal: ""
         })
@@ -200,7 +199,7 @@ class Settings extends React.Component<Props, ComponentState> {
         }
 
         // Check that name isn't in use
-        let foundApp = this.props.blisApps.all.find(a => (a.appName == value && a.appId != this.props.app.appId));
+        let foundApp = this.props.apps.find(a => (a.appName == value && a.appId != this.props.app.appId));
         if (foundApp) {
             return intl.formatMessage(messages.fieldErrorDistinct)
         }
@@ -341,7 +340,7 @@ const mapDispatchToProps = (dispatch: any) => {
 const mapStateToProps = (state: State) => {
     return {
         userKey: state.user.key,
-        blisApps: state.apps
+        apps: state.apps.all
     }
 }
 

@@ -22,8 +22,7 @@ export type LogDialogState = {
     all: LogDialog[]
 }
 export type AppState = {
-    all: BlisAppBase[],
-    current: BlisAppBase
+    all: BlisAppBase[]
 }
 export type BotState = {
     botInfo: BotInfo
