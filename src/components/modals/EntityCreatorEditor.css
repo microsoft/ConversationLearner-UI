@@ -1,11 +1,3 @@
 .blis-entity-creator-checkbox {
     margin-bottom: 0.6em;
 }
-
-.blis-entity-example {
-    display: grid;
-    grid-template-columns: min-content 1fr;
-}
-.blis-entity-example dt {
-    margin: 0;
-}

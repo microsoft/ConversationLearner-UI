@@ -41,7 +41,7 @@ let columns: OF.IColumn[] = [
         isResizable: true
     },
     {
-        key: 'score',
+        key: 'actionScore',
         name: 'Score',
         fieldName: 'score',
         minWidth: 80,
@@ -51,7 +51,7 @@ let columns: OF.IColumn[] = [
         isSortedDescending: true
     },
     {
-        key: 'entities',
+        key: 'actionEntities',
         name: 'Entities',
         fieldName: 'entities',
         minWidth: 100,
@@ -367,7 +367,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                         componentRef={ref}
                     />
                 )
-            case 'score':
+            case 'actionScore':
                 if (fieldContent) {
                     // No scores in TrainDialogs
                     if (this.props.dialogType == DialogType.TRAINDIALOG) {
@@ -387,17 +387,17 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                             "Training...";
                 }
                 break;
-            case 'entities':
+            case 'actionEntities':
                 return this.renderEntityRequirements(action.actionId);
-            case 'type':
+            case 'actionType':
                 return action.metadata.actionType;
-            case 'wait':
+            case 'isTerminal':
                 if (fieldContent == true) {
                     return <span className="ms-Icon ms-Icon--CheckMark checkIcon" aria-hidden="true"></span>;
                 } else {
                     return <span className="ms-Icon ms-Icon--Remove notFoundIcon" aria-hidden="true"></span>;
                 }
-            case 'arguments':
+            case 'actionArguments':
                 let args = ModelUtils.GetArguments(item);
                 if (args) {
                     return (
@@ -410,7 +410,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                     )
                 }
                 return <span className="ms-Icon ms-Icon--Remove notFoundIcon" aria-hidden="true"></span>;
-            case 'payload':
+            case 'actionResponse':
                 fieldContent = ModelUtils.GetPrimaryPayload(item);
             default:
                 break;
