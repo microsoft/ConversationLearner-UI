@@ -60,7 +60,13 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
         const localePreBuiltEntities = PreBuiltEntities
             .find(obj => obj.locale === currentAppLocale)
 
-        const localePreBuildOptions = localePreBuiltEntities.preBuiltEntities
+        // Filter out one that have already been used
+        const unusedPreBuilts = localePreBuiltEntities.preBuiltEntities
+            .filter(bp => {
+                return !this.props.entities.find(e => e.entityType === bp);
+            })
+
+        const localePreBuildOptions = unusedPreBuilts
             .map<BlisDropdownOption>(entityName =>
                 ({
                     key: entityName,
@@ -240,7 +246,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                         label="Programmatic Only"
                         defaultChecked={this.state.isProgrammaticVal}
                         onChange={this.onChangeProgrammatic}
-                        disabled={this.state.editing || this.state.entityTypeVal != NEW_ENTITY}
+                        disabled={this.state.editing || this.state.entityTypeVal !== NEW_ENTITY}
                     />
                     <div className="ms-fontSize-s ms-fontColor-neutralSecondary">Entity only set by code. &nbsp;
                             <OF.TooltipHost
