@@ -4,7 +4,9 @@ import { connect } from 'react-redux';
 import { returntypeof } from 'react-redux-typescript';
 import { ModelUtils } from 'blis-models';
 import { State } from '../../types'
-import { TrainScorerStep, Memory, ScoredBase, ScoreInput, ScoreResponse, ActionBase, ScoredAction, UnscoredAction, ScoreReason, DialogType } from 'blis-models';
+import { 
+    TrainScorerStep, Memory, ScoredBase, ScoreInput, ScoreResponse, 
+    ActionBase, ScoredAction, UnscoredAction, ScoreReason, DialogType } from 'blis-models';
 import { toggleAutoTeach } from '../../actions/teachActions'
 import { PrimaryButton } from 'office-ui-fabric-react';
 import { DialogMode } from '../../types/const'
@@ -12,7 +14,7 @@ import * as OF from 'office-ui-fabric-react';
 import ActionCreatorEditor from './ActionCreatorEditor'
 import { onRenderDetailsHeader } from '../ToolTips'
 
-const ACTION_BUTTON = "action_button";
+const ACTION_BUTTON = 'action_button';
 
 let columns: OF.IColumn[] = [
     {
@@ -107,7 +109,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         this.focusPrimaryButton = this.focusPrimaryButton.bind(this);
     }
     componentWillReceiveProps(newProps: Props) {
-        if (this.props.scoreResponse != newProps.scoreResponse) {
+        if (this.props.scoreResponse !== newProps.scoreResponse) {
 
             // Note any newly added action
             let newAction = null;
@@ -115,8 +117,8 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             {
                 // Find the new action
                 newAction = newProps.actions.filter(na => {
-                    let fa = this.props.actions.find(a => a.actionId == na.actionId);
-                    return fa == undefined;
+                    let fa = this.props.actions.find(a => a.actionId === na.actionId);
+                    return fa === undefined;
                 })[0];
             }
             this.setState({
@@ -136,14 +138,15 @@ class ActionScorer extends React.Component<Props, ComponentState> {
     }
     autoSelect() {
         // If not in interactive mode select action automatically
-        if (this.props.autoTeach && this.props.dialogMode == DialogMode.Scorer) {
+        if (this.props.autoTeach && this.props.dialogMode === DialogMode.Scorer) {
 
-            let actions = (this.props.scoreResponse.scoredActions as ScoredBase[]).concat(this.props.scoreResponse.unscoredActions) || [];
+            let actions = (this.props.scoreResponse.scoredActions as ScoredBase[])
+                .concat(this.props.scoreResponse.unscoredActions) || [];
             // Since actions are sorted by score descending (max first), assume first scored action is the "best" action
             let bestAction = actions[0];
 
             // Make sure there is an available aciont
-            if ((bestAction as UnscoredAction).reason == ScoreReason.NotAvailable) {
+            if ((bestAction as UnscoredAction).reason === ScoreReason.NotAvailable) {
                 // If none available auto teach isn't possible.  User must create a new action
                 this.props.toggleAutoTeach(false);
                 return;
@@ -203,24 +206,23 @@ class ActionScorer extends React.Component<Props, ComponentState> {
     }
     getValue(scoredBase: ScoredBase, col: OF.IColumn): any {
         let value = scoredBase[col.fieldName]
-        if (col.fieldName == "score") {
+        if (col.fieldName === 'score') {
             // Sort new actions to the top
-            if (this.state.newAction && this.state.newAction.actionId == scoredBase.actionId)
-            {
+            if (this.state.newAction && this.state.newAction.actionId === scoredBase.actionId) {
                 return 100;
-            }
-            else if (!scoredBase[col.fieldName]) {
-                if (scoredBase["reason"] == ScoreReason.NotAvailable) {
+            } else if (!scoredBase[col.fieldName]) {
+                if (scoredBase['reason'] === ScoreReason.NotAvailable) {
                     return -100;
-                }
-                else {  // notScorable
+                } else {  // notScorable
                     return -1;
                 }
             }
         }
-        if (!value) value = "";
+        if (!value) {
+            value = '';
+        }
 
-        if (typeof value == 'string' || value instanceof String) {
+        if (typeof value === 'string' || value instanceof String) {
             return value.toUpperCase();
         }
         return value;
@@ -231,10 +233,9 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         let scoreResponse = this.props.scoreResponse;
         if (scoreResponse.scoredActions && scoreResponse.scoredActions.length > 0) {
             actionId = scoreResponse.scoredActions[0].actionId;
-        }
-        else if (scoreResponse.unscoredActions) {
+        } else if (scoreResponse.unscoredActions) {
             for (let unscoredAction of scoreResponse.unscoredActions) {
-                if (unscoredAction.reason == ScoreReason.NotScorable) {
+                if (unscoredAction.reason === ScoreReason.NotScorable) {
                     actionId = unscoredAction.actionId;
                     break;
                 }
@@ -246,9 +247,9 @@ class ActionScorer extends React.Component<Props, ComponentState> {
     }
     handleActionSelection(actionId: string) {
 
-        let scoredAction = this.props.scoreResponse.scoredActions.find(a => a.actionId == actionId);
+        let scoredAction = this.props.scoreResponse.scoredActions.find(a => a.actionId === actionId);
         if (!scoredAction) {
-            let unscoredAction = this.props.scoreResponse.unscoredActions.find(a => a.actionId == actionId);
+            let unscoredAction = this.props.scoreResponse.unscoredActions.find(a => a.actionId === actionId);
             scoredAction = new ScoredAction(unscoredAction);
         }
         let trainScorerStep = new TrainScorerStep(
@@ -264,18 +265,18 @@ class ActionScorer extends React.Component<Props, ComponentState> {
 
     /** Check if entity is in memory and return it's name */
     entityInMemory(entityId: string): { match: boolean, name: string } {
-        let entity = this.props.entities.filter(e => e.entityId == entityId)[0];
+        let entity = this.props.entities.filter(e => e.entityId === entityId)[0];
 
         // If entity is null - there's a bug somewhere
         if (!entity) {
-            return { match: false, name: "ERROR" };
+            return { match: false, name: 'ERROR' };
         }
 
-        let memory = this.props.memories.filter(m => m.entityName == entity.entityName)[0];
+        let memory = this.props.memories.filter(m => m.entityName === entity.entityName)[0];
         return { match: (memory != null), name: entity.entityName };
     }
     renderEntityRequirements(actionId: string) {
-        let action = this.props.actions.filter(a => a.actionId == actionId)[0];
+        let action = this.props.actions.filter(a => a.actionId === actionId)[0];
 
         // If action is null - there's a bug somewhere
         if (!action) {
@@ -285,11 +286,13 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         let items = [];
         for (let entityId of action.requiredEntities) {
             let found = this.entityInMemory(entityId);
-            items.push({ name: found.name, type: found.match ? "blis-entity blis-entity--match" : "blis-entity--mismatch", neg: false });
+            items.push({ name: found.name, type: found.match ? 
+                "blis-entity blis-entity--match" : "blis-entity--mismatch", neg: false });
         }
         for (let entityId of action.negativeEntities) {
             let found = this.entityInMemory(entityId);
-            items.push({ name: found.name, type: found.match ? "blis-entity blis-entity--mismatch" : "blis-entity blis-entity--match", neg: true });
+            items.push({ name: found.name, type: found.match ? 
+                "blis-entity blis-entity--mismatch" : "blis-entity blis-entity--match", neg: true });
         }
         return (
             <OF.List
@@ -301,7 +304,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         )
     }
     // Returns true if Action is available given Entities in Memory
-    isAvailable(action: ActionBase) : boolean {
+    isAvailable(action: ActionBase): boolean {
 
         for (let entityId of action.requiredEntities) {
             let found = this.entityInMemory(entityId);
@@ -317,11 +320,11 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         }
         return true;
     }
-    calculateReason(unscoredAction: UnscoredAction) : ScoreReason {
+    calculateReason(unscoredAction: UnscoredAction): ScoreReason {
 
-        if (!unscoredAction.reason || unscoredAction.reason == ScoreReason.NotCalculated) {
+        if (!unscoredAction.reason || unscoredAction.reason === ScoreReason.NotCalculated) {
 
-            let action = this.props.actions.filter((a: ActionBase) => a.actionId == unscoredAction.actionId)[0];
+            let action = this.props.actions.filter((a: ActionBase) => a.actionId === unscoredAction.actionId)[0];
 
             // If action is null - there's a bug somewhere
             if (!action) {
@@ -339,10 +342,10 @@ class ActionScorer extends React.Component<Props, ComponentState> {
     renderItemColumn(item?: any, index?: number, column?: OF.IColumn) {
 
         // Null is action create button
-        if (item == ACTION_BUTTON) {
-            if (column.key == 'select') {
+        if (item === ACTION_BUTTON) {
+            if (column.key === 'select') {
                 // Will focus on new action button if no scores
-                let ref = (index == 0) ? ((ref: any) => { this.primaryScoreButton = ref }) : null;
+                let ref = (index === 0) ? ((ref: any) => { this.primaryScoreButton = ref }) : null;
                 return (
                     <PrimaryButton
                         onClick={this.handleOpenActionModal}
@@ -353,16 +356,16 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                     />
                 )
             } else {
-                return "";
+                return '';
             }
         }
         let action = item as ScoredBase;
         let fieldContent = action[column.fieldName];
         switch (column.key) {
             case 'select':
-                let buttonText = (this.props.dialogType != DialogType.TEACH && index == 0) ? "Selected" : "Select";
+                let buttonText = (this.props.dialogType !== DialogType.TEACH && index === 0) ? "Selected" : "Select";
                 let reason = (action as UnscoredAction).reason;
-                if (reason == ScoreReason.NotAvailable) {
+                if (reason === ScoreReason.NotAvailable) {
                     return (
                         <PrimaryButton
                             disabled={true}
@@ -371,7 +374,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                         />
                     )
                 }
-                let ref = (index == 0) ? ((ref: any) => { this.primaryScoreButton = ref }) : null;
+                let ref = (index === 0) ? ((ref: any) => { this.primaryScoreButton = ref }) : null;
                 return (
 
                     <PrimaryButton
@@ -384,20 +387,19 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             case 'actionScore':
                 if (fieldContent) {
                     // No scores in TrainDialogs
-                    if (this.props.dialogType == DialogType.TRAINDIALOG) {
-                        fieldContent = "";
+                    if (this.props.dialogType === DialogType.TRAINDIALOG) {
+                        fieldContent = '';
                     } else {
                         fieldContent = (fieldContent * 100).toFixed(1) + "%"
                     }
                 } else if (this.isMasked(action.actionId)) {
                     fieldContent = "Masked"
-                }
-                else {
+                } else {
                     let reason = (action as UnscoredAction).reason;
-                    fieldContent = (reason == ScoreReason.NotAvailable) ?
+                    fieldContent = (reason === ScoreReason.NotAvailable) ?
                         "Disqualified" :
-                        (this.props.dialogType != DialogType.TEACH) ?
-                            "" :
+                        (this.props.dialogType !== DialogType.TEACH) ?
+                            '' :
                             "Training...";
                 }
                 break;
@@ -406,10 +408,10 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             case 'actionType':
                 return action.metadata.actionType;
             case 'isTerminal':
-                if (fieldContent == true) {
-                    return <span className="ms-Icon blis-icon ms-Icon--CheckMark checkIcon" aria-hidden="true"></span>;
+                if (fieldContent === true) {
+                    return <span className="ms-Icon blis-icon ms-Icon--CheckMark checkIcon" aria-hidden="true"/>;
                 } else {
-                    return <span className="ms-Icon blis-icon ms-Icon--Remove notFoundIcon" aria-hidden="true"></span>;
+                    return <span className="ms-Icon blis-icon ms-Icon--Remove notFoundIcon" aria-hidden="true"/>;
                 }
             case 'actionArguments':
                 let args = ModelUtils.GetArguments(item);
@@ -423,9 +425,10 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                         />
                     )
                 }
-                return <span className="ms-Icon ms-Icon--Remove notFoundIcon" aria-hidden="true"></span>;
+                return <span className="ms-Icon ms-Icon--Remove notFoundIcon" aria-hidden="true"/>;
             case 'actionResponse':
                 fieldContent = ModelUtils.GetPrimaryPayload(item);
+                break;
             default:
                 break;
         }
@@ -436,11 +439,12 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             return null;
         }
 
-        let scoredItems = (this.props.scoreResponse.scoredActions as ScoredBase[]).concat(this.props.scoreResponse.unscoredActions) || [];
+        let scoredItems = (this.props.scoreResponse.scoredActions as ScoredBase[])
+            .concat(this.props.scoreResponse.unscoredActions) || [];
 
         // Need to reassemble to scored item has full action info and reason
         scoredItems = scoredItems.map(e => {
-            let action = this.props.actions.find(ee => ee.actionId == e.actionId);
+            let action = this.props.actions.find(ee => ee.actionId === e.actionId);
             let score = (e as ScoredAction).score;
             let reason = score ? null : this.calculateReason(e as UnscoredAction);
             return { ...action, reason: reason, score: score }
@@ -448,7 +452,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
 
         // Add any new actions that weren't included in scores
         // NOTE: This will go away when we always rescore the step
-        let missingActions = this.props.actions.filter(a => scoredItems.find(si => si.actionId == a.actionId) == null);
+        let missingActions = this.props.actions.filter(a => scoredItems.find(si => si.actionId === a.actionId) == null);
         let missingItems = missingActions.map(a => {
             let action = a;
             let score = 0;
@@ -466,8 +470,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
 
                 if (this.state.sortColumn.isSortedDescending) {
                     return firstValue > secondValue ? -1 : 1;
-                }
-                else {
+                } else {
                     return firstValue > secondValue ? 1 : -1;
                 }
             });
@@ -480,11 +483,11 @@ class ActionScorer extends React.Component<Props, ComponentState> {
     render() {
         // In teach mode, hide scores after selection
         // so they can't be reselected for non-terminal actions
-        if (this.props.dialogType == DialogType.TEACH && this.state.haveEdited) {
+        if (this.props.dialogType === DialogType.TEACH && this.state.haveEdited) {
             return null;
         }
 
-        let scores : (ScoredBase | string)[] = this.getScoredItems();
+        let scores: (ScoredBase | string)[] = this.getScoredItems();
 
         // If editing allowed and Action creation button
         if (!this.props.autoTeach) {
@@ -500,8 +503,9 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                     checkboxVisibility={OF.CheckboxVisibility.hidden}
                     onRenderItemColumn={this.renderItemColumn}
                     onColumnHeaderClick={this.onColumnClick}
-                    onRenderDetailsHeader={(detailsHeaderProps: OF.IDetailsHeaderProps, 
-                                        defaultRender: OF.IRenderFunction<OF.IDetailsHeaderProps>) => 
+                    onRenderDetailsHeader={(
+                        detailsHeaderProps: OF.IDetailsHeaderProps, 
+                        defaultRender: OF.IRenderFunction<OF.IDetailsHeaderProps>) => 
                         onRenderDetailsHeader(detailsHeaderProps, defaultRender)}
                 />
                 <ActionCreatorEditor
