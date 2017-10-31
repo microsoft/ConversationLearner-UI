@@ -4,86 +4,101 @@ import { connect } from 'react-redux';
 import { returntypeof } from 'react-redux-typescript';
 import { ModelUtils } from 'blis-models';
 import { State } from '../../types'
-import { 
-    BlisAppBase, TrainScorerStep, Memory, ScoredBase, ScoreInput, ScoreResponse, 
-    ActionBase, ScoredAction, UnscoredAction, ScoreReason, DialogType } from 'blis-models';
+import {
+    BlisAppBase, TrainScorerStep, Memory, ScoredBase, ScoreInput, ScoreResponse,
+    ActionBase, ScoredAction, UnscoredAction, ScoreReason, DialogType
+} from 'blis-models';
 import { toggleAutoTeach } from '../../actions/teachActions'
 import { PrimaryButton } from 'office-ui-fabric-react';
 import { DialogMode } from '../../types/const'
 import * as OF from 'office-ui-fabric-react';
 import ActionCreatorEditor from './ActionCreatorEditor'
 import { onRenderDetailsHeader } from '../ToolTips'
+import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
+import { FM } from '../../react-intl-messages'
 
 const ACTION_BUTTON = 'action_button';
 
-let columns: OF.IColumn[] = [
-    {
-        key: 'select',
-        name: '',
-        fieldName: 'actionId',
-        minWidth: 80,
-        maxWidth: 80,
-        isResizable: true
-    },
-    {
-        key: 'actionResponse',
-        name: 'Response',
-        fieldName: 'actionResponse',
-        minWidth: 100,
-        maxWidth: 500,
-        isMultiline: true,
-        isResizable: true,
-    },
-    {
-        key: 'actionArguments',
-        name: 'Arguments',
-        fieldName: 'actionArguments',
-        minWidth: 80,
-        maxWidth: 300,
-        isResizable: true
-    },
-    {
-        key: 'actionScore',
-        name: 'Score',
-        fieldName: 'score',
-        minWidth: 80,
-        maxWidth: 80,
-        isResizable: true,
-        isSorted: true,
-        isSortedDescending: true
-    },
-    {
-        key: 'actionEntities',
-        name: 'Entities',
-        fieldName: 'entities',
-        minWidth: 100,
-        maxWidth: 300,
-        isResizable: true
-    },
-    {
-        key: 'isTerminal',
-        name: 'Wait',
-        fieldName: 'isTerminal',
-        minWidth: 50,
-        maxWidth: 50,
-        isResizable: true
-    },
-    {
-        key: 'actionType',
-        name: 'Type',
-        fieldName: 'actionType',
-        minWidth: 80,
-        maxWidth: 80,
-        isResizable: true
-    }
-]
-
-const initState: ComponentState = {
-    actionModalOpen: false,
-    columns: columns,
-    sortColumn: columns[3], // "score"
-    haveEdited: false,
-    newAction: null
+function getColumns(intl: InjectedIntl): OF.IColumn[] {
+    return [
+        {
+            key: 'select',
+            name: '',
+            fieldName: 'actionId',
+            minWidth: 80,
+            maxWidth: 80,
+            isResizable: true
+        },
+        {
+            key: 'actionResponse',
+            name: intl.formatMessage({
+                id: FM.ACTIONSCORER_COLUMNS_RESPONSE,
+                defaultMessage: 'Response'
+            }),
+            fieldName: 'actionResponse',
+            minWidth: 100,
+            maxWidth: 500,
+            isMultiline: true,
+            isResizable: true,
+        },
+        {
+            key: 'actionArguments',
+            name: intl.formatMessage({
+                id: FM.ACTIONSCORER_COLUMNS_ARGUMENTS,
+                defaultMessage: 'Arguments'
+            }),
+            fieldName: 'actionArguments',
+            minWidth: 80,
+            maxWidth: 300,
+            isResizable: true
+        },
+        {
+            key: 'actionScore',
+            name: intl.formatMessage({
+                id: FM.ACTIONSCORER_COLUMNS_SCORE,
+                defaultMessage: 'Score'
+            }),
+            fieldName: 'score',
+            minWidth: 80,
+            maxWidth: 80,
+            isResizable: true,
+            isSorted: true,
+            isSortedDescending: true
+        },
+        {
+            key: 'actionEntities',
+            name: intl.formatMessage({
+                id: FM.ACTIONSCORER_COLUMNS_ENTITIES,
+                defaultMessage: 'Entities'
+            }),
+            fieldName: 'entities',
+            minWidth: 100,
+            maxWidth: 300,
+            isResizable: true
+        },
+        {
+            key: 'isTerminal',
+            name: intl.formatMessage({
+                id: FM.ACTIONSCORER_COLUMNS_ISTERMINAL,
+                defaultMessage: 'Wait'
+            }),
+            fieldName: 'isTerminal',
+            minWidth: 50,
+            maxWidth: 50,
+            isResizable: true
+        },
+        {
+            key: 'actionType',
+            name: intl.formatMessage({
+                id: FM.ACTIONSCORER_COLUMNS_TYPE,
+                defaultMessage: 'Type'
+            }),
+            fieldName: 'actionType',
+            minWidth: 80,
+            maxWidth: 80,
+            isResizable: true
+        }
+    ]
 }
 
 interface ComponentState {
@@ -99,7 +114,15 @@ class ActionScorer extends React.Component<Props, ComponentState> {
 
     constructor(p: Props) {
         super(p);
-        this.state = initState;
+
+        const columns = getColumns(this.props.intl)
+        this.state = {
+            actionModalOpen: false,
+            columns,
+            sortColumn: columns[3], // "score"
+            haveEdited: false,
+            newAction: null
+        };
         this.handleActionSelection = this.handleActionSelection.bind(this);
         this.handleDefaultSelection = this.handleDefaultSelection.bind(this);
         this.handleOpenActionModal = this.handleOpenActionModal.bind(this);
@@ -113,8 +136,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
 
             // Note any newly added action
             let newAction = null;
-            if (newProps.actions.length > this.props.actions.length)
-            {
+            if (newProps.actions.length > this.props.actions.length) {
                 // Find the new action
                 newAction = newProps.actions.filter(na => {
                     let fa = this.props.actions.find(a => a.actionId === na.actionId);
@@ -125,8 +147,9 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                 haveEdited: false,
                 newAction: newAction
             });
-        } 
+        }
     }
+    // TODO: Why invoke autoSelect on both Update and DidUpdate?!
     componentUpdate() {
         this.autoSelect();
     }
@@ -159,7 +182,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             let isAvailable = this.isAvailable(this.state.newAction);
             if (isAvailable) {
                 this.handleActionSelection(this.state.newAction.actionId);
-                this.setState({newAction: null});
+                this.setState({ newAction: null });
             }
 
         } else if (!this.state.actionModalOpen) {
@@ -259,7 +282,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                 scoredAction: scoredAction
             });
 
-        this.setState({haveEdited: true});
+        this.setState({ haveEdited: true });
         this.props.onActionSelected(trainScorerStep);
     }
 
@@ -286,13 +309,17 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         let items = [];
         for (let entityId of action.requiredEntities) {
             let found = this.entityInMemory(entityId);
-            items.push({ name: found.name, type: found.match ? 
-                "blis-entity blis-entity--match" : "blis-entity--mismatch", neg: false });
+            items.push({
+                name: found.name, type: found.match ?
+                    "blis-entity blis-entity--match" : "blis-entity--mismatch", neg: false
+            });
         }
         for (let entityId of action.negativeEntities) {
             let found = this.entityInMemory(entityId);
-            items.push({ name: found.name, type: found.match ? 
-                "blis-entity blis-entity--mismatch" : "blis-entity blis-entity--match", neg: true });
+            items.push({
+                name: found.name, type: found.match ?
+                    "blis-entity blis-entity--mismatch" : "blis-entity blis-entity--match", neg: true
+            });
         }
         return (
             <OF.List
@@ -409,9 +436,9 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                 return action.metadata.actionType;
             case 'isTerminal':
                 if (fieldContent === true) {
-                    return <span className="ms-Icon blis-icon ms-Icon--CheckMark checkIcon" aria-hidden="true"/>;
+                    return <span className="ms-Icon blis-icon ms-Icon--CheckMark checkIcon" aria-hidden="true" />;
                 } else {
-                    return <span className="ms-Icon blis-icon ms-Icon--Remove notFoundIcon" aria-hidden="true"/>;
+                    return <span className="ms-Icon blis-icon ms-Icon--Remove notFoundIcon" aria-hidden="true" />;
                 }
             case 'actionArguments':
                 let args = ModelUtils.GetArguments(item);
@@ -425,7 +452,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                         />
                     )
                 }
-                return <span className="ms-Icon ms-Icon--Remove notFoundIcon" aria-hidden="true"/>;
+                return <span className="ms-Icon ms-Icon--Remove notFoundIcon" aria-hidden="true" />;
             case 'actionResponse':
                 fieldContent = ModelUtils.GetPrimaryPayload(item);
                 break;
@@ -504,8 +531,8 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                     onRenderItemColumn={this.renderItemColumn}
                     onColumnHeaderClick={this.onColumnClick}
                     onRenderDetailsHeader={(
-                        detailsHeaderProps: OF.IDetailsHeaderProps, 
-                        defaultRender: OF.IRenderFunction<OF.IDetailsHeaderProps>) => 
+                        detailsHeaderProps: OF.IDetailsHeaderProps,
+                        defaultRender: OF.IRenderFunction<OF.IDetailsHeaderProps>) =>
                         onRenderDetailsHeader(detailsHeaderProps, defaultRender)}
                 />
                 <ActionCreatorEditor
@@ -513,7 +540,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                     open={this.state.actionModalOpen}
                     blisAction={null}
                     handleClose={this.handleCloseActionModal}
-                    handleOpenDeleteModal={()=>{}}
+                    handleOpenDeleteModal={() => { }}
                 />
             </div>
         )
@@ -548,6 +575,6 @@ const mapStateToProps = (state: State, ownProps: any) => {
 // Props types inferred from mapStateToProps & dispatchToProps
 const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
-type Props = typeof stateProps & typeof dispatchProps & ReceivedProps;
+type Props = typeof stateProps & typeof dispatchProps & ReceivedProps & InjectedIntlProps
 
-export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(ActionScorer);
+export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(ActionScorer))

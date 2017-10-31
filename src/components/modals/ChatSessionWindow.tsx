@@ -11,6 +11,8 @@ import { deleteChatSessionAsync } from '../../actions/deleteActions'
 import { Activity } from 'botframework-directlinejs';
 // TODO: Investigate if this can be removed in favor of local state
 import { addMessageToChatConversationStack } from '../../actions/displayActions';
+import { FM } from '../../react-intl-messages'
+import { injectIntl, InjectedIntlProps } from 'react-intl'
 
 interface ComponentState {
 }
@@ -31,6 +33,7 @@ class SessionWindow extends React.Component<Props, ComponentState> {
     }
 
     render() {
+        const { intl } = this.props
         return (
             <Modal
                 isOpen={this.props.open && this.props.error == null}
@@ -62,8 +65,14 @@ class SessionWindow extends React.Component<Props, ComponentState> {
                         <div className="blis-modal-buttons_secondary">
                             <PrimaryButton
                                 onClick={() => this.onClickDone()}
-                                ariaDescription='Done Testing'
-                                text='Done Testing'
+                                ariaDescription={intl.formatMessage({
+                                    id: FM.CHATSESSIONWINDOW_PRIMARYBUTTON_ARIADESCRIPTION,
+                                    defaultMessage: 'Done Testing'
+                                })}
+                                text={intl.formatMessage({
+                                    id: FM.CHATSESSIONWINDOW_PRIMARYBUTTON_TEXT,
+                                    defaultMessage: 'Done Testing'
+                                })}
                             />
                         </div>
                     </div>
@@ -95,6 +104,6 @@ export interface ReceivedProps {
 // Props types inferred from mapStateToProps & dispatchToProps
 const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
-type Props = typeof stateProps & typeof dispatchProps & ReceivedProps;
+type Props = typeof stateProps & typeof dispatchProps & ReceivedProps & InjectedIntlProps
 
-export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(SessionWindow);
+export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(SessionWindow))

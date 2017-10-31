@@ -6,6 +6,8 @@ import { State } from '../types';
 import { returntypeof } from 'react-redux-typescript';
 import { runExtractorAsync } from '../actions/teachActions';
 import { TextField } from 'office-ui-fabric-react';
+import { injectIntl, InjectedIntlProps } from 'react-intl'
+import { FM } from '../react-intl-messages'
 
 const initState = {
     variationValue: '',
@@ -31,7 +33,7 @@ class TextVariationCreator extends React.Component<Props, ComponentState> {
     handleAddVariation() {
         let userInput = new UserInput({ text: this.state.variationValue })
         this.props.runExtractorAsync(
-            this.props.user.key, this.props.appId, this.props.extractType, 
+            this.props.user.key, this.props.appId, this.props.extractType,
             this.props.sessionId, this.props.roundIndex, userInput);
         this.setState({
             variationValue: ''
@@ -39,13 +41,17 @@ class TextVariationCreator extends React.Component<Props, ComponentState> {
         this.props.onAddVariation();
     }
     render() {
+        const { intl } = this.props
         return (
             <div className='teachVariationBox'>
                 <div className='teachAddVariation'>
                     <TextField
                         value={this.state.variationValue}
                         onChanged={this.textChanged}
-                        placeholder="Add alternative input..."
+                        placeholder={intl.formatMessage({
+                            id: FM.TEXTVARIATION_PLACEHOLDER,
+                            defaultMessage: "Add alternative input..."
+                        })}
                         onKeyPress={(ev) => {
                             if (ev.key === 'Enter') {
                                 this.handleAddVariation();
@@ -81,6 +87,6 @@ export interface ReceivedProps {
 // Props types inferred from mapStateToProps & dispatchToProps
 const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
-type Props = typeof stateProps & typeof dispatchProps & ReceivedProps;
+type Props = typeof stateProps & typeof dispatchProps & ReceivedProps & InjectedIntlProps
 
-export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(TextVariationCreator);
+export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(TextVariationCreator))

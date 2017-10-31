@@ -6,6 +6,8 @@ import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import * as OF from 'office-ui-fabric-react';
 import { clearErrorDisplay } from '../../actions/displayActions'
 import { State } from '../../types'
+import { FM } from '../../react-intl-messages'
+import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 
 class UIError extends React.Component<Props, {}> {
     constructor(p: any) {
@@ -17,6 +19,7 @@ class UIError extends React.Component<Props, {}> {
         this.props.clearErrorDisplay();
     }
     render() {
+        const { intl } = this.props
         let message = this.props.error.message ?
             <div className='ms-font-m ms-fontWeight-semilight'>{this.props.error.message}</div> :
             null;
@@ -28,7 +31,12 @@ class UIError extends React.Component<Props, {}> {
                 containerClassName='blis-modal blis-modal--small blis-modal--border'
             >
                 <div className='blis-modal_header'>
-                    <span className='ms-font-xxl ms-fontWeight-semilight'>Error</span>
+                    <span className='ms-font-xxl ms-fontWeight-semilight'>
+                        <FormattedMessage
+                            id={FM.ERROR_TITLE}
+                            defaultMessage="Error"
+                        />
+                    </span>
                 </div>
                 <div className='ms-font-l ms-fontWeight-semilight'>{this.props.error.route} Failed</div>
                 <div className='ms-font-m ms-fontWeight-semilight'>{this.props.error.error}</div>
@@ -36,8 +44,14 @@ class UIError extends React.Component<Props, {}> {
                 <div className='blis-modal_footer'>
                     <OF.PrimaryButton
                         onClick={this.handleClose}
-                        ariaDescription='Ok'
-                        text='Ok'
+                        ariaDescription={intl.formatMessage({
+                            id: FM.ERROR_PRIMARYBUTTON_ARIADESCRIPTION,
+                            defaultMessage: 'Ok'
+                        })}
+                        text={intl.formatMessage({
+                            id: FM.ERROR_PRIMARYBUTTON_TEXT,
+                            defaultMessage: 'Ok'
+                        })}
                     />
                 </div>
             </Modal>
@@ -57,6 +71,6 @@ const mapStateToProps = (state: State) => {
 // Props types inferred from mapStateToProps & dispatchToProps
 const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
-type Props = typeof stateProps & typeof dispatchProps;
+type Props = typeof stateProps & typeof dispatchProps & InjectedIntlProps
 
-export default connect<typeof stateProps, typeof dispatchProps, {}>(mapStateToProps, mapDispatchToProps)(UIError);
+export default connect<typeof stateProps, typeof dispatchProps, {}>(mapStateToProps, mapDispatchToProps)(injectIntl(UIError))

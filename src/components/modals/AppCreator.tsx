@@ -7,6 +7,23 @@ import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { PrimaryButton, DefaultButton, Dropdown, IDropdownOption, TextField, Label } from 'office-ui-fabric-react';
 import { BlisAppBase, BlisAppMetaData } from 'blis-models'
 import { State } from '../../types'
+import { FM } from '../../react-intl-messages'
+import { injectIntl, InjectedIntlProps, defineMessages, FormattedMessage } from 'react-intl'
+
+const messages = defineMessages({
+    fieldErrorRequired: {
+        id: FM.APPCREATOR_FIELDERROR_REQUIREDVALUE,
+        defaultMessage: "Required Value"
+    },
+    fieldErrorAlphanumeric: {
+        id: FM.APPCREATOR_FIELDERROR_ALPHANUMERIC,
+        defaultMessage: 'Application name may only contain alphanumeric characters'
+    },
+    fieldErrorDistinct: {
+        id: FM.APPCREATOR_FIELDERROR_DISTINCT,
+        defaultMessage: 'Name is already in use.'
+    }
+})
 
 interface ComponentState {
     appNameVal: string
@@ -102,28 +119,30 @@ class AppCreator extends React.Component<Props, ComponentState> {
     }
 
     onGetNameErrorMessage(value: string): string {
+        const { intl } = this.props
         if (value.length === 0) {
-            return "Required Value";
+            return intl.formatMessage(messages.fieldErrorRequired)
         }
 
         if (!/^[a-zA-Z0-9- ]+$/.test(value)) {
-            return "Application name may only contain alphanumeric characters";
+            return intl.formatMessage(messages.fieldErrorAlphanumeric)
         }
 
         // Check that name isn't in use
-        let foundApp = this.props.apps.all.find(a => a.appName == value);
+        let foundApp = this.props.apps.find(a => a.appName == value)
         if (foundApp) {
-            return "Name is already in use.";
+            return intl.formatMessage(messages.fieldErrorDistinct)
         }
 
-        return "";
+        return ""
     }
 
     onGetPasswordErrorMessage(value: string): string {
-        return value ? "" : "Required Value";
+        return value ? "" : this.props.intl.formatMessage(messages.fieldErrorRequired);
     }
 
     render() {
+        const { intl } = this.props
         return (
             <Modal
                 isOpen={this.props.open}
@@ -132,26 +151,53 @@ class AppCreator extends React.Component<Props, ComponentState> {
                 containerClassName='blis-modal blis-modal--small blis-modal--border'
             >
                 <div className='blis-modal_header'>
-                    <span className='ms-font-xxl ms-fontWeight-semilight'>Create a BLIS App</span>
+                    <span className='ms-font-xxl ms-fontWeight-semilight'>
+                        <FormattedMessage
+                            id={FM.APPCREATOR_TITLE}
+                            defaultMessage="Create a BLIS App"
+                        />
+                    </span>
                 </div>
                 <div>
                     <TextField
                         onGetErrorMessage={value => this.onGetNameErrorMessage(value)}
                         onChanged={text => this.nameChanged(text)}
-                        label="Name"
-                        placeholder="Application Name..."
+                        label={intl.formatMessage({
+                            id: FM.APPCREATOR_FIELDS_NAME_LABEL,
+                            defaultMessage: "Name"
+                        })}
+                        placeholder={intl.formatMessage({
+                            id: FM.APPCREATOR_FIELDS_NAME_PLACEHOLDER,
+                            defaultMessage: "Application Name..."
+                        })}
                         onKeyDown={key => this.onKeyDown(key)}
                         value={this.state.appNameVal} />
-                    <Label>LUIS Key <a href="https://www.luis.ai/user/settings" tabIndex={-1} className="ms-font-xs" target="_blank">(Find your key)</a></Label>
+                    <Label>
+                        <FormattedMessage
+                            id={FM.APPCREATOR_FIELDS_LUISKEY_LABEL}
+                            defaultMessage="LUIS Key"
+                        /> <a href="https://www.luis.ai/user/settings" tabIndex={-1} className="ms-font-xs" target="_blank">
+                            (<FormattedMessage
+                                id={FM.APPCREATOR_FIELDS_LUISKEY_HELPTEXT}
+                                defaultMessage="Find your key"
+                            />)
+                        </a>
+                    </Label>
                     <TextField
                         onGetErrorMessage={value => this.onGetPasswordErrorMessage(value)}
                         onChanged={this.luisKeyChanged}
-                        placeholder="Key..."
+                        placeholder={intl.formatMessage({
+                            id: FM.APPCREATOR_FIELDS_LUISKEY_PLACEHOLDER,
+                            defaultMessage: "Key..."
+                        })}
                         type="password"
                         onKeyDown={this.onKeyDown}
                         value={this.state.luisKeyVal} />
                     <Dropdown
-                        label='Locale'
+                        label={intl.formatMessage({
+                            id: FM.APPCREATOR_FIELDS_LOCALE_LABEL,
+                            defaultMessage: 'Locale'
+                        })}
                         defaultSelectedKey={this.state.localeVal}
                         options={this.state.localeOptions}
                         onChanged={this.localeChanged}
@@ -163,13 +209,25 @@ class AppCreator extends React.Component<Props, ComponentState> {
                             <PrimaryButton
                                 disabled={!this.state.appNameVal || !this.state.luisKeyVal}
                                 onClick={this.onClickCreate}
-                                ariaDescription='Create'
-                                text='Create'
+                                ariaDescription={intl.formatMessage({
+                                    id: FM.APPCREATOR_CREATEBUTTON_ARIADESCRIPTION,
+                                    defaultMessage: 'Create'
+                                })}
+                                text={intl.formatMessage({
+                                    id: FM.APPCREATOR_CREATEBUTTON_TEXT,
+                                    defaultMessage: 'Create'
+                                })}
                             />
                             <DefaultButton
                                 onClick={this.onClickCancel}
-                                ariaDescription='Cancel'
-                                text='Cancel'
+                                ariaDescription={intl.formatMessage({
+                                    id: FM.APPCREATOR_CANCELBUTTON_ARIADESCRIPTION,
+                                    defaultMessage: 'Cancel'
+                                })}
+                                text={intl.formatMessage({
+                                    id: FM.APPCREATOR_CANCELBUTTON_TEXT,
+                                    defaultMessage: 'Cancel'
+                                })}
                             />
                         </div>
                     </div>
@@ -185,7 +243,7 @@ const mapDispatchToProps = (dispatch: any) => {
 }
 const mapStateToProps = (state: State) => {
     return {
-        apps: state.apps
+        apps: state.apps.all
     }
 }
 
@@ -198,6 +256,6 @@ export interface ReceivedProps {
 // Props types inferred from mapStateToProps & dispatchToProps
 const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
-type Props = typeof stateProps & typeof dispatchProps & ReceivedProps;
+type Props = typeof stateProps & typeof dispatchProps & ReceivedProps & InjectedIntlProps
 
-export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(AppCreator);
+export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(AppCreator))
