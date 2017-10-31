@@ -5,8 +5,7 @@ import { Reducer } from 'redux'
 import { replace } from '../util'
 
 const initialState: AppState = {
-    all: [],
-    current: null
+    all: []
 };
 
 const appsReducer: Reducer<AppState> = (state = initialState, action: ActionObject): AppState => {
@@ -18,14 +17,11 @@ const appsReducer: Reducer<AppState> = (state = initialState, action: ActionObje
         case AT.CREATE_BLIS_APPLICATION_FULFILLED:
             return { ...state, all: [...state.all, action.blisApp] }
         case AT.SET_CURRENT_BLIS_APP_FULFILLED:
-            return { ...state, current: action.app };
+            return { ...state };
         case AT.DELETE_BLIS_APPLICATION_FULFILLED:
             return { ...state, all: state.all.filter(app => app.appId !== action.blisAppGUID) };
         case AT.EDIT_BLIS_APPLICATION_FULFILLED:
-            return {
-                all: replace(state.all, action.blisApp, app => app.appId),
-                current: action.blisApp
-            }
+            return { ...state, all: replace(state.all, action.blisApp, app => app.appId) }
         default:
             return state;
     }

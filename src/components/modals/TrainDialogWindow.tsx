@@ -134,6 +134,7 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
                         <div className="blis-chatmodal_controls">
                             <div className="blis-chatmodal_admin-controls">
                                 <TrainDialogAdmin
+                                    app={this.props.app}
                                     trainDialog={this.props.trainDialog}
                                     selectedActivity={this.state.selectedActivity}
                                 />

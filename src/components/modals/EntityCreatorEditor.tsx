@@ -10,7 +10,7 @@ import ActionDetailsList from '../ActionDetailsList'
 import { State, PreBuiltEntities } from '../../types';
 import { BlisDropdownOption } from './BlisDropDownOption'
 import { GetTip, TipType } from '../ToolTips'
-import { EntityBase, EntityMetaData, EntityType, ActionBase } from 'blis-models'
+import { BlisAppBase, EntityBase, EntityMetaData, EntityType, ActionBase } from 'blis-models'
 import './EntityCreatorEditor.css'
 
 const NEW_ENTITY = 'New Entity';
@@ -56,7 +56,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
 
     componentWillReceiveProps(p: Props) {
         // Build entity options based on current applicaiton locale
-        const currentAppLocale = this.props.blisApps.current.locale
+        const currentAppLocale = this.props.app.locale
         const localePreBuiltEntities = PreBuiltEntities
             .find(obj => obj.locale === currentAppLocale)
 
@@ -126,7 +126,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
 
     onClickSubmit = () => {
         const entity = this.convertStateToEntity(this.state)
-        let currentAppId = this.props.blisApps.current.appId;
+        let currentAppId = this.props.app.appId
 
         if (this.state.editing === false) {
             this.props.createEntityAsync(this.props.userKey, entity, currentAppId);
@@ -384,7 +384,6 @@ const mapStateToProps = (state: State, ownProps: any) => {
         userKey: state.user.key,
         entities: state.entities,
         actions: state.actions,
-        blisApps: state.apps
     }
 }
 
@@ -393,6 +392,7 @@ export interface ReceivedProps {
     entity: EntityBase | null,
     handleClose: Function,
     entityTypeFilter: EntityType | null,
+    app: BlisAppBase
     handleOpenDeleteModal: (entityId: string) => void
 }
 

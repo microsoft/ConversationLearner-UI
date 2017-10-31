@@ -160,7 +160,7 @@ class AppsList extends React.Component<Props, ComponentState> {
     }
 
     getSortedApplications(): BlisAppBase[] {
-        let sortedApps = this.props.apps.all || [];
+        let sortedApps = this.props.apps
 
         if (this.state.sortColumn) {
             // Sort the items.
@@ -241,11 +241,11 @@ const mapDispatchToProps = (dispatch: any) => {
 }
 const mapStateToProps = (state: State) => {
     return {
-        apps: state.apps
     }
 }
 
 export interface ReceivedProps {
+    apps: BlisAppBase[]
     onCreateApp: (app: BlisAppBase) => void
     onSelectedAppChanged: (app: BlisAppBase) => void
     onClickDeleteApp: (app: BlisAppBase) => void

@@ -172,6 +172,7 @@ class Actions extends React.Component<Props, ComponentState> {
                     })}
                 />
                 <ActionCreatorEditor
+                    app={this.props.app}
                     open={this.state.isActionEditorModalOpen}
                     blisAction={this.state.actionSelected}
                     handleClose={this.onClickCloseActionEditor}

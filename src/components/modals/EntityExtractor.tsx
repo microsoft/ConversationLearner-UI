@@ -3,7 +3,7 @@ import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../../types'
-import { ModelUtils, ExtractResponse, TextVariation, DialogType, EntityType } from 'blis-models'
+import { BlisAppBase, ModelUtils, ExtractResponse, TextVariation, DialogType, EntityType } from 'blis-models'
 import * as OF from 'office-ui-fabric-react';
 import TextVariationCreator from '../TextVariationCreator';
 import ExtractorResponseEditor from '../ExtractorResponseEditor';
@@ -249,7 +249,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         if (canEdit) {
 
             variationCreator = <TextVariationCreator
-                appId={this.props.appId}
+                appId={this.props.app.appId}
                 sessionId={this.props.sessionId}
                 extractType={this.props.extractType}
                 roundIndex={this.props.roundIndex}
@@ -331,11 +331,13 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                 <div>
                     <div className="blis-dialog-creation-buttons">
                         <EntityCreatorEditor
+                            app={this.props.app}
                             open={this.state.entityModalOpen}
                             entity={null}
                             handleClose={this.entityEditorHandleClose}
                             handleOpenDeleteModal={()=>{}}
-                            entityTypeFilter={EntityType.LUIS}/>
+                            entityTypeFilter={EntityType.LUIS}
+                        />
                     </div>
                     {extractDisplay}
                     {variationCreator}
@@ -392,7 +394,7 @@ const mapStateToProps = (state: State, ownProps: any) => {
 }
 
 export interface ReceivedProps {
-    appId: string,
+    app: BlisAppBase,
     extractType: DialogType,
     sessionId: string,
     roundIndex: number,

@@ -12,7 +12,7 @@ import ActionScorer from './ActionScorer';
 import MemoryTable from './MemoryTable';
 import { Activity } from 'botframework-directlinejs'
 import * as OF from 'office-ui-fabric-react';
-import { ActionBase, TrainDialog, TrainRound, ScoreReason, ScoredAction,
+import { ActionBase, BlisAppBase, TrainDialog, TrainRound, ScoreReason, ScoredAction,
     TrainScorerStep, Memory, UnscoredAction, ScoreResponse,
     TextVariation, ExtractResponse, DialogType } from 'blis-models'
 
@@ -104,7 +104,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
         }  
         // Otherwise just save with new text variations, remaining rounds are ok
         else {
-            this.props.editTrainDialogAsync(this.props.user.key, updatedTrainDialog, this.props.appId);
+            this.props.editTrainDialogAsync(this.props.user.key, updatedTrainDialog, this.props.app.appId);
             this.props.clearExtractResponses();
         }
     }    
@@ -143,7 +143,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
 
     onClickSaveCheckYes() {
         // Submit saved extractions
-        this.props.editTrainDialogAsync(this.props.user.key, this.state.saveTrainDialog, this.props.appId);
+        this.props.editTrainDialogAsync(this.props.user.key, this.state.saveTrainDialog, this.props.app.appId);
         this.props.clearExtractResponses();
 
         this.setState({
@@ -269,7 +269,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                         <div>
                             {renderData.round ?
                                 <EntityExtractor
-                                    appId={this.props.appId}
+                                    app={this.props.app}
                                     extractType={DialogType.TRAINDIALOG}
                                     sessionId={this.props.trainDialog.trainDialogId}
                                     roundIndex={this.state.roundIndex}
@@ -289,7 +289,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                         <div className="blis-dialog-admin-title">Action</div>
                         <div>
                                 <ActionScorer
-                                    appId={this.props.appId}
+                                    app={this.props.app}
                                     dialogType={DialogType.TRAINDIALOG}
                                     sessionId={this.props.trainDialog.trainDialogId}
                                     autoTeach={false}
@@ -334,7 +334,6 @@ const mapDispatchToProps = (dispatch: any) => {
 const mapStateToProps = (state: State) => {
     return {
         user: state.user,
-        appId: state.apps.current.appId,
         actions: state.actions,
         entities: state.entities,
         extractResponses: state.teachSessions.extractResponses
@@ -351,6 +350,7 @@ interface ComponentState {
 
 export interface ReceivedProps {
     trainDialog: TrainDialog,
+    app: BlisAppBase
     selectedActivity: Activity
 }
 
