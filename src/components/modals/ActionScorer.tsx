@@ -393,9 +393,9 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                 return action.metadata.actionType;
             case 'isTerminal':
                 if (fieldContent == true) {
-                    return <span className="ms-Icon ms-Icon--CheckMark checkIcon" aria-hidden="true"></span>;
+                    return <span className="ms-Icon blis-icon ms-Icon--CheckMark checkIcon" aria-hidden="true"></span>;
                 } else {
-                    return <span className="ms-Icon ms-Icon--Remove notFoundIcon" aria-hidden="true"></span>;
+                    return <span className="ms-Icon blis-icon ms-Icon--Remove notFoundIcon" aria-hidden="true"></span>;
                 }
             case 'actionArguments':
                 let args = ModelUtils.GetArguments(item);
