@@ -3,7 +3,7 @@ import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
-import { CommandButton } from 'office-ui-fabric-react';
+import * as OF from 'office-ui-fabric-react';
 import { clearErrorDisplay } from '../../actions/displayActions'
 import { State } from '../../types'
 
@@ -34,9 +34,8 @@ class UIError extends React.Component<Props, {}> {
                 <div className='ms-font-m ms-fontWeight-semilight'>{this.props.error.error}</div>
                 {message}
                 <div className='blis-modal_footer'>
-                    <CommandButton
+                    <OF.PrimaryButton
                         onClick={this.handleClose}
-                        className='blis-button--gold'
                         ariaDescription='Ok'
                         text='Ok'
                     />

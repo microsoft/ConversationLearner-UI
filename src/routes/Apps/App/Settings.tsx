@@ -4,7 +4,7 @@ import { editBLISApplicationAsync } from '../../../actions/updateActions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../../../types';
-import { CommandButton, PrimaryButton, TextField, Dropdown, Label, List } from 'office-ui-fabric-react';
+import * as OF from 'office-ui-fabric-react';
 import { BlisAppBase, BlisAppMetaData } from 'blis-models'
 import './Settings.css'
 import { FM } from '../../../react-intl-messages'
@@ -150,7 +150,7 @@ class Settings extends React.Component<Props, ComponentState> {
     onRenderBotListRow(item?: any, index?: number) {
         return (
             <div>
-                <TextField className="ms-font-m-plus" disabled={true} value={item} />
+                <OF.TextField className="ms-font-m-plus" disabled={true} value={item} />
             </div>
         )
     }
@@ -239,7 +239,7 @@ class Settings extends React.Component<Props, ComponentState> {
                     />
                 </span>
                 <div>
-                    <TextField
+                    <OF.TextField
                         className="ms-font-m-plus"
                         onChanged={(text) => this.onChangedName(text)}
                         label={intl.formatMessage({
@@ -249,7 +249,7 @@ class Settings extends React.Component<Props, ComponentState> {
                         onGetErrorMessage={value => this.onGetNameErrorMessage(value)}
                         value={this.state.appNameVal}
                     />
-                    <TextField
+                    <OF.TextField
                         className="ms-font-m-plus"
                         disabled={true}
                         label={intl.formatMessage({
@@ -258,73 +258,71 @@ class Settings extends React.Component<Props, ComponentState> {
                         })}
                         value={this.state.appIdVal}
                     />
-                    <Label className="ms-font-m-plus">
+                    <OF.Label className="ms-font-m-plus">
                         <FormattedMessage
                             id={FM.SETTINGS_BOTFRAMEWORKLUISKEYLABEL}
                             defaultMessage="LUIS Key"
                         />
-                    </Label>
+                    </OF.Label>
                     <div className="blis-settings-textfieldwithbutton">
-                        <TextField
+                        <OF.TextField
                             id="luis-key"
                             className="ms-font-m-plus"
                             onChanged={(text) => this.onChangedLuisKey(text)}
                             type={this.state.isPasswordVisible ? "text" : "password"}
                             value={this.state.luisKeyVal}
                         />
-                        <PrimaryButton
+                        <OF.PrimaryButton
                             onClick={this.onClickShowPassword}
                             ariaDescription={this.state.passwordShowHideText}
                             text={this.state.passwordShowHideText}
                         />
                     </div>
-                    <Label className="ms-font-m-plus">
+                    <OF.Label className="ms-font-m-plus">
                         <FormattedMessage
                             id={FM.SETTINGS_BOTFRAMEWORKLOCALELABEL}
                             defaultMessage="Locale"
                         />
-                    </Label>
-                    <Dropdown
+                    </OF.Label>
+                    <OF.Dropdown
                         className="ms-font-m-plus"
                         options={options}
                         selectedKey={this.state.localeVal}
                         disabled={true}
                     />
                     <div>
-                        <Label className="ms-font-m-plus">
+                        <OF.Label className="ms-font-m-plus">
                             <FormattedMessage
                                 id={FM.SETTINGS_BOTFRAMEWORKLISTLABEL}
                                 defaultMessage="Bot Framework Apps"
                             />
-                        </Label>
-                        <List
+                        </OF.Label>
+                        <OF.List
                             items={this.state.botFrameworkAppsVal}
                             onRenderCell={this.onRenderBotListRow}
                         />
                         <div className="blis-settings-textfieldwithbutton">
-                            <TextField
+                            <OF.TextField
                                 className="ms-font-m-plus"
                                 onChanged={(text) => this.onChangedBotId(text)}
                                 placeholder={intl.formatMessage(messages.botFrameworkAppIdFieldLabel)}
                                 value={this.state.newBotVal}
                             />
-                            <PrimaryButton
+                            <OF.PrimaryButton
                                 onClick={this.onClickAddBot}
                                 ariaDescription={intl.formatMessage(messages.botFrameworkAddBotButtonText)}
                                 text={intl.formatMessage(messages.botFrameworkAddBotButtonText)}
                             />
                         </div>
                     </div>
-                    <div style={buttonsDivStyle}>
-                        <CommandButton
+                    <div className="blis-modal-buttons_primary" style={buttonsDivStyle}>
+                        <OF.PrimaryButton
                             disabled={this.onGetNameErrorMessage(this.state.appNameVal) !== ""}
                             onClick={this.onClickSave}
-                            className='blis-button--gold'
                             ariaDescription={intl.formatMessage(messages.saveChanges)}
                             text={intl.formatMessage(messages.saveChanges)}
                         />
-                        <CommandButton
-                            className="blis-button--gray"
+                        <OF.DefaultButton
                             onClick={this.onClickDiscard}
                             ariaDescription={intl.formatMessage(messages.discard)}
                             text={intl.formatMessage(messages.discard)}

@@ -14,37 +14,11 @@ html {
 * {
   box-sizing: border-box;
 }
-
-.blis-button--gold:hover {
-  border: 1px solid #004b50;
-}
-.blis-button--gold:focus {
-  border: 2px solid var(--color-yellow-darkest);
-  box-sizing: border-box;
-}
-.blis-button--gold{
-  background-color: #ffb900 !important;
-  color: black !important;
-  padding: 0em 2em !important;
-}
-.blis-button--gold *{
-  color: black !important;
-}
 .blis-button--right {
   float: right;
 }
 .blis-button--widemargin {
   margin: 20px;
-}
-.blis-button--gray:hover,
-.blis-button--gray:focus {
-  border: 1px solid #004b50;
-  box-sizing: border-box;
-}
-.blis-button--gray{
-  background-color: lightgrey !important;
-  color:black !important;
-  padding: 0em 2em !important;
 }
 .blis-button--hidden {
   width: 1px;

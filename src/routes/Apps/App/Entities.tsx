@@ -270,9 +270,8 @@ class Entities extends React.Component<Props, ComponentState> {
                     />
                 </span>
                 <div>
-                    <OF.CommandButton
+                    <OF.PrimaryButton
                         onClick={this.handleOpenCreateModal}
-                        className='blis-button--gold'
                         ariaDescription={this.props.intl.formatMessage({
                             id: FM.ENTITIES_CREATEBUTTONARIALDESCRIPTION,
                             defaultMessage: 'Create a New Entity'
