@@ -244,14 +244,13 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                     />
                     <div className="ms-fontSize-s ms-fontColor-neutralSecondary">Entity only set by code. &nbsp;
                             <OF.TooltipHost
-                            tooltipProps={{
-                                onRenderContent: () => { return GetTip(TipType.PROGAMMATIC) }
-                            }}
-                            delay={OF.TooltipDelay.zero}
-                            directionalHint={OF.DirectionalHint.bottomCenter}
-                        ><span className="ms-fontColor-themeTertiary">More</span>
-                        </OF.TooltipHost>
-                    </div>
+                                tooltipProps={{
+                                    onRenderContent: () => {return GetTip(TipType.ENTITY_PROGAMMATIC)}
+                                }}
+                                delay={OF.TooltipDelay.zero}
+                                directionalHint={OF.DirectionalHint.bottomCenter}
+                            ><span className="ms-fontColor-themeTertiary">More</span>
+                            </OF.TooltipHost>
                 </div>
                 <div className="blis-entity-creator-checkbox">
                     <OF.Checkbox
@@ -262,31 +261,32 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                     />
                     <div className="ms-fontSize-s ms-fontColor-neutralSecondary">Entity may hold multiple values. &nbsp;
                             <OF.TooltipHost
-                            tooltipProps={{
-                                onRenderContent: () => { return GetTip(TipType.MULTIVALUE) }
-                            }}
-                            delay={OF.TooltipDelay.zero}
-                            directionalHint={OF.DirectionalHint.bottomCenter}
-                        ><span className="ms-fontColor-themeTertiary">More</span>
-                        </OF.TooltipHost>
+                                tooltipProps={{
+                                    onRenderContent: () => {return GetTip(TipType.ENTITY_MULTIVALUE)}
+                                }}
+                                delay={OF.TooltipDelay.zero}
+                                directionalHint={OF.DirectionalHint.bottomCenter}
+                            ><span className="ms-fontColor-themeTertiary">More</span>
+                            </OF.TooltipHost>
+                        </div>
                     </div>
-                </div>
-                <div className="blis-entity-creator-checkbox">
-                    <OF.Checkbox
-                        label="Negatable"
-                        defaultChecked={this.state.isNegatableVal}
-                        onChange={this.onChangeReversible}
-                        disabled={this.state.editing}
-                    />
-                    <div className="ms-fontSize-s ms-fontColor-neutralSecondary">Can remove or delete values in memory. &nbsp;
-                        <OF.TooltipHost
-                            tooltipProps={{
-                                onRenderContent: () => { return GetTip(TipType.NEGATABLE) }
-                            }}
-                            delay={OF.TooltipDelay.zero}
-                            directionalHint={OF.DirectionalHint.bottomCenter}
-                        ><span className="ms-fontColor-themeTertiary">More</span>
-                        </OF.TooltipHost>
+                    <div className="blis-entity-creator-checkbox">
+                        <OF.Checkbox
+                            label="Negatable"
+                            defaultChecked={this.state.isNegatableVal}
+                            onChange={this.onChangeReversible}
+                            disabled={this.state.editing}
+                        />
+                        <div className="ms-fontSize-s ms-fontColor-neutralSecondary">Can remove or delete values in memory. &nbsp;
+                            <OF.TooltipHost
+                                tooltipProps={{
+                                    onRenderContent: () => {return GetTip(TipType.ENTITY_NEGATABLE)}
+                                }}
+                                delay={OF.TooltipDelay.zero}
+                                directionalHint={OF.DirectionalHint.bottomCenter}
+                            ><span className="ms-fontColor-themeTertiary">More</span>
+                            </OF.TooltipHost>
+                        </div>
                     </div>
                 </div>
             </div>

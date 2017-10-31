@@ -8,12 +8,13 @@ import { TrainScorerStep, Memory, ScoredBase, ScoreInput, ScoreResponse, ActionB
 import { toggleAutoTeach } from '../../actions/teachActions'
 import { PrimaryButton } from 'office-ui-fabric-react';
 import { DialogMode } from '../../types/const'
-import { IColumn, DetailsList, CheckboxVisibility, List } from 'office-ui-fabric-react';
+import * as OF from 'office-ui-fabric-react';
 import ActionCreatorEditor from './ActionCreatorEditor'
+import { onRenderDetailsHeader } from '../ToolTips'
 
 const ACTION_BUTTON = "action_button";
 
-let columns: IColumn[] = [
+let columns: OF.IColumn[] = [
     {
         key: 'select',
         name: '',
@@ -23,18 +24,18 @@ let columns: IColumn[] = [
         isResizable: true
     },
     {
-        key: 'payload',
-        name: 'Payload',
-        fieldName: 'payload',
+        key: 'actionResponse',
+        name: 'Response',
+        fieldName: 'actionResponse',
         minWidth: 100,
         maxWidth: 500,
         isMultiline: true,
         isResizable: true,
     },
     {
-        key: 'arguments',
+        key: 'actionArguments',
         name: 'Arguments',
-        fieldName: 'arguments',
+        fieldName: 'actionArguments',
         minWidth: 80,
         maxWidth: 300,
         isResizable: true
@@ -58,7 +59,7 @@ let columns: IColumn[] = [
         isResizable: true
     },
     {
-        key: 'wait',
+        key: 'isTerminal',
         name: 'Wait',
         fieldName: 'isTerminal',
         minWidth: 50,
@@ -66,9 +67,9 @@ let columns: IColumn[] = [
         isResizable: true
     },
     {
-        key: 'type',
+        key: 'actionType',
         name: 'Type',
-        fieldName: 'type',
+        fieldName: 'actionType',
         minWidth: 80,
         maxWidth: 80,
         isResizable: true
@@ -85,8 +86,8 @@ const initState: ComponentState = {
 
 interface ComponentState {
     actionModalOpen: boolean;
-    columns: IColumn[];
-    sortColumn: IColumn;
+    columns: OF.IColumn[];
+    sortColumn: OF.IColumn;
     haveEdited: boolean;
     newAction: ActionBase;
 }
@@ -192,7 +193,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             sortColumn: column
         });
     }
-    getValue(scoredBase: ScoredBase, col: IColumn): any {
+    getValue(scoredBase: ScoredBase, col: OF.IColumn): any {
         let value = scoredBase[col.fieldName]
         if (col.fieldName == "score") {
             // Sort new actions to the top
@@ -283,7 +284,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             items.push({ name: found.name, type: found.match ? "blis-entity blis-entity--mismatch" : "blis-entity blis-entity--match", neg: true });
         }
         return (
-            <List
+            <OF.List
                 items={items}
                 onRenderCell={(item, index) => {
                     return <span className={item.type}>{item.neg ? (<del>{item.name}</del>) : item.name}</span>
@@ -321,7 +322,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
     isMasked(actionId: string): boolean {
         return (this.props.scoreInput.maskedActions && this.props.scoreInput.maskedActions.indexOf(actionId) > -1);
     }
-    renderItemColumn(item?: any, index?: number, column?: IColumn) {
+    renderItemColumn(item?: any, index?: number, column?: OF.IColumn) {
 
         // Null is action create button
         if (item == ACTION_BUTTON) {
@@ -400,7 +401,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                 let args = ModelUtils.GetArguments(item);
                 if (args) {
                     return (
-                        <List
+                        <OF.List
                             items={args}
                             onRenderCell={(item, index) => (
                                 <span className='ms-ListItem-primaryText'>{item}</span>
@@ -482,13 +483,16 @@ class ActionScorer extends React.Component<Props, ComponentState> {
 
         return (
             <div>
-                <DetailsList
+                <OF.DetailsList
                     className="ms-font-m-plus"
                     items={scores}
                     columns={this.state.columns}
-                    checkboxVisibility={CheckboxVisibility.hidden}
+                    checkboxVisibility={OF.CheckboxVisibility.hidden}
                     onRenderItemColumn={this.renderItemColumn}
                     onColumnHeaderClick={this.onColumnClick}
+                    onRenderDetailsHeader={(detailsHeaderProps: OF.IDetailsHeaderProps, 
+                                        defaultRender: OF.IRenderFunction<OF.IDetailsHeaderProps>) => 
+                        onRenderDetailsHeader(detailsHeaderProps, defaultRender)}
                 />
                 <ActionCreatorEditor
                     open={this.state.actionModalOpen}

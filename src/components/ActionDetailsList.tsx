@@ -1,10 +1,10 @@
 import * as React from 'react';
-import { DetailsList } from 'office-ui-fabric-react';
 import { returntypeof } from 'react-redux-typescript';
 import { connect } from 'react-redux';
 import { ActionBase, ModelUtils } from 'blis-models'
 import { State } from '../types'
-import { CheckboxVisibility, IColumn } from 'office-ui-fabric-react';
+import * as OF from 'office-ui-fabric-react';
+import { onRenderDetailsHeader } from './ToolTips'
 
 class ActionDetailsList extends React.Component<Props, ComponentState> {
 
@@ -62,14 +62,17 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
     render() {
         let sortedActions = this.sortActions();
         return (
-            <DetailsList
+            <OF.DetailsList
                 className="ms-font-m-plus"
                 items={sortedActions}
                 columns={this.state.columns}
-                checkboxVisibility={CheckboxVisibility.hidden}
+                checkboxVisibility={OF.CheckboxVisibility.hidden}
                 onRenderItemColumn={(action: ActionBase, i, column: IRenderableColumn) => column.render(action, this)}
                 onActiveItemChanged={action => this.props.onSelectAction(action)}
                 onColumnHeaderClick={this.onClickColumnHeader}
+                onRenderDetailsHeader={(detailsHeaderProps: OF.IDetailsHeaderProps, 
+                                        defaultRender: OF.IRenderFunction<OF.IDetailsHeaderProps>) => 
+                        onRenderDetailsHeader(detailsHeaderProps, defaultRender)}
             />
         )
     }
@@ -94,9 +97,9 @@ export default connect<typeof stateProps, {}, ReceivedProps>(mapStateToProps, nu
 
 const columns: IRenderableColumn[] = [
     {
-        key: 'payload',
-        name: 'Payload',
-        fieldName: 'payload',
+        key: 'actionResponse',
+        name: 'Response',
+        fieldName: 'actionResponse',
         minWidth: 100,
         maxWidth: 400,
         isResizable: true,
@@ -105,9 +108,9 @@ const columns: IRenderableColumn[] = [
         render: (action, component) => <span className='ms-font-m-plus' onClick={() => component.props.onSelectAction(action)}>{ModelUtils.GetPrimaryPayload(action)}</span>
     },
     {
-        key: 'arguments',
+        key: 'actionArguments',
         name: 'Arguments',
-        fieldName: 'arguments',
+        fieldName: 'actionArguments',
         minWidth: 80,
         maxWidth: 300,
         isResizable: true,
@@ -196,7 +199,7 @@ const columns: IRenderableColumn[] = [
         }
     },
     {
-        key: 'wait',
+        key: 'isTerminal',
         name: 'Wait',
         fieldName: 'isTerminal',
         minWidth: 50,
@@ -207,7 +210,7 @@ const columns: IRenderableColumn[] = [
     }
 ];
 
-interface IRenderableColumn extends IColumn {
+interface IRenderableColumn extends OF.IColumn {
     render: (action: ActionBase, component: ActionDetailsList) => JSX.Element | JSX.Element[]
     getSortValue: (action: ActionBase, component: ActionDetailsList) => string
 }

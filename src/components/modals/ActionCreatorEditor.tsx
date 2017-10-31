@@ -293,7 +293,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         this.props.editActionAsync(this.props.userKey, actionToAdd, currentAppId);
     }
     onGetErrorMessagePayload(value: string): string {
-        return value ? '' : 'Payload is required';
+        return value ? '' : 'Response is required';
     }
     onChangeWait() {
         this.setState({
@@ -842,8 +842,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     key='1'
                     onGetErrorMessage={this.onGetErrorMessagePayload}
                     onChanged={this.onChangedPayload}
-                    label="Payload"
-                    placeholder="Payload..."
+                    label="Response"
+                    placeholder="Response..."
                     autoFocus={true}
                     onFocus={this.onFocusPayload}
                     onKeyDown={this.onKeyDownPayload}

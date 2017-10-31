@@ -10,6 +10,7 @@ import { IButton, CommandButton, SearchBox } from 'office-ui-fabric-react';
 import { BlisAppBase, ActionBase } from 'blis-models'
 import { ConfirmDeleteModal, ActionCreatorEditor } from '../../../components/modals'
 import { State } from '../../../types'
+import { FM } from '../../../react-intl-messages'
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 
 interface ComponentState {
@@ -128,13 +129,13 @@ class Actions extends React.Component<Props, ComponentState> {
             <div className="blis-page">
                 <span className="ms-font-xxl">
                     <FormattedMessage
-                        id="Actions.title"
+                        id={FM.ACTIONS_TITLE}
                         defaultMessage="Actions"
                     />
                 </span>
                 <span className="ms-font-m-plus">
                     <FormattedMessage
-                        id="Actions.subtitle"
+                        id={FM.ACTIONS_SUBTITLE}
                         defaultMessage="Manage a list of actions that your application can take given it's state and user input..."
                     />
                 </span>
@@ -143,11 +144,11 @@ class Actions extends React.Component<Props, ComponentState> {
                         onClick={this.onClickCreateAction}
                         className='blis-button--gold'
                         ariaDescription={this.props.intl.formatMessage({
-                            id: 'Actions.createButtonAriaDescription',
+                            id: FM.ACTIONS_CREATEBUTTONARIALDESCRIPTION,
                             defaultMessage: 'Create a New Action'
                         })}
                         text={this.props.intl.formatMessage({
-                            id: 'Actions.createButtonTitle',
+                            id: FM.ACTIONS_CREATEBUTTONTITLE,
                             defaultMessage: 'New Action'
                         })}
                         componentRef={component => this.newActionButton = component}
@@ -167,7 +168,7 @@ class Actions extends React.Component<Props, ComponentState> {
                     onCancel={() => this.onClickCancelDelete()}
                     onConfirm={() => this.onClickConfirmDelete()}
                     title={this.props.intl.formatMessage({
-                        id: 'Actions.confirmDeleteModalTitle',
+                        id: FM.ACTIONS_CONFIRMDELETEMODALTITLE,
                         defaultMessage: 'Are you sure you want to delete this action?'
                     })}
                 />

@@ -15,6 +15,7 @@ import { UserLogin, SpinnerWindow, LogoutModal, Error } from '../components/moda
 import { setUser, logout } from '../actions/displayActions'
 import './App.css'
 import { FormattedMessage } from 'react-intl'
+import { FM } from '../react-intl-messages'
 
 interface ComponentState {
   isLoginWindowOpen: boolean
@@ -97,25 +98,25 @@ class App extends React.Component<Props, ComponentState> {
             <nav className="blis-header_links ">
               <NavLink to="/home">
                 <FormattedMessage
-                  id="App.header.home"
+                  id={FM.APP_HEADER_HOME}
                   defaultMessage="Home"
                 />
               </NavLink>
               <NavLink to="/about">
                 <FormattedMessage
-                  id="App.header.about"
+                  id={FM.APP_HEADER_ABOUT}
                   defaultMessage="About"
                 />
               </NavLink>
               <NavLink to="/docs">
                 <FormattedMessage
-                  id="App.header.docs"
+                  id={FM.APP_HEADER_DOCS}
                   defaultMessage="Docs"
                 />
               </NavLink>
               <NavLink to="/support">
                 <FormattedMessage
-                  id="App.header.support"
+                  id={FM.APP_HEADER_SUPPORT}
                   defaultMessage="Support"
                 />
               </NavLink>

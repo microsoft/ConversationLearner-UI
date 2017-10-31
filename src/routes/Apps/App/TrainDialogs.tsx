@@ -8,13 +8,14 @@ import { BlisAppBase, Teach, TrainDialog } from 'blis-models'
 import { TeachSessionWindow, TrainDialogWindow } from '../../../components/modals'
 import { createTeachSessionThunkAsync } from '../../../actions/createActions'
 import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
+import { FM } from '../../../react-intl-messages'
 
 function getColumns(intl: InjectedIntl): IColumn[] {
     return [
         {
             key: 'firstInput',
             name: intl.formatMessage({
-                id: 'TrainDialogs.firstInput',
+                id: FM.TRAINDIALOGS_FIRSTINPUT,
                 defaultMessage: 'First Input'
             }),
             fieldName: 'firstInput',
@@ -25,7 +26,7 @@ function getColumns(intl: InjectedIntl): IColumn[] {
         {
             key: 'lastInput',
             name: intl.formatMessage({
-                id: 'TrainDialogs.lastInput',
+                id: FM.TRAINDIALOGS_LASTINPUT,
                 defaultMessage: 'Last Input'
             }),
             fieldName: 'lastInput',
@@ -36,7 +37,7 @@ function getColumns(intl: InjectedIntl): IColumn[] {
         {
             key: 'lastResponse',
             name: intl.formatMessage({
-                id: 'TrainDialogs.lastResponse',
+                id: FM.TRAINDIALOGS_LASTRESPONSE,
                 defaultMessage: 'Last Response'
             }),
             fieldName: 'lastResponse',
@@ -47,7 +48,7 @@ function getColumns(intl: InjectedIntl): IColumn[] {
         {
             key: 'turns',
             name: intl.formatMessage({
-                id: 'TrainDialogs.turns',
+                id: FM.TRAINDIALOGS_TURNS,
                 defaultMessage: 'Turns'
             }),
             fieldName: 'dialog',
@@ -222,13 +223,13 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             <div className="blis-page">
                 <div className="blis-dialog-title blis-dialog-title--teach ms-font-xxl">
                     <FormattedMessage
-                        id="TrainDialogs.title"
+                        id={FM.TRAINDIALOGS_TITLE}
                         defaultMessage="Train Dialogs"
                     />
                 </div>
                 <span className="ms-font-m-plus">
                     <FormattedMessage
-                        id="TrainDialogs.subtitle"
+                        id={FM.TRAINDIALOGS_SUBTITLE}
                         defaultMessage="Use this tool to train and improve the current versions of your application..."
                     />
                 </span>
@@ -237,11 +238,11 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         onClick={() => this.onClickNewTeachSession()}
                         className='blis-button--gold'
                         ariaDescription={intl.formatMessage({
-                            id: 'TrainDialogs.createButtonAriaDescription',
+                            id: FM.TRAINDIALOGS_CREATEBUTTONARIALDESCRIPTION,
                             defaultMessage: 'Create a New Teach Session'
                         })}
                         text={intl.formatMessage({
-                            id: 'TrainDialogs.createButtonTitle',
+                            id: FM.TRAINDIALOGS_CREATEBUTTONTITLE,
                             defaultMessage: 'New Teach Session'
                         })}
                         componentRef={component => this.newTeachSessionButton = component}

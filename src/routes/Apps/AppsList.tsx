@@ -7,6 +7,7 @@ import { CommandButton, DetailsList, Link, CheckboxVisibility, IColumn } from 'o
 import { State } from '../../types';
 import { BlisAppBase } from 'blis-models'
 import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
+import { FM } from '../../react-intl-messages'
 
 interface ISortableRenderableColumn extends IColumn {
     render: (app: BlisAppBase, component: AppsList) => JSX.Element
@@ -18,7 +19,7 @@ function getColumns(intl: InjectedIntl): ISortableRenderableColumn[] {
         {
             key: 'appName',
             name: intl.formatMessage({
-                id: 'AppsList.columns.name',
+                id: FM.APPSLIST_COLUMN_NAME,
                 defaultMessage: 'Name'
             }),
             fieldName: 'appName',
@@ -31,7 +32,7 @@ function getColumns(intl: InjectedIntl): ISortableRenderableColumn[] {
         {
             key: 'locale',
             name: intl.formatMessage({
-                id: 'AppsList.columns.locale',
+                id: FM.APPSLIST_COLUMNS_LOCALE,
                 defaultMessage: 'Locale'
             }),
             fieldName: 'locale',
@@ -44,7 +45,7 @@ function getColumns(intl: InjectedIntl): ISortableRenderableColumn[] {
         {
             key: 'bots',
             name: intl.formatMessage({
-                id: 'AppsList.columns.linkedBots',
+                id: FM.APPSLIST_COLUMNS_LINKEDBOTS,
                 defaultMessage: 'Linked Bots'
             }),
             fieldName: 'metadata',
@@ -57,7 +58,7 @@ function getColumns(intl: InjectedIntl): ISortableRenderableColumn[] {
         {
             key: 'actions',
             name: intl.formatMessage({
-                id: 'AppsList.columns.actions',
+                id: FM.APPSLIST_COLUMNS_ACTIONS,
                 defaultMessage: 'Actions'
             }),
             fieldName: 'appId',
@@ -185,13 +186,13 @@ class AppsList extends React.Component<Props, ComponentState> {
             <div className="blis-page">
                 <span className="ms-font-su">
                     <FormattedMessage
-                        id="AppsList.title"
+                        id={FM.APPSLIST_TITLE}
                         defaultMessage="My Apps"
                     />
                 </span>
                 <span className="ms-font-m-plus">
                     <FormattedMessage
-                        id="AppsList.subtitle"
+                        id={FM.APPSLIST_SUBTITLE}
                         defaultMessage="Create and Manage your BLIS applications..."
                     />
                 </span>
@@ -200,11 +201,11 @@ class AppsList extends React.Component<Props, ComponentState> {
                         onClick={() => this.onClickCreateNewApp()}
                         className='blis-button--gold'
                         ariaDescription={this.props.intl.formatMessage({
-                            id: 'AppsList.createButtonAriaDescription',
+                            id: FM.APPSLIST_CREATEBUTTONARIADESCRIPTION,
                             defaultMessage: 'Create a New Application'
                         })}
                         text={this.props.intl.formatMessage({
-                            id: 'AppsList.createButtonText',
+                            id: FM.APPSLIST_CREATEBUTTONTEXT,
                             defaultMessage: 'New App'
                         })}
                     />
@@ -227,7 +228,7 @@ class AppsList extends React.Component<Props, ComponentState> {
                     onCancel={() => this.onCancelDeleteModal()}
                     onConfirm={() => this.onConfirmDeleteModal()}
                     title={this.props.intl.formatMessage({
-                        id: 'AppsList.confirmDeleteModalTitle',
+                        id: FM.APPSLIST_CONFIRMDELETEMODALTITLE,
                         defaultMessage: 'Are you sure you want to delete this application?'
                     })}
                 />

@@ -8,6 +8,7 @@ import { BlisAppBase, LogDialog, Session } from 'blis-models'
 import { ChatSessionWindow, LogDialogModal } from '../../../components/modals'
 import { createChatSessionThunkAsync } from '../../../actions/createActions'
 import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
+import { FM } from '../../../react-intl-messages'
 
 interface IRenderableColumn extends IColumn {
     render: (x: LogDialog, component: LogDialogs) => React.ReactNode
@@ -31,7 +32,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
         {
             key: 'firstInput',
             name: intl.formatMessage({
-                id: 'LogDialogs.firstInput',
+                id: FM.LOGDIALOGS_FIRSTINPUT,
                 defaultMessage: 'First Input'
             }),
             fieldName: 'firstInput',
@@ -49,7 +50,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
         {
             key: 'lastInput',
             name: intl.formatMessage({
-                id: 'LogDialogs.lastInput',
+                id: FM.LOGDIALOGS_LASTINPUT,
                 defaultMessage: 'Last Input'
             }),
             fieldName: 'lastInput',
@@ -67,7 +68,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
         {
             key: 'lastResponse',
             name: intl.formatMessage({
-                id: 'LogDialogs.lastResponse',
+                id: FM.LOGDIALOGS_LASTRESPONSE,
                 defaultMessage: 'Last Response'
             }),
             fieldName: 'lastResponse',
@@ -94,7 +95,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
         {
             key: 'turns',
             name: intl.formatMessage({
-                id: 'LogDialogs.turns',
+                id: FM.LOGDIALOGS_TURNS,
                 defaultMessage: 'Turns'
             }),
             fieldName: 'dialog',
@@ -188,13 +189,13 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             <div className="blis-page">
                 <div className="blis-dialog-title blis-dialog-title--log ms-font-xxl">
                     <FormattedMessage
-                        id="LogDialogs.title"
+                        id={FM.LOGDIALOGS_TITLE}
                         defaultMessage="Log Dialogs"
                     />
                 </div>
                 <span className="ms-font-m-plus">
                     <FormattedMessage
-                        id="LogDialogs.subtitle"
+                        id={FM.LOGDIALOGS_SUBTITLE}
                         defaultMessage="Use this tool to test the current versions of your application, to check if you are progressing on the right track..."
                     />
                 </span>
@@ -203,11 +204,11 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                         onClick={() => this.onClickNewChatSession()}
                         className='blis-button--gold'
                         ariaDescription={this.props.intl.formatMessage({
-                            id: 'LogDialogs.createButtonAriaDescription',
+                            id: FM.LOGDIALOGS_CREATEBUTTONARIALDESCRIPTION,
                             defaultMessage: 'Create a New Chat Session'
                         })}
                         text={this.props.intl.formatMessage({
-                            id: 'LogDialogs.createButtonTitle',
+                            id: FM.LOGDIALOGS_CREATEBUTTONTITLE,
                             defaultMessage: 'New Chat Session'
                         })}
                     />
@@ -242,7 +243,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     dialogContentProps={{
                         type: DialogType.normal,
                         title: this.props.intl.formatMessage({
-                            id: 'LogDialogs.sessionCreationWarning.title',
+                            id: FM.LOGDIALOGS_SESSIONCREATIONWARNING_TITLE,
                             defaultMessage: 'You may not create chat session at this time. Please try again later.'
                         })
                     }}
@@ -252,7 +253,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                         <PrimaryButton
                             onClick={() => this.onClickWarningWindowOk()}
                             text={this.props.intl.formatMessage({
-                                id: 'LogDialogs.sessionCreationWarning.primaryButton',
+                                id: FM.LOGDIALOGS_SESSIONCREATIONWARNING_PRIMARYBUTTON,
                                 defaultMessage: 'Ok'
                             })}
                         />

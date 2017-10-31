@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { State } from '../../../types'
 import { BlisAppBase } from 'blis-models'
 import { FormattedMessage } from 'react-intl'
+import { FM } from '../../../react-intl-messages'
 
 class Dashboard extends React.Component<Props, {}> {
     render() {
@@ -11,13 +12,13 @@ class Dashboard extends React.Component<Props, {}> {
             <div className="blis-page">
                 <span className="ms-font-xxl">
                     <FormattedMessage
-                        id="Dashboard.title"
+                        id={FM.DASHBOARD_TITLE}
                         defaultMessage="Overview"
                     />
                 </span>
                 <span className="ms-font-m-plus">
                     <FormattedMessage
-                        id="Dashboard.subtitle"
+                        id={FM.DASHBOARD_SUBTITLE}
                         defaultMessage="Facts & statistics about the app's data at any period of time..."
                     />
                 </span>

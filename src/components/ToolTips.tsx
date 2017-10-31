@@ -1,13 +1,23 @@
 import * as React from 'react';
 import * as OF from 'office-ui-fabric-react';
+import { FormattedMessage } from 'react-intl'
+import { FM } from '../react-intl-messages'
 
 export enum TipType {
-    ENTITYTYPE = "entityName",
-    ENTITYVALUE = "entityValues",
-    MULTIVALUE = "isBucketable",   
-    NEGATABLE = "isNegatable",
-    PROGAMMATIC = "isProgrammatic",
-    TYPE = "entityType",          
+    ACTION_ARGUMENTS = "actionArguments",
+    ACTION_NEGATIVE = "negativeEntities",
+    ACTION_REQUIRED = "requiredEntities",
+    ACTION_RESPONSE = "actionResponse",
+    ACTION_TYPE = "actionType",
+    ACTION_SUGGESTED = "suggestedEntity",
+    ACTION_WAIT = "isTerminal",
+    
+    ENTITY_MULTIVALUE = "isBucketable", 
+    ENTITY_NAME = "entityName",  
+    ENTITY_NEGATABLE = "isNegatable",
+    ENTITY_PROGAMMATIC = "isProgrammatic",
+    ENTITY_TYPE = "entityType", 
+    ENTITY_VALUE = "entityValues",         
 }
 
 export function onRenderDetailsHeader(detailsHeaderProps: OF.IDetailsHeaderProps, defaultRender: OF.IRenderFunction<OF.IDetailsHeaderProps>) {
@@ -40,19 +50,36 @@ export function onRenderDetailsHeader(detailsHeaderProps: OF.IDetailsHeaderProps
 }
 export function GetTip(text: string) {
     switch (text) {
-        case TipType.ENTITYTYPE:
-            return (
-                <div>
-                    Name of the Entity
-                </div>
-            )
-        case TipType.ENTITYVALUE:
-            return (
-                <div>
-                    What the Bot currently has in Memory for this Entity
-                </div>
-            )
-        case TipType.MULTIVALUE:
+        case TipType.ACTION_ARGUMENTS:
+            return (<FormattedMessage id={FM.TOOLTIP_ACTION_ARGUEMENTS} defaultMessage="Arguements"/>)      
+        case TipType.ACTION_NEGATIVE:
+            return (<FormattedMessage id={FM.TOOLTIP_ACTION_NEGATIVE} defaultMessage="Negative Entities"/>)     
+        case TipType.ACTION_REQUIRED:
+            return (<FormattedMessage id={FM.TOOLTIP_ACTION_REQUIRED} defaultMessage="Required Entities"/>)     
+        case TipType.ACTION_RESPONSE:
+            return (<FormattedMessage id={FM.TOOLTIP_ACTION_RESPONSE} defaultMessage="Response"/>)      
+        case TipType.ACTION_TYPE:
+        return (
+            <div>
+                <FormattedMessage id="ToolTip.ACTION_TYPE" defaultMessage="Response"/>
+                <dl className="blis-entity-example">
+                    <dt>Text:</dt><dd><FormattedMessage id={FM.TOOLTIP_ACTION_TYPE}/></dd>
+                    <dt>API_Local:</dt><dd><FormattedMessage id={FM.TOOLTIP_ACTION_TYPE_APILOCAL}/></dd>
+                    <dt>API_Azure:</dt><dd><FormattedMessage id={FM.TOOLTIP_ACTION_TYPE_APIAZURE}/></dd>
+                    <dt>Intent:</dt><dd><FormattedMessage id={FM.TOOLTIP_ACTION_TYPE_INTENT}/></dd>
+                    <dt>Card:</dt><dd><FormattedMessage id={FM.TOOLTIP_ACTION_TYPE_CARD}/></dd>
+                </dl>
+            </div>
+        )      
+        case TipType.ACTION_SUGGESTED:
+            return (<FormattedMessage id={FM.TOOLTIP_ACTION_SUGGESTED} defaultMessage="Suggested"/>); 
+        case TipType.ACTION_WAIT:
+            return (<FormattedMessage id={FM.TOOLTIP_ACTION_WAIT} defaultMessage="Wait"/>);
+        case TipType.ENTITY_NAME:
+            return (<FormattedMessage id={FM.TOOLTIP_ENTITY_NAME} defaultMessage="Wait"/>);
+        case TipType.ENTITY_VALUE:
+            return (<FormattedMessage id={FM.TOOLTIP_ENTITY_VALUE} defaultMessage="Wait"/>);
+        case TipType.ENTITY_MULTIVALUE:
             return (
                 <div>
                     When checked additional occurences of the Entity add to list of previous values. For non multi-value entites new values replace previous values.<br /><br/>
@@ -64,7 +91,7 @@ export function GetTip(text: string) {
                     </dl>
                 </div>
             )
-        case TipType.NEGATABLE:
+        case TipType.ENTITY_NEGATABLE:
             return (                                            
                 <div>
                     When checked this creates a corresponding 'negatable' entity that can be used to remove or delete previous memory values.<br /><br />
@@ -77,7 +104,7 @@ export function GetTip(text: string) {
                     </dl>
                 </div>
             )
-        case TipType.PROGAMMATIC:
+        case TipType.ENTITY_PROGAMMATIC:
             return (                                            
                 <div>
                     When checked Entities are not extracted from user utterances.  They are set in code you write for your Bot<br /><br />
@@ -88,12 +115,8 @@ export function GetTip(text: string) {
                     The "isLoggedIn" Entity is set in code. When not set, it can be used to block Actions that require authorized users
                 </div>
             )
-        case TipType.TYPE:
-            return (
-                <div>
-                    Type of Entity: CUSTOM or name existing of Pre-Built Entity
-                </div>
-            )
+        case TipType.ENTITY_TYPE:
+            return (<FormattedMessage id={FM.TOOLTIP_ENTITY_TYPE} defaultMessage="Wait"/>)
     }
     return (<div>{text}</div>);
 }

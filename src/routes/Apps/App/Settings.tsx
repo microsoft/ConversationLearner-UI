@@ -7,6 +7,7 @@ import { State } from '../../../types';
 import { CommandButton, PrimaryButton, TextField, Dropdown, Label, List } from 'office-ui-fabric-react';
 import { BlisAppBase, BlisAppMetaData } from 'blis-models'
 import './Settings.css'
+import { FM } from '../../../react-intl-messages'
 import { injectIntl, InjectedIntlProps, defineMessages, FormattedMessage } from 'react-intl'
 
 const messages = defineMessages({
@@ -227,13 +228,13 @@ class Settings extends React.Component<Props, ComponentState> {
             <div className="blis-page">
                 <span className="ms-font-xxl">
                     <FormattedMessage
-                        id="Settings.title"
+                        id={FM.SETTINGS_TITLE}
                         defaultMessage="Settings"
                     />
                 </span>
                 <span className="ms-font-m-plus">
                     <FormattedMessage
-                        id="Settings.subtitle"
+                        id={FM.SETTINGS_SUBTITLE}
                         defaultMessage="Control your application versions, who has access to it and whether it is public or private..."
                     />
                 </span>
@@ -242,7 +243,7 @@ class Settings extends React.Component<Props, ComponentState> {
                         className="ms-font-m-plus"
                         onChanged={(text) => this.onChangedName(text)}
                         label={intl.formatMessage({
-                            id: "Settings.fields.nameLabel",
+                            id: FM.SETTINGS_FIELDS_NAMELABEL,
                             defaultMessage: "Name"
                         })}
                         onGetErrorMessage={value => this.onGetNameErrorMessage(value)}
@@ -252,14 +253,14 @@ class Settings extends React.Component<Props, ComponentState> {
                         className="ms-font-m-plus"
                         disabled={true}
                         label={intl.formatMessage({
-                            id: "Settings.fields.appIdLabel",
+                            id: FM.SETTINGS_FILEDS_APPIDLABEL,
                             defaultMessage: "App ID"
                         })}
                         value={this.state.appIdVal}
                     />
                     <Label className="ms-font-m-plus">
                         <FormattedMessage
-                            id="Settings.botFrameworkLuisKeyLabel"
+                            id={FM.SETTINGS_BOTFRAMEWORKLUISKEYLABEL}
                             defaultMessage="LUIS Key"
                         />
                     </Label>
@@ -279,7 +280,7 @@ class Settings extends React.Component<Props, ComponentState> {
                     </div>
                     <Label className="ms-font-m-plus">
                         <FormattedMessage
-                            id="Settings.botFrameworkLocaleLabel"
+                            id={FM.SETTINGS_BOTFRAMEWORKLOCALELABEL}
                             defaultMessage="Locale"
                         />
                     </Label>
@@ -292,7 +293,7 @@ class Settings extends React.Component<Props, ComponentState> {
                     <div>
                         <Label className="ms-font-m-plus">
                             <FormattedMessage
-                                id="Settings.botFrameworkListLabel"
+                                id={FM.SETTINGS_BOTFRAMEWORKLISTLABEL}
                                 defaultMessage="Bot Framework Apps"
                             />
                         </Label>

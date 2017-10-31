@@ -8,6 +8,7 @@ import { deleteEntityAsync } from '../../../actions/deleteActions'
 import { State } from '../../../types';
 import { onRenderDetailsHeader } from '../../../components/ToolTips'
 import { BlisAppBase, EntityBase, EntityType } from 'blis-models'
+import { FM } from '../../../react-intl-messages'
 import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 
 interface IRenderableColumn extends OF.IColumn {
@@ -20,7 +21,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
         {
             key: 'entityName',
             name: intl.formatMessage({
-                id: 'Entities.columns.name',
+                id: FM.ENTITIES_COLUMNS_NAME,
                 defaultMessage: 'Entity Name'
             }),
             fieldName: 'entityName',
@@ -33,7 +34,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
         {
             key: 'entityType',
             name: intl.formatMessage({
-                id: 'Entities.columns.type',
+                id: FM.ENTITIES_COLUMNS_TYPE,
                 defaultMessage: 'Type'
             }),
             fieldName: 'entityType',
@@ -54,7 +55,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
         {
             key: 'isProgrammatic',
             name: intl.formatMessage({
-                id: 'Entities.columns.isProgrammatic',
+                id: FM.ENTITIES_COLUMNS_IS_PROGRAMMATIC,
                 defaultMessage: 'Programmatic'
             }),
             fieldName: 'programmatic',
@@ -70,7 +71,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
         {
             key: 'isBucketable',
             name: intl.formatMessage({
-                id: 'Entities.columns.isBucketable',
+                id: FM.ENTITIES_COLUMNS_IS_BUCKETABLE,
                 defaultMessage: 'Multi-Value'
             }),
             fieldName: 'metadata',
@@ -86,7 +87,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
         {
             key: 'isNegatable',
             name: intl.formatMessage({
-                id: 'Entities.columns.isNegatable',
+                id: FM.ENTITIES_COLUMNS_IS_NEGATABLE,
                 defaultMessage: 'Negatable'
             }),
             fieldName: 'metadata',
@@ -258,13 +259,13 @@ class Entities extends React.Component<Props, ComponentState> {
             <div className="blis-page">
                 <span className="ms-font-xxl">
                     <FormattedMessage
-                        id="Entities.title"
+                        id={FM.ENTITIES_TITLE}
                         defaultMessage="Entities"
                     />
                 </span>
                 <span className="ms-font-m-plus">
                     <FormattedMessage
-                        id="Entities.subtitle"
+                        id={FM.ENTITIES_SUBTITLE}
                         defaultMessage="Manage a list of entities in your application and track and control their instances within actions..."
                     />
                 </span>
@@ -273,11 +274,11 @@ class Entities extends React.Component<Props, ComponentState> {
                         onClick={this.handleOpenCreateModal}
                         className='blis-button--gold'
                         ariaDescription={this.props.intl.formatMessage({
-                            id: 'Entities.createButtonAriaDescription',
+                            id: FM.ENTITIES_CREATEBUTTONARIALDESCRIPTION,
                             defaultMessage: 'Create a New Entity'
                         })}
                         text={this.props.intl.formatMessage({
-                            id: 'Entities.createButtonText',
+                            id: FM.ENTITIES_CREATEBUTTONTEXT,
                             defaultMessage: 'New Entity'
                         })}
                         componentRef={component => this.newEntityButton = component}
@@ -313,7 +314,7 @@ class Entities extends React.Component<Props, ComponentState> {
                     onCancel={() => this.onClickCancelDelete()}
                     onConfirm={() => this.onClickConfirmDelete()}
                     title={this.props.intl.formatMessage({
-                        id: 'Entities.confirmDeleteModalTitle',
+                        id: FM.ENTITIES_CONFIRMDELETEMODALTITLE,
                         defaultMessage: 'Are you sure you want to delete this entity?'
                     })}
                 />
@@ -323,7 +324,7 @@ class Entities extends React.Component<Props, ComponentState> {
                     dialogContentProps={{
                         type: OF.DialogType.normal,
                         title: this.props.intl.formatMessage({
-                            id: 'Entities.deleteWarningTitle',
+                            id: FM.ENTITIES_DELETEWARNINGTITLE,
                             defaultMessage: 'Are you sure you want to delete this entity?'
                         })
                     }}
@@ -335,7 +336,7 @@ class Entities extends React.Component<Props, ComponentState> {
                         <OF.PrimaryButton
                             onClick={() => this.onClickCancelDelete()}
                             text={this.props.intl.formatMessage({
-                                id: 'Entities.deleteWarningPrimaryButtonText',
+                                id: FM.ENTITIES_DELETEWARNINGPRIMARYBUTTONTEXT,
                                 defaultMessage: 'Close'
                             })}
                         />
