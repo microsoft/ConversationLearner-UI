@@ -13,6 +13,8 @@ import {
 import ActionScorer from './ActionScorer';
 import EntityExtractor from './EntityExtractor';
 import MemoryTable from './MemoryTable';
+import { FM } from '../../react-intl-messages'
+import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 
 class TeachSessionAdmin extends React.Component<Props, {}> {
     constructor(p: Props) {
@@ -62,27 +64,47 @@ class TeachSessionAdmin extends React.Component<Props, {}> {
             <div className="blis-dialog-admin ms-font-l">
                 {this.props.teachSession.mode == DialogMode.Extractor ? (
                     <div className="blis-dialog-admin__content">
-                        <div className="blis-wc-message blis-wc-message--user">User Input</div>
+                        <div className="blis-wc-message blis-wc-message--user">
+                            <FormattedMessage
+                                id={FM.TEACHSESSIONADMIN_DIALOGMODE_USER}
+                                defaultMessage="User Input"
+                            />
+                        </div>
                     </div>
-                    ) : (this.props.teachSession.mode == DialogMode.Scorer ? (
-                        <div className="blis-dialog-admin__content">
-                            <div className="blis-wc-message blis-wc-message--bot">Bot Response</div>
-                        </div>) : null                   
+                ) : (this.props.teachSession.mode == DialogMode.Scorer ? (
+                    <div className="blis-dialog-admin__content">
+                        <div className="blis-wc-message blis-wc-message--bot">
+                            <FormattedMessage
+                                id={FM.TEACHSESSIONADMIN_DIALOGMODE_BOT}
+                                defaultMessage="Bot Response"
+                            />
+                        </div>
+                    </div>) : null
                     )
                 }
                 <div className="blis-dialog-admin__content">
-                    <div className="blis-dialog-admin-title">Memory</div>
+                    <div className="blis-dialog-admin-title">
+                        <FormattedMessage
+                            id={FM.TEACHSESSIONADMIN_MEMORY_TITLE}
+                            defaultMessage="Memory"
+                        />
+                    </div>
                     <div>
-                        <MemoryTable 
+                        <MemoryTable
                             dialogMode={this.props.teachSession.mode}
                             memories={this.props.teachSession.memories}
                             prevMemories={this.props.teachSession.prevMemories}
-                            />
+                        />
                     </div>
                 </div>
-                {this.props.teachSession.mode == DialogMode.Extractor && 
+                {this.props.teachSession.mode == DialogMode.Extractor &&
                     <div className="blis-dialog-admin__content">
-                        <div className="blis-dialog-admin-title">Entity Detection</div>
+                        <div className="blis-dialog-admin-title">
+                            <FormattedMessage
+                                id={FM.TEACHSESSIONADMIN_ENTITYDETECTION_TITLE}
+                                defaultMessage="Entity Detection"
+                            />
+                        </div>
                         <div>
                             {(mode === DialogMode.Extractor || autoTeachWithRound) &&
                                 <EntityExtractor
@@ -99,9 +121,14 @@ class TeachSessionAdmin extends React.Component<Props, {}> {
                         </div>
                     </div>
                 }
-                {this.props.teachSession.mode == DialogMode.Scorer && 
+                {this.props.teachSession.mode == DialogMode.Scorer &&
                     <div className="blis-dialog-admin__content">
-                        <div className="blis-dialog-admin-title">Action</div>
+                        <div className="blis-dialog-admin-title">
+                            <FormattedMessage
+                                id={FM.TEACHSESSIONADMIN_ACTION_TITLE}
+                                defaultMessage="Action"
+                            />
+                        </div>
                         <div>
                             {(mode === DialogMode.Scorer || autoTeachWithRound) &&
                                 <ActionScorer
@@ -143,6 +170,6 @@ export interface ReceivedProps {
 // Props types inferred from mapStateToProps & dispatchToProps
 const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
-type Props = typeof stateProps & typeof dispatchProps & ReceivedProps;
+type Props = typeof stateProps & typeof dispatchProps & ReceivedProps & InjectedIntlProps
 
-export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(TeachSessionAdmin);
+export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(TeachSessionAdmin))

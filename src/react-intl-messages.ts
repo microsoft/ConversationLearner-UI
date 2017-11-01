@@ -215,6 +215,45 @@ export enum FM {
     LOGOUT_PRIMARYBUTTON_TEXT = "LogoutModal.primaryButton.text",
     LOGOUT_DEFAULTBUTTON_ARIADESCRIPTION = "LogoutModal.defaultButton.ariaDescription",
     LOGOUT_DEFAULTBUTTON_TEXT = "LogoutModal.defaultButton.text",
+
+    // MemoryTable
+    MEMORYTABLE_EMPTY = "MemoryTable.empty",
+
+    // TeachSessionAdmin
+    TEACHSESSIONADMIN_DIALOGMODE_USER = "TeachSessionAdmin.dialogMode.user",
+    TEACHSESSIONADMIN_DIALOGMODE_BOT = "TeachSessionAdmin.dialogMode.bot",
+    TEACHSESSIONADMIN_MEMORY_TITLE = "TeachSessionAdmin.memory.title",
+    TEACHSESSIONADMIN_ENTITYDETECTION_TITLE = "TeachSessionAdmin.entityDetection.title",
+    TEACHSESSIONADMIN_ACTION_TITLE = "TeachSessionAdmin.action.title",
+
+    // TeachSessionWindow
+    TEACHSESSIONWINDOW_DEFAULTBUTTON_ARIADESCRIPTION = "TeachSessionWindow.defaultButton.ariaDescription",
+    TEACHSESSIONWINDOW_DEFAULTBUTTON_TEXT = "TeachSessionWindow.defaultButton.text",
+    TEACHSESSIONWINDOW_PRIMARYBUTTON_ARIADESCRIPTION = "TeachSessionWindow.primaryButton.ariaDescription",
+    TEACHSESSIONWINDOW_PRIMARYBUTTON_TEXT = "TeachSessionWindow.primaryButton.text",
+    TEACHSESSIONWINDOW_CONFIRMDELETE_TITLE = "TeachSessionWindow.confirmDelete.title",
+
+    // TrainDialogAdmin
+    TRAINDIALOGADMIN_DIALOGMODE_USER = "TrainDialogAdmin.dialogMode.user",
+    TRAINDIALOGADMIN_DIALOGMODE_TEXT = "TrainDialogAdmin.dialogMode.text",
+    TRAINDIALOGADMIN_MEMORY_TITLE = "TrainDialogAdmin.memory.title",
+    TRAINDIALOGADMIN_HELPTEXT_TITLE = "TrainDialogAdmin.helpText.title",
+    TRAINDIALOGADMIN_HELPTEXT_DESCRIPTION = "TrainDialogAdmin.helpText.description",
+    TRAINDIALOGADMIN_HELPTEXT_DESCRIPTION2 = "TrainDialogAdmin.helpText.description2",
+    TRAINDIALOGADMIN_ENTITYDETECTION_TITLE = "TrainDialogAdmin.entityDetection.title",
+    TRAINDIALOGADMIN_ENTITYDETECTION_HELPTEXT = "TrainDialogAdmin.entityDetection.helpText",
+    TRAINDIALOGADMIN_ACTION_TITLE = "TrainDialogAdmin.action.title",
+    TRAINDIALOGADMIN_SAVECHANGES_TITLE = "TrainDialogAdmin.saveChanges.title",
+    TRAINDIALOGADMIN_SAVECHANGES_DESCRIPTION = "TrainDialogAdmin.saveChanges.description",
+    TRAINDIALOGADMIN_SAVECHANGES_PRIMARYBUTTON_TEXT = "TrainDialogAdmin.saveChanges.primaryButton.text",
+    TRAINDIALOGADMIN_SAVECHANGES_DEFAULTBUTTON_TEXT = "TrainDialogAdmin.saveChanges.defaultButton.text",
+
+    // TrainDialogWindow
+    TRAINDIALOGWINDOW_DEFAULTBUTTON_ARIADESCRIPTION = "TrainDialogWindow.defaultButton.ariaDescription",
+    TRAINDIALOGWINDOW_DEFAULTBUTTON_TEXT = "TrainDialogWindow.defaultButton.text",
+    TRAINDIALOGWINDOW_PRIMARYBUTTON_ARIADESCRIPTION = "TrainDialogWindow.defaultButton.ariaDescription",
+    TRAINDIALOGWINDOW_PRIMARYBUTTON_TEXT = "TrainDialogWindow.defaultButton.text",
+    TRAINDIALOGWINDOW_CONFIRMDELETE_TITLE = "TrainDialogWindow.confirmDelete.title",
 }
 
 // Message ids follow convention of "<componentname>.<area>[.<subarea>]*`
@@ -437,6 +476,45 @@ export default {
         [FM.LOGOUT_PRIMARYBUTTON_TEXT]: "Log Out",
         [FM.LOGOUT_DEFAULTBUTTON_ARIADESCRIPTION]: "Cancel",
         [FM.LOGOUT_DEFAULTBUTTON_TEXT]: "Cancel",
+
+        // MemoryTable
+        [FM.MEMORYTABLE_EMPTY]: "Empty",
+
+        // TeachSessionAdmin
+        [FM.TEACHSESSIONADMIN_DIALOGMODE_USER]: "User Input",
+        [FM.TEACHSESSIONADMIN_DIALOGMODE_BOT]: "Bot Response",
+        [FM.TEACHSESSIONADMIN_MEMORY_TITLE]: "Memory",
+        [FM.TEACHSESSIONADMIN_ENTITYDETECTION_TITLE]: "Entity Detection",
+        [FM.TEACHSESSIONADMIN_ACTION_TITLE]: "Action",
+
+        // TeachSessionWindow
+        [FM.TEACHSESSIONWINDOW_DEFAULTBUTTON_ARIADESCRIPTION]: "Abandon Teach",
+        [FM.TEACHSESSIONWINDOW_DEFAULTBUTTON_TEXT]: "Abandon Teach",
+        [FM.TEACHSESSIONWINDOW_PRIMARYBUTTON_ARIADESCRIPTION]: "Done Teaching",
+        [FM.TEACHSESSIONWINDOW_PRIMARYBUTTON_TEXT]: "Done Teaching",
+        [FM.TEACHSESSIONWINDOW_CONFIRMDELETE_TITLE]: "Are you sure you want to abandon this teach session?",
+
+        // TrainDialogAdmin
+        [FM.TRAINDIALOGADMIN_DIALOGMODE_USER]: "User Input",
+        [FM.TRAINDIALOGADMIN_DIALOGMODE_TEXT]: "Bot Response",
+        [FM.TRAINDIALOGADMIN_MEMORY_TITLE]: "Memory",
+        [FM.TRAINDIALOGADMIN_HELPTEXT_TITLE]: "Train Dialog",
+        [FM.TRAINDIALOGADMIN_HELPTEXT_DESCRIPTION]: "Click on User or Bot dialogs to the left to view steps in the Train Dialog.",
+        [FM.TRAINDIALOGADMIN_HELPTEXT_DESCRIPTION2]: "You can then make changes to the Train Dialog.",
+        [FM.TRAINDIALOGADMIN_ENTITYDETECTION_TITLE]: "Entity Detection",
+        [FM.TRAINDIALOGADMIN_ENTITYDETECTION_HELPTEXT]: "Click on text from the dialog to the left.",
+        [FM.TRAINDIALOGADMIN_ACTION_TITLE]: "Action",
+        [FM.TRAINDIALOGADMIN_SAVECHANGES_TITLE]: "Your changes will invalidate the subsequent steps in the Train Dialog",
+        [FM.TRAINDIALOGADMIN_SAVECHANGES_DESCRIPTION]: "Do you want to proceed and truncate the Train Dialog at this step?",
+        [FM.TRAINDIALOGADMIN_SAVECHANGES_PRIMARYBUTTON_TEXT]: "Yes",
+        [FM.TRAINDIALOGADMIN_SAVECHANGES_DEFAULTBUTTON_TEXT]: "No",
+
+        // TrainDialogWindow
+        [FM.TRAINDIALOGWINDOW_DEFAULTBUTTON_ARIADESCRIPTION]: "Delete",
+        [FM.TRAINDIALOGWINDOW_DEFAULTBUTTON_TEXT]: "Delete",
+        [FM.TRAINDIALOGWINDOW_PRIMARYBUTTON_ARIADESCRIPTION]: "Done",
+        [FM.TRAINDIALOGWINDOW_PRIMARYBUTTON_TEXT]: "Done",
+        [FM.TRAINDIALOGWINDOW_CONFIRMDELETE_TITLE]: "Are you sure you want to delete this Training Dialog?",
     },
     "ko": {
         [FM.ABOUT_TITLE]: "약",

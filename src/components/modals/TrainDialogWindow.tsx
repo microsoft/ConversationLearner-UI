@@ -14,6 +14,8 @@ import { SenderType } from '../../types/const';
 import ConfirmDeleteModal from './ConfirmDeleteModal'
 // TODO: Investigate if this can be removed in favor of local state
 import { addMessageToChatConversationStack } from '../../actions/displayActions';
+import { FM } from '../../react-intl-messages'
+import { injectIntl, InjectedIntlProps } from 'react-intl'
 
 interface ComponentState {
     confirmDeleteModalOpen: boolean,
@@ -113,6 +115,7 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
         return activities;
     }
     render() {
+        const { intl } = this.props
         return (
             <Modal
                 isOpen={this.props.open && this.props.error == null}
@@ -149,13 +152,25 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
                         <div className="blis-modal-buttons_secondary">
                             <DefaultButton
                                 onClick={() => this.onClickDelete()}
-                                ariaDescription='Delete'
-                                text='Delete'
+                                ariaDescription={intl.formatMessage({
+                                    id: FM.TRAINDIALOGWINDOW_DEFAULTBUTTON_ARIADESCRIPTION,
+                                    defaultMessage: 'Delete'
+                                })}
+                                text={intl.formatMessage({
+                                    id: FM.TRAINDIALOGWINDOW_DEFAULTBUTTON_TEXT,
+                                    defaultMessage: 'Delete'
+                                })}
                             />
                             <PrimaryButton
                                 onClick={() => this.onClickDone()}
-                                ariaDescription='Done'
-                                text='Done'
+                                ariaDescription={intl.formatMessage({
+                                    id: FM.TRAINDIALOGWINDOW_PRIMARYBUTTON_ARIADESCRIPTION,
+                                    defaultMessage: 'Done'
+                                })}
+                                text={intl.formatMessage({
+                                    id: FM.TRAINDIALOGWINDOW_PRIMARYBUTTON_TEXT,
+                                    defaultMessage: 'Done'
+                                })}
                             />
                         </div>
                     </div>
@@ -164,7 +179,10 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
                     open={this.state.confirmDeleteModalOpen}
                     onCancel={() => this.onClickCancelDelete()}
                     onConfirm={() => this.onClickConfirmDelete()}
-                    title={`Are you sure you want to delete this Training Dialog?`}
+                    title={intl.formatMessage({
+                        id: FM.TRAINDIALOGWINDOW_CONFIRMDELETE_TITLE,
+                        defaultMessage: `Are you sure you want to delete this Training Dialog?`
+                    })}
                 />
             </Modal>
         );
@@ -194,6 +212,6 @@ export interface ReceivedProps {
 // Props types inferred from mapStateToProps & dispatchToProps
 const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
-type Props = typeof stateProps & typeof dispatchProps & ReceivedProps;
+type Props = typeof stateProps & typeof dispatchProps & ReceivedProps & InjectedIntlProps
 
-export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(TrainDialogWindow);
+export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(TrainDialogWindow))

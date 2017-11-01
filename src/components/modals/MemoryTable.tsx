@@ -7,8 +7,10 @@ import * as OF from 'office-ui-fabric-react';
 import { onRenderDetailsHeader } from '../ToolTips'
 import { EntityBase, EntityType, Memory } from 'blis-models'
 import { DialogMode } from '../../types/const'
+import { FM } from '../../react-intl-messages'
+import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 
-let columns: OF.IColumn[] = [
+const columns: OF.IColumn[] = [
     {
         key: 'entityName',
         name: 'Name',
@@ -127,7 +129,7 @@ class MemoryTable extends React.Component<Props, ComponentState> {
 
         return <span className={entityClass}>{entityName}</span>
     }
-    renderEntityValues(entityName : string) {
+    renderEntityValues(entityName: string) {
 
         // Current entity values
         let entity = this.props.entities.find(e => e.entityName == entityName);
@@ -137,7 +139,7 @@ class MemoryTable extends React.Component<Props, ComponentState> {
         // Corresponding old memory values
         let prevMemory = this.props.prevMemories.find(m => m.entityName == entityName);
         let prevValues = prevMemory ? prevMemory.entityValues : [];
-        
+
         // Find union and remove duplicates
         let unionValues = [...curValues, ...prevValues];
         unionValues = Array.from(new Set(unionValues));
@@ -145,36 +147,35 @@ class MemoryTable extends React.Component<Props, ComponentState> {
         // Print out list in friendly manner
         let display = [];
         let index = 0;
-        for (let value of unionValues)
-        {
+        for (let value of unionValues) {
             let entityClass = "";
 
             // Calculate prefix
             let prefix = "";
             if (!entity.metadata || !entity.metadata.isBucket) {
-                prefix  = " ";
+                prefix = " ";
             }
-            else if (unionValues.length != 1 && index == unionValues.length-1) {
-                    prefix = " and ";
+            else if (unionValues.length != 1 && index == unionValues.length - 1) {
+                prefix = " and ";
             }
             else if (index != 0) {
                 prefix = ", ";
             }
 
             // In old but not new
-            if (prevValues.indexOf(value) >= 0  && curValues.indexOf(value) < 0) {
+            if (prevValues.indexOf(value) >= 0 && curValues.indexOf(value) < 0) {
                 entityClass = "blis-font--deleted";
             }
             // In new but not old
-            else if (prevValues.indexOf(value) < 0  && curValues.indexOf(value) >= 0) {
+            else if (prevValues.indexOf(value) < 0 && curValues.indexOf(value) >= 0) {
                 entityClass = "blis-font--emphasis";
             }
-            
+
             display.push(<span className='ms-font-m-plus' key={value}>{prefix}<span className={entityClass}>{value}</span></span>);
 
             index++;
         }
-        return display; 
+        return display;
 
     }
     renderItemColumn(entityName?: any, index?: number, column?: OF.IColumn) {
@@ -182,10 +183,10 @@ class MemoryTable extends React.Component<Props, ComponentState> {
         let entity = this.props.entities.filter((e: EntityBase) => e.entityName == entityName)[0];
         if (!entity) {
             return "ERROR";
-        }        
+        }
         if (column.key == 'entityType') {
             let type = (entity.entityType == EntityType.LOCAL || entity.entityType == EntityType.LUIS) ? "CUSTOM" : entity.entityType;
-            return <span className="ms-font-m-plus">{type}</span>;  
+            return <span className="ms-font-m-plus">{type}</span>;
         }
         else if (column.key == 'entityValues') {
             return this.renderEntityValues(entityName);
@@ -199,21 +200,20 @@ class MemoryTable extends React.Component<Props, ComponentState> {
         else if (column.key == 'isNegatable') {
             return <span className={"ms-Icon blis-icon " + (entity.metadata.isReversable ? "ms-Icon--CheckMark" : "ms-Icon--Remove")} aria-hidden="true"></span>
         }
-        else if (column.key == 'entityName')
-        {
+        else if (column.key == 'entityName') {
             return this.renderEntityName(entityName);
         }
         return null;
     }
     getMemoryNames(): string[] {
 
-         let unionMemoryNames = 
+        let unionMemoryNames =
             // Find union or old and new remove duplicates
             [
-                ...this.props.memories.map(m => m.entityName), 
+                ...this.props.memories.map(m => m.entityName),
                 ...this.props.prevMemories.map(m => m.entityName)
             ];
-         
+
         unionMemoryNames = Array.from(new Set(unionMemoryNames));
 
         if (this.state.sortColumn) {
@@ -234,24 +234,27 @@ class MemoryTable extends React.Component<Props, ComponentState> {
         return unionMemoryNames;
     }
     render() {
-        let memoryNames = this.getMemoryNames();
-        let details = memoryNames.length == 0 ?
-            <div className='ms-font-l teachEmptyMemory'>Empty</div> :
-            <OF.DetailsList
-                className="ms-font-m-plus"
-                items={memoryNames}
-                columns={this.state.columns}
-                onColumnHeaderClick={this.onColumnClick}
-                onRenderItemColumn={this.renderItemColumn}
-                checkboxVisibility={OF.CheckboxVisibility.hidden}
-                onRenderDetailsHeader={(detailsHeaderProps: OF.IDetailsHeaderProps, 
-                                            defaultRender: OF.IRenderFunction<OF.IDetailsHeaderProps>) => 
-                        onRenderDetailsHeader(detailsHeaderProps, defaultRender)}
-                   
-            />
+        const memoryNames = this.getMemoryNames()
         return (
             <div>
-                {details}
+                {memoryNames.length == 0
+                    ? <div className='ms-font-l teachEmptyMemory'>
+                        <FormattedMessage
+                            id={FM.MEMORYTABLE_EMPTY}
+                            defaultMessage="Empty"
+                        />
+                    </div>
+                    : <OF.DetailsList
+                        className="ms-font-m-plus"
+                        items={memoryNames}
+                        columns={this.state.columns}
+                        onColumnHeaderClick={this.onColumnClick}
+                        onRenderItemColumn={this.renderItemColumn}
+                        checkboxVisibility={OF.CheckboxVisibility.hidden}
+                        onRenderDetailsHeader={(detailsHeaderProps: OF.IDetailsHeaderProps,
+                            defaultRender: OF.IRenderFunction<OF.IDetailsHeaderProps>) =>
+                            onRenderDetailsHeader(detailsHeaderProps, defaultRender)}
+                    />}
             </div>
         )
     }
@@ -276,6 +279,6 @@ export interface ReceivedProps {
 // Props types inferred from mapStateToProps & dispatchToProps
 const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
-type Props = typeof stateProps & typeof dispatchProps & ReceivedProps;
+type Props = typeof stateProps & typeof dispatchProps & ReceivedProps & InjectedIntlProps
 
-export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(MemoryTable);
+export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(MemoryTable))
