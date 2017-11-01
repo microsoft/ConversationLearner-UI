@@ -87,11 +87,11 @@ class UserLogin extends React.Component<Props, ComponentState> {
                         onKeyDown={this.onKeyDown}
                         onChanged={this.onChangedName}
                         label={this.props.intl.formatMessage({
-                            id: FM.USERLOGIN_PASSWORDFIELDLABEL,
+                            id: FM.USERLOGIN_USERNAMEFIELDLABEL,
                             defaultMessage: "Name"
                         })}
                         placeholder={this.props.intl.formatMessage({
-                            id: FM.USERLOGIN_PASSWORDFIELDPLACEHOLDER,
+                            id: FM.USERLOGIN_USERNAMEFIELDPLACEHOLDER,
                             defaultMessage: "User Name..."
                         })}
                         value={this.state.userName}
