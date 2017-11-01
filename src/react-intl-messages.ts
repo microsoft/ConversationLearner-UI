@@ -201,6 +201,13 @@ export enum FM {
     ERROR_WARNING = "Error.warning",
     ERROR_PRIMARYBUTTON_ARIADESCRIPTION = "Error.ariaDescription",
     ERROR_PRIMARYBUTTON_TEXT = "Error.text",
+
+    // LogDialogModal
+    LOGDIALOGMODAL_DEFAULTBUTTON_ARIADESCRIPTION = "LogDialogModal.defaultButton.ariaDescription",
+    LOGDIALOGMODAL_DEFAULTBUTTON_TEXT = "LogDialogModal.defaultButton.text",
+    LOGDIALOGMODAL_PRIMARYBUTTON_ARIADESCRIPTION = "LogDialogModal.primaryButton.ariaDescription",
+    LOGDIALOGMODAL_PRIMARYBUTTON_TEXT = "LogDialogModal.primaryButton.text",
+    LOGDIALOGMODAL_CONFIRMDELETE_TITLE = "LogDialogModal.confirmDelete.title",
 }
 
 // Message ids follow convention of "<componentname>.<area>[.<subarea>]*`
@@ -409,6 +416,13 @@ export default {
         [FM.ERROR_WARNING]: "Warning",
         [FM.ERROR_PRIMARYBUTTON_ARIADESCRIPTION]: "Ok",
         [FM.ERROR_PRIMARYBUTTON_TEXT]: "Ok",
+
+        // LogDialogModal
+        [FM.LOGDIALOGMODAL_DEFAULTBUTTON_ARIADESCRIPTION]: "Delete",
+        [FM.LOGDIALOGMODAL_DEFAULTBUTTON_TEXT]: "Delete",
+        [FM.LOGDIALOGMODAL_PRIMARYBUTTON_ARIADESCRIPTION]: "Done",
+        [FM.LOGDIALOGMODAL_PRIMARYBUTTON_TEXT]: "Done",
+        [FM.LOGDIALOGMODAL_CONFIRMDELETE_TITLE]: "Are you sure you want to delete this Log Dialog?",
     },
     "ko": {
         [FM.ABOUT_TITLE]: "약",
