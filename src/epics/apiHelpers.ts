@@ -19,6 +19,7 @@ import actions from '../actions'
 import { ActionObject } from '../types'
 import { AT } from '../types/ActionTypes'
 import BlisClient from '../services/blisClient'
+import { FM } from '../react-intl-messages'
 
 //=========================================================
 // CONFIG
@@ -387,7 +388,7 @@ export const getLuisApplicationCultures = (): Promise<CultureObject[]> => {
 let handleError = function (obs: Observer<ActionObject>, err: any, route: AT) {
   if (!obs.closed) {
     // Service call failure
-    obs.next(actions.display.setErrorDisplay(err.message, toErrorString(err.response), route));
+    obs.next(actions.display.setErrorDisplay(FM.ERROR_ERROR, err.message, toErrorString(err.response), route));
     obs.complete();
   }
   else {

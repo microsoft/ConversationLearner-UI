@@ -50,12 +50,13 @@ export type DisplayAction = {
     type: AT.SET_CURRENT_BLIS_APP_FULFILLED,
     app: BlisAppBase
 } | {
-    //used for setting whether the app list or app homepage (Index) is displayed
+    // used for setting whether the app list or app homepage (Index) is displayed
     type: AT.SET_DISPLAY_MODE,
     setDisplay: DisplayMode,
 } | {
-    //used for setting whether the error popup is displayed
+    // used for setting whether the error popup is displayed
     type: AT.SET_ERROR_DISPLAY,
+    titleId: string,
     error: string,
     message: string,
     route: AT

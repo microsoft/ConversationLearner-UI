@@ -33,12 +33,12 @@ class UIError extends React.Component<Props, {}> {
                 <div className='blis-modal_header'>
                     <span className='ms-font-xxl ms-fontWeight-semilight'>
                         <FormattedMessage
-                            id={FM.ERROR_TITLE}
+                            id={this.props.error.titleId}
                             defaultMessage="Error"
                         />
                     </span>
                 </div>
-                <div className='ms-font-l ms-fontWeight-semilight'>{this.props.error.route} Failed</div>
+                {this.props.error.route && <div className='ms-font-l ms-fontWeight-semilight'>{this.props.error.route} Failed</div>}
                 <div className='ms-font-m ms-fontWeight-semilight'>{this.props.error.error}</div>
                 {message}
                 <div className='blis-modal_footer'>

@@ -3,43 +3,69 @@ import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Nav, Link } from 'office-ui-fabric-react';
-import { BlisAppBase } from 'blis-models'
+import { BlisAppBase, ActionBase, ActionTypes, ModelUtils } from 'blis-models'
 import { State } from '../../../types';
 import { DisplayMode } from '../../../types/const';
-import { setDisplayMode } from '../../../actions/displayActions';
+import { setDisplayMode, setErrorDisplay } from '../../../actions/displayActions';
 import Entities from './Entities'
 import TrainDialogs from './TrainDialogs'
 import Actions from './Actions'
 import Dashboard from './Dashboard'
 import Settings from './Settings'
 import LogDialogs from './LogDialogs'
+import { FM } from '../../../react-intl-messages'
+
 // TODO: i18n support would be much easier after proper routing is implemented
 // this would eliminate the use of page title strings as navigation keys and instead use the url
 
 interface ComponentState {
-    display: string
-    selectedKey: string
+    display: string;
+    selectedKey: string;
+    validationErrors: string[];
 }
 
 class Index extends React.Component<Props, ComponentState> {
     state: ComponentState = {
         display: 'Dash',
-        selectedKey: 'Dash'
+        selectedKey: 'Dash',
+        validationErrors: []
     }
 
+    componentWillReceiveProps(newProps: Props) {
+        let validationErrors: string[] = [];
+
+        if (newProps.actions !== this.props.actions) {
+            validationErrors.push.apply(validationErrors, this.actionValidationErrors(newProps.actions));
+        }
+
+        if (validationErrors.length > 0) {
+            this.props.setErrorDisplay(FM.ERROR_WARNING, 'Validation Error:', validationErrors.join('<br/)'), null);
+        }
+    }
+
+    actionValidationErrors(actions: ActionBase[]): string[] {
+        let errors: string[] = [];
+
+        // Check for missing APIs
+        let apiActions = actions.filter(a => a.metadata && a.metadata.actionType === ActionTypes.API_LOCAL);
+        let missingApis = apiActions.filter(a => !this.props.botInfo.callbacks.find(cb => cb === ModelUtils.GetPrimaryPayload(a)));
+        errors = missingApis.map(a => `Action references API "${ModelUtils.GetPrimaryPayload(a)}" not contained by running Bot`);
+        return errors;
+    }
+    // If one is found and subst
     renderChosenNavLink() {
         switch (this.state.display) {
-            case "Settings":
+            case 'Settings':
                 return <Settings app={this.props.app} />
-            case "Dash":
+            case 'Dash':
                 return <Dashboard app={this.props.app} />
-            case "Entities":
+            case 'Entities':
                 return <Entities app={this.props.app} />
-            case "Actions":
+            case 'Actions':
                 return <Actions app={this.props.app} />
-            case "TrainDialogs":
+            case 'TrainDialogs':
                 return <TrainDialogs app={this.props.app} />
-            case "LogDialogs":
+            case 'LogDialogs':
                 return <LogDialogs app={this.props.app} />
             default:
                 return <Dashboard app={this.props.app} />
@@ -59,7 +85,7 @@ class Index extends React.Component<Props, ComponentState> {
                     <div className="blis-app-title ms-font-xxl">{this.props.app.appName}</div>
                     <div className="blis-nav ms-font-m-plus">
                         <div className="blis-nav_section">
-                            <a onClick={() => this.setArenaDisplay('Settings')}><span className="ms-Icon ms-Icon--Settings" aria-hidden="true"></span>&nbsp;&nbsp;</a>
+                            <a onClick={() => this.setArenaDisplay('Settings')}><span className="ms-Icon ms-Icon--Settings" aria-hidden="true"/>&nbsp;&nbsp;</a>
                             <span className="ms-font-m-plus"><a onClick={() => this.setArenaDisplay('Settings')}>Settings</a></span>
                         </div>
                         <div className="blis-nav_section">
@@ -90,7 +116,8 @@ class Index extends React.Component<Props, ComponentState> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        setDisplayMode
+        setDisplayMode,
+        setErrorDisplay,
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {
@@ -98,7 +125,8 @@ const mapStateToProps = (state: State) => {
         entities: state.entities,
         actions: state.actions,
         trainDialogs: state.trainDialogs,
-        display: state.display
+        display: state.display,
+        botInfo: state.bot.botInfo
     }
 }
 
