@@ -90,7 +90,7 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
     constructor(p: any) {
         super(p);
         this.state = {
-            input: "",
+            input: '',
             predictedEntities: [],
             definitions: null,
             substringObjects: [],
@@ -120,7 +120,7 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
         if (newProps.entities.length > this.props.entities.length) {
             // Find the new entity
             let newEntity = newProps.entities.filter(ne => {
-                let fe = this.props.entities.find(e => e.entityId == ne.entityId);
+                let fe = this.props.entities.find(e => e.entityId === ne.entityId);
                 return fe === undefined;
             })[0];
 
@@ -207,10 +207,10 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
             entity: null
         }
         predictedEntities.map(p => {
-            if (count == 0) {
-                if (p.startCharIndex == 0) {
+            if (count === 0) {
+                if (p.startCharIndex === 0) {
                     // handle the case where the first character of the input is part of an entity
-                    currentIndexGroup = { ...currentIndexGroup, end: p.endCharIndex + 1, entity: this.props.entities.find(e => e.entityId == p.entityId) }
+                    currentIndexGroup = { ...currentIndexGroup, end: p.endCharIndex + 1, entity: this.props.entities.find(e => e.entityId === p.entityId) }
                     indexGroups.push(currentIndexGroup);
                     currentIndexGroup = {
                         start: p.endCharIndex + 1,
@@ -221,7 +221,7 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
                     // handle the case where the first character of the input is part of a piece of regular text
                     currentIndexGroup = { ...currentIndexGroup, end: p.startCharIndex }
                     indexGroups.push(currentIndexGroup);
-                    currentIndexGroup = { ...currentIndexGroup, start: p.startCharIndex, end: p.endCharIndex + 1, entity: this.props.entities.find(e => e.entityId == p.entityId) }
+                    currentIndexGroup = { ...currentIndexGroup, start: p.startCharIndex, end: p.endCharIndex + 1, entity: this.props.entities.find(e => e.entityId === p.entityId) }
                     indexGroups.push(currentIndexGroup);
                     currentIndexGroup = {
                         start: p.endCharIndex + 1,
@@ -232,7 +232,7 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
             } else {
                 if (currentIndexGroup.start === p.startCharIndex) {
                     // handle the case where the first character after the last entity is part of another entity
-                    currentIndexGroup = { ...currentIndexGroup, end: p.endCharIndex, entity: this.props.entities.find(e => e.entityId == p.entityId) }
+                    currentIndexGroup = { ...currentIndexGroup, end: p.endCharIndex, entity: this.props.entities.find(e => e.entityId === p.entityId) }
                     indexGroups.push(currentIndexGroup);
                     currentIndexGroup = {
                         start: p.endCharIndex + 1,
@@ -243,7 +243,7 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
                     // handle the case where the first character after the last entity is part of a piece of regular text
                     currentIndexGroup = { ...currentIndexGroup, end: p.startCharIndex }
                     indexGroups.push(currentIndexGroup);
-                    currentIndexGroup = { ...currentIndexGroup, start: p.startCharIndex, end: p.endCharIndex + 1, entity: this.props.entities.find(e => e.entityId == p.entityId) }
+                    currentIndexGroup = { ...currentIndexGroup, start: p.startCharIndex, end: p.endCharIndex + 1, entity: this.props.entities.find(e => e.entityId === p.entityId) }
                     indexGroups.push(currentIndexGroup);
                     currentIndexGroup = {
                         start: p.endCharIndex + 1,
@@ -270,7 +270,7 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
             indexGroups.push(i)
         }
         let substringObjects: SubstringObject[] = [];
-        if (indexGroups.length === 0 && input.length == 1) {
+        if (indexGroups.length === 0 && input.length === 1) {
             // single letter, would not be picked up by the loop below
             let substringObj: SubstringObject = {
                 text: input,
@@ -492,6 +492,9 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
             substringObjects: allObjects
         })
     }
+    isPreBuilt(entity: EntityBase) {
+        return (entity.entityType !== EntityType.LUIS && entity.entityType !== EntityType.LOCAL);
+    }
     onClickText(s: SubstringObject) {
         if (!this.props.canEdit) {
             return;
@@ -562,7 +565,7 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
                     substringsClicked: [...currentlyClicked, s]
                 })
             }
-        } else {
+        } else if (!this.isPreBuilt(s.entity)) { //TODO: show message for why can't be edited
             // make the dropdown reappear. The user can edit the entity that applies to this string
             let style: {} = styles.hidden;
             if (s.dropdownStyle === styles.hidden) {
@@ -922,7 +925,7 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
         })
     }
     onGlobalClick() {
-        if (this.state.insideExtractor === false && this.state.substringsClicked.length > 0) {
+        if (this.state.insideExtractor === false) { //TEMP && this.state.substringsClicked.length > 0) {
             this.removeBracketsFromAllSelectedSubstrings();
             this.setState({
                 substringsClicked: []
