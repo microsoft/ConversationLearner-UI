@@ -197,7 +197,8 @@ export enum FM {
     ENTITYCREATOREDITOR_DELETEBUTTON_TEXT = "EntityCreatorEditor.deleteButton.text",
 
     // Error
-    ERROR_TITLE = "Error.title",
+    ERROR_ERROR = "Error.error",
+    ERROR_WARNING = "Error.warning",
     ERROR_PRIMARYBUTTON_ARIADESCRIPTION = "Error.ariaDescription",
     ERROR_PRIMARYBUTTON_TEXT = "Error.text",
 }
@@ -404,7 +405,8 @@ export default {
         [FM.ENTITYCREATOREDITOR_DELETEBUTTON_TEXT]: "Delete",
 
         // Error
-        [FM.ERROR_TITLE]: "Error",
+        [FM.ERROR_ERROR]: "Error",
+        [FM.ERROR_WARNING]: "Warning",
         [FM.ERROR_PRIMARYBUTTON_ARIADESCRIPTION]: "Ok",
         [FM.ERROR_PRIMARYBUTTON_TEXT]: "Ok",
     },

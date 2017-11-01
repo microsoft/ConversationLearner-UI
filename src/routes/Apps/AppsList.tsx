@@ -170,8 +170,7 @@ class AppsList extends React.Component<Props, ComponentState> {
 
                 if (this.state.sortColumn.isSortedDescending) {
                     return firstValue > secondValue ? -1 : 1;
-                }
-                else {
+                } else {
                     return firstValue > secondValue ? 1 : -1;
                 }
             });

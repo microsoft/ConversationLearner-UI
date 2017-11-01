@@ -12,6 +12,7 @@ import { AT } from '../types/ActionTypes'
 export type ActionState = ActionBase[];
 export type EntityState = EntityBase[];
 export type ErrorState = {
+    titleId: string,
     error: string,
     message: string,
     route: AT
