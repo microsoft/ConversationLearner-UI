@@ -1,6 +1,6 @@
 export const PreBuilts = {
 	DatetimeV2: "datetimeV2",
-	Datetime : "datetime",
+	Datetime: "datetime",
 	Number: "number",
 	Ordinal: "ordinal",
 	Percentage: "percentage",
