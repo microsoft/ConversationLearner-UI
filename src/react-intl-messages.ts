@@ -208,6 +208,13 @@ export enum FM {
     LOGDIALOGMODAL_PRIMARYBUTTON_ARIADESCRIPTION = "LogDialogModal.primaryButton.ariaDescription",
     LOGDIALOGMODAL_PRIMARYBUTTON_TEXT = "LogDialogModal.primaryButton.text",
     LOGDIALOGMODAL_CONFIRMDELETE_TITLE = "LogDialogModal.confirmDelete.title",
+
+    // LogOut
+    LOGOUT_TITLE = "LogoutModal.title",
+    LOGOUT_PRIMARYBUTTON_ARIADESCRIPTION = "LogoutModal.primaryButton.ariaDescription",
+    LOGOUT_PRIMARYBUTTON_TEXT = "LogoutModal.primaryButton.text",
+    LOGOUT_DEFAULTBUTTON_ARIADESCRIPTION = "LogoutModal.defaultButton.ariaDescription",
+    LOGOUT_DEFAULTBUTTON_TEXT = "LogoutModal.defaultButton.text",
 }
 
 // Message ids follow convention of "<componentname>.<area>[.<subarea>]*`
@@ -423,6 +430,13 @@ export default {
         [FM.LOGDIALOGMODAL_PRIMARYBUTTON_ARIADESCRIPTION]: "Done",
         [FM.LOGDIALOGMODAL_PRIMARYBUTTON_TEXT]: "Done",
         [FM.LOGDIALOGMODAL_CONFIRMDELETE_TITLE]: "Are you sure you want to delete this Log Dialog?",
+
+        // LogoutModal
+        [FM.LOGOUT_TITLE]: "Log Out",
+        [FM.LOGOUT_PRIMARYBUTTON_ARIADESCRIPTION]: "Log Out",
+        [FM.LOGOUT_PRIMARYBUTTON_TEXT]: "Log Out",
+        [FM.LOGOUT_DEFAULTBUTTON_ARIADESCRIPTION]: "Cancel",
+        [FM.LOGOUT_DEFAULTBUTTON_TEXT]: "Cancel",
     },
     "ko": {
         [FM.ABOUT_TITLE]: "약",
