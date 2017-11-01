@@ -8,8 +8,30 @@ import { PrimaryButton, Checkbox, DefaultButton, Dropdown, IDropdownOption, TagP
 import { ActionBase, ActionTypes, BlisAppBase, EntityBase } from 'blis-models'
 import ConfirmDeleteModal from './ConfirmDeleteModal'
 import EntityCreatorEditor from './EntityCreatorEditor'
-import ActionPayloadEditor from './ActionPayloadEditor/ActionPayloadEditor'
+import ActionPayloadEditor, { utilities as payloadUtilities, IMention } from './ActionPayloadEditor'
 import { State } from '../../types'
+
+const convertEntityToMention = (entity: EntityBase): IMention =>
+    ({
+        id: entity.entityId,
+        name: `{${entity.entityName}}`,
+        displayName: entity.entityName,
+    })
+
+const convertContentEntityToTag = (contentEntity: payloadUtilities.IContentEntity) =>
+    ({
+        key: contentEntity.entity.data.mention.displayName,
+        name: contentEntity.entity.data.mention.displayName
+    })
+
+const convertEntityIdsToTags = (ids: string[], entities: EntityBase[]): ITag[] => {
+    return ids
+        .map<EntityBase>(entityId => entities.find(e => e.entityId === entityId))
+        .map<ITag>(entity => ({
+            key: entity.entityName,
+            name: entity.entityName
+        }))
+}
 
 const getSuggestedTags = (filterText: string, allTags: ITag[], tagsToExclude: ITag[]): ITag[] => {
     if (filterText.length === 0) {
@@ -36,6 +58,7 @@ interface ComponentState {
     selectedActionTypeOptionKey: string | number
     entityTags: ITag[]
     selectedExpectedEntityTags: ITag[]
+    requiredEntityTagsFromPayload: ITag[]
     selectedRequiredEntityTags: ITag[]
     selectedNegativeEntityTags: ITag[]
     mentionEditorState: EditorState
@@ -53,6 +76,7 @@ const initialState: ComponentState = {
     selectedActionTypeOptionKey: actionTypeOptions[0].key,
     entityTags: [],
     selectedExpectedEntityTags: [],
+    requiredEntityTagsFromPayload: [],
     selectedRequiredEntityTags: [],
     selectedNegativeEntityTags: [],
     mentionEditorState: EditorState.createEmpty(),
@@ -110,8 +134,8 @@ class ActionEditor extends React.Component<Props, ComponentState> {
             if (nextProps.action) {
                 const action = nextProps.action
 
-                const selectedNegativeEntityTags = this.convertEntityIdsToTags(action.negativeEntities, nextProps.entities)
-                const selectedRequiredEntityTags = this.convertEntityIdsToTags(action.requiredEntities, nextProps.entities)
+                const selectedNegativeEntityTags = convertEntityIdsToTags(action.negativeEntities, nextProps.entities)
+                const selectedRequiredEntityTags = convertEntityIdsToTags(action.requiredEntities, nextProps.entities)
                 const selectedExpectedEntityTags = []
 
                 const expectedEntity: EntityBase = action.metadata && (action.metadata as any).entitySuggestion
@@ -122,15 +146,21 @@ class ActionEditor extends React.Component<Props, ComponentState> {
                     })
                 }
 
-                // Get all tags that are not already set as reuired tags
-                const tagsAvailableForPayload = this.state.entityTags.filter(t => selectedRequiredEntityTags.every(tag => tag.key !== t.key))
-
                 // Get editor state
                 // const contentState = convertFromRaw(JSON.parse(action.payload))
                 const contentState = ContentState.createFromText(action.payload)
                 let editorState = EditorState.createWithContent(contentState)
                 editorState = EditorState.moveFocusToEnd(editorState)
                 editorState = EditorState.moveSelectionToEnd(editorState)
+
+                // TODO: Remove coupling of mention id.  We're taking advantange that we know mentions use
+                // internal id formatted as [<mentionTrigger>]mention and we know the mentionTrigger is '{'
+                // This is mostly due to stretching the boundaries of what this plugin was meant to do.
+                // We could try to recreate the mention editor if needed, but save that as last resort.
+                const requiredEntityTagsFromPayload = payloadUtilities.getEntities(editorState, '{mention').map(convertContentEntityToTag)
+
+                // Get all tags that are not already set as reuired tags
+                const tagsAvailableForPayload = this.state.entityTags.filter(t => selectedRequiredEntityTags.every(tag => tag.key !== t.key))
 
                 nextState = {
                     ...nextState,
@@ -139,6 +169,7 @@ class ActionEditor extends React.Component<Props, ComponentState> {
                     editorKey: this.state.editorKey + 1,
                     selectedExpectedEntityTags,
                     selectedNegativeEntityTags,
+                    requiredEntityTagsFromPayload,
                     selectedRequiredEntityTags,
                     tagsAvailableForPayload,
                     isEditing: true
@@ -147,15 +178,6 @@ class ActionEditor extends React.Component<Props, ComponentState> {
         }
 
         this.setState(prevState => nextState)
-    }
-
-    convertEntityIdsToTags(ids: string[], entities: EntityBase[]): ITag[] {
-        return ids
-            .map<EntityBase>(entityId => entities.find(e => e.entityId === entityId))
-            .map<ITag>(entity => ({
-                key: entity.entityName,
-                name: entity.entityName
-            }))
     }
 
     onChangeWaitCheckbox() {
@@ -313,33 +335,16 @@ class ActionEditor extends React.Component<Props, ComponentState> {
         })
     }
 
-    onMatchTagInPayload(tag: ITag) {
-        console.log(`onMatchTagInPayload: `, tag)
-
-        const isTagAlreadyIncluded = this.state.selectedRequiredEntityTags.find(t => t.key === tag.key)
-        if (isTagAlreadyIncluded) {
-            console.error(`You attempted to add tag: ${tag.name} to the list of required entities, but was already included.`)
-            return
-        }
-
-        this.setState({
-            selectedRequiredEntityTags: [...this.state.selectedRequiredEntityTags, tag],
-            tagsAvailableForPayload: this.state.tagsAvailableForPayload.filter(t => t.key !== tag.key)
-        })
-    }
-
-    onUnmatchTagInPayload(tag: ITag) {
-        console.log(`onUnmatchTagInPayload: `, tag)
-
-        this.setState(prevState =>
-            ({
-                selectedRequiredEntityTags: prevState.selectedRequiredEntityTags.filter(t => t.key !== tag.key)
-            }))
-    }
-
     onChangeMentionEditor = (editorState: EditorState) => {
+        // TODO: Remove need for '{mention'. Risks possibily with getting out of sync with actual mention
+        // which are configured in different file.
+        // 1. Consolidate so it's guranteed across files
+        // 2. Find better solution where id is not exposing implementation detail
+        const entities = payloadUtilities.getEntities(editorState, '{mention')
+
         this.setState({
-            mentionEditorState: editorState
+            mentionEditorState: editorState,
+            selectedRequiredEntityTags: entities.map(convertContentEntityToTag)
         })
     }
 
@@ -393,13 +398,16 @@ class ActionEditor extends React.Component<Props, ComponentState> {
                                     disabled={this.state.apiOptions.length === 0 || this.state.isEditing}
                                 />
                             </div>
-                            : <ActionPayloadEditor
-                                allSuggestions={this.props.entities}
-                                editorState={this.state.mentionEditorState}
-                                placeholder="Phrase..."
-                                onChange={this.onChangeMentionEditor}
-                                key={this.state.editorKey}
-                            />
+                            : <div>
+                                <Label>Response...</Label>
+                                <ActionPayloadEditor
+                                    allSuggestions={this.props.entities.map(convertEntityToMention)}
+                                    editorState={this.state.mentionEditorState}
+                                    placeholder="Phrase..."
+                                    onChange={this.onChangeMentionEditor}
+                                    key={this.state.editorKey}
+                                />
+                            </div>
                         }
 
                         <Label>Expected Entity in Response...</Label>

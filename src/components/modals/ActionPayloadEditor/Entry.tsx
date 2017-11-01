@@ -1,8 +1,8 @@
 import * as React from 'react'
-import { EntityBase } from 'blis-models'
+// import { IMention } from './mentions'
 
 interface Props {
-  mention: EntityBase
+  mention: any // Immutable.Map<IMention>
   theme: any
   searchValue: string
 }
@@ -15,12 +15,11 @@ const customEntryComponent = (props: Props) => {
     ...parentProps
   } = props
 
-  const s = mention.entityName // mention.get('name')
-  const entryText = s.substring(1, s.length-1)
+  const s = mention.get('displayName')
 
   return (
     <div {...parentProps}>
-      <span>E:</span> <span>{entryText}</span>
+      <span>E:</span> <span>{s}</span>
     </div>
   );
 };
