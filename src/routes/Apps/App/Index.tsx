@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { Nav, Link } from 'office-ui-fabric-react';
 import { BlisAppBase, ActionBase, ActionTypes, ModelUtils } from 'blis-models'
 import { State } from '../../../types';
-import { DisplayMode } from '../../../types/const';
+import { ErrorType, DisplayMode } from '../../../types/const';
 import { setDisplayMode, setErrorDisplay } from '../../../actions/displayActions';
 import Entities from './Entities'
 import TrainDialogs from './TrainDialogs'
@@ -13,7 +13,6 @@ import Actions from './Actions'
 import Dashboard from './Dashboard'
 import Settings from './Settings'
 import LogDialogs from './LogDialogs'
-import { FM } from '../../../react-intl-messages'
 
 // TODO: i18n support would be much easier after proper routing is implemented
 // this would eliminate the use of page title strings as navigation keys and instead use the url
@@ -39,7 +38,7 @@ class Index extends React.Component<Props, ComponentState> {
         }
 
         if (validationErrors.length > 0) {
-            this.props.setErrorDisplay(FM.ERROR_WARNING, 'Validation Error:', validationErrors.join('<br/)'), null);
+            this.props.setErrorDisplay(ErrorType.Warning, 'Validation Error:', validationErrors.join('<br/)'), null);
         }
     }
 

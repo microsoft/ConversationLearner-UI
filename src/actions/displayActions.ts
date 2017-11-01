@@ -1,7 +1,7 @@
 
 import { ActionObject } from '../types'
 import { AT } from '../types/ActionTypes'
-import { DisplayMode } from '../types/const'
+import { ErrorType, DisplayMode } from '../types/const'
 import { BlisAppBase } from 'blis-models';
 
 export const setCurrentBLISApp = (key: string, app: BlisAppBase): ActionObject => { 
@@ -26,10 +26,10 @@ export const setDisplayMode = (displayMode: DisplayMode): ActionObject => {
     }
 }
 
-export const setErrorDisplay = (titleId: string, error: string, message: string, route: AT): ActionObject => { 
+export const setErrorDisplay = (errorType: ErrorType, error: string, message: string, route: AT): ActionObject => { 
     return {
         type: AT.SET_ERROR_DISPLAY,
-        titleId: titleId,
+        errorType,
         error: error,
         message: message,
         route: route

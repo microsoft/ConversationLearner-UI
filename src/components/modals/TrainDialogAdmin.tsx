@@ -12,9 +12,13 @@ import ActionScorer from './ActionScorer';
 import MemoryTable from './MemoryTable';
 import { Activity } from 'botframework-directlinejs'
 import * as OF from 'office-ui-fabric-react';
-import { ActionBase, BlisAppBase, TrainDialog, TrainRound, ScoreReason, ScoredAction,
+import {
+    ActionBase, BlisAppBase, TrainDialog, TrainRound, ScoreReason, ScoredAction,
     TrainScorerStep, Memory, UnscoredAction, ScoreResponse,
-    TextVariation, ExtractResponse, DialogType } from 'blis-models'
+    TextVariation, ExtractResponse, DialogType
+} from 'blis-models'
+import { FM } from '../../react-intl-messages'
+import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 
 interface RenderData {
     dialogMode: DialogMode,
@@ -46,10 +50,10 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
         if (newProps.selectedActivity && newProps.trainDialog) {
             let [senderType, roundIndex, scoreIndex] = newProps.selectedActivity.id.split(":").map(s => parseInt(s));
             // If rounds were trimmed, selectedActivity could have been in deleted rounds
-            if (roundIndex > newProps.trainDialog.rounds.length-1) { 
+            if (roundIndex > newProps.trainDialog.rounds.length - 1) {
                 this.setState({
                     senderType: senderType,
-                    roundIndex: newProps.trainDialog.rounds.length-1,
+                    roundIndex: newProps.trainDialog.rounds.length - 1,
                     scoreIndex: 0
                 })
             }
@@ -68,7 +72,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
         let newEntities = extractResponse.predictedEntities.map((p) => { return p.entityId });
 
         // Get list of entities from first text variation
-        let round = this.props.trainDialog.rounds[roundIndex]; 
+        let round = this.props.trainDialog.rounds[roundIndex];
         let oldEntities = round.extractorStep.textVariations[0].labelEntities.map((l) => { return l.entityId });
 
         let missingnew = newEntities.filter((i) => oldEntities.indexOf(i) < 0).length;
@@ -77,23 +81,23 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
     }
 
     // User has submitted new entity extractions / text variations for a round
-    onEntityExtractorSubmit(extractResponse: ExtractResponse, textVariations: TextVariation[], roundIndex: number) : void {
+    onEntityExtractorSubmit(extractResponse: ExtractResponse, textVariations: TextVariation[], roundIndex: number): void {
 
         // Generate the new train dialog
-        let round = this.props.trainDialog.rounds[roundIndex]; 
-        let newExtractorStep = {...round.extractorStep, textVariations: textVariations};
-        let newRound = {...round, extractorStep: newExtractorStep };
+        let round = this.props.trainDialog.rounds[roundIndex];
+        let newExtractorStep = { ...round.extractorStep, textVariations: textVariations };
+        let newRound = { ...round, extractorStep: newExtractorStep };
         let newRounds = [...this.props.trainDialog.rounds];
         newRounds[roundIndex] = newRound;
-        let updatedTrainDialog = {...this.props.trainDialog, rounds: newRounds};
+        let updatedTrainDialog = { ...this.props.trainDialog, rounds: newRounds };
 
         // Determine if extracted entities have changed.  If so, save and show prompt to user
         if (this.haveEntitiesChanged(extractResponse, roundIndex)) {
 
             // Delete at steps after the current round and clear scorer steps
-            let newRounds = updatedTrainDialog.rounds.slice(0,roundIndex+1);
+            let newRounds = updatedTrainDialog.rounds.slice(0, roundIndex + 1);
             newRounds[roundIndex].scorerSteps = [];
-            updatedTrainDialog = {...updatedTrainDialog, rounds: newRounds};
+            updatedTrainDialog = { ...updatedTrainDialog, rounds: newRounds };
 
             // Save prompt will be shown to user
             this.setState({
@@ -101,28 +105,28 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                 saveSliceRound: roundIndex
             });
             return;
-        }  
+        }
         // Otherwise just save with new text variations, remaining rounds are ok
         else {
             this.props.editTrainDialogAsync(this.props.user.key, updatedTrainDialog, this.props.app.appId);
             this.props.clearExtractResponses();
         }
-    }    
-    
+    }
+
     // User changed the selected action for a round
-    onActionScorerSubmit(trainScorerStep: TrainScorerStep) : void {
+    onActionScorerSubmit(trainScorerStep: TrainScorerStep): void {
 
         // Remove scoredAction, we only need labeledAction
         delete trainScorerStep.scoredAction;
-        
+
         // Remove training rounds
-        const rounds = this.props.trainDialog.rounds.slice(0, this.state.roundIndex+1);       
-        let round = rounds[this.state.roundIndex]; 
+        const rounds = this.props.trainDialog.rounds.slice(0, this.state.roundIndex + 1);
+        let round = rounds[this.state.roundIndex];
 
         // Remove trailing scorer steps
-        let newScorerSteps = round.scorerSteps.slice(0, this.state.scoreIndex+1);
+        let newScorerSteps = round.scorerSteps.slice(0, this.state.scoreIndex + 1);
         newScorerSteps[this.state.scoreIndex] = trainScorerStep;
-        
+
         // Create new train round
         let newRound = new TrainRound({
             extractorStep: round.extractorStep,
@@ -132,7 +136,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
         // New rounds list with new round
         let newRounds = [...rounds];
         newRounds[this.state.roundIndex] = newRound;
-        let updatedTrainDialog = {...this.props.trainDialog, rounds: newRounds};
+        let updatedTrainDialog = { ...this.props.trainDialog, rounds: newRounds };
 
         // Save prompt will be shown to user
         this.setState({
@@ -147,35 +151,34 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
         this.props.clearExtractResponses();
 
         this.setState({
-            saveTrainDialog: null, 
+            saveTrainDialog: null,
             saveSliceRound: 0,
             roundIndex: this.state.saveSliceRound
         });
     }
     onClickSaveCheckNo() {
         // Reset the entity extractor
-        this.setState({saveTrainDialog: null, saveSliceRound: 0});
+        this.setState({ saveTrainDialog: null, saveSliceRound: 0 });
         this.props.clearExtractResponses();
     }
-    getPrevMemories() : Memory[] {
-        let memories : Memory[] = [];
-        let prevIndex = this.state.roundIndex-1;
+    getPrevMemories(): Memory[] {
+        let memories: Memory[] = [];
+        let prevIndex = this.state.roundIndex - 1;
         if (prevIndex >= 0) {
             let round = this.props.trainDialog.rounds[prevIndex];
             if (round.scorerSteps.length > 0) {
                 let scorerStep = round.scorerSteps[0];
                 let filledEntities = this.props.entities.filter(entity => scorerStep.input.filledEntities.includes(entity.entityId))
-                memories = filledEntities.map((e) => new Memory({entityName: e.entityName, entityValues: []}));     
+                memories = filledEntities.map((e) => new Memory({ entityName: e.entityName, entityValues: [] }));
             }
         }
-        return memories;    
+        return memories;
     }
-    getRenderData() : RenderData
-    {
-        let selectedAction : ActionBase = null;
-        let scorerStep : TrainScorerStep = null;
+    getRenderData(): RenderData {
+        let selectedAction: ActionBase = null;
+        let scorerStep: TrainScorerStep = null;
         let scoreResponse: ScoreResponse = null;
-        let round : TrainRound = null;
+        let round: TrainRound = null;
         let memories: Memory[] = [];
         let prevMemories: Memory[] = [];
 
@@ -186,13 +189,13 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
 
                 selectedAction = this.props.actions.find(action => action.actionId == scorerStep.labelAction)
                 let filledEntities = this.props.entities.filter(entity => scorerStep.input.filledEntities.includes(entity.entityId))
-                memories = filledEntities.map((e) => new Memory({entityName: e.entityName, entityValues: []}));     
-                 
+                memories = filledEntities.map((e) => new Memory({ entityName: e.entityName, entityValues: [] }));
+
                 // Get prevmemories
                 prevMemories = this.getPrevMemories();
 
                 let scoredAction = new ScoredAction({
-                    actionId : selectedAction.actionId,
+                    actionId: selectedAction.actionId,
                     payload: selectedAction.payload,
                     isTerminal: selectedAction.isTerminal,
                     score: 1.0
@@ -202,12 +205,12 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                     .filter(a => a.actionId != selectedAction.actionId)
                     .map(action => {
                         return new UnscoredAction({
-                            actionId : action.actionId,
+                            actionId: action.actionId,
                             payload: action.payload,
                             isTerminal: action.isTerminal,
                             reason: ScoreReason.NotCalculated
                         })
-                });
+                    });
 
                 scoreResponse = new ScoreResponse({
                     scoredActions: [scoredAction],
@@ -216,7 +219,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
             }
         }
 
-        let renderData : RenderData = {
+        let renderData: RenderData = {
             dialogMode: (this.state.senderType == SenderType.User) ? DialogMode.Extractor : DialogMode.Scorer,
             selectedAction: selectedAction,
             scorerStep: scorerStep,
@@ -229,6 +232,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
         return renderData;
     }
     render() {
+        const { intl } = this.props
         if (!this.props.trainDialog) {
             return null;
         }
@@ -236,36 +240,72 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
         let renderData = this.getRenderData();
         return (
             <div className="blis-dialog-admin ms-font-l">
-                {this.props.selectedActivity && (this.state.senderType == SenderType.User ? (
-                    <div className="blis-dialog-admin__content">
-                        <div className="blis-wc-message blis-wc-message--user">User Input</div>
-                    </div>
+                {this.props.selectedActivity && (this.state.senderType == SenderType.User
+                    ? (
+                        <div className="blis-dialog-admin__content">
+                            <div className="blis-wc-message blis-wc-message--user">
+                                <FormattedMessage
+                                    id={FM.TRAINDIALOGADMIN_DIALOGMODE_USER}
+                                    defaultMessage="User Input"
+                                />
+                            </div>
+                        </div>
                     ) : (
-                    <div className="blis-dialog-admin__content">
-                        <div className="blis-wc-message blis-wc-message--bot">Bot Response</div>
-                    </div>                       
+                        <div className="blis-dialog-admin__content">
+                            <div className="blis-wc-message blis-wc-message--bot">
+                                <FormattedMessage
+                                    id={FM.TRAINDIALOGADMIN_DIALOGMODE_TEXT}
+                                    defaultMessage="Bot Response"
+                                />
+                            </div>
+                        </div>
                     ))
                 }
                 {this.props.selectedActivity ?
                     (<div className="blis-dialog-admin__content">
-                        <div className="blis-dialog-admin-title">Memory</div>
-                        <MemoryTable 
+                        <div className="blis-dialog-admin-title">
+                            <FormattedMessage
+                                id={FM.TRAINDIALOGADMIN_MEMORY_TITLE}
+                                defaultMessage="Memory"
+                            />
+                        </div>
+                        <MemoryTable
                             dialogMode={renderData.dialogMode}
                             memories={renderData.memories}
                             prevMemories={renderData.prevMemories}
-                        />                        
+                        />
                     </div>
                     ) : (
                         <div className="blis-dialog-admin__content">
-                            <div className="blis-dialog-admin-title">Train Dialog</div>
-                            <div>Click on User or Bot dialogs to the left to view steps in the Train Dialog.</div>
-                            <div>You can then make changes to the Train Dialog.</div>
+                            <div className="blis-dialog-admin-title">
+                                <FormattedMessage
+                                    id={FM.TRAINDIALOGADMIN_HELPTEXT_TITLE}
+                                    defaultMessage="Train Dialog"
+                                />
+                            </div>
+                            <div>
+                                <FormattedMessage
+                                    id={FM.TRAINDIALOGADMIN_HELPTEXT_DESCRIPTION}
+                                    defaultMessage="Click on User or Bot dialogs to the left to view steps in the Train Dialog."
+                                />
+                            </div>
+                            <div>
+                                <FormattedMessage
+                                    id={FM.TRAINDIALOGADMIN_HELPTEXT_DESCRIPTION2}
+                                    defaultMessage="You can then make changes to the Train Dialog."
+                                />
+                            </div>
                         </div>
                     )
                 }
                 {this.state.senderType == SenderType.User &&
                     <div className="blis-dialog-admin__content">
-                        <div className="blis-dialog-admin-title">Entity Detection</div>
+                        <div className="blis-dialog-admin-title">
+                            <FormattedMessage
+                                id={FM.TRAINDIALOGADMIN_ENTITYDETECTION_TITLE}
+                                defaultMessage="Entity Detection"
+                            />
+                        </div>
                         <div>
                             {renderData.round ?
                                 <EntityExtractor
@@ -279,26 +319,36 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                                     originalTextVariations={renderData.round.extractorStep.textVariations}
                                     onTextVariationsExtracted={this.onEntityExtractorSubmit}
                                 />
-                                : <span>Click on text from the dialog to the left.</span>
+                                : <span>
+                                    <FormattedMessage
+                                        id={FM.TRAINDIALOGADMIN_ENTITYDETECTION_HELPTEXT}
+                                        defaultMessage="Click on text from the dialog to the left."
+                                    />
+                                </span>
                             }
                         </div>
                     </div>
                 }
                 {renderData.selectedAction && this.state.senderType == SenderType.Bot &&
                     <div className="blis-dialog-admin__content">
-                        <div className="blis-dialog-admin-title">Action</div>
+                        <div className="blis-dialog-admin-title">
+                            <FormattedMessage
+                                id={FM.TRAINDIALOGADMIN_ACTION_TITLE}
+                                defaultMessage="Action"
+                            />
+                        </div>
                         <div>
-                                <ActionScorer
-                                    app={this.props.app}
-                                    dialogType={DialogType.TRAINDIALOG}
-                                    sessionId={this.props.trainDialog.trainDialogId}
-                                    autoTeach={false}
-                                    dialogMode={renderData.dialogMode}
-                                    scoreResponse={renderData.scoreResponse}
-                                    scoreInput={renderData.scorerStep.input}
-                                    memories={renderData.memories}
-                                    onActionSelected={this.onActionScorerSubmit}
-                                />
+                            <ActionScorer
+                                app={this.props.app}
+                                dialogType={DialogType.TRAINDIALOG}
+                                sessionId={this.props.trainDialog.trainDialogId}
+                                autoTeach={false}
+                                dialogMode={renderData.dialogMode}
+                                scoreResponse={renderData.scoreResponse}
+                                scoreInput={renderData.scorerStep.input}
+                                memories={renderData.memories}
+                                onActionSelected={this.onActionScorerSubmit}
+                            />
                         </div>
                     </div>
                 }
@@ -308,16 +358,34 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                         onDismiss={() => this.onClickSaveCheckNo()}
                         dialogContentProps={{
                             type: OF.DialogType.normal,
-                            subText: 'Your changes will invalidate the subsequent steps in the Train Dialog', 
-                            title: 'Do you want to proceed and truncate the Train Dialog at this step?'
+                            subText: intl.formatMessage({
+                                id: FM.TRAINDIALOGADMIN_SAVECHANGES_TITLE,
+                                defaultMessage: 'Your changes will invalidate the subsequent steps in the Train Dialog'
+                            }),
+                            title: intl.formatMessage({
+                                id: FM.TRAINDIALOGADMIN_SAVECHANGES_DESCRIPTION,
+                                defaultMessage: 'Do you want to proceed and truncate the Train Dialog at this step?'
+                            })
                         }}
                         modalProps={{
                             isBlocking: true
                         }}
                     >
                         <OF.DialogFooter>
-                            <OF.PrimaryButton onClick={() => this.onClickSaveCheckYes()} text='Yes' />
-                            <OF.DefaultButton onClick={() => this.onClickSaveCheckNo()} text='No' />
+                            <OF.PrimaryButton
+                                onClick={() => this.onClickSaveCheckYes()}
+                                text={intl.formatMessage({
+                                    id: FM.TRAINDIALOGADMIN_SAVECHANGES_PRIMARYBUTTON_TEXT,
+                                    defaultMessage: 'Yes'
+                                })}
+                            />
+                            <OF.DefaultButton
+                                onClick={() => this.onClickSaveCheckNo()}
+                                text={intl.formatMessage({
+                                    id: FM.TRAINDIALOGADMIN_SAVECHANGES_DEFAULTBUTTON_TEXT,
+                                    defaultMessage: 'No'
+                                })}
+                            />
                         </OF.DialogFooter>
                     </OF.Dialog>
                 </div>
@@ -357,6 +425,6 @@ export interface ReceivedProps {
 // Props types inferred from mapStateToProps & dispatchToProps
 const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
-type Props = typeof stateProps & typeof dispatchProps & ReceivedProps;
+type Props = typeof stateProps & typeof dispatchProps & ReceivedProps & InjectedIntlProps
 
-export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(TrainDialogAdmin);
+export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(TrainDialogAdmin))

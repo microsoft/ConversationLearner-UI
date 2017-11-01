@@ -13,6 +13,8 @@ import { createTrainDialogAsync } from '../../actions/createActions'
 import { BlisAppBase, TrainDialog, LogDialog } from 'blis-models'
 import { deleteLogDialogAsync } from '../../actions/deleteActions'
 import { SenderType } from '../../types/const'
+import { FM } from '../../react-intl-messages'
+import { injectIntl, InjectedIntlProps } from 'react-intl'
 
 interface ComponentState {
     isConfirmDeleteModalOpen: boolean
@@ -108,7 +110,8 @@ class LogDialogModal extends React.Component<Props, ComponentState> {
     }
 
     render() {
-        let history = this.generateHistory(this.props);
+        const { intl } = this.props
+        const history = this.generateHistory(this.props);
         return (
             <div>
                 <Modal
@@ -147,13 +150,25 @@ class LogDialogModal extends React.Component<Props, ComponentState> {
                             <div className="blis-modal-buttons_secondary">
                                 <DefaultButton
                                     onClick={() => this.onClickDelete()}
-                                    ariaDescription='Delete'
-                                    text='Delete'
+                                    ariaDescription={intl.formatMessage({
+                                        id: FM.LOGDIALOGMODAL_DEFAULTBUTTON_ARIADESCRIPTION,
+                                        defaultMessage: 'Delete'
+                                    })}
+                                    text={intl.formatMessage({
+                                        id: FM.LOGDIALOGMODAL_DEFAULTBUTTON_TEXT,
+                                        defaultMessage: 'Delete'
+                                    })}
                                 />
                                 <PrimaryButton
                                     onClick={() => this.props.onClose()}
-                                    ariaDescription='Done'
-                                    text='Done'
+                                    ariaDescription={intl.formatMessage({
+                                        id: FM.LOGDIALOGMODAL_PRIMARYBUTTON_ARIADESCRIPTION,
+                                        defaultMessage: 'Done'
+                                    })}
+                                    text={intl.formatMessage({
+                                        id: FM.LOGDIALOGMODAL_PRIMARYBUTTON_TEXT,
+                                        defaultMessage: 'Done'
+                                    })}
                                 />
                             </div>
                         </div>
@@ -162,7 +177,10 @@ class LogDialogModal extends React.Component<Props, ComponentState> {
                         open={this.state.isConfirmDeleteModalOpen}
                         onCancel={() => this.onClickCancelDelete()}
                         onConfirm={() => this.onClickConfirmDelete()}
-                        title={`Are you sure you want to delete this Log Dialog?`}
+                        title={intl.formatMessage({
+                            id: FM.LOGDIALOGMODAL_CONFIRMDELETE_TITLE,
+                            defaultMessage: `Are you sure you want to delete this Log Dialog?`
+                        })}
                     />
                 </Modal>
             </div>
@@ -192,6 +210,6 @@ export interface ReceivedProps {
 // Props types inferred from mapStateToProps & dispatchToProps
 const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
-type Props = typeof stateProps & typeof dispatchProps & ReceivedProps;
+type Props = typeof stateProps & typeof dispatchProps & ReceivedProps & InjectedIntlProps
 
-export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(LogDialogModal);
+export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(LogDialogModal))

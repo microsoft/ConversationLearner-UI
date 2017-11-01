@@ -14,7 +14,9 @@ import { Activity } from 'botframework-directlinejs'
 import { deleteTeachSessionAsync } from '../../actions/deleteActions'
 import { toggleAutoTeach, runExtractorAsync } from '../../actions/teachActions'
 import { addMessageToTeachConversationStack } from '../../actions/displayActions'
-import ConfirmDeleteModal from './ConfirmDeleteModal';
+import ConfirmDeleteModal from './ConfirmDeleteModal'
+import { FM } from '../../react-intl-messages'
+import { injectIntl, InjectedIntlProps } from 'react-intl'
 
 interface ComponentState {
     isConfirmDeleteOpen: boolean
@@ -72,8 +74,9 @@ class TeachWindow extends React.Component<Props, ComponentState> {
     }
 
     render() {
+        const { intl } = this.props
         // Show done button if at least on round and at end of round
-        let showDone = this.props.teachSessions.currentConversationStack.length > 0 
+        let showDone = this.props.teachSessions.currentConversationStack.length > 0
             && this.props.teachSessions.mode == DialogMode.Wait;
 
         // Put mask of webchat if not in input mode
@@ -93,7 +96,7 @@ class TeachWindow extends React.Component<Props, ComponentState> {
         */
 
         // Mask controls if autoTeach is enabled
-        let mask = (this.props.teachSessions.autoTeach) ? <div className="teachAutoMask"/> : null;
+        let mask = (this.props.teachSessions.autoTeach) ? <div className="teachAutoMask" /> : null;
         return (
             <Modal
                 isOpen={this.props.open && this.props.error === null}
@@ -107,7 +110,7 @@ class TeachWindow extends React.Component<Props, ComponentState> {
                                 app={this.props.app}
                                 history={null}
                                 onPostActivity={activity => this.onWebChatPostActivity(activity)}
-                                onSelectActivity={() => {}}
+                                onSelectActivity={() => { }}
                                 hideInput={false}
                                 focusInput={this.props.teachSessions.mode === DialogMode.Wait}
                             />
@@ -125,18 +128,30 @@ class TeachWindow extends React.Component<Props, ComponentState> {
                 </div>
                 <div className="blis-modal_footer">
                     <div className="blis-modal-buttons">
-                        <div className="blis-modal-buttons_primary"/>
+                        <div className="blis-modal-buttons_primary" />
                         <div className="blis-modal-buttons_secondary">
                             <DefaultButton
                                 onClick={() => this.onClickAbandonTeach()}
-                                ariaDescription="Abandon Teach"
-                                text="Abandon Teach"
+                                ariaDescription={intl.formatMessage({
+                                    id: FM.TEACHSESSIONWINDOW_DEFAULTBUTTON_ARIADESCRIPTION,
+                                    defaultMessage: "Abandon Teach"
+                                })}
+                                text={intl.formatMessage({
+                                    id: FM.TEACHSESSIONWINDOW_DEFAULTBUTTON_TEXT,
+                                    defaultMessage: "Abandon Teach"
+                                })}
                             />
                             <PrimaryButton
                                 disabled={!showDone}
                                 onClick={() => this.onClickSave()}
-                                ariaDescription="Done Teaching"
-                                text="Done Teaching"
+                                ariaDescription={intl.formatMessage({
+                                    id: FM.TEACHSESSIONWINDOW_PRIMARYBUTTON_ARIADESCRIPTION,
+                                    defaultMessage: "Done Teaching"
+                                })}
+                                text={intl.formatMessage({
+                                    id: FM.TEACHSESSIONWINDOW_PRIMARYBUTTON_TEXT,
+                                    defaultMessage: "Done Teaching"
+                                })}
                             />
                         </div>
                     </div>
@@ -145,7 +160,10 @@ class TeachWindow extends React.Component<Props, ComponentState> {
                     open={this.state.isConfirmDeleteOpen}
                     onCancel={() => this.onClickCancelDelete()}
                     onConfirm={() => this.onClickConfirmDelete()}
-                    title="Are you sure you want to abandon this teach session?"
+                    title={intl.formatMessage({
+                        id: FM.TEACHSESSIONWINDOW_CONFIRMDELETE_TITLE,
+                        defaultMessage: "Are you sure you want to abandon this teach session?"
+                    })}
                 />
             </Modal>
         );
@@ -177,7 +195,6 @@ export interface ReceivedProps {
 // Props types inferred from mapStateToProps & dispatchToProps
 const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
-type Props = typeof stateProps & typeof dispatchProps & ReceivedProps;
+type Props = typeof stateProps & typeof dispatchProps & ReceivedProps & InjectedIntlProps
 
-export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>
-    (mapStateToProps, mapDispatchToProps)(TeachWindow);
+export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(TeachWindow))

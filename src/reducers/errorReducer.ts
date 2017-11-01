@@ -1,10 +1,11 @@
 import { ActionObject } from '../types'
+import { ErrorType } from '../types/const'
 import { ErrorState } from '../types'
 import { Reducer } from 'redux'
 import { AT } from '../types/ActionTypes'
 
 const initialState: ErrorState = {
-    titleId: null,
+    errorType: ErrorType.Error,
     error: null,
     message: null,
     route: AT.NO_OP
@@ -15,7 +16,7 @@ const errorReducer: Reducer<ErrorState> = (state = initialState, action: ActionO
         case AT.CLEAR_ERROR_DISPLAY:
             return { ...initialState };
         case AT.SET_ERROR_DISPLAY:
-            return { titleId: action.titleId, error: action.error, message: action.message, route: action.route }
+            return { errorType: action.errorType, error: action.error, message: action.message, route: action.route }
         default:
             return state;
     }

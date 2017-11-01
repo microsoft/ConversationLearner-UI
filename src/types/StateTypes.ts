@@ -6,13 +6,13 @@ import {
     TrainDialog, LogDialog, Teach, Session,
     Memory, UIScoreInput, ScoreInput, ExtractResponse, ScoreResponse
 } from 'blis-models';
-import { DisplayMode, DialogMode } from '../types/const'
+import { ErrorType, DisplayMode, DialogMode } from '../types/const'
 import { AT } from '../types/ActionTypes'
 
 export type ActionState = ActionBase[];
 export type EntityState = EntityBase[];
 export type ErrorState = {
-    titleId: string,
+    errorType: ErrorType,
     error: string,
     message: string,
     route: AT
