@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { EditorState, ContentState, convertToRaw } from 'draft-js'
 import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
@@ -7,7 +8,7 @@ import { PrimaryButton, Checkbox, DefaultButton, Dropdown, IDropdownOption, TagP
 import { ActionBase, ActionTypes, BlisAppBase, EntityBase } from 'blis-models'
 import ConfirmDeleteModal from './ConfirmDeleteModal'
 import EntityCreatorEditor from './EntityCreatorEditor'
-import ActionPayloadEditor from './ActionPayloadEditor'
+import ActionPayloadEditor from './ActionPayloadEditor/ActionPayloadEditor'
 import { State } from '../../types'
 
 const getSuggestedTags = (filterText: string, allTags: ITag[], tagsToExclude: ITag[]): ITag[] => {
@@ -37,7 +38,8 @@ interface ComponentState {
     selectedExpectedEntityTags: ITag[]
     selectedRequiredEntityTags: ITag[]
     selectedNegativeEntityTags: ITag[]
-    payload: string
+    mentionEditorState: EditorState
+    editorKey: number
     tagsAvailableForPayload: ITag[]
     isTerminal: boolean
 }
@@ -53,7 +55,8 @@ const initialState: ComponentState = {
     selectedExpectedEntityTags: [],
     selectedRequiredEntityTags: [],
     selectedNegativeEntityTags: [],
-    payload: '',
+    mentionEditorState: EditorState.createEmpty(),
+    editorKey: 0,
     tagsAvailableForPayload: [],
     isTerminal: true
 }
@@ -98,7 +101,8 @@ class ActionEditor extends React.Component<Props, ComponentState> {
             // Reset state every time dialog was closed and is opened
             if (this.props.open === false) {
                 nextState = {
-                    ...this.openState
+                    ...this.openState,
+                    editorKey: this.state.editorKey + 1,
                 }
             }
 
@@ -121,10 +125,18 @@ class ActionEditor extends React.Component<Props, ComponentState> {
                 // Get all tags that are not already set as reuired tags
                 const tagsAvailableForPayload = this.state.entityTags.filter(t => selectedRequiredEntityTags.every(tag => tag.key !== t.key))
 
+                // Get editor state
+                // const contentState = convertFromRaw(JSON.parse(action.payload))
+                const contentState = ContentState.createFromText(action.payload)
+                let editorState = EditorState.createWithContent(contentState)
+                editorState = EditorState.moveFocusToEnd(editorState)
+                editorState = EditorState.moveSelectionToEnd(editorState)
+
                 nextState = {
                     ...nextState,
                     selectedApiOptionKey: action.metadata.actionType,
-                    payload: action.payload,
+                    mentionEditorState: editorState,
+                    editorKey: this.state.editorKey + 1,
                     selectedExpectedEntityTags,
                     selectedNegativeEntityTags,
                     selectedRequiredEntityTags,
@@ -159,7 +171,29 @@ class ActionEditor extends React.Component<Props, ComponentState> {
     }
 
     onClickSubmit() {
-        this.props.onClickSubmit(this.props.action)
+
+        const contentState = this.state.mentionEditorState.getCurrentContent()
+        const rawContent = convertToRaw(contentState)
+        const rawText = contentState.getPlainText()
+
+        const newOrEditedAction: ActionBase = {
+            actionId: null,
+            payload: `${rawText} : ${JSON.stringify(rawContent)}`,
+            isTerminal: this.state.isTerminal,
+            requiredEntities: this.state.selectedRequiredEntityTags,
+            negativeEntities: this.state.selectedNegativeEntityTags,
+            suggestedEntity: this.state.selectedExpectedEntityTags,
+            metadata: {
+                actionType: ActionTypes
+            }
+            // TODO: Remove need for `any` typing
+        } as any
+
+        if (this.state.isEditing) {
+            newOrEditedAction.actionId = this.props.action.actionId
+        }
+
+        this.props.onClickSubmit(newOrEditedAction)
     }
 
     onClickCancel() {
@@ -303,6 +337,12 @@ class ActionEditor extends React.Component<Props, ComponentState> {
             }))
     }
 
+    onChangeMentionEditor = (editorState: EditorState) => {
+        this.setState({
+            mentionEditorState: editorState
+        })
+    }
+
     render() {
         return (
             <Modal
@@ -354,10 +394,11 @@ class ActionEditor extends React.Component<Props, ComponentState> {
                                 />
                             </div>
                             : <ActionPayloadEditor
-                                tags={this.state.tagsAvailableForPayload}
-                                value={this.state.payload}
-                                onMatchTag={tag => this.onMatchTagInPayload(tag)}
-                                onUnmatchTag={tag => this.onUnmatchTagInPayload(tag)}
+                                allSuggestions={this.props.entities}
+                                editorState={this.state.mentionEditorState}
+                                placeholder="Phrase..."
+                                onChange={this.onChangeMentionEditor}
+                                key={this.state.editorKey}
                             />
                         }
 
@@ -417,7 +458,7 @@ class ActionEditor extends React.Component<Props, ComponentState> {
                 <div className="blis-modal_footer blis-modal-buttons">
                     <div className="blis-modal-buttons_primary">
                         <PrimaryButton
-                            disabled={this.state.payload.length === 0}
+                            /* disabled={this.state.payload.length === 0} */
                             onClick={() => this.onClickSubmit()}
                             ariaDescription="Submit"
                             text={this.state.isEditing ? "Save" : "Create"}
