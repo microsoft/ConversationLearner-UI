@@ -121,7 +121,7 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
             // Find the new entity
             let newEntity = newProps.entities.filter(ne => {
                 let fe = this.props.entities.find(e => e.entityId == ne.entityId);
-                return fe == undefined;
+                return fe === undefined;
             })[0];
 
             // If one is found and substring is waiting
@@ -133,7 +133,7 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
                     entityId: newEntity.entityId,
                     entityName: newEntity.entityName,
                     entityText: this.state.newEntityText,
-                    metadata: newProps.entities.find(e => e.entityName == newEntity.entityName).metadata,
+                    metadata: newProps.entities.find(e => e.entityName === newEntity.entityName).metadata,
                     score: 1.0
                 });
                 let newPredictions = [...this.props.extractResponse.predictedEntities, predictedEntity];
@@ -172,7 +172,7 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
                     entityId: s.entity.entityId,
                     entityName: s.entity.entityName,
                     entityText: s.text,
-                    metadata: entities.find(e => e.entityName == s.entity.entityName).metadata,
+                    metadata: entities.find(e => e.entityName === s.entity.entityName).metadata,
                     score: 1.0
                 });
                 predictions.push(predictedEntity);
@@ -209,7 +209,7 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
         predictedEntities.map(p => {
             if (count == 0) {
                 if (p.startCharIndex == 0) {
-                    //handle the case where the first character of the input is part of an entity
+                    // handle the case where the first character of the input is part of an entity
                     currentIndexGroup = { ...currentIndexGroup, end: p.endCharIndex + 1, entity: this.props.entities.find(e => e.entityId == p.entityId) }
                     indexGroups.push(currentIndexGroup);
                     currentIndexGroup = {
@@ -218,7 +218,7 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
                         entity: null
                     }
                 } else {
-                    //handle the case where the first character of the input is part of a piece of regular text
+                    // handle the case where the first character of the input is part of a piece of regular text
                     currentIndexGroup = { ...currentIndexGroup, end: p.startCharIndex }
                     indexGroups.push(currentIndexGroup);
                     currentIndexGroup = { ...currentIndexGroup, start: p.startCharIndex, end: p.endCharIndex + 1, entity: this.props.entities.find(e => e.entityId == p.entityId) }
@@ -230,8 +230,8 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
                     }
                 }
             } else {
-                if (currentIndexGroup.start == p.startCharIndex) {
-                    //handle the case where the first character after the last entity is part of another entity
+                if (currentIndexGroup.start === p.startCharIndex) {
+                    // handle the case where the first character after the last entity is part of another entity
                     currentIndexGroup = { ...currentIndexGroup, end: p.endCharIndex, entity: this.props.entities.find(e => e.entityId == p.entityId) }
                     indexGroups.push(currentIndexGroup);
                     currentIndexGroup = {
@@ -240,7 +240,7 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
                         entity: null
                     }
                 } else {
-                    //handle the case where the first character after the last entity is part of a piece of regular text
+                    // handle the case where the first character after the last entity is part of a piece of regular text
                     currentIndexGroup = { ...currentIndexGroup, end: p.startCharIndex }
                     indexGroups.push(currentIndexGroup);
                     currentIndexGroup = { ...currentIndexGroup, start: p.startCharIndex, end: p.endCharIndex + 1, entity: this.props.entities.find(e => e.entityId == p.entityId) }
@@ -253,15 +253,15 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
                 }
             }
             count++;
-            if (predictedEntities.length == count) {
-                //handle the case where there is text after the last predicted entity
+            if (predictedEntities.length === count) {
+                // handle the case where there is text after the last predicted entity
                 if (p.endCharIndex !== input.length - 1) {
                     currentIndexGroup = { ...currentIndexGroup, end: input.length }
                     indexGroups.push(currentIndexGroup);
                 }
             }
         })
-        if (predictedEntities.length == 0) {
+        if (predictedEntities.length === 0) {
             let i: IndexGroup = {
                 start: 0,
                 end: input.length,
@@ -270,8 +270,8 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
             indexGroups.push(i)
         }
         let substringObjects: SubstringObject[] = [];
-        if (indexGroups.length == 0 && input.length == 1) {
-            //single letter, would not be picked up by the loop below
+        if (indexGroups.length === 0 && input.length == 1) {
+            // single letter, would not be picked up by the loop below
             let substringObj: SubstringObject = {
                 text: input,
                 entity: null,
@@ -286,16 +286,16 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
         // run through the index groups but handle the entities and strings differently
         indexGroups.map((i: IndexGroup) => {
             if (i.entity == null) {
-                //is string
+                // is string
                 let nonEntities: SubstringObject[] = [];
                 let wordStartIndex: number;
-                if (i.end - i.start == 1) {
+                if (i.end - i.start === 1) {
                     let substringObj: SubstringObject = {
                         text: input.substring(i.start, i.end),
                         entity: null,
                         rightBracketStyle: styles.rightBracketDisplayedWhite,
                         leftBracketStyle: styles.leftBracketDisplayedWhite,
-                        //dropdown Style is going to have to depend on some state object. When you click an substring group with an entity it needs to go from styles.hidden to styles.normal
+                        // dropdown Style is going to have to depend on some state object. When you click an substring group with an entity it needs to go from styles.hidden to styles.normal
                         dropdownStyle: styles.hidden,
                         labelStyle: styles.hidden,
                         startIndex: i.start
@@ -303,16 +303,16 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
                     substringObjects.push(substringObj)
                 } else {
                     for (var x = i.start; x <= i.end; x++) {
-                        //push substring objects into non entities
-                        if (x == i.start) {
-                            //this is the first letter of the string
-                            if (input[x] == " ") {
+                        // push substring objects into non entities
+                        if (x === i.start) {
+                            // this is the first letter of the string
+                            if (input[x] === " ") {
                                 let substringObjForSpace: SubstringObject = {
                                     text: input.substring(x, x + 1),
                                     entity: null,
                                     rightBracketStyle: styles.rightBracketDisplayedWhite,
                                     leftBracketStyle: styles.leftBracketDisplayedWhite,
-                                    //dropdown Style is going to have to depend on some state object. When you click an substring group with an entity it needs to go from styles.hidden to styles.normal
+                                    // dropdown Style is going to have to depend on some state object. When you click an substring group with an entity it needs to go from styles.hidden to styles.normal
                                     dropdownStyle: styles.hidden,
                                     labelStyle: styles.hidden,
                                     startIndex: x
@@ -322,29 +322,29 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
                             } else {
                                 wordStartIndex = x;
                             }
-                        } else if (x == (i.end - 1)) {
-                            //this is the last letter of the index group
-                            if (x == input.length - 1) {
-                                //this is the last letter of the input entirely
+                        } else if (x === (i.end - 1)) {
+                            // this is the last letter of the index group
+                            if (x === input.length - 1) {
+                                // this is the last letter of the input entirely
                                 let substringObj: SubstringObject = {
                                     text: input.substring(wordStartIndex, x + 1),
                                     entity: null,
                                     rightBracketStyle: styles.rightBracketDisplayedWhite,
                                     leftBracketStyle: styles.leftBracketDisplayedWhite,
-                                    //dropdown Style is going to have to depend on some state object. When you click an substring group with an entity it needs to go from styles.hidden to styles.normal
+                                    // dropdown Style is going to have to depend on some state object. When you click an substring group with an entity it needs to go from styles.hidden to styles.normal
                                     dropdownStyle: styles.hidden,
                                     labelStyle: styles.hidden,
                                     startIndex: wordStartIndex
                                 }
                                 nonEntities.push(substringObj)
                             } else {
-                                if (input[x] == " ") {
+                                if (input[x] === " ") {
                                     let substringObj: SubstringObject = {
                                         text: input.substring(wordStartIndex, x),
                                         entity: null,
                                         rightBracketStyle: styles.rightBracketDisplayedWhite,
                                         leftBracketStyle: styles.leftBracketDisplayedWhite,
-                                        //dropdown Style is going to have to depend on some state object. When you click an substring group with an entity it needs to go from styles.hidden to styles.normal
+                                        // dropdown Style is going to have to depend on some state object. When you click an substring group with an entity it needs to go from styles.hidden to styles.normal
                                         dropdownStyle: styles.hidden,
                                         labelStyle: styles.hidden,
                                         startIndex: wordStartIndex
@@ -354,7 +354,7 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
                                         entity: null,
                                         rightBracketStyle: styles.rightBracketDisplayedWhite,
                                         leftBracketStyle: styles.leftBracketDisplayedWhite,
-                                        //dropdown Style is going to have to depend on some state object. When you click an substring group with an entity it needs to go from styles.hidden to styles.normal
+                                        // dropdown Style is going to have to depend on some state object. When you click an substring group with an entity it needs to go from styles.hidden to styles.normal
                                         dropdownStyle: styles.hidden,
                                         labelStyle: styles.hidden,
                                         startIndex: x
@@ -367,7 +367,7 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
                                         entity: null,
                                         rightBracketStyle: styles.rightBracketDisplayedWhite,
                                         leftBracketStyle: styles.leftBracketDisplayedWhite,
-                                        //dropdown Style is going to have to depend on some state object. When you click an substring group with an entity it needs to go from styles.hidden to styles.normal
+                                        // dropdown Style is going to have to depend on some state object. When you click an substring group with an entity it needs to go from styles.hidden to styles.normal
                                         dropdownStyle: styles.hidden,
                                         labelStyle: styles.hidden,
                                         startIndex: wordStartIndex
@@ -376,14 +376,14 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
                                 }
                             }
                         } else {
-                            //this some letter in the middle of the string
-                            if (input[x] == " ") {
+                            // this some letter in the middle of the string
+                            if (input[x] === " ") {
                                 let substringObj: SubstringObject = {
                                     text: input.substring(wordStartIndex, x),
                                     entity: null,
                                     rightBracketStyle: styles.rightBracketDisplayedWhite,
                                     leftBracketStyle: styles.leftBracketDisplayedWhite,
-                                    //dropdown Style is going to have to depend on some state object. When you click an substring group with an entity it needs to go from styles.hidden to styles.normal
+                                    // dropdown Style is going to have to depend on some state object. When you click an substring group with an entity it needs to go from styles.hidden to styles.normal
                                     dropdownStyle: styles.hidden,
                                     labelStyle: styles.hidden,
                                     startIndex: wordStartIndex
@@ -393,7 +393,7 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
                                     entity: null,
                                     rightBracketStyle: styles.rightBracketDisplayedWhite,
                                     leftBracketStyle: styles.leftBracketDisplayedWhite,
-                                    //dropdown Style is going to have to depend on some state object. When you click an substring group with an entity it needs to go from styles.hidden to styles.normal
+                                    // dropdown Style is going to have to depend on some state object. When you click an substring group with an entity it needs to go from styles.hidden to styles.normal
                                     dropdownStyle: styles.hidden,
                                     labelStyle: styles.hidden,
                                     startIndex: x
@@ -409,13 +409,13 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
                     })
                 }
             } else {
-                //is entity
+                // is entity
                 let substringObj: SubstringObject = {
                     text: input.substring(i.start, i.end),
                     entity: i.entity,
                     rightBracketStyle: styles.rightBracketDisplayedBlack,
                     leftBracketStyle: styles.leftBracketDisplayedBlack,
-                    //dropdown Style is going to have to depend on some state object. When you click an substring group with an entity it needs to go from styles.hidden to styles.normal
+                    // dropdown Style is going to have to depend on some state object. When you click an substring group with an entity it needs to go from styles.hidden to styles.normal
                     dropdownStyle: styles.hidden,
                     labelStyle: styles.normal,
                     startIndex: i.start
@@ -431,7 +431,7 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
         let result: boolean = false;
         if (this.state.substringsClicked.length > 0) {
             this.state.substringsClicked.map(sub => {
-                if (sub.startIndex == s.startIndex) {
+                if (sub.startIndex === s.startIndex) {
                     result = true
                 }
             })
@@ -445,7 +445,7 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
                 min = sub
             }
         })
-        let objWithPersistentClassInfo = this.state.substringObjects.find(s => s.startIndex == min.startIndex)
+        let objWithPersistentClassInfo = this.state.substringObjects.find(s => s.startIndex === min.startIndex)
         return objWithPersistentClassInfo;
     }
     findRightMostClickedSubstring(): SubstringObject {
@@ -455,14 +455,14 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
                 min = sub
             }
         })
-        let objWithPersistentClassInfo = this.state.substringObjects.find(s => s.startIndex == min.startIndex)
+        let objWithPersistentClassInfo = this.state.substringObjects.find(s => s.startIndex === min.startIndex)
         return objWithPersistentClassInfo;
     }
     findIndexOfHoveredSubstring(hovered: SubstringObject): number {
         let allObjects = this.state.substringObjects;
         let index: number;
         for (var i = 0; i < allObjects.length; i++) {
-            if (allObjects[i].startIndex == hovered.startIndex) {
+            if (allObjects[i].startIndex === hovered.startIndex) {
                 index = i;
             }
         }
@@ -499,10 +499,10 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
         let indexOfHoveredSubstring = this.findIndexOfHoveredSubstring(s);
         let allObjects = this.state.substringObjects;
         let updateClickedSubstrings = true;
-        //hovering over a specified entity does nothing
+        // hovering over a specified entity does nothing
         if (s.entity === null) {
-            if (this.state.substringsClicked.length == 0) {
-                //havent clicked any strings yet
+            if (this.state.substringsClicked.length === 0) {
+                // havent clicked any strings yet
                 let newSubstringObj = { ...s, leftBracketStyle: styles.leftBracketDisplayedBlack, rightBracketStyle: styles.rightBracketDisplayedBlack, dropdownStyle: styles.dropdownNormal }
                 allObjects[indexOfHoveredSubstring] = newSubstringObj;
                 this.setState({
@@ -510,21 +510,21 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
                 })
             } else {
                 if (this.substringHasBeenClicked(s) === true) {
-                    //user has clicked into the already clicked string/group of strings. We need to remove the brackets around all clicked but not set strings, and remove the dropwdowns currently displayed underneath them
+                    // user has clicked into the already clicked string/group of strings. We need to remove the brackets around all clicked but not set strings, and remove the dropwdowns currently displayed underneath them
                     this.removeBracketsFromAllSelectedSubstrings();
                     this.setState({
                         substringsClicked: []
                     })
                     updateClickedSubstrings = false
                 } else {
-                    //we already have an entity clicked but not set, and this is a different string than has previously been clicked
+                    // we already have an entity clicked but not set, and this is a different string than has previously been clicked
                     let left = this.findLeftMostClickedSubstring();
                     let right = this.findRightMostClickedSubstring();
                     if (s.startIndex < left.startIndex && (this.isDefinedEntityBetweenClickedSubstrings(s.startIndex, left.startIndex) == false)) {
-                        //place a gray bracket to left of hovered substring
+                        // place a gray bracket to left of hovered substring
                         let newSubstringObj = { ...s, leftBracketStyle: styles.leftBracketDisplayedBlack }
                         allObjects[indexOfHoveredSubstring] = newSubstringObj;
-                        //now remove the left bracket for the leftmost clicked substring object
+                        // now remove the left bracket for the leftmost clicked substring object
                         let indexOfClickedSubstring = this.findIndexOfHoveredSubstring(left);
 
                         let newClickedSubstringObject: SubstringObject;
@@ -538,10 +538,10 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
                             substringObjects: allObjects
                         })
                     } else if (s.startIndex > right.startIndex && (this.isDefinedEntityBetweenClickedSubstrings(right.startIndex, s.startIndex) == false)) {
-                        //place a gray bracket to right of hovered substring
+                        // place a gray bracket to right of hovered substring
                         let newSubstringObj = { ...s, rightBracketStyle: styles.rightBracketDisplayedBlack }
                         allObjects[indexOfHoveredSubstring] = newSubstringObj;
-                        //now remove the right bracket for the rightmost clicked substring object
+                        // now remove the right bracket for the rightmost clicked substring object
                         let indexOfClickedSubstring = this.findIndexOfHoveredSubstring(right);
                         let newClickedSubstringObject: SubstringObject;
                         if (this.state.substringsClicked.length < 2) {
@@ -557,13 +557,13 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
                 }
             }
             if (updateClickedSubstrings === true) {
-                let currentlyClicked: SubstringObject[] = this.state.substringsClicked.length == 0 ? [] : this.state.substringsClicked;
+                let currentlyClicked: SubstringObject[] = this.state.substringsClicked.length === 0 ? [] : this.state.substringsClicked;
                 this.setState({
                     substringsClicked: [...currentlyClicked, s]
                 })
             }
         } else {
-            //make the dropdown reappear. The user can edit the entity that applies to this string
+            // make the dropdown reappear. The user can edit the entity that applies to this string
             let style: {} = styles.hidden;
             if (s.dropdownStyle === styles.hidden) {
                 style = styles.dropdownNormal
@@ -583,24 +583,24 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
         let allObjects = this.state.substringObjects;
         let currentHoverIsPreviouslyClickedSubstring = this.substringHasBeenClicked(s)
 
-        //hovering over a specified entity does nothing, similarly hovering over a clicked substring should maintain the black brackets
-        if (s.entity === null && currentHoverIsPreviouslyClickedSubstring === false && (s.text.length == 1 && this.includesPunctuation(s.text)) == false) {
-            if (this.state.substringsClicked.length == 0) {
-                //havent clicked any strings yet
+        // hovering over a specified entity does nothing, similarly hovering over a clicked substring should maintain the black brackets
+        if (s.entity === null && currentHoverIsPreviouslyClickedSubstring === false && (s.text.length === 1 && this.includesPunctuation(s.text)) == false) {
+            if (this.state.substringsClicked.length === 0) {
+                // havent clicked any strings yet
                 let newSubstringObj = { ...s, leftBracketStyle: styles.leftBracketDisplayedGray, rightBracketStyle: styles.rightBracketDisplayedGray }
                 allObjects[indexOfHoveredSubstring] = newSubstringObj;
                 this.setState({
                     substringObjects: allObjects
                 })
             } else {
-                //weve clicked a string and need to extend the bracket
+                // weve clicked a string and need to extend the bracket
                 let left = this.findLeftMostClickedSubstring();
                 let right = this.findRightMostClickedSubstring();
                 if (s.startIndex < left.startIndex && (this.isDefinedEntityBetweenClickedSubstrings(s.startIndex, left.startIndex) == false)) {
-                    //place a gray bracket to left of hovered substring
+                    // place a gray bracket to left of hovered substring
                     let newSubstringObj = { ...s, leftBracketStyle: styles.leftBracketDisplayedGray }
                     allObjects[indexOfHoveredSubstring] = newSubstringObj;
-                    //now remove the left bracket for the clicked substring object
+                    // now remove the left bracket for the clicked substring object
                     let indexOfClickedSubstring = this.findIndexOfHoveredSubstring(left);
                     let newClickedSubstringObject: SubstringObject;
                     if (this.state.substringsClicked.length < 2) {
@@ -612,11 +612,11 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
                     this.setState({
                         substringObjects: allObjects
                     })
-                } else if (s.startIndex > right.startIndex && (this.isDefinedEntityBetweenClickedSubstrings(right.startIndex, s.startIndex) == false)) {
-                    //place a gray bracket to right of hovered substring
+                } else if (s.startIndex > right.startIndex && (this.isDefinedEntityBetweenClickedSubstrings(right.startIndex, s.startIndex) === false)) {
+                    // place a gray bracket to right of hovered substring
                     let newSubstringObj = { ...s, rightBracketStyle: styles.rightBracketDisplayedGray }
                     allObjects[indexOfHoveredSubstring] = newSubstringObj;
-                    //now remove the right bracket for the clicked substring object
+                    // now remove the right bracket for the clicked substring object
                     let indexOfClickedSubstring = this.findIndexOfHoveredSubstring(right);
                     let newClickedSubstringObject: SubstringObject;
                     if (this.state.substringsClicked.length < 2) {
@@ -636,9 +636,9 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
         let indexOfHoveredSubstring = this.findIndexOfHoveredSubstring(s);
         let allObjects = this.state.substringObjects;
         let currentHoverIsPreviouslyClickedSubstring = this.substringHasBeenClicked(s)
-        if (s.entity === null && currentHoverIsPreviouslyClickedSubstring == false && (s.text.length == 1 && this.includesPunctuation(s.text)) == false) {
-            if (this.state.substringsClicked.length == 0) {
-                //havent clicked any string yet
+        if (s.entity === null && currentHoverIsPreviouslyClickedSubstring === false && (s.text.length === 1 && this.includesPunctuation(s.text)) == false) {
+            if (this.state.substringsClicked.length === 0) {
+                // havent clicked any string yet
                 let newSubstringObj = { ...s, leftBracketStyle: styles.leftBracketDisplayedWhite, rightBracketStyle: styles.rightBracketDisplayedWhite }
                 allObjects[indexOfHoveredSubstring] = newSubstringObj;
                 this.setState({
@@ -648,10 +648,10 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
                 let left = this.findLeftMostClickedSubstring();
                 let right = this.findRightMostClickedSubstring();
                 if (s.startIndex < left.startIndex && (this.isDefinedEntityBetweenClickedSubstrings(s.startIndex, left.startIndex) == false)) {
-                    //place a gray bracket to left of hovered substring
+                    // place a gray bracket to left of hovered substring
                     let newSubstringObj = { ...s, leftBracketStyle: styles.leftBracketDisplayedWhite }
                     allObjects[indexOfHoveredSubstring] = newSubstringObj;
-                    //now remove the left bracket for the clicked substring object
+                    // now remove the left bracket for the clicked substring object
                     let indexOfClickedSubstring = this.findIndexOfHoveredSubstring(left);
                     let newClickedSubstringObject = { ...left, leftBracketStyle: styles.leftBracketDisplayedBlack };
                     allObjects[indexOfClickedSubstring] = newClickedSubstringObject;
@@ -659,10 +659,10 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
                         substringObjects: allObjects
                     })
                 } else if (s.startIndex > right.startIndex && (this.isDefinedEntityBetweenClickedSubstrings(right.startIndex, s.startIndex) == false)) {
-                    //place a gray bracket to right of hovered substring
+                    // place a gray bracket to right of hovered substring
                     let newSubstringObj = { ...s, rightBracketStyle: styles.rightBracketDisplayedWhite }
                     allObjects[indexOfHoveredSubstring] = newSubstringObj;
-                    //now remove the right bracket for the clicked substring object
+                    // now remove the right bracket for the clicked substring object
                     let indexOfClickedSubstring = this.findIndexOfHoveredSubstring(right);
                     let newClickedSubstringObject = { ...right, rightBracketStyle: styles.rightBracketDisplayedBlack }
                     allObjects[indexOfClickedSubstring] = newClickedSubstringObject;
@@ -674,7 +674,7 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
         }
     }
     getFullStringBetweenSubstrings(left: SubstringObject, right: SubstringObject): string {
-        let fullString: string = "";
+        let fullString: string = '';
         this.state.substringObjects.map(s => {
             if ((s.startIndex >= left.startIndex) && (s.startIndex <= right.startIndex)) {
                 fullString += s.text;
@@ -716,13 +716,13 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
     onDropdownEntitySelected(obj: { text: string }, substringClicked: SubstringObject) {
         //is this thing already an entity or was it a string before?
         let indexOfClickedSubstring: number = this.findIndexOfHoveredSubstring(substringClicked);
-        let entitySelected = this.props.entities.find(e => e.entityName == obj.text)
+        let entitySelected = this.props.entities.find(e => e.entityName === obj.text)
         let allObjects = this.state.substringObjects;
-        let isNewEntity = obj.text.toLowerCase() == 'new entity';
+        let isNewEntity = obj.text.toLowerCase() === 'new entity';
 
         if (substringClicked.entity === null) {
             // let currentlyClickedSubstrings = this.state.substringsClicked;
-            if (this.state.substringsClicked.length == 1) {
+            if (this.state.substringsClicked.length === 1) {
                 let newClickedSubstringObject: SubstringObject = {
                     ...substringClicked,
                     entity: entitySelected,
@@ -737,16 +737,15 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
                         newEntityText: substringClicked.text,
                         substringObjects: allObjects
                     })
-                }
-                else {
+                } else {
                     this.setState({
                         substringObjects: allObjects
                     })
                 }
             } else if (this.state.substringsClicked.length > 1) {
-                //1. set the entity and styling for the leftmost substring object 
-                //2. remove all substring objects after the first one up to the second substring object 
-                //3. set the state
+                // 1. set the entity and styling for the leftmost substring object 
+                // 2. remove all substring objects after the first one up to the second substring object 
+                // 3. set the state
                 let left: SubstringObject = this.findLeftMostClickedSubstring();
                 let right: SubstringObject = this.findRightMostClickedSubstring();
                 allObjects = this.mergeSubstrings(left, right, entitySelected);
@@ -757,8 +756,7 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
                         newEntityText: newText,
                         substringObjects: allObjects
                     })
-                }
-                else {
+                } else {
                     this.setState({
                         substringObjects: allObjects
                     })
@@ -768,7 +766,7 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
                 substringsClicked: []
             })
         } else {
-            if (obj.text.toLowerCase() == 'remove') {
+            if (obj.text.toLowerCase() === 'remove') {
                 let newClickedSubstringObject: SubstringObject = {
                     ...substringClicked,
                     entity: null,
@@ -795,17 +793,16 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
 
         if (isNewEntity) {
             this.props.onNewEntitySelected();
-        }
-        else {
+        } else {
             this.updateCurrentPredictedEntities(allObjects, this.props.entities);
         }
     }
     getAlphabetizedEntityOptions(): BlisDropdownOption[] {
-        let luisEntities = this.props.entities.filter(e => e.entityType == EntityType.LUIS.toString());
+        let luisEntities = this.props.entities.filter(e => e.entityType === EntityType.LUIS.toString());
         let names: string[] = luisEntities.map(e => e.entityName)
         names.sort();
         return names.map<BlisDropdownOption>(name => {
-            let ent = this.props.entities.find(e => e.entityName == name);
+            let ent = this.props.entities.find(e => e.entityName === name);
             return {
                 data: ent,
                 key: ent.entityName,
@@ -825,14 +822,14 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
         let parsed: SubstringObject[] = [];
         originals.map((o: SubstringObject) => {
             if (this.includesPunctuation(o.text) && o.entity == null && o.text.length !== 1) {
-                //punctuation will always appear at the end of the word (exs- Hi, | What? | name?)
-                //Note: If we ever want to handle quotes "X" ^ will not be true and we'll need to create 3 substring objects. For now, I'm assuming the quotes would be part of the string
+                // punctuation will always appear at the end of the word (exs- Hi, | What? | name?)
+                // Note: If we ever want to handle quotes "X" ^ will not be true and we'll need to create 3 substring objects. For now, I'm assuming the quotes would be part of the string
                 let substringObjForPunctuation: SubstringObject = {
                     text: o.text[o.text.length - 1],
                     entity: null,
                     rightBracketStyle: styles.rightBracketDisplayedWhite,
                     leftBracketStyle: styles.leftBracketDisplayedWhite,
-                    //dropdown Style is going to have to depend on some state object. When you click an substring group with an entity it needs to go from styles.hidden to styles.normal
+                    // dropdown Style is going to have to depend on some state object. When you click an substring group with an entity it needs to go from styles.hidden to styles.normal
                     dropdownStyle: styles.hidden,
                     labelStyle: styles.hidden,
                     startIndex: o.startIndex + o.text.length - 1
@@ -857,7 +854,7 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
         })
         options.unshift({
             key: "Divider",
-            text: "",
+            text: '',
             itemType: DropdownMenuItemType.Divider,
             style: "blisDropdown--normal"
         })
@@ -873,8 +870,8 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
             text: "New Entity",
             style: "blisDropdown--command"
         })
-        if (s.text != " ") {
-            if (s.text.length == 1 && this.includesPunctuation(s.text)) {
+        if (s.text !== " ") {
+            if (s.text.length === 1 && this.includesPunctuation(s.text)) {
                 return (
                     <div key={key} className="extractDiv" style={styles.containerDiv}>
                         <div style={styles.normal}>
@@ -936,8 +933,7 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
         if (entity.metadata) {
             if (entity.metadata.positiveId) {
                 return entity.entityName.replace("~","-");
-            }
-            else if (entity.metadata.negativeId) {
+            } else if (entity.metadata.negativeId) {
                 return `+${entity.entityName}`;
             }
         }
@@ -947,9 +943,9 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
         let key = 0;
         let boxClass = this.props.isValid ? 'extractorResponseBox' : 'extractorResponseBox extractorResponseBoxInvalid';
         let button = this.props.isPrimary ? null :
-            <div>
+            (<div>
                 <a onClick={() => this.onClickDeleteVariation()}><span className="teachDeleteVariation ms-Icon ms-Icon--Delete"></span></a>
-            </div>
+            </div>)
         return (
             <div onClick={() => this.onGlobalClick()} 
                 className='teachVariationBox'>
