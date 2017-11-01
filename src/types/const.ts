@@ -1,3 +1,8 @@
+export enum ErrorType {
+    Error,
+    Warning
+}
+
 export enum DisplayMode {
     AppList,
     AppAdmin

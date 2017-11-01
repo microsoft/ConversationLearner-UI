@@ -8,7 +8,7 @@ import {
     UIExtractResponse, UITrainScorerStep,
     UITeachResponse, UIScoreInput, UIScoreResponse
 } from 'blis-models'
-import { DisplayMode } from '../types/const'
+import { ErrorType, DisplayMode } from '../types/const'
 import { AT } from '../types/ActionTypes'
 
 export type UpdateAction = {
@@ -56,7 +56,7 @@ export type DisplayAction = {
 } | {
     // used for setting whether the error popup is displayed
     type: AT.SET_ERROR_DISPLAY,
-    titleId: string,
+    errorType: ErrorType,
     error: string,
     message: string,
     route: AT

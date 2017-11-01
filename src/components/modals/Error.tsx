@@ -6,6 +6,7 @@ import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import * as OF from 'office-ui-fabric-react';
 import { clearErrorDisplay } from '../../actions/displayActions'
 import { State } from '../../types'
+import { ErrorType } from '../../types/const'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 
@@ -32,10 +33,15 @@ class UIError extends React.Component<Props, {}> {
             >
                 <div className='blis-modal_header'>
                     <span className='ms-font-xxl ms-fontWeight-semilight'>
-                        <FormattedMessage
-                            id={this.props.error.titleId}
-                            defaultMessage="Error"
-                        />
+                        {this.props.error.errorType === ErrorType.Error
+                            ? <FormattedMessage
+                                id={FM.ERROR_ERROR}
+                                defaultMessage="Error"
+                            />
+                            : <FormattedMessage
+                                id={FM.ERROR_WARNING}
+                                defaultMessage="Warning"
+                            />}
                     </span>
                 </div>
                 {this.props.error.route && <div className='ms-font-l ms-fontWeight-semilight'>{this.props.error.route} Failed</div>}
