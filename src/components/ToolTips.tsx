@@ -36,7 +36,7 @@ export function onRenderDetailsHeader(detailsHeaderProps: OF.IDetailsHeaderProps
                                     let ttHP = {...tooltipHostProps};
                                     ttHP.tooltipProps =  {
                                         onRenderContent: () => { return tip },
-                                        delay: OF.TooltipDelay.zero,
+                                        delay: OF.TooltipDelay.medium,
                                         directionalHint: OF.DirectionalHint.topCenter
                                     };
                                     return <OF.TooltipHost {...ttHP} />

@@ -308,7 +308,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                             tooltipProps={{
                                 onRenderContent: () => { return GetTip(TipType.ENTITY_PROGAMMATIC) }
                             }}
-                            delay={OF.TooltipDelay.zero}
+                            delay={OF.TooltipDelay.medium}
                             directionalHint={OF.DirectionalHint.bottomCenter}
                         >
                             <span className="ms-fontColor-themeTertiary">
@@ -339,7 +339,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                             tooltipProps={{
                                 onRenderContent: () => { return GetTip(TipType.ENTITY_MULTIVALUE) }
                             }}
-                            delay={OF.TooltipDelay.zero}
+                            delay={OF.TooltipDelay.medium}
                             directionalHint={OF.DirectionalHint.bottomCenter}
                         >
                             <span className="ms-fontColor-themeTertiary">
@@ -370,7 +370,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                             tooltipProps={{
                                 onRenderContent: () => { return GetTip(TipType.ENTITY_NEGATABLE) }
                             }}
-                            delay={OF.TooltipDelay.zero}
+                            delay={OF.TooltipDelay.medium}
                             directionalHint={OF.DirectionalHint.bottomCenter}
                         >
                             <span className="ms-fontColor-themeTertiary">
