@@ -36,12 +36,11 @@ export function onRenderDetailsHeader(detailsHeaderProps: OF.IDetailsHeaderProps
                                     let ttHP = {...tooltipHostProps};
                                     ttHP.tooltipProps =  {
                                         onRenderContent: () => { return tip },
-                                        delay:OF.TooltipDelay.zero,
-                                        directionalHint:OF.DirectionalHint.topCenter
+                                        delay: OF.TooltipDelay.zero,
+                                        directionalHint: OF.DirectionalHint.topCenter
                                     };
                                     return <OF.TooltipHost {...ttHP} />
-                                }
-                            else {
+                                } else {
                                 return null;
                             }
                         }
