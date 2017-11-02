@@ -251,8 +251,8 @@ export enum FM {
     // TrainDialogWindow
     TRAINDIALOGWINDOW_DEFAULTBUTTON_ARIADESCRIPTION = "TrainDialogWindow.defaultButton.ariaDescription",
     TRAINDIALOGWINDOW_DEFAULTBUTTON_TEXT = "TrainDialogWindow.defaultButton.text",
-    TRAINDIALOGWINDOW_PRIMARYBUTTON_ARIADESCRIPTION = "TrainDialogWindow.defaultButton.ariaDescription",
-    TRAINDIALOGWINDOW_PRIMARYBUTTON_TEXT = "TrainDialogWindow.defaultButton.text",
+    TRAINDIALOGWINDOW_PRIMARYBUTTON_ARIADESCRIPTION = "TrainDialogWindow.primaryButton.ariaDescription",
+    TRAINDIALOGWINDOW_PRIMARYBUTTON_TEXT = "TrainDialogWindow.primaryButton.text",
     TRAINDIALOGWINDOW_CONFIRMDELETE_TITLE = "TrainDialogWindow.confirmDelete.title",
 }
 
