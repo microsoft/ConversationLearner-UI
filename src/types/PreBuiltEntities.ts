@@ -12,7 +12,7 @@ export const PreBuilts = {
 	Encyclopedia: "encyclopedia",
 	URL: "url",
 	Email: "email",
-	Phone_number: "Phone number"
+	Phone_number: "phonenumber"
 }
 export interface LocalePreBuilts {
 	locale: string,
