@@ -14,12 +14,13 @@ import { FM } from '../../../react-intl-messages'
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 
 interface ComponentState {
-    actionSelected: ActionBase | null;
-    actionIDToDelete: string;
-    isConfirmDeleteActionModalOpen: boolean;
-    isActionEditorModalOpen: boolean;
-    searchValue: string;
+    actionSelected: ActionBase | null
+    actionIDToDelete: string
+    isConfirmDeleteActionModalOpen: boolean
+    isActionEditorModalOpen: boolean
+    searchValue: string
     isActionEditorOpen: boolean
+    useNewActionEditor: boolean
 }
 
 class Actions extends React.Component<Props, ComponentState> {
@@ -33,7 +34,8 @@ class Actions extends React.Component<Props, ComponentState> {
             searchValue: '',
             isConfirmDeleteActionModalOpen: false,
             isActionEditorModalOpen: false,
-            isActionEditorOpen: false
+            isActionEditorOpen: false,
+            useNewActionEditor: false
         }
         this.onClickConfirmDelete = this.onClickConfirmDelete.bind(this);
         this.onSelectAction = this.onSelectAction.bind(this);
@@ -86,16 +88,33 @@ class Actions extends React.Component<Props, ComponentState> {
     }
 
     onSelectAction(action: ActionBase) {
-        this.setState({
-            actionSelected: action,
-            isActionEditorOpen: true
-        })
+        if (this.state.useNewActionEditor) {
+            this.setState({
+                actionSelected: action,
+                isActionEditorOpen: true
+            })
+        }
+        else {
+            this.setState({
+                actionSelected: action,
+                isActionEditorModalOpen: true
+            })
+        }
     }
 
     onClickOpenActionEditor() {
-        this.setState({
-            isActionEditorOpen: true
-        })
+        if (this.state.useNewActionEditor) {
+            this.setState({
+                isActionEditorOpen: true,
+                actionSelected: null
+            })
+        }
+        else {
+            this.setState({
+                isActionEditorModalOpen: true,
+                actionSelected: null
+            })
+        }
     }
 
     onClickCancelActionEditor() {
@@ -113,7 +132,7 @@ class Actions extends React.Component<Props, ComponentState> {
             console.log(`Actions.onClickDeleteActionEditor`)
             // this.props.deleteActionAsync(this.props.user.key, action.actionId, this.props.app.appId)
         })
-        
+
     }
 
     onClickSubmitActionEditor(action: ActionBase) {
@@ -167,6 +186,12 @@ class Actions extends React.Component<Props, ComponentState> {
         })
     }
 
+    onChangedUseNewactionEditor = (useNewActionEditor: boolean) => {
+        this.setState({
+            useNewActionEditor
+        })
+    }
+
     render() {
         // TODO: Look to move this up to the set state calls instead of forcing it to be on every render
         const actions = this.getFilteredActions();
@@ -185,8 +210,19 @@ class Actions extends React.Component<Props, ComponentState> {
                     />
                 </span>
                 <div>
+                    <OF.Toggle
+                        className="ms-font-m"
+                        label='Use New Editor'
+                        onAriaLabel='Use New Editor is checked. Press to uncheck.'
+                        offAriaLabel='Use New Editor is unchecked. Press to check.'
+                        onText='On'
+                        offText='Off'
+                        checked={this.state.useNewActionEditor}
+                        onChanged={this.onChangedUseNewactionEditor}
+                    />
+
                     <OF.PrimaryButton
-                        onClick={this.onClickCreateAction}
+                        onClick={() => this.onClickOpenActionEditor()}
                         ariaDescription={this.props.intl.formatMessage({
                             id: FM.ACTIONS_CREATEBUTTONARIALDESCRIPTION,
                             defaultMessage: 'Create a New Action'
@@ -196,12 +232,6 @@ class Actions extends React.Component<Props, ComponentState> {
                             defaultMessage: 'New Action'
                         })}
                         componentRef={component => this.newActionButton = component}
-                    />
-
-                    <OF.PrimaryButton
-                        onClick={() => this.onClickOpenActionEditor()}
-                        ariaDescription='Create a New Action'
-                        text='New Action (2.0)'
                     />
                 </div>
                 <OF.SearchBox

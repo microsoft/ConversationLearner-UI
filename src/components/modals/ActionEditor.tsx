@@ -10,6 +10,7 @@ import ConfirmDeleteModal from './ConfirmDeleteModal'
 import EntityCreatorEditor from './EntityCreatorEditor'
 import ActionPayloadEditor, { utilities as payloadUtilities, IMention } from './ActionPayloadEditor'
 import { State } from '../../types'
+import { BlisTagItem, IBlisPickerItemProps } from './BlisTagItem'
 
 const convertEntityToMention = (entity: EntityBase): IMention =>
     ({
@@ -20,7 +21,7 @@ const convertEntityToMention = (entity: EntityBase): IMention =>
 
 const convertContentEntityToTag = (contentEntity: payloadUtilities.IContentEntity) =>
     ({
-        key: contentEntity.entity.data.mention.displayName,
+        key: contentEntity.entity.data.mention.id,
         name: contentEntity.entity.data.mention.displayName
     })
 
@@ -28,7 +29,7 @@ const convertEntityIdsToTags = (ids: string[], entities: EntityBase[]): ITag[] =
     return ids
         .map<EntityBase>(entityId => entities.find(e => e.entityId === entityId))
         .map<ITag>(entity => ({
-            key: entity.entityName,
+            key: entity.entityId,
             name: entity.entityName
         }))
 }
@@ -94,7 +95,7 @@ class ActionEditor extends React.Component<Props, ComponentState> {
         const { entities, botInfo } = this.props
         let entityTags = entities.map<ITag>(e =>
             ({
-                key: e.entityName,
+                key: e.entityId,
                 name: e.entityName
             }))
 
@@ -267,6 +268,9 @@ class ActionEditor extends React.Component<Props, ComponentState> {
     }
 
     onResolveExpectedEntityTags(filterText: string, selectedTags: ITag[]): ITag[] {
+        // TODO: Look at using different control such as a dropdown which implies using single value.
+        // It is not possible to have more than 1 suggested entity
+        // If there is already an entity selected return empty list to prevent adding more
         if (selectedTags.length > 0) {
             return []
         }
@@ -276,6 +280,12 @@ class ActionEditor extends React.Component<Props, ComponentState> {
             this.state.entityTags,
             [...selectedTags, ...this.state.selectedRequiredEntityTags]
         )
+    }
+
+    onRenderExpectedTag(props: IBlisPickerItemProps<ITag>): JSX.Element {
+        const renderProps = { ...props }
+        renderProps.highlight = true
+        return <BlisTagItem { ...renderProps }>{props.item.name}</BlisTagItem>
     }
 
     onChangeExpectedEntityTags(nextTags: ITag[]) {
@@ -335,6 +345,18 @@ class ActionEditor extends React.Component<Props, ComponentState> {
             selectedNegativeEntityTags: tags
         })
     }
+    
+    onRenderNegativeEntityTag = (props: IBlisPickerItemProps<ITag>): JSX.Element => {
+        const renderProps = { ...props }
+        const suggestedEntityKey = this.state.selectedExpectedEntityTags.length > 0 ? this.state.selectedExpectedEntityTags[0].key : null
+
+        // Strickout and lock/highlight if also the suggested entity
+        renderProps.strike = true
+        renderProps.locked = suggestedEntityKey === props.key
+        renderProps.highlight = suggestedEntityKey === props.key
+
+        return <BlisTagItem {...renderProps}>{props.item.name}</BlisTagItem>
+    }
 
     onChangeMentionEditor = (editorState: EditorState) => {
         // TODO: Remove need for '{mention'. Risks possibily with getting out of sync with actual mention
@@ -348,6 +370,7 @@ class ActionEditor extends React.Component<Props, ComponentState> {
             selectedRequiredEntityTags: entities.map(convertContentEntityToTag)
         })
     }
+
 
     render() {
         return (
@@ -414,6 +437,7 @@ class ActionEditor extends React.Component<Props, ComponentState> {
                         <Label>Expected Entity in Response...</Label>
                         <TagPicker
                             onResolveSuggestions={(text, tags) => this.onResolveExpectedEntityTags(text, tags)}
+                            onRenderItem={this.onRenderExpectedTag}
                             getTextFromItem={item => item.name}
                             onChange={tags => this.onChangeExpectedEntityTags(tags)}
                             pickerSuggestionsProps={
@@ -425,7 +449,7 @@ class ActionEditor extends React.Component<Props, ComponentState> {
                             selectedItems={this.state.selectedExpectedEntityTags}
                         />
 
-                        <Label>Disallow Action when Entities are <b>NOT</b> in Memory...</Label>
+                        <Label>Required Entities: Disallow Action when Entities are <b>NOT</b> in Memory...</Label>
                         <TagPicker
                             onResolveSuggestions={(text, tags) => this.onResolveRequiredEntityTags(text, tags)}
                             getTextFromItem={item => item.name}
@@ -439,9 +463,10 @@ class ActionEditor extends React.Component<Props, ComponentState> {
                             selectedItems={this.state.selectedRequiredEntityTags}
                         />
 
-                        <Label>Disallow Action when Entities <b>ARE</b> in Memory...</Label>
+                        <Label>Blocking Entities: Disallow Action when Entities <b>ARE</b> in Memory...</Label>
                         <TagPicker
                             onResolveSuggestions={(text, tags) => this.onResolveNegativeEntityTags(text, tags)}
+                            onRenderItem={this.onRenderNegativeEntityTag}
                             getTextFromItem={item => item.name}
                             onChange={tags => this.onChangeNegativeEntityTags(tags)}
                             pickerSuggestionsProps={

@@ -1,9 +1,7 @@
 import * as React from 'react';
-import { IPickerItemProps, Icon } from 'office-ui-fabric-react'
+import { IPickerItemProps, Icon, ITag } from 'office-ui-fabric-react'
 
-export interface IBlisTag {
-  key: string;
-  name: string;
+export interface IBlisTag extends ITag {
 }
 
 export interface IBlisPickerItemProps<T> extends IPickerItemProps<T> {
