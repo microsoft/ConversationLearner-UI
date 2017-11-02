@@ -2,6 +2,7 @@ import * as React from 'react';
 import * as OF from 'office-ui-fabric-react';
 import { FormattedMessage } from 'react-intl'
 import { FM } from '../react-intl-messages'
+import { MemoryValue } from 'blis-models'
 import './ToolTips.css'
 
 export enum TipType {
@@ -28,7 +29,7 @@ export function onRenderDetailsHeader(detailsHeaderProps: OF.IDetailsHeaderProps
         <div>
              {
                 defaultRender({...detailsHeaderProps,
-                    onRenderColumnHeaderTooltip:(tooltipHostProps: OF.ITooltipHostProps) => 
+                    onRenderColumnHeaderTooltip: (tooltipHostProps: OF.ITooltipHostProps) => 
                         {
                             let id = tooltipHostProps.id.split('-')[1];
                             let tip = GetTip(id);
@@ -50,6 +51,7 @@ export function onRenderDetailsHeader(detailsHeaderProps: OF.IDetailsHeaderProps
         </div>
     )
 }
+
 export function GetTip(text: string) {
     switch (text) {
         case TipType.ACTION_ARGUMENTS:
@@ -148,4 +150,33 @@ export function GetTip(text: string) {
             return (<FormattedMessage id={FM.TOOLTIP_ENTITY_TYPE} defaultMessage="Wait"/>)
     }
     return (<div>{text}</div>);
+}
+
+export function Prebuilt(memoryValue: MemoryValue, content: JSX.Element): JSX.Element {
+    if (!memoryValue.type && !memoryValue.resolution) {
+        return content;
+    }
+    return (
+        <div>
+            <OF.TooltipHost 
+                tooltipProps={{
+                    onRenderContent: () => {
+                        let key = 0;
+                        return (
+                            <div>
+                                <span><b>{memoryValue.type}</b><br/><br/></span>
+                                {memoryValue.resolution &&
+                                <span key={key++}>{JSON.stringify(memoryValue.resolution, null, 2).split('\n')
+                                    .map(s => {return (<div key={key++}>{s.split(' ').map(u => {return <span key={key++}>&nbsp;{u}</span>;})}</div>)})}</span>
+                                }
+                            </div>
+                        );
+                    }
+                }}
+                calloutProps={{ gapSpace: 0 }}
+            >
+                {content}
+            </OF.TooltipHost>
+        </div>
+    )
 }

@@ -5,6 +5,7 @@ import { returntypeof } from 'react-redux-typescript';
 import { connect } from 'react-redux';
 import { ExtractResponse, PredictedEntity, EntityBase, AppDefinition, EntityType, MemoryValue } from 'blis-models'
 import { State } from '../types';
+import { Prebuilt} from './ToolTips';
 import { BlisDropdownOption } from './modals/BlisDropDownOption'
 import * as OF from 'office-ui-fabric-react';
 
@@ -853,27 +854,8 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
             let entityClass = 'ms-font-xs' + ((s.entity && this.isPreBuilt(s.entity)) ? ' blisText--emphasis' : '');
             let nameDisplay = isPrebuilt ?
                 // If a pre-built, show tool tip with extra info
-                (
-                    <div>
-                        <OF.TooltipHost 
-                            tooltipProps={{
-                                onRenderContent: () => {
-                                    return (
-                                        <div>
-                                            <span><b>{s.entityValue.type}</b><br/><br/></span>
-                                            <span>{JSON.stringify(s.entityValue.resolution)}</span>
-                                        </div>
-                                    );
-                                }
-                            }}
-                            calloutProps={{ gapSpace: 0 }}
-                        >
-                            <span style={s.labelStyle} className={entityClass}>{entityName}</span>
-                        </OF.TooltipHost>
-                    </div>
-                ) : (
-                    <span style={s.labelStyle} className={entityClass}>{entityName}</span>                
-                );
+                Prebuilt(s.entityValue, (<span style={s.labelStyle} className={entityClass}>{entityName}</span>))
+                : (<span style={s.labelStyle} className={entityClass}>{entityName}</span>);
 
             return (
                 <div key={key} className="extractDiv" style={styles.containerDiv}>
