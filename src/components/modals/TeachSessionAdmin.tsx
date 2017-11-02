@@ -62,7 +62,7 @@ class TeachSessionAdmin extends React.Component<Props, {}> {
 
         return (
             <div className="blis-dialog-admin ms-font-l">
-                {this.props.teachSession.mode == DialogMode.Extractor ? (
+                {this.props.teachSession.mode === DialogMode.Extractor ? (
                     <div className="blis-dialog-admin__content">
                         <div className="blis-wc-message blis-wc-message--user">
                             <FormattedMessage
@@ -71,7 +71,7 @@ class TeachSessionAdmin extends React.Component<Props, {}> {
                             />
                         </div>
                     </div>
-                ) : (this.props.teachSession.mode == DialogMode.Scorer ? (
+                ) : (this.props.teachSession.mode === DialogMode.Scorer ? (
                     <div className="blis-dialog-admin__content">
                         <div className="blis-wc-message blis-wc-message--bot">
                             <FormattedMessage
@@ -97,7 +97,7 @@ class TeachSessionAdmin extends React.Component<Props, {}> {
                         />
                     </div>
                 </div>
-                {this.props.teachSession.mode == DialogMode.Extractor &&
+                {this.props.teachSession.mode === DialogMode.Extractor &&
                     <div className="blis-dialog-admin__content">
                         <div className="blis-dialog-admin-title">
                             <FormattedMessage
@@ -121,7 +121,7 @@ class TeachSessionAdmin extends React.Component<Props, {}> {
                         </div>
                     </div>
                 }
-                {this.props.teachSession.mode == DialogMode.Scorer &&
+                {this.props.teachSession.mode === DialogMode.Scorer &&
                     <div className="blis-dialog-admin__content">
                         <div className="blis-dialog-admin-title">
                             <FormattedMessage

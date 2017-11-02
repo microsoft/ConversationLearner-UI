@@ -135,3 +135,7 @@
     grid-auto-columns: min-content;
     white-space: nowrap;
 }
+
+.blisText--emphasis {
+    color: var(--color-blue);
+} 
