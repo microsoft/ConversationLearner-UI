@@ -89,6 +89,7 @@ interface ComponentState {
 }
 
 class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
+    boundOnGlobalClick: () => void
     constructor(p: any) {
         super(p);
         this.state = {
@@ -150,11 +151,12 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
     }
     componentDidMount() {
         this.setInitialValues(this.props)
-        document.addEventListener('click', this.onGlobalClick.bind(this), false);
+        this.boundOnGlobalClick = this.onGlobalClick.bind(this)
+        document.addEventListener('click', this.boundOnGlobalClick, false)
     }
 
     componentWillUnmount() {
-        document.removeEventListener('click', this.onGlobalClick.bind(this), false);
+        document.removeEventListener('click', this.boundOnGlobalClick, false)
     }
     setInitialValues(props: Props) {
         this.setState({
