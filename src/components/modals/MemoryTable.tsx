@@ -103,28 +103,28 @@ class MemoryTable extends React.Component<Props, ComponentState> {
     getValue(memory: any, col: OF.IColumn): any {
         let value = memory[col.fieldName];
 
-        if (typeof value == 'string' || value instanceof String) {
+        if (typeof value === 'string' || value instanceof String) {
             return value.toUpperCase();
         }
         return value;
     }
     previousMemory(entityName: string) {
         let prevMemories = this.props.prevMemories || [];
-        return prevMemories.find(m => m.entityName == entityName);
+        return prevMemories.find(m => m.entityName === entityName);
     }
     renderEntityName(entityName: string) {
 
-        let curEntity = this.props.memories.find(m => m.entityName == entityName);
-        let prevEntity = this.props.prevMemories.find(m => m.entityName == entityName);
-        let entityClass = "ms-font-m-plus";
+        let curEntity = this.props.memories.find(m => m.entityName === entityName);
+        let prevEntity = this.props.prevMemories.find(m => m.entityName === entityName);
+        let entityClass = 'ms-font-m-plus';
 
         // In old but not new
         if (prevEntity && !curEntity) {
-            entityClass += " blis-font--deleted";
+            entityClass += ' blis-font--deleted';
         }
         // In new but not old
         else if (!prevEntity && curEntity) {
-            entityClass += " blis-font--emphasis";
+            entityClass += ' blis-font--emphasis';
         }
 
         return <span className={entityClass}>{entityName}</span>
@@ -132,75 +132,93 @@ class MemoryTable extends React.Component<Props, ComponentState> {
     renderEntityValues(entityName: string) {
 
         // Current entity values
-        let entity = this.props.entities.find(e => e.entityName == entityName);
-        let curMemory = this.props.memories.find(m => m.entityName == entityName);
-        let curValues = curMemory ? curMemory.entityValues : [];
+        let entity = this.props.entities.find(e => e.entityName === entityName);
+        let curMemory = this.props.memories.find(m => m.entityName === entityName);
+        let curMemoryValues = curMemory ? curMemory.entityValues : [];
+        let curValues = curMemoryValues.map(cmv => cmv.value);
 
         // Corresponding old memory values
-        let prevMemory = this.props.prevMemories.find(m => m.entityName == entityName);
-        let prevValues = prevMemory ? prevMemory.entityValues : [];
+        let prevMemory = this.props.prevMemories.find(m => m.entityName === entityName);
+        let prevMemoryValues = prevMemory ? prevMemory.entityValues : [];
+        let prevValues = prevMemoryValues.map(pmv => pmv.value);
 
         // Find union and remove duplicates
-        let unionValues = [...curValues, ...prevValues];
-        unionValues = Array.from(new Set(unionValues));
+        let unionMemoryValues = [...curMemoryValues, ...prevMemoryValues.filter(pmv => !curMemoryValues.find(cmv => cmv.value === pmv.value))];
 
         // Print out list in friendly manner
         let display = [];
         let index = 0;
-        for (let value of unionValues) {
-            let entityClass = "";
+        for (let memoryValue of unionMemoryValues) {
+            let entityClass = '';
 
             // Calculate prefix
-            let prefix = "";
+            let prefix = '';
             if (!entity.metadata || !entity.metadata.isBucket) {
-                prefix = " ";
-            }
-            else if (unionValues.length != 1 && index == unionValues.length - 1) {
-                prefix = " and ";
-            }
-            else if (index != 0) {
-                prefix = ", ";
+                prefix = ' ';
+            } else if (unionMemoryValues.length !== 1 && index === unionMemoryValues.length - 1) {
+                prefix = ' and ';
+            } else if (index !== 0) {
+                prefix = ', ';
             }
 
             // In old but not new
-            if (prevValues.indexOf(value) >= 0 && curValues.indexOf(value) < 0) {
-                entityClass = "blis-font--deleted";
+            if (prevValues.indexOf(memoryValue.value) >= 0 && curValues.indexOf(memoryValue.value) < 0) {
+                entityClass = 'blis-font--deleted';
             }
             // In new but not old
-            else if (prevValues.indexOf(value) < 0 && curValues.indexOf(value) >= 0) {
-                entityClass = "blis-font--emphasis";
+            else if (prevValues.indexOf(memoryValue.value) < 0 && curValues.indexOf(memoryValue.value) >= 0) {
+                entityClass = 'blis-font--emphasis';
             }
 
-            display.push(<span className='ms-font-m-plus' key={value}>{prefix}<span className={entityClass}>{value}</span></span>);
-
+            // If a pre-built, show tool tip with extra info
+            if (memoryValue.type || memoryValue.resolution) {
+                entityClass += ' blisText--emphasis';
+                display.push(
+                    <div>
+                    <OF.TooltipHost 
+                        tooltipProps={{
+                            onRenderContent: () => {
+                                return (
+                                    <div>
+                                        <span><b>{memoryValue.type}</b><br/><br/></span>
+                                        <span>{JSON.stringify(memoryValue.resolution)}</span>
+                                    </div>
+                                );
+                            }
+                        }}
+                        calloutProps={ { gapSpace: 0 } }
+                    >
+                        <span className="ms-font-m-plus" key={memoryValue.value}>{prefix}<span className={entityClass}>{memoryValue.value}</span></span>
+                    </OF.TooltipHost>
+                  </div>
+                )
+            } else {
+                display.push(<span className="ms-font-m-plus" key={memoryValue.value}>{prefix}<span className={entityClass}>{memoryValue.value}</span></span>);                
+            }
+ 
             index++;
         }
         return display;
 
     }
-    renderItemColumn(entityName?: any, index?: number, column?: OF.IColumn) {
+    renderItemColumn(entityName?: string, index?: number, column?: OF.IColumn) {
 
-        let entity = this.props.entities.filter((e: EntityBase) => e.entityName == entityName)[0];
+        let entity = this.props.entities.filter((e: EntityBase) => e.entityName === entityName)[0];
         if (!entity) {
-            return "ERROR";
+            return 'ERROR';
         }
-        if (column.key == 'entityType') {
-            let type = (entity.entityType == EntityType.LOCAL || entity.entityType == EntityType.LUIS) ? "CUSTOM" : entity.entityType;
+        if (column.key === 'entityType') {
+            let type = (entity.entityType === EntityType.LOCAL || entity.entityType === EntityType.LUIS) ? 'CUSTOM' : entity.entityType;
             return <span className="ms-font-m-plus">{type}</span>;
-        }
-        else if (column.key == 'entityValues') {
+        } else if (column.key === 'entityValues') {
             return this.renderEntityValues(entityName);
-        }
-        else if (column.key == 'isProgrammatic') {
-            return <span className={"ms-Icon blis-icon " + (entity.entityType == EntityType.LOCAL ? "ms-Icon--CheckMark" : "ms-Icon--Remove")} aria-hidden="true"></span>
-        }
-        else if (column.key == 'isBucketable') {
-            return <span className={"ms-Icon blis-icon " + (entity.metadata.isBucket ? "ms-Icon--CheckMark" : "ms-Icon--Remove")} aria-hidden="true"></span>
-        }
-        else if (column.key == 'isNegatable') {
-            return <span className={"ms-Icon blis-icon " + (entity.metadata.isReversable ? "ms-Icon--CheckMark" : "ms-Icon--Remove")} aria-hidden="true"></span>
-        }
-        else if (column.key == 'entityName') {
+        } else if (column.key === 'isProgrammatic') {
+            return <span className={'ms-Icon blis-icon ' + (entity.entityType === EntityType.LOCAL ? 'ms-Icon--CheckMark' : 'ms-Icon--Remove')} aria-hidden="true"/>
+        } else if (column.key === 'isBucketable') {
+            return <span className={'ms-Icon blis-icon ' + (entity.metadata.isBucket ? 'ms-Icon--CheckMark' : 'ms-Icon--Remove')} aria-hidden="true"/>
+        } else if (column.key === 'isNegatable') {
+            return <span className={'ms-Icon blis-icon ' + (entity.metadata.isReversable ? 'ms-Icon--CheckMark' : 'ms-Icon--Remove')} aria-hidden="true"/>
+        } else if (column.key === 'entityName') {
             return this.renderEntityName(entityName);
         }
         return null;
@@ -224,8 +242,7 @@ class MemoryTable extends React.Component<Props, ComponentState> {
 
                 if (this.state.sortColumn.isSortedDescending) {
                     return firstValue > secondValue ? -1 : 1;
-                }
-                else {
+                } else {
                     return firstValue > secondValue ? 1 : -1;
                 }
             });
@@ -237,21 +254,22 @@ class MemoryTable extends React.Component<Props, ComponentState> {
         const memoryNames = this.getMemoryNames()
         return (
             <div>
-                {memoryNames.length == 0
+                {memoryNames.length === 0
                     ? <div className='ms-font-l teachEmptyMemory'>
                         <FormattedMessage
                             id={FM.MEMORYTABLE_EMPTY}
-                            defaultMessage="Empty"
+                            defaultMessage='Empty'
                         />
                     </div>
                     : <OF.DetailsList
-                        className="ms-font-m-plus"
+                        className='ms-font-m-plus'
                         items={memoryNames}
                         columns={this.state.columns}
                         onColumnHeaderClick={this.onColumnClick}
                         onRenderItemColumn={this.renderItemColumn}
                         checkboxVisibility={OF.CheckboxVisibility.hidden}
-                        onRenderDetailsHeader={(detailsHeaderProps: OF.IDetailsHeaderProps,
+                        onRenderDetailsHeader={(
+                            detailsHeaderProps: OF.IDetailsHeaderProps,
                             defaultRender: OF.IRenderFunction<OF.IDetailsHeaderProps>) =>
                             onRenderDetailsHeader(detailsHeaderProps, defaultRender)}
                     />}
