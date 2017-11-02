@@ -152,7 +152,10 @@ export function GetTip(text: string) {
     return (<div>{text}</div>);
 }
 
-export function Prebuilt(memoryValue: MemoryValue, content: any) {
+export function Prebuilt(memoryValue: MemoryValue, content: JSX.Element): JSX.Element {
+    if (!memoryValue.type && !memoryValue.resolution) {
+        return content;
+    }
     return (
         <div>
             <OF.TooltipHost 
@@ -162,8 +165,10 @@ export function Prebuilt(memoryValue: MemoryValue, content: any) {
                         return (
                             <div>
                                 <span><b>{memoryValue.type}</b><br/><br/></span>
+                                {memoryValue.resolution &&
                                 <span key={key++}>{JSON.stringify(memoryValue.resolution, null, 2).split('\n')
-                                    .map(s => {return (<div key={key++}>{s.split(' ').map(u => {return <span key={key++}>&nbsp;{u}</span>;})}</div>);})}</span>
+                                    .map(s => {return (<div key={key++}>{s.split(' ').map(u => {return <span key={key++}>&nbsp;{u}</span>;})}</div>)})}</span>
+                                }
                             </div>
                         );
                     }
