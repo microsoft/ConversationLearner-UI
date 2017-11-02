@@ -19,7 +19,9 @@ export interface IContentEntity {
     end: number
 }
 
-export const getEntities = (editorState: EditorState, entityType: string | null = null): IContentEntity[] => {
+export const mentionTrigger = '$'
+
+export const getEntities = (editorState: EditorState, entityType: string | null = `${mentionTrigger}mention`): IContentEntity[] => {
     const content = editorState.getCurrentContent();
     const entities: any = [];
     content.getBlocksAsArray().forEach((block) => {

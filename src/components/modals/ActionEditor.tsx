@@ -1,11 +1,11 @@
 import * as React from 'react'
-import { EditorState, ContentState, convertToRaw } from 'draft-js'
+import { EditorState, ContentState /*, convertToRaw */} from 'draft-js'
 import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { Modal } from 'office-ui-fabric-react/lib/Modal'
 import { PrimaryButton, Checkbox, DefaultButton, Dropdown, IDropdownOption, TagPicker, TextField, ITag, Label } from 'office-ui-fabric-react'
-import { ActionBase, ActionTypes, BlisAppBase, EntityBase } from 'blis-models'
+import { ActionBase, ActionTypes, ActionMetaData, BlisAppBase, EntityBase } from 'blis-models'
 import ConfirmDeleteModal from './ConfirmDeleteModal'
 import EntityCreatorEditor from './EntityCreatorEditor'
 import ActionPayloadEditor, { utilities as payloadUtilities, IMention } from './ActionPayloadEditor'
@@ -14,7 +14,7 @@ import { State } from '../../types'
 const convertEntityToMention = (entity: EntityBase): IMention =>
     ({
         id: entity.entityId,
-        name: `{${entity.entityName}}`,
+        name: entity.entityName,
         displayName: entity.entityName,
     })
 
@@ -193,23 +193,24 @@ class ActionEditor extends React.Component<Props, ComponentState> {
     }
 
     onClickSubmit() {
-
         const contentState = this.state.mentionEditorState.getCurrentContent()
-        const rawContent = convertToRaw(contentState)
+        // const rawContent = convertToRaw(contentState)
         const rawText = contentState.getPlainText()
 
-        const newOrEditedAction: ActionBase = {
+        const newOrEditedAction = new ActionBase({
             actionId: null,
-            payload: `${rawText} : ${JSON.stringify(rawContent)}`,
+            payload: rawText, //`${rawText} : ${JSON.stringify(rawContent)}`,
             isTerminal: this.state.isTerminal,
-            requiredEntities: this.state.selectedRequiredEntityTags,
-            negativeEntities: this.state.selectedNegativeEntityTags,
-            suggestedEntity: this.state.selectedExpectedEntityTags,
-            metadata: {
-                actionType: ActionTypes
-            }
-            // TODO: Remove need for `any` typing
-        } as any
+            requiredEntities: this.state.selectedRequiredEntityTags.map<string>(tag => tag.key),
+            negativeEntities: this.state.selectedNegativeEntityTags.map<string>(tag => tag.key),
+            suggestedEntity: this.state.selectedExpectedEntityTags.map<string>(tag => tag.key)[0],
+            version: null,
+            packageCreationId: null,
+            packageDeletionId: null,
+            metadata: new ActionMetaData({
+                actionType: this.state.selectedApiOptionKey as string
+            })
+        })
 
         if (this.state.isEditing) {
             newOrEditedAction.actionId = this.props.action.actionId

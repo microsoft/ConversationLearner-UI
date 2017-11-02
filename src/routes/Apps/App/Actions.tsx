@@ -130,7 +130,7 @@ class Actions extends React.Component<Props, ComponentState> {
             }
             else {
                 console.log(`createActionAsync`)
-                // this.props.createActionAsync(this.props.user.key, action, this.props.app.appId)
+                this.props.createActionAsync(this.props.user.key, action, this.props.app.appId)
             }
             console.groupEnd()
         })

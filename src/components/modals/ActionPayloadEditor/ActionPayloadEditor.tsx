@@ -2,10 +2,10 @@ import * as React from 'react'
 import { EditorState } from 'draft-js'
 import Editor from 'draft-js-plugins-editor'
 import createMentionPlugin, { defaultSuggestionsFilter } from 'draft-js-mention-plugin'
-import CustomEntryComponent from './Entry'
-import CustomMention from './Mention'
+// import CustomEntryComponent from './Entry'
+// import CustomMention from './Mention'
 import { IMention } from './mentions'
-import { getEntities } from './utilities'
+import { mentionTrigger, getEntities } from './utilities'
 import './ActionPayloadEditor.css'
 import 'draft-js/dist/Draft.css'
 // import 'draft-js-mention-plugin/lib/plugin.css'
@@ -21,14 +21,11 @@ interface State {
   suggestions: IMention[]
 }
 
-const mentionTrigger = '{'
-
-
 const mentionPlugin = createMentionPlugin({
   entityMutability: 'IMMUTABLE',
-  mentionPrefix: '',
+  mentionPrefix: mentionTrigger,
   mentionTrigger,
-  mentionComponent: CustomMention
+  // mentionComponent: CustomMention
 })
 const { MentionSuggestions } = mentionPlugin
 const plugins = [mentionPlugin]
@@ -75,7 +72,7 @@ export default class extends React.Component<Props, State> {
         <MentionSuggestions
           onSearchChange={this.onSearchChange}
           suggestions={this.state.suggestions}
-          entryComponent={CustomEntryComponent}
+          /* entryComponent={CustomEntryComponent} */
         />
       </div>
     )
