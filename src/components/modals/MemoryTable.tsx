@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../../types'
 import * as OF from 'office-ui-fabric-react';
-import { onRenderDetailsHeader } from '../ToolTips'
+import { onRenderDetailsHeader, Prebuilt } from '../ToolTips'
 import { EntityBase, EntityType, Memory } from 'blis-models'
 import { DialogMode } from '../../types/const'
 import { FM } from '../../react-intl-messages'
@@ -174,23 +174,7 @@ class MemoryTable extends React.Component<Props, ComponentState> {
             if (memoryValue.type || memoryValue.resolution) {
                 entityClass += ' blisText--emphasis';
                 display.push(
-                    <div>
-                    <OF.TooltipHost 
-                        tooltipProps={{
-                            onRenderContent: () => {
-                                return (
-                                    <div>
-                                        <span><b>{memoryValue.type}</b><br/><br/></span>
-                                        <span>{JSON.stringify(memoryValue.resolution)}</span>
-                                    </div>
-                                );
-                            }
-                        }}
-                        calloutProps={ { gapSpace: 0 } }
-                    >
-                        <span className="ms-font-m-plus" key={memoryValue.value}>{prefix}<span className={entityClass}>{memoryValue.value}</span></span>
-                    </OF.TooltipHost>
-                  </div>
+                    Prebuilt(memoryValue,(<span className="ms-font-m-plus" key={memoryValue.value}>{prefix}<span className={entityClass}>{memoryValue.value}</span></span>))
                 )
             } else {
                 display.push(<span className="ms-font-m-plus" key={memoryValue.value}>{prefix}<span className={entityClass}>{memoryValue.value}</span></span>);                
