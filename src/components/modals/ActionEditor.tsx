@@ -1,10 +1,10 @@
 import * as React from 'react'
-import { EditorState, ContentState /*, convertToRaw */} from 'draft-js'
+import { EditorState, ContentState /*, convertToRaw */ } from 'draft-js'
 import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { Modal } from 'office-ui-fabric-react/lib/Modal'
-import { PrimaryButton, Checkbox, DefaultButton, Dropdown, IDropdownOption, TagPicker, TextField, ITag, Label } from 'office-ui-fabric-react'
+import { PrimaryButton, Checkbox, DefaultButton, Dropdown, IDropdownOption, TagPicker, TextField, ITag, Icon, Label } from 'office-ui-fabric-react'
 import { ActionBase, ActionTypes, ActionMetaData, BlisAppBase, EntityBase } from 'blis-models'
 import ConfirmDeleteModal from './ConfirmDeleteModal'
 import EntityCreatorEditor from './EntityCreatorEditor'
@@ -56,6 +56,8 @@ interface ComponentState {
     isEditing: boolean
     isEntityEditorModalOpen: boolean
     isConfirmDeleteModalOpen: boolean
+    isPayloadFocused: boolean
+    isPayloadValid: boolean
     selectedActionTypeOptionKey: string | number
     entityTags: ITag[]
     selectedExpectedEntityTags: ITag[]
@@ -74,6 +76,8 @@ const initialState: ComponentState = {
     isEditing: false,
     isEntityEditorModalOpen: false,
     isConfirmDeleteModalOpen: false,
+    isPayloadFocused: false,
+    isPayloadValid: false,
     selectedActionTypeOptionKey: actionTypeOptions[0].key,
     entityTags: [],
     selectedExpectedEntityTags: [],
@@ -137,7 +141,7 @@ class ActionEditor extends React.Component<Props, ComponentState> {
 
                 const selectedNegativeEntityTags = convertEntityIdsToTags(action.negativeEntities, nextProps.entities)
                 const selectedRequiredEntityTags = convertEntityIdsToTags(action.requiredEntities, nextProps.entities)
-                const selectedExpectedEntityTags = convertEntityIdsToTags((action.suggestedEntity ? [action.suggestedEntity]: []), nextProps.entities)
+                const selectedExpectedEntityTags = convertEntityIdsToTags((action.suggestedEntity ? [action.suggestedEntity] : []), nextProps.entities)
 
                 // TODO: Remove this? SuggestedEntity is now top level property
                 // const expectedEntity: EntityBase = action.metadata && (action.metadata as any).entitySuggestion
@@ -167,6 +171,7 @@ class ActionEditor extends React.Component<Props, ComponentState> {
 
                 nextState = {
                     ...nextState,
+                    isPayloadValid: action.payload.length !== 0,
                     selectedApiOptionKey: action.metadata.actionType,
                     mentionEditorState: editorState,
                     editorKey: this.state.editorKey + 1,
@@ -347,7 +352,7 @@ class ActionEditor extends React.Component<Props, ComponentState> {
             selectedNegativeEntityTags: tags
         })
     }
-    
+
     onRenderNegativeEntityTag = (props: IBlisPickerItemProps<ITag>): JSX.Element => {
         const renderProps = { ...props }
         const suggestedEntityKey = this.state.selectedExpectedEntityTags.length > 0 ? this.state.selectedExpectedEntityTags[0].key : null
@@ -365,18 +370,32 @@ class ActionEditor extends React.Component<Props, ComponentState> {
         // which are configured in different file.
         // 1. Consolidate so it's guranteed across files
         // 2. Find better solution where id is not exposing implementation detail
+        editorState.getSelection
+
         const getEntities = payloadUtilities.getEntities
         const entityTagsFromPreviousEditorState = getEntities(this.state.mentionEditorState).map(convertContentEntityToTag)
         const unmatchedRequiredEntityTags = this.state.selectedRequiredEntityTags.filter(t => !entityTagsFromPreviousEditorState.every(e => e.key === t.key))
         const entityTagsFromNewEditorState = payloadUtilities.getEntities(editorState).map(convertContentEntityToTag)
-
+        const isPayloadValid = editorState.getCurrentContent().hasText()
         this.setState({
+            isPayloadValid,
             mentionEditorState: editorState,
             requiredEntityTagsFromPayload: entityTagsFromNewEditorState,
             selectedRequiredEntityTags: [...entityTagsFromNewEditorState, ...unmatchedRequiredEntityTags]
         })
     }
 
+    onBlurPayloadEditor = () => {
+        this.setState({
+            isPayloadFocused: false,
+        })
+    }
+
+    onFocusPayloadEditor = () => {
+        this.setState({
+            isPayloadFocused: true,
+        })
+    }
 
     render() {
         return (
@@ -401,7 +420,7 @@ class ActionEditor extends React.Component<Props, ComponentState> {
                         />
 
                         {this.state.selectedActionTypeOptionKey === ActionTypes.API_LOCAL
-                            ? <div>
+                            ? (<div>
                                 <Dropdown
                                     label='API'
                                     options={this.state.apiOptions}
@@ -427,17 +446,25 @@ class ActionEditor extends React.Component<Props, ComponentState> {
                                     autoFocus={true}
                                     disabled={this.state.apiOptions.length === 0 || this.state.isEditing}
                                 />
-                            </div>
-                            : <div>
+                            </div>)
+                            : (<div className={(this.state.isPayloadValid ? "" : "editor--error") + (this.state.isPayloadFocused ? " editor--active" : "")}>
                                 <Label>Response...</Label>
                                 <ActionPayloadEditor
                                     allSuggestions={this.props.entities.map(convertEntityToMention)}
                                     editorState={this.state.mentionEditorState}
+                                    key={this.state.editorKey}
                                     placeholder="Phrase..."
                                     onChange={this.onChangeMentionEditor}
-                                    key={this.state.editorKey}
+                                    onBlur={this.onBlurPayloadEditor}
+                                    onFocus={this.onFocusPayloadEditor}
                                 />
-                            </div>
+                                {!this.state.isPayloadValid &&
+                                    (<div>
+                                        <p className="ms-TextField-errorMessage css-18uf7rs errorMessage_26f1f271">
+                                            <Icon iconName='Error' /><span aria-live="assertive" data-automation-id="error-message">Response is required</span>
+                                        </p>
+                                    </div>)}
+                            </div>)
                         }
 
                         <Label>Expected Entity in Response...</Label>
@@ -498,7 +525,7 @@ class ActionEditor extends React.Component<Props, ComponentState> {
                 <div className="blis-modal_footer blis-modal-buttons">
                     <div className="blis-modal-buttons_primary">
                         <PrimaryButton
-                            /* disabled={this.state.payload.length === 0} */
+                            disabled={!this.state.isPayloadValid}
                             onClick={() => this.onClickSubmit()}
                             ariaDescription="Submit"
                             text={this.state.isEditing ? "Save" : "Create"}

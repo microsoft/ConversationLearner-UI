@@ -11,10 +11,12 @@ import 'draft-js/dist/Draft.css'
 // import 'draft-js-mention-plugin/lib/plugin.css'
 
 interface Props {
+  allSuggestions: IMention[]
   editorState: EditorState
   placeholder: string
   onChange: (editorState: EditorState) => void
-  allSuggestions: IMention[]
+  onFocus: () => void
+  onBlur: () => void
 }
 
 interface State {
@@ -57,9 +59,15 @@ export default class extends React.Component<Props, State> {
     this.domEditor.focus()
   }
 
+  onFocus = () => {
+    this.props.onFocus()
+  }
+
+  onBlur = () => {
+    this.props.onBlur()
+  }
+
   render() {
-
-
     return (
       <div className="editor" onClick={this.onClickEditorContainer}>
         <Editor
@@ -68,6 +76,8 @@ export default class extends React.Component<Props, State> {
           onChange={this.onChange}
           plugins={plugins}
           ref={this.setDomEditorRef}
+          onFocus={this.onFocus}
+          onBlur={this.onBlur}
         />
         <MentionSuggestions
           onSearchChange={this.onSearchChange}
