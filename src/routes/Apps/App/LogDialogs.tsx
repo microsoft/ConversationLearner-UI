@@ -118,6 +118,8 @@ interface ComponentState {
 }
 
 class LogDialogs extends React.Component<Props, ComponentState> {
+    newChatSessionButton: OF.IButton
+
     state: ComponentState = {
         columns: getColumns(this.props.intl),
         chatSession: null,
@@ -127,6 +129,10 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         currentLogDialog: null,
         searchValue: '',
         dialogKey: 0
+    }
+
+    componentDidMount() {
+        this.newChatSessionButton.focus()
     }
 
     onClickNewChatSession() {
@@ -210,6 +216,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                             id: FM.LOGDIALOGS_CREATEBUTTONTITLE,
                             defaultMessage: 'New Chat Session'
                         })}
+                        componentRef={component => this.newChatSessionButton = component}
                     />
                     <ChatSessionWindow
                         app={this.props.app}
