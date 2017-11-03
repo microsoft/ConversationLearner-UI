@@ -206,15 +206,16 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             maxWidth: 100,
             isResizable: true,
             getSortValue: action => '',
-            render: action => {
-                const entitySuggestion = (action.metadata as any).entitySuggestion
-                if (!entitySuggestion) {
+            render: (action, component) => {
+                const expectedEntityId = action.suggestedEntity || (action.metadata as any).entitySuggestion
+                if (!expectedEntityId) {
                     return <span className="ms-Icon ms-Icon--Remove blis-icon" aria-hidden="true"></span>
                 }
-
+                
+                const expectedEntity = component.props.entities.find(e => e.entityId == expectedEntityId)
                 return (
                     <div className='ms-ListItem is-selectable'>
-                        <span className='ms-ListItem-primaryText'>{entitySuggestion.entityName}</span>
+                        <span className='ms-ListItem-primaryText'>{expectedEntity.entityName}</span>
                     </div>
                 )
             }
