@@ -338,6 +338,18 @@ class ActionEditor extends React.Component<Props, ComponentState> {
         })
     }
 
+    onRenderRequiredEntityTag = (props: IBlisPickerItemProps<ITag>): JSX.Element => {
+        const renderProps = { ...props }
+        const locked = this.state.requiredEntityTagsFromPayload.some(t => t.key === props.key)
+
+        // Strickout and lock/highlight if also the suggested entity
+        renderProps.strike = true
+        renderProps.locked = locked
+        renderProps.highlight = locked
+
+        return <BlisTagItem {...renderProps}>{props.item.name}</BlisTagItem>
+    }
+
     onResolveNegativeEntityTags(filterText: string, selectedTags: ITag[]): ITag[] {
         return getSuggestedTags(
             filterText,
@@ -485,6 +497,7 @@ class ActionEditor extends React.Component<Props, ComponentState> {
                         <Label>Required Entities: Disallow Action when Entities are <b>NOT</b> in Memory...</Label>
                         <TagPicker
                             onResolveSuggestions={(text, tags) => this.onResolveRequiredEntityTags(text, tags)}
+                            onRenderItem={this.onRenderRequiredEntityTag}
                             getTextFromItem={item => item.name}
                             onChange={tags => this.onChangeRequiredEntityTags(tags)}
                             pickerSuggestionsProps={
