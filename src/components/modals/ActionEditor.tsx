@@ -209,7 +209,7 @@ class ActionEditor extends React.Component<Props, ComponentState> {
             packageCreationId: null,
             packageDeletionId: null,
             metadata: new ActionMetaData({
-                actionType: this.state.selectedApiOptionKey as string
+                actionType: this.state.selectedActionTypeOptionKey as string
             })
         })
 
