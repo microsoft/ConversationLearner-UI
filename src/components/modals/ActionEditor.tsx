@@ -19,7 +19,7 @@ const convertEntityToMention = (entity: EntityBase): IMention =>
         displayName: entity.entityName,
     })
 
-const convertContentEntityToTag = (contentEntity: payloadUtilities.IContentEntity) =>
+const convertContentEntityToTag = (contentEntity: payloadUtilities.IContentEntity): ITag =>
     ({
         key: contentEntity.entity.data.mention.id,
         name: contentEntity.entity.data.mention.displayName
@@ -137,19 +137,21 @@ class ActionEditor extends React.Component<Props, ComponentState> {
 
                 const selectedNegativeEntityTags = convertEntityIdsToTags(action.negativeEntities, nextProps.entities)
                 const selectedRequiredEntityTags = convertEntityIdsToTags(action.requiredEntities, nextProps.entities)
-                const selectedExpectedEntityTags = convertEntityIdsToTags([action.suggestedEntity], nextProps.entities)
+                const selectedExpectedEntityTags = convertEntityIdsToTags((action.suggestedEntity ? [action.suggestedEntity]: []), nextProps.entities)
 
-                const expectedEntity: EntityBase = action.metadata && (action.metadata as any).entitySuggestion
-                if (expectedEntity) {
-                    selectedExpectedEntityTags.push({
-                        key: expectedEntity.entityName,
-                        name: expectedEntity.entityName
-                    })
-                }
+                // TODO: Remove this? SuggestedEntity is now top level property
+                // const expectedEntity: EntityBase = action.metadata && (action.metadata as any).entitySuggestion
+                // if (expectedEntity) {
+                //     selectedExpectedEntityTags.push({
+                //         key: expectedEntity.entityName,
+                //         name: expectedEntity.entityName
+                //     })
+                // }
 
                 // Get editor state
                 // const contentState = convertFromRaw(JSON.parse(action.payload))
                 const contentState = ContentState.createFromText(action.payload)
+                // TODO: Manually create '$mention' entities by using regex and selection?
                 let editorState = EditorState.createWithContent(contentState)
                 editorState = EditorState.moveFocusToEnd(editorState)
                 editorState = EditorState.moveSelectionToEnd(editorState)
@@ -158,7 +160,7 @@ class ActionEditor extends React.Component<Props, ComponentState> {
                 // internal id formatted as [<mentionTrigger>]mention and we know the mentionTrigger is '{'
                 // This is mostly due to stretching the boundaries of what this plugin was meant to do.
                 // We could try to recreate the mention editor if needed, but save that as last resort.
-                const requiredEntityTagsFromPayload = payloadUtilities.getEntities(editorState, '{mention').map(convertContentEntityToTag)
+                const requiredEntityTagsFromPayload = payloadUtilities.getEntities(editorState).map(convertContentEntityToTag)
 
                 // Get all tags that are not already set as reuired tags
                 const tagsAvailableForPayload = this.state.entityTags.filter(t => selectedRequiredEntityTags.every(tag => tag.key !== t.key))
@@ -363,11 +365,15 @@ class ActionEditor extends React.Component<Props, ComponentState> {
         // which are configured in different file.
         // 1. Consolidate so it's guranteed across files
         // 2. Find better solution where id is not exposing implementation detail
-        const entities = payloadUtilities.getEntities(editorState, '{mention')
+        const getEntities = payloadUtilities.getEntities
+        const entityTagsFromPreviousEditorState = getEntities(this.state.mentionEditorState).map(convertContentEntityToTag)
+        const unmatchedRequiredEntityTags = this.state.selectedRequiredEntityTags.filter(t => !entityTagsFromPreviousEditorState.every(e => e.key === t.key))
+        const entityTagsFromNewEditorState = payloadUtilities.getEntities(editorState).map(convertContentEntityToTag)
 
         this.setState({
             mentionEditorState: editorState,
-            selectedRequiredEntityTags: entities.map(convertContentEntityToTag)
+            requiredEntityTagsFromPayload: entityTagsFromNewEditorState,
+            selectedRequiredEntityTags: [...entityTagsFromNewEditorState, ...unmatchedRequiredEntityTags]
         })
     }
 

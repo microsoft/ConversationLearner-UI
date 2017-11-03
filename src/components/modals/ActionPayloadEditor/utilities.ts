@@ -20,6 +20,7 @@ export interface IContentEntity {
 }
 
 export const mentionTrigger = '$'
+export const entityType = `${mentionTrigger}mention`
 
 export const getEntities = (editorState: EditorState, entityType: string | null = `${mentionTrigger}mention`): IContentEntity[] => {
     const content = editorState.getCurrentContent();
@@ -30,6 +31,7 @@ export const getEntities = (editorState: EditorState, entityType: string | null 
         (character) => {
           if (character.getEntity() !== null) {
             const entity = content.getEntity(character.getEntity());
+            console.log(`Character: ${character} EntityType: ${entity.getType()}  ExpectedEntityType: ${entityType}`)
             if (!entityType || (entityType && entity.getType() === entityType)) {
               const entityMap = content.getEntity(character.getEntity())
               const entityJs = (entityMap as any).toJS()
