@@ -130,9 +130,8 @@ class Actions extends React.Component<Props, ComponentState> {
             actionSelected: null
         }, () => {
             console.log(`Actions.onClickDeleteActionEditor`)
-            // this.props.deleteActionAsync(this.props.user.key, action.actionId, this.props.app.appId)
+            this.props.deleteActionAsync(this.props.user.key, action.actionId, action, this.props.app.appId)
         })
-
     }
 
     onClickSubmitActionEditor(action: ActionBase) {
