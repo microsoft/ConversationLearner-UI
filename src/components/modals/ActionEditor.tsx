@@ -137,7 +137,7 @@ class ActionEditor extends React.Component<Props, ComponentState> {
 
                 const selectedNegativeEntityTags = convertEntityIdsToTags(action.negativeEntities, nextProps.entities)
                 const selectedRequiredEntityTags = convertEntityIdsToTags(action.requiredEntities, nextProps.entities)
-                const selectedExpectedEntityTags = []
+                const selectedExpectedEntityTags = convertEntityIdsToTags([action.suggestedEntity], nextProps.entities)
 
                 const expectedEntity: EntityBase = action.metadata && (action.metadata as any).entitySuggestion
                 if (expectedEntity) {
