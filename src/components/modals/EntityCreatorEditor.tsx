@@ -9,7 +9,7 @@ import * as OF from 'office-ui-fabric-react';
 import ActionDetailsList from '../ActionDetailsList'
 import { State, PreBuiltEntities } from '../../types';
 import { BlisDropdownOption } from './BlisDropDownOption'
-import { GetTip, TipType } from '../ToolTips'
+import * as ToolTip from '../ToolTips'
 import { BlisAppBase, EntityBase, EntityMetaData, EntityType, ActionBase } from 'blis-models'
 import './EntityCreatorEditor.css'
 import { FM } from '../../react-intl-messages'
@@ -306,7 +306,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                         />&nbsp;
                         <OF.TooltipHost
                             tooltipProps={{
-                                onRenderContent: () => { return GetTip(TipType.ENTITY_PROGAMMATIC) }
+                                onRenderContent: () => { return ToolTip.GetTip(ToolTip.TipType.ENTITY_PROGAMMATIC) }
                             }}
                             delay={OF.TooltipDelay.medium}
                             directionalHint={OF.DirectionalHint.bottomCenter}
@@ -336,26 +336,26 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                             defaultMessage="Entity may hold multiple values."
                         />&nbsp;
                             <OF.TooltipHost
-                            tooltipProps={{
-                                onRenderContent: () => { return GetTip(TipType.ENTITY_MULTIVALUE) }
-                            }}
-                            delay={OF.TooltipDelay.medium}
-                            directionalHint={OF.DirectionalHint.bottomCenter}
-                        >
-                            <span className="ms-fontColor-themeTertiary">
-                                <FormattedMessage
-                                    id={FM.ENTITYCREATOREDITOR_FIELDS_TOOLTIPTARGET}
-                                    defaultMessage="More"
-                                />
-                            </span>
-                        </OF.TooltipHost>
+                                tooltipProps={{
+                                    onRenderContent: () => { return ToolTip.GetTip(ToolTip.TipType.ENTITY_MULTIVALUE) }
+                                }}
+                                delay={OF.TooltipDelay.medium}
+                                directionalHint={OF.DirectionalHint.bottomCenter}
+                            >
+                                <span className="ms-fontColor-themeTertiary">
+                                    <FormattedMessage
+                                        id={FM.ENTITYCREATOREDITOR_FIELDS_TOOLTIPTARGET}
+                                        defaultMessage="More"
+                                    />
+                                </span>
+                            </OF.TooltipHost>
                     </div>
                 </div>
                 <div className="blis-entity-creator-checkbox">
                     <OF.Checkbox
                         label={intl.formatMessage({
                             id: FM.ENTITYCREATOREDITOR_FIELDS_NEGATAABLE_LABEL,
-                            defaultMessage: "Negatable"
+                            defaultMessage: 'Negatable'
                         })}
                         defaultChecked={this.state.isNegatableVal}
                         onChange={this.onChangeReversible}
@@ -367,19 +367,19 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                             defaultMessage="Can remove or delete values in memory."
                         /> &nbsp;
                             <OF.TooltipHost
-                            tooltipProps={{
-                                onRenderContent: () => { return GetTip(TipType.ENTITY_NEGATABLE) }
-                            }}
-                            delay={OF.TooltipDelay.medium}
-                            directionalHint={OF.DirectionalHint.bottomCenter}
-                        >
-                            <span className="ms-fontColor-themeTertiary">
-                                <FormattedMessage
-                                    id={FM.ENTITYCREATOREDITOR_FIELDS_TOOLTIPTARGET}
-                                    defaultMessage="More"
-                                />
-                            </span>
-                        </OF.TooltipHost>
+                                tooltipProps={{
+                                    onRenderContent: () => { return ToolTip.GetTip(ToolTip.TipType.ENTITY_NEGATABLE) }
+                                }}
+                                delay={OF.TooltipDelay.medium}
+                                directionalHint={OF.DirectionalHint.bottomCenter}
+                            >
+                                <span className="ms-fontColor-themeTertiary">
+                                    <FormattedMessage
+                                        id={FM.ENTITYCREATOREDITOR_FIELDS_TOOLTIPTARGET}
+                                        defaultMessage="More"
+                                    />
+                                </span>
+                            </OF.TooltipHost>
                     </div>
                 </div>
             </div>
@@ -401,25 +401,35 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                         ? (
                             <div>
                                 <OF.Pivot linkSize={OF.PivotLinkSize.large}>
-                                    <OF.PivotItem linkText={intl.formatMessage({
-                                        id: FM.ENTITYCREATOREDITOR_PIVOT_EDIT,
-                                        defaultMessage: 'Edit Entity'
-                                    })}>
-                                        {this.renderEdit()}
+                                    <OF.PivotItem 
+                                        linkText= {intl.formatMessage({
+                                            id: FM.ENTITYCREATOREDITOR_PIVOT_EDIT,
+                                            defaultMessage: 'Edit Entity'
+                                        })}
+                                    >
+                                    {this.renderEdit()}
                                     </OF.PivotItem>
-                                    <OF.PivotItem linkText={intl.formatMessage({
-                                        id: FM.ENTITYCREATOREDITOR_PIVOT_REQUIREDFOR,
-                                        defaultMessage: 'Required For Actions'
-                                    })}>
+                                    <OF.PivotItem 
+                                        ariaLabel={ToolTip.TipType.ENTITY_ACTION_REQUIRED}
+                                        linkText={intl.formatMessage({id: FM.ENTITYCREATOREDITOR_PIVOT_REQUIREDFOR, defaultMessage: 'Required For Actions'})}
+                                        onRenderItemLink={(
+                                            pivotItemProps: OF.IPivotItemProps,
+                                            defaultRender: (link: OF.IPivotItemProps) => JSX.Element) =>
+                                                ToolTip.onRenderPivotItem(pivotItemProps, defaultRender)}              
+                                    >
                                         <ActionDetailsList
                                             actions={this.getRequiredActions()}
                                             onSelectAction={null}
                                         />
                                     </OF.PivotItem>
-                                    <OF.PivotItem linkText={intl.formatMessage({
-                                        id: FM.ENTITYCREATOREDITOR_PIVOT_BLOCKEDACTIONS,
-                                        defaultMessage: 'Blocked Actions'
-                                    })}>
+                                    <OF.PivotItem 
+                                        ariaLabel={ToolTip.TipType.ENTITY_ACTION_BLOCKED}
+                                        linkText={intl.formatMessage({ id: FM.ENTITYCREATOREDITOR_PIVOT_BLOCKEDACTIONS, defaultMessage: 'Blocked Actions'})}
+                                        onRenderItemLink={(
+                                            pivotItemProps: OF.IPivotItemProps,
+                                            defaultRender: (link: OF.IPivotItemProps) => JSX.Element) =>
+                                                ToolTip.onRenderPivotItem(pivotItemProps, defaultRender)}  
+                                    >
                                         <ActionDetailsList
                                             actions={this.getBlockedActions()}
                                             onSelectAction={null}
@@ -436,7 +446,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                         <div className="blis-modal-buttons_primary">
                             {!this.state.editing &&
                                 <OF.PrimaryButton
-                                    disabled={this.onGetNameErrorMessage(this.state.entityNameVal) != ''}
+                                    disabled={this.onGetNameErrorMessage(this.state.entityNameVal) !== ''}
                                     onClick={this.onClickSubmit}
                                     ariaDescription={intl.formatMessage({
                                         id: FM.ENTITYCREATOREDITOR_CREATEBUTTON_ARIADESCRIPTION,

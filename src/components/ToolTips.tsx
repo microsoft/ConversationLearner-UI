@@ -6,22 +6,24 @@ import { MemoryValue } from 'blis-models'
 import './ToolTips.css'
 
 export enum TipType {
-    ACTION_ARGUMENTS = "actionArguments",
-    ACTION_ENTITIES = "actionEntities",
-    ACTION_NEGATIVE = "negativeEntities",
-    ACTION_REQUIRED = "requiredEntities",
-    ACTION_RESPONSE = "actionResponse",
-    ACTION_SCORE = "actionScore",
-    ACTION_SUGGESTED = "suggestedEntity",
-    ACTION_TYPE = "actionType",
-    ACTION_WAIT = "isTerminal",
+    ACTION_ARGUMENTS = 'actionArguments',
+    ACTION_ENTITIES = 'actionEntities',
+    ACTION_NEGATIVE = 'negativeEntities',
+    ACTION_REQUIRED = 'requiredEntities',
+    ACTION_RESPONSE = 'actionResponse',
+    ACTION_SCORE = 'actionScore',
+    ACTION_SUGGESTED = 'suggestedEntity',
+    ACTION_TYPE = 'actionType',
+    ACTION_WAIT = 'isTerminal',
     
-    ENTITY_MULTIVALUE = "isBucketable", 
-    ENTITY_NAME = "entityName",  
-    ENTITY_NEGATABLE = "isNegatable",
-    ENTITY_PROGAMMATIC = "isProgrammatic",
-    ENTITY_TYPE = "entityType", 
-    ENTITY_VALUE = "entityValues",         
+    ENTITY_ACTION_REQUIRED = 'entityActionRequired',
+    ENTITY_ACTION_BLOCKED = 'entityActionBlocked',
+    ENTITY_MULTIVALUE = 'isBucketable', 
+    ENTITY_NAME = 'entityName',  
+    ENTITY_NEGATABLE = 'isNegatable',
+    ENTITY_PROGAMMATIC = 'isProgrammatic',
+    ENTITY_TYPE = 'entityType', 
+    ENTITY_VALUE = 'entityValues',         
 }
 
 export function onRenderDetailsHeader(detailsHeaderProps: OF.IDetailsHeaderProps, defaultRender: OF.IRenderFunction<OF.IDetailsHeaderProps>) {
@@ -52,8 +54,20 @@ export function onRenderDetailsHeader(detailsHeaderProps: OF.IDetailsHeaderProps
     )
 }
 
-export function GetTip(text: string) {
-    switch (text) {
+export function onRenderPivotItem(link: OF.IPivotItemProps, defaultRenderer: (link: OF.IPivotItemProps) => JSX.Element): JSX.Element {
+    return (
+        <OF.TooltipHost
+            tooltipProps={{onRenderContent: () => { return GetTip(link.ariaLabel) }}}
+            delay={OF.TooltipDelay.medium}
+            directionalHint={OF.DirectionalHint.bottomCenter}
+        >
+            {defaultRenderer(link)}
+        </OF.TooltipHost>
+    );
+  }
+
+export function GetTip(tipType: string) {
+    switch (tipType) {
         case TipType.ACTION_ARGUMENTS:
             return (<FormattedMessage id={FM.TOOLTIP_ACTION_ARGUEMENTS} defaultMessage="Arguements"/>)      
         case TipType.ACTION_ENTITIES:
@@ -108,6 +122,10 @@ export function GetTip(text: string) {
             return (<FormattedMessage id={FM.TOOLTIP_ACTION_WAIT} defaultMessage="Wait"/>);
         case TipType.ENTITY_NAME:
             return (<FormattedMessage id={FM.TOOLTIP_ENTITY_NAME} defaultMessage="Wait"/>);
+        case TipType.ENTITY_ACTION_BLOCKED:
+            return (<FormattedMessage id={FM.TOOLTIP_ENTITY_ACTION_BLOCKED} defaultMessage="Blocked Actions"/>)  
+        case TipType.ENTITY_ACTION_REQUIRED:
+            return (<FormattedMessage id={FM.TOOLTIP_ENTITY_ACTION_REQUIRED} defaultMessage="Required For Actions"/>)     
         case TipType.ENTITY_VALUE:
             return (<FormattedMessage id={FM.TOOLTIP_ENTITY_VALUE} defaultMessage="Wait"/>);
         case TipType.ENTITY_MULTIVALUE:
@@ -148,8 +166,9 @@ export function GetTip(text: string) {
             )
         case TipType.ENTITY_TYPE:
             return (<FormattedMessage id={FM.TOOLTIP_ENTITY_TYPE} defaultMessage="Wait"/>)
+        default:
+            return (<div>{tipType}</div>);
     }
-    return (<div>{text}</div>);
 }
 
 export function Prebuilt(memoryValue: MemoryValue, content: JSX.Element): JSX.Element {
