@@ -7,6 +7,11 @@
     border-color: var(--color-neutralDark);
 }
 
+/**
+ * This isn't true BEM since the .editor Block is within the Modifier but
+ * we can't easily change the structure of HTML and still want to preserve
+ * the class name conventions
+ */
 .editor--error .editor,
 .editor--error {
     border-color: var(--color-error);
@@ -56,16 +61,16 @@
   
 .draftJsMentionPlugin__mentionSuggestionsEntryText__3Jobq {
     display: inline-block;
-    margin-left: 8px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: 368px;
-    font-size: 0.9em;
+    /* font-size: 0.9em; */
     margin-bottom: 0.2em;
 }
 
 .draftJsMentionPlugin__mentionSuggestions__2DWjA {
+    /* This margin is used to push content below cursor/text block in editor */
     margin-top: 1.75em;
     position: absolute;
     min-width: 220px;

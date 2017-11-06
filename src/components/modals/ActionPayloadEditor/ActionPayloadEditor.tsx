@@ -2,7 +2,7 @@ import * as React from 'react'
 import { EditorState } from 'draft-js'
 import Editor from 'draft-js-plugins-editor'
 import createMentionPlugin, { defaultSuggestionsFilter } from 'draft-js-mention-plugin'
-// import CustomEntryComponent from './Entry'
+import CustomEntryComponent from './Entry'
 // import CustomMention from './Mention'
 import { IMention } from './mentions'
 import { mentionTrigger, getEntities } from './utilities'
@@ -82,7 +82,7 @@ export default class extends React.Component<Props, State> {
         <MentionSuggestions
           onSearchChange={this.onSearchChange}
           suggestions={this.state.suggestions}
-          /* entryComponent={CustomEntryComponent} */
+          entryComponent={CustomEntryComponent}
         />
       </div>
     )

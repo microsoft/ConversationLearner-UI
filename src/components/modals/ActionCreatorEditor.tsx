@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { EditorState, ContentState, Modifier/* , convertToRaw */ } from 'draft-js'
+import { EditorState, ContentState, Modifier } from 'draft-js'
 import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
@@ -13,7 +13,6 @@ import * as ToolTip from '../ToolTips'
 import * as OF from 'office-ui-fabric-react';
 import { BlisTagItem, IBlisPickerItemProps } from './BlisTagItem'
 
-// Change to force build
 const convertEntityToMention = (entity: EntityBase): IMention =>
     ({
         id: entity.entityId,
@@ -146,7 +145,6 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 // Currently there is issue where we don't know how to recreate the entities from the plain text
                 // const contentState = convertFromRaw(JSON.parse(action.payload))
 
-                // TODO: Manually create '$mention' entities by using regex and selection?
                 const existingEntityMatches = (action.payload.match(/(\$[\w]+)/g) || [])
                     .map(match => {
                         // Get entity name by removing first character '$name' -> 'name'
@@ -245,7 +243,20 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
         const newOrEditedAction = new ActionBase({
             actionId: null,
-            payload: rawText, // `${rawText} : ${JSON.stringify(rawContent)}`,
+            /**
+             * Future Idea:
+             * Store compound object with both formats to get best of both
+             * {
+             *   "plainText": rawText,
+             *   "rawContent": rawContent
+             * }
+             * 
+             * This would allow backwards compatible parsing from downstream systems by updating them to look at the plainText field
+             * but this component would load from the rawContent which preserves entity relationships in native format for the editor.
+             * 
+             * Then whenever this component is used to modify content, it would update the plainText before saving to keep them in sync.
+             */
+            payload: rawText,
             isTerminal: this.state.isTerminal,
             requiredEntities: this.state.selectedRequiredEntityTags.map<string>(tag => tag.key),
             negativeEntities: this.state.selectedNegativeEntityTags.map<string>(tag => tag.key),

@@ -15,11 +15,11 @@ const customEntryComponent = (props: Props) => {
     ...parentProps
   } = props
 
-  const s = mention.get('displayName')
+  const mentionDisplayName = mention.get('displayName')
 
   return (
     <div {...parentProps}>
-      <span>E:</span> <span>{s}</span>
+      <span className={theme.mentionSuggestionsEntryText}>{mentionDisplayName}</span>
     </div>
   );
 };
