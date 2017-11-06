@@ -8,17 +8,19 @@ import { deleteActionAsync } from '../../../actions/deleteActions'
 import ActionDetailsList from '../../../components/ActionDetailsList'
 import * as OF from 'office-ui-fabric-react';
 import { BlisAppBase, ActionBase } from 'blis-models'
-import { ConfirmDeleteModal, ActionCreatorEditor } from '../../../components/modals'
+import { ActionCreatorEditor } from '../../../components/modals'
 import { State } from '../../../types'
 import { FM } from '../../../react-intl-messages'
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 
 interface ComponentState {
-    actionSelected: ActionBase | null;
-    actionIDToDelete: string;
-    isConfirmDeleteActionModalOpen: boolean;
-    isActionEditorModalOpen: boolean;
-    searchValue: string;
+    actionSelected: ActionBase | null
+    actionIDToDelete: string
+    isConfirmDeleteActionModalOpen: boolean
+    isActionEditorModalOpen: boolean
+    searchValue: string
+    isActionEditorOpen: boolean
+    useNewActionEditor: boolean
 }
 
 class Actions extends React.Component<Props, ComponentState> {
@@ -31,63 +33,63 @@ class Actions extends React.Component<Props, ComponentState> {
             actionSelected: null,
             searchValue: '',
             isConfirmDeleteActionModalOpen: false,
-            isActionEditorModalOpen: false
+            isActionEditorModalOpen: false,
+            isActionEditorOpen: false,
+            useNewActionEditor: false
         }
-        this.onClickConfirmDelete = this.onClickConfirmDelete.bind(this);
-        this.onSelectAction = this.onSelectAction.bind(this);
-        this.onChangeSearchString = this.onChangeSearchString.bind(this);
-        this.onClickCreateAction = this.onClickCreateAction.bind(this);
-        this.onClickCloseActionEditor = this.onClickCloseActionEditor.bind(this);
-        this.onClickDeleteAction = this.onClickDeleteAction.bind(this);
+
+        this.onSelectAction = this.onSelectAction.bind(this)
+        this.onChangeSearchString = this.onChangeSearchString.bind(this)
     }
 
     componentDidMount() {
         this.newActionButton.focus();
     }
 
-    onClickConfirmDelete() {
-        let actionToDelete = this.props.actions.find(a => a.actionId == this.state.actionIDToDelete)
-        this.props.deleteActionAsync(this.props.user.key, this.state.actionIDToDelete, actionToDelete, this.props.app.appId);
-        this.setState({
-            isConfirmDeleteActionModalOpen: false,
-            isActionEditorModalOpen: false,
-            actionIDToDelete: null
-        })
-
-    }
-
-    onClickCancelDelete() {
-        this.setState({
-            isConfirmDeleteActionModalOpen: false,
-            actionIDToDelete: null
-        })
-    }
-    onClickDeleteAction(guid: string) {
-        this.setState({
-            isConfirmDeleteActionModalOpen: true,
-            actionIDToDelete: guid
-        })
-    }
-    onClickCreateAction() {
-        this.setState({
-            isActionEditorModalOpen: true,
-            actionSelected: null
-        })
-    }
-    onClickCloseActionEditor() {
-        this.setState({
-            isActionEditorModalOpen: false,
-            actionSelected: null
-        })
-        setTimeout(() => {
-            this.newActionButton.focus();
-        }, 500);
-    }
-
     onSelectAction(action: ActionBase) {
         this.setState({
             actionSelected: action,
-            isActionEditorModalOpen: true
+            isActionEditorOpen: true
+        })
+    }
+
+    onClickOpenActionEditor() {
+        this.setState({
+            isActionEditorOpen: true,
+            actionSelected: null
+        })
+    }
+
+    onClickCancelActionEditor() {
+        this.setState({
+            isActionEditorOpen: false,
+            actionSelected: null
+        })
+    }
+
+    onClickDeleteActionEditor(action: ActionBase) {
+        this.setState({
+            isActionEditorOpen: false,
+            actionSelected: null
+        }, () => {
+            console.log(`Actions.onClickDeleteActionEditor`)
+            this.props.deleteActionAsync(this.props.user.key, action.actionId, action, this.props.app.appId)
+        })
+    }
+
+    onClickSubmitActionEditor(action: ActionBase) {
+        const wasEditing = this.state.actionSelected
+
+        this.setState({
+            isActionEditorOpen: false,
+            actionSelected: null
+        }, () => {
+            if (wasEditing) {
+                this.props.editActionAsync(this.props.user.key, action, this.props.app.appId)
+            }
+            else {
+                this.props.createActionAsync(this.props.user.key, action, this.props.app.appId)
+            }
         })
     }
 
@@ -122,6 +124,12 @@ class Actions extends React.Component<Props, ComponentState> {
         })
     }
 
+    onChangedUseNewactionEditor = (useNewActionEditor: boolean) => {
+        this.setState({
+            useNewActionEditor
+        })
+    }
+
     render() {
         // TODO: Look to move this up to the set state calls instead of forcing it to be on every render
         const actions = this.getFilteredActions();
@@ -141,7 +149,7 @@ class Actions extends React.Component<Props, ComponentState> {
                 </span>
                 <div>
                     <OF.PrimaryButton
-                        onClick={this.onClickCreateAction}
+                        onClick={() => this.onClickOpenActionEditor()}
                         ariaDescription={this.props.intl.formatMessage({
                             id: FM.ACTIONS_CREATEBUTTONARIALDESCRIPTION,
                             defaultMessage: 'Create a New Action'
@@ -162,21 +170,14 @@ class Actions extends React.Component<Props, ComponentState> {
                     actions={actions}
                     onSelectAction={this.onSelectAction}
                 />
-                <ConfirmDeleteModal
-                    open={this.state.isConfirmDeleteActionModalOpen}
-                    onCancel={() => this.onClickCancelDelete()}
-                    onConfirm={() => this.onClickConfirmDelete()}
-                    title={this.props.intl.formatMessage({
-                        id: FM.ACTIONS_CONFIRMDELETEMODALTITLE,
-                        defaultMessage: 'Are you sure you want to delete this action?'
-                    })}
-                />
+
                 <ActionCreatorEditor
                     app={this.props.app}
-                    open={this.state.isActionEditorModalOpen}
-                    blisAction={this.state.actionSelected}
-                    handleClose={this.onClickCloseActionEditor}
-                    handleOpenDeleteModal={this.onClickDeleteAction}
+                    open={this.state.isActionEditorOpen}
+                    action={this.state.actionSelected}
+                    onClickCancel={() => this.onClickCancelActionEditor()}
+                    onClickDelete={action => this.onClickDeleteActionEditor(action)}
+                    onClickSubmit={action => this.onClickSubmitActionEditor(action)}
                 />
             </div>
         );
