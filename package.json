@@ -7,6 +7,9 @@
     "blis-models": "^0.68.0",
     "blis-webchat": "^0.18.0",
     "botframework-directlinejs": "^0.9.12",
+    "draft-js": "^0.10.4",
+    "draft-js-mention-plugin": "^2.0.0-rc10",
+    "draft-js-plugins-editor": "^2.0.0-rc8",
     "office-ui-fabric-react": "^4.47.0",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
@@ -27,6 +30,7 @@
     "eject": "react-scripts-ts eject"
   },
   "devDependencies": {
+    "@types/draft-js": "^0.10.16",
     "@types/jest": "^20.0.8",
     "@types/node": "^8.0.28",
     "@types/prop-types": "^15.5.1",
