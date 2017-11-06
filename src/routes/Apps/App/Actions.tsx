@@ -84,16 +84,12 @@ class Actions extends React.Component<Props, ComponentState> {
             isActionEditorOpen: false,
             actionSelected: null
         }, () => {
-            console.group(`Actions.onClickSubmitActionEditor`)
             if (wasEditing) {
-                console.log(`editActionAsync`)
                 this.props.editActionAsync(this.props.user.key, action, this.props.app.appId)
             }
             else {
-                console.log(`createActionAsync`)
                 this.props.createActionAsync(this.props.user.key, action, this.props.app.appId)
             }
-            console.groupEnd()
         })
     }
 
