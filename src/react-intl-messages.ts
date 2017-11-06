@@ -364,7 +364,7 @@ export default {
         [FM.TOOLTIP_ACTION_TYPE_CARD]: 'Render an Adaptive Card template',
         [FM.TOOLTIP_ACTION_WAIT]: 'When selected, Bot will wait for more user input before taking another action',
         [FM.TOOLTIP_ENTITY_ACTION_BLOCKED]: `Actions that are blocked from use if this Entity is set`,
-        [FM.TOOLTIP_ENTITY_ACTION_REQUIRED]: `Actions are only employed when this Entity is set`,
+        [FM.TOOLTIP_ENTITY_ACTION_REQUIRED]: `Actions that are only employed when this Entity is set`,
         [FM.TOOLTIP_ENTITY_NAME]: 'Name of the Entity',
         [FM.TOOLTIP_ENTITY_VALUE]: 'What the Bot currently has in Memory for this Entity',
         [FM.TOOLTIP_ENTITY_TYPE]: 'Type of Entity: CUSTOM or name existing of Pre-Built Entity',

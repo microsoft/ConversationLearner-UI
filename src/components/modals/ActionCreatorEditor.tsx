@@ -33,7 +33,7 @@ const initState: ComponentState = {
     apiVal: null,
     displayAutocomplete: false,
     dropdownIndex: null,
-    entitySuggestFilterText: "",
+    entitySuggestFilterText: '',
     payloadVal: '',
     reqEntitiesVal: [] as IBlisTag[],
     negEntitiesVal: [] as IBlisTag[],
@@ -475,11 +475,11 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             // we only care about $ if dropdown isnt displayed yet
             for (let letter of text) {
                 if (letter === '$') {
-                    let indexFound = specialIndexes.find(specialIndex => specialIndex.index == pixels);
+                    let indexFound = specialIndexes.find(specialIndex => specialIndex.index === pixels);
                     if (!indexFound) {
                         // need to see if there is already text following the special character
                         let isLastCharacter = text.length === (pixels + 1);
-                        let precedesSpace = text[pixels + 1] ? text[pixels + 1] === " " : false;
+                        let precedesSpace = text[pixels + 1] ? text[pixels + 1] === ' ' : false;
                         if (isLastCharacter || precedesSpace) {
                             this.setState({
                                 displayAutocomplete: true,
@@ -490,7 +490,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                             // to the filter text so the dropdown doesnt have all options
                             let filterText: string = ''
                             for (let i = pixels + 1; i < text.length; i++) {
-                                if (text[i] != " ") {
+                                if (text[i] != ' ') {
                                     filterText += text[i];
                                 } else {
                                     break;
@@ -582,7 +582,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         if (items.length > 0) {
             // we added one. Need to check if its already in negative entities. If it is not, add it to that as well.
             let suggestedEntity: IBlisTag = items[0];
-            let foundIndex = negativeEntities.findIndex((n: IBlisTag) => n.name == suggestedEntity.name);
+            let foundIndex = negativeEntities.findIndex((n: IBlisTag) => n.name === suggestedEntity.name);
             if (foundIndex < 0) {
                 negativeEntities.push({
                     key: suggestedEntity.key,
@@ -622,7 +622,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         let text: string = this.state.payloadVal;
         let index: number = this.state.dropdownIndex;
         for (let i = this.state.dropdownIndex + 1; i < text.length + 1; i++) {
-            if (text[i] !== " ") {
+            if (text[i] !== ' ') {
                 index = i;
             } else {
                 break;
@@ -646,7 +646,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     entitySuggestionSelected(obj: { text: string }) {
         let specialIndexes: SpecialIndex[] = [];
         // don't add the entity if weve already manually entered it into the required picker
-        let foundEntityPickerObj: IBlisTag = this.state.reqEntitiesVal.find((e: IBlisTag) => e.name == obj.text);
+        let foundEntityPickerObj: IBlisTag = this.state.reqEntitiesVal.find((e: IBlisTag) => e.name === obj.text);
         let newRequiredEntities: IBlisTag[] = foundEntityPickerObj ?
             [...this.state.reqEntitiesVal] :
             [...this.state.reqEntitiesVal, { key: obj.text, name: obj.text }];
@@ -747,15 +747,15 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         let entitySuggestOptions: {}[] = [];
         if (this.state.displayAutocomplete === true) {
             entitySuggestStyle = {
-                marginTop: "-8px",
-                borderBottom: "1px solid lightgrey",
-                borderLeft: "1px solid lightgrey",
-                borderRight: "1px solid lightgrey"
+                marginTop: '-8px',
+                borderBottom: '1px solid lightgrey',
+                borderLeft: '1px solid lightgrey',
+                borderRight: '1px solid lightgrey'
             }
             entitySuggestOptions = this.getAlphabetizedFilteredEntityOptions();
         } else {
             entitySuggestStyle = {
-                display: "none"
+                display: 'none'
             }
         }
 
@@ -769,18 +769,18 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         let title: string;
         let createButtonText: string;
         if (this.state.editing === true) {
-            title = "Edit Action"
-            createButtonText = "Save"
+            title = 'Edit Action'
+            createButtonText = 'Save'
         } else {
-            title = "Create an Action"
-            createButtonText = "Create"
+            title = 'Create an Action'
+            createButtonText = 'Create'
         }
 
         let apiDropDown = null;
         let payloadTextField = null;
         if (this.state.actionTypeVal === ActionTypes.API_LOCAL) {
 
-            let placeholder = "API name...";
+            let placeholder = 'API name...';
             let disabled = this.state.editing;
             let apiOptions: TextObject[] = [];
             let haveCallbacks = this.props.botInfo.callbacks && this.props.botInfo.callbacks.length > 0;
@@ -823,7 +823,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 )
             payloadTextField = (
                 <TextField
-                    id={"actionArguements"}
+                    id={'actionArguements'}
                     key="0"
                     onChanged={this.onChangedPayload}
                     label="Arguments (Comma Separated)"
@@ -838,7 +838,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         } else {
             payloadTextField = (
                 <TextField
-                    id={"actionPayload"}
+                    id={'actionPayload'}
                     key='1'
                     onGetErrorMessage={this.onGetErrorMessagePayload}
                     onChanged={this.onChangedPayload}
@@ -861,15 +861,15 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     isOpen={this.props.open}
                     onDismiss={this.onClickCancel}
                     isBlocking={false}
-                    containerClassName='blis-modal blis-modal--medium blis-modal--border'
+                    containerClassName="blis-modal blis-modal--medium blis-modal--border"
                 >
-                    <div className='blis-modal_header'>
-                        <span className='ms-font-xxl ms-fontWeight-semilight'>{title}</span>
+                    <div className="blis-modal_header">
+                        <span className="ms-font-xxl ms-fontWeight-semilight">{title}</span>
                     </div>
-                    <div className='blis-modal_body'>
+                    <div className="blis-modal_body">
                         <div>
                             <Dropdown
-                                label='Action Type'
+                                label="Action Type"
                                 options={actionTypeOptions}
                                 onChanged={this.onChangedType}
                                 selectedKey={this.state.actionTypeVal}
@@ -930,10 +930,10 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                 defaultSelectedItems={this.state.negEntitiesVal}
                             />
                             <Checkbox
-                                label='Wait For Response?'
+                                label="Wait For Response?"
                                 defaultChecked={true}
                                 onChange={this.onChangeWait}
-                                style={{ marginTop: "1em", display: "inline-block" }}
+                                style={{ marginTop: '1em', display: 'inline-block' }}
                                 disabled={this.state.editing}
                             />
                         </div>

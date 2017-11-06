@@ -18,7 +18,7 @@ import { defineMessages, injectIntl, InjectedIntl, InjectedIntlProps, FormattedM
 const messages = defineMessages({
     fieldErrorRequired: {
         id: FM.ENTITYCREATOREDITOR_FIELDERROR_REQUIREDVALUE,
-        defaultMessage: "Required Value"
+        defaultMessage: 'Required Value'
     },
     fieldErrorAlphanumeric: {
         id: FM.ENTITYCREATOREDITOR_FIELDERROR_ALPHANUMERIC,
@@ -30,13 +30,10 @@ const messages = defineMessages({
     }
 })
 
-
-
-const NEW_ENTITY = 'New Entity';
-
 const initState: ComponentState = {
     entityNameVal: '',
-    entityTypeVal: NEW_ENTITY,
+    entityTypeVal: '',
+    isPrebuilt: false,
     isBucketableVal: false,
     isNegatableVal: false,
     isProgrammaticVal: false,
@@ -47,6 +44,7 @@ const initState: ComponentState = {
 interface ComponentState {
     entityNameVal: string;
     entityTypeVal: string;
+    isPrebuilt: boolean;
     isBucketableVal: boolean;
     isNegatableVal: boolean;
     isProgrammaticVal: boolean;
@@ -54,34 +52,39 @@ interface ComponentState {
     title: string;
 }
 
-function getStaticEntityOptions(intl: InjectedIntl): BlisDropdownOption[] {
-    return [
-        {
-            key: NEW_ENTITY,
-            text: intl.formatMessage({
-                id: FM.ENTITYCREATOREDITOR_ENTITYOPTION_NEW,
-                defaultMessage: 'New Type'
-            }),
-            itemType: OF.DropdownMenuItemType.Normal,
-            style: 'blisDropdown--command'
-        },
-        {
-            key: 'divider',
-            text: '-',
-            itemType: OF.DropdownMenuItemType.Divider,
-            style: 'blisDropdown--normal'
-        }
-    ]
-}
-
 class EntityCreatorEditor extends React.Component<Props, ComponentState> {
-    staticEntityOptions: BlisDropdownOption[]
-    entityOptions: BlisDropdownOption[]
-    state = initState
+
+    staticEntityOptions: BlisDropdownOption[];
+    entityOptions: BlisDropdownOption[];
 
     constructor(props: Props) {
         super(props)
-        this.staticEntityOptions = getStaticEntityOptions(this.props.intl)
+        this.state = {...initState, entityTypeVal: this.NEW_ENTITY};
+        this.staticEntityOptions = this.getStaticEntityOptions(this.props.intl)
+    }
+
+    get NEW_ENTITY(): string {
+        return this.props.intl.formatMessage({
+                id: FM.ENTITYCREATOREDITOR_ENTITYOPTION_NEW,
+                defaultMessage: 'New Entity Type'
+        });
+    }
+     
+    getStaticEntityOptions(intl: InjectedIntl): BlisDropdownOption[] {
+        return [
+            {
+                key: this.NEW_ENTITY,
+                text: this.NEW_ENTITY,
+                itemType: OF.DropdownMenuItemType.Normal,
+                style: 'blisDropdown--command'
+            },
+            {
+                key: 'divider',
+                text: '-',
+                itemType: OF.DropdownMenuItemType.Divider,
+                style: 'blisDropdown--normal'
+            }
+        ]
     }
 
     componentWillReceiveProps(p: Props) {
@@ -114,20 +117,24 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                     id: FM.ENTITYCREATOREDITOR_TITLE_CREATE,
                     defaultMessage: 'Create an Entity'
                 }),
-                entityTypeVal: this.props.entityTypeFilter ? this.props.entityTypeFilter : NEW_ENTITY
+                entityTypeVal: this.props.entityTypeFilter ? this.props.entityTypeFilter : this.NEW_ENTITY
             });
         } else {
             let entityType = p.entity.entityType;
             let isProgrammatic = false;
+            let isPrebuilt = true;
             if (entityType === EntityType.LUIS) {
-                entityType = NEW_ENTITY;
+                entityType = this.NEW_ENTITY;
+                isPrebuilt = false;
             } else if (entityType === EntityType.LOCAL) {
-                entityType = NEW_ENTITY;
+                entityType = this.NEW_ENTITY;
                 isProgrammatic = true;
+                isPrebuilt = false;
             }
             this.setState({
                 entityNameVal: p.entity.entityName,
                 entityTypeVal: entityType,
+                isPrebuilt: isPrebuilt,
                 isBucketableVal: p.entity.metadata.isBucket,
                 isNegatableVal: p.entity.metadata.isReversable,
                 isProgrammaticVal: isProgrammatic,
@@ -142,7 +149,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
 
     convertStateToEntity(state: ComponentState): EntityBase {
         let entityType = this.state.entityTypeVal;
-        if (entityType === NEW_ENTITY) {
+        if (!this.state.isPrebuilt) {
             entityType = (this.state.isProgrammaticVal) ? EntityType.LOCAL : EntityType.LUIS;
         }
         return new EntityBase({
@@ -187,7 +194,13 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
         })
     }
     onChangedType = (obj: BlisDropdownOption) => {
+        let isPrebuilt = obj.text !== this.NEW_ENTITY;
+        let isNegatableVal = isPrebuilt ? false : this.state.isNegatableVal;
+        let isProgrammaticVal = isPrebuilt ? false : this.state.isProgrammaticVal;
         this.setState({
+            isPrebuilt: isPrebuilt,
+            isNegatableVal : isNegatableVal,
+            isProgrammaticVal: isProgrammaticVal,
             entityTypeVal: obj.text
         })
     }
@@ -268,11 +281,11 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                     onKeyDown={this.onKeyDownName}
                     label={intl.formatMessage({
                         id: FM.ENTITYCREATOREDITOR_FIELDS_NAME_LABEL,
-                        defaultMessage: "Entity Name"
+                        defaultMessage: 'Entity Name'
                     })}
                     placeholder={intl.formatMessage({
                         id: FM.ENTITYCREATOREDITOR_FIELDS_NAME_PLACEHOLDER,
-                        defaultMessage: "Name..."
+                        defaultMessage: 'Name...'
                     })}
                     required={true}
                     value={this.state.entityNameVal}
@@ -281,7 +294,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                 <OF.Dropdown
                     label={intl.formatMessage({
                         id: FM.ENTITYCREATOREDITOR_FIELDS_TYPE_LABEL,
-                        defaultMessage: "Entity Type"
+                        defaultMessage: 'Entity Type'
                     })}
                     options={this.entityOptions}
                     onChanged={this.onChangedType}
@@ -293,11 +306,12 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                     <OF.Checkbox
                         label={intl.formatMessage({
                             id: FM.ENTITYCREATOREDITOR_FIELDS_PROGRAMMATICONLY_LABEL,
-                            defaultMessage: "Programmatic Only"
+                            defaultMessage: 'Programmatic Only'
                         })}
+                        checked={this.state.isProgrammaticVal}
                         defaultChecked={this.state.isProgrammaticVal}
                         onChange={this.onChangeProgrammatic}
-                        disabled={this.state.editing || this.state.entityTypeVal !== NEW_ENTITY}
+                        disabled={this.state.editing || this.state.isPrebuilt}
                     />
                     <div className="ms-fontSize-s ms-fontColor-neutralSecondary">
                         <FormattedMessage
@@ -324,8 +338,9 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                     <OF.Checkbox
                         label={intl.formatMessage({
                             id: FM.ENTITYCREATOREDITOR_FIELDS_MULTIVALUE_LABEL,
-                            defaultMessage: "Multi-valued"
+                            defaultMessage: 'Multi-valued'
                         })}
+                        checked={this.state.isBucketableVal}
                         defaultChecked={this.state.isBucketableVal}
                         onChange={this.onChangeBucketable}
                         disabled={this.state.editing}
@@ -357,9 +372,10 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                             id: FM.ENTITYCREATOREDITOR_FIELDS_NEGATAABLE_LABEL,
                             defaultMessage: 'Negatable'
                         })}
+                        checked={this.state.isNegatableVal}
                         defaultChecked={this.state.isNegatableVal}
                         onChange={this.onChangeReversible}
-                        disabled={this.state.editing}
+                        disabled={this.state.editing || this.state.isPrebuilt}
                     />
                     <div className="ms-fontSize-s ms-fontColor-neutralSecondary">
                         <FormattedMessage
@@ -391,18 +407,18 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
             <Modal
                 isOpen={this.props.open}
                 isBlocking={false}
-                containerClassName='blis-modal blis-modal--medium blis-modal--border'
+                containerClassName="blis-modal blis-modal--medium blis-modal--border"
             >
-                <div className='blis-modal_header'>
-                    <span className='ms-font-xxl ms-fontWeight-semilight'>{this.state.editing ? this.props.entity.entityName : this.state.title}</span>
+                <div className="blis-modal_header">
+                    <span className="ms-font-xxl ms-fontWeight-semilight">{this.state.editing ? this.props.entity.entityName : this.state.title}</span>
                 </div>
-                <div className='blis-modal_body'>
+                <div className="blis-modal_body">
                     {this.state.editing
                         ? (
                             <div>
                                 <OF.Pivot linkSize={OF.PivotLinkSize.large}>
                                     <OF.PivotItem 
-                                        linkText= {intl.formatMessage({
+                                        linkText={intl.formatMessage({
                                             id: FM.ENTITYCREATOREDITOR_PIVOT_EDIT,
                                             defaultMessage: 'Edit Entity'
                                         })}
@@ -450,11 +466,11 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                                     onClick={this.onClickSubmit}
                                     ariaDescription={intl.formatMessage({
                                         id: FM.ENTITYCREATOREDITOR_CREATEBUTTON_ARIADESCRIPTION,
-                                        defaultMessage: "Create"
+                                        defaultMessage: 'Create'
                                     })}
                                     text={intl.formatMessage({
                                         id: FM.ENTITYCREATOREDITOR_CREATEBUTTON_TEXT,
-                                        defaultMessage: "Create"
+                                        defaultMessage: 'Create'
                                     })}
                                 />
                             }
@@ -463,11 +479,11 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                                     onClick={this.onClickCancel}
                                     ariaDescription={intl.formatMessage({
                                         id: FM.ENTITYCREATOREDITOR_CANCELBUTTON_ARIADESCRIPTION,
-                                        defaultMessage: "Cancel"
+                                        defaultMessage: 'Cancel'
                                     })}
                                     text={intl.formatMessage({
                                         id: FM.ENTITYCREATOREDITOR_CANCELBUTTON_TEXT,
-                                        defaultMessage: "Cancel"
+                                        defaultMessage: 'Cancel'
                                     })}
                                 />
                             }
@@ -476,11 +492,11 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                                     onClick={this.onClickCancel}
                                     ariaDescription={intl.formatMessage({
                                         id: FM.ENTITYCREATOREDITOR_DONEBUTTON_ARIADESCRIPTION,
-                                        defaultMessage: "Done"
+                                        defaultMessage: 'Done'
                                     })}
                                     text={intl.formatMessage({
                                         id: FM.ENTITYCREATOREDITOR_DONEBUTTON_TEXT,
-                                        defaultMessage: "Done"
+                                        defaultMessage: 'Done'
                                     })}
                                 />
                             }
@@ -489,11 +505,11 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                                     onClick={() => this.props.handleOpenDeleteModal(this.props.entity.entityId)}
                                     ariaDescription={intl.formatMessage({
                                         id: FM.ENTITYCREATOREDITOR_DELETEBUTTON_ARIADESCRIPTION,
-                                        defaultMessage: "Delete"
+                                        defaultMessage: 'Delete'
                                     })}
                                     text={intl.formatMessage({
                                         id: FM.ENTITYCREATOREDITOR_DELETEBUTTON_TEXT,
-                                        defaultMessage: "Delete"
+                                        defaultMessage: 'Delete'
                                     })}
                                 />}
                         </div>
