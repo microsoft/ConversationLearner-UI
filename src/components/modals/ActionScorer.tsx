@@ -8,11 +8,12 @@ import {
     BlisAppBase, TrainScorerStep, Memory, ScoredBase, ScoreInput, ScoreResponse,
     ActionBase, ScoredAction, UnscoredAction, ScoreReason, DialogType
 } from 'blis-models';
+import { createActionAsync } from '../../actions/createActions'
 import { toggleAutoTeach } from '../../actions/teachActions'
 import { PrimaryButton } from 'office-ui-fabric-react';
 import { DialogMode } from '../../types/const'
 import * as OF from 'office-ui-fabric-react';
-import ActionCreatorEditor from './ActionCreatorEditor'
+import ActionEditor from './ActionEditor'
 import { onRenderDetailsHeader } from '../ToolTips'
 import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../react-intl-messages'
@@ -126,7 +127,6 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         this.handleActionSelection = this.handleActionSelection.bind(this);
         this.handleDefaultSelection = this.handleDefaultSelection.bind(this);
         this.handleOpenActionModal = this.handleOpenActionModal.bind(this);
-        this.handleCloseActionModal = this.handleCloseActionModal.bind(this);
         this.renderItemColumn = this.renderItemColumn.bind(this);
         this.onColumnClick = this.onColumnClick.bind(this);
         this.focusPrimaryButton = this.focusPrimaryButton.bind(this);
@@ -194,11 +194,21 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             this.primaryScoreButton.focus();
         }
     }
-    handleCloseActionModal(newAction: ActionBase) {
+    
+    onClickCancelActionEditor() {
         this.setState({
             actionModalOpen: false
         })
     }
+
+    onClickSubmitActionEditor(action: ActionBase) {
+        this.setState({
+            actionModalOpen: false
+        }, () => {
+            this.props.createActionAsync(this.props.user.key, action, this.props.app.appId)
+        })
+    }
+
     handleOpenActionModal() {
         this.setState({
             actionModalOpen: true
@@ -535,12 +545,15 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                         defaultRender: OF.IRenderFunction<OF.IDetailsHeaderProps>) =>
                         onRenderDetailsHeader(detailsHeaderProps, defaultRender)}
                 />
-                <ActionCreatorEditor
+
+                <ActionEditor
                     app={this.props.app}
                     open={this.state.actionModalOpen}
-                    blisAction={null}
-                    handleClose={this.handleCloseActionModal}
-                    handleOpenDeleteModal={() => { }}
+                    action={null}
+                    onClickCancel={() => this.onClickCancelActionEditor()}
+                    /* It is not possible to delete from this modal since you cannot select existing action so disregard implementation of delete */
+                    onClickDelete={action => {}}
+                    onClickSubmit={action => this.onClickSubmitActionEditor(action)}
                 />
             </div>
         )
@@ -561,7 +574,8 @@ export interface ReceivedProps {
 
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        toggleAutoTeach
+        createActionAsync,
+        toggleAutoTeach,
     }, dispatch);
 }
 const mapStateToProps = (state: State, ownProps: any) => {
