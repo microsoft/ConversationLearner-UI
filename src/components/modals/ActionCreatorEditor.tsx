@@ -514,6 +514,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                             key={this.state.editorKey}
                                             placeholder="Phrase..."
                                             onChange={this.onChangeMentionEditor}
+                                            disabled={false}
                                         /></div>),
                                     ToolTip.TipType.ACTION_RESPONSE_TEXT, OF.DirectionalHint.bottomRightEdge)
                                 }

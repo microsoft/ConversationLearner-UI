@@ -21,6 +21,12 @@
     border-color: var(--color-themePrimary);
 }
 
+.editor--disabled.editor,
+.editor--disabled {
+    border-color: var(--color-neutralLighter);
+    background: var(--color-neutralLighter);
+}
+
 .DraftEditor-root {
     line-height: 2em;
 }

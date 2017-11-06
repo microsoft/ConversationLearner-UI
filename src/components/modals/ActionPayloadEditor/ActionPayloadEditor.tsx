@@ -14,6 +14,7 @@ interface Props {
   allSuggestions: IMention[]
   editorState: EditorState
   placeholder: string
+  disabled: boolean
   onChange: (editorState: EditorState) => void
 }
 
@@ -73,7 +74,7 @@ export default class extends React.Component<Props, State> {
 
   render() {
     return (
-      <div className={"editor" + (this.state.isPayloadFocused ? " editor--active" : "")} onClick={this.onClickEditorContainer}>
+      <div className={"editor" + (this.props.disabled ? " editor--disabled" : "") + (this.state.isPayloadFocused ? " editor--active" : "")} onClick={this.onClickEditorContainer}>
         <Editor
           placeholder={this.props.placeholder}
           editorState={this.props.editorState}
@@ -82,6 +83,7 @@ export default class extends React.Component<Props, State> {
           ref={this.setDomEditorRef}
           onFocus={this.onFocus}
           onBlur={this.onBlur}
+          readOnly={this.props.disabled}
         />
         <MentionSuggestions
           onSearchChange={this.onSearchChange}
