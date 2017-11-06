@@ -1,15 +1,12 @@
 import * as React from 'react';
 import { IPickerItemProps, Icon, ITag } from 'office-ui-fabric-react'
 
-export interface IBlisTag extends ITag {
-}
-
 export interface IBlisPickerItemProps<T> extends IPickerItemProps<T> {
     locked: boolean;
     strike: boolean;
     highlight: boolean;
 }
-export const BlisTagItem = (props: IBlisPickerItemProps<IBlisTag>) => (
+export const BlisTagItem = (props: IBlisPickerItemProps<ITag>) => (
     <div
       className={`ms-TagItem ${props.highlight && 'ms-TagItem-text--highlight'}`}
       key={ props.index }
