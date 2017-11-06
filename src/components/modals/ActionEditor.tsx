@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { EditorState, ContentState, /*Modifier , convertToRaw */ } from 'draft-js'
+import { EditorState, ContentState, Modifier/* , convertToRaw */ } from 'draft-js'
 import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
@@ -19,6 +19,12 @@ const convertEntityToMention = (entity: EntityBase): IMention =>
         displayName: entity.entityName,
     })
 
+const convertEntityToTag = (entity: EntityBase): ITag =>
+    ({
+        key: entity.entityId,
+        name: entity.entityName
+    })
+
 const convertContentEntityToTag = (contentEntity: EditorUtilities.IContentEntity): ITag =>
     ({
         key: contentEntity.entity.data.mention.id,
@@ -28,10 +34,7 @@ const convertContentEntityToTag = (contentEntity: EditorUtilities.IContentEntity
 const convertEntityIdsToTags = (ids: string[], entities: EntityBase[]): ITag[] => {
     return ids
         .map<EntityBase>(entityId => entities.find(e => e.entityId === entityId))
-        .map<ITag>(entity => ({
-            key: entity.entityId,
-            name: entity.entityName
-        }))
+        .map<ITag>(convertEntityToTag)
 }
 
 const getSuggestedTags = (filterText: string, allTags: ITag[], tagsToExclude: ITag[]): ITag[] => {
@@ -151,7 +154,8 @@ class ActionEditor extends React.Component<Props, ComponentState> {
                 // TODO: Manually create '$mention' entities by using regex and selection?
                 const existingEntityMatches = (action.payload.match(/(\$[\w]+)/g) || [])
                     .map(match => {
-                        const entityName = match.substring(0)
+                        // Get entity name by removing first character '$name' -> 'name'
+                        const entityName = match.substring(1)
                         const startIndex = action.payload.indexOf(match)
                         const endIndex = startIndex + match.length
                         const entity = nextProps.entities.find(e => e.entityName === entityName)
@@ -167,27 +171,47 @@ class ActionEditor extends React.Component<Props, ComponentState> {
 
                 // Get editor state
                 const contentState = ContentState.createFromText(action.payload)
-                // existingEntityMatches
-                //     .forEach(entityMatch => {
-                //         const contentStateWithEntity = contentState.createEntity(
-                //             EditorUtilities.entityType,
-                //             'IMMUTABLE',
-                //             entityMatch.entity
-                //         )
-                //         const entityKey = contentStateWithEntity.getLastCreatedEntityKey()
-                //         const selectionState = editorState.getSelection()
-
-                //         const contentStateWithMention = Modifier.applyEntity(
-                //           contentStateWithEntity,
-                //           selectionState,
-                //           entityKey
-                //         );
-
-                //     })
-
                 let editorState = EditorState.createWithContent(contentState)
-                editorState = EditorState.moveFocusToEnd(editorState)
+
+                /**
+                 * Note: Remove this when we change the action.payload to save entity position directly
+                 * This is kind of a hack to force the entities into the content state without having the actual map
+                 * This relies on there being single block created by the above `createFromText` so that the anchorKey
+                 * and focusKeys from the default selection state are valid
+                 */
+                const contentStateWithMentions = existingEntityMatches
+                    .reduce((newContentState, entityMatch) => {
+                        const fakeMapMention = convertEntityToMention(entityMatch.entity);
+                        (fakeMapMention as any).toJS = () => fakeMapMention
+
+                        const contentStateWithEntity = newContentState.createEntity(
+                            EditorUtilities.entityType,
+                            'IMMUTABLE',
+                            {
+                                mention: fakeMapMention
+                            }
+                        )
+
+                        const entityKey = contentStateWithEntity.getLastCreatedEntityKey()
+                        const selectionState = editorState.getSelection()
+                        const updatedSelectionState: any = selectionState.merge({
+                            anchorOffset: entityMatch.startIndex,
+                            focusOffset: entityMatch.endIndex
+                        });
+
+                        return Modifier.applyEntity(
+                            contentStateWithEntity,
+                            updatedSelectionState,
+                            entityKey
+                        )
+                    }, contentState)
+
+                // Overwrite editor state with content state which has the entities
+                editorState = EditorState.createWithContent(contentStateWithMentions)
+
+                // Set cursor to end
                 editorState = EditorState.moveSelectionToEnd(editorState)
+                editorState = EditorState.moveFocusToEnd(editorState)
 
                 const requiredEntityTagsFromPayload = EditorUtilities.getEntities(editorState).map(convertContentEntityToTag)
 
