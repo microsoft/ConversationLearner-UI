@@ -1,5 +1,4 @@
 import ActionCreatorEditor from './ActionCreatorEditor'
-import ActionEditor from './ActionEditor'
 import AppCreator from './AppCreator'
 import EntityCreatorEditor from './EntityCreatorEditor'
 import ConfirmDeleteModal from './ConfirmDeleteModal'
@@ -14,7 +13,6 @@ import LogoutModal from './LogoutModal'
 
 export {
     ActionCreatorEditor,
-    ActionEditor,
     AppCreator,
     EntityCreatorEditor,
     ConfirmDeleteModal,

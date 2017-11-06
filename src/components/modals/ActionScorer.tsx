@@ -13,7 +13,7 @@ import { toggleAutoTeach } from '../../actions/teachActions'
 import { PrimaryButton } from 'office-ui-fabric-react';
 import { DialogMode } from '../../types/const'
 import * as OF from 'office-ui-fabric-react';
-import ActionEditor from './ActionEditor'
+import ActionCreatorEditor from './ActionCreatorEditor'
 import { onRenderDetailsHeader } from '../ToolTips'
 import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../react-intl-messages'
@@ -546,7 +546,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                         onRenderDetailsHeader(detailsHeaderProps, defaultRender)}
                 />
 
-                <ActionEditor
+                <ActionCreatorEditor
                     app={this.props.app}
                     open={this.state.actionModalOpen}
                     action={null}

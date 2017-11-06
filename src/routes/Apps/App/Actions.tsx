@@ -8,7 +8,7 @@ import { deleteActionAsync } from '../../../actions/deleteActions'
 import ActionDetailsList from '../../../components/ActionDetailsList'
 import * as OF from 'office-ui-fabric-react';
 import { BlisAppBase, ActionBase } from 'blis-models'
-import { ActionEditor } from '../../../components/modals'
+import { ActionCreatorEditor } from '../../../components/modals'
 import { State } from '../../../types'
 import { FM } from '../../../react-intl-messages'
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
@@ -171,7 +171,7 @@ class Actions extends React.Component<Props, ComponentState> {
                     onSelectAction={this.onSelectAction}
                 />
 
-                <ActionEditor
+                <ActionCreatorEditor
                     app={this.props.app}
                     open={this.state.isActionEditorOpen}
                     action={this.state.actionSelected}
