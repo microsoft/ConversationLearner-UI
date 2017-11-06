@@ -9,11 +9,17 @@
     overflow: hidden;
 }
 
-.teachDeleteVariation {
-    font-size: 18px;
+.teachVariationButtonsBar {
     float: right;
-    position: relative;
-    margin-left: 3px;
+}
+
+.teachVariationInvalid{
+    color: #ff0000;
+}
+
+.teachVariationButton {
+    font-size: 18px;
+    margin: 6px 0px 6px 3px
 }
 
 .teachAddVariation{
