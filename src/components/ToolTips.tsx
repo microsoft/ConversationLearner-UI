@@ -6,11 +6,13 @@ import { MemoryValue } from 'blis-models'
 import './ToolTips.css'
 
 export enum TipType {
+    ACTION_API = 'actionAPI',
     ACTION_ARGUMENTS = 'actionArguments',
     ACTION_ENTITIES = 'actionEntities',
     ACTION_NEGATIVE = 'negativeEntities',
     ACTION_REQUIRED = 'requiredEntities',
     ACTION_RESPONSE = 'actionResponse',
+    ACTION_RESPONSE_TEXT = 'actionResponseText',
     ACTION_SCORE = 'actionScore',
     ACTION_SUGGESTED = 'suggestedEntity',
     ACTION_TYPE = 'actionType',
@@ -67,12 +69,12 @@ export function onRenderPivotItem(link: OF.IPivotItemProps, defaultRenderer: (li
     );
   }
 
-export function Wrap(content: JSX.Element, tooltip: string): JSX.Element {
+export function Wrap(content: JSX.Element, tooltip: string, directionalHint: OF.DirectionalHint = OF.DirectionalHint.topCenter): JSX.Element {
     return (
         <OF.TooltipHost
             tooltipProps={{onRenderContent: () => { return GetTip(tooltip) }}}
             delay={OF.TooltipDelay.medium}
-            directionalHint={OF.DirectionalHint.bottomCenter}
+            directionalHint={directionalHint}
         >
             {content}
         </OF.TooltipHost>
@@ -81,6 +83,13 @@ export function Wrap(content: JSX.Element, tooltip: string): JSX.Element {
 
 export function GetTip(tipType: string) {
     switch (tipType) {
+        case TipType.ACTION_API:
+        return (
+            <div>
+            <FormattedMessage id={FM.TOOLTIP_ACTION_API} defaultMessage="API Actions"/><br/>
+            <span>blisdk.APICallback("[API NAME}], async (memoryManager, argArray) => [API BODY])</span>
+            </div>
+            ) 
         case TipType.ACTION_ARGUMENTS:
             return (<FormattedMessage id={FM.TOOLTIP_ACTION_ARGUEMENTS} defaultMessage="Arguements"/>)      
         case TipType.ACTION_ENTITIES:
@@ -104,7 +113,9 @@ export function GetTip(tipType: string) {
         case TipType.ACTION_REQUIRED:
             return (<FormattedMessage id={FM.TOOLTIP_ACTION_REQUIRED} defaultMessage="Required Entities"/>)     
         case TipType.ACTION_RESPONSE:
-            return (<FormattedMessage id={FM.TOOLTIP_ACTION_RESPONSE} defaultMessage="Response"/>)      
+            return (<FormattedMessage id={FM.TOOLTIP_ACTION_RESPONSE} defaultMessage="Response"/>)
+        case TipType.ACTION_RESPONSE_TEXT:
+            return (<FormattedMessage id={FM.TOOLTIP_ACTION_RESPONSE_TEXT} defaultMessage="Response"/>)      
         case TipType.ACTION_SCORE:
             return (
                 <div>

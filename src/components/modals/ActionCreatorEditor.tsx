@@ -4,12 +4,13 @@ import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { Modal } from 'office-ui-fabric-react/lib/Modal'
-import { PrimaryButton, Checkbox, DefaultButton, Dropdown, IDropdownOption, TagPicker, TextField, ITag, Icon, Label } from 'office-ui-fabric-react'
 import { ActionBase, ActionTypes, ActionMetaData, BlisAppBase, EntityBase } from 'blis-models'
 import ConfirmDeleteModal from './ConfirmDeleteModal'
 import EntityCreatorEditor from './EntityCreatorEditor'
 import ActionPayloadEditor, { utilities as EditorUtilities, IMention } from './ActionPayloadEditor'
 import { State } from '../../types'
+import * as ToolTip from '../ToolTips'
+import * as OF from 'office-ui-fabric-react';
 import { BlisTagItem, IBlisPickerItemProps } from './BlisTagItem'
 
 // Change to force build
@@ -20,25 +21,25 @@ const convertEntityToMention = (entity: EntityBase): IMention =>
         displayName: entity.entityName,
     })
 
-const convertEntityToTag = (entity: EntityBase): ITag =>
+const convertEntityToTag = (entity: EntityBase): OF.ITag =>
     ({
         key: entity.entityId,
         name: entity.entityName
     })
 
-const convertContentEntityToTag = (contentEntity: EditorUtilities.IContentEntity): ITag =>
+const convertContentEntityToTag = (contentEntity: EditorUtilities.IContentEntity): OF.ITag =>
     ({
         key: contentEntity.entity.data.mention.id,
         name: contentEntity.entity.data.mention.displayName
     })
 
-const convertEntityIdsToTags = (ids: string[], entities: EntityBase[]): ITag[] => {
+const convertEntityIdsToTags = (ids: string[], entities: EntityBase[]): OF.ITag[] => {
     return ids
         .map<EntityBase>(entityId => entities.find(e => e.entityId === entityId))
-        .map<ITag>(convertEntityToTag)
+        .map<OF.ITag>(convertEntityToTag)
 }
 
-const getSuggestedTags = (filterText: string, allTags: ITag[], tagsToExclude: ITag[]): ITag[] => {
+const getSuggestedTags = (filterText: string, allTags: OF.ITag[], tagsToExclude: OF.ITag[]): OF.ITag[] => {
     if (filterText.length === 0) {
         return []
     }
@@ -55,7 +56,7 @@ const actionTypeOptions = Object.values(ActionTypes).map(v =>
     }))
 
 interface ComponentState {
-    apiOptions: IDropdownOption[]
+    apiOptions: OF.IDropdownOption[]
     selectedApiOptionKey: string | number | null
     isEditing: boolean
     isEntityEditorModalOpen: boolean
@@ -63,11 +64,11 @@ interface ComponentState {
     isPayloadFocused: boolean
     isPayloadValid: boolean
     selectedActionTypeOptionKey: string | number
-    entityTags: ITag[]
-    selectedExpectedEntityTags: ITag[]
-    requiredEntityTagsFromPayload: ITag[]
-    selectedRequiredEntityTags: ITag[]
-    selectedNegativeEntityTags: ITag[]
+    entityTags: OF.ITag[]
+    selectedExpectedEntityTags: OF.ITag[]
+    requiredEntityTagsFromPayload: OF.ITag[]
+    selectedRequiredEntityTags: OF.ITag[]
+    selectedNegativeEntityTags: OF.ITag[]
     mentionEditorState: EditorState
     editorKey: number
     isTerminal: boolean
@@ -93,19 +94,19 @@ const initialState: ComponentState = {
 }
 
 class ActionCreatorEditor extends React.Component<Props, ComponentState> {
-    private openState: ComponentState = initialState
-    state = initialState
+    private openState: ComponentState = initialState;
+    state = initialState;
 
     componentWillMount() {
         const { entities, botInfo } = this.props
-        let entityTags = entities.map<ITag>(e =>
+        let entityTags = entities.map<OF.ITag>(e =>
             ({
                 key: e.entityId,
                 name: e.entityName
             }))
 
         const callbacks = (botInfo.callbacks || [])
-        const apiOptions = callbacks.map<IDropdownOption>(v =>
+        const apiOptions = callbacks.map<OF.IDropdownOption>(v =>
             ({
                 key: v,
                 text: v
@@ -231,7 +232,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         }))
     }
 
-    onChangedApiOption = (apiOption: IDropdownOption) => {
+    onChangedApiOption = (apiOption: OF.IDropdownOption) => {
         this.setState({
             selectedApiOptionKey: apiOption.key
         })
@@ -244,7 +245,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
         const newOrEditedAction = new ActionBase({
             actionId: null,
-            payload: rawText, //`${rawText} : ${JSON.stringify(rawContent)}`,
+            payload: rawText, // `${rawText} : ${JSON.stringify(rawContent)}`,
             isTerminal: this.state.isTerminal,
             requiredEntities: this.state.selectedRequiredEntityTags.map<string>(tag => tag.key),
             negativeEntities: this.state.selectedNegativeEntityTags.map<string>(tag => tag.key),
@@ -281,10 +282,9 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     }
 
     onConfirmDelete = () => {
-        this.setState({
-            isConfirmDeleteModalOpen: false
-        }, () => {
-            this.props.onClickDelete(this.props.action)
+        this.setState(
+            { isConfirmDeleteModalOpen: false }, 
+            () => {this.props.onClickDelete(this.props.action)
         })
     }
 
@@ -304,13 +304,13 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         this.props.onClickCancel()
     }
 
-    onChangedActionType = (actionTypeOption: IDropdownOption) => {
+    onChangedActionType = (actionTypeOption: OF.IDropdownOption) => {
         this.setState({
             selectedActionTypeOptionKey: actionTypeOption.key
         })
     }
 
-    onResolveExpectedEntityTags = (filterText: string, selectedTags: ITag[]): ITag[] => {
+    onResolveExpectedEntityTags = (filterText: string, selectedTags: OF.ITag[]): OF.ITag[] => {
         // TODO: Look at using different control such as a dropdown which implies using single value.
         // It is not possible to have more than 1 suggested entity
         // If there is already an entity selected return empty list to prevent adding more
@@ -325,13 +325,13 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         )
     }
 
-    onRenderExpectedTag = (props: IBlisPickerItemProps<ITag>): JSX.Element => {
+    onRenderExpectedTag = (props: IBlisPickerItemProps<OF.ITag>): JSX.Element => {
         const renderProps = { ...props }
         renderProps.highlight = true
         return <BlisTagItem { ...renderProps }>{props.item.name}</BlisTagItem>
     }
 
-    onChangeExpectedEntityTags = (nextTags: ITag[]) => {
+    onChangeExpectedEntityTags = (nextTags: OF.ITag[]) => {
         this.setState((prevState: ComponentState) => {
             const nextState: Partial<ComponentState> = {
                 selectedExpectedEntityTags: nextTags
@@ -357,7 +357,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         })
     }
 
-    onResolveRequiredEntityTags = (filterText: string, selectedTags: ITag[]): ITag[] => {
+    onResolveRequiredEntityTags = (filterText: string, selectedTags: OF.ITag[]): OF.ITag[] => {
         return getSuggestedTags(
             filterText,
             this.state.entityTags,
@@ -365,13 +365,13 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         )
     }
 
-    onChangeRequiredEntityTags = (tags: ITag[]) => {
+    onChangeRequiredEntityTags = (tags: OF.ITag[]) => {
         this.setState({
             selectedRequiredEntityTags: tags
         })
     }
 
-    onRenderRequiredEntityTag = (props: IBlisPickerItemProps<ITag>): JSX.Element => {
+    onRenderRequiredEntityTag = (props: IBlisPickerItemProps<OF.ITag>): JSX.Element => {
         const renderProps = { ...props }
         const locked = this.state.requiredEntityTagsFromPayload.some(t => t.key === props.key)
 
@@ -383,7 +383,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         return <BlisTagItem {...renderProps}>{props.item.name}</BlisTagItem>
     }
 
-    onResolveNegativeEntityTags(filterText: string, selectedTags: ITag[]): ITag[] {
+    onResolveNegativeEntityTags(filterText: string, selectedTags: OF.ITag[]): OF.ITag[] {
         return getSuggestedTags(
             filterText,
             this.state.entityTags,
@@ -391,13 +391,13 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         )
     }
 
-    onChangeNegativeEntityTags(tags: ITag[]) {
+    onChangeNegativeEntityTags(tags: OF.ITag[]) {
         this.setState({
             selectedNegativeEntityTags: tags
         })
     }
 
-    onRenderNegativeEntityTag = (props: IBlisPickerItemProps<ITag>): JSX.Element => {
+    onRenderNegativeEntityTag = (props: IBlisPickerItemProps<OF.ITag>): JSX.Element => {
         const renderProps = { ...props }
         const suggestedEntityKey = this.state.selectedExpectedEntityTags.length > 0 ? this.state.selectedExpectedEntityTags[0].key : null
 
@@ -453,32 +453,38 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 isOpen={this.props.open}
                 onDismiss={() => this.onDismissModal()}
                 isBlocking={false}
-                containerClassName='blis-modal blis-modal--medium blis-modal--border'
+                containerClassName="blis-modal blis-modal--medium blis-modal--border"
             >
-                <div className='blis-modal_header'>
-                    <span className='ms-font-xxl ms-fontWeight-semilight'>{this.state.isEditing ? "Edit Action" : "Create an Action"}</span>
+                <div className="blis-modal_header">
+                    <span className="ms-font-xxl ms-fontWeight-semilight">{this.state.isEditing ? 'Edit Action' : 'Create an Action'}</span>
                 </div>
 
-                <div className='blis-modal_body'>
+                <div className="blis-modal_body">
                     <div>
-                        <Dropdown
-                            label='Action Type'
-                            options={actionTypeOptions}
-                            onChanged={acionTypeOption => this.onChangedActionType(acionTypeOption)}
-                            selectedKey={this.state.selectedActionTypeOptionKey}
-                            disabled={this.state.isEditing}
-                        />
+                        {ToolTip.Wrap(
+                            (<OF.Dropdown
+                                    label="Action Type"
+                                    options={actionTypeOptions}
+                                    onChanged={acionTypeOption => this.onChangedActionType(acionTypeOption)}
+                                    selectedKey={this.state.selectedActionTypeOptionKey}
+                                    disabled={this.state.isEditing}
+                            />),
+                            ToolTip.TipType.ACTION_TYPE, OF.DirectionalHint.bottomRightEdge)
+                        }
 
                         {this.state.selectedActionTypeOptionKey === ActionTypes.API_LOCAL
                             ? (<div>
-                                <Dropdown
-                                    label='API'
-                                    options={this.state.apiOptions}
-                                    onChanged={apiOption => this.onChangedApiOption(apiOption)}
-                                    selectedKey={this.state.selectedApiOptionKey}
-                                    disabled={this.state.apiOptions.length === 0 || this.state.isEditing}
-                                    placeHolder={this.state.apiOptions.length === 0 ? "NONE DEFINED" : "API name..."}
-                                />
+                                {ToolTip.Wrap(
+                                    (<OF.Dropdown
+                                        label="API"
+                                        options={this.state.apiOptions}
+                                        onChanged={apiOption => this.onChangedApiOption(apiOption)}
+                                        selectedKey={this.state.selectedApiOptionKey}
+                                        disabled={this.state.apiOptions.length === 0 || this.state.isEditing}
+                                        placeHolder={this.state.apiOptions.length === 0 ? 'NONE DEFINED' : 'API name...'}
+                                    />), 
+                                    ToolTip.TipType.ACTION_API, OF.DirectionalHint.bottomRightEdge)
+                                }
                                 {/* <TextField
                                 onChanged={this.payloadChanged}
                                 label="Arguments (Comma Separated)"
@@ -489,117 +495,132 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                 onBlur={this.payloadBlur}
                                 value={this.state.payloadVal}
                                 disabled={disabled}
-                            /> */}
-                                <TextField
-                                    label="Arguments (Comma Separated)"
-                                    placeholder="Arguments..."
-                                    autoFocus={true}
-                                    disabled={this.state.apiOptions.length === 0 || this.state.isEditing}
-                                />
+                            /> */}     
+                                {ToolTip.Wrap(
+                                    (<div><OF.TextField
+                                        label="Arguments (Comma Separated)"
+                                        placeholder="Arguments..."
+                                        autoFocus={true}
+                                        disabled={this.state.apiOptions.length === 0 || this.state.isEditing}
+                                    /></div>),
+                                    ToolTip.TipType.ACTION_ARGUMENTS, OF.DirectionalHint.bottomRightEdge)
+                            }
                             </div>)
-                            : (<div className={(this.state.isPayloadValid ? "" : "editor--error") + (this.state.isPayloadFocused ? " editor--active" : "")}>
-                                <Label>Response...</Label>
-                                <ActionPayloadEditor
-                                    allSuggestions={getMentionsAvailableForPayload}
-                                    editorState={this.state.mentionEditorState}
-                                    key={this.state.editorKey}
-                                    placeholder="Phrase..."
-                                    onChange={this.onChangeMentionEditor}
-                                    onBlur={this.onBlurPayloadEditor}
-                                    onFocus={this.onFocusPayloadEditor}
-                                />
+                            : (<div className={(this.state.isPayloadValid ? '' : 'editor--error') + (this.state.isPayloadFocused ? ' editor--active' : '')}>
+                               {ToolTip.Wrap(
+                                    (<div><OF.Label>Response...</OF.Label>
+                                        <ActionPayloadEditor
+                                            allSuggestions={getMentionsAvailableForPayload}
+                                            editorState={this.state.mentionEditorState}
+                                            key={this.state.editorKey}
+                                            placeholder="Phrase..."
+                                            onChange={this.onChangeMentionEditor}
+                                            onBlur={this.onBlurPayloadEditor}
+                                            onFocus={this.onFocusPayloadEditor}
+                                        /></div>),
+                                    ToolTip.TipType.ACTION_RESPONSE_TEXT, OF.DirectionalHint.bottomRightEdge)
+                                }
                                 {!this.state.isPayloadValid &&
                                     (<div>
                                         <p className="ms-TextField-errorMessage css-18uf7rs errorMessage_26f1f271">
-                                            <Icon iconName='Error' /><span aria-live="assertive" data-automation-id="error-message">Response is required</span>
+                                            <OF.Icon iconName="Error" /><span aria-live="assertive" data-automation-id="error-message">Response is required</span>
                                         </p>
                                     </div>)}
                             </div>)
                         }
-
-                        <Label>Expected Entity in Response...</Label>
-                        <TagPicker
-                            onResolveSuggestions={(text, tags) => this.onResolveExpectedEntityTags(text, tags)}
-                            onRenderItem={this.onRenderExpectedTag}
-                            getTextFromItem={item => item.name}
-                            onChange={tags => this.onChangeExpectedEntityTags(tags)}
-                            pickerSuggestionsProps={
-                                {
-                                    suggestionsHeaderText: 'Entities',
-                                    noResultsFoundText: 'No Entities Found'
-                                }
-                            }
-                            selectedItems={this.state.selectedExpectedEntityTags}
-                        />
-
-                        <Label>Required Entities: Disallow Action when Entities are <b>NOT</b> in Memory...</Label>
-                        <TagPicker
-                            onResolveSuggestions={(text, tags) => this.onResolveRequiredEntityTags(text, tags)}
-                            onRenderItem={this.onRenderRequiredEntityTag}
-                            getTextFromItem={item => item.name}
-                            onChange={tags => this.onChangeRequiredEntityTags(tags)}
-                            pickerSuggestionsProps={
-                                {
-                                    suggestionsHeaderText: 'Entities',
-                                    noResultsFoundText: 'No Entities Found'
-                                }
-                            }
-                            selectedItems={this.state.selectedRequiredEntityTags}
-                        />
-
-                        <Label>Blocking Entities: Disallow Action when Entities <b>ARE</b> in Memory...</Label>
-                        <TagPicker
-                            onResolveSuggestions={(text, tags) => this.onResolveNegativeEntityTags(text, tags)}
-                            onRenderItem={this.onRenderNegativeEntityTag}
-                            getTextFromItem={item => item.name}
-                            onChange={tags => this.onChangeNegativeEntityTags(tags)}
-                            pickerSuggestionsProps={
-                                {
-                                    suggestionsHeaderText: 'Entities',
-                                    noResultsFoundText: 'No Entities Found'
-                                }
-                            }
-                            selectedItems={this.state.selectedNegativeEntityTags}
-                        />
+                        {ToolTip.Wrap(
+                            (<div><OF.Label>Expected Entity in Response...</OF.Label>
+                                <OF.TagPicker
+                                    onResolveSuggestions={(text, tags) => this.onResolveExpectedEntityTags(text, tags)}
+                                    onRenderItem={this.onRenderExpectedTag}
+                                    getTextFromItem={item => item.name}
+                                    onChange={tags => this.onChangeExpectedEntityTags(tags)}
+                                    pickerSuggestionsProps={
+                                        {
+                                            suggestionsHeaderText: 'Entities',
+                                            noResultsFoundText: 'No Entities Found'
+                                        }
+                                    }
+                                    selectedItems={this.state.selectedExpectedEntityTags}
+                                /></div>),
+                            ToolTip.TipType.ACTION_SUGGESTED, OF.DirectionalHint.bottomRightEdge)
+                        }
+                        {ToolTip.Wrap(
+                            (<div><OF.Label>Required Entities</OF.Label>
+                                <OF.TagPicker
+                                    onResolveSuggestions={(text, tags) => this.onResolveRequiredEntityTags(text, tags)}
+                                    onRenderItem={this.onRenderRequiredEntityTag}
+                                    getTextFromItem={item => item.name}
+                                    onChange={tags => this.onChangeRequiredEntityTags(tags)}
+                                    pickerSuggestionsProps={
+                                        {
+                                            suggestionsHeaderText: 'Entities',
+                                            noResultsFoundText: 'No Entities Found'
+                                        }
+                                    }
+                                    selectedItems={this.state.selectedRequiredEntityTags}
+                                /></div>),
+                            ToolTip.TipType.ACTION_REQUIRED, OF.DirectionalHint.bottomRightEdge)
+                        }
+                        {ToolTip.Wrap(
+                            (<div><OF.Label>Blocking Entities</OF.Label>
+                                <OF.TagPicker
+                                    onResolveSuggestions={(text, tags) => this.onResolveNegativeEntityTags(text, tags)}
+                                    onRenderItem={this.onRenderNegativeEntityTag}
+                                    getTextFromItem={item => item.name}
+                                    onChange={tags => this.onChangeNegativeEntityTags(tags)}
+                                    pickerSuggestionsProps={
+                                        {
+                                            suggestionsHeaderText: 'Entities',
+                                            noResultsFoundText: 'No Entities Found'
+                                        }
+                                    }
+                                    selectedItems={this.state.selectedNegativeEntityTags}
+                                /></div>),
+                            ToolTip.TipType.ACTION_NEGATIVE, OF.DirectionalHint.bottomRightEdge)
+                        }
 
                         <br />
-                        <Checkbox
-                            label='Wait For Response?'
-                            defaultChecked={true}
-                            onChange={() => this.onChangeWaitCheckbox()}
-                            style={{ marginTop: "1em", display: "inline-block" }}
-                            disabled={this.state.isEditing}
-                        />
+                        {ToolTip.Wrap(
+                            (<div><OF.Checkbox
+                                label="Wait For Response?"
+                                defaultChecked={true}
+                                onChange={() => this.onChangeWaitCheckbox()}
+                                style={{ marginTop: '1em', display: 'inline-block' }}
+                                disabled={this.state.isEditing}
+                            /></div>),
+                            ToolTip.TipType.ACTION_WAIT, OF.DirectionalHint.bottomLeftEdge)
+                        }
                     </div>
                 </div>
 
                 <div className="blis-modal_footer blis-modal-buttons">
                     <div className="blis-modal-buttons_primary">
-                        <PrimaryButton
+                        <OF.PrimaryButton
                             disabled={!this.state.isPayloadValid}
                             onClick={() => this.onClickSubmit()}
                             ariaDescription="Submit"
-                            text={this.state.isEditing ? "Save" : "Create"}
+                            text={this.state.isEditing ? 'Save' : 'Create'}
                         />
 
-                        <DefaultButton
+                        <OF.DefaultButton
                             onClick={() => this.onClickCancel()}
-                            ariaDescription='Cancel'
-                            text='Cancel'
+                            ariaDescription="Cancel"
+                            text="Cancel"
                         />
 
                         {this.state.isEditing &&
-                            <DefaultButton
+                            <OF.DefaultButton
                                 onClick={() => this.onClickDelete()}
-                                ariaDescription='Delete'
-                                text='Delete'
+                                ariaDescription="Delete"
+                                text="Delete"
                             />}
                     </div>
                     <div className="blis-modal-buttons_secondary">
-                        <PrimaryButton
+                        <OF.PrimaryButton
                             onClick={() => this.onClickCreateEntity()}
-                            ariaDescription='Create Entity'
-                            text='Entity'
+                            ariaDescription="Create Entity"
+                            text="Entity"
                             iconProps={{ iconName: 'CirclePlus' }}
                         />
                     </div>

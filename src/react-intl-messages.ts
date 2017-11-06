@@ -79,6 +79,7 @@ export enum FM {
     SETTINGS_DISCARD = 'Settings.discard',
 
     // ToolTip
+    TOOLTIP_ACTION_API = 'ToolTop.ACTION_API',
     TOOLTIP_ACTION_ARGUEMENTS = 'ToolTip.ACTION_ARGUEMENTS',
     TOOLTIP_ACTION_ENTITIES = 'ToolTip.ACTION_ENTITIES',
     TOOLTIP_ACTION_ENTITIES_REQ = 'ToolTip.ACTION_ENTITIES_REQ',
@@ -87,6 +88,7 @@ export enum FM {
     TOOLTIP_ACTION_ENTITIES_BLOCK_NOT = 'ToolTip.ACTION_ENTITIES_BLOCK_NOT',
     TOOLTIP_ACTION_NEGATIVE = 'ToolTip.ACTION_NEGATIVE',
     TOOLTIP_ACTION_RESPONSE = 'ToolTip.ACTION_RESPONSE',
+    TOOLTIP_ACTION_RESPONSE_TEXT = 'ToolTip.ACTION_RESPONSE_TEXT',
     TOOLTIP_ACTION_REQUIRED = 'ToolTip.ACTION_REQUIRED',
     TOOLTIP_ACTION_SCORE = 'ToolTip.ACTION_SCORE',
     TOOLTIP_ACTION_SCORE_PERCENT = 'ToolTip.ACTION_SCORE_PERCENT',
@@ -343,7 +345,8 @@ export default {
         [FM.SETTINGS_DISCARD]: 'Discard',
 
         // ToolTip
-        [FM.TOOLTIP_ACTION_ARGUEMENTS]: `When action is an API call, the arguements passed to the API. Entity arguements will send value of named entity.`,
+        [FM.TOOLTIP_ACTION_API]: 'APIs exposed in running bot using',
+        [FM.TOOLTIP_ACTION_ARGUEMENTS]: `When Action Type is an API call, a list of comma separated arguements passed to the API. Arguments prefixed with a $ refer to Entity values.  For example: "$city"`,
         [FM.TOOLTIP_ACTION_ENTITIES]: 'Status of Entity requirements for this action:',
         [FM.TOOLTIP_ACTION_ENTITIES_REQ]: 'Required Entity is present',
         [FM.TOOLTIP_ACTION_ENTITIES_REQ_NOT]: 'Required Enitity is missing (DISQUALIFIES ACTION)',
@@ -351,6 +354,7 @@ export default {
         [FM.TOOLTIP_ACTION_ENTITIES_BLOCK_NOT]: 'Blocking Entity is missing',
         [FM.TOOLTIP_ACTION_NEGATIVE]: 'Action will not be selected if Memory contains value for these Entities',
         [FM.TOOLTIP_ACTION_RESPONSE]: 'Value of Response that Bot will take',
+        [FM.TOOLTIP_ACTION_RESPONSE_TEXT]: 'Text the Bot will display to the user.  Prefix text with a $ to substitute Entity values.  For example: "Hi, $name"',
         [FM.TOOLTIP_ACTION_REQUIRED]: 'Action will not be selected unless Memory contains values for these Entities',
         [FM.TOOLTIP_ACTION_SCORE]: 'Score:',
         [FM.TOOLTIP_ACTION_SCORE_PERCENT]: 'BLIS confidence in performing an Action',
