@@ -15,12 +15,11 @@ interface Props {
   editorState: EditorState
   placeholder: string
   onChange: (editorState: EditorState) => void
-  onFocus: () => void
-  onBlur: () => void
 }
 
 interface State {
   suggestions: IMention[]
+  isPayloadFocused: boolean
 }
 
 const mentionPlugin = createMentionPlugin({
@@ -36,7 +35,8 @@ export default class extends React.Component<Props, State> {
   domEditor: any
 
   state = {
-    suggestions: this.props.allSuggestions
+    suggestions: this.props.allSuggestions,
+    isPayloadFocused: false,
   }
 
   setDomEditorRef = (ref: any) => this.domEditor = ref
@@ -60,16 +60,20 @@ export default class extends React.Component<Props, State> {
   }
 
   onFocus = () => {
-    this.props.onFocus()
+    this.setState({
+      isPayloadFocused: true,
+    })
   }
 
   onBlur = () => {
-    this.props.onBlur()
+    this.setState({
+      isPayloadFocused: false,
+    })
   }
 
   render() {
     return (
-      <div className="editor" onClick={this.onClickEditorContainer}>
+      <div className={"editor" + (this.state.isPayloadFocused ? " editor--active" : "")} onClick={this.onClickEditorContainer}>
         <Editor
           placeholder={this.props.placeholder}
           editorState={this.props.editorState}

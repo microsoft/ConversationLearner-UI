@@ -438,18 +438,6 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         })
     }
 
-    onBlurPayloadEditor = () => {
-        this.setState({
-            isPayloadFocused: false,
-        })
-    }
-
-    onFocusPayloadEditor = () => {
-        this.setState({
-            isPayloadFocused: true,
-        })
-    }
-
     render() {
         /**
          * Available Mentions: All entities - expected entity - required entities
@@ -517,7 +505,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                     ToolTip.TipType.ACTION_ARGUMENTS, OF.DirectionalHint.bottomRightEdge)
                             }
                             </div>)
-                            : (<div className={(this.state.isPayloadValid ? '' : 'editor--error') + (this.state.isPayloadFocused ? ' editor--active' : '')}>
+                            : (<div className={(this.state.isPayloadValid ? '' : 'editor--error')}>
                                {ToolTip.Wrap(
                                     (<div><OF.Label>Response...</OF.Label>
                                         <ActionPayloadEditor
@@ -526,8 +514,6 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                             key={this.state.editorKey}
                                             placeholder="Phrase..."
                                             onChange={this.onChangeMentionEditor}
-                                            onBlur={this.onBlurPayloadEditor}
-                                            onFocus={this.onFocusPayloadEditor}
                                         /></div>),
                                     ToolTip.TipType.ACTION_RESPONSE_TEXT, OF.DirectionalHint.bottomRightEdge)
                                 }

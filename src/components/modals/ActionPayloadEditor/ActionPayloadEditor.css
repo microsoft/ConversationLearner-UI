@@ -16,7 +16,7 @@
 .editor--error {
     border-color: var(--color-error);
 }
-.editor--active:not(.editor--error) .editor,
+.editor--active:not(.editor--error).editor,
 .editor--active:not(.editor--error) {
     border-color: var(--color-themePrimary);
 }
