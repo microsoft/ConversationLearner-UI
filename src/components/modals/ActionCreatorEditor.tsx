@@ -12,6 +12,7 @@ import ActionPayloadEditor, { utilities as EditorUtilities, IMention } from './A
 import { State } from '../../types'
 import { BlisTagItem, IBlisPickerItemProps } from './BlisTagItem'
 
+// Change to force build
 const convertEntityToMention = (entity: EntityBase): IMention =>
     ({
         id: entity.entityId,
