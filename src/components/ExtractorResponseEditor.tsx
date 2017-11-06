@@ -1,5 +1,6 @@
 import * as React from 'react';
 import './ExtractorResponseEditor.css'
+import * as ToolTips from './ToolTips';
 import { bindActionCreators } from 'redux';
 import { returntypeof } from 'react-redux-typescript';
 import { connect } from 'react-redux';
@@ -902,18 +903,19 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
     render() {
         let key = 0;
         let boxClass = this.props.isValid ? 'extractorResponseBox' : 'extractorResponseBox extractorResponseBoxInvalid';
-        let button = this.props.isPrimary ? null :
-            (
-                <div>
-                    <a onClick={() => this.onClickDeleteVariation()}><span className="teachDeleteVariation ms-Icon ms-Icon--Delete"/></a>
-                </div>
-            )
         return (
             <div 
                 onClick={() => this.onGlobalClick()} 
                 className="teachVariationBox"
             >
-                {button}
+                <div className="teachVariationButtonsBar">
+                {!this.props.isPrimary &&
+                    (<div><a onClick={() => this.onClickDeleteVariation()}><span className="teachVariationButton ms-Icon ms-Icon--Delete"/></a></div>
+                )}
+                {!this.props.isValid && ToolTips.Wrap(
+                    (<div><span className="teachVariationButton teachVariationInvalid ms-Icon ms-Icon--IncidentTriangle"/></div>), 
+                    ToolTips.TipType.ENTITY_EXTRACTOR_WARNING)}
+                </div>
                 <div className="teachVariation">
                     <div className={boxClass}>
                         <div onMouseLeave={() => this.onMousePosition(false)} onMouseEnter={() => this.onMousePosition(true)} className="extractContainer">
