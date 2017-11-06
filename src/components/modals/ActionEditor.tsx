@@ -69,7 +69,6 @@ interface ComponentState {
     selectedNegativeEntityTags: ITag[]
     mentionEditorState: EditorState
     editorKey: number
-    tagsAvailableForPayload: ITag[]
     isTerminal: boolean
 }
 
@@ -89,7 +88,6 @@ const initialState: ComponentState = {
     selectedNegativeEntityTags: [],
     mentionEditorState: EditorState.createEmpty(),
     editorKey: 0,
-    tagsAvailableForPayload: [],
     isTerminal: true
 }
 
@@ -116,7 +114,6 @@ class ActionEditor extends React.Component<Props, ComponentState> {
             ...initialState,
             apiOptions,
             entityTags,
-            tagsAvailableForPayload: entityTags,
             isEditing: !!this.props.action
         }
 
@@ -209,9 +206,6 @@ class ActionEditor extends React.Component<Props, ComponentState> {
 
                 const requiredEntityTagsFromPayload = EditorUtilities.getEntities(editorState).map(convertContentEntityToTag)
 
-                // Get all tags that are not already set as reuired tags
-                const tagsAvailableForPayload = this.state.entityTags.filter(t => selectedRequiredEntityTags.every(tag => tag.key !== t.key))
-
                 nextState = {
                     ...nextState,
                     isPayloadValid: action.payload.length !== 0,
@@ -222,7 +216,6 @@ class ActionEditor extends React.Component<Props, ComponentState> {
                     selectedNegativeEntityTags,
                     requiredEntityTagsFromPayload,
                     selectedRequiredEntityTags,
-                    tagsAvailableForPayload,
                     isEditing: true
                 }
             }
@@ -446,6 +439,14 @@ class ActionEditor extends React.Component<Props, ComponentState> {
     }
 
     render() {
+        /**
+         * Available Mentions: All entities - expected entity - required entities
+         */
+        const getMentionsAvailableForPayload = this.props.entities
+            .filter(e => !this.state.selectedExpectedEntityTags.some(t => t.key === e.entityId))
+            .filter(e => !this.state.selectedRequiredEntityTags.some(t => t.key === e.entityId))
+            .map(convertEntityToMention)
+            
         return (
             <Modal
                 isOpen={this.props.open}
@@ -498,7 +499,7 @@ class ActionEditor extends React.Component<Props, ComponentState> {
                             : (<div className={(this.state.isPayloadValid ? "" : "editor--error") + (this.state.isPayloadFocused ? " editor--active" : "")}>
                                 <Label>Response...</Label>
                                 <ActionPayloadEditor
-                                    allSuggestions={this.props.entities.map(convertEntityToMention)}
+                                    allSuggestions={getMentionsAvailableForPayload}
                                     editorState={this.state.mentionEditorState}
                                     key={this.state.editorKey}
                                     placeholder="Phrase..."
