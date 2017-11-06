@@ -13,7 +13,7 @@ import * as ToolTip from '../ToolTips'
 import { BlisAppBase, EntityBase, EntityMetaData, EntityType, ActionBase } from 'blis-models'
 import './EntityCreatorEditor.css'
 import { FM } from '../../react-intl-messages'
-import { defineMessages, injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
+import { defineMessages, injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 
 const messages = defineMessages({
     fieldErrorRequired: {
@@ -302,8 +302,8 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                     selectedKey={this.state.entityTypeVal}
                     disabled={this.state.editing || this.props.entityTypeFilter != null}
                 />
-                <div className="blis-entity-creator-checkbox">
-                    <OF.Checkbox
+                {ToolTip.Wrap( 
+                    (<div className="blis-entity-creator-checkbox"><OF.Checkbox
                         label={intl.formatMessage({
                             id: FM.ENTITYCREATOREDITOR_FIELDS_PROGRAMMATICONLY_LABEL,
                             defaultMessage: 'Programmatic Only'
@@ -312,24 +312,11 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                         defaultChecked={this.state.isProgrammaticVal}
                         onChange={this.onChangeProgrammatic}
                         disabled={this.state.editing || this.state.isPrebuilt}
-                    />
-                    <div className="ms-fontSize-s ms-fontColor-neutralSecondary">
-                        <FormattedMessage
-                            id={FM.ENTITYCREATOREDITOR_FIELDS_PROGRAMMATICONLY_HELPTEXT}
-                            defaultMessage="Entity only set by code."
-                        />&nbsp;
-                        {ToolTip.Wrap( 
-                            (<span className="ms-fontColor-themeTertiary">
-                                <FormattedMessage
-                                    id={FM.ENTITYCREATOREDITOR_FIELDS_TOOLTIPTARGET}
-                                    defaultMessage="More"
-                                />
-                            </span>),
-                            ToolTip.TipType.ENTITY_PROGAMMATIC)}
-                    </div>
-                </div>
-                <div className="blis-entity-creator-checkbox">
-                    <OF.Checkbox
+                    /></div>),
+                    ToolTip.TipType.ENTITY_PROGAMMATIC, OF.DirectionalHint.bottomLeftEdge)}
+                
+                {ToolTip.Wrap( 
+                    (<div className="blis-entity-creator-checkbox"><OF.Checkbox
                         label={intl.formatMessage({
                             id: FM.ENTITYCREATOREDITOR_FIELDS_MULTIVALUE_LABEL,
                             defaultMessage: 'Multi-valued'
@@ -338,24 +325,11 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                         defaultChecked={this.state.isBucketableVal}
                         onChange={this.onChangeBucketable}
                         disabled={this.state.editing}
-                    />
-                    <div className="ms-fontSize-s ms-fontColor-neutralSecondary">
-                        <FormattedMessage
-                            id={FM.ENTITYCREATOREDITOR_FIELDS_MULTIVALUE_HELPTEXT}
-                            defaultMessage="Entity may hold multiple values."
-                        />&nbsp;
-                        {ToolTip.Wrap( 
-                            (<span className="ms-fontColor-themeTertiary">
-                                    <FormattedMessage
-                                        id={FM.ENTITYCREATOREDITOR_FIELDS_TOOLTIPTARGET}
-                                        defaultMessage="More"
-                                    />
-                            </span>),
-                            ToolTip.TipType.ENTITY_MULTIVALUE)}
-                    </div>
-                </div>
-                <div className="blis-entity-creator-checkbox">
-                    <OF.Checkbox
+                    /></div>),
+                    ToolTip.TipType.ENTITY_MULTIVALUE, OF.DirectionalHint.bottomLeftEdge)}   
+
+                {ToolTip.Wrap( 
+                    (<div className="blis-entity-creator-checkbox"><OF.Checkbox
                         label={intl.formatMessage({
                             id: FM.ENTITYCREATOREDITOR_FIELDS_NEGATAABLE_LABEL,
                             defaultMessage: 'Negatable'
@@ -364,22 +338,8 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                         defaultChecked={this.state.isNegatableVal}
                         onChange={this.onChangeReversible}
                         disabled={this.state.editing || this.state.isPrebuilt}
-                    />
-                    <div className="ms-fontSize-s ms-fontColor-neutralSecondary">
-                        <FormattedMessage
-                            id={FM.ENTITYCREATOREDITOR_FIELDS_NEGATABLE_HELPTEXT}
-                            defaultMessage="Can remove or delete values in memory."
-                        /> &nbsp;
-                        {ToolTip.Wrap( 
-                            (<span className="ms-fontColor-themeTertiary">
-                                    <FormattedMessage
-                                        id={FM.ENTITYCREATOREDITOR_FIELDS_TOOLTIPTARGET}
-                                        defaultMessage="More"
-                                    />
-                                </span>),
-                            ToolTip.TipType.ENTITY_NEGATABLE)}
-                    </div>
-                </div>
+                    /></div>),
+                    ToolTip.TipType.ENTITY_NEGATABLE, OF.DirectionalHint.bottomLeftEdge)}
             </div>
         )
     }
