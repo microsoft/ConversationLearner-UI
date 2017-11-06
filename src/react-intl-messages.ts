@@ -79,6 +79,7 @@ export enum FM {
     SETTINGS_DISCARD = 'Settings.discard',
 
     // ToolTip
+    TOOLTIP_ACTION_API = 'ToolTop.ACTION_API',
     TOOLTIP_ACTION_ARGUEMENTS = 'ToolTip.ACTION_ARGUEMENTS',
     TOOLTIP_ACTION_ENTITIES = 'ToolTip.ACTION_ENTITIES',
     TOOLTIP_ACTION_ENTITIES_REQ = 'ToolTip.ACTION_ENTITIES_REQ',
@@ -87,6 +88,7 @@ export enum FM {
     TOOLTIP_ACTION_ENTITIES_BLOCK_NOT = 'ToolTip.ACTION_ENTITIES_BLOCK_NOT',
     TOOLTIP_ACTION_NEGATIVE = 'ToolTip.ACTION_NEGATIVE',
     TOOLTIP_ACTION_RESPONSE = 'ToolTip.ACTION_RESPONSE',
+    TOOLTIP_ACTION_RESPONSE_TEXT = 'ToolTip.ACTION_RESPONSE_TEXT',
     TOOLTIP_ACTION_REQUIRED = 'ToolTip.ACTION_REQUIRED',
     TOOLTIP_ACTION_SCORE = 'ToolTip.ACTION_SCORE',
     TOOLTIP_ACTION_SCORE_PERCENT = 'ToolTip.ACTION_SCORE_PERCENT',
@@ -102,6 +104,7 @@ export enum FM {
     TOOLTIP_ACTION_WAIT = 'ToolTip.ACTION_WAIT',
     TOOLTIP_ENTITY_ACTION_REQUIRED = 'ToolTip.ENTITY_ACTION_REQUIRED',
     TOOLTIP_ENTITY_ACTION_BLOCKED = 'ToolTip.ENTITY_ACTION_BLOCKED',
+    TOOLTIP_ENTITY_EXTRACTOR_WARNING = 'ToolTip.ENTITY_EXTRACTOR_WARNING',
     TOOLTIP_ENTITY_NAME = 'ToolTip.ENTITY_NAME',
     TOOLTIP_ENTITY_VALUE = 'ToolTip.ENTITY_VALUE',
     TOOLTIP_ENTITY_TYPE = 'ToolTip.ENTITY_TYPE',
@@ -342,7 +345,8 @@ export default {
         [FM.SETTINGS_DISCARD]: 'Discard',
 
         // ToolTip
-        [FM.TOOLTIP_ACTION_ARGUEMENTS]: `When action is an API call, the arguements passed to the API. Entity arguements will send value of named entity.`,
+        [FM.TOOLTIP_ACTION_API]: 'APIs exposed in running bot using',
+        [FM.TOOLTIP_ACTION_ARGUEMENTS]: `When Action Type is an API call, a list of comma separated arguements passed to the API. Arguments prefixed with a $ refer to Entity values.  For example: "$city"`,
         [FM.TOOLTIP_ACTION_ENTITIES]: 'Status of Entity requirements for this action:',
         [FM.TOOLTIP_ACTION_ENTITIES_REQ]: 'Required Entity is present',
         [FM.TOOLTIP_ACTION_ENTITIES_REQ_NOT]: 'Required Enitity is missing (DISQUALIFIES ACTION)',
@@ -350,6 +354,7 @@ export default {
         [FM.TOOLTIP_ACTION_ENTITIES_BLOCK_NOT]: 'Blocking Entity is missing',
         [FM.TOOLTIP_ACTION_NEGATIVE]: 'Action will not be selected if Memory contains value for these Entities',
         [FM.TOOLTIP_ACTION_RESPONSE]: 'Value of Response that Bot will take',
+        [FM.TOOLTIP_ACTION_RESPONSE_TEXT]: 'Text the Bot will display to the user.  Prefix text with a $ to substitute Entity values.  For example: "Hi, $name"',
         [FM.TOOLTIP_ACTION_REQUIRED]: 'Action will not be selected unless Memory contains values for these Entities',
         [FM.TOOLTIP_ACTION_SCORE]: 'Score:',
         [FM.TOOLTIP_ACTION_SCORE_PERCENT]: 'BLIS confidence in performing an Action',
@@ -365,6 +370,7 @@ export default {
         [FM.TOOLTIP_ACTION_WAIT]: 'When selected, Bot will wait for more user input before taking another action',
         [FM.TOOLTIP_ENTITY_ACTION_BLOCKED]: `Actions that are blocked from use if this Entity is set`,
         [FM.TOOLTIP_ENTITY_ACTION_REQUIRED]: `Actions that are only employed when this Entity is set`,
+        [FM.TOOLTIP_ENTITY_EXTRACTOR_WARNING]: 'Text Variations must contain the same detected Entities and the primary input text.',
         [FM.TOOLTIP_ENTITY_NAME]: 'Name of the Entity',
         [FM.TOOLTIP_ENTITY_VALUE]: 'What the Bot currently has in Memory for this Entity',
         [FM.TOOLTIP_ENTITY_TYPE]: 'Type of Entity: CUSTOM or name existing of Pre-Built Entity',

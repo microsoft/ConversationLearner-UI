@@ -318,20 +318,14 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                             id={FM.ENTITYCREATOREDITOR_FIELDS_PROGRAMMATICONLY_HELPTEXT}
                             defaultMessage="Entity only set by code."
                         />&nbsp;
-                        <OF.TooltipHost
-                            tooltipProps={{
-                                onRenderContent: () => { return ToolTip.GetTip(ToolTip.TipType.ENTITY_PROGAMMATIC) }
-                            }}
-                            delay={OF.TooltipDelay.medium}
-                            directionalHint={OF.DirectionalHint.bottomCenter}
-                        >
-                            <span className="ms-fontColor-themeTertiary">
+                        {ToolTip.Wrap( 
+                            (<span className="ms-fontColor-themeTertiary">
                                 <FormattedMessage
                                     id={FM.ENTITYCREATOREDITOR_FIELDS_TOOLTIPTARGET}
                                     defaultMessage="More"
                                 />
-                            </span>
-                        </OF.TooltipHost>
+                            </span>),
+                            ToolTip.TipType.ENTITY_PROGAMMATIC)}
                     </div>
                 </div>
                 <div className="blis-entity-creator-checkbox">
@@ -350,20 +344,14 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                             id={FM.ENTITYCREATOREDITOR_FIELDS_MULTIVALUE_HELPTEXT}
                             defaultMessage="Entity may hold multiple values."
                         />&nbsp;
-                            <OF.TooltipHost
-                                tooltipProps={{
-                                    onRenderContent: () => { return ToolTip.GetTip(ToolTip.TipType.ENTITY_MULTIVALUE) }
-                                }}
-                                delay={OF.TooltipDelay.medium}
-                                directionalHint={OF.DirectionalHint.bottomCenter}
-                            >
-                                <span className="ms-fontColor-themeTertiary">
+                        {ToolTip.Wrap( 
+                            (<span className="ms-fontColor-themeTertiary">
                                     <FormattedMessage
                                         id={FM.ENTITYCREATOREDITOR_FIELDS_TOOLTIPTARGET}
                                         defaultMessage="More"
                                     />
-                                </span>
-                            </OF.TooltipHost>
+                            </span>),
+                            ToolTip.TipType.ENTITY_MULTIVALUE)}
                     </div>
                 </div>
                 <div className="blis-entity-creator-checkbox">
@@ -382,20 +370,14 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                             id={FM.ENTITYCREATOREDITOR_FIELDS_NEGATABLE_HELPTEXT}
                             defaultMessage="Can remove or delete values in memory."
                         /> &nbsp;
-                            <OF.TooltipHost
-                                tooltipProps={{
-                                    onRenderContent: () => { return ToolTip.GetTip(ToolTip.TipType.ENTITY_NEGATABLE) }
-                                }}
-                                delay={OF.TooltipDelay.medium}
-                                directionalHint={OF.DirectionalHint.bottomCenter}
-                            >
-                                <span className="ms-fontColor-themeTertiary">
+                        {ToolTip.Wrap( 
+                            (<span className="ms-fontColor-themeTertiary">
                                     <FormattedMessage
                                         id={FM.ENTITYCREATOREDITOR_FIELDS_TOOLTIPTARGET}
                                         defaultMessage="More"
                                     />
-                                </span>
-                            </OF.TooltipHost>
+                                </span>),
+                            ToolTip.TipType.ENTITY_NEGATABLE)}
                     </div>
                 </div>
             </div>
