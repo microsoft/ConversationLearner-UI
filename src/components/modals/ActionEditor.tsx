@@ -98,7 +98,6 @@ class ActionEditor extends React.Component<Props, ComponentState> {
     state = initialState
 
     componentWillMount() {
-        console.log(`componentWillMount`)
         const { entities, botInfo } = this.props
         let entityTags = entities.map<ITag>(e =>
             ({
@@ -125,8 +124,6 @@ class ActionEditor extends React.Component<Props, ComponentState> {
     }
 
     componentWillReceiveProps(nextProps: Props) {
-        console.log(`ActionEditor.componentWillReceiveProps`)
-
         let nextState: Partial<ComponentState> = {}
 
         if (nextProps.open === true) {
@@ -145,7 +142,6 @@ class ActionEditor extends React.Component<Props, ComponentState> {
                 const selectedNegativeEntityTags = convertEntityIdsToTags(action.negativeEntities, nextProps.entities)
                 const selectedRequiredEntityTags = convertEntityIdsToTags(action.requiredEntities, nextProps.entities)
                 const selectedExpectedEntityTags = convertEntityIdsToTags((action.suggestedEntity ? [action.suggestedEntity] : []), nextProps.entities)
-
 
                 // TODO: If we allow to store raw state of editor then restoring it is very easy
                 // Currently there is issue where we don't know how to recreate the entities from the plain text
@@ -166,8 +162,6 @@ class ActionEditor extends React.Component<Props, ComponentState> {
                             entity
                         }
                     })
-
-                console.log(existingEntityMatches)
 
                 // Get editor state
                 const contentState = ContentState.createFromText(action.payload)
@@ -317,7 +311,6 @@ class ActionEditor extends React.Component<Props, ComponentState> {
     }
 
     onChangedActionType = (actionTypeOption: IDropdownOption) => {
-        console.log(`onChangedActionType: `, actionTypeOption)
         this.setState({
             selectedActionTypeOptionKey: actionTypeOption.key
         })
@@ -345,8 +338,6 @@ class ActionEditor extends React.Component<Props, ComponentState> {
     }
 
     onChangeExpectedEntityTags = (nextTags: ITag[]) => {
-        console.log(`onChangeExpectedEntityTags: `, nextTags)
-
         this.setState((prevState: ComponentState) => {
             const nextState: Partial<ComponentState> = {
                 selectedExpectedEntityTags: nextTags
@@ -381,7 +372,6 @@ class ActionEditor extends React.Component<Props, ComponentState> {
     }
 
     onChangeRequiredEntityTags = (tags: ITag[]) => {
-        console.log(`onChangeRequiredEntityTags: `, tags)
         this.setState({
             selectedRequiredEntityTags: tags
         })
@@ -408,7 +398,6 @@ class ActionEditor extends React.Component<Props, ComponentState> {
     }
 
     onChangeNegativeEntityTags(tags: ITag[]) {
-        console.log(`onChangeNegativeEntityTags: `, tags)
         this.setState({
             selectedNegativeEntityTags: tags
         })
