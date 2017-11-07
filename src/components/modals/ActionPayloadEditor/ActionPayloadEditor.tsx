@@ -2,7 +2,7 @@ import * as React from 'react'
 import { EditorState } from 'draft-js'
 import Editor from 'draft-js-plugins-editor'
 import createMentionPlugin, { defaultSuggestionsFilter } from 'draft-js-mention-plugin'
-// import CustomEntryComponent from './Entry'
+import CustomEntryComponent from './Entry'
 // import CustomMention from './Mention'
 import { IMention } from './mentions'
 import { mentionTrigger, getEntities } from './utilities'
@@ -14,13 +14,13 @@ interface Props {
   allSuggestions: IMention[]
   editorState: EditorState
   placeholder: string
+  disabled: boolean
   onChange: (editorState: EditorState) => void
-  onFocus: () => void
-  onBlur: () => void
 }
 
 interface State {
   suggestions: IMention[]
+  isPayloadFocused: boolean
 }
 
 const mentionPlugin = createMentionPlugin({
@@ -36,7 +36,8 @@ export default class extends React.Component<Props, State> {
   domEditor: any
 
   state = {
-    suggestions: this.props.allSuggestions
+    suggestions: this.props.allSuggestions,
+    isPayloadFocused: false,
   }
 
   setDomEditorRef = (ref: any) => this.domEditor = ref
@@ -60,16 +61,20 @@ export default class extends React.Component<Props, State> {
   }
 
   onFocus = () => {
-    this.props.onFocus()
+    this.setState({
+      isPayloadFocused: true,
+    })
   }
 
   onBlur = () => {
-    this.props.onBlur()
+    this.setState({
+      isPayloadFocused: false,
+    })
   }
 
   render() {
     return (
-      <div className="editor" onClick={this.onClickEditorContainer}>
+      <div className={"editor" + (this.props.disabled ? " editor--disabled" : "") + (this.state.isPayloadFocused ? " editor--active" : "")} onClick={this.onClickEditorContainer}>
         <Editor
           placeholder={this.props.placeholder}
           editorState={this.props.editorState}
@@ -78,11 +83,12 @@ export default class extends React.Component<Props, State> {
           ref={this.setDomEditorRef}
           onFocus={this.onFocus}
           onBlur={this.onBlur}
+          readOnly={this.props.disabled}
         />
         <MentionSuggestions
           onSearchChange={this.onSearchChange}
           suggestions={this.state.suggestions}
-          /* entryComponent={CustomEntryComponent} */
+          entryComponent={CustomEntryComponent}
         />
       </div>
     )

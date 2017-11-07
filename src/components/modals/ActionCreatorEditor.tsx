@@ -1,8 +1,9 @@
 import * as React from 'react'
-import { EditorState, ContentState, Modifier/* , convertToRaw */ } from 'draft-js'
+import { EditorState, ContentState, Modifier } from 'draft-js'
 import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
+import { fetchBotInfoAsync } from '../../actions/fetchActions'
 import { Modal } from 'office-ui-fabric-react/lib/Modal'
 import { ActionBase, ActionTypes, ActionMetaData, BlisAppBase, EntityBase } from 'blis-models'
 import ConfirmDeleteModal from './ConfirmDeleteModal'
@@ -13,7 +14,6 @@ import * as ToolTip from '../ToolTips'
 import * as OF from 'office-ui-fabric-react';
 import { BlisTagItem, IBlisPickerItemProps } from './BlisTagItem'
 
-// Change to force build
 const convertEntityToMention = (entity: EntityBase): IMention =>
     ({
         id: entity.entityId,
@@ -142,16 +142,31 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 const selectedRequiredEntityTags = convertEntityIdsToTags(action.requiredEntities, nextProps.entities)
                 const selectedExpectedEntityTags = convertEntityIdsToTags((action.suggestedEntity ? [action.suggestedEntity] : []), nextProps.entities)
 
+                /**
+                 * Special processing for local API responses:
+                 * TODO: Remove this after schema redesign
+                 * Current this is depending on knowledge that the name of function is the first part of the payload separated by a space
+                 * It should be explicit field of the payload object instead of substring.
+                 */
+                const actionType = action.metadata.actionType
+                let payload = action.payload
+                let selectedApiOptionKey: string | null = null
+
+                if (actionType === ActionTypes.API_LOCAL) {
+                    const splitPayload = action.payload.split(' ')
+                    selectedApiOptionKey = splitPayload[0]
+                    payload = splitPayload.slice(1).join(' ')
+                }
+
                 // TODO: If we allow to store raw state of editor then restoring it is very easy
                 // Currently there is issue where we don't know how to recreate the entities from the plain text
                 // const contentState = convertFromRaw(JSON.parse(action.payload))
 
-                // TODO: Manually create '$mention' entities by using regex and selection?
-                const existingEntityMatches = (action.payload.match(/(\$[\w]+)/g) || [])
+                const existingEntityMatches = (payload.match(/(\$[\w]+)/g) || [])
                     .map(match => {
                         // Get entity name by removing first character '$name' -> 'name'
                         const entityName = match.substring(1)
-                        const startIndex = action.payload.indexOf(match)
+                        const startIndex = payload.indexOf(match)
                         const endIndex = startIndex + match.length
                         const entity = nextProps.entities.find(e => e.entityName === entityName)
 
@@ -163,7 +178,9 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     })
 
                 // Get editor state
-                const contentState = ContentState.createFromText(action.payload)
+
+
+                const contentState = ContentState.createFromText(payload)
                 let editorState = EditorState.createWithContent(contentState)
 
                 /**
@@ -206,12 +223,13 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 editorState = EditorState.moveSelectionToEnd(editorState)
                 editorState = EditorState.moveFocusToEnd(editorState)
 
-                const requiredEntityTagsFromPayload = EditorUtilities.getEntities(editorState).map(convertContentEntityToTag)
+                const requiredEntityTagsFromPayload = EditorUtilities.getEntities(editorState).map(convertContentEntityToTag)             
 
                 nextState = {
                     ...nextState,
                     isPayloadValid: action.payload.length !== 0,
-                    selectedApiOptionKey: action.metadata.actionType,
+                    selectedActionTypeOptionKey: action.metadata.actionType,
+                    selectedApiOptionKey,
                     mentionEditorState: editorState,
                     editorKey: this.state.editorKey + 1,
                     selectedExpectedEntityTags,
@@ -238,14 +256,35 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         })
     }
 
+    onClickSyncAPI() {
+        this.props.fetchBotInfoAsync();
+    }
+
     onClickSubmit = () => {
         const contentState = this.state.mentionEditorState.getCurrentContent()
         // const rawContent = convertToRaw(contentState)
-        const rawText = contentState.getPlainText()
+        let payload = contentState.getPlainText()
+
+        if (this.state.selectedActionTypeOptionKey === ActionTypes.API_LOCAL) {
+            payload = `${this.state.selectedApiOptionKey} ${payload}`
+        }
 
         const newOrEditedAction = new ActionBase({
             actionId: null,
-            payload: rawText, // `${rawText} : ${JSON.stringify(rawContent)}`,
+            /**
+             * Future Idea:
+             * Store compound object with both formats to get best of both
+             * {
+             *   "plainText": rawText,
+             *   "rawContent": rawContent
+             * }
+             * 
+             * This would allow backwards compatible parsing from downstream systems by updating them to look at the plainText field
+             * but this component would load from the rawContent which preserves entity relationships in native format for the editor.
+             * 
+             * Then whenever this component is used to modify content, it would update the plainText before saving to keep them in sync.
+             */
+            payload,
             isTerminal: this.state.isTerminal,
             requiredEntities: this.state.selectedRequiredEntityTags.map<string>(tag => tag.key),
             negativeEntities: this.state.selectedNegativeEntityTags.map<string>(tag => tag.key),
@@ -283,9 +322,10 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
     onConfirmDelete = () => {
         this.setState(
-            { isConfirmDeleteModalOpen: false }, 
-            () => {this.props.onClickDelete(this.props.action)
-        })
+            { isConfirmDeleteModalOpen: false },
+            () => {
+                this.props.onClickDelete(this.props.action)
+            })
     }
 
     onClickCreateEntity = () => {
@@ -427,19 +467,11 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         })
     }
 
-    onBlurPayloadEditor = () => {
-        this.setState({
-            isPayloadFocused: false,
-        })
-    }
-
-    onFocusPayloadEditor = () => {
-        this.setState({
-            isPayloadFocused: true,
-        })
-    }
-
     render() {
+        // Disable payload if action type is local api and we're editing existing action or there are no api callbacks
+        const isPayloadDisabled = this.state.selectedActionTypeOptionKey === ActionTypes.API_LOCAL
+            && (this.state.isEditing || this.state.apiOptions.length === 0)
+
         /**
          * Available Mentions: All entities - expected entity - required entities
          */
@@ -447,7 +479,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             .filter(e => !this.state.selectedExpectedEntityTags.some(t => t.key === e.entityId))
             .filter(e => !this.state.selectedRequiredEntityTags.some(t => t.key === e.entityId))
             .map(convertEntityToMention)
-            
+
         return (
             <Modal
                 isOpen={this.props.open}
@@ -463,71 +495,70 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     <div>
                         {ToolTip.Wrap(
                             (<OF.Dropdown
-                                    label="Action Type"
-                                    options={actionTypeOptions}
-                                    onChanged={acionTypeOption => this.onChangedActionType(acionTypeOption)}
-                                    selectedKey={this.state.selectedActionTypeOptionKey}
-                                    disabled={this.state.isEditing}
+                                label="Action Type"
+                                options={actionTypeOptions}
+                                onChanged={acionTypeOption => this.onChangedActionType(acionTypeOption)}
+                                selectedKey={this.state.selectedActionTypeOptionKey}
+                                disabled={this.state.isEditing}
                             />),
                             ToolTip.TipType.ACTION_TYPE, OF.DirectionalHint.bottomRightEdge)
                         }
 
                         {this.state.selectedActionTypeOptionKey === ActionTypes.API_LOCAL
-                            ? (<div>
+                            && (<div>
                                 {ToolTip.Wrap(
-                                    (<OF.Dropdown
-                                        label="API"
-                                        options={this.state.apiOptions}
-                                        onChanged={apiOption => this.onChangedApiOption(apiOption)}
-                                        selectedKey={this.state.selectedApiOptionKey}
-                                        disabled={this.state.apiOptions.length === 0 || this.state.isEditing}
-                                        placeHolder={this.state.apiOptions.length === 0 ? 'NONE DEFINED' : 'API name...'}
-                                    />), 
+                                    (<div>
+                                        <OF.Dropdown
+                                            className="blis-dropdownWithButton-dropdown"
+                                            label='API'
+                                            options={this.state.apiOptions}
+                                            onChanged={this.onChangedApiOption}
+                                            selectedKey={this.state.selectedApiOptionKey}
+                                            disabled={this.state.apiOptions.length === 0 || this.state.isEditing}
+                                            placeHolder={this.state.apiOptions.length === 0 ? "NONE DEFINED" : "API name..."}
+                                        />
+                                        <div className="blis-dropdownWithButton-buttoncontainer">
+                                            <OF.PrimaryButton
+                                                className="blis-dropdownWithButton-button"
+                                                onClick={() => this.onClickSyncAPI()}
+                                                ariaDescription="Refresh"
+                                                text=""
+                                                iconProps={{ iconName: 'Sync' }}
+                                            />
+                                        </div>
+                                    </div>),
                                     ToolTip.TipType.ACTION_API, OF.DirectionalHint.bottomRightEdge)
                                 }
-                                {/* <TextField
-                                onChanged={this.payloadChanged}
-                                label="Arguments (Comma Separated)"
-                                placeholder="Arguments..."
-                                autoFocus={true}
-                                onFocus={this.payloadIsFocused}
-                                onKeyDown={this.payloadKeyDown}
-                                onBlur={this.payloadBlur}
-                                value={this.state.payloadVal}
-                                disabled={disabled}
-                            /> */}     
-                                {ToolTip.Wrap(
-                                    (<div><OF.TextField
-                                        label="Arguments (Comma Separated)"
-                                        placeholder="Arguments..."
-                                        autoFocus={true}
-                                        disabled={this.state.apiOptions.length === 0 || this.state.isEditing}
-                                    /></div>),
-                                    ToolTip.TipType.ACTION_ARGUMENTS, OF.DirectionalHint.bottomRightEdge)
+                            </div>
+                            )}
+
+                        <div className={(this.state.isPayloadValid ? '' : 'editor--error')}>
+                            {ToolTip.Wrap(
+                                (<div>
+                                    <OF.Label>{this.state.selectedActionTypeOptionKey === ActionTypes.API_LOCAL
+                                        ? "Arguments (Comma Separated)"
+                                        : "Response..."
+                                    }</OF.Label>
+                                    <ActionPayloadEditor
+                                        allSuggestions={getMentionsAvailableForPayload}
+                                        editorState={this.state.mentionEditorState}
+                                        key={this.state.editorKey}
+                                        placeholder={this.state.selectedActionTypeOptionKey === ActionTypes.API_LOCAL ? "Arguments..." : "Phrase..."}
+                                        onChange={this.onChangeMentionEditor}
+                                        disabled={isPayloadDisabled}
+                                    />
+                                </div>),
+                                this.state.selectedActionTypeOptionKey === ActionTypes.API_LOCAL ? ToolTip.TipType.ACTION_ARGUMENTS : ToolTip.TipType.ACTION_RESPONSE_TEXT,
+                                OF.DirectionalHint.bottomRightEdge)
                             }
-                            </div>)
-                            : (<div className={(this.state.isPayloadValid ? '' : 'editor--error') + (this.state.isPayloadFocused ? ' editor--active' : '')}>
-                               {ToolTip.Wrap(
-                                    (<div><OF.Label>Response...</OF.Label>
-                                        <ActionPayloadEditor
-                                            allSuggestions={getMentionsAvailableForPayload}
-                                            editorState={this.state.mentionEditorState}
-                                            key={this.state.editorKey}
-                                            placeholder="Phrase..."
-                                            onChange={this.onChangeMentionEditor}
-                                            onBlur={this.onBlurPayloadEditor}
-                                            onFocus={this.onFocusPayloadEditor}
-                                        /></div>),
-                                    ToolTip.TipType.ACTION_RESPONSE_TEXT, OF.DirectionalHint.bottomRightEdge)
-                                }
-                                {!this.state.isPayloadValid &&
-                                    (<div>
-                                        <p className="ms-TextField-errorMessage css-18uf7rs errorMessage_26f1f271">
-                                            <OF.Icon iconName="Error" /><span aria-live="assertive" data-automation-id="error-message">Response is required</span>
-                                        </p>
-                                    </div>)}
-                            </div>)
-                        }
+                            {!this.state.isPayloadValid &&
+                                (<div>
+                                    <p className="ms-TextField-errorMessage css-18uf7rs errorMessage_26f1f271">
+                                        <OF.Icon iconName="Error" /><span aria-live="assertive" data-automation-id="error-message">Response is required</span>
+                                    </p>
+                                </div>)}
+                        </div>
+
                         {ToolTip.Wrap(
                             (<div><OF.Label>Expected Entity in Response...</OF.Label>
                                 <OF.TagPicker
@@ -645,6 +676,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
+        fetchBotInfoAsync
     }, dispatch);
 }
 const mapStateToProps = (state: State, ownProps: any) => {
