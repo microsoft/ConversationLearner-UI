@@ -223,11 +223,11 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 editorState = EditorState.moveSelectionToEnd(editorState)
                 editorState = EditorState.moveFocusToEnd(editorState)
 
-                const requiredEntityTagsFromPayload = EditorUtilities.getEntities(editorState).map(convertContentEntityToTag)             
+                const requiredEntityTagsFromPayload = EditorUtilities.getEntities(editorState).map(convertContentEntityToTag)
 
                 nextState = {
                     ...nextState,
-                    isPayloadValid: action.payload.length !== 0,
+                    isPayloadValid: actionType === ActionTypes.API_LOCAL || action.payload.length !== 0,
                     selectedActionTypeOptionKey: action.metadata.actionType,
                     selectedApiOptionKey,
                     mentionEditorState: editorState,
@@ -345,7 +345,12 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     }
 
     onChangedActionType = (actionTypeOption: OF.IDropdownOption) => {
+        const isPayloadValid = actionTypeOption.key === ActionTypes.API_LOCAL
+            ? true
+            : this.state.mentionEditorState.getCurrentContent().hasText()
+            
         this.setState({
+            isPayloadValid,
             selectedActionTypeOptionKey: actionTypeOption.key
         })
     }
@@ -457,7 +462,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         const entityTagsFromNewEditorState = EditorUtilities.getEntities(editorState).map(convertContentEntityToTag)
         const selectedRequiredEntityTags = [...entityTagsFromNewEditorState, ...unmatchedRequiredEntityTags]
         const nextContentState = editorState.getCurrentContent()
-        const isPayloadValid = nextContentState.hasText()
+        const isPayloadValid = this.state.selectedActionTypeOptionKey === ActionTypes.API_LOCAL || nextContentState.hasText()
 
         this.setState({
             isPayloadValid,
@@ -628,7 +633,9 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 <div className="blis-modal_footer blis-modal-buttons">
                     <div className="blis-modal-buttons_primary">
                         <OF.PrimaryButton
-                            disabled={!this.state.isPayloadValid}
+                            disabled={this.state.selectedActionTypeOptionKey == ActionTypes.API_LOCAL
+                                ? this.state.selectedApiOptionKey === null
+                                : !this.state.isPayloadValid}
                             onClick={() => this.onClickSubmit()}
                             ariaDescription="Submit"
                             text={this.state.isEditing ? 'Save' : 'Create'}
