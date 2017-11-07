@@ -84,12 +84,20 @@ const ifStringReturnLowerCase = (s: string | number) => {
 }
 
 class AppsList extends React.Component<Props, ComponentState> {
-    state: ComponentState = {
-        isAppCreateModalOpen: false,
-        isConfirmDeleteAppModalOpen: false,
-        appToDelete: null,
-        columns: getColumns(this.props.intl),
-        sortColumn: null
+    constructor(props: Props) {
+        super(props)
+
+        const columns = getColumns(this.props.intl)
+        const defaultSortColumn = columns.find(c => c.key === "appName")
+        defaultSortColumn.isSorted = true
+        
+        this.state = {
+            isAppCreateModalOpen: false,
+            isConfirmDeleteAppModalOpen: false,
+            appToDelete: null,
+            columns,
+            sortColumn: defaultSortColumn
+        }
     }
 
     onConfirmDeleteModal() {
