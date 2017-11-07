@@ -142,15 +142,31 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 const selectedRequiredEntityTags = convertEntityIdsToTags(action.requiredEntities, nextProps.entities)
                 const selectedExpectedEntityTags = convertEntityIdsToTags((action.suggestedEntity ? [action.suggestedEntity] : []), nextProps.entities)
 
+                /**
+                 * Special processing for local API responses:
+                 * TODO: Remove this after schema redesign
+                 * Current this is depending on knowledge that the name of function is the first part of the payload separated by a space
+                 * It should be explicit field of the payload object instead of substring.
+                 */
+                const actionType = action.metadata.actionType
+                let payload = action.payload
+                let selectedApiOptionKey: string | null = null
+
+                if (actionType === ActionTypes.API_LOCAL) {
+                    const splitPayload = action.payload.split(' ')
+                    selectedApiOptionKey = splitPayload[0]
+                    payload = splitPayload.slice(1).join(' ')
+                }
+
                 // TODO: If we allow to store raw state of editor then restoring it is very easy
                 // Currently there is issue where we don't know how to recreate the entities from the plain text
                 // const contentState = convertFromRaw(JSON.parse(action.payload))
 
-                const existingEntityMatches = (action.payload.match(/(\$[\w]+)/g) || [])
+                const existingEntityMatches = (payload.match(/(\$[\w]+)/g) || [])
                     .map(match => {
                         // Get entity name by removing first character '$name' -> 'name'
                         const entityName = match.substring(1)
-                        const startIndex = action.payload.indexOf(match)
+                        const startIndex = payload.indexOf(match)
                         const endIndex = startIndex + match.length
                         const entity = nextProps.entities.find(e => e.entityName === entityName)
 
@@ -162,7 +178,9 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     })
 
                 // Get editor state
-                const contentState = ContentState.createFromText(action.payload)
+
+
+                const contentState = ContentState.createFromText(payload)
                 let editorState = EditorState.createWithContent(contentState)
 
                 /**
@@ -205,16 +223,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 editorState = EditorState.moveSelectionToEnd(editorState)
                 editorState = EditorState.moveFocusToEnd(editorState)
 
-                const requiredEntityTagsFromPayload = EditorUtilities.getEntities(editorState).map(convertContentEntityToTag)
-                const actionType = action.metadata.actionType
-                let selectedApiOptionKey: string | null = null
-
-                /**
-                 * This is hack to extract name of function which is known to be the first part of the payload
-                 */
-                if (actionType === ActionTypes.API_LOCAL) {
-                    selectedApiOptionKey = action.payload.split(' ')[0]
-                }
+                const requiredEntityTagsFromPayload = EditorUtilities.getEntities(editorState).map(convertContentEntityToTag)             
 
                 nextState = {
                     ...nextState,
