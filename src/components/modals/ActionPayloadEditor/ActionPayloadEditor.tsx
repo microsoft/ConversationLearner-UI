@@ -5,7 +5,10 @@ import createMentionPlugin, { defaultSuggestionsFilter } from 'draft-js-mention-
 import CustomEntryComponent from './Entry'
 // import CustomMention from './Mention'
 import { IMention } from './mentions'
+import { TipType } from '../../ToolTips'
 import { mentionTrigger, getEntities } from './utilities'
+import HelpIcon from '../../HelpIcon'
+import * as OF from 'office-ui-fabric-react';
 import './ActionPayloadEditor.css'
 import 'draft-js/dist/Draft.css'
 // import 'draft-js-mention-plugin/lib/plugin.css'
@@ -14,7 +17,9 @@ interface Props {
   allSuggestions: IMention[]
   editorState: EditorState
   placeholder: string
-  disabled: boolean
+  disabled: boolean,
+  label: string, 
+  tipType: TipType
   onChange: (editorState: EditorState) => void
 }
 
@@ -74,22 +79,28 @@ export default class extends React.Component<Props, State> {
 
   render() {
     return (
-      <div className={"editor" + (this.props.disabled ? " editor--disabled" : "") + (this.state.isPayloadFocused ? " editor--active" : "")} onClick={this.onClickEditorContainer}>
-        <Editor
-          placeholder={this.props.placeholder}
-          editorState={this.props.editorState}
-          onChange={this.onChange}
-          plugins={plugins}
-          ref={this.setDomEditorRef}
-          onFocus={this.onFocus}
-          onBlur={this.onBlur}
-          readOnly={this.props.disabled}
-        />
-        <MentionSuggestions
-          onSearchChange={this.onSearchChange}
-          suggestions={this.state.suggestions}
-          entryComponent={CustomEntryComponent}
-        />
+      <div>
+        <OF.Label>
+          {this.props.label}
+          <HelpIcon tipType={this.props.tipType}/>
+        </OF.Label>
+        <div className={'editor' + (this.props.disabled ? ' editor--disabled' : '') + (this.state.isPayloadFocused ? ' editor--active' : '')} onClick={this.onClickEditorContainer}>
+          <Editor
+            placeholder={this.props.placeholder}
+            editorState={this.props.editorState}
+            onChange={this.onChange}
+            plugins={plugins}
+            ref={this.setDomEditorRef}
+            onFocus={this.onFocus}
+            onBlur={this.onBlur}
+            readOnly={this.props.disabled}
+          />
+          <MentionSuggestions
+            onSearchChange={this.onSearchChange}
+            suggestions={this.state.suggestions}
+            entryComponent={CustomEntryComponent}
+          />
+        </div>
       </div>
     )
   }

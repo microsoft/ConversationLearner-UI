@@ -1,8 +1,8 @@
-
 import { ActionObject } from '../types'
 import { AT } from '../types/ActionTypes'
 import { ErrorType, DisplayMode } from '../types/const'
 import { BlisAppBase } from 'blis-models';
+import { TipType } from '../components/ToolTips'
 
 export const setCurrentBLISApp = (key: string, app: BlisAppBase): ActionObject => { 
     return {
@@ -23,6 +23,13 @@ export const setDisplayMode = (displayMode: DisplayMode): ActionObject => {
     return {
         type: AT.SET_DISPLAY_MODE,
         setDisplay: displayMode
+    }
+}
+
+export const setTipType = (tipType: TipType): ActionObject => { 
+    return {
+        type: AT.SET_TIP_TYPE,
+        tipType: tipType
     }
 }
 
