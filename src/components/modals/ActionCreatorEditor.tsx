@@ -42,12 +42,16 @@ const convertEntityIdsToTags = (ids: string[], entities: EntityBase[]): OF.ITag[
 }
 
 const getSuggestedTags = (filterText: string, allTags: OF.ITag[], tagsToExclude: OF.ITag[]): OF.ITag[] => {
-    if (filterText.length === 0) {
-        return []
-    }
+    filterText = (filterText.startsWith(EditorUtilities.mentionTrigger) ? filterText.substring(1) : filterText).trim()
 
-    return allTags
+    const availableTags = allTags
         .filter(tag => !tagsToExclude.some(t => t.key === tag.key))
+
+    if (filterText.length === 0) {
+        return availableTags
+    }
+    
+    return availableTags
         .filter(tag => tag.name.toLowerCase().startsWith(filterText.toLowerCase()))
 }
 
@@ -255,7 +259,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         })
     }
 
-    onClickSyncAPI() {
+    onClickSyncApi() {
         this.props.fetchBotInfoAsync();
     }
 
@@ -495,7 +499,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                         <div className="blis-dropdownWithButton-buttoncontainer">
                                             <OF.PrimaryButton
                                                 className="blis-dropdownWithButton-button"
-                                                onClick={() => this.onClickSyncAPI()}
+                                                onClick={() => this.onClickSyncApi()}
                                                 ariaDescription="Refresh"
                                                 text=""
                                                 iconProps={{ iconName: 'Sync' }}
