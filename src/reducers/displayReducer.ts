@@ -6,7 +6,8 @@ import { DisplayMode } from '../types/const'
 
 const initialState: DisplayState = {
     displayMode: DisplayMode.AppList,
-    displaySpinner: []
+    displaySpinner: [],
+    tipType: null
 };
 
 const spinnerName = function (spinner: string): string {
@@ -27,6 +28,8 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
             return { ...initialState };
         case AT.SET_DISPLAY_MODE:
             return { ...state, displayMode: action.setDisplay };
+        case AT.SET_TIP_TYPE:
+            return { ...state, tipType: action.tipType };
         case AT.CREATE_BLIS_APPLICATION_FULFILLED:
             return { ...state, displaySpinner: removeSpinner(state.displaySpinner, action.type) }
         case AT.SET_CURRENT_BLIS_APP_FULFILLED:

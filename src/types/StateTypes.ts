@@ -8,6 +8,7 @@ import {
 } from 'blis-models';
 import { ErrorType, DisplayMode, DialogMode } from '../types/const'
 import { AT } from '../types/ActionTypes'
+import { TipType } from '../components/ToolTips'
 
 export type ActionState = ActionBase[];
 export type EntityState = EntityBase[];
@@ -49,7 +50,8 @@ export type ChatSessionState = {
 }
 export type DisplayState = {
     displayMode: DisplayMode,
-    displaySpinner: string[]
+    displaySpinner: string[],
+    tipType: TipType
 }
 export type UserState = {
     name: string,

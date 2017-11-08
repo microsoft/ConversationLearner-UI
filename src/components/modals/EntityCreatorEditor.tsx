@@ -6,6 +6,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import * as OF from 'office-ui-fabric-react';
+import * as TC from '../tipComponents/Components'
 import ActionDetailsList from '../ActionDetailsList'
 import { State, PreBuiltEntities } from '../../types';
 import { BlisDropdownOption } from './BlisDropDownOption'
@@ -302,8 +303,8 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                     selectedKey={this.state.entityTypeVal}
                     disabled={this.state.editing || this.props.entityTypeFilter != null}
                 />
-                {ToolTip.Wrap( 
-                    (<div className="blis-entity-creator-checkbox"><OF.Checkbox
+                <div className="blis-entity-creator-checkbox">
+                    <TC.Checkbox
                         label={intl.formatMessage({
                             id: FM.ENTITYCREATOREDITOR_FIELDS_PROGRAMMATICONLY_LABEL,
                             defaultMessage: 'Programmatic Only'
@@ -312,11 +313,11 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                         defaultChecked={this.state.isProgrammaticVal}
                         onChange={this.onChangeProgrammatic}
                         disabled={this.state.editing || this.state.isPrebuilt}
-                    /></div>),
-                    ToolTip.TipType.ENTITY_PROGAMMATIC, OF.DirectionalHint.bottomLeftEdge)}
-                
-                {ToolTip.Wrap( 
-                    (<div className="blis-entity-creator-checkbox"><OF.Checkbox
+                        tipType={ToolTip.TipType.ENTITY_PROGAMMATIC}
+                    />
+                </div>
+                <div className="blis-entity-creator-checkbox">
+                    <TC.Checkbox
                         label={intl.formatMessage({
                             id: FM.ENTITYCREATOREDITOR_FIELDS_MULTIVALUE_LABEL,
                             defaultMessage: 'Multi-valued'
@@ -325,11 +326,11 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                         defaultChecked={this.state.isBucketableVal}
                         onChange={this.onChangeBucketable}
                         disabled={this.state.editing}
-                    /></div>),
-                    ToolTip.TipType.ENTITY_MULTIVALUE, OF.DirectionalHint.bottomLeftEdge)}   
-
-                {ToolTip.Wrap( 
-                    (<div className="blis-entity-creator-checkbox"><OF.Checkbox
+                        tipType={ToolTip.TipType.ENTITY_MULTIVALUE}
+                    />
+                    </div>
+                <div className="blis-entity-creator-checkbox">
+                    <TC.Checkbox
                         label={intl.formatMessage({
                             id: FM.ENTITYCREATOREDITOR_FIELDS_NEGATAABLE_LABEL,
                             defaultMessage: 'Negatable'
@@ -338,8 +339,9 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                         defaultChecked={this.state.isNegatableVal}
                         onChange={this.onChangeReversible}
                         disabled={this.state.editing || this.state.isPrebuilt}
-                    /></div>),
-                    ToolTip.TipType.ENTITY_NEGATABLE, OF.DirectionalHint.bottomLeftEdge)}
+                        tipType={ToolTip.TipType.ENTITY_NEGATABLE}
+                    />
+                </div>
             </div>
         )
     }

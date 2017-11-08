@@ -43,9 +43,18 @@ html {
   font-size: 18px
 }
 
+.blis-icon.ms-Icon--Info {
+  font-size: 12px;
+  margin-left: 8px;
+  color: var(--color-wc-user);
+}
 
 .ms-Icon--Delete:hover, .ms-Icon--Edit:hover{
   cursor: pointer;
+}
+
+.blis-tip.ms-Checkbox{
+  display: inline-block;
 }
 
 
