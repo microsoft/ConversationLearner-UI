@@ -90,21 +90,36 @@ export enum FM {
     TOOLTIP_ACTION_ENTITIES_BLOCK_NOT = 'ToolTip.ACTION_ENTITIES_BLOCK_NOT',
     TOOLTIP_ACTION_NEGATIVE = 'ToolTip.ACTION_NEGATIVE',
     TOOLTIP_ACTION_NEGATIVE_TITLE = 'ToolTip.ACTION_NEGATIVE_TITLE',
+    TOOLTIP_ACTION_NEGATIVE_ROW1 = 'ToolTip.ACTION_NEGATIVE_TITLE_ROW1',
+    TOOLTIP_ACTION_NEGATIVE_ROW2 = 'ToolTip.ACTION_NEGATIVE_TITLE_ROW2',
+    TOOLTIP_ACTION_NEGATIVE_ROW3 = 'ToolTip.ACTION_NEGATIVE_TITLE_ROW3',
+    TOOLTIP_ACTION_NEGATIVE_ROW4 = 'ToolTip.ACTION_NEGATIVE_TITLE_ROW4',
+
     TOOLTIP_ACTION_RESPONSE = 'ToolTip.ACTION_RESPONSE',
-    TOOLTIP_ACTION_RESPONSE_TEXT = 'ToolTip.ACTION_RESPONSE_TEXT',
+    TOOLTIP_ACTION_RESPONSE_TEXT1 = 'ToolTip.ACTION_RESPONSE_TEXT1',
+    TOOLTIP_ACTION_RESPONSE_TEXT2 = 'ToolTip.ACTION_RESPONSE_TEXT2',
+    TOOLTIP_ACTION_RESPONSE_TEXT3 = 'ToolTip.ACTION_RESPONSE_TEXT3',
     TOOLTIP_ACTION_RESPONSE_TEXT_TITLE = 'ToolTip.ACTION_RESPONSE_TEXT_TITLE',
+    TOOLTIP_ACTION_RESPONSE_ROW1 = 'ToolTip.ACTION_RESPONSE_ROW1',
+    TOOLTIP_ACTION_RESPONSE_ROW2 = 'ToolTip.ACTION_RESPONSE_ROW2',
+    TOOLTIP_ACTION_RESPONSE_ROW3 = 'ToolTip.ACTIONRESPONSE_ROW3',
+
     TOOLTIP_ACTION_REQUIRED = 'ToolTip.ACTION_REQUIRED',
     TOOLTIP_ACTION_REQUIRED_TITLE = 'ToolTip.ACTION_REQUIRED_TITLE',
-    TOOLTIP_ACTION_REQUIRED_ROW1 = 'ToolTip.ACTION_REQUIRED_TITLE_ROW1',
-    TOOLTIP_ACTION_REQUIRED_ROW2 = 'ToolTip.ACTION_REQUIRED_TITLE_ROW2',
-    TOOLTIP_ACTION_REQUIRED_ROW3 = 'ToolTip.ACTION_REQUIRED_TITLE_ROW3',
-    TOOLTIP_ACTION_REQUIRED_ROW4 = 'ToolTip.ACTION_REQUIRED_TITLE_ROW4',
+    TOOLTIP_ACTION_REQUIRED_ROW1 = 'ToolTip.ACTION_REQUIRED_ROW1',
+    TOOLTIP_ACTION_REQUIRED_ROW2 = 'ToolTip.ACTION_REQUIRED_ROW2',
+    TOOLTIP_ACTION_REQUIRED_ROW3 = 'ToolTip.ACTION_REQUIRED_ROW3',
+    TOOLTIP_ACTION_REQUIRED_ROW4 = 'ToolTip.ACTION_REQUIRED_ROW4',
     TOOLTIP_ACTION_SCORE = 'ToolTip.ACTION_SCORE',
     TOOLTIP_ACTION_SCORE_PERCENT = 'ToolTip.ACTION_SCORE_PERCENT',
     TOOLTIP_ACTION_SCORE_TRAINING = 'ToolTip.ACTION_SCORE_TRAINING',
     TOOLTIP_ACTION_SCORE_DISQUALIFIED = 'ToolTip.ACTION_SCORE_DISQUALIFIED',
+
     TOOLTIP_ACTION_SUGGESTED = 'ToolTip.ACTION_SUGGESTED',
     TOOLTIP_ACTION_SUGGESTED_TITLE = 'ToolTip.ACTION_SUGGESTED_TITLE',
+    TOOLTIP_ACTION_SUGGESTED_ROW1 = 'ToolTip.ACTION_SUGGESTED_ROW1',
+    TOOLTIP_ACTION_SUGGESTED_ROW2 = 'ToolTip.ACTION_SUGGESTED_ROW2',
+
     TOOLTIP_ACTION_TYPE = 'ToolTip.ACTION_TYPE',
     TOOLTIP_ACTION_TYPE_TITLE = 'ToolTip.ACTION_TYPE_TITLE',
     TOOLTIP_ACTION_TYPE_TEXT = 'ToolTip.ACTION_TYPE.Text',
@@ -121,6 +136,9 @@ export enum FM {
     TOOLTIP_ENTITY_VALUE = 'ToolTip.ENTITY_VALUE',
     TOOLTIP_ENTITY_TYPE = 'ToolTip.ENTITY_TYPE',
     TOOLTIP_EXAMPLE = 'ToolTip.EXAMPLE',
+
+    TOOLTIP_MEMORYMANAGER = 'ToolTip.ACTION_MEMORYMANAGER',
+    TOOLTIP_MEMORYMANAGER_TITLE = 'ToolTip.ACTION_MEMORYMANAGER_TITLE',
 
     // Train Dialogs
     TRAINDIALOGS_TITLE = 'TrainDialogs.title',
@@ -358,7 +376,7 @@ export default {
         [FM.SETTINGS_DISCARD]: 'Discard',
 
         // ToolTip
-        [FM.TOOLTIP_ACTION_API]: 'APIs exposed in running bot using',
+        [FM.TOOLTIP_ACTION_API]: 'APIs exposed in the running Bot of the form:',
         [FM.TOOLTIP_ACTION_API_TITLE]: 'API',
         [FM.TOOLTIP_ACTION_ARGUMENTS]: `When Action Type is an API call, a list of comma separated arguments passed to the API. Arguments prefixed with a $ refer to Entity values.  For example: "$city"`,
         [FM.TOOLTIP_ACTION_ARGUMENTS_TITLE]: `Arguments`,
@@ -367,23 +385,40 @@ export default {
         [FM.TOOLTIP_ACTION_ENTITIES_REQ_NOT]: 'Required Enitity is missing (DISQUALIFIES ACTION)',
         [FM.TOOLTIP_ACTION_ENTITIES_BLOCK]: 'Blocking Entity is present (DISQUALIFIES ACTION)',
         [FM.TOOLTIP_ACTION_ENTITIES_BLOCK_NOT]: 'Blocking Entity is missing',
-        [FM.TOOLTIP_ACTION_NEGATIVE]: 'Action will not be selected if Memory contains value for these Entities',
+
+        [FM.TOOLTIP_ACTION_NEGATIVE]: 'Action will not be selected if Memory already contains value for these Entities',
         [FM.TOOLTIP_ACTION_NEGATIVE_TITLE]: 'Blocking Entities',
+        [FM.TOOLTIP_ACTION_NEGATIVE_ROW1]: '"How would you like to pay?"',
+        [FM.TOOLTIP_ACTION_NEGATIVE_ROW2]: '$paymentDetails',
+        [FM.TOOLTIP_ACTION_NEGATIVE_ROW3]: '"When were you born?"',
+        [FM.TOOLTIP_ACTION_NEGATIVE_ROW4]: '$birthdate',
+
         [FM.TOOLTIP_ACTION_RESPONSE]: 'Value of Response that Bot will take',
-        [FM.TOOLTIP_ACTION_RESPONSE_TEXT]: 'Text the Bot will display to the user.  Prefix text with a $ to substitute Entity values.  For example: "Hi, $name"',
+        [FM.TOOLTIP_ACTION_RESPONSE_TEXT1]: 'Text the Bot will display to the user.',
+        [FM.TOOLTIP_ACTION_RESPONSE_TEXT2]: 'Prefix text with a $ to substitute Entity values.',
+        [FM.TOOLTIP_ACTION_RESPONSE_TEXT3]: 'Text contained in brackets (i.e. []) will only be displayed if all contained entities have values.',
         [FM.TOOLTIP_ACTION_RESPONSE_TEXT_TITLE]: 'Response',
+        [FM.TOOLTIP_ACTION_RESPONSE_ROW1]: '"How can I help you?"',
+        [FM.TOOLTIP_ACTION_RESPONSE_ROW2]: '"You have $toppings on your pizza."',
+        [FM.TOOLTIP_ACTION_RESPONSE_ROW3]: '"Hi[, $name]"',
+
         [FM.TOOLTIP_ACTION_REQUIRED]: 'Action will not be selected unless Memory contains values for these Entities',
         [FM.TOOLTIP_ACTION_REQUIRED_TITLE]: 'Required Entities',
         [FM.TOOLTIP_ACTION_REQUIRED_ROW1]: '"How would you like to pay?"',
-        [FM.TOOLTIP_ACTION_REQUIRED_ROW2]: '$orderDetails',
+        [FM.TOOLTIP_ACTION_REQUIRED_ROW2]: '$orderDetails $address',
         [FM.TOOLTIP_ACTION_REQUIRED_ROW3]: '"Hi, $name"',
         [FM.TOOLTIP_ACTION_REQUIRED_ROW4]: '$name',
+
         [FM.TOOLTIP_ACTION_SCORE]: 'Score:',
         [FM.TOOLTIP_ACTION_SCORE_PERCENT]: 'BLIS confidence in performing an Action',
         [FM.TOOLTIP_ACTION_SCORE_TRAINING]: `Action can't be scored yet as BLIS is still training`,
-        [FM.TOOLTIP_ACTION_SCORE_DISQUALIFIED]: 'Action has been disqualified - Required Entities are missing or Blocked Entites are present',
+        [FM.TOOLTIP_ACTION_SCORE_DISQUALIFIED]: 'Action has been disqualified - Required Entities are missing or Blocked Entites are present', 
+
         [FM.TOOLTIP_ACTION_SUGGESTED]: `Hint to BLIS that the user's reply to this Action will likely be a value for this Entity`,
         [FM.TOOLTIP_ACTION_SUGGESTED_TITLE]: 'Expected Response',
+        [FM.TOOLTIP_ACTION_SUGGESTED_ROW1]: '"What is your name?"',
+        [FM.TOOLTIP_ACTION_SUGGESTED_ROW2]: '$name',
+
         [FM.TOOLTIP_ACTION_TYPE]: 'One of the following:',
         [FM.TOOLTIP_ACTION_TYPE_TITLE]: 'Action Type',
         [FM.TOOLTIP_ACTION_TYPE_TEXT]: 'A text response',
@@ -400,6 +435,9 @@ export default {
         [FM.TOOLTIP_ENTITY_VALUE]: 'What the Bot currently has in Memory for this Entity',
         [FM.TOOLTIP_ENTITY_TYPE]: 'Type of Entity: CUSTOM or name existing of Pre-Built Entity',
         [FM.TOOLTIP_EXAMPLE]: 'For Example:',
+
+        [FM.TOOLTIP_MEMORYMANAGER]: `The memory manager provides the following functions for manipulating the Bot's memory:`,
+        [FM.TOOLTIP_MEMORYMANAGER_TITLE]: 'Memory Manager',
 
         // Train Dialogs
         [FM.TRAINDIALOGS_TITLE]: 'Train Dialogs',

@@ -3,6 +3,7 @@ import * as OF from 'office-ui-fabric-react';
 import { FormattedMessage } from 'react-intl'
 import { FM } from '../react-intl-messages'
 import { MemoryValue } from 'blis-models'
+import HelpLink from '../components/HelpLink'
 import './ToolTips.css'
 
 export enum TipType {
@@ -27,6 +28,8 @@ export enum TipType {
     ENTITY_PROGAMMATIC = 'isProgrammatic',
     ENTITY_TYPE = 'entityType', 
     ENTITY_VALUE = 'entityValues',  
+
+    MEMORY_MANAGER = 'memoryManager'
 }
 
 export function onRenderDetailsHeader(detailsHeaderProps: OF.IDetailsHeaderProps, defaultRender: OF.IRenderFunction<OF.IDetailsHeaderProps>) {
@@ -80,17 +83,63 @@ export function Wrap(content: JSX.Element, tooltip: string, directionalHint: OF.
     );
 }
 
+let apiCodeSample = 
+`blisdk.APICallback("Multiply", async (memoryManager, argArray) =>
+{
+    try {
+        var num1 = parseInt(argArray[0]);
+        var num2 = parseInt(argArray[1]);
+        var product = num1*num2;
+        return product.toString();
+    }
+    catch (err)
+    {
+        return "Invalid number";
+    }
+})`;
+
+let memoryManagerSample = 
+`async RememberEntityAsync(entityName : string, value : string) 
+    -> Promise<void> 
+
+async ForgetEntityAsync(entityName : string, value : string = null) 
+    -> Promise<void> 
+ 
+async CopyEntityAsync(entityNameFrom : string, entityNameTo: string) 
+    -> Promise<void> 
+ 
+async EntityValueAsync(entityName : string) 
+    -> Promise<string> 
+
+async EntityValueAsPrebuiltAsync(entityName : string) 
+    -> Promise<MemoryValue[]> 
+
+async EntityValueAsListAsync(entityName : string) 
+    -> Promise<string[]> 
+
+async GetFilledEntitiesAsync() 
+    -> Promise<string[]> 
+
+async AppNameAsync() 
+    -> Promise<string> 
+`;
+
 export function GetTip(tipType: string) {
     switch (tipType) {
         case TipType.ACTION_API:
         return (
             <div>
-                {render(FM.TOOLTIP_ACTION_API_TITLE, FM.TOOLTIP_ACTION_API)}
-                <div><br/>blisdk.APICallback("[API NAME}], async (memoryManager, argArray) => [API BODY])</div>
+                {render(FM.TOOLTIP_ACTION_API_TITLE, [FM.TOOLTIP_ACTION_API])}
+                <div><br/>blisdk.APICallback("<i>[API NAME]</i>", async (memoryManager, argArray) => <i>[API BODY]</i>)</div>
+                <div className="blis-tooltop-example"><FormattedMessage id={FM.TOOLTIP_EXAMPLE}/></div>
+                <pre>{apiCodeSample}</pre>
+                <div className="blis-tooltop-example"><FormattedMessage id={FM.TOOLTIP_ACTION_ARGUMENTS_TITLE}/></div>
+                <div>$number1 $number2<br/></div>
+                <div><br/>More about the <HelpLink label="Memory Manager" tipType={TipType.MEMORY_MANAGER}/></div>
             </div>
             ) 
         case TipType.ACTION_ARGUMENTS:  
-            return render(FM.TOOLTIP_ACTION_ARGUMENTS_TITLE, FM.TOOLTIP_ACTION_ARGUMENTS)     
+            return render(FM.TOOLTIP_ACTION_ARGUMENTS_TITLE, [FM.TOOLTIP_ACTION_ARGUMENTS])     
         case TipType.ACTION_ENTITIES:
             return (
                 <div>
@@ -108,11 +157,21 @@ export function GetTip(tipType: string) {
                 </div>
             )             
         case TipType.ACTION_NEGATIVE:
-            return render(FM.TOOLTIP_ACTION_NEGATIVE_TITLE, FM.TOOLTIP_ACTION_NEGATIVE);        
+            return render(
+                FM.TOOLTIP_ACTION_NEGATIVE_TITLE, 
+                [FM.TOOLTIP_ACTION_NEGATIVE],
+                FM.TOOLTIP_EXAMPLE,
+                [
+                    {key: 'Response:', value: FM.TOOLTIP_ACTION_NEGATIVE_ROW1},
+                    {key: 'Blocking:', value: FM.TOOLTIP_ACTION_NEGATIVE_ROW2},
+                    {key: '--', value: null},
+                    {key: 'Response:', value: FM.TOOLTIP_ACTION_NEGATIVE_ROW3},
+                    {key: 'Blocking:', value: FM.TOOLTIP_ACTION_NEGATIVE_ROW4}
+                ]);    
         case TipType.ACTION_REQUIRED:
             return render(
                 FM.TOOLTIP_ACTION_REQUIRED_TITLE, 
-                FM.TOOLTIP_ACTION_REQUIRED,
+                [FM.TOOLTIP_ACTION_REQUIRED],
                 FM.TOOLTIP_EXAMPLE,
                 [
                     {key: 'Response:', value: FM.TOOLTIP_ACTION_REQUIRED_ROW1},
@@ -124,8 +183,18 @@ export function GetTip(tipType: string) {
         case TipType.ACTION_RESPONSE:
             return (<FormattedMessage id={FM.TOOLTIP_ACTION_RESPONSE} defaultMessage="Response"/>)
         case TipType.ACTION_RESPONSE_TEXT:
-            return render(FM.TOOLTIP_ACTION_RESPONSE_TEXT_TITLE, FM.TOOLTIP_ACTION_RESPONSE_TEXT);    
-        case TipType.ACTION_SCORE:
+            return render(
+                FM.TOOLTIP_ACTION_RESPONSE_TEXT_TITLE, 
+                [FM.TOOLTIP_ACTION_RESPONSE_TEXT1, FM.TOOLTIP_ACTION_RESPONSE_TEXT2, FM.TOOLTIP_ACTION_RESPONSE_TEXT3],
+                FM.TOOLTIP_EXAMPLE,
+                [
+                    {key: 'Response:', value: FM.TOOLTIP_ACTION_RESPONSE_ROW1},
+                    {key: '--', value: null},
+                    {key: 'Response:', value: FM.TOOLTIP_ACTION_RESPONSE_ROW2},
+                    {key: '--', value: null},
+                    {key: 'Response:', value: FM.TOOLTIP_ACTION_RESPONSE_ROW3}
+                ]);   
+        case TipType.ACTION_SCORE: 
             return (
                 <div>
                     <FormattedMessage id={FM.TOOLTIP_ACTION_SCORE} defaultMessage="Response"/>
@@ -137,11 +206,18 @@ export function GetTip(tipType: string) {
                 </div>
             )      
         case TipType.ACTION_SUGGESTED:
-            return render(FM.TOOLTIP_ACTION_SUGGESTED_TITLE, FM.TOOLTIP_ACTION_SUGGESTED);
+            return render(
+                FM.TOOLTIP_ACTION_SUGGESTED_TITLE, 
+                [FM.TOOLTIP_ACTION_SUGGESTED],
+                FM.TOOLTIP_EXAMPLE,
+                [
+                    {key: 'Response:', value: FM.TOOLTIP_ACTION_SUGGESTED_ROW1},
+                    {key: 'Expected:', value: FM.TOOLTIP_ACTION_SUGGESTED_ROW2}
+                ]);   
         case TipType.ACTION_TYPE:
             return render(
                 FM.TOOLTIP_ACTION_TYPE_TITLE, 
-                FM.TOOLTIP_ACTION_TYPE,
+                [FM.TOOLTIP_ACTION_TYPE],
                 null,
                 [
                     {key: 'Text:', value: FM.TOOLTIP_ACTION_TYPE_TEXT},
@@ -151,7 +227,7 @@ export function GetTip(tipType: string) {
                     {key: 'Card:', value: FM.TOOLTIP_ACTION_TYPE_CARD}
                 ]);
         case TipType.ACTION_WAIT:
-            return render(FM.TOOLTIP_ACTION_WAIT_TITLE, FM.TOOLTIP_ACTION_WAIT);
+            return render(FM.TOOLTIP_ACTION_WAIT_TITLE, [FM.TOOLTIP_ACTION_WAIT]);
         case TipType.ENTITY_NAME:
             return (<FormattedMessage id={FM.TOOLTIP_ENTITY_NAME} defaultMessage="Wait"/>);
         case TipType.ENTITY_ACTION_BLOCKED:
@@ -200,26 +276,34 @@ export function GetTip(tipType: string) {
             )
         case TipType.ENTITY_TYPE:
             return (<FormattedMessage id={FM.TOOLTIP_ENTITY_TYPE} defaultMessage="Wait"/>)
+        case TipType.MEMORY_MANAGER:
+            return (
+                <div>
+                    {render(FM.TOOLTIP_MEMORYMANAGER_TITLE, [FM.TOOLTIP_MEMORYMANAGER])}
+                    <pre>{memoryManagerSample}</pre>
+                </div>
+                ) 
         default:
             return (<div>{tipType}</div>);
     }
 }
 
-function render(title: FM, body: FM, example: string = null, tableItems: {key: string, value: FM}[] = []): JSX.Element {
+function render(title: FM, body: FM[], example: string = null, tableItems: {key: string, value: FM}[] = []): JSX.Element {
+    let key = 0;
     return (
         <div>
-            <div className="blis-tooltop-headerText"><FormattedMessage id={title}/></div>
-            <FormattedMessage id={body}/>
+            <div className="blis-tooltop-headerText"><FormattedMessage id={title}/></div> 
+            {body.map(b => {return (<div key={key++}><FormattedMessage id={b}/><br/></div>)})}
             {example &&
                 <div className="blis-tooltop-example"><FormattedMessage id={example}/></div>}
             {tableItems.length > 0 ? 
                 (
                     <dl className="blis-tooltip-example">
-                        <dt>{tableItems[0] && tableItems[0].key}</dt><dd>{tableItems[0].value && <FormattedMessage id={tableItems[0].value}/>}</dd>
-                        <dt>{tableItems[1] && tableItems[1].key}</dt><dd>{tableItems[1].value && <FormattedMessage id={tableItems[1].value}/>}</dd>
-                        <dt>{tableItems[2] ? tableItems[2].key : <br/>}</dt><dd>{tableItems[2].value && <FormattedMessage id={tableItems[2].value}/>}</dd>
-                        <dt>{tableItems[3] && tableItems[3].key}</dt><dd>{tableItems[3].value && <FormattedMessage id={tableItems[3].value}/>}</dd>
-                        <dt>{tableItems[4] && tableItems[4].key}</dt><dd>{tableItems[4].value && <FormattedMessage id={tableItems[4].value}/>}</dd>              
+                        <dt>{tableItems[0] && tableItems[0].key}</dt><dd>{tableItems[0] && tableItems[0].value && <FormattedMessage id={tableItems[0].value}/>}</dd>
+                        <dt>{tableItems[1] && tableItems[1].key}</dt><dd>{tableItems[1] && tableItems[1].value && <FormattedMessage id={tableItems[1].value}/>}</dd>
+                        <dt>{tableItems[2] && tableItems[2].key}</dt><dd>{tableItems[2] && tableItems[2].value && <FormattedMessage id={tableItems[2].value}/>}</dd>
+                        <dt>{tableItems[3] && tableItems[3].key}</dt><dd>{tableItems[3] && tableItems[3].value && <FormattedMessage id={tableItems[3].value}/>}</dd>
+                        <dt>{tableItems[4] && tableItems[4].key}</dt><dd>{tableItems[4] && tableItems[4].value && <FormattedMessage id={tableItems[4].value}/>}</dd>              
                     </dl>
                 ) : null
             }
