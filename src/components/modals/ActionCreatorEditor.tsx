@@ -543,7 +543,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                             />
                         </div>
                         <div>
-                            <TC.TagPicker
+                            <BlisTagPicker
+                                nonRemovableTags={this.state.requiredEntityTagsFromPayload}
                                 label="Required Entities"
                                 onResolveSuggestions={(text, tags) => this.onResolveRequiredEntityTags(text, tags)}
                                 onRenderItem={this.onRenderRequiredEntityTag}
@@ -561,7 +562,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                         </div>
 
                         <div>
-                            <TC.TagPicker
+                            <BlisTagPicker
+                                nonRemovableTags={this.state.expectedEntityTags}
                                 label="Blocking Entities"
                                 onResolveSuggestions={(text, tags) => this.onResolveNegativeEntityTags(text, tags)}
                                 onRenderItem={this.onRenderNegativeEntityTag}

@@ -21,8 +21,7 @@ class HelpPanel extends React.Component<Props, {}> {
                 isOpen={this.props.tipType != null}
                 isLightDismiss={true}
                 onDismiss={() => {this.onDismiss()}}
-               // type={OF.PanelType.smallFixedFar}
-                type={OF.PanelType.custom}
+                type={OF.PanelType.medium}
                 customWidth="400px"
                 closeButtonAriaLabel="Close"
             >
