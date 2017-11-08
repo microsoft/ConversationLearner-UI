@@ -11,6 +11,7 @@ import EntityCreatorEditor from './EntityCreatorEditor'
 import ActionPayloadEditor, { utilities as EditorUtilities, IMention } from './ActionPayloadEditor'
 import { State } from '../../types'
 import * as ToolTip from '../ToolTips'
+import * as TC from '../tipComponents/Components'
 import * as OF from 'office-ui-fabric-react';
 import { BlisTagItem, IBlisPickerItemProps } from './BlisTagItem'
 
@@ -178,8 +179,6 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     })
 
                 // Get editor state
-
-
                 const contentState = ContentState.createFromText(payload)
                 let editorState = EditorState.createWithContent(contentState)
 
@@ -368,7 +367,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     onRenderExpectedTag = (props: IBlisPickerItemProps<OF.ITag>): JSX.Element => {
         const renderProps = { ...props }
         renderProps.highlight = true
-        return <BlisTagItem { ...renderProps }>{props.item.name}</BlisTagItem>
+        return <BlisTagItem{...renderProps}>{props.item.name}</BlisTagItem>
     }
 
     onChangeExpectedEntityTags = (nextTags: OF.ITag[]) => {
@@ -493,64 +492,54 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
                 <div className="blis-modal_body">
                     <div>
-                        {ToolTip.Wrap(
-                            (<OF.Dropdown
-                                label="Action Type"
-                                options={actionTypeOptions}
-                                onChanged={acionTypeOption => this.onChangedActionType(acionTypeOption)}
-                                selectedKey={this.state.selectedActionTypeOptionKey}
-                                disabled={this.state.isEditing}
-                            />),
-                            ToolTip.TipType.ACTION_TYPE, OF.DirectionalHint.bottomRightEdge)
-                        }
-
+                        <TC.Dropdown
+                            label="Action Type"
+                            options={actionTypeOptions}
+                            onChanged={acionTypeOption => this.onChangedActionType(acionTypeOption)}
+                            selectedKey={this.state.selectedActionTypeOptionKey}
+                            disabled={this.state.isEditing}
+                            tipType={ToolTip.TipType.ACTION_TYPE}
+                        />
                         {this.state.selectedActionTypeOptionKey === ActionTypes.API_LOCAL
                             && (<div>
-                                {ToolTip.Wrap(
-                                    (<div>
-                                        <OF.Dropdown
-                                            className="blis-dropdownWithButton-dropdown"
-                                            label='API'
-                                            options={this.state.apiOptions}
-                                            onChanged={this.onChangedApiOption}
-                                            selectedKey={this.state.selectedApiOptionKey}
-                                            disabled={this.state.apiOptions.length === 0 || this.state.isEditing}
-                                            placeHolder={this.state.apiOptions.length === 0 ? "NONE DEFINED" : "API name..."}
-                                        />
-                                        <div className="blis-dropdownWithButton-buttoncontainer">
-                                            <OF.PrimaryButton
-                                                className="blis-dropdownWithButton-button"
-                                                onClick={() => this.onClickSyncAPI()}
-                                                ariaDescription="Refresh"
-                                                text=""
-                                                iconProps={{ iconName: 'Sync' }}
-                                            />
-                                        </div>
-                                    </div>),
-                                    ToolTip.TipType.ACTION_API, OF.DirectionalHint.bottomRightEdge)
-                                }
+                                <TC.Dropdown
+                                    label="API"
+                                    className="blis-dropdownWithButton-dropdown"
+                                    options={this.state.apiOptions}
+                                    onChanged={this.onChangedApiOption}
+                                    selectedKey={this.state.selectedApiOptionKey}
+                                    disabled={this.state.apiOptions.length === 0 || this.state.isEditing}
+                                    placeHolder={this.state.apiOptions.length === 0 ? 'NONE DEFINED' : 'API name...'}
+                                    tipType={ToolTip.TipType.ACTION_API}
+                                    hasButton={true}
+                                />
+                                <div className="blis-dropdownWithButton-buttoncontainer">
+                                    <OF.PrimaryButton
+                                        className="blis-dropdownWithButton-button"
+                                        onClick={() => this.onClickSyncAPI()}
+                                        ariaDescription="Refresh"
+                                        text=""
+                                        iconProps={{ iconName: 'Sync' }}
+                                    />
+                                </div>
                             </div>
                             )}
 
                         <div className={(this.state.isPayloadValid ? '' : 'editor--error')}>
-                            {ToolTip.Wrap(
-                                (<div>
-                                    <OF.Label>{this.state.selectedActionTypeOptionKey === ActionTypes.API_LOCAL
-                                        ? "Arguments (Comma Separated)"
-                                        : "Response..."
-                                    }</OF.Label>
-                                    <ActionPayloadEditor
-                                        allSuggestions={getMentionsAvailableForPayload}
-                                        editorState={this.state.mentionEditorState}
-                                        key={this.state.editorKey}
-                                        placeholder={this.state.selectedActionTypeOptionKey === ActionTypes.API_LOCAL ? "Arguments..." : "Phrase..."}
-                                        onChange={this.onChangeMentionEditor}
-                                        disabled={isPayloadDisabled}
-                                    />
-                                </div>),
-                                this.state.selectedActionTypeOptionKey === ActionTypes.API_LOCAL ? ToolTip.TipType.ACTION_ARGUMENTS : ToolTip.TipType.ACTION_RESPONSE_TEXT,
-                                OF.DirectionalHint.bottomRightEdge)
-                            }
+                            <div>
+                                <ActionPayloadEditor
+                                    label={this.state.selectedActionTypeOptionKey === ActionTypes.API_LOCAL ? 
+                                        'Arguments (Comma Separated)' : 'Response...'}
+                                    allSuggestions={getMentionsAvailableForPayload}
+                                    editorState={this.state.mentionEditorState}
+                                    key={this.state.editorKey}
+                                    placeholder={this.state.selectedActionTypeOptionKey === ActionTypes.API_LOCAL ? "Arguments..." : "Phrase..."}
+                                    onChange={this.onChangeMentionEditor}
+                                    disabled={isPayloadDisabled}
+                                    tipType={this.state.selectedActionTypeOptionKey === ActionTypes.API_LOCAL ? 
+                                        ToolTip.TipType.ACTION_ARGUMENTS : ToolTip.TipType.ACTION_RESPONSE_TEXT}
+                                />
+                            </div>
                             {!this.state.isPayloadValid &&
                                 (<div>
                                     <p className="ms-TextField-errorMessage css-18uf7rs errorMessage_26f1f271">
@@ -558,70 +547,71 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                     </p>
                                 </div>)}
                         </div>
+       
+                        <div>
+                            <TC.TagPicker
+                                label="Expected Entity in Response..."
+                                onResolveSuggestions={(text, tags) => this.onResolveExpectedEntityTags(text, tags)}
+                                onRenderItem={this.onRenderExpectedTag}
+                                getTextFromItem={item => item.name}
+                                onChange={tags => this.onChangeExpectedEntityTags(tags)}
+                                pickerSuggestionsProps={
+                                    {
+                                        suggestionsHeaderText: 'Entities',
+                                        noResultsFoundText: 'No Entities Found'
+                                    }
+                                }
+                                selectedItems={this.state.selectedExpectedEntityTags}
+                                tipType={ToolTip.TipType.ACTION_SUGGESTED}
+                            />
+                        </div>
+                        <div>
+                            <TC.TagPicker
+                                label="Required Entities"
+                                onResolveSuggestions={(text, tags) => this.onResolveRequiredEntityTags(text, tags)}
+                                onRenderItem={this.onRenderRequiredEntityTag}
+                                getTextFromItem={item => item.name}
+                                onChange={tags => this.onChangeRequiredEntityTags(tags)}
+                                pickerSuggestionsProps={
+                                    {
+                                        suggestionsHeaderText: 'Entities',
+                                        noResultsFoundText: 'No Entities Found'
+                                    }
+                                }
+                                selectedItems={this.state.selectedRequiredEntityTags}
+                                tipType={ToolTip.TipType.ACTION_REQUIRED}
+                            />
+                        </div>
 
-                        {ToolTip.Wrap(
-                            (<div><OF.Label>Expected Entity in Response...</OF.Label>
-                                <OF.TagPicker
-                                    onResolveSuggestions={(text, tags) => this.onResolveExpectedEntityTags(text, tags)}
-                                    onRenderItem={this.onRenderExpectedTag}
-                                    getTextFromItem={item => item.name}
-                                    onChange={tags => this.onChangeExpectedEntityTags(tags)}
-                                    pickerSuggestionsProps={
-                                        {
-                                            suggestionsHeaderText: 'Entities',
-                                            noResultsFoundText: 'No Entities Found'
-                                        }
+                        <div>
+                            <TC.TagPicker
+                                label="Blocking Entities"
+                                onResolveSuggestions={(text, tags) => this.onResolveNegativeEntityTags(text, tags)}
+                                onRenderItem={this.onRenderNegativeEntityTag}
+                                getTextFromItem={item => item.name}
+                                onChange={tags => this.onChangeNegativeEntityTags(tags)}
+                                pickerSuggestionsProps={
+                                    {
+                                        suggestionsHeaderText: 'Entities',
+                                        noResultsFoundText: 'No Entities Found'
                                     }
-                                    selectedItems={this.state.selectedExpectedEntityTags}
-                                /></div>),
-                            ToolTip.TipType.ACTION_SUGGESTED, OF.DirectionalHint.bottomRightEdge)
-                        }
-                        {ToolTip.Wrap(
-                            (<div><OF.Label>Required Entities</OF.Label>
-                                <OF.TagPicker
-                                    onResolveSuggestions={(text, tags) => this.onResolveRequiredEntityTags(text, tags)}
-                                    onRenderItem={this.onRenderRequiredEntityTag}
-                                    getTextFromItem={item => item.name}
-                                    onChange={tags => this.onChangeRequiredEntityTags(tags)}
-                                    pickerSuggestionsProps={
-                                        {
-                                            suggestionsHeaderText: 'Entities',
-                                            noResultsFoundText: 'No Entities Found'
-                                        }
-                                    }
-                                    selectedItems={this.state.selectedRequiredEntityTags}
-                                /></div>),
-                            ToolTip.TipType.ACTION_REQUIRED, OF.DirectionalHint.bottomRightEdge)
-                        }
-                        {ToolTip.Wrap(
-                            (<div><OF.Label>Blocking Entities</OF.Label>
-                                <OF.TagPicker
-                                    onResolveSuggestions={(text, tags) => this.onResolveNegativeEntityTags(text, tags)}
-                                    onRenderItem={this.onRenderNegativeEntityTag}
-                                    getTextFromItem={item => item.name}
-                                    onChange={tags => this.onChangeNegativeEntityTags(tags)}
-                                    pickerSuggestionsProps={
-                                        {
-                                            suggestionsHeaderText: 'Entities',
-                                            noResultsFoundText: 'No Entities Found'
-                                        }
-                                    }
-                                    selectedItems={this.state.selectedNegativeEntityTags}
-                                /></div>),
-                            ToolTip.TipType.ACTION_NEGATIVE, OF.DirectionalHint.bottomRightEdge)
-                        }
+                                }
+                                selectedItems={this.state.selectedNegativeEntityTags}
+                                tipType={ToolTip.TipType.ACTION_NEGATIVE}
+                            />
+                        </div>
 
                         <br />
-                        {ToolTip.Wrap(
-                            (<div><OF.Checkbox
-                                label="Wait For Response?"
+                        <div>
+                            <TC.Checkbox
+                                label="Wait for Response?"
                                 defaultChecked={true}
                                 onChange={() => this.onChangeWaitCheckbox()}
                                 style={{ marginTop: '1em', display: 'inline-block' }}
                                 disabled={this.state.isEditing}
-                            /></div>),
-                            ToolTip.TipType.ACTION_WAIT, OF.DirectionalHint.bottomLeftEdge)
-                        }
+                                tipType={ToolTip.TipType.ACTION_WAIT}
+                            />
+                        </div>
                     </div>
                 </div>
 

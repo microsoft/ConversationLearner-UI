@@ -5,3 +5,11 @@
 .blis-tooltip-example dt {
     margin: 0;
 }
+
+.blis-tooltop-headerText {
+    font-size: 21px;
+    font-weight: 100;
+    color: #333333;
+    line-height: 32px;
+    margin-bottom: 20px;
+}

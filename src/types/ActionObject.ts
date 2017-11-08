@@ -8,6 +8,7 @@ import {
     UIExtractResponse, UITrainScorerStep,
     UITeachResponse, UIScoreInput, UIScoreResponse
 } from 'blis-models'
+import { TipType } from '../components/ToolTips'
 import { ErrorType, DisplayMode } from '../types/const'
 import { AT } from '../types/ActionTypes'
 
@@ -49,6 +50,10 @@ export type DisplayAction = {
 } | {
     type: AT.SET_CURRENT_BLIS_APP_FULFILLED,
     app: BlisAppBase
+} | {
+    // used for setting what tool tip is displayed
+    type: AT.SET_TIP_TYPE,
+    tipType: TipType,
 } | {
     // used for setting whether the app list or app homepage (Index) is displayed
     type: AT.SET_DISPLAY_MODE,
