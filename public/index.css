@@ -49,6 +49,10 @@ html {
   color: var(--color-wc-user);
 }
 
+.blis-link {
+  color: var(--color-wc-user);
+}
+
 .ms-Icon--Delete:hover, .ms-Icon--Edit:hover{
   cursor: pointer;
 }
