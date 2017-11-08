@@ -13,6 +13,8 @@ import { State } from '../../types'
 import * as ToolTip from '../ToolTips'
 import * as OF from 'office-ui-fabric-react';
 import { BlisTagItem, IBlisPickerItemProps } from './BlisTagItem'
+import BlisTagPicker from '../BlisTagPicker'
+import './ActionCreatorEditor.css'
 
 const convertEntityToMention = (entity: EntityBase): IMention =>
     ({
@@ -65,10 +67,10 @@ interface ComponentState {
     isPayloadValid: boolean
     selectedActionTypeOptionKey: string | number
     entityTags: OF.ITag[]
-    selectedExpectedEntityTags: OF.ITag[]
+    expectedEntityTags: OF.ITag[]
     requiredEntityTagsFromPayload: OF.ITag[]
-    selectedRequiredEntityTags: OF.ITag[]
-    selectedNegativeEntityTags: OF.ITag[]
+    requiredEntityTags: OF.ITag[]
+    negativeEntityTags: OF.ITag[]
     mentionEditorState: EditorState
     editorKey: number
     isTerminal: boolean
@@ -84,10 +86,10 @@ const initialState: ComponentState = {
     isPayloadValid: false,
     selectedActionTypeOptionKey: actionTypeOptions[0].key,
     entityTags: [],
-    selectedExpectedEntityTags: [],
+    expectedEntityTags: [],
     requiredEntityTagsFromPayload: [],
-    selectedRequiredEntityTags: [],
-    selectedNegativeEntityTags: [],
+    requiredEntityTags: [],
+    negativeEntityTags: [],
     mentionEditorState: EditorState.createEmpty(),
     editorKey: 0,
     isTerminal: true
@@ -138,10 +140,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             if (nextProps.action) {
                 const action = nextProps.action
 
-                const selectedNegativeEntityTags = convertEntityIdsToTags(action.negativeEntities, nextProps.entities)
-                const selectedRequiredEntityTags = convertEntityIdsToTags(action.requiredEntities, nextProps.entities)
-                const selectedExpectedEntityTags = convertEntityIdsToTags((action.suggestedEntity ? [action.suggestedEntity] : []), nextProps.entities)
-
+                const negativeEntityTags = convertEntityIdsToTags(action.negativeEntities, nextProps.entities)
+                const expectedEntityTags = convertEntityIdsToTags((action.suggestedEntity ? [action.suggestedEntity] : []), nextProps.entities)
                 /**
                  * Special processing for local API responses:
                  * TODO: Remove this after schema redesign
@@ -161,7 +161,6 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 // TODO: If we allow to store raw state of editor then restoring it is very easy
                 // Currently there is issue where we don't know how to recreate the entities from the plain text
                 // const contentState = convertFromRaw(JSON.parse(action.payload))
-
                 const existingEntityMatches = (payload.match(/(\$[\w]+)/g) || [])
                     .map(match => {
                         // Get entity name by removing first character '$name' -> 'name'
@@ -178,8 +177,6 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     })
 
                 // Get editor state
-
-
                 const contentState = ContentState.createFromText(payload)
                 let editorState = EditorState.createWithContent(contentState)
 
@@ -224,6 +221,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 editorState = EditorState.moveFocusToEnd(editorState)
 
                 const requiredEntityTagsFromPayload = EditorUtilities.getEntities(editorState).map(convertContentEntityToTag)
+                const requiredEntityTags = convertEntityIdsToTags(action.requiredEntities, nextProps.entities)
+                    .filter(t => !requiredEntityTagsFromPayload.some(tag => tag.key === t.key))
 
                 nextState = {
                     ...nextState,
@@ -232,10 +231,10 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     selectedApiOptionKey,
                     mentionEditorState: editorState,
                     editorKey: this.state.editorKey + 1,
-                    selectedExpectedEntityTags,
-                    selectedNegativeEntityTags,
+                    expectedEntityTags,
+                    negativeEntityTags,
                     requiredEntityTagsFromPayload,
-                    selectedRequiredEntityTags,
+                    requiredEntityTags,
                     isEditing: true
                 }
             }
@@ -286,9 +285,9 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
              */
             payload,
             isTerminal: this.state.isTerminal,
-            requiredEntities: this.state.selectedRequiredEntityTags.map<string>(tag => tag.key),
-            negativeEntities: this.state.selectedNegativeEntityTags.map<string>(tag => tag.key),
-            suggestedEntity: this.state.selectedExpectedEntityTags.map<string>(tag => tag.key)[0],
+            requiredEntities: [...this.state.requiredEntityTagsFromPayload, ...this.state.requiredEntityTags].map<string>(tag => tag.key),
+            negativeEntities: [...this.state.expectedEntityTags, ...this.state.negativeEntityTags].map<string>(tag => tag.key),
+            suggestedEntity: (this.state.expectedEntityTags.length > 0) ? this.state.expectedEntityTags.map<string>(tag => tag.key)[0] : null,
             version: null,
             packageCreationId: null,
             packageDeletionId: null,
@@ -366,7 +365,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         return getSuggestedTags(
             filterText,
             this.state.entityTags,
-            [...selectedTags, ...this.state.selectedRequiredEntityTags]
+            [...selectedTags, ...this.state.requiredEntityTagsFromPayload, ...this.state.requiredEntityTags]
         )
     }
 
@@ -376,29 +375,9 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         return <BlisTagItem { ...renderProps }>{props.item.name}</BlisTagItem>
     }
 
-    onChangeExpectedEntityTags = (nextTags: OF.ITag[]) => {
-        this.setState((prevState: ComponentState) => {
-            const nextState: Partial<ComponentState> = {
-                selectedExpectedEntityTags: nextTags
-            }
-
-            const previousTags = prevState.selectedExpectedEntityTags
-            // If we added a tag, also add it to the negative entities list
-            if (nextTags.length > previousTags.length) {
-                const addedTag = nextTags.find(tag => previousTags.every(t => t.key !== tag.key))
-                if (addedTag) {
-                    nextState.selectedNegativeEntityTags = [...previousTags, addedTag]
-                }
-            }
-            // If we removed a tag, also remove it from negative entities list
-            else if (nextTags.length < previousTags.length) {
-                const removedTag = previousTags.find(tag => nextTags.every(t => t.key !== tag.key))
-                if (removedTag) {
-                    nextState.selectedNegativeEntityTags = prevState.selectedNegativeEntityTags.filter(tag => tag.key !== removedTag.key)
-                }
-            }
-
-            return nextState
+    onChangeExpectedEntityTags = (tags: OF.ITag[]) => {
+        this.setState({
+            expectedEntityTags: tags
         })
     }
 
@@ -406,13 +385,13 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         return getSuggestedTags(
             filterText,
             this.state.entityTags,
-            [...selectedTags, ...this.state.selectedNegativeEntityTags, ...this.state.selectedExpectedEntityTags]
+            [...selectedTags, ...this.state.requiredEntityTagsFromPayload, ...this.state.negativeEntityTags, ...this.state.expectedEntityTags]
         )
     }
 
     onChangeRequiredEntityTags = (tags: OF.ITag[]) => {
         this.setState({
-            selectedRequiredEntityTags: tags
+            requiredEntityTags: tags
         })
     }
 
@@ -432,19 +411,19 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         return getSuggestedTags(
             filterText,
             this.state.entityTags,
-            [...selectedTags, ...this.state.selectedRequiredEntityTags]
+            [...selectedTags, ...this.state.requiredEntityTags]
         )
     }
 
     onChangeNegativeEntityTags(tags: OF.ITag[]) {
         this.setState({
-            selectedNegativeEntityTags: tags
+            negativeEntityTags: tags
         })
     }
 
     onRenderNegativeEntityTag = (props: IBlisPickerItemProps<OF.ITag>): JSX.Element => {
         const renderProps = { ...props }
-        const suggestedEntityKey = this.state.selectedExpectedEntityTags.length > 0 ? this.state.selectedExpectedEntityTags[0].key : null
+        const suggestedEntityKey = this.state.expectedEntityTags.length > 0 ? this.state.expectedEntityTags[0].key : null
 
         // Strickout and lock/highlight if also the suggested entity
         renderProps.strike = true
@@ -455,20 +434,13 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     }
 
     onChangeMentionEditor = (editorState: EditorState) => {
-        const getEntities = EditorUtilities.getEntities
-        const entityTagsFromPreviousEditorState = getEntities(this.state.mentionEditorState).map(convertContentEntityToTag)
-        // Get entity tags from total required entities tags that are not from the payload
-        const unmatchedRequiredEntityTags = this.state.selectedRequiredEntityTags.filter(t => !entityTagsFromPreviousEditorState.some(e => e.key === t.key))
-        const entityTagsFromNewEditorState = EditorUtilities.getEntities(editorState).map(convertContentEntityToTag)
-        const selectedRequiredEntityTags = [...entityTagsFromNewEditorState, ...unmatchedRequiredEntityTags]
-        const nextContentState = editorState.getCurrentContent()
-        const isPayloadValid = this.state.selectedActionTypeOptionKey === ActionTypes.API_LOCAL || nextContentState.hasText()
+        const requiredEntityTagsFromPayload = EditorUtilities.getEntities(editorState).map(convertContentEntityToTag)
+        const isPayloadValid = this.state.selectedActionTypeOptionKey === ActionTypes.API_LOCAL || editorState.getCurrentContent().hasText()
 
         this.setState({
             isPayloadValid,
             mentionEditorState: editorState,
-            requiredEntityTagsFromPayload: entityTagsFromNewEditorState,
-            selectedRequiredEntityTags
+            requiredEntityTagsFromPayload
         })
     }
 
@@ -477,12 +449,10 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         const isPayloadDisabled = this.state.selectedActionTypeOptionKey === ActionTypes.API_LOCAL
             && (this.state.isEditing || this.state.apiOptions.length === 0)
 
-        /**
-         * Available Mentions: All entities - expected entity - required entities
-         */
+        // Available Mentions: All entities - expected entity - required entities
+        const unavailableTags = [...this.state.expectedEntityTags, ...this.state.requiredEntityTagsFromPayload, ...this.state.requiredEntityTags]
         const getMentionsAvailableForPayload = this.props.entities
-            .filter(e => !this.state.selectedExpectedEntityTags.some(t => t.key === e.entityId))
-            .filter(e => !this.state.selectedRequiredEntityTags.some(t => t.key === e.entityId))
+            .filter(e => !unavailableTags.some(t => t.key === e.entityId))
             .map(convertEntityToMention)
 
         return (
@@ -577,13 +547,15 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                             noResultsFoundText: 'No Entities Found'
                                         }
                                     }
-                                    selectedItems={this.state.selectedExpectedEntityTags}
+                                    selectedItems={this.state.expectedEntityTags}
                                 /></div>),
                             ToolTip.TipType.ACTION_SUGGESTED, OF.DirectionalHint.bottomRightEdge)
                         }
                         {ToolTip.Wrap(
-                            (<div><OF.Label>Required Entities</OF.Label>
-                                <OF.TagPicker
+                            (<div>
+                                <OF.Label>Required Entities</OF.Label>
+                                <BlisTagPicker
+                                    nonRemovableTags={this.state.requiredEntityTagsFromPayload}
                                     onResolveSuggestions={(text, tags) => this.onResolveRequiredEntityTags(text, tags)}
                                     onRenderItem={this.onRenderRequiredEntityTag}
                                     getTextFromItem={item => item.name}
@@ -594,13 +566,15 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                             noResultsFoundText: 'No Entities Found'
                                         }
                                     }
-                                    selectedItems={this.state.selectedRequiredEntityTags}
-                                /></div>),
+                                    selectedItems={this.state.requiredEntityTags}
+                                />
+                            </div>),
                             ToolTip.TipType.ACTION_REQUIRED, OF.DirectionalHint.bottomRightEdge)
                         }
                         {ToolTip.Wrap(
                             (<div><OF.Label>Blocking Entities</OF.Label>
-                                <OF.TagPicker
+                                <BlisTagPicker
+                                    nonRemovableTags={this.state.expectedEntityTags}
                                     onResolveSuggestions={(text, tags) => this.onResolveNegativeEntityTags(text, tags)}
                                     onRenderItem={this.onRenderNegativeEntityTag}
                                     getTextFromItem={item => item.name}
@@ -611,7 +585,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                             noResultsFoundText: 'No Entities Found'
                                         }
                                     }
-                                    selectedItems={this.state.selectedNegativeEntityTags}
+                                    selectedItems={this.state.negativeEntityTags}
                                 /></div>),
                             ToolTip.TipType.ACTION_NEGATIVE, OF.DirectionalHint.bottomRightEdge)
                         }
