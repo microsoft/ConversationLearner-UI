@@ -6,27 +6,11 @@ import { connect } from 'react-redux';
 import * as ToolTip from './ToolTips';
 import * as OF from 'office-ui-fabric-react';
 import { setTipType } from '../actions/displayActions'
-interface ComponentState {
-    tipType: ToolTip.TipType;
-}
 
-class HelpPanel extends React.Component<Props, ComponentState> {
-    
-    constructor() {
-        super();
-        this.state = { tipType: null };
-    }
-
-    componentWillReceiveProps(newProps: Props) {
-        if (this.props.tipType !== newProps.tipType) {
-            this.setState({
-                tipType: newProps.tipType
-            });
-        }
-    }
+class HelpPanel extends React.Component<Props, {}> {
 
     onDismiss(): void {
-      this.setState({ tipType: null }, () => this.props.setTipType(null));
+      this.props.setTipType(null);
     }
 
     render() {
@@ -34,10 +18,12 @@ class HelpPanel extends React.Component<Props, ComponentState> {
         <div>
             <OF.Panel
                 isBlocking={true}
-                isOpen={this.state.tipType != null}
+                isOpen={this.props.tipType != null}
                 isLightDismiss={true}
                 onDismiss={() => {this.onDismiss()}}
-                type={OF.PanelType.smallFixedFar}
+               // type={OF.PanelType.smallFixedFar}
+                type={OF.PanelType.custom}
+                customWidth="400px"
                 closeButtonAriaLabel="Close"
             >
                 <span>{ToolTip.GetTip(this.props.tipType)}</span>

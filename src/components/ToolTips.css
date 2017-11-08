@@ -13,3 +13,9 @@
     line-height: 32px;
     margin-bottom: 20px;
 }
+
+.blis-tooltop-example {
+    font-weight: bolder;
+    margin-bottom: 5px;
+    margin-top: 8px;
+}

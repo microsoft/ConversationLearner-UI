@@ -95,6 +95,10 @@ export enum FM {
     TOOLTIP_ACTION_RESPONSE_TEXT_TITLE = 'ToolTip.ACTION_RESPONSE_TEXT_TITLE',
     TOOLTIP_ACTION_REQUIRED = 'ToolTip.ACTION_REQUIRED',
     TOOLTIP_ACTION_REQUIRED_TITLE = 'ToolTip.ACTION_REQUIRED_TITLE',
+    TOOLTIP_ACTION_REQUIRED_ROW1 = 'ToolTip.ACTION_REQUIRED_TITLE_ROW1',
+    TOOLTIP_ACTION_REQUIRED_ROW2 = 'ToolTip.ACTION_REQUIRED_TITLE_ROW2',
+    TOOLTIP_ACTION_REQUIRED_ROW3 = 'ToolTip.ACTION_REQUIRED_TITLE_ROW3',
+    TOOLTIP_ACTION_REQUIRED_ROW4 = 'ToolTip.ACTION_REQUIRED_TITLE_ROW4',
     TOOLTIP_ACTION_SCORE = 'ToolTip.ACTION_SCORE',
     TOOLTIP_ACTION_SCORE_PERCENT = 'ToolTip.ACTION_SCORE_PERCENT',
     TOOLTIP_ACTION_SCORE_TRAINING = 'ToolTip.ACTION_SCORE_TRAINING',
@@ -116,6 +120,7 @@ export enum FM {
     TOOLTIP_ENTITY_NAME = 'ToolTip.ENTITY_NAME',
     TOOLTIP_ENTITY_VALUE = 'ToolTip.ENTITY_VALUE',
     TOOLTIP_ENTITY_TYPE = 'ToolTip.ENTITY_TYPE',
+    TOOLTIP_EXAMPLE = 'ToolTip.EXAMPLE',
 
     // Train Dialogs
     TRAINDIALOGS_TITLE = 'TrainDialogs.title',
@@ -369,6 +374,10 @@ export default {
         [FM.TOOLTIP_ACTION_RESPONSE_TEXT_TITLE]: 'Response',
         [FM.TOOLTIP_ACTION_REQUIRED]: 'Action will not be selected unless Memory contains values for these Entities',
         [FM.TOOLTIP_ACTION_REQUIRED_TITLE]: 'Required Entities',
+        [FM.TOOLTIP_ACTION_REQUIRED_ROW1]: '"How would you like to pay?"',
+        [FM.TOOLTIP_ACTION_REQUIRED_ROW2]: '$orderDetails',
+        [FM.TOOLTIP_ACTION_REQUIRED_ROW3]: '"Hi, $name"',
+        [FM.TOOLTIP_ACTION_REQUIRED_ROW4]: '$name',
         [FM.TOOLTIP_ACTION_SCORE]: 'Score:',
         [FM.TOOLTIP_ACTION_SCORE_PERCENT]: 'BLIS confidence in performing an Action',
         [FM.TOOLTIP_ACTION_SCORE_TRAINING]: `Action can't be scored yet as BLIS is still training`,
@@ -390,6 +399,7 @@ export default {
         [FM.TOOLTIP_ENTITY_NAME]: 'Name of the Entity',
         [FM.TOOLTIP_ENTITY_VALUE]: 'What the Bot currently has in Memory for this Entity',
         [FM.TOOLTIP_ENTITY_TYPE]: 'Type of Entity: CUSTOM or name existing of Pre-Built Entity',
+        [FM.TOOLTIP_EXAMPLE]: 'For Example:',
 
         // Train Dialogs
         [FM.TRAINDIALOGS_TITLE]: 'Train Dialogs',
