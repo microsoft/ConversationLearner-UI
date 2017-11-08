@@ -14,7 +14,7 @@ class CheckboxWithTip extends OF.BaseComponent<ICheckboxWithTipProps, OF.ICheckb
             <div>
                 <OF.Checkbox 
                     className="blis-tip"
-                    defaultChecked={true}
+                    defaultChecked={this.props.defaultChecked}
                     onChange={this.props.onChange}
                     style={{ marginTop: '1em', display: 'inline-block' }}
                     disabled={this.props.disabled}
