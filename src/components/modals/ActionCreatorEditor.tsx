@@ -381,9 +381,10 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     }
 
     onChangeExpectedEntityTags = (tags: OF.ITag[]) => {
-        this.setState({
-            expectedEntityTags: tags
-        })
+        this.setState(prevState => ({
+            expectedEntityTags: tags,
+            negativeEntityTags: prevState.negativeEntityTags.filter(t => !tags.some(tag => tag.key === t.key))
+        }))
     }
 
     onResolveRequiredEntityTags = (filterText: string, selectedTags: OF.ITag[]): OF.ITag[] => {
@@ -416,7 +417,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         return getSuggestedTags(
             filterText,
             this.state.entityTags,
-            [...selectedTags, ...this.state.requiredEntityTags]
+            [...selectedTags, ...this.state.expectedEntityTags, ...this.state.requiredEntityTags]
         )
     }
 
