@@ -13,7 +13,7 @@ import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'r
 
 interface IRenderableColumn extends OF.IColumn {
     render: (entity: EntityBase, component: Entities) => JSX.Element | JSX.Element[]
-    getSortValue: (IRenderableColumn: EntityBase, component: Entities) => string
+    getSortValue: (entity: EntityBase, component: Entities) => string
 }
 
 function getColumns(intl: InjectedIntl): IRenderableColumn[] {

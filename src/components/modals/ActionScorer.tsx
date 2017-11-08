@@ -20,7 +20,11 @@ import { FM } from '../../react-intl-messages'
 
 const ACTION_BUTTON = 'action_button';
 
-function getColumns(intl: InjectedIntl): OF.IColumn[] {
+interface IRenderableColumn extends OF.IColumn {
+    render: (x: ScoredBase, component: ActionScorer, index: number) => React.ReactNode
+}
+
+function getColumns(intl: InjectedIntl): IRenderableColumn[] {
     return [
         {
             key: 'select',
@@ -28,7 +32,29 @@ function getColumns(intl: InjectedIntl): OF.IColumn[] {
             fieldName: 'actionId',
             minWidth: 80,
             maxWidth: 80,
-            isResizable: true
+            isResizable: true,
+            render: (action, component, index) => {
+                let buttonText = (component.props.dialogType !== DialogType.TEACH && index === 0) ? "Selected" : "Select";
+                let reason = (action as UnscoredAction).reason;
+                if (reason === ScoreReason.NotAvailable) {
+                    return (
+                        <PrimaryButton
+                            disabled={true}
+                            ariaDescription={buttonText}
+                            text={buttonText}
+                        />
+                    )
+                }
+                let refFn = (index === 0) ? ((ref: any) => { component.primaryScoreButton = ref }) : null;
+                return (
+                    <PrimaryButton
+                        onClick={() => component.handleActionSelection(action.actionId)}
+                        ariaDescription={buttonText}
+                        text={buttonText}
+                        componentRef={refFn}
+                    />
+                )
+            }
         },
         {
             key: 'actionResponse',
@@ -41,6 +67,7 @@ function getColumns(intl: InjectedIntl): OF.IColumn[] {
             maxWidth: 500,
             isMultiline: true,
             isResizable: true,
+            render: action => <span className='ms-font-m-plus'>{ModelUtils.GetPrimaryPayload(action as ActionBase)}</span>
         },
         {
             key: 'actionArguments',
@@ -51,7 +78,18 @@ function getColumns(intl: InjectedIntl): OF.IColumn[] {
             fieldName: 'actionArguments',
             minWidth: 80,
             maxWidth: 300,
-            isResizable: true
+            isResizable: true,
+            render: action => {
+                const args = ModelUtils.GetArguments(action as ActionBase)
+                return (!args)
+                    ? <span className="ms-Icon ms-Icon--Remove notFoundIcon" aria-hidden="true" />
+                    : <OF.List
+                        items={args}
+                        onRenderCell={(item, index) => (
+                            <span className='ms-ListItem-primaryText'>{item}</span>
+                        )}
+                    />
+            }
         },
         {
             key: 'actionScore',
@@ -64,7 +102,29 @@ function getColumns(intl: InjectedIntl): OF.IColumn[] {
             maxWidth: 80,
             isResizable: true,
             isSorted: true,
-            isSortedDescending: true
+            isSortedDescending: true,
+            render: (action, component) => {
+                let fieldContent: number | string = (action as ScoredAction).score
+                if (fieldContent) {
+                    // No scores in TrainDialogs
+                    if (component.props.dialogType === DialogType.TRAINDIALOG) {
+                        fieldContent = '';
+                    } else {
+                        fieldContent = (fieldContent as number * 100).toFixed(1) + "%"
+                    }
+                } else if (component.isMasked(action.actionId)) {
+                    fieldContent = "Masked"
+                } else {
+                    let reason = (action as UnscoredAction).reason;
+                    fieldContent = (reason === ScoreReason.NotAvailable) ?
+                        "Disqualified" :
+                        (component.props.dialogType !== DialogType.TEACH) ?
+                            '' :
+                            "Training...";
+                }
+
+                return <span className='ms-font-m-plus'>{fieldContent}</span>
+            }
         },
         {
             key: 'actionEntities',
@@ -75,7 +135,8 @@ function getColumns(intl: InjectedIntl): OF.IColumn[] {
             fieldName: 'entities',
             minWidth: 100,
             maxWidth: 300,
-            isResizable: true
+            isResizable: true,
+            render: (action, component) => component.renderEntityRequirements(action.actionId)
         },
         {
             key: 'isTerminal',
@@ -86,7 +147,8 @@ function getColumns(intl: InjectedIntl): OF.IColumn[] {
             fieldName: 'isTerminal',
             minWidth: 50,
             maxWidth: 50,
-            isResizable: true
+            isResizable: true,
+            render: action => <span className={"ms-Icon blis-icon" + (action.isTerminal ? " ms-Icon--CheckMark checkIcon" : "ms-Icon--Remove notFoundIcon")} aria-hidden="true" />
         },
         {
             key: 'actionType',
@@ -97,8 +159,9 @@ function getColumns(intl: InjectedIntl): OF.IColumn[] {
             fieldName: 'actionType',
             minWidth: 80,
             maxWidth: 80,
-            isResizable: true
-        }
+            isResizable: true,
+            render: action => action.metadata.actionType
+        },
     ]
 }
 
@@ -111,7 +174,7 @@ interface ComponentState {
 }
 
 class ActionScorer extends React.Component<Props, ComponentState> {
-    private primaryScoreButton: any = null;
+    primaryScoreButton: any = null;
 
     constructor(p: Props) {
         super(p);
@@ -194,7 +257,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             this.primaryScoreButton.focus();
         }
     }
-    
+
     onClickCancelActionEditor() {
         this.setState({
             actionModalOpen: false
@@ -321,7 +384,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             let found = this.entityInMemory(entityId);
             items.push({
                 name: found.name, type: found.match ?
-                    "blis-entity blis-entity--match" : "blis-entity--mismatch", neg: false
+                    "blis-entity blis-entity--match" : "blis-entity blis-entity--mismatch", neg: false
             });
         }
         for (let entityId of action.negativeEntities) {
@@ -376,10 +439,9 @@ class ActionScorer extends React.Component<Props, ComponentState> {
     isMasked(actionId: string): boolean {
         return (this.props.scoreInput.maskedActions && this.props.scoreInput.maskedActions.indexOf(actionId) > -1);
     }
-    renderItemColumn(item?: any, index?: number, column?: OF.IColumn) {
-
+    renderItemColumn(action: ScoredBase | string, index: number, column: IRenderableColumn) {
         // Null is action create button
-        if (item === ACTION_BUTTON) {
+        if (action === ACTION_BUTTON) {
             if (column.key === 'select') {
                 // Will focus on new action button if no scores
                 let ref = (index === 0) ? ((ref: any) => { this.primaryScoreButton = ref }) : null;
@@ -396,80 +458,8 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                 return '';
             }
         }
-        let action = item as ScoredBase;
-        let fieldContent = action[column.fieldName];
-        switch (column.key) {
-            case 'select':
-                let buttonText = (this.props.dialogType !== DialogType.TEACH && index === 0) ? "Selected" : "Select";
-                let reason = (action as UnscoredAction).reason;
-                if (reason === ScoreReason.NotAvailable) {
-                    return (
-                        <PrimaryButton
-                            disabled={true}
-                            ariaDescription={buttonText}
-                            text={buttonText}
-                        />
-                    )
-                }
-                let ref = (index === 0) ? ((ref: any) => { this.primaryScoreButton = ref }) : null;
-                return (
-
-                    <PrimaryButton
-                        onClick={() => this.handleActionSelection(fieldContent)}
-                        ariaDescription={buttonText}
-                        text={buttonText}
-                        componentRef={ref}
-                    />
-                )
-            case 'actionScore':
-                if (fieldContent) {
-                    // No scores in TrainDialogs
-                    if (this.props.dialogType === DialogType.TRAINDIALOG) {
-                        fieldContent = '';
-                    } else {
-                        fieldContent = (fieldContent * 100).toFixed(1) + "%"
-                    }
-                } else if (this.isMasked(action.actionId)) {
-                    fieldContent = "Masked"
-                } else {
-                    let reason = (action as UnscoredAction).reason;
-                    fieldContent = (reason === ScoreReason.NotAvailable) ?
-                        "Disqualified" :
-                        (this.props.dialogType !== DialogType.TEACH) ?
-                            '' :
-                            "Training...";
-                }
-                break;
-            case 'actionEntities':
-                return this.renderEntityRequirements(action.actionId);
-            case 'actionType':
-                return action.metadata.actionType;
-            case 'isTerminal':
-                if (fieldContent === true) {
-                    return <span className="ms-Icon blis-icon ms-Icon--CheckMark checkIcon" aria-hidden="true" />;
-                } else {
-                    return <span className="ms-Icon blis-icon ms-Icon--Remove notFoundIcon" aria-hidden="true" />;
-                }
-            case 'actionArguments':
-                let args = ModelUtils.GetArguments(item);
-                if (args) {
-                    return (
-                        <OF.List
-                            items={args}
-                            onRenderCell={(item, index) => (
-                                <span className='ms-ListItem-primaryText'>{item}</span>
-                            )}
-                        />
-                    )
-                }
-                return <span className="ms-Icon ms-Icon--Remove notFoundIcon" aria-hidden="true" />;
-            case 'actionResponse':
-                fieldContent = ModelUtils.GetPrimaryPayload(item);
-                break;
-            default:
-                break;
-        }
-        return <span className='ms-font-m-plus'>{fieldContent}</span>
+        
+        return column.render(action as ScoredBase, this, index)
     }
     getScoredItems(): ScoredBase[] {
         if (!this.props.scoreResponse) {
@@ -552,7 +542,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                     action={null}
                     onClickCancel={() => this.onClickCancelActionEditor()}
                     /* It is not possible to delete from this modal since you cannot select existing action so disregard implementation of delete */
-                    onClickDelete={action => {}}
+                    onClickDelete={action => { }}
                     onClickSubmit={action => this.onClickSubmitActionEditor(action)}
                 />
             </div>
