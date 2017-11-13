@@ -298,7 +298,14 @@ export const getLuisApplicationCultures = (): Promise<CultureObject[]> => {
           obs.next(actions.fetch.fetchAllTrainDialogsAsync(key, appId));
           obs.complete();
         })
-        .catch(err => handleError(obs, err,  AT.DELETE_TEACH_SESSION_ASYNC)));
+        .catch(err => 
+          {
+            // Still want to clear teach session, even if delete failed
+            actions.delete.deleteTeachSessionFulfilled(key, teachSession.teachId, appId);
+            actions.fetch.fetchAllTrainDialogsAsync(key, appId);
+            handleError(obs, err,  AT.DELETE_TEACH_SESSION_ASYNC);
+          }
+        ));
   };
 
   export const getAllTeachSessionsForBlisApp = (key: string, appId: string): Observable<ActionObject> => {
@@ -408,11 +415,11 @@ let toErrorString = function (error: any): string {
     else if (error.data.errorMessages) {
       return error.data.errorMessages.join();
     }
-    else if (typeof error.data == 'string') {
+    else if (typeof error.data === 'string') {
       return error.data;
     }
     else {
-      return error.data.stringify();
+      return JSON.stringify(error.data);
     }
   }
   catch (e) {
