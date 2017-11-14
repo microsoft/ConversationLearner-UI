@@ -56,8 +56,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                     roundIndex: newProps.trainDialog.rounds.length - 1,
                     scoreIndex: 0
                 })
-            }
-            else {
+            } else {
                 this.setState({
                     senderType: senderType,
                     roundIndex: roundIndex,
@@ -95,9 +94,9 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
         if (this.haveEntitiesChanged(extractResponse, roundIndex)) {
 
             // Delete at steps after the current round and clear scorer steps
-            let newRounds = updatedTrainDialog.rounds.slice(0, roundIndex + 1);
+            let rounds = updatedTrainDialog.rounds.slice(0, roundIndex + 1);
             newRounds[roundIndex].scorerSteps = [];
-            updatedTrainDialog = { ...updatedTrainDialog, rounds: newRounds };
+            updatedTrainDialog = { ...updatedTrainDialog, rounds: rounds };
 
             // Save prompt will be shown to user
             this.setState({
@@ -168,8 +167,11 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
             let round = this.props.trainDialog.rounds[prevIndex];
             if (round.scorerSteps.length > 0) {
                 let scorerStep = round.scorerSteps[0];
-                let filledEntities = this.props.entities.filter(entity => scorerStep.input.filledEntities.includes(entity.entityId))
-                memories = filledEntities.map((e) => new Memory({ entityName: e.entityName, entityValues: [] }));
+                memories = scorerStep.input.filledEntities.map((fe) => new Memory(
+                    { 
+                        entityName: this.props.entities.find(e => e.entityId === fe.entityId).entityName,
+                        entityValues: fe.values }
+                    ));
             }
         }
         return memories;
@@ -187,9 +189,13 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
             if (round.scorerSteps.length > 0) {
                 scorerStep = round.scorerSteps[this.state.scoreIndex];
 
-                selectedAction = this.props.actions.find(action => action.actionId == scorerStep.labelAction)
-                let filledEntities = this.props.entities.filter(entity => scorerStep.input.filledEntities.includes(entity.entityId))
-                memories = filledEntities.map((e) => new Memory({ entityName: e.entityName, entityValues: [] }));
+                selectedAction = this.props.actions.find(action => action.actionId === scorerStep.labelAction)
+                memories = scorerStep.input.filledEntities.map((fe) => new Memory(
+                    { 
+                        entityName: this.props.entities.find(e => e.entityId === fe.entityId).entityName,
+                        entityValues: fe.values
+                    }
+                ));
 
                 // Get prevmemories
                 prevMemories = this.getPrevMemories();
@@ -202,7 +208,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                 })
                 // Generate list of all actions (apart from selected) for ScoreResponse as I have no scores
                 let unscoredActions = this.props.actions
-                    .filter(a => a.actionId != selectedAction.actionId)
+                    .filter(a => a.actionId !== selectedAction.actionId)
                     .map(action => {
                         return new UnscoredAction({
                             actionId: action.actionId,
@@ -220,7 +226,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
         }
 
         let renderData: RenderData = {
-            dialogMode: (this.state.senderType == SenderType.User) ? DialogMode.Extractor : DialogMode.Scorer,
+            dialogMode: (this.state.senderType === SenderType.User) ? DialogMode.Extractor : DialogMode.Scorer,
             selectedAction: selectedAction,
             scorerStep: scorerStep,
             scoreResponse: scoreResponse,
@@ -240,7 +246,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
         let renderData = this.getRenderData();
         return (
             <div className="blis-dialog-admin ms-font-l">
-                {this.props.selectedActivity && (this.state.senderType == SenderType.User
+                {this.props.selectedActivity && (this.state.senderType === SenderType.User
                     ? (
                         <div className="blis-dialog-admin__content">
                             <div className="blis-wc-message blis-wc-message--user">
@@ -298,7 +304,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                         </div>
                     )
                 }
-                {this.state.senderType == SenderType.User &&
+                {this.state.senderType === SenderType.User &&
                     <div className="blis-dialog-admin__content">
                         <div className="blis-dialog-admin-title">
                             <FormattedMessage
@@ -329,7 +335,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                         </div>
                     </div>
                 }
-                {renderData.selectedAction && this.state.senderType == SenderType.Bot &&
+                {renderData.selectedAction && this.state.senderType === SenderType.Bot &&
                     <div className="blis-dialog-admin__content">
                         <div className="blis-dialog-admin-title">
                             <FormattedMessage

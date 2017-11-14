@@ -135,18 +135,19 @@ class MemoryTable extends React.Component<Props, ComponentState> {
         let entity = this.props.entities.find(e => e.entityName === entityName);
         let curMemory = this.props.memories.find(m => m.entityName === entityName);
         let curMemoryValues = curMemory ? curMemory.entityValues : [];
-        let curValues = curMemoryValues.map(cmv => cmv.value);
+        let curValues = curMemoryValues.map(cmv => cmv.userText);
 
         // Corresponding old memory values
         let prevMemory = this.props.prevMemories.find(m => m.entityName === entityName);
         let prevMemoryValues = prevMemory ? prevMemory.entityValues : [];
-        let prevValues = prevMemoryValues.map(pmv => pmv.value);
+        let prevValues = prevMemoryValues.map(pmv => pmv.userText);
 
         // Find union and remove duplicates
-        let unionMemoryValues = [...curMemoryValues, ...prevMemoryValues.filter(pmv => !curMemoryValues.find(cmv => cmv.value === pmv.value))];
+        let unionMemoryValues = [...curMemoryValues, ...prevMemoryValues.filter(pmv => !curMemoryValues.find(cmv => cmv.userText === pmv.userText))];
 
         // Print out list in friendly manner
         let display = [];
+        let key = 0;
         let index = 0;
         for (let memoryValue of unionMemoryValues) {
             let entityClass = '';
@@ -162,22 +163,22 @@ class MemoryTable extends React.Component<Props, ComponentState> {
             }
 
             // In old but not new
-            if (prevValues.indexOf(memoryValue.value) >= 0 && curValues.indexOf(memoryValue.value) < 0) {
+            if (prevValues.indexOf(memoryValue.userText) >= 0 && curValues.indexOf(memoryValue.userText) < 0) {
                 entityClass = 'blis-font--deleted';
             }
             // In new but not old
-            else if (prevValues.indexOf(memoryValue.value) < 0 && curValues.indexOf(memoryValue.value) >= 0) {
+            else if (prevValues.indexOf(memoryValue.userText) < 0 && curValues.indexOf(memoryValue.userText) >= 0) {
                 entityClass = 'blis-font--emphasis';
             }
 
             // If a pre-built, show tool tip with extra info
-            if (memoryValue.type || memoryValue.resolution) {
+            if (memoryValue.builtinType || memoryValue.resolution) {
                 entityClass += ' blisText--emphasis';
                 display.push(
-                    Prebuilt(memoryValue,(<span className="ms-font-m-plus" key={memoryValue.value}>{prefix}<span className={entityClass}>{memoryValue.value}</span></span>))
+                    Prebuilt(memoryValue, (<span className="ms-font-m-plus" key={key++}>{prefix}<span className={entityClass}>{memoryValue.displayText}</span></span>))
                 )
             } else {
-                display.push(<span className="ms-font-m-plus" key={memoryValue.value}>{prefix}<span className={entityClass}>{memoryValue.value}</span></span>);                
+                display.push(<span className="ms-font-m-plus" key={key++}>{prefix}<span className={entityClass}>{memoryValue.userText}</span></span>);                
             }
  
             index++;

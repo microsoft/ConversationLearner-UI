@@ -312,23 +312,23 @@ function render(title: FM, body: FM[], example: string = null, tableItems: {key:
 }
 
 export function Prebuilt(memoryValue: MemoryValue, content: JSX.Element): JSX.Element {
-    if (!memoryValue.type && !memoryValue.resolution) {
+    if (!memoryValue.builtinType && !memoryValue.resolution) {
         return content;
     }
     return (
-        <div>
+        <span>
             <OF.TooltipHost 
                 tooltipProps={{
                     onRenderContent: () => {
                         let key = 0;
                         return (
-                            <div>
-                                <span><b>{memoryValue.type}</b><br/><br/></span>
+                            <span>
+                                <span><b>{memoryValue.builtinType}</b><br/><br/></span>
                                 {memoryValue.resolution &&
                                 <span key={key++}>{JSON.stringify(memoryValue.resolution, null, 2).split('\n')
                                     .map(s => {return (<div key={key++}>{s.split(' ').map(u => {return <span key={key++}>&nbsp;{u}</span>; })}</div>)})}</span>
                                 }
-                            </div>
+                            </span>
                         );
                     }
                 }}
@@ -336,6 +336,6 @@ export function Prebuilt(memoryValue: MemoryValue, content: JSX.Element): JSX.El
             >
                 {content}
             </OF.TooltipHost>
-        </div>
+        </span>
     )
 }

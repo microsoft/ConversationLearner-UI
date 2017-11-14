@@ -12,7 +12,7 @@ import { Activity } from 'botframework-directlinejs'
 import { BlisAppBase, TrainExtractorStep, TrainScorerStep, TextVariation, 
         Memory, TrainDialog, TrainRound, 
         LogDialog, LogRound, LogScorerStep, 
-        ActionBase, EntityBase, ExtractResponse, 
+        ActionBase, ExtractResponse, 
         DialogType, ModelUtils } from 'blis-models'
 
 interface ComponentState {
@@ -39,7 +39,7 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
     componentWillReceiveProps(newProps: Props) {
         
         if (newProps.selectedActivity && newProps.logDialog) {
-            let [senderType, roundIndex, scoreIndex] = newProps.selectedActivity.id.split(":").map(s => parseInt(s));
+            let [senderType, roundIndex, scoreIndex] = newProps.selectedActivity.id.split(':').map(s => parseInt(s));
             this.setState({
                 senderType: senderType,
                 roundIndex: roundIndex,
@@ -58,7 +58,7 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
     }
 
     // User has submitted new entity extractions / text variations for a round
-    onEntityExtractorSubmit(extractResponse: ExtractResponse, textVariations: TextVariation[], roundIndex: number) : void {
+    onEntityExtractorSubmit(extractResponse: ExtractResponse, textVariations: TextVariation[], roundIndex: number): void {
 
         // Generate the new train dialog
         const roundsBeforeModification = this.props.logDialog.rounds.slice(0, roundIndex).map(ModelUtils.ToTrainRound);
@@ -80,7 +80,7 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
     } 
 
     // User has submitted new entity extractions / text variations for a round
-    onActionScorerSubmit(trainScorerStep: TrainScorerStep) : void {
+    onActionScorerSubmit(trainScorerStep: TrainScorerStep): void {
 
         // Remove scoredAction, we only need labeledAction
         delete trainScorerStep.scoredAction;
@@ -113,15 +113,18 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
         this.setState({newTrainDialog: trainDialog});
     } 
 
-    getPrevMemories() : Memory[] {
-        let memories : Memory[] = [];
-        let prevIndex = this.state.roundIndex-1;
+    getPrevMemories(): Memory[] {
+        let memories: Memory[] = [];
+        let prevIndex = this.state.roundIndex - 1;
         if (prevIndex >= 0) {
             let round = this.props.logDialog.rounds[prevIndex];
             if (round.scorerSteps.length > 0) {
                 let scorerStep = round.scorerSteps[0];
-                let filledEntities = this.props.entities.filter(entity => scorerStep.input.filledEntities.includes(entity.entityId))
-                memories = filledEntities.map((e) => new Memory({entityName: e.entityName, entityValues: []}));     
+                memories = scorerStep.input.filledEntities.map((fe) => new Memory(
+                    {
+                        entityName: this.props.entities.find(e => e.entityId === fe.entityId).entityName,
+                        entityValues: fe.values
+                    }));     
             }
         }
         return memories;    
@@ -130,11 +133,10 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
     render() {
         let round: LogRound = null;
         let action: ActionBase = null;
-        let filledEntities: EntityBase[] = [];
         let memories: Memory[] = [];
         let prevMemories: Memory[] = [];
         let scorerStep: LogScorerStep = null;
-        let dialogMode = (this.state.senderType == SenderType.User) ? DialogMode.Extractor : DialogMode.Scorer;
+        let dialogMode = (this.state.senderType === SenderType.User) ? DialogMode.Extractor : DialogMode.Scorer;
 
         const { logDialog, selectedActivity } = this.props
         if (logDialog && selectedActivity) {
@@ -147,9 +149,12 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
             if (this.state.scoreIndex < round.scorerSteps.length) {
                 scorerStep = round.scorerSteps[this.state.scoreIndex]
                 if (scorerStep && scorerStep.predictedAction) {
-                    action = this.props.actions.find(action => action.actionId === scorerStep.predictedAction);
-                    filledEntities = this.props.entities.filter(entity => scorerStep.input.filledEntities.includes(entity.entityId));
-                    memories = filledEntities.map((e) => new Memory({entityName: e.entityName, entityValues: []}));
+                    action = this.props.actions.find(a => a.actionId === scorerStep.predictedAction);
+                    memories = scorerStep.input.filledEntities.map((fe) => new Memory(
+                        {
+                            entityName: this.props.entities.find(e => e.entityId === fe.entityId).entityName,
+                            entityValues: fe.values
+                        }));
                 }
             }
             prevMemories = this.getPrevMemories();
@@ -157,7 +162,7 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
          
         return (
             <div className="blis-dialog-admin ms-font-l">
-                {this.props.selectedActivity && (this.state.senderType == SenderType.User ? (
+                {this.props.selectedActivity && (this.state.senderType === SenderType.User ? (
                     <div className="blis-dialog-admin__content">
                         <div className="blis-wc-message blis-wc-message--user">User Input</div>
                     </div>
@@ -184,7 +189,7 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
                         </div>
                     )
                 }
-                {this.state.senderType == SenderType.User &&
+                {this.state.senderType === SenderType.User &&
                     <div className="blis-dialog-admin__content">
                         <div className="blis-dialog-admin-title">Entity Detection</div>
                         <div>
@@ -204,7 +209,7 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
                         </div>
                     </div>
                 }
-                {this.state.senderType == SenderType.Bot &&
+                {this.state.senderType === SenderType.Bot &&
                     <div className="blis-dialog-admin__content">
                         <div className="blis-dialog-admin-title">Action</div>
                         <div>
