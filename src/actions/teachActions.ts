@@ -4,7 +4,7 @@ import { UserInput, ExtractResponse, UIScoreInput, UIExtractResponse,
     UIScoreResponse, UITrainScorerStep, UITeachResponse,
     DialogType } from 'blis-models'
 
-export const runExtractorAsync = (key: string, appId: string, extractType: DialogType, sessionId: string, turnIndex: number, userInput: UserInput) : ActionObject => { 
+export const runExtractorAsync = (key: string, appId: string, extractType: DialogType, sessionId: string, turnIndex: number, userInput: UserInput): ActionObject => { 
     return {
         type: AT.RUN_EXTRACTOR_ASYNC,
         key: key,
@@ -16,7 +16,7 @@ export const runExtractorAsync = (key: string, appId: string, extractType: Dialo
     }
 }
 
-export const runExtractorFulfilled = (key: string, appId: string, sessionId: string, uiExtractResponse: UIExtractResponse) : ActionObject => { 
+export const runExtractorFulfilled = (key: string, appId: string, sessionId: string, uiExtractResponse: UIExtractResponse): ActionObject => { 
     return {
         type: AT.RUN_EXTRACTOR_FULFILLED,
         key: key,
@@ -27,7 +27,7 @@ export const runExtractorFulfilled = (key: string, appId: string, sessionId: str
 }
 
 // User makes an update to an extract response
-export const updateExtractResponse = (extractResponse: ExtractResponse) : ActionObject => { 
+export const updateExtractResponse = (extractResponse: ExtractResponse): ActionObject => { 
     return {
         type: AT.UPDATE_EXTRACT_RESPONSE,
         extractResponse: extractResponse
@@ -35,7 +35,7 @@ export const updateExtractResponse = (extractResponse: ExtractResponse) : Action
 }
 
 // User removes extract response
-export const removeExtractResponse = (extractResponse: ExtractResponse) : ActionObject => { 
+export const removeExtractResponse = (extractResponse: ExtractResponse): ActionObject => { 
     return {
         type: AT.REMOVE_EXTRACT_RESPONSE,
         extractResponse: extractResponse
@@ -43,13 +43,13 @@ export const removeExtractResponse = (extractResponse: ExtractResponse) : Action
 }
 
 // Clear extract responses
-export const clearExtractResponses = () : ActionObject => { 
+export const clearExtractResponses = (): ActionObject => { 
     return {
         type: AT.CLEAR_EXTRACT_RESPONSES
     }
 }
 
-export const runScorerAsync = (key: string, appId: string, teachId: string, uiScoreInput: UIScoreInput) : ActionObject => { 
+export const runScorerAsync = (key: string, appId: string, teachId: string, uiScoreInput: UIScoreInput): ActionObject => { 
     return {
         type: AT.RUN_SCORER_ASYNC,
         key: key,
@@ -59,7 +59,7 @@ export const runScorerAsync = (key: string, appId: string, teachId: string, uiSc
     }
 }
 
-export const runScorerFulfilled = (key: string, appId: string, teachId: string, uiScoreResponse: UIScoreResponse) : ActionObject => { 
+export const runScorerFulfilled = (key: string, appId: string, teachId: string, uiScoreResponse: UIScoreResponse): ActionObject => { 
     return {
         type: AT.RUN_SCORER_FULFILLED,
         key: key,
@@ -69,7 +69,7 @@ export const runScorerFulfilled = (key: string, appId: string, teachId: string, 
     }
 }
 
-export const postScorerFeedbackAsync = (key: string, appId: string, teachId: string, uiTrainScorerStep: UITrainScorerStep, waitForUser: boolean, uiScoreInput: UIScoreInput) : ActionObject => { 
+export const postScorerFeedbackAsync = (key: string, appId: string, teachId: string, uiTrainScorerStep: UITrainScorerStep, waitForUser: boolean, uiScoreInput: UIScoreInput): ActionObject => { 
     return {
         type: AT.POST_SCORE_FEEDBACK_ASYNC,
         key: key,
@@ -82,7 +82,7 @@ export const postScorerFeedbackAsync = (key: string, appId: string, teachId: str
 }
 
 // Score has been posted.  Action is Terminal
-export const postScorerFeedbackWaitFulfilled = (key: string, appId: string, teachId: string, uiTeachResponse: UITeachResponse) : ActionObject => { 
+export const postScorerFeedbackWaitFulfilled = (key: string, appId: string, teachId: string, uiTeachResponse: UITeachResponse): ActionObject => { 
     return {
         type: AT.POST_SCORE_FEEDBACK_FULFILLEDWAIT,
         key: key,
@@ -93,7 +93,7 @@ export const postScorerFeedbackWaitFulfilled = (key: string, appId: string, teac
 }
 
 // Score has been posted.  Action is not Terminal
-export const postScorerFeedbackNoWaitFulfilled = (key: string, appId: string, teachId: string, uiTeachResponse: UITeachResponse, uiScoreInput: UIScoreInput) : ActionObject => { 
+export const postScorerFeedbackNoWaitFulfilled = (key: string, appId: string, teachId: string, uiTeachResponse: UITeachResponse, uiScoreInput: UIScoreInput): ActionObject => { 
     return {
         type: AT.POST_SCORE_FEEDBACK_FULFILLEDNOWAIT,
         key: key,
@@ -103,7 +103,6 @@ export const postScorerFeedbackNoWaitFulfilled = (key: string, appId: string, te
         uiScoreInput: uiScoreInput
     }
 }
-
 
 export const toggleAutoTeach = (autoTeach: boolean): ActionObject => {
     return {
