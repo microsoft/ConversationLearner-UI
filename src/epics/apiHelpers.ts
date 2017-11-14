@@ -20,11 +20,12 @@ import { ActionObject } from '../types'
 import { ErrorType } from '../types/const'
 import { AT } from '../types/ActionTypes'
 import BlisClient from '../services/blisClient'
+import ApiConfig from './config'
 
 //=========================================================
 // CONFIG
 //=========================================================
-const blisClient = new BlisClient("http://localhost:5000", () => '')
+const blisClient = new BlisClient(ApiConfig.BlisClientEnpoint, () => '')
 
 //=========================================================
 // PARAMETER REQUIREMENTS
@@ -119,7 +120,7 @@ export interface CultureObject {
 }
 
 export const getLuisApplicationCultures = (): Promise<CultureObject[]> => {
-  return axios.get('http://blis-service.azurewebsites.net/api/v1/applicationcultures')
+  return axios.get(ApiConfig.BlisLocaleEndpoint)
       .then(response => response.data)
 }
 
