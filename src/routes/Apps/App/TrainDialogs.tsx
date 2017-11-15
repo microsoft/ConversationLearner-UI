@@ -10,7 +10,24 @@ import { createTeachSessionThunkAsync } from '../../../actions/createActions'
 import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { FM } from '../../../react-intl-messages'
 
-function getColumns(intl: InjectedIntl): OF.IColumn[] {
+interface IRenderableColumn extends OF.IColumn {
+    render: (x: TrainDialog, component: TrainDialogs) => React.ReactNode
+}
+
+const returnStringWhenError = (s: string) => {
+    return (f: Function) => {
+        try {
+            return f()
+        }
+        catch (err) {
+            return s
+        }
+    }
+}
+
+const returnErrorStringWhenError = returnStringWhenError("ERR")
+
+function getColumns(intl: InjectedIntl): IRenderableColumn[] {
     return [
         {
             key: 'firstInput',
@@ -21,7 +38,14 @@ function getColumns(intl: InjectedIntl): OF.IColumn[] {
             fieldName: 'firstInput',
             minWidth: 100,
             maxWidth: 500,
-            isResizable: true
+            isResizable: true,
+            render: trainDialog => {
+                if (trainDialog.rounds && trainDialog.rounds.length > 0) {
+                    const text = trainDialog.rounds[0].extractorStep.textVariations[0].text
+                    return <span className='ms-font-m-plus'>{text}</span>
+                }
+                return <span className="ms-Icon ms-Icon--Remove notFoundIcon" aria-hidden="true"></span>
+            }
         },
         {
             key: 'lastInput',
@@ -32,7 +56,14 @@ function getColumns(intl: InjectedIntl): OF.IColumn[] {
             fieldName: 'lastInput',
             minWidth: 100,
             maxWidth: 500,
-            isResizable: true
+            isResizable: true,
+            render: trainDialog => {
+                if (trainDialog.rounds && trainDialog.rounds.length > 0) {
+                    const text = trainDialog.rounds[trainDialog.rounds.length - 1].extractorStep.textVariations[0].text;
+                    return <span className='ms-font-m-plus'>{text}</span>
+                }
+                return <span className="ms-Icon ms-Icon--Remove notFoundIcon"></span>
+            }
         },
         {
             key: 'lastResponse',
@@ -43,7 +74,23 @@ function getColumns(intl: InjectedIntl): OF.IColumn[] {
             fieldName: 'lastResponse',
             minWidth: 100,
             maxWidth: 500,
-            isResizable: true
+            isResizable: true,
+            render: (trainDialog, component) => {
+                // Find last action of last scorer step of last round
+                // If found, return payload, otherwise return not found icon
+                if (trainDialog.rounds && trainDialog.rounds.length > 0) {
+                    let scorerSteps = trainDialog.rounds[trainDialog.rounds.length - 1].scorerSteps;
+                    if (scorerSteps.length > 0) {
+                        let actionId = scorerSteps[scorerSteps.length - 1].labelAction;
+                        let action = component.props.actions.find(a => a.actionId == actionId);
+                        if (action) {
+                            return <span className='ms-font-m-plus'>{action.payload}</span>;
+                        }
+                    }
+                }
+
+                return <span className="ms-Icon ms-Icon--Remove notFoundIcon"></span>;
+            }
         },
         {
             key: 'turns',
@@ -54,7 +101,11 @@ function getColumns(intl: InjectedIntl): OF.IColumn[] {
             fieldName: 'dialog',
             minWidth: 50,
             maxWidth: 50,
-            isResizable: true
+            isResizable: true,
+            render: trainDialog => {
+                let count = trainDialog.rounds ? trainDialog.rounds.length : 0
+                return <span className='ms-font-m-plus'>{count}</span>
+            }
         }
     ]
 }
@@ -82,12 +133,6 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         dialogKey: 0
     }
 
-    constructor(p: Props) {
-        super(p)
-
-        this.renderItemColumn = this.renderItemColumn.bind(this)
-    }
-
     componentDidMount() {
         this.newTeachSessionButton.focus();
     }
@@ -102,64 +147,6 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 })
             }
             this.newTeachSessionButton.focus();
-        }
-    }
-    firstUtterance(item: any) {
-        try {
-            if (item.rounds && item.rounds.length > 0) {
-                let text = item.rounds[0].extractorStep.textVariations[0].text;
-                return <span className='ms-font-m-plus'>{text}</span>;
-            }
-            return <span className="ms-Icon ms-Icon--Remove notFoundIcon" aria-hidden="true"></span>;
-        }
-        catch (err) {
-            return "ERR";
-        }
-    }
-    lastUtterance(item: any) {
-        try {
-            if (item.rounds && item.rounds.length > 0) {
-                let text = item.rounds[item.rounds.length - 1].extractorStep.textVariations[0].text;
-                return <span className='ms-font-m-plus'>{text}</span>;
-            }
-            return <span className="ms-Icon ms-Icon--Remove notFoundIcon" aria-hidden="true"></span>;
-        }
-        catch (err) {
-            return "ERR";
-        }
-    }
-    lastResponse(item: any) {
-        try {
-            if (item.rounds && item.rounds.length > 0) {
-                let scorerSteps = item.rounds[item.rounds.length - 1].scorerSteps;
-                if (scorerSteps.length > 0) {
-                    let actionId = scorerSteps[scorerSteps.length - 1].labelAction;
-                    let action = this.props.actions.find(a => a.actionId == actionId);
-                    if (action) {
-                        return <span className='ms-font-m-plus'>{action.payload}</span>;
-                    }
-                }
-            }
-            return <span className="ms-Icon ms-Icon--Remove notFoundIcon" aria-hidden="true"></span>;
-        }
-        catch (err) {
-            return "ERR";
-        }
-    }
-    renderItemColumn(item?: any, index?: number, column?: OF.IColumn) {
-        let fieldContent = item[column.fieldName];
-        switch (column.key) {
-            case 'firstInput':
-                return this.firstUtterance(item);
-            case 'lastInput':
-                return this.lastUtterance(item);
-            case 'lastResponse':
-                return this.lastResponse(item);
-            case 'turns':
-                let count = item.rounds ? item.rounds.length : 0;
-                return <span className='ms-font-m-plus'>{count}</span>;
-            default:
-                return <span className='ms-font-m-plus'>{fieldContent}</span>;
         }
     }
 
@@ -263,7 +250,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     items={trainDialogItems}
                     columns={this.state.columns}
                     checkboxVisibility={OF.CheckboxVisibility.hidden}
-                    onRenderItemColumn={this.renderItemColumn}
+                    onRenderItemColumn={(trainDialog, i, column: IRenderableColumn) => returnErrorStringWhenError(() => column.render(trainDialog, this))}
                     onActiveItemChanged={trainDialog => this.onClickTrainDialogItem(trainDialog)}
                 />
                 <TrainDialogWindow

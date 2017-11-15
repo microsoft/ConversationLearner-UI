@@ -10,14 +10,21 @@ import { DialogMode } from '../../types/const'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 
-const columns: OF.IColumn[] = [
+interface IRenderableColumn extends OF.IColumn {
+    render: (x: EntityBase, component: MemoryTable) => React.ReactNode
+    getSortValue: (entity: EntityBase, component: MemoryTable) => string
+}
+
+const columns: IRenderableColumn[] = [
     {
         key: 'entityName',
         name: 'Name',
         fieldName: 'entityName',
         minWidth: 100,
         maxWidth: 200,
-        isResizable: true
+        isResizable: true,
+        render: (entity, component) => component.renderEntityName(entity.entityName),
+        getSortValue: entity => entity.entityName.toUpperCase()
     },
     {
         key: 'entityValues',
@@ -25,7 +32,9 @@ const columns: OF.IColumn[] = [
         fieldName: 'entityValues',
         minWidth: 200,
         maxWidth: 400,
-        isResizable: true
+        isResizable: true,
+        render: (entity, component) => component.renderEntityValues(entity),
+        getSortValue: entity => ''
     },
     {
         key: 'entityType',
@@ -33,7 +42,12 @@ const columns: OF.IColumn[] = [
         fieldName: 'entityType',
         minWidth: 100,
         maxWidth: 200,
-        isResizable: true
+        isResizable: true,
+        render: entity => {
+            const type = (entity.entityType === EntityType.LOCAL || entity.entityType === EntityType.LUIS) ? "CUSTOM" : entity.entityType
+            return <span className="ms-font-m-plus">{type}</span>
+        },
+        getSortValue: entity => entity.entityType.toUpperCase()
     },
     {
         key: 'isProgrammatic',
@@ -42,6 +56,8 @@ const columns: OF.IColumn[] = [
         minWidth: 100,
         maxWidth: 100,
         isResizable: true,
+        render: entity => <span className={"ms-Icon blis-icon " + (entity.entityType === EntityType.LOCAL ? "ms-Icon--CheckMark" : "ms-Icon--Remove")} aria-hidden="true"></span>,
+        getSortValue: entity => entity.entityType === EntityType.LOCAL ? 'a' : 'b'
     },
     {
         key: 'isBucketable',
@@ -50,6 +66,8 @@ const columns: OF.IColumn[] = [
         minWidth: 80,
         maxWidth: 100,
         isResizable: true,
+        render: entity => <span className={"ms-Icon blis-icon " + (entity.metadata.isBucket ? "ms-Icon--CheckMark" : "ms-Icon--Remove")} aria-hidden="true"></span>,
+        getSortValue: entity => entity.metadata.isBucket ? 'a' : 'b'
     },
     {
         key: 'isNegatable',
@@ -58,12 +76,14 @@ const columns: OF.IColumn[] = [
         minWidth: 80,
         maxWidth: 100,
         isResizable: true,
+        render: entity => <span className={"ms-Icon blis-icon " + (entity.metadata.isReversable ? "ms-Icon--CheckMark" : "ms-Icon--Remove")} aria-hidden="true"></span>,
+        getSortValue: entity => entity.metadata.isReversable ? 'a' : 'b'
     }
 ]
 
 interface ComponentState {
-    columns: OF.IColumn[],
-    sortColumn: OF.IColumn
+    columns: IRenderableColumn[],
+    sortColumn: IRenderableColumn
 }
 
 class MemoryTable extends React.Component<Props, ComponentState> {
@@ -77,7 +97,7 @@ class MemoryTable extends React.Component<Props, ComponentState> {
         this.onColumnClick = this.onColumnClick.bind(this)
         this.renderItemColumn = this.renderItemColumn.bind(this)
     }
-    onColumnClick(event: any, column: OF.IColumn) {
+    onColumnClick(event: any, column: IRenderableColumn) {
         let { columns } = this.state;
         let isSortedDescending = column.isSortedDescending;
 
@@ -100,20 +120,13 @@ class MemoryTable extends React.Component<Props, ComponentState> {
             sortColumn: column
         });
     }
-    getValue(memory: any, col: OF.IColumn): any {
-        let value = memory[col.fieldName];
 
-        if (typeof value === 'string' || value instanceof String) {
-            return value.toUpperCase();
-        }
-        return value;
-    }
     previousMemory(entityName: string) {
         let prevMemories = this.props.prevMemories || [];
         return prevMemories.find(m => m.entityName === entityName);
     }
+    
     renderEntityName(entityName: string) {
-
         let curEntity = this.props.memories.find(m => m.entityName === entityName);
         let prevEntity = this.props.prevMemories.find(m => m.entityName === entityName);
         let entityClass = 'ms-font-m-plus';
@@ -129,21 +142,20 @@ class MemoryTable extends React.Component<Props, ComponentState> {
 
         return <span className={entityClass}>{entityName}</span>
     }
-    renderEntityValues(entityName: string) {
 
+    renderEntityValues(entity: EntityBase) {
         // Current entity values
-        let entity = this.props.entities.find(e => e.entityName === entityName);
-        let curMemory = this.props.memories.find(m => m.entityName === entityName);
+        let curMemory = this.props.memories.find(m => m.entityName === entity.entityName);
         let curMemoryValues = curMemory ? curMemory.entityValues : [];
         let curValues = curMemoryValues.map(cmv => cmv.userText);
 
         // Corresponding old memory values
-        let prevMemory = this.props.prevMemories.find(m => m.entityName === entityName);
+        let prevMemory = this.props.prevMemories.find(m => m.entityName === entity.entityName);
         let prevMemoryValues = prevMemory ? prevMemory.entityValues : [];
         let prevValues = prevMemoryValues.map(pmv => pmv.userText);
 
         // Find union and remove duplicates
-        let unionMemoryValues = [...curMemoryValues, ...prevMemoryValues.filter(pmv => !curMemoryValues.find(cmv => cmv.userText === pmv.userText))];
+        let unionMemoryValues = [...curMemoryValues, ...prevMemoryValues.filter(pmv => !curMemoryValues.some(cmv => cmv.userText === pmv.userText))];
 
         // Print out list in friendly manner
         let display = [];
@@ -184,32 +196,19 @@ class MemoryTable extends React.Component<Props, ComponentState> {
             index++;
         }
         return display;
-
     }
-    renderItemColumn(entityName?: string, index?: number, column?: OF.IColumn) {
 
-        let entity = this.props.entities.filter((e: EntityBase) => e.entityName === entityName)[0];
+    renderItemColumn(entityName: string, index: number, column: IRenderableColumn) {
+        const entity = this.props.entities.find(e => e.entityName == entityName)
         if (!entity) {
+            console.warn(`Attempted to render entity: ${entityName} for column: ${column.name} but the entity could not be found.`)
             return 'ERROR';
         }
-        if (column.key === 'entityType') {
-            let type = (entity.entityType === EntityType.LOCAL || entity.entityType === EntityType.LUIS) ? 'CUSTOM' : entity.entityType;
-            return <span className="ms-font-m-plus">{type}</span>;
-        } else if (column.key === 'entityValues') {
-            return this.renderEntityValues(entityName);
-        } else if (column.key === 'isProgrammatic') {
-            return <span className={'ms-Icon blis-icon ' + (entity.entityType === EntityType.LOCAL ? 'ms-Icon--CheckMark' : 'ms-Icon--Remove')} aria-hidden="true"/>
-        } else if (column.key === 'isBucketable') {
-            return <span className={'ms-Icon blis-icon ' + (entity.metadata.isBucket ? 'ms-Icon--CheckMark' : 'ms-Icon--Remove')} aria-hidden="true"/>
-        } else if (column.key === 'isNegatable') {
-            return <span className={'ms-Icon blis-icon ' + (entity.metadata.isReversable ? 'ms-Icon--CheckMark' : 'ms-Icon--Remove')} aria-hidden="true"/>
-        } else if (column.key === 'entityName') {
-            return this.renderEntityName(entityName);
-        }
-        return null;
-    }
-    getMemoryNames(): string[] {
 
+        return column.render(entity, this)
+    }
+
+    getMemoryNames(): string[] {
         let unionMemoryNames =
             // Find union or old and new remove duplicates
             [
@@ -219,11 +218,17 @@ class MemoryTable extends React.Component<Props, ComponentState> {
 
         unionMemoryNames = Array.from(new Set(unionMemoryNames));
 
+        // TODO: Refactor, this strips memorys down to a entity name string to perform union
+        // then re-merges back with original data.  This could be done in one pass only adding
+        // entity information to memorys, preserving original data, then reducing down to name on render
+
         if (this.state.sortColumn) {
             // Sort the items.
-            unionMemoryNames = unionMemoryNames.concat([]).sort((a: any, b: any) => {
-                let firstValue = this.getValue(a, this.state.sortColumn);
-                let secondValue = this.getValue(b, this.state.sortColumn);
+            unionMemoryNames = unionMemoryNames.concat([]).sort((a, b) => {
+                const aEntity = this.props.entities.find(e => e.entityName == a)
+                const bEntity = this.props.entities.find(e => e.entityName == b)
+                let firstValue = this.state.sortColumn.getSortValue(aEntity, this)
+                let secondValue = this.state.sortColumn.getSortValue(bEntity, this)
 
                 if (this.state.sortColumn.isSortedDescending) {
                     return firstValue > secondValue ? -1 : 1;
