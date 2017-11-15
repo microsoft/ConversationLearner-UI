@@ -38,7 +38,7 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
         if (this.props.open === false && nextProps.open === true) {
             this.setState(initialState);
         }
-        if (this.state.currentTrainDialog != nextProps.trainDialog) {
+        if (this.state.currentTrainDialog !== nextProps.trainDialog) {
             // Force webchat to re-mount as history prop can't be updated
             this.setState({
                 currentTrainDialog: nextProps.trainDialog,
@@ -64,13 +64,13 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
     }
 
     onClickConfirmDelete = () => {
-        this.setState({
-            confirmDeleteModalOpen: false
-        }, () => {
-            this.props.deleteTrainDialogAsync(this.props.user.key, this.props.trainDialog, this.props.app.appId)
-            this.props.onClose()
-        })
-    }
+        this.setState(
+            {confirmDeleteModalOpen: false}, 
+            () => {
+                this.props.deleteTrainDialogAsync(this.props.user.key, this.props.trainDialog, this.props.app.appId)
+                this.props.onClose()
+            })
+        }
 
     // TODO: Investigate if this can be removed.
     // Lars mentioned people shouldn't be able to / expected to chat when viewing existing dialogs
@@ -147,8 +147,7 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
                 </div>
                 <div className="blis-modal_footer">
                     <div className="blis-modal-buttons">
-                        <div className="blis-modal-buttons_primary">
-                        </div>
+                        <div className="blis-modal-buttons_primary"/>
                         <div className="blis-modal-buttons_secondary">
                             <DefaultButton
                                 onClick={() => this.onClickDelete()}

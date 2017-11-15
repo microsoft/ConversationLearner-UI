@@ -94,9 +94,9 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
     componentWillReceiveProps(newProps: Props) {
         // If train dialogs have been updated, update selected trainDialog too
-        if (this.props.trainDialogs != newProps.trainDialogs) {
+        if (this.props.trainDialogs !== newProps.trainDialogs) {
             if (this.state.trainDialogId) {
-                let newTrainDialog = newProps.trainDialogs.find(t => t.trainDialogId == this.state.trainDialogId);
+                let newTrainDialog = newProps.trainDialogs.find(t => t.trainDialogId === this.state.trainDialogId);
                 this.setState({
                     trainDialogId: newTrainDialog ? newTrainDialog.trainDialogId : null
                 })
@@ -218,7 +218,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     render() {
         const { intl } = this.props
         let trainDialogItems = this.renderTrainDialogItems()
-        let trainDialog = this.props.trainDialogs.find((td) => td.trainDialogId == this.state.trainDialogId);
+        let trainDialog = this.props.trainDialogs.find((td) => td.trainDialogId === this.state.trainDialogId);
         return (
             <div className="blis-page">
                 <div className="blis-dialog-title blis-dialog-title--teach ms-font-xxl">

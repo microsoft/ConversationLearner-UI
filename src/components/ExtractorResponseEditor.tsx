@@ -7,7 +7,7 @@ import { connect } from 'react-redux';
 import { ExtractResponse, PredictedEntity, EntityBase, 
     AppDefinition, EntityType, MemoryValue } from 'blis-models'
 import { State } from '../types';
-import { Prebuilt} from './ToolTips';
+import { Prebuilt } from './ToolTips';
 import { BlisDropdownOption } from './modals/BlisDropDownOption'
 import * as OF from 'office-ui-fabric-react';
 
@@ -894,10 +894,10 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
             })
         }
     }
-    getEntityDisplayName(entity: EntityBase) : string {
+    getEntityDisplayName(entity: EntityBase): string {
         if (entity.metadata) {
             if (entity.metadata.positiveId) {
-                return entity.entityName.replace('~','-');
+                return entity.entityName.replace('~', '-');
             } else if (entity.metadata.negativeId) {
                 return `+${entity.entityName}`;
             }

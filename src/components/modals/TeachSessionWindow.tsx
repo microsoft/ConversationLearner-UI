@@ -21,24 +21,26 @@ import { injectIntl, InjectedIntlProps } from 'react-intl'
 interface ComponentState {
     isConfirmDeleteOpen: boolean
     editing: boolean,
-    hadError: boolean
+    errorForId: string
 }
 
 class TeachWindow extends React.Component<Props, ComponentState> {
     state: ComponentState = {
         isConfirmDeleteOpen: false,
         editing: false,
-        hadError: false
+        errorForId: null
     }
 
     componentWillReceiveProps(newProps: Props) {
-        if (newProps.error) {
-            this.setState({hadError: true});
-        } else if (!newProps.error && this.state.hadError) {
-            // End the teaching session after error is done displaying as I can't continue after an error
-            this.setState({hadError: false}, () => {
-                this.props.deleteTeachSessionAsync(this.props.user.key, this.props.teachSessions.current, this.props.app.appId, true); 
-                this.props.onClose();
+        if (newProps.error && this.props.teachSessions.current) {
+            this.setState({errorForId: this.props.teachSessions.current.teachId});
+        } else if (!newProps.error && this.state.errorForId) {
+            this.setState({errorForId: null}, () => {
+                 // End the teaching session after error is done displaying as I can't continue after an error
+                if (newProps.teachSessions.current && this.state.errorForId === newProps.teachSessions.current.teachId) {
+                    this.props.deleteTeachSessionAsync(this.props.user.key, this.props.teachSessions.current, this.props.app.appId, true); 
+                    this.props.onClose();
+                }
             });
         }
     }
@@ -91,7 +93,7 @@ class TeachWindow extends React.Component<Props, ComponentState> {
         const { intl } = this.props
         // Show done button if at least on round and at end of round
         let showDone = this.props.teachSessions.currentConversationStack.length > 0
-            && this.props.teachSessions.mode == DialogMode.Wait;
+            && this.props.teachSessions.mode === DialogMode.Wait;
 
         // Put mask of webchat if not in input mode
         let chatDisable = (this.props.teachSessions.mode !== DialogMode.Wait) ?
