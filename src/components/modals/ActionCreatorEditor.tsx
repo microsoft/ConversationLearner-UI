@@ -132,6 +132,20 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     componentWillReceiveProps(nextProps: Props) {
         let nextState: Partial<ComponentState> = {}
 
+        // Update local copy of entity tags if they have changed
+        if (nextProps.entities !== this.props.entities) {
+            const entityTags = nextProps.entities.map<OF.ITag>(e =>
+                ({
+                    key: e.entityId,
+                    name: e.entityName
+                }))
+    
+            nextState = {
+                ...nextState,
+                entityTags
+            }
+        }
+
         if (nextProps.open === true) {
             // Reset state every time dialog was closed and is opened
             if (this.props.open === false) {
