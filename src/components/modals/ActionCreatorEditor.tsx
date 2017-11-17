@@ -51,7 +51,7 @@ const getSuggestedTags = (filterText: string, allTags: OF.ITag[], tagsToExclude:
     if (filterText.length === 0) {
         return availableTags
     }
-    
+
     return availableTags
         .filter(tag => tag.name.toLowerCase().startsWith(filterText.toLowerCase()))
 }
@@ -352,7 +352,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         const isPayloadValid = actionTypeOption.key === ActionTypes.API_LOCAL
             ? true
             : this.state.mentionEditorState.getCurrentContent().hasText()
-            
+
         this.setState({
             isPayloadValid,
             selectedActionTypeOptionKey: actionTypeOption.key
@@ -377,7 +377,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     onRenderExpectedTag = (props: IBlisPickerItemProps<OF.ITag>): JSX.Element => {
         const renderProps = { ...props }
         renderProps.highlight = true
-        return <BlisTagItem{...renderProps}>{props.item.name}</BlisTagItem>
+        return <BlisTagItem key={props.index} {...renderProps}>{props.item.name}</BlisTagItem>
     }
 
     onChangeExpectedEntityTags = (tags: OF.ITag[]) => {
@@ -406,11 +406,11 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         const locked = this.state.requiredEntityTagsFromPayload.some(t => t.key === props.key)
 
         // Strickout and lock/highlight if also the suggested entity
-        renderProps.strike = true
+        renderProps.strike = false
         renderProps.locked = locked
         renderProps.highlight = locked
 
-        return <BlisTagItem {...renderProps}>{props.item.name}</BlisTagItem>
+        return <BlisTagItem key={props.index} {...renderProps}>{props.item.name}</BlisTagItem>
     }
 
     onResolveNegativeEntityTags(filterText: string, selectedTags: OF.ITag[]): OF.ITag[] {
@@ -436,7 +436,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         renderProps.locked = suggestedEntityKey === props.key
         renderProps.highlight = suggestedEntityKey === props.key
 
-        return <BlisTagItem {...renderProps}>{props.item.name}</BlisTagItem>
+        return <BlisTagItem key={props.index} {...renderProps}>{props.item.name}</BlisTagItem>
     }
 
     onChangeMentionEditor = (editorState: EditorState) => {
@@ -510,7 +510,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                         <div className={(this.state.isPayloadValid ? '' : 'editor--error')}>
                             <div>
                                 <ActionPayloadEditor
-                                    label={this.state.selectedActionTypeOptionKey === ActionTypes.API_LOCAL ? 
+                                    label={this.state.selectedActionTypeOptionKey === ActionTypes.API_LOCAL ?
                                         'Arguments (Comma Separated)' : 'Response...'}
                                     allSuggestions={getMentionsAvailableForPayload}
                                     editorState={this.state.mentionEditorState}
@@ -518,7 +518,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                     placeholder={this.state.selectedActionTypeOptionKey === ActionTypes.API_LOCAL ? "Arguments..." : "Phrase..."}
                                     onChange={this.onChangeMentionEditor}
                                     disabled={isPayloadDisabled}
-                                    tipType={this.state.selectedActionTypeOptionKey === ActionTypes.API_LOCAL ? 
+                                    tipType={this.state.selectedActionTypeOptionKey === ActionTypes.API_LOCAL ?
                                         ToolTip.TipType.ACTION_ARGUMENTS : ToolTip.TipType.ACTION_RESPONSE_TEXT}
                                 />
                             </div>
@@ -529,8 +529,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                     </p>
                                 </div>)}
                         </div>
-       
-                        <div>
+
+                        <div className="blis-action-creator--expected-entities">
                             <TC.TagPicker
                                 label="Expected Entity in Response..."
                                 onResolveSuggestions={(text, tags) => this.onResolveExpectedEntityTags(text, tags)}
@@ -547,9 +547,10 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                 tipType={ToolTip.TipType.ACTION_SUGGESTED}
                             />
                         </div>
-                        <div>
+                        <div className="blis-action-creator--required-entities">
                             <BlisTagPicker
                                 nonRemovableTags={this.state.requiredEntityTagsFromPayload}
+                                nonRemoveableStrikethrough={false}
                                 label="Required Entities"
                                 onResolveSuggestions={(text, tags) => this.onResolveRequiredEntityTags(text, tags)}
                                 onRenderItem={this.onRenderRequiredEntityTag}
@@ -566,7 +567,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                             />
                         </div>
 
-                        <div>
+                        <div className="blis-action-creator--blocking-entities">
                             <BlisTagPicker
                                 nonRemovableTags={this.state.expectedEntityTags}
                                 label="Blocking Entities"
