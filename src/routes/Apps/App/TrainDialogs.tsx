@@ -201,15 +201,22 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         }
         // TODO: Consider caching as not very efficient
         let filteredTrainDialogs = this.props.trainDialogs.filter((t: TrainDialog) => {
-            let rawTD = JSON.stringify(t);
-            // Subsitute in values for GUIDS so they can be searched
-            for (let action of this.props.actions) {
-                rawTD = rawTD.replace(new RegExp(action.actionId, 'g'), action.payload);
+
+            let keys = [];
+            for (let round of t.rounds)
+            {
+                for (let variation of round.extractorStep.textVariations) {
+                    keys.push(variation.text);
+                    for (let le of variation.labelEntities) {
+                        keys.push(this.props.entities.find(e => e.entityId == le.entityId).entityName);
+                    }
+                }
+                for (let ss of round.scorerSteps) {
+                    keys.push(this.props.actions.find(a => a.actionId == ss.labelAction).payload);
+                }
             }
-            for (let entity of this.props.entities) {
-                rawTD = rawTD.replace(new RegExp(entity.entityId, 'g'), entity.entityName);
-            }
-            return rawTD.indexOf(this.state.searchValue) > -1;
+            let searchString = keys.join(' ').toLowerCase();
+            return searchString.indexOf(this.state.searchValue) > -1;
         })
         return filteredTrainDialogs;
     }
