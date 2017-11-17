@@ -34,7 +34,7 @@
 .draftJsMentionPlugin__mention__29BEd,
 .draftJsMentionPlugin__mention__29BEd:visited {
     display: inline-block;
-    background: var(--color-tag-highlight);
+    background: var(--color-themeLighter);
     padding-left: 2px;
     padding-right: 2px;
     border-radius: 2px;
@@ -45,7 +45,7 @@
   
 .draftJsMentionPlugin__mention__29BEd:hover,
 .draftJsMentionPlugin__mention__29BEd:focus {
-    background: var(--color-tag-highlight);
+    background: var(--color-themeLighter);
     outline: 0; /* reset for :focus */
 }
 
@@ -62,7 +62,7 @@
 }
   
 .draftJsMentionPlugin__mentionSuggestionsEntryFocused__3LcTd {
-    background-color: var(--color-tag-highlight);
+    background-color: var(--color-themeLighter);
 }
   
 .draftJsMentionPlugin__mentionSuggestionsEntryText__3Jobq {

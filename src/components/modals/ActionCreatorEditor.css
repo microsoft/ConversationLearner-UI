@@ -1,0 +1,6 @@
+.blis-action-creator--expected-entities .ms-TagItem-text--highlight {
+    background-color: var(--color-successBackground);
+}
+.blis-action-creator--blocking-entities .ms-BasePicker-text--static .ms-TagItem-text--highlight {
+    background-color: var(--color-successBackground);
+}
