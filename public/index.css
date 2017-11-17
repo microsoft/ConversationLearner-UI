@@ -284,7 +284,7 @@ html {
 }
 
 .ms-TagItem-text--highlight {
-  background-color: var(--color-tag-highlight);
+  background-color: var(--color-themeLighter);
 }
 
 .ms-TagItem-close {
