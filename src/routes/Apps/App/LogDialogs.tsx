@@ -7,6 +7,7 @@ import { State } from '../../../types'
 import { BlisAppBase, LogDialog, Session } from 'blis-models'
 import { ChatSessionWindow, LogDialogModal } from '../../../components/modals'
 import { createChatSessionThunkAsync } from '../../../actions/createActions'
+import { fetchAllLogDialogsAsync } from '../../../actions/fetchActions';
 import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { FM } from '../../../react-intl-messages'
 
@@ -188,6 +189,10 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         })
     }
 
+    onClickSync() {
+        this.props.fetchAllLogDialogsAsync(this.props.user.key, this.props.app.appId);
+    }
+
     render() {
         const logDialogItems = this.props.logDialogs.all;
         const currentLogDialog = this.state.currentLogDialog;
@@ -229,6 +234,13 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     onChange={(newValue) => this.onChange(newValue)}
                     onSearch={(newValue) => this.onChange(newValue)}
                 />
+                <OF.PrimaryButton
+                        className="blis-dropdownWithButton-button"
+                        onClick={() => this.onClickSync()}
+                        ariaDescription="Refresh"
+                        text=""
+                        iconProps={{ iconName: 'Sync' }}
+                    />
                 <OF.DetailsList
                     key={this.state.dialogKey}
                     className="ms-font-m-plus"
@@ -272,7 +284,8 @@ class LogDialogs extends React.Component<Props, ComponentState> {
 
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        createChatSessionThunkAsync
+        createChatSessionThunkAsync,
+        fetchAllLogDialogsAsync,
     }, dispatch)
 }
 const mapStateToProps = (state: State) => {
