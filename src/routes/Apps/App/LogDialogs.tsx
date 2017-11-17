@@ -193,8 +193,28 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         this.props.fetchAllLogDialogsAsync(this.props.user.key, this.props.app.appId);
     }
 
+    renderLogDialogItems(): LogDialog[] {
+        if (!this.state.searchValue)
+        {
+            return this.props.logDialogs.all;
+        }
+        // TODO: Consider caching as not very efficient
+        let filteredTrainDialogs = this.props.logDialogs.all.filter((l: LogDialog) => {
+            let rawTD = JSON.stringify(l);
+            // Subsitute in values for GUIDS so they can be searched
+            for (let action of this.props.actions) {
+                rawTD = rawTD.replace(new RegExp(action.actionId, 'g'), action.payload);
+            }
+            for (let entity of this.props.entities) {
+                rawTD = rawTD.replace(new RegExp(entity.entityId, 'g'), entity.entityName);
+            }
+            return rawTD.indexOf(this.state.searchValue) > -1;
+        })
+        return filteredTrainDialogs;
+    }
+
     render() {
-        const logDialogItems = this.props.logDialogs.all;
+        let logDialogItems = this.renderLogDialogItems()
         const currentLogDialog = this.state.currentLogDialog;
         return (
             <div className="blis-page">
@@ -292,7 +312,8 @@ const mapStateToProps = (state: State) => {
     return {
         logDialogs: state.logDialogs,
         user: state.user,
-        actions: state.actions
+        actions: state.actions,
+        entities: state.entities
     }
 }
 

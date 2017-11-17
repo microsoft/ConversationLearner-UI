@@ -195,9 +195,21 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     }
 
     renderTrainDialogItems(): TrainDialog[] {
-        // let lcString = this.state.searchValue.toLowerCase();
+        if (!this.state.searchValue)
+        {
+            return this.props.trainDialogs;
+        }
+        // TODO: Consider caching as not very efficient
         let filteredTrainDialogs = this.props.trainDialogs.filter((t: TrainDialog) => {
-            return true
+            let rawTD = JSON.stringify(t);
+            // Subsitute in values for GUIDS so they can be searched
+            for (let action of this.props.actions) {
+                rawTD = rawTD.replace(new RegExp(action.actionId, 'g'), action.payload);
+            }
+            for (let entity of this.props.entities) {
+                rawTD = rawTD.replace(new RegExp(entity.entityId, 'g'), entity.entityName);
+            }
+            return rawTD.indexOf(this.state.searchValue) > -1;
         })
         return filteredTrainDialogs;
     }
@@ -272,6 +284,7 @@ const mapStateToProps = (state: State) => {
     return {
         user: state.user,
         actions: state.actions,
+        entities: state.entities,
         trainDialogs: state.trainDialogs
     }
 }
