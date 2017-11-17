@@ -200,15 +200,19 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         }
         // TODO: Consider caching as not very efficient
         let filteredTrainDialogs = this.props.logDialogs.all.filter((l: LogDialog) => {
-            let rawTD = JSON.stringify(l);
-            // Subsitute in values for GUIDS so they can be searched
-            for (let action of this.props.actions) {
-                rawTD = rawTD.replace(new RegExp(action.actionId, 'g'), action.payload);
+            let keys = [];
+            for (let round of l.rounds)
+            {
+                keys.push(round.extractorStep.text);
+                for (let le of round.extractorStep.predictedEntities) {
+                    keys.push(this.props.entities.find(e => e.entityId == le.entityId).entityName);
+                }
+                for (let ss of round.scorerSteps) {
+                    keys.push(this.props.actions.find(a => a.actionId == ss.predictedAction).payload);
+                }
             }
-            for (let entity of this.props.entities) {
-                rawTD = rawTD.replace(new RegExp(entity.entityId, 'g'), entity.entityName);
-            }
-            return rawTD.indexOf(this.state.searchValue) > -1;
+            let searchString = keys.join(' ').toLowerCase();
+            return searchString.indexOf(this.state.searchValue) > -1;
         })
         return filteredTrainDialogs;
     }
