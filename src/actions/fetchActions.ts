@@ -8,8 +8,9 @@ import {
     TrainDialog,
     LogDialog,
     Session,
-    Teach
-} from 'blis-models';
+    Teach,
+    TrainingStatus
+} from 'blis-models'
 
 export const fetchAllTrainDialogsAsync = (key: string, blisAppID: string): ActionObject => {
     return {
@@ -69,6 +70,21 @@ export const fetchApplicationsFulfilled = (apps: BlisAppBase[]): ActionObject =>
     return {
         type: AT.FETCH_APPLICATIONS_FULFILLED,
         allBlisApps: apps
+    }
+}
+
+export const fetchApplicationTrainingStatusAsync = (appId: string): ActionObject => {
+    return {
+        type: AT.FETCH_APPLICATION_TRAININGSTATUS_ASYNC,
+        appId
+    }
+}
+
+export const fetchApplicationTrainingStatusFulfilled = (appId: string, trainingStatus: TrainingStatus): ActionObject => {
+    return {
+        type: AT.FETCH_APPLICATION_TRAININGSTATUS_FULFILLED,
+        appId,
+        trainingStatus
     }
 }
 

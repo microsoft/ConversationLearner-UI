@@ -32,9 +32,7 @@ const blisClient = new BlisClient(ApiConfig.BlisClientEnpoint, () => '')
 //=========================================================
 
 export interface BlisAppForUpdate extends BlisAppBase {
-  trainingFailureMessage: string;
-  trainingRequired: boolean;
-  trainingStatus: string;
+  trainingRequired: boolean
   latestPackageId: number
 }
 
@@ -69,11 +67,22 @@ export interface BlisAppForUpdate extends BlisAppBase {
   export const getAllBlisApps = (key: string, userId: string): Observable<ActionObject> => {
     return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.apps(userId)
       .then(apps => {
+        // Set datetime on each app
+        apps.forEach(app => app.datetime = new Date())
         obs.next(actions.fetch.fetchApplicationsFulfilled(apps));
         obs.complete();
       })
       .catch(err => handleError(obs, err, AT.FETCH_APPLICATIONS_ASYNC)));
   };
+
+export const getAppTrainingStatus = (appId: string): Observable<ActionObject> => {
+  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.appGetTrainingStatus(appId)
+    .then(trainingStatus => {
+      obs.next(actions.fetch.fetchApplicationTrainingStatusFulfilled(appId, trainingStatus))
+      obs.complete();
+    })
+    .catch(err => handleError(obs, err, AT.FETCH_APPLICATION_TRAININGSTATUS_ASYNC)));
+};
 
   export const getAllEntitiesForBlisApp = (key: string, appId: string): Observable<ActionObject> => {
     return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.entities(appId)

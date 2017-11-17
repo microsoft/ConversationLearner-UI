@@ -6,7 +6,7 @@ import {
     TrainDialog, LogDialog, Session, Teach,
     UserInput, ExtractResponse, DialogType,
     UIExtractResponse, UITrainScorerStep,
-    UITeachResponse, UIScoreInput, UIScoreResponse
+    UITeachResponse, UIScoreInput, UIScoreResponse, TrainingStatus
 } from 'blis-models'
 import { TipType } from '../components/ToolTips'
 import { ErrorType, DisplayMode } from '../types/const'
@@ -84,6 +84,13 @@ export type DisplayAction = {
 }
 
 export type FetchAction = {
+    type: AT.FETCH_APPLICATION_TRAININGSTATUS_ASYNC,
+    appId: string
+} | {
+    type: AT.FETCH_APPLICATION_TRAININGSTATUS_FULFILLED,
+    appId: string,
+    trainingStatus: TrainingStatus
+} |{
     type: AT.FETCH_APPLICATIONS_ASYNC,
     userId: string
 } | {

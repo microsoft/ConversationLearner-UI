@@ -13,6 +13,7 @@ import Actions from './Actions'
 import Dashboard from './Dashboard'
 import Settings from './Settings'
 import LogDialogs from './LogDialogs'
+import TrainingStatus from '../../../components/TrainingStatus'
 
 // TODO: i18n support would be much easier after proper routing is implemented
 // this would eliminate the use of page title strings as navigation keys and instead use the url
@@ -31,6 +32,7 @@ class Index extends React.Component<Props, ComponentState> {
     }
 
     componentWillReceiveProps(newProps: Props) {
+        console.log(`App/Index: componentWillReceiveProps`, newProps.app.datetime)
         let validationErrors: string[] = [];
 
         if (newProps.actions !== this.props.actions) {
@@ -82,6 +84,9 @@ class Index extends React.Component<Props, ComponentState> {
             <div className="blis-app-page">
                 <div>
                     <div className="blis-app-title ms-font-xxl">{this.props.app.appName}</div>
+                    <TrainingStatus
+                        app={this.props.app}
+                    />
                     <div className="blis-nav ms-font-m-plus">
                         <div className="blis-nav_section">
                             <a onClick={() => this.setArenaDisplay('Settings')}><span className="ms-Icon ms-Icon--Settings" aria-hidden="true"/>&nbsp;&nbsp;</a>
