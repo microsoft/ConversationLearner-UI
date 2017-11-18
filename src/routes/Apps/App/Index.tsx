@@ -13,7 +13,7 @@ import Actions from './Actions'
 import Dashboard from './Dashboard'
 import Settings from './Settings'
 import LogDialogs from './LogDialogs'
-import TrainingStatus from '../../../components/TrainingStatus'
+import TrainingStatus from '../../../components/TrainingStatusContainer'
 
 // TODO: i18n support would be much easier after proper routing is implemented
 // this would eliminate the use of page title strings as navigation keys and instead use the url

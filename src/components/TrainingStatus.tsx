@@ -1,118 +1,98 @@
 import * as React from 'react'
-import { returntypeof } from 'react-redux-typescript'
-import { bindActionCreators } from 'redux'
-import { connect } from 'react-redux'
-import { State } from '../types'
-import { BlisAppBase, TrainingStatusCode } from 'blis-models'
-import { fetchApplicationTrainingStatusAsync } from '../actions/fetchActions'
-import { FormattedRelative } from 'react-intl'
+import { FormattedMessage, FormattedRelative } from 'react-intl'
+import { FM } from '../react-intl-messages'
+import { TooltipHost } from 'office-ui-fabric-react'
 import './TrainingStatus.css'
 
-enum InternalTrainingStatus {
+export enum InternalTrainingStatus {
     Unknown = "Unknown",
-    Pending = "Pending",
+    Queued = "Queued",
+    Running = "Running",
     Completed = "Completed",
     Failed = "Failed"
 }
-
-const externalStatusToInternalStatusMap = new Map<TrainingStatusCode, InternalTrainingStatus>([
-    [TrainingStatusCode.Completed, InternalTrainingStatus.Completed],
-    [TrainingStatusCode.Failed, InternalTrainingStatus.Failed],
-])
 
 const internalStatusToUiStateMap = new Map<InternalTrainingStatus, StatusUI>([
     [InternalTrainingStatus.Unknown, {
         className: "blis-training-status__icon-row--unknown",
         iconClassName: "ms-Icon--Unknown",
-        iconLabel: "Unknown",
+        iconLabelMessageId: FM.APP_TRAINING_STATUS_UNKNOWN,
     }],
-    [InternalTrainingStatus.Pending, {
-        className: "blis-training-status__icon-row--pending",
+    [InternalTrainingStatus.Queued, {
+        className: "blis-training-status__icon-row--queued",
+        iconClassName: "ms-Icon--StatusErrorFull",
+        iconLabelMessageId: FM.APP_TRAINING_STATUS_QUEUED,
+    }],
+    [InternalTrainingStatus.Running, {
+        className: "blis-training-status__icon-row--running",
         iconClassName: "ms-Icon--Sync",
-        iconLabel: "Pending",
+        iconLabelMessageId: FM.APP_TRAINING_STATUS_RUNNING,
     }],
     [InternalTrainingStatus.Completed, {
         className: "blis-training-status__icon-row--success",
         iconClassName: "ms-Icon--CompletedSolid",
-        iconLabel: "Trained",
+        iconLabelMessageId: FM.APP_TRAINING_STATUS_COMPLETED,
     }],
     [InternalTrainingStatus.Failed, {
         className: "blis-training-status__icon-row--error",
         iconClassName: "ms-Icon--StatusErrorFull",
-        iconLabel: "Failed",
+        iconLabelMessageId: FM.APP_TRAINING_STATUS_FAILED,
     }]
 ])
 
 interface StatusUI {
     className: string
     iconClassName: string
-    iconLabel: string
+    iconLabelMessageId: string
 }
 
-interface ComponentState {
+export interface Props {
     status: InternalTrainingStatus
+    failureMessage: string
+    lastUpdatedDatetime: Date | null
+    onClickRefresh: () => void
 }
 
-class Component extends React.Component<Props, ComponentState> {
-    state: ComponentState = {
-        status: InternalTrainingStatus.Unknown
-    }
-
-    constructor(props: Props) {
-        super(props)
-        console.log(`TrainingStatus: constructor`, props.app.appId, props.app.datetime)
-        this.state.status = externalStatusToInternalStatusMap.get(props.app.trainingStatus) || InternalTrainingStatus.Unknown
-    }
-
-    componentWillReceiveProps(nextProps: Props) {
-        console.log(`TrainingStatus: componentWillReceiveProps`, nextProps.app.appId, nextProps.app.datetime)
-        this.setState({
-            status: externalStatusToInternalStatusMap.get(nextProps.app.trainingStatus) || InternalTrainingStatus.Unknown,
-        })
-    }
-
-    onClickRefresh = () => {
-        this.setState({
-            status: InternalTrainingStatus.Pending
-        }, () => {
-            this.props.fetchApplicationTrainingStatusAsync(this.props.app.appId)
-        })
-    }
-
-    render() {
-        const uiState = internalStatusToUiStateMap.get(this.state.status)
-        return (
-            <div className="blis-training-status ms-font-l">
-                <div className={"blis-training-status__icon-row " + uiState.className}>Status: &nbsp;<span className={"ms-Icon " + uiState.iconClassName} aria-hidden="true" /> &nbsp;<span className="blis-training-status__icon-label">{uiState.iconLabel}</span></div>
-                <div className="blis-training-status__text-row ms-font-s">
-                    Last Update: &nbsp;
-                    <span className="blis-training-status__time">
-                        {this.props.app.datetime ? <FormattedRelative value={this.props.app.datetime} /> : ''}
-                    </span>
-                    <button className="blis-training-status__trigger ms-font-s" onClick={this.onClickRefresh}>Refresh</button>
-                </div>
+const Component: React.SFC<Props> = (props: Props) => {
+    const uiState = internalStatusToUiStateMap.get(props.status)
+    return (
+        <div className="blis-training-status ms-font-l">
+            <div className={"blis-training-status__icon-row " + uiState.className}>
+                <FormattedMessage
+                    id={FM.APP_TRAINING_STATUS_STATUS}
+                    defaultMessage="Status"
+                />: &nbsp;<span className={"ms-Icon " + uiState.iconClassName} aria-hidden="true" />
+                &nbsp;<span className="blis-training-status__icon-label">
+                    <FormattedMessage
+                        id={uiState.iconLabelMessageId}
+                        defaultMessage="Status Placeholder"
+                    />
+                </span>
+                {props.status === InternalTrainingStatus.Failed
+                    && <TooltipHost content={props.failureMessage}>
+                        <span className="blis-icon ms-Icon ms-Icon--Info" aria-hidden="true" />
+                    </TooltipHost>}
             </div>
-        )
-    }
-}
-const mapDispatchToProps = (dispatch: any) => {
-    return bindActionCreators({
-        fetchApplicationTrainingStatusAsync
-    }, dispatch);
-}
-const mapStateToProps = (state: State, ownProps: any) => {
-    return {
-    }
+            <div className="blis-training-status__text-row ms-font-s">
+                <FormattedMessage
+                    id={FM.APP_TRAINING_STATUS_LAST_UPDATE}
+                    defaultMessage="Last Update"
+                />: &nbsp;
+                    <span className="blis-training-status__time">
+                    {props.lastUpdatedDatetime ? <FormattedRelative value={props.lastUpdatedDatetime} /> : ''}
+                </span>
+                <button className="blis-training-status__trigger ms-font-s" onClick={props.onClickRefresh}>
+                    <FormattedMessage
+                        id={FM.APP_TRAINING_STATUS_REFRESH}
+                        defaultMessage="Refresh"
+                    />
+                </button>
+            </div>
+        </div>
+    )
 }
 
-export interface ReceivedProps {
-    app: BlisAppBase
-}
 
-// Props types inferred from mapStateToProps & dispatchToProps
-const stateProps = returntypeof(mapStateToProps);
-const dispatchProps = returntypeof(mapDispatchToProps);
-type Props = typeof stateProps & typeof dispatchProps & ReceivedProps;
 
-export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(Component);
+export default Component
 
