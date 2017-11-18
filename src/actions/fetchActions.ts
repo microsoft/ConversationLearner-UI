@@ -9,8 +9,16 @@ import {
     LogDialog,
     Session,
     Teach,
-    TrainingStatus
+    TrainingStatus,
+    TrainingStatusCode
 } from 'blis-models'
+import { Dispatch } from 'redux'
+
+// TODO: Need to isolate usage of blis client to single layer
+import BlisClient from '../services/blisClient'
+import ApiConfig from '../epics/config'
+
+const blisClient = new BlisClient(ApiConfig.BlisClientEnpoint, () => '')
 
 export const fetchAllTrainDialogsAsync = (key: string, blisAppID: string): ActionObject => {
     return {
@@ -85,6 +93,46 @@ export const fetchApplicationTrainingStatusFulfilled = (appId: string, trainingS
         type: AT.FETCH_APPLICATION_TRAININGSTATUS_FULFILLED,
         appId,
         trainingStatus
+    }
+}
+
+const delay = <T>(ms: number, value: T = null): Promise<T> => new Promise<T>(resolve => setTimeout(() => resolve(value), ms))
+
+export const fetchApplicationTrainingStatusThunkAsync = (appId: string) => {
+    return async (dispatch: Dispatch<any>) => {
+        dispatch(fetchApplicationTrainingStatusAsync(appId))
+
+        // Simulate queued
+        await delay(1000)
+        const trainingStatus1: TrainingStatus = {
+            trainingStatus: TrainingStatusCode.Queued,
+            trainingFailureMessage: null
+        }
+
+        dispatch(fetchApplicationTrainingStatusFulfilled(appId, trainingStatus1))
+
+        // Simulate running
+        await delay(1000)
+        const trainingStatus2: TrainingStatus = {
+            trainingStatus: TrainingStatusCode.Running,
+            trainingFailureMessage: null
+        }
+
+        dispatch(fetchApplicationTrainingStatusFulfilled(appId, trainingStatus2))
+
+        // Simulate running
+        await delay(1000)
+        const trainingStatus3: TrainingStatus = {
+            trainingStatus: TrainingStatusCode.Completed,
+            trainingFailureMessage: null
+        }
+
+        dispatch(fetchApplicationTrainingStatusFulfilled(appId, trainingStatus3))
+
+        // Simulate actual
+        await delay(1000)
+        const trainingStatus = await blisClient.appGetTrainingStatus(appId)
+        dispatch(fetchApplicationTrainingStatusFulfilled(appId, trainingStatus))
     }
 }
 

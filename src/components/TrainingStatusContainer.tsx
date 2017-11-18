@@ -4,11 +4,13 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { State } from '../types'
 import { BlisAppBase, TrainingStatusCode } from 'blis-models'
-import { fetchApplicationTrainingStatusAsync } from '../actions/fetchActions'
+import { fetchApplicationTrainingStatusThunkAsync } from '../actions/fetchActions'
 import { InternalTrainingStatus, default as TrainingStatus } from './TrainingStatus'
 
 
 const externalStatusToInternalStatusMap = new Map<TrainingStatusCode, InternalTrainingStatus>([
+    [TrainingStatusCode.Queued, InternalTrainingStatus.Queued],
+    [TrainingStatusCode.Running, InternalTrainingStatus.Running],
     [TrainingStatusCode.Completed, InternalTrainingStatus.Completed],
     [TrainingStatusCode.Failed, InternalTrainingStatus.Failed],
 ])
@@ -17,30 +19,26 @@ interface ComponentState {
     status: InternalTrainingStatus
 }
 
-class Component extends React.Component<Props, ComponentState> {
+class TrainingStatusContainer extends React.Component<Props, ComponentState> {
     state: ComponentState = {
         status: InternalTrainingStatus.Unknown
     }
 
     constructor(props: Props) {
         super(props)
-        console.log(`TrainingStatusContainer: ${this.constructor.name}: constructor`, props.app.appId, props.app.datetime)
+        console.log(`${this.constructor.name}: constructor`, props.app.appId, props.app.datetime)
         this.state.status = externalStatusToInternalStatusMap.get(props.app.trainingStatus) || InternalTrainingStatus.Unknown
     }
 
     componentWillReceiveProps(nextProps: Props) {
-        console.log(`TrainingStatusContainer: componentWillReceiveProps`, nextProps.app.appId, nextProps.app.datetime)
+        console.log(`${this.constructor.name}: componentWillReceiveProps`, nextProps.app.appId, nextProps.app.datetime)
         this.setState({
             status: externalStatusToInternalStatusMap.get(nextProps.app.trainingStatus) || InternalTrainingStatus.Unknown,
         })
     }
 
     onClickRefresh = () => {
-        this.setState({
-            status: InternalTrainingStatus.Queued
-        }, () => {
-            this.props.fetchApplicationTrainingStatusAsync(this.props.app.appId)
-        })
+        this.props.fetchApplicationTrainingStatusThunkAsync(this.props.app.appId)
     }
 
     render() {
@@ -56,7 +54,7 @@ class Component extends React.Component<Props, ComponentState> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        fetchApplicationTrainingStatusAsync
+        fetchApplicationTrainingStatusThunkAsync
     }, dispatch);
 }
 const mapStateToProps = (state: State, ownProps: any) => {
@@ -73,5 +71,5 @@ const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
 type Props = typeof stateProps & typeof dispatchProps & ReceivedProps;
 
-export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(Component);
+export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(TrainingStatusContainer);
 

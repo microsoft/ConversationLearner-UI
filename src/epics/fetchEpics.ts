@@ -3,7 +3,7 @@ import * as Rx from 'rxjs';
 import { ActionsObservable, Epic } from 'redux-observable'
 import { State, ActionObject } from '../types'
 import { AT } from '../types/ActionTypes'
-import { getBotInfo, getAllBlisApps, getAppTrainingStatus, getAllEntitiesForBlisApp, getAllActionsForBlisApp, getAllSessionsForBlisApp, getAllTeachSessionsForBlisApp, getAllTrainDialogsForBlisApp, getAllLogDialogsForBlisApp } from "./apiHelpers";
+import { getBotInfo, getAllBlisApps, getAllEntitiesForBlisApp, getAllActionsForBlisApp, getAllSessionsForBlisApp, getAllTeachSessionsForBlisApp, getAllTrainDialogsForBlisApp, getAllLogDialogsForBlisApp } from "./apiHelpers";
 
 const assertNever = () => { throw Error(`Should not reach here`) }
 
@@ -20,14 +20,6 @@ export const fetchApplicationsEpic: Epic<ActionObject, State> = (action$: Action
         .flatMap(action =>
             (action.type === AT.FETCH_APPLICATIONS_ASYNC)
                 ? getAllBlisApps('', action.userId)
-                : assertNever())
-}
-
-export const fetchApplicationTrainingStatusEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
-    return action$.ofType(AT.FETCH_APPLICATION_TRAININGSTATUS_ASYNC)
-        .flatMap(action =>
-            (action.type === AT.FETCH_APPLICATION_TRAININGSTATUS_ASYNC)
-                ? getAppTrainingStatus(action.appId)
                 : assertNever())
 }
 

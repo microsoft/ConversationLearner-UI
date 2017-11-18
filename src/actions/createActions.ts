@@ -3,8 +3,9 @@ import { AT } from '../types/ActionTypes'
 import { BlisAppBase, EntityBase, ActionBase, TrainDialog, LogDialog, Teach, Session, TrainingStatusCode } from 'blis-models'
 import { Dispatch } from 'redux'
 import BlisClient from '../services/blisClient'
+import ApiConfig from '../epics/config'
 
-const blisClient = new BlisClient("http://localhost:5000", () => '')
+const blisClient = new BlisClient(ApiConfig.BlisClientEnpoint, () => '')
 
 export const createBLISApplicationAsync = (key: string, userId: string, application: BlisAppBase): ActionObject => {
     return {
