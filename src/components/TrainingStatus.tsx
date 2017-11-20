@@ -92,7 +92,5 @@ const Component: React.SFC<Props> = (props: Props) => {
     )
 }
 
-
-
 export default Component
 

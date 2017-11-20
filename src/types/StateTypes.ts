@@ -23,7 +23,7 @@ export type TrainDialogState = TrainDialog[];
 export type LogDialogState = {
     all: LogDialog[]
 }
-export interface AppsState {
+export type AppsState = {
     all: BlisAppBase[]
 }
 export type BotState = {

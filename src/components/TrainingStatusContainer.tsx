@@ -7,7 +7,6 @@ import { BlisAppBase, TrainingStatusCode } from 'blis-models'
 import { fetchApplicationTrainingStatusThunkAsync } from '../actions/fetchActions'
 import { InternalTrainingStatus, default as TrainingStatus } from './TrainingStatus'
 
-
 const externalStatusToInternalStatusMap = new Map<TrainingStatusCode, InternalTrainingStatus>([
     [TrainingStatusCode.Queued, InternalTrainingStatus.Queued],
     [TrainingStatusCode.Running, InternalTrainingStatus.Running],

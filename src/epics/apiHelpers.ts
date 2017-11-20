@@ -75,15 +75,6 @@ export interface BlisAppForUpdate extends BlisAppBase {
       .catch(err => handleError(obs, err, AT.FETCH_APPLICATIONS_ASYNC)));
   };
 
-export const getAppTrainingStatus = (appId: string): Observable<ActionObject> => {
-  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.appGetTrainingStatus(appId)
-    .then(trainingStatus => {
-      obs.next(actions.fetch.fetchApplicationTrainingStatusFulfilled(appId, trainingStatus))
-      obs.complete();
-    })
-    .catch(err => handleError(obs, err, AT.FETCH_APPLICATION_TRAININGSTATUS_ASYNC)));
-};
-
   export const getAllEntitiesForBlisApp = (key: string, appId: string): Observable<ActionObject> => {
     return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.entities(appId)
       .then(entities => {
