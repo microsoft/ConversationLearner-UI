@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "axios": "^0.16.2",
-    "blis-models": "^0.81.0",
+    "blis-models": "^0.82.0",
     "blis-webchat": "^0.18.0",
     "botframework-directlinejs": "^0.9.12",
     "draft-js": "^0.10.4",
