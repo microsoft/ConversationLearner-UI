@@ -1,6 +1,11 @@
 import { ActionObject } from '../types'
 import { AT } from '../types/ActionTypes'
+import { Dispatch } from 'redux'
 import { BlisAppBase, EntityBase, ActionBase, Session, Teach, TrainDialog } from 'blis-models'
+import BlisClient from '../services/blisClient'
+import ApiConfig from '../epics/config'
+
+const blisClient = new BlisClient(ApiConfig.BlisClientEnpoint, () => '')
 
 export const deleteBLISApplicationAsync = (key: string, blisApp: BlisAppBase): ActionObject => {
 
@@ -115,11 +120,33 @@ export const deleteTrainDialogAsync = (key: string, trainDialog: TrainDialog, cu
     }
 }
 
+export const deleteTrainDialogRejected = (): ActionObject => {
+    return {
+        type: AT.DELETE_TRAIN_DIALOG_REJECTED
+    }
+}
+
 export const deleteTrainDialogFulfilled = (key: string, GUID: string): ActionObject => {
     return {
         type: AT.DELETE_TRAIN_DIALOG_FULFILLED,
         key: key,
         trainDialogGUID: GUID
+    }
+}
+
+export const deleteTrainDialogThunkAsync = (appId: string, trainDialog: TrainDialog, key: string) => {
+    blisClient.key = key
+    return async (dispatch: Dispatch<any>) => {
+        dispatch(deleteTrainDialogAsync(key, trainDialog, appId))
+
+        try {
+            await blisClient.trainDialogsDelete(appId, trainDialog.trainDialogId)
+            dispatch(deleteTrainDialogFulfilled(key, trainDialog.trainDialogId))
+        }
+        catch(e) {
+            dispatch(deleteTrainDialogRejected())
+            throw new Error(e)
+        }
     }
 }
 

@@ -251,6 +251,8 @@ export type DeleteAction = {
 } | {
     type: AT.DELETE_TRAIN_DIALOG_FULFILLED,
     trainDialogGUID: string,
+} | {
+    type: AT.DELETE_TRAIN_DIALOG_REJECTED
 } | DeleteLogDialogAsyncAction
 | DeleteLogDialogFulfilledAction
 | {
