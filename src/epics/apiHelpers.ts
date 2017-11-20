@@ -219,15 +219,6 @@ export const getLuisApplicationCultures = (): Promise<CultureObject[]> => {
       .catch(err => handleError(obs, err, AT.DELETE_LOG_DIALOG_ASYNC)));
   };
 
-  export const deleteTrainDialog = (key: string, appId: string, trainDialog: TrainDialog): Observable<ActionObject> => {
-    return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.trainDialogsDelete(appId, trainDialog.trainDialogId)
-      .then(() => {
-        obs.next(actions.delete.deleteTrainDialogFulfilled(key, trainDialog.trainDialogId));
-        obs.complete();
-      })
-      .catch(err => handleError(obs, err, AT.DELETE_TRAIN_DIALOG_ASYNC)));
-  };
-
   //=========================================================
   // EDIT ROUTES
   //=========================================================

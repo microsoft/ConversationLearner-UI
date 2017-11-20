@@ -8,13 +8,13 @@ import { State } from '../../types';
 import Webchat from '../Webchat'
 import TrainDialogAdmin from './TrainDialogAdmin'
 import { BlisAppBase, ActionBase, TrainDialog } from 'blis-models'
-import { deleteTrainDialogAsync } from '../../actions/deleteActions'
+import { deleteTrainDialogThunkAsync } from '../../actions/deleteActions'
 import { fetchApplicationTrainingStatusThunkAsync } from '../../actions/fetchActions'
+// TODO: Investigate if this can be removed in favor of local state
+import { addMessageToChatConversationStack } from '../../actions/displayActions'
 import { Activity } from 'botframework-directlinejs';
 import { SenderType } from '../../types/const';
 import ConfirmDeleteModal from './ConfirmDeleteModal'
-// TODO: Investigate if this can be removed in favor of local state
-import { addMessageToChatConversationStack } from '../../actions/displayActions';
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 
@@ -67,10 +67,15 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
     onClickConfirmDelete = () => {
         this.setState(
             {confirmDeleteModalOpen: false}, 
-            () => {
-                this.props.deleteTrainDialogAsync(this.props.user.key, this.props.trainDialog, this.props.app.appId)
-                this.props.fetchApplicationTrainingStatusThunkAsync(this.props.app.appId)
-                this.props.onClose()
+            async () => {
+                try {
+                    await this.props.deleteTrainDialogThunkAsync(this.props.app.appId, this.props.trainDialog)
+                    this.props.fetchApplicationTrainingStatusThunkAsync(this.props.app.appId)
+                    this.props.onClose()
+                }
+                catch (e) {
+                    console.error(e)
+                }
             })
         }
 
@@ -192,7 +197,7 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         addMessageToChatConversationStack,
-        deleteTrainDialogAsync,
+        deleteTrainDialogThunkAsync,
         fetchApplicationTrainingStatusThunkAsync
     }, dispatch);
 }

@@ -3,7 +3,7 @@ import * as Rx from 'rxjs';
 import { ActionsObservable, Epic } from 'redux-observable'
 import { State, ActionObject } from '../types'
 import { AT } from '../types/ActionTypes'
-import { deleteBlisApp, deleteBlisEntity, deleteBlisAction, deleteChatSession, deleteTeachSession, deleteTrainDialog, deleteLogDialog } from "./apiHelpers";
+import { deleteBlisApp, deleteBlisEntity, deleteBlisAction, deleteChatSession, deleteTeachSession } from "./apiHelpers";
 
 const assertNever = () => { throw Error(`Should not reach here`) }
 
@@ -57,24 +57,6 @@ export const deleteTeachEpic: Epic<ActionObject, State> = (action$: ActionsObser
         .flatMap(action =>
             (action.type === AT.DELETE_TEACH_SESSION_ASYNC)
                 ? deleteTeachSession(action.key, action.currentAppId, action.teachSession, action.save)
-                : assertNever()
-        )
-}
-
-export const deleteTrainDialogEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
-    return action$.ofType(AT.DELETE_TRAIN_DIALOG_ASYNC)
-        .flatMap(action =>
-            (action.type === AT.DELETE_TRAIN_DIALOG_ASYNC)
-                ? deleteTrainDialog(action.key, action.currentAppId, action.trainDialog)
-                : assertNever()
-        )
-}
-
-export const deleteLogDialogEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
-    return action$.ofType(AT.DELETE_LOG_DIALOG_ASYNC)
-        .flatMap(action =>
-            (action.type === AT.DELETE_LOG_DIALOG_ASYNC)
-                ? deleteLogDialog(action.appId, action.logDialogId)
                 : assertNever()
         )
 }
