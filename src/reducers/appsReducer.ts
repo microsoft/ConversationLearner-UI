@@ -28,7 +28,6 @@ const appsReducer: Reducer<AppsState> = (state = initialState, action: ActionObj
                     : null
             }
 
-            console.log(`appsReducer: FETCH_APPLICATION_TRAININGSTATUS_FULFILLED: `, app.appId, app.datetime)
             return { ...state, all: replace(state.all, newApp, a => a.appId) }
         case AT.CREATE_BLIS_APPLICATION_FULFILLED:
             return { ...state, all: [...state.all, action.blisApp] }

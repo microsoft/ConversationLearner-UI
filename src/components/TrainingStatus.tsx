@@ -20,12 +20,12 @@ const internalStatusToUiStateMap = new Map<InternalTrainingStatus, StatusUI>([
     }],
     [InternalTrainingStatus.Queued, {
         className: "blis-training-status__icon-row--queued",
-        iconClassName: "ms-Icon--StatusErrorFull",
+        iconClassName: "ms-Icon--Recent",
         iconLabelMessageId: FM.APP_TRAINING_STATUS_QUEUED,
     }],
     [InternalTrainingStatus.Running, {
         className: "blis-training-status__icon-row--running",
-        iconClassName: "ms-Icon--Sync",
+        iconClassName: "ms-Icon--Sync blis-icon--spin",
         iconLabelMessageId: FM.APP_TRAINING_STATUS_RUNNING,
     }],
     [InternalTrainingStatus.Completed, {
