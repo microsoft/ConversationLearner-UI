@@ -69,7 +69,7 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
             {confirmDeleteModalOpen: false}, 
             async () => {
                 try {
-                    await this.props.deleteTrainDialogThunkAsync(this.props.app.appId, this.props.trainDialog, this.props.user.key)
+                    await this.props.deleteTrainDialogThunkAsync(this.props.app.appId, this.props.trainDialog)
                     this.props.fetchApplicationTrainingStatusThunkAsync(this.props.app.appId)
                     this.props.onClose()
                 }
