@@ -96,43 +96,43 @@ export const fetchApplicationTrainingStatusFulfilled = (appId: string, trainingS
     }
 }
 
-const delay = <T>(ms: number, value: T = null): Promise<T> => new Promise<T>(resolve => setTimeout(() => resolve(value), ms))
+
+const pollTrainingStatusUntilResolvedOrMaxDuration = (dispatch: Dispatch<any>, appId: string, resolvedStates: TrainingStatusCode[], interval: number, maxDuration: number): Promise<void> => {
+    const start = new Date()
+    const end = start.getTime() + maxDuration
+
+    return new Promise<void>((resolve, reject) => {
+        const timerId = setInterval(async () => {
+            // If current time is after max allowed polling duration then resolve
+            const now = (new Date()).getTime()
+            if (now >= end) {
+                console.log(`Polling exceeded max duration. Stopping`)
+                if (timerId) {
+                    clearInterval(timerId)
+                }
+                resolve()
+            }
+
+            // Get training status and if it's one of the resolved states resolve promise
+            const trainingStatus = await blisClient.appGetTrainingStatus(appId)
+            console.log(`Poll training status for app: ${appId}`, trainingStatus.trainingStatus, now, end)
+            dispatch(fetchApplicationTrainingStatusFulfilled(appId, trainingStatus))
+
+            if (resolvedStates.includes(trainingStatus.trainingStatus)) {
+                console.log(`Training status was resolved state: `, trainingStatus.trainingStatus)
+                if (timerId) {
+                    clearInterval(timerId)
+                }
+                resolve()
+            }
+        }, interval)
+    })
+}
 
 export const fetchApplicationTrainingStatusThunkAsync = (appId: string) => {
     return async (dispatch: Dispatch<any>) => {
         dispatch(fetchApplicationTrainingStatusAsync(appId))
-
-        // Simulate queued
-        await delay(1000)
-        const trainingStatus1: TrainingStatus = {
-            trainingStatus: TrainingStatusCode.Queued,
-            trainingFailureMessage: null
-        }
-
-        dispatch(fetchApplicationTrainingStatusFulfilled(appId, trainingStatus1))
-
-        // Simulate running
-        await delay(1000)
-        const trainingStatus2: TrainingStatus = {
-            trainingStatus: TrainingStatusCode.Running,
-            trainingFailureMessage: null
-        }
-
-        dispatch(fetchApplicationTrainingStatusFulfilled(appId, trainingStatus2))
-
-        // Simulate running
-        await delay(1000)
-        const trainingStatus3: TrainingStatus = {
-            trainingStatus: TrainingStatusCode.Completed,
-            trainingFailureMessage: null
-        }
-
-        dispatch(fetchApplicationTrainingStatusFulfilled(appId, trainingStatus3))
-
-        // Simulate actual
-        await delay(1000)
-        const trainingStatus = await blisClient.appGetTrainingStatus(appId)
-        dispatch(fetchApplicationTrainingStatusFulfilled(appId, trainingStatus))
+        pollTrainingStatusUntilResolvedOrMaxDuration(dispatch, appId, [TrainingStatusCode.Completed, TrainingStatusCode.Failed], 2000, 30000)
     }
 }
 
