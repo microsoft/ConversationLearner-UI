@@ -1,6 +1,11 @@
-import { ActionObject } from '../types'
-import { AT } from '../types/ActionTypes'
+import { AT, ActionObject, ErrorType } from '../types'
+import { Dispatch } from 'redux'
 import { BlisAppBase, EntityBase, ActionBase, Session, Teach, TrainDialog } from 'blis-models'
+import { setErrorDisplay } from './displayActions'
+import BlisClient from '../services/blisClient'
+import ApiConfig from '../epics/config'
+
+const blisClient = new BlisClient(ApiConfig.BlisClientEnpoint, () => '')
 
 export const deleteBLISApplicationAsync = (key: string, blisApp: BlisAppBase): ActionObject => {
 
@@ -96,7 +101,6 @@ export const deleteTeachSessionAsync = (key: string, teachSession: Teach, curren
 }
 
 export const deleteTeachSessionFulfilled = (key: string, teachSessionGUID: string, currentAppId: string): ActionObject => {
-
     return {
         type: AT.DELETE_TEACH_SESSION_FULFILLED,
         key: key,
@@ -106,20 +110,42 @@ export const deleteTeachSessionFulfilled = (key: string, teachSessionGUID: strin
 }
 
 
-export const deleteTrainDialogAsync = (key: string, trainDialog: TrainDialog, currentAppId: string): ActionObject => {
+export const deleteTrainDialogAsync = (trainDialog: TrainDialog, appId: string): ActionObject => {
     return {
         type: AT.DELETE_TRAIN_DIALOG_ASYNC,
-        key: key,
-        currentAppId: currentAppId,
-        trainDialog: trainDialog
+        appId,
+        trainDialog
     }
 }
 
-export const deleteTrainDialogFulfilled = (key: string, GUID: string): ActionObject => {
+export const deleteTrainDialogRejected = (): ActionObject => {
+    return {
+        type: AT.DELETE_TRAIN_DIALOG_REJECTED
+    }
+}
+
+export const deleteTrainDialogFulfilled = (trainDialogId: string): ActionObject => {
     return {
         type: AT.DELETE_TRAIN_DIALOG_FULFILLED,
-        key: key,
-        trainDialogGUID: GUID
+        trainDialogId
+    }
+}
+
+export const deleteTrainDialogThunkAsync = (appId: string, trainDialog: TrainDialog) => {
+    return async (dispatch: Dispatch<any>) => {
+        dispatch(deleteTrainDialogAsync(trainDialog, appId))
+
+        try {
+            await blisClient.trainDialogsDelete(appId, trainDialog.trainDialogId)
+            dispatch(deleteTrainDialogFulfilled(trainDialog.trainDialogId))
+        }
+        catch(e) {
+            const error = e as Error
+            // TODO: Why does this method take error and message?
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.message, AT.DELETE_TRAIN_DIALOG_REJECTED))
+            dispatch(deleteTrainDialogRejected())
+            throw new Error(e)
+        }
     }
 }
 
@@ -135,5 +161,29 @@ export const deleteLogDialogFulFilled = (logDialogId: string): ActionObject => {
     return {
         type: AT.DELETE_LOG_DIALOG_FULFILLED,
         logDialogId
+    }
+}
+
+export const deleteLogDialogRejected = (): ActionObject => {
+    return {
+        type: AT.DELETE_LOG_DIALOG_REJECTED
+    }
+}
+
+export const deleteLogDialogThunkAsync = (appId: string, logDialogId: string) => {
+    return async (dispatch: Dispatch<any>) => {
+        dispatch(deleteLogDialogAsync(logDialogId, appId))
+
+        try {
+            await blisClient.logDialogsDelete(appId, logDialogId)
+            dispatch(deleteLogDialogFulFilled(logDialogId))
+        }
+        catch(e) {
+            const error = e as Error
+            // TODO: Why does this method take error and message?
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.message, AT.DELETE_LOG_DIALOG_ASYNC))
+            dispatch(deleteLogDialogRejected())
+            throw new Error(e)
+        }
     }
 }

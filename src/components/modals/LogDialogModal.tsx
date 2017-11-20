@@ -10,7 +10,7 @@ import ConfirmDeleteModal from './ConfirmDeleteModal'
 import LogDialogAdmin from './LogDialogAdmin'
 import { Activity } from 'botframework-directlinejs'
 import { createTrainDialogAsync } from '../../actions/createActions'
-import { deleteLogDialogAsync } from '../../actions/deleteActions'
+import { deleteLogDialogThunkAsync } from '../../actions/deleteActions'
 import { fetchApplicationTrainingStatusThunkAsync } from '../../actions/fetchActions'
 import { BlisAppBase, TrainDialog, LogDialog } from 'blis-models'
 import { SenderType } from '../../types/const'
@@ -87,11 +87,14 @@ class LogDialogModal extends React.Component<Props, ComponentState> {
         })
     }
 
-    onClickConfirmDelete = () => {
-        this.props.deleteLogDialogAsync(this.props.app.appId, this.props.logDialog.logDialogId)
-        // TODO: Would be better to close the dialog after it has been confirmed the delete was successful
-        // How do we wait until the promise above has been resolved?
-        this.props.onClose()
+    onClickConfirmDelete = async () => {
+        try {
+            await this.props.deleteLogDialogThunkAsync(this.props.app.appId, this.props.logDialog.logDialogId)
+            this.props.onClose()
+        }
+        catch (e) {
+            console.error(e)
+        }
     }
 
     onSaveDialogChanges(trainDialog: TrainDialog) {
@@ -191,7 +194,7 @@ class LogDialogModal extends React.Component<Props, ComponentState> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         createTrainDialogAsync,
-        deleteLogDialogAsync,
+        deleteLogDialogThunkAsync,
         fetchApplicationTrainingStatusThunkAsync
     }, dispatch);
 }
