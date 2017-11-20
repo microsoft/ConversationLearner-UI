@@ -27,6 +27,20 @@ class AppsIndex extends React.Component<Props, ComponentState> {
             this.props.fetchApplicationsAsync(this.props.user.key, this.props.user.id);
             this.props.fetchBotInfoAsync();
         }
+
+        if (this.state.selectedApp !== null) {
+            const app = this.props.apps.find(a => a.appId === this.state.selectedApp.appId)
+            if (!app) {
+                console.warn(`Attempted to find selected app in list of apps: ${this.state.selectedApp.appId} but it could not be found.`)
+                return
+            }
+
+            if (this.state.selectedApp.datetime !== app.datetime) {
+                this.setState({
+                    selectedApp: app
+                })
+            }
+        }
     }
 
     onSelectedAppChanged(selectedApp: BlisAppBase) {

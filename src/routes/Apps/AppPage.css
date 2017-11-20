@@ -1,10 +1,10 @@
 .blis-app-page {
     display: grid;
-    grid-template-columns: minmax(160px, min-content) 1fr;
+    grid-template-columns: minmax(220px, min-content) 1fr;
     grid-gap: 3rem;
 }
 .blis-app-title {
-    padding-bottom: 1rem;
+    padding-bottom: 0.9rem;
 }
 
 .blis-page {

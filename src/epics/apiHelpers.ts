@@ -32,9 +32,7 @@ const blisClient = new BlisClient(ApiConfig.BlisClientEnpoint, () => '')
 //=========================================================
 
 export interface BlisAppForUpdate extends BlisAppBase {
-  trainingFailureMessage: string;
-  trainingRequired: boolean;
-  trainingStatus: string;
+  trainingRequired: boolean
   latestPackageId: number
 }
 
@@ -69,6 +67,8 @@ export interface BlisAppForUpdate extends BlisAppBase {
   export const getAllBlisApps = (key: string, userId: string): Observable<ActionObject> => {
     return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.apps(userId)
       .then(apps => {
+        // Set datetime on each app
+        apps.forEach(app => app.datetime = new Date())
         obs.next(actions.fetch.fetchApplicationsFulfilled(apps));
         obs.complete();
       })

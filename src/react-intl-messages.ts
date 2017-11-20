@@ -19,6 +19,16 @@ export enum FM {
     APP_HEADER_DOCS = 'App.header.docs',
     APP_HEADER_SUPPORT = 'App.header.support',
 
+    // TrainingStatus
+    APP_TRAINING_STATUS_STATUS = 'TrainingStatus.status.label',
+    APP_TRAINING_STATUS_UNKNOWN = 'TrainingStatus.status.unknown',
+    APP_TRAINING_STATUS_QUEUED = 'TrainingStatus.status.queued',
+    APP_TRAINING_STATUS_RUNNING = 'TrainingStatus.status.running',
+    APP_TRAINING_STATUS_COMPLETED = 'TrainingStatus.status.completed',
+    APP_TRAINING_STATUS_FAILED = 'TrainingStatus.status.failed',
+    APP_TRAINING_STATUS_LAST_UPDATE = 'TrainingStatus.lastupdate',
+    APP_TRAINING_STATUS_REFRESH = 'TrainingStatus.refresh',
+
     // Apps List
     APPSLIST_TITLE = 'AppsList.title',
     APPSLIST_SUBTITLE = 'AppsList.subtitle',
@@ -315,6 +325,16 @@ export default {
         [FM.APP_HEADER_ABOUT]: 'About',
         [FM.APP_HEADER_DOCS]: 'Docs',
         [FM.APP_HEADER_SUPPORT]: 'Support',
+
+        // TrainingStatus
+        [FM.APP_TRAINING_STATUS_STATUS]: 'Status',
+        [FM.APP_TRAINING_STATUS_UNKNOWN]: 'Unknown',
+        [FM.APP_TRAINING_STATUS_QUEUED]: 'Queued',
+        [FM.APP_TRAINING_STATUS_RUNNING]: 'Running',
+        [FM.APP_TRAINING_STATUS_COMPLETED]: 'Completed',
+        [FM.APP_TRAINING_STATUS_FAILED]: 'Failed',
+        [FM.APP_TRAINING_STATUS_LAST_UPDATE]: 'Last Updated',
+        [FM.APP_TRAINING_STATUS_REFRESH]: 'Refresh',
 
         // Apps List
         [FM.APPSLIST_TITLE]: 'My Apps',

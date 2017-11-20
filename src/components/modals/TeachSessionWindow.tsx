@@ -14,6 +14,7 @@ import { Activity } from 'botframework-directlinejs'
 import { deleteTeachSessionAsync } from '../../actions/deleteActions'
 import { toggleAutoTeach, runExtractorAsync } from '../../actions/teachActions'
 import { addMessageToTeachConversationStack } from '../../actions/displayActions'
+import { fetchApplicationTrainingStatusThunkAsync } from '../../actions/fetchActions'
 import ConfirmDeleteModal from './ConfirmDeleteModal'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
@@ -53,6 +54,7 @@ class TeachWindow extends React.Component<Props, ComponentState> {
 
     onClickSave() {
         this.props.deleteTeachSessionAsync(this.props.user.key, this.props.teachSessions.current, this.props.app.appId, true); // True = save to train dialog
+        this.props.fetchApplicationTrainingStatusThunkAsync(this.props.app.appId)
         this.props.onClose()
     }
 
@@ -190,6 +192,7 @@ const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         addMessageToTeachConversationStack,
         deleteTeachSessionAsync,
+        fetchApplicationTrainingStatusThunkAsync,
         runExtractorAsync,
         toggleAutoTeach
     }, dispatch);

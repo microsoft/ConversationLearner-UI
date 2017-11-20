@@ -10,8 +10,9 @@ import ConfirmDeleteModal from './ConfirmDeleteModal'
 import LogDialogAdmin from './LogDialogAdmin'
 import { Activity } from 'botframework-directlinejs'
 import { createTrainDialogAsync } from '../../actions/createActions'
-import { BlisAppBase, TrainDialog, LogDialog } from 'blis-models'
 import { deleteLogDialogAsync } from '../../actions/deleteActions'
+import { fetchApplicationTrainingStatusThunkAsync } from '../../actions/fetchActions'
+import { BlisAppBase, TrainDialog, LogDialog } from 'blis-models'
 import { SenderType } from '../../types/const'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
@@ -94,8 +95,8 @@ class LogDialogModal extends React.Component<Props, ComponentState> {
     }
 
     onSaveDialogChanges(trainDialog: TrainDialog) {
-        console.log(`onSaveDialogChanges: `, trainDialog)
         this.props.createTrainDialogAsync(this.props.user.key, this.props.app.appId, trainDialog, this.props.logDialog.logDialogId)
+        this.props.fetchApplicationTrainingStatusThunkAsync(this.props.app.appId)
         this.props.onClose()
     }
 
@@ -190,7 +191,8 @@ class LogDialogModal extends React.Component<Props, ComponentState> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         createTrainDialogAsync,
-        deleteLogDialogAsync
+        deleteLogDialogAsync,
+        fetchApplicationTrainingStatusThunkAsync
     }, dispatch);
 }
 const mapStateToProps = (state: State, ownProps: ReceivedProps) => {

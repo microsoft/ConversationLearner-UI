@@ -80,6 +80,13 @@ export default class BlisClient {
             .then(response => response.data)
     }
 
+    appGetTrainingStatus(appId: string): Promise<models.TrainingStatus> {
+        return this.send<models.TrainingStatus>({
+            url: `${this.baseUrl}/app/${appId}/trainingstatus`
+        })
+            .then(response => response.data)
+    }
+
     appsCreate(userId: string, app: models.BlisAppBase): Promise<models.BlisAppBase> {
         return this.send<string>({
             method: 'post',

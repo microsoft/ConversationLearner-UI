@@ -23,7 +23,7 @@ export type TrainDialogState = TrainDialog[];
 export type LogDialogState = {
     all: LogDialog[]
 }
-export type AppState = {
+export type AppsState = {
     all: BlisAppBase[]
 }
 export type BotState = {
@@ -62,7 +62,7 @@ export type UserState = {
 export type State = {
     user: UserState,
     bot: BotState
-    apps: AppState,
+    apps: AppsState,
     entities: EntityState,
     actions: ActionState,
     trainDialogs: TrainDialogState,

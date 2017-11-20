@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
+import { fetchApplicationTrainingStatusThunkAsync } from '../../actions/fetchActions'
 import { createEntityAsync } from '../../actions/createActions';
 import { editEntityAsync } from '../../actions/updateActions';
 import { bindActionCreators } from 'redux';
@@ -170,18 +171,20 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
 
     onClickSubmit = () => {
         const entity = this.convertStateToEntity(this.state)
-        let currentAppId = this.props.app.appId
+        const appId = this.props.app.appId
 
         if (this.state.editing === false) {
-            this.props.createEntityAsync(this.props.userKey, entity, currentAppId);
+            this.props.createEntityAsync(this.props.userKey, entity, appId)
         } else {
+            // Set entity id if we're editing existing id.
+            entity.entityId = this.props.entity.entityId
+
             // TODO: Currently it's not possible to edit an entity, 
             // and the code below is incorrect because it doesn't pass the app id.
-            // Set entity id if we're editing existing id.
-            // entity.entityId = this.props.entity.entityId;
-            // this.props.editEntityAsync(this.props.userKey, entity);
+            // this.props.editEntityAsync(this.props.userKey, entity)
         }
-
+        
+        this.props.fetchApplicationTrainingStatusThunkAsync(appId)
         this.props.handleClose()
     }
 
@@ -467,7 +470,8 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         createEntityAsync,
-        editEntityAsync
+        editEntityAsync,
+        fetchApplicationTrainingStatusThunkAsync
     }, dispatch);
 }
 const mapStateToProps = (state: State, ownProps: any) => {

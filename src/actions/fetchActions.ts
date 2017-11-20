@@ -8,8 +8,17 @@ import {
     TrainDialog,
     LogDialog,
     Session,
-    Teach
-} from 'blis-models';
+    Teach,
+    TrainingStatus,
+    TrainingStatusCode
+} from 'blis-models'
+import { Dispatch } from 'redux'
+
+// TODO: Need to isolate usage of blis client to single layer
+import BlisClient from '../services/blisClient'
+import ApiConfig from '../epics/config'
+
+const blisClient = new BlisClient(ApiConfig.BlisClientEnpoint, () => '')
 
 export const fetchAllTrainDialogsAsync = (key: string, blisAppID: string): ActionObject => {
     return {
@@ -69,6 +78,64 @@ export const fetchApplicationsFulfilled = (apps: BlisAppBase[]): ActionObject =>
     return {
         type: AT.FETCH_APPLICATIONS_FULFILLED,
         allBlisApps: apps
+    }
+}
+
+export const fetchApplicationTrainingStatusAsync = (appId: string): ActionObject => {
+    return {
+        type: AT.FETCH_APPLICATION_TRAININGSTATUS_ASYNC,
+        appId
+    }
+}
+
+export const fetchApplicationTrainingStatusFulfilled = (appId: string, trainingStatus: TrainingStatus): ActionObject => {
+    return {
+        type: AT.FETCH_APPLICATION_TRAININGSTATUS_FULFILLED,
+        appId,
+        trainingStatus
+    }
+}
+
+const pollTrainingStatusUntilResolvedOrMaxDuration = (dispatch: Dispatch<any>, appId: string, resolvedStates: TrainingStatusCode[], interval: number, maxDuration: number): Promise<void> => {
+    const start = new Date()
+    const end = start.getTime() + maxDuration
+
+    return new Promise<void>((resolve, reject) => {
+        const timerId = setInterval(async () => {
+            // If current time is after max allowed polling duration then resolve
+            const now = (new Date()).getTime()
+            if (now >= end) {
+                console.log(`Polling exceeded max duration. Stopping`)
+                if (timerId) {
+                    clearInterval(timerId)
+                }
+                resolve()
+            }
+
+            // Get training status and if it's one of the resolved states resolve promise
+            const trainingStatus = await blisClient.appGetTrainingStatus(appId)
+            console.log(`Poll training status for app: ${appId}`, trainingStatus.trainingStatus, now, end)
+            dispatch(fetchApplicationTrainingStatusFulfilled(appId, trainingStatus))
+
+            if (resolvedStates.includes(trainingStatus.trainingStatus)) {
+                console.log(`Training status was resolved state: `, trainingStatus.trainingStatus)
+                if (timerId) {
+                    clearInterval(timerId)
+                }
+                resolve()
+            }
+        }, interval)
+    })
+}
+
+const delay = <T>(ms: number, value: T = null): Promise<T> => new Promise<T>(resolve => setTimeout(() => resolve(value), ms))
+
+export const fetchApplicationTrainingStatusThunkAsync = (appId: string) => {
+    return async (dispatch: Dispatch<any>) => {
+        dispatch(fetchApplicationTrainingStatusAsync(appId))
+        // Wait 1 second before polling to ensure service has time to change status from previous to queued / running
+        await delay(1000)
+        pollTrainingStatusUntilResolvedOrMaxDuration(dispatch, appId, [TrainingStatusCode.Completed, TrainingStatusCode.Failed], 2000, 30000)
     }
 }
 

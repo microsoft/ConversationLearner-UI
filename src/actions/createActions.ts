@@ -1,10 +1,11 @@
 import { ActionObject } from '../types'
 import { AT } from '../types/ActionTypes'
-import { BlisAppBase, EntityBase, ActionBase, TrainDialog, LogDialog, Teach, Session } from 'blis-models'
+import { BlisAppBase, EntityBase, ActionBase, TrainDialog, LogDialog, Teach, Session, TrainingStatusCode } from 'blis-models'
 import { Dispatch } from 'redux'
 import BlisClient from '../services/blisClient'
+import ApiConfig from '../epics/config'
 
-const blisClient = new BlisClient("http://localhost:5000", () => '')
+const blisClient = new BlisClient(ApiConfig.BlisClientEnpoint, () => '')
 
 export const createBLISApplicationAsync = (key: string, userId: string, application: BlisAppBase): ActionObject => {
     return {
@@ -104,9 +105,7 @@ export const createChatSessionThunkAsync = (key: string, appId: string) => {
         blisClient.key = key
         dispatch(createChatSessionAsync(key))
         const app = await blisClient.appGet(appId)
-        // TODO: Update blis-models to expose trainingStatus on app model
-        const trainingStatus = (app as any).trainingStatus
-        if (trainingStatus !== "completed") {
+        if (app.trainingStatus !== TrainingStatusCode.Completed) {
             dispatch(createChatSessionRejected())
             throw new Error(`Application is still training. You may not create chat session at this time. Please try again later.`)
         }
