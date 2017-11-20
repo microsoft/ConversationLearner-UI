@@ -29,14 +29,13 @@ class AppsIndex extends React.Component<Props, ComponentState> {
         }
 
         if (this.state.selectedApp !== null) {
-            console.log(`AppsIndex: componentDidUpdate, selectedApp`)
-            console.log(`selected: `, this.state.selectedApp.appId, this.state.selectedApp.datetime)
-
             const app = this.props.apps.find(a => a.appId === this.state.selectedApp.appId)
-            console.log(`updated:  `, app.appId, app.datetime)
-            
+            if (!app) {
+                console.warn(`Attempted to find selected app in list of apps: ${this.state.selectedApp.appId} but it could not be found.`)
+                return
+            }
+
             if (this.state.selectedApp.datetime !== app.datetime) {
-                console.log(`AppsIndex: update selected app`)
                 this.setState({
                     selectedApp: app
                 })

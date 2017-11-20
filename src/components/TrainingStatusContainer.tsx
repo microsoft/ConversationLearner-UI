@@ -26,12 +26,10 @@ class TrainingStatusContainer extends React.Component<Props, ComponentState> {
 
     constructor(props: Props) {
         super(props)
-        console.log(`${this.constructor.name}: constructor`, props.app.appId, props.app.datetime)
         this.state.status = externalStatusToInternalStatusMap.get(props.app.trainingStatus) || InternalTrainingStatus.Unknown
     }
 
     componentWillReceiveProps(nextProps: Props) {
-        console.log(`${this.constructor.name}: componentWillReceiveProps`, nextProps.app.appId, nextProps.app.datetime)
         this.setState({
             status: externalStatusToInternalStatusMap.get(nextProps.app.trainingStatus) || InternalTrainingStatus.Unknown,
         })

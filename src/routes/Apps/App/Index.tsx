@@ -32,7 +32,6 @@ class Index extends React.Component<Props, ComponentState> {
     }
 
     componentWillReceiveProps(newProps: Props) {
-        console.log(`App/Index: componentWillReceiveProps`, newProps.app.datetime)
         let validationErrors: string[] = [];
 
         if (newProps.actions !== this.props.actions) {
