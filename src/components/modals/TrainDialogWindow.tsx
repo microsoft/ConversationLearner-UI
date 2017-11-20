@@ -9,6 +9,7 @@ import Webchat from '../Webchat'
 import TrainDialogAdmin from './TrainDialogAdmin'
 import { BlisAppBase, ActionBase, TrainDialog } from 'blis-models'
 import { deleteTrainDialogAsync } from '../../actions/deleteActions'
+import { fetchApplicationTrainingStatusThunkAsync } from '../../actions/fetchActions'
 import { Activity } from 'botframework-directlinejs';
 import { SenderType } from '../../types/const';
 import ConfirmDeleteModal from './ConfirmDeleteModal'
@@ -68,6 +69,7 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
             {confirmDeleteModalOpen: false}, 
             () => {
                 this.props.deleteTrainDialogAsync(this.props.user.key, this.props.trainDialog, this.props.app.appId)
+                this.props.fetchApplicationTrainingStatusThunkAsync(this.props.app.appId)
                 this.props.onClose()
             })
         }
@@ -190,7 +192,8 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         addMessageToChatConversationStack,
-        deleteTrainDialogAsync
+        deleteTrainDialogAsync,
+        fetchApplicationTrainingStatusThunkAsync
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {

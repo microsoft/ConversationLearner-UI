@@ -96,7 +96,6 @@ export const fetchApplicationTrainingStatusFulfilled = (appId: string, trainingS
     }
 }
 
-
 const pollTrainingStatusUntilResolvedOrMaxDuration = (dispatch: Dispatch<any>, appId: string, resolvedStates: TrainingStatusCode[], interval: number, maxDuration: number): Promise<void> => {
     const start = new Date()
     const end = start.getTime() + maxDuration
@@ -129,9 +128,13 @@ const pollTrainingStatusUntilResolvedOrMaxDuration = (dispatch: Dispatch<any>, a
     })
 }
 
+const delay = <T>(ms: number, value: T = null): Promise<T> => new Promise<T>(resolve => setTimeout(() => resolve(value), ms))
+
 export const fetchApplicationTrainingStatusThunkAsync = (appId: string) => {
     return async (dispatch: Dispatch<any>) => {
         dispatch(fetchApplicationTrainingStatusAsync(appId))
+        // Wait 1 second before polling to ensure service has time to change status from previous to queued / running
+        await delay(1000)
         pollTrainingStatusUntilResolvedOrMaxDuration(dispatch, appId, [TrainingStatusCode.Completed, TrainingStatusCode.Failed], 2000, 30000)
     }
 }

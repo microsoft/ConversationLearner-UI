@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import { createActionAsync } from '../../../actions/createActions'
 import { editActionAsync } from '../../../actions/updateActions'
 import { deleteActionAsync } from '../../../actions/deleteActions'
+import { fetchApplicationTrainingStatusThunkAsync } from '../../../actions/fetchActions'
 import ActionDetailsList from '../../../components/ActionDetailsList'
 import * as OF from 'office-ui-fabric-react';
 import { BlisAppBase, ActionBase } from 'blis-models'
@@ -72,8 +73,8 @@ class Actions extends React.Component<Props, ComponentState> {
             isActionEditorOpen: false,
             actionSelected: null
         }, () => {
-            console.log(`Actions.onClickDeleteActionEditor`)
             this.props.deleteActionAsync(this.props.user.key, action.actionId, action, this.props.app.appId)
+            this.props.fetchApplicationTrainingStatusThunkAsync(this.props.app.appId)
         })
     }
 
@@ -90,6 +91,8 @@ class Actions extends React.Component<Props, ComponentState> {
             else {
                 this.props.createActionAsync(this.props.user.key, action, this.props.app.appId)
             }
+
+            this.props.fetchApplicationTrainingStatusThunkAsync(this.props.app.appId)
         })
     }
 
@@ -188,7 +191,8 @@ const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         createActionAsync,
         editActionAsync,
-        deleteActionAsync
+        deleteActionAsync,
+        fetchApplicationTrainingStatusThunkAsync
     }, dispatch)
 }
 const mapStateToProps = (state: State) => {
