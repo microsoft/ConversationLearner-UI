@@ -159,7 +159,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             if (nextProps.action) {
                 const action = nextProps.action
 
-                const negativeEntityTags = convertEntityIdsToTags(action.negativeEntities, nextProps.entities)
+                const negativeEntityTags = convertEntityIdsToTags(action.negativeEntities.filter(entityId => entityId !== action.suggestedEntity), nextProps.entities)
                 const expectedEntityTags = convertEntityIdsToTags((action.suggestedEntity ? [action.suggestedEntity] : []), nextProps.entities)
                 /**
                  * Special processing for local API responses:
