@@ -114,11 +114,10 @@ const pollTrainingStatusUntilResolvedOrMaxDuration = (dispatch: Dispatch<any>, a
 
             // Get training status and if it's one of the resolved states resolve promise
             const trainingStatus = await blisClient.appGetTrainingStatus(appId)
-            console.log(`Poll training status for app: ${appId}`, trainingStatus.trainingStatus, now, end)
+            console.log(`Poll app: ${appId} training status: `, end, now, trainingStatus.trainingStatus)
             dispatch(fetchApplicationTrainingStatusFulfilled(appId, trainingStatus))
 
             if (resolvedStates.includes(trainingStatus.trainingStatus)) {
-                console.log(`Training status was resolved state: `, trainingStatus.trainingStatus)
                 if (timerId) {
                     clearInterval(timerId)
                 }

@@ -112,7 +112,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 name: e.entityName
             }))
 
-        const callbacks = (botInfo.callbacks || [])
+        const callbacks = (botInfo && botInfo.callbacks || [])
         const apiOptions = callbacks.map<OF.IDropdownOption>(v =>
             ({
                 key: v,

@@ -6,7 +6,7 @@ import { returntypeof } from 'react-redux-typescript'
 import { connect } from 'react-redux'
 import { State } from '../types'
 import { bindActionCreators } from 'redux'
-import Index from './Apps/AppsIndex'
+import AppsIndex from './Apps/AppsIndex'
 import About from './About'
 import Docs from './Docs'
 import Support from './Support'
@@ -128,7 +128,7 @@ class App extends React.Component<Props, ComponentState> {
           <div className="blis-app_content">
             <Switch>
               <Route exact path="/" render={() => <Redirect to="/home" />} />
-              <Route path="/home" component={Index} />
+              <Route path="/home" component={AppsIndex} />
               <Route path="/about" component={About} />
               <Route path="/docs" component={Docs} />
               <Route path="/support" component={Support} />
@@ -171,8 +171,8 @@ const mapStateToProps = (state: State) => {
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
-const stateProps = returntypeof(mapStateToProps);
-const dispatchProps = returntypeof(mapDispatchToProps);
-type Props = typeof stateProps & typeof dispatchProps;
+const stateProps = returntypeof(mapStateToProps)
+const dispatchProps = returntypeof(mapDispatchToProps)
+type Props = typeof stateProps & typeof dispatchProps
 
-export default connect<typeof stateProps, typeof dispatchProps, {}>(mapStateToProps, mapDispatchToProps)(App);
+export default connect<typeof stateProps, typeof dispatchProps, {}>(mapStateToProps, mapDispatchToProps)(App)
