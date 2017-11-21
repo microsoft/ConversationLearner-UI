@@ -1,16 +1,18 @@
-import * as React from 'react';
+import * as React from 'react'
+import {
+    Route,
+    Switch
+} from 'react-router-dom'
+import { RouteComponentProps } from 'react-router'
 import { returntypeof } from 'react-redux-typescript';
-import { fetchApplicationsAsync, fetchBotInfoAsync, fetchAllActionsAsync, fetchAllEntitiesAsync, fetchAllTrainDialogsAsync, fetchAllLogDialogsAsync, fetchAllChatSessionsAsync } from '../../actions/fetchActions';
 import { createBLISApplicationAsync } from '../../actions/createActions'
-import { setCurrentBLISApp } from '../../actions/displayActions';
 import { deleteBLISApplicationAsync } from '../../actions/deleteActions'
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../../types'
-import { DisplayMode } from '../../types/const'
 import { BlisAppBase } from 'blis-models'
-import './AppPage.css'
-import Index from './App/Index'
+import actions from '../../actions'
+import AppIndex from './App/Index'
 import AppsList from './AppsList'
 
 interface ComponentState {
@@ -22,41 +24,35 @@ class AppsIndex extends React.Component<Props, ComponentState> {
         selectedApp: null
     }
 
+    componentWillMount() {
+        const { history } = this.props
+        if (history.location.pathname !== '/home') {
+            history.replace('/home', null)
+        }
+    }
+
     componentDidUpdate(prevProps: Props, prevState: ComponentState) {
-        if (typeof(this.props.user.id) === 'string' && this.props.user.id !== prevProps.user.id) {
+        if (typeof (this.props.user.id) === 'string' && this.props.user.id !== prevProps.user.id) {
             this.props.fetchApplicationsAsync(this.props.user.key, this.props.user.id);
             this.props.fetchBotInfoAsync();
         }
 
-        if (this.state.selectedApp !== null) {
-            const app = this.props.apps.find(a => a.appId === this.state.selectedApp.appId)
+        const { history, location } = this.props
+        const appFromLocationState: BlisAppBase | null = location.state && location.state.app
+        if (appFromLocationState) {
+            const app = this.props.apps.find(a => a.appId === appFromLocationState.appId)
             if (!app) {
                 console.warn(`Attempted to find selected app in list of apps: ${this.state.selectedApp.appId} but it could not be found.`)
                 return
             }
 
-            if (this.state.selectedApp.datetime !== app.datetime) {
-                this.setState({
-                    selectedApp: app
-                })
+            if (appFromLocationState.datetime !== app.datetime) {
+                history.replace(location.pathname, { app })
             }
         }
     }
 
-    onSelectedAppChanged(selectedApp: BlisAppBase) {
-        this.setState({
-            selectedApp
-        })
-        this.props.setCurrentBLISApp(this.props.user.key, selectedApp);
-        this.props.fetchAllActionsAsync(this.props.user.key, selectedApp.appId);
-        this.props.fetchAllEntitiesAsync(this.props.user.key, selectedApp.appId);
-        this.props.fetchAllTrainDialogsAsync(this.props.user.key, selectedApp.appId);
-        this.props.fetchAllLogDialogsAsync(this.props.user.key, selectedApp.appId);
-        this.props.fetchAllChatSessionsAsync(this.props.user.key, selectedApp.appId);
-        // this.props.fetchAllTeachSessions(this.props.user.key, appSelected.appId);
-    }
-
-    onClickDeleteApp(appToDelete: BlisAppBase) {
+    onClickDeleteApp = (appToDelete: BlisAppBase) => {
         this.props.deleteBLISApplicationAsync(this.props.user.key, appToDelete)
     }
 
@@ -65,34 +61,33 @@ class AppsIndex extends React.Component<Props, ComponentState> {
     }
 
     render() {
+        const { match } = this.props as any
         return (
-            this.props.display.displayMode === DisplayMode.AppAdmin && this.state.selectedApp !== null
-                ? <Index
-                    app={this.state.selectedApp}
+            <Switch>
+                <Route path={`${match.url}/:appid`} component={AppIndex} />
+                <Route
+                    exact={true}
+                    path={match.url}
+                    render={() =>
+                        <AppsList
+                            apps={this.props.apps}
+                            onCreateApp={this.onCreateApp}
+                            onClickDeleteApp={this.onClickDeleteApp}
+                        />
+                    }
                 />
-                : <AppsList
-                    apps={this.props.apps}
-                    onCreateApp={this.onCreateApp}
-                    onSelectedAppChanged={app => this.onSelectedAppChanged(app)}
-                    onClickDeleteApp={app => this.onClickDeleteApp(app)}
-                />
+            </Switch>
         )
     }
 }
 
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        fetchAllActionsAsync,
-        fetchAllEntitiesAsync,
-        fetchAllTrainDialogsAsync,
-        fetchAllLogDialogsAsync,
-        setCurrentBLISApp,
+        fetchApplicationsAsync: actions.fetch.fetchApplicationsAsync,
+        fetchBotInfoAsync: actions.fetch.fetchBotInfoAsync,
         createBLISApplicationAsync,
         deleteBLISApplicationAsync,
-        fetchAllChatSessionsAsync,
-        fetchApplicationsAsync,
-        fetchBotInfoAsync
-    }, dispatch);
+    }, dispatch)
 }
 
 const mapStateToProps = (state: State) => {
@@ -103,8 +98,8 @@ const mapStateToProps = (state: State) => {
     }
 }
 // Props types inferred from mapStateToProps & dispatchToProps
-const stateProps = returntypeof(mapStateToProps);
-const dispatchProps = returntypeof(mapDispatchToProps);
-type Props = typeof stateProps & typeof dispatchProps;
+const stateProps = returntypeof(mapStateToProps)
+const dispatchProps = returntypeof(mapDispatchToProps)
+type Props = typeof stateProps & typeof dispatchProps & RouteComponentProps<any>
 
-export default connect<typeof stateProps, typeof dispatchProps, {}>(mapStateToProps, mapDispatchToProps)(AppsIndex);
+export default connect<typeof stateProps, typeof dispatchProps, RouteComponentProps<any>>(mapStateToProps, mapDispatchToProps)(AppsIndex)

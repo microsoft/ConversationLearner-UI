@@ -1,4 +1,6 @@
 import * as React from 'react';
+import { withRouter } from 'react-router-dom'
+import { RouteComponentProps } from 'react-router'
 import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -126,8 +128,9 @@ class AppsList extends React.Component<Props, ComponentState> {
             appToDelete: app
         })
     }
-    onClickApp(selectedApp: BlisAppBase) {
-        this.props.onSelectedAppChanged(selectedApp)
+    onClickApp(app: BlisAppBase) {
+        const { match, history } = this.props
+        history.push(`${match.url}/${app.appId}`, { app })
     }
 
     onColumnClick = (event: any, column: ISortableRenderableColumn) => {
@@ -254,13 +257,12 @@ const mapStateToProps = (state: State) => {
 export interface ReceivedProps {
     apps: BlisAppBase[]
     onCreateApp: (app: BlisAppBase) => void
-    onSelectedAppChanged: (app: BlisAppBase) => void
     onClickDeleteApp: (app: BlisAppBase) => void
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
 const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
-type Props = typeof stateProps & typeof dispatchProps & ReceivedProps & InjectedIntlProps;
+type Props = typeof stateProps & typeof dispatchProps & ReceivedProps & InjectedIntlProps & RouteComponentProps<any>
 
-export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(AppsList))
+export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(withRouter(injectIntl(AppsList)))

@@ -1,12 +1,17 @@
 import * as React from 'react';
+import {
+    NavLink,
+    Route,
+    Switch
+} from 'react-router-dom'
+import { RouteComponentProps } from 'react-router'
 import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Nav, Link } from 'office-ui-fabric-react';
 import { BlisAppBase, ActionBase, ActionTypes, ModelUtils } from 'blis-models'
 import { State } from '../../../types';
-import { ErrorType, DisplayMode } from '../../../types/const';
-import { setDisplayMode, setErrorDisplay } from '../../../actions/displayActions';
+import { ErrorType } from '../../../types/const';
+import { setErrorDisplay } from '../../../actions/displayActions';
 import Entities from './Entities'
 import TrainDialogs from './TrainDialogs'
 import Actions from './Actions'
@@ -14,21 +19,40 @@ import Dashboard from './Dashboard'
 import Settings from './Settings'
 import LogDialogs from './LogDialogs'
 import TrainingStatus from '../../../components/TrainingStatusContainer'
+import actions from '../../../actions'
+import './Index.css'
 
 // TODO: i18n support would be much easier after proper routing is implemented
 // this would eliminate the use of page title strings as navigation keys and instead use the url
 
 interface ComponentState {
-    display: string;
-    selectedKey: string;
     validationErrors: string[];
 }
 
 class Index extends React.Component<Props, ComponentState> {
     state: ComponentState = {
-        display: 'Dash',
-        selectedKey: 'Dash',
         validationErrors: []
+    }
+
+    componentWillMount() {
+        // If we're loading Index due to page refresh where app is not in router state
+        // force back to /home route to mimic old behavior and allow user to login again
+        const { location, history } = this.props
+        const app: BlisAppBase | null = location.state && location.state.app
+        if (!app) {
+            console.log(`${this.constructor.name} componentWillMount. location.state.app is undefined: Redirect to /home`)
+            history.push('/home')
+            return
+        }
+
+        this.props.setCurrentBLISApp(this.props.user.key, app)
+        this.props.fetchAllActionsAsync(this.props.user.key, app.appId)
+        this.props.fetchAllEntitiesAsync(this.props.user.key, app.appId)
+        this.props.fetchAllTrainDialogsAsync(this.props.user.key, app.appId)
+        this.props.fetchAllLogDialogsAsync(this.props.user.key, app.appId)
+        this.props.fetchBotInfoAsync()
+        // this.props.fetchAllChatSessionsAsync(this.props.user.key, app.appId)
+        // this.props.fetchAllTeachSessions(this.props.user.key, app.appId)
     }
 
     componentWillReceiveProps(newProps: Props) {
@@ -52,75 +76,60 @@ class Index extends React.Component<Props, ComponentState> {
         errors = missingApis.map(a => `Action references API "${ModelUtils.GetPrimaryPayload(a)}" not contained by running Bot`);
         return errors;
     }
-    // If one is found and subst
-    renderChosenNavLink() {
-        switch (this.state.display) {
-            case 'Settings':
-                return <Settings app={this.props.app} />
-            case 'Dash':
-                return <Dashboard app={this.props.app} />
-            case 'Entities':
-                return <Entities app={this.props.app} />
-            case 'Actions':
-                return <Actions app={this.props.app} />
-            case 'TrainDialogs':
-                return <TrainDialogs app={this.props.app} />
-            case 'LogDialogs':
-                return <LogDialogs app={this.props.app} />
-            default:
-                return <Dashboard app={this.props.app} />
-        }
-    }
-    setArenaDisplay(page: string) {
-        this.setState({
-            display: page,
-            selectedKey: page
-        })
-    }
-
+    
     render() {
+        const { match, location } = this.props
+        const app: BlisAppBase = location.state.app
         return (
             <div className="blis-app-page">
                 <div>
-                    <div className="blis-app-title ms-font-xxl">{this.props.app.appName}</div>
+                    <div className="blis-app-title ms-font-xxl">{app.appName}</div>
                     <TrainingStatus
-                        app={this.props.app}
+                        app={app}
                     />
                     <div className="blis-nav ms-font-m-plus">
                         <div className="blis-nav_section">
-                            <a onClick={() => this.setArenaDisplay('Settings')}><span className="ms-Icon ms-Icon--Settings" aria-hidden="true"/>&nbsp;&nbsp;</a>
-                            <span className="ms-font-m-plus"><a onClick={() => this.setArenaDisplay('Settings')}>Settings</a></span>
+                            <NavLink className="blis-nav-link" to={{ pathname: `${match.url}/settings`, state: { app } }}>
+                                <span className="ms-Icon ms-Icon--Settings" aria-hidden="true" />&nbsp;&nbsp;Settings
+                            </NavLink>
+                        </div>
+                        <div className="blis-nav_section blis-nav_section--links ms-font-m">
+                            <NavLink className="blis-nav-link" exact to={{ pathname: `${match.url}`, state: { app } }}>Dashboard</NavLink>
+                            <NavLink className="blis-nav-link" to={{ pathname: `${match.url}/entities`, state: { app } }}>Entities</NavLink>
+                            <NavLink className="blis-nav-link" to={{ pathname: `${match.url}/actions`, state: { app } }}>Actions</NavLink>
+                            <NavLink className="blis-nav-link" to={{ pathname: `${match.url}/trainDialogs`, state: { app } }}>Train Dialogs</NavLink>
+                            <NavLink className="blis-nav-link" to={{ pathname: `${match.url}/logDialogs`, state: { app } }}>Log Dialogs</NavLink>
                         </div>
                         <div className="blis-nav_section">
-                            <Nav
-                                className="ms-font-m-plus blis-nav-links"
-                                initialSelectedKey="Dash"
-                                selectedKey={this.state.selectedKey}
-                                groups={[{
-                                    links: [
-                                        { name: 'Dashboard', key: 'Dash', url: null, onClick: () => this.setArenaDisplay('Dash') },
-                                        { name: 'Entities', key: 'Entities', url: null, onClick: () => this.setArenaDisplay('Entities') },
-                                        { name: 'Actions', key: 'Actions', url: null, onClick: () => this.setArenaDisplay('Actions') },
-                                        { name: 'Train Dialogs', key: 'TrainDialogs', url: null, onClick: () => this.setArenaDisplay('TrainDialogs') },
-                                        { name: 'Log Dialogs', key: 'LogDialogs', url: null, onClick: () => this.setArenaDisplay('LogDialogs') }
-                                    ]
-                                }]}
-                            />
-                        </div>
-                        <div className="blis-nav_section backToApps">
-                            <Link onClick={() => this.props.setDisplayMode(DisplayMode.AppList)}><span className="ms-Icon ms-Icon--Back" aria-hidden="true"></span>&nbsp;&nbsp;App List</Link>
+                            <NavLink className="blis-nav-link" exact={true} to="/home"><span className="ms-Icon ms-Icon--Back"></span>&nbsp;&nbsp;App List</NavLink>
                         </div>
                     </div>
                 </div>
-                {this.renderChosenNavLink()}
+                <Switch>
+                    <Route path={`${match.url}/settings`} render={props => <Settings {...props} app={app} />} />
+                    <Route path={`${match.url}/entities`} render={props => <Entities {...props} app={app} />} />
+                    <Route path={`${match.url}/actions`} render={props => <Actions {...props} app={app} />} />
+                    <Route path={`${match.url}/trainDialogs`} render={props => <TrainDialogs {...props} app={app} />} />
+                    <Route path={`${match.url}/logDialogs`} render={props => <LogDialogs {...props} app={app} />} />
+                    <Route
+                        exact={true}
+                        path={match.url}
+                        render={props => <Dashboard {...props} app={app} />}
+                    />
+                </Switch>
             </div>
         )
     }
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        setDisplayMode,
         setErrorDisplay,
+        setCurrentBLISApp: actions.display.setCurrentBLISApp,
+        fetchAllActionsAsync: actions.fetch.fetchAllActionsAsync,
+        fetchAllEntitiesAsync: actions.fetch.fetchAllEntitiesAsync,
+        fetchAllTrainDialogsAsync: actions.fetch.fetchAllTrainDialogsAsync,
+        fetchAllLogDialogsAsync: actions.fetch.fetchAllLogDialogsAsync,
+        fetchBotInfoAsync: actions.fetch.fetchBotInfoAsync
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {
@@ -129,17 +138,17 @@ const mapStateToProps = (state: State) => {
         actions: state.actions,
         trainDialogs: state.trainDialogs,
         display: state.display,
-        botInfo: state.bot.botInfo
+        botInfo: state.bot.botInfo,
+        user: state.user
     }
 }
 
 export interface ReceivedProps {
-    app: BlisAppBase
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
 const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
-type Props = typeof stateProps & typeof dispatchProps & ReceivedProps;
+type Props = typeof stateProps & typeof dispatchProps & RouteComponentProps<any> & ReceivedProps;
 
-export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(Index);
+export default connect<typeof stateProps, typeof dispatchProps, RouteComponentProps<any> & ReceivedProps>(mapStateToProps, mapDispatchToProps)(Index);
