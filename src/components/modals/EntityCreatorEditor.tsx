@@ -108,8 +108,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
 
         // If we are not opening the window, stop
         // The code below is only for initializtion when opening modal
-        if (this.props.open === true) {
-            console.log(`stop early since modal is already open`)
+        if (!(this.props.open === false && nextProps.open === true)) {
             return
         }
 
