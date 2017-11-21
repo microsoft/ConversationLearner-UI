@@ -89,19 +89,13 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
         ]
     }
 
-    componentWillReceiveProps(p: Props) {
+    componentWillReceiveProps(nextProps: Props) {
         // Build entity options based on current applicaiton locale
-        const currentAppLocale = this.props.app.locale
-        const localePreBuiltEntities = PreBuiltEntities
-            .find(obj => obj.locale === currentAppLocale)
-
         // Filter out one that have already been used
-        const unusedPreBuilts = localePreBuiltEntities.preBuiltEntities
-            .filter(bp => {
-                return !this.props.entities.find(e => e.entityType === bp);
-            })
-
-        const localePreBuildOptions = unusedPreBuilts
+        const currentAppLocale = this.props.app.locale
+        const localePreBuildOptions = PreBuiltEntities
+            .find(entitiesList => entitiesList.locale === currentAppLocale).preBuiltEntities
+            .filter(preBuiltEntityType => !this.props.entities.some(e => e.entityType === preBuiltEntityType))
             .map<BlisDropdownOption>(entityName =>
                 ({
                     key: entityName,
@@ -112,17 +106,23 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
 
         this.entityOptions = [...this.staticEntityOptions, ...localePreBuildOptions]
 
-        if (p.entity === null) {
+        // If we are not opening the window, stop
+        // The code below is only for initializtion when opening modal
+        if (!(this.props.open === false && nextProps.open === true)) {
+            return
+        }
+
+        if (nextProps.entity === null) {
             this.setState({
                 ...initState,
-                title: p.intl.formatMessage({
+                title: nextProps.intl.formatMessage({
                     id: FM.ENTITYCREATOREDITOR_TITLE_CREATE,
                     defaultMessage: 'Create an Entity'
                 }),
                 entityTypeVal: this.props.entityTypeFilter ? this.props.entityTypeFilter : this.NEW_ENTITY
             });
         } else {
-            let entityType = p.entity.entityType;
+            let entityType = nextProps.entity.entityType;
             let isProgrammatic = false;
             let isPrebuilt = true;
             if (entityType === EntityType.LUIS) {
@@ -134,14 +134,14 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                 isPrebuilt = false;
             }
             this.setState({
-                entityNameVal: p.entity.entityName,
+                entityNameVal: nextProps.entity.entityName,
                 entityTypeVal: entityType,
                 isPrebuilt: isPrebuilt,
-                isBucketableVal: p.entity.metadata.isBucket,
-                isNegatableVal: p.entity.metadata.isReversable,
+                isBucketableVal: nextProps.entity.metadata.isBucket,
+                isNegatableVal: nextProps.entity.metadata.isReversable,
                 isProgrammaticVal: isProgrammatic,
                 editing: true,
-                title: p.intl.formatMessage({
+                title: nextProps.intl.formatMessage({
                     id: FM.ENTITYCREATOREDITOR_TITLE_EDIT,
                     defaultMessage: 'Edit Entity'
                 })
@@ -183,7 +183,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
             // and the code below is incorrect because it doesn't pass the app id.
             // this.props.editEntityAsync(this.props.userKey, entity)
         }
-        
+
         this.props.fetchApplicationTrainingStatusThunkAsync(appId)
         this.props.handleClose()
     }
