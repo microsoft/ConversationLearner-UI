@@ -76,7 +76,7 @@ class Index extends React.Component<Props, ComponentState> {
         errors = missingApis.map(a => `Action references API "${ModelUtils.GetPrimaryPayload(a)}" not contained by running Bot`);
         return errors;
     }
-    
+
     render() {
         const { match, location } = this.props
         const app: BlisAppBase = location.state.app

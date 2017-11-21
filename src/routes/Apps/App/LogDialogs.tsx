@@ -194,15 +194,13 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     }
 
     renderLogDialogItems(): LogDialog[] {
-        if (!this.state.searchValue)
-        {
+        if (!this.state.searchValue) {
             return this.props.logDialogs.all;
         }
         // TODO: Consider caching as not very efficient
         let filteredTrainDialogs = this.props.logDialogs.all.filter((l: LogDialog) => {
             let keys = [];
-            for (let round of l.rounds)
-            {
+            for (let round of l.rounds) {
                 keys.push(round.extractorStep.text);
                 for (let le of round.extractorStep.predictedEntities) {
                     keys.push(this.props.entities.find(e => e.entityId == le.entityId).entityName);
@@ -259,12 +257,12 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     onSearch={(newValue) => this.onChange(newValue)}
                 />
                 <OF.PrimaryButton
-                        className="blis-dropdownWithButton-button"
-                        onClick={() => this.onClickSync()}
-                        ariaDescription="Refresh"
-                        text=""
-                        iconProps={{ iconName: 'Sync' }}
-                    />
+                    className="blis-dropdownWithButton-button"
+                    onClick={() => this.onClickSync()}
+                    ariaDescription="Refresh"
+                    text=""
+                    iconProps={{ iconName: 'Sync' }}
+                />
                 <OF.DetailsList
                     key={this.state.dialogKey}
                     className="ms-font-m-plus"

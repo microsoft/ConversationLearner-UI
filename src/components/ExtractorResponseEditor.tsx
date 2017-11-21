@@ -4,8 +4,10 @@ import * as ToolTips from './ToolTips';
 import { bindActionCreators } from 'redux';
 import { returntypeof } from 'react-redux-typescript';
 import { connect } from 'react-redux';
-import { ExtractResponse, PredictedEntity, EntityBase, 
-    AppDefinition, EntityType, MemoryValue } from 'blis-models'
+import {
+    ExtractResponse, PredictedEntity, EntityBase,
+    AppDefinition, EntityType, MemoryValue
+} from 'blis-models'
 import { State } from '../types';
 import { Prebuilt } from './ToolTips';
 import { BlisDropdownOption } from './modals/BlisDropDownOption'
@@ -178,7 +180,7 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
                     endCharIndex: (s.startIndex + (s.text.length - 1)),
                     entityId: s.entity.entityId,
                     entityName: s.entity.entityName,
-                    entityText: s.text, 
+                    entityText: s.text,
                     resolution: s.memoryValue ? s.memoryValue.resolution : null,
                     builtinType: s.memoryValue ? s.memoryValue.builtinType : null,
                     metadata: entities.find(e => e.entityName === s.entity.entityName).metadata,
@@ -237,11 +239,11 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
             if (count === 0) {
                 if (p.startCharIndex === 0) {
                     // handle the case where the first character of the input is part of an entity
-                    currentIndexGroup = { 
-                        ...currentIndexGroup, 
-                        end: p.endCharIndex + 1, 
+                    currentIndexGroup = {
+                        ...currentIndexGroup,
+                        end: p.endCharIndex + 1,
                         entity: this.props.entities.find(e => e.entityId === p.entityId),
-                        value: new MemoryValue({userText: p.entityText, builtinType: p.builtinType, resolution: p.resolution})
+                        value: new MemoryValue({ userText: p.entityText, builtinType: p.builtinType, resolution: p.resolution })
                     };
                     indexGroups.push(currentIndexGroup);
                     currentIndexGroup = this.makeIndexGroup(p.endCharIndex + 1);
@@ -250,13 +252,14 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
                     // handle the case where the first character of the input is part of a piece of regular text
                     currentIndexGroup = { ...currentIndexGroup, end: p.startCharIndex }
                     indexGroups.push(currentIndexGroup);
-                    
-                    currentIndexGroup = { 
-                        ...currentIndexGroup, 
-                        start: p.startCharIndex, 
-                        end: p.endCharIndex + 1, 
+
+                    currentIndexGroup = {
+                        ...currentIndexGroup,
+                        start: p.startCharIndex,
+                        end: p.endCharIndex + 1,
                         entity: this.props.entities.find(e => e.entityId === p.entityId),
-                        value: new MemoryValue({userText: p.entityText, builtinType: p.builtinType, resolution: p.resolution})}
+                        value: new MemoryValue({ userText: p.entityText, builtinType: p.builtinType, resolution: p.resolution })
+                    }
                     indexGroups.push(currentIndexGroup);
 
                     currentIndexGroup = this.makeIndexGroup(p.endCharIndex + 1);
@@ -264,11 +267,12 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
             } else {
                 if (currentIndexGroup.start === p.startCharIndex) {
                     // handle the case where the first character after the last entity is part of another entity
-                    currentIndexGroup = { 
-                        ...currentIndexGroup, 
-                        end: p.endCharIndex, 
+                    currentIndexGroup = {
+                        ...currentIndexGroup,
+                        end: p.endCharIndex,
                         entity: this.props.entities.find(e => e.entityId === p.entityId),
-                        value: new MemoryValue({userText: p.entityText, builtinType: p.builtinType, resolution: p.resolution}) }
+                        value: new MemoryValue({ userText: p.entityText, builtinType: p.builtinType, resolution: p.resolution })
+                    }
                     indexGroups.push(currentIndexGroup);
 
                     currentIndexGroup = this.makeIndexGroup(p.endCharIndex + 1);
@@ -278,12 +282,12 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
                     currentIndexGroup = { ...currentIndexGroup, end: p.startCharIndex }
                     indexGroups.push(currentIndexGroup);
 
-                    currentIndexGroup = { 
-                        ...currentIndexGroup, 
-                        start: p.startCharIndex, 
-                        end: p.endCharIndex + 1, 
+                    currentIndexGroup = {
+                        ...currentIndexGroup,
+                        start: p.startCharIndex,
+                        end: p.endCharIndex + 1,
                         entity: this.props.entities.find(e => e.entityId === p.entityId),
-                        value: new MemoryValue({userText: p.entityText, builtinType: p.builtinType, resolution: p.resolution})
+                        value: new MemoryValue({ userText: p.entityText, builtinType: p.builtinType, resolution: p.resolution })
                     }
                     indexGroups.push(currentIndexGroup);
 
@@ -371,7 +375,7 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
                     dropdownStyle: styles.hidden,
                     labelStyle: styles.normal,
                     startIndex: i.start
-                                
+
                 }
                 substringObjects.push(substringObj)
             }
@@ -908,17 +912,17 @@ class ExtractorResponseEditor extends React.Component<Props, ComponentState> {
         let key = 0;
         let boxClass = this.props.isValid ? 'extractorResponseBox' : 'extractorResponseBox extractorResponseBoxInvalid';
         return (
-            <div 
-                onClick={() => this.onGlobalClick()} 
+            <div
+                onClick={() => this.onGlobalClick()}
                 className="teachVariationBox"
             >
                 <div className="teachVariationButtonsBar">
-                {!this.props.isPrimary &&
-                    (<div><a onClick={() => this.onClickDeleteVariation()}><span className="teachVariationButton ms-Icon ms-Icon--Delete"/></a></div>
-                )}
-                {!this.props.isValid && ToolTips.Wrap(
-                    (<div><span className="teachVariationButton teachVariationInvalid ms-Icon ms-Icon--IncidentTriangle"/></div>), 
-                    ToolTips.TipType.ENTITY_EXTRACTOR_WARNING)}
+                    {!this.props.isPrimary &&
+                        (<div><a onClick={() => this.onClickDeleteVariation()}><span className="teachVariationButton ms-Icon ms-Icon--Delete" /></a></div>
+                        )}
+                    {!this.props.isValid && ToolTips.Wrap(
+                        (<div><span className="teachVariationButton teachVariationInvalid ms-Icon ms-Icon--IncidentTriangle" /></div>),
+                        ToolTips.TipType.ENTITY_EXTRACTOR_WARNING)}
                 </div>
                 <div className="teachVariation">
                     <div className={boxClass}>

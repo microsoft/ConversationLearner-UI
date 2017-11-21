@@ -5,7 +5,7 @@ import HelpIcon from '../HelpIcon'
 import * as OF from 'office-ui-fabric-react';
 
 class DropdownWithTip extends OF.BaseComponent<IDropdownWithTipProps, OF.IDropdownState> {
-    
+
     constructor(props: IDropdownWithTipProps) {
         super(props)
     }
@@ -13,7 +13,7 @@ class DropdownWithTip extends OF.BaseComponent<IDropdownWithTipProps, OF.IDropdo
         return (
             <div>
                 <OF.Label>{this.props.label}
-                    <HelpIcon tipType={this.props.tipType}/>
+                    <HelpIcon tipType={this.props.tipType} />
                 </OF.Label>
                 <OF.Dropdown
                     className={this.props.hasButton ? 'blis-dropdownWithButton-dropdown' : ''}

@@ -8,26 +8,25 @@ import * as OF from 'office-ui-fabric-react';
 import { setTipType } from '../actions/displayActions'
 
 class HelpPanel extends React.Component<Props, {}> {
-
     onDismiss(): void {
-      this.props.setTipType(null);
+        this.props.setTipType(null);
     }
 
     render() {
         return (
-        <div>
-            <OF.Panel
-                isBlocking={true}
-                isOpen={this.props.tipType != null}
-                isLightDismiss={true}
-                onDismiss={() => {this.onDismiss()}}
-                type={OF.PanelType.medium}
-                customWidth="400px"
-                closeButtonAriaLabel="Close"
-            >
-                <span>{ToolTip.GetTip(this.props.tipType)}</span>
-            </OF.Panel>
-        </div>
+            <div>
+                <OF.Panel
+                    isBlocking={true}
+                    isOpen={this.props.tipType != null}
+                    isLightDismiss={true}
+                    onDismiss={() => { this.onDismiss() }}
+                    type={OF.PanelType.medium}
+                    customWidth="400px"
+                    closeButtonAriaLabel="Close"
+                >
+                    <span>{ToolTip.GetTip(this.props.tipType)}</span>
+                </OF.Panel>
+            </div>
         )
     }
 }

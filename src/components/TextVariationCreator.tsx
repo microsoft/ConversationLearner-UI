@@ -80,9 +80,9 @@ export interface ReceivedProps {
     sessionId: string,
     extractType: DialogType
     roundIndex: number,
-    onAddVariation: ()=>void
-    onTextChanged: (text: string)=>void;
- }
+    onAddVariation: () => void
+    onTextChanged: (text: string) => void;
+}
 
 // Props types inferred from mapStateToProps & dispatchToProps
 const stateProps = returntypeof(mapStateToProps);

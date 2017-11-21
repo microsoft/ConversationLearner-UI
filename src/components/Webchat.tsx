@@ -9,7 +9,6 @@ import { BlisAppBase } from 'blis-models'
 import { BehaviorSubject } from 'rxjs';
 import { Activity } from 'botframework-directlinejs';
 
-
 class Webchat extends React.Component<Props, {}> {
     private behaviorSubject: BehaviorSubject<any> = null;
     private chatProps: BotChat.ChatProps = null;
@@ -19,7 +18,7 @@ class Webchat extends React.Component<Props, {}> {
         history: null,
         onSelectActivity: () => { },
         onPostActivity: () => { },
-        hideInput: false, 
+        hideInput: false,
         focusInput: false
     }
 

@@ -18,7 +18,7 @@ interface Props {
   editorState: EditorState
   placeholder: string
   disabled: boolean,
-  label: string, 
+  label: string,
   tipType: TipType
   onChange: (editorState: EditorState) => void
 }
@@ -82,7 +82,7 @@ export default class extends React.Component<Props, State> {
       <div>
         <OF.Label>
           {this.props.label}
-          <HelpIcon tipType={this.props.tipType}/>
+          <HelpIcon tipType={this.props.tipType} />
         </OF.Label>
         <div className={'editor' + (this.props.disabled ? ' editor--disabled' : '') + (this.state.isPayloadFocused ? ' editor--active' : '')} onClick={this.onClickEditorContainer}>
           <Editor

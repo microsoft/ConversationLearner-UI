@@ -124,7 +124,7 @@ class App extends React.Component<Props, ComponentState> {
             </nav>
             <NavLink className="blis-header_user" to="/home" onClick={this.onClickUsername}>{this.props.user.name || "BLIS"}</NavLink>
           </header>
-          <div className="blis-app_header-placeholder"/>
+          <div className="blis-app_header-placeholder" />
           <div className="blis-app_content">
             <Switch>
               <Route exact path="/" render={() => <Redirect to="/home" />} />
@@ -136,7 +136,7 @@ class App extends React.Component<Props, ComponentState> {
             </Switch>
           </div>
           <div className="blis-app_modals">
-            <HelpPanel/>
+            <HelpPanel />
             <Error />
             <UserLogin
               open={this.state.isLoginWindowOpen}

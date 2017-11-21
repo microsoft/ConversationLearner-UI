@@ -12,7 +12,7 @@ export enum FM {
     ACTIONS_CREATEBUTTONARIALDESCRIPTION = 'Actions.createButtonAriaDescription',
     ACTIONS_CREATEBUTTONTITLE = 'Actions.createButtonTitle',
     ACTIONS_CONFIRMDELETEMODALTITLE = 'Actions.confirmDeleteModalTitle',
-   
+
     // App
     APP_HEADER_HOME = 'App.header.home',
     APP_HEADER_ABOUT = 'App.header.about',
@@ -432,7 +432,7 @@ export default {
         [FM.TOOLTIP_ACTION_SCORE]: 'Score:',
         [FM.TOOLTIP_ACTION_SCORE_PERCENT]: 'BLIS confidence in performing an Action',
         [FM.TOOLTIP_ACTION_SCORE_TRAINING]: `Action can't be scored yet as BLIS is still training`,
-        [FM.TOOLTIP_ACTION_SCORE_DISQUALIFIED]: 'Action has been disqualified - Required Entities are missing or Blocked Entites are present', 
+        [FM.TOOLTIP_ACTION_SCORE_DISQUALIFIED]: 'Action has been disqualified - Required Entities are missing or Blocked Entites are present',
 
         [FM.TOOLTIP_ACTION_SUGGESTED]: `Hint to BLIS that the user's reply to this Action will likely be a value for this Entity`,
         [FM.TOOLTIP_ACTION_SUGGESTED_TITLE]: 'Expected Response',
@@ -468,7 +468,7 @@ export default {
         [FM.TRAINDIALOGS_LASTINPUT]: 'Last Input',
         [FM.TRAINDIALOGS_LASTRESPONSE]: 'Last Response',
         [FM.TRAINDIALOGS_TURNS]: 'Turns',
-        
+
         // Login
         [FM.USERLOGIN_TITLE]: 'Log In',
         [FM.USERLOGIN_USERNAMEFIELDLABEL]: 'Name',
@@ -613,7 +613,7 @@ export default {
         [FM.NOMATCH_TITLE]: '페이지를 찾을 수 없습니다.',
         [FM.NOMATCH_HOME]: '집',
         [FM.PAGE_COMINGSOON]: '출시 예정 ...',
-        
+
         // App
         [FM.APP_HEADER_HOME]: '집',
         [FM.APP_HEADER_ABOUT]: '약',
@@ -625,7 +625,7 @@ export default {
         [FM.APPSLIST_COLUMNS_LINKEDBOTS]: '연결된 봇',
         [FM.APPSLIST_COLUMNS_ACTIONS]: '행위',
 
-         // Apps List
+        // Apps List
         [FM.APPSLIST_SUBTITLE]: '내 앱',
         [FM.APPSLIST_SUBTITLE]: 'BLIS 응용 프로그램 작성 및 관리 ...',
         [FM.APPSLIST_CREATEBUTTONARIADESCRIPTION]: '새 응용 프로그램 만들기',

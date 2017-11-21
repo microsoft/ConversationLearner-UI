@@ -458,7 +458,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                 return '';
             }
         }
-        
+
         return column.render(action as ScoredBase, this, index)
     }
     getScoredItems(): ScoredBase[] {

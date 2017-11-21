@@ -172,10 +172,11 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
             if (round.scorerSteps.length > 0) {
                 let scorerStep = round.scorerSteps[0];
                 memories = scorerStep.input.filledEntities.map((fe) => new Memory(
-                    { 
+                    {
                         entityName: this.props.entities.find(e => e.entityId === fe.entityId).entityName,
-                        entityValues: fe.values }
-                    ));
+                        entityValues: fe.values
+                    }
+                ));
             }
         }
         return memories;
@@ -195,7 +196,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
 
                 selectedAction = this.props.actions.find(action => action.actionId === scorerStep.labelAction)
                 memories = scorerStep.input.filledEntities.map((fe) => new Memory(
-                    { 
+                    {
                         entityName: this.props.entities.find(e => e.entityId === fe.entityId).entityName,
                         entityValues: fe.values
                     }
