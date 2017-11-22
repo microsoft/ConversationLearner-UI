@@ -7,11 +7,10 @@ import { setTipType } from '../actions/displayActions'
 import { TipType } from '../components/ToolTips';
 
 class HelpIcon extends React.Component<Props, {}> {
-    
     render() {
         return (
-            <a onClick={() => {this.props.setTipType(this.props.tipType)}}>
-                <span className="blis-icon ms-Icon ms-Icon--Info"/>
+            <a onClick={() => { this.props.setTipType(this.props.tipType) }}>
+                <span className="blis-icon ms-Icon ms-Icon--Info" />
             </a>
         )
     }

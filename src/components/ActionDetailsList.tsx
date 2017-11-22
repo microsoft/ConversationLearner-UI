@@ -9,7 +9,6 @@ import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../react-intl-messages'
 
 class ActionDetailsList extends React.Component<Props, ComponentState> {
-
     constructor(p: any) {
         super(p);
         this.state = {
@@ -211,7 +210,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                 if (!expectedEntityId) {
                     return <span className="ms-Icon ms-Icon--Remove blis-icon" aria-hidden="true"></span>
                 }
-                
+
                 const expectedEntity = component.props.entities.find(e => e.entityId == expectedEntityId)
                 return (
                     <div className='ms-ListItem is-selectable'>

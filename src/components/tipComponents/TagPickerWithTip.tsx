@@ -5,7 +5,7 @@ import HelpIcon from '../HelpIcon'
 import * as OF from 'office-ui-fabric-react';
 
 class TagPickerWithTip extends OF.BaseComponent<ITagPickerWithTipProps, {}> {
-    
+
     constructor(props: ITagPickerWithTipProps) {
         super(props)
     }
@@ -13,7 +13,7 @@ class TagPickerWithTip extends OF.BaseComponent<ITagPickerWithTipProps, {}> {
         return (
             <div>
                 <OF.Label>{this.props.label}
-                    <HelpIcon tipType={this.props.tipType}/>
+                    <HelpIcon tipType={this.props.tipType} />
                 </OF.Label>
                 <OF.TagPicker
                     onResolveSuggestions={this.props.onResolveSuggestions}

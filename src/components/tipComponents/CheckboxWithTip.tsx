@@ -5,14 +5,14 @@ import HelpIcon from '../HelpIcon'
 import * as OF from 'office-ui-fabric-react';
 
 class CheckboxWithTip extends OF.BaseComponent<ICheckboxWithTipProps, OF.ICheckboxState> {
-    
+
     constructor(props: ICheckboxWithTipProps) {
         super(props)
     }
     render() {
         return (
             <div>
-                <OF.Checkbox 
+                <OF.Checkbox
                     className="blis-tip"
                     defaultChecked={this.props.defaultChecked}
                     onChange={this.props.onChange}
@@ -20,7 +20,7 @@ class CheckboxWithTip extends OF.BaseComponent<ICheckboxWithTipProps, OF.ICheckb
                     disabled={this.props.disabled}
                     label={this.props.label}
                 />
-                <HelpIcon tipType={this.props.tipType}/>
+                <HelpIcon tipType={this.props.tipType} />
             </div>
         )
     }

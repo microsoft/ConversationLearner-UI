@@ -125,7 +125,7 @@ class MemoryTable extends React.Component<Props, ComponentState> {
         let prevMemories = this.props.prevMemories || [];
         return prevMemories.find(m => m.entityName === entityName);
     }
-    
+
     renderEntityName(entityName: string) {
         let curEntity = this.props.memories.find(m => m.entityName === entityName);
         let prevEntity = this.props.prevMemories.find(m => m.entityName === entityName);
@@ -190,9 +190,9 @@ class MemoryTable extends React.Component<Props, ComponentState> {
                     Prebuilt(memoryValue, (<span className="ms-font-m-plus" key={key++}>{prefix}<span className={entityClass}>{memoryValue.displayText}</span></span>))
                 )
             } else {
-                display.push(<span className="ms-font-m-plus" key={key++}>{prefix}<span className={entityClass}>{memoryValue.userText}</span></span>);                
+                display.push(<span className="ms-font-m-plus" key={key++}>{prefix}<span className={entityClass}>{memoryValue.userText}</span></span>);
             }
- 
+
             index++;
         }
         return display;

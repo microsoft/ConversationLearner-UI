@@ -139,7 +139,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     key: e.entityId,
                     name: e.entityName
                 }))
-    
+
             nextState = {
                 ...nextState,
                 entityTags

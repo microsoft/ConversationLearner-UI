@@ -66,7 +66,7 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
 
     onClickConfirmDelete = () => {
         this.setState(
-            {confirmDeleteModalOpen: false}, 
+            { confirmDeleteModalOpen: false },
             async () => {
                 try {
                     await this.props.deleteTrainDialogThunkAsync(this.props.app.appId, this.props.trainDialog)
@@ -77,7 +77,7 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
                     console.error(e)
                 }
             })
-        }
+    }
 
     // TODO: Investigate if this can be removed.
     // Lars mentioned people shouldn't be able to / expected to chat when viewing existing dialogs
@@ -154,7 +154,7 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
                 </div>
                 <div className="blis-modal_footer">
                     <div className="blis-modal-buttons">
-                        <div className="blis-modal-buttons_primary"/>
+                        <div className="blis-modal-buttons_primary" />
                         <div className="blis-modal-buttons_secondary">
                             <DefaultButton
                                 onClick={() => this.onClickDelete()}

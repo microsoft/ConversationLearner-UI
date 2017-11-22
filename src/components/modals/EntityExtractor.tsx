@@ -17,7 +17,7 @@ interface ComponentState {
     extractionChanged: boolean,
     pendingVariationChange: boolean,
     entityModalOpen: boolean,
-    warningOpen: boolean, 
+    warningOpen: boolean,
     // Handle saves after round change
     savedExtractResponses: ExtractResponse[],
     savedRoundIndex: number
@@ -49,7 +49,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         this.focusPrimaryButton = this.focusPrimaryButton.bind(this);
     }
     componentWillMount() {
-        this.setState({newTextVariations : this.props.originalTextVariations})
+        this.setState({ newTextVariations: this.props.originalTextVariations })
     }
 
     componentDidMount() {
@@ -62,7 +62,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
     }
     componentWillReceiveProps(newProps: Props) {
         // If I'm swiching my round or have added/removed text variations
-        if (this.props.sessionId !== newProps.sessionId || 
+        if (this.props.sessionId !== newProps.sessionId ||
             this.props.roundIndex !== newProps.roundIndex ||
             this.props.originalTextVariations.length !== newProps.originalTextVariations.length) {
             // If I made an unsaved change, show save prompt before switching
@@ -116,7 +116,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
             return false;
         }
         return true;
-    } 
+    }
     allValid(extractResponses: ExtractResponse[]): boolean {
         for (let extractResponse of extractResponses) {
             if (extractResponse !== extractResponses[0]) {
@@ -133,16 +133,14 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         let allResponses = [...convertedVariations, ...this.props.extractResponses];
         return allResponses;
     }
-    onClickUndoChanges()
-    {
+    onClickUndoChanges() {
         this.props.clearExtractResponses();
         this.setState({
             newTextVariations: [...this.props.originalTextVariations],
             extractionChanged: false,
         });
     }
-    onClickSubmitExtractions()
-    {
+    onClickSubmitExtractions() {
         this.submitExtractions(this.allResponses(), this.props.roundIndex);
     }
     submitExtractions(allResponses: ExtractResponse[], roundIndex: number) {
@@ -150,7 +148,8 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         this.setState({
             savedExtractResponses: null,
             savedRoundIndex: 0,
-            extractionChanged: false}
+            extractionChanged: false
+        }
         );
 
         if (!this.allValid(allResponses)) {
@@ -162,17 +161,17 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         for (let extractResponse of allResponses) {
             let labeledEntities = ModelUtils.ToLabeledEntities(extractResponse.predictedEntities);
             textVariations.push(new TextVariation({ text: extractResponse.text, labelEntities: labeledEntities }));
-        }     
+        }
         this.props.onTextVariationsExtracted(allResponses[0], textVariations, roundIndex);
 
     }
-    onAddExtractResponse() : void {
-        this.setState({ 
+    onAddExtractResponse(): void {
+        this.setState({
             extractionChanged: true,
             pendingVariationChange: false
         });
     }
-    onChangeTextVariation(text: string) : void {
+    onChangeTextVariation(text: string): void {
         this.setState({
             pendingVariationChange: (text.length > 0)
         });
@@ -184,7 +183,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         let foundResponse = this.props.extractResponses.find(e => e.text === extractResponse.text);
         if (foundResponse) {
             this.props.removeExtractResponse(foundResponse);
-            this.setState({extractionChanged: true});
+            this.setState({ extractionChanged: true });
         } else {
             // Otherwise change is in text variation
             let newVariations = this.state.newTextVariations
@@ -254,7 +253,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                 extractType={this.props.extractType}
                 roundIndex={this.props.roundIndex}
                 onAddVariation={() => this.onAddExtractResponse()}
-                onTextChanged={(text:string) => this.onChangeTextVariation(text)} />
+                onTextChanged={(text: string) => this.onChangeTextVariation(text)} />
 
             extractDisplay = [];
             let allValid = true;
@@ -276,30 +275,30 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                     extractResponse={extractResponse}
                     updateExtractResponse={extractResponse => this.onUpdateExtractResponse(extractResponse)}
                     removeExtractResponse={extractResponse => this.onRemoveExtractResponse(extractResponse)}
-                    onNewEntitySelected={() =>this.onNewEntity()}
+                    onNewEntitySelected={() => this.onNewEntity()}
                 />));
             }
 
-            editComponents = (this.props.extractType !== DialogType.TEACH) ?  
+            editComponents = (this.props.extractType !== DialogType.TEACH) ?
                 (
                     <div className="blis-buttons-row">
-                        <OF.PrimaryButton 
+                        <OF.PrimaryButton
                             disabled={!this.state.extractionChanged || !allValid || this.state.pendingVariationChange}
                             onClick={this.onClickSubmitExtractions}
                             ariaDescription={'Sumbit Changes'}
                             text={'Submit Changes'}
                             componentRef={(ref: any) => { this.doneExtractingButton = ref }}
                         />
-                        <OF.PrimaryButton 
+                        <OF.PrimaryButton
                             disabled={!this.state.extractionChanged}
                             onClick={this.onClickUndoChanges}
                             ariaDescription="Undo Changes"
                             text="Undo"
                         />
                     </div>
-                ) :(
+                ) : (
                     <div className="blis-buttons-row">
-                        <OF.PrimaryButton 
+                        <OF.PrimaryButton
                             disabled={!allValid || this.state.pendingVariationChange}
                             onClick={this.onClickSubmitExtractions}
                             ariaDescription={'Score Actions'}
@@ -313,17 +312,17 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         else {
             // Only display primary response if not in edit mode
             const extractResponse = allResponses[0]
-            extractDisplay = 
-            (<ExtractorResponseEditor
-                canEdit={canEdit}
-                key={0}
-                isPrimary={true}
-                isValid={true}
-                extractResponse={extractResponse}
-                updateExtractResponse={er => this.onUpdateExtractResponse(er)}
-                removeExtractResponse={er => this.onRemoveExtractResponse(er)}
-                onNewEntitySelected={() =>this.onNewEntity()}
-            />)
+            extractDisplay =
+                (<ExtractorResponseEditor
+                    canEdit={canEdit}
+                    key={0}
+                    isPrimary={true}
+                    isValid={true}
+                    extractResponse={extractResponse}
+                    updateExtractResponse={er => this.onUpdateExtractResponse(er)}
+                    removeExtractResponse={er => this.onRemoveExtractResponse(er)}
+                    onNewEntitySelected={() => this.onNewEntity()}
+                />)
         }
 
         return (
@@ -335,7 +334,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                             open={this.state.entityModalOpen}
                             entity={null}
                             handleClose={this.entityEditorHandleClose}
-                            handleOpenDeleteModal={()=>{}}
+                            handleOpenDeleteModal={() => { }}
                             entityTypeFilter={EntityType.LUIS}
                         />
                     </div>

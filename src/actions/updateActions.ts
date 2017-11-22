@@ -3,8 +3,8 @@ import { ActionObject } from '../types'
 import { AT } from '../types/ActionTypes'
 import { BlisAppBase, EntityBase, ActionBase, TrainDialog, LogDialog } from 'blis-models';
 
-export const editBLISApplicationAsync = (key: string, application: BlisAppBase) : ActionObject => { 
-    
+export const editBLISApplicationAsync = (key: string, application: BlisAppBase): ActionObject => {
+
     return {
         type: AT.EDIT_BLIS_APPLICATION_ASYNC,
         key: key,
@@ -12,16 +12,16 @@ export const editBLISApplicationAsync = (key: string, application: BlisAppBase) 
     }
 }
 
-export const editBLISApplicationFulfilled = (application: BlisAppBase) : ActionObject => { 
-    
+export const editBLISApplicationFulfilled = (application: BlisAppBase): ActionObject => {
+
     return {
         type: AT.EDIT_BLIS_APPLICATION_FULFILLED,
         blisApp: application
     }
 }
 
-export const editEntityAsync = (key: string, entity: EntityBase) : ActionObject => { 
-    
+export const editEntityAsync = (key: string, entity: EntityBase): ActionObject => {
+
     return {
         type: AT.EDIT_ENTITY_ASYNC,
         key: key,
@@ -29,16 +29,16 @@ export const editEntityAsync = (key: string, entity: EntityBase) : ActionObject 
     }
 }
 
-export const editEntityFulfilled = (entity: EntityBase) : ActionObject => { 
-    
+export const editEntityFulfilled = (entity: EntityBase): ActionObject => {
+
     return {
         type: AT.EDIT_ENTITY_FULFILLED,
         entity: entity
     }
 }
 
-export const editActionAsync = (key: string, action: ActionBase, currentAppId: string) : ActionObject => { 
-    
+export const editActionAsync = (key: string, action: ActionBase, currentAppId: string): ActionObject => {
+
     return {
         type: AT.EDIT_ACTION_ASYNC,
         key: key,
@@ -47,16 +47,16 @@ export const editActionAsync = (key: string, action: ActionBase, currentAppId: s
     }
 }
 
-export const editActionFulfilled = (action: ActionBase) : ActionObject => { 
-    
+export const editActionFulfilled = (action: ActionBase): ActionObject => {
+
     return {
         type: AT.EDIT_ACTION_FULFILLED,
         blisAction: action,
     }
 }
 
-export const editTrainDialogAsync = (key: string, trainDialog: TrainDialog, currentAppId: string) : ActionObject => { 
-    
+export const editTrainDialogAsync = (key: string, trainDialog: TrainDialog, currentAppId: string): ActionObject => {
+
     return {
         type: AT.EDIT_TRAIN_DIALOG_ASYNC,
         key: key,
@@ -65,8 +65,8 @@ export const editTrainDialogAsync = (key: string, trainDialog: TrainDialog, curr
     }
 }
 
-export const editTrainDialogFulfilled = (trainDialog: TrainDialog) : ActionObject => { 
-    
+export const editTrainDialogFulfilled = (trainDialog: TrainDialog): ActionObject => {
+
     return {
         type: AT.EDIT_TRAIN_DIALOG_FULFILLED,
         trainDialog: trainDialog
@@ -74,8 +74,8 @@ export const editTrainDialogFulfilled = (trainDialog: TrainDialog) : ActionObjec
 }
 
 // TODO: should be async with fulfillment
-export const editLogDialog = (key: string, logDialog: LogDialog) : ActionObject => { 
-    
+export const editLogDialog = (key: string, logDialog: LogDialog): ActionObject => {
+
     return {
         type: AT.EDIT_LOG_DIALOG,
         key: key,

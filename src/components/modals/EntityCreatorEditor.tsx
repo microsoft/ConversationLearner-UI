@@ -61,17 +61,17 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
 
     constructor(props: Props) {
         super(props)
-        this.state = {...initState, entityTypeVal: this.NEW_ENTITY};
+        this.state = { ...initState, entityTypeVal: this.NEW_ENTITY };
         this.staticEntityOptions = this.getStaticEntityOptions(this.props.intl)
     }
 
     get NEW_ENTITY(): string {
         return this.props.intl.formatMessage({
-                id: FM.ENTITYCREATOREDITOR_ENTITYOPTION_NEW,
-                defaultMessage: 'New Entity Type'
+            id: FM.ENTITYCREATOREDITOR_ENTITYOPTION_NEW,
+            defaultMessage: 'New Entity Type'
         });
     }
-     
+
     getStaticEntityOptions(intl: InjectedIntl): BlisDropdownOption[] {
         return [
             {
@@ -203,7 +203,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
         let isProgrammaticVal = isPrebuilt ? false : this.state.isProgrammaticVal;
         this.setState({
             isPrebuilt: isPrebuilt,
-            isNegatableVal : isNegatableVal,
+            isNegatableVal: isNegatableVal,
             isProgrammaticVal: isProgrammaticVal,
             entityTypeVal: obj.text
         })
@@ -331,7 +331,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                         disabled={this.state.editing}
                         tipType={ToolTip.TipType.ENTITY_MULTIVALUE}
                     />
-                    </div>
+                </div>
                 <div className="blis-entity-creator-checkbox">
                     <TC.Checkbox
                         label={intl.formatMessage({
@@ -364,34 +364,34 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                         ? (
                             <div>
                                 <OF.Pivot linkSize={OF.PivotLinkSize.large}>
-                                    <OF.PivotItem 
+                                    <OF.PivotItem
                                         linkText={intl.formatMessage({
                                             id: FM.ENTITYCREATOREDITOR_PIVOT_EDIT,
                                             defaultMessage: 'Edit Entity'
                                         })}
                                     >
-                                    {this.renderEdit()}
+                                        {this.renderEdit()}
                                     </OF.PivotItem>
-                                    <OF.PivotItem 
+                                    <OF.PivotItem
                                         ariaLabel={ToolTip.TipType.ENTITY_ACTION_REQUIRED}
-                                        linkText={intl.formatMessage({id: FM.ENTITYCREATOREDITOR_PIVOT_REQUIREDFOR, defaultMessage: 'Required For Actions'})}
+                                        linkText={intl.formatMessage({ id: FM.ENTITYCREATOREDITOR_PIVOT_REQUIREDFOR, defaultMessage: 'Required For Actions' })}
                                         onRenderItemLink={(
                                             pivotItemProps: OF.IPivotItemProps,
                                             defaultRender: (link: OF.IPivotItemProps) => JSX.Element) =>
-                                                ToolTip.onRenderPivotItem(pivotItemProps, defaultRender)}              
+                                            ToolTip.onRenderPivotItem(pivotItemProps, defaultRender)}
                                     >
                                         <ActionDetailsList
                                             actions={this.getRequiredActions()}
                                             onSelectAction={null}
                                         />
                                     </OF.PivotItem>
-                                    <OF.PivotItem 
+                                    <OF.PivotItem
                                         ariaLabel={ToolTip.TipType.ENTITY_ACTION_BLOCKED}
-                                        linkText={intl.formatMessage({ id: FM.ENTITYCREATOREDITOR_PIVOT_BLOCKEDACTIONS, defaultMessage: 'Blocked Actions'})}
+                                        linkText={intl.formatMessage({ id: FM.ENTITYCREATOREDITOR_PIVOT_BLOCKEDACTIONS, defaultMessage: 'Blocked Actions' })}
                                         onRenderItemLink={(
                                             pivotItemProps: OF.IPivotItemProps,
                                             defaultRender: (link: OF.IPivotItemProps) => JSX.Element) =>
-                                                ToolTip.onRenderPivotItem(pivotItemProps, defaultRender)}  
+                                            ToolTip.onRenderPivotItem(pivotItemProps, defaultRender)}
                                     >
                                         <ActionDetailsList
                                             actions={this.getBlockedActions()}

@@ -195,16 +195,14 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     }
 
     renderTrainDialogItems(): TrainDialog[] {
-        if (!this.state.searchValue)
-        {
+        if (!this.state.searchValue) {
             return this.props.trainDialogs;
         }
         // TODO: Consider caching as not very efficient
         let filteredTrainDialogs = this.props.trainDialogs.filter((t: TrainDialog) => {
 
             let keys = [];
-            for (let round of t.rounds)
-            {
+            for (let round of t.rounds) {
                 for (let variation of round.extractorStep.textVariations) {
                     keys.push(variation.text);
                     for (let le of variation.labelEntities) {

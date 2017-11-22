@@ -9,11 +9,13 @@ import ActionScorer from './ActionScorer';
 import MemoryTable from './MemoryTable';
 import * as OF from 'office-ui-fabric-react'
 import { Activity } from 'botframework-directlinejs'
-import { BlisAppBase, TrainExtractorStep, TrainScorerStep, TextVariation, 
-        Memory, TrainDialog, TrainRound, 
-        LogDialog, LogRound, LogScorerStep, 
-        ActionBase, ExtractResponse, 
-        DialogType, ModelUtils } from 'blis-models'
+import {
+    BlisAppBase, TrainExtractorStep, TrainScorerStep, TextVariation,
+    Memory, TrainDialog, TrainRound,
+    LogDialog, LogRound, LogScorerStep,
+    ActionBase, ExtractResponse,
+    DialogType, ModelUtils
+} from 'blis-models'
 
 interface ComponentState {
     senderType: SenderType,
@@ -37,7 +39,7 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
     }
 
     componentWillReceiveProps(newProps: Props) {
-        
+
         if (newProps.selectedActivity && newProps.logDialog) {
             let [senderType, roundIndex, scoreIndex] = newProps.selectedActivity.id.split(':').map(s => parseInt(s));
             this.setState({
@@ -50,11 +52,11 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
 
     onClickSaveConfirmation() {
         this.props.onSaveChanges(this.state.newTrainDialog);
-        this.setState({newTrainDialog: null});
+        this.setState({ newTrainDialog: null });
     }
 
     onClickCancelSaveConfirmation() {
-        this.setState({newTrainDialog: null});
+        this.setState({ newTrainDialog: null });
     }
 
     // User has submitted new entity extractions / text variations for a round
@@ -76,8 +78,8 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
             ]
         })
 
-        this.setState({newTrainDialog: trainDialog});
-    } 
+        this.setState({ newTrainDialog: trainDialog });
+    }
 
     // User has submitted new entity extractions / text variations for a round
     onActionScorerSubmit(trainScorerStep: TrainScorerStep): void {
@@ -110,8 +112,8 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
             rounds: [...roundsBeforeModification, modifiedRound]
         })
 
-        this.setState({newTrainDialog: trainDialog});
-    } 
+        this.setState({ newTrainDialog: trainDialog });
+    }
 
     getPrevMemories(): Memory[] {
         let memories: Memory[] = [];
@@ -124,10 +126,10 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
                     {
                         entityName: this.props.entities.find(e => e.entityId === fe.entityId).entityName,
                         entityValues: fe.values
-                    }));     
+                    }));
             }
         }
-        return memories;    
+        return memories;
     }
 
     render() {
@@ -159,31 +161,31 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
             }
             prevMemories = this.getPrevMemories();
         }
-         
+
         return (
             <div className="blis-dialog-admin ms-font-l">
                 {this.props.selectedActivity && (this.state.senderType === SenderType.User ? (
                     <div className="blis-dialog-admin__content">
                         <div className="blis-wc-message blis-wc-message--user">User Input</div>
                     </div>
-                    ) : (
-                    <div className="blis-dialog-admin__content">
-                        <div className="blis-wc-message blis-wc-message--bot">Bot Response</div>
-                    </div>                       
+                ) : (
+                        <div className="blis-dialog-admin__content">
+                            <div className="blis-wc-message blis-wc-message--bot">Bot Response</div>
+                        </div>
                     ))
                 }
                 {logDialog && selectedActivity ?
                     (<div className="blis-dialog-admin__content">
                         <div className="blis-dialog-admin-title">Memory</div>
-                        <MemoryTable 
+                        <MemoryTable
                             dialogMode={dialogMode}
                             memories={memories}
                             prevMemories={prevMemories}
-                        />                        
+                        />
                     </div>
                     ) : (
                         <div className="blis-dialog-admin__content">
-                        <div className="blis-dialog-admin-title">Log Dialog</div>
+                            <div className="blis-dialog-admin-title">Log Dialog</div>
                             <div>Click on User or Bot dialogs to the left to view how the Bot handled the User's conversation.</div>
                             <div>You can then make corrections to the Bot's behavior.</div>
                         </div>

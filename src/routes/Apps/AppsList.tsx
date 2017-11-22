@@ -92,7 +92,7 @@ class AppsList extends React.Component<Props, ComponentState> {
         const columns = getColumns(this.props.intl)
         const defaultSortColumn = columns.find(c => c.key === "appName")
         defaultSortColumn.isSorted = true
-        
+
         this.state = {
             isAppCreateModalOpen: false,
             isConfirmDeleteAppModalOpen: false,
