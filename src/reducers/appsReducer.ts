@@ -23,8 +23,6 @@ const appsReducer: Reducer<AppsState> = (state = initialState, action: ActionObj
                 didPollingExpire: false
             }
 
-            console.log(`appsReducer.FETCH_APPLICATION_TRAININGSTATUS_ASYNC.didPollingExpire`, newApp.didPollingExpire)
-
             return { ...state, all: replace(state.all, newApp, a => a.appId) }
         }
         case AT.FETCH_APPLICATION_TRAININGSTATUS_EXPIRED: {
@@ -34,8 +32,6 @@ const appsReducer: Reducer<AppsState> = (state = initialState, action: ActionObj
                 didPollingExpire: true
             }
 
-            console.log(`appsReducer.FETCH_APPLICATION_TRAININGSTATUS_EXPIRED.didPollingExpire`, newApp.didPollingExpire)
-            
             return { ...state, all: replace(state.all, newApp, a => a.appId) }
         }
         case AT.FETCH_APPLICATION_TRAININGSTATUS_FULFILLED: {
@@ -48,12 +44,10 @@ const appsReducer: Reducer<AppsState> = (state = initialState, action: ActionObj
                 datetime: new Date(),
                 // Used discriminated union to access failure message
                 trainingFailureMessage: (action.trainingStatus.trainingStatus === TrainingStatusCode.Failed)
-                ? action.trainingStatus.trainingFailureMessage
-                : null
+                    ? action.trainingStatus.trainingFailureMessage
+                    : null
             }
 
-            console.log(`appsReducer.FETCH_APPLICATION_TRAININGSTATUS_FULFILLED.didPollingExpire`, newApp.didPollingExpire)
-            
             return { ...state, all: replace(state.all, newApp, a => a.appId) }
         }
         case AT.CREATE_BLIS_APPLICATION_FULFILLED:
