@@ -431,7 +431,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         return getSuggestedTags(
             filterText,
             this.state.entityTags,
-            [...selectedTags, ...this.state.expectedEntityTags, ...this.state.requiredEntityTags]
+            [...selectedTags, ...this.state.expectedEntityTags, ...this.state.requiredEntityTagsFromPayload, ...this.state.requiredEntityTags]
         )
     }
 
@@ -472,8 +472,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         const isPayloadDisabled = this.state.selectedActionTypeOptionKey === ActionTypes.API_LOCAL
             && (this.state.isEditing || this.state.apiOptions.length === 0)
 
-        // Available Mentions: All entities - expected entity - required entities from payload
-        const unavailableTags = [...this.state.expectedEntityTags, ...this.state.requiredEntityTagsFromPayload]
+        // Available Mentions: All entities - expected entity - required entities from payload - blocking entities
+        const unavailableTags = [...this.state.expectedEntityTags, ...this.state.requiredEntityTagsFromPayload, ...this.state.negativeEntityTags]
         const getMentionsAvailableForPayload = this.props.entities
             .filter(e => !unavailableTags.some(t => t.key === e.entityId))
             .map(convertEntityToMention)
