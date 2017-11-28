@@ -4,6 +4,7 @@ import { AT } from '../types/ActionTypes'
 import { Reducer } from 'redux'
 import { replace } from '../util'
 import { TrainingStatusCode } from 'blis-models'
+import { App } from '../types/models'
 
 const initialState: AppsState = {
     all: []
@@ -15,20 +16,46 @@ const appsReducer: Reducer<AppsState> = (state = initialState, action: ActionObj
             return { ...initialState };
         case AT.FETCH_APPLICATIONS_FULFILLED:
             return { ...state, all: action.allBlisApps }
-        case AT.FETCH_APPLICATION_TRAININGSTATUS_FULFILLED:
+        case AT.FETCH_APPLICATION_TRAININGSTATUS_ASYNC: {
             const app = state.all.find(app => app.appId === action.appId)
-            const newApp = {
+            const newApp: App = {
                 ...app,
+                didPollingExpire: false
+            }
+
+            console.log(`appsReducer.FETCH_APPLICATION_TRAININGSTATUS_ASYNC.didPollingExpire`, newApp.didPollingExpire)
+
+            return { ...state, all: replace(state.all, newApp, a => a.appId) }
+        }
+        case AT.FETCH_APPLICATION_TRAININGSTATUS_EXPIRED: {
+            const app = state.all.find(app => app.appId === action.appId)
+            const newApp: App = {
+                ...app,
+                didPollingExpire: true
+            }
+
+            console.log(`appsReducer.FETCH_APPLICATION_TRAININGSTATUS_EXPIRED.didPollingExpire`, newApp.didPollingExpire)
+            
+            return { ...state, all: replace(state.all, newApp, a => a.appId) }
+        }
+        case AT.FETCH_APPLICATION_TRAININGSTATUS_FULFILLED: {
+            const app = state.all.find(app => app.appId === action.appId)
+            const newApp: App = {
+                ...app,
+                didPollingExpire: false,
                 trainingStatus: action.trainingStatus.trainingStatus,
                 // Since we're updating training status simulate update to datetime field
                 datetime: new Date(),
                 // Used discriminated union to access failure message
                 trainingFailureMessage: (action.trainingStatus.trainingStatus === TrainingStatusCode.Failed)
-                    ? action.trainingStatus.trainingFailureMessage
-                    : null
+                ? action.trainingStatus.trainingFailureMessage
+                : null
             }
 
+            console.log(`appsReducer.FETCH_APPLICATION_TRAININGSTATUS_FULFILLED.didPollingExpire`, newApp.didPollingExpire)
+            
             return { ...state, all: replace(state.all, newApp, a => a.appId) }
+        }
         case AT.CREATE_BLIS_APPLICATION_FULFILLED:
             return { ...state, all: [...state.all, action.blisApp] }
         case AT.SET_CURRENT_BLIS_APP_FULFILLED:

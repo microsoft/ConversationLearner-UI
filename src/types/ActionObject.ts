@@ -90,7 +90,10 @@ export type FetchAction = {
     type: AT.FETCH_APPLICATION_TRAININGSTATUS_FULFILLED,
     appId: string,
     trainingStatus: TrainingStatus
-} |{
+} | {
+    type: AT.FETCH_APPLICATION_TRAININGSTATUS_EXPIRED,
+    appId: string
+} | {
     type: AT.FETCH_APPLICATIONS_ASYNC,
     userId: string
 } | {

@@ -69,7 +69,6 @@ export const fetchApplicationsAsync = (key: string, userId: string): ActionObjec
     //needs a fulfilled version to handle response from Epic
     return {
         type: AT.FETCH_APPLICATIONS_ASYNC,
-        key: key,
         userId: userId
     }
 }
@@ -96,6 +95,13 @@ export const fetchApplicationTrainingStatusFulfilled = (appId: string, trainingS
     }
 }
 
+export const fetchApplicationTrainingStatusExpired = (appId: string): ActionObject => {
+    return {
+        type: AT.FETCH_APPLICATION_TRAININGSTATUS_EXPIRED,
+        appId
+    }
+}
+
 const pollTrainingStatusUntilResolvedOrMaxDuration = (dispatch: Dispatch<any>, appId: string, resolvedStates: TrainingStatusCode[], interval: number, maxDuration: number): Promise<void> => {
     const start = new Date()
     const end = start.getTime() + maxDuration
@@ -105,10 +111,13 @@ const pollTrainingStatusUntilResolvedOrMaxDuration = (dispatch: Dispatch<any>, a
             // If current time is after max allowed polling duration then resolve
             const now = (new Date()).getTime()
             if (now >= end) {
-                console.log(`Polling exceeded max duration. Stopping`)
+                console.warn(`Polling exceeded max duration. Stopping`)
+                
                 if (timerId) {
                     clearInterval(timerId)
                 }
+
+                dispatch(fetchApplicationTrainingStatusExpired(appId))
                 resolve()
             }
 
@@ -142,7 +151,6 @@ export const fetchAllEntitiesAsync = (key: string, blisAppID: string): ActionObj
     //needs a fulfilled version to handle response from Epic
     return {
         type: AT.FETCH_ENTITIES_ASYNC,
-        key: key,
         blisAppID: blisAppID
     }
 }
@@ -158,7 +166,6 @@ export const fetchAllActionsAsync = (key: string, blisAppID: string): ActionObje
     //needs a fulfilled version to handle response from Epic
     return {
         type: AT.FETCH_ACTIONS_ASYNC,
-        key: key,
         blisAppID: blisAppID
     }
 }
