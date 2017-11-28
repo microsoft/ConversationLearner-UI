@@ -455,12 +455,15 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
     onChangeMentionEditor = (editorState: EditorState) => {
         const requiredEntityTagsFromPayload = EditorUtilities.getEntities(editorState).map(convertContentEntityToTag)
+        // If we added entity to the payload which was already in the list of required entities remove it to avoid duplicates.
+        const requiredEntityTags = this.state.requiredEntityTags.filter(tag => !requiredEntityTagsFromPayload.some(t => t.key === tag.key))
         const isPayloadValid = this.state.selectedActionTypeOptionKey === ActionTypes.API_LOCAL || editorState.getCurrentContent().hasText()
 
         this.setState({
             isPayloadValid,
             mentionEditorState: editorState,
-            requiredEntityTagsFromPayload
+            requiredEntityTagsFromPayload,
+            requiredEntityTags
         })
     }
 
@@ -469,8 +472,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         const isPayloadDisabled = this.state.selectedActionTypeOptionKey === ActionTypes.API_LOCAL
             && (this.state.isEditing || this.state.apiOptions.length === 0)
 
-        // Available Mentions: All entities - expected entity - required entities
-        const unavailableTags = [...this.state.expectedEntityTags, ...this.state.requiredEntityTagsFromPayload, ...this.state.requiredEntityTags]
+        // Available Mentions: All entities - expected entity - required entities from payload
+        const unavailableTags = [...this.state.expectedEntityTags, ...this.state.requiredEntityTagsFromPayload]
         const getMentionsAvailableForPayload = this.props.entities
             .filter(e => !unavailableTags.some(t => t.key === e.entityId))
             .map(convertEntityToMention)
