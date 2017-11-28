@@ -46,7 +46,7 @@ class AppsIndex extends React.Component<Props, ComponentState> {
                 return
             }
 
-            if (appFromLocationState.datetime !== app.datetime) {
+            if (appFromLocationState !== app) {
                 history.replace(location.pathname, { app })
             }
         }

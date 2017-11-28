@@ -28,6 +28,7 @@ export enum FM {
     APP_TRAINING_STATUS_FAILED = 'TrainingStatus.status.failed',
     APP_TRAINING_STATUS_LAST_UPDATE = 'TrainingStatus.lastupdate',
     APP_TRAINING_STATUS_REFRESH = 'TrainingStatus.refresh',
+    APP_TRAINING_STATUS_EXPIRED = 'TrainingStatus.expired',
 
     // Apps List
     APPSLIST_TITLE = 'AppsList.title',
@@ -335,6 +336,7 @@ export default {
         [FM.APP_TRAINING_STATUS_FAILED]: 'Failed',
         [FM.APP_TRAINING_STATUS_LAST_UPDATE]: 'Last Updated',
         [FM.APP_TRAINING_STATUS_REFRESH]: 'Refresh',
+        [FM.APP_TRAINING_STATUS_EXPIRED]: 'Polling was stopped before training status was finalized. Please Refresh',
 
         // Apps List
         [FM.APPSLIST_TITLE]: 'My Apps',

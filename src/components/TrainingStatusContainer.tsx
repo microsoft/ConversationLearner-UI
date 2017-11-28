@@ -6,6 +6,7 @@ import { State } from '../types'
 import { BlisAppBase, TrainingStatusCode } from 'blis-models'
 import { fetchApplicationTrainingStatusThunkAsync } from '../actions/fetchActions'
 import { InternalTrainingStatus, default as TrainingStatus } from './TrainingStatus'
+import { App } from '../types/models';
 
 const externalStatusToInternalStatusMap = new Map<TrainingStatusCode, InternalTrainingStatus>([
     [TrainingStatusCode.Queued, InternalTrainingStatus.Queued],
@@ -45,6 +46,7 @@ class TrainingStatusContainer extends React.Component<Props, ComponentState> {
                 failureMessage={this.props.app.trainingFailureMessage}
                 lastUpdatedDatetime={this.props.app.datetime}
                 onClickRefresh={this.onClickRefresh}
+                didPollingExpire={(this.props.app as App).didPollingExpire === true}
             />
         )
     }

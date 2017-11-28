@@ -47,6 +47,7 @@ interface StatusUI {
 }
 
 export interface Props {
+    didPollingExpire: boolean
     status: InternalTrainingStatus
     failureMessage: string
     lastUpdatedDatetime: Date | null
@@ -57,7 +58,7 @@ const Component: React.SFC<Props> = (props: Props) => {
     const uiState = internalStatusToUiStateMap.get(props.status)
     return (
         <div className="blis-training-status ms-font-l">
-            <div className={"blis-training-status__icon-row " + uiState.className}>
+            <div className={`blis-training-status__icon-row ${uiState.className} ${props.didPollingExpire ? 'blis-training-status__icon-row--expired': ''}`}>
                 <FormattedMessage
                     id={FM.APP_TRAINING_STATUS_STATUS}
                     defaultMessage="Status"
@@ -71,6 +72,18 @@ const Component: React.SFC<Props> = (props: Props) => {
                 {props.status === InternalTrainingStatus.Failed
                     && <TooltipHost content={props.failureMessage}>
                         <span className="blis-icon ms-Icon ms-Icon--Info" aria-hidden="true" />
+                    </TooltipHost>}
+                {props.didPollingExpire
+                    && <TooltipHost
+                        tooltipProps={{
+                            onRenderContent: () =>
+                                <FormattedMessage
+                                    id={FM.APP_TRAINING_STATUS_EXPIRED}
+                                    defaultMessage="Status Placeholder"
+                                />
+                        }}
+                    >
+                         &nbsp;<span className="blis-icon ms-Icon ms-Icon--Warning" aria-hidden="true" />
                     </TooltipHost>}
             </div>
             <div className="blis-training-status__text-row ms-font-s">
