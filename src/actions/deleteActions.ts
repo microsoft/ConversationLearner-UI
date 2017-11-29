@@ -138,11 +138,9 @@ export const deleteTrainDialogThunkAsync = (appId: string, trainDialog: TrainDia
         try {
             await blisClient.trainDialogsDelete(appId, trainDialog.trainDialogId)
             dispatch(deleteTrainDialogFulfilled(trainDialog.trainDialogId))
-        }
-        catch (e) {
+        } catch (e) {
             const error = e as Error
-            // TODO: Why does this method take error and message?
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.message, AT.DELETE_TRAIN_DIALOG_REJECTED))
+            dispatch(setErrorDisplay(ErrorType.Error, error.name, error.message, AT.DELETE_TRAIN_DIALOG_REJECTED))
             dispatch(deleteTrainDialogRejected())
             throw new Error(e)
         }

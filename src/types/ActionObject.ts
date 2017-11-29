@@ -62,8 +62,8 @@ export type DisplayAction = {
     // used for setting whether the error popup is displayed
     type: AT.SET_ERROR_DISPLAY,
     errorType: ErrorType,
-    error: string,
-    message: string,
+    title: string,
+    description: string,
     route: AT
 } | {
     type: AT.CLEAR_ERROR_DISPLAY
