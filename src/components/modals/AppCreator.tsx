@@ -5,10 +5,10 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { PrimaryButton, DefaultButton, Dropdown, IDropdownOption, TextField, Label } from 'office-ui-fabric-react';
-import { BlisAppBase, BlisAppMetaData } from 'blis-models'
 import { State } from '../../types'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps, defineMessages, FormattedMessage } from 'react-intl'
+import { AppInput } from '../../types/models';
 
 const messages = defineMessages({
     fieldErrorRequired: {
@@ -96,14 +96,14 @@ class AppCreator extends React.Component<Props, ComponentState> {
     }
 
     onClickCreate() {
-        const appToAdd = new BlisAppBase({
+        const appToAdd: AppInput = {
             appName: this.state.appNameVal,
             luisKey: this.state.luisKeyVal,
             locale: this.state.localeVal,
-            metadata: new BlisAppMetaData({
+            metadata: {
                 botFrameworkApps: []
-            })
-        })
+            }
+        }
 
         this.resetState()
         this.props.onSubmit(appToAdd)
@@ -249,7 +249,7 @@ const mapStateToProps = (state: State) => {
 
 export interface ReceivedProps {
     open: boolean
-    onSubmit: (app: BlisAppBase) => void
+    onSubmit: (app: AppInput) => void
     onCancel: () => void
 }
 
