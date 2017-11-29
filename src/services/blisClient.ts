@@ -1,5 +1,6 @@
 import * as models from 'blis-models'
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios'
+import { AppInput } from '../types/models';
 
 interface TypedAxiosResponse<T> extends AxiosResponse {
     data: T
@@ -87,14 +88,22 @@ export default class BlisClient {
             .then(response => response.data)
     }
 
-    appsCreate(userId: string, app: models.BlisAppBase): Promise<models.BlisAppBase> {
+    appsCreate(userId: string, appInput: AppInput): Promise<models.BlisAppBase> {
         return this.send<string>({
             method: 'post',
             url: `${this.baseUrl}/app?userId=${userId}`,
-            data: app
+            data: appInput
         }).then(response => {
-            app.appId = response.data
-            return app
+            // TODO: Fix API to return full object instead of faking it
+            // Alternative is to send another request for app
+            return {
+                ...appInput,
+                appId: response.data,
+                datetime: new Date(),
+                trainingFailureMessage: null,
+                trainingStatus: models.TrainingStatusCode.Completed,
+                latestPackageId: 0
+            }
         })
     }
 
