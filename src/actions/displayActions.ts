@@ -33,12 +33,12 @@ export const setTipType = (tipType: TipType): ActionObject => {
     }
 }
 
-export const setErrorDisplay = (errorType: ErrorType, error: string, message: string, route: AT): ActionObject => {
+export const setErrorDisplay = (errorType: ErrorType, title: string, description: string, route: AT): ActionObject => {
     return {
         type: AT.SET_ERROR_DISPLAY,
         errorType,
-        error: error,
-        message: message,
+        title: title,
+        description: description,
         route: route
     }
 }

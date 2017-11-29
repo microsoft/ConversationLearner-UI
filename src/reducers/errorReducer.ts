@@ -16,7 +16,7 @@ const errorReducer: Reducer<ErrorState> = (state = initialState, action: ActionO
         case AT.CLEAR_ERROR_DISPLAY:
             return { ...initialState };
         case AT.SET_ERROR_DISPLAY:
-            return { errorType: action.errorType, error: action.error, message: action.message, route: action.route }
+            return { errorType: action.errorType, error: action.title, message: action.description, route: action.route }
         default:
             return state;
     }
