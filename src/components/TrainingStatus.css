@@ -8,7 +8,7 @@
 }
 .blis-training-status__icon-row .ms-Icon {
     vertical-align: text-bottom;
-    padding-bottom: 0.125em;
+    padding: 0.125em 0;
 }
 .blis-training-status__icon-row--success .ms-Icon {
     color: var(--color-success);
