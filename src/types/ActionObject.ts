@@ -3,7 +3,7 @@ import {
     BotInfo,
     EntityBase,
     ActionBase, 
-    TrainDialog, LogDialog, Session, Teach,
+    TrainDialog, LogDialog, Session, Teach, ScoreInput,
     UserInput, ExtractResponse, DialogType,
     UIExtractResponse, UITrainScorerStep,
     UITeachResponse, UIScoreInput, UIScoreResponse, TrainingStatus
@@ -316,6 +316,18 @@ export type TeachAction = {
     extractResponse: ExtractResponse
 } | {
     type: AT.CLEAR_EXTRACT_RESPONSES
+} | {
+    type: AT.GET_SCORES_ASYNC,
+    key: string,
+    appId: string,
+    sessionId: string,
+    scoreInput: ScoreInput
+} | {
+    type: AT.GET_SCORES_FULFILLED,
+    key: string,
+    appId: string,
+    sessionId: string,
+    uiScoreResponse: UIScoreResponse
 } | {
     type: AT.RUN_SCORER_ASYNC,
     key: string,
