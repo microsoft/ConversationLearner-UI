@@ -161,24 +161,41 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                                 id={FM.TEACHSESSIONADMIN_ACTION_TITLE}
                                 defaultMessage="Action"
                             />
+                            {/* Consider making this a component although it's display is very custom to the location it's used in the header */}
                             <span className="blis-training-status-inline">
                                 {this.props.app.trainingStatus === TrainingStatusCode.Completed
                                     ? <span>
-                                        Train Status: Completed &nbsp;
+                                        <FormattedMessage
+                                            id={FM.TEACHSESSIONADMIN_TRAINSTATUS_COMPLETED}
+                                            defaultMessage="Train Status: Completed"
+                                        /> &nbsp;
                                         {this.state.isScoresRefreshVisible
-                                            && <span>New Scores Available (
+                                            && <span>
+                                                <FormattedMessage
+                                                    id={FM.TEACHSESSIONADMIN_TRAINSTATUS_NEWSCORES}
+                                                    defaultMessage="New Scores Available"
+                                                /> (
                                                 <button
-                                                        type="button"
-                                                        className="blis-training-status-inline__button ms-font-l"
-                                                        onClick={this.onClickRefreshScores}>
-                                                        Refresh
+                                                    type="button"
+                                                    className="blis-training-status-inline__button ms-font-l"
+                                                    onClick={this.onClickRefreshScores}>
+                                                    <FormattedMessage
+                                                        id={FM.TEACHSESSIONADMIN_TRAINSTATUS_REFRESH}
+                                                        defaultMessage="Refresh"
+                                                    />
                                                 </button>
                                                 )
                                             </span>}
                                     </span>
                                     : (this.props.app.trainingStatus === TrainingStatusCode.Failed
-                                        ? <span>Train Status: Failed</span>
-                                        : <span>Train Status: Runnning...</span>
+                                        ? <FormattedMessage
+                                            id={FM.TEACHSESSIONADMIN_TRAINSTATUS_FAILED}
+                                            defaultMessage="Train Status: Failed"
+                                        />
+                                        : <FormattedMessage
+                                            id={FM.TEACHSESSIONADMIN_TRAINSTATUS_RUNNING}
+                                            defaultMessage="Train Status: Runnning..."
+                                        />
                                     )}
                             </span>
                         </div>
