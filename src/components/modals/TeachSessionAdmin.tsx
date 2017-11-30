@@ -4,10 +4,11 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../../types'
 import { DialogMode } from '../../types/const';
-import { runScorerAsync, postScorerFeedbackAsync } from '../../actions/teachActions';
+import { fetchApplicationTrainingStatusThunkAsync } from '../../actions/fetchActions'
+import { runScorerAsync, postScorerFeedbackAsync } from '../../actions/teachActions'
 import {
     BlisAppBase, TextVariation, ExtractResponse,
-    DialogType, TrainExtractorStep, TrainScorerStep,
+    DialogType, TrainScorerStep, TrainingStatusCode,
     UITrainScorerStep, UIScoreInput
 } from 'blis-models'
 import ActionScorer from './ActionScorer';
@@ -15,8 +16,11 @@ import EntityExtractor from './EntityExtractor';
 import MemoryTable from './MemoryTable';
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
+import './TeachSessionAdmin.css'
 
 class TeachSessionAdmin extends React.Component<Props, {}> {
+    lastExtractScoreInput: UIScoreInput | null = null
+    
     constructor(p: Props) {
         super(p);
         this.onEntityExtractorSubmit = this.onEntityExtractorSubmit.bind(this);
@@ -24,15 +28,19 @@ class TeachSessionAdmin extends React.Component<Props, {}> {
     }
 
     onEntityExtractorSubmit(extractResponse: ExtractResponse, textVariations: TextVariation[], roundIndex: number): void {
-        let trainExtractorStep = new TrainExtractorStep({
-            textVariations: textVariations
-        });
+        const uiScoreInput: UIScoreInput = {
+            trainExtractorStep: {
+                textVariations
+            },
+            extractResponse
+        }
 
-        let uiScoreInput = new UIScoreInput({ trainExtractorStep: trainExtractorStep, extractResponse: extractResponse });
+        this.lastExtractScoreInput = uiScoreInput
 
-        let appId = this.props.app.appId;
-        let teachId = this.props.teachSession.current.teachId;
-        this.props.runScorerAsync(this.props.user.key, appId, teachId, uiScoreInput);
+        const appId = this.props.app.appId
+        const teachId = this.props.teachSession.current.teachId
+        this.props.runScorerAsync(this.props.user.key, appId, teachId, uiScoreInput)
+        this.props.fetchApplicationTrainingStatusThunkAsync(appId)
     }
     onActionScorerSubmit(trainScorerStep: TrainScorerStep): void {
         let uiTrainScorerStep = new UITrainScorerStep(
@@ -49,6 +57,21 @@ class TeachSessionAdmin extends React.Component<Props, {}> {
         let uiScoreInput: UIScoreInput = { ...this.props.teachSession.uiScoreInput, trainExtractorStep: null };
 
         this.props.postScorerFeedbackAsync(this.props.user.key, appId, teachId, uiTrainScorerStep, waitForUser, uiScoreInput);
+    }
+
+    onClickRefreshScores = (event: React.MouseEvent<HTMLButtonElement>) => {
+        console.log(`onClickRefreshScores: `)
+        if (this.lastExtractScoreInput === null) {
+            throw new Error(`You attempted to refresh scores but there was no previous score input to re-use.  This is likely a problem with the code. Please open an issue.`)
+        }
+        
+        this.props.runScorerAsync(
+            this.props.user.key,
+            this.props.app.appId,
+            this.props.teachSession.current.teachId,
+            this.lastExtractScoreInput)
+
+        this.props.fetchApplicationTrainingStatusThunkAsync(this.props.app.appId)
     }
 
     render() {
@@ -128,21 +151,29 @@ class TeachSessionAdmin extends React.Component<Props, {}> {
                                 id={FM.TEACHSESSIONADMIN_ACTION_TITLE}
                                 defaultMessage="Action"
                             />
+                            <span className="blis-training-status-inline">
+                                {this.props.app.trainingStatus === TrainingStatusCode.Completed
+                                    ? <span>Train Status: Completed  New Scores Available (<button type="button" className="blis-training-status-inline__button ms-font-l" onClick={this.onClickRefreshScores}>Refresh</button>)</span>
+                                    : (this.props.app.trainingStatus === TrainingStatusCode.Failed
+                                        ? <span>Train Status: Failed</span>
+                                        : <span>Train Status: Runnning...</span>
+                                    )}
+                            </span>
                         </div>
-                        <div>
-                            {(mode === DialogMode.Scorer || autoTeachWithRound) &&
-                                <ActionScorer
-                                    app={this.props.app}
-                                    dialogType={DialogType.TEACH}
-                                    sessionId={this.props.teachSession.current.teachId}
-                                    autoTeach={this.props.teachSession.autoTeach}
-                                    dialogMode={this.props.teachSession.mode}
-                                    scoreResponse={this.props.teachSession.scoreResponse}
-                                    scoreInput={this.props.teachSession.scoreInput}
-                                    memories={this.props.teachSession.memories}
-                                    onActionSelected={this.onActionScorerSubmit}
-                                />}
-                        </div>
+
+                        {(mode === DialogMode.Scorer || autoTeachWithRound)
+                            && <ActionScorer
+                                app={this.props.app}
+                                dialogType={DialogType.TEACH}
+                                sessionId={this.props.teachSession.current.teachId}
+                                autoTeach={this.props.teachSession.autoTeach}
+                                dialogMode={this.props.teachSession.mode}
+                                scoreResponse={this.props.teachSession.scoreResponse}
+                                scoreInput={this.props.teachSession.scoreInput}
+                                memories={this.props.teachSession.memories}
+                                onActionSelected={this.onActionScorerSubmit}
+                            />
+                        }
                     </div>
                 }
             </div>
@@ -151,6 +182,7 @@ class TeachSessionAdmin extends React.Component<Props, {}> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
+        fetchApplicationTrainingStatusThunkAsync,
         runScorerAsync,
         postScorerFeedbackAsync
     }, dispatch);
