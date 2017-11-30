@@ -272,6 +272,11 @@ export enum FM {
     TEACHSESSIONADMIN_MEMORY_TITLE = 'TeachSessionAdmin.memory.title',
     TEACHSESSIONADMIN_ENTITYDETECTION_TITLE = 'TeachSessionAdmin.entityDetection.title',
     TEACHSESSIONADMIN_ACTION_TITLE = 'TeachSessionAdmin.action.title',
+    TEACHSESSIONADMIN_TRAINSTATUS_COMPLETED = 'TeachSessionAdmin.trainstatus.completed',
+    TEACHSESSIONADMIN_TRAINSTATUS_NEWSCORES = 'TeachSessionAdmin.trainstatus.newscores',
+    TEACHSESSIONADMIN_TRAINSTATUS_REFRESH = 'TeachSessionAdmin.trainstatus.refresh',
+    TEACHSESSIONADMIN_TRAINSTATUS_FAILED = 'TeachSessionAdmin.trainstatus.failed',
+    TEACHSESSIONADMIN_TRAINSTATUS_RUNNING = 'TeachSessionAdmin.trainstatus.running',
 
     // TeachSessionWindow
     TEACHSESSIONWINDOW_DEFAULTBUTTON_ARIADESCRIPTION = 'TeachSessionWindow.defaultButton.ariaDescription',
@@ -578,6 +583,11 @@ export default {
         [FM.TEACHSESSIONADMIN_MEMORY_TITLE]: 'Memory',
         [FM.TEACHSESSIONADMIN_ENTITYDETECTION_TITLE]: 'Entity Detection',
         [FM.TEACHSESSIONADMIN_ACTION_TITLE]: 'Action',
+        [FM.TEACHSESSIONADMIN_TRAINSTATUS_COMPLETED]: 'Train Status: Completed',
+        [FM.TEACHSESSIONADMIN_TRAINSTATUS_NEWSCORES]: 'New Scores Available',
+        [FM.TEACHSESSIONADMIN_TRAINSTATUS_REFRESH]: 'Refresh',
+        [FM.TEACHSESSIONADMIN_TRAINSTATUS_FAILED]: 'Train Status: Failed',
+        [FM.TEACHSESSIONADMIN_TRAINSTATUS_RUNNING]: 'Train Status: Runnning...',
 
         // TeachSessionWindow
         [FM.TEACHSESSIONWINDOW_DEFAULTBUTTON_ARIADESCRIPTION]: 'Abandon Teach',

@@ -72,6 +72,7 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
         case AT.FETCH_TEACH_SESSIONS_ASYNC:
 
         case AT.RUN_EXTRACTOR_ASYNC:
+        case AT.GET_SCORES_ASYNC:
         case AT.RUN_SCORER_ASYNC:
         case AT.POST_SCORE_FEEDBACK_ASYNC:
         case AT.DELETE_LOG_DIALOG_ASYNC:
@@ -106,6 +107,7 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
         case AT.FETCH_TEACH_SESSIONS_FULFILLED:
 
         case AT.RUN_EXTRACTOR_FULFILLED:
+        case AT.GET_SCORES_FULFILLED:
         case AT.RUN_SCORER_FULFILLED:
         case AT.POST_SCORE_FEEDBACK_FULFILLEDWAIT:
         case AT.POST_SCORE_FEEDBACK_FULFILLEDNOWAIT:

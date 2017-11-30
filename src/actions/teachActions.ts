@@ -1,7 +1,7 @@
 import { ActionObject } from '../types'
 import { AT } from '../types/ActionTypes'
 import {
-    UserInput, ExtractResponse, UIScoreInput, UIExtractResponse,
+    UserInput, ExtractResponse, ScoreInput, UIScoreInput, UIExtractResponse,
     UIScoreResponse, UITrainScorerStep, UITeachResponse,
     DialogType
 } from 'blis-models'
@@ -50,6 +50,24 @@ export const clearExtractResponses = (): ActionObject => {
         type: AT.CLEAR_EXTRACT_RESPONSES
     }
 }
+
+export const getScoresAsync = (key: string, appId: string, sessionId: string, scoreInput: ScoreInput): ActionObject =>
+    ({
+        type: AT.GET_SCORES_ASYNC,
+        key,
+        appId,
+        sessionId,
+        scoreInput
+    })
+
+export const getScoresFulfilled = (key: string, appId: string, sessionId: string, uiScoreResponse: UIScoreResponse): ActionObject =>
+    ({
+        type: AT.GET_SCORES_FULFILLED,
+        key,
+        appId,
+        sessionId,
+        uiScoreResponse,
+    })
 
 export const runScorerAsync = (key: string, appId: string, teachId: string, uiScoreInput: UIScoreInput): ActionObject => {
     return {

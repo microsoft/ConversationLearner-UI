@@ -58,6 +58,7 @@ const teachSessionReducer: Reducer<TeachSessionState> = (state = initialState, a
             return { ...state, mode: DialogMode.Extractor, extractResponses: [] };
         case AT.RUN_SCORER_ASYNC:
             return { ...state, uiScoreInput: action.uiScoreInput }
+        case AT.GET_SCORES_FULFILLED:
         case AT.RUN_SCORER_FULFILLED:
             return { ...state, mode: DialogMode.Scorer, memories: action.uiScoreResponse.memories, prevMemories: state.memories, scoreInput: action.uiScoreResponse.scoreInput, scoreResponse: action.uiScoreResponse.scoreResponse };
         case AT.POST_SCORE_FEEDBACK_FULFILLEDWAIT:

@@ -3,7 +3,7 @@ import * as Rx from 'rxjs';
 import { ActionsObservable, Epic } from 'redux-observable'
 import { State, ActionObject } from '../types'
 import { AT } from '../types/ActionTypes'
-import { putExtract, putScore, postScore } from "./apiHelpers";
+import { putExtract, getScore, putScore, postScore } from "./apiHelpers";
 
 const assertNever = () => { throw Error(`Should not reach here`) }
 
@@ -12,6 +12,14 @@ export const runExtractorEpic: Epic<ActionObject, State> = (action$: ActionsObse
         .flatMap(action =>
             (action.type === AT.RUN_EXTRACTOR_ASYNC)
                 ? putExtract(action.key, action.appId, action.extractType, action.sessionId, action.turnIndex, action.userInput)
+                : assertNever())
+}
+
+export const getScoresEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
+    return action$.ofType(AT.GET_SCORES_ASYNC)
+        .flatMap(action =>
+            (action.type === AT.GET_SCORES_ASYNC)
+                ? getScore(action.key, action.appId, action.sessionId, action.scoreInput)
                 : assertNever())
 }
 
