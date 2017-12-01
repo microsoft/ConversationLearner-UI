@@ -335,7 +335,7 @@ export const putExtract = (key: string, appId: string, extractType: DialogType, 
 
 export const getScore = (key: string, appId: string, teachId: string, scoreInput: ScoreInput): Observable<ActionObject> => {
   blisClient.key = key
-  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.teachSessionGetScorerStep(appId, teachId, scoreInput)
+  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.teachSessionRescore(appId, teachId, scoreInput)
     .then(uiScoreResponse => {
       obs.next(actions.teach.getScoresFulfilled(key, appId, teachId, uiScoreResponse))
       obs.complete()

@@ -331,10 +331,10 @@ export default class BlisClient {
             .then(response => response.data)
     }
 
-    teachSessionGetScorerStep(appId: string, teachId: string, scoreInput: models.ScoreInput): Promise<models.UIScoreResponse> {
+    teachSessionRescore(appId: string, teachId: string, scoreInput: models.ScoreInput): Promise<models.UIScoreResponse> {
         return this.send<models.UIScoreResponse>({
-            method: 'get',
-            url: `${this.baseUrl}/app/${appId}/teach/${teachId}/scorer`,
+            method: 'put',
+            url: `${this.baseUrl}/app/${appId}/teach/${teachId}/rescore`,
             data: scoreInput
         })
             .then(response => response.data)
