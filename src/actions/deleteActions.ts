@@ -155,7 +155,7 @@ export const deleteLogDialogAsync = (appId: string, logDialogId: string): Action
     }
 }
 
-export const deleteLogDialogFulFilled = (logDialogId: string): ActionObject => {
+export const deleteLogDialogFulfilled = (logDialogId: string): ActionObject => {
     return {
         type: AT.DELETE_LOG_DIALOG_FULFILLED,
         logDialogId
@@ -174,7 +174,7 @@ export const deleteLogDialogThunkAsync = (appId: string, logDialogId: string) =>
 
         try {
             await blisClient.logDialogsDelete(appId, logDialogId)
-            dispatch(deleteLogDialogFulFilled(logDialogId))
+            dispatch(deleteLogDialogFulfilled(logDialogId))
         }
         catch (e) {
             const error = e as Error

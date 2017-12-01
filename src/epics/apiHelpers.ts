@@ -214,7 +214,7 @@ export const deleteBlisAction = (key: string, appId: string, action: ActionBase)
 export const deleteLogDialog = (appId: string, logDialogId: string): Observable<ActionObject> => {
   return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.logDialogsDelete(appId, logDialogId)
     .then(() => {
-      obs.next(actions.delete.deleteLogDialogFulFilled(logDialogId));
+      obs.next(actions.delete.deleteLogDialogFulfilled(logDialogId));
       obs.complete();
     })
     .catch(err => handleError(obs, err, AT.DELETE_LOG_DIALOG_ASYNC)));
