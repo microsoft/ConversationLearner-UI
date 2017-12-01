@@ -70,6 +70,8 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
         case AT.FETCH_CHAT_SESSIONS_ASYNC:
         case AT.FETCH_ENTITIES_ASYNC:
         case AT.FETCH_TEACH_SESSIONS_ASYNC:
+        case AT.FETCH_TRAIN_DIALOGS_ASYNC:
+        case AT.FETCH_LOG_DIALOGS_ASYNC:
 
         case AT.RUN_EXTRACTOR_ASYNC:
         case AT.GET_SCORES_ASYNC:
@@ -105,6 +107,8 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
         case AT.FETCH_CHAT_SESSIONS_FULFILLED:
         case AT.FETCH_ENTITIES_FULFILLED:
         case AT.FETCH_TEACH_SESSIONS_FULFILLED:
+        case AT.FETCH_TRAIN_DIALOGS_FULFILLED:
+        case AT.FETCH_LOG_DIALOGS_FULFILLED:
 
         case AT.RUN_EXTRACTOR_FULFILLED:
         case AT.GET_SCORES_FULFILLED:
