@@ -279,6 +279,17 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
         const { intl } = this.props
         return (
             <div>
+                <OF.Dropdown
+                    label={intl.formatMessage({
+                        id: FM.ENTITYCREATOREDITOR_FIELDS_TYPE_LABEL,
+                        defaultMessage: 'Entity Type'
+                    })}
+                    options={this.entityOptions}
+                    onChanged={this.onChangedType}
+                    onRenderOption={(option) => this.onRenderOption(option as BlisDropdownOption)}
+                    selectedKey={this.state.entityTypeVal}
+                    disabled={this.state.editing || this.props.entityTypeFilter != null}
+                />
                 <OF.TextField
                     onGetErrorMessage={this.onGetNameErrorMessage}
                     onChanged={this.onChangedName}
@@ -294,17 +305,6 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                     required={true}
                     value={this.state.entityNameVal}
                     disabled={this.state.editing}
-                />
-                <OF.Dropdown
-                    label={intl.formatMessage({
-                        id: FM.ENTITYCREATOREDITOR_FIELDS_TYPE_LABEL,
-                        defaultMessage: 'Entity Type'
-                    })}
-                    options={this.entityOptions}
-                    onChanged={this.onChangedType}
-                    onRenderOption={(option) => this.onRenderOption(option as BlisDropdownOption)}
-                    selectedKey={this.state.entityTypeVal}
-                    disabled={this.state.editing || this.props.entityTypeFilter != null}
                 />
                 <div className="blis-entity-creator-checkbox">
                     <TC.Checkbox
