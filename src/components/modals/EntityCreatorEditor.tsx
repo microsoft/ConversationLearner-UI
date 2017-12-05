@@ -44,24 +44,23 @@ const initState: ComponentState = {
 };
 
 interface ComponentState {
-    entityNameVal: string;
-    entityTypeVal: string;
-    isPrebuilt: boolean;
-    isBucketableVal: boolean;
-    isNegatableVal: boolean;
-    isProgrammaticVal: boolean;
-    editing: boolean;
-    title: string;
+    entityNameVal: string
+    entityTypeVal: string
+    isPrebuilt: boolean
+    isBucketableVal: boolean
+    isNegatableVal: boolean
+    isProgrammaticVal: boolean
+    editing: boolean
+    title: string
 }
 
 class EntityCreatorEditor extends React.Component<Props, ComponentState> {
-
-    staticEntityOptions: BlisDropdownOption[];
-    entityOptions: BlisDropdownOption[];
+    staticEntityOptions: BlisDropdownOption[]
+    entityOptions: BlisDropdownOption[]
 
     constructor(props: Props) {
         super(props)
-        this.state = { ...initState, entityTypeVal: this.NEW_ENTITY };
+        this.state = { ...initState, entityTypeVal: this.NEW_ENTITY }
         this.staticEntityOptions = this.getStaticEntityOptions(this.props.intl)
     }
 
@@ -90,12 +89,10 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
     }
 
     componentWillReceiveProps(nextProps: Props) {
-        // Build entity options based on current applicaiton locale
-        // Filter out one that have already been used
+        // Build entity options based on current application locale
         const currentAppLocale = this.props.app.locale
-        const localePreBuildOptions = PreBuiltEntities
+        const localePreBuiltOptions = PreBuiltEntities
             .find(entitiesList => entitiesList.locale === currentAppLocale).preBuiltEntities
-            .filter(preBuiltEntityType => !this.props.entities.some(e => e.entityType === preBuiltEntityType))
             .map<BlisDropdownOption>(entityName =>
                 ({
                     key: entityName,
@@ -104,15 +101,13 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                     style: 'blisDropdown--normal'
                 }))
 
-        this.entityOptions = [...this.staticEntityOptions, ...localePreBuildOptions]
-
-        // If we are not opening the window, stop
-        // The code below is only for initializtion when opening modal
-        if (!(this.props.open === false && nextProps.open === true)) {
-            return
-        }
-
         if (nextProps.entity === null) {
+            // Filter out one that have already been used so user can't create two of same type.
+            const filteredPrebuilts = localePreBuiltOptions
+                .filter(entityOption => !this.props.entities.some(e => e.entityType === entityOption.key))
+
+            this.entityOptions = [...this.staticEntityOptions, ...filteredPrebuilts]
+
             this.setState({
                 ...initState,
                 title: nextProps.intl.formatMessage({
@@ -122,6 +117,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                 entityTypeVal: this.props.entityTypeFilter ? this.props.entityTypeFilter : this.NEW_ENTITY
             });
         } else {
+            this.entityOptions = [...this.staticEntityOptions, ...localePreBuiltOptions]
             let entityType = nextProps.entity.entityType;
             let isProgrammatic = false;
             let isPrebuilt = true;
@@ -150,19 +146,24 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
     }
 
     convertStateToEntity(state: ComponentState): EntityBase {
-        let entityType = this.state.entityTypeVal;
-        if (!this.state.isPrebuilt) {
-            entityType = (this.state.isProgrammaticVal) ? EntityType.LOCAL : EntityType.LUIS;
+        let entityName = this.state.entityNameVal
+        let entityType = this.state.entityTypeVal
+        if (this.state.isPrebuilt) {
+            entityName = this.getPrebuiltEntityName(entityType)
         }
+        else {
+            entityType = this.state.isProgrammaticVal ? EntityType.LOCAL : EntityType.LUIS
+        }
+
         return new EntityBase({
-            entityName: this.state.entityNameVal,
+            entityName,
             metadata: new EntityMetaData({
                 isBucket: this.state.isBucketableVal,
                 isReversable: this.state.isNegatableVal,
                 negativeId: null,
                 positiveId: null,
             }),
-            entityType: entityType,
+            entityType,
             version: null,
             packageCreationId: null,
             packageDeletionId: null
@@ -198,13 +199,16 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
         })
     }
     onChangedType = (obj: BlisDropdownOption) => {
-        let isPrebuilt = obj.text !== this.NEW_ENTITY;
-        let isNegatableVal = isPrebuilt ? false : this.state.isNegatableVal;
-        let isProgrammaticVal = isPrebuilt ? false : this.state.isProgrammaticVal;
+        const isPrebuilt = obj.text !== this.NEW_ENTITY
+        const isNegatableVal = isPrebuilt ? false : this.state.isNegatableVal
+        const isProgrammaticVal = isPrebuilt ? false : this.state.isProgrammaticVal
+        const isBucketableVal = isPrebuilt ? true : this.state.isBucketableVal
+
         this.setState({
-            isPrebuilt: isPrebuilt,
-            isNegatableVal: isNegatableVal,
-            isProgrammaticVal: isProgrammaticVal,
+            isPrebuilt,
+            isBucketableVal,
+            isNegatableVal,
+            isProgrammaticVal,
             entityTypeVal: obj.text
         })
     }
@@ -267,6 +271,10 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
         return requiredActions;
     }
 
+    getPrebuiltEntityName(preBuiltType: string): string {
+        return `luis-${preBuiltType.toLowerCase()}`
+    }
+
     onRenderOption = (option: BlisDropdownOption): JSX.Element => {
         return (
             <div className="dropdownExample-option">
@@ -303,8 +311,8 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                         defaultMessage: 'Name...'
                     })}
                     required={true}
-                    value={this.state.entityNameVal}
-                    disabled={this.state.editing}
+                    value={this.state.isPrebuilt ? this.getPrebuiltEntityName(this.state.entityTypeVal) : this.state.entityNameVal}
+                    disabled={this.state.editing || this.state.isPrebuilt}
                 />
                 <div className="blis-entity-creator-checkbox">
                     <TC.Checkbox
@@ -313,7 +321,6 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                             defaultMessage: 'Programmatic Only'
                         })}
                         checked={this.state.isProgrammaticVal}
-                        defaultChecked={this.state.isProgrammaticVal}
                         onChange={this.onChangeProgrammatic}
                         disabled={this.state.editing || this.state.isPrebuilt}
                         tipType={ToolTip.TipType.ENTITY_PROGAMMATIC}
@@ -326,7 +333,6 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                             defaultMessage: 'Multi-valued'
                         })}
                         checked={this.state.isBucketableVal}
-                        defaultChecked={this.state.isBucketableVal}
                         onChange={this.onChangeBucketable}
                         disabled={this.state.editing}
                         tipType={ToolTip.TipType.ENTITY_MULTIVALUE}
@@ -339,7 +345,6 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                             defaultMessage: 'Negatable'
                         })}
                         checked={this.state.isNegatableVal}
-                        defaultChecked={this.state.isNegatableVal}
                         onChange={this.onChangeReversible}
                         disabled={this.state.editing || this.state.isPrebuilt}
                         tipType={ToolTip.TipType.ENTITY_NEGATABLE}
@@ -409,7 +414,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                         <div className="blis-modal-buttons_primary">
                             {!this.state.editing &&
                                 <OF.PrimaryButton
-                                    disabled={this.onGetNameErrorMessage(this.state.entityNameVal) !== ''}
+                                    disabled={(this.onGetNameErrorMessage(this.state.entityNameVal) !== '') && !this.state.isPrebuilt}
                                     onClick={this.onClickSubmit}
                                     ariaDescription={intl.formatMessage({
                                         id: FM.ENTITYCREATOREDITOR_CREATEBUTTON_ARIADESCRIPTION,
