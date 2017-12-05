@@ -56,11 +56,23 @@ const getSuggestedTags = (filterText: string, allTags: OF.ITag[], tagsToExclude:
         .filter(tag => tag.name.toLowerCase().startsWith(filterText.toLowerCase()))
 }
 
-const actionTypeOptions = Object.values(ActionTypes).map(v =>
-    ({
-        key: v,
-        text: v
-    }))
+const availableActionTypes = [
+    ActionTypes.TEXT,
+    ActionTypes.API_LOCAL,
+    ActionTypes.API_AZURE,
+]
+
+const actionTypeOptions = Object.values(ActionTypes)
+    .map<OF.IDropdownOption>(actionTypeString => {
+        const disabled = !availableActionTypes.includes(actionTypeString)
+        return {
+            key: actionTypeString,
+            text: `${actionTypeString} ${disabled ? ' [not implemented]' : ''}`,
+            // TODO: Why does disabled flag not work?
+            disabled,
+            isDisabled: disabled
+        }
+    })
 
 interface ComponentState {
     apiOptions: OF.IDropdownOption[]
