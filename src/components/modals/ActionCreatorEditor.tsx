@@ -619,7 +619,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                         <div>
                             <TC.Checkbox
                                 label="Wait for Response?"
-                                defaultChecked={true}
+                                checked={this.state.isTerminal}
                                 onChange={() => this.onChangeWaitCheckbox()}
                                 style={{ marginTop: '1em', display: 'inline-block' }}
                                 disabled={this.state.isEditing}
