@@ -3,7 +3,7 @@ import { Editor } from 'slate-react'
 import { Value } from 'slate'
 import initialValue from './value'
 import { IOption, IPosition, IGenericEntity, NodeType } from './models'
-import { valueToJSON, convertEntitiesAndTextToEditorValue, getRelativeParent, getEntitiesFromValue, getSelectedText } from './utilities'
+import { convertEntitiesAndTextToEditorValue, getRelativeParent, getEntitiesFromValue, getSelectedText } from './utilities'
 import CustomEntityNode from './CustomEntityNode'
 import PreBuiltEntityNode from './PreBuiltEntityNode'
 import EntityPicker from './EntityPickerContainer'
@@ -129,14 +129,12 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
     }
 
     onChange = (change: any) => {
-        console.group('onChange')
         const { value, operations } = change
         const operationsJs = operations.toJS()
 
         const containsDisallowedOperations = operationsJs.some((o: any) => disallowedOperations.includes(o.type))
         if (containsDisallowedOperations) {
-            console.log(`containsDisallowedOperations `, operationsJs.map((o: any) => o.type).join(', '))
-            console.groupEnd()
+            // console.log(`containsDisallowedOperations `, operationsJs.map((o: any) => o.type).join(', '))
             return
         }
 
@@ -145,15 +143,11 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
 
         const containsExternalChangeOperation = operationsJs.some((o: any) => externalChangeOperations.includes(o.type))
         if (containsExternalChangeOperation) {
-            console.log(`containsExternalChangeOperation `, operationsJs.map((o: any) => o.type).join(', '))
-            const valueJson = valueToJSON(value)
-            console.log(`value `, valueJson)
+            // console.log(`containsExternalChangeOperation `, operationsJs.map((o: any) => o.type).join(', '))
             const customEntities = getEntitiesFromValue(change)
             console.log(`customEntities: `, customEntities)
             this.props.onChangeCustomEntities(customEntities)
         }
-
-        console.groupEnd()
     }
 
     menuRef = (menu: any) => {
@@ -168,7 +162,6 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
     }
 
     onSelectOption = (option: IOption) => {
-        console.log(`onSelectOption`, option)
         const value = this.state.value
         const selectedText = getSelectedText(value)
         const change = value.change()

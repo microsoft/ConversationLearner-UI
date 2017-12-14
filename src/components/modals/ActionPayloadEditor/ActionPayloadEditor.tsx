@@ -52,7 +52,6 @@ export default class extends React.Component<Props, State> {
   }
 
   onSearchChange = ({ value }: { value: string }) => {
-    console.log(`onSearchChange: ${value}`)
     const entities = getEntities(this.props.editorState, `${mentionTrigger}mention`)
     const existingEntityIds = entities.map(e => e.entity.data.mention.id)
     const filteredMentions = this.props.allSuggestions.filter(m => !existingEntityIds.includes(m.id))
