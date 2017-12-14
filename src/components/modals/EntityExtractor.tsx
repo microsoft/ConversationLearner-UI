@@ -6,8 +6,7 @@ import { State } from '../../types'
 import { BlisAppBase, ModelUtils, ExtractResponse, TextVariation, DialogType, EntityType, EntityBase } from 'blis-models'
 import * as OF from 'office-ui-fabric-react';
 import TextVariationCreator from '../TextVariationCreator';
-import ExtractorResponseEditor from '../ExtractorResponseEditor';
-import * as NewExtractorResponseEditor from '../NewExtractorResponseEditor'
+import * as ExtractorResponseEditor from '../NewExtractorResponseEditor'
 import EntityCreatorEditor from './EntityCreatorEditor';
 import { DialogMode } from '../../types/const'
 import { clearExtractResponses, updateExtractResponse, removeExtractResponse } from '../../actions/teachActions'
@@ -270,34 +269,23 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                         isValid = this.isValid(allResponses[0], extractResponse);
                     }
 
-                    return <div key={key}>
-                        <ExtractorResponseEditor
-                            canEdit={canEdit}
-                            isPrimary={key === 0}
+                    return <div key={key} className="editor-container">
+                        <ExtractorResponseEditor.EditorWrapper
+                            readOnly={!canEdit}
                             isValid={isValid}
-                            extractResponse={extractResponse}
-                            updateExtractResponse={extractResponse => this.onUpdateExtractResponse(extractResponse)}
-                            removeExtractResponse={extractResponse => this.onRemoveExtractResponse(extractResponse)}
-                            onNewEntitySelected={() => this.onNewEntity()}
+                            entities={this.props.entities}
+                            extractorResponse={extractResponse}
+                            onChange={this.onUpdateExtractResponse}
+                            onClickNewEntity={this.onNewEntity}
                         />
-                        <div className="editor-container">
-                            <NewExtractorResponseEditor.EditorWrapper
-                                readOnly={!canEdit}
-                                isValid={isValid}
-                                entities={this.props.entities}
-                                extractorResponse={extractResponse}
-                                onChange={this.onUpdateExtractResponse}
-                                onClickNewEntity={this.onNewEntity}
-                            />
-                            {(key !== 0) && <div className="editor-container__icons">
-                                <button type="button" className="editor-button-delete ms-font-l" onClick={() => this.onRemoveExtractResponse(extractResponse)}>
-                                    <span className="ms-Icon ms-Icon--Delete" />
-                                </button>
-                                {!isValid && ToolTips.Wrap(
-                                    <span className="editor-button-invalid ms-Icon ms-Icon--IncidentTriangle" />,
-                                    ToolTips.TipType.ENTITY_EXTRACTOR_WARNING)}
-                            </div>}
-                        </div>
+                        {(key !== 0) && <div className="editor-container__icons">
+                            <button type="button" className="editor-button-delete ms-font-l" onClick={() => this.onRemoveExtractResponse(extractResponse)}>
+                                <span className="ms-Icon ms-Icon--Delete" />
+                            </button>
+                            {!isValid && ToolTips.Wrap(
+                                <span className="editor-button-invalid ms-Icon ms-Icon--IncidentTriangle" />,
+                                ToolTips.TipType.ENTITY_EXTRACTOR_WARNING)}
+                        </div>}
                     </div>
                 })}
                 {canEdit && <TextVariationCreator
