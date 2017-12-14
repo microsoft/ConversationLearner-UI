@@ -10,6 +10,8 @@
     "draft-js": "^0.10.4",
     "draft-js-mention-plugin": "^2.0.0-rc10",
     "draft-js-plugins-editor": "^2.0.0-rc8",
+    "fuse.js": "^3.2.0",
+    "immutable": "^3.8.2",
     "office-ui-fabric-react": "^4.47.0",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
@@ -21,7 +23,9 @@
     "redux": "^3.7.2",
     "redux-observable": "^0.16.0",
     "redux-thunk": "^2.2.0",
-    "rxjs": "^5.4.3"
+    "rxjs": "^5.4.3",
+    "slate": "^0.31.5",
+    "slate-react": "^0.10.20"
   },
   "scripts": {
     "start": "react-scripts-ts start",

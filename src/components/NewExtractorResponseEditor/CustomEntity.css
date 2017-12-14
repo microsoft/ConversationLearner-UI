@@ -1,0 +1,120 @@
+:root {
+    --color-warning: rgb(197, 31, 31);
+    --color-custom-entity-bg-hover: rgba(149, 228, 169, 0.4);
+    --color-custom-entity-bg: rgba(149, 228, 169, 0.836);
+    --color-custom-entity-label: rgb(42, 161, 68);
+    --color-custom-entity-bracket: rgb(149, 228, 169);
+    --color-prebuilt-entity-bg-hover: rgba(149, 174, 228, 0.4);
+    --color-prebuilt-entity-bg: rgba(149, 174, 228, 0.836);
+    --color-prebuilt-entity-label: rgb(72, 110, 192);
+    --color-prebuilt-entity-hover: rgb(149, 174, 228);
+}
+
+.blis-entity-node {
+    position: relative;
+}
+
+.blis-entity-node__text {
+    display: inline-block;
+    position: relative;
+    border-radius: 3px;
+    line-height: 1.7em;
+}
+.blis-entity-node--custom .blis-entity-node__text:hover {
+    background: var(--color-custom-entity-bg-hover);
+}
+.blis-entity-node--prebuilt .blis-entity-node__text:hover {
+    background: var(--color-prebuilt-entity-bg-hover);
+}
+
+.blis-entity-node--custom.blis-entity-node--is-editing .blis-entity-node__text {
+    background: var(--color-custom-entity-bg);
+}
+.blis-entity-node--prebuilt.blis-entity-node--is-editing .blis-entity-node__text {
+    background: var(--color-prebuilt-entity-bg);
+}
+
+.blis-entity-node-indicator {
+    display: inline-block;
+    position: absolute;
+    width: 100%;
+    line-height: 1em;
+    font-size: 0.75rem;
+    text-align: center;
+    z-index: 1;
+    bottom: calc(1.6em);
+}
+
+.blis-entity-node--custom .blis-entity-node-indicator {
+    color: var(--color-custom-entity-label);
+}
+.blis-entity-node--prebuilt .blis-entity-node-indicator {
+    color: var(--color-prebuilt-entity-label);
+}
+
+.blis-entity-node-indicator__mincontent {
+    margin-bottom: 0.25em;
+    white-space: nowrap;
+}
+
+.blis-entity-node-indicator__controls {
+    margin-bottom: 2px;
+}
+
+.blis-entity-node-indicator__controls button {
+    font-size: 0.75rem;
+    padding: 0.0em 0.3em;
+    margin: 0;
+    border: none;
+    cursor: pointer;
+    color: white;
+    border-radius: 50%;
+    font-size: 0.75rem;
+}
+.blis-entity-node--read-only .blis-entity-node-indicator__controls button {
+    cursor: default;
+}
+
+.blis-entity-node--custom .blis-entity-node-indicator__controls button {
+    background: var(--color-warning);
+}
+.blis-entity-node--prebuilt .blis-entity-node-indicator__controls button {
+    background: var(--color-warning);
+}
+
+.blis-entity-node-indicator__name {
+    cursor: default;
+}
+
+.blis-entity-node-indicator__name button {
+    border: none;
+    background: none;
+    cursor: pointer;
+    margin: 0;
+    padding: 0;
+}
+.blis-entity-node--read-only .blis-entity-node-indicator__name button {
+    cursor: default;
+}
+
+.blis-entity-node--custom .blis-entity-node-indicator__name,
+.blis-entity-node--custom .blis-entity-node-indicator__name button {
+    color: var(--color-custom-entity-label);
+}
+.blis-entity-node--prebuilt .blis-entity-node-indicator__name,
+.blis-entity-node--prebuilt .blis-entity-node-indicator__name button {
+    color: var(--color-prebuilt-entity-label);
+}
+
+.blis-entity-node-indicator__bracket {
+    height: 5px;
+    border: 2px solid var(--color-custom-entity-bracket);
+    border-bottom: none;
+}
+
+.blis-entity-node--custom .blis-entity-node-indicator__bracket {
+    border-color: var(--color-custom-entity-bg);
+}
+.blis-entity-node--prebuilt .blis-entity-node-indicator__bracket {
+    border-color: var(--color-prebuilt-entity-bg);
+}

@@ -5,3 +5,26 @@
     justify-content: space-between;
     white-space: nowrap;
 }
+
+.editor-container {
+    display: grid;
+    grid-template-columns: 1fr min-content;
+}
+.editor-container__icons {
+    padding-left: 0.5em;
+    padding-top: 0.5em;
+    display: grid;
+    grid-auto-flow: row;
+    grid-auto-rows: min-content;
+    grid-gap: 0.25em;
+}
+
+.editor-button-delete {
+    background: none;
+    border: none;
+    padding: 0;
+}
+
+.editor-button-invalid {
+    color: var(--color-red);
+}

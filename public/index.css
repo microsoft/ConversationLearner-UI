@@ -248,7 +248,8 @@ html {
   border-left: 1px solid var(--color-botchat-grey);
   display: grid;
   grid-template-rows: 1fr min-content;
-  overflow-x: auto;
+  /* This was causing clipping of the entity picker menu */
+  /* overflow-x: auto; */
 }
 .blis-chatmodal_admin-controls {
   padding: 1em;

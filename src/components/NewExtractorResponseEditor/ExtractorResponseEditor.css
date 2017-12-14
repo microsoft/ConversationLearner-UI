@@ -1,0 +1,46 @@
+.entity-labeler {
+    position: relative;
+    border: 1px solid rgba(0,0,0,0.25);
+}
+.entity-labeler__title {
+    color: rgba(0,0,0,0.5);
+    padding: 1em 0 0 1em;
+    font-size: 11px;
+}
+.entity-labeler__editor {
+    position: relative;
+}
+
+.entity-labeler__custom-editor {
+    border: 1px solid transparent;
+    /* This is to allow the border of this box to overlap container */
+    margin: -1px;
+}
+.entity-labeler__custom-editor--read-only {
+    background-color: rgba(0,0,0,0.025);
+}
+.entity-labeler__custom-editor--error {
+    border-color: red;
+}
+
+.entity-labeler__prebuilt-editors {
+    background-color: rgba(0,0,0,0.025);
+}
+
+.slate-editor {
+    padding: 1em 1em 0.5em 1em;
+    line-height: 3em;
+}
+
+.prebuilt-entity-editors .slate-editor:not(:last-of-type) {
+}
+
+.noselect {
+    -webkit-touch-callout: none; /* iOS Safari */
+      -webkit-user-select: none; /* Safari */
+       -khtml-user-select: none; /* Konqueror HTML */
+         -moz-user-select: none; /* Firefox */
+          -ms-user-select: none; /* Internet Explorer/Edge */
+              user-select: none; /* Non-prefixed version, currently
+                                    supported by Chrome and Opera */
+  }
