@@ -6,7 +6,7 @@ import { State } from '../../types'
 import { BlisAppBase, ModelUtils, ExtractResponse, TextVariation, DialogType, EntityType, EntityBase } from 'blis-models'
 import * as OF from 'office-ui-fabric-react';
 import TextVariationCreator from '../TextVariationCreator';
-import * as ExtractorResponseEditor from '../NewExtractorResponseEditor'
+import * as ExtractorResponseEditor from '../ExtractorResponseEditor'
 import EntityCreatorEditor from './EntityCreatorEditor';
 import { DialogMode } from '../../types/const'
 import { clearExtractResponses, updateExtractResponse, removeExtractResponse } from '../../actions/teachActions'
