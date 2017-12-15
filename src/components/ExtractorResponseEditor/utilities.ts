@@ -273,17 +273,11 @@ export const getEntityDisplayName = (pe: models.PredictedEntity): string => {
     return names[names.length - 1]
 }
 
-export const convertPredictedEntityToGenericEntity = (pe: models.PredictedEntity): models.IGenericEntity<models.IGenericEntityData<models.PredictedEntity>> => {
-    // If entity is custom, use given name
-    // Otherwise entity is pre-built, use computed name
-    const displayName =  (pe.builtinType === "LUIS")
-        ? pe.entityName
-        : getEntityDisplayName(pe)
-
-    return {
+export const convertPredictedEntityToGenericEntity = (pe: models.PredictedEntity, displayName: string): models.IGenericEntity<models.IGenericEntityData<models.PredictedEntity>> =>
+    ({
         startIndex: pe.startCharIndex,
-        // TODO: It seems some predicted entities come back with the endCharIndex one less that it should be, perhaps this is only for pre-builts because they are passed through by LUIS API?
-        endIndex: pe.builtinType !== "LUIS" ? pe.endCharIndex + 1 : pe.endCharIndex,
+        // The predicted entities returned by the service treat indices as characters instead of before or after the character so add 1 to endIndex for slicing using JavaScript
+        endIndex: pe.endCharIndex + 1,
         data: {
             option: {
                 id: pe.entityId,
@@ -293,8 +287,7 @@ export const convertPredictedEntityToGenericEntity = (pe: models.PredictedEntity
             displayName,
             original: pe
         }
-    }
-}
+    })
 
 export const convertGenericEntityToPredictedEntity = (ge: models.IGenericEntity<models.IGenericEntityData<models.PredictedEntity>>): any => {
     const predictedEntity = ge.data.original
@@ -329,14 +322,15 @@ export const convertExtractorResponseToEditorModels = (extractResponse: models.E
         }))
 
     const text = extractResponse.text
-
+    
+    // Predicted entities for non prebuilts to not have builtinType property
     const customEntities = extractResponse.predictedEntities
-        .filter(pe => pe.builtinType === "LUIS")
-        .map(convertPredictedEntityToGenericEntity)
+        .filter(pe => (pe as any).entityType === "LUIS" || typeof pe.builtinType === undefined || pe.builtinType === "LUIS")
+        .map(pe => convertPredictedEntityToGenericEntity(pe, pe.entityName))
 
     const preBuiltEntities = extractResponse.predictedEntities
-        .filter(pe => pe.builtinType !== "LUIS")
-        .map(convertPredictedEntityToGenericEntity)
+        .filter(pe => typeof pe.builtinType === "string" && pe.builtinType !== "LUIS")
+        .map(pe => convertPredictedEntityToGenericEntity(pe, getEntityDisplayName(pe)))
 
     return {
         options,
