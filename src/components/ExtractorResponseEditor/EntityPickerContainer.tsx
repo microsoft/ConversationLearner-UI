@@ -73,8 +73,9 @@ export default class EntityPickerContainer extends React.Component<Props, State>
     }
 
     componentWillReceiveProps(nextProps: Props) {
-        if (this.props.isVisible === false
-            && nextProps.isVisible === true) {
+        if (nextProps.options.length !== this.props.options.length
+            || (this.props.isVisible === false
+            && nextProps.isVisible === true)) {
 
             this.fuse = new Fuse(nextProps.options, fuseOptions)
 
