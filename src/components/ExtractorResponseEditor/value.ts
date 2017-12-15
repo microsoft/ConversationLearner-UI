@@ -1,5 +1,8 @@
-import { NodeType } from './models'
-
+/**
+ * This isn't really used, but is here to serve as a default for Slate value object.
+ * In practice, it is immediately over written with a new value when the props of the component update based on application state
+ * I think this is safer than assigning the value a null or an object that is not recognizable by Slate
+ */
 const value = {
     "document": {
         "nodes": [
@@ -14,37 +17,7 @@ const value = {
                         "leaves": [
                             {
                                 "kind": "leaf",
-                                "text": "Test ",
-                                "marks": [] as any[]
-                            }
-                        ]
-                    },
-                    {
-                        "kind": "inline",
-                        "type": NodeType.CustomEntityNodeType,
-                        "isVoid": false,
-                        "data": {
-                            "foo": "bar"
-                        },
-                        "nodes": [
-                            {
-                                "kind": "text",
-                                "leaves": [
-                                    {
-                                        "kind": "leaf",
-                                        "text": "Hey",
-                                        "marks": [] as any[]
-                                    }
-                                ]
-                            }
-                        ]
-                    },
-                    {
-                        "kind": "text",
-                        "leaves": [
-                            {
-                                "kind": "leaf",
-                                "text": " Test",
+                                "text": "Default Value",
                                 "marks": [] as any[]
                             }
                         ]

@@ -3,7 +3,7 @@ import { Editor } from 'slate-react'
 import { Value } from 'slate'
 import initialValue from './value'
 import { IOption, IPosition, IGenericEntity, NodeType } from './models'
-import { valueToJSON, convertEntitiesAndTextToEditorValue, getRelativeParent, getEntitiesFromValue, getSelectedText } from './utilities'
+import { convertEntitiesAndTextToEditorValue, getRelativeParent, getEntitiesFromValue, getSelectedText } from './utilities'
 import CustomEntityNode from './CustomEntityNode'
 import PreBuiltEntityNode from './PreBuiltEntityNode'
 import EntityPicker from './EntityPickerContainer'
@@ -88,20 +88,16 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
     }
 
     updateMenu = () => {
-        console.log(`ExtractorResponseEditor.updateMenu`)
         const menu = this.menu
         if (!menu) return
 
         const { value } = this.state
         if (value.isEmpty) {
-            console.log(`value.isEmpty: `, value.isEmpty)
-            console.log(`value: `, valueToJSON(value))
             if (this.state.isMenuVisible !== false) {
                 // this.setState({
                 //     isMenuVisible: false
                 // })
             }
-            console.log(`ExtractorResponseEditor.updateMenu.removeAttribute`)
             menu.removeAttribute('style')
             return
         }
@@ -111,7 +107,6 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
 
         const selection = window.getSelection()
         if (!selection || selection.isCollapsed) {
-            console.log(`ExtractorResponseEditor.updateMenu.selection.collapsed`)
             return
         }
         const range = selection.getRangeAt(0)
@@ -138,7 +133,6 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
             transform: 'scale(1)'
         }
 
-        console.log(`ExtractorResponseEditor.updateMenu.Object.assign`)
         Object.assign(menu.style, style)
     }
 

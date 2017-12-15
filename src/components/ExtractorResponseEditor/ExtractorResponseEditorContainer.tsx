@@ -15,6 +15,9 @@ interface Props {
     onClickNewEntity: () => void
 }
 
+/**
+ * Purpose of the container is to convert extractResponses into sub parts such as grouping predictedEntities into pre-builts and custom entities
+ */
 class ExtractorResponseEditorContainer extends React.Component<Props, {}> {
     onChangeCustomEntities = (customEntities: IGenericEntity<IGenericEntityData<PredictedEntity>>[]) => {
         const preBuiltPredictedEntities = this.props.extractorResponse.predictedEntities.filter(e => e.builtinType !== "LUIS")
