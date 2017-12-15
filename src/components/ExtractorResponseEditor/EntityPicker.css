@@ -1,0 +1,84 @@
+.toolbar-container {
+    position: relative;
+}
+
+.custom-toolbar {
+    background: white;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+    min-width: 200px;
+    opacity: 0;
+    padding: 0.25em;
+    position: absolute;
+    left: -10000px;
+    bottom: 10000px;
+    transition: opacity .75s;
+    z-index: 2;
+    visibility: hidden;
+    transform: scale(0);
+    transition: transform 0.15s cubic-bezier(.3,1.2,.2,1), left 0.05s ease-in-out;
+}
+
+/* 
+.custom-toolbar--visible {
+  visibility: visible;
+  opacity: 1;
+  transform: scale(1);
+}
+*/
+
+.custom-toolbar__search {
+    padding: 0.25em;
+}
+
+.custom-toolbar__search label {
+    font-size: 0.75rem;
+    padding-bottom: 0.25em;
+    display: block;
+    color: grey;
+}
+
+.custom-toolbar__input {
+    padding: 0.25em;
+    border: 1px solid lightgrey;
+    width: 100%;
+    font-size: 1rem;
+}
+
+.custom-toolbar__results {
+    margin: 0;
+    list-style: none;
+    padding: 0;
+    padding-bottom: 0.25em;
+    border-bottom: 1px solid lightgrey;
+}
+
+.custom-toolbar__result {
+    margin-bottom: 1px;
+    padding: 0.25em 0.5em;
+    cursor: pointer;
+}
+
+.custom-toolbar__result:hover:not(.custom-toolbar__result--highlight) {
+    background: rgba(187, 255, 187, 0.5);
+}
+
+.custom-toolbar__result--highlight {
+    background: rgba(187, 255, 187, 1.0);
+}
+
+.custom-toolbar__new-entity-button {
+    border: none;
+    background: none;
+    cursor: pointer;
+    padding: 0.25em 0.5em;
+    display: block;
+    margin: 0;
+    width: 100%;
+    text-align: left;
+    font-size: 1rem;
+    margin-top: 0.25em;
+}
+.custom-toolbar__new-entity-button:hover {
+    background: rgba(187, 255, 187, 0.5);
+}
