@@ -28,15 +28,12 @@ class ExtractorResponseEditorContainer extends React.Component<Props, {}> {
 
     render() {
         const { readOnly, isValid, onClickNewEntity } = this.props
-        const editorParts = convertExtractorResponseToEditorModels(this.props.extractorResponse, this.props.entities)
+        const editorProps = convertExtractorResponseToEditorModels(this.props.extractorResponse, this.props.entities)
         return (
             <ExtractorResponseEditor
                 readOnly={readOnly}
                 isValid={isValid}
-                options={editorParts.options}
-                text={editorParts.text}
-                customEntities={editorParts.customEntities}
-                preBuiltEntities={editorParts.preBuiltEntities}
+                {...editorProps}
 
                 onChangeCustomEntities={this.onChangeCustomEntities}
                 onClickNewEntity={onClickNewEntity}

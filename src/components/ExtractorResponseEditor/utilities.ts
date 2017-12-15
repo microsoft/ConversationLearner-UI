@@ -257,21 +257,44 @@ export const getEntitiesFromValue = (change: any) => {
         }, [])
 }
 
-export const convertPredictedEntityToGenericEntity = (pe: models.PredictedEntity): models.IGenericEntity<models.IGenericEntityData<models.PredictedEntity>> =>
-    ({
+export const getEntityDisplayName = (pe: models.PredictedEntity): string => {
+    const names = pe.builtinType.split('.')
+    // If builtinType is only copy of entityType
+    if (names.length === 1) {
+        return pe.builtinType
+    }
+
+    // If builtinType is just basic value 'builtin.number' -> 'number'
+    if (names.length === 2) {
+        return names[1]
+    }
+
+    // If builtinType is complex value 'builtin.encyclopedia.people.person' -> 'person'
+    return names[names.length - 1]
+}
+
+export const convertPredictedEntityToGenericEntity = (pe: models.PredictedEntity): models.IGenericEntity<models.IGenericEntityData<models.PredictedEntity>> => {
+    // If entity is custom, use given name
+    // Otherwise entity is pre-built, use computed name
+    const displayName =  (pe.builtinType === "LUIS")
+        ? pe.entityName
+        : getEntityDisplayName(pe)
+
+    return {
         startIndex: pe.startCharIndex,
         // TODO: It seems some predicted entities come back with the endCharIndex one less that it should be, perhaps this is only for pre-builts because they are passed through by LUIS API?
         endIndex: pe.builtinType !== "LUIS" ? pe.endCharIndex + 1 : pe.endCharIndex,
-        name: pe.entityName,
         data: {
             option: {
                 id: pe.entityId,
                 name: pe.entityName,
                 type: pe.builtinType
             },
+            displayName,
             original: pe
         }
-    })
+    }
+}
 
 export const convertGenericEntityToPredictedEntity = (ge: models.IGenericEntity<models.IGenericEntityData<models.PredictedEntity>>): any => {
     const predictedEntity = ge.data.original

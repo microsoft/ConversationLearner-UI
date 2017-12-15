@@ -1,6 +1,6 @@
 import * as React from 'react'
 import CustomEntity from './CustomEntity'
-import { IOption } from './models'
+import { IGenericEntityData, IOption } from './models'
 
 /* Simulate entity component props which have children */
 interface EntityComponentProps {
@@ -49,13 +49,13 @@ export class CustomEntityContainer extends React.Component<Props, State> {
     }
 
     render() {
-        const nodeData = this.props.node.data.toJS()
-        const option: IOption = nodeData.option
+        const nodeData: IGenericEntityData<any> = this.props.node.data.toJS()
+        const { displayName } = nodeData
 
         return (
             <CustomEntity
                 isEditing={this.state.isEditing}
-                name={option.name}
+                name={displayName}
                 onClickName={this.onClickName}
                 onClickDelete={this.onClickDelete}
                 readOnly={this.props.readOnly}

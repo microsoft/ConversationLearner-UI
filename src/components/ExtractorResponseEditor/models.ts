@@ -9,6 +9,8 @@ export interface PredictedEntity {
     entityId: string
     entityName: string
     entityText: string
+    // TODO: PredictedEntities have entityType but it is not in blis-models so adding it here breaks compatibility
+    // entityType: string 
     resolution: {}
     builtinType: string
 }
@@ -34,12 +36,12 @@ export interface IOption {
 export interface IGenericEntity<T> {
     startIndex: number
     endIndex: number
-    name: string
     data: T
 }
 
 export interface IGenericEntityData<T> {
     option: IOption,
+    displayName: string,
     original: T
 }
 

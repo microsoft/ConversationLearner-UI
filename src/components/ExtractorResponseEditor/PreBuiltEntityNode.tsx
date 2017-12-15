@@ -1,5 +1,6 @@
 import * as React from 'react'
 import PreBuiltEntity from './PreBuiltEntity'
+import { IGenericEntityData } from './models'
 
 /* Simulate entity component props which have children */
 interface EntityComponentProps {
@@ -12,12 +13,11 @@ interface Props extends EntityComponentProps {
 }
 
 export const PreBuiltEntityNode = (props: Props) => {
-    const nodeData = props.node.data.toJS()
-    const option = nodeData.option
+    const nodeData: IGenericEntityData<any> = props.node.data.toJS()
 
     return (
         <PreBuiltEntity
-            option={option}
+            name={nodeData.displayName}
             {...props.attributes}
         >
             {...props.children}

@@ -1,5 +1,4 @@
 import * as React from 'react'
-import { IOption } from './models'
 import './CustomEntity.css'
 
 /* Simulate entity component props which have children */
@@ -8,17 +7,17 @@ interface EntityComponentProps {
 }
 
 interface Props extends EntityComponentProps {
-    option: IOption
+    name: string
 }
 
 export const CustomEntity = (props: Props) => {
-    const { option } = props
+    const { name } = props
     return (
         <span className="blis-entity-node blis-entity-node--prebuilt">
             <div className="blis-entity-node-indicator noselect">
                 <div className="blis-entity-node-indicator__mincontent">
                     <div className="blis-entity-node-indicator__name">
-                        {option.name}
+                        {name}
                     </div>
                 </div>
                 <div className="blis-entity-node-indicator__bracket">
