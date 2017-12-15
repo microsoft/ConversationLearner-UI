@@ -1,10 +1,12 @@
 :root {
     --color-warning: rgb(197, 31, 31);
-    --color-custom-entity-bg-hover: rgba(149, 228, 169, 0.4);
+    --color-custom-entity-bg-default: rgba(149, 228, 169, 0.4);
+    --color-custom-entity-bg-hover: rgba(149, 228, 169, 0.6);
     --color-custom-entity-bg: rgba(149, 228, 169, 0.836);
     --color-custom-entity-label: rgb(42, 161, 68);
     --color-custom-entity-bracket: rgb(149, 228, 169);
-    --color-prebuilt-entity-bg-hover: rgba(149, 174, 228, 0.4);
+    --color-prebuilt-entity-bg-default: rgba(149, 174, 228, 0.4);
+    --color-prebuilt-entity-bg-hover: rgba(149, 174, 228, 0.6);
     --color-prebuilt-entity-bg: rgba(149, 174, 228, 0.836);
     --color-prebuilt-entity-label: rgb(72, 110, 192);
     --color-prebuilt-entity-hover: rgb(149, 174, 228);
@@ -20,8 +22,14 @@
     border-radius: 3px;
     line-height: 1.7em;
 }
+.blis-entity-node--custom .blis-entity-node__text {
+    background: var(--color-custom-entity-bg-default);
+}
 .blis-entity-node--custom .blis-entity-node__text:hover {
     background: var(--color-custom-entity-bg-hover);
+}
+.blis-entity-node--prebuilt .blis-entity-node__text {
+    background: var(--color-prebuilt-entity-bg-default);
 }
 .blis-entity-node--prebuilt .blis-entity-node__text:hover {
     background: var(--color-prebuilt-entity-bg-hover);
