@@ -3,14 +3,15 @@ import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../../types'
-import { BlisAppBase, ModelUtils, ExtractResponse, TextVariation, DialogType, EntityType, EntityBase } from 'blis-models'
+import { BlisAppBase, ModelUtils, ExtractResponse, TextVariation, DialogType, EntityType, EntityBase, UserInput } from 'blis-models'
 import * as OF from 'office-ui-fabric-react';
-import TextVariationCreator from '../TextVariationCreator';
 import * as ExtractorResponseEditor from '../ExtractorResponseEditor'
 import EntityCreatorEditor from './EntityCreatorEditor';
 import { DialogMode } from '../../types/const'
-import { clearExtractResponses, updateExtractResponse, removeExtractResponse } from '../../actions/teachActions'
+import { clearExtractResponses, updateExtractResponse, removeExtractResponse, runExtractorAsync } from '../../actions/teachActions'
 import * as ToolTips from '../ToolTips'
+import { injectIntl, InjectedIntlProps } from 'react-intl'
+import { FM } from '../../react-intl-messages'
 import './EntityExtractor.css'
 
 const addMissingEntityData = (extractResponse: ExtractResponse, entities: EntityBase[]): ExtractResponse => {
@@ -31,13 +32,14 @@ const addMissingEntityData = (extractResponse: ExtractResponse, entities: Entity
 
 interface ComponentState {
     // Has the user made any changes
-    extractionChanged: boolean,
-    pendingVariationChange: boolean,
-    entityModalOpen: boolean,
-    warningOpen: boolean,
+    extractionChanged: boolean
+    pendingVariationChange: boolean
+    entityModalOpen: boolean
+    warningOpen: boolean
     // Handle saves after round change
-    savedExtractResponses: ExtractResponse[],
+    savedExtractResponses: ExtractResponse[]
     savedRoundIndex: number
+    textVariationValue: string
     newTextVariations: TextVariation[]
 };
 
@@ -55,6 +57,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
             warningOpen: false,
             savedExtractResponses: null,
             savedRoundIndex: 0,
+            textVariationValue: '',
             newTextVariations: []
         }
         this.onNewEntity = this.onNewEntity.bind(this);
@@ -177,20 +180,22 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         }))
 
         this.props.onTextVariationsExtracted(allResponses[0], textVariations, roundIndex);
-
     }
+
     onAddExtractResponse(): void {
         this.setState({
             extractionChanged: true,
             pendingVariationChange: false
         });
     }
-    onChangeTextVariation(text: string): void {
-        this.setState({
-            pendingVariationChange: (text.length > 0)
-        });
 
+    onChangeTextVariation = (value: string): void => {
+        this.setState({
+            textVariationValue: value,
+            pendingVariationChange: (value.length > 0)
+        })
     }
+
     onRemoveExtractResponse(extractResponse: ExtractResponse): void {
 
         // First look for match in extract reponses
@@ -249,6 +254,24 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         });
     }
 
+    onSubmitTextVariation() {
+        const userInput = new UserInput({ text: this.state.textVariationValue })
+        this.props.runExtractorAsync(
+            this.props.user.key,
+            this.props.app.appId,
+            this.props.extractType,
+            this.props.sessionId,
+            this.props.roundIndex,
+            userInput
+        )
+
+        this.setState({
+            extractionChanged: true,
+            pendingVariationChange: false,
+            textVariationValue: ''
+        })
+    }
+
     render() {
         const allResponses = this.allResponses();
         if (!allResponses[0]) {
@@ -259,7 +282,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         const canEdit = (!this.props.autoTeach && this.props.dialogMode === DialogMode.Extractor)
         // If editing is not allowed, only show the primary response which is the first response
         const extractResponsesToRender = canEdit ? allResponses : [allResponses[0]]
-        const allValid = extractResponsesToRender.every(extractResponse => this.isValid(extractResponsesToRender[0], extractResponse))
+        const allExtractResponsesValid = extractResponsesToRender.every(extractResponse => this.isValid(extractResponsesToRender[0], extractResponse))
 
         return (
             <div>
@@ -288,20 +311,26 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                         </div>}
                     </div>
                 })}
-                {canEdit && <TextVariationCreator
-                    appId={this.props.app.appId}
-                    sessionId={this.props.sessionId}
-                    extractType={this.props.extractType}
-                    roundIndex={this.props.roundIndex}
-                    onAddVariation={() => this.onAddExtractResponse()}
-                    onTextChanged={text => this.onChangeTextVariation(text)}
-                />}
+                {canEdit && <OF.TextField
+                        value={this.state.textVariationValue}
+                        onChanged={this.onChangeTextVariation}
+                        placeholder={this.props.intl.formatMessage({
+                            id: FM.TEXTVARIATION_PLACEHOLDER,
+                            defaultMessage: "Add alternative input..."
+                        })}
+                        onKeyPress={(event) => {
+                            if (event.key === 'Enter') {
+                                this.onSubmitTextVariation()
+                                event.preventDefault()
+                            }
+                        }}
+                    />}
                 {canEdit && (
                     (this.props.extractType !== DialogType.TEACH) ?
                         (
                             <div className="blis-buttons-row">
                                 <OF.PrimaryButton
-                                    disabled={!this.state.extractionChanged || !allValid || this.state.pendingVariationChange}
+                                    disabled={!this.state.extractionChanged || !allExtractResponsesValid || this.state.pendingVariationChange}
                                     onClick={this.onClickSubmitExtractions}
                                     ariaDescription={'Sumbit Changes'}
                                     text={'Submit Changes'}
@@ -317,7 +346,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                         ) : (
                             <div className="blis-buttons-row">
                                 <OF.PrimaryButton
-                                    disabled={!allValid || this.state.pendingVariationChange}
+                                    disabled={!allExtractResponsesValid || this.state.pendingVariationChange}
                                     onClick={this.onClickSubmitExtractions}
                                     ariaDescription={'Score Actions'}
                                     text={'Score Actions'}
@@ -373,6 +402,7 @@ const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         updateExtractResponse,
         removeExtractResponse,
+        runExtractorAsync,
         clearExtractResponses
     }, dispatch);
 }
@@ -384,20 +414,20 @@ const mapStateToProps = (state: State, ownProps: any) => {
 }
 
 export interface ReceivedProps {
-    app: BlisAppBase,
-    extractType: DialogType,
-    sessionId: string,
-    roundIndex: number,
+    app: BlisAppBase
+    extractType: DialogType
+    sessionId: string
+    roundIndex: number
     autoTeach: boolean
-    dialogMode: DialogMode,
-    extractResponses: ExtractResponse[],
-    originalTextVariations: TextVariation[],
-    onTextVariationsExtracted: (extractResponse: ExtractResponse, textVariations: TextVariation[], roundIndex: number) => void,
+    dialogMode: DialogMode
+    extractResponses: ExtractResponse[]
+    originalTextVariations: TextVariation[]
+    onTextVariationsExtracted: (extractResponse: ExtractResponse, textVariations: TextVariation[], roundIndex: number) => void
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
-const stateProps = returntypeof(mapStateToProps);
-const dispatchProps = returntypeof(mapDispatchToProps);
-type Props = typeof stateProps & typeof dispatchProps & ReceivedProps;
+const stateProps = returntypeof(mapStateToProps)
+const dispatchProps = returntypeof(mapDispatchToProps)
+type Props = typeof stateProps & typeof dispatchProps & ReceivedProps & InjectedIntlProps
 
-export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(EntityExtractor);
+export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(EntityExtractor))
