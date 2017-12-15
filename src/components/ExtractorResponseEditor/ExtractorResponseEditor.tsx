@@ -3,7 +3,7 @@ import { Editor } from 'slate-react'
 import { Value } from 'slate'
 import initialValue from './value'
 import { IOption, IPosition, IGenericEntity, NodeType } from './models'
-import { convertEntitiesAndTextToEditorValue, getRelativeParent, getEntitiesFromValue, getSelectedText } from './utilities'
+import { valueToJSON, convertEntitiesAndTextToEditorValue, getRelativeParent, getEntitiesFromValue, getSelectedText } from './utilities'
 import CustomEntityNode from './CustomEntityNode'
 import PreBuiltEntityNode from './PreBuiltEntityNode'
 import EntityPicker from './EntityPickerContainer'
@@ -65,10 +65,17 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
 
     componentWillReceiveProps(nextProps: Props) {
         console.log(`ExtractorResponseEditor.componentWillReceiveProps: nextProps `, nextProps)
-        this.setState({
-            value: convertEntitiesAndTextToEditorValue(nextProps.text, nextProps.customEntities, NodeType.CustomEntityNodeType),
-            preBuiltEditorValues: nextProps.preBuiltEntities.map<any[]>(preBuiltEntity => convertEntitiesAndTextToEditorValue(nextProps.text, [preBuiltEntity], NodeType.PreBuiltEntityNodeType))
-        })
+        // TODO: See if we can avoid all of these checks.  Currently the issue is that when we recompute a new Slate value
+        // we lose the current selection that was existing in the old value and if the selection goes away this forces the EntityPicker menu to close
+        // which disrupts the users interaction with menu.
+        if (nextProps.text !== this.props.text
+            || nextProps.customEntities.length !== this.props.customEntities.length
+            || nextProps.preBuiltEntities.length !== this.props.preBuiltEntities.length) {
+            this.setState({
+                value: convertEntitiesAndTextToEditorValue(nextProps.text, nextProps.customEntities, NodeType.CustomEntityNodeType),
+                preBuiltEditorValues: nextProps.preBuiltEntities.map<any[]>(preBuiltEntity => convertEntitiesAndTextToEditorValue(nextProps.text, [preBuiltEntity], NodeType.PreBuiltEntityNodeType))
+            })
+        }
     }
 
     // TODO: Is this necessary?
@@ -81,16 +88,20 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
     }
 
     updateMenu = () => {
+        console.log(`ExtractorResponseEditor.updateMenu`)
         const menu = this.menu
         if (!menu) return
 
         const { value } = this.state
         if (value.isEmpty) {
+            console.log(`value.isEmpty: `, value.isEmpty)
+            console.log(`value: `, valueToJSON(value))
             if (this.state.isMenuVisible !== false) {
                 // this.setState({
                 //     isMenuVisible: false
                 // })
             }
+            console.log(`ExtractorResponseEditor.updateMenu.removeAttribute`)
             menu.removeAttribute('style')
             return
         }
@@ -100,6 +111,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
 
         const selection = window.getSelection()
         if (!selection || selection.isCollapsed) {
+            console.log(`ExtractorResponseEditor.updateMenu.selection.collapsed`)
             return
         }
         const range = selection.getRangeAt(0)
@@ -126,6 +138,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
             transform: 'scale(1)'
         }
 
+        console.log(`ExtractorResponseEditor.updateMenu.Object.assign`)
         Object.assign(menu.style, style)
     }
 
