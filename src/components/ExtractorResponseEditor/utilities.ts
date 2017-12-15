@@ -277,7 +277,9 @@ export const convertPredictedEntityToGenericEntity = (pe: models.PredictedEntity
     ({
         startIndex: pe.startCharIndex,
         // The predicted entities returned by the service treat indices as characters instead of before or after the character so add 1 to endIndex for slicing using JavaScript
-        endIndex: pe.endCharIndex + 1,
+        // Also, it seems when predicted entities come back from the service during Teach Session the endIndex is 1 less;
+        // howver, the entities that are returned when viewing TrainDialog are correctly matching length of text
+        endIndex: pe.startCharIndex + pe.entityText.length, // pe.endCharIndex + 1,
         data: {
             option: {
                 id: pe.entityId,
@@ -301,7 +303,7 @@ export const convertGenericEntityToPredictedEntity = (ge: models.IGenericEntity<
     const text = (ge as any).text || (ge.data as any).text || ''
     return {
         startCharIndex: ge.startIndex,
-        endCharIndex: ge.endIndex,
+        endCharIndex: ge.endIndex - 1,
         entityId: option.id,
         entityName: option.name,
         entityText: text,
