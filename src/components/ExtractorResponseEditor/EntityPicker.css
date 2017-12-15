@@ -16,7 +16,7 @@
     z-index: 2;
     visibility: hidden;
     transform: scale(0);
-    transition: transform 0.15s cubic-bezier(.3,1.2,.2,1);
+    transition: transform 0.15s cubic-bezier(.3,1.2,.2,1), left 0.05s ease-in-out;
 }
 
 /* 
