@@ -269,7 +269,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                         isValid = this.isValid(allResponses[0], extractResponse);
                     }
 
-                    return <div key={key} className="editor-container">
+                    return <div key={key} className="editor-container ms-font-m-plus">
                         <ExtractorResponseEditor.EditorWrapper
                             readOnly={!canEdit}
                             isValid={isValid}
