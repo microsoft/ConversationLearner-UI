@@ -64,7 +64,6 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
     }
 
     componentWillReceiveProps(nextProps: Props) {
-        console.log(`ExtractorResponseEditor.componentWillReceiveProps: nextProps `, nextProps)
         // TODO: See if we can avoid all of these checks.  Currently the issue is that when we recompute a new Slate value
         // we lose the current selection that was existing in the old value and if the selection goes away this forces the EntityPicker menu to close
         // which disrupts the users interaction with menu.
@@ -142,18 +141,15 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
 
         const containsDisallowedOperations = operationsJs.some((o: any) => disallowedOperations.includes(o.type))
         if (containsDisallowedOperations) {
-            // console.log(`containsDisallowedOperations `, operationsJs.map((o: any) => o.type).join(', '))
             return
         }
 
-        // This must alwasy be called to allow normal interaction with editor such as text selection
+        // This must always be called to allow normal interaction with editor such as text selection
         this.setState({ value })
 
         const containsExternalChangeOperation = operationsJs.some((o: any) => externalChangeOperations.includes(o.type))
         if (containsExternalChangeOperation) {
-            // console.log(`containsExternalChangeOperation `, operationsJs.map((o: any) => o.type).join(', '))
             const customEntities = getEntitiesFromValue(change)
-            console.log(`customEntities: `, customEntities)
             this.props.onChangeCustomEntities(customEntities)
         }
     }

@@ -11,7 +11,6 @@ export const deleteBLISApplicationAsync = (key: string, blisApp: BlisAppBase): A
 
     return {
         type: AT.DELETE_BLIS_APPLICATION_ASYNC,
-        key: key,
         blisAppGUID: blisApp.appId,
         blisApp: blisApp
     }
@@ -28,7 +27,6 @@ export const deleteEntityAsync = (key: string, GUID: string, entity: EntityBase,
 
     return {
         type: AT.DELETE_ENTITY_ASYNC,
-        key: key,
         entityGUID: GUID,
         entity: entity,
         currentAppId: currentAppId
@@ -58,7 +56,6 @@ export const deleteActionAsync = (key: string, GUID: string, action: ActionBase,
 
     return {
         type: AT.DELETE_ACTION_ASYNC,
-        key: key,
         actionGUID: GUID,
         action: action,
         currentAppId: currentAppId
