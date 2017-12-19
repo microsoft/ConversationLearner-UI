@@ -2,10 +2,8 @@ import { ActionObject } from '../types'
 import { DisplayState } from '../types'
 import { AT } from '../types/ActionTypes'
 import { Reducer } from 'redux'
-import { DisplayMode } from '../types/const'
 
 const initialState: DisplayState = {
-    displayMode: DisplayMode.AppList,
     displaySpinner: [],
     tipType: null
 };
@@ -26,14 +24,12 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
     switch (action.type) {
         case AT.LOGOUT:
             return { ...initialState };
-        case AT.SET_DISPLAY_MODE:
-            return { ...state, displayMode: action.setDisplay };
         case AT.SET_TIP_TYPE:
             return { ...state, tipType: action.tipType };
         case AT.CREATE_BLIS_APPLICATION_FULFILLED:
             return { ...state, displaySpinner: removeSpinner(state.displaySpinner, action.type) }
         case AT.SET_CURRENT_BLIS_APP_FULFILLED:
-            return { ...state, displayMode: DisplayMode.AppAdmin, displaySpinner: removeSpinner(state.displaySpinner, action.type) }
+            return { ...state, displaySpinner: removeSpinner(state.displaySpinner, action.type) }
         case AT.SET_ERROR_DISPLAY:
             // If I fail to load critical data, return to home page
             switch (action.route) {

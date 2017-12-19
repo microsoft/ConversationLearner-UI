@@ -9,7 +9,7 @@ import {
     UITeachResponse, UIScoreInput, UIScoreResponse, TrainingStatus
 } from 'blis-models'
 import { TipType } from '../components/ToolTips'
-import { ErrorType, DisplayMode } from '../types/const'
+import { ErrorType } from '../types/const'
 import { AT } from '../types/ActionTypes'
 
 export type UpdateAction = {
@@ -54,10 +54,6 @@ export type DisplayAction = {
     // used for setting what tool tip is displayed
     type: AT.SET_TIP_TYPE,
     tipType: TipType,
-} | {
-    // used for setting whether the app list or app homepage (Index) is displayed
-    type: AT.SET_DISPLAY_MODE,
-    setDisplay: DisplayMode,
 } | {
     // used for setting whether the error popup is displayed
     type: AT.SET_ERROR_DISPLAY,
