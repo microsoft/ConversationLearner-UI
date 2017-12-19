@@ -1,6 +1,6 @@
 import { ActionObject } from '../types'
 import { AT } from '../types/ActionTypes'
-import { ErrorType, DisplayMode } from '../types/const'
+import { ErrorType } from '../types/const'
 import { BlisAppBase } from 'blis-models';
 import { TipType } from '../components/ToolTips'
 
@@ -16,13 +16,6 @@ export const setCurrentBLISAppFulfilled = (app: BlisAppBase): ActionObject => {
     return {
         type: AT.SET_CURRENT_BLIS_APP_FULFILLED,
         app
-    }
-}
-
-export const setDisplayMode = (displayMode: DisplayMode): ActionObject => {
-    return {
-        type: AT.SET_DISPLAY_MODE,
-        setDisplay: displayMode
     }
 }
 

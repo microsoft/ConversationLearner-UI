@@ -3,10 +3,6 @@ export enum ErrorType {
     Warning
 }
 
-export enum DisplayMode {
-    AppList,
-    AppAdmin
-}
 export enum DialogMode {
     Extractor = "Extract",    // Waiting for Extractor feedback
     Scorer = "Score",        // Waiting for Scorer feedback

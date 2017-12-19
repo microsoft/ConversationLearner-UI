@@ -6,7 +6,7 @@ import {
     TrainDialog, LogDialog, Teach, Session,
     Memory, UIScoreInput, ScoreInput, ExtractResponse, ScoreResponse
 } from 'blis-models';
-import { ErrorType, DisplayMode, DialogMode } from '../types/const'
+import { ErrorType, DialogMode } from '../types/const'
 import { AT } from '../types/ActionTypes'
 import { TipType } from '../components/ToolTips'
 
@@ -49,7 +49,6 @@ export type ChatSessionState = {
     currentConversationStack: {}[]
 }
 export type DisplayState = {
-    displayMode: DisplayMode,
     displaySpinner: string[],
     tipType: TipType
 }
