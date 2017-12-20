@@ -6,8 +6,7 @@ import { Reducer } from 'redux'
 const initialState: UserState = {
     name: "",
     password: "",
-    id: null,
-    key: null
+    id: null
 };
 
 const userReducer: Reducer<UserState> = (state = initialState, action: ActionObject): UserState => {
@@ -21,7 +20,6 @@ const userReducer: Reducer<UserState> = (state = initialState, action: ActionObj
                 name: action.name,
                 password: action.password,
                 id: action.id,
-                key: action.id
             };
         default:
             return state;

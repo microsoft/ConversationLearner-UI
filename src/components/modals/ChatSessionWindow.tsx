@@ -20,7 +20,7 @@ interface ComponentState {
 class SessionWindow extends React.Component<Props, ComponentState> {
     onClickDone() {
         if (this.props.chatSession.current !== null) {
-            this.props.deleteChatSessionAsync(this.props.userKey, this.props.chatSession.current, this.props.app.appId)
+            this.props.deleteChatSessionAsync(this.props.user.id, this.props.chatSession.current, this.props.app.appId)
         }
 
         this.props.onClose();
@@ -90,7 +90,7 @@ const mapDispatchToProps = (dispatch: any) => {
 const mapStateToProps = (state: State) => {
     return {
         chatSession: state.chatSessions,
-        userKey: state.user.key,
+        user: state.user,
         error: state.error.error
     }
 }

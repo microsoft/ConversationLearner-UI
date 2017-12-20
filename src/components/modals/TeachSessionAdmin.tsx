@@ -43,7 +43,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
 
         const appId = this.props.app.appId
         const teachId = this.props.teachSession.current.teachId
-        this.props.runScorerAsync(this.props.user.key, appId, teachId, uiScoreInput)
+        this.props.runScorerAsync(this.props.user.id, appId, teachId, uiScoreInput)
         await this.props.fetchApplicationTrainingStatusThunkAsync(appId)
         this.setState({
             isScoresRefreshVisible: true
@@ -64,7 +64,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
         // Pass score input (minus extractor step) for subsequent actions when this one is non-terminal
         let uiScoreInput: UIScoreInput = { ...this.props.teachSession.uiScoreInput, trainExtractorStep: null }
 
-        this.props.postScorerFeedbackAsync(this.props.user.key, appId, teachId, uiTrainScorerStep, waitForUser, uiScoreInput)
+        this.props.postScorerFeedbackAsync(this.props.user.id, appId, teachId, uiTrainScorerStep, waitForUser, uiScoreInput)
     }
 
     onClickRefreshScores = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -74,7 +74,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
         }
 
         this.props.getScoresAsync(
-            this.props.user.key,
+            this.props.user.id,
             this.props.app.appId,
             this.props.teachSession.current.teachId,
             this.props.teachSession.scoreInput)

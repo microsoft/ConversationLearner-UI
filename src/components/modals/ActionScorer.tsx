@@ -268,7 +268,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         this.setState({
             actionModalOpen: false
         }, () => {
-            this.props.createActionAsync(this.props.user.key, action, this.props.app.appId)
+            this.props.createActionAsync(this.props.user.id, action, this.props.app.appId)
         })
     }
 

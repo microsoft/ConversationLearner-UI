@@ -257,7 +257,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
     onSubmitTextVariation() {
         const userInput = new UserInput({ text: this.state.textVariationValue })
         this.props.runExtractorAsync(
-            this.props.user.key,
+            this.props.user.id,
             this.props.app.appId,
             this.props.extractType,
             this.props.sessionId,

@@ -152,7 +152,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
     onClickNewTeachSession() {
         // TODO: Find cleaner solution for the types.  Thunks return functions but when using them on props they should be returning result of the promise.
-        ((this.props.createTeachSessionThunkAsync(this.props.user.key, this.props.app.appId) as any) as Promise<Teach>)
+        ((this.props.createTeachSessionThunkAsync(this.props.user.id, this.props.app.appId) as any) as Promise<Teach>)
             .then(teachSession => {
                 this.setState({
                     teachSession,

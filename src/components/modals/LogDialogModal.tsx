@@ -98,7 +98,7 @@ class LogDialogModal extends React.Component<Props, ComponentState> {
     }
 
     onSaveDialogChanges(trainDialog: TrainDialog) {
-        this.props.createTrainDialogAsync(this.props.user.key, this.props.app.appId, trainDialog, this.props.logDialog.logDialogId)
+        this.props.createTrainDialogAsync(this.props.user.id, this.props.app.appId, trainDialog, this.props.logDialog.logDialogId)
         this.props.fetchApplicationTrainingStatusThunkAsync(this.props.app.appId)
         this.props.onClose()
     }

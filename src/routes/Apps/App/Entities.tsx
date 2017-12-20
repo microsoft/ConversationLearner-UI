@@ -144,7 +144,7 @@ class Entities extends React.Component<Props, ComponentState> {
 
     onClickConfirmDelete() {
         let entityToDelete = this.props.entities.find(entity => entity.entityId === this.state.entityIDToDelete)
-        this.props.deleteEntityAsync(this.props.user.key, this.state.entityIDToDelete, entityToDelete, this.props.app.appId)
+        this.props.deleteEntityAsync(this.props.user.id, this.state.entityIDToDelete, entityToDelete, this.props.app.appId)
         this.props.fetchApplicationTrainingStatusThunkAsync(this.props.app.appId)
         this.setState({
             confirmDeleteEntityModalOpen: false,

@@ -175,14 +175,14 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
         const appId = this.props.app.appId
 
         if (this.state.editing === false) {
-            this.props.createEntityAsync(this.props.userKey, entity, appId)
+            this.props.createEntityAsync(this.props.user.id, entity, appId)
         } else {
             // Set entity id if we're editing existing id.
             entity.entityId = this.props.entity.entityId
 
             // TODO: Currently it's not possible to edit an entity, 
             // and the code below is incorrect because it doesn't pass the app id.
-            // this.props.editEntityAsync(this.props.userKey, entity)
+            // this.props.editEntityAsync(this.props.user.id, entity)
         }
 
         this.props.fetchApplicationTrainingStatusThunkAsync(appId)
@@ -481,7 +481,7 @@ const mapDispatchToProps = (dispatch: any) => {
 }
 const mapStateToProps = (state: State, ownProps: any) => {
     return {
-        userKey: state.user.key,
+        user: state.user,
         entities: state.entities,
         actions: state.actions,
     }
