@@ -73,7 +73,7 @@ class Actions extends React.Component<Props, ComponentState> {
             isActionEditorOpen: false,
             actionSelected: null
         }, () => {
-            this.props.deleteActionAsync(this.props.user.key, action.actionId, action, this.props.app.appId)
+            this.props.deleteActionAsync(this.props.user.id, action.actionId, action, this.props.app.appId)
             this.props.fetchApplicationTrainingStatusThunkAsync(this.props.app.appId)
         })
     }
@@ -86,10 +86,10 @@ class Actions extends React.Component<Props, ComponentState> {
             actionSelected: null
         }, () => {
             if (wasEditing) {
-                this.props.editActionAsync(this.props.user.key, action, this.props.app.appId)
+                this.props.editActionAsync(this.props.user.id, action, this.props.app.appId)
             }
             else {
-                this.props.createActionAsync(this.props.user.key, action, this.props.app.appId)
+                this.props.createActionAsync(this.props.user.id, action, this.props.app.appId)
             }
 
             this.props.fetchApplicationTrainingStatusThunkAsync(this.props.app.appId)

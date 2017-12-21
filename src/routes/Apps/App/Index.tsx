@@ -45,14 +45,14 @@ class Index extends React.Component<Props, ComponentState> {
             return
         }
 
-        this.props.setCurrentBLISApp(this.props.user.key, app)
-        this.props.fetchAllActionsAsync(this.props.user.key, app.appId)
-        this.props.fetchAllEntitiesAsync(this.props.user.key, app.appId)
-        this.props.fetchAllTrainDialogsAsync(this.props.user.key, app.appId)
-        this.props.fetchAllLogDialogsAsync(this.props.user.key, app.appId)
+        this.props.setCurrentBLISApp(this.props.user.id, app)
+        this.props.fetchAllActionsAsync(this.props.user.id, app.appId)
+        this.props.fetchAllEntitiesAsync(this.props.user.id, app.appId)
+        this.props.fetchAllTrainDialogsAsync(this.props.user.id, app.appId)
+        this.props.fetchAllLogDialogsAsync(this.props.user.id, app.appId)
         this.props.fetchBotInfoAsync()
-        // this.props.fetchAllChatSessionsAsync(this.props.user.key, app.appId)
-        // this.props.fetchAllTeachSessions(this.props.user.key, app.appId)
+        // this.props.fetchAllChatSessionsAsync(this.props.user.id, app.appId)
+        // this.props.fetchAllTeachSessions(this.props.user.id, app.appId)
     }
 
     componentWillReceiveProps(newProps: Props) {

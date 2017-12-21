@@ -138,7 +138,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
 
     onClickNewChatSession() {
         // TODO: Find cleaner solution for the types.  Thunks return functions but when using them on props they should be returning result of the promise.
-        ((this.props.createChatSessionThunkAsync(this.props.user.key, this.props.app.appId) as any) as Promise<Session>)
+        ((this.props.createChatSessionThunkAsync(this.props.user.id, this.props.app.appId) as any) as Promise<Session>)
             .then(chatSession => {
                 this.setState({
                     chatSession,
@@ -190,7 +190,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     }
 
     onClickSync() {
-        this.props.fetchAllLogDialogsAsync(this.props.user.key, this.props.app.appId);
+        this.props.fetchAllLogDialogsAsync(this.props.user.id, this.props.app.appId);
     }
 
     renderLogDialogItems(): LogDialog[] {

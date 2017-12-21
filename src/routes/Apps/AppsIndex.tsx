@@ -33,7 +33,7 @@ class AppsIndex extends React.Component<Props, ComponentState> {
 
     componentDidUpdate(prevProps: Props, prevState: ComponentState) {
         if (typeof (this.props.user.id) === 'string' && this.props.user.id !== prevProps.user.id) {
-            this.props.fetchApplicationsAsync(this.props.user.key, this.props.user.id);
+            this.props.fetchApplicationsAsync(this.props.user.id, this.props.user.id);
             this.props.fetchBotInfoAsync();
         }
 
@@ -53,11 +53,11 @@ class AppsIndex extends React.Component<Props, ComponentState> {
     }
 
     onClickDeleteApp = (appToDelete: BlisAppBase) => {
-        this.props.deleteBLISApplicationAsync(this.props.user.key, appToDelete)
+        this.props.deleteBLISApplicationAsync(this.props.user.id, appToDelete)
     }
 
     onCreateApp = (appToCreate: BlisAppBase) => {
-        this.props.createBLISApplicationAsync(this.props.user.key, this.props.user.id, appToCreate)
+        this.props.createBLISApplicationAsync(this.props.user.id, this.props.user.id, appToCreate)
     }
 
     render() {

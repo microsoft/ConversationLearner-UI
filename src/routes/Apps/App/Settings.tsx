@@ -177,7 +177,7 @@ class Settings extends React.Component<Props, ComponentState> {
                 botFrameworkApps: this.state.botFrameworkAppsVal
             })
         })
-        this.props.editBLISApplicationAsync(this.props.userKey, modifiedApp);
+        this.props.editBLISApplicationAsync(this.props.user.id, modifiedApp);
         this.setState({
             localeVal: app.locale,
             appIdVal: app.appId,
@@ -339,7 +339,7 @@ const mapDispatchToProps = (dispatch: any) => {
 }
 const mapStateToProps = (state: State) => {
     return {
-        userKey: state.user.key,
+        user: state.user,
         apps: state.apps.all
     }
 }

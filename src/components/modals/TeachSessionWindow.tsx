@@ -39,7 +39,7 @@ class TeachWindow extends React.Component<Props, ComponentState> {
             this.setState({ errorForId: null }, () => {
                 // End the teaching session after error is done displaying as I can't continue after an error
                 if (newProps.teachSessions.current && this.state.errorForId === newProps.teachSessions.current.teachId) {
-                    this.props.deleteTeachSessionAsync(this.props.user.key, this.props.teachSessions.current, this.props.app.appId, true);
+                    this.props.deleteTeachSessionAsync(this.props.user.id, this.props.teachSessions.current, this.props.app.appId, true);
                     this.props.onClose();
                 }
             });
@@ -53,7 +53,7 @@ class TeachWindow extends React.Component<Props, ComponentState> {
     }
 
     onClickSave() {
-        this.props.deleteTeachSessionAsync(this.props.user.key, this.props.teachSessions.current, this.props.app.appId, true); // True = save to train dialog
+        this.props.deleteTeachSessionAsync(this.props.user.id, this.props.teachSessions.current, this.props.app.appId, true); // True = save to train dialog
         this.props.fetchApplicationTrainingStatusThunkAsync(this.props.app.appId)
         this.props.onClose()
     }
@@ -62,7 +62,7 @@ class TeachWindow extends React.Component<Props, ComponentState> {
         this.setState({
             isConfirmDeleteOpen: false
         }, () => {
-            this.props.deleteTeachSessionAsync(this.props.user.key, this.props.teachSessions.current, this.props.app.appId, false); // False = abandon
+            this.props.deleteTeachSessionAsync(this.props.user.id, this.props.teachSessions.current, this.props.app.appId, false); // False = abandon
             this.props.onClose()
         })
     }
@@ -87,7 +87,7 @@ class TeachWindow extends React.Component<Props, ComponentState> {
                 throw new Error(`Current teach session is not defined. This may be due to race condition where you attempted to chat with the bot before the teach session has been created.`)
             }
 
-            this.props.runExtractorAsync(this.props.user.key, this.props.app.appId, DialogType.TEACH, teachSession.teachId, null, userInput);
+            this.props.runExtractorAsync(this.props.user.id, this.props.app.appId, DialogType.TEACH, teachSession.teachId, null, userInput);
         }
     }
 
