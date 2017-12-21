@@ -13,12 +13,7 @@ import {
     TrainingStatusCode
 } from 'blis-models'
 import { Dispatch } from 'redux'
-
-// TODO: Need to isolate usage of blis client to single layer
-import BlisClient from '../services/blisClient'
-import ApiConfig from '../epics/config'
-
-const blisClient = new BlisClient(ApiConfig.BlisClientEnpoint, () => '')
+import * as ClientFactory from '../services/clientFactory'
 
 export const fetchAllTrainDialogsAsync = (key: string, blisAppID: string): ActionObject => {
     return {
@@ -105,7 +100,8 @@ export const fetchApplicationTrainingStatusExpired = (appId: string): ActionObje
 const pollTrainingStatusUntilResolvedOrMaxDuration = (dispatch: Dispatch<any>, appId: string, resolvedStates: TrainingStatusCode[], interval: number, maxDuration: number): Promise<void> => {
     const start = new Date()
     const end = start.getTime() + maxDuration
-
+    const blisClient = ClientFactory.getInstance()
+    
     return new Promise<void>((resolve, reject) => {
         const timerId = setInterval(async () => {
             // If current time is after max allowed polling duration then resolve

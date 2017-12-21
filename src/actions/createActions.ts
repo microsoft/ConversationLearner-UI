@@ -2,10 +2,7 @@ import { ActionObject } from '../types'
 import { AT } from '../types/ActionTypes'
 import { BlisAppBase, EntityBase, ActionBase, TrainDialog, LogDialog, Teach, Session, TrainingStatusCode } from 'blis-models'
 import { Dispatch } from 'redux'
-import BlisClient from '../services/blisClient'
-import ApiConfig from '../epics/config'
-
-const blisClient = new BlisClient(ApiConfig.BlisClientEnpoint, () => '')
+import * as ClientFactory from '../services/clientFactory'
 
 export const createBLISApplicationAsync = (key: string, userId: string, application: BlisAppBase): ActionObject => {
     return {
@@ -60,7 +57,6 @@ export const createNegativeEntityFulfilled = (key: string, positiveEntity: Entit
     //send both to store to be saved locally, and send the positive entity back to the service to update its metadata
     return {
         type: AT.CREATE_ENTITY_FULFILLEDNEGATIVE,
-        key: key,
         positiveEntity: posEntity,
         negativeEntity: negativeEntity,
         currentAppId: currentAppId
@@ -70,7 +66,6 @@ export const createNegativeEntityFulfilled = (key: string, positiveEntity: Entit
 export const createActionAsync = (key: string, action: ActionBase, currentAppId: string): ActionObject => {
     return {
         type: AT.CREATE_ACTION_ASYNC,
-        key: key,
         action: action,
         currentAppId: currentAppId
     }
@@ -102,7 +97,7 @@ export const createChatSessionFulfilled = (session: Session): ActionObject =>
 
 export const createChatSessionThunkAsync = (key: string, appId: string) => {
     return async (dispatch: Dispatch<any>) => {
-        blisClient.key = key
+        const blisClient = ClientFactory.getInstance()
         dispatch(createChatSessionAsync(key))
         const app = await blisClient.appGet(appId)
         if (app.trainingStatus !== TrainingStatusCode.Completed) {
@@ -135,7 +130,7 @@ export const createTeachSessionFulfilled = (teachSession: Teach): ActionObject =
 
 export const createTeachSessionThunkAsync = (key: string, appId: string) => {
     return async (dispatch: Dispatch<any>) => {
-        blisClient.key = key
+        const blisClient = ClientFactory.getInstance()
         dispatch(createTeachSessionAsync())
 
         try {
@@ -167,10 +162,8 @@ export const createTrainDialogFulfilled = (trainDialog: TrainDialog): ActionObje
 
 // TODO: should be async with fulfillment
 export const createLogDialog = (key: string, logDialog: LogDialog): ActionObject => {
-
     return {
         type: AT.CREATE_LOG_DIALOG,
-        key: key,
         logDialog: logDialog
     }
 }
