@@ -31,6 +31,7 @@ export default class BlisClient {
             'Content-Type': 'application/json'
         }
     }
+    getAccessToken: () => string
 
     // TODO: Remove after I find out where this is used and why it's needed
     // Blis service doesn't use the key, but it seems the BLIS-SDK relies on it for certain operations
@@ -39,17 +40,23 @@ export default class BlisClient {
 
     constructor(baseUrl: string, getAccessToken: () => string, defaultHeaders?: { [x: string]: string }) {
         this.baseUrl = baseUrl
+        this.getAccessToken = getAccessToken
         this.defaultConfig.headers = { ...this.defaultConfig.headers, ...defaultHeaders }
     }
 
     send<T = any>(config: AxiosRequestConfig) {
         const joinCharacter = /\?/g.test(config.url) ? '&' : '?'
         const urlWithKey = `${config.url}${joinCharacter}key=${this.key}`
-        return axios({
+
+        const finalConfig = {
             ...this.defaultConfig,
             ...config,
             url: urlWithKey
-        }) as Promise<TypedAxiosResponse<T>>
+        }
+
+        finalConfig.headers.Authorization = `Bearer ${this.getAccessToken()}`
+
+        return axios(finalConfig) as Promise<TypedAxiosResponse<T>>
     }
 
     setBlisApp(app: models.BlisAppBase): Promise<void> {
