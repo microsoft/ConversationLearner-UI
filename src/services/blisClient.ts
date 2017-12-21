@@ -31,25 +31,31 @@ export default class BlisClient {
             'Content-Type': 'application/json'
         }
     }
+    getAccessToken: () => string
+    // The memory is key is used by BLIS-SDK to access the memory partition for a particular user
+    // TODO: Need to further find out why this is required. (I would expect this to also partition on session)
+    getMemoryKey: () => string
 
-    // TODO: Remove after I find out where this is used and why it's needed
-    // Blis service doesn't use the key, but it seems the BLIS-SDK relies on it for certain operations
-    // Removing it will break teach/chat sessions
-    key: string
-
-    constructor(baseUrl: string, getAccessToken: () => string, defaultHeaders?: { [x: string]: string }) {
+    constructor(baseUrl: string, getAccessToken: () => string, getMemoryKey: () => string, defaultHeaders?: { [x: string]: string }) {
         this.baseUrl = baseUrl
+        this.getAccessToken = getAccessToken
+        this.getMemoryKey = getMemoryKey
         this.defaultConfig.headers = { ...this.defaultConfig.headers, ...defaultHeaders }
     }
 
     send<T = any>(config: AxiosRequestConfig) {
         const joinCharacter = /\?/g.test(config.url) ? '&' : '?'
-        const urlWithKey = `${config.url}${joinCharacter}key=${this.key}`
-        return axios({
+        const urlWithKey = `${config.url}${joinCharacter}key=${this.getMemoryKey()}`
+
+        const finalConfig = {
             ...this.defaultConfig,
             ...config,
             url: urlWithKey
-        }) as Promise<TypedAxiosResponse<T>>
+        }
+
+        finalConfig.headers.Authorization = `Bearer ${this.getAccessToken()}`
+
+        return axios(finalConfig) as Promise<TypedAxiosResponse<T>>
     }
 
     setBlisApp(app: models.BlisAppBase): Promise<void> {
