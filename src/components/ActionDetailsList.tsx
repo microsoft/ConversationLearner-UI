@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
 import { connect } from 'react-redux';
-import { ActionBase, ModelUtils } from 'blis-models'
+import { ActionBase } from 'blis-models'
 import { State } from '../types'
 import * as OF from 'office-ui-fabric-react';
 import { onRenderDetailsHeader } from './ToolTips'
@@ -109,8 +109,8 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             maxWidth: 400,
             isResizable: true,
             isMultiline: true,
-            getSortValue: action => action.payload.toLowerCase(),
-            render: (action, component) => <span className='ms-font-m-plus' onClick={() => component.props.onSelectAction(action)}>{ModelUtils.GetPrimaryPayload(action)}</span>
+            getSortValue: action => ActionBase.GetPayload(action),
+            render: (action, component) => <span className="ms-font-m-plus" onClick={() => component.props.onSelectAction(action)}>{ActionBase.GetPayload(action)}</span>
         },
         {
             key: 'actionArguments',
@@ -123,12 +123,12 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             maxWidth: 300,
             isResizable: true,
             // TODO: There was no value in previous implementation, what should it be?
-            getSortValue: action => ModelUtils.GetArguments(action).join('').toLowerCase(),
+            getSortValue: action => ActionBase.GetArguments(action).join('').toLowerCase(),
             render: action => {
-                const args = ModelUtils.GetArguments(action);
+                const args = ActionBase.GetArguments(action);
                 return (!args || args.length === 0)
-                    ? <span className="ms-Icon ms-Icon--Remove notFoundIcon" aria-hidden="true"></span>
-                    : args.map((argument, i) => <span className='ms-ListItem-primaryText' key={i}>{argument}</span>)
+                    ? <span className="ms-Icon ms-Icon--Remove notFoundIcon" aria-hidden="true"/>
+                    : args.map((argument, i) => <div className="ms-ListItem-primaryText" key={i}>{argument}</div>)
             }
         },
         {
@@ -161,7 +161,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             render: (action, component) => action.requiredEntities.length === 0
                 ? <span className="ms-Icon ms-Icon--Remove blis-icon" aria-hidden="true"></span>
                 : action.requiredEntities.map(entityId => {
-                    const entity = component.props.entities.find(e => e.entityId == entityId)
+                    const entity = component.props.entities.find(e => e.entityId === entityId)
                     return (
                         <div className='ms-ListItem is-selectable' key={entityId}>
                             <span className='ms-ListItem-primaryText'>{entity.entityName}</span>

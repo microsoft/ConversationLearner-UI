@@ -5,7 +5,8 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { fetchBotInfoAsync } from '../../actions/fetchActions'
 import { Modal } from 'office-ui-fabric-react/lib/Modal'
-import { ActionBase, ActionTypes, ActionMetaData, BlisAppBase, EntityBase } from 'blis-models'
+import { ActionBase, ActionTypes, ActionMetaData, ActionPayload, 
+    ActionArgument, BlisAppBase, EntityBase } from 'blis-models'
 import ConfirmDeleteModal from './ConfirmDeleteModal'
 import EntityCreatorEditor from './EntityCreatorEditor'
 import ActionPayloadEditor, { utilities as EditorUtilities, IMention } from './ActionPayloadEditor'
@@ -76,7 +77,9 @@ const actionTypeOptions = Object.values(ActionTypes)
 
 interface ComponentState {
     apiOptions: OF.IDropdownOption[]
+    cardOptions: OF.IDropdownOption[]
     selectedApiOptionKey: string | number | null
+    selectedCardOptionKey: string | number  | null
     isEditing: boolean
     isEntityEditorModalOpen: boolean
     isConfirmDeleteModalOpen: boolean
@@ -89,13 +92,16 @@ interface ComponentState {
     requiredEntityTags: OF.ITag[]
     negativeEntityTags: OF.ITag[]
     mentionEditorState: EditorState
+    argumentEditorStates: {[slot: string]: EditorState }
     editorKey: number
     isTerminal: boolean
 }
 
 const initialState: ComponentState = {
     apiOptions: [],
+    cardOptions: [],
     selectedApiOptionKey: null,
+    selectedCardOptionKey: null,
     isEditing: false,
     isEntityEditorModalOpen: false,
     isConfirmDeleteModalOpen: false,
@@ -108,6 +114,7 @@ const initialState: ComponentState = {
     requiredEntityTags: [],
     negativeEntityTags: [],
     mentionEditorState: EditorState.createEmpty(),
+    argumentEditorStates: {},
     editorKey: 0,
     isTerminal: true
 }
@@ -131,9 +138,17 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 text: v
             }))
 
+        const templates = (botInfo && botInfo.templates || [])
+        const cardOptions = templates.map<OF.IDropdownOption>(v =>
+            ({
+                key: v.name,
+                text: v.name
+            }))
+
         this.openState = {
             ...initialState,
             apiOptions,
+            cardOptions,
             entityTags,
             isEditing: !!this.props.action
         }
@@ -181,7 +196,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                  */
                 const actionType = action.metadata.actionType
                 let payload = action.payload
-                let selectedApiOptionKey: string | null = null
+                let selectedApiOptionKey: string | null = null;
+                let selectedCardOptionKey: string | null = null;
 
                 if (actionType === ActionTypes.API_LOCAL) {
                     const splitPayload = action.payload.split(' ')
@@ -189,6 +205,18 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     payload = splitPayload.slice(1).join(' ')
                 }
 
+                let argumentEditorStates: {[slot: string]: EditorState } = {};
+                if (actionType === ActionTypes.CARD) {
+                    let actionPayload = JSON.parse(action.payload) as ActionPayload;
+                    selectedCardOptionKey = actionPayload.payload;
+                    for (let actionArgument of actionPayload.arguments) {
+                        let value = ContentState.createFromText(actionArgument.value);
+                        let argEditorState = EditorState.createWithContent(value);
+                        argumentEditorStates[actionArgument.parameter] = argEditorState;
+                    }
+                }
+
+                // LARSTODO - include arguements here
                 // TODO: If we allow to store raw state of editor then restoring it is very easy
                 // Currently there is issue where we don't know how to recreate the entities from the plain text
                 // const contentState = convertFromRaw(JSON.parse(action.payload))
@@ -260,7 +288,9 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     isPayloadValid: actionType === ActionTypes.API_LOCAL || action.payload.length !== 0,
                     selectedActionTypeOptionKey: action.metadata.actionType,
                     selectedApiOptionKey,
+                    selectedCardOptionKey,
                     mentionEditorState: editorState,
+                    argumentEditorStates: argumentEditorStates,
                     editorKey: this.state.editorKey + 1,
                     expectedEntityTags,
                     negativeEntityTags,
@@ -286,17 +316,39 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         })
     }
 
-    onClickSyncApi() {
+    onChangedCardOption = (cardOption: OF.IDropdownOption) => {
+        this.setState({
+            selectedCardOptionKey: cardOption.key
+        })
+    }
+
+    onClickSyncBotInfo() {
         this.props.fetchBotInfoAsync();
     }
 
     onClickSubmit = () => {
         const contentState = this.state.mentionEditorState.getCurrentContent()
+        // LARSTODO - process argumentEditorState
         // const rawContent = convertToRaw(contentState)
         let payload = contentState.getPlainText()
 
         if (this.state.selectedActionTypeOptionKey === ActionTypes.API_LOCAL) {
             payload = `${this.state.selectedApiOptionKey} ${payload}`
+        }
+
+        if (this.state.selectedActionTypeOptionKey === ActionTypes.CARD) {
+            let actionArguments: ActionArgument[] = [];
+            for (let parameter of Object.keys(this.state.argumentEditorStates)) {
+                let argPayload = this.state.argumentEditorStates[parameter].getCurrentContent().getPlainText();
+                actionArguments.push(new ActionArgument({parameter: parameter, value: argPayload}))
+            }
+            let actionPayload = new ActionPayload(
+                {
+                    payload: this.state.selectedCardOptionKey.toString(),
+                    arguments: actionArguments
+                }
+            )
+            payload = JSON.stringify(actionPayload);
         }
 
         const newOrEditedAction = new ActionBase({
@@ -378,7 +430,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         const isPayloadValid = actionTypeOption.key === ActionTypes.API_LOCAL
             ? true
             : this.state.mentionEditorState.getCurrentContent().hasText()
-
+        // LARSTODO - payload validity
         this.setState({
             isPayloadValid,
             selectedActionTypeOptionKey: actionTypeOption.key
@@ -465,24 +517,39 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         return <BlisTagItem key={props.index} {...renderProps}>{props.item.name}</BlisTagItem>
     }
 
-    onChangeMentionEditor = (editorState: EditorState) => {
+    onChangeMentionEditor = (editorState: EditorState, slot: string = null) => {
         const requiredEntityTagsFromPayload = EditorUtilities.getEntities(editorState).map(convertContentEntityToTag)
         // If we added entity to the payload which was already in the list of required entities remove it to avoid duplicates.
         const requiredEntityTags = this.state.requiredEntityTags.filter(tag => !requiredEntityTagsFromPayload.some(t => t.key === tag.key))
         const isPayloadValid = this.state.selectedActionTypeOptionKey === ActionTypes.API_LOCAL || editorState.getCurrentContent().hasText()
 
-        this.setState({
-            isPayloadValid,
-            mentionEditorState: editorState,
-            requiredEntityTagsFromPayload,
-            requiredEntityTags
-        })
+        if (!slot) {
+            this.setState({
+                isPayloadValid,
+                mentionEditorState: editorState,
+                requiredEntityTagsFromPayload,
+                requiredEntityTags
+            })            
+        } else {
+            let newArguments = {...this.state.argumentEditorStates}
+            newArguments[slot] = editorState;
+            this.setState({
+                isPayloadValid,
+                argumentEditorStates: newArguments,
+                requiredEntityTagsFromPayload,
+                requiredEntityTags
+            })
+        }
     }
 
     render() {
-        // Disable payload if action type is local api and we're editing existing action or there are no api callbacks
-        const isPayloadDisabled = this.state.selectedActionTypeOptionKey === ActionTypes.API_LOCAL
-            && (this.state.isEditing || this.state.apiOptions.length === 0)
+        // Disable payload if we're editing existing action and no API or CARD data available
+        const isPayloadDisabled = 
+            (this.state.selectedActionTypeOptionKey === ActionTypes.API_LOCAL
+                && (this.state.isEditing || this.state.apiOptions.length === 0))
+            ||
+            (this.state.selectedActionTypeOptionKey === ActionTypes.CARD
+                && (this.state.isEditing || this.state.cardOptions.length === 0));
 
         // Available Mentions: All entities - expected entity - required entities from payload - blocking entities
         const unavailableTags = [...this.state.expectedEntityTags, ...this.state.requiredEntityTagsFromPayload, ...this.state.negativeEntityTags]
@@ -527,7 +594,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                 <div className="blis-dropdownWithButton-buttoncontainer">
                                     <OF.PrimaryButton
                                         className="blis-dropdownWithButton-button"
-                                        onClick={() => this.onClickSyncApi()}
+                                        onClick={() => this.onClickSyncBotInfo()}
                                         ariaDescription="Refresh"
                                         text=""
                                         iconProps={{ iconName: 'Sync' }}
@@ -536,7 +603,51 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                             </div>
                             )}
 
-                        <div className={(this.state.isPayloadValid ? '' : 'editor--error')}>
+                            {this.state.selectedActionTypeOptionKey === ActionTypes.CARD
+                            && (<div>
+                                <TC.Dropdown
+                                    label="Template"
+                                    className="blis-dropdownWithButton-dropdown"
+                                    options={this.state.cardOptions}
+                                    onChanged={this.onChangedCardOption}
+                                    selectedKey={this.state.selectedCardOptionKey}
+                                    disabled={this.state.cardOptions.length === 0 || this.state.isEditing}
+                                    placeHolder={this.state.cardOptions.length === 0 ? 'NONE DEFINED' : 'Template name...'}
+                                    tipType={ToolTip.TipType.ACTION_CARD}
+                                    hasButton={true}
+                                />
+                                <div className="blis-dropdownWithButton-buttoncontainer">
+                                    <OF.PrimaryButton
+                                        className="blis-dropdownWithButton-button"
+                                        onClick={() => this.onClickSyncBotInfo()}
+                                        ariaDescription="Refresh"
+                                        text=""
+                                        iconProps={{ iconName: 'Sync' }}
+                                    />
+                                </div>
+                            </div>
+                            )}
+
+                            {this.state.selectedActionTypeOptionKey === ActionTypes.CARD && this.state.selectedCardOptionKey
+                            && (this.props.botInfo.templates.find(t => t.name === this.state.selectedCardOptionKey).entities.map(slot =>
+                                {
+                                    return (
+                                        <ActionPayloadEditor
+                                            label={slot}
+                                            allSuggestions={getMentionsAvailableForPayload}
+                                            editorState={this.state.argumentEditorStates[slot] || EditorState.createEmpty()}
+                                            key={this.state.editorKey + slot}
+                                            placeholder={'Arguments...'}
+                                            onChange={eState => this.onChangeMentionEditor(eState, slot)}
+                                            disabled={isPayloadDisabled}
+                                            tipType={ToolTip.TipType.ACTION_ARGUMENTS}
+                                        />
+                                    )
+                                })
+                            )}
+
+                        {this.state.selectedActionTypeOptionKey !== ActionTypes.CARD
+                        && (<div className={(this.state.isPayloadValid ? '' : 'editor--error')}>
                             <div>
                                 <ActionPayloadEditor
                                     label={this.state.selectedActionTypeOptionKey === ActionTypes.API_LOCAL ?
@@ -558,8 +669,10 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                     </p>
                                 </div>)}
                         </div>
+                        )}
 
-                        <div className="blis-action-creator--expected-entities">
+                        {this.state.selectedActionTypeOptionKey !== ActionTypes.CARD
+                        && (<div className="blis-action-creator--expected-entities">
                             <TC.TagPicker
                                 label="Expected Entity in Response..."
                                 onResolveSuggestions={(text, tags) => this.onResolveExpectedEntityTags(text, tags)}
@@ -576,6 +689,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                 tipType={ToolTip.TipType.ACTION_SUGGESTED}
                             />
                         </div>
+                        )}
+
                         <div className="blis-action-creator--required-entities">
                             <BlisTagPicker
                                 nonRemovableTags={this.state.requiredEntityTagsFromPayload}

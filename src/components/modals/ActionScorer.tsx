@@ -2,7 +2,6 @@ import * as React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { returntypeof } from 'react-redux-typescript';
-import { ModelUtils } from 'blis-models';
 import { State } from '../../types'
 import {
     BlisAppBase, TrainScorerStep, Memory, ScoredBase, ScoreInput, ScoreResponse,
@@ -67,7 +66,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             maxWidth: 500,
             isMultiline: true,
             isResizable: true,
-            render: action => <span className='ms-font-m-plus'>{ModelUtils.GetPrimaryPayload(action as ActionBase)}</span>
+            render: action => <span className='ms-font-m-plus'>{ActionBase.GetPayload(action as ActionBase)}</span>
         },
         {
             key: 'actionArguments',
@@ -80,13 +79,13 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             maxWidth: 300,
             isResizable: true,
             render: action => {
-                const args = ModelUtils.GetArguments(action as ActionBase)
+                const args = ActionBase.GetArguments(action as ActionBase)
                 return (!args)
                     ? <span className="ms-Icon ms-Icon--Remove notFoundIcon" aria-hidden="true" />
                     : <OF.List
                         items={args}
                         onRenderCell={(item, index) => (
-                            <span className='ms-ListItem-primaryText'>{item}</span>
+                            <div className='ms-ListItem-primaryText'>{item}</div>
                         )}
                     />
             }

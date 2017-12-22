@@ -9,6 +9,7 @@ import './ToolTips.css'
 export enum TipType {
     ACTION_API = 'actionAPI',
     ACTION_ARGUMENTS = 'actionArguments',
+    ACTION_CARD = 'actionCard',
     ACTION_ENTITIES = 'actionEntities',
     ACTION_NEGATIVE = 'negativeEntities',
     ACTION_REQUIRED = 'requiredEntities',
@@ -141,6 +142,8 @@ export function GetTip(tipType: string) {
             )
         case TipType.ACTION_ARGUMENTS:
             return render(FM.TOOLTIP_ACTION_ARGUMENTS_TITLE, [FM.TOOLTIP_ACTION_ARGUMENTS])
+        case TipType.ACTION_CARD:
+            return render(FM.TOOLTIP_ACTION_CARD_TITLE, [FM.TOOLTIP_ACTION_CARD])
         case TipType.ACTION_ENTITIES:
             return (
                 <div>

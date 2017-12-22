@@ -104,16 +104,16 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
         for (let round of this.props.trainDialog.rounds) {
             let userText = round.extractorStep.textVariations[0].text;
             let id = `${SenderType.User}:${roundNum}:0`;
-            let userActivity = { id: id, from: { id: this.props.user.id, name: this.props.user.name }, type: "message", text: userText } as Activity;
+            let userActivity = { id: id, from: { id: this.props.user.id, name: this.props.user.name }, type: 'message', text: userText } as Activity;
             activities.push(userActivity);
 
             let scoreNum = 0;
             for (let scorerStep of round.scorerSteps) {
                 let labelAction = scorerStep.labelAction;
-                let action = this.props.actions.filter((a: ActionBase) => a.actionId == labelAction)[0];
-                let payload = action ? action.payload : "ERROR: Missing Action";
+                let action = this.props.actions.filter((a: ActionBase) => a.actionId === labelAction)[0];
+                let payload = action ? action.payload : 'ERROR: Missing Action';
                 id = `${SenderType.Bot}:${roundNum}:${scoreNum}`
-                let botActivity = { id: id, from: { id: "BlisTrainer", name: "BlisTrainer" }, type: "message", text: payload } as Activity;
+                let botActivity = { id: id, from: { id: 'BlisTrainer', name: 'BlisTrainer' }, type: 'message', text: payload } as Activity;
                 activities.push(botActivity);
                 scoreNum++;
             }
@@ -127,7 +127,7 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
             <Modal
                 isOpen={this.props.open && this.props.error == null}
                 isBlocking={true}
-                containerClassName='blis-modal blis-modal--large blis-modal--teach'>
+                containerClassName="blis-modal blis-modal--large blis-modal--teach">
                 <div className="blis-modal_body">
                     <div className="blis-chatmodal">
                         <div className="blis-chatmodal_webchat">
