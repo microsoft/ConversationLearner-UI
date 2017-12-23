@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "adaptivecards": "^1.0.0-beta9",
     "axios": "^0.16.2",
     "blis-models": "^0.82.0",
     "blis-webchat": "^0.18.0",

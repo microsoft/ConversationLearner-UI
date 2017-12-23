@@ -9,6 +9,7 @@ import { ActionBase, ActionTypes, ActionMetaData, ActionPayload,
     ActionArgument, BlisAppBase, EntityBase } from 'blis-models'
 import ConfirmDeleteModal from './ConfirmDeleteModal'
 import EntityCreatorEditor from './EntityCreatorEditor'
+import AdaptiveCardViewer from './AdaptiveCardViewer'
 import ActionPayloadEditor, { utilities as EditorUtilities, IMention } from './ActionPayloadEditor'
 import { State } from '../../types'
 import * as ToolTip from '../ToolTips'
@@ -82,6 +83,7 @@ interface ComponentState {
     selectedCardOptionKey: string | number  | null
     isEditing: boolean
     isEntityEditorModalOpen: boolean
+    isCardViewerModalOpen: boolean
     isConfirmDeleteModalOpen: boolean
     isPayloadFocused: boolean
     isPayloadValid: boolean
@@ -104,6 +106,7 @@ const initialState: ComponentState = {
     selectedCardOptionKey: null,
     isEditing: false,
     isEntityEditorModalOpen: false,
+    isCardViewerModalOpen: false,
     isConfirmDeleteModalOpen: false,
     isPayloadFocused: false,
     isPayloadValid: false,
@@ -326,6 +329,28 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         this.props.fetchBotInfoAsync();
     }
 
+    onClickViewCard() {
+        this.setState({
+            isCardViewerModalOpen: true
+        })
+    }
+
+    onCloseCardViewer = () => {
+        this.setState({
+            isCardViewerModalOpen: false
+        })
+    }
+
+    getActionArguments(): ActionArgument[] {
+
+        let actionArguments: ActionArgument[] = [];
+        for (let parameter of Object.keys(this.state.argumentEditorStates)) {
+            let argPayload = this.state.argumentEditorStates[parameter].getCurrentContent().getPlainText();
+            actionArguments.push(new ActionArgument({parameter: parameter, value: argPayload}))
+        }
+        return actionArguments;
+    }
+
     onClickSubmit = () => {
         const contentState = this.state.mentionEditorState.getCurrentContent()
         // LARSTODO - process argumentEditorState
@@ -345,7 +370,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             let actionPayload = new ActionPayload(
                 {
                     payload: this.state.selectedCardOptionKey.toString(),
-                    arguments: actionArguments
+                    arguments: this.getActionArguments()
                 }
             )
             payload = JSON.stringify(actionPayload);
@@ -625,6 +650,15 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                         iconProps={{ iconName: 'Sync' }}
                                     />
                                 </div>
+                                <div className="blis-dropdownWithButton-buttoncontainer">
+                                    <OF.PrimaryButton
+                                        className="blis-dropdownWithButton-button"
+                                        onClick={() => this.onClickViewCard()}
+                                        ariaDescription="Refresh"
+                                        text=""
+                                        iconProps={{ iconName: 'RedEye' }}
+                                    />
+                                </div>
                             </div>
                             )}
 
@@ -788,8 +822,14 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     open={this.state.isEntityEditorModalOpen}
                     entity={null}
                     handleClose={() => this.onCloseEntityEditor()}
-                    handleOpenDeleteModal={() => { }}
+                    handleOpenDeleteModal={() => {}}
                     entityTypeFilter={null}
+                />
+                <AdaptiveCardViewer
+                    open={this.state.isCardViewerModalOpen && this.state.selectedCardOptionKey != null}
+                    onDismiss={() => this.onCloseCardViewer()}
+                    template={this.state.selectedCardOptionKey && this.props.botInfo.templates.find(t => t.name === this.state.selectedCardOptionKey).body}
+                    actionArguments={this.getActionArguments()}
                 />
             </Modal>
         );
