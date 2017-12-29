@@ -2,10 +2,7 @@ import { AT, ActionObject, ErrorType } from '../types'
 import { Dispatch } from 'redux'
 import { BlisAppBase, EntityBase, ActionBase, Session, Teach, TrainDialog } from 'blis-models'
 import { setErrorDisplay } from './displayActions'
-import BlisClient from '../services/blisClient'
-import ApiConfig from '../epics/config'
-
-const blisClient = new BlisClient(ApiConfig.BlisClientEnpoint, () => '')
+import * as ClientFactory from '../services/clientFactory'
 
 export const deleteBLISApplicationAsync = (key: string, blisApp: BlisAppBase): ActionObject => {
 
@@ -53,7 +50,6 @@ export const deleteEntityFulfilled = (key: string, deletedEntityId: string, curr
 }
 
 export const deleteActionAsync = (key: string, GUID: string, action: ActionBase, currentAppId: string): ActionObject => {
-
     return {
         type: AT.DELETE_ACTION_ASYNC,
         actionGUID: GUID,
@@ -70,7 +66,6 @@ export const deleteActionFulfilled = (actionGUID: string): ActionObject => {
 }
 
 export const deleteChatSessionAsync = (key: string, session: Session, currentAppId: string): ActionObject => {
-
     return {
         type: AT.DELETE_CHAT_SESSION_ASYNC,
         key: key,
@@ -87,7 +82,6 @@ export const deleteChatSessionFulfilled = (sessionId: string): ActionObject => {
 }
 
 export const deleteTeachSessionAsync = (key: string, teachSession: Teach, currentAppId: string, save: boolean): ActionObject => {
-
     return {
         type: AT.DELETE_TEACH_SESSION_ASYNC,
         key: key,
@@ -131,6 +125,7 @@ export const deleteTrainDialogFulfilled = (trainDialogId: string): ActionObject 
 export const deleteTrainDialogThunkAsync = (appId: string, trainDialog: TrainDialog) => {
     return async (dispatch: Dispatch<any>) => {
         dispatch(deleteTrainDialogAsync(trainDialog, appId))
+        const blisClient = ClientFactory.getInstance()
 
         try {
             await blisClient.trainDialogsDelete(appId, trainDialog.trainDialogId)
@@ -168,6 +163,7 @@ export const deleteLogDialogRejected = (): ActionObject => {
 export const deleteLogDialogThunkAsync = (appId: string, logDialogId: string) => {
     return async (dispatch: Dispatch<any>) => {
         dispatch(deleteLogDialogAsync(logDialogId, appId))
+        const blisClient = ClientFactory.getInstance()
 
         try {
             await blisClient.logDialogsDelete(appId, logDialogId)
