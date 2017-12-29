@@ -81,7 +81,15 @@ class TeachWindow extends React.Component<Props, ComponentState> {
         if (activity.type === 'message') {
             this.props.addMessageToTeachConversationStack(activity.text)
 
-            let userInput = new UserInput({ text: activity.text });
+            let userInput;
+            // Check if button submit info
+            if (!activity.text && activity.value && activity.value['submit']) {
+                userInput = new UserInput({ text: activity.value['submit'] });
+            } 
+            // Otherwise use text
+            else {
+                userInput = new UserInput({ text: activity.text });
+            }
             const teachSession = this.props.teachSessions.current
             if (!teachSession) {
                 throw new Error(`Current teach session is not defined. This may be due to race condition where you attempted to chat with the bot before the teach session has been created.`)

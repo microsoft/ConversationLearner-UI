@@ -346,7 +346,9 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         let actionArguments: ActionArgument[] = [];
         for (let parameter of Object.keys(this.state.argumentEditorStates)) {
             let argPayload = this.state.argumentEditorStates[parameter].getCurrentContent().getPlainText();
-            actionArguments.push(new ActionArgument({parameter: parameter, value: argPayload}))
+            if (argPayload.length > 0) {
+                actionArguments.push(new ActionArgument({parameter: parameter, value: argPayload}))
+            }
         }
         return actionArguments;
     }
@@ -443,7 +445,9 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
     onCloseEntityEditor = () => {
         this.setState({
-            isEntityEditorModalOpen: false
+            isEntityEditorModalOpen: false,
+            selectedApiOptionKey: null,
+            selectedCardOptionKey: null
         })
     }
 
@@ -663,16 +667,16 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                             )}
 
                             {this.state.selectedActionTypeOptionKey === ActionTypes.CARD && this.state.selectedCardOptionKey
-                            && (this.props.botInfo.templates.find(t => t.name === this.state.selectedCardOptionKey).entities.map(slot =>
+                            && (this.props.botInfo.templates.find(t => t.name === this.state.selectedCardOptionKey).variables.map(slot =>
                                 {
                                     return (
                                         <ActionPayloadEditor
-                                            label={slot}
+                                            label={slot.key}
                                             allSuggestions={getMentionsAvailableForPayload}
-                                            editorState={this.state.argumentEditorStates[slot] || EditorState.createEmpty()}
-                                            key={this.state.editorKey + slot}
-                                            placeholder={'Arguments...'}
-                                            onChange={eState => this.onChangeMentionEditor(eState, slot)}
+                                            editorState={this.state.argumentEditorStates[slot.key] || EditorState.createEmpty()}
+                                            key={this.state.editorKey + slot.key}
+                                            placeholder={''}
+                                            onChange={eState => this.onChangeMentionEditor(eState, slot.key)}
                                             disabled={isPayloadDisabled}
                                             tipType={ToolTip.TipType.ACTION_ARGUMENTS}
                                         />
@@ -828,8 +832,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 <AdaptiveCardViewer
                     open={this.state.isCardViewerModalOpen && this.state.selectedCardOptionKey != null}
                     onDismiss={() => this.onCloseCardViewer()}
-                    template={this.state.selectedCardOptionKey && this.props.botInfo.templates.find(t => t.name === this.state.selectedCardOptionKey).body}
-                    actionArguments={this.getActionArguments()}
+                    template={this.state.selectedCardOptionKey && this.props.botInfo.templates.find(t => t.name === this.state.selectedCardOptionKey)}
+                    actionArguments={this.state.isCardViewerModalOpen && this.getActionArguments()}
                 />
             </Modal>
         );

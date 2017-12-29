@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { clearErrorDisplay } from '../../actions/displayActions'
-import { ActionArgument } from 'blis-models'
+import { ActionArgument, Template } from 'blis-models'
 import { State } from '../../types'
 import * as AdaptiveCards from 'adaptivecards';
 import { injectIntl, InjectedIntlProps } from 'react-intl'
@@ -26,7 +26,7 @@ var renderOptions = {
 
 interface ReceivedProps {
     open: boolean;
-    template: any;
+    template: Template;
     actionArguments: ActionArgument[]
     onDismiss: () => void;
 }
@@ -38,7 +38,7 @@ class AdaptiveCardViewer extends React.Component<Props, {}> {
 
     renderTemplate(): any {
         
-        let templateString = JSON.stringify(this.props.template);
+        let templateString = JSON.stringify(this.props.template.body);
 
         // Substitute agrument values
         for (let actionArgument of this.props.actionArguments) {
@@ -46,10 +46,20 @@ class AdaptiveCardViewer extends React.Component<Props, {}> {
                 templateString = templateString.replace(new RegExp(`{{${actionArgument.parameter}}}`, 'g'), actionArgument.value);
             }
         }
+
+        // Now replace any images that haven't been substituted with a dummy image
+        for (let templateVar of this.props.template.variables) {
+            if (templateVar.type === 'Image') {
+                templateString = templateString.replace(new RegExp(`{{${templateVar.key}}}`, 'g'), 'https://c1.staticflickr.com/9/8287/29517736620_3184b66ec8.jpg');
+            }
+        }
         return JSON.parse(templateString);
     }
 
     render() {
+        if (!this.props.open || !this.props.template) {
+            return null;
+        }
         let template = this.renderTemplate();
         let card = AdaptiveCards.renderCard(template, renderOptions);
         return (

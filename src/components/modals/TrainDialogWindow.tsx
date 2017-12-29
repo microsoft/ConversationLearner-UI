@@ -6,8 +6,9 @@ import { PrimaryButton, DefaultButton } from 'office-ui-fabric-react';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { State } from '../../types';
 import Webchat from '../Webchat'
+import * as BB from 'botbuilder-core';
 import TrainDialogAdmin from './TrainDialogAdmin'
-import { BlisAppBase, ActionBase, TrainDialog } from 'blis-models'
+import { BlisAppBase, ActionBase, TrainDialog, ActionTypes, ActionPayload } from 'blis-models'
 import { deleteTrainDialogThunkAsync } from '../../actions/deleteActions'
 import { fetchApplicationTrainingStatusThunkAsync } from '../../actions/fetchActions'
 // TODO: Investigate if this can be removed in favor of local state
@@ -84,7 +85,7 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
     // which means this should not ever be called and whatever it's doing now is likely unnecessary
     onWebChatPostActivity(activity: Activity) {
         console.log(`post activity: `, activity)
-        if (activity.type === "message") {
+        if (activity.type === 'message') {
             this.props.addMessageToChatConversationStack(activity)
         }
     }
@@ -93,6 +94,33 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
         this.setState({
             selectedActivity: activity
         })
+    }
+
+    // LARSTODO - really should store full activity in logs, as templates may change
+    // so not a good reflection of what was actually shown to the user
+    renderCard(action: ActionBase, id: string): Activity {
+
+        let actionPayload = JSON.parse(action.payload) as ActionPayload;
+        let template = this.props.templates.find(t => t.name === actionPayload.payload);
+
+        if (!template) {
+            return {id: id, from: { id: 'BlisTrainer', name: 'BlisTrainer' }, type: 'message', 
+                text: `ERROR: Can't find template called - ${actionPayload.payload}` } as Activity;
+        }
+
+        let templateString = JSON.stringify(template.body);
+
+        // Substitute argument values
+        for (let actionArgument of actionPayload.arguments) {
+            if (actionArgument) {
+                templateString = templateString.replace(new RegExp(`{{${actionArgument.parameter}}}`, 'g'), actionArgument.value);
+            }
+        }
+
+        // Render to activity
+        const attachment = BB.CardStyler.adaptiveCard(JSON.parse(templateString));
+        const message = BB.MessageStyler.attachment(attachment);
+        return {...message, id: id, from: { id: 'BlisTrainer', name: 'BlisTrainer' }, type: 'message', text: null } as Activity;
     }
 
     generateHistory(): Activity[] {
@@ -113,7 +141,12 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
                 let action = this.props.actions.filter((a: ActionBase) => a.actionId === labelAction)[0];
                 let payload = action ? action.payload : 'ERROR: Missing Action';
                 id = `${SenderType.Bot}:${roundNum}:${scoreNum}`
-                let botActivity = { id: id, from: { id: 'BlisTrainer', name: 'BlisTrainer' }, type: 'message', text: payload } as Activity;
+                let botActivity = null;
+                if (action.metadata && action.metadata.actionType === ActionTypes.CARD) {
+                    botActivity = this.renderCard(action, id);
+                 } else {
+                    botActivity = { id: id, from: { id: 'BlisTrainer', name: 'BlisTrainer' }, type: 'message', text: payload } as Activity;
+                }
                 activities.push(botActivity);
                 scoreNum++;
             }
@@ -205,7 +238,8 @@ const mapStateToProps = (state: State) => {
     return {
         user: state.user,
         error: state.error.error,
-        actions: state.actions
+        actions: state.actions,
+        templates: state.bot.botInfo.templates
     }
 }
 
