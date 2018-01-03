@@ -17,7 +17,7 @@ import ActionCreatorEditor from './ActionCreatorEditor'
 import { onRenderDetailsHeader } from '../ToolTips'
 import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../react-intl-messages'
-import AdaptiveCardViewer from './AdaptiveCardViewer'
+import AdaptiveCardViewer from './AdaptiveCardViewer/AdaptiveCardViewer'
 
 const ACTION_BUTTON = 'action_button';
 
@@ -536,24 +536,6 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         // Add null for action createtion button at end
         return scoredItems;
     }
-
-   /*LARSDELETE getActionArguments(action: Action) : ActionArgument[] {
-
-        let actionPayload = ActionBase.GetArgumentValues(this.state.cardViewerAction);
-        actionPayload.
-        if (template) {
-            let actionArguments: ActionArgument[] = [];
-            for (let variable of template.variables) {
-                let memory = this.props.memories.find(m => m.entityName == variable.key);
-                if (memory) {
-                    let value = memory.entityValues.map(ev => ev.displayText).join();
-                    actionArguments.push(new ActionArgument({parameter: variable.key, value: value}))
-                }
-            }
-            return actionArguments;
-        }
-        return [];
-    }*/
 
     render() {
         // In teach mode, hide scores after selection

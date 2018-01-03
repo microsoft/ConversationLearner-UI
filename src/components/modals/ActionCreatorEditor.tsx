@@ -9,7 +9,7 @@ import { ActionBase, ActionTypes, ActionMetaData, ActionPayload,
     ActionArgument, BlisAppBase, EntityBase } from 'blis-models'
 import ConfirmDeleteModal from './ConfirmDeleteModal'
 import EntityCreatorEditor from './EntityCreatorEditor'
-import AdaptiveCardViewer from './AdaptiveCardViewer'
+import AdaptiveCardViewer from './AdaptiveCardViewer/AdaptiveCardViewer'
 import ActionPayloadEditor, { utilities as EditorUtilities, IMention } from './ActionPayloadEditor'
 import { State } from '../../types'
 import * as ToolTip from '../ToolTips'

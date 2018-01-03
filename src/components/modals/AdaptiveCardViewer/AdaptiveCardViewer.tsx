@@ -1,19 +1,19 @@
 import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
+//LARSTEMPimport ScopedStyle, { createStyleSheet } from 'react-scoped-style';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
-import { clearErrorDisplay } from '../../actions/displayActions'
+import { clearErrorDisplay } from '../../../actions/displayActions'
 import { ActionArgument, Template } from 'blis-models'
-import { State } from '../../types'
+import { State } from '../../../types'
 import * as AdaptiveCards from 'adaptivecards';
 import { injectIntl, InjectedIntlProps } from 'react-intl'
+var hostconfig = require('./AdaptiveCardHostConfig.json')
 
 var renderOptions = {
         // a Host Config defines the style and behavior of all cards
-        hostConfig: {
-            'fontFamily': 'Segoe UI, Helvetica Nue, sans-serif'
-        },
+        hostConfig: hostconfig,
     
         // the action handler is invoked when actions are pressed
         onExecuteAction: (action: any) => { alert('Ow!'); },
@@ -67,9 +67,11 @@ class AdaptiveCardViewer extends React.Component<Props, {}> {
                 isOpen={this.props.open}
                 onDismiss={this.onDismiss}
                 isBlocking={false}
-                containerClassName="blis-modal blis-modal--small blis-modal--border"
+                containerClassName="blis-modal blis-modal--border"
             >
-              <div dangerouslySetInnerHTML={{__html: card.outerHTML}} />
+               <div className="wc-app wc-card wc-adaptive-card">
+                    <div dangerouslySetInnerHTML={{__html: card.outerHTML}} />
+                </div>
             </Modal>
         );
     }
