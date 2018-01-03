@@ -123,9 +123,9 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             maxWidth: 300,
             isResizable: true,
             // TODO: There was no value in previous implementation, what should it be?
-            getSortValue: action => ActionBase.GetArguments(action).join('').toLowerCase(),
+            getSortValue: action => ActionBase.GetActionArguments(action).map(aa => aa.parameter).join('').toLowerCase(),
             render: action => {
-                const args = ActionBase.GetArguments(action);
+                const args = ActionBase.GetActionArguments(action).map(aa => `${aa.parameter}: ${aa.value}`);;
                 return (!args || args.length === 0)
                     ? <span className="ms-Icon ms-Icon--Remove notFoundIcon" aria-hidden="true"/>
                     : args.map((argument, i) => <div className="ms-ListItem-primaryText" key={i}>{argument}</div>)

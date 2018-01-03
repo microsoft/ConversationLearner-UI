@@ -5,7 +5,8 @@ import { returntypeof } from 'react-redux-typescript';
 import { State } from '../../types'
 import {
     BlisAppBase, TrainScorerStep, Memory, ScoredBase, ScoreInput, ScoreResponse,
-    ActionBase, ScoredAction, UnscoredAction, ScoreReason, DialogType, ActionTypes
+    ActionBase, ScoredAction, UnscoredAction, ScoreReason, DialogType, ActionTypes,
+    Template, ActionArgument
 } from 'blis-models';
 import { createActionAsync } from '../../actions/createActions'
 import { toggleAutoTeach } from '../../actions/teachActions'
@@ -73,7 +74,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                     {action.metadata.actionType === ActionTypes.CARD &&
                         <OF.PrimaryButton
                             className="blis-dropdownWithButton-button"
-                            onClick={() => component.onClickViewCard(ActionBase.GetPayload(action))}
+                            onClick={() => component.onClickViewCard(action)}
                             ariaDescription="Refresh"
                             text=""
                             iconProps={{ iconName: 'RedEye' }}
@@ -95,7 +96,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             maxWidth: 300,
             isResizable: true,
             render: action => {
-                const args = ActionBase.GetArguments(action as ActionBase)
+                const args = ActionBase.GetActionArguments(action as ActionBase).map(aa => `${aa.parameter}: ${aa.value}`);
                 return (!args)
                     ? <span className="ms-Icon ms-Icon--Remove notFoundIcon" aria-hidden="true" />
                     : <OF.List
@@ -186,7 +187,7 @@ interface ComponentState {
     sortColumn: OF.IColumn;
     haveEdited: boolean;
     newAction: ActionBase;
-    cardViewerTemplateName: string;
+    cardViewerAction: ActionBase;
 }
 
 class ActionScorer extends React.Component<Props, ComponentState> {
@@ -202,7 +203,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             sortColumn: columns[3], // "score"
             haveEdited: false,
             newAction: null,
-            cardViewerTemplateName: null
+            cardViewerAction: null
         };
         this.handleActionSelection = this.handleActionSelection.bind(this);
         this.handleDefaultSelection = this.handleDefaultSelection.bind(this);
@@ -240,14 +241,14 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         this.autoSelect();
     }
 
-    onClickViewCard(templateName: string) {
+    onClickViewCard(action: ActionBase) {
         this.setState({
-            cardViewerTemplateName: templateName
+            cardViewerAction: action
         })
     }
     onCloseCardViewer = () => {
         this.setState({
-            cardViewerTemplateName: null
+            cardViewerAction: null
         })
     }
 
@@ -536,6 +537,24 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         return scoredItems;
     }
 
+   /*LARSDELETE getActionArguments(action: Action) : ActionArgument[] {
+
+        let actionPayload = ActionBase.GetArgumentValues(this.state.cardViewerAction);
+        actionPayload.
+        if (template) {
+            let actionArguments: ActionArgument[] = [];
+            for (let variable of template.variables) {
+                let memory = this.props.memories.find(m => m.entityName == variable.key);
+                if (memory) {
+                    let value = memory.entityValues.map(ev => ev.displayText).join();
+                    actionArguments.push(new ActionArgument({parameter: variable.key, value: value}))
+                }
+            }
+            return actionArguments;
+        }
+        return [];
+    }*/
+
     render() {
         // In teach mode, hide scores after selection
         // so they can't be reselected for non-terminal actions
@@ -550,6 +569,13 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             scores.push(ACTION_BUTTON);
         }
 
+        let template: Template = null;
+        let actionArguments: ActionArgument[] = [];
+        if (this.state.cardViewerAction) {
+            let actionPayload = ActionBase.GetPayload(this.state.cardViewerAction);
+            template = this.props.templates.find((t) => t.name === actionPayload);
+            actionArguments = ActionBase.GetActionArguments(this.state.cardViewerAction);
+        }
         return (
             <div>
                 <OF.DetailsList
@@ -574,12 +600,11 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                     onClickDelete={action => { }}
                     onClickSubmit={action => this.onClickSubmitActionEditor(action)}
                 />
-
                 <AdaptiveCardViewer
-                    open={this.state.cardViewerTemplateName != null}
+                    open={this.state.cardViewerAction != null}
                     onDismiss={() => this.onCloseCardViewer()}
-                    template={this.props.templates.find(t => t.name === this.state.cardViewerTemplateName)}
-                    actionArguments={[]}  // LARSTODO
+                    template={template}
+                    actionArguments={actionArguments} 
                 />
             </div>
         )

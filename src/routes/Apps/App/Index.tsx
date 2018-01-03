@@ -72,8 +72,20 @@ class Index extends React.Component<Props, ComponentState> {
 
         // Check for missing APIs
         let apiActions = actions.filter(a => a.metadata && a.metadata.actionType === ActionTypes.API_LOCAL);
-        let missingApis = apiActions.filter(a => !this.props.botInfo.callbacks.find(cb => cb.name === ActionBase.GetPayload(a)));
+        let missingApis = apiActions.filter(a => !this.props.botInfo.callbacks || !this.props.botInfo.callbacks.find(cb => cb.name === ActionBase.GetPayload(a)));
         errors = missingApis.map(a => `Action references API "${ActionBase.GetPayload(a)}" not contained by running Bot`);
+
+        // Check for bad templates
+        let badTemplates = this.props.botInfo.templates.filter(t => t.validationError != null);
+        errors = errors.concat(badTemplates.map(a => a.validationError));
+
+        // Check for missing templates
+        let cardActions = actions.filter(a => a.metadata && a.metadata.actionType === ActionTypes.CARD);
+        let missingTemplates = cardActions.filter(a => !this.props.botInfo.templates || !this.props.botInfo.templates.find(cb => cb.name === ActionBase.GetPayload(a)));
+        errors = missingTemplates.map(a => `Action references Template "${ActionBase.GetPayload(a)}" not contained by running Bot`);
+ 
+        // Check for missing entities
+
         return errors;
     }
 
