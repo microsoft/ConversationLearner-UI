@@ -1,6 +1,7 @@
 import * as models from 'blis-models'
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios'
 import { AppInput } from '../types/models';
+import { Activity } from 'botframework-directlinejs';
 
 interface TypedAxiosResponse<T> extends AxiosResponse {
     data: T
@@ -245,6 +246,12 @@ export default class BlisClient {
             data: userInput
         })
             .then(response => response.data)
+    }
+
+    history(appId: string, trainDialogId: string, userName: string, userId: string): Promise<Activity[]> {
+        return this.send<Activity[]>({
+            url: `${this.baseUrl}/app/${appId}/traindialog/${trainDialogId}/history?username=${userName}&userid=${userId}`
+        }).then(response => response.data)
     }
 
     logDialogs(appId: string): Promise<models.LogDialog[]> {

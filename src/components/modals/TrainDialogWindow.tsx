@@ -6,15 +6,13 @@ import { PrimaryButton, DefaultButton } from 'office-ui-fabric-react';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { State } from '../../types';
 import Webchat from '../Webchat'
-import * as BB from 'botbuilder-core';
 import TrainDialogAdmin from './TrainDialogAdmin'
-import { BlisAppBase, ActionBase, TrainDialog, ActionTypes, ActionPayload } from 'blis-models'
+import { BlisAppBase, ActionBase, TrainDialog, ActionPayload } from 'blis-models'
 import { deleteTrainDialogThunkAsync } from '../../actions/deleteActions'
 import { fetchApplicationTrainingStatusThunkAsync } from '../../actions/fetchActions'
 // TODO: Investigate if this can be removed in favor of local state
 import { addMessageToChatConversationStack } from '../../actions/displayActions'
 import { Activity } from 'botframework-directlinejs';
-import { SenderType } from '../../types/const';
 import ConfirmDeleteModal from './ConfirmDeleteModal'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
@@ -96,6 +94,7 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
         })
     }
 
+    // LARS - GOES AWAY
     // LARSTODO - really should store full activity in logs, as templates may change
     // so not a good reflection of what was actually shown to the user
     renderCard(action: ActionBase, id: string): Activity {
@@ -118,11 +117,12 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
         }
 
         // Render to activity
-        const attachment = BB.CardStyler.adaptiveCard(JSON.parse(templateString));
-        const message = BB.MessageStyler.attachment(attachment);
-        return {...message, id: id, from: { id: 'BlisTrainer', name: 'BlisTrainer' }, type: 'message', text: null } as Activity;
+    //    const attachment = BB.CardStyler.adaptiveCard(JSON.parse(templateString));
+     //   const message = BB.MessageStyler.attachment(attachment);
+     //   return {...message, id: id, from: { id: 'BlisTrainer', name: 'BlisTrainer' }, type: 'message', text: null } as Activity;
+     return null;//TEMP
     }
-
+/*
     generateHistory(): Activity[] {
         if (!this.props.trainDialog || !this.props.trainDialog.rounds) {
             return [];
@@ -144,7 +144,9 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
                 let botActivity = null;
                 if (action.metadata && action.metadata.actionType === ActionTypes.CARD) {
                     botActivity = this.renderCard(action, id);
-                 } else {
+                } else if (action.metadata && action.metadata.actionType === ActionTypes.API_LOCAL) {
+                    botActivity = this.renderCard(action, id);
+                }  else {
                     botActivity = { id: id, from: { id: 'BlisTrainer', name: 'BlisTrainer' }, type: 'message', text: payload } as Activity;
                 }
                 activities.push(botActivity);
@@ -153,7 +155,7 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
             roundNum++;
         }
         return activities;
-    }
+    }*/
     render() {
         const { intl } = this.props
         return (
@@ -167,7 +169,7 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
                             <Webchat
                                 key={this.state.webchatKey}
                                 app={this.props.app}
-                                history={this.generateHistory()}
+                                history={this.props.history}
                                 onPostActivity={activity => this.onWebChatPostActivity(activity)}
                                 onSelectActivity={activity => this.onWebChatSelectActivity(activity)}
                                 hideInput={true}
@@ -239,7 +241,7 @@ const mapStateToProps = (state: State) => {
         user: state.user,
         error: state.error.error,
         actions: state.actions,
-        templates: state.bot.botInfo.templates
+        templates: state.bot.botInfo ? state.bot.botInfo.templates : [] //LARS REMOVE
     }
 }
 
@@ -248,6 +250,7 @@ export interface ReceivedProps {
     onClose: () => void
     open: boolean
     trainDialog: TrainDialog
+    history: Activity[]
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps

@@ -5,7 +5,7 @@ import { returntypeof } from 'react-redux-typescript';
 import { State } from '../../types'
 import {
     BlisAppBase, TrainScorerStep, Memory, ScoredBase, ScoreInput, ScoreResponse,
-    ActionBase, ScoredAction, UnscoredAction, ScoreReason, DialogType
+    ActionBase, ScoredAction, UnscoredAction, ScoreReason, DialogType, ActionTypes
 } from 'blis-models';
 import { createActionAsync } from '../../actions/createActions'
 import { toggleAutoTeach } from '../../actions/teachActions'
@@ -16,6 +16,7 @@ import ActionCreatorEditor from './ActionCreatorEditor'
 import { onRenderDetailsHeader } from '../ToolTips'
 import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../react-intl-messages'
+import AdaptiveCardViewer from './AdaptiveCardViewer'
 
 const ACTION_BUTTON = 'action_button';
 
@@ -66,7 +67,22 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             maxWidth: 500,
             isMultiline: true,
             isResizable: true,
-            render: action => <span className='ms-font-m-plus'>{ActionBase.GetPayload(action as ActionBase)}</span>
+            render: (action: ActionBase, component) => {
+                return (
+                    <div>
+                    {action.metadata.actionType === ActionTypes.CARD &&
+                        <OF.PrimaryButton
+                            className="blis-dropdownWithButton-button"
+                            onClick={() => component.onClickViewCard(ActionBase.GetPayload(action))}
+                            ariaDescription="Refresh"
+                            text=""
+                            iconProps={{ iconName: 'RedEye' }}
+                        />
+                    }
+                    <span className='ms-font-m-plus'>{ActionBase.GetPayload(action as ActionBase)}</span>
+                    </div>
+                )
+            }
         },
         {
             key: 'actionArguments',
@@ -170,6 +186,7 @@ interface ComponentState {
     sortColumn: OF.IColumn;
     haveEdited: boolean;
     newAction: ActionBase;
+    cardViewerTemplateName: string;
 }
 
 class ActionScorer extends React.Component<Props, ComponentState> {
@@ -184,7 +201,8 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             columns,
             sortColumn: columns[3], // "score"
             haveEdited: false,
-            newAction: null
+            newAction: null,
+            cardViewerTemplateName: null
         };
         this.handleActionSelection = this.handleActionSelection.bind(this);
         this.handleDefaultSelection = this.handleDefaultSelection.bind(this);
@@ -221,6 +239,18 @@ class ActionScorer extends React.Component<Props, ComponentState> {
     componentDidMount() {
         this.autoSelect();
     }
+
+    onClickViewCard(templateName: string) {
+        this.setState({
+            cardViewerTemplateName: templateName
+        })
+    }
+    onCloseCardViewer = () => {
+        this.setState({
+            cardViewerTemplateName: null
+        })
+    }
+
     autoSelect() {
         // If not in interactive mode select action automatically
         if (this.props.autoTeach && this.props.dialogMode === DialogMode.Scorer) {
@@ -544,6 +574,13 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                     onClickDelete={action => { }}
                     onClickSubmit={action => this.onClickSubmitActionEditor(action)}
                 />
+
+                <AdaptiveCardViewer
+                    open={this.state.cardViewerTemplateName != null}
+                    onDismiss={() => this.onCloseCardViewer()}
+                    template={this.props.templates.find(t => t.name === this.state.cardViewerTemplateName)}
+                    actionArguments={[]}  // LARSTODO
+                />
             </div>
         )
     }
@@ -571,7 +608,8 @@ const mapStateToProps = (state: State, ownProps: any) => {
     return {
         user: state.user,
         entities: state.entities,
-        actions: state.actions
+        actions: state.actions,
+        templates: state.bot.botInfo.templates
     }
 }
 

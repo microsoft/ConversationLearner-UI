@@ -226,8 +226,7 @@ export function GetTip(tipType: string) {
                 [
                     { key: 'Text:', value: FM.TOOLTIP_ACTION_TYPE_TEXT },
                     { key: 'API_Local:', value: FM.TOOLTIP_ACTION_TYPE_APILOCAL },
-                    { key: 'API_Azure:', value: FM.TOOLTIP_ACTION_TYPE_APIAZURE },
-                    { key: 'Intent:', value: FM.TOOLTIP_ACTION_TYPE_INTENT },
+                    // { key: 'API_Azure:', value: FM.TOOLTIP_ACTION_TYPE_APIAZURE },
                     { key: 'Card:', value: FM.TOOLTIP_ACTION_TYPE_CARD }
                 ]);
         case TipType.ACTION_WAIT:
