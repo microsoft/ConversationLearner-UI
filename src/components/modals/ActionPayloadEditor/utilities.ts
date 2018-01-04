@@ -75,5 +75,18 @@ export const getEntities = (editorState: EditorState, entityType: string | null 
 }
 
 /**
+ * Get entities from existing content state
+ * https://stackoverflow.com/questions/46395930/draft-js-how-to-get-all-entities-data-from-the-contentstate
+ */
+export const getAllEntities = (editorStates: EditorState[], entityType: string | null = `${mentionTrigger}mention`): IContentEntity[] => {
+  let allEntities: IContentEntity[] = [];
+  for (let editorState of editorStates) {
+    let entities = getEntities(editorState, entityType);
+    allEntities = allEntities.concat(entities);
+  }
+  return allEntities;
+}
+
+/**
  * Get anchor and focus keys for each word in content
  */

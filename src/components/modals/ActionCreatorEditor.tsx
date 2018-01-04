@@ -5,9 +5,11 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { fetchBotInfoAsync } from '../../actions/fetchActions'
 import { Modal } from 'office-ui-fabric-react/lib/Modal'
-import { ActionBase, ActionTypes, ActionMetaData, BlisAppBase, EntityBase } from 'blis-models'
+import { ActionBase, ActionTypes, ActionMetaData, ActionPayload, 
+    ActionArgument, BlisAppBase, EntityBase } from 'blis-models'
 import ConfirmDeleteModal from './ConfirmDeleteModal'
 import EntityCreatorEditor from './EntityCreatorEditor'
+import AdaptiveCardViewer from './AdaptiveCardViewer/AdaptiveCardViewer'
 import ActionPayloadEditor, { utilities as EditorUtilities, IMention } from './ActionPayloadEditor'
 import { State } from '../../types'
 import * as ToolTip from '../ToolTips'
@@ -16,6 +18,8 @@ import * as OF from 'office-ui-fabric-react';
 import { BlisTagItem, IBlisPickerItemProps } from './BlisTagItem'
 import BlisTagPicker from '../BlisTagPicker'
 import './ActionCreatorEditor.css'
+
+const TEXT_SLOT = '#API_SLOT#';
 
 const convertEntityToMention = (entity: EntityBase): IMention =>
     ({
@@ -56,29 +60,22 @@ const getSuggestedTags = (filterText: string, allTags: OF.ITag[], tagsToExclude:
         .filter(tag => tag.name.toLowerCase().startsWith(filterText.toLowerCase()))
 }
 
-const availableActionTypes = [
-    ActionTypes.TEXT,
-    ActionTypes.API_LOCAL,
-    ActionTypes.API_AZURE,
-]
-
 const actionTypeOptions = Object.values(ActionTypes)
     .map<OF.IDropdownOption>(actionTypeString => {
-        const disabled = !availableActionTypes.includes(actionTypeString)
         return {
             key: actionTypeString,
-            text: `${actionTypeString} ${disabled ? ' [not implemented]' : ''}`,
-            // TODO: Why does disabled flag not work?
-            disabled,
-            isDisabled: disabled
+            text: `${actionTypeString}`
         }
     })
 
 interface ComponentState {
     apiOptions: OF.IDropdownOption[]
+    cardOptions: OF.IDropdownOption[]
     selectedApiOptionKey: string | number | null
+    selectedCardOptionKey: string | number  | null
     isEditing: boolean
     isEntityEditorModalOpen: boolean
+    isCardViewerModalOpen: boolean
     isConfirmDeleteModalOpen: boolean
     isPayloadFocused: boolean
     isPayloadValid: boolean
@@ -88,16 +85,19 @@ interface ComponentState {
     requiredEntityTagsFromPayload: OF.ITag[]
     requiredEntityTags: OF.ITag[]
     negativeEntityTags: OF.ITag[]
-    mentionEditorState: EditorState
+    payloadEditorStates: {[slot: string]: EditorState }
     editorKey: number
     isTerminal: boolean
 }
 
 const initialState: ComponentState = {
     apiOptions: [],
+    cardOptions: [],
     selectedApiOptionKey: null,
+    selectedCardOptionKey: null,
     isEditing: false,
     isEntityEditorModalOpen: false,
+    isCardViewerModalOpen: false,
     isConfirmDeleteModalOpen: false,
     isPayloadFocused: false,
     isPayloadValid: false,
@@ -107,7 +107,7 @@ const initialState: ComponentState = {
     requiredEntityTagsFromPayload: [],
     requiredEntityTags: [],
     negativeEntityTags: [],
-    mentionEditorState: EditorState.createEmpty(),
+    payloadEditorStates: {},
     editorKey: 0,
     isTerminal: true
 }
@@ -127,18 +127,93 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         const callbacks = (botInfo && botInfo.callbacks || [])
         const apiOptions = callbacks.map<OF.IDropdownOption>(v =>
             ({
-                key: v,
-                text: v
+                key: v.name,
+                text: v.name
+            }))
+
+        const templates = (botInfo && botInfo.templates || [])
+        const cardOptions = templates.map<OF.IDropdownOption>(v =>
+            ({
+                key: v.name,
+                text: v.name
             }))
 
         this.openState = {
             ...initialState,
             apiOptions,
+            cardOptions,
             entityTags,
             isEditing: !!this.props.action
         }
 
         this.setState(this.openState)
+    }
+
+    existingEntityMatches(text: string, entities: EntityBase[]): any[] {
+        return (text.match(/(\$[\w]+)/g) || [])
+            .map(match => {
+                // Get entity name by removing first character '$name' -> 'name'
+                const entityName = match.substring(1)
+                const startIndex = text.indexOf(match)
+                const endIndex = startIndex + match.length
+                const entity = entities.find(e => e.entityName === entityName)
+
+                return {
+                    startIndex,
+                    endIndex,
+                    entity
+                }
+            }
+        )
+    }
+
+    initEditorState(content: string, slotName: string, entities: EntityBase[]) {
+
+        const contentState = ContentState.createFromText(content)
+        let editorState = EditorState.createWithContent(contentState)
+        let existingEntityMatches = this.existingEntityMatches(content, entities);
+
+        /**
+         * Note: Remove this when we change the action.payload to save entity position directly
+         * This is kind of a hack to force the entities into the content state without having the actual map
+         * This relies on there being single block created by the above `createFromText` so that the anchorKey
+         * and focusKeys from the default selection state are valid
+         */
+        const contentStateWithMentions = existingEntityMatches
+            .reduce((newContentState, entityMatch) => {
+                const fakeMapMention = convertEntityToMention(entityMatch.entity);
+                (fakeMapMention as any).toJS = () => fakeMapMention
+
+                const contentStateWithEntity = newContentState.createEntity(
+                    EditorUtilities.entityType,
+                    'IMMUTABLE',
+                    {
+                        mention: fakeMapMention
+                    }
+                )
+
+                const entityKey = contentStateWithEntity.getLastCreatedEntityKey()
+                const selectionState = editorState.getSelection()  
+                const updatedSelectionState: any = selectionState.merge({
+                    anchorOffset: entityMatch.startIndex,
+                    focusOffset: entityMatch.endIndex
+                });
+
+                return Modifier.applyEntity(
+                    contentStateWithEntity,
+                    updatedSelectionState,
+                    entityKey
+                )
+            }, contentState)
+
+        // Overwrite editor state with content state which has the entities
+        editorState = EditorState.createWithContent(contentStateWithMentions)
+
+        // Set cursor to end
+        editorState = EditorState.moveSelectionToEnd(editorState)
+        editorState = EditorState.moveFocusToEnd(editorState)
+
+        return editorState;
     }
 
     componentWillReceiveProps(nextProps: Props) {
@@ -181,77 +256,26 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                  */
                 const actionType = action.metadata.actionType
                 let payload = action.payload
-                let selectedApiOptionKey: string | null = null
+                let selectedApiOptionKey: string | null = null;
+                let selectedCardOptionKey: string | null = null;
 
-                if (actionType === ActionTypes.API_LOCAL) {
-                    const splitPayload = action.payload.split(' ')
-                    selectedApiOptionKey = splitPayload[0]
-                    payload = splitPayload.slice(1).join(' ')
+                let payloadEditorStates: {[slot: string]: EditorState } = {};
+                if (actionType === ActionTypes.TEXT) {
+                    payloadEditorStates[TEXT_SLOT] = this.initEditorState(payload, TEXT_SLOT, nextProps.entities);
+                }
+                else {
+                    let actionPayload = JSON.parse(action.payload) as ActionPayload;
+                    if (actionType === ActionTypes.API_LOCAL) {
+                        selectedApiOptionKey = actionPayload.payload;
+                    } else if (actionType === ActionTypes.CARD) {
+                        selectedCardOptionKey = actionPayload.payload;
+                    }
+                    for (let actionArgument of actionPayload.arguments) {
+                        payloadEditorStates[actionArgument.parameter] = this.initEditorState(actionArgument.value, actionArgument.parameter, nextProps.entities);
+                    }
                 }
 
-                // TODO: If we allow to store raw state of editor then restoring it is very easy
-                // Currently there is issue where we don't know how to recreate the entities from the plain text
-                // const contentState = convertFromRaw(JSON.parse(action.payload))
-                const existingEntityMatches = (payload.match(/(\$[\w]+)/g) || [])
-                    .map(match => {
-                        // Get entity name by removing first character '$name' -> 'name'
-                        const entityName = match.substring(1)
-                        const startIndex = payload.indexOf(match)
-                        const endIndex = startIndex + match.length
-                        const entity = nextProps.entities.find(e => e.entityName === entityName)
-
-                        return {
-                            startIndex,
-                            endIndex,
-                            entity
-                        }
-                    })
-
-                // Get editor state
-                const contentState = ContentState.createFromText(payload)
-                let editorState = EditorState.createWithContent(contentState)
-
-                /**
-                 * Note: Remove this when we change the action.payload to save entity position directly
-                 * This is kind of a hack to force the entities into the content state without having the actual map
-                 * This relies on there being single block created by the above `createFromText` so that the anchorKey
-                 * and focusKeys from the default selection state are valid
-                 */
-                const contentStateWithMentions = existingEntityMatches
-                    .reduce((newContentState, entityMatch) => {
-                        const fakeMapMention = convertEntityToMention(entityMatch.entity);
-                        (fakeMapMention as any).toJS = () => fakeMapMention
-
-                        const contentStateWithEntity = newContentState.createEntity(
-                            EditorUtilities.entityType,
-                            'IMMUTABLE',
-                            {
-                                mention: fakeMapMention
-                            }
-                        )
-
-                        const entityKey = contentStateWithEntity.getLastCreatedEntityKey()
-                        const selectionState = editorState.getSelection()
-                        const updatedSelectionState: any = selectionState.merge({
-                            anchorOffset: entityMatch.startIndex,
-                            focusOffset: entityMatch.endIndex
-                        });
-
-                        return Modifier.applyEntity(
-                            contentStateWithEntity,
-                            updatedSelectionState,
-                            entityKey
-                        )
-                    }, contentState)
-
-                // Overwrite editor state with content state which has the entities
-                editorState = EditorState.createWithContent(contentStateWithMentions)
-
-                // Set cursor to end
-                editorState = EditorState.moveSelectionToEnd(editorState)
-                editorState = EditorState.moveFocusToEnd(editorState)
-
-                const requiredEntityTagsFromPayload = EditorUtilities.getEntities(editorState).map(convertContentEntityToTag)
+                const requiredEntityTagsFromPayload = EditorUtilities.getAllEntities(Object.values(payloadEditorStates)).map(convertContentEntityToTag);
                 const requiredEntityTags = convertEntityIdsToTags(action.requiredEntities, nextProps.entities)
                     .filter(t => !requiredEntityTagsFromPayload.some(tag => tag.key === t.key))
 
@@ -260,7 +284,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     isPayloadValid: actionType === ActionTypes.API_LOCAL || action.payload.length !== 0,
                     selectedActionTypeOptionKey: action.metadata.actionType,
                     selectedApiOptionKey,
-                    mentionEditorState: editorState,
+                    selectedCardOptionKey,
+                    payloadEditorStates: payloadEditorStates,
                     editorKey: this.state.editorKey + 1,
                     expectedEntityTags,
                     negativeEntityTags,
@@ -281,22 +306,91 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     }
 
     onChangedApiOption = (apiOption: OF.IDropdownOption) => {
+        let newPayloadStates = {};
+        let args = this.props.botInfo.callbacks.find(t => t.name === apiOption.key).arguments;
+        for (let arg of args) {
+            newPayloadStates[arg] = this.initEditorState("", arg, []);
+        }
+
         this.setState({
-            selectedApiOptionKey: apiOption.key
+            selectedApiOptionKey: apiOption.key,
+            payloadEditorStates: newPayloadStates
         })
     }
 
-    onClickSyncApi() {
+    onChangedCardOption = (cardOption: OF.IDropdownOption) => {
+        let newPayloadStates = {};
+        let templateVariable = this.props.botInfo.templates.find(t => t.name === cardOption.key).variables;
+        for (let variable of templateVariable) {
+            newPayloadStates[variable.key] = this.initEditorState("", variable.key, []);
+        }
+
+        this.setState({
+            selectedCardOptionKey: cardOption.key,
+            payloadEditorStates: newPayloadStates
+        })
+    }
+
+    onClickSyncBotInfo() {
         this.props.fetchBotInfoAsync();
     }
 
-    onClickSubmit = () => {
-        const contentState = this.state.mentionEditorState.getCurrentContent()
-        // const rawContent = convertToRaw(contentState)
-        let payload = contentState.getPlainText()
+    onClickViewCard() {
+        this.setState({
+            isCardViewerModalOpen: true
+        })
+    }
 
-        if (this.state.selectedActionTypeOptionKey === ActionTypes.API_LOCAL) {
-            payload = `${this.state.selectedApiOptionKey} ${payload}`
+    onCloseCardViewer = () => {
+        this.setState({
+            isCardViewerModalOpen: false
+        })
+    }
+
+    getActionArguments(): ActionArgument[] {
+
+        let actionArguments: ActionArgument[] = [];
+        for (let parameter of Object.keys(this.state.payloadEditorStates)) {
+            let argPayload = this.state.payloadEditorStates[parameter].getCurrentContent().getPlainText();
+            if (argPayload.length > 0) {
+                actionArguments.push(new ActionArgument({parameter: parameter, value: argPayload}))
+            }
+        }
+        return actionArguments;
+    }
+
+    onClickSubmit = () => {
+
+        let payload: string = null;
+        switch (this.state.selectedActionTypeOptionKey) {
+            case ActionTypes.TEXT:
+                const contentState = this.state.payloadEditorStates[TEXT_SLOT].getCurrentContent()
+                payload = contentState.getPlainText();
+                break;
+            case ActionTypes.CARD:
+                payload = this.state.selectedCardOptionKey.toString();
+                break;
+            case ActionTypes.API_LOCAL:
+                payload = this.state.selectedApiOptionKey.toString();
+                break;
+            default:
+                break;
+        }
+
+        if (this.state.selectedActionTypeOptionKey !== ActionTypes.TEXT) {
+            let actionArguments: ActionArgument[] = [];
+            for (let parameter of Object.keys(this.state.payloadEditorStates)) {
+                let argPayload = this.state.payloadEditorStates[parameter].getCurrentContent().getPlainText();
+                actionArguments.push(new ActionArgument({parameter: parameter, value: argPayload}))
+            }
+
+            let actionPayload = new ActionPayload(
+                {
+                    payload: payload,
+                    arguments: this.getActionArguments()
+                }
+            )
+            payload = JSON.stringify(actionPayload);
         }
 
         const newOrEditedAction = new ActionBase({
@@ -366,7 +460,9 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
     onCloseEntityEditor = () => {
         this.setState({
-            isEntityEditorModalOpen: false
+            isEntityEditorModalOpen: false,
+            selectedApiOptionKey: null,
+            selectedCardOptionKey: null
         })
     }
 
@@ -375,13 +471,14 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     }
 
     onChangedActionType = (actionTypeOption: OF.IDropdownOption) => {
-        const isPayloadValid = actionTypeOption.key === ActionTypes.API_LOCAL
+        const isPayloadValid = actionTypeOption.key !== ActionTypes.TEXT
             ? true
-            : this.state.mentionEditorState.getCurrentContent().hasText()
+            : this.state.payloadEditorStates[TEXT_SLOT] && this.state.payloadEditorStates[TEXT_SLOT].getCurrentContent().hasText()
 
         this.setState({
-            isPayloadValid,
-            selectedActionTypeOptionKey: actionTypeOption.key
+            isPayloadValid : isPayloadValid,
+            selectedActionTypeOptionKey: actionTypeOption.key,
+            payloadEditorStates: {}
         })
     }
 
@@ -465,24 +562,31 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         return <BlisTagItem key={props.index} {...renderProps}>{props.item.name}</BlisTagItem>
     }
 
-    onChangeMentionEditor = (editorState: EditorState) => {
-        const requiredEntityTagsFromPayload = EditorUtilities.getEntities(editorState).map(convertContentEntityToTag)
-        // If we added entity to the payload which was already in the list of required entities remove it to avoid duplicates.
+    onChangePayloadEditor = (editorState: EditorState, slot: string = null) => {
+        let newArguments = {...this.state.payloadEditorStates}
+        newArguments[slot] = editorState;
+
+        const requiredEntityTagsFromPayload = EditorUtilities.getAllEntities(Object.values(newArguments)).map(convertContentEntityToTag)
+        // If we added entity to a payload which was already in the list of required entities remove it to avoid duplicates.
         const requiredEntityTags = this.state.requiredEntityTags.filter(tag => !requiredEntityTagsFromPayload.some(t => t.key === tag.key))
         const isPayloadValid = this.state.selectedActionTypeOptionKey === ActionTypes.API_LOCAL || editorState.getCurrentContent().hasText()
 
         this.setState({
             isPayloadValid,
-            mentionEditorState: editorState,
+            payloadEditorStates: newArguments,
             requiredEntityTagsFromPayload,
             requiredEntityTags
         })
     }
 
     render() {
-        // Disable payload if action type is local api and we're editing existing action or there are no api callbacks
-        const isPayloadDisabled = this.state.selectedActionTypeOptionKey === ActionTypes.API_LOCAL
-            && (this.state.isEditing || this.state.apiOptions.length === 0)
+        // Disable payload if we're editing existing action and no API or CARD data available
+        const isPayloadDisabled = 
+            (this.state.selectedActionTypeOptionKey === ActionTypes.API_LOCAL
+                && (this.state.isEditing || this.state.apiOptions.length === 0))
+            ||
+            (this.state.selectedActionTypeOptionKey === ActionTypes.CARD
+                && (this.state.isEditing || this.state.cardOptions.length === 0));
 
         // Available Mentions: All entities - expected entity - required entities from payload - blocking entities
         const unavailableTags = [...this.state.expectedEntityTags, ...this.state.requiredEntityTagsFromPayload, ...this.state.negativeEntityTags]
@@ -511,13 +615,14 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                             disabled={this.state.isEditing}
                             tipType={ToolTip.TipType.ACTION_TYPE}
                         />
+
                         {this.state.selectedActionTypeOptionKey === ActionTypes.API_LOCAL
                             && (<div>
                                 <TC.Dropdown
                                     label="API"
                                     className="blis-dropdownWithButton-dropdown"
                                     options={this.state.apiOptions}
-                                    onChanged={this.onChangedApiOption}
+                                    onChanged={(apiOption) => this.onChangedApiOption(apiOption)}
                                     selectedKey={this.state.selectedApiOptionKey}
                                     disabled={this.state.apiOptions.length === 0 || this.state.isEditing}
                                     placeHolder={this.state.apiOptions.length === 0 ? 'NONE DEFINED' : 'API name...'}
@@ -527,7 +632,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                 <div className="blis-dropdownWithButton-buttoncontainer">
                                     <OF.PrimaryButton
                                         className="blis-dropdownWithButton-button"
-                                        onClick={() => this.onClickSyncApi()}
+                                        onClick={() => this.onClickSyncBotInfo()}
                                         ariaDescription="Refresh"
                                         text=""
                                         iconProps={{ iconName: 'Sync' }}
@@ -536,16 +641,88 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                             </div>
                             )}
 
-                        <div className={(this.state.isPayloadValid ? '' : 'editor--error')}>
+                        {this.state.selectedActionTypeOptionKey === ActionTypes.CARD
+                            && (<div>
+                                <div className="blis-dropdownWithButton-buttoncontainer">
+                                    <OF.PrimaryButton
+                                        className="blis-dropdownWithButton-button"
+                                        onClick={() => this.onClickViewCard()}
+                                        ariaDescription="Refresh"
+                                        text=""
+                                        iconProps={{ iconName: 'RedEye' }}
+                                    />
+                                </div>
+                                <TC.Dropdown
+                                    label="Template"
+                                    className="blis-dropdownWithButton-dropdown"
+                                    options={this.state.cardOptions}
+                                    onChanged={(cardOption) => this.onChangedCardOption(cardOption)}
+                                    selectedKey={this.state.selectedCardOptionKey}
+                                    disabled={this.state.cardOptions.length === 0 || this.state.isEditing}
+                                    placeHolder={this.state.cardOptions.length === 0 ? 'NONE DEFINED' : 'Template name...'}
+                                    tipType={ToolTip.TipType.ACTION_CARD}
+                                    hasButton={true}
+                                />
+                                <div className="blis-dropdownWithButton-buttoncontainer">
+                                    <OF.PrimaryButton
+                                        className="blis-dropdownWithButton-button"
+                                        onClick={() => this.onClickSyncBotInfo()}
+                                        ariaDescription="Refresh"
+                                        text=""
+                                        iconProps={{ iconName: 'Sync' }}
+                                    />
+                                </div>
+                            </div>
+                        )}
+
+                        {this.state.selectedActionTypeOptionKey === ActionTypes.CARD && this.state.selectedCardOptionKey
+                        && (this.props.botInfo.templates.find(t => t.name === this.state.selectedCardOptionKey).variables
+                            .map(slot =>
+                            {
+                                return (
+                                    <ActionPayloadEditor
+                                        label={slot.key}
+                                        allSuggestions={getMentionsAvailableForPayload}
+                                        editorState={this.state.payloadEditorStates[slot.key]}
+                                        key={this.state.editorKey + slot.key}
+                                        placeholder={''}
+                                        onChange={eState => this.onChangePayloadEditor(eState, slot.key)}
+                                        disabled={isPayloadDisabled}
+                                        tipType={ToolTip.TipType.ACTION_ARGUMENTS}
+                                    />
+                                )
+                            })
+                        )}
+
+                        {this.state.selectedActionTypeOptionKey === ActionTypes.API_LOCAL && this.state.selectedApiOptionKey
+                            && (this.props.botInfo.callbacks.find(t => t.name === this.state.selectedApiOptionKey).arguments
+                                .map(slot =>
+                                {
+                                    return (
+                                        <ActionPayloadEditor
+                                            label={slot}
+                                            allSuggestions={getMentionsAvailableForPayload}
+                                            editorState={this.state.payloadEditorStates[slot]}
+                                            key={this.state.editorKey + slot}
+                                            placeholder={''}
+                                            onChange={eState => this.onChangePayloadEditor(eState, slot)}
+                                            disabled={isPayloadDisabled}
+                                            tipType={ToolTip.TipType.ACTION_ARGUMENTS}
+                                        />
+                                    )
+                                })
+                            )}
+
+                        {this.state.selectedActionTypeOptionKey === ActionTypes.TEXT
+                        && (<div className={(this.state.isPayloadValid ? '' : 'editor--error')}>
                             <div>
                                 <ActionPayloadEditor
-                                    label={this.state.selectedActionTypeOptionKey === ActionTypes.API_LOCAL ?
-                                        'Arguments (Comma Separated)' : 'Response...'}
+                                    label='Response...'
                                     allSuggestions={getMentionsAvailableForPayload}
-                                    editorState={this.state.mentionEditorState}
+                                    editorState={this.state.payloadEditorStates[TEXT_SLOT] || EditorState.createEmpty()}
                                     key={this.state.editorKey}
-                                    placeholder={this.state.selectedActionTypeOptionKey === ActionTypes.API_LOCAL ? "Arguments..." : "Phrase..."}
-                                    onChange={this.onChangeMentionEditor}
+                                    placeholder="Phrase..."
+                                    onChange={eState => this.onChangePayloadEditor(eState, TEXT_SLOT)}
                                     disabled={isPayloadDisabled}
                                     tipType={this.state.selectedActionTypeOptionKey === ActionTypes.API_LOCAL ?
                                         ToolTip.TipType.ACTION_ARGUMENTS : ToolTip.TipType.ACTION_RESPONSE_TEXT}
@@ -558,8 +735,10 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                     </p>
                                 </div>)}
                         </div>
+                        )}
 
-                        <div className="blis-action-creator--expected-entities">
+                        {this.state.selectedActionTypeOptionKey !== ActionTypes.CARD
+                        && (<div className="blis-action-creator--expected-entities">
                             <TC.TagPicker
                                 label="Expected Entity in Response..."
                                 onResolveSuggestions={(text, tags) => this.onResolveExpectedEntityTags(text, tags)}
@@ -576,6 +755,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                 tipType={ToolTip.TipType.ACTION_SUGGESTED}
                             />
                         </div>
+                        )}
+
                         <div className="blis-action-creator--required-entities">
                             <BlisTagPicker
                                 nonRemovableTags={this.state.requiredEntityTagsFromPayload}
@@ -673,8 +854,14 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     open={this.state.isEntityEditorModalOpen}
                     entity={null}
                     handleClose={() => this.onCloseEntityEditor()}
-                    handleOpenDeleteModal={() => { }}
+                    handleOpenDeleteModal={() => {}}
                     entityTypeFilter={null}
+                />
+                <AdaptiveCardViewer
+                    open={this.state.isCardViewerModalOpen && this.state.selectedCardOptionKey != null}
+                    onDismiss={() => this.onCloseCardViewer()}
+                    template={this.state.selectedCardOptionKey && this.props.botInfo.templates.find(t => t.name === this.state.selectedCardOptionKey)}
+                    actionArguments={this.state.isCardViewerModalOpen && this.getActionArguments()}
                 />
             </Modal>
         );

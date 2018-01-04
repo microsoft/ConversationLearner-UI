@@ -3,7 +3,7 @@ import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../../types'
-import { SenderType, DialogMode } from '../../types/const';
+import { DialogMode } from '../../types/const';
 import EntityExtractor from './EntityExtractor';
 import ActionScorer from './ActionScorer';
 import MemoryTable from './MemoryTable';
@@ -14,7 +14,7 @@ import {
     Memory, TrainDialog, TrainRound,
     LogDialog, LogRound, LogScorerStep,
     ActionBase, ExtractResponse,
-    DialogType, ModelUtils
+    DialogType, ModelUtils, SenderType
 } from 'blis-models'
 
 interface ComponentState {

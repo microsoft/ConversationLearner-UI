@@ -14,6 +14,7 @@ import {
 } from 'blis-models'
 import { Dispatch } from 'redux'
 import * as ClientFactory from '../services/clientFactory'
+import { Activity } from 'botframework-directlinejs';
 
 export const fetchAllTrainDialogsAsync = (key: string, blisAppID: string): ActionObject => {
     return {
@@ -27,6 +28,36 @@ export const fetchAllTrainDialogsFulfilled = (trainDialogs: TrainDialog[]): Acti
     return {
         type: AT.FETCH_TRAIN_DIALOGS_FULFILLED,
         allTrainDialogs: trainDialogs
+    }
+}
+
+
+export const fetchHistoryThunkAsync = (appId: string, trainDialogId: string, userName: string, userId: string) => {
+    return async (dispatch: Dispatch<any>) => {
+        const blisClient = ClientFactory.getInstance()
+        dispatch(fetchHistoryAsync(appId, trainDialogId, userName, userId))
+
+        const activities = await blisClient.history(appId, trainDialogId, userName, userId)
+        dispatch(fetchHistoryFulfilled(activities))
+        return activities
+    }
+}
+
+export const fetchHistoryAsync = (blisAppID: string, trainDialogId: string, userName: string, userId: string): ActionObject => {
+    return {
+        type: AT.FETCH_HISTORY_ASYNC,
+        blisAppID: blisAppID,
+        userName: userName,
+        userId: userId,
+        trainDialogId: trainDialogId
+    }
+}
+
+export const fetchHistoryFulfilled = (activities: Activity[]): ActionObject => {
+    // Needs a fulfilled version to handle response from Epic
+    return {
+        type: AT.FETCH_HISTORY_FULFILLED,
+        activities: activities
     }
 }
 
@@ -46,14 +77,14 @@ export const fetchAllLogDialogsFulfilled = (logDialogs: LogDialog[]): ActionObje
 }
 
 export const fetchBotInfoAsync = (): ActionObject => {
-    //needs a fulfilled version to handle response from Epic
+    // Needs a fulfilled version to handle response from Epic
     return {
         type: AT.FETCH_BOTINFO_ASYNC
     }
 }
 
 export const fetchBotInfoFulfilled = (botInfo: BotInfo): ActionObject => {
-    //needs a fulfilled version to handle response from Epic
+    // Needs a fulfilled version to handle response from Epic
     return {
         type: AT.FETCH_BOTINFO_FULFILLED,
         botInfo: botInfo

@@ -11,6 +11,7 @@ import {
 import { TipType } from '../components/ToolTips'
 import { ErrorType } from '../types/const'
 import { AT } from '../types/ActionTypes'
+import { Activity } from 'botframework-directlinejs';
 
 export type UpdateAction = {
     type: AT.EDIT_BLIS_APPLICATION_ASYNC,
@@ -115,6 +116,15 @@ export type FetchAction = {
     type: AT.FETCH_TRAIN_DIALOGS_FULFILLED,
     allTrainDialogs: TrainDialog[],
 } | {
+    type: AT.FETCH_HISTORY_ASYNC,
+    blisAppID: string,
+    userName: string,
+    userId: string,
+    trainDialogId: string
+} | {
+    type: AT.FETCH_HISTORY_FULFILLED,
+    activities: Activity[],
+}| {
     type: AT.FETCH_LOG_DIALOGS_ASYNC,
     key: string,
     blisAppID: string

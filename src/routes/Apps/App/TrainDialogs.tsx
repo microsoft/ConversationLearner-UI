@@ -6,9 +6,11 @@ import * as OF from 'office-ui-fabric-react';
 import { State } from '../../../types'
 import { BlisAppBase, Teach, TrainDialog } from 'blis-models'
 import { TeachSessionWindow, TrainDialogWindow } from '../../../components/modals'
+import { fetchHistoryThunkAsync } from '../../../actions/fetchActions'
 import { createTeachSessionThunkAsync } from '../../../actions/createActions'
 import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { FM } from '../../../react-intl-messages'
+import { Activity } from 'botframework-directlinejs';
 
 interface IRenderableColumn extends OF.IColumn {
     render: (x: TrainDialog, component: TrainDialogs) => React.ReactNode
@@ -113,6 +115,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
 interface ComponentState {
     columns: OF.IColumn[],
     teachSession: Teach,
+    activities: Activity[]
     isTeachDialogModalOpen: boolean
     isTrainDialogModalOpen: boolean
     trainDialogId: string
@@ -126,6 +129,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     state: ComponentState = {
         columns: getColumns(this.props.intl),
         teachSession: null,
+        activities: [],
         isTeachDialogModalOpen: false,
         isTrainDialogModalOpen: false,
         trainDialogId: null,
@@ -173,9 +177,18 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     }
 
     onClickTrainDialogItem(trainDialog: TrainDialog) {
-        this.setState({
-            isTrainDialogModalOpen: true,
-            trainDialogId: trainDialog.trainDialogId
+
+        // TODO: Find cleaner solution for the types.  Thunks return functions but when using them on props they should be returning result of the promise.
+        ((this.props.fetchHistoryThunkAsync(this.props.app.appId, trainDialog.trainDialogId, this.props.user.name, this.props.user.id) as any) as Promise<Activity[]>)
+        .then(activities => {
+            this.setState({
+                activities: activities,
+                trainDialogId: trainDialog.trainDialogId,
+                isTrainDialogModalOpen: true
+            })
+        })
+        .catch(error => {
+            console.warn(`Error when attempting to create history: `, error)
         })
     }
 
@@ -275,14 +288,16 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     open={this.state.isTrainDialogModalOpen}
                     onClose={() => this.onCloseTrainDialogWindow()}
                     trainDialog={trainDialog}
-                />
+                    history={this.state.activities}
+                />}
             </div>
         );
     }
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        createTeachSessionThunkAsync
+        createTeachSessionThunkAsync,
+        fetchHistoryThunkAsync
     }, dispatch)
 }
 const mapStateToProps = (state: State) => {

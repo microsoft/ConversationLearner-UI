@@ -26,6 +26,14 @@ html {
   opacity: 0.0;
 }
 
+.blis-button--viewCard {
+  margin-right: 10px;
+  border-radius: 20px;
+  padding: 0px !important;
+  float: right;
+  min-width: 32px !important;
+}
+
 .blis-action {
   border: none;
   background: none;

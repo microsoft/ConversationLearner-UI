@@ -7,13 +7,12 @@ import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { State } from '../../types';
 import Webchat from '../Webchat'
 import TrainDialogAdmin from './TrainDialogAdmin'
-import { BlisAppBase, ActionBase, TrainDialog } from 'blis-models'
+import { BlisAppBase, TrainDialog} from 'blis-models'
 import { deleteTrainDialogThunkAsync } from '../../actions/deleteActions'
 import { fetchApplicationTrainingStatusThunkAsync } from '../../actions/fetchActions'
 // TODO: Investigate if this can be removed in favor of local state
 import { addMessageToChatConversationStack } from '../../actions/displayActions'
 import { Activity } from 'botframework-directlinejs';
-import { SenderType } from '../../types/const';
 import ConfirmDeleteModal from './ConfirmDeleteModal'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
@@ -84,7 +83,7 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
     // which means this should not ever be called and whatever it's doing now is likely unnecessary
     onWebChatPostActivity(activity: Activity) {
         console.log(`post activity: `, activity)
-        if (activity.type === "message") {
+        if (activity.type === 'message') {
             this.props.addMessageToChatConversationStack(activity)
         }
     }
@@ -95,46 +94,20 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
         })
     }
 
-    generateHistory(): Activity[] {
-        if (!this.props.trainDialog || !this.props.trainDialog.rounds) {
-            return [];
-        }
-        let activities = [];
-        let roundNum = 0;
-        for (let round of this.props.trainDialog.rounds) {
-            let userText = round.extractorStep.textVariations[0].text;
-            let id = `${SenderType.User}:${roundNum}:0`;
-            let userActivity = { id: id, from: { id: this.props.user.id, name: this.props.user.name }, type: "message", text: userText } as Activity;
-            activities.push(userActivity);
-
-            let scoreNum = 0;
-            for (let scorerStep of round.scorerSteps) {
-                let labelAction = scorerStep.labelAction;
-                let action = this.props.actions.filter((a: ActionBase) => a.actionId == labelAction)[0];
-                let payload = action ? action.payload : "ERROR: Missing Action";
-                id = `${SenderType.Bot}:${roundNum}:${scoreNum}`
-                let botActivity = { id: id, from: { id: "BlisTrainer", name: "BlisTrainer" }, type: "message", text: payload } as Activity;
-                activities.push(botActivity);
-                scoreNum++;
-            }
-            roundNum++;
-        }
-        return activities;
-    }
     render() {
         const { intl } = this.props
         return (
             <Modal
                 isOpen={this.props.open && this.props.error == null}
                 isBlocking={true}
-                containerClassName='blis-modal blis-modal--large blis-modal--teach'>
+                containerClassName="blis-modal blis-modal--large blis-modal--teach">
                 <div className="blis-modal_body">
                     <div className="blis-chatmodal">
                         <div className="blis-chatmodal_webchat">
                             <Webchat
                                 key={this.state.webchatKey}
                                 app={this.props.app}
-                                history={this.generateHistory()}
+                                history={this.props.history}
                                 onPostActivity={activity => this.onWebChatPostActivity(activity)}
                                 onSelectActivity={activity => this.onWebChatSelectActivity(activity)}
                                 hideInput={true}
@@ -214,6 +187,7 @@ export interface ReceivedProps {
     onClose: () => void
     open: boolean
     trainDialog: TrainDialog
+    history: Activity[]
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
