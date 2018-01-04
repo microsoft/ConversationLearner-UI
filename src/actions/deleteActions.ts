@@ -147,6 +147,20 @@ export const deleteLogDialogAsync = (appId: string, logDialogId: string): Action
     }
 }
 
+/**
+ * Created a separate delete log dialog async for deleting log dialogs manually
+ * as the other async above is used in the Epic flow and implicitly runs when
+ * LogDialogs are converted to TrainDialogs
+ * See: apiHelpers.ts#createTrainDialog
+ */
+export const deleteLogDialogAsync2 = (appId: string, logDialogId: string): ActionObject => {
+    return {
+        type: AT.DELETE_LOG_DIALOG_ASYNC2,
+        appId,
+        logDialogId
+    }
+}
+
 export const deleteLogDialogFulfilled = (logDialogId: string): ActionObject => {
     return {
         type: AT.DELETE_LOG_DIALOG_FULFILLED,
@@ -162,7 +176,7 @@ export const deleteLogDialogRejected = (): ActionObject => {
 
 export const deleteLogDialogThunkAsync = (appId: string, logDialogId: string) => {
     return async (dispatch: Dispatch<any>) => {
-        dispatch(deleteLogDialogAsync(logDialogId, appId))
+        dispatch(deleteLogDialogAsync2(appId, logDialogId))
         const blisClient = ClientFactory.getInstance()
 
         try {
@@ -172,7 +186,7 @@ export const deleteLogDialogThunkAsync = (appId: string, logDialogId: string) =>
         catch (e) {
             const error = e as Error
             // TODO: Why does this method take error and message?
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.message, AT.DELETE_LOG_DIALOG_ASYNC))
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.message, AT.DELETE_LOG_DIALOG_ASYNC2))
             dispatch(deleteLogDialogRejected())
             throw new Error(e)
         }

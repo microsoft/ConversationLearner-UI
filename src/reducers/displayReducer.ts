@@ -54,6 +54,7 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
         case AT.DELETE_CHAT_SESSION_ASYNC:
         case AT.DELETE_ENTITY_ASYNC:
         case AT.DELETE_LOG_DIALOG_ASYNC:
+        case AT.DELETE_LOG_DIALOG_ASYNC2:
         case AT.DELETE_TEACH_SESSION_ASYNC:
         case AT.DELETE_TRAIN_DIALOG_ASYNC:
 
@@ -75,7 +76,9 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
         case AT.GET_SCORES_ASYNC:
         case AT.RUN_SCORER_ASYNC:
         case AT.POST_SCORE_FEEDBACK_ASYNC:
-            return { ...state, displaySpinner: addSpinner(state.displaySpinner, action.type) };
+            const nextState2 = { ...state, displaySpinner: addSpinner(state.displaySpinner, action.type) }
+            console.log(`Add Spinner: `, nextState2.displaySpinner, action.type)
+            return nextState2
 
         case AT.CREATE_ACTION_FULFILLED:
         //case AT.CREATE_BLIS_APPLICATION_FULFILLED: Handled above
@@ -115,7 +118,9 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
         case AT.RUN_SCORER_FULFILLED:
         case AT.POST_SCORE_FEEDBACK_FULFILLEDWAIT:
         case AT.POST_SCORE_FEEDBACK_FULFILLEDNOWAIT:
-            return { ...state, displaySpinner: removeSpinner(state.displaySpinner, action.type) };
+            const nextState = { ...state, displaySpinner: removeSpinner(state.displaySpinner, action.type) };
+            console.log(`Remove Spinner: `, nextState.displaySpinner, action.type)
+            return nextState
         default:
             return state;
     }
