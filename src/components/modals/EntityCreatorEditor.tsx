@@ -89,59 +89,61 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
     }
 
     componentWillReceiveProps(nextProps: Props) {
-        // Build entity options based on current application locale
-        const currentAppLocale = this.props.app.locale
-        const localePreBuiltOptions = PreBuiltEntities
-            .find(entitiesList => entitiesList.locale === currentAppLocale).preBuiltEntities
-            .map<BlisDropdownOption>(entityName =>
-                ({
-                    key: entityName,
-                    text: entityName,
-                    itemType: OF.DropdownMenuItemType.Normal,
-                    style: 'blisDropdown--normal'
-                }))
+        if (nextProps.open !== this.props.open) {
+            // Build entity options based on current application locale
+            const currentAppLocale = nextProps.app.locale
+            const localePreBuiltOptions = PreBuiltEntities
+                .find(entitiesList => entitiesList.locale === currentAppLocale).preBuiltEntities
+                .map<BlisDropdownOption>(entityName =>
+                    ({
+                        key: entityName,
+                        text: entityName,
+                        itemType: OF.DropdownMenuItemType.Normal,
+                        style: 'blisDropdown--normal'
+                    }))
 
-        if (nextProps.entity === null) {
-            // Filter out one that have already been used so user can't create two of same type.
-            const filteredPrebuilts = localePreBuiltOptions
-                .filter(entityOption => !this.props.entities.some(e => e.entityType === entityOption.key))
+            if (nextProps.entity === null) {
+                // Filter out one that have already been used so user can't create two of same type.
+                const filteredPrebuilts = localePreBuiltOptions
+                    .filter(entityOption => !nextProps.entities.some(e => e.entityType === entityOption.key))
 
-            this.entityOptions = [...this.staticEntityOptions, ...filteredPrebuilts]
+                this.entityOptions = [...this.staticEntityOptions, ...filteredPrebuilts]
 
-            this.setState({
-                ...initState,
-                title: nextProps.intl.formatMessage({
-                    id: FM.ENTITYCREATOREDITOR_TITLE_CREATE,
-                    defaultMessage: 'Create an Entity'
-                }),
-                entityTypeVal: this.props.entityTypeFilter ? this.props.entityTypeFilter : this.NEW_ENTITY
-            });
-        } else {
-            this.entityOptions = [...this.staticEntityOptions, ...localePreBuiltOptions]
-            let entityType = nextProps.entity.entityType;
-            let isProgrammatic = false;
-            let isPrebuilt = true;
-            if (entityType === EntityType.LUIS) {
-                entityType = this.NEW_ENTITY;
-                isPrebuilt = false;
-            } else if (entityType === EntityType.LOCAL) {
-                entityType = this.NEW_ENTITY;
-                isProgrammatic = true;
-                isPrebuilt = false;
-            }
-            this.setState({
-                entityNameVal: nextProps.entity.entityName,
-                entityTypeVal: entityType,
-                isPrebuilt: isPrebuilt,
-                isBucketableVal: nextProps.entity.metadata.isBucket,
-                isNegatableVal: nextProps.entity.metadata.isReversable,
-                isProgrammaticVal: isProgrammatic,
-                editing: true,
-                title: nextProps.intl.formatMessage({
-                    id: FM.ENTITYCREATOREDITOR_TITLE_EDIT,
-                    defaultMessage: 'Edit Entity'
+                this.setState({
+                    ...initState,
+                    title: nextProps.intl.formatMessage({
+                        id: FM.ENTITYCREATOREDITOR_TITLE_CREATE,
+                        defaultMessage: 'Create an Entity'
+                    }),
+                    entityTypeVal: nextProps.entityTypeFilter ? nextProps.entityTypeFilter : this.NEW_ENTITY
+                });
+            } else {
+                this.entityOptions = [...this.staticEntityOptions, ...localePreBuiltOptions]
+                let entityType = nextProps.entity.entityType;
+                let isProgrammatic = false;
+                let isPrebuilt = true;
+                if (entityType === EntityType.LUIS) {
+                    entityType = this.NEW_ENTITY;
+                    isPrebuilt = false;
+                } else if (entityType === EntityType.LOCAL) {
+                    entityType = this.NEW_ENTITY;
+                    isProgrammatic = true;
+                    isPrebuilt = false;
+                }
+                this.setState({
+                    entityNameVal: nextProps.entity.entityName,
+                    entityTypeVal: entityType,
+                    isPrebuilt: isPrebuilt,
+                    isBucketableVal: nextProps.entity.metadata.isBucket,
+                    isNegatableVal: nextProps.entity.metadata.isReversable,
+                    isProgrammaticVal: isProgrammatic,
+                    editing: true,
+                    title: nextProps.intl.formatMessage({
+                        id: FM.ENTITYCREATOREDITOR_TITLE_EDIT,
+                        defaultMessage: 'Edit Entity'
+                    })
                 })
-            })
+            }
         }
     }
 
