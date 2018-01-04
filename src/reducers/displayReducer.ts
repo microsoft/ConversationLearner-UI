@@ -76,9 +76,7 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
         case AT.GET_SCORES_ASYNC:
         case AT.RUN_SCORER_ASYNC:
         case AT.POST_SCORE_FEEDBACK_ASYNC:
-            const nextState2 = { ...state, displaySpinner: addSpinner(state.displaySpinner, action.type) }
-            console.log(`Add Spinner: `, nextState2.displaySpinner, action.type)
-            return nextState2
+            return { ...state, displaySpinner: addSpinner(state.displaySpinner, action.type) }
 
         case AT.CREATE_ACTION_FULFILLED:
         //case AT.CREATE_BLIS_APPLICATION_FULFILLED: Handled above
@@ -118,9 +116,7 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
         case AT.RUN_SCORER_FULFILLED:
         case AT.POST_SCORE_FEEDBACK_FULFILLEDWAIT:
         case AT.POST_SCORE_FEEDBACK_FULFILLEDNOWAIT:
-            const nextState = { ...state, displaySpinner: removeSpinner(state.displaySpinner, action.type) };
-            console.log(`Remove Spinner: `, nextState.displaySpinner, action.type)
-            return nextState
+            return { ...state, displaySpinner: removeSpinner(state.displaySpinner, action.type) }
         default:
             return state;
     }
