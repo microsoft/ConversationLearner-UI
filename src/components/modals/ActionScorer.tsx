@@ -73,7 +73,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                     <div>
                     {action.metadata.actionType === ActionTypes.CARD &&
                         <OF.PrimaryButton
-                            className="blis-dropdownWithButton-button"
+                            className="blis-button--viewCard"
                             onClick={() => component.onClickViewCard(action)}
                             ariaDescription="Refresh"
                             text=""

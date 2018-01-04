@@ -7,7 +7,7 @@ import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { State } from '../../types';
 import Webchat from '../Webchat'
 import TrainDialogAdmin from './TrainDialogAdmin'
-import { BlisAppBase, ActionBase, TrainDialog, ActionPayload } from 'blis-models'
+import { BlisAppBase, TrainDialog} from 'blis-models'
 import { deleteTrainDialogThunkAsync } from '../../actions/deleteActions'
 import { fetchApplicationTrainingStatusThunkAsync } from '../../actions/fetchActions'
 // TODO: Investigate if this can be removed in favor of local state
@@ -94,68 +94,6 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
         })
     }
 
-    // LARS - GOES AWAY
-    // LARSTODO - really should store full activity in logs, as templates may change
-    // so not a good reflection of what was actually shown to the user
-    renderCard(action: ActionBase, id: string): Activity {
-
-        let actionPayload = JSON.parse(action.payload) as ActionPayload;
-        let template = this.props.templates.find(t => t.name === actionPayload.payload);
-
-        if (!template) {
-            return {id: id, from: { id: 'BlisTrainer', name: 'BlisTrainer' }, type: 'message', 
-                text: `ERROR: Can't find template called - ${actionPayload.payload}` } as Activity;
-        }
-
-        let templateString = JSON.stringify(template.body);
-
-        // Substitute argument values
-        for (let actionArgument of actionPayload.arguments) {
-            if (actionArgument) {
-                templateString = templateString.replace(new RegExp(`{{${actionArgument.parameter}}}`, 'g'), actionArgument.value);
-            }
-        }
-
-        // Render to activity
-    //    const attachment = BB.CardStyler.adaptiveCard(JSON.parse(templateString));
-     //   const message = BB.MessageStyler.attachment(attachment);
-     //   return {...message, id: id, from: { id: 'BlisTrainer', name: 'BlisTrainer' }, type: 'message', text: null } as Activity;
-     return null;//TEMP
-    }
-/*
-    generateHistory(): Activity[] {
-        if (!this.props.trainDialog || !this.props.trainDialog.rounds) {
-            return [];
-        }
-        let activities = [];
-        let roundNum = 0;
-        for (let round of this.props.trainDialog.rounds) {
-            let userText = round.extractorStep.textVariations[0].text;
-            let id = `${SenderType.User}:${roundNum}:0`;
-            let userActivity = { id: id, from: { id: this.props.user.id, name: this.props.user.name }, type: 'message', text: userText } as Activity;
-            activities.push(userActivity);
-
-            let scoreNum = 0;
-            for (let scorerStep of round.scorerSteps) {
-                let labelAction = scorerStep.labelAction;
-                let action = this.props.actions.filter((a: ActionBase) => a.actionId === labelAction)[0];
-                let payload = action ? action.payload : 'ERROR: Missing Action';
-                id = `${SenderType.Bot}:${roundNum}:${scoreNum}`
-                let botActivity = null;
-                if (action.metadata && action.metadata.actionType === ActionTypes.CARD) {
-                    botActivity = this.renderCard(action, id);
-                } else if (action.metadata && action.metadata.actionType === ActionTypes.API_LOCAL) {
-                    botActivity = this.renderCard(action, id);
-                }  else {
-                    botActivity = { id: id, from: { id: 'BlisTrainer', name: 'BlisTrainer' }, type: 'message', text: payload } as Activity;
-                }
-                activities.push(botActivity);
-                scoreNum++;
-            }
-            roundNum++;
-        }
-        return activities;
-    }*/
     render() {
         const { intl } = this.props
         return (
@@ -240,8 +178,7 @@ const mapStateToProps = (state: State) => {
     return {
         user: state.user,
         error: state.error.error,
-        actions: state.actions,
-        templates: state.bot.botInfo ? state.bot.botInfo.templates : [] //LARS REMOVE
+        actions: state.actions
     }
 }
 

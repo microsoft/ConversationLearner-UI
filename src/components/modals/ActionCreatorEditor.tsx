@@ -471,12 +471,12 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     }
 
     onChangedActionType = (actionTypeOption: OF.IDropdownOption) => {
-  /*      const isPayloadValid = actionTypeOption.key === ActionTypes.API_LOCAL
+        const isPayloadValid = actionTypeOption.key !== ActionTypes.TEXT
             ? true
-            : this.state.payloadEditorStates[TEXT_SLOT].getCurrentContent().hasText()
-        // LARSTODO - payload validity */
+            : this.state.payloadEditorStates[TEXT_SLOT] && this.state.payloadEditorStates[TEXT_SLOT].getCurrentContent().hasText()
+
         this.setState({
-            isPayloadValid : true, //LARSTODO set from above
+            isPayloadValid : isPayloadValid,
             selectedActionTypeOptionKey: actionTypeOption.key,
             payloadEditorStates: {}
         })
@@ -643,6 +643,15 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
                         {this.state.selectedActionTypeOptionKey === ActionTypes.CARD
                             && (<div>
+                                <div className="blis-dropdownWithButton-buttoncontainer">
+                                    <OF.PrimaryButton
+                                        className="blis-dropdownWithButton-button"
+                                        onClick={() => this.onClickViewCard()}
+                                        ariaDescription="Refresh"
+                                        text=""
+                                        iconProps={{ iconName: 'RedEye' }}
+                                    />
+                                </div>
                                 <TC.Dropdown
                                     label="Template"
                                     className="blis-dropdownWithButton-dropdown"
@@ -661,15 +670,6 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                         ariaDescription="Refresh"
                                         text=""
                                         iconProps={{ iconName: 'Sync' }}
-                                    />
-                                </div>
-                                <div className="blis-dropdownWithButton-buttoncontainer">
-                                    <OF.PrimaryButton
-                                        className="blis-dropdownWithButton-button"
-                                        onClick={() => this.onClickViewCard()}
-                                        ariaDescription="Refresh"
-                                        text=""
-                                        iconProps={{ iconName: 'RedEye' }}
                                     />
                                 </div>
                             </div>

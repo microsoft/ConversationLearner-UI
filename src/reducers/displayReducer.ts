@@ -65,7 +65,6 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
         case AT.FETCH_BOTINFO_ASYNC:
         case AT.FETCH_CHAT_SESSIONS_ASYNC:
         case AT.FETCH_ENTITIES_ASYNC:
-        //LARSTEMP case AT.FETCH_HISTORY_ASYNC:
         case AT.FETCH_TEACH_SESSIONS_ASYNC:
         case AT.FETCH_TRAIN_DIALOGS_ASYNC:
         case AT.FETCH_LOG_DIALOGS_ASYNC:

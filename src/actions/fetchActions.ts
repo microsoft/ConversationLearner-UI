@@ -37,15 +37,9 @@ export const fetchHistoryThunkAsync = (appId: string, trainDialogId: string, use
         const blisClient = ClientFactory.getInstance()
         dispatch(fetchHistoryAsync(appId, trainDialogId, userName, userId))
 
-        try {
-            const activities = await blisClient.history(appId, trainDialogId, userName, userId)
-            dispatch(fetchHistoryFulfilled(activities))
-            return activities
-        }
-        catch (e) {
-//LARSTODO            dispatch(createTeachSessionRejected())
-            throw e
-        }
+        const activities = await blisClient.history(appId, trainDialogId, userName, userId)
+        dispatch(fetchHistoryFulfilled(activities))
+        return activities
     }
 }
 

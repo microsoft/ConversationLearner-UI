@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
-//LARSTEMPimport ScopedStyle, { createStyleSheet } from 'react-scoped-style';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
@@ -16,7 +15,7 @@ var renderOptions = {
         hostConfig: hostconfig,
     
         // the action handler is invoked when actions are pressed
-        onExecuteAction: (action: any) => { alert('Ow!'); },
+        //onExecuteAction: (action: any) => { alert('Ow!'); },
     
         // For markdown support you need a third-party library
         // E.g., to use markdown-it include the script and add the following:

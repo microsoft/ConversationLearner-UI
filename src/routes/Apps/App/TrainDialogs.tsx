@@ -190,12 +190,6 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         .catch(error => {
             console.warn(`Error when attempting to create history: `, error)
         })
-/* LARS REMOVE
-        this.setState({
-            isTrainDialogModalOpen: true,
-            trainDialogId: trainDialog.trainDialogId
-        })
-        */
     }
 
     onCloseTrainDialogWindow() {
