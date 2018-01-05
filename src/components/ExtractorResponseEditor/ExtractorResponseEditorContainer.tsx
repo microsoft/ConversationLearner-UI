@@ -20,7 +20,19 @@ interface Props {
  */
 class ExtractorResponseEditorContainer extends React.Component<Props, {}> {
     onChangeCustomEntities = (customEntities: IGenericEntity<IGenericEntityData<PredictedEntity>>[]) => {
-        const preBuiltPredictedEntities = this.props.extractorResponse.predictedEntities.filter(e => e.builtinType !== "LUIS")
+        // TODO: Need to find out why entities sometimes come back with builtinType populated and other times have entitType populated
+        // This should be normalized so we can only check one property here.
+        const preBuiltPredictedEntities = this.props.extractorResponse.predictedEntities.filter(e => {
+            if (e.builtinType) {
+                console.warn(`ExtractorResponseEditorContainer#onChangeCustomEntities When filtering prebuilts out of predicted entities encountered entity with builtinType defined`)
+            }
+
+            // TODO: Should not have to cast to any. After re-model all entities should have type available
+            const entityType = (e as any).entityType
+            return (typeof entityType === "string" && entityType !== "LUIS")
+                || (typeof e.builtinType === "string" && e.builtinType !== "LUIS")
+        })
+
         const newExtractResponse = {
             ...this.props.extractorResponse,
             predictedEntities: [...preBuiltPredictedEntities, ...customEntities.map(convertGenericEntityToPredictedEntity)]

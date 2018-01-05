@@ -301,14 +301,20 @@ export const convertGenericEntityToPredictedEntity = (ge: models.IGenericEntity<
     // Such as the case where we're editing the extract response and adding a new entity
     const option = ge.data.option
     const text = (ge as any).text || (ge.data as any).text || ''
+
+    if (option.type !== "LUIS") {
+        console.warn(`convertGenericEntityToPredictedEntity option selected as option type other than LUIS, this will most likely cause an error`)
+    }
+
     return {
         startCharIndex: ge.startIndex,
         endCharIndex: ge.endIndex - 1,
         entityId: option.id,
         entityName: option.name,
         entityText: text,
+        entityType: option.type,
         resolution: {},
-        builtinType: option.type
+        builtinType: undefined
     }
 }
 
