@@ -217,7 +217,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     }
 
     componentWillReceiveProps(nextProps: Props) {
-        let nextState: Partial<ComponentState> = {}
+        let nextState = {}
 
         // Update local copy of entity tags if they have changed
         if (nextProps.entities !== this.props.entities) {
