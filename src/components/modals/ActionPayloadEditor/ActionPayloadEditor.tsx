@@ -28,21 +28,25 @@ interface State {
   isPayloadFocused: boolean
 }
 
-const mentionPlugin = createMentionPlugin({
-  entityMutability: 'IMMUTABLE',
-  mentionPrefix: mentionTrigger,
-  mentionTrigger,
-  // mentionComponent: CustomMention
-})
-const { MentionSuggestions } = mentionPlugin
-const plugins = [mentionPlugin]
-
 export default class extends React.Component<Props, State> {
-  domEditor: any
-
   state = {
     suggestions: this.props.allSuggestions,
     isPayloadFocused: false,
+  }
+
+  private domEditor: any
+  private mentionPlugin: any;
+
+  constructor(p: Props) {
+    super(p);
+ 
+    // See: https://github.com/draft-js-plugins/draft-js-plugins/issues/298
+    this.mentionPlugin = createMentionPlugin({
+      entityMutability: 'IMMUTABLE',
+      mentionPrefix: mentionTrigger,
+      mentionTrigger,
+      // mentionComponent: CustomMention
+    })
   }
 
   setDomEditorRef = (ref: any) => this.domEditor = ref
@@ -77,6 +81,9 @@ export default class extends React.Component<Props, State> {
   }
 
   render() {
+    const { MentionSuggestions } = this.mentionPlugin;
+    const plugins = [this.mentionPlugin];
+
     return (
       <div>
         <OF.Label>

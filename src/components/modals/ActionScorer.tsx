@@ -2,11 +2,11 @@ import * as React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { returntypeof } from 'react-redux-typescript';
-import { ModelUtils } from 'blis-models';
 import { State } from '../../types'
 import {
     BlisAppBase, TrainScorerStep, Memory, ScoredBase, ScoreInput, ScoreResponse,
-    ActionBase, ScoredAction, UnscoredAction, ScoreReason, DialogType
+    ActionBase, ScoredAction, UnscoredAction, ScoreReason, DialogType, ActionTypes,
+    Template, ActionArgument
 } from 'blis-models';
 import { createActionAsync } from '../../actions/createActions'
 import { toggleAutoTeach } from '../../actions/teachActions'
@@ -17,6 +17,7 @@ import ActionCreatorEditor from './ActionCreatorEditor'
 import { onRenderDetailsHeader } from '../ToolTips'
 import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../react-intl-messages'
+import AdaptiveCardViewer from './AdaptiveCardViewer/AdaptiveCardViewer'
 
 const ACTION_BUTTON = 'action_button';
 
@@ -67,7 +68,22 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             maxWidth: 500,
             isMultiline: true,
             isResizable: true,
-            render: action => <span className='ms-font-m-plus'>{ModelUtils.GetPrimaryPayload(action as ActionBase)}</span>
+            render: (action: ActionBase, component) => {
+                return (
+                    <div>
+                    {action.metadata.actionType === ActionTypes.CARD &&
+                        <OF.PrimaryButton
+                            className="blis-button--viewCard"
+                            onClick={() => component.onClickViewCard(action)}
+                            ariaDescription="Refresh"
+                            text=""
+                            iconProps={{ iconName: 'RedEye' }}
+                        />
+                    }
+                    <span className='ms-font-m-plus'>{ActionBase.GetPayload(action as ActionBase)}</span>
+                    </div>
+                )
+            }
         },
         {
             key: 'actionArguments',
@@ -80,13 +96,13 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             maxWidth: 300,
             isResizable: true,
             render: action => {
-                const args = ModelUtils.GetArguments(action as ActionBase)
+                const args = ActionBase.GetActionArguments(action as ActionBase).map(aa => `${aa.parameter}: ${aa.value}`);
                 return (!args)
                     ? <span className="ms-Icon ms-Icon--Remove notFoundIcon" aria-hidden="true" />
                     : <OF.List
                         items={args}
                         onRenderCell={(item, index) => (
-                            <span className='ms-ListItem-primaryText'>{item}</span>
+                            <div className='ms-ListItem-primaryText'>{item}</div>
                         )}
                     />
             }
@@ -171,6 +187,7 @@ interface ComponentState {
     sortColumn: OF.IColumn;
     haveEdited: boolean;
     newAction: ActionBase;
+    cardViewerAction: ActionBase;
 }
 
 class ActionScorer extends React.Component<Props, ComponentState> {
@@ -185,7 +202,8 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             columns,
             sortColumn: columns[3], // "score"
             haveEdited: false,
-            newAction: null
+            newAction: null,
+            cardViewerAction: null
         };
         this.handleActionSelection = this.handleActionSelection.bind(this);
         this.handleDefaultSelection = this.handleDefaultSelection.bind(this);
@@ -222,6 +240,18 @@ class ActionScorer extends React.Component<Props, ComponentState> {
     componentDidMount() {
         this.autoSelect();
     }
+
+    onClickViewCard(action: ActionBase) {
+        this.setState({
+            cardViewerAction: action
+        })
+    }
+    onCloseCardViewer = () => {
+        this.setState({
+            cardViewerAction: null
+        })
+    }
+
     autoSelect() {
         // If not in interactive mode select action automatically
         if (this.props.autoTeach && this.props.dialogMode === DialogMode.Scorer) {
@@ -521,6 +551,13 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             scores.push(ACTION_BUTTON);
         }
 
+        let template: Template = null;
+        let actionArguments: ActionArgument[] = [];
+        if (this.state.cardViewerAction) {
+            let actionPayload = ActionBase.GetPayload(this.state.cardViewerAction);
+            template = this.props.templates.find((t) => t.name === actionPayload);
+            actionArguments = ActionBase.GetActionArguments(this.state.cardViewerAction);
+        }
         return (
             <div>
                 <OF.DetailsList
@@ -544,6 +581,12 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                     /* It is not possible to delete from this modal since you cannot select existing action so disregard implementation of delete */
                     onClickDelete={action => { }}
                     onClickSubmit={action => this.onClickSubmitActionEditor(action)}
+                />
+                <AdaptiveCardViewer
+                    open={this.state.cardViewerAction != null}
+                    onDismiss={() => this.onCloseCardViewer()}
+                    template={template}
+                    actionArguments={actionArguments} 
                 />
             </div>
         )
@@ -572,7 +615,8 @@ const mapStateToProps = (state: State, ownProps: any) => {
     return {
         user: state.user,
         entities: state.entities,
-        actions: state.actions
+        actions: state.actions,
+        templates: state.bot.botInfo.templates
     }
 }
 

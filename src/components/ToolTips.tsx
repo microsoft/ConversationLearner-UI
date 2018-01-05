@@ -9,6 +9,7 @@ import './ToolTips.css'
 export enum TipType {
     ACTION_API = 'actionAPI',
     ACTION_ARGUMENTS = 'actionArguments',
+    ACTION_CARD = 'actionCard',
     ACTION_ENTITIES = 'actionEntities',
     ACTION_NEGATIVE = 'negativeEntities',
     ACTION_REQUIRED = 'requiredEntities',
@@ -141,6 +142,8 @@ export function GetTip(tipType: string) {
             )
         case TipType.ACTION_ARGUMENTS:
             return render(FM.TOOLTIP_ACTION_ARGUMENTS_TITLE, [FM.TOOLTIP_ACTION_ARGUMENTS])
+        case TipType.ACTION_CARD:
+            return render(FM.TOOLTIP_ACTION_CARD_TITLE, [FM.TOOLTIP_ACTION_CARD])
         case TipType.ACTION_ENTITIES:
             return (
                 <div>
@@ -223,8 +226,7 @@ export function GetTip(tipType: string) {
                 [
                     { key: 'Text:', value: FM.TOOLTIP_ACTION_TYPE_TEXT },
                     { key: 'API_Local:', value: FM.TOOLTIP_ACTION_TYPE_APILOCAL },
-                    { key: 'API_Azure:', value: FM.TOOLTIP_ACTION_TYPE_APIAZURE },
-                    { key: 'Intent:', value: FM.TOOLTIP_ACTION_TYPE_INTENT },
+                    // { key: 'API_Azure:', value: FM.TOOLTIP_ACTION_TYPE_APIAZURE },
                     { key: 'Card:', value: FM.TOOLTIP_ACTION_TYPE_CARD }
                 ]);
         case TipType.ACTION_WAIT:
