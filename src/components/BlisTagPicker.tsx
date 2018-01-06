@@ -23,7 +23,7 @@ export const component = (props: IBlisTagPickerProps) => {
                 <HelpIcon tipType={props.tipType} />
             </OF.Label>
             <div className="blis-tagpicker">
-                <div className="ms-BasePicker-text ms-BasePicker-text--static pickerText_4c4c5cb3" role="list">
+                <div className="ms-BasePicker-text ms-BasePicker-text--static pickerText_9a477b5b" role="list">
                     {nonRemovableTags.map(tag => (
                         <div className={`ms-TagItem ${nonRemoveableHighlight ? 'ms-TagItem-text--highlight' : ''}`} tabIndex={0} key={tag.key}>
                             <span className={`ms-TagItem-text ${nonRemoveableStrikethrough ? 'ms-TagItem-text--strike' : ''}`} aria-label={tag.name}>{tag.name}</span>
