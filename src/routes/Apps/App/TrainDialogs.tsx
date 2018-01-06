@@ -289,7 +289,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     onClose={() => this.onCloseTrainDialogWindow()}
                     trainDialog={trainDialog}
                     history={this.state.activities}
-                />}
+                />
             </div>
         );
     }
