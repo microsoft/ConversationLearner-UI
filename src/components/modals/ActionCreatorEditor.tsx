@@ -150,7 +150,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     }
 
     existingEntityMatches(text: string, entities: EntityBase[]): any[] {
-        return (text.match(/(\$[\w]+)/g) || [])
+        return (text.match(/(\$[-\w]+)/g) || [])
             .map(match => {
                 // Get entity name by removing first character '$name' -> 'name'
                 const entityName = match.substring(1)
