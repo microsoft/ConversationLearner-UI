@@ -378,7 +378,7 @@ export default {
         [FM.LOGDIALOGS_SUBTITLE]: 'Use this tool to test the current versions of your application, to check if you are progressing on the right track...',
         [FM.LOGDIALOGS_CREATEBUTTONTITLE]: 'New Chat Session',
         [FM.LOGDIALOGS_CREATEBUTTONARIALDESCRIPTION]: 'Create a New Chat Session',
-        [FM.LOGDIALOGS_SESSIONCREATIONWARNING_TITLE]: 'You may not create chat session at this time. Please try again later.',
+        [FM.LOGDIALOGS_SESSIONCREATIONWARNING_TITLE]: 'You may not create chat session at this time. Please try again after training as completed.',
         [FM.LOGDIALOGS_SESSIONCREATIONWARNING_PRIMARYBUTTON]: 'Ok',
         [FM.LOGDIALOGS_FIRSTINPUT]: 'First Input',
         [FM.LOGDIALOGS_LASTINPUT]: 'Last Input',

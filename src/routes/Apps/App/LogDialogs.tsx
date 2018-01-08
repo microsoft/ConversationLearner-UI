@@ -284,7 +284,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                         type: OF.DialogType.normal,
                         title: this.props.intl.formatMessage({
                             id: FM.LOGDIALOGS_SESSIONCREATIONWARNING_TITLE,
-                            defaultMessage: 'You may not create chat session at this time. Please try again later.'
+                            defaultMessage: 'You may not create chat session at this time. Please try again after training as completed.'
                         })
                     }}
                     onDismiss={() => this.onClickWarningWindowOk()}
