@@ -101,6 +101,12 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
             return
         }
 
+        // If selection overlaps another entity (inline node) then don't show menu
+        if (value.inlines.size > 0) {
+            menu.removeAttribute('style')
+            return
+        }
+
         const relativeParent = getRelativeParent(this.menu.parentElement)
         const relativeRect = relativeParent.getBoundingClientRect()
 
@@ -108,6 +114,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
         if (!selection || selection.isCollapsed) {
             return
         }
+
         const range = selection.getRangeAt(0)
         const selectionBoundingRect = range.getBoundingClientRect()
 
