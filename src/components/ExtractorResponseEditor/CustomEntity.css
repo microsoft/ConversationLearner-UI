@@ -109,9 +109,15 @@
 .blis-entity-node--custom .blis-entity-node-indicator__name button {
     color: var(--color-custom-entity-label);
 }
+.blis-entity-node--custom .blis-entity-node-indicator__name button {
+    background: white;
+}
 .blis-entity-node--prebuilt .blis-entity-node-indicator__name,
 .blis-entity-node--prebuilt .blis-entity-node-indicator__name button {
     color: var(--color-prebuilt-entity-label);
+}
+.blis-entity-node--prebuilt .blis-entity-node-indicator__name button {
+    background: white;
 }
 
 .blis-entity-node-indicator__bracket {
