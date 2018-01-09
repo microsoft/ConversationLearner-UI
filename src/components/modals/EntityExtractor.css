@@ -28,3 +28,8 @@
 .editor-button-invalid {
     color: var(--color-red);
 }
+
+.entity-extractor-help-text {
+    color: var(--color-neutralSecondaryAlt);
+    padding: 0.25rem 0;
+}

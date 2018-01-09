@@ -22,6 +22,7 @@ export enum TipType {
 
     ENTITY_ACTION_REQUIRED = 'entityActionRequired',
     ENTITY_ACTION_BLOCKED = 'entityActionBlocked',
+    ENTITY_EXTRACTOR_HELP = 'entityExtractorHelp',
     ENTITY_EXTRACTOR_WARNING = 'extractorWarning',
     ENTITY_MULTIVALUE = 'isBucketable',
     ENTITY_NAME = 'entityName',
@@ -284,6 +285,31 @@ export function GetTip(tipType: string) {
                 <div>
                     {render(FM.TOOLTIP_MEMORYMANAGER_TITLE, [FM.TOOLTIP_MEMORYMANAGER])}
                     <pre>{memoryManagerSample}</pre>
+                </div>
+            )
+        case TipType.ENTITY_EXTRACTOR_HELP:
+            return (
+                <div>
+                    <h2>Label Text as Entity</h2>
+                    <ol>
+                        <li>Select text</li>
+                        <li>Pick entity from menu</li>
+                    </ol>
+
+                    <img src="/entity-extractor-label.gif" width="560px" height="368px" />
+
+                    <h2>Remove Label</h2>
+                    <ol>
+                        <li>Click on green highlighted text</li>
+                        <li>Click on red 'X'</li>
+                    </ol>
+
+                    <img src="/entity-extractor-remove-label.gif" width="518px" height="184px" />
+
+                    <h2>Notes:</h2>
+                    <ul>
+                        <li>Pre-Built entities in blue are not editable</li>
+                    </ul>
                 </div>
             )
         default:
