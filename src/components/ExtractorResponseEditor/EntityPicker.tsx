@@ -21,11 +21,16 @@ interface MenuProps {
 
 export default class EntityPicker extends React.Component<MenuProps> {
     render() {
+        const style: any = {
+            left: this.props.isVisible ? `${this.props.position.left}px` : null,
+            bottom: this.props.isVisible ? `${this.props.position.bottom}px` : null
+        }
         return (
             <div
                 className={`custom-toolbar ${this.props.isVisible ? "custom-toolbar--visible" : ""}`}
                 onKeyDown={this.props.onKeyDown}
                 ref={this.props.menuRef}
+                style={style}
             >
                 {this.props.matchedOptions.length !== 0
                     && <ul className="custom-toolbar__results">

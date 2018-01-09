@@ -19,13 +19,11 @@
     transition: transform 0.15s cubic-bezier(.3,1.2,.2,1), left 0.05s ease-in-out;
 }
 
-/* 
 .custom-toolbar--visible {
   visibility: visible;
   opacity: 1;
   transform: scale(1);
 }
-*/
 
 .custom-toolbar__search {
     padding: 0.25em;

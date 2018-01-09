@@ -21,6 +21,11 @@ export interface EntityBase {
     entityType: string
 }
 
+export interface IEntityPickerProps {
+    isVisible: boolean
+    position: IPosition
+}
+
 export interface IPosition {
     top: number
     left: number

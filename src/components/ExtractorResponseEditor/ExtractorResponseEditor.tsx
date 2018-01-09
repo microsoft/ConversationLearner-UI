@@ -2,7 +2,7 @@ import * as React from 'react'
 import { Editor } from 'slate-react'
 import { Value } from 'slate'
 import initialValue from './value'
-import { IOption, IPosition, IGenericEntity, NodeType } from './models'
+import { IOption, IPosition, IEntityPickerProps, IGenericEntity, NodeType } from './models'
 import { convertEntitiesAndTextToEditorValue, getRelativeParent, getEntitiesFromValue, getSelectedText } from './utilities'
 import CustomEntityNode from './CustomEntityNode'
 import PreBuiltEntityNode from './PreBuiltEntityNode'
@@ -77,34 +77,24 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
         }
     }
 
-    // TODO: Is this necessary?
-    // componentDidMount() {
-    //     this.updateMenu()
-    // }
-
-    componentDidUpdate() {
-        this.updateMenu()
-    }
-
-    updateMenu = () => {
+    updateMenu = (): IEntityPickerProps | void => {
+        const hideMenu: IEntityPickerProps = {
+            isVisible: false,
+            position: null
+        }
         const menu = this.menu
-        if (!menu) return
+        if (!menu) {
+            return hideMenu
+        }
 
         const { value } = this.state
         if (value.isEmpty) {
-            if (this.state.isMenuVisible !== false) {
-                // this.setState({
-                //     isMenuVisible: false
-                // })
-            }
-            menu.removeAttribute('style')
-            return
+            return hideMenu
         }
 
         // If selection overlaps another entity (inline node) then don't show menu
         if (value.inlines.size > 0) {
-            menu.removeAttribute('style')
-            return
+            return hideMenu
         }
 
         const relativeParent = getRelativeParent(this.menu.parentElement)
@@ -112,7 +102,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
 
         const selection = window.getSelection()
         if (!selection || selection.isCollapsed) {
-            return
+            return hideMenu
         }
 
         const range = selection.getRangeAt(0)
@@ -125,21 +115,10 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
             bottom: relativeRect.height - (selectionBoundingRect.top - relativeRect.top) + 10
         }
 
-        // this.setState({
-        //     isMenuVisible: true,
-        //     menuPosition
-        // })
-
-        const style: any = {
-            visibility: 'visible',
-            opacity: '1',
-            // top: `${menuPosition.top}px`,
-            left: `${menuPosition.left}px`,
-            bottom: `${menuPosition.bottom}px`,
-            transform: 'scale(1)'
+        return {
+            isVisible: true,
+            position: menuPosition
         }
-
-        Object.assign(menu.style, style)
     }
 
     onChange = (change: any) => {
@@ -158,6 +137,14 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
         if (containsExternalChangeOperation) {
             const customEntities = getEntitiesFromValue(change)
             this.props.onChangeCustomEntities(customEntities)
+        }
+
+        const pickerProps = this.updateMenu()
+        if (pickerProps) {
+            this.setState({
+                isMenuVisible: pickerProps.isVisible,
+                menuPosition: pickerProps.position
+            })
         }
     }
 
