@@ -2,6 +2,7 @@ import * as React from 'react'
 import { FormattedMessage, FormattedRelative } from 'react-intl'
 import { FM } from '../react-intl-messages'
 import { TooltipHost } from 'office-ui-fabric-react'
+import { Icon } from 'office-ui-fabric-react/lib/Icon'
 import './TrainingStatus.css'
 
 export enum InternalTrainingStatus {
@@ -15,35 +16,41 @@ export enum InternalTrainingStatus {
 const internalStatusToUiStateMap = new Map<InternalTrainingStatus, StatusUI>([
     [InternalTrainingStatus.Unknown, {
         className: "blis-training-status__icon-row--unknown",
-        iconClassName: "ms-Icon--Unknown",
+        iconName: "Unknown",
         iconLabelMessageId: FM.APP_TRAINING_STATUS_UNKNOWN,
+        additionalIconClasses: ''
     }],
     [InternalTrainingStatus.Queued, {
         className: "blis-training-status__icon-row--queued",
-        iconClassName: "ms-Icon--Recent",
+        iconName: "Recent",
         iconLabelMessageId: FM.APP_TRAINING_STATUS_QUEUED,
+        additionalIconClasses: ''
     }],
     [InternalTrainingStatus.Running, {
         className: "blis-training-status__icon-row--running",
-        iconClassName: "ms-Icon--Sync blis-icon--spin",
+        iconName: "Sync",
         iconLabelMessageId: FM.APP_TRAINING_STATUS_RUNNING,
+        additionalIconClasses: 'blis-icon--spin'
     }],
     [InternalTrainingStatus.Completed, {
         className: "blis-training-status__icon-row--success",
-        iconClassName: "ms-Icon--CompletedSolid",
+        iconName: "CompletedSolid",
         iconLabelMessageId: FM.APP_TRAINING_STATUS_COMPLETED,
+        additionalIconClasses: ''
     }],
     [InternalTrainingStatus.Failed, {
         className: "blis-training-status__icon-row--error",
-        iconClassName: "ms-Icon--StatusErrorFull",
+        iconName: "StatusErrorFull",
         iconLabelMessageId: FM.APP_TRAINING_STATUS_FAILED,
+        additionalIconClasses: ''
     }]
 ])
 
 interface StatusUI {
     className: string
-    iconClassName: string
+    iconName: string
     iconLabelMessageId: string
+    additionalIconClasses: string
 }
 
 export interface Props {
@@ -62,7 +69,7 @@ const Component: React.SFC<Props> = (props: Props) => {
                 <FormattedMessage
                     id={FM.APP_TRAINING_STATUS_STATUS}
                     defaultMessage="Status"
-                />: &nbsp;<span className={"ms-Icon " + uiState.iconClassName} aria-hidden="true" />
+                />: &nbsp;<Icon iconName={uiState.iconName} className={uiState.additionalIconClasses} />
                 &nbsp;<span className="blis-training-status__icon-label">
                     <FormattedMessage
                         id={uiState.iconLabelMessageId}
@@ -71,7 +78,7 @@ const Component: React.SFC<Props> = (props: Props) => {
                 </span>
                 {props.status === InternalTrainingStatus.Failed
                     && <TooltipHost content={props.failureMessage}>
-                        <span className="blis-icon ms-Icon ms-Icon--Info" aria-hidden="true" />
+                        <Icon iconName="Info" className="blis-icon" />
                     </TooltipHost>}
                 {props.didPollingExpire
                     && <TooltipHost
@@ -83,7 +90,7 @@ const Component: React.SFC<Props> = (props: Props) => {
                                 />
                         }}
                     >
-                         &nbsp;<span className="blis-icon ms-Icon ms-Icon--Warning" aria-hidden="true" />
+                         &nbsp;<Icon iconName="Warning" className="blis-icon" />
                     </TooltipHost>}
             </div>
             <div className="blis-training-status__text-row ms-font-s">

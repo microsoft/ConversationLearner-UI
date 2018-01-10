@@ -98,7 +98,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             render: action => {
                 const args = ActionBase.GetActionArguments(action as ActionBase).map(aa => `${aa.parameter}: ${aa.value}`);
                 return (!args)
-                    ? <span className="ms-Icon ms-Icon--Remove notFoundIcon" aria-hidden="true" />
+                    ? <OF.Icon iconName="Remove" className="notFoundIcon" />
                     : <OF.List
                         items={args}
                         onRenderCell={(item, index) => (
@@ -164,7 +164,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             minWidth: 50,
             maxWidth: 50,
             isResizable: true,
-            render: action => <span className={"ms-Icon blis-icon" + (action.isTerminal ? " ms-Icon--CheckMark checkIcon" : "ms-Icon--Remove notFoundIcon")} aria-hidden="true" />
+            render: action => <OF.Icon iconName={(action.isTerminal ? "CheckMark" : "Remove")} className={"blis-icon" + (action.isTerminal ? " checkIcon" : " notFoundIcon")} />
         },
         {
             key: 'actionType',

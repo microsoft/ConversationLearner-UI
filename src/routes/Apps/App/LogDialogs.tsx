@@ -45,7 +45,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                     let text = logDialog.rounds[0].extractorStep.text;
                     return <span className='ms-font-m-plus'>{text}</span>;
                 }
-                return <span className="ms-Icon ms-Icon--Remove notFoundIcon" aria-hidden="true"></span>;
+                return <OF.Icon iconName="Remove" className="notFoundIcon" />
             }
         },
         {
@@ -63,7 +63,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                     let text = logDialog.rounds[logDialog.rounds.length - 1].extractorStep.text;
                     return <span className='ms-font-m-plus'>{text}</span>;
                 }
-                return <span className="ms-Icon ms-Icon--Remove notFoundIcon"></span>;
+                return <OF.Icon iconName="Remove" className="notFoundIcon" />
             }
         },
         {
@@ -90,7 +90,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                     }
                 }
 
-                return <span className="ms-Icon ms-Icon--Remove notFoundIcon"></span>;
+                return <OF.Icon iconName="Remove" className="notFoundIcon" />;
             }
         },
         {

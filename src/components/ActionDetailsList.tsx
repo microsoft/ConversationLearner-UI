@@ -127,7 +127,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             render: action => {
                 const args = ActionBase.GetActionArguments(action).map(aa => `${aa.parameter}: ${aa.value}`);;
                 return (!args || args.length === 0)
-                    ? <span className="ms-Icon ms-Icon--Remove notFoundIcon" aria-hidden="true"/>
+                    ? <OF.Icon iconName="Remove" className="notFoundIcon" />
                     : args.map((argument, i) => <div className="ms-ListItem-primaryText" key={i}>{argument}</div>)
             }
         },
@@ -159,7 +159,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             // This lookup should be done ahead of time instead of on every render
             getSortValue: action => '',
             render: (action, component) => action.requiredEntities.length === 0
-                ? <span className="ms-Icon ms-Icon--Remove blis-icon" aria-hidden="true"></span>
+                ? <OF.Icon iconName="Remove" className="blis-icon" />
                 : action.requiredEntities.map(entityId => {
                     const entity = component.props.entities.find(e => e.entityId === entityId)
                     return (
@@ -184,7 +184,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             // This lookup should be done ahead of time instead of on every render
             getSortValue: action => '',
             render: (action, component) => action.negativeEntities.length === 0
-                ? <span className="ms-Icon ms-Icon--Remove blis-icon" aria-hidden="true"></span>
+                ? <OF.Icon iconName="Remove" className="blis-icon" />
                 : action.negativeEntities.map(entityId => {
                     const entity = component.props.entities.find(e => e.entityId == entityId)
                     return (
@@ -208,7 +208,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             render: (action, component) => {
                 const expectedEntityId = action.suggestedEntity || (action.metadata as any).entitySuggestion
                 if (!expectedEntityId) {
-                    return <span className="ms-Icon ms-Icon--Remove blis-icon" aria-hidden="true"></span>
+                    return <OF.Icon iconName="Remove" className="blis-icon" />
                 }
 
                 const expectedEntity = component.props.entities.find(e => e.entityId == expectedEntityId)
@@ -230,7 +230,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             maxWidth: 50,
             isResizable: true,
             getSortValue: action => action.isTerminal ? 'a' : 'b',
-            render: action => <span className={"ms-Icon blis-icon " + (action.isTerminal ? 'ms-Icon--CheckMark' : 'ms-Icon--Remove')} aria-hidden="true"></span>
+            render: action => <OF.Icon iconName={action.isTerminal ? 'CheckMark' : 'Remove'} className="blis-icon" />
         }
     ]
 }

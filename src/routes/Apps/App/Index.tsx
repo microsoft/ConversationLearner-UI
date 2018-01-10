@@ -12,6 +12,7 @@ import { BlisAppBase, ActionBase, ActionTypes } from 'blis-models'
 import { State } from '../../../types';
 import { ErrorType } from '../../../types/const';
 import { setErrorDisplay } from '../../../actions/displayActions';
+import { Icon } from 'office-ui-fabric-react/lib/Icon'
 import Entities from './Entities'
 import TrainDialogs from './TrainDialogs'
 import Actions from './Actions'
@@ -102,7 +103,7 @@ class Index extends React.Component<Props, ComponentState> {
                     <div className="blis-nav ms-font-m-plus">
                         <div className="blis-nav_section">
                             <NavLink className="blis-nav-link" to={{ pathname: `${match.url}/settings`, state: { app } }}>
-                                <span className="ms-Icon ms-Icon--Settings" aria-hidden="true" />&nbsp;&nbsp;Settings
+                                <Icon iconName="Settings" />&nbsp;&nbsp;Settings
                             </NavLink>
                         </div>
                         <div className="blis-nav_section blis-nav_section--links ms-font-m">
@@ -113,7 +114,7 @@ class Index extends React.Component<Props, ComponentState> {
                             <NavLink className="blis-nav-link" to={{ pathname: `${match.url}/logDialogs`, state: { app } }}>Log Dialogs</NavLink>
                         </div>
                         <div className="blis-nav_section">
-                            <NavLink className="blis-nav-link" exact={true} to="/home"><span className="ms-Icon ms-Icon--Back"></span>&nbsp;&nbsp;App List</NavLink>
+                            <NavLink className="blis-nav-link" exact={true} to="/home"><Icon iconName="Back" />&nbsp;&nbsp;App List</NavLink>
                         </div>
                     </div>
                 </div>

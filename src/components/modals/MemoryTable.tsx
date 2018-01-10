@@ -56,7 +56,7 @@ const columns: IRenderableColumn[] = [
         minWidth: 100,
         maxWidth: 100,
         isResizable: true,
-        render: entity => <span className={"ms-Icon blis-icon " + (entity.entityType === EntityType.LOCAL ? "ms-Icon--CheckMark" : "ms-Icon--Remove")} aria-hidden="true"></span>,
+        render: entity => <OF.Icon iconName={entity.entityType === EntityType.LOCAL ? "CheckMark" : "Remove"} className="blis-icon" />,
         getSortValue: entity => entity.entityType === EntityType.LOCAL ? 'a' : 'b'
     },
     {
@@ -66,7 +66,7 @@ const columns: IRenderableColumn[] = [
         minWidth: 80,
         maxWidth: 100,
         isResizable: true,
-        render: entity => <span className={"ms-Icon blis-icon " + (entity.metadata.isBucket ? "ms-Icon--CheckMark" : "ms-Icon--Remove")} aria-hidden="true"></span>,
+        render: entity => <OF.Icon iconName={entity.metadata.isBucket ? "CheckMark" : "Remove"} className="blis-icon" />,
         getSortValue: entity => entity.metadata.isBucket ? 'a' : 'b'
     },
     {
@@ -76,7 +76,7 @@ const columns: IRenderableColumn[] = [
         minWidth: 80,
         maxWidth: 100,
         isResizable: true,
-        render: entity => <span className={"ms-Icon blis-icon " + (entity.metadata.isReversable ? "ms-Icon--CheckMark" : "ms-Icon--Remove")} aria-hidden="true"></span>,
+        render: entity => <OF.Icon iconName={entity.metadata.isReversable ? "CheckMark" : "Remove"} className="blis-icon" />,
         getSortValue: entity => entity.metadata.isReversable ? 'a' : 'b'
     }
 ]
