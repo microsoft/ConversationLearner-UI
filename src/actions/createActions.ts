@@ -150,11 +150,16 @@ export const createTeachSessionFromUndoThunkAsync = (appId: string, teach: Teach
         const blisClient = ClientFactory.getInstance()
         dispatch(createTeachSessionFromUndoAsync(appId, teach, userName, userId))
 
-        const teachWithHistory = await blisClient.teachSessionFromUndo(appId, teach, userName, userId)
-        dispatch(createTeachSessionFromUndoFulfilled(teachWithHistory))
-        return teachWithHistory
+        try {
+            const teachWithHistory = await blisClient.teachSessionFromUndo(appId, teach, userName, userId)
+            dispatch(createTeachSessionFromUndoFulfilled(teachWithHistory))
+            return teachWithHistory
+        }
+        catch (e) {
+            dispatch(createTeachSessionRejected())
+            throw e
+        }
     }
-    //LARS TODO fail catch
 }
 
 export const createTeachSessionFromUndoAsync = (blisAppID: string, teach: Teach, userName: string, userId: string): ActionObject => {
@@ -180,11 +185,16 @@ export const createTeachSessionFromBranchThunkAsync = (appId: string, teachId: s
         const blisClient = ClientFactory.getInstance()
         dispatch(createTeachSessionFromBranchAsync(appId, teachId, userName, userId, turnIndex))
 
-        const teachWithHistory = await blisClient.teachSessionFromBranch(appId, teachId, userName, userId, turnIndex)
-        dispatch(createTeachSessionFromBranchFulfilled(teachWithHistory))
-        return teachWithHistory
+        try  {
+            const teachWithHistory = await blisClient.teachSessionFromBranch(appId, teachId, userName, userId, turnIndex)
+            dispatch(createTeachSessionFromBranchFulfilled(teachWithHistory))
+            return teachWithHistory
+        }
+        catch (e) {
+            dispatch(createTeachSessionRejected())
+            throw e
+        }
     }
-    //LARS TODO fail catch
 }
 
 export const createTeachSessionFromBranchAsync = (blisAppID: string, teachId: string, userName: string, userId: string, turnIndex: number): ActionObject => {

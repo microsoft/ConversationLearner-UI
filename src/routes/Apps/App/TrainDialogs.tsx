@@ -184,7 +184,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             this.setState({
                 teachSession: teachWithHistory.teach, 
                 activities: teachWithHistory.history,
-                dialogKey: this.state.dialogKey + 1    // Force UI update as new teach session  LARS needed?
+          //      dialogKey: this.state.dialogKey + 1    // Force UI update as new teach session  LARS needed?
             })
         })
         .catch(error => {

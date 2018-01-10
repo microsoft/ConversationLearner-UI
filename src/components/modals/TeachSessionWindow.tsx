@@ -46,7 +46,7 @@ class TeachWindow extends React.Component<Props, ComponentState> {
                 }
             });
         }
-        if (this.props.teachSessions.current !== newProps.teachSessions.current) {
+        if (this.props.history !== newProps.history) {
             // Force webchat to re-mount as history prop can't be updated
             this.setState({
                 webchatKey: this.state.webchatKey + 1

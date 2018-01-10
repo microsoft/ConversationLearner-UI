@@ -2,7 +2,7 @@ import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { PrimaryButton, DefaultButton } from 'office-ui-fabric-react';
+import { PrimaryButton, DefaultButton, Callout } from 'office-ui-fabric-react';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { State } from '../../types';
 import Webchat from '../Webchat'
@@ -19,6 +19,7 @@ import { injectIntl, InjectedIntlProps } from 'react-intl'
 
 interface ComponentState {
     confirmDeleteModalOpen: boolean,
+    calloutOpen: boolean,
     selectedActivity: Activity | null,
     webchatKey: number,
     currentTrainDialog: TrainDialog
@@ -26,6 +27,7 @@ interface ComponentState {
 
 const initialState: ComponentState = {
     confirmDeleteModalOpen: false,
+    calloutOpen: false,
     selectedActivity: null,
     webchatKey: 0,
     currentTrainDialog: null,
@@ -33,6 +35,8 @@ const initialState: ComponentState = {
 
 class TrainDialogWindow extends React.Component<Props, ComponentState> {
     state = initialState
+
+    private _refBranchButton: HTMLElement | null;
 
     componentWillReceiveProps(nextProps: Props) {
         if (this.props.open === false && nextProps.open === true) {
@@ -52,8 +56,12 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
             let roundIndex = this.state.selectedActivity.id.split(':').map(s => parseInt(s))[1];
             this.props.onBranch(roundIndex);
         }
-        //LARS TODO pop up telling to seledct a round
-        // also check that not round 0
+        else {
+            this.setState({
+                calloutOpen: true
+              });
+        }
+        //LARS TODO check that not round 0
     }
 
     onClickDone() {
@@ -103,6 +111,12 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
         })
     }
 
+    onCalloutDismiss() {
+        this.setState({
+          calloutOpen: false
+        });
+      }
+
     render() {
         const { intl } = this.props
         return (
@@ -138,17 +152,19 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
                     <div className="blis-modal-buttons">
                         <div className="blis-modal-buttons_primary" />
                         <div className="blis-modal-buttons_secondary">
-                            <DefaultButton
-                                    onClick={() => this.onClickBranch()}
-                                    ariaDescription={intl.formatMessage({
-                                        id: FM.TRAINDIALOGWINDOW_BRANCH_ARIADESCRIPTION,
-                                        defaultMessage: 'Branch'
-                                    })}
-                                    text={intl.formatMessage({
-                                        id: FM.TRAINDIALOGWINDOW_BRANCH_TEXT,
-                                        defaultMessage: 'Branch'
-                                    })}
-                            />
+                            <div  ref={ (menuButton) => this._refBranchButton = menuButton}>
+                                <DefaultButton
+                                        onClick={() => this.onClickBranch()}
+                                        ariaDescription={intl.formatMessage({
+                                            id: FM.TRAINDIALOGWINDOW_BRANCH_ARIADESCRIPTION,
+                                            defaultMessage: 'Branch'
+                                        })}
+                                        text={intl.formatMessage({
+                                            id: FM.TRAINDIALOGWINDOW_BRANCH_TEXT,
+                                            defaultMessage: 'Branch'
+                                        })}
+                                />
+                            </div>
                             <DefaultButton
                                 onClick={() => this.onClickDelete()}
                                 ariaDescription={intl.formatMessage({
@@ -183,6 +199,22 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
                         defaultMessage: `Are you sure you want to delete this Training Dialog?`
                     })}
                 />
+                { this.state.calloutOpen && (
+                    <Callout
+                        role={ 'alertdialog' }
+                        gapSpace={ 0 }
+                        target={ this._refBranchButton }
+                        onDismiss={ () => this.onCalloutDismiss() }
+                        setInitialFocus={ true }
+                    >
+                        <div>
+                        <p className='blis-callout'>
+                            First select a round in the conversation by clicking on it.  Then click "Branch"
+                            to create a new Training Dialog starting at that round.
+                        </p>
+                        </div>
+                    </Callout>
+        ) }
             </Modal>
         );
     }
