@@ -5,12 +5,13 @@ import { connect } from 'react-redux';
 import { State } from '../types';
 import { setTipType } from '../actions/displayActions'
 import { TipType } from '../components/ToolTips';
+import { Icon } from 'office-ui-fabric-react/lib/Icon';
 
 class HelpIcon extends React.Component<Props, {}> {
     render() {
         return (
             <a onClick={() => { this.props.setTipType(this.props.tipType) }}>
-                <span className="blis-icon ms-Icon ms-Icon--Info" />
+                <Icon iconName="Info" className="blis-icon" />
             </a>
         )
     }

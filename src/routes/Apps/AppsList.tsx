@@ -68,7 +68,7 @@ function getColumns(intl: InjectedIntl): ISortableRenderableColumn[] {
             maxWidth: 100,
             isResizable: false,
             getSortValue: app => 0,
-            render: (app, component) => <a onClick={() => component.onClickDeleteApp(app)}><span className="ms-Icon ms-Icon--Delete"></span>&nbsp;&nbsp;</a>
+            render: (app, component) => <a onClick={() => component.onClickDeleteApp(app)}><OF.Icon iconName="Delete"/>&nbsp;&nbsp;</a>
         },
     ]
 }

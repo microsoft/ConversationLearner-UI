@@ -21,6 +21,12 @@ export interface EntityBase {
     entityType: string
 }
 
+export interface IEntityPickerProps {
+    isOverlappingOtherEntities: boolean
+    isVisible: boolean
+    position: IPosition
+}
+
 export interface IPosition {
     top: number
     left: number

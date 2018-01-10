@@ -311,10 +311,10 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                         />
                         {(key !== 0) && <div className="editor-container__icons">
                             <button type="button" className="editor-button-delete ms-font-l" onClick={() => this.onRemoveExtractResponse(extractResponse)}>
-                                <span className="ms-Icon ms-Icon--Delete" />
+                                <OF.Icon iconName="Delete" />
                             </button>
                             {!isValid && ToolTips.Wrap(
-                                <span className="editor-button-invalid ms-Icon ms-Icon--IncidentTriangle" />,
+                                <OF.Icon iconName="IncidentTriangle" className="editor-button-invalid" />,
                                 ToolTips.TipType.ENTITY_EXTRACTOR_WARNING)}
                         </div>}
                     </div>
