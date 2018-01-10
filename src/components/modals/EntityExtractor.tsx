@@ -10,7 +10,8 @@ import EntityCreatorEditor from './EntityCreatorEditor';
 import { DialogMode } from '../../types/const'
 import { clearExtractResponses, updateExtractResponse, removeExtractResponse, runExtractorAsync } from '../../actions/teachActions'
 import * as ToolTips from '../ToolTips'
-import { injectIntl, InjectedIntlProps } from 'react-intl'
+import HelpIcon from '../HelpIcon'
+import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { FM } from '../../react-intl-messages'
 import './EntityExtractor.css'
 
@@ -286,6 +287,13 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
 
         return (
             <div>
+                <OF.Label className="entity-extractor-help-text ms-font-s-plus">
+                    <FormattedMessage
+                        id={FM.TOOLTIP_ENTITY_EXTRACTOR_HELP}
+                        defaultMessage="Select text to label it as an entity.  View Help:"
+                    />
+                    <HelpIcon tipType={ToolTips.TipType.ENTITY_EXTRACTOR_HELP} />
+                </OF.Label>
                 {extractResponsesToRender.map((extractResponse, key) => {
                     let isValid = true;
                     if (extractResponse !== allResponses[0]) {
@@ -312,19 +320,19 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                     </div>
                 })}
                 {canEdit && <OF.TextField
-                        value={this.state.textVariationValue}
-                        onChanged={this.onChangeTextVariation}
-                        placeholder={this.props.intl.formatMessage({
-                            id: FM.TEXTVARIATION_PLACEHOLDER,
-                            defaultMessage: "Add alternative input..."
-                        })}
-                        onKeyPress={(event) => {
-                            if (event.key === 'Enter') {
-                                this.onSubmitTextVariation()
-                                event.preventDefault()
-                            }
-                        }}
-                    />}
+                    value={this.state.textVariationValue}
+                    onChanged={this.onChangeTextVariation}
+                    placeholder={this.props.intl.formatMessage({
+                        id: FM.TEXTVARIATION_PLACEHOLDER,
+                        defaultMessage: "Add alternative input..."
+                    })}
+                    onKeyPress={(event) => {
+                        if (event.key === 'Enter') {
+                            this.onSubmitTextVariation()
+                            event.preventDefault()
+                        }
+                    }}
+                />}
                 {canEdit && (
                     (this.props.extractType !== DialogType.TEACH) ?
                         (
