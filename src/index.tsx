@@ -9,7 +9,9 @@ import { addLocaleData, IntlProvider } from 'react-intl'
 import * as en from 'react-intl/locale-data/en'
 import * as ko from 'react-intl/locale-data/ko'
 import messages from './react-intl-messages'
+import { initializeIcons } from '@uifabric/icons'
 
+initializeIcons()
 addLocaleData([...en, ...ko])
 
 const locale = (navigator.languages && navigator.languages[0])
