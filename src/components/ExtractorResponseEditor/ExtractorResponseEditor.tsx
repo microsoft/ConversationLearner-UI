@@ -24,6 +24,7 @@ interface Props {
 }
 
 interface State {
+    isSelectionOverlappingOtherEntities: boolean
     isMenuVisible: boolean
     menuPosition: IPosition
     value: SlateValue
@@ -46,6 +47,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
     menu: HTMLElement
 
     state = {
+        isSelectionOverlappingOtherEntities: false,
         isMenuVisible: false,
         menuPosition: {
             top: 0,
@@ -79,6 +81,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
 
     updateMenu = (): IEntityPickerProps | void => {
         const hideMenu: IEntityPickerProps = {
+            isOverlappingOtherEntities: false,
             isVisible: false,
             position: null
         }
@@ -89,11 +92,6 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
 
         const { value } = this.state
         if (value.isEmpty) {
-            return hideMenu
-        }
-
-        // If selection overlaps another entity (inline node) then don't show menu
-        if (value.inlines.size > 0) {
             return hideMenu
         }
 
@@ -116,6 +114,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
         }
 
         return {
+            isOverlappingOtherEntities: (value.inlines.size > 0),
             isVisible: true,
             position: menuPosition
         }
@@ -142,6 +141,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
         const pickerProps = this.updateMenu()
         if (pickerProps) {
             this.setState({
+                isSelectionOverlappingOtherEntities: pickerProps.isOverlappingOtherEntities,
                 isMenuVisible: pickerProps.isVisible,
                 menuPosition: pickerProps.position
             })
@@ -189,6 +189,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
                             readOnly={this.props.readOnly}
                         />
                         <EntityPicker
+                            isOverlappingOtherEntities={this.state.isSelectionOverlappingOtherEntities}
                             isVisible={this.state.isMenuVisible}
                             options={this.props.options}
                             maxDisplayedOptions={4}

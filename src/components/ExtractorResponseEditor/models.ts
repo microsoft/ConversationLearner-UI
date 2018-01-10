@@ -22,6 +22,7 @@ export interface EntityBase {
 }
 
 export interface IEntityPickerProps {
+    isOverlappingOtherEntities: boolean
     isVisible: boolean
     position: IPosition
 }

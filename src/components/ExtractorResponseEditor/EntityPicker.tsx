@@ -5,6 +5,7 @@ import './EntityPicker.css'
 
 interface MenuProps {
     highlightIndex: number
+    isOverlappingOtherEntities: boolean
     isVisible: boolean
     matchedOptions: MatchedOption<IOption>[]
     maxDisplayedOptions: number
@@ -32,38 +33,43 @@ export default class EntityPicker extends React.Component<MenuProps> {
                 ref={this.props.menuRef}
                 style={style}
             >
-                {this.props.matchedOptions.length !== 0
-                    && <ul className="custom-toolbar__results">
-                        {this.props.matchedOptions.map((matchedOption, i) =>
-                            <li
-                                key={matchedOption.original.id}
-                                onClick={() => this.props.onClickOption(matchedOption.original)}
-                                className={`custom-toolbar__result ${this.props.highlightIndex === i ? 'custom-toolbar__result--highlight' : ''}`}
-                            >
-                                <FuseMatch matches={matchedOption.matchedStrings} />
-                            </li>
-                        )}
+                {this.props.isOverlappingOtherEntities
+                    ? <div>Cannot add overlapping entities.<br />Please change the selection.</div>
+                    : <React.Fragment>
+                        {this.props.matchedOptions.length !== 0
+                            && <ul className="custom-toolbar__results">
+                                {this.props.matchedOptions.map((matchedOption, i) =>
+                                    <li
+                                        key={matchedOption.original.id}
+                                        onClick={() => this.props.onClickOption(matchedOption.original)}
+                                        className={`custom-toolbar__result ${this.props.highlightIndex === i ? 'custom-toolbar__result--highlight' : ''}`}
+                                    >
+                                        <FuseMatch matches={matchedOption.matchedStrings} />
+                                    </li>
+                                )}
 
-                    </ul>}
-                <button
-                    type="button"
-                    tabIndex={-1}
-                    onClick={this.props.onClickNewEntity}
-                    className="custom-toolbar__new-entity-button"
-                >
-                    New Entity
-                </button>
-                <div className="custom-toolbar__search">
-                    <label htmlFor="toolbar-input">Search for entities:</label>
-                    <input
-                        id="toolbar-input"
-                        type="text"
-                        placeholder="Search input"
-                        value={this.props.searchText}
-                        className="custom-toolbar__input"
-                        onChange={event => this.props.onChangeSearchText(event.target.value)}
-                    />
-                </div>
+                            </ul>}
+                        <button
+                            type="button"
+                            tabIndex={-1}
+                            onClick={this.props.onClickNewEntity}
+                            className="custom-toolbar__new-entity-button"
+                        >
+                            New Entity
+                    </button>
+                        <div className="custom-toolbar__search">
+                            <label htmlFor="toolbar-input">Search for entities:</label>
+                            <input
+                                id="toolbar-input"
+                                type="text"
+                                placeholder="Search input"
+                                value={this.props.searchText}
+                                className="custom-toolbar__input"
+                                onChange={event => this.props.onChangeSearchText(event.target.value)}
+                            />
+                        </div>
+                    </React.Fragment>
+                }
             </div>
         )
     }
