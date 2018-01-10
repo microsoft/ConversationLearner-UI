@@ -10,9 +10,17 @@ import * as en from 'react-intl/locale-data/en'
 import * as ko from 'react-intl/locale-data/ko'
 import messages from './react-intl-messages'
 import { Fabric } from 'office-ui-fabric-react/lib/Fabric'
+import { loadTheme } from 'office-ui-fabric-react/lib/Styling';
 import { initializeIcons } from '@uifabric/icons'
 
+/** Required for Office UI Fabric to load icon fonts  */
 initializeIcons()
+/** Override default colors */
+loadTheme({
+  palette: {
+    /* 'themePrimary': 'red' */
+  }
+});
 addLocaleData([...en, ...ko])
 
 const locale = (navigator.languages && navigator.languages[0])
