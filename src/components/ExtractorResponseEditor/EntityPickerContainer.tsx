@@ -21,6 +21,8 @@ const fuseOptions: Fuse.FuseOptions = {
 }
 
 interface Props {
+    /** This is kind of a one-off property for the scenario when we want the picker to show a warning message, although it was easier than showing a completely different component */
+    isOverlappingOtherEntities: boolean
     isVisible: boolean
     options: IOption[]
     maxDisplayedOptions: number
@@ -194,6 +196,7 @@ export default class EntityPickerContainer extends React.Component<Props, State>
         return (
             <EntityPicker
                 highlightIndex={this.state.highlightIndex}
+                isOverlappingOtherEntities={this.props.isOverlappingOtherEntities}
                 isVisible={this.props.isVisible}
                 matchedOptions={this.state.matchedOptions}
                 maxDisplayedOptions={this.props.maxDisplayedOptions}
