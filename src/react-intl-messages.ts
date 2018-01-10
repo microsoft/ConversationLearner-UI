@@ -280,6 +280,8 @@ export enum FM {
     TEACHSESSIONADMIN_TRAINSTATUS_RUNNING = 'TeachSessionAdmin.trainstatus.running',
 
     // TeachSessionWindow
+    TEACHSESSIONWINDOW_UNDO_ARIADESCRIPTION = 'TeachSessionWindow.undo.ariaDescription',
+    TEACHSESSIONWINDOW_UNDO_TEXT = 'TeachSessionWindow.undo.text',
     TEACHSESSIONWINDOW_DEFAULTBUTTON_ARIADESCRIPTION = 'TeachSessionWindow.defaultButton.ariaDescription',
     TEACHSESSIONWINDOW_DEFAULTBUTTON_TEXT = 'TeachSessionWindow.defaultButton.text',
     TEACHSESSIONWINDOW_PRIMARYBUTTON_ARIADESCRIPTION = 'TeachSessionWindow.primaryButton.ariaDescription',
@@ -302,6 +304,8 @@ export enum FM {
     TRAINDIALOGADMIN_SAVECHANGES_DEFAULTBUTTON_TEXT = 'TrainDialogAdmin.saveChanges.defaultButton.text',
 
     // TrainDialogWindow
+    TRAINDIALOGWINDOW_BRANCH_ARIADESCRIPTION = 'TrainDialogWindow.branch.ariaDescription',
+    TRAINDIALOGWINDOW_BRANCH_TEXT = 'TrainDialogWindow.branch.text',
     TRAINDIALOGWINDOW_DEFAULTBUTTON_ARIADESCRIPTION = 'TrainDialogWindow.defaultButton.ariaDescription',
     TRAINDIALOGWINDOW_DEFAULTBUTTON_TEXT = 'TrainDialogWindow.defaultButton.text',
     TRAINDIALOGWINDOW_PRIMARYBUTTON_ARIADESCRIPTION = 'TrainDialogWindow.primaryButton.ariaDescription',
@@ -592,6 +596,8 @@ export default {
         [FM.TEACHSESSIONADMIN_TRAINSTATUS_RUNNING]: 'Train Status: Runnning...',
 
         // TeachSessionWindow
+        [FM.TEACHSESSIONWINDOW_UNDO_ARIADESCRIPTION]: 'Undo Step',
+        [FM.TEACHSESSIONWINDOW_UNDO_TEXT]: 'Undo Step',
         [FM.TEACHSESSIONWINDOW_DEFAULTBUTTON_ARIADESCRIPTION]: 'Abandon Teach',
         [FM.TEACHSESSIONWINDOW_DEFAULTBUTTON_TEXT]: 'Abandon Teach',
         [FM.TEACHSESSIONWINDOW_PRIMARYBUTTON_ARIADESCRIPTION]: 'Done Teaching',
@@ -614,6 +620,8 @@ export default {
         [FM.TRAINDIALOGADMIN_SAVECHANGES_DEFAULTBUTTON_TEXT]: 'No',
 
         // TrainDialogWindow
+        [FM.TRAINDIALOGWINDOW_BRANCH_ARIADESCRIPTION]: 'Branch',
+        [FM.TRAINDIALOGWINDOW_BRANCH_TEXT]: 'Branch',
         [FM.TRAINDIALOGWINDOW_DEFAULTBUTTON_ARIADESCRIPTION]: 'Delete',
         [FM.TRAINDIALOGWINDOW_DEFAULTBUTTON_TEXT]: 'Delete',
         [FM.TRAINDIALOGWINDOW_PRIMARYBUTTON_ARIADESCRIPTION]: 'Done',

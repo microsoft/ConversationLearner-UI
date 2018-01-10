@@ -248,9 +248,11 @@ export default class BlisClient {
             .then(response => response.data)
     }
 
-    history(appId: string, trainDialogId: string, userName: string, userId: string): Promise<Activity[]> {
+    history(appId: string, trainDialog: models.TrainDialog, userName: string, userId: string): Promise<Activity[]> {
         return this.send<Activity[]>({
-            url: `${this.baseUrl}/app/${appId}/traindialog/${trainDialogId}/history?username=${userName}&userid=${userId}`
+            method: 'post',
+            url: `${this.baseUrl}/app/${appId}/history?username=${userName}&userid=${userId}`,
+            data: trainDialog
         }).then(response => response.data)
     }
 
@@ -369,5 +371,20 @@ export default class BlisClient {
             data: uiScoreInput
         })
             .then(response => response.data)
+    }
+
+    teachSessionFromUndo(appId: string, teach: models.Teach, userName: string, userId: string): Promise<models.TeachWithHistory> {
+        return this.send<models.TeachWithHistory>({
+            method: 'post',
+            url: `${this.baseUrl}/app/${appId}/teach/${teach.teachId}/undo?username=${userName}&userid=${userId}`,
+            data: teach
+        }).then(response => response.data)
+    }
+
+    teachSessionFromBranch(appId: string, trainDialogId: string, userName: string, userId: string, turnIndex: number): Promise<models.TeachWithHistory> {
+        return this.send<models.TeachWithHistory>({
+            method: 'post',
+            url: `${this.baseUrl}/app/${appId}/traindialog/${trainDialogId}/branch/${turnIndex}?username=${userName}&userid=${userId}`
+        }).then(response => response.data)
     }
 }

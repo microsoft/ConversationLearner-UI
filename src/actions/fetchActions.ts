@@ -32,24 +32,24 @@ export const fetchAllTrainDialogsFulfilled = (trainDialogs: TrainDialog[]): Acti
 }
 
 
-export const fetchHistoryThunkAsync = (appId: string, trainDialogId: string, userName: string, userId: string) => {
+export const fetchHistoryThunkAsync = (appId: string, trainDialog: TrainDialog, userName: string, userId: string) => {
     return async (dispatch: Dispatch<any>) => {
         const blisClient = ClientFactory.getInstance()
-        dispatch(fetchHistoryAsync(appId, trainDialogId, userName, userId))
+        dispatch(fetchHistoryAsync(appId, trainDialog, userName, userId))
 
-        const activities = await blisClient.history(appId, trainDialogId, userName, userId)
+        const activities = await blisClient.history(appId, trainDialog, userName, userId)
         dispatch(fetchHistoryFulfilled(activities))
         return activities
     }
 }
 
-export const fetchHistoryAsync = (blisAppID: string, trainDialogId: string, userName: string, userId: string): ActionObject => {
+export const fetchHistoryAsync = (blisAppID: string, trainDialog: TrainDialog, userName: string, userId: string): ActionObject => {
     return {
         type: AT.FETCH_HISTORY_ASYNC,
         blisAppID: blisAppID,
         userName: userName,
         userId: userId,
-        trainDialogId: trainDialogId
+        trainDialog: trainDialog
     }
 }
 

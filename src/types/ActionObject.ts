@@ -2,7 +2,7 @@ import {
     BlisAppBase,
     BotInfo,
     EntityBase,
-    ActionBase, 
+    ActionBase, TeachWithHistory,
     TrainDialog, LogDialog, Session, Teach, ScoreInput,
     UserInput, ExtractResponse, DialogType,
     UIExtractResponse, UITrainScorerStep,
@@ -120,11 +120,11 @@ export type FetchAction = {
     blisAppID: string,
     userName: string,
     userId: string,
-    trainDialogId: string
+    trainDialog: TrainDialog
 } | {
     type: AT.FETCH_HISTORY_FULFILLED,
     activities: Activity[],
-}| {
+} | {
     type: AT.FETCH_LOG_DIALOGS_ASYNC,
     key: string,
     blisAppID: string
@@ -219,6 +219,26 @@ export type CreateAction = {
 }| {
     type: AT.CREATE_TEACH_SESSION_FULFILLED,
     teachSession: Teach
+} | {
+    type: AT.CREATE_TEACH_SESSION_FROM_UNDO_ASYNC,
+    blisAppID: string,
+    userName: string,
+    userId: string,
+    teach: Teach
+} | {
+    type: AT.CREATE_TEACH_SESSION_FROM_UNDO_FULFILLED,
+    teachWithHistory: TeachWithHistory
+}
+| {
+    type: AT.CREATE_TEACH_SESSION_FROM_BRANCH_ASYNC,
+    blisAppID: string,
+    userName: string,
+    userId: string,
+    teachId: string,
+    turnIndex: number
+} | {
+    type: AT.CREATE_TEACH_SESSION_FROM_BRANCH_FULFILLED,
+    teachWithHistory: TeachWithHistory
 }
 
 export type DeleteAction = {

@@ -1,6 +1,6 @@
 import { ActionObject } from '../types'
 import { AT } from '../types/ActionTypes'
-import { BlisAppBase, EntityBase, ActionBase, TrainDialog, LogDialog, Teach, Session, TrainingStatusCode } from 'blis-models'
+import { BlisAppBase, EntityBase, ActionBase, TrainDialog, LogDialog, Teach, Session, TrainingStatusCode, TeachWithHistory } from 'blis-models'
 import { Dispatch } from 'redux'
 import * as ClientFactory from '../services/clientFactory'
 
@@ -142,6 +142,67 @@ export const createTeachSessionThunkAsync = (key: string, appId: string) => {
             dispatch(createTeachSessionRejected())
             throw e
         }
+    }
+}
+
+export const createTeachSessionFromUndoThunkAsync = (appId: string, teach: Teach, userName: string, userId: string) => {
+    return async (dispatch: Dispatch<any>) => {
+        const blisClient = ClientFactory.getInstance()
+        dispatch(createTeachSessionFromUndoAsync(appId, teach, userName, userId))
+
+        const teachWithHistory = await blisClient.teachSessionFromUndo(appId, teach, userName, userId)
+        dispatch(createTeachSessionFromUndoFulfilled(teachWithHistory))
+        return teachWithHistory
+    }
+    //LARS TODO fail catch
+}
+
+export const createTeachSessionFromUndoAsync = (blisAppID: string, teach: Teach, userName: string, userId: string): ActionObject => {
+    return {
+        type: AT.CREATE_TEACH_SESSION_FROM_UNDO_ASYNC,
+        blisAppID: blisAppID,
+        userName: userName,
+        userId: userId,
+        teach: teach
+    }
+}
+
+export const createTeachSessionFromUndoFulfilled = (teachWithHistory: TeachWithHistory): ActionObject => {
+    // Needs a fulfilled version to handle response from Epic
+    return {
+        type: AT.CREATE_TEACH_SESSION_FROM_UNDO_FULFILLED,
+        teachWithHistory: teachWithHistory
+    }
+}
+
+export const createTeachSessionFromBranchThunkAsync = (appId: string, teachId: string, userName: string, userId: string, turnIndex: number) => {
+    return async (dispatch: Dispatch<any>) => {
+        const blisClient = ClientFactory.getInstance()
+        dispatch(createTeachSessionFromBranchAsync(appId, teachId, userName, userId, turnIndex))
+
+        const teachWithHistory = await blisClient.teachSessionFromBranch(appId, teachId, userName, userId, turnIndex)
+        dispatch(createTeachSessionFromBranchFulfilled(teachWithHistory))
+        return teachWithHistory
+    }
+    //LARS TODO fail catch
+}
+
+export const createTeachSessionFromBranchAsync = (blisAppID: string, teachId: string, userName: string, userId: string, turnIndex: number): ActionObject => {
+    return {
+        type: AT.CREATE_TEACH_SESSION_FROM_BRANCH_ASYNC,
+        blisAppID: blisAppID,
+        userName: userName,
+        userId: userId,
+        teachId: teachId,
+        turnIndex: turnIndex
+    }
+}
+
+export const createTeachSessionFromBranchFulfilled = (teachWithHistory: TeachWithHistory): ActionObject => {
+    // Needs a fulfilled version to handle response from Epic
+    return {
+        type: AT.CREATE_TEACH_SESSION_FROM_BRANCH_FULFILLED,
+        teachWithHistory: teachWithHistory
     }
 }
 

@@ -47,6 +47,15 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
         }
     }
 
+    onClickBranch() {
+        if (this.state.selectedActivity) {
+            let roundIndex = this.state.selectedActivity.id.split(':').map(s => parseInt(s))[1];
+            this.props.onBranch(roundIndex);
+        }
+        //LARS TODO pop up telling to seledct a round
+        // also check that not round 0
+    }
+
     onClickDone() {
         this.props.onClose()
     }
@@ -130,6 +139,17 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
                         <div className="blis-modal-buttons_primary" />
                         <div className="blis-modal-buttons_secondary">
                             <DefaultButton
+                                    onClick={() => this.onClickBranch()}
+                                    ariaDescription={intl.formatMessage({
+                                        id: FM.TRAINDIALOGWINDOW_BRANCH_ARIADESCRIPTION,
+                                        defaultMessage: 'Branch'
+                                    })}
+                                    text={intl.formatMessage({
+                                        id: FM.TRAINDIALOGWINDOW_BRANCH_TEXT,
+                                        defaultMessage: 'Branch'
+                                    })}
+                            />
+                            <DefaultButton
                                 onClick={() => this.onClickDelete()}
                                 ariaDescription={intl.formatMessage({
                                     id: FM.TRAINDIALOGWINDOW_DEFAULTBUTTON_ARIADESCRIPTION,
@@ -185,6 +205,7 @@ const mapStateToProps = (state: State) => {
 export interface ReceivedProps {
     app: BlisAppBase
     onClose: () => void
+    onBranch: (turnIndex: number) => void
     open: boolean
     trainDialog: TrainDialog
     history: Activity[]

@@ -9,7 +9,7 @@ import { State } from '../../types';
 import { DialogMode } from '../../types/const';
 import Webchat from '../Webchat'
 import TeachSessionAdmin from './TeachSessionAdmin'
-import { BlisAppBase, UserInput, DialogType } from 'blis-models'
+import { BlisAppBase, UserInput, DialogType, TrainDialog } from 'blis-models'
 import { Activity } from 'botframework-directlinejs'
 import { deleteTeachSessionAsync } from '../../actions/deleteActions'
 import { toggleAutoTeach, runExtractorAsync } from '../../actions/teachActions'
@@ -20,7 +20,8 @@ import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 
 interface ComponentState {
-    isConfirmDeleteOpen: boolean
+    isConfirmDeleteOpen: boolean,
+    webchatKey: number,
     editing: boolean,
     errorForId: string
 }
@@ -28,6 +29,7 @@ interface ComponentState {
 class TeachWindow extends React.Component<Props, ComponentState> {
     state: ComponentState = {
         isConfirmDeleteOpen: false,
+        webchatKey: 0,
         editing: false,
         errorForId: null
     }
@@ -42,6 +44,12 @@ class TeachWindow extends React.Component<Props, ComponentState> {
                     this.props.deleteTeachSessionAsync(this.props.user.id, this.props.teachSessions.current, this.props.app.appId, true);
                     this.props.onClose();
                 }
+            });
+        }
+        if (this.props.teachSessions.current !== newProps.teachSessions.current) {
+            // Force webchat to re-mount as history prop can't be updated
+            this.setState({
+                webchatKey: this.state.webchatKey + 1
             });
         }
     }
@@ -133,8 +141,9 @@ class TeachWindow extends React.Component<Props, ComponentState> {
                     <div className="blis-chatmodal">
                         <div className="blis-chatmodal_webchat">
                             <Webchat
+                                key={this.state.webchatKey}
                                 app={this.props.app}
-                                history={null}
+                                history={this.props.history}
                                 onPostActivity={activity => this.onWebChatPostActivity(activity)}
                                 onSelectActivity={() => { }}
                                 hideInput={false}
@@ -156,6 +165,17 @@ class TeachWindow extends React.Component<Props, ComponentState> {
                     <div className="blis-modal-buttons">
                         <div className="blis-modal-buttons_primary" />
                         <div className="blis-modal-buttons_secondary">
+                            <DefaultButton
+                                onClick={() => this.props.onUndo()}
+                                ariaDescription={intl.formatMessage({
+                                    id: FM.TEACHSESSIONWINDOW_UNDO_ARIADESCRIPTION,
+                                    defaultMessage: "Undo Step"
+                                })}
+                                text={intl.formatMessage({
+                                    id: FM.TEACHSESSIONWINDOW_UNDO_TEXT,
+                                    defaultMessage: "Undo Step"
+                                })}
+                            />
                             <DefaultButton
                                 onClick={() => this.onClickAbandonTeach()}
                                 ariaDescription={intl.formatMessage({
@@ -216,7 +236,11 @@ const mapStateToProps = (state: State) => {
 export interface ReceivedProps {
     open: boolean,
     onClose: Function,
-    app: BlisAppBase
+    onUndo: Function,
+    app: BlisAppBase,
+    // When continuing existing TD
+    trainDialog: TrainDialog,
+    history: Activity[]       
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
