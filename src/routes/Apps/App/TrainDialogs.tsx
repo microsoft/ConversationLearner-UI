@@ -229,6 +229,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         this.setState({
             isTrainDialogModalOpen: false,
             trainDialogId: null,
+            activities: null,
             dialogKey: this.state.dialogKey + 1
         })
     }
