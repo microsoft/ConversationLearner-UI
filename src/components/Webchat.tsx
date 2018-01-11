@@ -52,7 +52,9 @@ class Webchat extends React.Component<Props, {}> {
             const _dl = {
                 ...dl,
                 postActivity: (activity: any) => {
-                    this.props.onPostActivity(activity)
+                    if (this.props.onPostActivity) { 
+                        this.props.onPostActivity(activity)
+                    }
                     return dl.postActivity(activity)
                 },
             } as BotChat.DirectLine;
