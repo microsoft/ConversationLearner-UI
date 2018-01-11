@@ -75,9 +75,6 @@ export type DisplayAction = {
     type: AT.LOGOUT
 } | {
     type: AT.NO_OP
-} | {
-    type: AT.CHAT_MESSAGE_RECEIVED,
-    message: {}
 }
 
 export type FetchAction = {

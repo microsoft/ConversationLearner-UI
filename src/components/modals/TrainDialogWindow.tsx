@@ -10,8 +10,6 @@ import TrainDialogAdmin from './TrainDialogAdmin'
 import { BlisAppBase, TrainDialog} from 'blis-models'
 import { deleteTrainDialogThunkAsync } from '../../actions/deleteActions'
 import { fetchApplicationTrainingStatusThunkAsync } from '../../actions/fetchActions'
-// TODO: Investigate if this can be removed in favor of local state
-import { addMessageToChatConversationStack } from '../../actions/displayActions'
 import { Activity } from 'botframework-directlinejs';
 import ConfirmDeleteModal from './ConfirmDeleteModal'
 import { FM } from '../../react-intl-messages'
@@ -95,16 +93,6 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
             })
     }
 
-    // TODO: Investigate if this can be removed.
-    // Lars mentioned people shouldn't be able to / expected to chat when viewing existing dialogs
-    // which means this should not ever be called and whatever it's doing now is likely unnecessary
-    onWebChatPostActivity(activity: Activity) {
-        console.log(`post activity: `, activity)
-        if (activity.type === 'message') {
-            this.props.addMessageToChatConversationStack(activity)
-        }
-    }
-
     onWebChatSelectActivity(activity: Activity) {
         this.setState({
             selectedActivity: activity
@@ -131,7 +119,7 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
                                 key={this.state.webchatKey}
                                 app={this.props.app}
                                 history={this.props.history}
-                                onPostActivity={activity => this.onWebChatPostActivity(activity)}
+                                onPostActivity={null}
                                 onSelectActivity={activity => this.onWebChatSelectActivity(activity)}
                                 hideInput={true}
                                 focusInput={false}
@@ -221,7 +209,6 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        addMessageToChatConversationStack,
         deleteTrainDialogThunkAsync,
         fetchApplicationTrainingStatusThunkAsync
     }, dispatch);

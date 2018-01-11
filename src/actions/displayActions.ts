@@ -63,10 +63,3 @@ export const addMessageToTeachConversationStack = (message: string): ActionObjec
         message: message
     }
 }
-
-export const addMessageToChatConversationStack = (message: {}): ActionObject => {
-    return {
-        type: AT.CHAT_MESSAGE_RECEIVED,
-        message: message
-    }
-}

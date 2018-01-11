@@ -4,8 +4,7 @@ import { Reducer } from 'redux'
 
 const initialState: ChatSessionState = {
     all: [],
-    current: null,
-    currentConversationStack: []
+    current: null
 };
 
 const chatSessionReducer: Reducer<ChatSessionState> = (state = initialState, action: ActionObject): ChatSessionState => {
@@ -22,8 +21,6 @@ const chatSessionReducer: Reducer<ChatSessionState> = (state = initialState, act
                 all: state.all.filter(s => s.sessionId !== action.sessionId),
                 current: state.current.sessionId === action.sessionId ? null : state.current
             }
-        case AT.CHAT_MESSAGE_RECEIVED:
-            return { ...state, currentConversationStack: [...state.currentConversationStack, action.message] };
         default:
             return state;
     }

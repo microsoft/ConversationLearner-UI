@@ -1,19 +1,21 @@
 import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
 import { connect } from 'react-redux';
-import { ActionBase } from 'blis-models'
+import { ActionBase, ActionTypes, Template, ActionArgument } from 'blis-models'
 import { State } from '../types'
 import * as OF from 'office-ui-fabric-react';
 import { onRenderDetailsHeader } from './ToolTips'
 import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../react-intl-messages'
+import AdaptiveCardViewer from './modals/AdaptiveCardViewer/AdaptiveCardViewer'
 
 class ActionDetailsList extends React.Component<Props, ComponentState> {
     constructor(p: any) {
         super(p);
         this.state = {
             columns: getColumns(this.props.intl),
-            sortColumn: null
+            sortColumn: null,
+            cardViewerAction: null
         }
         this.onClickColumnHeader = this.onClickColumnHeader.bind(this);
     }
@@ -60,21 +62,58 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
         });
     }
 
+    onClickViewCard(action: ActionBase) {
+        this.setState({
+            cardViewerAction: action
+        })
+    }
+
+    onClickRow(item: any, index: number, ev: React.FocusEvent<HTMLElement>) {
+        // Don't response to row click if it's button that was clicked
+        if ((ev.target as any).type !== 'button') {
+            let action = item as ActionBase;
+            this.props.onSelectAction(action);
+        }
+    }
+
+    onCloseCardViewer = () => {
+        this.setState({
+            cardViewerAction: null
+        })
+    }
+
     render() {
         let sortedActions = this.sortActions();
+
+        let template: Template = null;
+        let actionArguments: ActionArgument[] = [];
+        if (this.state.cardViewerAction) {
+            let actionPayload = ActionBase.GetPayload(this.state.cardViewerAction);
+            template = this.props.templates.find((t) => t.name === actionPayload);
+            actionArguments = ActionBase.GetActionArguments(this.state.cardViewerAction);
+        }
+
         return (
-            <OF.DetailsList
-                className="ms-font-m-plus"
-                items={sortedActions}
-                columns={this.state.columns}
-                checkboxVisibility={OF.CheckboxVisibility.hidden}
-                onRenderItemColumn={(action: ActionBase, i, column: IRenderableColumn) => column.render(action, this)}
-                onActiveItemChanged={action => this.props.onSelectAction(action)}
-                onColumnHeaderClick={this.onClickColumnHeader}
-                onRenderDetailsHeader={(detailsHeaderProps: OF.IDetailsHeaderProps,
-                    defaultRender: OF.IRenderFunction<OF.IDetailsHeaderProps>) =>
-                    onRenderDetailsHeader(detailsHeaderProps, defaultRender)}
-            />
+            <div>
+                <OF.DetailsList
+                    className="ms-font-m-plus"
+                    items={sortedActions}
+                    columns={this.state.columns}
+                    checkboxVisibility={OF.CheckboxVisibility.hidden}
+                    onRenderItemColumn={(action: ActionBase, i, column: IRenderableColumn) => column.render(action, this)}
+                    onActiveItemChanged={(item, index, ev) => this.onClickRow(item, index, ev)}
+                    onColumnHeaderClick={this.onClickColumnHeader} 
+                    onRenderDetailsHeader={(detailsHeaderProps: OF.IDetailsHeaderProps,
+                        defaultRender: OF.IRenderFunction<OF.IDetailsHeaderProps>) =>
+                        onRenderDetailsHeader(detailsHeaderProps, defaultRender)}
+                />
+                <AdaptiveCardViewer
+                    open={this.state.cardViewerAction != null}
+                    onDismiss={() => this.onCloseCardViewer()}
+                    template={template}
+                    actionArguments={actionArguments} 
+                />
+            </div>
         )
     }
 }
@@ -82,6 +121,7 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
 const mapStateToProps = (state: State) => {
     return {
         entities: state.entities,
+        templates: state.bot.botInfo.templates
     }
 }
 
@@ -105,12 +145,27 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                 defaultMessage: 'Response'
             }),
             fieldName: 'actionResponse',
-            minWidth: 100,
+            minWidth: 200,
             maxWidth: 400,
             isResizable: true,
             isMultiline: true,
             getSortValue: action => ActionBase.GetPayload(action),
-            render: (action, component) => <span className="ms-font-m-plus" onClick={() => component.props.onSelectAction(action)}>{ActionBase.GetPayload(action)}</span>
+            render: (action, component) => {
+                return (
+                    <div>
+                    {action.metadata.actionType === ActionTypes.CARD &&
+                        <OF.PrimaryButton
+                            className="blis-button--viewCard"
+                            onClick={() => component.onClickViewCard(action)}
+                            ariaDescription="ViewCard"
+                            text=""
+                            iconProps={{ iconName: 'RedEye' }}
+                        />
+                    }
+                    <span className="ms-font-m-plus" onClick={() => component.props.onSelectAction(action)}>{ActionBase.GetPayload(action)}</span>
+                    </div>
+                )
+            }
         },
         {
             key: 'actionArguments',
@@ -242,5 +297,6 @@ interface IRenderableColumn extends OF.IColumn {
 
 interface ComponentState {
     columns: IRenderableColumn[]
-    sortColumn: IRenderableColumn
+    sortColumn: IRenderableColumn,
+    cardViewerAction: ActionBase
 }

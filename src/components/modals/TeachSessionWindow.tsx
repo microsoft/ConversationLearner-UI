@@ -13,7 +13,6 @@ import { BlisAppBase, UserInput, DialogType, TrainDialog } from 'blis-models'
 import { Activity } from 'botframework-directlinejs'
 import { deleteTeachSessionAsync } from '../../actions/deleteActions'
 import { toggleAutoTeach, runExtractorAsync } from '../../actions/teachActions'
-import { addMessageToTeachConversationStack } from '../../actions/displayActions'
 import { fetchApplicationTrainingStatusThunkAsync } from '../../actions/fetchActions'
 import ConfirmDeleteModal from './ConfirmDeleteModal'
 import { FM } from '../../react-intl-messages'
@@ -23,7 +22,8 @@ interface ComponentState {
     isConfirmDeleteOpen: boolean,
     webchatKey: number,
     editing: boolean,
-    errorForId: string
+    errorForId: string,
+    hasOneRound: boolean
 }
 
 class TeachWindow extends React.Component<Props, ComponentState> {
@@ -31,7 +31,8 @@ class TeachWindow extends React.Component<Props, ComponentState> {
         isConfirmDeleteOpen: false,
         webchatKey: 0,
         editing: false,
-        errorForId: null
+        errorForId: null,
+        hasOneRound: false
     }
 
     componentWillReceiveProps(newProps: Props) {
@@ -46,12 +47,28 @@ class TeachWindow extends React.Component<Props, ComponentState> {
                 }
             });
         }
-        if (this.props.history !== newProps.history) {
-            // Force webchat to re-mount as history prop can't be updated
-            this.setState({
-                webchatKey: this.state.webchatKey + 1
-            });
-        }
+        else {
+            let webchatKey = this.state.webchatKey;
+            let hasOneRound = this.state.hasOneRound;
+
+            if (this.props.history !== newProps.history) {
+                webchatKey = this.state.webchatKey + 1
+            }
+            // Clear round if new session
+            if (this.props.teachSessions.current !== newProps.teachSessions.current) {
+                hasOneRound = false;
+            }
+            // History counts as having a round
+            if (newProps.history != null && newProps.history.length > 0) {
+                hasOneRound = true;
+            }
+            if (webchatKey !== this.state.webchatKey || hasOneRound !== this.state.hasOneRound) {
+                this.setState({
+                    webchatKey: webchatKey,
+                    hasOneRound: hasOneRound
+                })
+            }   
+        }    
     }
 
     onClickAbandonTeach() {
@@ -87,7 +104,6 @@ class TeachWindow extends React.Component<Props, ComponentState> {
 
     onWebChatPostActivity(activity: Activity) {
         if (activity.type === 'message') {
-            this.props.addMessageToTeachConversationStack(activity.text)
 
             let userInput;
             // Check if button submit info
@@ -109,25 +125,11 @@ class TeachWindow extends React.Component<Props, ComponentState> {
 
     render() {
         const { intl } = this.props
-        // Show done button if at least on round and at end of round
-        let showDone = this.props.teachSessions.currentConversationStack.length > 0
-            && this.props.teachSessions.mode === DialogMode.Wait;
 
         // Put mask of webchat if not in input mode
         let chatDisable = (this.props.teachSessions.mode !== DialogMode.Wait) ?
             <div className="wc-disable"></div>
             : null;
-
-
-        /* Disable auto advance for hackathon 
-            <Checkbox
-                    className="blis-button--right"
-                    label='Auto Advance'
-                    checked={this.props.teachSessions.autoTeach}
-                    onChange={(e, value) => this.autoTeachChanged(e, value)}
-                    disabled={this.state.editing}
-                />
-        */
 
         // Mask controls if autoTeach is enabled
         let mask = (this.props.teachSessions.autoTeach) ? <div className="teachAutoMask" /> : null;
@@ -155,6 +157,7 @@ class TeachWindow extends React.Component<Props, ComponentState> {
                             <div className="blis-chatmodal_admin-controls">
                                 <TeachSessionAdmin
                                     app={this.props.app}
+                                    onScoredAction={() => {this.setState({hasOneRound: true})}}
                                 />
                                 {mask}
                             </div>
@@ -166,6 +169,7 @@ class TeachWindow extends React.Component<Props, ComponentState> {
                         <div className="blis-modal-buttons_primary" />
                         <div className="blis-modal-buttons_secondary">
                             <DefaultButton
+                                disabled={!this.state.hasOneRound}
                                 onClick={() => this.props.onUndo()}
                                 ariaDescription={intl.formatMessage({
                                     id: FM.TEACHSESSIONWINDOW_UNDO_ARIADESCRIPTION,
@@ -188,7 +192,7 @@ class TeachWindow extends React.Component<Props, ComponentState> {
                                 })}
                             />
                             <PrimaryButton
-                                disabled={!showDone}
+                                disabled={!this.state.hasOneRound}
                                 onClick={() => this.onClickSave()}
                                 ariaDescription={intl.formatMessage({
                                     id: FM.TEACHSESSIONWINDOW_PRIMARYBUTTON_ARIADESCRIPTION,
@@ -218,7 +222,6 @@ class TeachWindow extends React.Component<Props, ComponentState> {
 
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        addMessageToTeachConversationStack,
         deleteTeachSessionAsync,
         fetchApplicationTrainingStatusThunkAsync,
         runExtractorAsync,
