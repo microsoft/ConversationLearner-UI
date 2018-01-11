@@ -197,8 +197,10 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
                     >
                         <div>
                         <p className='blis-callout'>
-                            First select a round in the conversation by clicking on it.  Then click "Branch"
-                            to create a new Training Dialog starting at that round.
+                            {intl.formatMessage({
+                                id: FM.TRAINDIALOGWINDOW_BRANCH_TIP,
+                                defaultMessage: `Select a round first`
+                            })}
                         </p>
                         </div>
                     </Callout>

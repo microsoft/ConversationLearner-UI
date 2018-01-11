@@ -307,6 +307,7 @@ export enum FM {
     // TrainDialogWindow
     TRAINDIALOGWINDOW_BRANCH_ARIADESCRIPTION = 'TrainDialogWindow.branch.ariaDescription',
     TRAINDIALOGWINDOW_BRANCH_TEXT = 'TrainDialogWindow.branch.text',
+    TRAINDIALOGWINDOW_BRANCH_TIP = 'TrainDialogWindow.branch.tip',
     TRAINDIALOGWINDOW_DEFAULTBUTTON_ARIADESCRIPTION = 'TrainDialogWindow.defaultButton.ariaDescription',
     TRAINDIALOGWINDOW_DEFAULTBUTTON_TEXT = 'TrainDialogWindow.defaultButton.text',
     TRAINDIALOGWINDOW_PRIMARYBUTTON_ARIADESCRIPTION = 'TrainDialogWindow.primaryButton.ariaDescription',
@@ -624,6 +625,7 @@ export default {
         // TrainDialogWindow
         [FM.TRAINDIALOGWINDOW_BRANCH_ARIADESCRIPTION]: 'Branch',
         [FM.TRAINDIALOGWINDOW_BRANCH_TEXT]: 'Branch',
+        [FM.TRAINDIALOGWINDOW_BRANCH_TIP] : 'First select a round in the conversation by clicking on it.  Then click "Branch" to create a new Training Dialog starting at that round.',
         [FM.TRAINDIALOGWINDOW_DEFAULTBUTTON_ARIADESCRIPTION]: 'Delete',
         [FM.TRAINDIALOGWINDOW_DEFAULTBUTTON_TEXT]: 'Delete',
         [FM.TRAINDIALOGWINDOW_PRIMARYBUTTON_ARIADESCRIPTION]: 'Done',
