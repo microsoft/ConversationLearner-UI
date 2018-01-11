@@ -69,8 +69,8 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
     }
 
     onClickRow(item: any, index: number, ev: React.FocusEvent<HTMLElement>) {
-                // Don't response to row click if it's button that was clicked
-        if ((ev.target as any).type != "button") {
+        // Don't response to row click if it's button that was clicked
+        if ((ev.target as any).type !== 'button') {
             let action = item as ActionBase;
             this.props.onSelectAction(action);
         }

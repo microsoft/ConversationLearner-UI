@@ -15,7 +15,6 @@ const initialState: TeachSessionState = {
     uiScoreInput: null,
     extractResponses: [],
     scoreResponse: null,
-    currentConversationStack: [],
     autoTeach: false
 };
 
@@ -37,7 +36,7 @@ const teachSessionReducer: Reducer<TeachSessionState> = (state = initialState, a
         case AT.DELETE_TEACH_SESSION_FULFILLED:
             return { ...initialState, all: state.all.filter(t => t.teachId !== action.teachSessionGUID) }
         case AT.TEACH_MESSAGE_RECEIVED:
-            return { ...state, currentConversationStack: [...state.currentConversationStack, action.message], input: action.message, scoreInput: null, scoreResponse: null, extractResponses: [] };
+            return { ...state, input: action.message, scoreInput: null, scoreResponse: null, extractResponses: [] };
         case AT.RUN_EXTRACTOR_FULFILLED:
             // Replace existing extract response (if any) with new one
             const extractResponses = state.extractResponses.filter(e => e.text !== action.uiExtractResponse.extractResponse.text);

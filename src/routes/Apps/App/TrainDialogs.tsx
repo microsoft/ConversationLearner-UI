@@ -178,13 +178,16 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     }
 
     onUndoTeachStep() {
-        
+        // Clear history first
+        this.setState({
+            activities: null
+        });
+
         ((this.props.createTeachSessionFromUndoThunkAsync(this.props.app.appId, this.state.teachSession, this.props.user.name, this.props.user.id) as any) as Promise<TeachWithHistory>)
         .then(teachWithHistory => {
             this.setState({
                 teachSession: teachWithHistory.teach, 
                 activities: teachWithHistory.history,
-          //      dialogKey: this.state.dialogKey + 1    // Force UI update as new teach session  LARS needed?
             })
         })
         .catch(error => {

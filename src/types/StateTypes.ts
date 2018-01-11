@@ -40,13 +40,11 @@ export type TeachSessionState = {
     uiScoreInput: UIScoreInput,
     extractResponses: ExtractResponse[],
     scoreResponse: ScoreResponse,
-    currentConversationStack: {}[],
     autoTeach: boolean
 }
 export type ChatSessionState = {
     all: Session[],
-    current: Session,
-    currentConversationStack: {}[]
+    current: Session
 }
 export type DisplayState = {
     displaySpinner: string[],

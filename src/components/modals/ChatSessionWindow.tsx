@@ -8,9 +8,6 @@ import { State } from '../../types';
 import Webchat from '../Webchat'
 import { BlisAppBase } from 'blis-models'
 import { deleteChatSessionAsync } from '../../actions/deleteActions'
-import { Activity } from 'botframework-directlinejs';
-// TODO: Investigate if this can be removed in favor of local state
-import { addMessageToChatConversationStack } from '../../actions/displayActions';
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 
@@ -24,12 +21,6 @@ class SessionWindow extends React.Component<Props, ComponentState> {
         }
 
         this.props.onClose();
-    }
-
-    onWebChatPostActivity(activity: Activity) {
-        if (activity.type === "message") {
-            this.props.addMessageToChatConversationStack(activity)
-        }
     }
 
     render() {
@@ -46,7 +37,7 @@ class SessionWindow extends React.Component<Props, ComponentState> {
                             <Webchat
                                 app={this.props.app}
                                 history={null}
-                                onPostActivity={activity => this.onWebChatPostActivity(activity)}
+                                onPostActivity={null}
                                 onSelectActivity={() => { }}
                                 hideInput={false}
                                 focusInput={true}
@@ -83,7 +74,6 @@ class SessionWindow extends React.Component<Props, ComponentState> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        addMessageToChatConversationStack,
         deleteChatSessionAsync
     }, dispatch);
 }

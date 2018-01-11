@@ -64,7 +64,9 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
         // Pass score input (minus extractor step) for subsequent actions when this one is non-terminal
         let uiScoreInput: UIScoreInput = { ...this.props.teachSession.uiScoreInput, trainExtractorStep: null }
 
-        this.props.postScorerFeedbackAsync(this.props.user.id, appId, teachId, uiTrainScorerStep, waitForUser, uiScoreInput)
+        this.props.postScorerFeedbackAsync(this.props.user.id, appId, teachId, uiTrainScorerStep, waitForUser, uiScoreInput);
+
+        this.props.onScoredAction();
     }
 
     onClickRefreshScores = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -91,7 +93,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
         }
 
         const mode = this.props.teachSession.mode
-        const autoTeachWithRound = this.props.teachSession.autoTeach && this.props.teachSession.currentConversationStack.length > 0
+        const autoTeachWithRound = this.props.teachSession.autoTeach 
 
         return (
             <div className="blis-dialog-admin ms-font-l">
@@ -236,6 +238,7 @@ const mapStateToProps = (state: State) => {
 }
 
 export interface ReceivedProps {
+    onScoredAction: () => void;
     app: BlisAppBase
 }
 
