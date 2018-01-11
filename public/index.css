@@ -34,6 +34,16 @@ html {
   min-width: 32px !important;
 }
 
+.blis-callout {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 400;
+  color: #333333;
+  padding: 18px 24px 12px;
+  font-weight: 300;
+  max-width: 300px;
+}
+
 .blis-action {
   border: none;
   background: none;

@@ -47,10 +47,6 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
 
     componentWillReceiveProps(newProps: Props) {
 
-        // If app has changed, clear extract responses
-        if (newProps.trainDialog !== this.props.trainDialog) {
-            this.props.clearExtractResponses();
-        }
         if (newProps.selectedActivity && newProps.trainDialog) {
             let [senderType, roundIndex, scoreIndex] = newProps.selectedActivity.id.split(':').map(s => parseInt(s));
             // If rounds were trimmed, selectedActivity could have been in deleted rounds

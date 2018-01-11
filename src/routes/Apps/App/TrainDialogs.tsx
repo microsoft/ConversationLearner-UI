@@ -4,10 +4,10 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import * as OF from 'office-ui-fabric-react';
 import { State } from '../../../types'
-import { BlisAppBase, Teach, TrainDialog } from 'blis-models'
+import { BlisAppBase, Teach, TrainDialog, TeachWithHistory } from 'blis-models'
 import { TeachSessionWindow, TrainDialogWindow } from '../../../components/modals'
 import { fetchHistoryThunkAsync } from '../../../actions/fetchActions'
-import { createTeachSessionThunkAsync } from '../../../actions/createActions'
+import { createTeachSessionThunkAsync, createTeachSessionFromUndoThunkAsync, createTeachSessionFromBranchThunkAsync } from '../../../actions/createActions'
 import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { FM } from '../../../react-intl-messages'
 import { Activity } from 'botframework-directlinejs';
@@ -172,14 +172,47 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         this.setState({
             teachSession: null,
             isTeachDialogModalOpen: false,
+            activities: null,
             dialogKey: this.state.dialogKey + 1
+        })
+    }
+
+    onUndoTeachStep() {
+        
+        ((this.props.createTeachSessionFromUndoThunkAsync(this.props.app.appId, this.state.teachSession, this.props.user.name, this.props.user.id) as any) as Promise<TeachWithHistory>)
+        .then(teachWithHistory => {
+            this.setState({
+                teachSession: teachWithHistory.teach, 
+                activities: teachWithHistory.history,
+          //      dialogKey: this.state.dialogKey + 1    // Force UI update as new teach session  LARS needed?
+            })
+        })
+        .catch(error => {
+            console.warn(`Error when attempting to create teach session from undo: `, error)
+        })
+    }
+
+    onBranchTrainDialog(turnIndex: number) {
+        
+        ((this.props.createTeachSessionFromBranchThunkAsync(this.props.app.appId, this.state.trainDialogId, this.props.user.name, this.props.user.id, turnIndex) as any) as Promise<TeachWithHistory>)
+        .then(teachWithHistory => {
+            this.setState({
+                teachSession: teachWithHistory.teach, 
+                activities: teachWithHistory.history,
+                trainDialogId: null,
+                isTrainDialogModalOpen: false,
+                isTeachDialogModalOpen: true
+            })
+        })
+        .catch(error => {
+            console.warn(`Error when attempting to create teach session from branch: `, error)
         })
     }
 
     onClickTrainDialogItem(trainDialog: TrainDialog) {
 
         // TODO: Find cleaner solution for the types.  Thunks return functions but when using them on props they should be returning result of the promise.
-        ((this.props.fetchHistoryThunkAsync(this.props.app.appId, trainDialog.trainDialogId, this.props.user.name, this.props.user.id) as any) as Promise<Activity[]>)
+        ((this.props.fetchHistoryThunkAsync(this.props.app.appId, trainDialog, this.props.user.name, this.props.user.id) as any) as Promise<Activity[]>)
         .then(activities => {
             this.setState({
                 activities: activities,
@@ -196,6 +229,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         this.setState({
             isTrainDialogModalOpen: false,
             trainDialogId: null,
+            activities: null,
             dialogKey: this.state.dialogKey + 1
         })
     }
@@ -266,7 +300,10 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     <TeachSessionWindow
                         app={this.props.app}
                         open={this.state.isTeachDialogModalOpen}
-                        onClose={() => this.onCloseTeachSession()}
+                        onClose={() => this.onCloseTeachSession()} 
+                        onUndo={() => this.onUndoTeachStep()}
+                        history={this.state.isTeachDialogModalOpen ? this.state.activities : null}
+                        trainDialog={null}
                     />
                 </div>
                 <OF.SearchBox
@@ -287,8 +324,9 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     app={this.props.app}
                     open={this.state.isTrainDialogModalOpen}
                     onClose={() => this.onCloseTrainDialogWindow()}
+                    onBranch={(turnIndex: number) => this.onBranchTrainDialog(turnIndex)}
                     trainDialog={trainDialog}
-                    history={this.state.activities}
+                    history={this.state.isTrainDialogModalOpen ? this.state.activities : null}
                 />
             </div>
         );
@@ -297,7 +335,9 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         createTeachSessionThunkAsync,
-        fetchHistoryThunkAsync
+        fetchHistoryThunkAsync,
+        createTeachSessionFromUndoThunkAsync,
+        createTeachSessionFromBranchThunkAsync
     }, dispatch)
 }
 const mapStateToProps = (state: State) => {

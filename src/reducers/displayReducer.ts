@@ -46,6 +46,8 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
         case AT.CREATE_ACTION_ASYNC:
         case AT.CREATE_BLIS_APPLICATION_ASYNC:
         case AT.CREATE_TEACH_SESSION_ASYNC:
+        case AT.CREATE_TEACH_SESSION_FROM_BRANCH_ASYNC:
+        case AT.CREATE_TEACH_SESSION_FROM_UNDO_ASYNC:
         case AT.CREATE_CHAT_SESSION_ASYNC:
         case AT.CREATE_ENTITY_ASYNC:
 
@@ -84,6 +86,8 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
         case AT.CREATE_CHAT_SESSION_FULFILLED:
         case AT.CREATE_TEACH_SESSION_REJECTED:
         case AT.CREATE_TEACH_SESSION_FULFILLED:
+        case AT.CREATE_TEACH_SESSION_FROM_BRANCH_FULFILLED:
+        case AT.CREATE_TEACH_SESSION_FROM_UNDO_FULFILLED:
         case AT.CREATE_ENTITY_FULFILLED:
         //case AT.CREATE_ENTITY_FULFILLEDNEGATIVE: Do not clear spinner until positive is complete
         case AT.CREATE_ENTITY_FULFILLEDPOSITIVE:
