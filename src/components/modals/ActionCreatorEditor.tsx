@@ -529,8 +529,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         const renderProps = { ...props }
         const suggestedEntityKey = this.state.expectedEntityTags.length > 0 ? this.state.expectedEntityTags[0].key : null
 
-        // Strickout and lock/highlight if also the suggested entity
         renderProps.strike = true
+        // If negative entity is also the suggested entity lock/highlight
         renderProps.locked = suggestedEntityKey === props.key
         renderProps.highlight = suggestedEntityKey === props.key
 
