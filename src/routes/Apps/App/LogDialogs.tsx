@@ -4,12 +4,13 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import * as OF from 'office-ui-fabric-react';
 import { State } from '../../../types'
-import { BlisAppBase, LogDialog, Session } from 'blis-models'
+import { BlisAppBase, LogDialog, Session, ModelUtils } from 'blis-models'
 import { ChatSessionWindow, LogDialogModal } from '../../../components/modals'
 import { createChatSessionThunkAsync } from '../../../actions/createActions'
-import { fetchAllLogDialogsAsync } from '../../../actions/fetchActions';
+import { fetchAllLogDialogsAsync, fetchHistoryThunkAsync } from '../../../actions/fetchActions';
 import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { FM } from '../../../react-intl-messages'
+import { Activity } from 'botframework-directlinejs';
 
 interface IRenderableColumn extends OF.IColumn {
     render: (x: LogDialog, component: LogDialogs) => React.ReactNode
@@ -115,7 +116,8 @@ interface ComponentState {
     isLogDialogWindowOpen: boolean
     currentLogDialog: LogDialog
     searchValue: string
-    dialogKey: number   // Allows user to re-open modal for same row ()
+    dialogKey: number,   // Allows user to re-open modal for same row ()
+    activities: Activity[],
 }
 
 class LogDialogs extends React.Component<Props, ComponentState> {
@@ -129,7 +131,8 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         isLogDialogWindowOpen: false,
         currentLogDialog: null,
         searchValue: '',
-        dialogKey: 0
+        dialogKey: 0,
+        activities: []
     }
 
     componentDidMount() {
@@ -168,10 +171,21 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         })
     }
 
-    onLogDialogInvoked(logDialog: LogDialog) {
-        this.setState({
-            isLogDialogWindowOpen: true,
-            currentLogDialog: logDialog
+    onClickLogDialogItem(logDialog: LogDialog) {
+        
+        // Convert to trainDialog until schema update chagne
+        let trainDialog = ModelUtils.ToTrainDialog(logDialog);
+
+        ((this.props.fetchHistoryThunkAsync(this.props.app.appId, trainDialog, this.props.user.name, this.props.user.id) as any) as Promise<Activity[]>)
+        .then(activities => {
+            this.setState({
+                activities: activities,
+                currentLogDialog: logDialog,
+                isLogDialogWindowOpen: true
+            })
+        })
+        .catch(error => {
+            console.warn(`Error when attempting to create history: `, error)
         })
     }
 
@@ -270,13 +284,14 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     columns={this.state.columns}
                     checkboxVisibility={OF.CheckboxVisibility.hidden}
                     onRenderItemColumn={(logDialog, i, column: IRenderableColumn) => returnErrorStringWhenError(() => column.render(logDialog, this))}
-                    onActiveItemChanged={logDialog => this.onLogDialogInvoked(logDialog)}
+                    onActiveItemChanged={logDialog => this.onClickLogDialogItem(logDialog)}
                 />
                 <LogDialogModal
                     open={this.state.isLogDialogWindowOpen}
                     app={this.props.app}
                     onClose={() => this.onCloseLogDialogModal()}
                     logDialog={currentLogDialog}
+                    history={this.state.isLogDialogWindowOpen ? this.state.activities : null}
                 />
                 <OF.Dialog
                     hidden={!this.state.isChatSessionWarningWindowOpen}
@@ -308,6 +323,7 @@ const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         createChatSessionThunkAsync,
         fetchAllLogDialogsAsync,
+        fetchHistoryThunkAsync,
     }, dispatch)
 }
 const mapStateToProps = (state: State) => {

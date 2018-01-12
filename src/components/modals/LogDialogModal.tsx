@@ -12,7 +12,7 @@ import { Activity } from 'botframework-directlinejs'
 import { createTrainDialogAsync } from '../../actions/createActions'
 import { deleteLogDialogThunkAsync } from '../../actions/deleteActions'
 import { fetchApplicationTrainingStatusThunkAsync } from '../../actions/fetchActions'
-import { BlisAppBase, TrainDialog, LogDialog, SenderType } from 'blis-models'
+import { BlisAppBase, TrainDialog, LogDialog } from 'blis-models'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 
@@ -33,45 +33,6 @@ class LogDialogModal extends React.Component<Props, ComponentState> {
         if (this.props.open === false && nextProps.open === true) {
             this.setState(initialState)
         }
-    }
-
-    generateHistory(props: Props): Activity[] {
-        const { actions, logDialog, user } = props;
-
-        if (!logDialog || !logDialog.rounds) {
-            return [];
-        }
-
-        return logDialog.rounds.map((round, i) => {
-            const userActivity: Activity = {
-                id: `${SenderType.User}:${i}:0`,
-                from: {
-                    id: user.id,
-                    name: user.name
-                },
-                type: "message",
-                text: round.extractorStep.text
-            }
-
-            const botActivities = round.scorerSteps.map<Activity>((scorerStep, j) => {
-                if (scorerStep.predictedAction === null) {
-                    return null
-                }
-
-                let action = actions.find(action => action.actionId === scorerStep.predictedAction)
-                return {
-                    id: `${SenderType.Bot}:${i}:${j}`,
-                    from: {
-                        id: "BlisTrainer",
-                        name: "BlisTrainer"
-                    },
-                    type: "message",
-                    text: action.payload
-                };
-            }).filter(x => x)
-
-            return [userActivity, ...botActivities]
-        }).reduce((a, b) => a.concat(b));
     }
 
     onClickDelete() {
@@ -113,8 +74,7 @@ class LogDialogModal extends React.Component<Props, ComponentState> {
     }
 
     render() {
-        const { intl } = this.props
-        const history = this.generateHistory(this.props);
+        const { intl } = this.props;
         return (
             <div>
                 <Modal
@@ -127,7 +87,7 @@ class LogDialogModal extends React.Component<Props, ComponentState> {
                             <div className="blis-chatmodal_webchat">
                                 <Webchat
                                     app={this.props.app}
-                                    history={history}
+                                    history={this.props.history}
                                     onSelectActivity={activity => this.onSelectWebChatActivity(activity)}
                                     onPostActivity={activity => this.onPostWebChatActivity(activity)}
                                     hideInput={true}
@@ -208,7 +168,8 @@ export interface ReceivedProps {
     open: boolean,
     onClose: () => void,
     logDialog: LogDialog,
-    app: BlisAppBase
+    app: BlisAppBase,
+    history: Activity[]
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps

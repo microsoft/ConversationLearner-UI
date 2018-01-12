@@ -307,6 +307,7 @@ export enum FM {
     // TrainDialogWindow
     TRAINDIALOGWINDOW_BRANCH_ARIADESCRIPTION = 'TrainDialogWindow.branch.ariaDescription',
     TRAINDIALOGWINDOW_BRANCH_TEXT = 'TrainDialogWindow.branch.text',
+    TRAINDIALOGWINDOW_BRANCH_TIP = 'TrainDialogWindow.branch.tip',
     TRAINDIALOGWINDOW_DEFAULTBUTTON_ARIADESCRIPTION = 'TrainDialogWindow.defaultButton.ariaDescription',
     TRAINDIALOGWINDOW_DEFAULTBUTTON_TEXT = 'TrainDialogWindow.defaultButton.text',
     TRAINDIALOGWINDOW_PRIMARYBUTTON_ARIADESCRIPTION = 'TrainDialogWindow.primaryButton.ariaDescription',
@@ -464,7 +465,7 @@ export default {
         [FM.TOOLTIP_ACTION_WAIT_TITLE]: 'Wait For Response',
         [FM.TOOLTIP_ENTITY_ACTION_BLOCKED]: `Actions that are blocked from use if this Entity is set`,
         [FM.TOOLTIP_ENTITY_ACTION_REQUIRED]: `Actions that are only employed when this Entity is set`,
-        [FM.TOOLTIP_ENTITY_EXTRACTOR_HELP]: `Select text to label it as an entity.  View Help:`,
+        [FM.TOOLTIP_ENTITY_EXTRACTOR_HELP]: `Select text to label it as an entity`,
         [FM.TOOLTIP_ENTITY_EXTRACTOR_WARNING]: 'Text Variations must contain the same detected Entities and the primary input text.',
         [FM.TOOLTIP_ENTITY_NAME]: 'Name of the Entity',
         [FM.TOOLTIP_ENTITY_VALUE]: 'What the Bot currently has in Memory for this Entity',
@@ -624,6 +625,7 @@ export default {
         // TrainDialogWindow
         [FM.TRAINDIALOGWINDOW_BRANCH_ARIADESCRIPTION]: 'Branch',
         [FM.TRAINDIALOGWINDOW_BRANCH_TEXT]: 'Branch',
+        [FM.TRAINDIALOGWINDOW_BRANCH_TIP] : 'First select a round in the conversation by clicking on it.  Then click "Branch" to create a new Training Dialog starting at that round.',
         [FM.TRAINDIALOGWINDOW_DEFAULTBUTTON_ARIADESCRIPTION]: 'Delete',
         [FM.TRAINDIALOGWINDOW_DEFAULTBUTTON_TEXT]: 'Delete',
         [FM.TRAINDIALOGWINDOW_PRIMARYBUTTON_ARIADESCRIPTION]: 'Done',
