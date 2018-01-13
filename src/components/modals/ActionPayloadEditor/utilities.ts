@@ -1,92 +1,106 @@
-import { EditorState } from 'draft-js'
-import { IMention } from './mentions'
-
-export interface IRawEntityData {
-  mention: IMention
-}
-
-export interface IRawEntity {
-  type: string
-  mutability: string
-  data: IRawEntityData
-}
-
-export interface IContentEntity {
-  entityKey: string
-  blockKey: string
-  entity: IRawEntity
-  start: number
-  end: number
-}
-
-export const mentionTrigger = '$'
-/**
- * Currently we need to ask the editor state for the list of entities inside it becuase we sync this with
- * external component state such as the tags list.  However, asking about entities reuires knowing the 
- * entity id and this is leakage of editor implementation details.
- * 
- * I'm not sure if this is hitting limitation of the plugin system or if this issue would still exist
- * even if we built our own mention/auto-complete editor.  We are starting to stretch
- *  the boundaries of what this plugin was meant to do. We could try to recreate the mention
- *  editor if needed, but save that as last resort.
- */
-export const entityType = `${mentionTrigger}mention`
+import { IOption, NodeTypes } from "./models"
 
 /**
- * Get entities from existing content state
- * https://stackoverflow.com/questions/46395930/draft-js-how-to-get-all-entities-data-from-the-contentstate
+ * Recursively walk up DOM tree until root or parent with non-static position is found.
+ * (relative, fixed, or absolute) which will be used as reference for absolutely positioned elements within it
  */
-export const getEntities = (editorState: EditorState, entityType: string | null = `${mentionTrigger}mention`): IContentEntity[] => {
-  const content = editorState.getCurrentContent();
-  const entities: any = [];
-  content.getBlocksAsArray().forEach((block) => {
-    let selectedEntity: any = null;
-    block.findEntityRanges(
-      (character) => {
-        if (character.getEntity() !== null) {
-          const entity = content.getEntity(character.getEntity());
-          if (!entityType || (entityType && entity.getType() === entityType)) {
-            const entityMap = content.getEntity(character.getEntity())
-            const entityJs = (entityMap as any).toJS()
-            const mention = entityJs.data.mention.toJS()
-            const entityRaw = {
-              type: entityJs.type,
-              mutability: entityJs.mutability,
-              data: {
-                mention
-              }
-            }
+export const getRelativeParent = (element: HTMLElement | null): HTMLElement => {
+    if (!element) {
+        return document.body
+    }
 
-            selectedEntity = {
-              entityKey: character.getEntity(),
-              blockKey: block.getKey(),
-              entity: entityRaw
-            };
-            return true;
-          }
-        }
-        return false;
-      },
-      (start, end) => {
-        entities.push({ ...selectedEntity, start, end });
-      });
-  });
-  return entities;
+    const position = window.getComputedStyle(element).getPropertyValue('position')
+    if (position !== 'static') {
+        return element
+    }
+
+    return getRelativeParent(element.parentElement)
+};
+
+export const valueToJSON = (value: any) => {
+    const characters = value.characters ? value.characters.toJSON() : [];
+    return {
+        data: value.data.toJSON(),
+        decorations: value.decorations ? value.decorations.toJSON() : [],
+        document: value.toJSON().document,
+        activeMarks: value.activeMarks.toJSON(),
+        marks: value.marks.toJSON(),
+        texts: value.texts.toJSON(),
+        characters,
+        selectedText: characters.reduce((s: string, node: any) => s += node.text, ''),
+        selection: value.selection.toJSON()
+    }
 }
 
-/**
- * Get entities from existing content state
- * https://stackoverflow.com/questions/46395930/draft-js-how-to-get-all-entities-data-from-the-contentstate
- */
-export const getAllEntities = (editorStates: EditorState[], entityType: string | null = `${mentionTrigger}mention`): IContentEntity[] => {
-  let allEntities: IContentEntity[] = [];
-  for (let editorState of editorStates) {
-    let entities = getEntities(editorState, entityType);
-    allEntities = allEntities.concat(entities);
-  }
-  return allEntities;
+
+export const findNodeByPath = (path: number[], root: any, nodeType: string = NodeTypes.Mention): any => {
+    if (path.length === 0) {
+        return null
+    }
+
+    const [nextKey, ...nextPath] = path
+
+    const nextRoot = root.findDescendant((node: any, i: number) => i === nextKey)
+    // If the node was already removed due to another change it might not exist in the path anymore
+    if (nextRoot === null) {
+        return null
+    }
+
+    if (nextRoot.type === nodeType) {
+        return nextRoot
+    }
+
+    return findNodeByPath(nextPath, nextRoot)
+}
+
+export const getNodesByPath = (path: number[], root: any, nodes: any[] = []): any[] => {
+    if (path.length === 0) {
+        return nodes
+    }
+
+    const [nextKey, ...nextPath] = path
+    const nextRoot = root.findDescendant((node: any, i: number) => i === nextKey)
+
+    // If the node was already removed due to another change it might not exist in the path anymore
+    if (nextRoot === null) {
+        return nodes
+    }
+
+    nodes.push(nextRoot)
+
+    return getNodesByPath(nextPath, nextRoot, nodes)
+}
+
+export const getEntitiesFromValue = (value: any): IOption[] => {
+    const tree = value.toJSON().document
+
+    return depthFirstSearch(tree, n => n.type === NodeTypes.Mention && n.data.completed === true, n => n.type === NodeTypes.Optional)
+        .map<IOption>(n => n.data.option)
+}
+
+interface INode {
+    kind: string
+    type: string
+    nodes: INode[] | undefined
+    data: any
 }
 
 /**
- * Get anchor and focus keys for each word in content
+ * This a normal tree DFS with change that it only returns nodes that satisfy the predicate and also it will skip nodes that are excluded
+ * In practice this means return all inline nodes and skip optional nodes effectively returning list of inline nodes that are not within and optional node.
  */
+const depthFirstSearch = (root: INode, predicate: (n: INode) => boolean, exclude: (n: INode) => boolean, nodes: INode[] = []): INode[] => {
+    if (predicate(root)) {
+        nodes.push(root)
+    }
+
+    const childNodes = !Array.isArray(root.nodes)
+        ? []
+        : root.nodes
+            .filter(n => !exclude(n))
+            .map(n => depthFirstSearch(n, predicate, exclude))
+            .reduce((a, b) => [...a, ...b], [])
+
+    return [...nodes, ...childNodes]
+}
+
