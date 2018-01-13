@@ -27,8 +27,8 @@
     "redux-observable": "^0.16.0",
     "redux-thunk": "^2.2.0",
     "rxjs": "^5.4.3",
-    "slate": "^0.31.5",
-    "slate-react": "^0.10.20"
+    "slate": "0.31.3",
+    "slate-react": "0.10.17"
   },
   "scripts": {
     "start": "react-scripts-ts start",

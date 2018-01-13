@@ -7,6 +7,8 @@ import MentionPlugin, { defaultPickerProps } from './MentionPlugin'
 import OptionalPlugin from './OptionalPlugin'
 import Picker from './Picker'
 import * as Utilities from './utilities'
+// TODO: Need to not have dependency outside of the current folder
+// Move these to shared location between the two editors
 import { FuseResult, MatchedOption } from '../../ExtractorResponseEditor/models'
 import { convertMatchedTextIntoMatchedOption } from '../../ExtractorResponseEditor/utilities'
 import './PayloadEditor.css'
@@ -163,7 +165,7 @@ export default class MentionEditor extends React.Component<Props, State> {
     onArrowUp(event: React.KeyboardEvent<HTMLInputElement>, change: any) {
         console.log(`onArrowUp`)
         if (!this.state.menuProps.isVisible) {
-            return
+            return undefined
         }
 
         event.preventDefault()
@@ -184,7 +186,7 @@ export default class MentionEditor extends React.Component<Props, State> {
     onArrowDown(event: React.KeyboardEvent<HTMLInputElement>, change: any) {
         console.log('onArrowDown')
         if (!this.state.menuProps.isVisible) {
-            return
+            return undefined
         }
 
         event.preventDefault()
@@ -212,7 +214,7 @@ export default class MentionEditor extends React.Component<Props, State> {
 
     private onCompleteNode(event: React.KeyboardEvent<HTMLInputElement> | undefined, change: any, option: IOption) {
         if (!this.state.menuProps.isVisible || this.state.matchedOptions.length === 0) {
-            return
+            return undefined
         }
 
         // It's a little odd to have optional event here, there might be better way to refactor
@@ -267,7 +269,7 @@ export default class MentionEditor extends React.Component<Props, State> {
         return true
     }
 
-    onEscape(event: React.KeyboardEvent<HTMLInputElement>, change: any) {
+    onEscape(event: React.KeyboardEvent<HTMLInputElement>, change: any): boolean | void {
         console.log(`onEscape`)
         if (!this.state.menuProps.isVisible) {
             return
@@ -317,7 +319,6 @@ export default class MentionEditor extends React.Component<Props, State> {
         this.onCompleteNode(undefined, change, option)
 
         this.setState(prevState => ({
-            value: change.value,
             menuProps: { ...prevState.menuProps, isVisible: false }
         }))
     }
@@ -328,7 +329,7 @@ export default class MentionEditor extends React.Component<Props, State> {
             highlighted: i === this.state.highlightIndex
         }))
 
-        return <div className="mention-editor-container">
+        return <div className="editor-container">
             <Picker
                 menuRef={this.onMenuRef}
                 {...this.state.menuProps}
@@ -336,7 +337,7 @@ export default class MentionEditor extends React.Component<Props, State> {
                 onClickOption={this.onClickOption}
             />
             <Editor
-                className={`mention-editor ${this.props.disabled ? 'mention-editor--disabled' : ''}`}
+                className={`editor ${this.props.disabled ? 'editor--disabled' : ''} ${this.props.value.isFocused ? 'editor--active' : ''}`}
                 placeholder={this.props.placeholder}
                 value={this.props.value}
                 onChange={this.onChangeValue}
