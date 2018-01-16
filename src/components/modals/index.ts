@@ -6,7 +6,7 @@ import ChatSessionWindow from './ChatSessionWindow'
 import LogDialogModal from './LogDialogModal'
 import TeachSessionWindow from './TeachSessionWindow'
 import TrainDialogWindow from './TrainDialogWindow'
-import Error from './Error'
+import ErrorPanel from './ErrorPanel'
 import SpinnerWindow from './SpinnerWindow'
 import UserLogin from './UserLogin'
 import LogoutModal from './LogoutModal'
@@ -20,7 +20,7 @@ export {
     LogDialogModal,
     TeachSessionWindow,
     TrainDialogWindow,
-    Error,
+    ErrorPanel,
     SpinnerWindow,
     UserLogin,
     LogoutModal

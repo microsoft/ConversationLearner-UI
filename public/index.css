@@ -44,6 +44,10 @@ html {
   max-width: 300px;
 }
 
+.blis-errorpanel {
+  background-color: #FDE7E9;
+}
+
 .blis-action {
   border: none;
   background: none;

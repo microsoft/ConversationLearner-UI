@@ -3,13 +3,15 @@ import './TeachSessionWindow.css';
 import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import { ErrorHandler } from './../../ErrorHandler'
+import { AT } from '../../types/ActionTypes'
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { PrimaryButton, DefaultButton } from 'office-ui-fabric-react';
 import { State } from '../../types';
 import { DialogMode } from '../../types/const';
 import Webchat from '../Webchat'
 import TeachSessionAdmin from './TeachSessionAdmin'
-import { BlisAppBase, UserInput, DialogType, TrainDialog } from 'blis-models'
+import { BlisAppBase, UserInput, DialogType, TrainDialog, Teach } from 'blis-models'
 import { Activity } from 'botframework-directlinejs'
 import { deleteTeachSessionAsync } from '../../actions/deleteActions'
 import { toggleAutoTeach, runExtractorAsync } from '../../actions/teachActions'
@@ -17,58 +19,66 @@ import { fetchApplicationTrainingStatusThunkAsync } from '../../actions/fetchAct
 import ConfirmDeleteModal from './ConfirmDeleteModal'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
+import { autobind } from 'office-ui-fabric-react/lib/Utilities';
 
 interface ComponentState {
     isConfirmDeleteOpen: boolean,
     webchatKey: number,
     editing: boolean,
-    errorForId: string,
     hasOneRound: boolean
 }
 
 class TeachWindow extends React.Component<Props, ComponentState> {
+
     state: ComponentState = {
         isConfirmDeleteOpen: false,
         webchatKey: 0,
         editing: false,
-        errorForId: null,
         hasOneRound: false
     }
 
-    componentWillReceiveProps(newProps: Props) {
-        if (newProps.error && this.props.teachSessions.current) {
-            this.setState({ errorForId: this.props.teachSessions.current.teachId });
-        } else if (!newProps.error && this.state.errorForId) {
-            this.setState({ errorForId: null }, () => {
-                // End the teaching session after error is done displaying as I can't continue after an error
-                if (newProps.teachSessions.current && this.state.errorForId === newProps.teachSessions.current.teachId) {
-                    this.props.deleteTeachSessionAsync(this.props.user.id, this.props.teachSessions.current, this.props.app.appId, true);
-                    this.props.onClose();
-                }
-            });
-        }
-        else {
-            let webchatKey = this.state.webchatKey;
-            let hasOneRound = this.state.hasOneRound;
+    private callbacksId: string = null;
 
-            if (this.props.history !== newProps.history) {
-                webchatKey = this.state.webchatKey + 1
-            }
-            // Clear round if new session
-            if (this.props.teachSessions.current !== newProps.teachSessions.current) {
-                hasOneRound = false;
-            }
-            // History counts as having a round
-            if (newProps.history != null && newProps.history.length > 0) {
-                hasOneRound = true;
-            }
-            if (webchatKey !== this.state.webchatKey || hasOneRound !== this.state.hasOneRound) {
-                this.setState({
-                    webchatKey: webchatKey,
-                    hasOneRound: hasOneRound
-                })
-            }   
-        }    
+    componentWillMount() {
+        this.callbacksId = ErrorHandler.registerCallbacks(
+            [
+                {actionType: AT.POST_SCORE_FEEDBACK_ASYNC, callback: this.onDismissError},
+                {actionType: AT.RUN_SCORER_ASYNC, callback: this.onDismissError},
+            ]
+        );
+    };
+
+    componentWillUnmount() {
+        ErrorHandler.deleteCallbacks(this.callbacksId);
+    }
+ 
+    @autobind
+    onDismissError(errorType: AT) : void {
+        this.props.deleteTeachSessionAsync(this.props.user.id, this.props.teachSession, this.props.app.appId, false); // False = abandon
+        this.props.onClose();
+    }
+    componentWillReceiveProps(newProps: Props) {
+
+        let webchatKey = this.state.webchatKey;
+        let hasOneRound = this.state.hasOneRound;
+
+        if (this.props.history !== newProps.history) {
+            webchatKey = this.state.webchatKey + 1
+        }
+        // Clear round if new session
+        if (this.props.teachSession !== newProps.teachSession) {
+            hasOneRound = false;
+        }
+        // History counts as having a round
+        if (newProps.history != null && newProps.history.length > 0) {
+            hasOneRound = true;
+        }
+        if (webchatKey !== this.state.webchatKey || hasOneRound !== this.state.hasOneRound) {
+            this.setState({
+                webchatKey: webchatKey,
+                hasOneRound: hasOneRound
+            })
+        }   
     }
 
     onClickAbandonTeach() {
@@ -78,7 +88,7 @@ class TeachWindow extends React.Component<Props, ComponentState> {
     }
 
     onClickSave() {
-        this.props.deleteTeachSessionAsync(this.props.user.id, this.props.teachSessions.current, this.props.app.appId, true); // True = save to train dialog
+        this.props.deleteTeachSessionAsync(this.props.user.id, this.props.teachSession, this.props.app.appId, true); // True = save to train dialog
         this.props.fetchApplicationTrainingStatusThunkAsync(this.props.app.appId)
         this.props.onClose()
     }
@@ -87,7 +97,7 @@ class TeachWindow extends React.Component<Props, ComponentState> {
         this.setState({
             isConfirmDeleteOpen: false
         }, () => {
-            this.props.deleteTeachSessionAsync(this.props.user.id, this.props.teachSessions.current, this.props.app.appId, false); // False = abandon
+            this.props.deleteTeachSessionAsync(this.props.user.id, this.props.teachSession, this.props.app.appId, false); // False = abandon
             this.props.onClose()
         })
     }
@@ -114,12 +124,12 @@ class TeachWindow extends React.Component<Props, ComponentState> {
             else {
                 userInput = new UserInput({ text: activity.text });
             }
-            const teachSession = this.props.teachSessions.current
-            if (!teachSession) {
+
+            if (!this.props.teachSession) {
                 throw new Error(`Current teach session is not defined. This may be due to race condition where you attempted to chat with the bot before the teach session has been created.`)
             }
 
-            this.props.runExtractorAsync(this.props.user.id, this.props.app.appId, DialogType.TEACH, teachSession.teachId, null, userInput);
+            this.props.runExtractorAsync(this.props.user.id, this.props.app.appId, DialogType.TEACH, this.props.teachSession.teachId, null, userInput);
         }
     }
 
@@ -127,15 +137,13 @@ class TeachWindow extends React.Component<Props, ComponentState> {
         const { intl } = this.props
 
         // Put mask of webchat if not in input mode
-        let chatDisable = (this.props.teachSessions.mode !== DialogMode.Wait) ?
+        let chatDisable = (this.props.dialogMode !== DialogMode.Wait) ?
             <div className="wc-disable"></div>
             : null;
 
-        // Mask controls if autoTeach is enabled
-        let mask = (this.props.teachSessions.autoTeach) ? <div className="teachAutoMask" /> : null;
         return (
             <Modal
-                isOpen={this.props.open && this.props.error === null}
+                isOpen={this.props.open}
                 isBlocking={true}
                 containerClassName="blis-modal blis-modal--large blis-modal--teach"
             >
@@ -149,7 +157,7 @@ class TeachWindow extends React.Component<Props, ComponentState> {
                                 onPostActivity={activity => this.onWebChatPostActivity(activity)}
                                 onSelectActivity={() => { }}
                                 hideInput={false}
-                                focusInput={this.props.teachSessions.mode === DialogMode.Wait}
+                                focusInput={this.props.dialogMode === DialogMode.Wait}
                             />
                             {chatDisable}
                         </div>
@@ -159,7 +167,6 @@ class TeachWindow extends React.Component<Props, ComponentState> {
                                     app={this.props.app}
                                     onScoredAction={() => {this.setState({hasOneRound: true})}}
                                 />
-                                {mask}
                             </div>
                         </div>
                     </div>
@@ -230,9 +237,7 @@ const mapDispatchToProps = (dispatch: any) => {
 }
 const mapStateToProps = (state: State) => {
     return {
-        teachSessions: state.teachSessions,
-        user: state.user,
-        error: state.error.error
+        user: state.user
     }
 }
 
@@ -241,6 +246,8 @@ export interface ReceivedProps {
     onClose: Function,
     onUndo: Function,
     app: BlisAppBase,
+    teachSession: Teach,
+    dialogMode: DialogMode,
     // When continuing existing TD
     trainDialog: TrainDialog,
     history: Activity[]       

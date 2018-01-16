@@ -33,7 +33,6 @@ const initialState: ComponentState = {
 
 class TrainDialogWindow extends React.Component<Props, ComponentState> {
     state = initialState
-
     private _refBranchButton: HTMLElement | null;
 
     componentWillReceiveProps(nextProps: Props) {
@@ -109,10 +108,11 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
         const { intl } = this.props
         return (
             <Modal
-                isOpen={this.props.open && this.props.error == null}
+                isOpen={this.props.open}
                 isBlocking={true}
-                containerClassName="blis-modal blis-modal--large blis-modal--teach">
-                <div className="blis-modal_body">
+                containerClassName="blis-modal blis-modal--large blis-modal--teach"
+            >
+                <div className="blis-modal_body">  
                     <div className="blis-chatmodal">
                         <div className="blis-chatmodal_webchat">
                             <Webchat
@@ -218,7 +218,6 @@ const mapDispatchToProps = (dispatch: any) => {
 const mapStateToProps = (state: State) => {
     return {
         user: state.user,
-        error: state.error.error,
         actions: state.actions
     }
 }

@@ -173,8 +173,8 @@ class LogDialogs extends React.Component<Props, ComponentState> {
 
     onClickLogDialogItem(logDialog: LogDialog) {
         
-        // Convert to trainDialog until schema update chagne
-        let trainDialog = ModelUtils.ToTrainDialog(logDialog);
+        // Convert to trainDialog until schema update change, and pass in app definition too
+        let trainDialog = ModelUtils.ToTrainDialog(logDialog, this.props.actions, this.props.entities);
 
         ((this.props.fetchHistoryThunkAsync(this.props.app.appId, trainDialog, this.props.user.name, this.props.user.id) as any) as Promise<Activity[]>)
         .then(activities => {

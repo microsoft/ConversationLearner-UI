@@ -32,19 +32,27 @@ export default class BlisClient {
             'Content-Type': 'application/json'
         }
     }
+    forceError: boolean = false
+
     getAccessToken: () => string
     // The memory is key is used by BLIS-SDK to access the memory partition for a particular user
     // TODO: Need to further find out why this is required. (I would expect this to also partition on session)
     getMemoryKey: () => string
 
-    constructor(baseUrl: string, getAccessToken: () => string, getMemoryKey: () => string, defaultHeaders?: { [x: string]: string }) {
+    constructor(baseUrl: string, getAccessToken: () => string, getMemoryKey: () => string, defaultHeaders?: { [x: string]: string }, forceError: boolean = false) {
         this.baseUrl = baseUrl
         this.getAccessToken = getAccessToken
         this.getMemoryKey = getMemoryKey
         this.defaultConfig.headers = { ...this.defaultConfig.headers, ...defaultHeaders }
+        this.forceError = forceError
     }
 
     send<T = any>(config: AxiosRequestConfig) {
+
+        if (this.forceError) {
+            return Promise.reject(new Error("Injected Error"));
+        }
+
         const joinCharacter = /\?/g.test(config.url) ? '&' : '?'
         const urlWithKey = `${config.url}${joinCharacter}key=${this.getMemoryKey()}`
 
@@ -142,8 +150,7 @@ export default class BlisClient {
             method: 'post',
             url: `${this.baseUrl}/app/${appId}/entity`,
             data: entity
-        })
-            .then(response => {
+        }).then(response => {
                 entity.entityId = response.data
                 return entity
             })

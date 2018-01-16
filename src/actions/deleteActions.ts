@@ -125,7 +125,7 @@ export const deleteTrainDialogFulfilled = (trainDialogId: string): ActionObject 
 export const deleteTrainDialogThunkAsync = (appId: string, trainDialog: TrainDialog) => {
     return async (dispatch: Dispatch<any>) => {
         dispatch(deleteTrainDialogAsync(trainDialog, appId))
-        const blisClient = ClientFactory.getInstance()
+        const blisClient = ClientFactory.getInstance(AT.DELETE_TRAIN_DIALOG_ASYNC)
 
         try {
             await blisClient.trainDialogsDelete(appId, trainDialog.trainDialogId)
@@ -177,7 +177,7 @@ export const deleteLogDialogRejected = (): ActionObject => {
 export const deleteLogDialogThunkAsync = (appId: string, logDialogId: string) => {
     return async (dispatch: Dispatch<any>) => {
         dispatch(deleteLogDialogAsync2(appId, logDialogId))
-        const blisClient = ClientFactory.getInstance()
+        const blisClient = ClientFactory.getInstance(AT.DELETE_LOG_DIALOG_ASYNC2)
 
         try {
             await blisClient.logDialogsDelete(appId, logDialogId)
@@ -185,7 +185,6 @@ export const deleteLogDialogThunkAsync = (appId: string, logDialogId: string) =>
         }
         catch (e) {
             const error = e as Error
-            // TODO: Why does this method take error and message?
             dispatch(setErrorDisplay(ErrorType.Error, error.message, error.message, AT.DELETE_LOG_DIALOG_ASYNC2))
             dispatch(deleteLogDialogRejected())
             throw new Error(e)

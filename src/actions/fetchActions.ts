@@ -31,10 +31,9 @@ export const fetchAllTrainDialogsFulfilled = (trainDialogs: TrainDialog[]): Acti
     }
 }
 
-
 export const fetchHistoryThunkAsync = (appId: string, trainDialog: TrainDialog, userName: string, userId: string) => {
     return async (dispatch: Dispatch<any>) => {
-        const blisClient = ClientFactory.getInstance()
+        const blisClient = ClientFactory.getInstance(AT.FETCH_HISTORY_ASYNC,)
         dispatch(fetchHistoryAsync(appId, trainDialog, userName, userId))
 
         const activities = await blisClient.history(appId, trainDialog, userName, userId)
@@ -131,7 +130,7 @@ export const fetchApplicationTrainingStatusExpired = (appId: string): ActionObje
 const pollTrainingStatusUntilResolvedOrMaxDuration = (dispatch: Dispatch<any>, appId: string, resolvedStates: TrainingStatusCode[], interval: number, maxDuration: number): Promise<void> => {
     const start = new Date()
     const end = start.getTime() + maxDuration
-    const blisClient = ClientFactory.getInstance()
+    const blisClient = ClientFactory.getInstance(null)
     
     return new Promise<void>((resolve, reject) => {
         const timerId = setInterval(async () => {
