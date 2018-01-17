@@ -16,7 +16,7 @@ export type ErrorState = {
     errorType: ErrorType,
     error: string,
     message: string,
-    route: AT
+    action: AT
 }
 export type TrainDialogState = TrainDialog[];
 

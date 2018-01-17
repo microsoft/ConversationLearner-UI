@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import * as OF from 'office-ui-fabric-react';
 import { State } from '../../../types'
-import { BlisAppBase, Teach, TrainDialog, TeachWithHistory } from 'blis-models'
+import { BlisAppBase, Teach, TrainDialog, TeachWithHistory, AppDefinition } from 'blis-models'
 import { TeachSessionWindow, TrainDialogWindow } from '../../../components/modals'
 import { fetchHistoryThunkAsync } from '../../../actions/fetchActions'
 import { createTeachSessionThunkAsync, createTeachSessionFromUndoThunkAsync, createTeachSessionFromBranchThunkAsync } from '../../../actions/createActions'
@@ -214,8 +214,17 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
     onClickTrainDialogItem(trainDialog: TrainDialog) {
 
-        // TODO: Find cleaner solution for the types.  Thunks return functions but when using them on props they should be returning result of the promise.
-        ((this.props.fetchHistoryThunkAsync(this.props.app.appId, trainDialog, this.props.user.name, this.props.user.id) as any) as Promise<Activity[]>)
+        let definitions = new AppDefinition({
+            actions: this.props.actions,
+            entities: this.props.entities
+            })
+
+        let trainDialogWithDefinitions = new TrainDialog({
+            rounds: trainDialog.rounds,
+            definitions: definitions
+        });
+
+        ((this.props.fetchHistoryThunkAsync(this.props.app.appId, trainDialogWithDefinitions, this.props.user.name, this.props.user.id) as any) as Promise<Activity[]>)
         .then(activities => {
             this.setState({
                 activities: activities,
@@ -302,6 +311,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     />
                     <TeachSessionWindow
                         app={this.props.app}
+                        teachSession={this.props.teachSessions.current}
+                        dialogMode={this.props.teachSessions.mode}
                         open={this.state.isTeachDialogModalOpen}
                         onClose={() => this.onCloseTeachSession()} 
                         onUndo={() => this.onUndoTeachStep()}
@@ -348,7 +359,8 @@ const mapStateToProps = (state: State) => {
         user: state.user,
         actions: state.actions,
         entities: state.entities,
-        trainDialogs: state.trainDialogs
+        trainDialogs: state.trainDialogs,
+        teachSessions: state.teachSessions
     }
 }
 

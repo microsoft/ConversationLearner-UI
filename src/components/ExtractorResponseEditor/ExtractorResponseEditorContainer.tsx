@@ -24,10 +24,10 @@ class ExtractorResponseEditorContainer extends React.Component<Props, {}> {
         // This should be normalized so we can only check one property here.
         const preBuiltPredictedEntities = this.props.extractorResponse.predictedEntities.filter(e => {
             if (e.builtinType) {
-                console.warn(`ExtractorResponseEditorContainer#onChangeCustomEntities When filtering prebuilts out of predicted entities encountered entity with builtinType defined`)
+                console.warn(`ExtractorResponseEditorContainer#onChangeCustomEntities: When filtering prebuilts entities out of predicted entities encountered entity with builtinType defined`)
             }
 
-            // TODO: Should not have to cast to any. After re-model all entities should have type available
+            // TODO: Should not have to cast to any. After schema change all entities should have type available
             const entityType = (e as any).entityType
             return (typeof entityType === "string" && entityType !== "LUIS")
                 || (typeof e.builtinType === "string" && e.builtinType !== "LUIS")
@@ -35,7 +35,7 @@ class ExtractorResponseEditorContainer extends React.Component<Props, {}> {
 
         const newExtractResponse = {
             ...this.props.extractorResponse,
-            predictedEntities: [...preBuiltPredictedEntities, ...customEntities.map(convertGenericEntityToPredictedEntity)]
+            predictedEntities: [...preBuiltPredictedEntities, ...customEntities.map(convertGenericEntityToPredictedEntity(this.props.entities))]
         }
 
         this.props.onChange(newExtractResponse)

@@ -217,24 +217,24 @@ export type CreateAction = {
     type: AT.CREATE_TEACH_SESSION_FULFILLED,
     teachSession: Teach
 } | {
-    type: AT.CREATE_TEACH_SESSION_FROM_UNDO_ASYNC,
+    type: AT.CREATE_TEACH_SESSION_FROMUNDOASYNC,
     blisAppID: string,
     userName: string,
     userId: string,
     teach: Teach
 } | {
-    type: AT.CREATE_TEACH_SESSION_FROM_UNDO_FULFILLED,
+    type: AT.CREATE_TEACH_SESSION_FROMUNDOFULFILLED,
     teachWithHistory: TeachWithHistory
 }
 | {
-    type: AT.CREATE_TEACH_SESSION_FROM_BRANCH_ASYNC,
+    type: AT.CREATE_TEACH_SESSION_FROMBRANCHASYNC,
     blisAppID: string,
     userName: string,
     userId: string,
     teachId: string,
     turnIndex: number
 } | {
-    type: AT.CREATE_TEACH_SESSION_FROM_BRANCH_FULFILLED,
+    type: AT.CREATE_TEACH_SESSION_FROMBRANCHFULFILLED,
     teachWithHistory: TeachWithHistory
 }
 
