@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import * as OF from 'office-ui-fabric-react';
 import { State } from '../../../types'
-import { BlisAppBase, LogDialog, Session, ModelUtils } from 'blis-models'
+import { BlisAppBase, LogDialog, Session, ModelUtils, ActionBase } from 'blis-models'
 import { ChatSessionWindow, LogDialogModal } from '../../../components/modals'
 import { createChatSessionThunkAsync } from '../../../actions/createActions'
 import { fetchAllLogDialogsAsync, fetchHistoryThunkAsync } from '../../../actions/fetchActions';
@@ -86,7 +86,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                         let actionId = scorerSteps[scorerSteps.length - 1].predictedAction;
                         let action = component.props.actions.find(a => a.actionId == actionId);
                         if (action) {
-                            return <span className='ms-font-m-plus'>{action.payload}</span>;
+                            return <span className='ms-font-m-plus'>{ActionBase.GetPayload(action)}</span>;
                         }
                     }
                 }

@@ -150,11 +150,12 @@ export const convertEntitiesAndTextToEditorValue = (text: string, customEntities
 }
 
 export const convertMatchedTextIntoMatchedOption = <T>(text: string, matches: [number, number][], original: T): models.MatchedOption<T> => {
-    const matchedStrings = matches.reduce<models.ISegement[]>((segements, [startIndex, endIndex]) => {
-        if (startIndex === endIndex) {
-            return segements
-        }
+    const matchedStrings = matches.reduce<models.ISegement[]>((segements, [startIndex, originalEndIndex]) => {
+        // if (startIndex === endIndex) {
+        //     return segements
+        // }
 
+        let endIndex = originalEndIndex + 1
         const segementIndexWhereEntityBelongs = segements.findIndex(seg => seg.startIndex <= startIndex && endIndex <= seg.endIndex)
         const prevSegements = segements.slice(0, segementIndexWhereEntityBelongs)
         const nextSegements = segements.slice(segementIndexWhereEntityBelongs + 1, segements.length)
@@ -165,7 +166,7 @@ export const convertMatchedTextIntoMatchedOption = <T>(text: string, matches: [n
         const prevSegement: models.ISegement = {
             ...segementWhereEntityBelongs,
             text: prevSegementText,
-            endIndex: prevSegementEndIndex,
+            endIndex: startIndex,
         }
 
         const nextSegementStartIndex = endIndex - segementWhereEntityBelongs.startIndex
@@ -173,7 +174,7 @@ export const convertMatchedTextIntoMatchedOption = <T>(text: string, matches: [n
         const nextSegement: models.ISegement = {
             ...segementWhereEntityBelongs,
             text: nextSegementText,
-            startIndex: nextSegementStartIndex,
+            startIndex: endIndex,
         }
 
         const newSegement: models.ISegement = {
@@ -186,7 +187,7 @@ export const convertMatchedTextIntoMatchedOption = <T>(text: string, matches: [n
             }
         }
 
-        const newSegements = prevSegements
+        const newSegements = []
         if (prevSegement.startIndex !== prevSegement.endIndex) {
             newSegements.push(prevSegement)
         }
@@ -199,7 +200,7 @@ export const convertMatchedTextIntoMatchedOption = <T>(text: string, matches: [n
             newSegements.push(nextSegement)
         }
 
-        return [...newSegements, ...nextSegements]
+        return [...prevSegements, ...newSegements, ...nextSegements]
     }, [
             {
                 text,
@@ -216,6 +217,7 @@ export const convertMatchedTextIntoMatchedOption = <T>(text: string, matches: [n
         }))
 
     return {
+        highlighted: false,
         original,
         matchedStrings
     }

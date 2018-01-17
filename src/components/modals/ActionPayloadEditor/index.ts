@@ -1,11 +1,19 @@
-import ActionPayloadEditor from './ActionPayloadEditor'
-import * as utilities from './utilities'
-import { IMention } from './mentions'
+import Editor, { SlateValue } from './PayloadEditor'
+import { defaultOptions } from './MentionPlugin'
+import initialValue from './value'
+import { getEntitiesFromValue, createTextValue } from './utilities'
+import { IOption } from './models'
 
-export {
-    ActionPayloadEditor,
-    utilities,
-    IMention
+const triggerCharacter = defaultOptions.triggerCharacter
+const Utilities = {
+    getEntitiesFromValue,
+    createTextValue
 }
-
-export default ActionPayloadEditor
+export {
+    triggerCharacter, 
+    SlateValue,
+    Editor,
+    IOption,
+    initialValue,
+    Utilities
+}

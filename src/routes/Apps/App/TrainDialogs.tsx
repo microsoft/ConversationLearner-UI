@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import * as OF from 'office-ui-fabric-react';
 import { State } from '../../../types'
-import { BlisAppBase, Teach, TrainDialog, TeachWithHistory, AppDefinition } from 'blis-models'
+import { BlisAppBase, Teach, TrainDialog, TeachWithHistory, AppDefinition, ActionBase } from 'blis-models'
 import { TeachSessionWindow, TrainDialogWindow } from '../../../components/modals'
 import { fetchHistoryThunkAsync } from '../../../actions/fetchActions'
 import { createTeachSessionThunkAsync, createTeachSessionFromUndoThunkAsync, createTeachSessionFromBranchThunkAsync } from '../../../actions/createActions'
@@ -86,7 +86,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                         let actionId = scorerSteps[scorerSteps.length - 1].labelAction;
                         let action = component.props.actions.find(a => a.actionId == actionId);
                         if (action) {
-                            return <span className='ms-font-m-plus'>{action.payload}</span>;
+                            return <span className='ms-font-m-plus'>{ActionBase.GetPayload(action)}</span>;
                         }
                     }
                 }

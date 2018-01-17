@@ -9,7 +9,7 @@ export enum FM {
     // Actions
     ACTIONS_TITLE = 'Actions.title',
     ACTIONS_SUBTITLE = 'Actions.subtitle',
-    ACTIONS_CREATEBUTTONARIALDESCRIPTION = 'Actions.createButtonAriaDescription',
+    ACTIONS_CREATEBUTTONARIADESCRIPTION = 'Actions.createButtonAriaDescription',
     ACTIONS_CREATEBUTTONTITLE = 'Actions.createButtonTitle',
     ACTIONS_CONFIRMDELETEMODALTITLE = 'Actions.confirmDeleteModalTitle',
 
@@ -329,7 +329,7 @@ export default {
         // Actions
         [FM.ACTIONS_TITLE]: 'Actions',
         [FM.ACTIONS_SUBTITLE]: `Manage a list of actions that your application can take given it's state and user input...`,
-        [FM.ACTIONS_CREATEBUTTONARIALDESCRIPTION]: 'Create a New Action',
+        [FM.ACTIONS_CREATEBUTTONARIADESCRIPTION]: 'Create a New Action',
         [FM.ACTIONS_CREATEBUTTONTITLE]: 'New Action',
         [FM.ACTIONS_CONFIRMDELETEMODALTITLE]: 'Are you sure you want to delete this action?',
 

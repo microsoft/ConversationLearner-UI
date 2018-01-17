@@ -154,7 +154,7 @@ class Actions extends React.Component<Props, ComponentState> {
                     <OF.PrimaryButton
                         onClick={() => this.onClickOpenActionEditor()}
                         ariaDescription={this.props.intl.formatMessage({
-                            id: FM.ACTIONS_CREATEBUTTONARIALDESCRIPTION,
+                            id: FM.ACTIONS_CREATEBUTTONARIADESCRIPTION,
                             defaultMessage: 'Create a New Action'
                         })}
                         text={this.props.intl.formatMessage({

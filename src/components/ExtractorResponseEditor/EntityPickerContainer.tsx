@@ -68,6 +68,7 @@ export default class EntityPickerContainer extends React.Component<Props, State>
 
         this.defaultMatchedOptions = props.options.filter((_, i) => i < props.maxDisplayedOptions)
             .map<MatchedOption<IOption>>(option => ({
+                highlighted: false,
                 matchedStrings: [{ text: option.name, matched: false }],
                 original: option
             }))
@@ -84,6 +85,7 @@ export default class EntityPickerContainer extends React.Component<Props, State>
             // Recompute default options in case options list and max displayed props have changed
             this.defaultMatchedOptions = nextProps.options.filter((_, i) => i < nextProps.maxDisplayedOptions)
                 .map<MatchedOption<IOption>>(option => ({
+                    highlighted: false,
                     matchedStrings: [{ text: option.name, matched: false }],
                     original: option
                 }))

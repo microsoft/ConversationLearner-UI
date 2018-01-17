@@ -80,6 +80,7 @@ export interface FuseMatch {
 }
 
 export interface MatchedOption<T> {
+    highlighted: boolean
     matchedStrings: MatchedString[]
     original: T
 }
