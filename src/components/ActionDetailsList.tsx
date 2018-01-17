@@ -151,10 +151,6 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             isMultiline: true,
             getSortValue: action => ActionBase.GetPayload(action),
             render: (action, component) => {
-                let displayPayload = ActionBase.GetPayload(action)
-                if (displayPayload.startsWith('{')) {
-                    displayPayload = JSON.parse(displayPayload).text
-                }
                 return (
                     <div>
                     {action.metadata.actionType === ActionTypes.CARD &&
@@ -166,7 +162,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                             iconProps={{ iconName: 'RedEye' }}
                         />
                     }
-                    <span className="ms-font-m-plus" onClick={() => component.props.onSelectAction(action)}>{displayPayload}</span>
+                    <span className="ms-font-m-plus" onClick={() => component.props.onSelectAction(action)}>{ActionBase.GetPayload(action)}</span>
                     </div>
                 )
             }
