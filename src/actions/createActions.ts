@@ -1,7 +1,8 @@
-import { ActionObject } from '../types'
+import { ActionObject, ErrorType } from '../types'
 import { AT } from '../types/ActionTypes'
 import { BlisAppBase, EntityBase, ActionBase, TrainDialog, LogDialog, Teach, Session, TrainingStatusCode, TeachWithHistory } from 'blis-models'
 import { Dispatch } from 'redux'
+import { setErrorDisplay } from './displayActions'
 import * as ClientFactory from '../services/clientFactory'
 
 export const createBLISApplicationAsync = (key: string, userId: string, application: BlisAppBase): ActionObject => {
@@ -97,7 +98,7 @@ export const createChatSessionFulfilled = (session: Session): ActionObject =>
 
 export const createChatSessionThunkAsync = (key: string, appId: string) => {
     return async (dispatch: Dispatch<any>) => {
-        const blisClient = ClientFactory.getInstance()
+        const blisClient = ClientFactory.getInstance(AT.CREATE_CHAT_SESSION_ASYNC)
         dispatch(createChatSessionAsync(key))
         const app = await blisClient.appGet(appId)
         if (app.trainingStatus !== TrainingStatusCode.Completed) {
@@ -130,7 +131,7 @@ export const createTeachSessionFulfilled = (teachSession: Teach): ActionObject =
 
 export const createTeachSessionThunkAsync = (key: string, appId: string) => {
     return async (dispatch: Dispatch<any>) => {
-        const blisClient = ClientFactory.getInstance()
+        const blisClient = ClientFactory.getInstance(AT.CREATE_TEACH_SESSION_ASYNC)
         dispatch(createTeachSessionAsync())
 
         try {
@@ -138,16 +139,17 @@ export const createTeachSessionThunkAsync = (key: string, appId: string) => {
             dispatch(createTeachSessionFulfilled(session))
             return session
         }
-        catch (e) {
+        catch (error) {
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response && error.response.data, AT.CREATE_TEACH_SESSION_ASYNC))
             dispatch(createTeachSessionRejected())
-            throw e
+            throw error
         }
     }
 }
 
 export const createTeachSessionFromUndoThunkAsync = (appId: string, teach: Teach, userName: string, userId: string) => {
     return async (dispatch: Dispatch<any>) => {
-        const blisClient = ClientFactory.getInstance()
+        const blisClient = ClientFactory.getInstance(AT.CREATE_TEACH_SESSION_FROMUNDOASYNC)
         dispatch(createTeachSessionFromUndoAsync(appId, teach, userName, userId))
 
         try {
@@ -155,16 +157,17 @@ export const createTeachSessionFromUndoThunkAsync = (appId: string, teach: Teach
             dispatch(createTeachSessionFromUndoFulfilled(teachWithHistory))
             return teachWithHistory
         }
-        catch (e) {
+        catch (error) {
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response && error.response.data, AT.CREATE_TEACH_SESSION_FROMUNDOASYNC))
             dispatch(createTeachSessionRejected())
-            throw e
+            throw error
         }
     }
 }
 
 export const createTeachSessionFromUndoAsync = (blisAppID: string, teach: Teach, userName: string, userId: string): ActionObject => {
     return {
-        type: AT.CREATE_TEACH_SESSION_FROM_UNDO_ASYNC,
+        type: AT.CREATE_TEACH_SESSION_FROMUNDOASYNC,
         blisAppID: blisAppID,
         userName: userName,
         userId: userId,
@@ -175,14 +178,14 @@ export const createTeachSessionFromUndoAsync = (blisAppID: string, teach: Teach,
 export const createTeachSessionFromUndoFulfilled = (teachWithHistory: TeachWithHistory): ActionObject => {
     // Needs a fulfilled version to handle response from Epic
     return {
-        type: AT.CREATE_TEACH_SESSION_FROM_UNDO_FULFILLED,
+        type: AT.CREATE_TEACH_SESSION_FROMUNDOFULFILLED,
         teachWithHistory: teachWithHistory
     }
 }
 
 export const createTeachSessionFromBranchThunkAsync = (appId: string, teachId: string, userName: string, userId: string, turnIndex: number) => {
     return async (dispatch: Dispatch<any>) => {
-        const blisClient = ClientFactory.getInstance()
+        const blisClient = ClientFactory.getInstance(AT.CREATE_TEACH_SESSION_FROMBRANCHASYNC)
         dispatch(createTeachSessionFromBranchAsync(appId, teachId, userName, userId, turnIndex))
 
         try  {
@@ -190,16 +193,17 @@ export const createTeachSessionFromBranchThunkAsync = (appId: string, teachId: s
             dispatch(createTeachSessionFromBranchFulfilled(teachWithHistory))
             return teachWithHistory
         }
-        catch (e) {
+        catch (error) {
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response && error.response.data, AT.CREATE_TEACH_SESSION_FROMBRANCHASYNC))
             dispatch(createTeachSessionRejected())
-            throw e
+            throw error
         }
     }
 }
 
 export const createTeachSessionFromBranchAsync = (blisAppID: string, teachId: string, userName: string, userId: string, turnIndex: number): ActionObject => {
     return {
-        type: AT.CREATE_TEACH_SESSION_FROM_BRANCH_ASYNC,
+        type: AT.CREATE_TEACH_SESSION_FROMBRANCHASYNC,
         blisAppID: blisAppID,
         userName: userName,
         userId: userId,
@@ -211,7 +215,7 @@ export const createTeachSessionFromBranchAsync = (blisAppID: string, teachId: st
 export const createTeachSessionFromBranchFulfilled = (teachWithHistory: TeachWithHistory): ActionObject => {
     // Needs a fulfilled version to handle response from Epic
     return {
-        type: AT.CREATE_TEACH_SESSION_FROM_BRANCH_FULFILLED,
+        type: AT.CREATE_TEACH_SESSION_FROMBRANCHFULFILLED,
         teachWithHistory: teachWithHistory
     }
 }

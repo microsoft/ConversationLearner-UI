@@ -12,6 +12,7 @@
     "jsx": "react",
     "moduleResolution": "node",
     "rootDir": "src",
+    "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": false,  // For BotBuilder-core
     "noImplicitReturns": true,
     "noImplicitThis": true,

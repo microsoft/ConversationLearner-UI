@@ -8,6 +8,7 @@ import * as OF from 'office-ui-fabric-react';
 import { BlisAppBase, BlisAppMetaData } from 'blis-models'
 import './Settings.css'
 import { FM } from '../../../react-intl-messages'
+import ErrorInjectionEditor from '../../../components/modals/ErrorInjectionEditor'
 import { injectIntl, InjectedIntlProps, defineMessages, FormattedMessage } from 'react-intl'
 
 const messages = defineMessages({
@@ -67,7 +68,8 @@ interface ComponentState {
     botFrameworkAppsVal: any[],
     newBotVal: string,
     isPasswordVisible: boolean,
-    passwordShowHideText: string
+    passwordShowHideText: string,
+    debugErrorsOpen: boolean
 }
 
 class Settings extends React.Component<Props, ComponentState> {
@@ -83,7 +85,8 @@ class Settings extends React.Component<Props, ComponentState> {
             botFrameworkAppsVal: [],
             newBotVal: "",
             isPasswordVisible: false,
-            passwordShowHideText: this.props.intl.formatMessage(messages.passwordHidden)
+            passwordShowHideText: this.props.intl.formatMessage(messages.passwordHidden),
+            debugErrorsOpen: false
         }
 
         this.onChangedLuisKey = this.onChangedLuisKey.bind(this)
@@ -216,6 +219,18 @@ class Settings extends React.Component<Props, ComponentState> {
         }))
     }
 
+    onCloseDebugErrors() {
+        this.setState({
+            debugErrorsOpen: false
+        })
+    }
+
+    onOpenDebugErrors() {
+        this.setState({
+            debugErrorsOpen: true
+        })
+    }
+
     render() {
         const { intl } = this.props
         let options = [{
@@ -327,6 +342,15 @@ class Settings extends React.Component<Props, ComponentState> {
                             text={intl.formatMessage(messages.discard)}
                         />
                     </div>
+                    <OF.DefaultButton
+                            onClick={() => this.onOpenDebugErrors()}
+                            ariaDescription={intl.formatMessage(messages.discard)}
+                            text={'Debug Errors'}
+                        />
+                    <ErrorInjectionEditor 
+                        open={this.state.debugErrorsOpen}
+                        onClose={()=>this.onCloseDebugErrors()}
+                    />
                 </div>
             </div>
         );

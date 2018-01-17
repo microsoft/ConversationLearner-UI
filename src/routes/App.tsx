@@ -12,7 +12,7 @@ import Docs from './Docs'
 import Support from './Support'
 import NoMatch from './NoMatch'
 import HelpPanel from '../components/HelpPanel'
-import { UserLogin, SpinnerWindow, LogoutModal, Error } from '../components/modals'
+import { UserLogin, SpinnerWindow, LogoutModal, ErrorPanel } from '../components/modals'
 import { setUser, logout } from '../actions/displayActions'
 import './App.css'
 import { FormattedMessage } from 'react-intl'
@@ -126,6 +126,9 @@ class App extends React.Component<Props, ComponentState> {
           </header>
           <div className="blis-app_header-placeholder" />
           <div className="blis-app_content">
+            <div>
+            <ErrorPanel/>
+            </div>
             <Switch>
               <Route exact path="/" render={() => <Redirect to="/home" />} />
               <Route path="/home" component={AppsIndex} />
@@ -137,7 +140,6 @@ class App extends React.Component<Props, ComponentState> {
           </div>
           <div className="blis-app_modals">
             <HelpPanel />
-            <Error />
             <UserLogin
               open={this.state.isLoginWindowOpen}
               onClickLogin={this.onClickLogin}
