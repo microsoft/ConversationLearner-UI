@@ -291,7 +291,7 @@ export const convertPredictedEntityToGenericEntity = (pe: models.PredictedEntity
         }
     })
 
-export const convertGenericEntityToPredictedEntity = (ge: models.IGenericEntity<models.IGenericEntityData<models.PredictedEntity>>): any => {
+export const convertGenericEntityToPredictedEntity = (entities: models.EntityBase[]) => (ge: models.IGenericEntity<models.IGenericEntityData<models.PredictedEntity>>): any => {
     const predictedEntity = ge.data.original
     if (predictedEntity) {
         return predictedEntity
@@ -306,15 +306,17 @@ export const convertGenericEntityToPredictedEntity = (ge: models.IGenericEntity<
         console.warn(`convertGenericEntityToPredictedEntity option selected as option type other than LUIS, this will most likely cause an error`)
     }
 
+    const entity = entities.find(e => e.entityId === option.id)
+    if (!entity) {
+        throw new Error(`Could not find entity with id: ${option.id} in list of entities: ${entities}`)
+    }
+
     return {
+        ...entity,
         startCharIndex: ge.startIndex,
         endCharIndex: ge.endIndex - 1,
-        entityId: option.id,
-        entityName: option.name,
         entityText: text,
-        entityType: option.type,
-        resolution: {},
-        builtinType: undefined
+        resolution: {}
     }
 }
 

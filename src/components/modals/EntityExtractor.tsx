@@ -177,7 +177,9 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
 
         const textVariations = allResponses.map<TextVariation>(extractResponse => new TextVariation({
             text: extractResponse.text,
-            labelEntities: ModelUtils.ToLabeledEntities(extractResponse.predictedEntities)
+            // When converting predicted entities to labeled entities the metadata field was lost and causing problems
+            // so here we simply re-use predicted entities.
+            labelEntities: extractResponse.predictedEntities
         }))
 
         this.props.onTextVariationsExtracted(allResponses[0], textVariations, roundIndex);
