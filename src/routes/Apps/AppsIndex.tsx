@@ -61,7 +61,7 @@ class AppsIndex extends React.Component<Props, ComponentState> {
     }
 
     render() {
-        const { match } = this.props as any
+        const { match } = this.props
         return (
             <Switch>
                 <Route path={`${match.url}/:appid`} component={AppIndex} />
