@@ -15,6 +15,7 @@ import ActionScorer from './ActionScorer';
 import EntityExtractor from './EntityExtractor';
 import MemoryTable from './MemoryTable';
 import { FM } from '../../react-intl-messages'
+import { FontClassNames } from 'office-ui-fabric-react'
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import './TeachSessionAdmin.css'
 
@@ -96,7 +97,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
         const autoTeachWithRound = this.props.teachSession.autoTeach 
 
         return (
-            <div className="blis-dialog-admin ms-font-l">
+            <div className={`blis-dialog-admin ${FontClassNames.large}`}>
                 {this.props.teachSession.mode === DialogMode.Extractor ? (
                     <div className="blis-dialog-admin__content">
                         <div className="blis-wc-message blis-wc-message--user">
@@ -179,7 +180,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                                                 /> (
                                                 <button
                                                     type="button"
-                                                    className="blis-training-status-inline__button ms-font-l"
+                                                    className={`blis-training-status-inline__button ${FontClassNames.large}`}
                                                     onClick={this.onClickRefreshScores}>
                                                     <FormattedMessage
                                                         id={FM.TEACHSESSIONADMIN_TRAINSTATUS_REFRESH}

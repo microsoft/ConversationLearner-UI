@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { FormattedMessage, FormattedRelative } from 'react-intl'
 import { FM } from '../react-intl-messages'
-import { TooltipHost } from 'office-ui-fabric-react'
+import { TooltipHost, FontClassNames } from 'office-ui-fabric-react'
 import { Icon } from 'office-ui-fabric-react/lib/Icon'
 import './TrainingStatus.css'
 
@@ -64,7 +64,7 @@ export interface Props {
 const Component: React.SFC<Props> = (props: Props) => {
     const uiState = internalStatusToUiStateMap.get(props.status)
     return (
-        <div className="blis-training-status ms-font-l">
+        <div className={`blis-training-status ${FontClassNames.large}`}>
             <div className={`blis-training-status__icon-row ${uiState.className} ${props.didPollingExpire ? 'blis-training-status__icon-row--expired': ''}`}>
                 <FormattedMessage
                     id={FM.APP_TRAINING_STATUS_STATUS}
@@ -93,7 +93,7 @@ const Component: React.SFC<Props> = (props: Props) => {
                          &nbsp;<Icon iconName="Warning" className="blis-icon" />
                     </TooltipHost>}
             </div>
-            <div className="blis-training-status__text-row ms-font-s">
+            <div className={`blis-training-status__text-row ${FontClassNames.small}`}>
                 <FormattedMessage
                     id={FM.APP_TRAINING_STATUS_LAST_UPDATE}
                     defaultMessage="Last Update"
@@ -101,7 +101,7 @@ const Component: React.SFC<Props> = (props: Props) => {
                     <span className="blis-training-status__time">
                     {props.lastUpdatedDatetime ? <FormattedRelative value={props.lastUpdatedDatetime} /> : ''}
                 </span>
-                <button className="blis-training-status__trigger ms-font-s" onClick={props.onClickRefresh}>
+                <button className={`blis-training-status__trigger ${FontClassNames.small}`} onClick={props.onClickRefresh}>
                     <FormattedMessage
                         id={FM.APP_TRAINING_STATUS_REFRESH}
                         defaultMessage="Refresh"

@@ -29,7 +29,7 @@ function getColumns(intl: InjectedIntl): ISortableRenderableColumn[] {
             maxWidth: 200,
             isResizable: true,
             getSortValue: app => app.appName,
-            render: (app, component) => <span className='ms-font-m-plus'><OF.Link onClick={() => component.onClickApp(app)}>{app.appName}</OF.Link></span>
+            render: (app, component) => <span className={OF.FontClassNames.mediumPlus}><OF.Link onClick={() => component.onClickApp(app)}>{app.appName}</OF.Link></span>
         },
         {
             key: 'locale',
@@ -42,7 +42,7 @@ function getColumns(intl: InjectedIntl): ISortableRenderableColumn[] {
             maxWidth: 100,
             isResizable: false,
             getSortValue: app => app.locale,
-            render: app => <span className='ms-font-m-plus'>{app.locale}</span>
+            render: app => <span className={OF.FontClassNames.mediumPlus}>{app.locale}</span>
         },
         {
             key: 'bots',
@@ -55,7 +55,7 @@ function getColumns(intl: InjectedIntl): ISortableRenderableColumn[] {
             maxWidth: 100,
             isResizable: false,
             getSortValue: app => app.metadata.botFrameworkApps.length,
-            render: app => <span className='ms-font-m-plus'>{app.metadata.botFrameworkApps.length}</span>
+            render: app => <span className={OF.FontClassNames.mediumPlus}>{app.metadata.botFrameworkApps.length}</span>
         },
         {
             key: 'actions',
@@ -194,13 +194,13 @@ class AppsList extends React.Component<Props, ComponentState> {
         let apps = this.getSortedApplications();
         return (
             <div className="blis-page">
-                <span className="ms-font-su">
+                <span className={OF.FontClassNames.superLarge}>
                     <FormattedMessage
                         id={FM.APPSLIST_TITLE}
                         defaultMessage="My Apps"
                     />
                 </span>
-                <span className="ms-font-m-plus">
+                <span className={OF.FontClassNames.mediumPlus}>
                     <FormattedMessage
                         id={FM.APPSLIST_SUBTITLE}
                         defaultMessage="Create and Manage your BLIS applications..."
@@ -220,7 +220,7 @@ class AppsList extends React.Component<Props, ComponentState> {
                     />
                 </div>
                 <OF.DetailsList
-                    className="ms-font-m-plus"
+                    className={OF.FontClassNames.mediumPlus}
                     items={apps}
                     columns={this.state.columns}
                     checkboxVisibility={OF.CheckboxVisibility.hidden}

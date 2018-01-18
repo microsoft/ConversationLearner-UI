@@ -21,6 +21,8 @@ loadTheme({
     /* 'themePrimary': 'red' */
   }
 });
+
+/** Initialize react-intl-messages */
 addLocaleData([...en, ...ko])
 
 const locale = (navigator.languages && navigator.languages[0])

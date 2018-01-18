@@ -3,7 +3,7 @@ import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
-import { PrimaryButton, TextField } from 'office-ui-fabric-react';
+import { PrimaryButton, TextField, FontClassNames } from 'office-ui-fabric-react';
 import { State } from '../../types';
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { FM } from '../../react-intl-messages'
@@ -75,7 +75,7 @@ class UserLogin extends React.Component<Props, ComponentState> {
                 containerClassName='blis-modal blis-modal--small blis-modal--border'
             >
                 <div className='blis-modal_header'>
-                    <span className='ms-font-xxl ms-fontWeight-semilight'>
+                    <span className={FontClassNames.xxLarge}>
                         <FormattedMessage
                             id={FM.USERLOGIN_TITLE}
                             defaultMessage="Log In"

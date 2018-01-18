@@ -19,6 +19,7 @@ import Actions from './Actions'
 import Dashboard from './Dashboard'
 import Settings from './Settings'
 import LogDialogs from './LogDialogs'
+import { FontClassNames } from 'office-ui-fabric-react'
 import TrainingStatus from '../../../components/TrainingStatusContainer'
 import actions from '../../../actions'
 import './Index.css'
@@ -96,17 +97,17 @@ class Index extends React.Component<Props, ComponentState> {
         return (
             <div className="blis-app-page">
                 <div>
-                    <div className="blis-app-title ms-font-xxl">{app.appName}</div>
+                    <div className={`blis-app-title ${FontClassNames.xxLarge}`}>{app.appName}</div>
                     <TrainingStatus
                         app={app}
                     />
-                    <div className="blis-nav ms-font-m-plus">
+                    <div className={`blis-nav ${FontClassNames.mediumPlus}`}>
                         <div className="blis-nav_section">
                             <NavLink className="blis-nav-link" to={{ pathname: `${match.url}/settings`, state: { app } }}>
                                 <Icon iconName="Settings" />&nbsp;&nbsp;Settings
                             </NavLink>
                         </div>
-                        <div className="blis-nav_section blis-nav_section--links ms-font-m">
+                        <div className={`blis-nav_section blis-nav_section--links ${FontClassNames.medium}`}>
                             <NavLink className="blis-nav-link" exact to={{ pathname: `${match.url}`, state: { app } }}>Dashboard</NavLink>
                             <NavLink className="blis-nav-link" to={{ pathname: `${match.url}/entities`, state: { app } }}>Entities</NavLink>
                             <NavLink className="blis-nav-link" to={{ pathname: `${match.url}/actions`, state: { app } }}>Actions</NavLink>

@@ -37,7 +37,7 @@ class LogoutModal extends React.Component<Props, {}> {
                 containerClassName='blis-modal blis-modal--small blis-modal--border'
             >
                 <div className='blis-modal_header'>
-                    <span className='ms-font-xxl ms-fontWeight-semilight'>
+                    <span className={OF.FontClassNames.xxLarge}>
                         <FormattedMessage
                             id={FM.LOGOUT_TITLE}
                             defaultMessage="Log Out"

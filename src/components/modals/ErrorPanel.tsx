@@ -6,6 +6,7 @@ import { Panel, PanelType } from 'office-ui-fabric-react/lib/Panel';
 import { clearErrorDisplay } from '../../actions/displayActions'
 import { State } from '../../types'
 import { ErrorHandler } from '../../ErrorHandler'
+import { FontClassNames } from 'office-ui-fabric-react'
 import { DefaultButton } from 'office-ui-fabric-react/lib/Button';
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { AT } from '../../types/ActionTypes'
@@ -62,9 +63,9 @@ class ErrorPanel extends React.Component<Props, {}> {
                     customWidth='600px'
                 >
                 <div className="blis-errorpanel" >
-                {this.props.error.action && <div className="ms-font-l ms-fontWeight-semilight">{this.props.error.action} Failed</div>}
-                <div className="ms-font-m ms-fontWeight-semilight">{this.props.error.error}</div>
-                <div className="ms-font-m ms-fontWeight-semilight">{this.props.error.message}</div>
+                    {this.props.error.action && <div className={FontClassNames.large}>{this.props.error.action} Failed</div>}
+                    <div className={FontClassNames.medium}>{this.props.error.error}</div>
+                    <div className={FontClassNames.medium}>{this.props.error.message}</div>
                 </div>
                 </Panel>
             }

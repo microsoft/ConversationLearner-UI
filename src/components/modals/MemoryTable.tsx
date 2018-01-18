@@ -45,7 +45,7 @@ const columns: IRenderableColumn[] = [
         isResizable: true,
         render: entity => {
             const type = (entity.entityType === EntityType.LOCAL || entity.entityType === EntityType.LUIS) ? "CUSTOM" : entity.entityType
-            return <span className="ms-font-m-plus">{type}</span>
+            return <span className={OF.FontClassNames.mediumPlus}>{type}</span>
         },
         getSortValue: entity => entity.entityType.toUpperCase()
     },
@@ -129,7 +129,7 @@ class MemoryTable extends React.Component<Props, ComponentState> {
     renderEntityName(entityName: string) {
         let curEntity = this.props.memories.find(m => m.entityName === entityName);
         let prevEntity = this.props.prevMemories.find(m => m.entityName === entityName);
-        let entityClass = 'ms-font-m-plus';
+        let entityClass = OF.FontClassNames.mediumPlus;
 
         // In old but not new
         if (prevEntity && !curEntity) {
@@ -187,10 +187,10 @@ class MemoryTable extends React.Component<Props, ComponentState> {
             if (memoryValue.builtinType || memoryValue.resolution) {
                 entityClass += ' blisText--emphasis';
                 display.push(
-                    Prebuilt(memoryValue, (<span className="ms-font-m-plus" key={key++}>{prefix}<span className={entityClass}>{memoryValue.displayText}</span></span>))
+                    Prebuilt(memoryValue, (<span className={OF.FontClassNames.mediumPlus} key={key++}>{prefix}<span className={entityClass}>{memoryValue.displayText}</span></span>))
                 )
             } else {
-                display.push(<span className="ms-font-m-plus" key={key++}>{prefix}<span className={entityClass}>{memoryValue.userText}</span></span>);
+                display.push(<span className={OF.FontClassNames.mediumPlus} key={key++}>{prefix}<span className={entityClass}>{memoryValue.userText}</span></span>);
             }
 
             index++;
@@ -245,14 +245,14 @@ class MemoryTable extends React.Component<Props, ComponentState> {
         return (
             <div>
                 {memoryNames.length === 0
-                    ? <div className='ms-font-l teachEmptyMemory'>
+                    ? <div className={`${OF.FontClassNames.large} teachEmptyMemory`}>
                         <FormattedMessage
                             id={FM.MEMORYTABLE_EMPTY}
                             defaultMessage='Empty'
                         />
                     </div>
                     : <OF.DetailsList
-                        className='ms-font-m-plus'
+                        className={OF.FontClassNames.mediumPlus}
                         items={memoryNames}
                         columns={this.state.columns}
                         onColumnHeaderClick={this.onColumnClick}
