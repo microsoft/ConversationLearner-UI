@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import * as OF from 'office-ui-fabric-react';
 import { State } from '../../../types'
-import { BlisAppBase, Teach, TrainDialog, TeachWithHistory, AppDefinition } from 'blis-models'
+import { BlisAppBase, Teach, TrainDialog, TeachWithHistory, AppDefinition, ActionBase } from 'blis-models'
 import { TeachSessionWindow, TrainDialogWindow } from '../../../components/modals'
 import { fetchHistoryThunkAsync } from '../../../actions/fetchActions'
 import { createTeachSessionThunkAsync, 
@@ -47,7 +47,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             render: trainDialog => {
                 if (trainDialog.rounds && trainDialog.rounds.length > 0) {
                     const text = trainDialog.rounds[0].extractorStep.textVariations[0].text
-                    return <span className='ms-font-m-plus'>{text}</span>
+                    return <span className={OF.FontClassNames.mediumPlus}>{text}</span>
                 }
                 return <OF.Icon iconName="Remove" className="notFoundIcon" />
             }
@@ -65,7 +65,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             render: trainDialog => {
                 if (trainDialog.rounds && trainDialog.rounds.length > 0) {
                     const text = trainDialog.rounds[trainDialog.rounds.length - 1].extractorStep.textVariations[0].text;
-                    return <span className='ms-font-m-plus'>{text}</span>
+                    return <span className={OF.FontClassNames.mediumPlus}>{text}</span>
                 }
                 return <OF.Icon iconName="Remove" className="notFoundIcon" />
             }
@@ -89,7 +89,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                         let actionId = scorerSteps[scorerSteps.length - 1].labelAction;
                         let action = component.props.actions.find(a => a.actionId == actionId);
                         if (action) {
-                            return <span className='ms-font-m-plus'>{action.payload}</span>;
+                            return <span className={OF.FontClassNames.mediumPlus}>{ActionBase.GetPayload(action)}</span>;
                         }
                     }
                 }
@@ -109,7 +109,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             isResizable: true,
             render: trainDialog => {
                 let count = trainDialog.rounds ? trainDialog.rounds.length : 0
-                return <span className='ms-font-m-plus'>{count}</span>
+                return <span className={OF.FontClassNames.mediumPlus}>{count}</span>
             }
         }
     ]
@@ -317,13 +317,13 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         let trainDialog = this.props.trainDialogs.find((td) => td.trainDialogId === this.state.trainDialogId);
         return (
             <div className="blis-page">
-                <div className="blis-dialog-title blis-dialog-title--teach ms-font-xxl">
+                <div className={`blis-dialog-title blis-dialog-title--teach ${OF.FontClassNames.xxLarge}`}>
                     <FormattedMessage
                         id={FM.TRAINDIALOGS_TITLE}
                         defaultMessage="Train Dialogs"
                     />
                 </div>
-                <span className="ms-font-m-plus">
+                <span className={OF.FontClassNames.mediumPlus}>
                     <FormattedMessage
                         id={FM.TRAINDIALOGS_SUBTITLE}
                         defaultMessage="Use this tool to train and improve the current versions of your application..."
@@ -354,13 +354,13 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     />
                 </div>
                 <OF.SearchBox
-                    className="ms-font-m-plus"
+                    className={OF.FontClassNames.mediumPlus}
                     onChange={(newValue) => this.onChangeSearchString(newValue)}
                     onSearch={(newValue) => this.onChangeSearchString(newValue)}
                 />
                 <OF.DetailsList
                     key={this.state.dialogKey}
-                    className="ms-font-m-plus"
+                    className={OF.FontClassNames.mediumPlus}
                     items={trainDialogItems}
                     columns={this.state.columns}
                     checkboxVisibility={OF.CheckboxVisibility.hidden}

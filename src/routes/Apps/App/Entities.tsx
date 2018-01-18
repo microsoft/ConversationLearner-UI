@@ -30,7 +30,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             maxWidth: 200,
             isResizable: true,
             getSortValue: entity => entity.entityName.toLowerCase(),
-            render: entity => <span className='ms-font-m-plus'>{entity.entityName}</span>
+            render: entity => <span className={OF.FontClassNames.mediumPlus}>{entity.entityName}</span>
         },
         {
             key: 'entityType',
@@ -48,7 +48,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                 return display.toLowerCase();
             },
             render: entity => (
-                <span className='ms-font-m-plus'>
+                <span className={OF.FontClassNames.mediumPlus}>
                     {(entity.entityType === EntityType.LOCAL || entity.entityType === EntityType.LUIS)
                         ? 'CUSTOM' : entity.entityType}
                 </span>)
@@ -253,13 +253,13 @@ class Entities extends React.Component<Props, ComponentState> {
 
         return (
             <div className="blis-page">
-                <span className="ms-font-xxl">
+                <span className={OF.FontClassNames.xxLarge}>
                     <FormattedMessage
                         id={FM.ENTITIES_TITLE}
                         defaultMessage="Entities"
                     />
                 </span>
-                <span className="ms-font-m-plus">
+                <span className={OF.FontClassNames.mediumPlus}>
                     <FormattedMessage
                         id={FM.ENTITIES_SUBTITLE}
                         defaultMessage="Manage a list of entities in your application and track and control their instances within actions..."
@@ -288,12 +288,12 @@ class Entities extends React.Component<Props, ComponentState> {
                     />
                 </div>
                 <OF.SearchBox
-                    className="ms-font-m-plus"
+                    className={OF.FontClassNames.mediumPlus}
                     onChange={(newValue) => this.onChange(newValue)}
                     onSearch={(newValue) => this.onChange(newValue)}
                 />
                 <OF.DetailsList
-                    className="ms-font-m-plus"
+                    className={OF.FontClassNames.mediumPlus}
                     items={entityItems}
                     columns={this.state.columns}
                     checkboxVisibility={OF.CheckboxVisibility.hidden}

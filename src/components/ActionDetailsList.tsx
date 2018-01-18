@@ -96,7 +96,7 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
         return (
             <div>
                 <OF.DetailsList
-                    className="ms-font-m-plus"
+                    className={OF.FontClassNames.mediumPlus}
                     items={sortedActions}
                     columns={this.state.columns}
                     checkboxVisibility={OF.CheckboxVisibility.hidden}
@@ -162,7 +162,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                             iconProps={{ iconName: 'RedEye' }}
                         />
                     }
-                    <span className="ms-font-m-plus" onClick={() => component.props.onSelectAction(action)}>{ActionBase.GetPayload(action)}</span>
+                    <span className={OF.FontClassNames.mediumPlus} onClick={() => component.props.onSelectAction(action)}>{ActionBase.GetPayload(action)}</span>
                     </div>
                 )
             }
@@ -197,7 +197,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             maxWidth: 100,
             isResizable: true,
             getSortValue: action => action.metadata.actionType.toLowerCase(),
-            render: action => <span className='ms-font-m-plus'>{action.metadata.actionType}</span>
+            render: action => <span className={OF.FontClassNames.mediumPlus}>{action.metadata.actionType}</span>
         },
         {
             key: 'requiredEntities',

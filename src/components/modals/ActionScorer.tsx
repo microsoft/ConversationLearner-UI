@@ -80,7 +80,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                             iconProps={{ iconName: 'RedEye' }}
                         />
                     }
-                    <span className='ms-font-m-plus'>{ActionBase.GetPayload(action as ActionBase)}</span>
+                    <span className={OF.FontClassNames.mediumPlus}>{ActionBase.GetPayload(action as ActionBase)}</span>
                     </div>
                 )
             }
@@ -139,7 +139,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                             "Training...";
                 }
 
-                return <span className='ms-font-m-plus'>{fieldContent}</span>
+                return <span className={OF.FontClassNames.mediumPlus}>{fieldContent}</span>
             }
         },
         {
@@ -561,7 +561,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         return (
             <div>
                 <OF.DetailsList
-                    className="ms-font-m-plus"
+                    className={OF.FontClassNames.mediumPlus}
                     items={scores}
                     columns={this.state.columns}
                     checkboxVisibility={OF.CheckboxVisibility.hidden}

@@ -12,6 +12,7 @@ import Docs from './Docs'
 import Support from './Support'
 import NoMatch from './NoMatch'
 import HelpPanel from '../components/HelpPanel'
+import { FontClassNames } from 'office-ui-fabric-react'
 import { UserLogin, SpinnerWindow, LogoutModal, ErrorPanel } from '../components/modals'
 import { setUser, logout } from '../actions/displayActions'
 import './App.css'
@@ -95,7 +96,7 @@ class App extends React.Component<Props, ComponentState> {
       <Router>
         <div className="blis-app">
           <div className="blis-app_header-placeholder"></div>
-          <header className="blis-app_header blis-header ms-font-m-plus">
+          <header className={`blis-app_header blis-header ${FontClassNames.mediumPlus}`}>
             <nav className="blis-header_links ">
               <NavLink to="/home">
                 <FormattedMessage

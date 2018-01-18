@@ -138,13 +138,13 @@ class Actions extends React.Component<Props, ComponentState> {
         const actions = this.getFilteredActions();
         return (
             <div className="blis-page">
-                <span className="ms-font-xxl">
+                <span className={OF.FontClassNames.xxLarge}>
                     <FormattedMessage
                         id={FM.ACTIONS_TITLE}
                         defaultMessage="Actions"
                     />
                 </span>
-                <span className="ms-font-m-plus">
+                <span className={OF.FontClassNames.mediumPlus}>
                     <FormattedMessage
                         id={FM.ACTIONS_SUBTITLE}
                         defaultMessage="Manage a list of actions that your application can take given it's state and user input..."
@@ -154,7 +154,7 @@ class Actions extends React.Component<Props, ComponentState> {
                     <OF.PrimaryButton
                         onClick={() => this.onClickOpenActionEditor()}
                         ariaDescription={this.props.intl.formatMessage({
-                            id: FM.ACTIONS_CREATEBUTTONARIALDESCRIPTION,
+                            id: FM.ACTIONS_CREATEBUTTONARIADESCRIPTION,
                             defaultMessage: 'Create a New Action'
                         })}
                         text={this.props.intl.formatMessage({
@@ -165,7 +165,7 @@ class Actions extends React.Component<Props, ComponentState> {
                     />
                 </div>
                 <OF.SearchBox
-                    className="ms-font-m-plus"
+                    className={OF.FontClassNames.mediumPlus}
                     onChange={searchString => this.onChangeSearchString(searchString)}
                     onSearch={searchString => this.onChangeSearchString(searchString)}
                 />
