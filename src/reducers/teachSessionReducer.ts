@@ -29,7 +29,6 @@ const teachSessionReducer: Reducer<TeachSessionState> = (state = initialState, a
             return { ...initialState, all: state.all };
         case AT.CREATE_TEACH_SESSION_FULFILLED:
             return { ...state, all: [...state.all, action.teachSession], current: action.teachSession, mode: DialogMode.Wait }
-        case AT.CREATE_TEACH_SESSION_FROMBRANCHFULFILLED:
         case AT.CREATE_TEACH_SESSION_FROMUNDOFULFILLED:
         case AT.CREATE_TEACH_SESSION_FROMHISTORYFULFILLED:
             return { ...state, all: [...state.all, action.teachWithHistory.teach], memories: action.teachWithHistory.memories, current: action.teachWithHistory.teach, mode: DialogMode.Wait }

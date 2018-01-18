@@ -236,19 +236,6 @@ export default class BlisClient {
             .then(response => { })
     }
 
-    // LARS DELETEME
-    // AT.EDIT_TRAIN_DIALOG_ASYNC
-    // Deletes existing train dialog, returns with a new one in Teach mode
-    trainDialogEdit(appId: string, trainDialog: models.TrainDialog, userName: string, userId: string): Promise<models.TeachWithHistory> {
-        const { trainDialogId, ...trainDialogToSend } = trainDialog;
-        return this.send({
-            method: 'put',
-            url: `${this.baseUrl}/app/${appId}/traindialog/${trainDialog.trainDialogId}?username=${userName}&userid=${userId}`,
-            data: trainDialogToSend
-        })
-            .then(response => response.data)
-    }
-
     trainDialogsUpdateExtractStep(appId: string, trainDialogId: string, turnIndex: number, userInput: models.UserInput): Promise<models.UIExtractResponse> {
         return this.send({
             method: 'put',

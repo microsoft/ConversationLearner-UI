@@ -9,8 +9,7 @@ import { TeachSessionWindow, TrainDialogWindow } from '../../../components/modal
 import { fetchHistoryThunkAsync } from '../../../actions/fetchActions'
 import { createTeachSessionThunkAsync, 
     createTeachSessionFromUndoThunkAsync, 
-    createTeachSessionFromBranchThunkAsync,
-    createTeachSessionFromLogThunkAsync } from '../../../actions/createActions'
+    createTeachSessionFromHistoryThunkAsync } from '../../../actions/createActions'
 import { deleteTrainDialogThunkAsync } from '../../../actions/deleteActions';    
 import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { FM } from '../../../react-intl-messages'
@@ -201,7 +200,18 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
     onBranchTrainDialog(turnIndex: number) {
         
-        ((this.props.createTeachSessionFromBranchThunkAsync(this.props.app.appId, this.state.trainDialogId, this.props.user.name, this.props.user.id, turnIndex) as any) as Promise<TeachWithHistory>)
+        let trainDialog = this.props.trainDialogs.find(td => td.trainDialogId === this.state.trainDialogId);
+
+        // Create new train dialog, removing turns above the branch
+        let newTrainDialog = new TrainDialog({
+            rounds: trainDialog.rounds.slice(0, turnIndex),
+            definitions: new AppDefinition({
+                entities: this.props.entities,
+                actions: this.props.actions
+            })
+        });
+
+        ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app.appId, newTrainDialog, this.props.user.name, this.props.user.id) as any) as Promise<TeachWithHistory>)
         .then(teachWithHistory => {
             this.setState({
                 teachSession: teachWithHistory.teach, 
@@ -215,31 +225,12 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             console.warn(`Error when attempting to create teach session from branch: `, error)
         })
     }
-/* LARS DELETE
-    oldonEditTrainDialog(oldTrainDialogId: string, newTrainDialog: TrainDialog) {
-        
-        this.props.deleteTrainDialogThunkAsync(this.props.app.appId, oldTrainDialogId)
-        
-        ((this.props.createTeachSessionFromLogThunkAsync(this.props.app.appId, newTrainDialog, this.props.user.name, this.props.user.id) as any) as Promise<TeachWithHistory>)
-        .then(teachWithHistory => {
-            this.setState({
-                teachSession: teachWithHistory.teach, 
-                activities: teachWithHistory.history,
-                trainDialogId: null,
-                isTrainDialogModalOpen: false,
-                isTeachDialogModalOpen: true
-            })
-        })
-        .catch(error => {
-            console.warn(`Error when attempting to create teach session from train dialog: `, error)
-        })
-    }
-*/
+
     onEditTrainDialog(sourceTrainDialogId: string, newTrainDialog: TrainDialog) {
         
         this.props.deleteTrainDialogThunkAsync(this.props.app.appId,sourceTrainDialogId);
         
-        ((this.props.createTeachSessionFromLogThunkAsync(this.props.app.appId, newTrainDialog, this.props.user.name, this.props.user.id) as any) as Promise<TeachWithHistory>)
+        ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app.appId, newTrainDialog, this.props.user.name, this.props.user.id) as any) as Promise<TeachWithHistory>)
         .then(teachWithHistory => {
             this.setState({
                 teachSession: teachWithHistory.teach, 
@@ -394,8 +385,7 @@ const mapDispatchToProps = (dispatch: any) => {
         createTeachSessionThunkAsync,
         fetchHistoryThunkAsync,
         createTeachSessionFromUndoThunkAsync,
-        createTeachSessionFromBranchThunkAsync,
-        createTeachSessionFromLogThunkAsync,
+        createTeachSessionFromHistoryThunkAsync,
         deleteTrainDialogThunkAsync
     }, dispatch)
 }

@@ -8,7 +8,7 @@ import { BlisAppBase, LogDialog, Session, ModelUtils, Teach, TeachWithHistory, T
 import { ChatSessionWindow, LogDialogModal, TeachSessionWindow } from '../../../components/modals'
 import { 
     createChatSessionThunkAsync, 
-    createTeachSessionFromLogThunkAsync,
+    createTeachSessionFromHistoryThunkAsync,
     createTeachSessionFromUndoThunkAsync } from '../../../actions/createActions'
 import { fetchAllLogDialogsAsync, fetchHistoryThunkAsync } from '../../../actions/fetchActions';
 import { deleteLogDialogThunkAsync } from '../../../actions/deleteActions';
@@ -217,9 +217,11 @@ class LogDialogs extends React.Component<Props, ComponentState> {
 
     onEditLogDialog(logDialogId: string, newTrainDialog: TrainDialog) {
         
+        // Delete log dialog
         this.props.deleteLogDialogThunkAsync(this.props.app.appId,logDialogId);
         
-        ((this.props.createTeachSessionFromLogThunkAsync(this.props.app.appId, newTrainDialog, this.props.user.name, this.props.user.id) as any) as Promise<TeachWithHistory>)
+        // Create a new teach session from the train dialog
+        ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app.appId, newTrainDialog, this.props.user.name, this.props.user.id) as any) as Promise<TeachWithHistory>)
         .then(teachWithHistory => {
             this.setState({
                 teachSession: teachWithHistory.teach, 
@@ -387,7 +389,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         createChatSessionThunkAsync,
-        createTeachSessionFromLogThunkAsync,
+        createTeachSessionFromHistoryThunkAsync,
         createTeachSessionFromUndoThunkAsync,
         deleteLogDialogThunkAsync,
         fetchAllLogDialogsAsync,

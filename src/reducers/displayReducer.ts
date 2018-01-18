@@ -46,7 +46,6 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
         case AT.CREATE_ACTION_ASYNC:
         case AT.CREATE_BLIS_APPLICATION_ASYNC:
         case AT.CREATE_TEACH_SESSION_ASYNC:
-        case AT.CREATE_TEACH_SESSION_FROMBRANCHASYNC:
         case AT.CREATE_TEACH_SESSION_FROMUNDOASYNC:
         case AT.CREATE_TEACH_SESSION_FROMHISTORYASYNC:
         case AT.CREATE_CHAT_SESSION_ASYNC:
@@ -86,7 +85,6 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
         case AT.CREATE_CHAT_SESSION_FULFILLED:
         case AT.CREATE_TEACH_SESSION_REJECTED:
         case AT.CREATE_TEACH_SESSION_FULFILLED:
-        case AT.CREATE_TEACH_SESSION_FROMBRANCHFULFILLED:
         case AT.CREATE_TEACH_SESSION_FROMUNDOFULFILLED:
         case AT.CREATE_TEACH_SESSION_FROMHISTORYFULFILLED:
         case AT.CREATE_ENTITY_FULFILLED:
