@@ -4,7 +4,7 @@ import { getLuisApplicationCultures } from '../../epics/apiHelpers'
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
-import { PrimaryButton, DefaultButton, Dropdown, IDropdownOption, TextField, Label } from 'office-ui-fabric-react';
+import * as OF from 'office-ui-fabric-react'
 import { State } from '../../types'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps, defineMessages, FormattedMessage } from 'react-intl'
@@ -29,7 +29,7 @@ interface ComponentState {
     appNameVal: string
     localeVal: string
     luisKeyVal: string
-    localeOptions: IDropdownOption[]
+    localeOptions: OF.IDropdownOption[]
 }
 
 class AppCreator extends React.Component<Props, ComponentState> {
@@ -53,7 +53,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
     componentWillMount() {
         getLuisApplicationCultures()
             .then(cultures => {
-                const cultureOptions = cultures.map<IDropdownOption>(c =>
+                const cultureOptions = cultures.map<OF.IDropdownOption>(c =>
                     ({
                         key: c.cultureCode,
                         text: c.cultureCode,
@@ -79,7 +79,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
             appNameVal: text
         })
     }
-    localeChanged(obj: IDropdownOption) {
+    localeChanged(obj: OF.IDropdownOption) {
         this.setState({
             localeVal: obj.text
         })
@@ -151,7 +151,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
                 containerClassName='blis-modal blis-modal--small blis-modal--border'
             >
                 <div className='blis-modal_header'>
-                    <span className='ms-font-xxl ms-fontWeight-semilight'>
+                    <span className={OF.FontClassNames.xxLarge}>
                         <FormattedMessage
                             id={FM.APPCREATOR_TITLE}
                             defaultMessage="Create a BLIS App"
@@ -159,7 +159,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
                     </span>
                 </div>
                 <div>
-                    <TextField
+                    <OF.TextField
                         onGetErrorMessage={value => this.onGetNameErrorMessage(value)}
                         onChanged={text => this.nameChanged(text)}
                         label={intl.formatMessage({
@@ -172,18 +172,18 @@ class AppCreator extends React.Component<Props, ComponentState> {
                         })}
                         onKeyDown={key => this.onKeyDown(key)}
                         value={this.state.appNameVal} />
-                    <Label>
+                    <OF.Label>
                         <FormattedMessage
                             id={FM.APPCREATOR_FIELDS_LUISKEY_LABEL}
                             defaultMessage="LUIS Key"
-                        /> <a href="https://www.luis.ai/user/settings" tabIndex={-1} className="ms-font-xs" target="_blank">
+                        /> <a href="https://www.luis.ai/user/settings" tabIndex={-1} className={OF.FontClassNames.xSmall} target="_blank">
                             (<FormattedMessage
                                 id={FM.APPCREATOR_FIELDS_LUISKEY_HELPTEXT}
                                 defaultMessage="Find your key"
                             />)
                         </a>
-                    </Label>
-                    <TextField
+                    </OF.Label>
+                    <OF.TextField
                         onGetErrorMessage={value => this.onGetPasswordErrorMessage(value)}
                         onChanged={this.luisKeyChanged}
                         placeholder={intl.formatMessage({
@@ -193,7 +193,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
                         type="password"
                         onKeyDown={this.onKeyDown}
                         value={this.state.luisKeyVal} />
-                    <Dropdown
+                    <OF.Dropdown
                         label={intl.formatMessage({
                             id: FM.APPCREATOR_FIELDS_LOCALE_LABEL,
                             defaultMessage: 'Locale'
@@ -206,7 +206,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
                 <div className='blis-modal_footer'>
                     <div className="blis-modal-buttons">
                         <div className="blis-modal-buttons_primary">
-                            <PrimaryButton
+                            <OF.PrimaryButton
                                 disabled={!this.state.appNameVal || !this.state.luisKeyVal}
                                 onClick={this.onClickCreate}
                                 ariaDescription={intl.formatMessage({
@@ -218,7 +218,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
                                     defaultMessage: 'Create'
                                 })}
                             />
-                            <DefaultButton
+                            <OF.DefaultButton
                                 onClick={this.onClickCancel}
                                 ariaDescription={intl.formatMessage({
                                     id: FM.APPCREATOR_CANCELBUTTON_ARIADESCRIPTION,

@@ -364,7 +364,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                 containerClassName="blis-modal blis-modal--medium blis-modal--border"
             >
                 <div className="blis-modal_header">
-                    <span className="ms-font-xxl ms-fontWeight-semilight">{this.state.editing ? this.props.entity.entityName : this.state.title}</span>
+                    <span className={OF.FontClassNames.xxLarge}>{this.state.editing ? this.props.entity.entityName : this.state.title}</span>
                 </div>
                 <div className="blis-modal_body">
                     {this.state.editing

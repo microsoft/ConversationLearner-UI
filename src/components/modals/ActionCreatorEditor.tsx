@@ -581,7 +581,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 containerClassName="blis-modal blis-modal--medium blis-modal--border"
             >
                 <div className="blis-modal_header">
-                    <span className="ms-font-xxl ms-fontWeight-semilight">{this.state.isEditing ? 'Edit Action' : 'Create an Action'}</span>
+                    <span className={OF.FontClassNames.xxLarge}>{this.state.isEditing ? 'Edit Action' : 'Create an Action'}</span>
                 </div>
 
                 <div className="blis-modal_body">

@@ -289,10 +289,10 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
 
         return (
             <div>
-                <OF.Label className="entity-extractor-help-text ms-font-s-plus">
+                <OF.Label className={`entity-extractor-help-text ${OF.FontClassNames.smallPlus}`}>
                     <FormattedMessage
                         id={FM.TOOLTIP_ENTITY_EXTRACTOR_HELP}
-                        defaultMessage="Select text to label it as an entity.  View Help:"
+                        defaultMessage="Select text to label it as an entity."
                     />
                     <HelpIcon tipType={ToolTips.TipType.ENTITY_EXTRACTOR_HELP} />
                 </OF.Label>
@@ -302,7 +302,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                         isValid = this.isValid(allResponses[0], extractResponse);
                     }
 
-                    return <div key={key} className="editor-container ms-font-m-plus">
+                    return <div key={key} className={`editor-container ${OF.FontClassNames.mediumPlus}`}>
                         <ExtractorResponseEditor.EditorWrapper
                             readOnly={!canEdit}
                             isValid={isValid}
@@ -312,7 +312,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                             onClickNewEntity={this.onNewEntity}
                         />
                         {(key !== 0) && <div className="editor-container__icons">
-                            <button type="button" className="editor-button-delete ms-font-l" onClick={() => this.onRemoveExtractResponse(extractResponse)}>
+                            <button type="button" className={`editor-button-delete ${OF.FontClassNames.large}`} onClick={() => this.onRemoveExtractResponse(extractResponse)}>
                                 <OF.Icon iconName="Delete" />
                             </button>
                             {!isValid && ToolTips.Wrap(

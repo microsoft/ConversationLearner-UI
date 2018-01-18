@@ -153,7 +153,7 @@ class Settings extends React.Component<Props, ComponentState> {
     onRenderBotListRow(item?: any, index?: number) {
         return (
             <div>
-                <OF.TextField className="ms-font-m-plus" disabled={true} value={item} />
+                <OF.TextField className={OF.FontClassNames.mediumPlus} disabled={true} value={item} />
             </div>
         )
     }
@@ -240,13 +240,13 @@ class Settings extends React.Component<Props, ComponentState> {
         let buttonsDivStyle = this.state.edited == true ? styles.shown : styles.hidden;
         return (
             <div className="blis-page">
-                <span className="ms-font-xxl">
+                <span className={OF.FontClassNames.xxLarge}>
                     <FormattedMessage
                         id={FM.SETTINGS_TITLE}
                         defaultMessage="Settings"
                     />
                 </span>
-                <span className="ms-font-m-plus">
+                <span className={OF.FontClassNames.mediumPlus}>
                     <FormattedMessage
                         id={FM.SETTINGS_SUBTITLE}
                         defaultMessage="Control your application versions, who has access to it and whether it is public or private..."
@@ -254,7 +254,7 @@ class Settings extends React.Component<Props, ComponentState> {
                 </span>
                 <div>
                     <OF.TextField
-                        className="ms-font-m-plus"
+                        className={OF.FontClassNames.mediumPlus}
                         onChanged={(text) => this.onChangedName(text)}
                         label={intl.formatMessage({
                             id: FM.SETTINGS_FIELDS_NAMELABEL,
@@ -264,7 +264,7 @@ class Settings extends React.Component<Props, ComponentState> {
                         value={this.state.appNameVal}
                     />
                     <OF.TextField
-                        className="ms-font-m-plus"
+                        className={OF.FontClassNames.mediumPlus}
                         disabled={true}
                         label={intl.formatMessage({
                             id: FM.SETTINGS_FILEDS_APPIDLABEL,
@@ -272,7 +272,7 @@ class Settings extends React.Component<Props, ComponentState> {
                         })}
                         value={this.state.appIdVal}
                     />
-                    <OF.Label className="ms-font-m-plus">
+                    <OF.Label className={OF.FontClassNames.mediumPlus}>
                         <FormattedMessage
                             id={FM.SETTINGS_BOTFRAMEWORKLUISKEYLABEL}
                             defaultMessage="LUIS Key"
@@ -281,7 +281,7 @@ class Settings extends React.Component<Props, ComponentState> {
                     <div className="blis-settings-textfieldwithbutton">
                         <OF.TextField
                             id="luis-key"
-                            className="ms-font-m-plus"
+                            className={OF.FontClassNames.mediumPlus}
                             onChanged={(text) => this.onChangedLuisKey(text)}
                             type={this.state.isPasswordVisible ? "text" : "password"}
                             value={this.state.luisKeyVal}
@@ -292,20 +292,20 @@ class Settings extends React.Component<Props, ComponentState> {
                             text={this.state.passwordShowHideText}
                         />
                     </div>
-                    <OF.Label className="ms-font-m-plus">
+                    <OF.Label className={OF.FontClassNames.mediumPlus}>
                         <FormattedMessage
                             id={FM.SETTINGS_BOTFRAMEWORKLOCALELABEL}
                             defaultMessage="Locale"
                         />
                     </OF.Label>
                     <OF.Dropdown
-                        className="ms-font-m-plus"
+                        className={OF.FontClassNames.mediumPlus}
                         options={options}
                         selectedKey={this.state.localeVal}
                         disabled={true}
                     />
                     <div>
-                        <OF.Label className="ms-font-m-plus">
+                        <OF.Label className={OF.FontClassNames.mediumPlus}>
                             <FormattedMessage
                                 id={FM.SETTINGS_BOTFRAMEWORKLISTLABEL}
                                 defaultMessage="Bot Framework Apps"
@@ -317,7 +317,7 @@ class Settings extends React.Component<Props, ComponentState> {
                         />
                         <div className="blis-settings-textfieldwithbutton">
                             <OF.TextField
-                                className="ms-font-m-plus"
+                                className={OF.FontClassNames.mediumPlus}
                                 onChanged={(text) => this.onChangedBotId(text)}
                                 placeholder={intl.formatMessage(messages.botFrameworkAppIdFieldLabel)}
                                 value={this.state.newBotVal}

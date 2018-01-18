@@ -163,7 +163,7 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
         }
 
         return (
-            <div className="blis-dialog-admin ms-font-l">
+            <div className={`blis-dialog-admin ${OF.FontClassNames.large}`}>
                 {this.props.selectedActivity && (this.state.senderType === SenderType.User ? (
                     <div className="blis-dialog-admin__content">
                         <div className="blis-wc-message blis-wc-message--user">User Input</div>

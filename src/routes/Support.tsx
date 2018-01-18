@@ -1,16 +1,17 @@
 import * as React from 'react'
 import { FormattedMessage } from 'react-intl'
+import { FontClassNames } from 'office-ui-fabric-react'
 import { FM } from '../react-intl-messages'
 
 const component = () => (
     <div className="blis-page">
-        <div className="ms-font-su">
+        <div className={FontClassNames.superLarge}>
             <FormattedMessage
                 id={FM.SUPPORT_TITLE}
                 defaultMessage="Support"
             />
         </div>
-        <div className="ms-font-m-plus">
+        <div className={FontClassNames.mediumPlus}>
             <FormattedMessage
                 id={FM.PAGE_COMINGSOON}
                 defaultMessage="Coming Soon..."

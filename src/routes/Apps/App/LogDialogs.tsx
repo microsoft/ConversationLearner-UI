@@ -44,7 +44,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             render: logDialog => {
                 if (logDialog.rounds && logDialog.rounds.length > 0) {
                     let text = logDialog.rounds[0].extractorStep.text;
-                    return <span className='ms-font-m-plus'>{text}</span>;
+                    return <span className={OF.FontClassNames.mediumPlus}>{text}</span>;
                 }
                 return <OF.Icon iconName="Remove" className="notFoundIcon" />
             }
@@ -62,7 +62,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             render: logDialog => {
                 if (logDialog.rounds && logDialog.rounds.length > 0) {
                     let text = logDialog.rounds[logDialog.rounds.length - 1].extractorStep.text;
-                    return <span className='ms-font-m-plus'>{text}</span>;
+                    return <span className={OF.FontClassNames.mediumPlus}>{text}</span>;
                 }
                 return <OF.Icon iconName="Remove" className="notFoundIcon" />
             }
@@ -86,7 +86,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                         let actionId = scorerSteps[scorerSteps.length - 1].predictedAction;
                         let action = component.props.actions.find(a => a.actionId == actionId);
                         if (action) {
-                            return <span className='ms-font-m-plus'>{ActionBase.GetPayload(action)}</span>;
+                            return <span className={OF.FontClassNames.mediumPlus}>{ActionBase.GetPayload(action)}</span>;
                         }
                     }
                 }
@@ -103,7 +103,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             fieldName: 'dialog',
             minWidth: 30,
             maxWidth: 50,
-            render: logDialog => <span className='ms-font-m-plus'>{logDialog.rounds.length}</span>
+            render: logDialog => <span className={OF.FontClassNames.mediumPlus}>{logDialog.rounds.length}</span>
         }
     ]
 }
@@ -234,13 +234,13 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         const currentLogDialog = this.state.currentLogDialog;
         return (
             <div className="blis-page">
-                <div className="blis-dialog-title blis-dialog-title--log ms-font-xxl">
+                <div className={`blis-dialog-title blis-dialog-title--log ${OF.FontClassNames.xxLarge}`}>
                     <FormattedMessage
                         id={FM.LOGDIALOGS_TITLE}
                         defaultMessage="Log Dialogs"
                     />
                 </div>
-                <span className="ms-font-m-plus">
+                <span className={OF.FontClassNames.mediumPlus}>
                     <FormattedMessage
                         id={FM.LOGDIALOGS_SUBTITLE}
                         defaultMessage="Use this tool to test the current versions of your application, to check if you are progressing on the right track..."
@@ -266,7 +266,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     />
                 </div>
                 <OF.SearchBox
-                    className="ms-font-m-plus"
+                    className={OF.FontClassNames.mediumPlus}
                     onChange={(newValue) => this.onChange(newValue)}
                     onSearch={(newValue) => this.onChange(newValue)}
                 />
@@ -279,7 +279,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 />
                 <OF.DetailsList
                     key={this.state.dialogKey}
-                    className="ms-font-m-plus"
+                    className={OF.FontClassNames.mediumPlus}
                     items={logDialogItems}
                     columns={this.state.columns}
                     checkboxVisibility={OF.CheckboxVisibility.hidden}
