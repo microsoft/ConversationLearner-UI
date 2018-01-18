@@ -57,12 +57,6 @@ class LogDialogModal extends React.Component<Props, ComponentState> {
         }
     }
 
-    onSaveDialogChanges(trainDialog: TrainDialog) {
-        this.props.createTrainDialogAsync(this.props.user.id, this.props.app.appId, trainDialog, this.props.logDialog.logDialogId)
-        this.props.fetchApplicationTrainingStatusThunkAsync(this.props.app.appId)
-        this.props.onClose()
-    }
-
     onSelectWebChatActivity(activity: Activity) {
         this.setState({
             selectedActivity: activity
@@ -100,7 +94,7 @@ class LogDialogModal extends React.Component<Props, ComponentState> {
                                         app={this.props.app}
                                         logDialog={this.props.logDialog}
                                         selectedActivity={this.state.selectedActivity}
-                                        onSaveChanges={trainDialog => this.onSaveDialogChanges(trainDialog)}
+                                        onEdit={(logDialogId: string, newTrainDialog: TrainDialog) => this.props.onEdit(logDialogId, newTrainDialog)}
                                     />
                                 </div>
                             </div>
@@ -167,6 +161,7 @@ const mapStateToProps = (state: State, ownProps: ReceivedProps) => {
 export interface ReceivedProps {
     open: boolean,
     onClose: () => void,
+    onEdit: (logDialogId: string, newTrainDialog: TrainDialog) => void,
     logDialog: LogDialog,
     app: BlisAppBase,
     history: Activity[]

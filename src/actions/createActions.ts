@@ -147,6 +147,42 @@ export const createTeachSessionThunkAsync = (key: string, appId: string) => {
     }
 }
 
+export const createTeachSessionFromHistoryThunkAsync = (appId: string, trainDialog: TrainDialog, userName: string, userId: string) => {
+    return async (dispatch: Dispatch<any>) => {
+        const blisClient = ClientFactory.getInstance(AT.CREATE_TEACH_SESSION_FROMHISTORYASYNC)
+        dispatch(createTeachSessionFromHistoryAsync(appId, trainDialog, userName, userId))
+
+        try {
+            const teachWithHistory = await blisClient.teachSessionFromHistory(appId, trainDialog, userName, userId)
+            dispatch(createTeachSessionFromHistoryFulfilled(teachWithHistory))
+            return teachWithHistory
+        }
+        catch (error) {
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response && error.response.data, AT.CREATE_TEACH_SESSION_FROMHISTORYASYNC))
+            dispatch(createTeachSessionRejected())
+            throw error
+        }
+    }
+}
+
+export const createTeachSessionFromHistoryAsync = (blisAppID: string, trainDialog: TrainDialog, userName: string, userId: string): ActionObject => {
+    return {
+        type: AT.CREATE_TEACH_SESSION_FROMHISTORYASYNC,
+        blisAppID: blisAppID,
+        userName: userName,
+        userId: userId,
+        trainDialog: trainDialog
+    }
+}
+
+export const createTeachSessionFromHistoryFulfilled = (teachWithHistory: TeachWithHistory): ActionObject => {
+    // Needs a fulfilled version to handle response from Epic
+    return {
+        type: AT.CREATE_TEACH_SESSION_FROMHISTORYFULFILLED,
+        teachWithHistory: teachWithHistory
+    }
+}
+
 export const createTeachSessionFromUndoThunkAsync = (appId: string, teach: Teach, userName: string, userId: string) => {
     return async (dispatch: Dispatch<any>) => {
         const blisClient = ClientFactory.getInstance(AT.CREATE_TEACH_SESSION_FROMUNDOASYNC)
@@ -179,43 +215,6 @@ export const createTeachSessionFromUndoFulfilled = (teachWithHistory: TeachWithH
     // Needs a fulfilled version to handle response from Epic
     return {
         type: AT.CREATE_TEACH_SESSION_FROMUNDOFULFILLED,
-        teachWithHistory: teachWithHistory
-    }
-}
-
-export const createTeachSessionFromBranchThunkAsync = (appId: string, teachId: string, userName: string, userId: string, turnIndex: number) => {
-    return async (dispatch: Dispatch<any>) => {
-        const blisClient = ClientFactory.getInstance(AT.CREATE_TEACH_SESSION_FROMBRANCHASYNC)
-        dispatch(createTeachSessionFromBranchAsync(appId, teachId, userName, userId, turnIndex))
-
-        try  {
-            const teachWithHistory = await blisClient.teachSessionFromBranch(appId, teachId, userName, userId, turnIndex)
-            dispatch(createTeachSessionFromBranchFulfilled(teachWithHistory))
-            return teachWithHistory
-        }
-        catch (error) {
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response && error.response.data, AT.CREATE_TEACH_SESSION_FROMBRANCHASYNC))
-            dispatch(createTeachSessionRejected())
-            throw error
-        }
-    }
-}
-
-export const createTeachSessionFromBranchAsync = (blisAppID: string, teachId: string, userName: string, userId: string, turnIndex: number): ActionObject => {
-    return {
-        type: AT.CREATE_TEACH_SESSION_FROMBRANCHASYNC,
-        blisAppID: blisAppID,
-        userName: userName,
-        userId: userId,
-        teachId: teachId,
-        turnIndex: turnIndex
-    }
-}
-
-export const createTeachSessionFromBranchFulfilled = (teachWithHistory: TeachWithHistory): ActionObject => {
-    // Needs a fulfilled version to handle response from Epic
-    return {
-        type: AT.CREATE_TEACH_SESSION_FROMBRANCHFULFILLED,
         teachWithHistory: teachWithHistory
     }
 }

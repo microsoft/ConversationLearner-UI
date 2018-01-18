@@ -7,7 +7,10 @@ import { State } from '../../../types'
 import { BlisAppBase, Teach, TrainDialog, TeachWithHistory, AppDefinition, ActionBase } from 'blis-models'
 import { TeachSessionWindow, TrainDialogWindow } from '../../../components/modals'
 import { fetchHistoryThunkAsync } from '../../../actions/fetchActions'
-import { createTeachSessionThunkAsync, createTeachSessionFromUndoThunkAsync, createTeachSessionFromBranchThunkAsync } from '../../../actions/createActions'
+import { createTeachSessionThunkAsync, 
+    createTeachSessionFromUndoThunkAsync, 
+    createTeachSessionFromHistoryThunkAsync } from '../../../actions/createActions'
+import { deleteTrainDialogThunkAsync } from '../../../actions/deleteActions';    
 import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { FM } from '../../../react-intl-messages'
 import { Activity } from 'botframework-directlinejs';
@@ -197,7 +200,18 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
     onBranchTrainDialog(turnIndex: number) {
         
-        ((this.props.createTeachSessionFromBranchThunkAsync(this.props.app.appId, this.state.trainDialogId, this.props.user.name, this.props.user.id, turnIndex) as any) as Promise<TeachWithHistory>)
+        let trainDialog = this.props.trainDialogs.find(td => td.trainDialogId === this.state.trainDialogId);
+
+        // Create new train dialog, removing turns above the branch
+        let newTrainDialog = new TrainDialog({
+            rounds: trainDialog.rounds.slice(0, turnIndex),
+            definitions: new AppDefinition({
+                entities: this.props.entities,
+                actions: this.props.actions
+            })
+        });
+
+        ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app.appId, newTrainDialog, this.props.user.name, this.props.user.id) as any) as Promise<TeachWithHistory>)
         .then(teachWithHistory => {
             this.setState({
                 teachSession: teachWithHistory.teach, 
@@ -209,6 +223,25 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         })
         .catch(error => {
             console.warn(`Error when attempting to create teach session from branch: `, error)
+        })
+    }
+
+    onEditTrainDialog(sourceTrainDialogId: string, newTrainDialog: TrainDialog) {
+        
+        this.props.deleteTrainDialogThunkAsync(this.props.app.appId,sourceTrainDialogId);
+        
+        ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app.appId, newTrainDialog, this.props.user.name, this.props.user.id) as any) as Promise<TeachWithHistory>)
+        .then(teachWithHistory => {
+            this.setState({
+                teachSession: teachWithHistory.teach, 
+                activities: teachWithHistory.history,
+                trainDialogId: null,
+                isTrainDialogModalOpen: false,
+                isTeachDialogModalOpen: true
+            })
+        })
+        .catch(error => {
+            console.warn(`Error when attempting to create teach session from train dialog: `, error)
         })
     }
 
@@ -339,6 +372,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     open={this.state.isTrainDialogModalOpen}
                     onClose={() => this.onCloseTrainDialogWindow()}
                     onBranch={(turnIndex: number) => this.onBranchTrainDialog(turnIndex)}
+                    onEdit={(sourceTrainDialogId: string, editedTrainDialog: TrainDialog) => this.onEditTrainDialog(sourceTrainDialogId, editedTrainDialog)}
                     trainDialog={trainDialog}
                     history={this.state.isTrainDialogModalOpen ? this.state.activities : null}
                 />
@@ -351,7 +385,8 @@ const mapDispatchToProps = (dispatch: any) => {
         createTeachSessionThunkAsync,
         fetchHistoryThunkAsync,
         createTeachSessionFromUndoThunkAsync,
-        createTeachSessionFromBranchThunkAsync
+        createTeachSessionFromHistoryThunkAsync,
+        deleteTrainDialogThunkAsync
     }, dispatch)
 }
 const mapStateToProps = (state: State) => {

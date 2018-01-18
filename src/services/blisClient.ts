@@ -236,16 +236,6 @@ export default class BlisClient {
             .then(response => { })
     }
 
-    trainDialogsUpdate(appId: string, trainDialog: models.TrainDialog): Promise<models.TrainDialog> {
-        const { trainDialogId, ...trainDialogToSend } = trainDialog;
-        return this.send({
-            method: 'put',
-            url: `${this.baseUrl}/app/${appId}/traindialog/${trainDialog.trainDialogId}`,
-            data: trainDialogToSend
-        })
-            .then(response => trainDialog)
-    }
-
     trainDialogsUpdateExtractStep(appId: string, trainDialogId: string, turnIndex: number, userInput: models.UserInput): Promise<models.UIExtractResponse> {
         return this.send({
             method: 'put',
@@ -362,6 +352,7 @@ export default class BlisClient {
             .then(response => response.data)
     }
 
+    // AT.POST_SCORE_FEEDBACK_ASYNC
     teachSessionAddScorerStep(appId: string, teachId: string, uiTrainScorerStep: models.UITrainScorerStep): Promise<models.UITeachResponse> {
         return this.send<models.UITeachResponse>({
             method: 'post',
@@ -371,6 +362,7 @@ export default class BlisClient {
             .then(response => response.data)
     }
 
+    // AT.RUN_SCORER_ASYNC
     teachSessionUpdateScorerStep(appId: string, teachId: string, uiScoreInput: models.UIScoreInput): Promise<models.UIScoreResponse> {
         return this.send<models.UIScoreResponse>({
             method: 'put',
@@ -392,6 +384,15 @@ export default class BlisClient {
         return this.send<models.TeachWithHistory>({
             method: 'post',
             url: `${this.baseUrl}/app/${appId}/traindialog/${trainDialogId}/branch/${turnIndex}?username=${userName}&userid=${userId}`
+        }).then(response => response.data)
+    }
+
+    //AT.CREATE_TEACH_SESSION_FROMLOGASYNC
+    teachSessionFromHistory(appId: string, trainDialog: models.TrainDialog, userName: string, userId: string): Promise<models.TeachWithHistory> {
+        return this.send<models.TeachWithHistory>({
+            method: 'post',
+            url: `${this.baseUrl}/app/${appId}/teachwithhistory?username=${userName}&userid=${userId}`,
+            data: trainDialog
         }).then(response => response.data)
     }
 }

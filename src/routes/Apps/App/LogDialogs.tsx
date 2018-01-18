@@ -4,10 +4,14 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import * as OF from 'office-ui-fabric-react';
 import { State } from '../../../types'
-import { BlisAppBase, LogDialog, Session, ModelUtils, ActionBase } from 'blis-models'
-import { ChatSessionWindow, LogDialogModal } from '../../../components/modals'
-import { createChatSessionThunkAsync } from '../../../actions/createActions'
+import { BlisAppBase, LogDialog, Session, ModelUtils, Teach, TeachWithHistory, TrainDialog, ActionBase } from 'blis-models'
+import { ChatSessionWindow, LogDialogModal, TeachSessionWindow } from '../../../components/modals'
+import { 
+    createChatSessionThunkAsync, 
+    createTeachSessionFromHistoryThunkAsync,
+    createTeachSessionFromUndoThunkAsync } from '../../../actions/createActions'
 import { fetchAllLogDialogsAsync, fetchHistoryThunkAsync } from '../../../actions/fetchActions';
+import { deleteLogDialogThunkAsync } from '../../../actions/deleteActions';
 import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { FM } from '../../../react-intl-messages'
 import { Activity } from 'botframework-directlinejs';
@@ -114,10 +118,12 @@ interface ComponentState {
     isChatSessionWarningWindowOpen: boolean
     isChatSessionWindowOpen: boolean
     isLogDialogWindowOpen: boolean
+    isTeachDialogModalOpen: boolean
     currentLogDialog: LogDialog
     searchValue: string
     dialogKey: number,   // Allows user to re-open modal for same row ()
     activities: Activity[],
+    teachSession: Teach
 }
 
 class LogDialogs extends React.Component<Props, ComponentState> {
@@ -129,10 +135,12 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         isChatSessionWarningWindowOpen: false,
         isChatSessionWindowOpen: false,
         isLogDialogWindowOpen: false,
+        isTeachDialogModalOpen: false,
         currentLogDialog: null,
         searchValue: '',
         dialogKey: 0,
-        activities: []
+        activities: [],
+        teachSession: null
     }
 
     componentDidMount() {
@@ -205,6 +213,54 @@ class LogDialogs extends React.Component<Props, ComponentState> {
 
     onClickSync() {
         this.props.fetchAllLogDialogsAsync(this.props.user.id, this.props.app.appId);
+    }
+
+    onEditLogDialog(logDialogId: string, newTrainDialog: TrainDialog) {
+        
+        // Delete log dialog
+        this.props.deleteLogDialogThunkAsync(this.props.app.appId,logDialogId);
+        
+        // Create a new teach session from the train dialog
+        ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app.appId, newTrainDialog, this.props.user.name, this.props.user.id) as any) as Promise<TeachWithHistory>)
+        .then(teachWithHistory => {
+            this.setState({
+                teachSession: teachWithHistory.teach, 
+                activities: teachWithHistory.history,
+                currentLogDialog: null,
+                isLogDialogWindowOpen: false,
+                isTeachDialogModalOpen: true
+            })
+        })
+        .catch(error => {
+            console.warn(`Error when attempting to create teach session from log dialog: `, error)
+        })
+    }
+
+    onCloseTeachSession() {
+        this.setState({
+            teachSession: null,
+            isTeachDialogModalOpen: false,
+            activities: null,
+            dialogKey: this.state.dialogKey + 1
+        })
+    }
+
+    onUndoTeachStep() {
+        // Clear history first
+        this.setState({
+            activities: null
+        });
+
+        ((this.props.createTeachSessionFromUndoThunkAsync(this.props.app.appId, this.state.teachSession, this.props.user.name, this.props.user.id) as any) as Promise<TeachWithHistory>)
+        .then(teachWithHistory => {
+            this.setState({
+                teachSession: teachWithHistory.teach, 
+                activities: teachWithHistory.history,
+            })
+        })
+        .catch(error => {
+            console.warn(`Error when attempting to create teach session from undo: `, error)
+        })
     }
 
     renderLogDialogItems(): LogDialog[] {
@@ -290,9 +346,20 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     open={this.state.isLogDialogWindowOpen}
                     app={this.props.app}
                     onClose={() => this.onCloseLogDialogModal()}
+                    onEdit={(logDialogId: string, newTrainDialog: TrainDialog) => this.onEditLogDialog(logDialogId, newTrainDialog)}
                     logDialog={currentLogDialog}
                     history={this.state.isLogDialogWindowOpen ? this.state.activities : null}
                 />
+                <TeachSessionWindow
+                        app={this.props.app}
+                        teachSession={this.props.teachSessions.current}
+                        dialogMode={this.props.teachSessions.mode}
+                        open={this.state.isTeachDialogModalOpen}
+                        onClose={() => this.onCloseTeachSession()} 
+                        onUndo={() => this.onUndoTeachStep()}
+                        history={this.state.isTeachDialogModalOpen ? this.state.activities : null}
+                        trainDialog={null}
+                    />
                 <OF.Dialog
                     hidden={!this.state.isChatSessionWarningWindowOpen}
                     dialogContentProps={{
@@ -322,6 +389,9 @@ class LogDialogs extends React.Component<Props, ComponentState> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         createChatSessionThunkAsync,
+        createTeachSessionFromHistoryThunkAsync,
+        createTeachSessionFromUndoThunkAsync,
+        deleteLogDialogThunkAsync,
         fetchAllLogDialogsAsync,
         fetchHistoryThunkAsync,
     }, dispatch)
@@ -331,7 +401,8 @@ const mapStateToProps = (state: State) => {
         logDialogs: state.logDialogs,
         user: state.user,
         actions: state.actions,
-        entities: state.entities
+        entities: state.entities,
+        teachSessions: state.teachSessions
     }
 }
 

@@ -6,10 +6,6 @@ import { AT } from '../../types/ActionTypes'
 
 class ErrorInjectionEditor extends React.Component<ReceivedProps, {}> {
 
-    private _onCheckboxChange(ev: React.FormEvent<HTMLElement>, isChecked: boolean, actionType: string) {
-        ErrorInjector.SetError(actionType, isChecked);
-    }
-
     render() {
         return (
 
@@ -25,17 +21,20 @@ class ErrorInjectionEditor extends React.Component<ReceivedProps, {}> {
             >
             {Object.keys(AT).filter(key => key.indexOf("ASYNC") > -1).map(key => {
                 return ( 
-                        <Checkbox
+                    <Checkbox
                         key={key}
                         label={key}
-                        onChange= { (ev, isChecked) => this._onCheckboxChange(ev, isChecked, key) }
-                        ariaDescribedBy={ 'descriptionID' }
+                        onChange={ (ev, isChecked) => this._onCheckboxChange(ev, isChecked, key) }
                         defaultChecked={ErrorInjector.ShouldError(AT[key])}
-                        />
+                    />
                     )})
             }
             </Dialog>
         )
+    }
+   
+    private _onCheckboxChange(ev: React.FormEvent<HTMLElement>, isChecked: boolean, actionType: string) {
+        ErrorInjector.SetError(actionType, isChecked);
     }
 }
 

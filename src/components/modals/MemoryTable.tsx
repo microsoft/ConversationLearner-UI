@@ -183,8 +183,9 @@ class MemoryTable extends React.Component<Props, ComponentState> {
                 entityClass = 'blis-font--emphasis';
             }
 
+            let isPrebuilt = memoryValue.builtinType || (memoryValue.resolution && Object.keys(memoryValue.resolution).length > 0);
             // If a pre-built, show tool tip with extra info
-            if (memoryValue.builtinType || memoryValue.resolution) {
+            if (isPrebuilt) {
                 entityClass += ' blisText--emphasis';
                 display.push(
                     Prebuilt(memoryValue, (<span className={OF.FontClassNames.mediumPlus} key={key++}>{prefix}<span className={entityClass}>{memoryValue.displayText}</span></span>))

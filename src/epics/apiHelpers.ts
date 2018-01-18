@@ -260,15 +260,6 @@ export const editBlisEntity = (key: string, appId: string, entity: EntityBase): 
     })
     .catch(err => handleError(obs, err, AT.EDIT_ENTITY_ASYNC)));
 }
-export const editTrainDialog = (key: string, appId: string, trainDialog: TrainDialog): Observable<ActionObject> => {
-  const blisClient = ClientFactory.getInstance(AT.EDIT_TRAIN_DIALOG_ASYNC)
-  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.trainDialogsUpdate(appId, trainDialog)
-    .then(response => {
-      obs.next(actions.update.editTrainDialogFulfilled(trainDialog));
-      obs.complete();
-    })
-    .catch(err => handleError(obs, err, AT.EDIT_TRAIN_DIALOG_ASYNC)));
-};
 
 //========================================================
 // SESSION ROUTES
