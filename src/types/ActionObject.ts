@@ -32,16 +32,6 @@ export type UpdateAction = {
 } | {
     type: AT.EDIT_ACTION_FULFILLED,
     blisAction: ActionBase
-} | {
-    type: AT.EDIT_TRAIN_DIALOG_ASYNC,
-    trainDialog: TrainDialog,
-    currentAppId: string
-} | {
-    type: AT.EDIT_TRAIN_DIALOG_FULFILLED,
-    trainDialog: TrainDialog,
-} | {
-    type: AT.EDIT_LOG_DIALOG,
-    logDialog: LogDialog,
 }
 
 export type DisplayAction = {
@@ -236,6 +226,15 @@ export type CreateAction = {
 } | {
     type: AT.CREATE_TEACH_SESSION_FROMBRANCHFULFILLED,
     teachWithHistory: TeachWithHistory
+} | {
+    type: AT.CREATE_TEACH_SESSION_FROMHISTORYASYNC,
+    blisAppID: string,
+    userName: string,
+    userId: string,
+    trainDialog: TrainDialog
+} | {
+    type: AT.CREATE_TEACH_SESSION_FROMHISTORYFULFILLED,
+    teachWithHistory: TeachWithHistory
 }
 
 export type DeleteAction = {
@@ -272,7 +271,7 @@ export type DeleteAction = {
 } | {
     type: AT.DELETE_TRAIN_DIALOG_ASYNC,
     appId: string,
-    trainDialog: TrainDialog
+    trainDialogId: string
 } | {
     type: AT.DELETE_TRAIN_DIALOG_FULFILLED,
     trainDialogId: string,

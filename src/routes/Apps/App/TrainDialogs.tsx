@@ -7,7 +7,11 @@ import { State } from '../../../types'
 import { BlisAppBase, Teach, TrainDialog, TeachWithHistory, AppDefinition } from 'blis-models'
 import { TeachSessionWindow, TrainDialogWindow } from '../../../components/modals'
 import { fetchHistoryThunkAsync } from '../../../actions/fetchActions'
-import { createTeachSessionThunkAsync, createTeachSessionFromUndoThunkAsync, createTeachSessionFromBranchThunkAsync } from '../../../actions/createActions'
+import { createTeachSessionThunkAsync, 
+    createTeachSessionFromUndoThunkAsync, 
+    createTeachSessionFromBranchThunkAsync,
+    createTeachSessionFromLogThunkAsync } from '../../../actions/createActions'
+import { deleteTrainDialogThunkAsync } from '../../../actions/deleteActions';    
 import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { FM } from '../../../react-intl-messages'
 import { Activity } from 'botframework-directlinejs';
@@ -211,6 +215,44 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             console.warn(`Error when attempting to create teach session from branch: `, error)
         })
     }
+/* LARS DELETE
+    oldonEditTrainDialog(oldTrainDialogId: string, newTrainDialog: TrainDialog) {
+        
+        this.props.deleteTrainDialogThunkAsync(this.props.app.appId, oldTrainDialogId)
+        
+        ((this.props.createTeachSessionFromLogThunkAsync(this.props.app.appId, newTrainDialog, this.props.user.name, this.props.user.id) as any) as Promise<TeachWithHistory>)
+        .then(teachWithHistory => {
+            this.setState({
+                teachSession: teachWithHistory.teach, 
+                activities: teachWithHistory.history,
+                trainDialogId: null,
+                isTrainDialogModalOpen: false,
+                isTeachDialogModalOpen: true
+            })
+        })
+        .catch(error => {
+            console.warn(`Error when attempting to create teach session from train dialog: `, error)
+        })
+    }
+*/
+    onEditTrainDialog(sourceTrainDialogId: string, newTrainDialog: TrainDialog) {
+        
+        this.props.deleteTrainDialogThunkAsync(this.props.app.appId,sourceTrainDialogId);
+        
+        ((this.props.createTeachSessionFromLogThunkAsync(this.props.app.appId, newTrainDialog, this.props.user.name, this.props.user.id) as any) as Promise<TeachWithHistory>)
+        .then(teachWithHistory => {
+            this.setState({
+                teachSession: teachWithHistory.teach, 
+                activities: teachWithHistory.history,
+                trainDialogId: null,
+                isTrainDialogModalOpen: false,
+                isTeachDialogModalOpen: true
+            })
+        })
+        .catch(error => {
+            console.warn(`Error when attempting to create teach session from train dialog: `, error)
+        })
+    }
 
     onClickTrainDialogItem(trainDialog: TrainDialog) {
 
@@ -339,6 +381,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     open={this.state.isTrainDialogModalOpen}
                     onClose={() => this.onCloseTrainDialogWindow()}
                     onBranch={(turnIndex: number) => this.onBranchTrainDialog(turnIndex)}
+                    onEdit={(sourceTrainDialogId: string, editedTrainDialog: TrainDialog) => this.onEditTrainDialog(sourceTrainDialogId, editedTrainDialog)}
                     trainDialog={trainDialog}
                     history={this.state.isTrainDialogModalOpen ? this.state.activities : null}
                 />
@@ -351,7 +394,9 @@ const mapDispatchToProps = (dispatch: any) => {
         createTeachSessionThunkAsync,
         fetchHistoryThunkAsync,
         createTeachSessionFromUndoThunkAsync,
-        createTeachSessionFromBranchThunkAsync
+        createTeachSessionFromBranchThunkAsync,
+        createTeachSessionFromLogThunkAsync,
+        deleteTrainDialogThunkAsync
     }, dispatch)
 }
 const mapStateToProps = (state: State) => {

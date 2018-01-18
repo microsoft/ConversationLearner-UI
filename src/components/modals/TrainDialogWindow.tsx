@@ -82,7 +82,7 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
             { confirmDeleteModalOpen: false },
             async () => {
                 try {
-                    await this.props.deleteTrainDialogThunkAsync(this.props.app.appId, this.props.trainDialog)
+                    await this.props.deleteTrainDialogThunkAsync(this.props.app.appId, this.props.trainDialog.trainDialogId)
                     this.props.fetchApplicationTrainingStatusThunkAsync(this.props.app.appId)
                     this.props.onClose()
                 }
@@ -131,6 +131,7 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
                                     app={this.props.app}
                                     trainDialog={this.props.trainDialog}
                                     selectedActivity={this.state.selectedActivity}
+                                    onEdit={(sourceTrainDialogId: string, editedTrainDialog: TrainDialog) => this.props.onEdit(sourceTrainDialogId, editedTrainDialog)}
                                 />
                             </div>
                         </div>
@@ -225,7 +226,8 @@ const mapStateToProps = (state: State) => {
 export interface ReceivedProps {
     app: BlisAppBase
     onClose: () => void
-    onBranch: (turnIndex: number) => void
+    onBranch: (turnIndex: number) => void,
+    onEdit: (sourceTrainDialogId: string, newTrainDialog: TrainDialog) => void,
     open: boolean
     trainDialog: TrainDialog
     history: Activity[]

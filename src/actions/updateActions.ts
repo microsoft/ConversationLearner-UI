@@ -1,7 +1,7 @@
 
 import { ActionObject } from '../types'
 import { AT } from '../types/ActionTypes'
-import { BlisAppBase, EntityBase, ActionBase, TrainDialog, LogDialog } from 'blis-models';
+import { BlisAppBase, EntityBase, ActionBase } from 'blis-models';
 
 export const editBLISApplicationAsync = (key: string, application: BlisAppBase): ActionObject => {
 
@@ -52,33 +52,5 @@ export const editActionFulfilled = (action: ActionBase): ActionObject => {
     return {
         type: AT.EDIT_ACTION_FULFILLED,
         blisAction: action,
-    }
-}
-
-export const editTrainDialogAsync = (key: string, trainDialog: TrainDialog, currentAppId: string): ActionObject => {
-
-    return {
-        type: AT.EDIT_TRAIN_DIALOG_ASYNC,
-        key: key,
-        trainDialog: trainDialog,
-        currentAppId: currentAppId
-    }
-}
-
-export const editTrainDialogFulfilled = (trainDialog: TrainDialog): ActionObject => {
-
-    return {
-        type: AT.EDIT_TRAIN_DIALOG_FULFILLED,
-        trainDialog: trainDialog
-    }
-}
-
-// TODO: should be async with fulfillment
-export const editLogDialog = (key: string, logDialog: LogDialog): ActionObject => {
-
-    return {
-        type: AT.EDIT_LOG_DIALOG,
-        key: key,
-        logDialog: logDialog
     }
 }

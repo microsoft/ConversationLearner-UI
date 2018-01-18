@@ -46,6 +46,7 @@ class Index extends React.Component<Props, ComponentState> {
             return
         }
 
+        //TODO - combine these into fewer calls
         this.props.setCurrentBLISApp(this.props.user.id, app)
         this.props.fetchAllActionsAsync(this.props.user.id, app.appId)
         this.props.fetchAllEntitiesAsync(this.props.user.id, app.appId)

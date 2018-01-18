@@ -48,6 +48,7 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
         case AT.CREATE_TEACH_SESSION_ASYNC:
         case AT.CREATE_TEACH_SESSION_FROMBRANCHASYNC:
         case AT.CREATE_TEACH_SESSION_FROMUNDOASYNC:
+        case AT.CREATE_TEACH_SESSION_FROMHISTORYASYNC:
         case AT.CREATE_CHAT_SESSION_ASYNC:
         case AT.CREATE_ENTITY_ASYNC:
 
@@ -63,7 +64,6 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
         case AT.EDIT_ACTION_ASYNC:
         case AT.EDIT_BLIS_APPLICATION_ASYNC:
         case AT.EDIT_ENTITY_ASYNC:
-        case AT.EDIT_TRAIN_DIALOG_ASYNC:
 
         case AT.FETCH_ACTIONS_ASYNC:
         case AT.FETCH_APPLICATIONS_ASYNC:
@@ -88,6 +88,7 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
         case AT.CREATE_TEACH_SESSION_FULFILLED:
         case AT.CREATE_TEACH_SESSION_FROMBRANCHFULFILLED:
         case AT.CREATE_TEACH_SESSION_FROMUNDOFULFILLED:
+        case AT.CREATE_TEACH_SESSION_FROMHISTORYFULFILLED:
         case AT.CREATE_ENTITY_FULFILLED:
         //case AT.CREATE_ENTITY_FULFILLEDNEGATIVE: Do not clear spinner until positive is complete
         case AT.CREATE_ENTITY_FULFILLEDPOSITIVE:
@@ -104,7 +105,6 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
         case AT.EDIT_ACTION_FULFILLED:
         case AT.EDIT_BLIS_APPLICATION_FULFILLED:
         case AT.EDIT_ENTITY_FULFILLED:
-        case AT.EDIT_TRAIN_DIALOG_FULFILLED:
 
         case AT.FETCH_ACTIONS_FULFILLED:
         case AT.FETCH_BOTINFO_FULFILLED:

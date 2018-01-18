@@ -5,7 +5,6 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../../types'
 import { DialogMode } from '../../types/const';
-import { editTrainDialogAsync } from '../../actions/updateActions';
 import { clearExtractResponses } from '../../actions/teachActions'
 import EntityExtractor from './EntityExtractor';
 import ActionScorer from './ActionScorer';
@@ -15,7 +14,7 @@ import * as OF from 'office-ui-fabric-react';
 import {
     ActionBase, BlisAppBase, TrainDialog, TrainRound, ScoreReason, ScoredAction,
     TrainScorerStep, Memory, UnscoredAction, ScoreResponse,
-    TextVariation, ExtractResponse, DialogType, SenderType
+    TextVariation, ExtractResponse, DialogType, SenderType, AppDefinition
 } from 'blis-models'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
@@ -106,8 +105,17 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
             return;
         }
         // Otherwise just save with new text variations, remaining rounds are ok
-        else {
-            this.props.editTrainDialogAsync(this.props.user.id, updatedTrainDialog, this.props.app.appId);
+        else {  
+            
+            let trainDialog = new TrainDialog({
+                rounds: this.state.saveTrainDialog.rounds,
+                definitions: new AppDefinition({
+                    entities: this.props.entities,
+                    actions: this.props.actions
+                })
+            })
+
+            this.props.onEdit(this.props.trainDialog.trainDialogId, trainDialog);         
             this.props.clearExtractResponses();
         }
     }
@@ -145,8 +153,17 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
     }
 
     onClickSaveCheckYes() {
-        // Submit saved extractions
-        this.props.editTrainDialogAsync(this.props.user.id, this.state.saveTrainDialog, this.props.app.appId);
+
+        let trainDialog = new TrainDialog({
+            rounds: this.state.saveTrainDialog.rounds,
+            definitions: new AppDefinition({
+                entities: this.props.entities,
+                actions: this.props.actions
+            })
+        })
+
+        this.props.onEdit(this.state.saveTrainDialog.trainDialogId, trainDialog);
+         
         this.props.clearExtractResponses();
 
         this.setState({
@@ -402,7 +419,6 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        editTrainDialogAsync,
         clearExtractResponses
     }, dispatch);
 }
@@ -425,8 +441,9 @@ interface ComponentState {
 
 export interface ReceivedProps {
     trainDialog: TrainDialog,
-    app: BlisAppBase
-    selectedActivity: Activity
+    app: BlisAppBase,
+    selectedActivity: Activity,
+    onEdit: (sourceTrainDialogId: string, editedTrainDialog: TrainDialog) => void
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps

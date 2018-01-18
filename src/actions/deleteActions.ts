@@ -1,6 +1,6 @@
 import { AT, ActionObject, ErrorType } from '../types'
 import { Dispatch } from 'redux'
-import { BlisAppBase, EntityBase, ActionBase, Session, Teach, TrainDialog } from 'blis-models'
+import { BlisAppBase, EntityBase, ActionBase, Session, Teach } from 'blis-models'
 import { setErrorDisplay } from './displayActions'
 import * as ClientFactory from '../services/clientFactory'
 
@@ -101,11 +101,11 @@ export const deleteTeachSessionFulfilled = (key: string, teachSessionGUID: strin
 }
 
 
-export const deleteTrainDialogAsync = (trainDialog: TrainDialog, appId: string): ActionObject => {
+export const deleteTrainDialogAsync = (trainDialogId: string, appId: string): ActionObject => {
     return {
         type: AT.DELETE_TRAIN_DIALOG_ASYNC,
         appId,
-        trainDialog
+        trainDialogId
     }
 }
 
@@ -122,14 +122,14 @@ export const deleteTrainDialogFulfilled = (trainDialogId: string): ActionObject 
     }
 }
 
-export const deleteTrainDialogThunkAsync = (appId: string, trainDialog: TrainDialog) => {
+export const deleteTrainDialogThunkAsync = (appId: string, trainDialogId: string) => {
     return async (dispatch: Dispatch<any>) => {
-        dispatch(deleteTrainDialogAsync(trainDialog, appId))
+        dispatch(deleteTrainDialogAsync(trainDialogId, appId))
         const blisClient = ClientFactory.getInstance(AT.DELETE_TRAIN_DIALOG_ASYNC)
 
         try {
-            await blisClient.trainDialogsDelete(appId, trainDialog.trainDialogId)
-            dispatch(deleteTrainDialogFulfilled(trainDialog.trainDialogId))
+            await blisClient.trainDialogsDelete(appId, trainDialogId)
+            dispatch(deleteTrainDialogFulfilled(trainDialogId))
         } catch (e) {
             const error = e as Error
             dispatch(setErrorDisplay(ErrorType.Error, error.name, error.message, AT.DELETE_TRAIN_DIALOG_REJECTED))

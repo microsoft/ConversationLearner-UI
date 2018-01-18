@@ -14,7 +14,7 @@ import {
     Memory, TrainDialog, TrainRound,
     LogDialog, LogRound, LogScorerStep,
     ActionBase, ExtractResponse,
-    DialogType, ModelUtils, SenderType
+    DialogType, ModelUtils, SenderType, AppDefinition
 } from 'blis-models'
 
 interface ComponentState {
@@ -50,12 +50,21 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
         }
     }
 
-    onClickSaveConfirmation() {
-        this.props.onSaveChanges(this.state.newTrainDialog);
+    onClickSaveCheckYes() {
+
+        let newTrainDialog = new TrainDialog({
+            rounds: this.state.newTrainDialog.rounds,
+            definitions: new AppDefinition({
+                entities: this.props.entities,
+                actions: this.props.actions
+            })
+        })
+
+        this.props.onEdit( this.props.logDialog.logDialogId, newTrainDialog);
         this.setState({ newTrainDialog: null });
     }
 
-    onClickCancelSaveConfirmation() {
+    onClickSaveCheckNo() {
         this.setState({ newTrainDialog: null });
     }
 
@@ -234,7 +243,7 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
                 <div className="blis-dialog-admin__dialogs">
                     <OF.Dialog
                         hidden={!this.state.newTrainDialog}
-                        onDismiss={() => this.onClickCancelSaveConfirmation()}
+                        onDismiss={() => this.onClickSaveCheckNo()}
                         dialogContentProps={{
                             type: OF.DialogType.normal,
                             title: 'Are you sure you want to save changes?',
@@ -245,8 +254,8 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
                         }}
                     >
                         <OF.DialogFooter>
-                            <OF.PrimaryButton onClick={() => this.onClickSaveConfirmation()} text='Save' />
-                            <OF.DefaultButton onClick={() => this.onClickCancelSaveConfirmation()} text='Cancel' />
+                            <OF.PrimaryButton onClick={() => this.onClickSaveCheckYes()} text='Save' />
+                            <OF.DefaultButton onClick={() => this.onClickSaveCheckNo()} text='Cancel' />
                         </OF.DialogFooter>
                     </OF.Dialog>
                 </div>
@@ -270,7 +279,7 @@ export interface ReceivedProps {
     app: BlisAppBase
     logDialog: LogDialog
     selectedActivity: Activity
-    onSaveChanges: (trainDialog: TrainDialog) => void
+    onEdit: (logDialogId: string, newTrainDialog: TrainDialog) => void
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
