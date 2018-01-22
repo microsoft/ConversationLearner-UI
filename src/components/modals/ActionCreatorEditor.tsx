@@ -316,7 +316,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
     getActionArguments(slateValuesMap: {[slot: string]: ActionPayloadEditor.SlateValue}): ActionArgument[] {
         return Object.entries(slateValuesMap)
-            .filter(([parameter, value]) => value.document.text > 0)
+            .filter(([parameter, value]) => value.document.text.length > 0)
             .map(([parameter, value]) => new ActionArgument({parameter, value: value.document.text}))
     }
 
