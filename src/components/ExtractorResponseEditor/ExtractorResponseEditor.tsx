@@ -91,7 +91,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
         }
 
         const { value } = this.state
-        if (value.isEmpty) {
+        if (value.document.text.length === 0) {
             return hideMenu
         }
 
