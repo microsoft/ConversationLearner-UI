@@ -268,7 +268,10 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
         // Initialize a new empyt slate value for each of the arguments in the callback
         const newSlateValues = apiCallback.arguments
-            .reduce((values, argument) => values[argument] = createSlateValue(""), {})
+            .reduce((values, argument) => {
+                values[argument] = createSlateValue("")
+                return values
+            }, {})
 
         this.setState({
             selectedApiOptionKey: apiOption.key,
@@ -284,7 +287,10 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
         // Initialize a new empyt slate value for each of the arguments in the callback
         const newSlateValues = template.variables
-            .reduce((values, variable) => values[variable.key] = createSlateValue(""), {})
+            .reduce((values, variable) => {
+                values[variable.key] = createSlateValue("")
+                return values
+            }, {})
 
         this.setState({
             selectedCardOptionKey: cardOption.key,
