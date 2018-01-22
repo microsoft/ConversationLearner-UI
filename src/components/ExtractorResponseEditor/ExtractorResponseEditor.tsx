@@ -79,7 +79,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
         }
     }
 
-    updateMenu = (): IEntityPickerProps | void => {
+    updateMenu = (value: SlateValue): IEntityPickerProps | void => {
         const hideMenu: IEntityPickerProps = {
             isOverlappingOtherEntities: false,
             isVisible: false,
@@ -90,8 +90,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
             return hideMenu
         }
 
-        const { value } = this.state
-        if (value.document.text.length === 0) {
+        if (value.isEmpty) {
             return hideMenu
         }
 
@@ -138,7 +137,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
             this.props.onChangeCustomEntities(customEntities)
         }
 
-        const pickerProps = this.updateMenu()
+        const pickerProps = this.updateMenu(value)
         if (pickerProps) {
             this.setState({
                 isSelectionOverlappingOtherEntities: pickerProps.isOverlappingOtherEntities,
