@@ -53,10 +53,10 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
 
         case AT.DELETE_ACTION_ASYNC:
         case AT.DELETE_BLIS_APPLICATION_ASYNC:
-        case AT.DELETE_CHAT_SESSION_ASYNC:
+        // case AT.DELETE_CHAT_SESSION_ASYNC: Don't block
         case AT.DELETE_ENTITY_ASYNC:
         // case AT.DELETE_LOG_DIALOG_ASYNC: Don't block
-        case AT.DELETE_TEACH_SESSION_ASYNC:
+        // case AT.DELETE_TEACH_SESSION_ASYNC: Don't block
         // case AT.DELETE_TRAIN_DIALOG_ASYNC: Don't block
 
         case AT.EDIT_ACTION_ASYNC:
@@ -69,8 +69,8 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
         case AT.FETCH_CHAT_SESSIONS_ASYNC:
         case AT.FETCH_ENTITIES_ASYNC:
         case AT.FETCH_TEACH_SESSIONS_ASYNC:
-        case AT.FETCH_TRAIN_DIALOGS_ASYNC:
-        case AT.FETCH_LOG_DIALOGS_ASYNC:
+        // case AT.FETCH_TRAIN_DIALOGS_ASYNC: Don't block
+        // case AT.FETCH_LOG_DIALOGS_ASYNC: Don't block
 
         case AT.RUN_EXTRACTOR_ASYNC:
         case AT.GET_SCORES_ASYNC:
@@ -92,10 +92,10 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
 
         case AT.DELETE_ACTION_FULFILLED:
         case AT.DELETE_BLIS_APPLICATION_FULFILLED:
-        case AT.DELETE_CHAT_SESSION_FULFILLED:
+        // case AT.DELETE_CHAT_SESSION_FULFILLED: Doesn't block
         case AT.DELETE_ENTITY_FULFILLED:
         // case AT.DELETE_LOG_DIALOG_FULFILLED: Doesn't block
-        case AT.DELETE_TEACH_SESSION_FULFILLED:
+        // case AT.DELETE_TEACH_SESSION_FULFILLED: Doesn't block
         // case AT.DELETE_TRAIN_DIALOG_FULFILLED: Doesn't block
         case AT.DELETE_TRAIN_DIALOG_REJECTED:
 
@@ -109,8 +109,8 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
         case AT.FETCH_CHAT_SESSIONS_FULFILLED:
         case AT.FETCH_ENTITIES_FULFILLED:
         case AT.FETCH_TEACH_SESSIONS_FULFILLED:
-        case AT.FETCH_TRAIN_DIALOGS_FULFILLED:
-        case AT.FETCH_LOG_DIALOGS_FULFILLED:
+        // case AT.FETCH_TRAIN_DIALOGS_FULFILLED: Doesn't block
+        // case AT.FETCH_LOG_DIALOGS_FULFILLED: Doeesn't block
 
         case AT.RUN_EXTRACTOR_FULFILLED:
         case AT.GET_SCORES_FULFILLED:
