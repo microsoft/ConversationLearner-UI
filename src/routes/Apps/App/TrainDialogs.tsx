@@ -6,7 +6,7 @@ import * as OF from 'office-ui-fabric-react';
 import { State } from '../../../types'
 import { BlisAppBase, Teach, TrainDialog, TeachWithHistory, AppDefinition, ActionBase } from 'blis-models'
 import { TeachSessionWindow, TrainDialogWindow } from '../../../components/modals'
-import { fetchHistoryThunkAsync } from '../../../actions/fetchActions'
+import { fetchHistoryThunkAsync, fetchApplicationTrainingStatusThunkAsync } from '../../../actions/fetchActions'
 import { createTeachSessionThunkAsync, 
     createTeachSessionFromUndoThunkAsync, 
     createTeachSessionFromHistoryThunkAsync } from '../../../actions/createActions'
@@ -198,6 +198,13 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         })
     }
 
+    onDeleteTrainDialog() {
+        
+        this.props.deleteTrainDialogThunkAsync(this.props.user.id, this.props.app.appId, this.state.trainDialogId)
+        this.props.fetchApplicationTrainingStatusThunkAsync(this.props.app.appId)
+        this.onCloseTrainDialogWindow();
+    }
+
     onBranchTrainDialog(turnIndex: number) {
         
         let trainDialog = this.props.trainDialogs.find(td => td.trainDialogId === this.state.trainDialogId);
@@ -228,7 +235,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
     onEditTrainDialog(sourceTrainDialogId: string, newTrainDialog: TrainDialog) {
         
-        this.props.deleteTrainDialogThunkAsync(this.props.app.appId,sourceTrainDialogId);
+        this.props.deleteTrainDialogThunkAsync(this.props.user.id, this.props.app.appId,sourceTrainDialogId);
         
         ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app.appId, newTrainDialog, this.props.user.name, this.props.user.id) as any) as Promise<TeachWithHistory>)
         .then(teachWithHistory => {
@@ -372,6 +379,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     open={this.state.isTrainDialogModalOpen}
                     onClose={() => this.onCloseTrainDialogWindow()}
                     onBranch={(turnIndex: number) => this.onBranchTrainDialog(turnIndex)}
+                    onDelete={() => this.onDeleteTrainDialog()}
                     onEdit={(sourceTrainDialogId: string, editedTrainDialog: TrainDialog) => this.onEditTrainDialog(sourceTrainDialogId, editedTrainDialog)}
                     trainDialog={trainDialog}
                     history={this.state.isTrainDialogModalOpen ? this.state.activities : null}
@@ -384,9 +392,10 @@ const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         createTeachSessionThunkAsync,
         fetchHistoryThunkAsync,
+        fetchApplicationTrainingStatusThunkAsync,
+        deleteTrainDialogThunkAsync,
         createTeachSessionFromUndoThunkAsync,
         createTeachSessionFromHistoryThunkAsync,
-        deleteTrainDialogThunkAsync
     }, dispatch)
 }
 const mapStateToProps = (state: State) => {

@@ -58,7 +58,7 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
         case AT.DELETE_LOG_DIALOG_ASYNC:
         case AT.DELETE_LOG_DIALOG_ASYNC2:
         case AT.DELETE_TEACH_SESSION_ASYNC:
-        case AT.DELETE_TRAIN_DIALOG_ASYNC:
+        // case AT.DELETE_TRAIN_DIALOG_ASYNC: Don't block
 
         case AT.EDIT_ACTION_ASYNC:
         case AT.EDIT_BLIS_APPLICATION_ASYNC:
@@ -97,7 +97,7 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
         case AT.DELETE_ENTITY_FULFILLED:
         case AT.DELETE_LOG_DIALOG_FULFILLED:
         case AT.DELETE_TEACH_SESSION_FULFILLED:
-        case AT.DELETE_TRAIN_DIALOG_FULFILLED:
+        //case AT.DELETE_TRAIN_DIALOG_FULFILLED: Doesn't block
         case AT.DELETE_TRAIN_DIALOG_REJECTED:
 
         case AT.EDIT_ACTION_FULFILLED:

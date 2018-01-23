@@ -2,6 +2,7 @@ import { AT, ActionObject, ErrorType } from '../types'
 import { Dispatch } from 'redux'
 import { BlisAppBase, EntityBase, ActionBase, Session, Teach } from 'blis-models'
 import { setErrorDisplay } from './displayActions'
+import { fetchAllTrainDialogsAsync } from './fetchActions'
 import * as ClientFactory from '../services/clientFactory'
 
 export const deleteBLISApplicationAsync = (key: string, blisApp: BlisAppBase): ActionObject => {
@@ -122,7 +123,7 @@ export const deleteTrainDialogFulfilled = (trainDialogId: string): ActionObject 
     }
 }
 
-export const deleteTrainDialogThunkAsync = (appId: string, trainDialogId: string) => {
+export const deleteTrainDialogThunkAsync = (userId: string, appId: string, trainDialogId: string) => {
     return async (dispatch: Dispatch<any>) => {
         dispatch(deleteTrainDialogAsync(trainDialogId, appId))
         const blisClient = ClientFactory.getInstance(AT.DELETE_TRAIN_DIALOG_ASYNC)
@@ -134,7 +135,7 @@ export const deleteTrainDialogThunkAsync = (appId: string, trainDialogId: string
             const error = e as Error
             dispatch(setErrorDisplay(ErrorType.Error, error.name, error.message, AT.DELETE_TRAIN_DIALOG_REJECTED))
             dispatch(deleteTrainDialogRejected())
-            throw new Error(e)
+            dispatch(fetchAllTrainDialogsAsync(userId, appId));
         }
     }
 }
