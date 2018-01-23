@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import * as OF from 'office-ui-fabric-react';
 import { State } from '../../../types'
 import { BlisAppBase, LogDialog, Session, ModelUtils, Teach, TeachWithHistory, TrainDialog, ActionBase } from 'blis-models'
-import { ChatSessionWindow, LogDialogModal, TeachSessionWindow } from '../../../components/modals'
+import { ChatSessionModal, LogDialogModal, TeachSessionModal } from '../../../components/modals'
 import { 
     createChatSessionThunkAsync, 
     createTeachSessionFromHistoryThunkAsync,
@@ -215,10 +215,15 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         this.props.fetchAllLogDialogsAsync(this.props.user.id, this.props.app.appId);
     }
 
+    onDeleteLogDialog() {      
+        this.props.deleteLogDialogThunkAsync(this.props.user.id, this.props.app.appId, this.state.currentLogDialog.logDialogId)
+        this.onCloseLogDialogModal();
+    }
+
     onEditLogDialog(logDialogId: string, newTrainDialog: TrainDialog) {
         
         // Delete log dialog
-        this.props.deleteLogDialogThunkAsync(this.props.app.appId,logDialogId);
+        this.props.deleteLogDialogThunkAsync(this.props.user.id, this.props.app.appId,logDialogId);
         
         // Create a new teach session from the train dialog
         ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app.appId, newTrainDialog, this.props.user.name, this.props.user.id) as any) as Promise<TeachWithHistory>)
@@ -315,7 +320,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                         })}
                         componentRef={component => this.newChatSessionButton = component}
                     />
-                    <ChatSessionWindow
+                    <ChatSessionModal
                         app={this.props.app}
                         open={this.state.isChatSessionWindowOpen}
                         onClose={() => this.onCloseChatSessionWindow()}
@@ -347,10 +352,11 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     app={this.props.app}
                     onClose={() => this.onCloseLogDialogModal()}
                     onEdit={(logDialogId: string, newTrainDialog: TrainDialog) => this.onEditLogDialog(logDialogId, newTrainDialog)}
+                    onDelete={() => this.onDeleteLogDialog()}
                     logDialog={currentLogDialog}
                     history={this.state.isLogDialogWindowOpen ? this.state.activities : null}
                 />
-                <TeachSessionWindow
+                <TeachSessionModal
                         app={this.props.app}
                         teachSession={this.props.teachSessions.current}
                         dialogMode={this.props.teachSessions.mode}

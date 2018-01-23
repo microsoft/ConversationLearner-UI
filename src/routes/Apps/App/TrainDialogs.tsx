@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import * as OF from 'office-ui-fabric-react';
 import { State } from '../../../types'
 import { BlisAppBase, Teach, TrainDialog, TeachWithHistory, AppDefinition, ActionBase } from 'blis-models'
-import { TeachSessionWindow, TrainDialogWindow } from '../../../components/modals'
+import { TeachSessionModal, TrainDialogModal } from '../../../components/modals'
 import { fetchHistoryThunkAsync, fetchApplicationTrainingStatusThunkAsync } from '../../../actions/fetchActions'
 import { createTeachSessionThunkAsync, 
     createTeachSessionFromUndoThunkAsync, 
@@ -202,7 +202,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         
         this.props.deleteTrainDialogThunkAsync(this.props.user.id, this.props.app.appId, this.state.trainDialogId)
         this.props.fetchApplicationTrainingStatusThunkAsync(this.props.app.appId)
-        this.onCloseTrainDialogWindow();
+        this.onCloseTrainDialogModal();
     }
 
     onBranchTrainDialog(turnIndex: number) {
@@ -277,7 +277,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         })
     }
 
-    onCloseTrainDialogWindow() {
+    onCloseTrainDialogModal() {
         this.setState({
             isTrainDialogModalOpen: false,
             trainDialogId: null,
@@ -349,7 +349,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         })}
                         componentRef={component => this.newTeachSessionButton = component}
                     />
-                    <TeachSessionWindow
+                    <TeachSessionModal
                         app={this.props.app}
                         teachSession={this.props.teachSessions.current}
                         dialogMode={this.props.teachSessions.mode}
@@ -374,10 +374,10 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     onRenderItemColumn={(trainDialog, i, column: IRenderableColumn) => returnErrorStringWhenError(() => column.render(trainDialog, this))}
                     onActiveItemChanged={trainDialog => this.onClickTrainDialogItem(trainDialog)}
                 />
-                <TrainDialogWindow
+                <TrainDialogModal
                     app={this.props.app}
                     open={this.state.isTrainDialogModalOpen}
-                    onClose={() => this.onCloseTrainDialogWindow()}
+                    onClose={() => this.onCloseTrainDialogModal()}
                     onBranch={(turnIndex: number) => this.onBranchTrainDialog(turnIndex)}
                     onDelete={() => this.onDeleteTrainDialog()}
                     onEdit={(sourceTrainDialogId: string, editedTrainDialog: TrainDialog) => this.onEditTrainDialog(sourceTrainDialogId, editedTrainDialog)}
