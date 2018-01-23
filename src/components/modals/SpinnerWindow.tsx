@@ -5,12 +5,10 @@ import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { Spinner, SpinnerSize } from 'office-ui-fabric-react/lib/Spinner';
 import { State } from '../../types'
 
+// Enable to see what API calls I'm waiting for
+const debug = false;
+
 class SpinnerWindow extends React.Component<Props, {}> {
-    /* Tool for debugging a stuck spinner
-        <div>
-            {this.props.displaySpinner.join("\n\n")}
-        </div>
-    */
     render() {
         return (
             <Modal
@@ -18,6 +16,11 @@ class SpinnerWindow extends React.Component<Props, {}> {
                 isBlocking={true}
                 containerClassName='blis-spinner'>
                 <Spinner size={SpinnerSize.large} />
+                {debug &&
+                    <div>
+                        {this.props.displaySpinner.join("\n\n")}
+                    </div>
+                }
             </Modal>
         );
     }
