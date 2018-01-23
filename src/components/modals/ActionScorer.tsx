@@ -17,6 +17,7 @@ import ActionCreatorEditor from './ActionCreatorEditor'
 import { onRenderDetailsHeader } from '../ToolTips'
 import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../react-intl-messages'
+import * as Util from '../../util'
 import AdaptiveCardViewer from './AdaptiveCardViewer/AdaptiveCardViewer'
 
 const ACTION_BUTTON = 'action_button';
@@ -69,6 +70,10 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             isMultiline: true,
             isResizable: true,
             render: (action: ActionBase, component) => {
+                const args = (action.metadata.actionType === ActionTypes.TEXT) ? [] :
+                    ActionBase.GetActionArguments(action)
+                    .filter(aa => !Util.isNullOrWhiteSpace(aa.value))
+                    .map(aa => `${aa.value}`);
                 return (
                     <div>
                     {action.metadata.actionType === ActionTypes.CARD &&
@@ -81,30 +86,11 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                         />
                     }
                     <span className={OF.FontClassNames.mediumPlus}>{ActionBase.GetPayload(action as ActionBase)}</span>
+                    {   args.length !== 0 &&
+                        args.map((argument, i) => <div className="ms-ListItem-primaryText" key={i}>{argument}</div>)
+                    }
                     </div>
                 )
-            }
-        },
-        {
-            key: 'actionArguments',
-            name: intl.formatMessage({
-                id: FM.ACTIONSCORER_COLUMNS_ARGUMENTS,
-                defaultMessage: 'Arguments'
-            }),
-            fieldName: 'actionArguments',
-            minWidth: 80,
-            maxWidth: 300,
-            isResizable: true,
-            render: action => {
-                const args = ActionBase.GetActionArguments(action as ActionBase).map(aa => `${aa.parameter}: ${aa.value}`);
-                return (!args)
-                    ? <OF.Icon iconName="Remove" className="notFoundIcon" />
-                    : <OF.List
-                        items={args}
-                        onRenderCell={(item, index) => (
-                            <div className='ms-ListItem-primaryText'>{item}</div>
-                        )}
-                    />
             }
         },
         {

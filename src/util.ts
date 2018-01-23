@@ -16,3 +16,7 @@ export function replace<T>(xs: T[], updatedX: T, getId: (x: T) => any): T[] {
 
     return [...xs.slice(0, index), updatedX, ...xs.slice(index + 1)]
 }
+
+export function isNullOrWhiteSpace(str: string): boolean {
+    return (!str || str.length === 0 || /^\s*$/.test(str))
+  }

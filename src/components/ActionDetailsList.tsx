@@ -7,6 +7,7 @@ import * as OF from 'office-ui-fabric-react';
 import { onRenderDetailsHeader } from './ToolTips'
 import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../react-intl-messages'
+import * as Util from '../util'
 import AdaptiveCardViewer from './modals/AdaptiveCardViewer/AdaptiveCardViewer'
 
 class ActionDetailsList extends React.Component<Props, ComponentState> {
@@ -121,7 +122,7 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
 const mapStateToProps = (state: State) => {
     return {
         entities: state.entities,
-        templates: state.bot.botInfo.templates
+        templates: state.bot.botInfo && state.bot.botInfo.templates
     }
 }
 
@@ -151,6 +152,10 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             isMultiline: true,
             getSortValue: action => ActionBase.GetPayload(action),
             render: (action, component) => {
+                const args = (action.metadata.actionType === ActionTypes.TEXT) ? [] :
+                    ActionBase.GetActionArguments(action)
+                    .filter(aa => !Util.isNullOrWhiteSpace(aa.value))
+                    .map(aa => `${aa.value}`);
                 return (
                     <div>
                     {action.metadata.actionType === ActionTypes.CARD &&
@@ -162,31 +167,15 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                             iconProps={{ iconName: 'RedEye' }}
                         />
                     }
-                    <span className={OF.FontClassNames.mediumPlus} onClick={() => component.props.onSelectAction(action)}>{ActionBase.GetPayload(action)}</span>
+                    <span className={OF.FontClassNames.mediumPlus} onClick={() => component.props.onSelectAction(action)}>{ActionBase.GetPayload(action)}</span>                   
+                    {   args.length !== 0 &&
+                        args.map((argument, i) => <div className="ms-ListItem-primaryText" key={i}>{argument}</div>)
+                    }
                     </div>
                 )
             }
         },
-        {
-            key: 'actionArguments',
-            name: intl.formatMessage({
-                id: FM.ACTIONDETAILSLIST_COLUMNS_ARGUMENTS,
-                defaultMessage: 'Arguments'
-            }),
-            fieldName: 'actionArguments',
-            minWidth: 80,
-            maxWidth: 300,
-            isResizable: true,
-            // TODO: There was no value in previous implementation, what should it be?
-            getSortValue: action => ActionBase.GetActionArguments(action).map(aa => aa.parameter).join('').toLowerCase(),
-            render: action => {
-                const args = ActionBase.GetActionArguments(action).map(aa => `${aa.parameter}: ${aa.value}`);;
-                return (!args || args.length === 0)
-                    ? <OF.Icon iconName="Remove" className="notFoundIcon" />
-                    : args.map((argument, i) => <div className="ms-ListItem-primaryText" key={i}>{argument}</div>)
-            }
-        },
-        {
+        { 
             key: 'actionType',
             name: intl.formatMessage({
                 id: FM.ACTIONDETAILSLIST_COLUMNS_TYPE,
