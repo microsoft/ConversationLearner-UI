@@ -1,6 +1,6 @@
 {
   "name": "blis-ui",
-  "version": "0.100.0",
+  "version": "0.100.5",
   "private": true,
   "dependencies": {
     "adaptivecards": "^1.0.0-beta9",
