@@ -11,6 +11,8 @@ const trainDialogsReducer: Reducer<TrainDialogState> = (state = initialState, ac
             return [...initialState]
         case AT.FETCH_TRAIN_DIALOGS_FULFILLED:
             return action.allTrainDialogs;
+        case AT.FETCH_APPSOURCE_FULFILLED:
+            return action.appDefinition.trainDialogs;
         case AT.CREATE_BLIS_APPLICATION_FULFILLED:
             return [...initialState]
         case AT.CREATE_TRAIN_DIALOG_FULFILLED:

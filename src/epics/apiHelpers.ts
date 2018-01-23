@@ -82,6 +82,16 @@ export const getAllEntitiesForBlisApp = (key: string, appId: string): Observable
     .catch(err => handleError(obs, err, AT.FETCH_ENTITIES_ASYNC)));
 };
 
+export const getSourceForBlisApp = (key: string, appId: string): Observable<ActionObject> => {
+  const blisClient = ClientFactory.getInstance(AT.FETCH_APPSOURCE_ASYNC)
+  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.source(appId)
+    .then(source => {
+      obs.next(actions.fetch.fetchAppSourceFulfilled(source));
+      obs.complete();
+    })
+    .catch(err => handleError(obs, err, AT.FETCH_APPSOURCE_ASYNC)));
+};
+
 export const getAllActionsForBlisApp = (key: string, appId: string): Observable<ActionObject> => {
   const blisClient = ClientFactory.getInstance(AT.FETCH_ACTIONS_ASYNC)
   return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.actions(appId)

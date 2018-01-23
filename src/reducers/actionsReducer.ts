@@ -11,7 +11,9 @@ const actionsReducer: Reducer<ActionState> = (state = initialState, actionObject
         case AT.LOGOUT:
             return [...initialState]
         case AT.FETCH_ACTIONS_FULFILLED:
-            return actionObject.allActions
+            return actionObject.allActions;
+        case AT.FETCH_APPSOURCE_FULFILLED:
+            return actionObject.appDefinition.actions;
         case AT.CREATE_BLIS_APPLICATION_FULFILLED:
             return [...initialState]
         case AT.CREATE_ACTION_FULFILLED:

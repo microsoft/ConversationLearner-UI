@@ -174,6 +174,12 @@ export default class BlisClient {
             .then(response => entity)
     }
 
+    source(appId: string): Promise<models.AppDefinition> {
+        return this.send<models.AppDefinition>({
+            url: `${this.baseUrl}/app/${appId}/source`
+        }).then(response => response.data)
+    }
+
     actions(appId: string): Promise<models.ActionBase[]> {
         return this.send<models.ActionList>({
             url: `${this.baseUrl}/app/${appId}/actions`

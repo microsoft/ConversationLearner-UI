@@ -1,6 +1,7 @@
 import {
     BlisAppBase,
-    BotInfo,
+    BotInfo, 
+    AppDefinition,
     EntityBase,
     ActionBase, TeachWithHistory,
     TrainDialog, LogDialog, Session, Teach, ScoreInput,
@@ -92,6 +93,9 @@ export type FetchAction = {
     type: AT.FETCH_ACTIONS_ASYNC,
     blisAppID: string
 } | {
+    type: AT.FETCH_APPSOURCE_ASYNC,
+    blisAppID: string
+} | {
     type: AT.FETCH_CHAT_SESSIONS_ASYNC,
     key: string,
     blisAppID: string
@@ -124,6 +128,9 @@ export type FetchAction = {
 } | {
     type: AT.FETCH_ENTITIES_FULFILLED,
     allEntities: EntityBase[],
+} | {
+    type: AT.FETCH_APPSOURCE_FULFILLED,
+    appDefinition: AppDefinition
 } | {
     type: AT.FETCH_ACTIONS_FULFILLED,
     allActions: ActionBase[]
