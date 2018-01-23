@@ -14,7 +14,7 @@ import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 
 interface ComponentState {
-    confirmDeleteModalOpen: boolean,
+    isConfirmDeleteModalOpen: boolean,
     calloutOpen: boolean,
     selectedActivity: Activity | null,
     webchatKey: number,
@@ -22,14 +22,14 @@ interface ComponentState {
 }
 
 const initialState: ComponentState = {
-    confirmDeleteModalOpen: false,
+    isConfirmDeleteModalOpen: false,
     calloutOpen: false,
     selectedActivity: null,
     webchatKey: 0,
     currentTrainDialog: null,
 }
 
-class TrainDialogWindow extends React.Component<Props, ComponentState> {
+class TrainDialogModal extends React.Component<Props, ComponentState> {
     state = initialState
     private _refBranchButton: HTMLElement | null;
 
@@ -65,20 +65,20 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
 
     onClickDelete() {
         this.setState({
-            confirmDeleteModalOpen: true
+            isConfirmDeleteModalOpen: true
         })
     }
 
     onClickCancelDelete = () => {
         this.setState({
-            confirmDeleteModalOpen: false
+            isConfirmDeleteModalOpen: false
         })
     }
 
     onClickConfirmDelete = () => {
         this.props.onDelete();
         this.setState(
-            { confirmDeleteModalOpen: false }
+            { isConfirmDeleteModalOpen: false }
         );
     }
 
@@ -135,11 +135,11 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
                                 <DefaultButton
                                         onClick={() => this.onClickBranch()}
                                         ariaDescription={intl.formatMessage({
-                                            id: FM.TRAINDIALOGWINDOW_BRANCH_ARIADESCRIPTION,
+                                            id: FM.TRAINDIALOGMODAL_BRANCH_ARIADESCRIPTION,
                                             defaultMessage: 'Branch'
                                         })}
                                         text={intl.formatMessage({
-                                            id: FM.TRAINDIALOGWINDOW_BRANCH_TEXT,
+                                            id: FM.TRAINDIALOGMODAL_BRANCH_TEXT,
                                             defaultMessage: 'Branch'
                                         })}
                                 />
@@ -147,22 +147,22 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
                             <DefaultButton
                                 onClick={() => this.onClickDelete()}
                                 ariaDescription={intl.formatMessage({
-                                    id: FM.TRAINDIALOGWINDOW_DEFAULTBUTTON_ARIADESCRIPTION,
+                                    id: FM.TRAINDIALOGMODAL_DEFAULTBUTTON_ARIADESCRIPTION,
                                     defaultMessage: 'Delete'
                                 })}
                                 text={intl.formatMessage({
-                                    id: FM.TRAINDIALOGWINDOW_DEFAULTBUTTON_TEXT,
+                                    id: FM.TRAINDIALOGMODAL_DEFAULTBUTTON_TEXT,
                                     defaultMessage: 'Delete'
                                 })}
                             />
                             <PrimaryButton
                                 onClick={() => this.onClickDone()}
                                 ariaDescription={intl.formatMessage({
-                                    id: FM.TRAINDIALOGWINDOW_PRIMARYBUTTON_ARIADESCRIPTION,
+                                    id: FM.TRAINDIALOGMODAL_PRIMARYBUTTON_ARIADESCRIPTION,
                                     defaultMessage: 'Done'
                                 })}
                                 text={intl.formatMessage({
-                                    id: FM.TRAINDIALOGWINDOW_PRIMARYBUTTON_TEXT,
+                                    id: FM.TRAINDIALOGMODAL_PRIMARYBUTTON_TEXT,
                                     defaultMessage: 'Done'
                                 })}
                             />
@@ -170,11 +170,11 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
                     </div>
                 </div>
                 <ConfirmDeleteModal
-                    open={this.state.confirmDeleteModalOpen}
+                    open={this.state.isConfirmDeleteModalOpen}
                     onCancel={() => this.onClickCancelDelete()}
                     onConfirm={() => this.onClickConfirmDelete()}
                     title={intl.formatMessage({
-                        id: FM.TRAINDIALOGWINDOW_CONFIRMDELETE_TITLE,
+                        id: FM.TRAINDIALOGMODAL_CONFIRMDELETE_TITLE,
                         defaultMessage: `Are you sure you want to delete this Training Dialog?`
                     })}
                 />
@@ -189,7 +189,7 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
                         <div>
                         <p className='blis-callout'>
                             {intl.formatMessage({
-                                id: FM.TRAINDIALOGWINDOW_BRANCH_TIP,
+                                id: FM.TRAINDIALOGMODAL_BRANCH_TIP,
                                 defaultMessage: `Select a round first`
                             })}
                         </p>
@@ -227,4 +227,4 @@ const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
 type Props = typeof stateProps & typeof dispatchProps & ReceivedProps & InjectedIntlProps
 
-export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(TrainDialogWindow))
+export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(TrainDialogModal))

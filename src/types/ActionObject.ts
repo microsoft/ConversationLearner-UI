@@ -267,7 +267,6 @@ export type DeleteAction = {
 } | {
     type: AT.DELETE_TRAIN_DIALOG_REJECTED
 } | DeleteLogDialogAsyncAction
-| DeleteLogDialogAsyncAction2
 | DeleteLogDialogFulfilledAction
 | DeleteLogDialogRejectedAction
 | {
@@ -295,11 +294,6 @@ export type DeleteAction = {
 
 export type DeleteLogDialogAsyncAction = {
     type: AT.DELETE_LOG_DIALOG_ASYNC,
-    appId: string,
-    logDialogId: string
-}
-export type DeleteLogDialogAsyncAction2 = {
-    type: AT.DELETE_LOG_DIALOG_ASYNC2,
     appId: string,
     logDialogId: string
 }

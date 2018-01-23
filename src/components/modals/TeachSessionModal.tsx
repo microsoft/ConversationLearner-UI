@@ -1,5 +1,5 @@
 import * as React from 'react';
-import './TeachSessionWindow.css';
+import './TeachSessionModal.css';
 import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -28,7 +28,7 @@ interface ComponentState {
     hasOneRound: boolean
 }
 
-class TeachWindow extends React.Component<Props, ComponentState> {
+class TeachModal extends React.Component<Props, ComponentState> {
 
     state: ComponentState = {
         isConfirmDeleteOpen: false,
@@ -179,22 +179,22 @@ class TeachWindow extends React.Component<Props, ComponentState> {
                                 disabled={!this.state.hasOneRound}
                                 onClick={() => this.props.onUndo()}
                                 ariaDescription={intl.formatMessage({
-                                    id: FM.TEACHSESSIONWINDOW_UNDO_ARIADESCRIPTION,
+                                    id: FM.TEACHSESSIONMODAL_UNDO_ARIADESCRIPTION,
                                     defaultMessage: "Undo Step"
                                 })}
                                 text={intl.formatMessage({
-                                    id: FM.TEACHSESSIONWINDOW_UNDO_TEXT,
+                                    id: FM.TEACHSESSIONMODAL_UNDO_TEXT,
                                     defaultMessage: "Undo Step"
                                 })}
                             />
                             <DefaultButton
                                 onClick={() => this.onClickAbandonTeach()}
                                 ariaDescription={intl.formatMessage({
-                                    id: FM.TEACHSESSIONWINDOW_DEFAULTBUTTON_ARIADESCRIPTION,
+                                    id: FM.TEACHSESSIONMODAL_DEFAULTBUTTON_ARIADESCRIPTION,
                                     defaultMessage: "Abandon Teach"
                                 })}
                                 text={intl.formatMessage({
-                                    id: FM.TEACHSESSIONWINDOW_DEFAULTBUTTON_TEXT,
+                                    id: FM.TEACHSESSIONMODAL_DEFAULTBUTTON_TEXT,
                                     defaultMessage: "Abandon Teach"
                                 })}
                             />
@@ -202,11 +202,11 @@ class TeachWindow extends React.Component<Props, ComponentState> {
                                 disabled={!this.state.hasOneRound}
                                 onClick={() => this.onClickSave()}
                                 ariaDescription={intl.formatMessage({
-                                    id: FM.TEACHSESSIONWINDOW_PRIMARYBUTTON_ARIADESCRIPTION,
+                                    id: FM.TEACHSESSIONMODAL_PRIMARYBUTTON_ARIADESCRIPTION,
                                     defaultMessage: "Done Teaching"
                                 })}
                                 text={intl.formatMessage({
-                                    id: FM.TEACHSESSIONWINDOW_PRIMARYBUTTON_TEXT,
+                                    id: FM.TEACHSESSIONMODAL_PRIMARYBUTTON_TEXT,
                                     defaultMessage: "Done Teaching"
                                 })}
                             />
@@ -218,7 +218,7 @@ class TeachWindow extends React.Component<Props, ComponentState> {
                     onCancel={() => this.onClickCancelDelete()}
                     onConfirm={() => this.onClickConfirmDelete()}
                     title={intl.formatMessage({
-                        id: FM.TEACHSESSIONWINDOW_CONFIRMDELETE_TITLE,
+                        id: FM.TEACHSESSIONMODAL_CONFIRMDELETE_TITLE,
                         defaultMessage: "Are you sure you want to abandon this teach session?"
                     })}
                 />
@@ -258,4 +258,4 @@ const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
 type Props = typeof stateProps & typeof dispatchProps & ReceivedProps & InjectedIntlProps
 
-export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(TeachWindow))
+export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(TeachModal))

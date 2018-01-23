@@ -216,18 +216,6 @@ export default class BlisClient {
         }).then(response => response.data.trainDialogs)
     }
 
-    trainDialogsCreate(appId: string, trainDialog: models.TrainDialog): Promise<models.TrainDialog> {
-        return this.send<string>({
-            method: 'post',
-            url: `${this.baseUrl}/app/${appId}/traindialog`,
-            data: trainDialog
-        })
-            .then(response => {
-                trainDialog.trainDialogId = response.data
-                return trainDialog
-            })
-    }
-
     trainDialogsDelete(appId: string, trainDialogId: string): Promise<void> {
         return this.send({
             method: 'delete',
