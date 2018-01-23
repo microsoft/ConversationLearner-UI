@@ -15,11 +15,11 @@
   See: `npm run builduipackage`
 
   1. Build react app: `npm run build`
-  2. Build index.ts from /publish folder: `npm tsc -- -p ./publish/tsconfig.json`
+  2. Build index.ts from /publish folder: `npm run tsc -- -p ./publish/tsconfig.json`
 
      This effectively generates the: `index.js` and `index.d.ts` which are the entry point for the package inside the `/package` folder
 
-  3. Build publish script: `npm tsc -- -p ./scripts/tsconfig.json`
+  3. Build publish script: `npm run tsc -- -p ./scripts/tsconfig.json`
 
      This just generates the publish.js file and is only required because we're using typescript. (Alternative is to use ts-node)
 
