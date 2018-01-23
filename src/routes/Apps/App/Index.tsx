@@ -47,12 +47,9 @@ class Index extends React.Component<Props, ComponentState> {
             return
         }
 
-        //TODO - combine these into fewer calls
         this.props.setCurrentBLISApp(this.props.user.id, app)
-        this.props.fetchAllActionsAsync(this.props.user.id, app.appId)
-        this.props.fetchAllEntitiesAsync(this.props.user.id, app.appId)
-        this.props.fetchAllTrainDialogsAsync(this.props.user.id, app.appId)
-        this.props.fetchAllLogDialogsAsync(this.props.user.id, app.appId)
+        this.props.fetchAllLogDialogsAsync(this.props.user.id, app.appId) // Note: a separate call as eventurlaly we want to page
+        this.props.fetchAppSource(this.props.user.id, app.appId)
         this.props.fetchBotInfoAsync()
         // this.props.fetchAllChatSessionsAsync(this.props.user.id, app.appId)
         // this.props.fetchAllTeachSessions(this.props.user.id, app.appId)
@@ -140,9 +137,7 @@ const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         setErrorDisplay,
         setCurrentBLISApp: actions.display.setCurrentBLISApp,
-        fetchAllActionsAsync: actions.fetch.fetchAllActionsAsync,
-        fetchAllEntitiesAsync: actions.fetch.fetchAllEntitiesAsync,
-        fetchAllTrainDialogsAsync: actions.fetch.fetchAllTrainDialogsAsync,
+        fetchAppSource: actions.fetch.fetchAppSourceAsync,
         fetchAllLogDialogsAsync: actions.fetch.fetchAllLogDialogsAsync,
         fetchBotInfoAsync: actions.fetch.fetchBotInfoAsync
     }, dispatch);

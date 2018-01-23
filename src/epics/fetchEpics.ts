@@ -3,8 +3,8 @@ import * as Rx from 'rxjs';
 import { ActionsObservable, Epic } from 'redux-observable'
 import { State, ActionObject } from '../types'
 import { AT } from '../types/ActionTypes'
-import { getBotInfo, getAllBlisApps, getAllEntitiesForBlisApp, getAllActionsForBlisApp, getAllSessionsForBlisApp, getAllTeachSessionsForBlisApp, getAllTrainDialogsForBlisApp, getAllLogDialogsForBlisApp } from "./apiHelpers";
-
+import { getBotInfo, getAllBlisApps, getSourceForBlisApp, getAllEntitiesForBlisApp, getAllActionsForBlisApp, getAllSessionsForBlisApp, getAllTeachSessionsForBlisApp, getAllTrainDialogsForBlisApp, getAllLogDialogsForBlisApp } from "./apiHelpers";
+ 
 const assertNever = () => { throw Error(`Should not reach here`) }
 
 export const fetchBotInfoEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
@@ -28,6 +28,14 @@ export const fetchEntitiesEpic: Epic<ActionObject, State> = (action$: ActionsObs
         .flatMap(action =>
             (action.type === AT.FETCH_ENTITIES_ASYNC)
                 ? getAllEntitiesForBlisApp('', action.blisAppID)
+                : assertNever())
+}
+
+export const fetchSourceEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
+    return action$.ofType(AT.FETCH_APPSOURCE_ASYNC)
+        .flatMap(action =>
+            (action.type === AT.FETCH_APPSOURCE_ASYNC)
+                ? getSourceForBlisApp('', action.blisAppID)
                 : assertNever())
 }
 

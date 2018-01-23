@@ -13,6 +13,8 @@ const entitiesReducer: Reducer<EntityState> = (state = initialState, action: Act
             return [...initialState]
         case AT.FETCH_ENTITIES_FULFILLED:
             return action.allEntities;
+        case AT.FETCH_APPSOURCE_FULFILLED:
+            return action.appDefinition.entities;
         case AT.CREATE_BLIS_APPLICATION_FULFILLED:
             return [...initialState]
         case AT.CREATE_ENTITY_FULFILLED:
