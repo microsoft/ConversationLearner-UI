@@ -8,8 +8,6 @@ import { State } from '../../types';
 import Webchat from '../Webchat'
 import TrainDialogAdmin from './TrainDialogAdmin'
 import { BlisAppBase, TrainDialog} from 'blis-models'
-import { deleteTrainDialogThunkAsync } from '../../actions/deleteActions'
-import { fetchApplicationTrainingStatusThunkAsync } from '../../actions/fetchActions'
 import { Activity } from 'botframework-directlinejs';
 import ConfirmDeleteModal from './ConfirmDeleteModal'
 import { FM } from '../../react-intl-messages'
@@ -78,18 +76,10 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
     }
 
     onClickConfirmDelete = () => {
+        this.props.onDelete();
         this.setState(
-            { confirmDeleteModalOpen: false },
-            async () => {
-                try {
-                    await this.props.deleteTrainDialogThunkAsync(this.props.app.appId, this.props.trainDialog.trainDialogId)
-                    this.props.fetchApplicationTrainingStatusThunkAsync(this.props.app.appId)
-                    this.props.onClose()
-                }
-                catch (e) {
-                    console.error(e)
-                }
-            })
+            { confirmDeleteModalOpen: false }
+        );
     }
 
     onWebChatSelectActivity(activity: Activity) {
@@ -212,8 +202,6 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        deleteTrainDialogThunkAsync,
-        fetchApplicationTrainingStatusThunkAsync
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {
@@ -225,9 +213,10 @@ const mapStateToProps = (state: State) => {
 
 export interface ReceivedProps {
     app: BlisAppBase
-    onClose: () => void
+    onClose: () => void,
     onBranch: (turnIndex: number) => void,
     onEdit: (sourceTrainDialogId: string, newTrainDialog: TrainDialog) => void,
+    onDelete: () => void
     open: boolean
     trainDialog: TrainDialog
     history: Activity[]
