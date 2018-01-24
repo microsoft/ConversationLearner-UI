@@ -9,6 +9,7 @@ import { bindActionCreators } from 'redux'
 import AppsIndex from './Apps/AppsIndex'
 import About from './About'
 import Docs from './Docs'
+import Profile from './Profile'
 import Support from './Support'
 import NoMatch from './NoMatch'
 import HelpPanel from '../components/HelpPanel'
@@ -123,7 +124,9 @@ class App extends React.Component<Props, ComponentState> {
                 />
               </NavLink>
             </nav>
-            <NavLink className="blis-header_user" to="/home" onClick={this.onClickUsername}>{this.props.user.name || "BLIS"}</NavLink>
+            {this.props.user.name
+              ? <NavLink className="blis-header_user" to="/profile">{this.props.user.name}</NavLink>
+              : <NavLink className="blis-header_user" to="/home" onClick={this.onClickUsername}>BLIS</NavLink>}
           </header>
           <div className="blis-app_header-placeholder" />
           <div className="blis-app_content">
@@ -136,6 +139,7 @@ class App extends React.Component<Props, ComponentState> {
               <Route path="/about" component={About} />
               <Route path="/docs" component={Docs} />
               <Route path="/support" component={Support} />
+              <Route path="/profile" component={Profile} />
               <Route component={NoMatch} />
             </Switch>
           </div>
