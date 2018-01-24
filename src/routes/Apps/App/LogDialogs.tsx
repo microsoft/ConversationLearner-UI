@@ -6,11 +6,13 @@ import * as OF from 'office-ui-fabric-react';
 import { State } from '../../../types'
 import { BlisAppBase, LogDialog, Session, ModelUtils, Teach, TeachWithHistory, TrainDialog, ActionBase } from 'blis-models'
 import { ChatSessionModal, LogDialogModal, TeachSessionModal } from '../../../components/modals'
+import { ErrorType } from '../../../types/const';
 import { 
     createChatSessionThunkAsync, 
     createTeachSessionFromHistoryThunkAsync,
     createTeachSessionFromUndoThunkAsync } from '../../../actions/createActions'
 import { fetchAllLogDialogsAsync, fetchHistoryThunkAsync } from '../../../actions/fetchActions';
+import { setErrorDisplay } from '../../../actions/displayActions';
 import { deleteLogDialogThunkAsync } from '../../../actions/deleteActions';
 import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { FM } from '../../../react-intl-messages'
@@ -228,13 +230,19 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         // Create a new teach session from the train dialog
         ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app.appId, newTrainDialog, this.props.user.name, this.props.user.id) as any) as Promise<TeachWithHistory>)
         .then(teachWithHistory => {
-            this.setState({
-                teachSession: teachWithHistory.teach, 
-                activities: teachWithHistory.history,
-                currentLogDialog: null,
-                isLogDialogWindowOpen: false,
-                isTeachDialogModalOpen: true
-            })
+            if (teachWithHistory.discrepancies.length === 0) {
+                this.setState({
+                    teachSession: teachWithHistory.teach, 
+                    activities: teachWithHistory.history,
+                    currentLogDialog: null,
+                    isLogDialogWindowOpen: false,
+                    isTeachDialogModalOpen: true
+                })
+            }
+            else {
+                //LARS internation
+                setErrorDisplay(ErrorType.Error, "Unable to Edit", teachWithHistory.discrepancies.join(' '), null);
+            }
         })
         .catch(error => {
             console.warn(`Error when attempting to create teach session from log dialog: `, error)
@@ -258,10 +266,15 @@ class LogDialogs extends React.Component<Props, ComponentState> {
 
         ((this.props.createTeachSessionFromUndoThunkAsync(this.props.app.appId, this.state.teachSession, this.props.user.name, this.props.user.id) as any) as Promise<TeachWithHistory>)
         .then(teachWithHistory => {
-            this.setState({
-                teachSession: teachWithHistory.teach, 
-                activities: teachWithHistory.history,
-            })
+            if (teachWithHistory.discrepancies.length === 0) {
+                this.setState({
+                    teachSession: teachWithHistory.teach, 
+                    activities: teachWithHistory.history,
+                })
+            } else {
+                //lars INTERNATION
+                setErrorDisplay(ErrorType.Error, "Unable to Undo", teachWithHistory.discrepancies.join(' '), null);
+            }
         })
         .catch(error => {
             console.warn(`Error when attempting to create teach session from undo: `, error)
@@ -400,6 +413,7 @@ const mapDispatchToProps = (dispatch: any) => {
         deleteLogDialogThunkAsync,
         fetchAllLogDialogsAsync,
         fetchHistoryThunkAsync,
+        setErrorDisplay
     }, dispatch)
 }
 const mapStateToProps = (state: State) => {
