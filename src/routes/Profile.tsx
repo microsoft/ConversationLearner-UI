@@ -5,11 +5,50 @@ import { State } from '../types'
 import { bindActionCreators } from 'redux'
 import { FormattedMessage } from 'react-intl'
 import { FM } from '../react-intl-messages'
-import { FontClassNames, PrimaryButton } from 'office-ui-fabric-react'
+import { FontClassNames, PrimaryButton, Label } from 'office-ui-fabric-react'
+import { logout } from '../actions/displayActions'
+import LogoutModal from '../components/modals/LogoutModal'
+import * as SdkPort from '../services/sdkPort'
+import './Profile.css'
 
-class Profile extends React.Component<Props, {}> {
+interface ComponentState {
+    isLogoutWindowOpen: boolean
+    sdkPort: number
+}
+
+const initialState: ComponentState = {
+    isLogoutWindowOpen: false,
+    sdkPort: SdkPort.get()
+}
+
+class Profile extends React.Component<Props, ComponentState> {
+    state = initialState
+
     onClickLogout = () => {
-        console.log(`onClickLogout`)
+        this.setState({
+            isLogoutWindowOpen: true
+        })
+    }
+
+    onChangeSdkPort = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const sdkPort = parseInt(event.target.value)
+        SdkPort.set(sdkPort)
+        this.setState({
+            sdkPort
+        })
+    }
+
+    onClickConfirmLogout = () => {
+        this.props.logout()
+        this.setState({
+            isLogoutWindowOpen: false
+        })
+    }
+
+    onClickCancelLogout = () => {
+        this.setState({
+            isLogoutWindowOpen: false
+        })
     }
 
     render() {
@@ -23,13 +62,47 @@ class Profile extends React.Component<Props, {}> {
                     />
                 </div>
                 <div className={FontClassNames.mediumPlus}>
-                    Name: {user && user.name}
+                    <FormattedMessage
+                        id={FM.PROFILE_NAME}
+                        defaultMessage="Name"
+                    /> {user && user.name}
                 </div>
                 <div>
                     <PrimaryButton onClick={this.onClickLogout}>
-                        Log Out
+                        <FormattedMessage
+                            id={FM.LOGOUT_PRIMARYBUTTON_TEXT}
+                            defaultMessage="Log Out"
+                        />
                     </PrimaryButton>
                 </div>
+                <div className={FontClassNames.xxLarge}>
+                    <FormattedMessage
+                        id={FM.PROFILE_SETTINGS_TITLE}
+                        defaultMessage="Settings"
+                    />
+                </div>
+                <div>
+                    <Label>
+                        <FormattedMessage
+                            id={FM.PROFILE_SETTINGS_SDKPORT}
+                            defaultMessage="SDK Port"
+                        />
+                    </Label>
+                    <input
+                        className="blis-input"
+                        type="number"
+                        min={0}
+                        max={99999}
+                        value={this.state.sdkPort}
+                        onChange={this.onChangeSdkPort}
+                    />
+                </div>
+                <LogoutModal
+                    open={this.state.isLogoutWindowOpen}
+                    onClickLogout={this.onClickConfirmLogout}
+                    onClickCancel={this.onClickCancelLogout}
+                    onDismiss={this.onClickCancelLogout}
+                />
             </div>
         )
     }
@@ -38,6 +111,7 @@ class Profile extends React.Component<Props, {}> {
 
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
+        logout
     }, dispatch)
 }
 

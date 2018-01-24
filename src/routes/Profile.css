@@ -1,0 +1,11 @@
+.blis-input {
+    padding: 0.5em;
+    border: 1px solid #a6a6a6;
+    color: rgb(51,51,51);
+}
+.blis-input:hover {
+    border-color: #212121;
+}
+.blis-input:focus {
+    border-color: #0078d7;
+}
