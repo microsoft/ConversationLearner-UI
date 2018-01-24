@@ -93,6 +93,7 @@
 }
 .blis-header a {
     padding: var(--nav-link-padding);
+    white-space: nowrap;
 }
 .blis-header_links {
     display: flex;
@@ -115,6 +116,7 @@
     text-decoration: none;
     color: white;
 }
+.blis-header_user.active,
 .blis-header_user:hover {
     background-color: var(--color-yellow);
     color: black;
