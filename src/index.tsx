@@ -12,7 +12,9 @@ import messages from './react-intl-messages'
 import { Fabric } from 'office-ui-fabric-react/lib/Fabric'
 import { loadTheme } from 'office-ui-fabric-react/lib/Styling'
 import { initializeIcons } from 'office-ui-fabric-react/lib/Icons'
+import * as SdkPort from './services/sdkPort'
 
+SdkPort.initialize()
 /** Required for Office UI Fabric to load icon fonts  */
 initializeIcons()
 /** Override default colors */
