@@ -2,10 +2,10 @@ import ActionCreatorEditor from './ActionCreatorEditor'
 import AppCreator from './AppCreator'
 import EntityCreatorEditor from './EntityCreatorEditor'
 import ConfirmDeleteModal from './ConfirmDeleteModal'
-import ChatSessionWindow from './ChatSessionWindow'
+import ChatSessionModal from './ChatSessionModal'
 import LogDialogModal from './LogDialogModal'
-import TeachSessionWindow from './TeachSessionWindow'
-import TrainDialogWindow from './TrainDialogWindow'
+import TeachSessionModal from './TeachSessionModal'
+import TrainDialogModal from './TrainDialogModal'
 import ErrorPanel from './ErrorPanel'
 import SpinnerWindow from './SpinnerWindow'
 import UserLogin from './UserLogin'
@@ -16,10 +16,10 @@ export {
     AppCreator,
     EntityCreatorEditor,
     ConfirmDeleteModal,
-    ChatSessionWindow,
+    ChatSessionModal,
     LogDialogModal,
-    TeachSessionWindow,
-    TrainDialogWindow,
+    TeachSessionModal,
+    TrainDialogModal,
     ErrorPanel,
     SpinnerWindow,
     UserLogin,

@@ -2,6 +2,7 @@ import { AT, ActionObject, ErrorType } from '../types'
 import { Dispatch } from 'redux'
 import { BlisAppBase, EntityBase, ActionBase, Session, Teach } from 'blis-models'
 import { setErrorDisplay } from './displayActions'
+import { fetchAllTrainDialogsAsync, fetchAllLogDialogsAsync } from './fetchActions'
 import * as ClientFactory from '../services/clientFactory'
 
 export const deleteBLISApplicationAsync = (key: string, blisApp: BlisAppBase): ActionObject => {
@@ -100,7 +101,9 @@ export const deleteTeachSessionFulfilled = (key: string, teachSessionGUID: strin
     }
 }
 
-
+// -----------------
+// TRAIN DIALOG
+// -----------------
 export const deleteTrainDialogAsync = (trainDialogId: string, appId: string): ActionObject => {
     return {
         type: AT.DELETE_TRAIN_DIALOG_ASYNC,
@@ -122,7 +125,7 @@ export const deleteTrainDialogFulfilled = (trainDialogId: string): ActionObject 
     }
 }
 
-export const deleteTrainDialogThunkAsync = (appId: string, trainDialogId: string) => {
+export const deleteTrainDialogThunkAsync = (userId: string, appId: string, trainDialogId: string) => {
     return async (dispatch: Dispatch<any>) => {
         dispatch(deleteTrainDialogAsync(trainDialogId, appId))
         const blisClient = ClientFactory.getInstance(AT.DELETE_TRAIN_DIALOG_ASYNC)
@@ -134,28 +137,17 @@ export const deleteTrainDialogThunkAsync = (appId: string, trainDialogId: string
             const error = e as Error
             dispatch(setErrorDisplay(ErrorType.Error, error.name, error.message, AT.DELETE_TRAIN_DIALOG_REJECTED))
             dispatch(deleteTrainDialogRejected())
-            throw new Error(e)
+            dispatch(fetchAllTrainDialogsAsync(userId, appId));
         }
     }
 }
 
+// -----------------
+// LOG DIALOG
+// -----------------
 export const deleteLogDialogAsync = (appId: string, logDialogId: string): ActionObject => {
     return {
         type: AT.DELETE_LOG_DIALOG_ASYNC,
-        appId,
-        logDialogId
-    }
-}
-
-/**
- * Created a separate delete log dialog async for deleting log dialogs manually
- * as the other async above is used in the Epic flow and implicitly runs when
- * LogDialogs are converted to TrainDialogs
- * See: apiHelpers.ts#createTrainDialog
- */
-export const deleteLogDialogAsync2 = (appId: string, logDialogId: string): ActionObject => {
-    return {
-        type: AT.DELETE_LOG_DIALOG_ASYNC2,
         appId,
         logDialogId
     }
@@ -174,10 +166,10 @@ export const deleteLogDialogRejected = (): ActionObject => {
     }
 }
 
-export const deleteLogDialogThunkAsync = (appId: string, logDialogId: string) => {
+export const deleteLogDialogThunkAsync = (userId: string, appId: string, logDialogId: string) => {
     return async (dispatch: Dispatch<any>) => {
-        dispatch(deleteLogDialogAsync2(appId, logDialogId))
-        const blisClient = ClientFactory.getInstance(AT.DELETE_LOG_DIALOG_ASYNC2)
+        dispatch(deleteLogDialogAsync(appId, logDialogId))
+        const blisClient = ClientFactory.getInstance(AT.DELETE_LOG_DIALOG_ASYNC)
 
         try {
             await blisClient.logDialogsDelete(appId, logDialogId)
@@ -185,9 +177,9 @@ export const deleteLogDialogThunkAsync = (appId: string, logDialogId: string) =>
         }
         catch (e) {
             const error = e as Error
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.message, AT.DELETE_LOG_DIALOG_ASYNC2))
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.message, AT.DELETE_LOG_DIALOG_ASYNC))
             dispatch(deleteLogDialogRejected())
-            throw new Error(e)
+            dispatch(fetchAllLogDialogsAsync(userId, appId));
         }
     }
 }

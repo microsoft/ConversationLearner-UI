@@ -1,7 +1,8 @@
 # See https://help.github.com/ignore-files/ for more about ignoring files.
 
 .vscode/chrome
-secrets.ts
+scripts/*.js
+package
 
 # dependencies
 /node_modules

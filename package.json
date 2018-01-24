@@ -1,11 +1,11 @@
 {
   "name": "blis-ui",
-  "version": "0.100.0",
+  "version": "0.100.5",
   "private": true,
   "dependencies": {
     "adaptivecards": "^1.0.0-beta9",
     "axios": "^0.16.2",
-    "blis-models": "^0.107.1",
+    "blis-models": "^0.110.0",
     "blis-webchat": "^0.18.0",
     "botframework-directlinejs": "^0.9.12",
     "botframework-webchat": "^0.11.4",
@@ -35,10 +35,13 @@
     "start": "react-scripts-ts start",
     "build": "react-scripts-ts build",
     "test": "react-scripts-ts test --env=jsdom",
-    "eject": "react-scripts-ts eject"
+    "eject": "react-scripts-ts eject",
+    "tsc": "tsc",
+    "builduipackage": "react-scripts-ts build && tsc -p ./publish/tsconfig.json && tsc -p ./scripts/tsconfig.json && node ./scripts/publish.js"
   },
   "devDependencies": {
     "@types/draft-js": "^0.10.16",
+    "@types/fs-extra": "^5.0.0",
     "@types/jest": "^20.0.8",
     "@types/node": "^8.0.28",
     "@types/prop-types": "^15.5.1",
@@ -46,6 +49,8 @@
     "@types/react-dom": "^16.0.3",
     "@types/react-intl": "^2.3.2",
     "@types/react-redux": "^5.0.9",
-    "@types/react-router-dom": "^4.0.7"
+    "@types/react-router-dom": "^4.0.7",
+    "fs-extra": "^5.0.0",
+    "typescript": "^2.4.2"
   }
 }

@@ -8,15 +8,13 @@ import { State } from '../../types';
 import Webchat from '../Webchat'
 import TrainDialogAdmin from './TrainDialogAdmin'
 import { BlisAppBase, TrainDialog} from 'blis-models'
-import { deleteTrainDialogThunkAsync } from '../../actions/deleteActions'
-import { fetchApplicationTrainingStatusThunkAsync } from '../../actions/fetchActions'
 import { Activity } from 'botframework-directlinejs';
 import ConfirmDeleteModal from './ConfirmDeleteModal'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 
 interface ComponentState {
-    confirmDeleteModalOpen: boolean,
+    isConfirmDeleteModalOpen: boolean,
     calloutOpen: boolean,
     selectedActivity: Activity | null,
     webchatKey: number,
@@ -24,14 +22,14 @@ interface ComponentState {
 }
 
 const initialState: ComponentState = {
-    confirmDeleteModalOpen: false,
+    isConfirmDeleteModalOpen: false,
     calloutOpen: false,
     selectedActivity: null,
     webchatKey: 0,
     currentTrainDialog: null,
 }
 
-class TrainDialogWindow extends React.Component<Props, ComponentState> {
+class TrainDialogModal extends React.Component<Props, ComponentState> {
     state = initialState
     private _refBranchButton: HTMLElement | null;
 
@@ -67,29 +65,21 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
 
     onClickDelete() {
         this.setState({
-            confirmDeleteModalOpen: true
+            isConfirmDeleteModalOpen: true
         })
     }
 
     onClickCancelDelete = () => {
         this.setState({
-            confirmDeleteModalOpen: false
+            isConfirmDeleteModalOpen: false
         })
     }
 
     onClickConfirmDelete = () => {
+        this.props.onDelete();
         this.setState(
-            { confirmDeleteModalOpen: false },
-            async () => {
-                try {
-                    await this.props.deleteTrainDialogThunkAsync(this.props.app.appId, this.props.trainDialog.trainDialogId)
-                    this.props.fetchApplicationTrainingStatusThunkAsync(this.props.app.appId)
-                    this.props.onClose()
-                }
-                catch (e) {
-                    console.error(e)
-                }
-            })
+            { isConfirmDeleteModalOpen: false }
+        );
     }
 
     onWebChatSelectActivity(activity: Activity) {
@@ -145,11 +135,11 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
                                 <DefaultButton
                                         onClick={() => this.onClickBranch()}
                                         ariaDescription={intl.formatMessage({
-                                            id: FM.TRAINDIALOGWINDOW_BRANCH_ARIADESCRIPTION,
+                                            id: FM.TRAINDIALOGMODAL_BRANCH_ARIADESCRIPTION,
                                             defaultMessage: 'Branch'
                                         })}
                                         text={intl.formatMessage({
-                                            id: FM.TRAINDIALOGWINDOW_BRANCH_TEXT,
+                                            id: FM.TRAINDIALOGMODAL_BRANCH_TEXT,
                                             defaultMessage: 'Branch'
                                         })}
                                 />
@@ -157,22 +147,22 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
                             <DefaultButton
                                 onClick={() => this.onClickDelete()}
                                 ariaDescription={intl.formatMessage({
-                                    id: FM.TRAINDIALOGWINDOW_DEFAULTBUTTON_ARIADESCRIPTION,
+                                    id: FM.TRAINDIALOGMODAL_DEFAULTBUTTON_ARIADESCRIPTION,
                                     defaultMessage: 'Delete'
                                 })}
                                 text={intl.formatMessage({
-                                    id: FM.TRAINDIALOGWINDOW_DEFAULTBUTTON_TEXT,
+                                    id: FM.TRAINDIALOGMODAL_DEFAULTBUTTON_TEXT,
                                     defaultMessage: 'Delete'
                                 })}
                             />
                             <PrimaryButton
                                 onClick={() => this.onClickDone()}
                                 ariaDescription={intl.formatMessage({
-                                    id: FM.TRAINDIALOGWINDOW_PRIMARYBUTTON_ARIADESCRIPTION,
+                                    id: FM.TRAINDIALOGMODAL_PRIMARYBUTTON_ARIADESCRIPTION,
                                     defaultMessage: 'Done'
                                 })}
                                 text={intl.formatMessage({
-                                    id: FM.TRAINDIALOGWINDOW_PRIMARYBUTTON_TEXT,
+                                    id: FM.TRAINDIALOGMODAL_PRIMARYBUTTON_TEXT,
                                     defaultMessage: 'Done'
                                 })}
                             />
@@ -180,11 +170,11 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
                     </div>
                 </div>
                 <ConfirmDeleteModal
-                    open={this.state.confirmDeleteModalOpen}
+                    open={this.state.isConfirmDeleteModalOpen}
                     onCancel={() => this.onClickCancelDelete()}
                     onConfirm={() => this.onClickConfirmDelete()}
                     title={intl.formatMessage({
-                        id: FM.TRAINDIALOGWINDOW_CONFIRMDELETE_TITLE,
+                        id: FM.TRAINDIALOGMODAL_CONFIRMDELETE_TITLE,
                         defaultMessage: `Are you sure you want to delete this Training Dialog?`
                     })}
                 />
@@ -199,7 +189,7 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
                         <div>
                         <p className='blis-callout'>
                             {intl.formatMessage({
-                                id: FM.TRAINDIALOGWINDOW_BRANCH_TIP,
+                                id: FM.TRAINDIALOGMODAL_BRANCH_TIP,
                                 defaultMessage: `Select a round first`
                             })}
                         </p>
@@ -212,8 +202,6 @@ class TrainDialogWindow extends React.Component<Props, ComponentState> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        deleteTrainDialogThunkAsync,
-        fetchApplicationTrainingStatusThunkAsync
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {
@@ -225,9 +213,10 @@ const mapStateToProps = (state: State) => {
 
 export interface ReceivedProps {
     app: BlisAppBase
-    onClose: () => void
+    onClose: () => void,
     onBranch: (turnIndex: number) => void,
     onEdit: (sourceTrainDialogId: string, newTrainDialog: TrainDialog) => void,
+    onDelete: () => void
     open: boolean
     trainDialog: TrainDialog
     history: Activity[]
@@ -238,4 +227,4 @@ const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
 type Props = typeof stateProps & typeof dispatchProps & ReceivedProps & InjectedIntlProps
 
-export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(TrainDialogWindow))
+export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(TrainDialogModal))

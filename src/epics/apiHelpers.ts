@@ -5,7 +5,6 @@ import {
   EntityBase,
   ActionBase,
   UserInput,
-  TrainDialog,
   UIExtractResponse,
   UITrainScorerStep,
   Session,
@@ -81,6 +80,16 @@ export const getAllEntitiesForBlisApp = (key: string, appId: string): Observable
       obs.complete();
     })
     .catch(err => handleError(obs, err, AT.FETCH_ENTITIES_ASYNC)));
+};
+
+export const getSourceForBlisApp = (key: string, appId: string): Observable<ActionObject> => {
+  const blisClient = ClientFactory.getInstance(AT.FETCH_APPSOURCE_ASYNC)
+  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.source(appId)
+    .then(source => {
+      obs.next(actions.fetch.fetchAppSourceFulfilled(source));
+      obs.complete();
+    })
+    .catch(err => handleError(obs, err, AT.FETCH_APPSOURCE_ASYNC)));
 };
 
 export const getAllActionsForBlisApp = (key: string, appId: string): Observable<ActionObject> => {
@@ -169,18 +178,6 @@ export const createBlisAction = (key: string, action: ActionBase, appId: string)
     .catch(err => handleError(obs, err, AT.CREATE_ACTION_ASYNC)));
 };
 
-// Train
-export const createTrainDialog = (key: string, appId: string, trainDialog: TrainDialog, logDialogId: string): Observable<ActionObject> => {
-  const blisClient = ClientFactory.getInstance(AT.CREATE_TRAIN_DIALOG_ASYNC)
-  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.trainDialogsCreate(appId, trainDialog)
-    .then(trainDialog => {
-      obs.next(actions.create.createTrainDialogFulfilled(trainDialog));
-      obs.next(actions.delete.deleteLogDialogAsync(appId, logDialogId))
-      obs.complete();
-    })
-    .catch(err => handleError(obs, err, AT.CREATE_TRAIN_DIALOG_ASYNC)));
-};
-
 //=========================================================
 // DELETE ROUTES
 //=========================================================
@@ -217,16 +214,6 @@ export const deleteBlisAction = (key: string, appId: string, action: ActionBase)
       obs.complete();
     })
     .catch(err => handleError(obs, err, AT.DELETE_ACTION_ASYNC)));
-};
-
-export const deleteLogDialog = (appId: string, logDialogId: string): Observable<ActionObject> => {
-  const blisClient = ClientFactory.getInstance(AT.DELETE_LOG_DIALOG_ASYNC)
-  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.logDialogsDelete(appId, logDialogId)
-    .then(() => {
-      obs.next(actions.delete.deleteLogDialogFulfilled(logDialogId));
-      obs.complete();
-    })
-    .catch(err => handleError(obs, err, AT.DELETE_LOG_DIALOG_ASYNC)));
 };
 
 //=========================================================
