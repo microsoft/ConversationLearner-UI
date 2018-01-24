@@ -209,9 +209,9 @@ export enum FM {
     APPCREATOR_CANCELBUTTON_ARIADESCRIPTION = 'AppCreator.cancelButton.ariaDescription',
     APPCREATOR_CANCELBUTTON_TEXT = 'AppCreator.cancelButton.text',
 
-    // ChatSessionWindow
-    CHATSESSIONWINDOW_PRIMARYBUTTON_ARIADESCRIPTION = 'ChatSessionWindow.primaryButton.ariaDescription',
-    CHATSESSIONWINDOW_PRIMARYBUTTON_TEXT = 'ChatSessionWindow.primaryButton.text',
+    // ChatSessionModal
+    CHATSESSIONMODAL_PRIMARYBUTTON_ARIADESCRIPTION = 'ChatSessionModal.primaryButton.ariaDescription',
+    CHATSESSIONMODAL_PRIMARYBUTTON_TEXT = 'ChatSessionModal.primaryButton.text',
 
     // ConfirmDeleteModal
     CONFIRMDELETEMODAL_PRIMARYBUTTON_TEXT = 'ConfirmDeleteModal.primaryButton.text',
@@ -281,14 +281,14 @@ export enum FM {
     TEACHSESSIONADMIN_TRAINSTATUS_FAILED = 'TeachSessionAdmin.trainstatus.failed',
     TEACHSESSIONADMIN_TRAINSTATUS_RUNNING = 'TeachSessionAdmin.trainstatus.running',
 
-    // TeachSessionWindow
-    TEACHSESSIONWINDOW_UNDO_ARIADESCRIPTION = 'TeachSessionWindow.undo.ariaDescription',
-    TEACHSESSIONWINDOW_UNDO_TEXT = 'TeachSessionWindow.undo.text',
-    TEACHSESSIONWINDOW_DEFAULTBUTTON_ARIADESCRIPTION = 'TeachSessionWindow.defaultButton.ariaDescription',
-    TEACHSESSIONWINDOW_DEFAULTBUTTON_TEXT = 'TeachSessionWindow.defaultButton.text',
-    TEACHSESSIONWINDOW_PRIMARYBUTTON_ARIADESCRIPTION = 'TeachSessionWindow.primaryButton.ariaDescription',
-    TEACHSESSIONWINDOW_PRIMARYBUTTON_TEXT = 'TeachSessionWindow.primaryButton.text',
-    TEACHSESSIONWINDOW_CONFIRMDELETE_TITLE = 'TeachSessionWindow.confirmDelete.title',
+    // TeachSessionModal
+    TEACHSESSIONMODAL_UNDO_ARIADESCRIPTION = 'TeachSessionModal.undo.ariaDescription',
+    TEACHSESSIONMODAL_UNDO_TEXT = 'TeachSessionModal.undo.text',
+    TEACHSESSIONMODAL_DEFAULTBUTTON_ARIADESCRIPTION = 'TeachSessionModal.defaultButton.ariaDescription',
+    TEACHSESSIONMODAL_DEFAULTBUTTON_TEXT = 'TeachSessionModal.defaultButton.text',
+    TEACHSESSIONMODAL_PRIMARYBUTTON_ARIADESCRIPTION = 'TeachSessionModal.primaryButton.ariaDescription',
+    TEACHSESSIONMODAL_PRIMARYBUTTON_TEXT = 'TeachSessionModal.primaryButton.text',
+    TEACHSESSIONMODAL_CONFIRMDELETE_TITLE = 'TeachSessionModal.confirmDelete.title',
 
     // TrainDialogAdmin
     TRAINDIALOGADMIN_DIALOGMODE_USER = 'TrainDialogAdmin.dialogMode.user',
@@ -305,15 +305,15 @@ export enum FM {
     TRAINDIALOGADMIN_SAVECHANGES_PRIMARYBUTTON_TEXT = 'TrainDialogAdmin.saveChanges.primaryButton.text',
     TRAINDIALOGADMIN_SAVECHANGES_DEFAULTBUTTON_TEXT = 'TrainDialogAdmin.saveChanges.defaultButton.text',
 
-    // TrainDialogWindow
-    TRAINDIALOGWINDOW_BRANCH_ARIADESCRIPTION = 'TrainDialogWindow.branch.ariaDescription',
-    TRAINDIALOGWINDOW_BRANCH_TEXT = 'TrainDialogWindow.branch.text',
-    TRAINDIALOGWINDOW_BRANCH_TIP = 'TrainDialogWindow.branch.tip',
-    TRAINDIALOGWINDOW_DEFAULTBUTTON_ARIADESCRIPTION = 'TrainDialogWindow.defaultButton.ariaDescription',
-    TRAINDIALOGWINDOW_DEFAULTBUTTON_TEXT = 'TrainDialogWindow.defaultButton.text',
-    TRAINDIALOGWINDOW_PRIMARYBUTTON_ARIADESCRIPTION = 'TrainDialogWindow.primaryButton.ariaDescription',
-    TRAINDIALOGWINDOW_PRIMARYBUTTON_TEXT = 'TrainDialogWindow.primaryButton.text',
-    TRAINDIALOGWINDOW_CONFIRMDELETE_TITLE = 'TrainDialogWindow.confirmDelete.title',
+    // TrainDialogModal
+    TRAINDIALOGMODAL_BRANCH_ARIADESCRIPTION = 'TrainDialogModal.branch.ariaDescription',
+    TRAINDIALOGMODAL_BRANCH_TEXT = 'TrainDialogModal.branch.text',
+    TRAINDIALOGMODAL_BRANCH_TIP = 'TrainDialogModal.branch.tip',
+    TRAINDIALOGMODAL_DEFAULTBUTTON_ARIADESCRIPTION = 'TrainDialogModal.defaultButton.ariaDescription',
+    TRAINDIALOGMODAL_DEFAULTBUTTON_TEXT = 'TrainDialogModal.defaultButton.text',
+    TRAINDIALOGMODAL_PRIMARYBUTTON_ARIADESCRIPTION = 'TrainDialogModal.primaryButton.ariaDescription',
+    TRAINDIALOGMODAL_PRIMARYBUTTON_TEXT = 'TrainDialogModal.primaryButton.text',
+    TRAINDIALOGMODAL_CONFIRMDELETE_TITLE = 'TrainDialogModal.confirmDelete.title',
 }
 
 // Message ids follow convention of '<componentname>.<area>[.<subarea>]*`
@@ -532,9 +532,9 @@ export default {
         [FM.APPCREATOR_CANCELBUTTON_ARIADESCRIPTION]: 'Cancel',
         [FM.APPCREATOR_CANCELBUTTON_TEXT]: 'Cancel',
 
-        // ChatSessionWindow
-        [FM.CHATSESSIONWINDOW_PRIMARYBUTTON_ARIADESCRIPTION]: 'Done Testing',
-        [FM.CHATSESSIONWINDOW_PRIMARYBUTTON_TEXT]: 'Done Testing',
+        // ChatSessionModal
+        [FM.CHATSESSIONMODAL_PRIMARYBUTTON_ARIADESCRIPTION]: 'Done Testing',
+        [FM.CHATSESSIONMODAL_PRIMARYBUTTON_TEXT]: 'Done Testing',
 
         // ConfirmDeleteModal
         [FM.CONFIRMDELETEMODAL_PRIMARYBUTTON_TEXT]: 'Confirm',
@@ -600,14 +600,14 @@ export default {
         [FM.TEACHSESSIONADMIN_TRAINSTATUS_FAILED]: 'Train Status: Failed',
         [FM.TEACHSESSIONADMIN_TRAINSTATUS_RUNNING]: 'Train Status: Runnning...',
 
-        // TeachSessionWindow
-        [FM.TEACHSESSIONWINDOW_UNDO_ARIADESCRIPTION]: 'Undo Step',
-        [FM.TEACHSESSIONWINDOW_UNDO_TEXT]: 'Undo Step',
-        [FM.TEACHSESSIONWINDOW_DEFAULTBUTTON_ARIADESCRIPTION]: 'Abandon Teach',
-        [FM.TEACHSESSIONWINDOW_DEFAULTBUTTON_TEXT]: 'Abandon Teach',
-        [FM.TEACHSESSIONWINDOW_PRIMARYBUTTON_ARIADESCRIPTION]: 'Done Teaching',
-        [FM.TEACHSESSIONWINDOW_PRIMARYBUTTON_TEXT]: 'Done Teaching',
-        [FM.TEACHSESSIONWINDOW_CONFIRMDELETE_TITLE]: 'Are you sure you want to abandon this teach session?',
+        // TeachSessionModal
+        [FM.TEACHSESSIONMODAL_UNDO_ARIADESCRIPTION]: 'Undo Step',
+        [FM.TEACHSESSIONMODAL_UNDO_TEXT]: 'Undo Step',
+        [FM.TEACHSESSIONMODAL_DEFAULTBUTTON_ARIADESCRIPTION]: 'Abandon Teach',
+        [FM.TEACHSESSIONMODAL_DEFAULTBUTTON_TEXT]: 'Abandon Teach',
+        [FM.TEACHSESSIONMODAL_PRIMARYBUTTON_ARIADESCRIPTION]: 'Done Teaching',
+        [FM.TEACHSESSIONMODAL_PRIMARYBUTTON_TEXT]: 'Done Teaching',
+        [FM.TEACHSESSIONMODAL_CONFIRMDELETE_TITLE]: 'Are you sure you want to abandon this teach session?',
 
         // TrainDialogAdmin
         [FM.TRAINDIALOGADMIN_DIALOGMODE_USER]: 'User Input',
@@ -624,15 +624,15 @@ export default {
         [FM.TRAINDIALOGADMIN_SAVECHANGES_PRIMARYBUTTON_TEXT]: 'Yes',
         [FM.TRAINDIALOGADMIN_SAVECHANGES_DEFAULTBUTTON_TEXT]: 'No',
 
-        // TrainDialogWindow
-        [FM.TRAINDIALOGWINDOW_BRANCH_ARIADESCRIPTION]: 'Branch',
-        [FM.TRAINDIALOGWINDOW_BRANCH_TEXT]: 'Branch',
-        [FM.TRAINDIALOGWINDOW_BRANCH_TIP] : 'First select a round in the conversation by clicking on it.  Then click "Branch" to create a new Training Dialog starting at that round.',
-        [FM.TRAINDIALOGWINDOW_DEFAULTBUTTON_ARIADESCRIPTION]: 'Delete',
-        [FM.TRAINDIALOGWINDOW_DEFAULTBUTTON_TEXT]: 'Delete',
-        [FM.TRAINDIALOGWINDOW_PRIMARYBUTTON_ARIADESCRIPTION]: 'Done',
-        [FM.TRAINDIALOGWINDOW_PRIMARYBUTTON_TEXT]: 'Done',
-        [FM.TRAINDIALOGWINDOW_CONFIRMDELETE_TITLE]: 'Are you sure you want to delete this Training Dialog?',
+        // TrainDialogModal
+        [FM.TRAINDIALOGMODAL_BRANCH_ARIADESCRIPTION]: 'Branch',
+        [FM.TRAINDIALOGMODAL_BRANCH_TEXT]: 'Branch',
+        [FM.TRAINDIALOGMODAL_BRANCH_TIP] : 'First select a round in the conversation by clicking on it.  Then click "Branch" to create a new Training Dialog starting at that round.',
+        [FM.TRAINDIALOGMODAL_DEFAULTBUTTON_ARIADESCRIPTION]: 'Delete',
+        [FM.TRAINDIALOGMODAL_DEFAULTBUTTON_TEXT]: 'Delete',
+        [FM.TRAINDIALOGMODAL_PRIMARYBUTTON_ARIADESCRIPTION]: 'Done',
+        [FM.TRAINDIALOGMODAL_PRIMARYBUTTON_TEXT]: 'Done',
+        [FM.TRAINDIALOGMODAL_CONFIRMDELETE_TITLE]: 'Are you sure you want to delete this Training Dialog?',
     },
     'ko': {
         [FM.ABOUT_TITLE]: '약',

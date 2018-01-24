@@ -174,6 +174,12 @@ export default class BlisClient {
             .then(response => entity)
     }
 
+    source(appId: string): Promise<models.AppDefinition> {
+        return this.send<models.AppDefinition>({
+            url: `${this.baseUrl}/app/${appId}/source`
+        }).then(response => response.data)
+    }
+
     actions(appId: string): Promise<models.ActionBase[]> {
         return this.send<models.ActionList>({
             url: `${this.baseUrl}/app/${appId}/actions`
@@ -214,18 +220,6 @@ export default class BlisClient {
         return this.send<models.TrainDialogList>({
             url: `${this.baseUrl}/app/${appId}/traindialogs`
         }).then(response => response.data.trainDialogs)
-    }
-
-    trainDialogsCreate(appId: string, trainDialog: models.TrainDialog): Promise<models.TrainDialog> {
-        return this.send<string>({
-            method: 'post',
-            url: `${this.baseUrl}/app/${appId}/traindialog`,
-            data: trainDialog
-        })
-            .then(response => {
-                trainDialog.trainDialogId = response.data
-                return trainDialog
-            })
     }
 
     trainDialogsDelete(appId: string, trainDialogId: string): Promise<void> {

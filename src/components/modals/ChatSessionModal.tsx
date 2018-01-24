@@ -57,11 +57,11 @@ class SessionWindow extends React.Component<Props, ComponentState> {
                             <PrimaryButton
                                 onClick={() => this.onClickDone()}
                                 ariaDescription={intl.formatMessage({
-                                    id: FM.CHATSESSIONWINDOW_PRIMARYBUTTON_ARIADESCRIPTION,
+                                    id: FM.CHATSESSIONMODAL_PRIMARYBUTTON_ARIADESCRIPTION,
                                     defaultMessage: 'Done Testing'
                                 })}
                                 text={intl.formatMessage({
-                                    id: FM.CHATSESSIONWINDOW_PRIMARYBUTTON_TEXT,
+                                    id: FM.CHATSESSIONMODAL_PRIMARYBUTTON_TEXT,
                                     defaultMessage: 'Done Testing'
                                 })}
                             />

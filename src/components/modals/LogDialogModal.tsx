@@ -48,13 +48,10 @@ class LogDialogModal extends React.Component<Props, ComponentState> {
     }
 
     onClickConfirmDelete = async () => {
-        try {
-            await this.props.deleteLogDialogThunkAsync(this.props.app.appId, this.props.logDialog.logDialogId)
-            this.props.onClose()
-        }
-        catch (e) {
-            console.error(e)
-        }
+        this.props.onDelete();
+        this.setState(
+            { isConfirmDeleteModalOpen: false }
+        );
     }
 
     onSelectWebChatActivity(activity: Activity) {
@@ -162,6 +159,7 @@ export interface ReceivedProps {
     open: boolean,
     onClose: () => void,
     onEdit: (logDialogId: string, newTrainDialog: TrainDialog) => void,
+    onDelete: ()=> void,
     logDialog: LogDialog,
     app: BlisAppBase,
     history: Activity[]

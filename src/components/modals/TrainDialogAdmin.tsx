@@ -1,5 +1,5 @@
 import * as React from 'react';
-import "./TeachSessionWindow.css"
+import "./TeachSessionModal.css"
 import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';

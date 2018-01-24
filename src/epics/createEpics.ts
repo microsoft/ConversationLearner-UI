@@ -3,7 +3,7 @@ import * as Rx from 'rxjs';
 import { ActionsObservable, Epic } from 'redux-observable'
 import { State, ActionObject } from '../types'
 import { AT } from '../types/ActionTypes'
-import { createBlisApp, createBlisAction, createBlisEntity, createTrainDialog } from "./apiHelpers";
+import { createBlisApp, createBlisAction, createBlisEntity } from "./apiHelpers";
 
 const assertNever = () => { throw Error(`Should not reach here`) }
 
@@ -42,13 +42,4 @@ export const createNegativeEntity: Epic<ActionObject, State> = (action$: Actions
                 : assertNever()
         )
 
-}
-
-export const createNewTrainDialogEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
-    return action$.ofType(AT.CREATE_TRAIN_DIALOG_ASYNC)
-        .flatMap(action =>
-            (action.type === AT.CREATE_TRAIN_DIALOG_ASYNC)
-                ? createTrainDialog(action.key, action.appId, action.trainDialog, action.logDialogId)
-                : assertNever()
-        );
 }

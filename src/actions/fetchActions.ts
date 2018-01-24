@@ -10,7 +10,8 @@ import {
     Session,
     Teach,
     TrainingStatus,
-    TrainingStatusCode
+    TrainingStatusCode,
+    AppDefinition
 } from 'blis-models'
 import { Dispatch } from 'redux'
 import * as ClientFactory from '../services/clientFactory'
@@ -185,6 +186,21 @@ export const fetchAllEntitiesFulfilled = (entities: EntityBase[]): ActionObject 
     return {
         type: AT.FETCH_ENTITIES_FULFILLED,
         allEntities: entities
+    }
+}
+
+export const fetchAppSourceAsync = (key: string, blisAppID: string): ActionObject => {
+    //needs a fulfilled version to handle response from Epic
+    return {
+        type: AT.FETCH_APPSOURCE_ASYNC,
+        blisAppID: blisAppID
+    }
+}
+
+export const fetchAppSourceFulfilled = (appDefinition: AppDefinition): ActionObject => {
+    return {
+        type: AT.FETCH_APPSOURCE_FULFILLED,
+        appDefinition: appDefinition
     }
 }
 
