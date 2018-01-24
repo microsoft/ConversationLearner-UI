@@ -3,7 +3,7 @@ import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../types';
-import * as BotChat from 'botframework-webchat'
+import * as BotChat from 'blis-webchat'
 import { BlisAppBase } from 'blis-models'
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Activity } from 'botframework-directlinejs';
