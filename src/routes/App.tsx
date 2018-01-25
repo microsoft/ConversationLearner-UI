@@ -108,9 +108,6 @@ class App extends React.Component<Props, ComponentState> {
           </header>
           <div className="blis-app_header-placeholder" />
           <div className="blis-app_content">
-            <div>
-              <ErrorPanel />
-            </div>
             <Switch>
               <Route exact path="/" render={() => <Redirect to="/home" />} />
               <Route path="/home" component={AppsIndex} />
@@ -122,6 +119,7 @@ class App extends React.Component<Props, ComponentState> {
             </Switch>
           </div>
           <div className="blis-app_modals">
+            <ErrorPanel />
             <HelpPanel />
             <UserLogin
               open={this.state.isLoginWindowOpen}

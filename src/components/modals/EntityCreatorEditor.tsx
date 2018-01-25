@@ -316,6 +316,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                     value={this.state.isPrebuilt ? this.getPrebuiltEntityName(this.state.entityTypeVal) : this.state.entityNameVal}
                     disabled={this.state.editing || this.state.isPrebuilt}
                 />
+                <br />
                 <div className="blis-entity-creator-checkbox">
                     <TC.Checkbox
                         label={intl.formatMessage({

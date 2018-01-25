@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { RouteComponentProps } from 'react-router'
 import { returntypeof } from 'react-redux-typescript'
 import { connect } from 'react-redux'
 import { State } from '../types'
@@ -7,7 +8,6 @@ import { FormattedMessage } from 'react-intl'
 import { FM } from '../react-intl-messages'
 import { FontClassNames, PrimaryButton, Label } from 'office-ui-fabric-react'
 import { logout } from '../actions/displayActions'
-import LogoutModal from '../components/modals/LogoutModal'
 import * as SdkPort from '../services/sdkPort'
 import './Profile.css'
 
@@ -25,9 +25,8 @@ class Profile extends React.Component<Props, ComponentState> {
     state = initialState
 
     onClickLogout = () => {
-        this.setState({
-            isLogoutWindowOpen: true
-        })
+        this.props.logout()
+        this.props.history.push('/home')
     }
 
     onChangeSdkPort = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -35,19 +34,6 @@ class Profile extends React.Component<Props, ComponentState> {
         SdkPort.set(sdkPort)
         this.setState({
             sdkPort
-        })
-    }
-
-    onClickConfirmLogout = () => {
-        this.props.logout()
-        this.setState({
-            isLogoutWindowOpen: false
-        })
-    }
-
-    onClickCancelLogout = () => {
-        this.setState({
-            isLogoutWindowOpen: false
         })
     }
 
@@ -97,12 +83,6 @@ class Profile extends React.Component<Props, ComponentState> {
                         onChange={this.onChangeSdkPort}
                     />
                 </div>
-                <LogoutModal
-                    open={this.state.isLogoutWindowOpen}
-                    onClickLogout={this.onClickConfirmLogout}
-                    onClickCancel={this.onClickCancelLogout}
-                    onDismiss={this.onClickCancelLogout}
-                />
             </div>
         )
     }
@@ -124,6 +104,6 @@ const mapStateToProps = (state: State) => {
 // Props types inferred from mapStateToProps & dispatchToProps
 const stateProps = returntypeof(mapStateToProps)
 const dispatchProps = returntypeof(mapDispatchToProps)
-type Props = typeof stateProps & typeof dispatchProps
+type Props = typeof stateProps & typeof dispatchProps & RouteComponentProps<any>
 
-export default connect<typeof stateProps, typeof dispatchProps, {}>(mapStateToProps, mapDispatchToProps)(Profile)
+export default connect<typeof stateProps, typeof dispatchProps, RouteComponentProps<any>>(mapStateToProps, mapDispatchToProps)(Profile)
