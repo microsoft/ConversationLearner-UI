@@ -25,11 +25,13 @@
 
   4. Run publish scripts: `node ./scripts/publish.js`
 
-     This script copies the `/build` folder, `./.npmrc`, and `./publish/package.json` file into the `/package` folder. (Not this is different `package.json` than the one at the root)
+     This script copies the contents of the `/build` folder, `./.npmrc`, and `./publish/package.json` file into the `/package` folder. (Not this is different `package.json` than the one at the root)
 
   > At this point the /package folder should have all of the contents necessary to be considered valid NPM package
 
   5. Navigate into the /package folder and increment the package version and publish
+
+  6. Run 'npm publish'
 
 
 ## Future Improvements
