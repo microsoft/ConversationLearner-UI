@@ -13,6 +13,8 @@ import { createTeachSessionThunkAsync,
 import { deleteTrainDialogThunkAsync } from '../../../actions/deleteActions';    
 import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { FM } from '../../../react-intl-messages'
+import { setErrorDisplay } from '../../../actions/displayActions';
+import { ErrorType } from '../../../types/const';
 import { Activity } from 'botframework-directlinejs';
 
 interface IRenderableColumn extends OF.IColumn {
@@ -188,10 +190,25 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
         ((this.props.createTeachSessionFromUndoThunkAsync(this.props.app.appId, this.state.teachSession, this.props.user.name, this.props.user.id) as any) as Promise<TeachWithHistory>)
         .then(teachWithHistory => {
-            this.setState({
-                teachSession: teachWithHistory.teach, 
-                activities: teachWithHistory.history,
-            })
+            if (teachWithHistory.discrepancies.length === 0) {
+                this.setState({
+                    teachSession: teachWithHistory.teach, 
+                    activities: teachWithHistory.history,
+                })
+            }
+            else {
+                let unable = this.props.intl.formatMessage({
+                    id: FM.VALIDATE_UNABLE_TO_UNDO,
+                    defaultMessage: 'Unable to Undo'
+                })
+                let reason = this.props.intl.formatMessage({
+                    id: FM.VALIDATE_ENTITY_REASON,
+                    defaultMessage: `Entities don't match.`
+                })
+                this.props.setErrorDisplay(
+                    ErrorType.Error, unable, 
+                    [reason, ...teachWithHistory.discrepancies], null);             
+            }
         })
         .catch(error => {
             console.warn(`Error when attempting to create teach session from undo: `, error)
@@ -220,13 +237,28 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
         ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app.appId, newTrainDialog, this.props.user.name, this.props.user.id) as any) as Promise<TeachWithHistory>)
         .then(teachWithHistory => {
-            this.setState({
-                teachSession: teachWithHistory.teach, 
-                activities: teachWithHistory.history,
-                trainDialogId: null,
-                isTrainDialogModalOpen: false,
-                isTeachDialogModalOpen: true
-            })
+            if (teachWithHistory.discrepancies.length === 0) {
+                this.setState({
+                    teachSession: teachWithHistory.teach, 
+                    activities: teachWithHistory.history,
+                    trainDialogId: null,
+                    isTrainDialogModalOpen: false,
+                    isTeachDialogModalOpen: true
+                })
+            }
+            else {
+                let unable = this.props.intl.formatMessage({
+                    id: FM.VALIDATE_UNABLE_TO_BRANCH,
+                    defaultMessage: 'Unable to Branch'
+                })
+                let reason = this.props.intl.formatMessage({
+                    id: FM.VALIDATE_ENTITY_REASON,
+                    defaultMessage: `Entities don't match.`
+                })
+                this.props.setErrorDisplay(
+                    ErrorType.Error, unable, 
+                    [reason, ...teachWithHistory.discrepancies], null);            
+            }
         })
         .catch(error => {
             console.warn(`Error when attempting to create teach session from branch: `, error)
@@ -239,13 +271,28 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         
         ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app.appId, newTrainDialog, this.props.user.name, this.props.user.id) as any) as Promise<TeachWithHistory>)
         .then(teachWithHistory => {
-            this.setState({
-                teachSession: teachWithHistory.teach, 
-                activities: teachWithHistory.history,
-                trainDialogId: null,
-                isTrainDialogModalOpen: false,
-                isTeachDialogModalOpen: true
-            })
+            if (teachWithHistory.discrepancies.length === 0) {
+                this.setState({
+                    teachSession: teachWithHistory.teach, 
+                    activities: teachWithHistory.history,
+                    trainDialogId: null,
+                    isTrainDialogModalOpen: false,
+                    isTeachDialogModalOpen: true
+                })
+            }
+            else {
+                let unable = this.props.intl.formatMessage({
+                    id: FM.VALIDATE_UNABLE_TO_EDIT,
+                    defaultMessage: 'Unable to Edit'
+                })
+                let reason = this.props.intl.formatMessage({
+                    id: FM.VALIDATE_ENTITY_REASON,
+                    defaultMessage: `Entities don't match.`
+                })
+                this.props.setErrorDisplay(
+                    ErrorType.Error, unable, 
+                    [reason, ...teachWithHistory.discrepancies], null);
+             }
         })
         .catch(error => {
             console.warn(`Error when attempting to create teach session from train dialog: `, error)
@@ -396,6 +443,7 @@ const mapDispatchToProps = (dispatch: any) => {
         deleteTrainDialogThunkAsync,
         createTeachSessionFromUndoThunkAsync,
         createTeachSessionFromHistoryThunkAsync,
+        setErrorDisplay
     }, dispatch)
 }
 const mapStateToProps = (state: State) => {

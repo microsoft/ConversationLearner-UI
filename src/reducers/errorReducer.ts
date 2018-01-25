@@ -7,8 +7,8 @@ import { AT } from '../types/ActionTypes'
 const initialState: ErrorState = {
     errorType: ErrorType.Error,
     error: null,
-    message: null,
-    action: AT.NO_OP
+    messages: null,
+    actionType: AT.NO_OP
 };
 
 const errorReducer: Reducer<ErrorState> = (state = initialState, action: ActionObject): ErrorState => {
@@ -16,7 +16,7 @@ const errorReducer: Reducer<ErrorState> = (state = initialState, action: ActionO
         case AT.CLEAR_ERROR_DISPLAY:
             return { ...initialState };
         case AT.SET_ERROR_DISPLAY:
-            return { errorType: action.errorType, error: action.title, message: action.description, action: action.route }
+            return { errorType: action.errorType, error: action.title, messages: action.messages, actionType: action.actionType }
         default:
             return state;
     }

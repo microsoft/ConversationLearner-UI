@@ -15,8 +15,8 @@ export type EntityState = EntityBase[];
 export type ErrorState = {
     errorType: ErrorType,
     error: string,
-    message: string,
-    action: AT
+    messages: string[],
+    actionType: AT
 }
 export type TrainDialogState = TrainDialog[];
 

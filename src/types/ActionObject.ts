@@ -51,8 +51,8 @@ export type DisplayAction = {
     type: AT.SET_ERROR_DISPLAY,
     errorType: ErrorType,
     title: string,
-    description: string,
-    route: AT
+    messages: string[],
+    actionType: AT
 } | {
     type: AT.CLEAR_ERROR_DISPLAY
 } | {

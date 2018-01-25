@@ -63,7 +63,7 @@ class Index extends React.Component<Props, ComponentState> {
         }
 
         if (validationErrors.length > 0) {
-            this.props.setErrorDisplay(ErrorType.Warning, 'Validation Error:', validationErrors.join('<br/)'), null);
+            this.props.setErrorDisplay(ErrorType.Warning, 'Validation Error:', validationErrors, null);
         }
     }
 

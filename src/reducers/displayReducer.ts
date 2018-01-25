@@ -32,7 +32,7 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
             return { ...state, displaySpinner: removeSpinner(state.displaySpinner, action.type) }
         case AT.SET_ERROR_DISPLAY:
             // If I fail to load critical data, return to home page
-            switch (action.route) {
+            switch (action.actionType) {
                 case AT.FETCH_APPSOURCE_ASYNC:
                 case AT.FETCH_APPLICATIONS_ASYNC:
                 case AT.FETCH_BOTINFO_ASYNC:
