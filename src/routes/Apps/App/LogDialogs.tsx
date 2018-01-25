@@ -240,8 +240,17 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 })
             }
             else {
-                //LARS internation
-                setErrorDisplay(ErrorType.Error, "Unable to Edit", teachWithHistory.discrepancies, null);
+                let unable = this.props.intl.formatMessage({
+                    id: FM.VALIDATE_UNABLE_TO_EDIT,
+                    defaultMessage: 'Unable to Edit'
+                })
+                let reason = this.props.intl.formatMessage({
+                    id: FM.VALIDATE_ENTITY_REASON,
+                    defaultMessage: `Entities don't match.`
+                })
+                this.props.setErrorDisplay(
+                    ErrorType.Error, unable, 
+                    [reason, ...teachWithHistory.discrepancies], null);
             }
         })
         .catch(error => {
@@ -272,8 +281,17 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     activities: teachWithHistory.history,
                 })
             } else {
-                //lars INTERNATION
-                setErrorDisplay(ErrorType.Error, "Unable to Undo", teachWithHistory.discrepancies, null);
+                let unable = this.props.intl.formatMessage({
+                    id: FM.VALIDATE_UNABLE_TO_UNDO,
+                    defaultMessage: 'Unable to Undo'
+                })
+                let reason = this.props.intl.formatMessage({
+                    id: FM.VALIDATE_ENTITY_REASON,
+                    defaultMessage: `Entities don't match.`
+                })
+                this.props.setErrorDisplay(
+                    ErrorType.Error, unable, 
+                    [reason, ...teachWithHistory.discrepancies], null); 
             }
         })
         .catch(error => {

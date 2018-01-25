@@ -197,8 +197,17 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 })
             }
             else {
-                //LARS internation
-                setErrorDisplay(ErrorType.Error, "Unable to Undo", teachWithHistory.discrepancies, null);
+                let unable = this.props.intl.formatMessage({
+                    id: FM.VALIDATE_UNABLE_TO_UNDO,
+                    defaultMessage: 'Unable to Undo'
+                })
+                let reason = this.props.intl.formatMessage({
+                    id: FM.VALIDATE_ENTITY_REASON,
+                    defaultMessage: `Entities don't match.`
+                })
+                this.props.setErrorDisplay(
+                    ErrorType.Error, unable, 
+                    [reason, ...teachWithHistory.discrepancies], null);             
             }
         })
         .catch(error => {
@@ -238,8 +247,17 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 })
             }
             else {
-                //LARS internation
-                this.props.setErrorDisplay(ErrorType.Error, "Unable to Branch", teachWithHistory.discrepancies, null);
+                let unable = this.props.intl.formatMessage({
+                    id: FM.VALIDATE_UNABLE_TO_BRANCH,
+                    defaultMessage: 'Unable to Branch'
+                })
+                let reason = this.props.intl.formatMessage({
+                    id: FM.VALIDATE_ENTITY_REASON,
+                    defaultMessage: `Entities don't match.`
+                })
+                this.props.setErrorDisplay(
+                    ErrorType.Error, unable, 
+                    [reason, ...teachWithHistory.discrepancies], null);            
             }
         })
         .catch(error => {
@@ -263,9 +281,18 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 })
             }
             else {
-                //LARS internation
-                setErrorDisplay(ErrorType.Error, "Unable to Edit", teachWithHistory.discrepancies, null);
-            }
+                let unable = this.props.intl.formatMessage({
+                    id: FM.VALIDATE_UNABLE_TO_EDIT,
+                    defaultMessage: 'Unable to Edit'
+                })
+                let reason = this.props.intl.formatMessage({
+                    id: FM.VALIDATE_ENTITY_REASON,
+                    defaultMessage: `Entities don't match.`
+                })
+                this.props.setErrorDisplay(
+                    ErrorType.Error, unable, 
+                    [reason, ...teachWithHistory.discrepancies], null);
+             }
         })
         .catch(error => {
             console.warn(`Error when attempting to create teach session from train dialog: `, error)
