@@ -4,9 +4,8 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../types';
 import * as BotChat from 'blis-webchat'
-import { Chat } from 'blis-webchat'
 import { BlisAppBase } from 'blis-models'
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { Activity } from 'botframework-directlinejs';
 
 class Webchat extends React.Component<Props, {}> {
@@ -19,13 +18,19 @@ class Webchat extends React.Component<Props, {}> {
         onSelectActivity: () => { },
         onPostActivity: () => { },
         hideInput: false,
-        focusInput: false
+        focusInput: false,
     }
 
     constructor(p: any) {
         super(p);
         this.behaviorSubject = null;
         this.selectedActivity$ = this.selectedActivity$.bind(this)
+    }
+
+    componentWillReceiveProps(nextProps: Props) {
+        if (this.props.history !== nextProps.history) {
+            this.chatProps = null;
+        }
     }
 
     selectedActivity$(): BehaviorSubject<any> {
@@ -42,38 +47,50 @@ class Webchat extends React.Component<Props, {}> {
 
     GetChatProps(): BotChat.ChatProps {
         if (!this.chatProps) {
-            const dl = new BotChat.DirectLine({
-                secret: 'secret', //params['s'],
-                token: 'token', //params['t'],
-                domain: "http://localhost:3000/directline", //params['domain'],
+            let dl = new BotChat.DirectLine({
+                secret: 'secret', 
+                token: 'token', 
+                domain: 'http://localhost:3000/directline', 
                 webSocket: false // defaults to true,
             });
 
-            const _dl = {
-                ...dl,
-                postActivity: (activity: any) => {
-                    if (this.props.onPostActivity) { 
-                        this.props.onPostActivity(activity)
+            let botConnection = null;
+            if (this.props.history) {
+                botConnection = {
+                    ...dl,
+                    activity$: Observable.from(this.props.history).concat(dl.activity$),
+                    postActivity: (activity: any) => {
+                        if (this.props.onPostActivity) { 
+                            this.props.onPostActivity(activity)
+                        }
+                        return dl.postActivity(activity)
                     }
-                    return dl.postActivity(activity)
-                },
-            } as BotChat.DirectLine;
+                };
+             }
+             else {
+                botConnection = {
+                    ...dl,
+                    postActivity: (activity: any) => {
+                        if (this.props.onPostActivity) { 
+                            this.props.onPostActivity(activity)
+                        }
+                        return dl.postActivity(activity)
+                    }
+                };
+             }
 
             this.chatProps = {
-                botConnection: _dl,
+                botConnection: botConnection,
+                selectedActivity: this.props.hideInput ? this.selectedActivity$() as any : null,
                 formatOptions: {
                     showHeader: false
                 },
                 user: { name: this.props.user.name, id: this.props.user.id },
-                bot: { name: "BlisTrainer", id: "BlisTrainer" },
+                bot: { name: 'BlisTrainer', id: 'BlisTrainer' },
                 resize: 'detect',
                 hideInput: this.props.hideInput,
                 focusInput: this.props.focusInput
-            }
-            // If viewing history, add history and listener
-            if (this.props.history) {
-                this.chatProps = { ...this.chatProps, history: this.props.history, selectedActivity: this.selectedActivity$() as any };
-            }
+            } as any
         }
         else {
             this.chatProps.hideInput = this.props.hideInput;
@@ -85,7 +102,7 @@ class Webchat extends React.Component<Props, {}> {
         let chatProps = this.GetChatProps();
         return (
             <div id="botchat" className="webchatwindow wc-app">
-                <Chat {...chatProps} />
+                <BotChat.Chat {...chatProps} />
             </div>
         )
     }
@@ -104,7 +121,7 @@ const mapStateToProps = (state: State, ownProps: any) => {
 
 export interface ReceivedProps {
     app: BlisAppBase,
-    history: Activity[] | null,
+    history: Activity[],
     hideInput: boolean,
     focusInput: boolean,
     onSelectActivity: (a: Activity) => void,
