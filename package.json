@@ -1,11 +1,11 @@
 {
   "name": "blis-ui",
-  "version": "0.100.5",
+  "version": "0.111.0",
   "private": true,
   "dependencies": {
     "adaptivecards": "^1.0.0-beta9",
     "axios": "^0.16.2",
-    "blis-models": "^0.110.1",
+    "blis-models": "^0.111.0",
     "blis-webchat": "^0.100.2",
     "botframework-directlinejs": "^0.9.12",
     "draft-js": "^0.10.4",
