@@ -176,6 +176,12 @@ export enum FM {
     USERLOGIN_LOGINBUTTONARIADESCRPTION = 'UserLogin.loginButtonAriaDescription',
     USERLOGIN_LOGINBUTTONTEXT = 'UserLogin.loginButtonText',
 
+    // Validations
+    VALIDATE_UNABLE_TO_EDIT = 'Validate.unableToEdit',
+    VALIDATE_UNABLE_TO_BRANCH = 'Validate.unableToEdit',
+    VALIDATE_UNABLE_TO_UNDO = 'Validate.unableToUndo',
+    VALIDATE_ENTITY_REASON = 'Validate.entityReason',
+
     // ActionDetails
     ACTIONDETAILSLIST_COLUMNS_RESPONSE = 'ActionDetailsList.columns.response',
     ACTIONDETAILSLIST_COLUMNS_ARGUMENTS = 'ActionDetailsList.columns.arguments',
@@ -501,6 +507,12 @@ export default {
         [FM.USERLOGIN_PASSWORDFIELDPLACEHOLDER]: 'Password...',
         [FM.USERLOGIN_LOGINBUTTONARIADESCRPTION]: 'Log In',
         [FM.USERLOGIN_LOGINBUTTONTEXT]: 'Log In',
+
+        // Validation
+        [FM.VALIDATE_UNABLE_TO_EDIT]: 'Unable to Edit',
+        [FM.VALIDATE_UNABLE_TO_BRANCH]: 'Unable to Branch',
+        [FM.VALIDATE_UNABLE_TO_UNDO]: 'Unable to Undo',
+        [FM.VALIDATE_ENTITY_REASON]: 'Bot API calls are behaving differently. Entities in memory do not match.',
 
         // ActionDetailsList
         [FM.ACTIONDETAILSLIST_COLUMNS_RESPONSE]: 'Response',

@@ -376,10 +376,10 @@ export const postScore = (key: string, appId: string, teachId: string, uiTrainSc
     .catch(err => handleError(obs, err, AT.POST_SCORE_FEEDBACK_ASYNC)));
 };
 
-let handleError = function (obs: Observer<ActionObject>, err: any, route: AT) {
+let handleError = function (obs: Observer<ActionObject>, err: any, actionType: AT) {
   if (!obs.closed) {
     // Service call failure
-    obs.next(actions.display.setErrorDisplay(ErrorType.Error, err.message, toErrorString(err.response), route));
+    obs.next(actions.display.setErrorDisplay(ErrorType.Error, err.message, [toErrorString(err.response)], actionType));
     obs.complete();
   }
   else {
