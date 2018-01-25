@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { RouteComponentProps } from 'react-router'
 import { returntypeof } from 'react-redux-typescript'
 import { connect } from 'react-redux'
 import { State } from '../types'
@@ -25,6 +26,7 @@ class Profile extends React.Component<Props, ComponentState> {
 
     onClickLogout = () => {
         this.props.logout()
+        this.props.history.push('/home')
     }
 
     onChangeSdkPort = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -102,6 +104,6 @@ const mapStateToProps = (state: State) => {
 // Props types inferred from mapStateToProps & dispatchToProps
 const stateProps = returntypeof(mapStateToProps)
 const dispatchProps = returntypeof(mapDispatchToProps)
-type Props = typeof stateProps & typeof dispatchProps
+type Props = typeof stateProps & typeof dispatchProps & RouteComponentProps<any>
 
-export default connect<typeof stateProps, typeof dispatchProps, {}>(mapStateToProps, mapDispatchToProps)(Profile)
+export default connect<typeof stateProps, typeof dispatchProps, RouteComponentProps<any>>(mapStateToProps, mapDispatchToProps)(Profile)
