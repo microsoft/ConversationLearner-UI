@@ -572,7 +572,8 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                     open={this.state.cardViewerAction != null}
                     onDismiss={() => this.onCloseCardViewer()}
                     template={template}
-                    actionArguments={actionArguments} 
+                    actionArguments={actionArguments}
+                    hideUndefined={true} 
                 />
             </div>
         )

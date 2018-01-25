@@ -3,7 +3,6 @@ import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
-import { clearErrorDisplay } from '../../../actions/displayActions'
 import { ActionArgument, Template } from 'blis-models'
 import { State } from '../../../types'
 import * as AdaptiveCards from 'adaptivecards';
@@ -22,13 +21,6 @@ var renderOptions = {
         // <!-- <script type="text/javascript" src="https://unpkg.com/markdown-it/dist/markdown-it.js"></script> -->
         // processMarkdown: function (text) { return markdownit().render(text); }
     };
-
-interface ReceivedProps {
-    open: boolean;
-    template: Template;
-    actionArguments: ActionArgument[]
-    onDismiss: () => void;
-}
     
 class AdaptiveCardViewer extends React.Component<Props, {}> {
     onDismiss = () => {
@@ -46,10 +38,15 @@ class AdaptiveCardViewer extends React.Component<Props, {}> {
             }
         }
 
-        // Now replace any images that haven't been substituted with a dummy image
-        for (let templateVar of this.props.template.variables) {
-            if (templateVar.type === 'Image') {
-                templateString = templateString.replace(new RegExp(`{{${templateVar.key}}}`, 'g'), 'https://c1.staticflickr.com/9/8287/29517736620_3184b66ec8.jpg');
+        if (this.props.hideUndefined) {
+            // Replace unfilled entity refrences with blank
+            templateString = templateString.replace(/{{\s*[\w\.]+\s*}}/g, '');
+        } else {
+            // Now replace any images that haven't been substituted with a dummy image
+            for (let templateVar of this.props.template.variables) {
+                if (templateVar.type === 'Image') {
+                    templateString = templateString.replace(new RegExp(`{{${templateVar.key}}}`, 'g'), 'https://c1.staticflickr.com/9/8287/29517736620_3184b66ec8.jpg');
+                }
             }
         }
         return JSON.parse(templateString);
@@ -75,9 +72,17 @@ class AdaptiveCardViewer extends React.Component<Props, {}> {
         );
     }
 }
+
+interface ReceivedProps {
+    open: boolean;
+    template: Template;
+    actionArguments: ActionArgument[]
+    onDismiss: () => void;
+    hideUndefined: boolean;
+}
+
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        clearErrorDisplay
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {
