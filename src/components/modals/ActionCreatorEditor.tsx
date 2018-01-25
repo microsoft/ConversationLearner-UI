@@ -845,6 +845,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     onDismiss={() => this.onCloseCardViewer()}
                     template={this.state.selectedCardOptionKey && this.props.botInfo.templates.find(t => t.name === this.state.selectedCardOptionKey)}
                     actionArguments={this.state.isCardViewerModalOpen && this.getActionArguments(this.state.slateValuesMap)}
+                    hideUndefined={false}
                 />
             </Modal>
         );
