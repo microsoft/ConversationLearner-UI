@@ -48,8 +48,7 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
 
     onClickBranch() {
         if (this.state.selectedActivity) {
-            let roundIndex = this.state.selectedActivity.id.split(':').map(s => parseInt(s))[1];
-            this.props.onBranch(roundIndex);
+            this.props.onBranch(this.state.selectedActivity.channelData.roundIndex);
         }
         else {
             this.setState({

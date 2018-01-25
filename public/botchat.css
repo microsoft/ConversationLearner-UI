@@ -4,12 +4,11 @@ body .wc-app, .wc-app button, .wc-app input, .wc-app textarea {
   font-size: 15px; }
 
 .wc-app button {
-  background-color: #0063b1;
+  background-color: #0078d7;
   border: 1px solid #cccccc;
   border-radius: 1px;
   color: #ffffff;
   cursor: pointer;
-  outline: none;
   transition: color .2s ease, background-color .2s ease; }
 
 .wc-app h1, .wc-app h2, .wc-app h3, .wc-app h4, .wc-app p, .wc-app ul, .wc-app ol {
@@ -24,7 +23,7 @@ body .wc-app, .wc-app button, .wc-app input, .wc-app textarea {
   visibility: hidden; }
 
 .wc-header {
-  background-color: #3a96dd;
+  background-color: #0078d7;
   box-shadow: 0 1px rgba(0, 0, 0, 0.2);
   box-sizing: content-box;
   color: #ffffff;
@@ -46,13 +45,16 @@ body .wc-app, .wc-app button, .wc-app input, .wc-app textarea {
   bottom: 50px;
   left: 0;
   transform: translateY(0);
+  outline: 0;
   overflow-x: hidden;
   overflow-y: scroll;
   padding: 10px;
   position: absolute;
   right: 0;
-  top: 0;
+  top: 38px;
   transition: transform 0.2s cubic-bezier(0, 0, 0.5, 1); }
+  .wc-message-groups.no-header {
+    top: 0; }
 
 .wc-message-group-content {
   overflow: hidden; }
@@ -75,20 +77,21 @@ body .wc-app, .wc-app button, .wc-app input, .wc-app textarea {
       max-width: 40%; }
       .wc-suggested-actions .wc-hscroll > ul > li button {
         background-color: #fff;
-        color: #3a96dd;
+        color: #0078d7;
         min-height: 32px;
         overflow: hidden;
         padding: 0 16px;
         text-overflow: ellipsis;
         white-space: nowrap;
         width: 100%; }
+      .wc-suggested-actions .wc-hscroll > ul > li button:focus,
       .wc-suggested-actions .wc-hscroll > ul > li button:hover {
         background-color: #fff;
-        border-color: #3a96dd;
-        color: #3a96dd; }
+        border-color: #0078d7;
+        color: #0078d7; }
       .wc-suggested-actions .wc-hscroll > ul > li button:active {
-        background-color: #3a96dd;
-        border-color: #3a96dd;
+        background-color: #0078d7;
+        border-color: #0078d7;
         color: #ffffff; }
   .wc-suggested-actions button.scroll {
     background-color: #d2dde5;
@@ -100,6 +103,7 @@ body .wc-app, .wc-app button, .wc-app input, .wc-app textarea {
     width: 28px; }
   .wc-suggested-actions button.scroll:disabled {
     display: none; }
+  .wc-suggested-actions button.scroll:focus,
   .wc-suggested-actions button.scroll:hover {
     background-color: #808c95; }
   .wc-suggested-actions button.scroll svg {
@@ -116,15 +120,6 @@ body .wc-app, .wc-app button, .wc-app input, .wc-app textarea {
 
 .wc-message-pane.show-actions .wc-suggested-actions {
   height: 40px; }
-
-.wc-console {
-  border: 5px solid #dbdee1;
-  bottom: 0;
-  box-sizing: border-box;
-  height: 50px;
-  left: 0;
-  position: absolute;
-  right: 0; }
 
 /* views */
 .wc-chatview-panel {
@@ -178,7 +173,7 @@ body .wc-app, .wc-app button, .wc-app input, .wc-app textarea {
   cursor: pointer; }
 
 .wc-message-content.selected {
-  box-shadow: 5px 5px 5px 0px #ffa333; }
+  box-shadow: 0px 5px 5px 5px #ffa333; }
 
 .wc-message-content img {
   max-height: 320px;
@@ -195,7 +190,7 @@ body .wc-app, .wc-app button, .wc-app input, .wc-app textarea {
 
 .wc-message-from {
   clear: both;
-  color: #999999;
+  color: #767676;
   font-size: 11px;
   margin-top: 5px; }
 
@@ -206,17 +201,17 @@ body .wc-app, .wc-app button, .wc-app input, .wc-app textarea {
     margin: 8px 8px 0 8px; }
   .wc-card button {
     background-color: transparent;
-    color: #3a96dd;
+    color: #0078d7;
     min-height: 32px;
     width: 100%;
     padding: 0 16px; }
   .wc-card button:hover {
     background-color: transparent;
-    border-color: #3a96dd;
-    color: #3a96dd; }
+    border-color: #0078d7;
+    color: #0078d7; }
   .wc-card button:active {
-    background-color: #3a96dd;
-    border-color: #3a96dd;
+    background-color: #0078d7;
+    border-color: #0078d7;
     color: #ffffff; }
   .wc-card.receipt table {
     border-collapse: collapse;
@@ -346,6 +341,7 @@ body .wc-app, .wc-app button, .wc-app input, .wc-app textarea {
     width: 28px; }
   .wc-carousel button.scroll:disabled {
     display: none; }
+  .wc-carousel button.scroll:focus,
   .wc-carousel button.scroll:hover {
     background-color: #808c95; }
   .wc-carousel button.scroll svg {
@@ -375,11 +371,11 @@ body .wc-app, .wc-app button, .wc-app input, .wc-app textarea {
   text-align: right; }
 
 .wc-message-from-me .wc-message-content {
-  background-color: #3a96dd;
+  background-color: #0078d7;
   color: #ffffff; }
 
 .wc-message-from-me svg.wc-message-callout path {
-  fill: #3a96dd; }
+  fill: #0078d7; }
 
 .wc-message-from-me svg.wc-message-callout path.point-left {
   display: none; }
@@ -406,49 +402,82 @@ body .wc-app, .wc-app button, .wc-app input, .wc-app textarea {
   left: -6px; }
 
 /* console */
-.wc-console > * {
-  position: absolute;
-  top: 0;
-  vertical-align: middle; }
-
-.wc-console label {
-  cursor: pointer;
-  display: inline-block;
-  height: 40px; }
-
-.wc-console svg {
-  fill: #8a8a8a;
-  margin: 11px; }
-
-.wc-console textarea, .wc-console input[type=text] {
-  border: none;
-  height: 100%;
-  outline: none;
-  padding: 0;
-  resize: none;
-  width: 100%; }
-
-.wc-send svg {
-  height: 18px;
-  width: 27px; }
-
-.wc-upload svg {
-  height: 18px;
-  width: 26px; }
-
-#wc-upload-input {
-  display: none; }
-
-.wc-textbox {
+.wc-console {
+  border: 5px solid #dbdee1;
   bottom: 0;
-  left: 48px;
-  right: 49px; }
-
-.wc-send {
+  box-sizing: border-box;
+  height: 50px;
+  left: 0;
+  position: absolute;
   right: 0; }
+  .wc-console > .wc-upload,
+  .wc-console > .wc-textbox,
+  .wc-console > .wc-send,
+  .wc-console > .wc-mic {
+    position: absolute;
+    top: 0;
+    vertical-align: middle; }
+  .wc-console label, .wc-console button {
+    cursor: pointer;
+    display: inline-block;
+    height: 40px; }
+  .wc-console svg {
+    fill: #8a8a8a;
+    margin: 11px; }
+  .wc-console input[type=text],
+  .wc-console textarea {
+    border: none;
+    height: 100%;
+    outline: none;
+    padding: 0;
+    resize: none;
+    width: 100%; }
+  .wc-console.has-text .wc-send svg {
+    fill: #0078d7; }
+  .wc-console .wc-upload {
+    cursor: pointer;
+    position: relative; }
+    .wc-console .wc-upload svg {
+      height: 18px;
+      width: 26px; }
+  .wc-console #wc-upload-input {
+    font-size: 0;
+    height: 0;
+    left: 0;
+    opacity: 0;
+    outline: 0;
+    position: absolute;
+    top: 0;
+    width: 0; }
+  .wc-console .wc-send {
+    right: 0; }
+  .wc-console .wc-send.hidden {
+    visibility: hidden; }
+  .wc-console .wc-textbox {
+    bottom: 0;
+    left: 48px;
+    right: 49px; }
+    .wc-console .wc-textbox input {
+      background-color: transparent; }
+  .wc-console .wc-mic,
+  .wc-console .wc-send {
+    background-color: transparent;
+    border: 0;
+    padding: 0;
+    right: 0; }
+    .wc-console .wc-mic.hidden,
+    .wc-console .wc-send.hidden {
+      visibility: hidden; }
+  .wc-console .wc-send svg {
+    height: 18px;
+    width: 27px; }
+  .wc-console .wc-mic.active path#micFilling {
+    fill: #4e3787; }
+  .wc-console .wc-mic.inactive path#micFilling {
+    visibility: hidden; }
 
 .wc-console.has-text .wc-send svg {
-  fill: #3a96dd; }
+  fill: #0078d7; }
 
 /* animation */
 .wc-typing {
@@ -498,3 +527,58 @@ body .wc-app, .wc-app button, .wc-app input, .wc-app textarea {
 
 .wc-app ::-webkit-scrollbar-thumb {
   background-color: #dbdee1; }
+
+/* download button for Unknown media */
+.wc-icon-download {
+  display: inline-block;
+  height: 20px;
+  margin-left: 8px;
+  vertical-align: top;
+  width: 12px; }
+
+.wc-text-download {
+  display: inline-block;
+  font-weight: 500;
+  text-decoration: none; }
+
+.wc-message-from-bot a.wc-link-download:link, .wc-message-from-bot a.wc-link-download:visited {
+  color: #000000;
+  opacity: 1; }
+  .wc-message-from-bot a.wc-link-download:link .wc-icon-download, .wc-message-from-bot a.wc-link-download:visited .wc-icon-download {
+    background-image: url('data:image/svg+xml;utf8,<svg width="12" height="20" viewBox="0 0 12 20" xmlns="http://www.w3.org/2000/svg"><path d="M.435 20v-1.25h11.13V20H.435zM12 10.44l-6 6.113-6-6.114.87-.88 4.512 4.59V0h1.236v14.15l4.512-4.59.87.88z" fill="#000000" fill-rule="evenodd"/></svg>');
+    background-repeat: no-repeat; }
+
+.wc-message-from-bot a.wc-link-download:hover {
+  color: #0078d7;
+  opacity: 1; }
+  .wc-message-from-bot a.wc-link-download:hover .wc-icon-download {
+    background-image: url('data:image/svg+xml;utf8,<svg width="12" height="20" viewBox="0 0 12 20" xmlns="http://www.w3.org/2000/svg"><path d="M.435 20v-1.25h11.13V20H.435zM12 10.44l-6 6.113-6-6.114.87-.88 4.512 4.59V0h1.236v14.15l4.512-4.59.87.88z" fill="#0078d7" fill-rule="evenodd"/></svg>');
+    background-repeat: no-repeat; }
+
+.wc-message-from-bot a.wc-link-download:active {
+  color: #0078d7;
+  opacity: 0.8; }
+  .wc-message-from-bot a.wc-link-download:active .wc-icon-download {
+    background-image: url('data:image/svg+xml;utf8,<svg width="12" height="20" viewBox="0 0 12 20" xmlns="http://www.w3.org/2000/svg"><path d="M.435 20v-1.25h11.13V20H.435zM12 10.44l-6 6.113-6-6.114.87-.88 4.512 4.59V0h1.236v14.15l4.512-4.59.87.88z" fill="#0078d7" fill-rule="evenodd"/></svg>');
+    background-repeat: no-repeat; }
+
+.wc-message-from-me a.wc-link-download:link, .wc-message-from-me a.wc-link-download:visited {
+  color: #ffffff;
+  opacity: 1; }
+  .wc-message-from-me a.wc-link-download:link .wc-icon-download, .wc-message-from-me a.wc-link-download:visited .wc-icon-download {
+    background-image: url('data:image/svg+xml;utf8,<svg width="12" height="20" viewBox="0 0 12 20" xmlns="http://www.w3.org/2000/svg"><path d="M.435 20v-1.25h11.13V20H.435zM12 10.44l-6 6.113-6-6.114.87-.88 4.512 4.59V0h1.236v14.15l4.512-4.59.87.88z" fill="#ffffff" fill-rule="evenodd"/></svg>');
+    background-repeat: no-repeat; }
+
+.wc-message-from-me a.wc-link-download:hover {
+  color: #ffffff;
+  opacity: 0.8; }
+  .wc-message-from-me a.wc-link-download:hover .wc-icon-download {
+    background-image: url('data:image/svg+xml;utf8,<svg width="12" height="20" viewBox="0 0 12 20" xmlns="http://www.w3.org/2000/svg"><path d="M.435 20v-1.25h11.13V20H.435zM12 10.44l-6 6.113-6-6.114.87-.88 4.512 4.59V0h1.236v14.15l4.512-4.59.87.88z" fill="#ffffff" fill-rule="evenodd"/></svg>');
+    background-repeat: no-repeat; }
+
+.wc-message-from-me a.wc-link-download:active {
+  color: #ffffff;
+  opacity: 0.6; }
+  .wc-message-from-me a.wc-link-download:active .wc-icon-download {
+    background-image: url('data:image/svg+xml;utf8,<svg width="12" height="20" viewBox="0 0 12 20" xmlns="http://www.w3.org/2000/svg"><path d="M.435 20v-1.25h11.13V20H.435zM12 10.44l-6 6.113-6-6.114.87-.88 4.512 4.59V0h1.236v14.15l4.512-4.59.87.88z" fill="#ffffff" fill-rule="evenodd"/></svg>');
+    background-repeat: no-repeat; }

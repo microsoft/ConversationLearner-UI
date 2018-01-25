@@ -1,6 +1,10 @@
 export enum FM {
     ABOUT_TITLE = 'About.title',
     DOCS_TITLE = 'Docs.title',
+    PROFILE_TITLE = 'Profile.title',
+    PROFILE_NAME = 'Profile.name',
+    PROFILE_SETTINGS_TITLE = 'Profile.settings.title',
+    PROFILE_SETTINGS_SDKPORT = 'Profile.settings.sdkport',
     SUPPORT_TITLE = 'Support.title',
     NOMATCH_TITLE = 'NoMatch.title',
     NOMATCH_HOME = 'NoMatch.home',
@@ -321,6 +325,10 @@ export default {
         //  {FM.ABOUT_TITLE}
         [FM.ABOUT_TITLE]: 'About',
         [FM.DOCS_TITLE]: 'Docs',
+        [FM.PROFILE_TITLE]: 'Profile',
+        [FM.PROFILE_NAME]: 'Name',
+        [FM.PROFILE_SETTINGS_TITLE]: 'Settings',
+        [FM.PROFILE_SETTINGS_SDKPORT]: 'SDK Port',
         [FM.SUPPORT_TITLE]: 'Support',
         [FM.NOMATCH_TITLE]: 'That page was not found.',
         [FM.NOMATCH_HOME]: 'Home',

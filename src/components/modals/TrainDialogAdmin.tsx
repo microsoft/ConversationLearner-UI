@@ -48,19 +48,18 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
     componentWillReceiveProps(newProps: Props) {
 
         if (newProps.selectedActivity && newProps.trainDialog) {
-            let [senderType, roundIndex, scoreIndex] = newProps.selectedActivity.id.split(':').map(s => parseInt(s));
             // If rounds were trimmed, selectedActivity could have been in deleted rounds
-            if (roundIndex > newProps.trainDialog.rounds.length - 1) {
+            if (newProps.selectedActivity.channelData.roundIndex > newProps.trainDialog.rounds.length - 1) {
                 this.setState({
-                    senderType: senderType,
+                    senderType: newProps.selectedActivity.channelData.senderType,
                     roundIndex: newProps.trainDialog.rounds.length - 1,
                     scoreIndex: 0
                 })
             } else {
                 this.setState({
-                    senderType: senderType,
-                    roundIndex: roundIndex,
-                    scoreIndex: scoreIndex
+                    senderType: newProps.selectedActivity.channelData.senderType,
+                    roundIndex: newProps.selectedActivity.channelData.roundIndex,
+                    scoreIndex: newProps.selectedActivity.channelData.scoreIndex
                 })
             }
         }

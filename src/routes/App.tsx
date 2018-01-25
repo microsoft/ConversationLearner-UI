@@ -9,12 +9,13 @@ import { bindActionCreators } from 'redux'
 import AppsIndex from './Apps/AppsIndex'
 import About from './About'
 import Docs from './Docs'
+import Profile from './Profile'
 import Support from './Support'
 import NoMatch from './NoMatch'
 import HelpPanel from '../components/HelpPanel'
 import { FontClassNames } from 'office-ui-fabric-react'
-import { UserLogin, SpinnerWindow, LogoutModal, ErrorPanel } from '../components/modals'
-import { setUser, logout } from '../actions/displayActions'
+import { UserLogin, SpinnerWindow, ErrorPanel } from '../components/modals'
+import { setUser } from '../actions/displayActions'
 import './App.css'
 import { FormattedMessage } from 'react-intl'
 import { FM } from '../react-intl-messages'
@@ -63,31 +64,9 @@ class App extends React.Component<Props, ComponentState> {
     })
   }
 
-  onClickUsername = () => {
-    // If user is not logged in, show login window
-    // otherwise show logout window
-    if (!this.props.user) {
-      this.setState({
-        isLoginWindowOpen: true
-      })
-    }
-    else {
-      this.setState({
-        isLogoutWindowOpen: true
-      })
-    }
-  }
-
-  onClickConfirmLogout = () => {
-    this.props.logout()
+  onClickOpenLogin = () => {
     this.setState({
-      isLogoutWindowOpen: false
-    })
-  }
-
-  onClickCancelLogout = () => {
-    this.setState({
-      isLogoutWindowOpen: false
+      isLoginWindowOpen: true
     })
   }
 
@@ -123,12 +102,14 @@ class App extends React.Component<Props, ComponentState> {
                 />
               </NavLink>
             </nav>
-            <NavLink className="blis-header_user" to="/home" onClick={this.onClickUsername}>{this.props.user.name || "BLIS"}</NavLink>
+            {this.props.user.name
+              ? <NavLink className="blis-header_user" to="/profile">{this.props.user.name}</NavLink>
+              : <NavLink className="blis-header_user" to="/home" onClick={this.onClickOpenLogin}>Login</NavLink>}
           </header>
           <div className="blis-app_header-placeholder" />
           <div className="blis-app_content">
             <div>
-            <ErrorPanel/>
+              <ErrorPanel />
             </div>
             <Switch>
               <Route exact path="/" render={() => <Redirect to="/home" />} />
@@ -136,6 +117,7 @@ class App extends React.Component<Props, ComponentState> {
               <Route path="/about" component={About} />
               <Route path="/docs" component={Docs} />
               <Route path="/support" component={Support} />
+              <Route path="/profile" component={Profile} />
               <Route component={NoMatch} />
             </Switch>
           </div>
@@ -145,12 +127,6 @@ class App extends React.Component<Props, ComponentState> {
               open={this.state.isLoginWindowOpen}
               onClickLogin={this.onClickLogin}
               onDismiss={this.onDismissLogin}
-            />
-            <LogoutModal
-              open={this.state.isLogoutWindowOpen}
-              onClickLogout={this.onClickConfirmLogout}
-              onClickCancel={this.onClickCancelLogout}
-              onDismiss={this.onClickCancelLogout}
             />
             <SpinnerWindow />
           </div>
@@ -162,8 +138,7 @@ class App extends React.Component<Props, ComponentState> {
 
 const mapDispatchToProps = (dispatch: any) => {
   return bindActionCreators({
-    setUser,
-    logout
+    setUser
   }, dispatch);
 }
 

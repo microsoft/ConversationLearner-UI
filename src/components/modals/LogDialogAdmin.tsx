@@ -41,11 +41,10 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
     componentWillReceiveProps(newProps: Props) {
 
         if (newProps.selectedActivity && newProps.logDialog) {
-            let [senderType, roundIndex, scoreIndex] = newProps.selectedActivity.id.split(':').map(s => parseInt(s));
             this.setState({
-                senderType: senderType,
-                roundIndex: roundIndex,
-                scoreIndex: scoreIndex
+                senderType: newProps.selectedActivity.channelData.senderType,
+                roundIndex: newProps.selectedActivity.channelData.roundIndex,
+                scoreIndex: newProps.selectedActivity.channelData.scoreIndex
             })
         }
     }
