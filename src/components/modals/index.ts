@@ -9,7 +9,6 @@ import TrainDialogModal from './TrainDialogModal'
 import ErrorPanel from './ErrorPanel'
 import SpinnerWindow from './SpinnerWindow'
 import UserLogin from './UserLogin'
-import LogoutModal from './LogoutModal'
 
 export {
     ActionCreatorEditor,
@@ -23,5 +22,4 @@ export {
     ErrorPanel,
     SpinnerWindow,
     UserLogin,
-    LogoutModal
 }

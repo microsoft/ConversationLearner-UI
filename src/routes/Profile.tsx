@@ -7,7 +7,6 @@ import { FormattedMessage } from 'react-intl'
 import { FM } from '../react-intl-messages'
 import { FontClassNames, PrimaryButton, Label } from 'office-ui-fabric-react'
 import { logout } from '../actions/displayActions'
-import LogoutModal from '../components/modals/LogoutModal'
 import * as SdkPort from '../services/sdkPort'
 import './Profile.css'
 
@@ -25,9 +24,7 @@ class Profile extends React.Component<Props, ComponentState> {
     state = initialState
 
     onClickLogout = () => {
-        this.setState({
-            isLogoutWindowOpen: true
-        })
+        this.props.logout()
     }
 
     onChangeSdkPort = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -35,19 +32,6 @@ class Profile extends React.Component<Props, ComponentState> {
         SdkPort.set(sdkPort)
         this.setState({
             sdkPort
-        })
-    }
-
-    onClickConfirmLogout = () => {
-        this.props.logout()
-        this.setState({
-            isLogoutWindowOpen: false
-        })
-    }
-
-    onClickCancelLogout = () => {
-        this.setState({
-            isLogoutWindowOpen: false
         })
     }
 
@@ -97,12 +81,6 @@ class Profile extends React.Component<Props, ComponentState> {
                         onChange={this.onChangeSdkPort}
                     />
                 </div>
-                <LogoutModal
-                    open={this.state.isLogoutWindowOpen}
-                    onClickLogout={this.onClickConfirmLogout}
-                    onClickCancel={this.onClickCancelLogout}
-                    onDismiss={this.onClickCancelLogout}
-                />
             </div>
         )
     }
