@@ -186,7 +186,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         this.state = {
             actionModalOpen: false,
             columns,
-            sortColumn: columns[3], // "score"
+            sortColumn: columns[2], // "score"
             haveEdited: false,
             newAction: null,
             cardViewerAction: null
