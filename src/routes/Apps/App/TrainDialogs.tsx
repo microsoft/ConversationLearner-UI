@@ -198,7 +198,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             }
             else {
                 //LARS internation
-                setErrorDisplay(ErrorType.Error, "Unable to Undo", teachWithHistory.discrepancies.join(' '), null);
+                setErrorDisplay(ErrorType.Error, "Unable to Undo", teachWithHistory.discrepancies, null);
             }
         })
         .catch(error => {
@@ -239,7 +239,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             }
             else {
                 //LARS internation
-                this.props.setErrorDisplay(ErrorType.Error, "Unable to Branch", teachWithHistory.discrepancies.join(' '), null);
+                this.props.setErrorDisplay(ErrorType.Error, "Unable to Branch", teachWithHistory.discrepancies, null);
             }
         })
         .catch(error => {
@@ -264,7 +264,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             }
             else {
                 //LARS internation
-                setErrorDisplay(ErrorType.Error, "Unable to Edit", teachWithHistory.discrepancies.join(' '), null);
+                setErrorDisplay(ErrorType.Error, "Unable to Edit", teachWithHistory.discrepancies, null);
             }
         })
         .catch(error => {

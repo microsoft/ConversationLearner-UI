@@ -241,7 +241,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             }
             else {
                 //LARS internation
-                setErrorDisplay(ErrorType.Error, "Unable to Edit", teachWithHistory.discrepancies.join(' '), null);
+                setErrorDisplay(ErrorType.Error, "Unable to Edit", teachWithHistory.discrepancies, null);
             }
         })
         .catch(error => {
@@ -273,7 +273,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 })
             } else {
                 //lars INTERNATION
-                setErrorDisplay(ErrorType.Error, "Unable to Undo", teachWithHistory.discrepancies.join(' '), null);
+                setErrorDisplay(ErrorType.Error, "Unable to Undo", teachWithHistory.discrepancies, null);
             }
         })
         .catch(error => {

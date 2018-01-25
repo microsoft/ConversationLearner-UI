@@ -135,7 +135,7 @@ export const deleteTrainDialogThunkAsync = (userId: string, appId: string, train
             dispatch(deleteTrainDialogFulfilled(trainDialogId))
         } catch (e) {
             const error = e as Error
-            dispatch(setErrorDisplay(ErrorType.Error, error.name, error.message, AT.DELETE_TRAIN_DIALOG_REJECTED))
+            dispatch(setErrorDisplay(ErrorType.Error, error.name, [error.message], AT.DELETE_TRAIN_DIALOG_REJECTED))
             dispatch(deleteTrainDialogRejected())
             dispatch(fetchAllTrainDialogsAsync(userId, appId));
         }
@@ -177,7 +177,7 @@ export const deleteLogDialogThunkAsync = (userId: string, appId: string, logDial
         }
         catch (e) {
             const error = e as Error
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.message, AT.DELETE_LOG_DIALOG_ASYNC))
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, [error.message], AT.DELETE_LOG_DIALOG_ASYNC))
             dispatch(deleteLogDialogRejected())
             dispatch(fetchAllLogDialogsAsync(userId, appId));
         }
