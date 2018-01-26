@@ -304,6 +304,10 @@ body .wc-app, .wc-app button, .wc-app input, .wc-app textarea {
   margin-right: 0; }
 
 /* list */
+.wc-disabled .wc-card {
+  pointer-events: none;
+}
+
 .wc-list > .wc-card {
   margin-top: 8px; }
 

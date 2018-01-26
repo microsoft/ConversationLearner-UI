@@ -158,6 +158,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                                 onSelectActivity={() => { }}
                                 hideInput={false}
                                 focusInput={this.props.dialogMode === DialogMode.Wait}
+                                viewOnly={false}
                             />
                             {chatDisable}
                         </div>
