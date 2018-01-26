@@ -37,8 +37,8 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             isResizable: true,
             render: (action, component, index) => {
                 let buttonText = (component.props.dialogType !== DialogType.TEACH && index === 0) ? "Selected" : "Select";
-                let reason = (action as UnscoredAction).reason;
-                if (reason === ScoreReason.NotAvailable) {
+                let isAvailable = component.isUnscoredActionAvailable(action as UnscoredAction);
+                if (!isAvailable) {
                     return (
                         <PrimaryButton
                             disabled={true}
@@ -47,15 +47,17 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                         />
                     )
                 }
-                let refFn = (index === 0) ? ((ref: any) => { component.primaryScoreButton = ref }) : null;
-                return (
-                    <PrimaryButton
-                        onClick={() => component.handleActionSelection(action.actionId)}
-                        ariaDescription={buttonText}
-                        text={buttonText}
-                        componentRef={refFn}
-                    />
-                )
+                else {
+                    let refFn = (index === 0) ? ((ref: any) => { component.primaryScoreButton = ref }) : null;
+                    return (
+                        <PrimaryButton
+                            onClick={() => component.handleActionSelection(action.actionId)}
+                            ariaDescription={buttonText}
+                            text={buttonText}
+                            componentRef={refFn}
+                        />
+                    )
+                }
             }
         },
         {
@@ -117,14 +119,15 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                 } else if (component.isMasked(action.actionId)) {
                     fieldContent = "Masked"
                 } else {
-                    let reason = (action as UnscoredAction).reason;
-                    fieldContent = (reason === ScoreReason.NotAvailable) ?
-                        "Disqualified" :
-                        (component.props.dialogType !== DialogType.TEACH) ?
-                            '' :
-                            "Training...";
+                    let isAvailable = component.isUnscoredActionAvailable(action as UnscoredAction);
+                    if (isAvailable) {
+                        fieldContent = (component.props.dialogType !== DialogType.TEACH) ?
+                            '' : "Training...";
+                    }
+                    else {
+                        fieldContent = "Disqualified";
+                    }
                 }
-
                 return <span className={OF.FontClassNames.mediumPlus}>{fieldContent}</span>
             }
         },
@@ -419,6 +422,26 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             />
         )
     }
+
+    isUnscoredActionAvailable(action: UnscoredAction): boolean {
+        if (action.reason === ScoreReason.NotCalculated) {
+            return this.isActionIdAvailable(action.actionId);
+        }
+        else if (action.reason === ScoreReason.NotAvailable) {
+            return false;
+        }
+        return true;
+    }
+
+    // Returns true if ActionId is available given Entities in Memory
+    isActionIdAvailable(actionId: string) : boolean {
+        let action = this.props.actions.find(a => a.actionId === actionId);
+        if (!action) { 
+            return false;
+        }
+        return this.isAvailable(action);
+    }
+
     // Returns true if Action is available given Entities in Memory
     isAvailable(action: ActionBase): boolean {
 
