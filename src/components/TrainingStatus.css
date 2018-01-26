@@ -6,17 +6,17 @@
     color: var(--color-neutralSecondaryAlt);
     margin-bottom: 0.3em;
 }
-.blis-training-status__icon-row .ms-Icon {
+.blis-training-status__icon-row i[role="presentation"] {
     vertical-align: text-bottom;
     padding: 0.125em 0;
 }
-.blis-training-status__icon-row--success .ms-Icon {
+.blis-training-status__icon-row--success i[role="presentation"] {
     color: var(--color-success);
 }
-.blis-training-status__icon-row--error .ms-Icon {
+.blis-training-status__icon-row--error i[role="presentation"] {
     color: var(--color-error);
 }
-.blis-training-status__icon-row--expired .ms-Icon--Warning {
+.blis-training-status__icon-row--expired i[data-icon-name="Warning"] {
     cursor: pointer;
     color: var(--color-alert);
 }
