@@ -66,8 +66,9 @@ class ErrorPanel extends React.Component<Props, {}> {
                 <div className="blis-errorpanel" >
                     {this.props.error.actionType && <div className={FontClassNames.large}>{this.props.error.actionType} Failed</div>}
                     <div className={FontClassNames.medium}>{this.props.error.error}</div>
-                    {this.props.error && this.props.error.messages.map((str: string) => { 
-                            return str.length === 0 ? <br></br> : <div key={key++} className={FontClassNames.medium}>{str}</div>; 
+                    {this.props.error && this.props.error.messages.map((message: any) => { 
+                            let text = JSON.stringify(message);
+                            return text.length === 0 ? <br></br> : <div key={key++} className={FontClassNames.medium}>{text}</div>; 
                         })
                     }
                 </div>
