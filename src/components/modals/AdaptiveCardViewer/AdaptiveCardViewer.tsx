@@ -8,25 +8,17 @@ import { State } from '../../../types'
 import * as AdaptiveCards from 'adaptivecards';
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 var hostconfig = require('./AdaptiveCardHostConfig.json')
-
-var renderOptions = {
-        // a Host Config defines the style and behavior of all cards
-        hostConfig: hostconfig,
-    
-        // the action handler is invoked when actions are pressed
-        //onExecuteAction: (action: any) => { alert('Ow!'); },
-    
-        // For markdown support you need a third-party library
-        // E.g., to use markdown-it include the script and add the following:
-        // <!-- <script type="text/javascript" src="https://unpkg.com/markdown-it/dist/markdown-it.js"></script> -->
-        // processMarkdown: function (text) { return markdownit().render(text); }
-    };
-    
+   
 class AdaptiveCardViewer extends React.Component<Props, {}> {
     onDismiss = () => {
         this.props.onDismiss()
     }
 
+    renderOptions(): any {
+        return {
+            hostConfig: hostconfig
+        }
+    }
     renderTemplate(): any {
         
         let templateString = JSON.stringify(this.props.template.body);
@@ -57,7 +49,7 @@ class AdaptiveCardViewer extends React.Component<Props, {}> {
             return null;
         }
         let template = this.renderTemplate();
-        let card = AdaptiveCards.renderCard(template, renderOptions);
+        let card = AdaptiveCards.renderCard(template, this.renderOptions());
         return (
             <Modal
                 isOpen={this.props.open}
@@ -65,7 +57,7 @@ class AdaptiveCardViewer extends React.Component<Props, {}> {
                 isBlocking={false}
                 containerClassName="blis-modal blis-modal--border"
             >
-               <div className="wc-app wc-card wc-adaptive-card">
+               <div className="blis-wc-disabled wc-app wc-card wc-adaptive-card">
                     <div dangerouslySetInnerHTML={{__html: card.outerHTML}} />
                 </div>
             </Modal>

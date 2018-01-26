@@ -320,6 +320,7 @@ export default class BlisClient {
             .then(response => new models.Teach(response.data))
     }
 
+    // DELETE_TEACH_SESSION_ASYNC
     teachSessionsDelete(appId: string, teachSession: models.Teach, save: boolean): Promise<void> {
         return this.send({
             method: 'delete',

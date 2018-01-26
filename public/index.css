@@ -34,6 +34,10 @@ html {
   min-width: 32px !important;
 }
 
+.blis-wc-disabled {
+  pointer-events: none;
+}
+
 .blis-callout {
   margin: 0;
   font-size: 12px;
