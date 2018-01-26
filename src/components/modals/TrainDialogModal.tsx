@@ -112,6 +112,7 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
                                 onSelectActivity={activity => this.onWebChatSelectActivity(activity)}
                                 hideInput={true}
                                 focusInput={false}
+                                viewOnly={true}
                             />
                         </div>
                         <div className="blis-chatmodal_controls">

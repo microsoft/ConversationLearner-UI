@@ -19,6 +19,7 @@ class Webchat extends React.Component<Props, {}> {
         onPostActivity: () => { },
         hideInput: false,
         focusInput: false,
+        viewOnly: false
     }
 
     constructor(p: any) {
@@ -100,8 +101,10 @@ class Webchat extends React.Component<Props, {}> {
     }
     render() {
         let chatProps = this.GetChatProps();
+        let className = `webchatwindow wc-app${this.props.viewOnly ? ' wc-disabled' : ``}`;
+
         return (
-            <div id="botchat" className="webchatwindow wc-app">
+            <div id="botchat" className={className}>
                 <BotChat.Chat {...chatProps} />
             </div>
         )
@@ -124,6 +127,7 @@ export interface ReceivedProps {
     history: Activity[],
     hideInput: boolean,
     focusInput: boolean,
+    viewOnly: boolean,
     onSelectActivity: (a: Activity) => void,
     onPostActivity: (a: Activity) => void
 }
