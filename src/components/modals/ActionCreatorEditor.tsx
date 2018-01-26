@@ -246,6 +246,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     negativeEntityTags,
                     requiredEntityTagsFromPayload,
                     requiredEntityTags,
+                    isTerminal: action.isTerminal,
                     isEditing: true
                 }
             }
