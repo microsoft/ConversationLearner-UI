@@ -90,7 +90,7 @@ html {
   color: var(--color-wc-user);
 }
 
-.ms-Icon--Delete:hover, .ms-Icon--Edit:hover{
+i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
   cursor: pointer;
 }
 
@@ -393,13 +393,13 @@ html {
 .blis-action-icon {
   font-size: 24px;
 }
-.blis-action-icon.ms-Icon--ChromeClose {
+.blis-action-icon.i[data-icon-name="ChromeClose"] {
   color: #cc0000;
 }
-.blis-action-icon.ms-Icon--CompletedSolid {
+.blis-action-icon.i[data-icon-name="CompletedSolid"] {
   color: #ffb900;
 }
-.blis-action-icon.ms-Icon--Remove {
+.blis-action-icon.i[data-icon-name="Remove"] {
     color: lightgrey;
     font-size: 18px
 }

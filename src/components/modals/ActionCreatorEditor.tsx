@@ -713,7 +713,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                             </div>
                             {!this.state.isPayloadValid &&
                                 (<div>
-                                    <p className="ms-TextField-errorMessage css-75 errorMessage_c3beacf8">
+                                    <p className="ms-TextField-errorMessage css-83 errorMessage_d666ced5">
                                         <OF.Icon iconName="Error" /><span aria-live="assertive" data-automation-id="error-message">Response is required</span>
                                     </p>
                                 </div>)}
