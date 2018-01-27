@@ -140,7 +140,7 @@ export const createTeachSessionThunkAsync = (key: string, appId: string) => {
             return session
         }
         catch (error) {
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response && error.response.data, AT.CREATE_TEACH_SESSION_ASYNC))
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, [error.response], AT.CREATE_TEACH_SESSION_ASYNC))
             dispatch(createTeachSessionRejected())
             throw error
         }
@@ -158,7 +158,7 @@ export const createTeachSessionFromHistoryThunkAsync = (appId: string, trainDial
             return teachWithHistory
         }
         catch (error) {
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response && error.response.data, AT.CREATE_TEACH_SESSION_FROMHISTORYASYNC))
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, [error.response], AT.CREATE_TEACH_SESSION_FROMHISTORYASYNC))
             dispatch(createTeachSessionRejected())
             throw error
         }
@@ -194,7 +194,7 @@ export const createTeachSessionFromUndoThunkAsync = (appId: string, teach: Teach
             return teachWithHistory
         }
         catch (error) {
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response && error.response.data, AT.CREATE_TEACH_SESSION_FROMUNDOASYNC))
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, [error.response], AT.CREATE_TEACH_SESSION_FROMUNDOASYNC))
             dispatch(createTeachSessionRejected())
             throw error
         }

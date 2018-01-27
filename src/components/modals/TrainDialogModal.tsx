@@ -48,14 +48,20 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
 
     onClickBranch() {
         if (this.state.selectedActivity) {
-            this.props.onBranch(this.state.selectedActivity.channelData.roundIndex);
+            let branchRound = this.state.selectedActivity.channelData.roundIndex;
+            // If bot response branch one later
+            if (this.state.selectedActivity.from.id === 'BlisTrainer') {
+                branchRound++;
+            }
+            if (branchRound > 0) {
+                this.props.onBranch(branchRound);
+            }
         }
         else {
             this.setState({
                 calloutOpen: true
               });
         }
-        //LARS TODO check that not round 0
     }
 
     onClickDone() {
