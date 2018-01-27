@@ -555,8 +555,10 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             
         // If we added entity to a payload which was already in the list of required entities remove it to avoid duplicates.
         const requiredEntityTags = this.state.requiredEntityTags.filter(tag => !requiredEntityTagsFromPayload.some(t => t.key === tag.key))
-        const isPayloadValid = this.state.selectedActionTypeOptionKey === ActionTypes.API_LOCAL || (value.document.text.length > 0)
-
+        const isPayloadValid = this.state.selectedActionTypeOptionKey !== ActionTypes.TEXT
+            ? true
+            : value.document.text.length !== 0
+        
         this.setState({
             isPayloadValid,
             slateValuesMap: newArguments,
