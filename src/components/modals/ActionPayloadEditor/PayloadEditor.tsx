@@ -285,10 +285,22 @@ export default class MentionEditor extends React.Component<Props, State> {
         return true
     }
 
-    onTab(event: React.KeyboardEvent<HTMLInputElement>, change: any) {
+    onTab(event: React.KeyboardEvent<HTMLInputElement>, change: any): boolean | void {
         console.log(`onTab`)
-        const option = this.state.matchedOptions[this.state.highlightIndex].original
-        return this.onCompleteNode(event, change, option)
+        if (!this.state.menuProps.isVisible) {
+            return
+        }
+
+        if (this.state.matchedOptions.length === 0) {
+            return
+        }
+
+        const matchedOption = this.state.matchedOptions[this.state.highlightIndex]
+        if (matchedOption) {
+            throw new Error(`You attempted to access matched option at index ${this.state.highlightIndex}, but there are only ${this.state.matchedOptions.length} items`)
+        }
+
+        return this.onCompleteNode(event, change, matchedOption.original)
     }
 
     onChangePickerProps = (menuProps: Partial<IPickerProps>) => {
