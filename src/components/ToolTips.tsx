@@ -239,7 +239,7 @@ export function GetTip(tipType: string) {
         case TipType.ENTITY_ACTION_REQUIRED:
             return (<FormattedMessage id={FM.TOOLTIP_ENTITY_ACTION_REQUIRED} defaultMessage="Required For Actions" />)
         case TipType.ENTITY_EXTRACTOR_WARNING:
-            return (<FormattedMessage id={FM.TOOLTIP_ENTITY_EXTRACTOR_WARNING} defaultMessage="Blocked Actions" />)
+            return (<FormattedMessage id={FM.TOOLTIP_ENTITY_EXTRACTOR_WARNING} defaultMessage="Text Variations must contain the same detected Entities and the primary input text." />)
         case TipType.ENTITY_VALUE:
             return (<FormattedMessage id={FM.TOOLTIP_ENTITY_VALUE} defaultMessage="Wait" />);
         case TipType.ENTITY_MULTIVALUE:

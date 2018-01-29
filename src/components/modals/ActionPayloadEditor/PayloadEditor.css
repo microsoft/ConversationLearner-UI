@@ -2,6 +2,10 @@
 .editor-container {
     position: relative;
 }
+/** This is BEM violation, don't repeat */
+.editor-container .ms-TextField-errorMessage {
+    padding: 0.5em 0;
+}
 
 
 .editor {
