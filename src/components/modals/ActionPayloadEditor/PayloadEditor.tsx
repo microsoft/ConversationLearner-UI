@@ -213,7 +213,7 @@ export default class MentionEditor extends React.Component<Props, State> {
         }
 
         const matchedOption = this.state.matchedOptions[this.state.highlightIndex]
-        if (matchedOption) {
+        if (!matchedOption) {
             throw new Error(`You attempted to access matched option at index ${this.state.highlightIndex}, but there are only ${this.state.matchedOptions.length} items`)
         }
 
@@ -301,7 +301,7 @@ export default class MentionEditor extends React.Component<Props, State> {
         }
 
         const matchedOption = this.state.matchedOptions[this.state.highlightIndex]
-        if (matchedOption) {
+        if (!matchedOption) {
             throw new Error(`You attempted to access matched option at index ${this.state.highlightIndex}, but there are only ${this.state.matchedOptions.length} items`)
         }
 
@@ -338,6 +338,7 @@ export default class MentionEditor extends React.Component<Props, State> {
         this.setState(prevState => ({
             menuProps: { ...prevState.menuProps, isVisible: false }
         }))
+        this.props.onChange(change.value)
     }
 
     render() {

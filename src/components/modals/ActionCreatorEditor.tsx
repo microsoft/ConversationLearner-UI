@@ -207,13 +207,12 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                  * It should be explicit field of the payload object instead of substring.
                  */
                 const actionType = action.metadata.actionType
-                let payload = action.payload
                 let selectedApiOptionKey: string | null = null;
                 let selectedCardOptionKey: string | null = null;
 
                 let slateValuesMap = {}
                 if (actionType === ActionTypes.TEXT) {
-                    slateValuesMap[TEXT_SLOT] = createSlateValue(payload)
+                    slateValuesMap[TEXT_SLOT] = createSlateValue(action.payload)
                 }
                 else {
                     let actionPayload = JSON.parse(action.payload) as ActionPayload;
