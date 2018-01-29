@@ -3,6 +3,7 @@ import { Value } from 'slate'
 import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
+import Plain from 'slate-plain-serializer'
 import { fetchBotInfoAsync } from '../../actions/fetchActions'
 import { Modal } from 'office-ui-fabric-react/lib/Modal'
 import { ActionBase, ActionTypes, ActionMetaData, ActionPayload, 
@@ -329,7 +330,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     getActionArguments(slateValuesMap: {[slot: string]: ActionPayloadEditor.SlateValue}): ActionArgument[] {
         return Object.entries(slateValuesMap)
             .filter(([parameter, value]) => value.document.text.length > 0)
-            .map(([parameter, value]) => new ActionArgument({parameter, value: value.document.text}))
+            .map(([parameter, value]) => new ActionArgument({parameter, value: Plain.serialize(value)}))
     }
 
     onClickSubmit = () => {
@@ -338,7 +339,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             case ActionTypes.TEXT: {
                 const value = this.state.slateValuesMap[TEXT_SLOT]
                 const slatePayload: IPayload = {
-                    text: value.document.text,
+                    text: Plain.serialize(value),
                     json: value.toJSON()
                 }
                 payload = JSON.stringify(slatePayload)
