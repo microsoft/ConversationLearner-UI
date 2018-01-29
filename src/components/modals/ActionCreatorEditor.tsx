@@ -329,7 +329,10 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     getActionArguments(slateValuesMap: {[slot: string]: ActionPayloadEditor.SlateValue}): ActionArgument[] {
         return Object.entries(slateValuesMap)
             .filter(([parameter, value]) => value.document.text.length > 0)
-            .map(([parameter, value]) => new ActionArgument({parameter, value: Plain.serialize(value)}))
+            .map(([parameter, value]) => new ActionArgument({parameter, value: JSON.stringify({
+                text: Plain.serialize(value),
+                json: value.toJSON()
+            })}))
     }
 
     onClickSubmit = () => {
