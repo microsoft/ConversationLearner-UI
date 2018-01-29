@@ -108,7 +108,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
         else {  
             
             let trainDialog = new TrainDialog({
-                rounds: this.state.saveTrainDialog.rounds,
+                rounds: updatedTrainDialog.rounds,
                 definitions: new AppDefinition({
                     entities: this.props.entities,
                     actions: this.props.actions
