@@ -162,7 +162,7 @@ export default class MentionEditor extends React.Component<Props, State> {
         }
     }
 
-    onArrowUp(event: React.KeyboardEvent<HTMLInputElement>, change: any) {
+    onArrowUp(event: React.KeyboardEvent<HTMLInputElement>, change: any): boolean | void {
         console.log(`onArrowUp`)
         if (!this.state.menuProps.isVisible) {
             return undefined
@@ -183,7 +183,7 @@ export default class MentionEditor extends React.Component<Props, State> {
         return true
     }
 
-    onArrowDown(event: React.KeyboardEvent<HTMLInputElement>, change: any) {
+    onArrowDown(event: React.KeyboardEvent<HTMLInputElement>, change: any): boolean | void {
         console.log('onArrowDown')
         if (!this.state.menuProps.isVisible) {
             return undefined
@@ -204,11 +204,20 @@ export default class MentionEditor extends React.Component<Props, State> {
         return true
     }
 
-    onEnter(event: React.KeyboardEvent<HTMLInputElement>, change: any) {
+    onEnter(event: React.KeyboardEvent<HTMLInputElement>, change: any): boolean | void {
         console.log(`onEnter`)
         event.preventDefault()
-        const option = this.state.matchedOptions[this.state.highlightIndex].original
-        this.onCompleteNode(event, change, option)
+
+        if (!this.state.menuProps.isVisible || this.state.matchedOptions.length === 0) {
+            return true
+        }
+
+        const matchedOption = this.state.matchedOptions[this.state.highlightIndex]
+        if (!matchedOption) {
+            throw new Error(`You attempted to access matched option at index ${this.state.highlightIndex}, but there are only ${this.state.matchedOptions.length} items`)
+        }
+
+        this.onCompleteNode(event, change, matchedOption.original)
         return true
     }
 
@@ -287,16 +296,12 @@ export default class MentionEditor extends React.Component<Props, State> {
 
     onTab(event: React.KeyboardEvent<HTMLInputElement>, change: any): boolean | void {
         console.log(`onTab`)
-        if (!this.state.menuProps.isVisible) {
-            return
-        }
-
-        if (this.state.matchedOptions.length === 0) {
+        if (!this.state.menuProps.isVisible || this.state.matchedOptions.length === 0) {
             return
         }
 
         const matchedOption = this.state.matchedOptions[this.state.highlightIndex]
-        if (matchedOption) {
+        if (!matchedOption) {
             throw new Error(`You attempted to access matched option at index ${this.state.highlightIndex}, but there are only ${this.state.matchedOptions.length} items`)
         }
 
@@ -333,6 +338,7 @@ export default class MentionEditor extends React.Component<Props, State> {
         this.setState(prevState => ({
             menuProps: { ...prevState.menuProps, isVisible: false }
         }))
+        this.props.onChange(change.value)
     }
 
     render() {

@@ -3,6 +3,7 @@ import { Value } from 'slate'
 import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
+import Plain from 'slate-plain-serializer'
 import { fetchBotInfoAsync } from '../../actions/fetchActions'
 import { Modal } from 'office-ui-fabric-react/lib/Modal'
 import { ActionBase, ActionTypes, ActionMetaData, ActionPayload, 
@@ -206,23 +207,33 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                  * It should be explicit field of the payload object instead of substring.
                  */
                 const actionType = action.metadata.actionType
-                let payload = action.payload
                 let selectedApiOptionKey: string | null = null;
                 let selectedCardOptionKey: string | null = null;
 
                 let slateValuesMap = {}
                 if (actionType === ActionTypes.TEXT) {
-                    slateValuesMap[TEXT_SLOT] = createSlateValue(payload)
+                    slateValuesMap[TEXT_SLOT] = createSlateValue(action.payload)
                 }
                 else {
                     let actionPayload = JSON.parse(action.payload) as ActionPayload;
                     if (actionType === ActionTypes.API_LOCAL) {
                         selectedApiOptionKey = actionPayload.payload;
+                        for (let actionArgument of actionPayload.arguments) {
+                            slateValuesMap[actionArgument.parameter] = createSlateValue(actionArgument.value)
+                        }
                     } else if (actionType === ActionTypes.CARD) {
                         selectedCardOptionKey = actionPayload.payload;
-                    }
-                    for (let actionArgument of actionPayload.arguments) {
-                        slateValuesMap[actionArgument.parameter] = createSlateValue(actionArgument.value)
+                        const template = this.props.botInfo.templates.find(t => t.name === selectedCardOptionKey)
+                        if (!template) {
+                            throw new Error(`Could not find template with name: ${selectedCardOptionKey}`)
+                        }
+
+                        // For each template variable initialize to the associated argument value or default to empty string
+                        for (let cardTemplateVariable of template.variables) {
+                            const argument = actionPayload.arguments.find(a => a.parameter === cardTemplateVariable.key)
+                            const initialValue = argument ? argument.value : ''
+                            slateValuesMap[cardTemplateVariable.key] = createSlateValue(initialValue)
+                        }
                     }
                 }
 
@@ -318,7 +329,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     getActionArguments(slateValuesMap: {[slot: string]: ActionPayloadEditor.SlateValue}): ActionArgument[] {
         return Object.entries(slateValuesMap)
             .filter(([parameter, value]) => value.document.text.length > 0)
-            .map(([parameter, value]) => new ActionArgument({parameter, value: value.document.text}))
+            .map(([parameter, value]) => new ActionArgument({parameter, value: Plain.serialize(value)}))
     }
 
     onClickSubmit = () => {
@@ -327,7 +338,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             case ActionTypes.TEXT: {
                 const value = this.state.slateValuesMap[TEXT_SLOT]
                 const slatePayload: IPayload = {
-                    text: value.document.text,
+                    text: Plain.serialize(value),
                     json: value.toJSON()
                 }
                 payload = JSON.stringify(slatePayload)
