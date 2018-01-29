@@ -218,11 +218,22 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     let actionPayload = JSON.parse(action.payload) as ActionPayload;
                     if (actionType === ActionTypes.API_LOCAL) {
                         selectedApiOptionKey = actionPayload.payload;
+                        for (let actionArgument of actionPayload.arguments) {
+                            slateValuesMap[actionArgument.parameter] = createSlateValue(actionArgument.value)
+                        }
                     } else if (actionType === ActionTypes.CARD) {
                         selectedCardOptionKey = actionPayload.payload;
-                    }
-                    for (let actionArgument of actionPayload.arguments) {
-                        slateValuesMap[actionArgument.parameter] = createSlateValue(actionArgument.value)
+                        const template = this.props.botInfo.templates.find(t => t.name === selectedCardOptionKey)
+                        if (!template) {
+                            throw new Error(`Could not find template with name: ${selectedCardOptionKey}`)
+                        }
+
+                        // For each template variable initialize to the associated argument value or default to empty string
+                        for (let cardTemplateVariable of template.variables) {
+                            const argument = actionPayload.arguments.find(a => a.parameter === cardTemplateVariable.key)
+                            const initialValue = argument ? argument.value : ''
+                            slateValuesMap[cardTemplateVariable.key] = createSlateValue(initialValue)
+                        }
                     }
                 }
 
