@@ -3,7 +3,7 @@ import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
-import { ActionArgument, Template } from 'blis-models'
+import { ActionArgument, Template, TextPayload } from 'blis-models'
 import { State } from '../../../types'
 import * as AdaptiveCards from 'adaptivecards';
 import { injectIntl, InjectedIntlProps } from 'react-intl'
@@ -19,14 +19,20 @@ class AdaptiveCardViewer extends React.Component<Props, {}> {
             hostConfig: hostconfig
         }
     }
-    renderTemplate(): any {
-        
+
+    getTemplate(): any {
         let templateString = JSON.stringify(this.props.template.body);
 
         // Substitute agrument values
         for (let actionArgument of this.props.actionArguments) {
             if (actionArgument) {
-                templateString = templateString.replace(new RegExp(`{{${actionArgument.parameter}}}`, 'g'), actionArgument.value);
+                let argumentValue = actionArgument.value
+                if (actionArgument.value.startsWith('{')) {
+                    const textPayload = JSON.parse(actionArgument.value) as TextPayload
+                    argumentValue = textPayload.text
+                }
+
+                templateString = templateString.replace(new RegExp(`{{${actionArgument.parameter}}}`, 'g'), argumentValue);
             }
         }
 
@@ -48,7 +54,7 @@ class AdaptiveCardViewer extends React.Component<Props, {}> {
         if (!this.props.open || !this.props.template) {
             return null;
         }
-        let template = this.renderTemplate();
+        let template = this.getTemplate();
         let card = AdaptiveCards.renderCard(template, this.renderOptions());
         return (
             <Modal

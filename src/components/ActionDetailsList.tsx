@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
 import { connect } from 'react-redux';
-import { ActionBase, ActionTypes, Template, ActionArgument } from 'blis-models'
+import { ActionBase, ActionTypes, Template, ActionArgument, TextPayload } from 'blis-models'
 import { State } from '../types'
 import * as OF from 'office-ui-fabric-react';
 import { onRenderDetailsHeader } from './ToolTips'
@@ -91,7 +91,8 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
         if (this.state.cardViewerAction) {
             let actionPayload = ActionBase.GetPayload(this.state.cardViewerAction);
             template = this.props.templates.find((t) => t.name === actionPayload);
-            actionArguments = ActionBase.GetActionArguments(this.state.cardViewerAction);
+            actionArguments = ActionBase.GetActionArguments(this.state.cardViewerAction)
+            console.log(`actionArguments: `, actionArguments)
         }
 
         return (
@@ -103,7 +104,7 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
                     checkboxVisibility={OF.CheckboxVisibility.hidden}
                     onRenderItemColumn={(action: ActionBase, i, column: IRenderableColumn) => column.render(action, this)}
                     onActiveItemChanged={(item, index, ev) => this.onClickRow(item, index, ev)}
-                    onColumnHeaderClick={this.onClickColumnHeader} 
+                    onColumnHeaderClick={this.onClickColumnHeader}
                     onRenderDetailsHeader={(detailsHeaderProps: OF.IDetailsHeaderProps,
                         defaultRender: OF.IRenderFunction<OF.IDetailsHeaderProps>) =>
                         onRenderDetailsHeader(detailsHeaderProps, defaultRender)}
@@ -155,28 +156,36 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             render: (action, component) => {
                 const args = (action.metadata.actionType === ActionTypes.TEXT) ? [] :
                     ActionBase.GetActionArguments(action)
-                    .filter(aa => !Util.isNullOrWhiteSpace(aa.value))
-                    .map(aa => `${aa.value}`);
+                        .map(aa => {
+                            if (aa.value.startsWith('{')) {
+                                const textPayload = JSON.parse(aa.value) as TextPayload
+                                return textPayload.text
+                            }
+
+                            return aa.value
+                        })
+                        .filter(value => !Util.isNullOrWhiteSpace(value))
+
                 return (
                     <div>
-                    {action.metadata.actionType === ActionTypes.CARD &&
-                        <OF.PrimaryButton
-                            className="blis-button--viewCard"
-                            onClick={() => component.onClickViewCard(action)}
-                            ariaDescription="ViewCard"
-                            text=""
-                            iconProps={{ iconName: 'RedEye' }}
-                        />
-                    }
-                    <span className={OF.FontClassNames.mediumPlus} onClick={() => component.props.onSelectAction(action)}>{ActionBase.GetPayload(action)}</span>                   
-                    {   args.length !== 0 &&
-                        args.map((argument, i) => <div className="ms-ListItem-primaryText" key={i}>{argument}</div>)
-                    }
+                        {action.metadata.actionType === ActionTypes.CARD &&
+                            <OF.PrimaryButton
+                                className="blis-button--viewCard"
+                                onClick={() => component.onClickViewCard(action)}
+                                ariaDescription="ViewCard"
+                                text=""
+                                iconProps={{ iconName: 'RedEye' }}
+                            />
+                        }
+                        <span className={OF.FontClassNames.mediumPlus} onClick={() => component.props.onSelectAction(action)}>{ActionBase.GetPayload(action)}</span>
+                        {args.length !== 0 &&
+                            args.map((argument, i) => <div className="ms-ListItem-primaryText" key={i}>{argument}</div>)
+                        }
                     </div>
                 )
             }
         },
-        { 
+        {
             key: 'actionType',
             name: intl.formatMessage({
                 id: FM.ACTIONDETAILSLIST_COLUMNS_TYPE,
