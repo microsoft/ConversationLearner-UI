@@ -33,7 +33,13 @@ const teachSessionReducer: Reducer<TeachSessionState> = (state = initialState, a
         case AT.CREATE_TEACH_SESSION_FROMHISTORYFULFILLED:
             // Only update state if there were no discrepancies
             if (action.teachWithHistory.discrepancies.length === 0) {
-                return { ...state, all: [...state.all, action.teachWithHistory.teach], memories: action.teachWithHistory.memories, current: action.teachWithHistory.teach, mode: DialogMode.Wait }
+                return { ...initialState, 
+                    all: [...state.all, action.teachWithHistory.teach], 
+                    current: action.teachWithHistory.teach, 
+                    mode: DialogMode.Wait, 
+                    memories: action.teachWithHistory.memories, 
+                    prevMemories: action.teachWithHistory.prevMemories
+                }
             }
             return { ...state };
         case AT.DELETE_TEACH_SESSION_FULFILLED:

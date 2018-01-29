@@ -183,11 +183,6 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     }
 
     onUndoTeachStep() {
-        // Clear history first
-        this.setState({
-            activities: null
-        });
-
         ((this.props.createTeachSessionFromUndoThunkAsync(this.props.app.appId, this.state.teachSession, this.props.user.name, this.props.user.id) as any) as Promise<TeachWithHistory>)
         .then(teachWithHistory => {
             if (teachWithHistory.discrepancies.length === 0) {

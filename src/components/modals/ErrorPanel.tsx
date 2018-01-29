@@ -67,10 +67,14 @@ class ErrorPanel extends React.Component<Props, {}> {
                     {this.props.error.actionType && <div className={FontClassNames.large}>{this.props.error.actionType} Failed</div>}
                     <div className={FontClassNames.medium}>{this.props.error.error}</div>
                     {this.props.error && this.props.error.messages.map((message: any) => { 
-                            if (typeof message !== "string") {
+                            if (message == null)
+                            { 
+                                message = 'Unknown';
+                            }
+                            else if (typeof message !== 'string') {
                                 message = JSON.stringify(message);
                             }
-                            return message.length === 0 ? <br></br> : <div key={key++} className={FontClassNames.medium}>{message}</div>; 
+                            return message.length === 0 ? <br key={key++}></br> : <div key={key++} className={FontClassNames.medium}>{message}</div>;
                         })
                     }
                 </div>
