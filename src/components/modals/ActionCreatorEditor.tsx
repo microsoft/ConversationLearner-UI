@@ -195,7 +195,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             }
 
             // If we are given an action, set edit mode and apply properties
-            if (nextProps.action) {
+            if (nextProps.action && nextProps.action !== this.props.action) {
                 const action = nextProps.action
 
                 const negativeEntityTags = convertEntityIdsToTags(action.negativeEntities.filter(entityId => entityId !== action.suggestedEntity), nextProps.entities)
