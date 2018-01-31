@@ -11,6 +11,7 @@ import { createTeachSessionThunkAsync,
     createTeachSessionFromUndoThunkAsync, 
     createTeachSessionFromHistoryThunkAsync } from '../../../actions/createActions'
 import { deleteTrainDialogThunkAsync } from '../../../actions/deleteActions';    
+import { editTrainDialogThunkAsync } from '../../../actions/updateActions';
 import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { FM } from '../../../react-intl-messages'
 import { setErrorDisplay } from '../../../actions/displayActions';
@@ -262,9 +263,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
     onEditTrainDialog(sourceTrainDialogId: string, newTrainDialog: TrainDialog) {
         
-        this.props.deleteTrainDialogThunkAsync(this.props.user.id, this.props.app.appId,sourceTrainDialogId);
-        
-        ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app.appId, newTrainDialog, this.props.user.name, this.props.user.id) as any) as Promise<TeachWithHistory>)
+        ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app.appId, newTrainDialog, this.props.user.name, this.props.user.id, sourceTrainDialogId) as any) as Promise<TeachWithHistory>)
         .then(teachWithHistory => {
             if (teachWithHistory.discrepancies.length === 0) {
                 this.setState({
@@ -291,6 +290,16 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         })
         .catch(error => {
             console.warn(`Error when attempting to create teach session from train dialog: `, error)
+        })
+    }
+
+    // Replace the current trainDialog with a new one
+    // Should only be used when replay not required (i.e. changing text variations)
+    onReplaceTrainDialog(newTrainDialog: TrainDialog) {
+        
+        ((this.props.editTrainDialogThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<TeachWithHistory>)
+        .catch(error => {
+            console.warn(`Error when attempting to edit a train dialog: `, error)
         })
     }
 
@@ -423,6 +432,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     onBranch={(turnIndex: number) => this.onBranchTrainDialog(turnIndex)}
                     onDelete={() => this.onDeleteTrainDialog()}
                     onEdit={(sourceTrainDialogId: string, editedTrainDialog: TrainDialog) => this.onEditTrainDialog(sourceTrainDialogId, editedTrainDialog)}
+                    onReplace={(editedTrainDialog: TrainDialog) => this.onReplaceTrainDialog(editedTrainDialog)}
                     trainDialog={trainDialog}
                     history={this.state.isTrainDialogModalOpen ? this.state.activities : null}
                 />
@@ -438,6 +448,7 @@ const mapDispatchToProps = (dispatch: any) => {
         deleteTrainDialogThunkAsync,
         createTeachSessionFromUndoThunkAsync,
         createTeachSessionFromHistoryThunkAsync,
+        editTrainDialogThunkAsync,
         setErrorDisplay
     }, dispatch)
 }

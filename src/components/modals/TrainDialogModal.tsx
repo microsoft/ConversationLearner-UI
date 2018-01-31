@@ -18,7 +18,8 @@ interface ComponentState {
     calloutOpen: boolean,
     selectedActivity: Activity | null,
     webchatKey: number,
-    currentTrainDialog: TrainDialog
+    currentTrainDialog: TrainDialog,
+    pendingExtractionChanges: boolean
 }
 
 const initialState: ComponentState = {
@@ -27,6 +28,7 @@ const initialState: ComponentState = {
     selectedActivity: null,
     webchatKey: 0,
     currentTrainDialog: null,
+    pendingExtractionChanges: false
 }
 
 class TrainDialogModal extends React.Component<Props, ComponentState> {
@@ -99,8 +101,17 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
         });
       }
 
+    onExtractionsChanged(changed: boolean) {
+        // Put mask on webchat if changing extractions
+        this.setState({
+            pendingExtractionChanges: changed
+        })
+    }
+
     render() {
         const { intl } = this.props
+        let chatDisable = this.state.pendingExtractionChanges ? <div className="wc-disable"/> : null;
+
         return (
             <Modal
                 isOpen={this.props.open}
@@ -120,6 +131,7 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
                                 focusInput={false}
                                 viewOnly={true}
                             />
+                            {chatDisable}
                         </div>
                         <div className="blis-chatmodal_controls">
                             <div className="blis-chatmodal_admin-controls">
@@ -128,6 +140,8 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
                                     trainDialog={this.props.trainDialog}
                                     selectedActivity={this.state.selectedActivity}
                                     onEdit={(sourceTrainDialogId: string, editedTrainDialog: TrainDialog) => this.props.onEdit(sourceTrainDialogId, editedTrainDialog)}
+                                    onReplace={(editedTrainDialog: TrainDialog) => this.props.onReplace(editedTrainDialog)}
+                                    onExtractionsChanged={(changed: boolean) => this.onExtractionsChanged(changed)}
                                 />
                             </div>
                         </div>
@@ -139,6 +153,7 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
                         <div className="blis-modal-buttons_secondary">
                             <div  ref={ (menuButton) => this._refBranchButton = menuButton}>
                                 <DefaultButton
+                                        disabled={this.state.pendingExtractionChanges}
                                         onClick={() => this.onClickBranch()}
                                         ariaDescription={intl.formatMessage({
                                             id: FM.TRAINDIALOGMODAL_BRANCH_ARIADESCRIPTION,
@@ -151,6 +166,7 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
                                 />
                             </div>
                             <DefaultButton
+                                disabled={this.state.pendingExtractionChanges}
                                 onClick={() => this.onClickDelete()}
                                 ariaDescription={intl.formatMessage({
                                     id: FM.TRAINDIALOGMODAL_DEFAULTBUTTON_ARIADESCRIPTION,
@@ -162,6 +178,7 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
                                 })}
                             />
                             <PrimaryButton
+                                disabled={this.state.pendingExtractionChanges}
                                 onClick={() => this.onClickDone()}
                                 ariaDescription={intl.formatMessage({
                                     id: FM.TRAINDIALOGMODAL_PRIMARYBUTTON_ARIADESCRIPTION,
@@ -222,6 +239,7 @@ export interface ReceivedProps {
     onClose: () => void,
     onBranch: (turnIndex: number) => void,
     onEdit: (sourceTrainDialogId: string, newTrainDialog: TrainDialog) => void,
+    onReplace: (newTrainDialog: TrainDialog) => void,
     onDelete: () => void
     open: boolean
     trainDialog: TrainDialog

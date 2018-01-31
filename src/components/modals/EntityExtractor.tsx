@@ -158,17 +158,14 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
             newTextVariations: [...this.props.originalTextVariations],
             extractionChanged: false,
         });
+        if (this.props.onExtractionsChanged) {
+            this.props.onExtractionsChanged(false);
+        }
     }
     onClickSubmitExtractions() {
         this.submitExtractions(this.allResponses(), this.props.roundIndex);
     }
     submitExtractions(allResponses: ExtractResponse[], roundIndex: number) {
-        // Clear saved responses
-        this.setState({
-            savedExtractResponses: null,
-            savedRoundIndex: 0,
-            extractionChanged: false
-        })
 
         if (!this.allValid(allResponses)) {
             this.handleOpenWarning();
@@ -190,6 +187,10 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
             extractionChanged: true,
             pendingVariationChange: false
         });
+
+        if (this.props.onExtractionsChanged) {
+            this.props.onExtractionsChanged(true);
+        }
     }
 
     onChangeTextVariation = (value: string): void => {
@@ -215,6 +216,9 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                 extractionChanged: true
             });
         }
+        if (this.props.onExtractionsChanged) {
+            this.props.onExtractionsChanged(true);
+        }
     }
     onUpdateExtractResponse(extractResponse: ExtractResponse): void {
 
@@ -239,6 +243,9 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                 newTextVariations: newVariations,
                 extractionChanged: true
             });
+        }
+        if (this.props.onExtractionsChanged) {
+            this.props.onExtractionsChanged(true);
         }
     }
     onClickSaveCheckYes() {
@@ -273,6 +280,10 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
             pendingVariationChange: false,
             textVariationValue: ''
         })
+
+        if (this.props.onExtractionsChanged) {
+            this.props.onExtractionsChanged(true);
+        }
     }
 
     render() {
@@ -324,7 +335,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                         </div>}
                     </div>
                 })}
-                {canEdit && <OF.TextField
+                {canEdit && this.props.extractType !== DialogType.LOGDIALOG && <OF.TextField
                     value={this.state.textVariationValue}
                     onChanged={this.onChangeTextVariation}
                     placeholder={this.props.intl.formatMessage({
@@ -338,35 +349,34 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                         }
                     }}
                 />}
-                {canEdit && (
-                    (this.props.extractType !== DialogType.TEACH) ?
-                        (
-                            <div className="blis-buttons-row">
-                                <OF.PrimaryButton
-                                    disabled={!this.state.extractionChanged || !allExtractResponsesValid || this.state.pendingVariationChange}
-                                    onClick={this.onClickSubmitExtractions}
-                                    ariaDescription={'Sumbit Changes'}
-                                    text={'Submit Changes'}
-                                    componentRef={(ref: any) => { this.doneExtractingButton = ref }}
-                                />
-                                <OF.PrimaryButton
-                                    disabled={!this.state.extractionChanged}
-                                    onClick={this.onClickUndoChanges}
-                                    ariaDescription="Undo Changes"
-                                    text="Undo"
-                                />
-                            </div>
-                        ) : (
-                            <div className="blis-buttons-row">
-                                <OF.PrimaryButton
-                                    disabled={!allExtractResponsesValid || this.state.pendingVariationChange}
-                                    onClick={this.onClickSubmitExtractions}
-                                    ariaDescription={'Score Actions'}
-                                    text={'Score Actions'}
-                                    componentRef={(ref: any) => { this.doneExtractingButton = ref }}
-                                />
-                            </div>
-                        ))}
+                {canEdit && this.props.extractType !== DialogType.TEACH &&
+                    <div className="blis-buttons-row">
+                        <OF.PrimaryButton
+                            disabled={!this.state.extractionChanged || !allExtractResponsesValid || this.state.pendingVariationChange}
+                            onClick={this.onClickSubmitExtractions}
+                            ariaDescription={'Sumbit Changes'}
+                            text={'Submit Changes'}
+                            componentRef={(ref: any) => { this.doneExtractingButton = ref }}
+                        />
+                        <OF.PrimaryButton
+                            disabled={!this.state.extractionChanged}
+                            onClick={this.onClickUndoChanges}
+                            ariaDescription="Undo Changes"
+                            text="Undo"
+                        />
+                    </div>
+                }
+                {canEdit && this.props.extractType === DialogType.TEACH &&
+                    <div className="blis-buttons-row">
+                        <OF.PrimaryButton
+                            disabled={!allExtractResponsesValid || this.state.pendingVariationChange}
+                            onClick={this.onClickSubmitExtractions}
+                            ariaDescription={'Score Actions'}
+                            text={'Score Actions'}
+                            componentRef={(ref: any) => { this.doneExtractingButton = ref }}
+                        />
+                    </div>
+                }
                 <div className="blis-dialog-admin__dialogs">
                     <EntityCreatorEditor
                         app={this.props.app}
@@ -436,6 +446,7 @@ export interface ReceivedProps {
     extractResponses: ExtractResponse[]
     originalTextVariations: TextVariation[]
     onTextVariationsExtracted: (extractResponse: ExtractResponse, textVariations: TextVariation[], roundIndex: number) => void
+    onExtractionsChanged?: (hasChanged: boolean) => void
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
