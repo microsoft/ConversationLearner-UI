@@ -4,6 +4,7 @@ import { BlisAppBase, EntityBase, ActionBase, TrainDialog, LogDialog, Teach, Ses
 import { Dispatch } from 'redux'
 import { setErrorDisplay } from './displayActions'
 import * as ClientFactory from '../services/clientFactory'
+import { deleteTrainDialogThunkAsync } from './deleteActions';  
 
 export const createBLISApplicationAsync = (key: string, userId: string, application: BlisAppBase): ActionObject => {
     return {
@@ -147,13 +148,17 @@ export const createTeachSessionThunkAsync = (key: string, appId: string) => {
     }
 }
 
-export const createTeachSessionFromHistoryThunkAsync = (appId: string, trainDialog: TrainDialog, userName: string, userId: string) => {
+export const createTeachSessionFromHistoryThunkAsync = (appId: string, trainDialog: TrainDialog, userName: string, userId: string, deleteSourceId: string = null) => {
     return async (dispatch: Dispatch<any>) => {
         const blisClient = ClientFactory.getInstance(AT.CREATE_TEACH_SESSION_FROMHISTORYASYNC)
         dispatch(createTeachSessionFromHistoryAsync(appId, trainDialog, userName, userId))
 
         try {
-            const teachWithHistory = await blisClient.teachSessionFromHistory(appId, trainDialog, userName, userId)
+            const teachWithHistory = await blisClient.teachSessionFromHistory(appId, trainDialog, userName, userId);
+            // Detele source trainDialog if requested and no discrepancies during replay
+            if (deleteSourceId && teachWithHistory.discrepancies.length === 0) {
+                dispatch(deleteTrainDialogThunkAsync(userId, appId, deleteSourceId));
+            }
             dispatch(createTeachSessionFromHistoryFulfilled(teachWithHistory))
             return teachWithHistory
         }

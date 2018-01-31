@@ -6,7 +6,7 @@ import {
     ActionBase, TeachWithHistory,
     TrainDialog, LogDialog, Session, Teach, ScoreInput,
     UserInput, ExtractResponse, DialogType,
-    UIExtractResponse, UITrainScorerStep,
+    UIExtractResponse, UITrainScorerStep, TrainResponse,
     UITeachResponse, UIScoreInput, UIScoreResponse, TrainingStatus
 } from 'blis-models'
 import { TipType } from '../components/ToolTips'
@@ -33,6 +33,13 @@ export type UpdateAction = {
 } | {
     type: AT.EDIT_ACTION_FULFILLED,
     blisAction: ActionBase
+} | {
+    type: AT.EDIT_TRAINDIALOG_ASYNC,
+    blisAppId: string,
+    trainDialog: TrainDialog
+} | {
+    type: AT.EDIT_TRAINDIALOG_FULFILLED,
+    trainResponse: TrainResponse
 }
 
 export type DisplayAction = {

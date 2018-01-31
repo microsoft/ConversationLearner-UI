@@ -1,13 +1,14 @@
-
-import { ActionObject } from '../types'
+import { ActionObject, ErrorType } from '../types'
 import { AT } from '../types/ActionTypes'
-import { BlisAppBase, EntityBase, ActionBase } from 'blis-models';
+import { BlisAppBase, EntityBase, ActionBase, TrainDialog, TrainResponse } from 'blis-models';
+import * as ClientFactory from '../services/clientFactory'
+import { setErrorDisplay } from './displayActions'
+import { Dispatch } from 'redux'
 
 export const editBLISApplicationAsync = (key: string, application: BlisAppBase): ActionObject => {
 
     return {
         type: AT.EDIT_BLIS_APPLICATION_ASYNC,
-        key: key,
         blisApp: application
     }
 }
@@ -24,7 +25,6 @@ export const editEntityAsync = (key: string, entity: EntityBase): ActionObject =
 
     return {
         type: AT.EDIT_ENTITY_ASYNC,
-        key: key,
         entity: entity
     }
 }
@@ -41,7 +41,6 @@ export const editActionAsync = (key: string, action: ActionBase, currentAppId: s
 
     return {
         type: AT.EDIT_ACTION_ASYNC,
-        key: key,
         blisAction: action,
         currentAppId: currentAppId
     }
@@ -52,5 +51,39 @@ export const editActionFulfilled = (action: ActionBase): ActionObject => {
     return {
         type: AT.EDIT_ACTION_FULFILLED,
         blisAction: action,
+    }
+}
+
+export const editTrainDialogThunkAsync = (appId: string, trainDialog: TrainDialog) => {
+    return async (dispatch: Dispatch<any>) => {
+        const blisClient = ClientFactory.getInstance(AT.EDIT_TRAINDIALOG_ASYNC)
+        dispatch(editTrainDialogAsync(appId, trainDialog))
+
+        try {
+            const trainResponse = await blisClient.trainDialogEdit(appId, trainDialog)
+            dispatch(editTrainDialogFulfilled(trainResponse))
+            return trainResponse
+        }
+        catch (error) {
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, [error.response], AT.EDIT_TRAINDIALOG_ASYNC))
+  //        dispatch(editTrainDialogRejected()) TODO: needed?
+            throw error
+        }
+    }
+}
+
+export const editTrainDialogAsync = (blisAppId: string, trainDialog: TrainDialog): ActionObject => {
+    return {
+        type: AT.EDIT_TRAINDIALOG_ASYNC,
+        blisAppId: blisAppId,
+        trainDialog: trainDialog
+    }
+}
+
+export const editTrainDialogFulfilled = (trainResponse: TrainResponse): ActionObject => {
+    // Needs a fulfilled version to handle response from Epic
+    return {
+        type: AT.EDIT_TRAINDIALOG_FULFILLED,
+        trainResponse: trainResponse
     }
 }

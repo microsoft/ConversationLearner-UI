@@ -108,6 +108,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
         else {  
             
             let trainDialog = new TrainDialog({
+                trainDialogId: this.props.trainDialog.trainDialogId,
                 rounds: updatedTrainDialog.rounds,
                 definitions: new AppDefinition({
                     entities: this.props.entities,
@@ -115,7 +116,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                 })
             })
 
-            this.props.onEdit(this.props.trainDialog.trainDialogId, trainDialog);         
+            this.props.onReplace(trainDialog);         
             this.props.clearExtractResponses();
         }
     }
@@ -342,6 +343,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                                     extractResponses={this.props.extractResponses}
                                     originalTextVariations={renderData.round.extractorStep.textVariations}
                                     onTextVariationsExtracted={this.onEntityExtractorSubmit}
+                                    onExtractionsChanged={this.props.onExtractionsChanged}
                                 />
                                 : <span>
                                     <FormattedMessage
@@ -444,6 +446,8 @@ export interface ReceivedProps {
     app: BlisAppBase,
     selectedActivity: Activity,
     onEdit: (sourceTrainDialogId: string, editedTrainDialog: TrainDialog) => void
+    onReplace: (editedTrainDialog: TrainDialog) => void
+    onExtractionsChanged: (changed: boolean) => void
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps

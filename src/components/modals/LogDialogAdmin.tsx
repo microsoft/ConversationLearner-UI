@@ -214,6 +214,7 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
                                     extractResponses={this.props.extractResponses}
                                     originalTextVariations={[ModelUtils.ToTextVariation(round.extractorStep)]}
                                     onTextVariationsExtracted={this.onEntityExtractorSubmit}
+                                    onExtractionsChanged={this.props.onExtractionsChanged}
                                 />
                             }
                         </div>
@@ -279,6 +280,7 @@ export interface ReceivedProps {
     logDialog: LogDialog
     selectedActivity: Activity
     onEdit: (logDialogId: string, newTrainDialog: TrainDialog) => void
+    onExtractionsChanged: (changed: boolean) => void
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps

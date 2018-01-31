@@ -19,11 +19,13 @@ import { injectIntl, InjectedIntlProps } from 'react-intl'
 interface ComponentState {
     isConfirmDeleteModalOpen: boolean
     selectedActivity: Activity | null
+    pendingExtractionChanges: boolean
 }
 
 const initialState: ComponentState = {
     isConfirmDeleteModalOpen: false,
-    selectedActivity: null
+    selectedActivity: null,
+    pendingExtractionChanges: false
 }
 
 class LogDialogModal extends React.Component<Props, ComponentState> {
@@ -64,8 +66,17 @@ class LogDialogModal extends React.Component<Props, ComponentState> {
         console.log(`activity posted: `, activity)
     }
 
+    onExtractionsChanged(changed: boolean) {
+        // Put mask on webchat if changing extractions
+        this.setState({
+            pendingExtractionChanges: changed
+        })
+    }
+
     render() {
         const { intl } = this.props;
+        let chatDisable = this.state.pendingExtractionChanges ? <div className="wc-disable"/> : null;
+
         return (
             <div>
                 <Modal
@@ -85,6 +96,7 @@ class LogDialogModal extends React.Component<Props, ComponentState> {
                                     focusInput={true}
                                     viewOnly={true}
                                 />
+                                {chatDisable}
                             </div>
                             <div className="blis-chatmodal_controls">
                                 <div className="blis-chatmodal_admin-controls">
@@ -93,6 +105,7 @@ class LogDialogModal extends React.Component<Props, ComponentState> {
                                         logDialog={this.props.logDialog}
                                         selectedActivity={this.state.selectedActivity}
                                         onEdit={(logDialogId: string, newTrainDialog: TrainDialog) => this.props.onEdit(logDialogId, newTrainDialog)}
+                                        onExtractionsChanged={(changed: boolean) => this.onExtractionsChanged(changed)}
                                     />
                                 </div>
                             </div>
@@ -104,6 +117,7 @@ class LogDialogModal extends React.Component<Props, ComponentState> {
                             </div>
                             <div className="blis-modal-buttons_secondary">
                                 <DefaultButton
+                                    disabled={this.state.pendingExtractionChanges}
                                     onClick={() => this.onClickDelete()}
                                     ariaDescription={intl.formatMessage({
                                         id: FM.LOGDIALOGMODAL_DEFAULTBUTTON_ARIADESCRIPTION,
@@ -115,6 +129,7 @@ class LogDialogModal extends React.Component<Props, ComponentState> {
                                     })}
                                 />
                                 <PrimaryButton
+                                    disabled={this.state.pendingExtractionChanges}
                                     onClick={() => this.props.onClose()}
                                     ariaDescription={intl.formatMessage({
                                         id: FM.LOGDIALOGMODAL_PRIMARYBUTTON_ARIADESCRIPTION,

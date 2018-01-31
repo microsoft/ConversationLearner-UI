@@ -216,6 +216,15 @@ export default class BlisClient {
             .then(response => action)
     }
 
+    //AT.EDIT_TRAINDIALOG_ASYNC
+    trainDialogEdit(appId: string, trainDialog: models.TrainDialog): Promise<models.TrainResponse> {
+        return this.send<models.TrainResponse>({
+            method: 'put',
+            url: `${this.baseUrl}/app/${appId}/traindialog/${trainDialog.trainDialogId}`,
+            data: trainDialog
+        }).then(response => response.data)
+    }
+
     trainDialogs(appId: string): Promise<models.TrainDialog[]> {
         return this.send<models.TrainDialogList>({
             url: `${this.baseUrl}/app/${appId}/traindialogs`
