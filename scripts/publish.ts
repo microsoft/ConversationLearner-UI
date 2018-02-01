@@ -1,5 +1,6 @@
 import * as fs from 'fs-extra'
 import * as path from 'path'
+import * as execa from 'execa'
 
 const packageJsonPath = path.join(__dirname, '..', 'package.json')
 const buildPath = path.join(__dirname, '..', 'build')
@@ -24,7 +25,7 @@ async function main() {
     catch (ex) {
         throw new Error(`${indexDtsPath} did not exist.`)
     }
-    
+
     console.log(`Copy: ${buildPath} to ${uiPackagePath}`)
     try {
         await fs.copy(buildPath, uiPackagePath)
@@ -33,29 +34,29 @@ async function main() {
         console.error(e)
     }
 
+    /**
+     * This auto increment and publish is making assumptions that the package we read was the latest package and version published which isn't very robust
+     * This assumes this only runs a master branch and is always the latest commit.  If someones a build for a previous commit this would increment and attempt
+     * to publish for a version which already exists and fail.
+     * 
+     * Alternatives are to query npm; however, semantic-release found the inconsistencies to be challenging and moved to querying git tags.  However, git tags could also
+     * be out of date.
+     */
+    // TODO: Make more robust
+    console.log(`Run npm version minor to increment package version and add commit with tag`)
+    const output = await execa('npm', ['version', 'minor']);
+    console.log(`Output: `, output)
+
     console.log(`Reading package.json from: ${packageJsonPath}`)
     try {
         const packageJsonObj = await fs.readJson(packageJsonPath)
         const { name, version, description, keywords, author, repository, license } = packageJsonObj
         console.log(`Found name: ${name} version: ${version}`)
+        console.log(`Updating root package.json with new version.`)
 
-        const [breaking, feature, patch] = (version as string).split('.').map(s => parseInt(s))
-        const nextVersion = `${breaking}.${feature + 1}.${patch}`
-
-        /**
-         * This auto increment and publish is making assumptions that the package we read was the latest package and version published which isn't very robust
-         * This assumes this only runs a master branch and is always the latest commit.  If someones a build for a previous commit this would increment and attempt
-         * to publish for a version which already exists and fail.
-         * 
-         * Alternatives are to query npm; however, semantic-release found the inconsistencies to be challenging and moved to querying git tags.  However, git tags could also
-         * be out of date.
-         */
-        // TODO: Make more robust
-        console.log(`Auto-incrementing minor (feature) version...`)
-        console.log(`Next version: `, nextVersion)
         const newPackageJson = {
             name,
-            version: nextVersion,
+            version,
             description,
             keywords,
             author,
@@ -67,7 +68,7 @@ async function main() {
 
         const newPackageJsonFilePath = path.join(uiPackagePath, 'package.json')
         console.log(`Writing new package.json to ${newPackageJsonFilePath}`)
-        await fs.writeFile(newPackageJsonFilePath, JSON.stringify(newPackageJson), 'utf-8')
+        await fs.writeJson(newPackageJsonFilePath, newPackageJson, { spaces: '  ' })
     }
     catch (e) {
         console.error(e)
