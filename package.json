@@ -1,6 +1,6 @@
 {
   "name": "blis-ui",
-  "version": "0.121.0",
+  "version": "0.123.0",
   "description": "Administration user interface for creating, training, and testing bots created using BLIS",
   "keywords": [
     "Microsoft",
