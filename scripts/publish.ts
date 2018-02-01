@@ -52,8 +52,6 @@ async function main() {
         const packageJsonObj = await fs.readJson(packageJsonPath)
         const { name, version, description, keywords, author, repository, license } = packageJsonObj
         console.log(`Found name: ${name} version: ${version}`)
-        console.log(`Updating root package.json with new version.`)
-
         const newPackageJson = {
             name,
             version,
