@@ -44,7 +44,7 @@ async function main() {
      */
     // TODO: Make more robust
     console.log(`Run npm version minor to increment package version and add commit with tag`)
-    const output = await execa('npm', ['version', 'minor']);
+    const output = await execa('npm', ['version', 'minor', '--force']);
     console.log(`Output: `, output)
 
     console.log(`Reading package.json from: ${packageJsonPath}`)
