@@ -14,7 +14,7 @@ export const BlisTagItem = (props: IBlisPickerItemProps<ITag>) => (
     >
         <span
             className={`ms-TagItem-text ${props.strike ? 'ms-TagItem-text--strike' : ''}`}
-            aria-label={props.children}
+            aria-label={props.children.toString()}
         >
             {props.children}
         </span>
