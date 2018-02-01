@@ -37,7 +37,7 @@
     "test": "react-scripts-ts test --env=jsdom",
     "eject": "react-scripts-ts eject",
     "tsc": "tsc",
-    "builduipackage": "react-scripts-ts build && tsc -p ./publish/tsconfig.json && tsc -p ./scripts/tsconfig.json && node ./scripts/publish.js"
+    "builduipackage": "tsc -p ./publish/tsconfig.json && tsc -p ./scripts/tsconfig.json && node ./scripts/publish.js"
   },
   "devDependencies": {
     "@types/draft-js": "^0.10.16",
