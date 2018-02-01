@@ -5,26 +5,26 @@ const packageJsonPath = path.join(__dirname, '..', 'package.json')
 const buildPath = path.join(__dirname, '..', 'build')
 const npmRcPath = path.join(__dirname, '..', '.npmrc')
 const uiPackagePath = path.join(__dirname, '..', 'package')
-// const indexJsPath = path.join(uiPackagePath, 'index.js')
-// const indexDtsPath = path.join(uiPackagePath, 'index.d.ts')
+const indexJsPath = path.join(uiPackagePath, 'index.js')
+const indexDtsPath = path.join(uiPackagePath, 'index.d.ts')
 
 async function main() {
-    // console.log(`Verifying ${indexJsPath} exists`)
-    // try {
-    //     await fs.readFile(indexJsPath, 'utf-8')
-    // }
-    // catch {
-    //     throw new Error(`${indexJsPath} did not exist.`)
-    // }
+    console.log(`Verifying ${indexJsPath} exists`)
+    try {
+        await fs.ensureFile(indexJsPath)
+    }
+    catch (ex) {
+        throw new Error(`${indexJsPath} did not exist.`)
+    }
 
-    // console.log(`Verifying ${indexDtsPath} exists`)
-    // try {
-    //     await fs.readFile(indexDtsPath, 'utf-8')
-    // }
-    // catch {
-    //     throw new Error(`${indexDtsPath} did not exist.`)
-    // }
-
+    console.log(`Verifying ${indexDtsPath} exists`)
+    try {
+        await fs.ensureFile(indexDtsPath)
+    }
+    catch (ex) {
+        throw new Error(`${indexDtsPath} did not exist.`)
+    }
+    
     console.log(`Copy: ${buildPath} to ${uiPackagePath}`)
     try {
         await fs.copy(buildPath, uiPackagePath)
@@ -35,8 +35,7 @@ async function main() {
 
     console.log(`Reading package.json from: ${packageJsonPath}`)
     try {
-        const packageJsonString = await fs.readFile(packageJsonPath, 'utf-8')
-        const packageJsonObj = JSON.parse(packageJsonString)
+        const packageJsonObj = await fs.readJson(packageJsonPath)
         const { name, version } = packageJsonObj
         console.log(`Found name: ${name} version: ${version}`)
         const newPackageJson = {
