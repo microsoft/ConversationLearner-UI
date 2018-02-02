@@ -1,4 +1,5 @@
 import {
+    DialogMode,
     BlisAppBase,
     BotInfo,
     EntityBase,
@@ -6,7 +7,7 @@ import {
     TrainDialog, LogDialog, Teach, Session,
     Memory, UIScoreInput, ScoreInput, ExtractResponse, ScoreResponse
 } from 'blis-models';
-import { ErrorType, DialogMode } from '../types/const'
+import { ErrorType } from '../types/const'
 import { AT } from '../types/ActionTypes'
 import { TipType } from '../components/ToolTips'
 

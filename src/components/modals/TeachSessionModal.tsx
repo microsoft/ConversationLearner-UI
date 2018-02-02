@@ -8,10 +8,9 @@ import { AT } from '../../types/ActionTypes'
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { PrimaryButton, DefaultButton } from 'office-ui-fabric-react';
 import { State } from '../../types';
-import { DialogMode } from '../../types/const';
 import Webchat from '../Webchat'
 import TeachSessionAdmin from './TeachSessionAdmin'
-import { BlisAppBase, UserInput, DialogType, TrainDialog, Teach } from 'blis-models'
+import { BlisAppBase, UserInput, DialogType, TrainDialog, Teach, DialogMode } from 'blis-models'
 import { Activity } from 'botframework-directlinejs'
 import { deleteTeachSessionAsync } from '../../actions/deleteActions'
 import { toggleAutoTeach, runExtractorAsync } from '../../actions/teachActions'

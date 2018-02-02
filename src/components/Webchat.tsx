@@ -7,10 +7,12 @@ import * as BotChat from 'blis-webchat'
 import { BlisAppBase } from 'blis-models'
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Activity } from 'botframework-directlinejs';
+import actions from '../actions'
 
 class Webchat extends React.Component<Props, {}> {
     private behaviorSubject: BehaviorSubject<any> = null;
     private chatProps: BotChat.ChatProps = null;
+    private dl: BotChat.DirectLine = null;
 
     static defaultProps: ReceivedProps = {
         app: null,
@@ -46,9 +48,16 @@ class Webchat extends React.Component<Props, {}> {
         return this.behaviorSubject;
     }
 
+    // Get conversation Id for pro-active message during a 
+    GetConversationId(status: number) {
+        if (status === 2) {  // wait for connection is 'OnLine' to send data to bot
+            let conversationId = (this.dl as any).conversationId;
+            this.props.setConversationId(this.props.user.name, this.props.user.id, conversationId);
+        }
+    }
     GetChatProps(): BotChat.ChatProps {
         if (!this.chatProps) {
-            let dl = new BotChat.DirectLine({
+            this.dl = new BotChat.DirectLine({
                 secret: 'secret', 
                 token: 'token', 
                 domain: 'http://localhost:3000/directline', 
@@ -58,27 +67,29 @@ class Webchat extends React.Component<Props, {}> {
             let botConnection = null;
             if (this.props.history) {
                 botConnection = {
-                    ...dl,
-                    activity$: Observable.from(this.props.history).concat(dl.activity$),
+                    ...this.dl,
+                    activity$: Observable.from(this.props.history).concat(this.dl.activity$),
                     postActivity: (activity: any) => {
                         if (this.props.onPostActivity) { 
                             this.props.onPostActivity(activity)
                         }
-                        return dl.postActivity(activity)
+                        return this.dl.postActivity(activity)
                     }
                 };
-             }
-             else {
+            }
+            else {
                 botConnection = {
-                    ...dl,
+                    ...this.dl,
                     postActivity: (activity: any) => {
                         if (this.props.onPostActivity) { 
                             this.props.onPostActivity(activity)
                         }
-                        return dl.postActivity(activity)
+                        return this.dl.postActivity(activity)
                     }
                 };
-             }
+            }
+
+            this.dl.connectionStatus$.subscribe((status) => this.GetConversationId(status));
 
             this.chatProps = {
                 botConnection: botConnection,
@@ -112,6 +123,7 @@ class Webchat extends React.Component<Props, {}> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
+        setConversationId: actions.display.setConversationId,
     }, dispatch);
 }
 const mapStateToProps = (state: State, ownProps: any) => {

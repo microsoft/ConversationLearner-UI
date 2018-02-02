@@ -148,13 +148,14 @@ export const createTeachSessionThunkAsync = (key: string, appId: string) => {
     }
 }
 
-export const createTeachSessionFromHistoryThunkAsync = (appId: string, trainDialog: TrainDialog, userName: string, userId: string, deleteSourceId: string = null) => {
+export const createTeachSessionFromHistoryThunkAsync = (appId: string, trainDialog: TrainDialog, userName: string, userId: string, deleteSourceId: string = null, lastExtractChanged: boolean = false) => {
     return async (dispatch: Dispatch<any>) => {
         const blisClient = ClientFactory.getInstance(AT.CREATE_TEACH_SESSION_FROMHISTORYASYNC)
         dispatch(createTeachSessionFromHistoryAsync(appId, trainDialog, userName, userId))
 
         try {
-            const teachWithHistory = await blisClient.teachSessionFromHistory(appId, trainDialog, userName, userId);
+            const teachWithHistory = await blisClient.teachSessionFromHistory(appId, trainDialog, userName, userId, lastExtractChanged);
+            
             // Detele source trainDialog if requested and no discrepancies during replay
             if (deleteSourceId && teachWithHistory.discrepancies.length === 0) {
                 dispatch(deleteTrainDialogThunkAsync(userId, appId, deleteSourceId));
