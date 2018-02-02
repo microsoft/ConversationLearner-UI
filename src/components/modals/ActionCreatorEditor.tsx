@@ -401,8 +401,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             payload,
             isTerminal: this.state.isTerminal,
             requiredEntities: [...this.state.requiredEntityTagsFromPayload, ...this.state.requiredEntityTags].map<string>(tag => tag.key),
-            negativeEntities: [...this.state.expectedEntityTags, ...this.state.negativeEntityTags].map<string>(tag => tag.key),
-            suggestedEntity: (this.state.expectedEntityTags.length > 0) ? this.state.expectedEntityTags.map<string>(tag => tag.key)[0] : null,
+            negativeEntities: this.state.negativeEntityTags.map<string>(tag => tag.key),
+            suggestedEntity: (this.state.expectedEntityTags.length > 0) ? this.state.expectedEntityTags[0].key : null,
             version: null,
             packageCreationId: null,
             packageDeletionId: null,
@@ -497,9 +497,12 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     }
 
     onChangeExpectedEntityTags = (tags: OF.ITag[]) => {
+        const newExpectedEntityTag = tags[0]
         this.setState(prevState => ({
             expectedEntityTags: tags,
-            negativeEntityTags: prevState.negativeEntityTags.filter(t => !tags.some(tag => tag.key === t.key))
+            negativeEntityTags: (!newExpectedEntityTag || prevState.negativeEntityTags.some(tag => tag.key === newExpectedEntityTag.key))
+                ? prevState.negativeEntityTags
+                : [...prevState.negativeEntityTags, newExpectedEntityTag]
         }))
     }
 
@@ -549,7 +552,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
         renderProps.strike = true
         // If negative entity is also the suggested entity lock/highlight
-        renderProps.locked = suggestedEntityKey === props.key
+        renderProps.locked = false
         renderProps.highlight = suggestedEntityKey === props.key
 
         return <BlisTagItem key={props.index} {...renderProps}>{props.item.name}</BlisTagItem>
@@ -775,8 +778,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                         </div>
 
                         <div className="blis-action-creator--blocking-entities">
-                            <BlisTagPicker
-                                nonRemovableTags={this.state.expectedEntityTags}
+                            <TC.TagPicker
                                 label="Blocking Entities"
                                 onResolveSuggestions={(text, tags) => this.onResolveNegativeEntityTags(text, tags)}
                                 onRenderItem={this.onRenderNegativeEntityTag}
