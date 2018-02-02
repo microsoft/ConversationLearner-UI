@@ -4,7 +4,6 @@ import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../../types'
-import { DialogMode } from '../../types/const';
 import { clearExtractResponses } from '../../actions/teachActions'
 import EntityExtractor from './EntityExtractor';
 import ActionScorer from './ActionScorer';
@@ -14,7 +13,7 @@ import * as OF from 'office-ui-fabric-react';
 import {
     ActionBase, BlisAppBase, TrainDialog, TrainRound, ScoreReason, ScoredAction,
     TrainScorerStep, Memory, UnscoredAction, ScoreResponse,
-    TextVariation, ExtractResponse, DialogType, SenderType, AppDefinition
+    TextVariation, ExtractResponse, DialogType, SenderType, AppDefinition, DialogMode
 } from 'blis-models'
 import { FontClassNames } from 'office-ui-fabric-react'
 import { FM } from '../../react-intl-messages'

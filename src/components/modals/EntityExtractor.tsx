@@ -3,11 +3,10 @@ import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../../types'
-import { BlisAppBase, ModelUtils, ExtractResponse, TextVariation, DialogType, EntityType, EntityBase, UserInput } from 'blis-models'
+import { BlisAppBase, ModelUtils, ExtractResponse, TextVariation, DialogType, EntityType, EntityBase, UserInput, DialogMode } from 'blis-models'
 import * as OF from 'office-ui-fabric-react';
 import * as ExtractorResponseEditor from '../ExtractorResponseEditor'
 import EntityCreatorEditor from './EntityCreatorEditor';
-import { DialogMode } from '../../types/const'
 import { clearExtractResponses, updateExtractResponse, removeExtractResponse, runExtractorAsync } from '../../actions/teachActions'
 import * as ToolTips from '../ToolTips'
 import HelpIcon from '../HelpIcon'

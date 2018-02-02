@@ -3,7 +3,6 @@ import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../../types'
-import { DialogMode } from '../../types/const';
 import EntityExtractor from './EntityExtractor';
 import ActionScorer from './ActionScorer';
 import MemoryTable from './MemoryTable';
@@ -13,7 +12,7 @@ import {
     BlisAppBase, TrainExtractorStep, TrainScorerStep, TextVariation,
     Memory, TrainDialog, TrainRound,
     LogDialog, LogRound, LogScorerStep,
-    ActionBase, ExtractResponse,
+    ActionBase, ExtractResponse, DialogMode,
     DialogType, ModelUtils, SenderType, AppDefinition
 } from 'blis-models'
 

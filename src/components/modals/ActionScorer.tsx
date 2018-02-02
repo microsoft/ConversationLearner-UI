@@ -6,12 +6,11 @@ import { State } from '../../types'
 import {
     BlisAppBase, TrainScorerStep, Memory, ScoredBase, ScoreInput, ScoreResponse,
     ActionBase, ScoredAction, UnscoredAction, ScoreReason, DialogType, ActionTypes,
-    Template, ActionArgument
+    Template, ActionArgument, DialogMode
 } from 'blis-models';
 import { createActionAsync } from '../../actions/createActions'
 import { toggleAutoTeach } from '../../actions/teachActions'
 import { PrimaryButton } from 'office-ui-fabric-react';
-import { DialogMode } from '../../types/const'
 import * as OF from 'office-ui-fabric-react';
 import ActionCreatorEditor from './ActionCreatorEditor'
 import { onRenderDetailsHeader } from '../ToolTips'

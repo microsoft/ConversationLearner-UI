@@ -50,6 +50,11 @@ export type DisplayAction = {
     type: AT.SET_CURRENT_BLIS_APP_FULFILLED,
     app: BlisAppBase
 } | {
+    type: AT.SET_CONVERSATION_ID_ASYNC,
+    userName: string,
+    userId: string,
+    conversationId: string
+} | {
     // used for setting what tool tip is displayed
     type: AT.SET_TIP_TYPE,
     tipType: TipType,

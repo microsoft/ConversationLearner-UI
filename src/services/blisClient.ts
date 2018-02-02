@@ -67,11 +67,21 @@ export default class BlisClient {
         return axios(finalConfig) as Promise<TypedAxiosResponse<T>>
     }
 
+    // AT.SET_CURRENT_BLIS_APP_ASYN
     setBlisApp(app: models.BlisAppBase): Promise<void> {
         return this.send({
             method: 'put',
             url: `${this.baseUrl}/state/app`,
             data: app
+        })
+            .then(response => { })
+    }
+
+    // AT.SET_CONVERSATION_ID_ASYN
+    setConversationId(userName: string, userId: string, conversationId: string): Promise<void> {
+        return this.send({
+            method: 'put',
+            url: `${this.baseUrl}/state/conversationId?username=${userName}&id=${conversationId}`,
         })
             .then(response => { })
     }

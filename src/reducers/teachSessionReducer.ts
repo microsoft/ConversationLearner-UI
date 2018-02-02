@@ -1,7 +1,6 @@
 import { ActionObject, TeachSessionState } from '../types'
 import { Reducer } from 'redux'
-import { UnscoredAction, ScoreReason } from 'blis-models'
-import { DialogMode } from '../types/const'
+import { UnscoredAction, ScoreReason, DialogMode } from 'blis-models'
 import { AT } from '../types/ActionTypes'
 
 const initialState: TeachSessionState = {
@@ -36,9 +35,11 @@ const teachSessionReducer: Reducer<TeachSessionState> = (state = initialState, a
                 return { ...initialState, 
                     all: [...state.all, action.teachWithHistory.teach], 
                     current: action.teachWithHistory.teach, 
-                    mode: DialogMode.Wait, 
+                    mode: action.teachWithHistory.dialogMode, 
                     memories: action.teachWithHistory.memories, 
-                    prevMemories: action.teachWithHistory.prevMemories
+                    prevMemories: action.teachWithHistory.prevMemories,
+                    scoreResponse: action.teachWithHistory.scoreResponse,
+                    scoreInput: action.teachWithHistory.scoreInput
                 }
             }
             return { ...state };

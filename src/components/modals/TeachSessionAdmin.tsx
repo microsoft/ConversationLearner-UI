@@ -3,13 +3,12 @@ import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../../types'
-import { DialogMode } from '../../types/const';
 import { fetchApplicationTrainingStatusThunkAsync } from '../../actions/fetchActions'
 import { getScoresAsync, runScorerAsync, postScorerFeedbackAsync } from '../../actions/teachActions'
 import {
     BlisAppBase, TextVariation, ExtractResponse,
     DialogType, TrainScorerStep, TrainingStatusCode,
-    UITrainScorerStep, UIScoreInput
+    UITrainScorerStep, UIScoreInput, DialogMode
 } from 'blis-models'
 import ActionScorer from './ActionScorer';
 import EntityExtractor from './EntityExtractor';
