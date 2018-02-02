@@ -261,9 +261,9 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         })
     }
 
-    onEditTrainDialog(sourceTrainDialogId: string, newTrainDialog: TrainDialog) {
+    onEditTrainDialog(sourceTrainDialogId: string, newTrainDialog: TrainDialog, lastExtractChanged: boolean) {
         
-        ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app.appId, newTrainDialog, this.props.user.name, this.props.user.id, sourceTrainDialogId) as any) as Promise<TeachWithHistory>)
+        ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app.appId, newTrainDialog, this.props.user.name, this.props.user.id, sourceTrainDialogId, lastExtractChanged) as any) as Promise<TeachWithHistory>)
         .then(teachWithHistory => {
             if (teachWithHistory.discrepancies.length === 0) {
                 this.setState({
@@ -431,7 +431,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     onClose={() => this.onCloseTrainDialogModal()}
                     onBranch={(turnIndex: number) => this.onBranchTrainDialog(turnIndex)}
                     onDelete={() => this.onDeleteTrainDialog()}
-                    onEdit={(sourceTrainDialogId: string, editedTrainDialog: TrainDialog) => this.onEditTrainDialog(sourceTrainDialogId, editedTrainDialog)}
+                    onEdit={(sourceTrainDialogId: string, editedTrainDialog: TrainDialog, lastExtractChanged: boolean) => this.onEditTrainDialog(sourceTrainDialogId, editedTrainDialog, lastExtractChanged)}
                     onReplace={(editedTrainDialog: TrainDialog) => this.onReplaceTrainDialog(editedTrainDialog)}
                     trainDialog={trainDialog}
                     history={this.state.isTrainDialogModalOpen ? this.state.activities : null}

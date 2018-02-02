@@ -19,8 +19,8 @@ const addMissingEntityData = (extractResponse: ExtractResponse, entities: Entity
     const predictedEntities = extractResponse.predictedEntities.map(pe => {
         const entity = entities.find(e => e.entityId === pe.entityId)
 
-        pe.builtinType = entity.entityType
-        pe.entityName = entity.entityName
+        pe.builtinType = entity ? entity.entityType : 'UNKNOWN';
+        pe.entityName = entity ? entity.entityName : 'UNKNOWN';
 
         return { ...pe }
     })
