@@ -79,8 +79,8 @@ async function main() {
     const messageMatchesTagFormat = /(\d+).(\d+).(\d+)/.test(commitMessage)
     console.log(`Message matches tag format: `, messageMatchesTagFormat)
     const shouldDeploy = !messageMatchesTagFormat
-    console.log(`##vso[task.setvariable variable=BLISUIDEPLOY]${shouldDeploy}`)
-    
+    console.log(`shouldDeploy: ${shouldDeploy}`)
+    console.log(`##vso[task.setvariable variable=blisuideploy]${shouldDeploy}`)
 }
 
 main()
