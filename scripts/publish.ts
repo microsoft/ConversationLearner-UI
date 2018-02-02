@@ -1,5 +1,6 @@
 import * as fs from 'fs-extra'
 import * as path from 'path'
+import * as execa from 'execa'
 
 const packageJsonPath = path.join(__dirname, '..', 'package.json')
 const buildPath = path.join(__dirname, '..', 'build')
@@ -66,6 +67,20 @@ async function main() {
     catch (e) {
         throw e
     }
+
+    console.log(`BUILD_SOURCEVERSION: ${process.env.BUILD_SOURCEVERSION}`)
+    const gitLogOutput = await execa.stdout('git', ['log', '-1', '--pretty=oneline'])
+    const segements = gitLogOutput.split(' ')
+    const commitMessage = segements[segements.length - 1]
+
+    console.log(`git log output: `, gitLogOutput)
+    console.log(`commit message: `, commitMessage)
+
+    const messageMatchesTagFormat = /(\d+).(\d+).(\d+)/.test(commitMessage)
+    console.log(`Message matches tag format: `, messageMatchesTagFormat)
+    const shouldDeploy = !messageMatchesTagFormat
+    console.log(`##vso[task.setvariable variable=BLISUIDEPLOY]${shouldDeploy}`)
+    
 }
 
 main()
