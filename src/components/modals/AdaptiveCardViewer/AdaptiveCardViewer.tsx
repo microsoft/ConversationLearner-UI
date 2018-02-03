@@ -3,7 +3,7 @@ import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
-import { ActionArgument, Template, TextPayload } from 'blis-models'
+import { ActionArgument, Template } from 'blis-models'
 import { State } from '../../../types'
 import * as AdaptiveCards from 'adaptivecards';
 import { injectIntl, InjectedIntlProps } from 'react-intl'
@@ -26,12 +26,7 @@ class AdaptiveCardViewer extends React.Component<Props, {}> {
         // Substitute agrument values
         for (let actionArgument of this.props.actionArguments) {
             if (actionArgument) {
-                let argumentValue = actionArgument.value
-                if (actionArgument.value.startsWith('{')) {
-                    const textPayload = JSON.parse(actionArgument.value) as TextPayload
-                    argumentValue = textPayload.text
-                }
-
+                let argumentValue = typeof actionArgument.value === 'string' ? actionArgument.value : actionArgument.value.text
                 templateString = templateString.replace(new RegExp(`{{${actionArgument.parameter}}}`, 'g'), argumentValue);
             }
         }

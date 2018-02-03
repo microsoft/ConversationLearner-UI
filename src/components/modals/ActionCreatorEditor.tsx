@@ -6,8 +6,8 @@ import { connect } from 'react-redux'
 import Plain from 'slate-plain-serializer'
 import { fetchBotInfoAsync } from '../../actions/fetchActions'
 import { Modal } from 'office-ui-fabric-react/lib/Modal'
-import { ActionBase, ActionTypes, ActionMetaData, ActionPayload, 
-    ActionArgument, BlisAppBase, EntityBase } from 'blis-models'
+import { ActionBase, ActionTypes, ActionPayload, 
+    ActionArgument, BlisAppBase, EntityBase, TextPayload } from 'blis-models'
 import ConfirmDeleteModal from './ConfirmDeleteModal'
 import EntityCreatorEditor from './EntityCreatorEditor'
 import AdaptiveCardViewer from './AdaptiveCardViewer/AdaptiveCardViewer'
@@ -20,11 +20,6 @@ import { BlisTagItem, IBlisPickerItemProps } from './BlisTagItem'
 import BlisTagPicker from '../BlisTagPicker'
 import './ActionCreatorEditor.css'
 import HelpIcon from '../HelpIcon';
-
-export interface IPayload {
-    text: string
-    json: any
-}
 
 const TEXT_SLOT = '#API_SLOT#';
 
@@ -66,7 +61,12 @@ const getSuggestedTags = (filterText: string, allTags: OF.ITag[], tagsToExclude:
         .filter(tag => tag.name.toLowerCase().startsWith(filterText.toLowerCase()))
 }
 
-const createSlateValue = (content: string): ActionPayloadEditor.SlateValue => {
+const createSlateValue = (content: TextPayload | string): ActionPayloadEditor.SlateValue => {
+    // In the case that we're initiating from ActionArgument.value which is TextPayload instead of serialized TextPayload
+    if (typeof content !== 'string') {
+        return Value.fromJSON(content.json)
+    }
+
     // If string does not starts with { assume it's the old simple string based payload and user will have to manually load and re-save
     // Otherwise, treat as json as load the json respresentation of the editor which has fully saved entities and doesn't need manual reconstruction
     if (!content.startsWith('{')) {
@@ -74,7 +74,7 @@ const createSlateValue = (content: string): ActionPayloadEditor.SlateValue => {
         return ActionPayloadEditor.Utilities.createTextValue(content)
     }
 
-    const payload: IPayload = JSON.parse(content)
+    const payload = JSON.parse(content) as TextPayload
     const value = Value.fromJSON(payload.json)
 
     return value
@@ -329,34 +329,18 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     getActionArguments(slateValuesMap: {[slot: string]: ActionPayloadEditor.SlateValue}): ActionArgument[] {
         return Object.entries(slateValuesMap)
             .filter(([parameter, value]) => value.document.text.length > 0)
-            .map(([parameter, value]) => new ActionArgument({parameter, value: JSON.stringify({
-                text: Plain.serialize(value),
-                json: value.toJSON()
-            })}))
+            .map(([parameter, value]) => ({
+                parameter,
+                value: {
+                    text: Plain.serialize(value),
+                    json: value.toJSON()
+                }
+            }))
     }
 
     onClickSubmit = () => {
         let payload: string = null;
-        switch (this.state.selectedActionTypeOptionKey) {
-            case ActionTypes.TEXT: {
-                const value = this.state.slateValuesMap[TEXT_SLOT]
-                const slatePayload: IPayload = {
-                    text: Plain.serialize(value),
-                    json: value.toJSON()
-                }
-                payload = JSON.stringify(slatePayload)
-                break;
-            }
-            case ActionTypes.CARD:
-                payload = this.state.selectedCardOptionKey.toString();
-                break;
-            case ActionTypes.API_LOCAL:
-                payload = this.state.selectedApiOptionKey.toString();
-                break;
-            default:
-                throw new Error(`When attempting to submit action, the selected action type: ${this.state.selectedActionTypeOptionKey} did not have matching type`)
-        }
-
+        
         /**
          * If action type if TEXT
          * Then payload map has single value named TEXT_SLOT:
@@ -376,14 +360,29 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
          *   [templateVariable3]: { ...slate value...}
          * }
          */
-        if (this.state.selectedActionTypeOptionKey !== ActionTypes.TEXT) {
-            let actionPayload = new ActionPayload(
-                {
-                    payload,
+        switch (this.state.selectedActionTypeOptionKey) {
+            case ActionTypes.TEXT: {
+                const value = this.state.slateValuesMap[TEXT_SLOT]
+                payload = JSON.stringify({
+                    text: Plain.serialize(value),
+                    json: value.toJSON()
+                })
+                break;
+            }
+            case ActionTypes.CARD:
+                payload = JSON.stringify({
+                    payload: this.state.selectedCardOptionKey.toString(),
                     arguments: this.getActionArguments(this.state.slateValuesMap)
-                }
-            )
-            payload = JSON.stringify(actionPayload);
+                })
+                break;
+            case ActionTypes.API_LOCAL:
+                payload = JSON.stringify({
+                    payload: this.state.selectedApiOptionKey.toString(),
+                    arguments: this.getActionArguments(this.state.slateValuesMap)
+                })
+                break;
+            default:
+                throw new Error(`When attempting to submit action, the selected action type: ${this.state.selectedActionTypeOptionKey} did not have matching type`)
         }
 
         const newOrEditedAction = new ActionBase({
@@ -409,9 +408,9 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             version: null,
             packageCreationId: null,
             packageDeletionId: null,
-            metadata: new ActionMetaData({
+            metadata: {
                 actionType: this.state.selectedActionTypeOptionKey as string
-            })
+            }
         })
 
         if (this.state.isEditing) {
