@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
 import { connect } from 'react-redux';
-import { ActionBase, ActionTypes, Template, ActionArgument, TextPayload } from 'blis-models'
+import { ActionBase, ActionTypes, Template, ActionArgument } from 'blis-models'
 import { State } from '../types'
 import * as OF from 'office-ui-fabric-react';
 import { onRenderDetailsHeader } from './ToolTips'
@@ -154,16 +154,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             isMultiline: true,
             getSortValue: action => ActionBase.GetPayload(action),
             render: (action, component) => {
-                const args = (action.metadata.actionType === ActionTypes.TEXT) ? [] :
-                    ActionBase.GetActionArguments(action)
-                        .map(aa => {
-                            if (aa.value.startsWith('{')) {
-                                const textPayload = JSON.parse(aa.value) as TextPayload
-                                return textPayload.text
-                            }
-
-                            return aa.value
-                        })
+                const args = ActionBase.GetActionArgumentValuesAsPlainText(action)
                         .filter(value => !Util.isNullOrWhiteSpace(value))
 
                 return (

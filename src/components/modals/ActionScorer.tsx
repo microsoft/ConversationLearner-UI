@@ -72,10 +72,9 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             isMultiline: true,
             isResizable: true,
             render: (action: ActionBase, component) => {
-                const args = (action.metadata.actionType === ActionTypes.TEXT) ? [] :
-                    ActionBase.GetActionArguments(action)
-                    .filter(aa => !Util.isNullOrWhiteSpace(aa.value))
-                    .map(aa => `${aa.value}`);
+                const args = ActionBase.GetActionArgumentValuesAsPlainText(action)
+                    .filter(value => !Util.isNullOrWhiteSpace(value))
+                    
                 return (
                     <div>
                     {action.metadata.actionType === ActionTypes.CARD &&
