@@ -67,11 +67,21 @@ export default class BlisClient {
         return axios(finalConfig) as Promise<TypedAxiosResponse<T>>
     }
 
+    // AT.SET_CURRENT_BLIS_APP_ASYN
     setBlisApp(app: models.BlisAppBase): Promise<void> {
         return this.send({
             method: 'put',
             url: `${this.baseUrl}/state/app`,
             data: app
+        })
+            .then(response => { })
+    }
+
+    // AT.SET_CONVERSATION_ID_ASYN
+    setConversationId(userName: string, userId: string, conversationId: string): Promise<void> {
+        return this.send({
+            method: 'put',
+            url: `${this.baseUrl}/state/conversationId?username=${userName}&id=${conversationId}`,
         })
             .then(response => { })
     }
@@ -392,10 +402,10 @@ export default class BlisClient {
     }
 
     //AT.CREATE_TEACH_SESSION_FROMLOGASYNC
-    teachSessionFromHistory(appId: string, trainDialog: models.TrainDialog, userName: string, userId: string): Promise<models.TeachWithHistory> {
+    teachSessionFromHistory(appId: string, trainDialog: models.TrainDialog, userName: string, userId: string, lastExtractChanged: boolean = false): Promise<models.TeachWithHistory> {
         return this.send<models.TeachWithHistory>({
             method: 'post',
-            url: `${this.baseUrl}/app/${appId}/teachwithhistory?username=${userName}&userid=${userId}`,
+            url: `${this.baseUrl}/app/${appId}/teachwithhistory?username=${userName}&userid=${userId}&ignoreLastExtract=${lastExtractChanged}`,
             data: trainDialog
         }).then(response => response.data)
     }

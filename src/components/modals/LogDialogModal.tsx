@@ -104,7 +104,7 @@ class LogDialogModal extends React.Component<Props, ComponentState> {
                                         app={this.props.app}
                                         logDialog={this.props.logDialog}
                                         selectedActivity={this.state.selectedActivity}
-                                        onEdit={(logDialogId: string, newTrainDialog: TrainDialog) => this.props.onEdit(logDialogId, newTrainDialog)}
+                                        onEdit={(logDialogId: string, newTrainDialog: TrainDialog, lastExtractChanged: boolean) => this.props.onEdit(logDialogId, newTrainDialog, lastExtractChanged)}
                                         onExtractionsChanged={(changed: boolean) => this.onExtractionsChanged(changed)}
                                     />
                                 </div>
@@ -174,7 +174,7 @@ const mapStateToProps = (state: State, ownProps: ReceivedProps) => {
 export interface ReceivedProps {
     open: boolean,
     onClose: () => void,
-    onEdit: (logDialogId: string, newTrainDialog: TrainDialog) => void,
+    onEdit: (logDialogId: string, newTrainDialog: TrainDialog, lastExtractChanged: boolean) => void,
     onDelete: ()=> void,
     logDialog: LogDialog,
     app: BlisAppBase,

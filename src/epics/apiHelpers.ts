@@ -46,6 +46,16 @@ export const setBlisApp = (key: string, app: BlisAppBase): Observable<ActionObje
     .catch(err => handleError(obs, err, AT.SET_CURRENT_BLIS_APP_ASYNC)));
 };
 
+/* Tell SDK what conversationId webchat is using */
+export const setConversationId = (userName: string, userId: string, conversationId: string): Observable<ActionObject> => {
+  const blisClient = ClientFactory.getInstance(AT.SET_CONVERSATION_ID_ASYNC)
+  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.setConversationId(userName, userId, conversationId)
+    .then(response => {
+      obs.complete();
+    })
+    .catch(err => handleError(obs, err, AT.SET_CONVERSATION_ID_ASYNC)));
+};
+
 //=========================================================
 // GET ROUTES
 //=========================================================

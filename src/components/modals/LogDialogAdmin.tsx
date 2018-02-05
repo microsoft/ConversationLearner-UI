@@ -3,7 +3,6 @@ import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../../types'
-import { DialogMode } from '../../types/const';
 import EntityExtractor from './EntityExtractor';
 import ActionScorer from './ActionScorer';
 import MemoryTable from './MemoryTable';
@@ -13,7 +12,7 @@ import {
     BlisAppBase, TrainExtractorStep, TrainScorerStep, TextVariation,
     Memory, TrainDialog, TrainRound,
     LogDialog, LogRound, LogScorerStep,
-    ActionBase, ExtractResponse,
+    ActionBase, ExtractResponse, DialogMode,
     DialogType, ModelUtils, SenderType, AppDefinition
 } from 'blis-models'
 
@@ -22,6 +21,7 @@ interface ComponentState {
     roundIndex: number,
     scoreIndex: number,
     newTrainDialog: TrainDialog
+    newExtractChanged: boolean,    // Did extraction change on edit
 }
 
 class LogDialogAdmin extends React.Component<Props, ComponentState> {
@@ -33,6 +33,7 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
             roundIndex: null,
             scoreIndex: null,
             newTrainDialog: null,
+            newExtractChanged: false,
         }
         this.onEntityExtractorSubmit = this.onEntityExtractorSubmit.bind(this);
         this.onActionScorerSubmit = this.onActionScorerSubmit.bind(this);
@@ -59,8 +60,11 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
             })
         })
 
-        this.props.onEdit( this.props.logDialog.logDialogId, newTrainDialog);
-        this.setState({ newTrainDialog: null });
+        this.props.onEdit( this.props.logDialog.logDialogId, newTrainDialog, this.state.newExtractChanged);
+        this.setState({ 
+            newTrainDialog: null,
+            newExtractChanged: false
+         });
     }
 
     onClickSaveCheckNo() {
@@ -86,7 +90,10 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
             ]
         })
 
-        this.setState({ newTrainDialog: trainDialog });
+        this.setState({ 
+            newTrainDialog: trainDialog,
+            newExtractChanged: true
+         });
     }
 
     // User has submitted new entity extractions / text variations for a round
@@ -120,7 +127,10 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
             rounds: [...roundsBeforeModification, modifiedRound]
         })
 
-        this.setState({ newTrainDialog: trainDialog });
+        this.setState({ 
+            newTrainDialog: trainDialog,
+            newExtractChanged: false
+        });
     }
 
     getPrevMemories(): Memory[] {
@@ -279,7 +289,7 @@ export interface ReceivedProps {
     app: BlisAppBase
     logDialog: LogDialog
     selectedActivity: Activity
-    onEdit: (logDialogId: string, newTrainDialog: TrainDialog) => void
+    onEdit: (logDialogId: string, newTrainDialog: TrainDialog, lastExtractChanged: boolean) => void
     onExtractionsChanged: (changed: boolean) => void
 }
 

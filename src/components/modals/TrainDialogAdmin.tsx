@@ -4,7 +4,6 @@ import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../../types'
-import { DialogMode } from '../../types/const';
 import { clearExtractResponses } from '../../actions/teachActions'
 import EntityExtractor from './EntityExtractor';
 import ActionScorer from './ActionScorer';
@@ -14,7 +13,7 @@ import * as OF from 'office-ui-fabric-react';
 import {
     ActionBase, BlisAppBase, TrainDialog, TrainRound, ScoreReason, ScoredAction,
     TrainScorerStep, Memory, UnscoredAction, ScoreResponse,
-    TextVariation, ExtractResponse, DialogType, SenderType, AppDefinition
+    TextVariation, ExtractResponse, DialogType, SenderType, AppDefinition, DialogMode
 } from 'blis-models'
 import { FontClassNames } from 'office-ui-fabric-react'
 import { FM } from '../../react-intl-messages'
@@ -37,6 +36,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
         this.state = {
             saveTrainDialog: null,
             saveSliceRound: 0,
+            saveExtractChanged: false,
             senderType: null,
             roundIndex: null,
             scoreIndex: null
@@ -100,7 +100,8 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
             // Save prompt will be shown to user
             this.setState({
                 saveTrainDialog: updatedTrainDialog,
-                saveSliceRound: roundIndex
+                saveSliceRound: roundIndex,
+                saveExtractChanged: true
             });
             return;
         }
@@ -149,7 +150,8 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
         // Save prompt will be shown to user
         this.setState({
             saveTrainDialog: updatedTrainDialog,
-            saveSliceRound: this.state.roundIndex
+            saveSliceRound: this.state.roundIndex,
+            saveExtractChanged: false
         });
     }
 
@@ -163,13 +165,14 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
             })
         })
 
-        this.props.onEdit(this.state.saveTrainDialog.trainDialogId, trainDialog);
+        this.props.onEdit(this.state.saveTrainDialog.trainDialogId, trainDialog, this.state.saveExtractChanged);
          
         this.props.clearExtractResponses();
 
         this.setState({
             saveTrainDialog: null,
             saveSliceRound: 0,
+            saveExtractChanged: false,
             roundIndex: this.state.saveSliceRound
         });
     }
@@ -209,12 +212,16 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                 scorerStep = round.scorerSteps[this.state.scoreIndex];
 
                 selectedAction = this.props.actions.find(action => action.actionId === scorerStep.labelAction)
-                memories = scorerStep.input.filledEntities.map((fe) => new Memory(
-                    {
-                        entityName: this.props.entities.find(e => e.entityId === fe.entityId).entityName,
-                        entityValues: fe.values
+                memories = scorerStep.input.filledEntities.map((fe) => {
+                    let entity = this.props.entities.find(e => e.entityId === fe.entityId);
+                    let entityName = entity ? entity.entityName : 'UNKNOWN ENTITY';
+                    return new Memory(
+                        {
+                            entityName: entityName,
+                            entityValues: fe.values
+                        })
                     }
-                ));
+                );
 
                 // Get prevmemories
                 prevMemories = this.getPrevMemories();
@@ -436,6 +443,7 @@ const mapStateToProps = (state: State) => {
 interface ComponentState {
     saveTrainDialog: TrainDialog,
     saveSliceRound: number,
+    saveExtractChanged: boolean,    // Did extraction change on edit
     senderType: SenderType,
     roundIndex: number,
     scoreIndex: number
@@ -445,7 +453,7 @@ export interface ReceivedProps {
     trainDialog: TrainDialog,
     app: BlisAppBase,
     selectedActivity: Activity,
-    onEdit: (sourceTrainDialogId: string, editedTrainDialog: TrainDialog) => void
+    onEdit: (sourceTrainDialogId: string, editedTrainDialog: TrainDialog, lastExtractChanged: boolean) => void
     onReplace: (editedTrainDialog: TrainDialog) => void
     onExtractionsChanged: (changed: boolean) => void
 }

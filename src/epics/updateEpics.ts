@@ -3,7 +3,7 @@ import * as Rx from 'rxjs';
 import { ActionsObservable, Epic } from 'redux-observable'
 import { State, ActionObject } from '../types'
 import { AT } from '../types/ActionTypes'
-import { editBlisAction, editBlisApp, editBlisEntity, setBlisApp } from './apiHelpers';
+import { editBlisAction, editBlisApp, editBlisEntity, setBlisApp, setConversationId } from './apiHelpers';
 
 const assertNever = () => { throw Error(`Should not reach here`) }
 
@@ -36,5 +36,13 @@ export const setBlisApplicationEpic: Epic<ActionObject, State> = (action$: Actio
         .flatMap(action =>
             (action.type === AT.SET_CURRENT_BLIS_APP_ASYNC)
                 ? setBlisApp(action.key, action.app)
+                : assertNever())
+}
+
+export const setConversationIdEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
+    return action$.ofType(AT.SET_CONVERSATION_ID_ASYNC)
+        .flatMap(action =>
+            (action.type === AT.SET_CONVERSATION_ID_ASYNC)
+                ? setConversationId(action.userName, action.userId, action.conversationId)
                 : assertNever())
 }

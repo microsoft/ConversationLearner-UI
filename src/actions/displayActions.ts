@@ -12,6 +12,15 @@ export const setCurrentBLISApp = (key: string, app: BlisAppBase): ActionObject =
     }
 }
 
+export const setConversationId = (userName: string, userId: string, conversationId: string): ActionObject => {
+    return {
+        type: AT.SET_CONVERSATION_ID_ASYNC,
+        userName,
+        userId,
+        conversationId
+    }
+}
+
 export const setCurrentBLISAppFulfilled = (app: BlisAppBase): ActionObject => {
     return {
         type: AT.SET_CURRENT_BLIS_APP_FULFILLED,

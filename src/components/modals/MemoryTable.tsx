@@ -5,8 +5,7 @@ import { connect } from 'react-redux';
 import { State } from '../../types'
 import * as OF from 'office-ui-fabric-react';
 import { onRenderDetailsHeader, Prebuilt } from '../ToolTips'
-import { EntityBase, EntityType, Memory } from 'blis-models'
-import { DialogMode } from '../../types/const'
+import { EntityBase, EntityType, Memory, DialogMode } from 'blis-models'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 
