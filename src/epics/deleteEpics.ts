@@ -20,7 +20,7 @@ export const deleteEntityEpic: Epic<ActionObject, State> = (action$: ActionsObse
     return action$.ofType(AT.DELETE_ENTITY_ASYNC)
         .flatMap(action =>
             (action.type === AT.DELETE_ENTITY_ASYNC)
-                ? deleteBlisEntity('', action.currentAppId, action.entity.entityId, action.entity.metadata.negativeId || action.entity.metadata.positiveId)
+                ? deleteBlisEntity('', action.currentAppId, action.entity.entityId, action.entity.negativeId || action.entity.positiveId)
                 : assertNever()
         )
 }

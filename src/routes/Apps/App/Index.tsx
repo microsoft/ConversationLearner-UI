@@ -10,7 +10,6 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { BlisAppBase, ActionBase, ActionTypes } from 'blis-models'
 import { State } from '../../../types';
-import { ErrorType } from '../../../types/const';
 import { setErrorDisplay } from '../../../actions/displayActions';
 import { Icon } from 'office-ui-fabric-react/lib/Icon'
 import Entities from './Entities'
@@ -56,14 +55,10 @@ class Index extends React.Component<Props, ComponentState> {
     }
 
     componentWillReceiveProps(newProps: Props) {
-        let validationErrors: string[] = [];
 
         if (newProps.actions !== this.props.actions) {
-            validationErrors.push.apply(validationErrors, this.actionValidationErrors(newProps.actions));
-        }
-
-        if (validationErrors.length > 0) {
-            this.props.setErrorDisplay(ErrorType.Warning, 'Validation Error:', validationErrors, null);
+            let validationErrors = this.actionValidationErrors(newProps.actions);
+            this.setState({validationErrors: validationErrors});
         }
     }
 
@@ -71,21 +66,25 @@ class Index extends React.Component<Props, ComponentState> {
         let errors: string[] = [];
 
         // Check for missing APIs
-        let apiActions = actions.filter(a => a.metadata && a.metadata.actionType === ActionTypes.API_LOCAL);
-        let missingApis = apiActions.filter(a => !this.props.botInfo.callbacks || !this.props.botInfo.callbacks.find(cb => cb.name === ActionBase.GetPayload(a)));
-        errors = missingApis.map(a => `Action references API "${ActionBase.GetPayload(a)}" not contained by running Bot`);
+        let apiActions = actions.filter(a => a.actionType === ActionTypes.API_LOCAL);
+        let actionsMissingApis = apiActions.filter(a => !this.props.botInfo.callbacks || !this.props.botInfo.callbacks.find(cb => cb.name === ActionBase.GetPayload(a)));
+        // Make unique list of missing APIs
+        let missingAPIs = actionsMissingApis.map(a => `${ActionBase.GetPayload(a)}`)
+                                            .filter((item, i, ar) => ar.indexOf(item) === i);
+        errors = missingAPIs.map(api => `Action references API "${api}" not contained by running Bot`);
 
         // Check for bad templates
         let badTemplates = this.props.botInfo.templates.filter(t => t.validationError != null);
         errors = errors.concat(badTemplates.map(a => a.validationError));
 
         // Check for missing templates
-        let cardActions = actions.filter(a => a.metadata && a.metadata.actionType === ActionTypes.CARD);
-        let missingTemplates = cardActions.filter(a => !this.props.botInfo.templates || !this.props.botInfo.templates.find(cb => cb.name === ActionBase.GetPayload(a)));
-        errors = missingTemplates.map(a => `Action references Template "${ActionBase.GetPayload(a)}" not contained by running Bot`);
+        let cardActions = actions.filter(a => a.actionType === ActionTypes.CARD);
+        let actionsMissingTemplates = cardActions.filter(a => !this.props.botInfo.templates || !this.props.botInfo.templates.find(cb => cb.name === ActionBase.GetPayload(a)));
+        // Make unique list of missing templates
+        let missingTemplates = actionsMissingTemplates.map(a => `${ActionBase.GetPayload(a)}`)
+                                                    .filter((item, i, ar) => ar.indexOf(item) === i);
+        errors = errors.concat(missingTemplates.map(template => `Action references Template "${template}" not contained by running Bot`));
  
-        // Check for missing entities
-
         return errors;
     }
 
@@ -126,7 +125,7 @@ class Index extends React.Component<Props, ComponentState> {
                     <Route
                         exact={true}
                         path={match.url}
-                        render={props => <Dashboard {...props} app={app} />}
+                        render={props => <Dashboard {...props} app={app} validationErrors={this.state.validationErrors} />}
                     />
                 </Switch>
             </div>

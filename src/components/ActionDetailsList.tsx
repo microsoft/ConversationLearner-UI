@@ -159,7 +159,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
 
                 return (
                     <div>
-                        {action.metadata.actionType === ActionTypes.CARD &&
+                        {action.actionType === ActionTypes.CARD &&
                             <OF.PrimaryButton
                                 className="blis-button--viewCard"
                                 onClick={() => component.onClickViewCard(action)}
@@ -186,8 +186,8 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             minWidth: 100,
             maxWidth: 100,
             isResizable: true,
-            getSortValue: action => action.metadata.actionType.toLowerCase(),
-            render: action => <span className={OF.FontClassNames.mediumPlus}>{action.metadata.actionType}</span>
+            getSortValue: action => action.actionType.toLowerCase(),
+            render: action => <span className={OF.FontClassNames.mediumPlus}>{action.actionType}</span>
         },
         {
             key: 'requiredEntities',
@@ -251,12 +251,11 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             isResizable: true,
             getSortValue: action => '',
             render: (action, component) => {
-                const expectedEntityId = action.suggestedEntity || (action.metadata as any).entitySuggestion
-                if (!expectedEntityId) {
+                if (!action.suggestedEntity) {
                     return <OF.Icon iconName="Remove" className="blis-icon" />
                 }
 
-                const expectedEntity = component.props.entities.find(e => e.entityId == expectedEntityId)
+                const expectedEntity = component.props.entities.find(e => e.entityId === action.suggestedEntity)
                 return (
                     <div className='ms-ListItem is-selectable'>
                         <span className='ms-ListItem-primaryText'>{expectedEntity.entityName}</span>

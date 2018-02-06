@@ -121,7 +121,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                     <div className="blis-dialog-admin-title">
                         <FormattedMessage
                             id={FM.TEACHSESSIONADMIN_MEMORY_TITLE}
-                            defaultMessage="Memory"
+                            defaultMessage="Entity Memory"
                         />
                     </div>
                     <div>

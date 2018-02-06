@@ -8,7 +8,9 @@ import { FontClassNames } from 'office-ui-fabric-react'
 import { FM } from '../../../react-intl-messages'
 
 class Dashboard extends React.Component<Props, {}> {
+
     render() {
+        let key = 0;
         return (
             <div className="blis-page">
                 <span className={FontClassNames.xxLarge}>
@@ -23,6 +25,16 @@ class Dashboard extends React.Component<Props, {}> {
                         defaultMessage="Facts & statistics about the app's data at any period of time..."
                     />
                 </span>
+                {this.props.validationErrors.length > 0 && 
+                (
+                    <div className="blis-errorpanel" >
+                        <div className={FontClassNames.medium}></div>
+                        {this.props.validationErrors.map((message: any) => { 
+                                return message.length === 0 ? <br key={key++}></br> : <div key={key++} className={FontClassNames.medium}>{message}</div>;
+                            })
+                        }
+                    </div>
+                )}
             </div>
         );
     }
@@ -37,7 +49,8 @@ const mapStateToProps = (state: State) => {
 }
 
 export interface ReceivedProps {
-    app: BlisAppBase
+    app: BlisAppBase, 
+    validationErrors: string[]
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps

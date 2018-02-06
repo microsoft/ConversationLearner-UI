@@ -87,7 +87,7 @@ const teachSessionReducer: Reducer<TeachSessionState> = (state = initialState, a
                     actionId: action.actionId,
                     payload: action.action.payload,
                     isTerminal: action.action.isTerminal,
-                    metadata: action.action.metadata,
+                    actionType: action.action.actionType,
                     reason: ScoreReason.NotCalculated
                 });
                 let unscoredActions = [...state.scoreResponse.unscoredActions, unscoredAction];

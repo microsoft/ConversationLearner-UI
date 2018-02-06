@@ -162,10 +162,10 @@ export const createBlisEntity = (key: string, entity: EntityBase, appId: string,
   const { version, packageCreationId, packageDeletionId, entityId, ...entityToSend } = entity;
   return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.entitiesCreate(appId, entityToSend as EntityBase)
     .then(newEntity => {
-      if (!entity.metadata.isReversable) {
+      if (!entity.isNegatible) {
         obs.next(actions.create.createEntityFulfilled(newEntity, newEntity.entityId));
       }
-      else if (entity.metadata.positiveId) {
+      else if (entity.positiveId) {
         obs.next(actions.create.createNegativeEntityFulfilled(key, reverseEntity, newEntity, newEntity.entityId, appId));
       }
       else {
