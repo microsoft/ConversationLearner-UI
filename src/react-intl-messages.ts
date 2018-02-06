@@ -39,6 +39,8 @@ export enum FM {
     APPSLIST_SUBTITLE = 'AppsList.subtitle',
     APPSLIST_CREATEBUTTONARIADESCRIPTION = 'AppsList.createButtonAriaDescription',
     APPSLIST_CREATEBUTTONTEXT = 'AppsList.createButtonText',
+    APPSLIST_IMPORTBUTTONARIADESCRIPTION = 'AppsList.importButtonAriaDescription',
+    APPSLIST_IMPORTBUTTONTEXT = 'AppsList.importButtonText',
     APPSLIST_CONFIRMDELETEMODALTITLE = 'AppsList.confirmDeleteModalTitle',
     APPSLIST_COLUMN_NAME = 'AppsList.columns.name',
     APPSLIST_COLUMNS_LOCALE = 'AppsList.columns.locale',
@@ -226,6 +228,11 @@ export enum FM {
     CONFIRMDELETEMODAL_PRIMARYBUTTON_TEXT = 'ConfirmDeleteModal.primaryButton.text',
     CONFIRMDELETEMODAL_DEFAULTBUTTON_TEXT = 'ConfirmDeleteModal.defaultButton.text',
 
+    // DemoImporter
+    DEMOIMPORT_TITLE = 'DemoImporter.title',
+    DEMOIMPORT_BUTTON_ARIADESCRIPTION = 'DemoImporter.button.ariaDescription',
+    DEMOIMPORT_BUTTON_TEXT = 'DemoImporter.button.text',
+
     // EntityCreatorEditor
     ENTITYCREATOREDITOR_FIELDERROR_REQUIREDVALUE = 'EntityCreatorEditor.fieldError.requiredValue',
     ENTITYCREATOREDITOR_FIELDERROR_ALPHANUMERIC = 'EntityCreatorEditor.fieldsError.alphanumerica',
@@ -369,6 +376,8 @@ export default {
         [FM.APPSLIST_SUBTITLE]: 'Create and Manage your BLIS applications...',
         [FM.APPSLIST_CREATEBUTTONARIADESCRIPTION]: 'Create a New Application',
         [FM.APPSLIST_CREATEBUTTONTEXT]: 'New App',
+        [FM.APPSLIST_IMPORTBUTTONARIADESCRIPTION]: 'Import Demo Applications',
+        [FM.APPSLIST_IMPORTBUTTONTEXT]: 'Import Demos',
         [FM.APPSLIST_CONFIRMDELETEMODALTITLE]: 'Are you sure you want to delete this application?',
         [FM.APPSLIST_COLUMN_NAME]: 'Name',
         [FM.APPSLIST_COLUMNS_LOCALE]: 'Locale',
@@ -549,6 +558,11 @@ export default {
         [FM.APPCREATOR_CREATEBUTTON_TEXT]: 'Create',
         [FM.APPCREATOR_CANCELBUTTON_ARIADESCRIPTION]: 'Cancel',
         [FM.APPCREATOR_CANCELBUTTON_TEXT]: 'Cancel',
+
+        // DemoImporter
+        [FM.DEMOIMPORT_TITLE]: 'Import Demo Applications',
+        [FM.DEMOIMPORT_BUTTON_ARIADESCRIPTION]: 'Import Demo Applications',
+        [FM.DEMOIMPORT_BUTTON_TEXT]: 'Import',
 
         // ChatSessionModal
         [FM.CHATSESSIONMODAL_PRIMARYBUTTON_ARIADESCRIPTION]: 'Done Testing',
