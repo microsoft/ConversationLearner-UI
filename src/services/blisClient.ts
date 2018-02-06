@@ -132,6 +132,16 @@ export default class BlisClient {
         })
     }
 
+    // AT.COPY_APPLICATIONS_ASYNC
+    appsCopy(srcUserId: string, destUserId: string, luisSubscriptionKey: string): Promise<void> {
+        return this.send<string>({
+            method: 'post',
+            url: `${this.baseUrl}/apps/copy?srcUserId=${srcUserId}&destUserId=${destUserId}&luisSubscriptionKey=${luisSubscriptionKey}`
+        }).then(response => {
+            return null;
+        })
+    }
+
     appsDelete(appId: string): Promise<void> {
         return this.send({
             method: 'delete',
