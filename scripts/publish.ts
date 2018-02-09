@@ -50,7 +50,7 @@ async function main() {
     }
 
     console.log(`Get last release:`)
-    const gitTagsOutput = await execa.stdout('git', ['tag', '-l'])
+    const gitTagsOutput = await execa.stdout('git', ['tag', '-l', '--sort=v:refname'])
     const tagVersions = gitTagsOutput.split('\n')
         .filter(t => /v(\d+).(\d+).(\d+)/.test(t))
         .reduce((versions: IVersion[], t) => {
@@ -102,7 +102,7 @@ async function main() {
     }
 
     console.log(`Create tag on current commit using the next version: ${nextVersion}`)
-    await execa('git', ['tag', '-a', '-m', `"Release blis-ui: ${nextVersion}"`, `v${nextVersion}`])
+    await execa('git', ['tag', '-a', '-m', `${nextVersion}`, `v${nextVersion}`])
 }
 
 main()

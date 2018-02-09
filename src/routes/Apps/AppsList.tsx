@@ -10,6 +10,7 @@ import { State } from '../../types';
 import { BlisAppBase } from 'blis-models'
 import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { FM } from '../../react-intl-messages'
+import DemoImporter from '../../components/modals/DemoImporter';
 
 interface ISortableRenderableColumn extends OF.IColumn {
     render: (app: BlisAppBase, component: AppsList) => JSX.Element
@@ -75,6 +76,7 @@ function getColumns(intl: InjectedIntl): ISortableRenderableColumn[] {
 
 interface ComponentState {
     isAppCreateModalOpen: boolean
+    isDemoImporterOpen: boolean
     isConfirmDeleteAppModalOpen: boolean
     appToDelete: BlisAppBase
     columns: ISortableRenderableColumn[]
@@ -95,6 +97,7 @@ class AppsList extends React.Component<Props, ComponentState> {
 
         this.state = {
             isAppCreateModalOpen: false,
+            isDemoImporterOpen: false,
             isConfirmDeleteAppModalOpen: false,
             appToDelete: null,
             columns,
@@ -122,6 +125,13 @@ class AppsList extends React.Component<Props, ComponentState> {
             isAppCreateModalOpen: true
         })
     }
+
+    onClickImportDemoApps = () => {
+        this.setState({
+            isDemoImporterOpen: true
+        })
+    }
+
     onClickDeleteApp(app: BlisAppBase) {
         this.setState({
             isConfirmDeleteAppModalOpen: true,
@@ -170,6 +180,19 @@ class AppsList extends React.Component<Props, ComponentState> {
         })
     }
 
+    onSubmitDemoImporterModal = (luisKey: string) => {
+        this.setState({
+            isDemoImporterOpen: false
+        })
+        this.props.onImportDemoApps(luisKey);
+    }
+
+    onCancelDemoImporterModal = () => {
+        this.setState({
+            isDemoImporterOpen: false
+        })
+    }
+
     getSortedApplications(): BlisAppBase[] {
         let sortedApps = this.props.apps
 
@@ -206,7 +229,7 @@ class AppsList extends React.Component<Props, ComponentState> {
                         defaultMessage="Create and Manage your BLIS applications..."
                     />
                 </span>
-                <div>
+                <div className="blis-modal-buttons_primary">
                     <OF.PrimaryButton
                         onClick={() => this.onClickCreateNewApp()}
                         ariaDescription={this.props.intl.formatMessage({
@@ -216,6 +239,17 @@ class AppsList extends React.Component<Props, ComponentState> {
                         text={this.props.intl.formatMessage({
                             id: FM.APPSLIST_CREATEBUTTONTEXT,
                             defaultMessage: 'New App'
+                        })}
+                    />
+                    <OF.DefaultButton
+                        onClick={() => this.onClickImportDemoApps()}
+                        ariaDescription={this.props.intl.formatMessage({
+                            id: FM.APPSLIST_IMPORTBUTTONARIADESCRIPTION,
+                            defaultMessage: 'Import Demo Applicaitons'
+                        })}
+                        text={this.props.intl.formatMessage({
+                            id: FM.APPSLIST_IMPORTBUTTONTEXT,
+                            defaultMessage: 'Import Demos'
                         })}
                     />
                 </div>
@@ -231,6 +265,11 @@ class AppsList extends React.Component<Props, ComponentState> {
                     open={this.state.isAppCreateModalOpen}
                     onSubmit={this.onSubmitAppCreateModal}
                     onCancel={this.onCancelAppCreateModal}
+                />
+                <DemoImporter
+                    open={this.state.isDemoImporterOpen}
+                    onSubmit={this.onSubmitDemoImporterModal}
+                    onCancel={this.onCancelDemoImporterModal}
                 />
                 <ConfirmDeleteModal
                     open={this.state.isConfirmDeleteAppModalOpen}
@@ -258,6 +297,7 @@ export interface ReceivedProps {
     apps: BlisAppBase[]
     onCreateApp: (app: BlisAppBase) => void
     onClickDeleteApp: (app: BlisAppBase) => void
+    onImportDemoApps: (luisKey: string) => void
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps

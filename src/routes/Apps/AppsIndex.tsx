@@ -5,7 +5,7 @@ import {
 } from 'react-router-dom'
 import { RouteComponentProps } from 'react-router'
 import { returntypeof } from 'react-redux-typescript';
-import { createBLISApplicationAsync } from '../../actions/createActions'
+import { createBLISApplicationAsync, copyApplicationsThunkAsync } from '../../actions/createActions'
 import { deleteBLISApplicationAsync } from '../../actions/deleteActions'
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -60,6 +60,14 @@ class AppsIndex extends React.Component<Props, ComponentState> {
         this.props.createBLISApplicationAsync(this.props.user.id, this.props.user.id, appToCreate)
     }
 
+    onImportDemoApps = (luiskey: string) => {
+        let srcUserId = "demo_demo";
+        let destUserId = this.props.user.id;
+
+        // TODO: Find cleaner solution for the types.  Thunks return functions but when using them on props they should be returning result of the promise.
+        this.props.copyApplicationsThunkAsync(srcUserId, destUserId, luiskey);
+    }
+
     render() {
         const { match } = this.props
         return (
@@ -73,6 +81,7 @@ class AppsIndex extends React.Component<Props, ComponentState> {
                             apps={this.props.apps}
                             onCreateApp={this.onCreateApp}
                             onClickDeleteApp={this.onClickDeleteApp}
+                            onImportDemoApps={this.onImportDemoApps}
                         />
                     }
                 />
@@ -87,6 +96,7 @@ const mapDispatchToProps = (dispatch: any) => {
         fetchBotInfoAsync: actions.fetch.fetchBotInfoAsync,
         createBLISApplicationAsync,
         deleteBLISApplicationAsync,
+        copyApplicationsThunkAsync
     }, dispatch)
 }
 

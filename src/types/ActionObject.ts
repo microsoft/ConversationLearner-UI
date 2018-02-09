@@ -164,6 +164,13 @@ export type CreateAction = {
     userId: string,
     blisApp: BlisAppBase,
 } | {
+    type: AT.COPY_APPLICATIONS_ASYNC,
+    srcUserId: string, 
+    destUserId: string, 
+    luisSubscriptionKey: string
+} | {
+    type: AT.COPY_APPLICATIONS_FULFILLED
+} | {
     type: AT.CREATE_ENTITY_ASYNC,
     key: string,
     entity: EntityBase,

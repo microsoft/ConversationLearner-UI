@@ -156,6 +156,17 @@ export const createBlisApp = (key: string, userId: string, app: BlisAppBase): Ob
     })
     .catch(err => handleError(obs, err, AT.CREATE_BLIS_APPLICATION_ASYNC)));
 };
+
+export const copyApplications = (srcUserId: string, destUserId: string, luisSubscriptionKey: string): Observable<ActionObject> => {
+  const blisClient = ClientFactory.getInstance(AT.COPY_APPLICATIONS_ASYNC)
+  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.appsCopy(srcUserId, destUserId, luisSubscriptionKey)
+    .then(() => {
+      obs.next(actions.create.copyApplicationsFulfilled())
+      obs.complete();
+    })
+    .catch(err => handleError(obs, err, AT.COPY_APPLICATIONS_ASYNC)));
+};
+
 export const createBlisEntity = (key: string, entity: EntityBase, appId: string, reverseEntity?: EntityBase): Observable<ActionObject> => {
   const blisClient = ClientFactory.getInstance(AT.CREATE_ENTITY_ASYNC)
   //remove property from the object that the route will not accept

@@ -5,6 +5,7 @@ import { Dispatch } from 'redux'
 import { setErrorDisplay } from './displayActions'
 import * as ClientFactory from '../services/clientFactory'
 import { deleteTrainDialogThunkAsync } from './deleteActions';  
+import { fetchApplicationsAsync } from './fetchActions';
 
 export const createBLISApplicationAsync = (key: string, userId: string, application: BlisAppBase): ActionObject => {
     return {
@@ -19,6 +20,38 @@ export const createApplicationFulfilled = (blisApp: BlisAppBase): ActionObject =
     return {
         type: AT.CREATE_BLIS_APPLICATION_FULFILLED,
         blisApp: blisApp
+    }
+}
+
+export const copyApplicationsAsync = (srcUserId: string, destUserId: string, luisSubscriptionKey: string): ActionObject => {
+    return {
+        type: AT.COPY_APPLICATIONS_ASYNC,
+        srcUserId: srcUserId,
+        destUserId: destUserId,
+        luisSubscriptionKey: luisSubscriptionKey,
+    }
+}
+
+export const copyApplicationsFulfilled = (): ActionObject => {
+    return {
+        type: AT.COPY_APPLICATIONS_FULFILLED
+    }
+}
+
+export const copyApplicationsThunkAsync = (srcUserId: string, destUserId: string, luisSubscriptionKey: string) => {
+    return async (dispatch: Dispatch<any>) => {
+        const blisClient = ClientFactory.getInstance(AT.COPY_APPLICATIONS_ASYNC)
+        try {
+            dispatch(copyApplicationsAsync(srcUserId, destUserId, luisSubscriptionKey))
+            await blisClient.appsCopy(srcUserId, destUserId, luisSubscriptionKey)
+            dispatch(fetchApplicationsAsync(destUserId, destUserId))
+            dispatch(copyApplicationsFulfilled())
+        }
+        catch (error) {
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, [error.response], AT.CREATE_TEACH_SESSION_ASYNC))
+            throw error
+        }
+        return;
     }
 }
 
