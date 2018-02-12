@@ -22,7 +22,7 @@ const removeSpinner = function (spinners: string[], oldSpinner: string): string[
 
 const displayReducer: Reducer<DisplayState> = (state = initialState, action: ActionObject): DisplayState => {
     switch (action.type) {
-        case AT.LOGOUT:
+        case AT.USER_LOGOUT:
             return { ...initialState };
         case AT.SET_TIP_TYPE:
             return { ...state, tipType: action.tipType };

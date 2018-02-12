@@ -51,21 +51,6 @@ export const clearErrorDisplay = (): ActionObject => {
     }
 }
 
-export const logout = (): ActionObject => {
-    return {
-        type: AT.LOGOUT
-    }
-}
-
-export const setUser = (name: string, password: string, id: string): ActionObject => {
-    return {
-        type: AT.SET_USER,
-        name: name,
-        password: password,
-        id: id
-    }
-}
-
 export const addMessageToTeachConversationStack = (message: string): ActionObject => {
     return {
         type: AT.TEACH_MESSAGE_RECEIVED,

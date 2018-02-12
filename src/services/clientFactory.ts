@@ -4,8 +4,8 @@ import { ErrorInjector } from '../ErrorInjector';
 //import DebugErrors from '../components/modals/DebugErrors'
 
 let sdkPort = 5000
-let getAccessToken = () => ''
-let getMemoryKey = () => ''
+let getAccessToken = (): string => { throw new Error(`You attempted to use the BlisClient before its getAccessToken method was properly configured. Call setAccessToken to configure`) }
+let getMemoryKey = (): string => { throw new Error(`You attempted to use the BlisClient before its getMemoryKey method was properly configured. Call setMemoryKey to configure`) }
 
 export const getInstance = (actionType: AT): BlisClient => {
     let forceError = (actionType && ErrorInjector.ShouldError(actionType));

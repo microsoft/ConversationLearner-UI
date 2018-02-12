@@ -52,11 +52,17 @@ export type DisplayState = {
     tipType: TipType
 }
 export type UserState = {
-    name: string,
-    password: string,
-    id: string,
+    isLoggedIn: boolean,
+    name: string | null,
+    id: string | null,
 }
+
+export interface ProfileState {
+    current: any
+}
+
 export type State = {
+    profile: ProfileState,
     user: UserState,
     bot: BotState
     apps: AppsState,

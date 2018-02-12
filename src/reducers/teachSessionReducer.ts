@@ -19,7 +19,7 @@ const initialState: TeachSessionState = {
 
 const teachSessionReducer: Reducer<TeachSessionState> = (state = initialState, action: ActionObject): TeachSessionState => {
     switch (action.type) {
-        case AT.LOGOUT:
+        case AT.USER_LOGOUT:
             return { ...initialState };
         case AT.FETCH_TEACH_SESSIONS_FULFILLED:
             return { ...state, all: action.allTeachSessions };
