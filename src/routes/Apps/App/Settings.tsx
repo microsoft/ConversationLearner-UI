@@ -111,10 +111,10 @@ class Settings extends React.Component<Props, ComponentState> {
             appIdVal: app.appId,
             appNameVal: app.appName,
             luisKeyVal: app.luisKey,
-            markdownVal: app.markdown,
-            videoVal: app.video,
+            markdownVal: app.metadata ? app.metadata.markdown : null,
+            videoVal: app.metadata ? app.metadata.video : null,
             botFrameworkAppsVal: app.metadata.botFrameworkApps,
-            newBotVal: ""
+            newBotVal: ''
         })
     }
     componentDidUpdate() {
@@ -123,16 +123,16 @@ class Settings extends React.Component<Props, ComponentState> {
             this.state.appIdVal !== app.appId ||
             this.state.appNameVal !== app.appName ||
             this.state.luisKeyVal !== app.luisKey ||
-            this.state.markdownVal !== app.markdown ||
-            this.state.videoVal !== app.video ||
+            this.state.markdownVal !== app.metadata.markdown ||
+            this.state.videoVal !== app.metadata.video ||
             this.state.botFrameworkAppsVal !== app.metadata.botFrameworkApps)) {
             this.setState({
                 localeVal: app.locale,
                 appIdVal: app.appId,
                 appNameVal: app.appName,
                 luisKeyVal: app.luisKey,
-                markdownVal: app.markdown,
-                videoVal: app.video,
+                markdownVal: app.metadata ? app.metadata.markdown : null,
+                videoVal: app.metadata ? app.metadata.video : null,
                 botFrameworkAppsVal: app.metadata.botFrameworkApps
             })
         }
@@ -188,11 +188,11 @@ class Settings extends React.Component<Props, ComponentState> {
             appIdVal: app.appId,
             appNameVal: app.appName,
             luisKeyVal: app.luisKey,
-            markdownVal: app.markdown,
-            videoVal: app.video,
+            markdownVal: app.metadata ? app.metadata.markdown : null,
+            videoVal: app.metadata ? app.metadata.video : null,
             botFrameworkAppsVal: app.metadata.botFrameworkApps,
             edited: false,
-            newBotVal: ""
+            newBotVal: ''
         })
     }
     onClickSave() {
@@ -201,11 +201,11 @@ class Settings extends React.Component<Props, ComponentState> {
             appName: this.state.appNameVal,
             appId: app.appId,
             luisKey: this.state.luisKeyVal,
-            markdown: this.state.markdownVal,
-            video: this.state.videoVal,
             locale: app.locale,
             metadata: new BlisAppMetaData({
-                botFrameworkApps: this.state.botFrameworkAppsVal
+                botFrameworkApps: this.state.botFrameworkAppsVal,
+                markdown: this.state.markdownVal,
+                video: this.state.videoVal,
             })
         })
         this.props.editBLISApplicationAsync(this.props.user.id, modifiedApp);
@@ -214,10 +214,11 @@ class Settings extends React.Component<Props, ComponentState> {
             appIdVal: app.appId,
             appNameVal: app.appName,
             luisKeyVal: app.luisKey,
-            markdownVal: app.markdown,
-            videoVal: app.video,
+            markdownVal: app.metadata ? app.metadata.markdown : null,
+            videoVal: app.metadata ? app.metadata.video : null,
+            botFrameworkAppsVal: app.metadata.botFrameworkApps,
             edited: false,
-            newBotVal: ""
+            newBotVal: ''
         })
     }
 
@@ -359,6 +360,30 @@ class Settings extends React.Component<Props, ComponentState> {
                             />
                         </div>
                     </div>
+                    {this.props.user.name === 'demo' &&
+                    <div>
+                        <OF.TextField
+                            className={OF.FontClassNames.mediumPlus}
+                            onChanged={(text) => this.onChangedMarkdown(text)}
+                            label={intl.formatMessage({
+                                id: FM.SETTINGS_FIELDS_MARKDOWNLABEL,
+                                defaultMessage: 'Markdown'
+                            })}
+                            value={this.state.markdownVal}
+                            multiline={true}
+                            rows={5}
+                        />
+                        <OF.TextField
+                            className={OF.FontClassNames.mediumPlus}
+                            onChanged={(text) => this.onChangedVideo(text)}
+                            label={intl.formatMessage({
+                                id: FM.SETTINGS_FIELDS_VIDEOLABEL,
+                                defaultMessage: 'Video'
+                            })}
+                            value={this.state.videoVal}
+                        />
+                    </div>
+                    }
                     <div className="blis-modal-buttons_primary" style={buttonsDivStyle}>
                         <OF.PrimaryButton
                             disabled={this.onGetNameErrorMessage(this.state.appNameVal) !== ""}
@@ -371,35 +396,14 @@ class Settings extends React.Component<Props, ComponentState> {
                             ariaDescription={intl.formatMessage(messages.discard)}
                             text={intl.formatMessage(messages.discard)}
                         />
+                        {this.props.user.name === 'demo' &&
+                            <OF.DefaultButton
+                                onClick={() => this.onOpenDebugErrors()}
+                                ariaDescription={intl.formatMessage(messages.discard)}
+                                text={'Inject Errors'}
+                            />
+                        }
                     </div>
-                    {this.props.user.name == "demo" &&
-                    <div>
-                        <OF.TextField
-                            className={OF.FontClassNames.mediumPlus}
-                            onChanged={(text) => this.onChangedMarkdown(text)}
-                            label={intl.formatMessage({
-                                id: FM.SETTINGS_FIELDS_MARKDOWNLABEL,
-                                defaultMessage: "Markdown"
-                            })}
-                            onGetErrorMessage={value => this.onGetNameErrorMessage(value)}
-                            value={this.state.markdownVal}
-                        />
-                        <OF.TextField
-                            className={OF.FontClassNames.mediumPlus}
-                            onChanged={(text) => this.onChangedVideo(text)}
-                            label={intl.formatMessage({
-                                id: FM.SETTINGS_FIELDS_VIDEOLABEL,
-                                defaultMessage: "Video"
-                            })}
-                            value={this.state.videoVal}
-                        />
-                    </div>
-                    }
-                    <OF.DefaultButton
-                            onClick={() => this.onOpenDebugErrors()}
-                            ariaDescription={intl.formatMessage(messages.discard)}
-                            text={'Debug Errors'}
-                        />
                     <ErrorInjectionEditor 
                         open={this.state.debugErrorsOpen}
                         onClose={()=>this.onCloseDebugErrors()}

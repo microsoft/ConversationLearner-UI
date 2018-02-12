@@ -37,13 +37,14 @@ class Dashboard extends React.Component<Props, {}> {
                         }
                     </div>
                 )}
-                {this.props.app.markdown &&
-                    <ReactMarkdown source={this.props.app.markdown} />
+                {this.props.app.metadata && this.props.app.metadata.markdown &&
+                    <ReactMarkdown source={this.props.app.metadata.markdown} />
                 }
-                {this.props.app.video &&
+                {this.props.app.metadata && this.props.app.metadata.video &&
                     <ReactPlayer 
-                        url={this.props.app.video}
-                        controls/>
+                        url={this.props.app.metadata.video}
+                        controls={true}
+                    />
                 }
             </div>
         );

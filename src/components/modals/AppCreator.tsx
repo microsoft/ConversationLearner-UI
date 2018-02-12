@@ -101,7 +101,9 @@ class AppCreator extends React.Component<Props, ComponentState> {
             luisKey: this.state.luisKeyVal,
             locale: this.state.localeVal,
             metadata: {
-                botFrameworkApps: []
+                botFrameworkApps: [],
+                markdown: null,
+                video: null
             }
         }
 
@@ -113,7 +115,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
     // Also has benefit of native browser validation for required fields
     onKeyDown(key: React.KeyboardEvent<HTMLElement>) {
         // On enter attempt to create the app if required fields are set
-        if (key.keyCode == 13 && this.state.appNameVal && this.state.luisKeyVal) {
+        if (key.keyCode === 13 && this.state.appNameVal && this.state.luisKeyVal) {
             this.onClickCreate();
         }
     }
