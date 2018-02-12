@@ -48,7 +48,7 @@ export const copyApplicationsThunkAsync = (srcUserId: string, destUserId: string
             dispatch(copyApplicationsFulfilled())
         }
         catch (error) {
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, [error.response], AT.CREATE_TEACH_SESSION_ASYNC))
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, [error.response], AT.COPY_APPLICATIONS_ASYNC))
             throw error
         }
         return;
