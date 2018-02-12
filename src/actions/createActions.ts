@@ -48,7 +48,7 @@ export const copyApplicationsThunkAsync = (srcUserId: string, destUserId: string
             dispatch(copyApplicationsFulfilled())
         }
         catch (error) {
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, [error.response], AT.CREATE_TEACH_SESSION_ASYNC))
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, [error.response], AT.COPY_APPLICATIONS_ASYNC))
             throw error
         }
         return;
@@ -74,7 +74,14 @@ export const createEntityFulfilled = (entity: EntityBase, entityId: string): Act
 
 // After positive entity has been created, create the negative entity with a reference to the positiveId
 export const createPositiveEntityFulfilled = (key: string, positiveEntity: EntityBase, positiveEntityId: string, currentAppId: string): ActionObject => {
-    let negativeEntity: EntityBase = { ...positiveEntity, entityName: `~${positiveEntity.entityName}`, metadata: { ...positiveEntity.metadata, positiveId: positiveEntityId } } as EntityBase;
+    let negativeEntity: EntityBase = { 
+        ...positiveEntity, 
+        entityName: `~${positiveEntity.entityName}`, 
+        isMultivalue: positiveEntity.isMultivalue,
+        isNegatible: true,
+        positiveId: positiveEntityId,
+        negativeId: null,
+    } as EntityBase;
     return {
         type: AT.CREATE_ENTITY_FULFILLEDPOSITIVE,
         key: key,
@@ -86,8 +93,8 @@ export const createPositiveEntityFulfilled = (key: string, positiveEntity: Entit
 
 export const createNegativeEntityFulfilled = (key: string, positiveEntity: EntityBase, negativeEntity: EntityBase, negativeEntityId: string, currentAppId: string): ActionObject => {
     let posEntity: EntityBase = positiveEntity;
-    posEntity.metadata.negativeId = negativeEntityId;
-    posEntity.entityId = negativeEntity.metadata.positiveId;
+    posEntity.negativeId = negativeEntityId;
+    posEntity.entityId = negativeEntity.positiveId;
     negativeEntity.entityId = negativeEntityId;
     //send both to store to be saved locally, and send the positive entity back to the service to update its metadata
     return {

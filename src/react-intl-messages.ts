@@ -627,7 +627,7 @@ export default {
         // TeachSessionAdmin
         [FM.TEACHSESSIONADMIN_DIALOGMODE_USER]: 'User Input',
         [FM.TEACHSESSIONADMIN_DIALOGMODE_BOT]: 'Bot Response',
-        [FM.TEACHSESSIONADMIN_MEMORY_TITLE]: 'Memory',
+        [FM.TEACHSESSIONADMIN_MEMORY_TITLE]: 'Entity Memory',
         [FM.TEACHSESSIONADMIN_ENTITYDETECTION_TITLE]: 'Entity Detection',
         [FM.TEACHSESSIONADMIN_ACTION_TITLE]: 'Action',
         [FM.TEACHSESSIONADMIN_TRAINSTATUS_COMPLETED]: 'Train Status: Completed',

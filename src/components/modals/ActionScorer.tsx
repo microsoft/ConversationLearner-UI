@@ -76,7 +76,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                     
                 return (
                     <div>
-                    {action.metadata.actionType === ActionTypes.CARD &&
+                    {action.actionType === ActionTypes.CARD &&
                         <OF.PrimaryButton
                             className="blis-button--viewCard"
                             onClick={() => component.onClickViewCard(action)}
@@ -163,7 +163,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             minWidth: 80,
             maxWidth: 80,
             isResizable: true,
-            render: action => action.metadata.actionType
+            render: action => action.actionType
         },
     ]
 }

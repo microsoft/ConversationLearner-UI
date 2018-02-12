@@ -76,8 +76,8 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             minWidth: 100,
             maxWidth: 200,
             isResizable: true,
-            getSortValue: entity => entity.metadata.isBucket ? 'a' : 'b',
-            render: entity => <OF.Icon iconName={entity.metadata.isBucket ? "CheckMark" : "Remove"} className="blis-icon" />
+            getSortValue: entity => entity.isMultivalue ? 'a' : 'b',
+            render: entity => <OF.Icon iconName={entity.isMultivalue ? "CheckMark" : "Remove"} className="blis-icon" />
         },
         {
             key: 'isNegatable',
@@ -89,8 +89,8 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             minWidth: 100,
             maxWidth: 200,
             isResizable: true,
-            getSortValue: entity => entity.metadata.isReversable ? 'a' : 'b',
-            render: entity => <OF.Icon iconName={entity.metadata.isReversable ? "CheckMark" : "Remove"} className="blis-icon" />
+            getSortValue: entity => entity.isNegatible ? 'a' : 'b',
+            render: entity => <OF.Icon iconName={entity.isNegatible ? "CheckMark" : "Remove"} className="blis-icon" />
         }
     ]
 }
@@ -220,7 +220,7 @@ class Entities extends React.Component<Props, ComponentState> {
             let nameMatch = e.entityName.toLowerCase().includes(lcString);
             let typeMatch = e.entityType.toLowerCase().includes(lcString);
             let match = nameMatch || typeMatch
-            return match && !e.metadata.positiveId;
+            return match && !e.positiveId;
         })
 
         if (!this.state.sortColumn) {

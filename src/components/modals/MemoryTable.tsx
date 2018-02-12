@@ -65,8 +65,8 @@ const columns: IRenderableColumn[] = [
         minWidth: 80,
         maxWidth: 100,
         isResizable: true,
-        render: entity => <OF.Icon iconName={entity.metadata.isBucket ? "CheckMark" : "Remove"} className="blis-icon" />,
-        getSortValue: entity => entity.metadata.isBucket ? 'a' : 'b'
+        render: entity => <OF.Icon iconName={entity.isMultivalue ? "CheckMark" : "Remove"} className="blis-icon" />,
+        getSortValue: entity => entity.isMultivalue ? 'a' : 'b'
     },
     {
         key: 'isNegatable',
@@ -75,8 +75,8 @@ const columns: IRenderableColumn[] = [
         minWidth: 80,
         maxWidth: 100,
         isResizable: true,
-        render: entity => <OF.Icon iconName={entity.metadata.isReversable ? "CheckMark" : "Remove"} className="blis-icon" />,
-        getSortValue: entity => entity.metadata.isReversable ? 'a' : 'b'
+        render: entity => <OF.Icon iconName={entity.isNegatible ? "CheckMark" : "Remove"} className="blis-icon" />,
+        getSortValue: entity => entity.isNegatible ? 'a' : 'b'
     }
 ]
 
@@ -165,7 +165,7 @@ class MemoryTable extends React.Component<Props, ComponentState> {
 
             // Calculate prefix
             let prefix = '';
-            if (!entity.metadata || !entity.metadata.isBucket) {
+            if (!entity.isMultivalue) {
                 prefix = ' ';
             } else if (unionMemoryValues.length !== 1 && index === unionMemoryValues.length - 1) {
                 prefix = ' and ';

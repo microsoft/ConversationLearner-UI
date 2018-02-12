@@ -10,7 +10,9 @@ import ReactPlayer from 'react-player'
 import * as ReactMarkdown from 'react-markdown'
 
 class Dashboard extends React.Component<Props, {}> {
+
     render() {
+        let key = 0;
         return (
             <div className="blis-page">
                 <span className={FontClassNames.xxLarge}>
@@ -25,6 +27,16 @@ class Dashboard extends React.Component<Props, {}> {
                         defaultMessage="Facts & statistics about the app's data at any period of time..."
                     />
                 </span>
+                {this.props.validationErrors.length > 0 && 
+                (
+                    <div className="blis-errorpanel" >
+                        <div className={FontClassNames.medium}></div>
+                        {this.props.validationErrors.map((message: any) => { 
+                                return message.length === 0 ? <br key={key++}></br> : <div key={key++} className={FontClassNames.medium}>{message}</div>;
+                            })
+                        }
+                    </div>
+                )}
                 {this.props.app.markdown &&
                     <ReactMarkdown source={this.props.app.markdown} />
                 }
@@ -47,7 +59,8 @@ const mapStateToProps = (state: State) => {
 }
 
 export interface ReceivedProps {
-    app: BlisAppBase
+    app: BlisAppBase, 
+    validationErrors: string[]
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
