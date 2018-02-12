@@ -18,7 +18,7 @@
   "dependencies": {
     "adaptivecards": "^1.0.0-beta9",
     "axios": "^0.16.2",
-    "blis-models": "^0.121.0",
+    "blis-models": "^0.122.0",
     "blis-webchat": "^0.100.2",
     "botframework-directlinejs": "^0.9.12",
     "draft-js": "^0.10.4",
@@ -31,6 +31,8 @@
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
     "react-intl": "^2.4.0",
+    "react-markdown": "^3.2.0",
+    "react-player": "^1.1.2",
     "react-redux": "^5.0.6",
     "react-redux-typescript": "^2.3.0",
     "react-router-dom": "^4.2.2",

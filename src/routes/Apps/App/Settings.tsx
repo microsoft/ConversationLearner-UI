@@ -64,6 +64,8 @@ interface ComponentState {
     appIdVal: string
     appNameVal: string
     luisKeyVal: string
+    markdownVal: string
+    videoVal: string
     edited: boolean
     botFrameworkAppsVal: any[],
     newBotVal: string,
@@ -81,6 +83,8 @@ class Settings extends React.Component<Props, ComponentState> {
             appIdVal: '',
             appNameVal: '',
             luisKeyVal: '',
+            markdownVal: '',
+            videoVal: '',
             edited: false,
             botFrameworkAppsVal: [],
             newBotVal: "",
@@ -89,6 +93,8 @@ class Settings extends React.Component<Props, ComponentState> {
             debugErrorsOpen: false
         }
 
+        this.onChangedVideo = this.onChangedVideo.bind(this)
+        this.onChangedMarkdown = this.onChangedMarkdown.bind(this)
         this.onChangedLuisKey = this.onChangedLuisKey.bind(this)
         this.onChangedBotId = this.onChangedBotId.bind(this)
         this.onChangedName = this.onChangedName.bind(this)
@@ -105,8 +111,10 @@ class Settings extends React.Component<Props, ComponentState> {
             appIdVal: app.appId,
             appNameVal: app.appName,
             luisKeyVal: app.luisKey,
+            markdownVal: app.metadata ? app.metadata.markdown : null,
+            videoVal: app.metadata ? app.metadata.video : null,
             botFrameworkAppsVal: app.metadata.botFrameworkApps,
-            newBotVal: ""
+            newBotVal: ''
         })
     }
     componentDidUpdate() {
@@ -115,12 +123,16 @@ class Settings extends React.Component<Props, ComponentState> {
             this.state.appIdVal !== app.appId ||
             this.state.appNameVal !== app.appName ||
             this.state.luisKeyVal !== app.luisKey ||
+            this.state.markdownVal !== app.metadata.markdown ||
+            this.state.videoVal !== app.metadata.video ||
             this.state.botFrameworkAppsVal !== app.metadata.botFrameworkApps)) {
             this.setState({
                 localeVal: app.locale,
                 appIdVal: app.appId,
                 appNameVal: app.appName,
                 luisKeyVal: app.luisKey,
+                markdownVal: app.metadata ? app.metadata.markdown : null,
+                videoVal: app.metadata ? app.metadata.video : null,
                 botFrameworkAppsVal: app.metadata.botFrameworkApps
             })
         }
@@ -140,6 +152,18 @@ class Settings extends React.Component<Props, ComponentState> {
     onChangedLuisKey(text: string) {
         this.setState({
             luisKeyVal: text,
+            edited: true
+        })
+    }
+    onChangedMarkdown(text: string) {
+        this.setState({
+            markdownVal: text,
+            edited: true
+        })
+    }
+    onChangedVideo(text: string) {
+        this.setState({
+            videoVal: text,
             edited: true
         })
     }
@@ -164,9 +188,11 @@ class Settings extends React.Component<Props, ComponentState> {
             appIdVal: app.appId,
             appNameVal: app.appName,
             luisKeyVal: app.luisKey,
+            markdownVal: app.metadata ? app.metadata.markdown : null,
+            videoVal: app.metadata ? app.metadata.video : null,
             botFrameworkAppsVal: app.metadata.botFrameworkApps,
             edited: false,
-            newBotVal: ""
+            newBotVal: ''
         })
     }
     onClickSave() {
@@ -177,7 +203,9 @@ class Settings extends React.Component<Props, ComponentState> {
             luisKey: this.state.luisKeyVal,
             locale: app.locale,
             metadata: new BlisAppMetaData({
-                botFrameworkApps: this.state.botFrameworkAppsVal
+                botFrameworkApps: this.state.botFrameworkAppsVal,
+                markdown: this.state.markdownVal,
+                video: this.state.videoVal,
             })
         })
         this.props.editBLISApplicationAsync(this.props.user.id, modifiedApp);
@@ -186,8 +214,11 @@ class Settings extends React.Component<Props, ComponentState> {
             appIdVal: app.appId,
             appNameVal: app.appName,
             luisKeyVal: app.luisKey,
+            markdownVal: app.metadata ? app.metadata.markdown : null,
+            videoVal: app.metadata ? app.metadata.video : null,
+            botFrameworkAppsVal: app.metadata.botFrameworkApps,
             edited: false,
-            newBotVal: ""
+            newBotVal: ''
         })
     }
 
@@ -237,7 +268,7 @@ class Settings extends React.Component<Props, ComponentState> {
             key: this.state.localeVal,
             text: this.state.localeVal,
         }]
-        let buttonsDivStyle = this.state.edited == true ? styles.shown : styles.hidden;
+        let buttonsDivStyle = this.state.edited === true ? styles.shown : styles.hidden;
         return (
             <div className="blis-page">
                 <span className={OF.FontClassNames.xxLarge}>
@@ -329,6 +360,30 @@ class Settings extends React.Component<Props, ComponentState> {
                             />
                         </div>
                     </div>
+                    {this.props.user.name === 'demo' &&
+                    <div>
+                        <OF.TextField
+                            className={OF.FontClassNames.mediumPlus}
+                            onChanged={(text) => this.onChangedMarkdown(text)}
+                            label={intl.formatMessage({
+                                id: FM.SETTINGS_FIELDS_MARKDOWNLABEL,
+                                defaultMessage: 'Markdown'
+                            })}
+                            value={this.state.markdownVal}
+                            multiline={true}
+                            rows={5}
+                        />
+                        <OF.TextField
+                            className={OF.FontClassNames.mediumPlus}
+                            onChanged={(text) => this.onChangedVideo(text)}
+                            label={intl.formatMessage({
+                                id: FM.SETTINGS_FIELDS_VIDEOLABEL,
+                                defaultMessage: 'Video'
+                            })}
+                            value={this.state.videoVal}
+                        />
+                    </div>
+                    }
                     <div className="blis-modal-buttons_primary" style={buttonsDivStyle}>
                         <OF.PrimaryButton
                             disabled={this.onGetNameErrorMessage(this.state.appNameVal) !== ""}
@@ -341,12 +396,14 @@ class Settings extends React.Component<Props, ComponentState> {
                             ariaDescription={intl.formatMessage(messages.discard)}
                             text={intl.formatMessage(messages.discard)}
                         />
+                        {this.props.user.name === 'demo' &&
+                            <OF.DefaultButton
+                                onClick={() => this.onOpenDebugErrors()}
+                                ariaDescription={intl.formatMessage(messages.discard)}
+                                text={'Inject Errors'}
+                            />
+                        }
                     </div>
-                    <OF.DefaultButton
-                            onClick={() => this.onOpenDebugErrors()}
-                            ariaDescription={intl.formatMessage(messages.discard)}
-                            text={'Debug Errors'}
-                        />
                     <ErrorInjectionEditor 
                         open={this.state.debugErrorsOpen}
                         onClose={()=>this.onCloseDebugErrors()}

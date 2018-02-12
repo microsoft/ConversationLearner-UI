@@ -6,6 +6,8 @@ import { BlisAppBase } from 'blis-models'
 import { FormattedMessage } from 'react-intl'
 import { FontClassNames } from 'office-ui-fabric-react'
 import { FM } from '../../../react-intl-messages'
+import ReactPlayer from 'react-player'
+import * as ReactMarkdown from 'react-markdown'
 
 class Dashboard extends React.Component<Props, {}> {
 
@@ -35,6 +37,15 @@ class Dashboard extends React.Component<Props, {}> {
                         }
                     </div>
                 )}
+                {this.props.app.metadata && this.props.app.metadata.markdown &&
+                    <ReactMarkdown source={this.props.app.metadata.markdown} />
+                }
+                {this.props.app.metadata && this.props.app.metadata.video &&
+                    <ReactPlayer 
+                        url={this.props.app.metadata.video}
+                        controls={true}
+                    />
+                }
             </div>
         );
     }
