@@ -206,33 +206,30 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                  * Current this is depending on knowledge that the name of function is the first part of the payload separated by a space
                  * It should be explicit field of the payload object instead of substring.
                  */
-                const actionType = action.metadata.actionType
                 let selectedApiOptionKey: string | null = null;
                 let selectedCardOptionKey: string | null = null;
 
                 let slateValuesMap = {}
-                if (actionType === ActionTypes.TEXT) {
+                if (action.actionType === ActionTypes.TEXT) {
                     slateValuesMap[TEXT_SLOT] = createSlateValue(action.payload)
                 }
                 else {
                     let actionPayload = JSON.parse(action.payload) as ActionPayload;
-                    if (actionType === ActionTypes.API_LOCAL) {
+                    if (action.actionType === ActionTypes.API_LOCAL) {
                         selectedApiOptionKey = actionPayload.payload;
                         for (let actionArgument of actionPayload.arguments) {
                             slateValuesMap[actionArgument.parameter] = createSlateValue(actionArgument.value)
                         }
-                    } else if (actionType === ActionTypes.CARD) {
+                    } else if (action.actionType === ActionTypes.CARD) {
                         selectedCardOptionKey = actionPayload.payload;
                         const template = this.props.botInfo.templates.find(t => t.name === selectedCardOptionKey)
-                        if (!template) {
-                            throw new Error(`Could not find template with name: ${selectedCardOptionKey}`)
-                        }
-
-                        // For each template variable initialize to the associated argument value or default to empty string
-                        for (let cardTemplateVariable of template.variables) {
-                            const argument = actionPayload.arguments.find(a => a.parameter === cardTemplateVariable.key)
-                            const initialValue = argument ? argument.value : ''
-                            slateValuesMap[cardTemplateVariable.key] = createSlateValue(initialValue)
+                        if (template) {
+                            // For each template variable initialize to the associated argument value or default to empty string
+                            for (let cardTemplateVariable of template.variables) {
+                                const argument = actionPayload.arguments.find(a => a.parameter === cardTemplateVariable.key)
+                                const initialValue = argument ? argument.value : ''
+                                slateValuesMap[cardTemplateVariable.key] = createSlateValue(initialValue)
+                            }
                         }
                     }
                 }
@@ -248,8 +245,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
                 nextState = {
                     ...nextState,
-                    isPayloadValid: actionType === ActionTypes.API_LOCAL || action.payload.length !== 0,
-                    selectedActionTypeOptionKey: action.metadata.actionType,
+                    isPayloadValid: action.actionType === ActionTypes.API_LOCAL || action.payload.length !== 0,
+                    selectedActionTypeOptionKey: action.actionType,
                     selectedApiOptionKey,
                     selectedCardOptionKey,
                     slateValuesMap,
@@ -408,9 +405,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             version: null,
             packageCreationId: null,
             packageDeletionId: null,
-            metadata: {
-                actionType: this.state.selectedActionTypeOptionKey as string
-            }
+            actionType: this.state.selectedActionTypeOptionKey as string
         })
 
         if (this.state.isEditing) {
@@ -679,43 +674,57 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                             </div>
                         )}
 
-                        {this.state.selectedActionTypeOptionKey === ActionTypes.CARD && this.state.selectedCardOptionKey
-                        && (this.props.botInfo.templates.find(t => t.name === this.state.selectedCardOptionKey).variables
-                            .map(cardTemplateVariable =>
-                            {
-                                return (
-                                    <React.Fragment key={cardTemplateVariable.key}>
-                                        <OF.Label>{cardTemplateVariable.key} <HelpIcon tipType={ToolTip.TipType.ACTION_ARGUMENTS}></HelpIcon></OF.Label>
-                                        <ActionPayloadEditor.Editor
-                                            options={optionsAvailableForPayload}
-                                            value={this.state.slateValuesMap[cardTemplateVariable.key]}
-                                            placeholder={''}
-                                            onChange={eState => this.onChangePayloadEditor(eState, cardTemplateVariable.key)}
-                                            disabled={isPayloadDisabled}
-                                        />
-                                    </React.Fragment>
-                                )
-                            })
-                        )}
+                        {this.state.selectedActionTypeOptionKey === ActionTypes.CARD 
+                            && this.state.selectedCardOptionKey
+                            && (this.props.botInfo.templates.find(t => t.name === this.state.selectedCardOptionKey) ?
+                                (this.props.botInfo.templates.find(t => t.name === this.state.selectedCardOptionKey).variables
+                                    .map(cardTemplateVariable =>
+                                    {
+                                        return (
+                                            <React.Fragment key={cardTemplateVariable.key}>
+                                                <OF.Label>{cardTemplateVariable.key} <HelpIcon tipType={ToolTip.TipType.ACTION_ARGUMENTS}></HelpIcon></OF.Label>
+                                                <ActionPayloadEditor.Editor
+                                                    options={optionsAvailableForPayload}
+                                                    value={this.state.slateValuesMap[cardTemplateVariable.key]}
+                                                    placeholder={''}
+                                                    onChange={eState => this.onChangePayloadEditor(eState, cardTemplateVariable.key)}
+                                                    disabled={isPayloadDisabled}
+                                                />
+                                            </React.Fragment>
+                                        )
+                                    })
+                                ) : 
+                                <div className="blis-errorpanel" >
+                                    <div>ERROR: Can't Find Template: ${this.state.selectedCardOptionKey}</div>
+                                </div>
+                            )
+                        }
 
-                        {this.state.selectedActionTypeOptionKey === ActionTypes.API_LOCAL && this.state.selectedApiOptionKey
-                            && (this.props.botInfo.callbacks.find(t => t.name === this.state.selectedApiOptionKey).arguments
-                                .map(apiArgument =>
-                                {
-                                    return (
-                                        <React.Fragment key={apiArgument}>
-                                        <OF.Label>{apiArgument} <HelpIcon tipType={ToolTip.TipType.ACTION_ARGUMENTS}></HelpIcon></OF.Label>
-                                        <ActionPayloadEditor.Editor
-                                            options={optionsAvailableForPayload}
-                                            value={this.state.slateValuesMap[apiArgument]}
-                                            placeholder={''}
-                                            onChange={eState => this.onChangePayloadEditor(eState, apiArgument)}
-                                            disabled={isPayloadDisabled}
-                                        />
-                                        </React.Fragment>
-                                    )
-                                })
-                            )}
+                        {this.state.selectedActionTypeOptionKey === ActionTypes.API_LOCAL 
+                            && this.state.selectedApiOptionKey
+                            && (this.props.botInfo.callbacks.find(t => t.name === this.state.selectedApiOptionKey) ?
+                                (this.props.botInfo.callbacks.find(t => t.name === this.state.selectedApiOptionKey).arguments
+                                    .map(apiArgument =>
+                                    {
+                                        return (
+                                            <React.Fragment key={apiArgument}>
+                                            <OF.Label>{apiArgument} <HelpIcon tipType={ToolTip.TipType.ACTION_ARGUMENTS}></HelpIcon></OF.Label>
+                                            <ActionPayloadEditor.Editor
+                                                options={optionsAvailableForPayload}
+                                                value={this.state.slateValuesMap[apiArgument]}
+                                                placeholder={''}
+                                                onChange={eState => this.onChangePayloadEditor(eState, apiArgument)}
+                                                disabled={isPayloadDisabled}
+                                            />
+                                            </React.Fragment>
+                                        )
+                                    })
+                                ) : 
+                                    <div className="blis-errorpanel" >
+                                        <div>ERROR: Missing API: ${this.state.selectedApiOptionKey}</div>
+                                    </div>
+                            )
+                        }
 
                         {this.state.selectedActionTypeOptionKey === ActionTypes.TEXT
                         && (<div className={(this.state.isPayloadValid ? '' : 'editor--error')}>

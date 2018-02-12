@@ -101,7 +101,7 @@ class Actions extends React.Component<Props, ComponentState> {
         let lcString = this.state.searchValue.toLowerCase();
         let filteredActions = this.props.actions.filter(a => {
             let nameMatch = a.payload.toLowerCase().includes(lcString);
-            let typeMatch = a.metadata.actionType ? a.metadata.actionType.toLowerCase().includes(lcString) : true;
+            let typeMatch = a.actionType ? a.actionType.toLowerCase().includes(lcString) : true;
             let negativeEntities = a.negativeEntities.map(entityId => {
                 let found = this.props.entities.find(e => e.entityId == entityId);
                 return found.entityName;

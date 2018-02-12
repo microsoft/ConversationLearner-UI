@@ -12,7 +12,7 @@ import ActionDetailsList from '../ActionDetailsList'
 import { State, PreBuiltEntities } from '../../types';
 import { BlisDropdownOption } from './BlisDropDownOption'
 import * as ToolTip from '../ToolTips'
-import { BlisAppBase, EntityBase, EntityMetaData, EntityType, ActionBase } from 'blis-models'
+import { BlisAppBase, EntityBase, EntityType, ActionBase } from 'blis-models'
 import './EntityCreatorEditor.css'
 import { FM } from '../../react-intl-messages'
 import { defineMessages, injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
@@ -36,7 +36,7 @@ const initState: ComponentState = {
     entityNameVal: '',
     entityTypeVal: '',
     isPrebuilt: false,
-    isBucketableVal: false,
+    isMultivalueVal: false,
     isNegatableVal: false,
     isProgrammaticVal: false,
     editing: false,
@@ -47,7 +47,7 @@ interface ComponentState {
     entityNameVal: string
     entityTypeVal: string
     isPrebuilt: boolean
-    isBucketableVal: boolean
+    isMultivalueVal: boolean
     isNegatableVal: boolean
     isProgrammaticVal: boolean
     editing: boolean
@@ -134,8 +134,8 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                     entityNameVal: nextProps.entity.entityName,
                     entityTypeVal: entityType,
                     isPrebuilt: isPrebuilt,
-                    isBucketableVal: nextProps.entity.metadata.isBucket,
-                    isNegatableVal: nextProps.entity.metadata.isReversable,
+                    isMultivalueVal: nextProps.entity.isMultivalue,
+                    isNegatableVal: nextProps.entity.isNegatible,
                     isProgrammaticVal: isProgrammatic,
                     editing: true,
                     title: nextProps.intl.formatMessage({
@@ -159,12 +159,10 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
 
         return new EntityBase({
             entityName,
-            metadata: new EntityMetaData({
-                isBucket: this.state.isBucketableVal,
-                isReversable: this.state.isNegatableVal,
-                negativeId: null,
-                positiveId: null,
-            }),
+            isMultivalue: this.state.isMultivalueVal,
+            isNegatible: this.state.isNegatableVal,
+            negativeId: null,
+            positiveId: null,
             entityType,
             version: null,
             packageCreationId: null,
@@ -204,11 +202,11 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
         const isPrebuilt = obj.text !== this.NEW_ENTITY
         const isNegatableVal = isPrebuilt ? false : this.state.isNegatableVal
         const isProgrammaticVal = isPrebuilt ? false : this.state.isProgrammaticVal
-        const isBucketableVal = isPrebuilt ? true : this.state.isBucketableVal
+        const isMultivalueVal = isPrebuilt ? true : this.state.isMultivalueVal
 
         this.setState({
             isPrebuilt,
-            isBucketableVal,
+            isMultivalueVal,
             isNegatableVal,
             isProgrammaticVal,
             entityTypeVal: obj.text
@@ -219,9 +217,9 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
             isProgrammaticVal: !this.state.isProgrammaticVal,
         })
     }
-    onChangeBucketable = () => {
+    onChangeMultivalue = () => {
         this.setState({
-            isBucketableVal: !this.state.isBucketableVal,
+            isMultivalueVal: !this.state.isMultivalueVal,
         })
     }
     onChangeReversible = () => {
@@ -335,8 +333,8 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                             id: FM.ENTITYCREATOREDITOR_FIELDS_MULTIVALUE_LABEL,
                             defaultMessage: 'Multi-valued'
                         })}
-                        checked={this.state.isBucketableVal}
-                        onChange={this.onChangeBucketable}
+                        checked={this.state.isMultivalueVal}
+                        onChange={this.onChangeMultivalue}
                         disabled={this.state.editing}
                         tipType={ToolTip.TipType.ENTITY_MULTIVALUE}
                     />
