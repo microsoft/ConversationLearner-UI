@@ -64,6 +64,8 @@ interface ComponentState {
     appIdVal: string
     appNameVal: string
     luisKeyVal: string
+    markdownVal: string
+    videoVal: string
     edited: boolean
     botFrameworkAppsVal: any[],
     newBotVal: string,
@@ -81,6 +83,8 @@ class Settings extends React.Component<Props, ComponentState> {
             appIdVal: '',
             appNameVal: '',
             luisKeyVal: '',
+            markdownVal: '',
+            videoVal: '',
             edited: false,
             botFrameworkAppsVal: [],
             newBotVal: "",
@@ -89,6 +93,8 @@ class Settings extends React.Component<Props, ComponentState> {
             debugErrorsOpen: false
         }
 
+        this.onChangedVideo = this.onChangedVideo.bind(this)
+        this.onChangedMarkdown = this.onChangedMarkdown.bind(this)
         this.onChangedLuisKey = this.onChangedLuisKey.bind(this)
         this.onChangedBotId = this.onChangedBotId.bind(this)
         this.onChangedName = this.onChangedName.bind(this)
@@ -105,6 +111,8 @@ class Settings extends React.Component<Props, ComponentState> {
             appIdVal: app.appId,
             appNameVal: app.appName,
             luisKeyVal: app.luisKey,
+            markdownVal: app.markdown,
+            videoVal: app.video,
             botFrameworkAppsVal: app.metadata.botFrameworkApps,
             newBotVal: ""
         })
@@ -115,12 +123,16 @@ class Settings extends React.Component<Props, ComponentState> {
             this.state.appIdVal !== app.appId ||
             this.state.appNameVal !== app.appName ||
             this.state.luisKeyVal !== app.luisKey ||
+            this.state.markdownVal !== app.markdown ||
+            this.state.videoVal !== app.video ||
             this.state.botFrameworkAppsVal !== app.metadata.botFrameworkApps)) {
             this.setState({
                 localeVal: app.locale,
                 appIdVal: app.appId,
                 appNameVal: app.appName,
                 luisKeyVal: app.luisKey,
+                markdownVal: app.markdown,
+                videoVal: app.video,
                 botFrameworkAppsVal: app.metadata.botFrameworkApps
             })
         }
@@ -140,6 +152,18 @@ class Settings extends React.Component<Props, ComponentState> {
     onChangedLuisKey(text: string) {
         this.setState({
             luisKeyVal: text,
+            edited: true
+        })
+    }
+    onChangedMarkdown(text: string) {
+        this.setState({
+            markdownVal: text,
+            edited: true
+        })
+    }
+    onChangedVideo(text: string) {
+        this.setState({
+            videoVal: text,
             edited: true
         })
     }
@@ -164,6 +188,8 @@ class Settings extends React.Component<Props, ComponentState> {
             appIdVal: app.appId,
             appNameVal: app.appName,
             luisKeyVal: app.luisKey,
+            markdownVal: app.markdown,
+            videoVal: app.video,
             botFrameworkAppsVal: app.metadata.botFrameworkApps,
             edited: false,
             newBotVal: ""
@@ -175,6 +201,8 @@ class Settings extends React.Component<Props, ComponentState> {
             appName: this.state.appNameVal,
             appId: app.appId,
             luisKey: this.state.luisKeyVal,
+            markdown: this.state.markdownVal,
+            video: this.state.videoVal,
             locale: app.locale,
             metadata: new BlisAppMetaData({
                 botFrameworkApps: this.state.botFrameworkAppsVal
@@ -186,6 +214,8 @@ class Settings extends React.Component<Props, ComponentState> {
             appIdVal: app.appId,
             appNameVal: app.appName,
             luisKeyVal: app.luisKey,
+            markdownVal: app.markdown,
+            videoVal: app.video,
             edited: false,
             newBotVal: ""
         })
@@ -237,7 +267,7 @@ class Settings extends React.Component<Props, ComponentState> {
             key: this.state.localeVal,
             text: this.state.localeVal,
         }]
-        let buttonsDivStyle = this.state.edited == true ? styles.shown : styles.hidden;
+        let buttonsDivStyle = this.state.edited === true ? styles.shown : styles.hidden;
         return (
             <div className="blis-page">
                 <span className={OF.FontClassNames.xxLarge}>
@@ -342,6 +372,29 @@ class Settings extends React.Component<Props, ComponentState> {
                             text={intl.formatMessage(messages.discard)}
                         />
                     </div>
+                    {this.props.user.name == "demo" &&
+                    <div>
+                        <OF.TextField
+                            className={OF.FontClassNames.mediumPlus}
+                            onChanged={(text) => this.onChangedMarkdown(text)}
+                            label={intl.formatMessage({
+                                id: FM.SETTINGS_FIELDS_MARKDOWNLABEL,
+                                defaultMessage: "Markdown"
+                            })}
+                            onGetErrorMessage={value => this.onGetNameErrorMessage(value)}
+                            value={this.state.markdownVal}
+                        />
+                        <OF.TextField
+                            className={OF.FontClassNames.mediumPlus}
+                            onChanged={(text) => this.onChangedVideo(text)}
+                            label={intl.formatMessage({
+                                id: FM.SETTINGS_FIELDS_VIDEOLABEL,
+                                defaultMessage: "Video"
+                            })}
+                            value={this.state.videoVal}
+                        />
+                    </div>
+                    }
                     <OF.DefaultButton
                             onClick={() => this.onOpenDebugErrors()}
                             ariaDescription={intl.formatMessage(messages.discard)}

@@ -6,6 +6,8 @@ import { BlisAppBase } from 'blis-models'
 import { FormattedMessage } from 'react-intl'
 import { FontClassNames } from 'office-ui-fabric-react'
 import { FM } from '../../../react-intl-messages'
+import ReactPlayer from 'react-player'
+import * as ReactMarkdown from 'react-markdown'
 
 class Dashboard extends React.Component<Props, {}> {
     render() {
@@ -23,6 +25,14 @@ class Dashboard extends React.Component<Props, {}> {
                         defaultMessage="Facts & statistics about the app's data at any period of time..."
                     />
                 </span>
+                {this.props.app.markdown &&
+                    <ReactMarkdown source={this.props.app.markdown} />
+                }
+                {this.props.app.video &&
+                    <ReactPlayer 
+                        url={this.props.app.video}
+                        controls/>
+                }
             </div>
         );
     }
