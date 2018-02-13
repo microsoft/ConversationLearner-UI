@@ -3,36 +3,50 @@ import { UserState } from '../types'
 import { AT } from '../types/ActionTypes'
 import { Reducer } from 'redux'
 import * as ClientFactory from '../services/clientFactory'
+import RSA from 'react-simple-auth'
+import { microsoftProvider } from '../providers/microsoft-v2'
 
-const initialState: UserState = {
+const unauthenticatedState: UserState = {
+    isLoggedIn: false,
     name: "",
-    password: "",
     id: null
-};
+}
+
+const intializeClientFactory = (id: string) => {
+    // Update the BlisClient configuration to access token and user id for memory for all future requests
+    ClientFactory.setAccessToken(() => RSA.getAccessToken(microsoftProvider, ''))
+    ClientFactory.setMemoryKey(() => id)
+}
+
+const initialState = { ...unauthenticatedState }
+const session = RSA.restoreSession(microsoftProvider)
+if (session) {
+    const id = session.decodedIdToken.oid
+    const name = session.decodedIdToken.name
+
+    intializeClientFactory(id)
+    initialState.isLoggedIn = true
+    initialState.id = id
+    initialState.name = name
+}
 
 const userReducer: Reducer<UserState> = (state = initialState, action: ActionObject): UserState => {
     switch (action.type) {
-        case AT.LOGOUT:
-            return { ...initialState };
-        case AT.SET_USER:
-            const userId = action.id
-            // After user logs in we are able to get access token and memory key
-            // Update the BlisClient configuration to use these values
-            // TODO: Update with real access token
-            ClientFactory.setAccessToken(() => btoa(JSON.stringify({ id: userId })))
-            ClientFactory.setMemoryKey(() => userId)
-            // TEMP: Until user data is passed through correctly
+        case AT.USER_LOGOUT:
+            RSA.invalidateSession()
+            return { ...unauthenticatedState }
+        case AT.USER_LOGIN:
+            const { id, name } = action
+            intializeClientFactory(id)
             return {
                 ...state,
-                name: action.name,
-                password: action.password,
-                id: userId,
-            };
+                isLoggedIn: true,
+                name,
+                id
+            }
         default:
-            return state;
+            return state
     }
 }
 
-
-
-export default userReducer;
+export default userReducer

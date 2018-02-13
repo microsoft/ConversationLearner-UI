@@ -8,7 +8,7 @@ const initialState: ActionState = [];
 
 const actionsReducer: Reducer<ActionState> = (state = initialState, actionObject: ActionObject): ActionState => {
     switch (actionObject.type) {
-        case AT.LOGOUT:
+        case AT.USER_LOGOUT:
             return [...initialState]
         case AT.FETCH_ACTIONS_FULFILLED:
             return actionObject.allActions;

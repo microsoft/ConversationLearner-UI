@@ -27,11 +27,22 @@ class AppsIndex extends React.Component<Props, ComponentState> {
     componentWillMount() {
         const { history } = this.props
         if (history.location.pathname !== '/home') {
+            // TODO: There seems to be bug where the router state is not cleared sychronously here
+            // Thus when refreshing on non home page such as entities list for an app, this will force redirect to home
+            // howver, the other component at the entities page still runs component will mount with old router state.
+            // Perhaps we need to use componentDidMount to inspect router state in children?
             history.replace('/home', null)
+            return
+        }
+
+        if (this.props.user.isLoggedIn) {
+            this.props.fetchApplicationsAsync(this.props.user.id, this.props.user.id)
+            this.props.fetchBotInfoAsync()
         }
     }
 
     componentDidUpdate(prevProps: Props, prevState: ComponentState) {
+        // TODO: See if this code can be removed. It seems like componentWillMount is called every time the user navigates to /home route
         if (typeof (this.props.user.id) === 'string' && this.props.user.id !== prevProps.user.id) {
             this.props.fetchApplicationsAsync(this.props.user.id, this.props.user.id);
             this.props.fetchBotInfoAsync();

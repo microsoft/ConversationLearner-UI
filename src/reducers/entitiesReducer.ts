@@ -9,7 +9,7 @@ const initialState: EntityState = [];
 
 const entitiesReducer: Reducer<EntityState> = (state = initialState, action: ActionObject): EntityState => {
     switch (action.type) {
-        case AT.LOGOUT:
+        case AT.USER_LOGOUT:
             return [...initialState]
         case AT.FETCH_ENTITIES_FULFILLED:
             return action.allEntities;

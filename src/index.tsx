@@ -27,6 +27,9 @@ loadTheme({
 /** Initialize react-intl-messages */
 addLocaleData([...en, ...ko])
 
+console.log(`process.env.NODE_ENV: `, process.env.NODE_ENV)
+console.log(`process.env.REACT_APP_AAD_APP_ID: `, process.env.REACT_APP_AAD_APP_ID)
+
 const locale = (navigator.languages && navigator.languages[0])
   || navigator.language
   || (navigator as any).userLanguage
