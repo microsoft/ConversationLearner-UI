@@ -85,6 +85,12 @@ export const microsoftProvider: IProvider<Session> = {
     },
 
     validateSession(session: Session): boolean {
+        const aadAppId = process.env.REACT_APP_AAD_APP_ID
+        if (session.decodedIdToken.aud !== aadAppId) {
+            console.warn(`Current application is expecting token issued for audience: ${aadAppId}; however, the current token's audience is: ${session.decodedIdToken.aud}`)
+            return false
+        }
+
         const now = (new Date()).getTime() / 1000
 
         // With normal JWT tokens you can inspect the `exp` Expiration claim; however,
