@@ -7,6 +7,7 @@ import trainDialogsReducer from './trainDialogsReducer';
 import logDialogsReducer from './logDialogsReducer';
 import displayReducer from './displayReducer';
 import userReducer from './userReducer';
+import profileReducer from './profileReducer';
 import errorReducer from './errorReducer';
 import teachSessionReducer from './teachSessionReducer';
 import chatSessionReducer from './chatSessionReducer';
@@ -14,6 +15,7 @@ import { State } from '../types';
 
 const rootReducer: Reducer<State> = combineReducers<State>({
     user: userReducer,
+    profile: profileReducer,
     apps: appsReducer,
     bot: botReducer,
     entities: entitiesReducer,

@@ -70,12 +70,11 @@ export type DisplayAction = {
 } | {
     type: AT.UPDATE_OPERATION_FULFILLED
 } | {
-    type: AT.SET_USER,
+    type: AT.USER_LOGIN,
     name: string,
-    password: string,
     id: string
 } | {
-    type: AT.LOGOUT
+    type: AT.USER_LOGOUT
 } | {
     type: AT.NO_OP
 }
@@ -156,6 +155,11 @@ export type FetchAction = {
     type: AT.FETCH_TEACH_SESSIONS_ASYNC,
     key: string,
     blisAppID: string
+} | {
+    type: AT.FETCH_PROFILE_ASYNC
+} | {
+    type: AT.FETCH_PROFILE_FULFILLED,
+    profile: any
 }
 
 export type CreateAction = {

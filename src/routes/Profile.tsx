@@ -7,7 +7,8 @@ import { bindActionCreators } from 'redux'
 import { FormattedMessage } from 'react-intl'
 import { FM } from '../react-intl-messages'
 import { FontClassNames, PrimaryButton, Label } from 'office-ui-fabric-react'
-import { logout } from '../actions/displayActions'
+import { logout } from '../actions/userActions'
+import { fetchProfile } from '../actions/graphApiActions'
 import * as SdkPort from '../services/sdkPort'
 import './Profile.css'
 
@@ -51,7 +52,7 @@ class Profile extends React.Component<Props, ComponentState> {
                     <FormattedMessage
                         id={FM.PROFILE_NAME}
                         defaultMessage="Name"
-                    /> {user && user.name}
+                    />: {user.name}
                 </div>
                 <div>
                     <PrimaryButton onClick={this.onClickLogout}>
@@ -91,6 +92,7 @@ class Profile extends React.Component<Props, ComponentState> {
 
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
+        fetchProfile,
         logout
     }, dispatch)
 }

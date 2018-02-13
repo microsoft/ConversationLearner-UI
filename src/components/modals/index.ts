@@ -8,7 +8,6 @@ import TeachSessionModal from './TeachSessionModal'
 import TrainDialogModal from './TrainDialogModal'
 import ErrorPanel from './ErrorPanel'
 import SpinnerWindow from './SpinnerWindow'
-import UserLogin from './UserLogin'
 
 export {
     ActionCreatorEditor,
@@ -21,5 +20,4 @@ export {
     TrainDialogModal,
     ErrorPanel,
     SpinnerWindow,
-    UserLogin,
 }

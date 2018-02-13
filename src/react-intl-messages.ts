@@ -1,6 +1,7 @@
 export enum FM {
     ABOUT_TITLE = 'About.title',
     DOCS_TITLE = 'Docs.title',
+    LOGIN_TITLE = 'Login.title',
     PROFILE_TITLE = 'Profile.title',
     PROFILE_NAME = 'Profile.name',
     PROFILE_SETTINGS_TITLE = 'Profile.settings.title',
@@ -171,15 +172,6 @@ export enum FM {
     TRAINDIALOGS_LASTRESPONSE = 'TrainDialogs.lastResponse',
     TRAINDIALOGS_TURNS = 'TrainDialogs.turns',
 
-    // User Login
-    USERLOGIN_TITLE = 'UserLogin.title',
-    USERLOGIN_USERNAMEFIELDLABEL = 'UserLogin.usernameFieldLabel',
-    USERLOGIN_USERNAMEFIELDPLACEHOLDER = 'UserLogin.usernameFieldPlaceholder',
-    USERLOGIN_PASSWORDFIELDLABEL = 'UserLogin.passwordFieldLabel',
-    USERLOGIN_PASSWORDFIELDPLACEHOLDER = 'UserLogin.passwordFieldPlaceholder',
-    USERLOGIN_LOGINBUTTONARIADESCRPTION = 'UserLogin.loginButtonAriaDescription',
-    USERLOGIN_LOGINBUTTONTEXT = 'UserLogin.loginButtonText',
-
     // Validations
     VALIDATE_UNABLE_TO_EDIT = 'Validate.unableToEdit',
     VALIDATE_UNABLE_TO_BRANCH = 'Validate.unableToEdit',
@@ -340,6 +332,7 @@ export default {
         //  {FM.ABOUT_TITLE}
         [FM.ABOUT_TITLE]: 'About',
         [FM.DOCS_TITLE]: 'Docs',
+        [FM.LOGIN_TITLE]: 'Log In',
         [FM.PROFILE_TITLE]: 'Profile',
         [FM.PROFILE_NAME]: 'Name',
         [FM.PROFILE_SETTINGS_TITLE]: 'Settings',
@@ -512,15 +505,6 @@ export default {
         [FM.TRAINDIALOGS_LASTRESPONSE]: 'Last Response',
         [FM.TRAINDIALOGS_TURNS]: 'Turns',
 
-        // Login
-        [FM.USERLOGIN_TITLE]: 'Log In',
-        [FM.USERLOGIN_USERNAMEFIELDLABEL]: 'Name',
-        [FM.USERLOGIN_USERNAMEFIELDPLACEHOLDER]: 'User Name...',
-        [FM.USERLOGIN_PASSWORDFIELDLABEL]: 'Password',
-        [FM.USERLOGIN_PASSWORDFIELDPLACEHOLDER]: 'Password...',
-        [FM.USERLOGIN_LOGINBUTTONARIADESCRPTION]: 'Log In',
-        [FM.USERLOGIN_LOGINBUTTONTEXT]: 'Log In',
-
         // Validation
         [FM.VALIDATE_UNABLE_TO_EDIT]: 'Unable to Edit',
         [FM.VALIDATE_UNABLE_TO_BRANCH]: 'Unable to Branch',
@@ -673,6 +657,7 @@ export default {
     'ko': {
         [FM.ABOUT_TITLE]: '약',
         [FM.DOCS_TITLE]: '선적 서류 비치',
+        [FM.LOGIN_TITLE]: '로그인',
         [FM.SUPPORT_TITLE]: '지원하다',
         [FM.NOMATCH_TITLE]: '페이지를 찾을 수 없습니다.',
         [FM.NOMATCH_HOME]: '집',
@@ -694,15 +679,6 @@ export default {
         [FM.APPSLIST_SUBTITLE]: 'BLIS 응용 프로그램 작성 및 관리 ...',
         [FM.APPSLIST_CREATEBUTTONARIADESCRIPTION]: '새 응용 프로그램 만들기',
         [FM.APPSLIST_CREATEBUTTONTEXT]: '새 앱',
-
-        // Login
-        [FM.USERLOGIN_TITLE]: '로그인',
-        [FM.USERLOGIN_USERNAMEFIELDLABEL]: '이름',
-        [FM.USERLOGIN_USERNAMEFIELDPLACEHOLDER]: '사용자 이름...',
-        [FM.USERLOGIN_PASSWORDFIELDLABEL]: '암호',
-        [FM.USERLOGIN_PASSWORDFIELDPLACEHOLDER]: '암호...',
-        [FM.USERLOGIN_LOGINBUTTONARIADESCRPTION]: '로그인',
-        [FM.USERLOGIN_LOGINBUTTONTEXT]: '로그인',
 
         // TODO: I think there are special localization experts within Microsoft who can fill this in for us.
     }

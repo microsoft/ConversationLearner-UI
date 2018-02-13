@@ -5,70 +5,54 @@ import {
 import { returntypeof } from 'react-redux-typescript'
 import { connect } from 'react-redux'
 import { State } from '../types'
-import { bindActionCreators } from 'redux'
+import locationHelperBuilder from 'redux-auth-wrapper/history4/locationHelper'
+import { connectedRouterRedirect } from 'redux-auth-wrapper/history4/redirect'
 import AppsIndex from './Apps/AppsIndex'
 import About from './About'
 import Docs from './Docs'
+import Login from './Login'
 import Profile from './Profile'
 import Support from './Support'
 import NoMatch from './NoMatch'
 import HelpPanel from '../components/HelpPanel'
 import { FontClassNames } from 'office-ui-fabric-react'
-import { UserLogin, SpinnerWindow, ErrorPanel } from '../components/modals'
-import { setUser } from '../actions/displayActions'
+import { SpinnerWindow, ErrorPanel } from '../components/modals'
 import './App.css'
 import { FormattedMessage } from 'react-intl'
 import { FM } from '../react-intl-messages'
 
+const userIsAuthenticated = connectedRouterRedirect<any, State>({
+  // The url to redirect user to if they fail
+  redirectPath: '/login',
+  // Determine if the user is authenticated or not
+  authenticatedSelector: state => state.user.isLoggedIn,
+  // A nice display name for this check
+  wrapperDisplayName: 'UserIsAuthenticated'
+})
+
+const locationHelper = locationHelperBuilder({})
+const userIsNotAuthenticated = connectedRouterRedirect<any, State>({
+  // This sends the user either to the query param route if we have one, or to the landing page if none is specified and the user is already logged in
+  redirectPath: (state, ownProps) => locationHelper.getRedirectQueryParam(ownProps) || '/home',
+  // This prevents us from adding the query parameter when we send the user away from the login page
+  allowRedirectBack: false,
+  // This prevents us from adding the query parameter when we send the user away from the login page
+  // Determine if the user is authenticated or not
+  authenticatedSelector: state => !state.user.isLoggedIn,
+  // A nice display name for this check
+  wrapperDisplayName: 'UserIsNotAuthenticated'
+})
+
 interface ComponentState {
-  isLoginWindowOpen: boolean
   isLogoutWindowOpen: boolean
 }
 
 const initialState: ComponentState = {
-  isLoginWindowOpen: false,
   isLogoutWindowOpen: false
 }
 
 class App extends React.Component<Props, ComponentState> {
   state = initialState
-
-  componentWillMount() {
-    // If user is not logged in, show the login window
-    if (this.props.user.name.length === 0) {
-      this.setState({
-        isLoginWindowOpen: true
-      })
-    }
-  }
-
-  componentWillReceiveProps(nextProps: Props) {
-    // If user is not logged in, show the login window
-    if (nextProps.user.name.length === 0) {
-      this.setState({
-        isLoginWindowOpen: true
-      })
-    }
-  }
-
-  onClickLogin = (name: string, password: string, id: string) => {
-    this.props.setUser(name, password, id)
-    this.setState({
-      isLoginWindowOpen: false
-    })
-  }
-
-  onDismissLogin = () => {
-    this.setState({
-      isLoginWindowOpen: false
-    })
-  }
-
-  onClickOpenLogin = () => {
-    this.setState({
-      isLoginWindowOpen: true
-    })
-  }
 
   render() {
     return (
@@ -102,42 +86,32 @@ class App extends React.Component<Props, ComponentState> {
                 />
               </NavLink>
             </nav>
-            {this.props.user.name
+            {this.props.user.isLoggedIn
               ? <NavLink className="blis-header_user" to="/profile">{this.props.user.name}</NavLink>
-              : <NavLink className="blis-header_user" to="/home" onClick={this.onClickOpenLogin}>Login</NavLink>}
+              : <NavLink className="blis-header_user" to="/login">Log In</NavLink>}
           </header>
           <div className="blis-app_header-placeholder" />
           <div className="blis-app_content">
             <Switch>
               <Route exact path="/" render={() => <Redirect to="/home" />} />
-              <Route path="/home" component={AppsIndex} />
+              <Route path="/home" component={userIsAuthenticated(AppsIndex)} />
               <Route path="/about" component={About} />
               <Route path="/docs" component={Docs} />
               <Route path="/support" component={Support} />
-              <Route path="/profile" component={Profile} />
+              <Route path="/login" component={userIsNotAuthenticated(Login)} />
+              <Route path="/profile" component={userIsAuthenticated(Profile)} />
               <Route component={NoMatch} />
             </Switch>
           </div>
           <div className="blis-app_modals">
             <ErrorPanel />
             <HelpPanel />
-            <UserLogin
-              open={this.state.isLoginWindowOpen}
-              onClickLogin={this.onClickLogin}
-              onDismiss={this.onDismissLogin}
-            />
             <SpinnerWindow />
           </div>
         </div>
       </Router>
     );
   }
-}
-
-const mapDispatchToProps = (dispatch: any) => {
-  return bindActionCreators({
-    setUser
-  }, dispatch);
 }
 
 const mapStateToProps = (state: State) => {
@@ -148,7 +122,6 @@ const mapStateToProps = (state: State) => {
 
 // Props types inferred from mapStateToProps & dispatchToProps
 const stateProps = returntypeof(mapStateToProps)
-const dispatchProps = returntypeof(mapDispatchToProps)
-type Props = typeof stateProps & typeof dispatchProps
+type Props = typeof stateProps
 
-export default connect<typeof stateProps, typeof dispatchProps, {}>(mapStateToProps, mapDispatchToProps)(App)
+export default connect<typeof stateProps, {}, {}>(mapStateToProps, null)(App)
