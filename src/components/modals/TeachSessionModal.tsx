@@ -10,9 +10,9 @@ import { PrimaryButton, DefaultButton } from 'office-ui-fabric-react';
 import { State } from '../../types';
 import Webchat from '../Webchat'
 import TeachSessionAdmin from './TeachSessionAdmin'
-import { BlisAppBase, UserInput, DialogType, TrainDialog, Teach, DialogMode } from 'blis-models'
+import { BlisAppBase, UserInput, DialogType, TrainDialog, LogDialog, Teach, DialogMode } from 'blis-models'
 import { Activity } from 'botframework-directlinejs'
-import { deleteTeachSessionAsync } from '../../actions/deleteActions'
+import { deleteTeachSessionThunkAsync, deleteLogDialogThunkAsync } from '../../actions/deleteActions'
 import { toggleAutoTeach, runExtractorAsync } from '../../actions/teachActions'
 import { fetchApplicationTrainingStatusThunkAsync } from '../../actions/fetchActions'
 import ConfirmDeleteModal from './ConfirmDeleteModal'
@@ -53,7 +53,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
  
     @autobind
     onDismissError(errorType: AT) : void {
-        this.props.deleteTeachSessionAsync(this.props.user.id, this.props.teachSession, this.props.app.appId, false); // False = abandon
+        this.props.deleteTeachSessionThunkAsync(this.props.user.id, this.props.teachSession, this.props.app.appId, false); // False = abandon
         this.props.onClose();
     }
     componentWillReceiveProps(newProps: Props) {
@@ -87,8 +87,15 @@ class TeachModal extends React.Component<Props, ComponentState> {
     }
 
     onClickSave() {
-        this.props.deleteTeachSessionAsync(this.props.user.id, this.props.teachSession, this.props.app.appId, true); // True = save to train dialog
-        this.props.fetchApplicationTrainingStatusThunkAsync(this.props.app.appId)
+
+        ((this.props.deleteTeachSessionThunkAsync(this.props.user.id, this.props.teachSession, this.props.app.appId, true  /* True = save to train dialog */) as any) as Promise<Activity[]>)
+            .then((success) => {
+                    // Delete source log dialog if there was one
+                    if (success && this.props.logDialog) {  
+                        this.props.deleteLogDialogThunkAsync(this.props.user.id, this.props.app.appId, this.props.logDialog.logDialogId);
+                    }
+                }
+            );
         this.props.onClose()
     }
 
@@ -96,7 +103,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
         this.setState({
             isConfirmDeleteOpen: false
         }, () => {
-            this.props.deleteTeachSessionAsync(this.props.user.id, this.props.teachSession, this.props.app.appId, false); // False = abandon
+            this.props.deleteTeachSessionThunkAsync(this.props.user.id, this.props.teachSession, this.props.app.appId, false); // False = abandon
             this.props.onClose()
         })
     }
@@ -229,7 +236,8 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        deleteTeachSessionAsync,
+        deleteTeachSessionThunkAsync,
+        deleteLogDialogThunkAsync,
         fetchApplicationTrainingStatusThunkAsync,
         runExtractorAsync,
         toggleAutoTeach
@@ -248,8 +256,9 @@ export interface ReceivedProps {
     app: BlisAppBase,
     teachSession: Teach,
     dialogMode: DialogMode,
-    // When continuing existing TD
+    // When editing and exitins log or train dialog
     trainDialog: TrainDialog,
+    logDialog?: LogDialog,
     history: Activity[]       
 }
 

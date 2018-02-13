@@ -411,7 +411,7 @@ export default class BlisClient {
         }).then(response => response.data)
     }
 
-    //AT.CREATE_TEACH_SESSION_FROMLOGASYNC
+    //AT.CREATE_TEACH_SESSION_FROMHISTORYASYNC
     teachSessionFromHistory(appId: string, trainDialog: models.TrainDialog, userName: string, userId: string, lastExtractChanged: boolean = false): Promise<models.TeachWithHistory> {
         return this.send<models.TeachWithHistory>({
             method: 'post',
