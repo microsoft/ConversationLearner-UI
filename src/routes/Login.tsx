@@ -15,8 +15,13 @@ class Login extends React.Component<Props, {}> {
 
     onClickLogin = async () => {
         console.log(`onClickLogin`)
-        const session = await RSA.acquireTokenAsync(microsoftProvider)
-        this.props.login(session.decodedIdToken.oid, session.decodedIdToken.name)
+        try {
+            const session = await RSA.acquireTokenAsync(microsoftProvider)
+            this.props.login(session.decodedIdToken.oid, session.decodedIdToken.name)
+        }
+        catch (e) {
+            console.error(e)
+        }
     }
 
     render() {
