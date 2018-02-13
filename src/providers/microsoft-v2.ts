@@ -49,9 +49,9 @@ export const microsoftProvider: IProvider<Session> = {
             return undefined
         }
 
-        const errorReason = errorMatch[1]
+        const errorReason = decodeURIComponent(errorMatch[1])
         const errorDescriptionMatch = redirectUrl.match(/error_description=([^&]+)/)
-        const errorDescription = errorDescriptionMatch ? errorDescriptionMatch[1] : ''
+        const errorDescription = errorDescriptionMatch ? decodeURIComponent(errorDescriptionMatch[1]).replace(/[+]/g, ' ') : 'Error could not be extracted from the url'
         return new Error(`Error during login. Reason: ${errorReason} Description: ${errorDescription}`)
     },
 
