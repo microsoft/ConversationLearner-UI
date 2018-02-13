@@ -37,21 +37,9 @@ class Profile extends React.Component<Props, ComponentState> {
             sdkPort
         })
     }
-    
-    componentWillMount() {
-        if (this.props.profile.current === null) {
-            this.props.fetchProfile()
-        }
-    }
-    
-    componentWillReceiveProps(nextProps: Props) {
-        if (this.props.profile.current === null) {
-            this.props.fetchProfile()
-        }
-    }   
 
     render() {
-        const { profile } = this.props
+        const { user } = this.props
         return (
             <div className="blis-page">
                 <div className={FontClassNames.superLarge}>
@@ -64,7 +52,7 @@ class Profile extends React.Component<Props, ComponentState> {
                     <FormattedMessage
                         id={FM.PROFILE_NAME}
                         defaultMessage="Name"
-                    /> {profile.current && profile.current.displayName}
+                    />: {user.name}
                 </div>
                 <div>
                     <PrimaryButton onClick={this.onClickLogout}>
@@ -111,7 +99,7 @@ const mapDispatchToProps = (dispatch: any) => {
 
 const mapStateToProps = (state: State) => {
     return {
-        profile: state.profile
+        user: state.user
     }
 }
 
