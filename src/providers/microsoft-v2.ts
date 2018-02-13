@@ -1,4 +1,4 @@
-import { IProvider } from '../services/react-simple-auth'
+import { IProvider } from 'react-simple-auth'
 import { generateGUID as guid } from '../util'
 
 export interface IdToken {
@@ -29,7 +29,7 @@ export const microsoftProvider: IProvider<Session> = {
     buildAuthorizeUrl() {
         return `https://login.microsoftonline.com/common/oauth2/v2.0/authorize?response_type=id_token+token
 &scope=https%3A%2F%2Fgraph.microsoft.com%2Fuser.read%20openid%20profile
-&client_id=1964e634-9521-4fc5-819f-c288ccee2ef5
+&client_id=${process.env.REACT_APP_AAD_APP_ID}
 &redirect_uri=${encodeURIComponent(`${window.location.origin}/redirect.html`)}
 &state=${guid()}
 &nonce=${guid()}
