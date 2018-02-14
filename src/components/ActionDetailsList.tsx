@@ -73,7 +73,9 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
         // Don't response to row click if it's button that was clicked
         if ((ev.target as any).type !== 'button') {
             let action = item as ActionBase;
-            this.props.onSelectAction(action);
+            if (this.props.onSelectAction) {
+                this.props.onSelectAction(action);
+            }
         }
     }
 
@@ -168,7 +170,12 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                                 iconProps={{ iconName: 'RedEye' }}
                             />
                         }
-                        <span className={OF.FontClassNames.mediumPlus} onClick={() => component.props.onSelectAction(action)}>{ActionBase.GetPayload(action)}</span>
+                        <span 
+                            className={OF.FontClassNames.mediumPlus} 
+                            onClick={() => component.props.onSelectAction ? component.props.onSelectAction(action) : null}
+                        >
+                            {ActionBase.GetPayload(action)}
+                        </span>
                         {args.length !== 0 &&
                             args.map((argument, i) => <div className="ms-ListItem-primaryText" key={i}>{argument}</div>)
                         }

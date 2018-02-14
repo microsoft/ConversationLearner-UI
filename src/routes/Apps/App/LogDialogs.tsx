@@ -228,10 +228,10 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app.appId, newTrainDialog, this.props.user.name, this.props.user.id, null, lastExtractionChanged) as any) as Promise<TeachWithHistory>)
         .then(teachWithHistory => {
             if (teachWithHistory.discrepancies.length === 0) {
+                // Note: Don't clear currentLogDialog so I can delete it if I save my edits
                 this.setState({
                     teachSession: teachWithHistory.teach, 
                     activities: teachWithHistory.history,
-                    currentLogDialog: null,
                     isLogDialogWindowOpen: false,
                     isTeachDialogModalOpen: true
                 })
@@ -260,6 +260,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             teachSession: null,
             isTeachDialogModalOpen: false,
             activities: null,
+            currentLogDialog: null,
             dialogKey: this.state.dialogKey + 1
         })
     }
@@ -393,7 +394,8 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                         onUndo={() => this.onUndoTeachStep()}
                         history={this.state.isTeachDialogModalOpen ? this.state.activities : null}
                         trainDialog={null}
-                    />
+                        logDialog={this.state.currentLogDialog}
+                />
                 <OF.Dialog
                     hidden={!this.state.isChatSessionWarningWindowOpen}
                     dialogContentProps={{

@@ -2,7 +2,7 @@ import { AT, ActionObject, ErrorType } from '../types'
 import { Dispatch } from 'redux'
 import { BlisAppBase, EntityBase, ActionBase, Session, Teach } from 'blis-models'
 import { setErrorDisplay } from './displayActions'
-import { fetchAllTrainDialogsAsync, fetchAllLogDialogsAsync } from './fetchActions'
+import { fetchAllTrainDialogsAsync, fetchAllLogDialogsAsync, fetchApplicationTrainingStatusThunkAsync } from './fetchActions'
 import * as ClientFactory from '../services/clientFactory'
 
 export const deleteBLISApplicationAsync = (key: string, blisApp: BlisAppBase): ActionObject => {
@@ -98,6 +98,26 @@ export const deleteTeachSessionFulfilled = (key: string, teachSessionGUID: strin
         key: key,
         currentAppId: currentAppId,
         teachSessionGUID: teachSessionGUID
+    }
+}
+
+export const deleteTeachSessionThunkAsync = (key: string, teachSession: Teach, currentAppId: string, save: boolean) => {
+    return async (dispatch: Dispatch<any>) => {
+        dispatch(deleteTeachSessionAsync(key, teachSession, currentAppId, save))
+        const blisClient = ClientFactory.getInstance(AT.DELETE_TEACH_SESSION_ASYNC)
+
+        try {
+            await blisClient.teachSessionsDelete(currentAppId, teachSession, save);
+            dispatch(deleteTeachSessionFulfilled(key, currentAppId, teachSession.teachId));
+            dispatch(fetchAllTrainDialogsAsync(key, currentAppId));
+            dispatch(fetchApplicationTrainingStatusThunkAsync(currentAppId));
+            return true;
+        } catch (e) {
+            const error = e as Error
+            dispatch(setErrorDisplay(ErrorType.Error, error.name, [error.message], AT.DELETE_TRAIN_DIALOG_REJECTED))
+            dispatch(fetchAllTrainDialogsAsync(key, currentAppId));
+            return false;
+        }
     }
 }
 

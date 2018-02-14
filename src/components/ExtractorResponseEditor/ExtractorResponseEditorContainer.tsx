@@ -1,7 +1,8 @@
 import * as React from 'react'
 import ExtractorResponseEditor from './ExtractorResponseEditor'
 import { convertExtractorResponseToEditorModels, convertGenericEntityToPredictedEntity } from './utilities'
-import { IGenericEntity, IGenericEntityData, PredictedEntity, ExtractResponse, EntityBase } from './models';
+import { IGenericEntity, IGenericEntityData } from './models';
+import { EntityBase, PredictedEntity, ExtractResponse } from 'blis-models'
 
 // Slate doesn't have type definitions but we still want type consistency and references so we make custom type
 export type SlateValue = any

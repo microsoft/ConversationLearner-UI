@@ -1,5 +1,6 @@
 import { Value } from 'slate'
 import * as models from './models'
+import { EntityBase, PredictedEntity, ExtractResponse } from 'blis-models'
 
 /**
  * Recursively walk up DOM tree until root or parent with non-static position is found.
@@ -259,7 +260,7 @@ export const getEntitiesFromValue = (change: any) => {
         }, [])
 }
 
-export const getEntityDisplayName = (pe: models.PredictedEntity): string => {
+export const getEntityDisplayName = (pe: PredictedEntity): string => {
     const names = pe.builtinType.split('.')
     // If builtinType is only copy of entityType
     if (names.length === 1) {
@@ -275,7 +276,7 @@ export const getEntityDisplayName = (pe: models.PredictedEntity): string => {
     return names[names.length - 1]
 }
 
-export const convertPredictedEntityToGenericEntity = (pe: models.PredictedEntity, displayName: string): models.IGenericEntity<models.IGenericEntityData<models.PredictedEntity>> =>
+export const convertPredictedEntityToGenericEntity = (pe: PredictedEntity, entityName: string, displayName: string): models.IGenericEntity<models.IGenericEntityData<PredictedEntity>> =>
     ({
         startIndex: pe.startCharIndex,
         // The predicted entities returned by the service treat indices as characters instead of before or after the character so add 1 to endIndex for slicing using JavaScript
@@ -285,7 +286,7 @@ export const convertPredictedEntityToGenericEntity = (pe: models.PredictedEntity
         data: {
             option: {
                 id: pe.entityId,
-                name: pe.entityName,
+                name: entityName,
                 type: pe.builtinType
             },
             displayName,
@@ -293,7 +294,7 @@ export const convertPredictedEntityToGenericEntity = (pe: models.PredictedEntity
         }
     })
 
-export const convertGenericEntityToPredictedEntity = (entities: models.EntityBase[]) => (ge: models.IGenericEntity<models.IGenericEntityData<models.PredictedEntity>>): any => {
+export const convertGenericEntityToPredictedEntity = (entities: EntityBase[]) => (ge: models.IGenericEntity<models.IGenericEntityData<PredictedEntity>>): any => {
     const predictedEntity = ge.data.original
     if (predictedEntity) {
         return predictedEntity
@@ -323,7 +324,7 @@ export const convertGenericEntityToPredictedEntity = (entities: models.EntityBas
 }
 
 // TODO: Use strong types from blis-models
-export const convertExtractorResponseToEditorModels = (extractResponse: models.ExtractResponse, entities: models.EntityBase[]) => {
+export const convertExtractorResponseToEditorModels = (extractResponse: ExtractResponse, entities: EntityBase[]) => {
     const options = entities
         .filter(e => e.entityType === "LUIS")
         .map<models.IOption>(e =>
@@ -338,11 +339,11 @@ export const convertExtractorResponseToEditorModels = (extractResponse: models.E
     // Predicted entities for non prebuilts to not have builtinType property
     const customEntities = extractResponse.predictedEntities
         .filter(pe => (pe as any).entityType === "LUIS" || typeof pe.builtinType === undefined || pe.builtinType === "LUIS")
-        .map(pe => convertPredictedEntityToGenericEntity(pe, pe.entityName))
+        .map(pe => convertPredictedEntityToGenericEntity(pe, EntityName(entities, pe.entityId), EntityName(entities, pe.entityId)))
 
     const preBuiltEntities = extractResponse.predictedEntities
         .filter(pe => typeof pe.builtinType === "string" && pe.builtinType !== "LUIS")
-        .map(pe => convertPredictedEntityToGenericEntity(pe, getEntityDisplayName(pe)))
+        .map(pe => convertPredictedEntityToGenericEntity(pe, EntityName(entities, pe.entityId), getEntityDisplayName(pe)))
 
     return {
         options,
@@ -350,4 +351,9 @@ export const convertExtractorResponseToEditorModels = (extractResponse: models.E
         customEntities,
         preBuiltEntities
     }
+}
+
+export const EntityName = (entities: EntityBase[], entityId: string)  => {
+    let entity = entities.find(e => e.entityId === entityId);
+    return entity ? entity.entityName : '';
 }

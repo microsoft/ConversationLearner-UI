@@ -10,7 +10,6 @@ import ConfirmDeleteModal from './ConfirmDeleteModal'
 import LogDialogAdmin from './LogDialogAdmin'
 import { Activity } from 'botframework-directlinejs'
 import { createTrainDialogAsync } from '../../actions/createActions'
-import { deleteLogDialogThunkAsync } from '../../actions/deleteActions'
 import { fetchApplicationTrainingStatusThunkAsync } from '../../actions/fetchActions'
 import { BlisAppBase, TrainDialog, LogDialog } from 'blis-models'
 import { FM } from '../../react-intl-messages'
@@ -160,7 +159,6 @@ class LogDialogModal extends React.Component<Props, ComponentState> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         createTrainDialogAsync,
-        deleteLogDialogThunkAsync,
         fetchApplicationTrainingStatusThunkAsync
     }, dispatch);
 }

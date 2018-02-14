@@ -1,26 +1,3 @@
-export interface ExtractResponse {
-    text: string;
-    predictedEntities: PredictedEntity[]
-}
-
-export interface PredictedEntity {
-    startCharIndex: number
-    endCharIndex: number
-    entityId: string
-    entityName: string
-    entityText: string
-    // TODO: PredictedEntities have entityType but it is not in blis-models so adding it here breaks compatibility
-    // entityType: string 
-    resolution: {}
-    builtinType: string
-}
-
-export interface EntityBase {
-    entityId: string
-    entityName: string
-    entityType: string
-}
-
 export interface IEntityPickerProps {
     isOverlappingOtherEntities: boolean
     isVisible: boolean

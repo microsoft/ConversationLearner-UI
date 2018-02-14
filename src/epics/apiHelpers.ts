@@ -8,7 +8,6 @@ import {
   UIExtractResponse,
   UITrainScorerStep,
   Session,
-  Teach,
   ScoreInput,
   UIScoreInput,
   DialogType
@@ -294,19 +293,9 @@ export const getAllSessionsForBlisApp = (key: string, appId: string): Observable
     .catch(err => handleError(obs, err, AT.FETCH_CHAT_SESSIONS_ASYNC)));
 };
 
-//========================================================
+// ========================================================
 // Teach
-//========================================================
-export const deleteTeachSession = (key: string, appId: string, teachSession: Teach, save: boolean): Observable<ActionObject> => {
-  const blisClient = ClientFactory.getInstance(AT.DELETE_TEACH_SESSION_ASYNC)
-  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.teachSessionsDelete(appId, teachSession, save)
-    .then(() => {
-      obs.next(actions.delete.deleteTeachSessionFulfilled(key, teachSession.teachId, appId));
-      obs.next(actions.fetch.fetchAllTrainDialogsAsync(key, appId));
-      obs.complete();
-    })
-    .catch(err => handleError(obs, err, AT.DELETE_TEACH_SESSION_ASYNC)));
-};
+// ========================================================
 
 export const getAllTeachSessionsForBlisApp = (key: string, appId: string): Observable<ActionObject> => {
   const blisClient = ClientFactory.getInstance(AT.FETCH_TEACH_SESSIONS_ASYNC)

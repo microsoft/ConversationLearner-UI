@@ -3,7 +3,7 @@ import * as Rx from 'rxjs';
 import { ActionsObservable, Epic } from 'redux-observable'
 import { State, ActionObject } from '../types'
 import { AT } from '../types/ActionTypes'
-import { deleteBlisApp, deleteBlisEntity, deleteBlisAction, deleteChatSession, deleteTeachSession } from "./apiHelpers";
+import { deleteBlisApp, deleteBlisEntity, deleteBlisAction, deleteChatSession } from './apiHelpers';
 
 const assertNever = () => { throw Error(`Should not reach here`) }
 
@@ -52,6 +52,8 @@ export const deleteSessionEpic: Epic<ActionObject, State> = (action$: ActionsObs
         )
 }
 
+// LARS goes away
+/*
 export const deleteTeachEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
     return action$.ofType(AT.DELETE_TEACH_SESSION_ASYNC)
         .flatMap(action =>
@@ -60,3 +62,4 @@ export const deleteTeachEpic: Epic<ActionObject, State> = (action$: ActionsObser
                 : assertNever()
         )
 }
+*/
