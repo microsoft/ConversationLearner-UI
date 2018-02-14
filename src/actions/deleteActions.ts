@@ -107,8 +107,8 @@ export const deleteTeachSessionThunkAsync = (key: string, teachSession: Teach, c
         const blisClient = ClientFactory.getInstance(AT.DELETE_TEACH_SESSION_ASYNC)
 
         try {
-            await blisClient.teachSessionsDelete(key, teachSession, save);
-            dispatch(deleteTeachSessionFulfilled(key, teachSession.teachId, currentAppId));
+            await blisClient.teachSessionsDelete(currentAppId, teachSession, save);
+            dispatch(deleteTeachSessionFulfilled(key, currentAppId, teachSession.teachId));
             dispatch(fetchAllTrainDialogsAsync(key, currentAppId));
             dispatch(fetchApplicationTrainingStatusThunkAsync(currentAppId));
             return true;
