@@ -51,11 +51,10 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
     }
 
     onActionScorerSubmit(trainScorerStep: TrainScorerStep): void {
-        let uiTrainScorerStep = new UITrainScorerStep(
-            {
-                trainScorerStep,
-                entities: this.props.entities
-            });
+        let uiTrainScorerStep: UITrainScorerStep = {
+            trainScorerStep,
+            entities: this.props.entities
+        };
 
         let appId: string = this.props.app.appId;
         let teachId: string = this.props.teachSession.current.teachId;

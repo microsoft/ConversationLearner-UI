@@ -323,7 +323,7 @@ export default class BlisClient {
             method: 'post',
             url: `${this.baseUrl}/app/${appId}/session`
         })
-            .then(response => new models.Session(response.data))
+            .then(response => response.data)
     }
 
     chatSessionsDelete(appId: string, sessionId: string): Promise<void> {
@@ -346,7 +346,7 @@ export default class BlisClient {
             method: 'post',
             url: `${this.baseUrl}/app/${appId}/teach`
         })
-            .then(response => new models.Teach(response.data))
+            .then(response => response.data)
     }
 
     // DELETE_TEACH_SESSION_ASYNC

@@ -360,17 +360,20 @@ class ActionScorer extends React.Component<Props, ComponentState> {
     }
     handleActionSelection(actionId: string) {
 
-        let scoredAction = this.props.scoreResponse.scoredActions.find(a => a.actionId === actionId);
+        let scoredAction: ScoredAction = this.props.scoreResponse.scoredActions.find(a => a.actionId === actionId);
         if (!scoredAction) {
             let unscoredAction = this.props.scoreResponse.unscoredActions.find(a => a.actionId === actionId);
-            scoredAction = new ScoredAction(unscoredAction);
+            const { reason, ...scoredBase } = unscoredAction
+            scoredAction = {
+                ...scoredBase,
+                score: undefined
+            }
         }
-        let trainScorerStep = new TrainScorerStep(
-            {
-                input: this.props.scoreInput,
-                labelAction: actionId,
-                scoredAction: scoredAction
-            });
+        let trainScorerStep: TrainScorerStep = {
+            input: this.props.scoreInput,
+            labelAction: actionId,
+            scoredAction: scoredAction
+        };
 
         this.setState({ haveEdited: true });
         this.props.onActionSelected(trainScorerStep);

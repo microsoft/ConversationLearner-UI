@@ -168,7 +168,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
             return;
         }
 
-        const textVariations = allResponses.map<TextVariation>(extractResponse => new TextVariation({
+        const textVariations = allResponses.map<TextVariation>(extractResponse => ({
             text: extractResponse.text,
             // When converting predicted entities to labeled entities the metadata field was lost and causing problems
             // so here we simply re-use predicted entities.
@@ -261,7 +261,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
     }
 
     onSubmitTextVariation() {
-        const userInput = new UserInput({ text: this.state.textVariationValue })
+        const userInput: UserInput = { text: this.state.textVariationValue }
         this.props.runExtractorAsync(
             this.props.user.id,
             this.props.app.appId,

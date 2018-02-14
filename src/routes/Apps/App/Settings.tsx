@@ -5,7 +5,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../../../types';
 import * as OF from 'office-ui-fabric-react';
-import { BlisAppBase, BlisAppMetaData } from 'blis-models'
+import { BlisAppBase, TrainingStatusCode } from 'blis-models'
 import './Settings.css'
 import { FM } from '../../../react-intl-messages'
 import ErrorInjectionEditor from '../../../components/modals/ErrorInjectionEditor'
@@ -197,17 +197,20 @@ class Settings extends React.Component<Props, ComponentState> {
     }
     onClickSave() {
         let app = this.props.app
-        let modifiedApp = new BlisAppBase({
+        let modifiedApp: BlisAppBase = {
             appName: this.state.appNameVal,
             appId: app.appId,
             luisKey: this.state.luisKeyVal,
             locale: app.locale,
-            metadata: new BlisAppMetaData({
+            metadata: {
                 botFrameworkApps: this.state.botFrameworkAppsVal,
                 markdown: this.state.markdownVal,
                 video: this.state.videoVal,
-            })
-        })
+            },
+            trainingFailureMessage: undefined,
+            trainingStatus: TrainingStatusCode.Completed,
+            datetime: new Date()
+        }
         this.props.editBLISApplicationAsync(this.props.user.id, modifiedApp);
         this.setState({
             localeVal: app.locale,

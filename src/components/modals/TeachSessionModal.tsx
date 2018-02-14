@@ -121,14 +121,14 @@ class TeachModal extends React.Component<Props, ComponentState> {
     onWebChatPostActivity(activity: Activity) {
         if (activity.type === 'message') {
 
-            let userInput;
+            let userInput: UserInput = undefined
             // Check if button submit info
             if (!activity.text && activity.value && activity.value['submit']) {
-                userInput = new UserInput({ text: activity.value['submit'] });
+                userInput = { text: activity.value['submit'] };
             } 
             // Otherwise use text
             else {
-                userInput = new UserInput({ text: activity.text });
+                userInput = { text: activity.text };
             }
 
             if (!this.props.teachSession) {
