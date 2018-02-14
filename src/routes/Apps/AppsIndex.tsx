@@ -72,7 +72,7 @@ class AppsIndex extends React.Component<Props, ComponentState> {
     }
 
     onImportDemoApps = (luiskey: string) => {
-        let srcUserId = "demo_demo";
+        let srcUserId = "00000000-0000-0000-d127-0ae0c3a0a206";  // BLIS Demos account Id
         let destUserId = this.props.user.id;
 
         // TODO: Find cleaner solution for the types.  Thunks return functions but when using them on props they should be returning result of the promise.
