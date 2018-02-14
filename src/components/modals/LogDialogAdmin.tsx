@@ -9,11 +9,11 @@ import MemoryTable from './MemoryTable';
 import * as OF from 'office-ui-fabric-react'
 import { Activity } from 'botframework-directlinejs'
 import {
-    BlisAppBase, TrainExtractorStep, TrainScorerStep, TextVariation,
+    BlisAppBase, TrainScorerStep, TextVariation,
     Memory, TrainDialog, TrainRound,
     LogDialog, LogRound, LogScorerStep,
     ActionBase, ExtractResponse, DialogMode,
-    DialogType, ModelUtils, SenderType, AppDefinition
+    DialogType, ModelUtils, SenderType
 } from 'blis-models'
 
 interface ComponentState {
@@ -51,14 +51,18 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
     }
 
     onClickSaveCheckYes() {
-
-        let newTrainDialog = new TrainDialog({
+        let newTrainDialog: TrainDialog = {
+            trainDialogId: undefined,
+            version: undefined,
+            packageCreationId: undefined,
+            packageDeletionId: undefined,
             rounds: this.state.newTrainDialog.rounds,
-            definitions: new AppDefinition({
+            definitions: {
                 entities: this.props.entities,
-                actions: this.props.actions
-            })
-        })
+                actions: this.props.actions,
+                trainDialogs: []
+            }
+        }
 
         this.props.onEdit( this.props.logDialog.logDialogId, newTrainDialog, this.state.newExtractChanged);
         this.setState({ 
@@ -76,19 +80,23 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
 
         // Generate the new train dialog
         const roundsBeforeModification = this.props.logDialog.rounds.slice(0, roundIndex).map(ModelUtils.ToTrainRound);
-        const modifiedRound = new TrainRound({
-            extractorStep: new TrainExtractorStep({
+        const modifiedRound: TrainRound = {
+            extractorStep: {
                 textVariations: textVariations
-            }),
+            },
             scorerSteps: []
-        });
+        };
 
-        const trainDialog = new TrainDialog({
+        const trainDialog: TrainDialog = {
+            trainDialogId: undefined,
+            version: undefined,
+            packageCreationId: undefined,
+            packageDeletionId: undefined,
             rounds: [
                 ...roundsBeforeModification,
                 modifiedRound
             ]
-        })
+        }
 
         this.setState({ 
             newTrainDialog: trainDialog,
@@ -108,24 +116,31 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
         const logRound = this.props.logDialog.rounds[this.state.roundIndex];
         const scorerStepsBeforeModification = logRound.scorerSteps.slice(0, this.state.scoreIndex).map(ModelUtils.ToTrainScorerStep);
         const originalScorerStep = logRound.scorerSteps[this.state.scoreIndex];
-        const modifiedScorerStep = new TrainScorerStep({
+        const modifiedScorerStep: TrainScorerStep = {
+            scoredAction: undefined,
             input: originalScorerStep.input,
             labelAction: trainScorerStep.labelAction
-        })
+        }
 
-        let modifiedRound = new TrainRound({
-            extractorStep: new TrainExtractorStep({
-                textVariations: [new TextVariation({
+        let modifiedRound: TrainRound = {
+            extractorStep: {
+                textVariations: [
+                    {
                     text: logRound.extractorStep.text,
                     labelEntities: ModelUtils.ToLabeledEntities(logRound.extractorStep.predictedEntities)
-                })]
-            }),
+                }]
+            },
             scorerSteps: [...scorerStepsBeforeModification, modifiedScorerStep]
-        })
+        }
 
-        let trainDialog = new TrainDialog({
+        let trainDialog: TrainDialog = {
+            trainDialogId: undefined,
+            version: undefined,
+            packageCreationId: undefined,
+            packageDeletionId: undefined,
+            definitions: undefined,
             rounds: [...roundsBeforeModification, modifiedRound]
-        })
+        }
 
         this.setState({ 
             newTrainDialog: trainDialog,
@@ -140,11 +155,11 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
             let round = this.props.logDialog.rounds[prevIndex];
             if (round.scorerSteps.length > 0) {
                 let scorerStep = round.scorerSteps[0];
-                memories = scorerStep.input.filledEntities.map((fe) => new Memory(
-                    {
+                memories = scorerStep.input.filledEntities.map<Memory>((fe) => 
+                    ({
                         entityName: this.props.entities.find(e => e.entityId === fe.entityId).entityName,
                         entityValues: fe.values
-                    }));
+                    }))
             }
         }
         return memories;
@@ -170,8 +185,8 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
                 scorerStep = round.scorerSteps[this.state.scoreIndex]
                 if (scorerStep && scorerStep.predictedAction) {
                     action = this.props.actions.find(a => a.actionId === scorerStep.predictedAction);
-                    memories = scorerStep.input.filledEntities.map((fe) => new Memory(
-                        {
+                    memories = scorerStep.input.filledEntities.map<Memory>((fe) => 
+                        ({
                             entityName: this.props.entities.find(e => e.entityId === fe.entityId).entityName,
                             entityValues: fe.values
                         }));

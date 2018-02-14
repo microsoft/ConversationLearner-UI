@@ -4,13 +4,15 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import * as OF from 'office-ui-fabric-react';
 import { State } from '../../../types'
-import { BlisAppBase, Teach, TrainDialog, TeachWithHistory, AppDefinition, ActionBase } from 'blis-models'
+import { BlisAppBase, Teach, TrainDialog, TeachWithHistory, ActionBase } from 'blis-models'
 import { TeachSessionModal, TrainDialogModal } from '../../../components/modals'
 import { fetchHistoryThunkAsync, fetchApplicationTrainingStatusThunkAsync } from '../../../actions/fetchActions'
-import { createTeachSessionThunkAsync, 
-    createTeachSessionFromUndoThunkAsync, 
-    createTeachSessionFromHistoryThunkAsync } from '../../../actions/createActions'
-import { deleteTrainDialogThunkAsync } from '../../../actions/deleteActions';    
+import {
+    createTeachSessionThunkAsync,
+    createTeachSessionFromUndoThunkAsync,
+    createTeachSessionFromHistoryThunkAsync
+} from '../../../actions/createActions'
+import { deleteTrainDialogThunkAsync } from '../../../actions/deleteActions';
 import { editTrainDialogThunkAsync } from '../../../actions/updateActions';
 import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { FM } from '../../../react-intl-messages'
@@ -185,147 +187,154 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
     onUndoTeachStep() {
         ((this.props.createTeachSessionFromUndoThunkAsync(this.props.app.appId, this.state.teachSession, this.props.user.name, this.props.user.id) as any) as Promise<TeachWithHistory>)
-        .then(teachWithHistory => {
-            if (teachWithHistory.discrepancies.length === 0) {
-                this.setState({
-                    teachSession: teachWithHistory.teach, 
-                    activities: teachWithHistory.history,
-                })
-            }
-            else {
-                let unable = this.props.intl.formatMessage({
-                    id: FM.VALIDATE_UNABLE_TO_UNDO,
-                    defaultMessage: 'Unable to Undo'
-                })
-                let reason = this.props.intl.formatMessage({
-                    id: FM.VALIDATE_ENTITY_REASON,
-                    defaultMessage: `Entities don't match.`
-                })
-                this.props.setErrorDisplay(
-                    ErrorType.Error, unable, 
-                    [reason, ...teachWithHistory.discrepancies], null);             
-            }
-        })
-        .catch(error => {
-            console.warn(`Error when attempting to create teach session from undo: `, error)
-        })
+            .then(teachWithHistory => {
+                if (teachWithHistory.discrepancies.length === 0) {
+                    this.setState({
+                        teachSession: teachWithHistory.teach,
+                        activities: teachWithHistory.history,
+                    })
+                }
+                else {
+                    let unable = this.props.intl.formatMessage({
+                        id: FM.VALIDATE_UNABLE_TO_UNDO,
+                        defaultMessage: 'Unable to Undo'
+                    })
+                    let reason = this.props.intl.formatMessage({
+                        id: FM.VALIDATE_ENTITY_REASON,
+                        defaultMessage: `Entities don't match.`
+                    })
+                    this.props.setErrorDisplay(
+                        ErrorType.Error, unable,
+                        [reason, ...teachWithHistory.discrepancies], null);
+                }
+            })
+            .catch(error => {
+                console.warn(`Error when attempting to create teach session from undo: `, error)
+            })
     }
 
     onDeleteTrainDialog() {
-        
+
         this.props.deleteTrainDialogThunkAsync(this.props.user.id, this.props.app.appId, this.state.trainDialogId)
         this.props.fetchApplicationTrainingStatusThunkAsync(this.props.app.appId)
         this.onCloseTrainDialogModal();
     }
 
     onBranchTrainDialog(turnIndex: number) {
-        
+
         let trainDialog = this.props.trainDialogs.find(td => td.trainDialogId === this.state.trainDialogId);
 
         // Create new train dialog, removing turns above the branch
-        let newTrainDialog = new TrainDialog({
+        let newTrainDialog: TrainDialog = {
+            trainDialogId: undefined,
+            version: undefined,
+            packageCreationId: undefined,
+            packageDeletionId: undefined,
             rounds: trainDialog.rounds.slice(0, turnIndex),
-            definitions: new AppDefinition({
+            definitions: {
                 entities: this.props.entities,
-                actions: this.props.actions
-            })
-        });
+                actions: this.props.actions,
+                trainDialogs: []
+            }
+        };
 
         ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app.appId, newTrainDialog, this.props.user.name, this.props.user.id) as any) as Promise<TeachWithHistory>)
-        .then(teachWithHistory => {
-            if (teachWithHistory.discrepancies.length === 0) {
-                this.setState({
-                    teachSession: teachWithHistory.teach, 
-                    activities: teachWithHistory.history,
-                    trainDialogId: null,
-                    isTrainDialogModalOpen: false,
-                    isTeachDialogModalOpen: true
-                })
-            }
-            else {
-                let unable = this.props.intl.formatMessage({
-                    id: FM.VALIDATE_UNABLE_TO_BRANCH,
-                    defaultMessage: 'Unable to Branch'
-                })
-                let reason = this.props.intl.formatMessage({
-                    id: FM.VALIDATE_ENTITY_REASON,
-                    defaultMessage: `Entities don't match.`
-                })
-                this.props.setErrorDisplay(
-                    ErrorType.Error, unable, 
-                    [reason, ...teachWithHistory.discrepancies], null);            
-            }
-        })
-        .catch(error => {
-            console.warn(`Error when attempting to create teach session from branch: `, error)
-        })
+            .then(teachWithHistory => {
+                if (teachWithHistory.discrepancies.length === 0) {
+                    this.setState({
+                        teachSession: teachWithHistory.teach,
+                        activities: teachWithHistory.history,
+                        trainDialogId: null,
+                        isTrainDialogModalOpen: false,
+                        isTeachDialogModalOpen: true
+                    })
+                }
+                else {
+                    let unable = this.props.intl.formatMessage({
+                        id: FM.VALIDATE_UNABLE_TO_BRANCH,
+                        defaultMessage: 'Unable to Branch'
+                    })
+                    let reason = this.props.intl.formatMessage({
+                        id: FM.VALIDATE_ENTITY_REASON,
+                        defaultMessage: `Entities don't match.`
+                    })
+                    this.props.setErrorDisplay(
+                        ErrorType.Error, unable,
+                        [reason, ...teachWithHistory.discrepancies], null);
+                }
+            })
+            .catch(error => {
+                console.warn(`Error when attempting to create teach session from branch: `, error)
+            })
     }
 
     onEditTrainDialog(sourceTrainDialogId: string, newTrainDialog: TrainDialog, lastExtractChanged: boolean) {
-        
+
         ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app.appId, newTrainDialog, this.props.user.name, this.props.user.id, sourceTrainDialogId, lastExtractChanged) as any) as Promise<TeachWithHistory>)
-        .then(teachWithHistory => {
-            if (teachWithHistory.discrepancies.length === 0) {
-                this.setState({
-                    teachSession: teachWithHistory.teach, 
-                    activities: teachWithHistory.history,
-                    trainDialogId: null,
-                    isTrainDialogModalOpen: false,
-                    isTeachDialogModalOpen: true
-                })
-            }
-            else {
-                let unable = this.props.intl.formatMessage({
-                    id: FM.VALIDATE_UNABLE_TO_EDIT,
-                    defaultMessage: 'Unable to Edit'
-                })
-                let reason = this.props.intl.formatMessage({
-                    id: FM.VALIDATE_ENTITY_REASON,
-                    defaultMessage: `Entities don't match.`
-                })
-                this.props.setErrorDisplay(
-                    ErrorType.Error, unable, 
-                    [reason, ...teachWithHistory.discrepancies], null);
-             }
-        })
-        .catch(error => {
-            console.warn(`Error when attempting to create teach session from train dialog: `, error)
-        })
+            .then(teachWithHistory => {
+                if (teachWithHistory.discrepancies.length === 0) {
+                    this.setState({
+                        teachSession: teachWithHistory.teach,
+                        activities: teachWithHistory.history,
+                        trainDialogId: null,
+                        isTrainDialogModalOpen: false,
+                        isTeachDialogModalOpen: true
+                    })
+                }
+                else {
+                    let unable = this.props.intl.formatMessage({
+                        id: FM.VALIDATE_UNABLE_TO_EDIT,
+                        defaultMessage: 'Unable to Edit'
+                    })
+                    let reason = this.props.intl.formatMessage({
+                        id: FM.VALIDATE_ENTITY_REASON,
+                        defaultMessage: `Entities don't match.`
+                    })
+                    this.props.setErrorDisplay(
+                        ErrorType.Error, unable,
+                        [reason, ...teachWithHistory.discrepancies], null);
+                }
+            })
+            .catch(error => {
+                console.warn(`Error when attempting to create teach session from train dialog: `, error)
+            })
     }
 
     // Replace the current trainDialog with a new one
     // Should only be used when replay not required (i.e. changing text variations)
     onReplaceTrainDialog(newTrainDialog: TrainDialog) {
-        
+
         ((this.props.editTrainDialogThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<TeachWithHistory>)
-        .catch(error => {
-            console.warn(`Error when attempting to edit a train dialog: `, error)
-        })
+            .catch(error => {
+                console.warn(`Error when attempting to edit a train dialog: `, error)
+            })
     }
 
     onClickTrainDialogItem(trainDialog: TrainDialog) {
-
-        let definitions = new AppDefinition({
-            actions: this.props.actions,
-            entities: this.props.entities
-            })
-
-        let trainDialogWithDefinitions = new TrainDialog({
+        let trainDialogWithDefinitions: TrainDialog = {
+            trainDialogId: undefined,
+            version: undefined,
+            packageCreationId: undefined,
+            packageDeletionId: undefined,
             rounds: trainDialog.rounds,
-            definitions: definitions
-        });
+            definitions: {
+                actions: this.props.actions,
+                entities: this.props.entities,
+                trainDialogs: []
+            },
+        };
 
         ((this.props.fetchHistoryThunkAsync(this.props.app.appId, trainDialogWithDefinitions, this.props.user.name, this.props.user.id) as any) as Promise<Activity[]>)
-        .then(activities => {
-            this.setState({
-                activities: activities,
-                trainDialogId: trainDialog.trainDialogId,
-                isTrainDialogModalOpen: true
+            .then(activities => {
+                this.setState({
+                    activities: activities,
+                    trainDialogId: trainDialog.trainDialogId,
+                    isTrainDialogModalOpen: true
+                })
             })
-        })
-        .catch(error => {
-            console.warn(`Error when attempting to create history: `, error)
-        })
+            .catch(error => {
+                console.warn(`Error when attempting to create history: `, error)
+            })
     }
 
     onCloseTrainDialogModal() {
@@ -405,7 +414,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         teachSession={this.props.teachSessions.current}
                         dialogMode={this.props.teachSessions.mode}
                         open={this.state.isTeachDialogModalOpen}
-                        onClose={() => this.onCloseTeachSession()} 
+                        onClose={() => this.onCloseTeachSession()}
                         onUndo={() => this.onUndoTeachStep()}
                         history={this.state.isTeachDialogModalOpen ? this.state.activities : null}
                         trainDialog={null}

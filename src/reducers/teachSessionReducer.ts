@@ -83,13 +83,13 @@ const teachSessionReducer: Reducer<TeachSessionState> = (state = initialState, a
         case AT.CREATE_ACTION_FULFILLED:
             // If action was created during scoring update available actions
             if (state.scoreResponse) {
-                let unscoredAction = new UnscoredAction({
+                let unscoredAction: UnscoredAction = {
                     actionId: action.actionId,
                     payload: action.action.payload,
                     isTerminal: action.action.isTerminal,
                     actionType: action.action.actionType,
                     reason: ScoreReason.NotCalculated
-                });
+                }
                 let unscoredActions = [...state.scoreResponse.unscoredActions, unscoredAction];
                 let scoreResponse = { ...state.scoreResponse, unscoredActions: unscoredActions };
                 return { ...state, scoreResponse: scoreResponse };

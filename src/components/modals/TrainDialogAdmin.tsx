@@ -13,7 +13,7 @@ import * as OF from 'office-ui-fabric-react';
 import {
     ActionBase, BlisAppBase, TrainDialog, TrainRound, ScoreReason, ScoredAction,
     TrainScorerStep, Memory, UnscoredAction, ScoreResponse,
-    TextVariation, ExtractResponse, DialogType, SenderType, AppDefinition, DialogMode
+    TextVariation, ExtractResponse, DialogType, SenderType, DialogMode
 } from 'blis-models'
 import { FontClassNames } from 'office-ui-fabric-react'
 import { FM } from '../../react-intl-messages'
@@ -108,14 +108,18 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
         // Otherwise just save with new text variations, remaining rounds are ok
         else {  
             
-            let trainDialog = new TrainDialog({
+            let trainDialog: TrainDialog = {
+                version: undefined,
+                packageCreationId: undefined,
+                packageDeletionId: undefined,
                 trainDialogId: this.props.trainDialog.trainDialogId,
                 rounds: updatedTrainDialog.rounds,
-                definitions: new AppDefinition({
+                definitions: {
                     entities: this.props.entities,
-                    actions: this.props.actions
-                })
-            })
+                    actions: this.props.actions,
+                    trainDialogs: []
+                }
+            }
 
             this.props.onReplace(trainDialog);         
             this.props.clearExtractResponses();
@@ -137,10 +141,10 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
         newScorerSteps[this.state.scoreIndex] = trainScorerStep;
 
         // Create new train round
-        let newRound = new TrainRound({
+        let newRound: TrainRound = {
             extractorStep: round.extractorStep,
             scorerSteps: newScorerSteps
-        })
+        }
 
         // New rounds list with new round
         let newRounds = [...rounds];
@@ -157,13 +161,18 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
 
     onClickSaveCheckYes() {
 
-        let trainDialog = new TrainDialog({
+        let trainDialog: TrainDialog = {
+            trainDialogId: undefined,
+            version: undefined,
+            packageCreationId: undefined,
+            packageDeletionId: undefined,
             rounds: this.state.saveTrainDialog.rounds,
-            definitions: new AppDefinition({
+            definitions: {
                 entities: this.props.entities,
-                actions: this.props.actions
-            })
-        })
+                actions: this.props.actions,
+                trainDialogs: []
+            }
+        }
 
         this.props.onEdit(this.state.saveTrainDialog.trainDialogId, trainDialog, this.state.saveExtractChanged);
          
@@ -188,12 +197,11 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
             let round = this.props.trainDialog.rounds[prevIndex];
             if (round.scorerSteps.length > 0) {
                 let scorerStep = round.scorerSteps[0];
-                memories = scorerStep.input.filledEntities.map((fe) => new Memory(
-                    {
+                memories = scorerStep.input.filledEntities.map<Memory>(fe =>
+                    ({
                         entityName: this.props.entities.find(e => e.entityId === fe.entityId).entityName,
                         entityValues: fe.values
-                    }
-                ));
+                    }));
             }
         }
         return memories;
@@ -212,42 +220,44 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                 scorerStep = round.scorerSteps[this.state.scoreIndex];
 
                 selectedAction = this.props.actions.find(action => action.actionId === scorerStep.labelAction)
-                memories = scorerStep.input.filledEntities.map((fe) => {
+                memories = scorerStep.input.filledEntities.map<Memory>((fe) => {
                     let entity = this.props.entities.find(e => e.entityId === fe.entityId);
                     let entityName = entity ? entity.entityName : 'UNKNOWN ENTITY';
-                    return new Memory(
-                        {
-                            entityName: entityName,
-                            entityValues: fe.values
-                        })
+                    return {
+                        entityName: entityName,
+                        entityValues: fe.values
                     }
-                );
+                });
 
                 // Get prevmemories
                 prevMemories = this.getPrevMemories();
 
-                let scoredAction = new ScoredAction({
+                let scoredAction: ScoredAction = {
                     actionId: selectedAction.actionId,
                     payload: selectedAction.payload,
                     isTerminal: selectedAction.isTerminal,
-                    score: 1.0
-                })
+                    score: 1.0,
+                    actionType: selectedAction.actionType
+                }
                 // Generate list of all actions (apart from selected) for ScoreResponse as I have no scores
                 let unscoredActions = this.props.actions
                     .filter(a => a.actionId !== selectedAction.actionId)
-                    .map(action => {
-                        return new UnscoredAction({
+                    .map<UnscoredAction>(action => 
+                        ({
                             actionId: action.actionId,
                             payload: action.payload,
                             isTerminal: action.isTerminal,
-                            reason: ScoreReason.NotCalculated
-                        })
-                    });
+                            reason: ScoreReason.NotCalculated,
+                            actionType: action.actionType
+                        }));
 
-                scoreResponse = new ScoreResponse({
+                scoreResponse = {
+                    metrics: {
+                        wallTime: 0
+                    },
                     scoredActions: [scoredAction],
                     unscoredActions: unscoredActions
-                })
+                }
             }
         }
 

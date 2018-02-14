@@ -157,7 +157,8 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
             entityType = this.state.isProgrammaticVal ? EntityType.LOCAL : EntityType.LUIS
         }
 
-        return new EntityBase({
+        return {
+            entityId: undefined,
             entityName,
             isMultivalue: this.state.isMultivalueVal,
             isNegatible: this.state.isNegatableVal,
@@ -167,7 +168,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
             version: null,
             packageCreationId: null,
             packageDeletionId: null
-        })
+        }
     }
 
     onClickSubmit = () => {
