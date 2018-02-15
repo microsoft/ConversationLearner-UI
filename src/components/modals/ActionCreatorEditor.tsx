@@ -618,7 +618,6 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                         {this.state.selectedActionTypeOptionKey === ActionTypes.API_LOCAL
                             && (<div>
                                 <TC.Dropdown
-                                    id="blay"
                                     label="API"
                                     className="blis-dropdownWithButton-dropdown"
                                     options={this.state.apiOptions}
@@ -643,7 +642,6 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                         {this.state.selectedActionTypeOptionKey === ActionTypes.CARD
                             && (<div>
                                 <TC.Dropdown
-                                    id="card"
                                     label="Template"
                                     className="blis-dropdownWith2Buttons-dropdown"
                                     options={this.state.cardOptions}
