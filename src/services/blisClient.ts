@@ -396,10 +396,10 @@ export default class BlisClient {
             .then(response => response.data)
     }
 
-    teachSessionFromUndo(appId: string, teach: models.Teach, userName: string, userId: string): Promise<models.TeachWithHistory> {
+    teachSessionFromUndo(appId: string, teach: models.Teach, popRound: boolean, userName: string, userId: string): Promise<models.TeachWithHistory> {
         return this.send<models.TeachWithHistory>({
             method: 'post',
-            url: `${this.baseUrl}/app/${appId}/teach/${teach.teachId}/undo?username=${userName}&userid=${userId}`,
+            url: `${this.baseUrl}/app/${appId}/teach/${teach.teachId}/undo?popround=${popRound}&username=${userName}&userid=${userId}`,
             data: teach
         }).then(response => response.data)
     }

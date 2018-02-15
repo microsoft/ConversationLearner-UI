@@ -557,7 +557,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         let scores: (ScoredBase | string)[] = this.getScoredItems();
 
         // If editing allowed and Action creation button
-        if (!this.props.autoTeach) {
+        if (scores && !this.props.autoTeach) {
             scores.push(ACTION_BUTTON);
         }
 

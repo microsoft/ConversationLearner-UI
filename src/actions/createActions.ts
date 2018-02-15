@@ -229,13 +229,13 @@ export const createTeachSessionFromHistoryFulfilled = (teachWithHistory: TeachWi
     }
 }
 
-export const createTeachSessionFromUndoThunkAsync = (appId: string, teach: Teach, userName: string, userId: string) => {
+export const createTeachSessionFromUndoThunkAsync = (appId: string, teach: Teach, popRound: boolean, userName: string, userId: string) => {
     return async (dispatch: Dispatch<any>) => {
         const blisClient = ClientFactory.getInstance(AT.CREATE_TEACH_SESSION_FROMUNDOASYNC)
-        dispatch(createTeachSessionFromUndoAsync(appId, teach, userName, userId))
+        dispatch(createTeachSessionFromUndoAsync(appId, teach, popRound, userName, userId))
 
         try {
-            const teachWithHistory = await blisClient.teachSessionFromUndo(appId, teach, userName, userId)
+            const teachWithHistory = await blisClient.teachSessionFromUndo(appId, teach, popRound, userName, userId)
             dispatch(createTeachSessionFromUndoFulfilled(teachWithHistory))
             return teachWithHistory
         }
@@ -247,13 +247,14 @@ export const createTeachSessionFromUndoThunkAsync = (appId: string, teach: Teach
     }
 }
 
-export const createTeachSessionFromUndoAsync = (blisAppID: string, teach: Teach, userName: string, userId: string): ActionObject => {
+export const createTeachSessionFromUndoAsync = (blisAppID: string, teach: Teach, popRound: boolean, userName: string, userId: string): ActionObject => {
     return {
         type: AT.CREATE_TEACH_SESSION_FROMUNDOASYNC,
         blisAppID: blisAppID,
+        teach: teach,
+        popRound: popRound,
         userName: userName,
-        userId: userId,
-        teach: teach
+        userId: userId
     }
 }
 

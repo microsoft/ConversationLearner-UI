@@ -265,13 +265,13 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         })
     }
 
-    onUndoTeachStep() {
+    onUndoTeachStep(popRound: boolean) {
         // Clear history first
         this.setState({
             activities: null
         });
 
-        ((this.props.createTeachSessionFromUndoThunkAsync(this.props.app.appId, this.state.teachSession, this.props.user.name, this.props.user.id) as any) as Promise<TeachWithHistory>)
+        ((this.props.createTeachSessionFromUndoThunkAsync(this.props.app.appId, this.state.teachSession, popRound, this.props.user.name, this.props.user.id) as any) as Promise<TeachWithHistory>)
         .then(teachWithHistory => {
             if (teachWithHistory.discrepancies.length === 0) {
                 this.setState({
@@ -391,7 +391,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                         dialogMode={this.props.teachSessions.mode}
                         open={this.state.isTeachDialogModalOpen}
                         onClose={() => this.onCloseTeachSession()} 
-                        onUndo={() => this.onUndoTeachStep()}
+                        onUndo={(popRound) => this.onUndoTeachStep(popRound)}
                         history={this.state.isTeachDialogModalOpen ? this.state.activities : null}
                         trainDialog={null}
                         logDialog={this.state.currentLogDialog}
