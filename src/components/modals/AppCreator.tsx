@@ -10,6 +10,8 @@ import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps, defineMessages, FormattedMessage } from 'react-intl'
 import { AppInput } from '../../types/models';
 
+const localStorageKeyForLuisKey = 'luis-key'
+
 const messages = defineMessages({
     fieldErrorRequired: {
         id: FM.APPCREATOR_FIELDERROR_REQUIREDVALUE,
@@ -22,14 +24,24 @@ const messages = defineMessages({
     fieldErrorDistinct: {
         id: FM.APPCREATOR_FIELDERROR_DISTINCT,
         defaultMessage: 'Name is already in use.'
-    }
+    },
+    passwordHidden: {
+        id: FM.SETTINGS_PASSWORDHIDDEN,
+        defaultMessage: 'Show'
+    },
+    passwordVisible: {
+        id: FM.SETTINGS_PASSWORDVISIBLE,
+        defaultMessage: 'Hide'
+    },
 })
 
 interface ComponentState {
     appNameVal: string
     localeVal: string
     luisKeyVal: string
-    localeOptions: OF.IDropdownOption[]
+    localeOptions: OF.IDropdownOption[],
+    isPasswordVisible: boolean,
+    passwordShowHideText: string,
 }
 
 class AppCreator extends React.Component<Props, ComponentState> {
@@ -37,7 +49,9 @@ class AppCreator extends React.Component<Props, ComponentState> {
         appNameVal: '',
         localeVal: '',
         luisKeyVal: '',
-        localeOptions: []
+        localeOptions: [],
+        isPasswordVisible: false,
+        passwordShowHideText: this.props.intl.formatMessage(messages.passwordHidden),
     }
 
     constructor(p: Props) {
@@ -66,14 +80,20 @@ class AppCreator extends React.Component<Props, ComponentState> {
             })
     }
 
-    resetState() {
-        let firstValue = this.state.localeOptions[0].text
-        this.setState({
-            appNameVal: '',
-            localeVal: firstValue,
-            luisKeyVal: ''
-        })
+    componentWillReceiveProps(nextProps: Props) {
+        // Reset when opening modal
+        if (this.props.open === false && nextProps.open === true) {
+            let firstValue = this.state.localeOptions[0].text
+            this.setState({
+                appNameVal: '',
+                localeVal: firstValue,
+                luisKeyVal: localStorage.getItem(localStorageKeyForLuisKey),
+                isPasswordVisible: false,
+                passwordShowHideText: this.props.intl.formatMessage(messages.passwordHidden)
+            })
+        }
     }
+
     nameChanged(text: string) {
         this.setState({
             appNameVal: text
@@ -91,7 +111,6 @@ class AppCreator extends React.Component<Props, ComponentState> {
     }
 
     onClickCancel() {
-        this.resetState()
         this.props.onCancel()
     }
 
@@ -107,7 +126,11 @@ class AppCreator extends React.Component<Props, ComponentState> {
             }
         }
 
-        this.resetState()
+        // TODO: This was the simplest solution to isolate locale storage usage of luis key to this component
+        // but it seems like poor practice to scatter this around the app.
+        // Alternate solution which seems more idomatic is to create LocalStorage state object with reducer which reacts to actions, and component which maps the state
+        // to the browser's localStorage on ever update; however, this seems overly complicated for the simple tasks we have
+        localStorage.setItem(localStorageKeyForLuisKey, appToAdd.luisKey)
         this.props.onSubmit(appToAdd)
     }
 
@@ -141,6 +164,15 @@ class AppCreator extends React.Component<Props, ComponentState> {
 
     onGetPasswordErrorMessage(value: string): string {
         return value ? "" : this.props.intl.formatMessage(messages.fieldErrorRequired);
+    }
+
+    onClickShowPassword = () => {
+        this.setState((prevState: ComponentState) => ({
+            isPasswordVisible: !prevState.isPasswordVisible,
+            passwordShowHideText: !prevState.isPasswordVisible
+                ? this.props.intl.formatMessage(messages.passwordVisible)
+                : this.props.intl.formatMessage(messages.passwordHidden)
+        }))
     }
 
     render() {
@@ -185,16 +217,24 @@ class AppCreator extends React.Component<Props, ComponentState> {
                             />)
                         </a>
                     </OF.Label>
-                    <OF.TextField
-                        onGetErrorMessage={value => this.onGetPasswordErrorMessage(value)}
-                        onChanged={this.luisKeyChanged}
-                        placeholder={intl.formatMessage({
-                            id: FM.APPCREATOR_FIELDS_LUISKEY_PLACEHOLDER,
-                            defaultMessage: "Key..."
-                        })}
-                        type="password"
-                        onKeyDown={this.onKeyDown}
-                        value={this.state.luisKeyVal} />
+                    <div className="blis-settings-textfieldwithbutton">
+                        <OF.TextField
+                            onGetErrorMessage={value => this.onGetPasswordErrorMessage(value)}
+                            onChanged={this.luisKeyChanged}
+                            placeholder={intl.formatMessage({
+                                id: FM.APPCREATOR_FIELDS_LUISKEY_PLACEHOLDER,
+                                defaultMessage: "Key..."
+                            })}
+                            type={this.state.isPasswordVisible ? "text" : "password"}
+                            onKeyDown={this.onKeyDown}
+                            value={this.state.luisKeyVal}
+                        />
+                        <OF.PrimaryButton
+                            onClick={this.onClickShowPassword}
+                            ariaDescription={this.state.passwordShowHideText}
+                            text={this.state.passwordShowHideText}
+                        />
+                    </div>
                     <OF.Dropdown
                         label={intl.formatMessage({
                             id: FM.APPCREATOR_FIELDS_LOCALE_LABEL,
