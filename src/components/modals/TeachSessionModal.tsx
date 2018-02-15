@@ -88,11 +88,12 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
     onClickSave() {
 
+        let deleteLogId = this.props.logDialog ? this.props.logDialog.logDialogId : null;
         ((this.props.deleteTeachSessionThunkAsync(this.props.user.id, this.props.teachSession, this.props.app.appId, true  /* True = save to train dialog */) as any) as Promise<Activity[]>)
             .then((success) => {
                     // Delete source log dialog if there was one
-                    if (success && this.props.logDialog) {  
-                        this.props.deleteLogDialogThunkAsync(this.props.user.id, this.props.app.appId, this.props.logDialog.logDialogId);
+                    if (success && deleteLogId) {  
+                        this.props.deleteLogDialogThunkAsync(this.props.user.id, this.props.app.appId, deleteLogId);
                     }
                 }
             );
