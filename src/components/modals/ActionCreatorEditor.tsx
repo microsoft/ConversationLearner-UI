@@ -618,6 +618,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                         {this.state.selectedActionTypeOptionKey === ActionTypes.API_LOCAL
                             && (<div>
                                 <TC.Dropdown
+                                    id="blay"
                                     label="API"
                                     className="blis-dropdownWithButton-dropdown"
                                     options={this.state.apiOptions}
@@ -626,7 +627,6 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                     disabled={this.state.apiOptions.length === 0 || this.state.isEditing}
                                     placeHolder={this.state.apiOptions.length === 0 ? 'NONE DEFINED' : 'API name...'}
                                     tipType={ToolTip.TipType.ACTION_API}
-                                    hasButton={true}
                                 />
                                 <div className="blis-dropdownWithButton-buttoncontainer">
                                     <OF.PrimaryButton
@@ -642,6 +642,17 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
                         {this.state.selectedActionTypeOptionKey === ActionTypes.CARD
                             && (<div>
+                                <TC.Dropdown
+                                    id="card"
+                                    label="Template"
+                                    className="blis-dropdownWith2Buttons-dropdown"
+                                    options={this.state.cardOptions}
+                                    onChanged={(cardOption) => this.onChangedCardOption(cardOption)}
+                                    selectedKey={this.state.selectedCardOptionKey}
+                                    disabled={this.state.cardOptions.length === 0 || this.state.isEditing}
+                                    placeHolder={this.state.cardOptions.length === 0 ? 'NONE DEFINED' : 'Template name...'}
+                                    tipType={ToolTip.TipType.ACTION_CARD}
+                                />
                                 <div className="blis-dropdownWithButton-buttoncontainer">
                                     <OF.PrimaryButton
                                         className="blis-dropdownWithButton-button"
@@ -649,19 +660,9 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                         ariaDescription="Refresh"
                                         text=""
                                         iconProps={{ iconName: 'RedEye' }}
+                                        disabled={this.state.selectedCardOptionKey == null}
                                     />
                                 </div>
-                                <TC.Dropdown
-                                    label="Template"
-                                    className="blis-dropdownWithButton-dropdown"
-                                    options={this.state.cardOptions}
-                                    onChanged={(cardOption) => this.onChangedCardOption(cardOption)}
-                                    selectedKey={this.state.selectedCardOptionKey}
-                                    disabled={this.state.cardOptions.length === 0 || this.state.isEditing}
-                                    placeHolder={this.state.cardOptions.length === 0 ? 'NONE DEFINED' : 'Template name...'}
-                                    tipType={ToolTip.TipType.ACTION_CARD}
-                                    hasButton={true}
-                                />
                                 <div className="blis-dropdownWithButton-buttoncontainer">
                                     <OF.PrimaryButton
                                         className="blis-dropdownWithButton-button"
@@ -682,7 +683,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                     {
                                         return (
                                             <React.Fragment key={cardTemplateVariable.key}>
-                                                <OF.Label>{cardTemplateVariable.key} <HelpIcon tipType={ToolTip.TipType.ACTION_ARGUMENTS}></HelpIcon></OF.Label>
+                                                <OF.Label className="blis-label">{cardTemplateVariable.key} <HelpIcon tipType={ToolTip.TipType.ACTION_ARGUMENTS}></HelpIcon></OF.Label>
                                                 <ActionPayloadEditor.Editor
                                                     options={optionsAvailableForPayload}
                                                     value={this.state.slateValuesMap[cardTemplateVariable.key]}

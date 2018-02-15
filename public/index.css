@@ -86,6 +86,10 @@ html {
   color: var(--color-wc-user);
 }
 
+.blis-label{
+  display: inline-block !important;
+}
+
 .blis-link {
   color: var(--color-wc-user);
 }
@@ -240,10 +244,16 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
 .blis-dropdownWithButton-buttoncontainer {
   height: 100%;
   margin-bottom: 8px;
+  float: right;
 }
 
 .blis-dropdownWithButton-dropdown {
   width: calc(100% - 35px);
+  float: left;
+}
+
+.blis-dropdownWith2Buttons-dropdown {
+  width: calc(100% - 68px);
   float: left;
 }
 

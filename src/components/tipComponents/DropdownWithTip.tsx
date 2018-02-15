@@ -16,7 +16,7 @@ class DropdownWithTip extends OF.BaseComponent<IDropdownWithTipProps, OF.IDropdo
                     <HelpIcon tipType={this.props.tipType} />
                 </OF.Label>
                 <OF.Dropdown
-                    className={this.props.hasButton ? 'blis-dropdownWithButton-dropdown' : ''}
+                    className={this.props.className}
                     label={null}
                     options={this.props.options}
                     onChanged={this.props.onChanged}
@@ -31,8 +31,6 @@ class DropdownWithTip extends OF.BaseComponent<IDropdownWithTipProps, OF.IDropdo
 
 export interface IDropdownWithTipProps extends OF.IDropdownProps {
     tipType: TipType
-    hasButton?: boolean
-
 }
 
 export default connect<IDropdownWithTipProps>(null, null)(DropdownWithTip);
