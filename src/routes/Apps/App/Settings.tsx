@@ -248,8 +248,8 @@ class Settings extends React.Component<Props, ComponentState> {
         this.setState((prevState: ComponentState) => ({
             isPasswordVisible: !prevState.isPasswordVisible,
             passwordShowHideText: !prevState.isPasswordVisible
-                ? this.props.intl.formatMessage(messages.passwordHidden)
-                : this.props.intl.formatMessage(messages.passwordVisible)
+                ? this.props.intl.formatMessage(messages.passwordVisible)
+                : this.props.intl.formatMessage(messages.passwordHidden)
         }))
     }
 
