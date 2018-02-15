@@ -355,7 +355,7 @@ export default class MentionEditor extends React.Component<Props, State> {
                 onClickOption={this.onClickOption}
             />
             <Editor
-                className={`editor ${this.props.disabled ? 'editor--disabled' : ''} ${this.props.value.isFocused ? 'editor--active' : ''}`}
+                className={`editor ${this.props.disabled ? 'editor--disabled' : ''} ${(this.props.value && this.props.value.isFocused) ? 'editor--active' : ''}`}
                 placeholder={this.props.placeholder}
                 value={this.props.value}
                 onChange={this.onChangeValue}

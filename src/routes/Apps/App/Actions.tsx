@@ -147,7 +147,7 @@ class Actions extends React.Component<Props, ComponentState> {
                 <span className={OF.FontClassNames.mediumPlus}>
                     <FormattedMessage
                         id={FM.ACTIONS_SUBTITLE}
-                        defaultMessage="Manage a list of actions that your application can take given it's state and user input..."
+                        defaultMessage="Actions that your application can take..."
                     />
                 </span>
                 <div>

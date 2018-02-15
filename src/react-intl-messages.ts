@@ -344,7 +344,7 @@ export default {
 
         // Actions
         [FM.ACTIONS_TITLE]: 'Actions',
-        [FM.ACTIONS_SUBTITLE]: `Manage a list of actions that your application can take given it's state and user input...`,
+        [FM.ACTIONS_SUBTITLE]: `Actions that the application can take...`,
         [FM.ACTIONS_CREATEBUTTONARIADESCRIPTION]: 'Create a New Action',
         [FM.ACTIONS_CREATEBUTTONTITLE]: 'New Action',
         [FM.ACTIONS_CONFIRMDELETEMODALTITLE]: 'Are you sure you want to delete this action?',
@@ -385,7 +385,7 @@ export default {
 
         // Entities
         [FM.ENTITIES_TITLE]: 'Entities',
-        [FM.ENTITIES_SUBTITLE]: 'Manage a list of entities in your application and track and control their instances within actions...',
+        [FM.ENTITIES_SUBTITLE]: 'Entities the application uses to track state...',
         [FM.ENTITIES_CREATEBUTTONARIALDESCRIPTION]: 'Create a New Entity',
         [FM.ENTITIES_CREATEBUTTONTEXT]: 'New Entity',
         [FM.ENTITIES_COLUMNS_NAME]: 'Name',

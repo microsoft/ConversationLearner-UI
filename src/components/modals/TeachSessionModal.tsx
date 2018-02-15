@@ -115,6 +115,14 @@ class TeachModal extends React.Component<Props, ComponentState> {
         })
     }
 
+    onClickUndo() {
+
+        // If on extractor step, just need to replay history (extractor step will be dropped)
+        // otherwise pop the last train round
+        let popRound = this.props.dialogMode !== DialogMode.Extractor;
+        this.props.onUndo(popRound);
+    }
+
     autoTeachChanged(ev: React.FormEvent<HTMLElement>, isChecked: boolean) {
         this.props.toggleAutoTeach(isChecked);
     }
@@ -185,7 +193,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                         <div className="blis-modal-buttons_secondary">
                             <DefaultButton
                                 disabled={!this.state.hasOneRound}
-                                onClick={() => this.props.onUndo()}
+                                onClick={() => this.onClickUndo()}
                                 ariaDescription={intl.formatMessage({
                                     id: FM.TEACHSESSIONMODAL_UNDO_ARIADESCRIPTION,
                                     defaultMessage: "Undo Step"
@@ -253,7 +261,7 @@ const mapStateToProps = (state: State) => {
 export interface ReceivedProps {
     open: boolean,
     onClose: Function,
-    onUndo: Function,
+    onUndo: (popRound: boolean) => void,
     app: BlisAppBase,
     teachSession: Teach,
     dialogMode: DialogMode,

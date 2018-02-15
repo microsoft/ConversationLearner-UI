@@ -239,9 +239,10 @@ export type CreateAction = {
 } | {
     type: AT.CREATE_TEACH_SESSION_FROMUNDOASYNC,
     blisAppID: string,
+    teach: Teach,
+    popRound: boolean,
     userName: string,
-    userId: string,
-    teach: Teach
+    userId: string
 } | {
     type: AT.CREATE_TEACH_SESSION_FROMUNDOFULFILLED,
     teachWithHistory: TeachWithHistory
