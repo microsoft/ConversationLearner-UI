@@ -1,6 +1,6 @@
 import { ActionObject, ErrorType } from '../types'
 import { AT } from '../types/ActionTypes'
-import { BlisAppBase, EntityBase, ActionBase, TrainDialog, TrainResponse } from 'blis-models';
+import { BlisAppBase, EntityBase, ActionBase, TrainDialog } from 'blis-models';
 import * as ClientFactory from '../services/clientFactory'
 import { setErrorDisplay } from './displayActions'
 import { Dispatch } from 'redux'
@@ -60,9 +60,9 @@ export const editTrainDialogThunkAsync = (appId: string, trainDialog: TrainDialo
         dispatch(editTrainDialogAsync(appId, trainDialog))
 
         try {
-            const trainResponse = await blisClient.trainDialogEdit(appId, trainDialog)
-            dispatch(editTrainDialogFulfilled(trainResponse))
-            return trainResponse
+            await blisClient.trainDialogEdit(appId, trainDialog)
+            dispatch(editTrainDialogFulfilled(trainDialog))
+            return trainDialog
         }
         catch (error) {
             dispatch(setErrorDisplay(ErrorType.Error, error.message, [error.response], AT.EDIT_TRAINDIALOG_ASYNC))
@@ -80,10 +80,10 @@ export const editTrainDialogAsync = (blisAppId: string, trainDialog: TrainDialog
     }
 }
 
-export const editTrainDialogFulfilled = (trainResponse: TrainResponse): ActionObject => {
+export const editTrainDialogFulfilled = (trainDialog: TrainDialog): ActionObject => {
     // Needs a fulfilled version to handle response from Epic
     return {
         type: AT.EDIT_TRAINDIALOG_FULFILLED,
-        trainResponse: trainResponse
+        trainDialog: trainDialog
     }
 }

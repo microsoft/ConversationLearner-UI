@@ -103,7 +103,6 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                 saveSliceRound: roundIndex,
                 saveExtractChanged: true
             });
-            return;
         }
         // Otherwise just save with new text variations, remaining rounds are ok
         else {  
@@ -122,7 +121,6 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
             }
 
             this.props.onReplace(trainDialog);         
-            this.props.clearExtractResponses();
         }
     }
 
