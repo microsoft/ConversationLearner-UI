@@ -18,7 +18,6 @@ interface Props {
  */
 class ExtractorResponseEditorContainer extends React.Component<Props, {}> {
     onChangeCustomEntities = (customEntities: IGenericEntity<IGenericEntityData<PredictedEntity>>[]): void => {
-        console.log(`onChangeCustomEntities: `, customEntities)
         // TODO: Need to find out why entities sometimes come back with builtinType populated and other times have entitType populated
         // This should be normalized so we can only check one property here.
         const preBuiltPredictedEntities = this.props.extractorResponse.predictedEntities.filter(e => {
@@ -34,7 +33,6 @@ class ExtractorResponseEditorContainer extends React.Component<Props, {}> {
             predictedEntities: [...preBuiltPredictedEntities, ...customEntities.map(convertGenericEntityToPredictedEntity(this.props.entities))]
         }
 
-        console.log(`onChangeCustomEntities: `, newExtractResponse)
         this.props.onChange(newExtractResponse)
     }
 
