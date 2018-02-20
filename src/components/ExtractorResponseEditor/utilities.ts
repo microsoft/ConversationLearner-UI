@@ -1,4 +1,5 @@
 import { Value } from 'slate'
+import Plain from 'slate-plain-serializer'
 import * as models from './models'
 import { EntityBase, PredictedEntity, ExtractResponse, EntityType } from 'blis-models'
 
@@ -224,9 +225,10 @@ export const convertMatchedTextIntoMatchedOption = <T>(text: string, matches: [n
     }
 }
 
-export const getEntitiesFromValue = (change: any) => {
+export const getEntitiesFromValue = (change: any): models.IGenericEntity<models.IGenericEntityData<PredictedEntity>>[] => {
     const inlineNodes = change.value.document.filterDescendants((node: any) => node.type === models.NodeType.CustomEntityNodeType)
 
+    // TODO: One alternative might be to save absolute anchor points on the text when it's selected as part of node data like we do with text value
     /**
      * TODO: Find out how to properly convert inline nodes back to entities
      * Currently the issue is that the anchorOffset and focusOffset are relative to the node they are within
@@ -238,22 +240,29 @@ export const getEntitiesFromValue = (change: any) => {
      * However, it should be improved.
      */
     return inlineNodes.map((node: any, i: number) => {
-        const selectionChange = change
-            .moveToRangeOf(node)
-        const text = selectionChange.value.document.text
-        const selectedText = getSelectedText(selectionChange.value)
-        const startIndex = text.search(selectedText)
-        const endIndex = startIndex + selectedText.length
+        const data: models.IGenericEntityData<PredictedEntity> = node.data.toJS()
+        const valueAsPlaintext = Plain.serialize(change.value)
+
+        // Old method of retreiving text based on node boundary and manually moving text selection
+        // const selectionChange = change
+        //     .moveToRangeOf(node)
+        // const nodeText = getSelectedText(selectionChange.value)
+
+        const nodeText = data.text
+        const startIndex = valueAsPlaintext.search(nodeText)
+        const endIndex = startIndex + nodeText.length
 
         return {
             startIndex,
             endIndex,
-            text: selectedText,
-            data: node.data.toJS()
+            data
         }
     })
         .toJS()
-        .reduce((entities: models.IGenericEntity<models.IGenericEntityData<any>>[], entity: models.IGenericEntity<models.IGenericEntityData<any>>) => {
+        .reduce((entities: models.IGenericEntity<models.IGenericEntityData<PredictedEntity>>[], entity: models.IGenericEntity<models.IGenericEntityData<PredictedEntity>>) => {
+            // TODO: Can this be removed?
+            // This de-dupling logic is likely only here for the case where the use reselects text that already contains entity to over-write it;
+            // however, that senario doesn't exist anymore.
             return entities.some(e => e.startIndex === entity.startIndex && e.endIndex === entity.endIndex)
                 ? entities
                 : [...entities, entity]
@@ -289,6 +298,7 @@ export const convertPredictedEntityToGenericEntity = (pe: PredictedEntity, entit
                 name: entityName,
                 type: pe.builtinType
             },
+            text: pe.entityText,
             displayName,
             original: pe
         }
@@ -303,7 +313,7 @@ export const convertGenericEntityToPredictedEntity = (entities: EntityBase[]) =>
     // If predicted entity doesn't exist, re-construct predicted entity object using the option/entity chosen by the user and the selected text
     // Such as the case where we're editing the extract response and adding a new entity
     const option = ge.data.option
-    const text = (ge as any).text || (ge.data as any).text || ''
+    const text = ge.data.text || ''
 
     if (option.type !== "LUIS") {
         console.warn(`convertGenericEntityToPredictedEntity option selected as option type other than LUIS, this will most likely cause an error`)
@@ -325,7 +335,7 @@ export const convertGenericEntityToPredictedEntity = (entities: EntityBase[]) =>
     }
 }
 
-export const convertExtractorResponseToEditorModels = (extractResponse: ExtractResponse, entities: EntityBase[]): models.InternalEditorModel => {
+export const convertExtractorResponseToEditorModels = (extractResponse: ExtractResponse, entities: EntityBase[]): models.IEditorProps => {
     const options = entities
         .filter(e => e.entityType === EntityType.LUIS)
         .map<models.IOption>(e =>

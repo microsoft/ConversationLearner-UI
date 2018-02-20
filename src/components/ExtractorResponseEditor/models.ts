@@ -1,10 +1,10 @@
 import { EntityBase, PredictedEntity } from "blis-models"
 
-export interface InternalEditorModel {
+export interface IEditorProps {
     options: IOption[]
     text: string
-    customEntities: IGenericEntity<any>[]
-    preBuiltEntities: IGenericEntity<any>[]
+    customEntities: IGenericEntity<IGenericEntityData<PredictedEntity>>[]
+    preBuiltEntities: IGenericEntity<IGenericEntityData<PredictedEntity>>[]
 }
 
 export interface InternalPredictedEntity {
@@ -37,8 +37,9 @@ export interface IGenericEntity<T> {
 }
 
 export interface IGenericEntityData<T> {
-    option: IOption,
-    displayName: string,
+    option: IOption
+    text: string
+    displayName: string
     original: T
 }
 

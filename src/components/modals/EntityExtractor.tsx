@@ -235,7 +235,6 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         }
     }
     onUpdateExtractResponse(extractResponse: ExtractResponse): void {
-
         // First for match in extract reponses
         let foundResponse = this.props.extractResponses.find(e => e.text === extractResponse.text);
         if (foundResponse) {
@@ -331,12 +330,19 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                 {extractResponsesForDisplay.map(({ isValid, extractResponse }, key) => {
                     return <div key={key} className={`editor-container ${OF.FontClassNames.mediumPlus}`}>
                         <ExtractorResponseEditor.EditorWrapper
-                            readOnly={!canEdit}
-                            isValid={isValid}
+                            render={(editorProps, onChangeCustomEntities) =>
+                                <ExtractorResponseEditor.Editor
+                                    readOnly={!canEdit}
+                                    isValid={isValid}
+                                    {...editorProps}
+
+                                    onChangeCustomEntities={onChangeCustomEntities}
+                                    onClickNewEntity={this.onNewEntity}
+                                />
+                            }
                             entities={this.props.entities}
                             extractorResponse={extractResponse}
                             onChange={this.onUpdateExtractResponse}
-                            onClickNewEntity={this.onNewEntity}
                         />
                         {(key !== 0) && <div className="editor-container__icons">
                             <button type="button" className={`editor-button-delete ${OF.FontClassNames.large}`} onClick={() => this.onRemoveExtractResponse(extractResponse)}>
