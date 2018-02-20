@@ -159,6 +159,12 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         }
     }
     onClickSubmitExtractions() {
+        this.setState({
+            extractionChanged: false,
+        });
+        if (this.props.onExtractionsChanged) {
+            this.props.onExtractionsChanged(false);
+        }
         this.submitExtractions(this.allResponses(), this.props.roundIndex);
     }
     submitExtractions(allResponses: ExtractResponse[], roundIndex: number) {

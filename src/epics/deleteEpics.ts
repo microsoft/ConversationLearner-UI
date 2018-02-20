@@ -51,15 +51,3 @@ export const deleteSessionEpic: Epic<ActionObject, State> = (action$: ActionsObs
                 : assertNever()
         )
 }
-
-// LARS goes away
-/*
-export const deleteTeachEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
-    return action$.ofType(AT.DELETE_TEACH_SESSION_ASYNC)
-        .flatMap(action =>
-            (action.type === AT.DELETE_TEACH_SESSION_ASYNC)
-                ? deleteTeachSession(action.key, action.currentAppId, action.teachSession, action.save)
-                : assertNever()
-        )
-}
-*/

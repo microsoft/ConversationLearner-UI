@@ -323,7 +323,6 @@ export const convertGenericEntityToPredictedEntity = (entities: EntityBase[]) =>
     }
 }
 
-// TODO: Use strong types from blis-models
 export const convertExtractorResponseToEditorModels = (extractResponse: ExtractResponse, entities: EntityBase[]) => {
     const options = entities
         .filter(e => e.entityType === EntityType.LUIS)
