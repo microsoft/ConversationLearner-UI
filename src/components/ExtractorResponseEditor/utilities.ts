@@ -1,5 +1,7 @@
 import { Value } from 'slate'
 import * as models from './models'
+import * as util from '../../util'
+
 import { EntityBase, PredictedEntity, ExtractResponse, EntityType } from 'blis-models'
 
 /**
@@ -327,11 +329,12 @@ export const convertExtractorResponseToEditorModels = (extractResponse: ExtractR
     const options = entities
         .filter(e => e.entityType === EntityType.LUIS)
         .map<models.IOption>(e =>
-        ({
-            id: e.entityId,
-            name: e.entityName,
-            type: e.entityType
-        }))
+            ({
+                id: e.entityId,
+                name: util.entityDisplayName(e),
+                type: e.entityType
+            })
+    )
 
     const text = extractResponse.text
     
@@ -359,5 +362,5 @@ export const convertExtractorResponseToEditorModels = (extractResponse: ExtractR
 
 export const EntityName = (entities: EntityBase[], entityId: string)  => {
     let entity = entities.find(e => e.entityId === entityId);
-    return entity ? entity.entityName : '';
+    return entity ? util.entityDisplayName(entity) : '';
 }
