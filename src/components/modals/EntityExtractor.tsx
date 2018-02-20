@@ -3,7 +3,7 @@ import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../../types'
-import { BlisAppBase, ModelUtils, ExtractResponse, TextVariation, DialogType, EntityType, EntityBase, UserInput, DialogMode } from 'blis-models'
+import { BlisAppBase, ModelUtils, ExtractResponse, TextVariation, DialogType, EntityType, EntityBase, UserInput, DialogMode, PredictedEntity } from 'blis-models'
 import * as OF from 'office-ui-fabric-react';
 import * as ExtractorResponseEditor from '../ExtractorResponseEditor'
 import EntityCreatorEditor from './EntityCreatorEditor';
@@ -14,11 +14,20 @@ import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { FM } from '../../react-intl-messages'
 import './EntityExtractor.css'
 
+interface ExtractResponseForDisplay {
+    extractResponse: ExtractResponse
+    isValid: boolean
+}
+
 const addMissingEntityData = (extractResponse: ExtractResponse, entities: EntityBase[]): ExtractResponse => {
-    const predictedEntities = extractResponse.predictedEntities.map(pe => {
+    const predictedEntities = extractResponse.predictedEntities.map<PredictedEntity>(pe => {
         const entity = entities.find(e => e.entityId === pe.entityId)
-        pe.builtinType = entity ? entity.entityType : 'UNKNOWN';
-        return { ...pe }
+        const builtinType = entity ? entity.entityType : 'UNKNOWN'
+
+        return {
+            ...pe,
+            builtinType
+        }
     })
 
     return {
@@ -52,7 +61,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
             pendingVariationChange: false,
             entityModalOpen: false,
             warningOpen: false,
-            savedExtractResponses: null,
+            savedExtractResponses: [],
             savedRoundIndex: 0,
             textVariationValue: '',
             newTextVariations: []
@@ -82,20 +91,21 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         if (this.props.sessionId !== newProps.sessionId ||
             this.props.roundIndex !== newProps.roundIndex ||
             this.props.originalTextVariations.length !== newProps.originalTextVariations.length) {
+
+            let nextState: Pick<ComponentState, any> = {
+                newTextVariations: [...newProps.originalTextVariations],
+                extractionChanged: false,
+            }
             // If I made an unsaved change, show save prompt before switching
             if (this.state.extractionChanged) {
-                this.setState({
-                    newTextVariations: [...newProps.originalTextVariations],
-                    extractionChanged: false,
+                nextState = {
+                    ...nextState,
                     savedExtractResponses: this.allResponses(),
                     savedRoundIndex: this.props.roundIndex
-                });
-            } else {
-                this.setState({
-                    newTextVariations: [...newProps.originalTextVariations],
-                    extractionChanged: false
-                })
+                }
             }
+
+            this.setState(nextState)
             this.props.clearExtractResponses();
         }
     }
@@ -140,8 +150,8 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
      * E.g. if Primary (response[0]) has name and color declared, all variations (1 through n) must also
      * have name and color declared
      */
-    allValid(extractResponses: ExtractResponse[]): boolean {
-        return extractResponses.every(extractResponse => (extractResponse === extractResponses[0]) ? true : this.isValid(extractResponses[0], extractResponse))
+    allValid(primaryExtractResponse: ExtractResponse, extractResponses: ExtractResponse[]): boolean {
+        return extractResponses.every(extractResponse => (extractResponse === primaryExtractResponse) ? true : this.isValid(primaryExtractResponse, extractResponse))
     }
 
     // Return merge of extract responses and text variations
@@ -168,8 +178,9 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         this.submitExtractions(this.allResponses(), this.props.roundIndex);
     }
     submitExtractions(allResponses: ExtractResponse[], roundIndex: number) {
-
-        if (!this.allValid(allResponses)) {
+        const primaryExtractResponse = allResponses[0]
+        
+        if (!this.allValid(primaryExtractResponse, allResponses)) {
             this.handleOpenWarning();
             return;
         }
@@ -181,7 +192,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
             labelEntities: extractResponse.predictedEntities
         }))
 
-        this.props.onTextVariationsExtracted(allResponses[0], textVariations, roundIndex);
+        this.props.onTextVariationsExtracted(primaryExtractResponse, textVariations, roundIndex);
     }
 
     onAddExtractResponse(): void {
@@ -212,18 +223,18 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         } else {
             // Otherwise change is in text variation
             let newVariations = this.state.newTextVariations
-                .filter((v: TextVariation) => v.text !== extractResponse.text);
+                .filter(v => v.text !== extractResponse.text);
             this.setState({
                 newTextVariations: newVariations,
                 extractionChanged: true
             });
         }
+
         if (this.props.onExtractionsChanged) {
             this.props.onExtractionsChanged(true);
         }
     }
     onUpdateExtractResponse(extractResponse: ExtractResponse): void {
-
         // First for match in extract reponses
         let foundResponse = this.props.extractResponses.find(e => e.text === extractResponse.text);
         if (foundResponse) {
@@ -254,14 +265,14 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         // Submit saved extractions and clear saved responses
         this.submitExtractions(this.state.savedExtractResponses, this.state.savedRoundIndex);
         this.setState({
-            savedExtractResponses: null,
+            savedExtractResponses: [],
             savedRoundIndex: 0
         });
     }
     onClickSaveCheckNo() {
         // Clear saved responses
         this.setState({
-            savedExtractResponses: null,
+            savedExtractResponses: [],
             savedRoundIndex: 0
         });
     }
@@ -290,15 +301,22 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
 
     render() {
         const allResponses = this.allResponses();
-        if (!allResponses[0]) {
+        const primaryExtractResponse = allResponses[0]
+        if (!primaryExtractResponse) {
             return null;
         }
 
         // Don't show edit components when in auto TEACH or on score step
         const canEdit = (!this.props.autoTeach && this.props.dialogMode === DialogMode.Extractor)
         // If editing is not allowed, only show the primary response which is the first response
-        const extractResponsesToRender = canEdit ? allResponses : [allResponses[0]]
-        const allExtractResponsesValid = extractResponsesToRender.every(extractResponse => this.isValid(extractResponsesToRender[0], extractResponse))
+        const extractResponsesToRender = canEdit ? allResponses : [primaryExtractResponse]
+        const extractResponsesForDisplay = extractResponsesToRender
+            .map<ExtractResponseForDisplay>(extractResponse =>
+                ({
+                    extractResponse,
+                    isValid: this.isValid(primaryExtractResponse, extractResponse)
+                }))
+        const allExtractResponsesValid = extractResponsesForDisplay.every(e => e.isValid)
 
         return (
             <div>
@@ -309,20 +327,22 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                     />
                     <HelpIcon tipType={ToolTips.TipType.ENTITY_EXTRACTOR_HELP} />
                 </OF.Label>
-                {extractResponsesToRender.map((extractResponse, key) => {
-                    let isValid = true;
-                    if (extractResponse !== allResponses[0]) {
-                        isValid = this.isValid(allResponses[0], extractResponse);
-                    }
-
+                {extractResponsesForDisplay.map(({ isValid, extractResponse }, key) => {
                     return <div key={key} className={`editor-container ${OF.FontClassNames.mediumPlus}`}>
                         <ExtractorResponseEditor.EditorWrapper
-                            readOnly={!canEdit}
-                            isValid={isValid}
+                            render={(editorProps, onChangeCustomEntities) =>
+                                <ExtractorResponseEditor.Editor
+                                    readOnly={!canEdit}
+                                    isValid={isValid}
+                                    {...editorProps}
+
+                                    onChangeCustomEntities={onChangeCustomEntities}
+                                    onClickNewEntity={this.onNewEntity}
+                                />
+                            }
                             entities={this.props.entities}
                             extractorResponse={extractResponse}
                             onChange={this.onUpdateExtractResponse}
-                            onClickNewEntity={this.onNewEntity}
                         />
                         {(key !== 0) && <div className="editor-container__icons">
                             <button type="button" className={`editor-button-delete ${OF.FontClassNames.large}`} onClick={() => this.onRemoveExtractResponse(extractResponse)}>
@@ -403,7 +423,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                         </OF.DialogFooter>
                     </OF.Dialog>
                     <OF.Dialog
-                        hidden={this.state.savedExtractResponses === null}
+                        hidden={this.state.savedExtractResponses.length === 0}
                         isBlocking={true}
                         dialogContentProps={{
                             type: OF.DialogType.normal,

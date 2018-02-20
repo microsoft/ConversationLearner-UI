@@ -1,3 +1,17 @@
+import { EntityBase, PredictedEntity } from "blis-models"
+
+export interface IEditorProps {
+    options: IOption[]
+    text: string
+    customEntities: IGenericEntity<IGenericEntityData<PredictedEntity>>[]
+    preBuiltEntities: IGenericEntity<IGenericEntityData<PredictedEntity>>[]
+}
+
+export interface InternalPredictedEntity {
+    entity: EntityBase
+    predictedEntity: PredictedEntity
+}
+
 export interface IEntityPickerProps {
     isOverlappingOtherEntities: boolean
     isVisible: boolean
@@ -23,8 +37,9 @@ export interface IGenericEntity<T> {
 }
 
 export interface IGenericEntityData<T> {
-    option: IOption,
-    displayName: string,
+    option: IOption
+    text: string
+    displayName: string
     original: T
 }
 
