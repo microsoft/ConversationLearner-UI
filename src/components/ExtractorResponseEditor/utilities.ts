@@ -294,7 +294,7 @@ export const convertPredictedEntityToGenericEntity = (pe: PredictedEntity, entit
         }
     })
 
-export const convertGenericEntityToPredictedEntity = (entities: EntityBase[]) => (ge: models.IGenericEntity<models.IGenericEntityData<PredictedEntity>>): any => {
+export const convertGenericEntityToPredictedEntity = (entities: EntityBase[]) => (ge: models.IGenericEntity<models.IGenericEntityData<PredictedEntity>>): PredictedEntity => {
     const predictedEntity = ge.data.original
     if (predictedEntity) {
         return predictedEntity
@@ -315,15 +315,17 @@ export const convertGenericEntityToPredictedEntity = (entities: EntityBase[]) =>
     }
 
     return {
-        ...entity,
+        entityId: entity.entityId,
         startCharIndex: ge.startIndex,
         endCharIndex: ge.endIndex - 1,
         entityText: text,
-        resolution: {}
+        resolution: {},
+        builtinType: entity.entityType,
+        score: 0
     }
 }
 
-export const convertExtractorResponseToEditorModels = (extractResponse: ExtractResponse, entities: EntityBase[]) => {
+export const convertExtractorResponseToEditorModels = (extractResponse: ExtractResponse, entities: EntityBase[]): models.InternalEditorModel => {
     const options = entities
         .filter(e => e.entityType === EntityType.LUIS)
         .map<models.IOption>(e =>
@@ -357,7 +359,7 @@ export const convertExtractorResponseToEditorModels = (extractResponse: ExtractR
     }
 }
 
-export const EntityName = (entities: EntityBase[], entityId: string)  => {
+export const entityName = (entities: EntityBase[], entityId: string)  => {
     let entity = entities.find(e => e.entityId === entityId);
     return entity ? entity.entityName : '';
 }

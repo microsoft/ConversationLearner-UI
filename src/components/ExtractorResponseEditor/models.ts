@@ -1,3 +1,10 @@
+export interface InternalEditorModel {
+    options: IOption[]
+    text: string
+    customEntities: IGenericEntity<any>[]
+    preBuiltEntities: IGenericEntity<any>[]
+}
+
 export interface IEntityPickerProps {
     isOverlappingOtherEntities: boolean
     isVisible: boolean
