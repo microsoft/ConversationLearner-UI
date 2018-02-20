@@ -1,6 +1,6 @@
 import { Value } from 'slate'
 import * as models from './models'
-import { EntityBase, PredictedEntity, ExtractResponse } from 'blis-models'
+import { EntityBase, PredictedEntity, ExtractResponse, EntityType } from 'blis-models'
 
 /**
  * Recursively walk up DOM tree until root or parent with non-static position is found.
@@ -326,7 +326,7 @@ export const convertGenericEntityToPredictedEntity = (entities: EntityBase[]) =>
 // TODO: Use strong types from blis-models
 export const convertExtractorResponseToEditorModels = (extractResponse: ExtractResponse, entities: EntityBase[]) => {
     const options = entities
-        .filter(e => e.entityType === "LUIS")
+        .filter(e => e.entityType === EntityType.LUIS)
         .map<models.IOption>(e =>
         ({
             id: e.entityId,
@@ -336,16 +336,18 @@ export const convertExtractorResponseToEditorModels = (extractResponse: ExtractR
 
     const text = extractResponse.text
     
-    // Predicted entities for non prebuilts to not have builtinType property
     const customEntities = extractResponse.predictedEntities
         .filter(pe => {
             let entity = entities.find(e => e.entityId === pe.entityId);
-            return entity && entity.entityType === 'LUIS';
+            return entity && entity.entityType === EntityType.LUIS;
         })
         .map(pe => convertPredictedEntityToGenericEntity(pe, EntityName(entities, pe.entityId), EntityName(entities, pe.entityId)))
 
     const preBuiltEntities = extractResponse.predictedEntities
-        .filter(pe => typeof pe.builtinType === 'string' && pe.builtinType !== 'LUIS')
+        .filter(pe => {
+            let entity = entities.find(e => e.entityId === pe.entityId);
+            return entity && entity.entityType !== EntityType.LUIS && entity.entityType !== EntityType.LOCAL;
+        })
         .map(pe => convertPredictedEntityToGenericEntity(pe, EntityName(entities, pe.entityId), getEntityDisplayName(pe)))
 
     return {
