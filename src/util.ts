@@ -1,3 +1,5 @@
+import * as models from 'blis-models'
+
 export function generateGUID(): string {
     let d = new Date().getTime();
     let guid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (char) => {
@@ -19,4 +21,16 @@ export function replace<T>(xs: T[], updatedX: T, getId: (x: T) => any): T[] {
 
 export function isNullOrWhiteSpace(str: string): boolean {
     return (!str || str.length === 0 || /^\s*$/.test(str))
-  }
+}
+
+export function entityDisplayName(entity: models.EntityBase) {
+    if (entity.positiveId) {
+        return `-${entity.entityName.slice(1)}`;
+    }
+    else if (entity.negativeId) {
+        return `+${entity.entityName}`;
+    } 
+    else {
+        return entity.entityName;
+    }
+}
