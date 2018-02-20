@@ -336,20 +336,22 @@ export const convertExtractorResponseToEditorModels = (extractResponse: ExtractR
         }))
 
     const text = extractResponse.text
-    
-    const customEntities = extractResponse.predictedEntities
-        .filter(pe => {
-            let entity = entities.find(e => e.entityId === pe.entityId);
-            return entity && entity.entityType === EntityType.LUIS;
+    const internalPredictedEntities = extractResponse.predictedEntities
+        .map<models.InternalPredictedEntity>(predictedEntity => {
+            const entity = entities.find(e => e.entityId === predictedEntity.entityId)
+            return {
+                entity,
+                predictedEntity
+            }
         })
-        .map(pe => convertPredictedEntityToGenericEntity(pe, EntityName(entities, pe.entityId), EntityName(entities, pe.entityId)))
 
-    const preBuiltEntities = extractResponse.predictedEntities
-        .filter(pe => {
-            let entity = entities.find(e => e.entityId === pe.entityId);
-            return entity && entity.entityType !== EntityType.LUIS && entity.entityType !== EntityType.LOCAL;
-        })
-        .map(pe => convertPredictedEntityToGenericEntity(pe, EntityName(entities, pe.entityId), getEntityDisplayName(pe)))
+    const customEntities = internalPredictedEntities
+        .filter(({ entity }) => entity && entity.entityType === EntityType.LUIS)
+        .map(({ entity, predictedEntity }) => convertPredictedEntityToGenericEntity(predictedEntity, entity.entityName, entity.entityName))
+
+    const preBuiltEntities = internalPredictedEntities
+        .filter(({ entity }) => entity && entity.entityType !== EntityType.LUIS && entity.entityType !== EntityType.LOCAL)
+        .map(({ entity, predictedEntity }) => convertPredictedEntityToGenericEntity(predictedEntity, entity.entityName, getEntityDisplayName(predictedEntity)))
 
     return {
         options,
