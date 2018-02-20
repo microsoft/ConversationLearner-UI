@@ -338,11 +338,14 @@ export const convertExtractorResponseToEditorModels = (extractResponse: ExtractR
     
     // Predicted entities for non prebuilts to not have builtinType property
     const customEntities = extractResponse.predictedEntities
-        .filter(pe => (pe as any).entityType === "LUIS" || typeof pe.builtinType === undefined || pe.builtinType === "LUIS")
+        .filter(pe => {
+            let entity = entities.find(e => e.entityId === pe.entityId);
+            return entity && entity.entityType === 'LUIS';
+        })
         .map(pe => convertPredictedEntityToGenericEntity(pe, EntityName(entities, pe.entityId), EntityName(entities, pe.entityId)))
 
     const preBuiltEntities = extractResponse.predictedEntities
-        .filter(pe => typeof pe.builtinType === "string" && pe.builtinType !== "LUIS")
+        .filter(pe => typeof pe.builtinType === 'string' && pe.builtinType !== 'LUIS')
         .map(pe => convertPredictedEntityToGenericEntity(pe, EntityName(entities, pe.entityId), getEntityDisplayName(pe)))
 
     return {
