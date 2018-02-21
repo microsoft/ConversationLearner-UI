@@ -137,6 +137,19 @@
     white-space: nowrap;
 }
 
+.blis-modal-dropdowns {
+    display: grid;
+    grid-auto-flow: column;
+    grid-gap: 0.75em;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--color-neutralQuaternary);
+}
+
 .blisText--emphasis {
     color: var(--color-blue);
+} 
+
+/* Office Fabric doesn't natively support a search label */
+.blisSearch-label {
+    margin-bottom: -10px;
 } 

@@ -19,6 +19,7 @@ import { FM } from '../../../react-intl-messages'
 import { setErrorDisplay } from '../../../actions/displayActions';
 import { ErrorType } from '../../../types/const';
 import { Activity } from 'botframework-directlinejs';
+import { autobind } from 'office-ui-fabric-react/lib/Utilities';
 
 interface IRenderableColumn extends OF.IColumn {
     render: (x: TrainDialog, component: TrainDialogs) => React.ReactNode
@@ -128,7 +129,9 @@ interface ComponentState {
     isTrainDialogModalOpen: boolean
     trainDialogId: string
     searchValue: string,
-    dialogKey: number
+    dialogKey: number,
+    entityFilter: OF.IDropdownOption,
+    actionFilter: OF.IDropdownOption
 }
 
 class TrainDialogs extends React.Component<Props, ComponentState> {
@@ -142,7 +145,9 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         isTrainDialogModalOpen: false,
         trainDialogId: null,
         searchValue: '',
-        dialogKey: 0
+        dialogKey: 0,
+        entityFilter: null,
+        actionFilter: null
     }
 
     componentDidMount() {
@@ -160,6 +165,20 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             }
             this.newTeachSessionButton.focus();
         }
+    }
+
+    @autobind
+    onSelectEntityFilter(item: OF.IDropdownOption) {
+        this.setState({
+            entityFilter: item
+        })
+    }
+
+    @autobind
+    onSelectActionFilter(item: OF.IDropdownOption) {
+        this.setState({
+            actionFilter: item
+        })
     }
 
     onClickNewTeachSession() {
@@ -354,25 +373,48 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     }
 
     renderTrainDialogItems(): TrainDialog[] {
-        if (!this.state.searchValue) {
+        if (!this.state.searchValue && ! this.state.entityFilter && !this.state.actionFilter) {
             return this.props.trainDialogs;
         }
         // TODO: Consider caching as not very efficient
         let filteredTrainDialogs = this.props.trainDialogs.filter((t: TrainDialog) => {
+            let entitiesInTD = [];
+            let actionsInTD = [];
+            let variationText = [];
 
-            let keys = [];
             for (let round of t.rounds) {
                 for (let variation of round.extractorStep.textVariations) {
-                    keys.push(variation.text);
+                    variationText.push(variation.text);
                     for (let le of variation.labelEntities) {
-                        keys.push(this.props.entities.find(e => e.entityId == le.entityId).entityName);
+                        // Include pos and neg examples of entity if reversable
+                        let entity = this.props.entities.find(e => e.entityId === le.entityId);
+                        entitiesInTD.push(entity);
+                        if (entity.negativeId) {
+                            entitiesInTD.push(this.props.entities.find(e => e.entityId === entity.negativeId));
+                        }
                     }
                 }
                 for (let ss of round.scorerSteps) {
-                    keys.push(this.props.actions.find(a => a.actionId == ss.labelAction).payload);
+                    actionsInTD.push(this.props.actions.find(a => a.actionId === ss.labelAction));
                 }
             }
-            let searchString = keys.join(' ').toLowerCase();
+
+            // Filter out train dialogs that don't match filters (data = negativeId for multivalue)
+            if (this.state.entityFilter && this.state.entityFilter.key
+                    && !entitiesInTD.find(en => en.entityId === this.state.entityFilter.key)
+                    && !entitiesInTD.find(en => en.entityId === this.state.entityFilter.data)) {
+                return false;
+            }
+            if (this.state.actionFilter && this.state.actionFilter.key
+                && !actionsInTD.find(a => a.actionId === this.state.actionFilter.key)) {
+            return false;
+        }
+
+            let entityNames = entitiesInTD.map(e => e.entityName);
+            let actionPayloads = actionsInTD.map(a => ActionBase.GetPayload(a));
+
+            // Then check search terms
+            let searchString = variationText.concat(actionPayloads).concat(entityNames).join(' ').toLowerCase();
             return searchString.indexOf(this.state.searchValue) > -1;
         })
         return filteredTrainDialogs;
@@ -420,11 +462,46 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         trainDialog={null}
                     />
                 </div>
+                <span className={`blisSearch-label ${OF.FontClassNames.medium}`}>
+                    Search:
+                </span>
                 <OF.SearchBox
-                    className={OF.FontClassNames.mediumPlus}
+                    className={OF.FontClassNames.medium}
                     onChange={(newValue) => this.onChangeSearchString(newValue)}
                     onSearch={(newValue) => this.onChangeSearchString(newValue)}
                 />
+                <div className="blis-modal-dropdowns">             
+                    <OF.Dropdown
+                        label="Entity:"
+                        selectedKey={(this.state.entityFilter ? this.state.entityFilter.key : undefined)}
+                        onChanged={this.onSelectEntityFilter}
+                        placeHolder="Filter by Entity"
+                        options={this.props.entities
+                            // Only show positive versions of negatable entities
+                            .filter(e => e.positiveId == null)
+                            .map(e => ({ 
+                                key: e.entityId,
+                                text: e.entityName,
+                                data: e.negativeId
+                            }))
+                            .concat({key: null, text: '---', data: null})
+                        }
+                    /> 
+        
+                    <OF.Dropdown
+                        label="Action:"
+                        selectedKey={(this.state.actionFilter ? this.state.actionFilter.key : undefined)}
+                        onChanged={this.onSelectActionFilter}
+                        placeHolder="Filter by Action"
+                        options={this.props.actions
+                            .map(a => ({ 
+                                key: a.actionId,
+                                text: ActionBase.GetPayload(a)
+                            }))
+                            .concat({key: null, text: '---'})
+                        }
+                    />
+                </div>
                 <OF.DetailsList
                     key={this.state.dialogKey}
                     className={OF.FontClassNames.mediumPlus}
