@@ -34,6 +34,7 @@ interface Props {
     disabled: boolean
     placeholder: string
     onChange: (value: SlateValue) => void
+    onSubmit: () => void
 }
 
 interface State {
@@ -207,6 +208,12 @@ export default class MentionEditor extends React.Component<Props, State> {
     onEnter(event: React.KeyboardEvent<HTMLInputElement>, change: any): boolean | void {
         console.log(`onEnter`)
         event.preventDefault()
+
+        // User is trying to submit Action as a whole
+        if (event.shiftKey) {
+            this.props.onSubmit();
+            return true;
+        }
 
         if (!this.state.menuProps.isVisible || this.state.matchedOptions.length === 0) {
             return true

@@ -555,6 +555,13 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         return <BlisTagItem key={props.index} {...renderProps}>{props.item.name}</BlisTagItem>
     }
 
+    // Payload editor is trying to submit action
+    onSubmitPayloadEditor(): void {
+        if (!this.saveDisabled()) {
+            this.onClickSubmit();
+        }
+    }
+
     onChangePayloadEditor = (value: ActionPayloadEditor.SlateValue, slot: string = null) => {
         console.log(`ActionCreatorEditor.onChangePayloadEditor: `, slot)
         let newArguments = {...this.state.slateValuesMap}
@@ -576,6 +583,12 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             requiredEntityTagsFromPayload,
             requiredEntityTags
         })
+    }
+
+    saveDisabled(): boolean {
+        return (this.state.selectedActionTypeOptionKey === ActionTypes.API_LOCAL
+        ? this.state.selectedApiOptionKey === null
+        : !this.state.isPayloadValid)
     }
 
     render() {
@@ -687,6 +700,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                                     value={this.state.slateValuesMap[cardTemplateVariable.key]}
                                                     placeholder={''}
                                                     onChange={eState => this.onChangePayloadEditor(eState, cardTemplateVariable.key)}
+                                                    onSubmit={() => this.onSubmitPayloadEditor()}
                                                     disabled={isPayloadDisabled}
                                                 />
                                             </React.Fragment>
@@ -713,6 +727,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                                 value={this.state.slateValuesMap[apiArgument]}
                                                 placeholder={''}
                                                 onChange={eState => this.onChangePayloadEditor(eState, apiArgument)}
+                                                onSubmit={() => this.onSubmitPayloadEditor()}
                                                 disabled={isPayloadDisabled}
                                             />
                                             </React.Fragment>
@@ -735,6 +750,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                     value={this.state.slateValuesMap[TEXT_SLOT]}
                                     placeholder="Phrase..."
                                     onChange={eState => this.onChangePayloadEditor(eState, TEXT_SLOT)}
+                                    onSubmit={() => this.onSubmitPayloadEditor()}
                                     disabled={isPayloadDisabled}
                                 />
                             </div>
@@ -822,9 +838,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 <div className="blis-modal_footer blis-modal-buttons">
                     <div className="blis-modal-buttons_primary">
                         <OF.PrimaryButton
-                            disabled={this.state.selectedActionTypeOptionKey == ActionTypes.API_LOCAL
-                                ? this.state.selectedApiOptionKey === null
-                                : !this.state.isPayloadValid}
+                            disabled={this.saveDisabled()}
                             onClick={() => this.onClickSubmit()}
                             ariaDescription="Submit"
                             text={this.state.isEditing ? 'Save' : 'Create'}
