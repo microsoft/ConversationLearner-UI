@@ -358,7 +358,7 @@ export const convertExtractorResponseToEditorModels = (extractResponse: ExtractR
 
     const customEntities = internalPredictedEntities
         .filter(({ entity }) => entity && entity.entityType === EntityType.LUIS)
-        .map(({ entity, predictedEntity }) => convertPredictedEntityToGenericEntity(predictedEntity, entity.entityName, entity.entityName))
+        .map(({ entity, predictedEntity }) => convertPredictedEntityToGenericEntity(predictedEntity, entity.entityName, util.entityDisplayName(entity)))
 
     const preBuiltEntities = internalPredictedEntities
         .filter(({ entity }) => entity && entity.entityType !== EntityType.LUIS && entity.entityType !== EntityType.LOCAL)
