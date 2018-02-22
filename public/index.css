@@ -124,6 +124,12 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
 {
   text-decoration: line-through;
 }
+.blis-font--action {
+  color: var(--color-blue);
+}
+.blis-font--preserve {
+  white-space: pre-wrap;
+}
 
 .blis-wc-message {
   border-radius: 2px;

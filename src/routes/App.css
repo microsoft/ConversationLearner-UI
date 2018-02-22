@@ -145,10 +145,6 @@
     border-bottom: 2px solid var(--color-neutralQuaternary);
 }
 
-.blisText--emphasis {
-    color: var(--color-blue);
-} 
-
 /* Office Fabric doesn't natively support a search label */
 .blisSearch-label {
     margin-bottom: -10px;

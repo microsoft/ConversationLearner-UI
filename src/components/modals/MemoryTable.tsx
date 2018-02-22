@@ -14,6 +14,17 @@ interface IRenderableColumn extends OF.IColumn {
     getSortValue: (entity: EntityBase, component: MemoryTable) => string
 }
 
+enum MemoryChangeStatus {
+    Unchanged = "Unchanged",
+    Added = "Added",
+    Removed = "Removed"
+}
+
+const memoryChangeClassMap = {
+    [MemoryChangeStatus.Added]: 'blis-font--emphasis',
+    [MemoryChangeStatus.Removed]: 'blis-font--deleted',
+}
+
 const columns: IRenderableColumn[] = [
     {
         key: 'entityName',
@@ -22,7 +33,12 @@ const columns: IRenderableColumn[] = [
         minWidth: 100,
         maxWidth: 200,
         isResizable: true,
-        render: (entity, component) => component.renderEntityName(entity.entityName),
+        render: (entity, component) => {
+            const changeStatus = component.getMemoryChangeStatus(entity.entityName)
+            const changeClass = memoryChangeClassMap[changeStatus] || ''
+
+            return <span className={`${OF.FontClassNames.mediumPlus} ${changeClass}`}>{entity.entityName}</span>
+        },
         getSortValue: entity => entity.entityName.toUpperCase()
     },
     {
@@ -32,7 +48,22 @@ const columns: IRenderableColumn[] = [
         minWidth: 200,
         maxWidth: 400,
         isResizable: true,
-        render: (entity, component) => component.renderEntityValues(entity),
+        render: (entity, component) => {
+            const entityValues = component.getEntityValues(entity)
+            
+            return <React.Fragment>
+                {entityValues.map((value, i) => {
+                    const changeClass = memoryChangeClassMap[value.changeStatus] || ''
+                    let renderedValue = <span>{value.prefix}<span className={`${changeClass} ${value.isPrebuilt ? 'blis-font--action' : ''}`}>{value.displayText}</span></span>
+
+                    if (value.isPrebuilt) {
+                        renderedValue = Prebuilt(value.memoryValue, renderedValue)
+                    }
+                    
+                    return <span className={`${OF.FontClassNames.mediumPlus} blis-font--preserve`} key={i}>{renderedValue}</span>
+                })}
+            </React.Fragment>
+        },
         getSortValue: entity => ''
     },
     {
@@ -125,28 +156,27 @@ class MemoryTable extends React.Component<Props, ComponentState> {
         return prevMemories.find(m => m.entityName === entityName);
     }
 
-    renderEntityName(entityName: string) {
+    getMemoryChangeStatus(entityName: string): MemoryChangeStatus {
         let curEntity = this.props.memories.find(m => m.entityName === entityName);
         let prevEntity = this.props.prevMemories.find(m => m.entityName === entityName);
-        let entityClass = OF.FontClassNames.mediumPlus;
 
         // In old but not new
         if (prevEntity && !curEntity) {
-            entityClass += ' blis-font--deleted';
+            return MemoryChangeStatus.Removed
         }
         // In new but not old
         else if (!prevEntity && curEntity) {
-            entityClass += ' blis-font--emphasis';
+            return MemoryChangeStatus.Added
         }
 
-        return <span className={entityClass}>{entityName}</span>
+        return MemoryChangeStatus.Unchanged
     }
 
     isPrebuilt(entity: EntityBase): boolean {
         return (entity.entityName.startsWith('luis-'));
     }
 
-    renderEntityValues(entity: EntityBase) {
+    getEntityValues(entity: EntityBase) {
         // Current entity values
         let curMemory = this.props.memories.find(m => m.entityName === entity.entityName);
         let curMemoryValues = curMemory ? curMemory.entityValues : [];
@@ -158,15 +188,20 @@ class MemoryTable extends React.Component<Props, ComponentState> {
         let prevValues = prevMemoryValues.map(pmv => pmv.userText);
 
         // Find union and remove duplicates
-        let unionMemoryValues = [...curMemoryValues, ...prevMemoryValues.filter(pmv => !curMemoryValues.some(cmv => cmv.userText === pmv.userText))];
+        const unionMemoryValues = [...curMemoryValues, ...prevMemoryValues.filter(pmv => !curMemoryValues.some(cmv => cmv.userText === pmv.userText))];
 
-        // Print out list in friendly manner
-        let display = [];
-        let key = 0;
-        let index = 0;
-        for (let memoryValue of unionMemoryValues) {
-            let entityClass = '';
+        return unionMemoryValues.map((memoryValue, index) => {
+            let changeStatus = MemoryChangeStatus.Unchanged
+            // In old but not new
+            if (prevValues.indexOf(memoryValue.userText) >= 0 && curValues.indexOf(memoryValue.userText) < 0) {
+                changeStatus = MemoryChangeStatus.Removed
+            }
+            // In new but not old
+            else if (prevValues.indexOf(memoryValue.userText) < 0 && curValues.indexOf(memoryValue.userText) >= 0) {
+                changeStatus = MemoryChangeStatus.Added
+            }
 
+            const isPrebuilt = this.isPrebuilt(entity)
             // Calculate prefix
             let prefix = '';
             if (!entity.isMultivalue) {
@@ -177,28 +212,15 @@ class MemoryTable extends React.Component<Props, ComponentState> {
                 prefix = ', ';
             }
 
-            // In old but not new
-            if (prevValues.indexOf(memoryValue.userText) >= 0 && curValues.indexOf(memoryValue.userText) < 0) {
-                entityClass = 'blis-font--deleted';
+            return {
+                prefix,
+                changeStatus,
+                memoryValue, 
+                isPrebuilt,
+                // TODO: Why is it called displayText if it's not always used for display...
+                displayText: isPrebuilt ? memoryValue.displayText : memoryValue.userText
             }
-            // In new but not old
-            else if (prevValues.indexOf(memoryValue.userText) < 0 && curValues.indexOf(memoryValue.userText) >= 0) {
-                entityClass = 'blis-font--emphasis';
-            }
-
-            // If a pre-built, show tool tip with extra info
-            if (this.isPrebuilt(entity)) {
-                entityClass += ' blisText--emphasis';
-                display.push(
-                    Prebuilt(memoryValue, (<span className={OF.FontClassNames.mediumPlus} key={key++}>{prefix}<span className={entityClass}>{memoryValue.displayText}</span></span>))
-                )
-            } else {
-                display.push(<span className={OF.FontClassNames.mediumPlus} key={key++}>{prefix}<span className={entityClass}>{memoryValue.userText}</span></span>);
-            }
-
-            index++;
-        }
-        return display;
+        })
     }
 
     renderItemColumn(entityName: string, index: number, column: IRenderableColumn) {
