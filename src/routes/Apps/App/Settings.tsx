@@ -7,6 +7,7 @@ import { State } from '../../../types';
 import * as OF from 'office-ui-fabric-react';
 import { BlisAppBase, TrainingStatusCode } from 'blis-models'
 import './Settings.css'
+import { BLIS_SAMPLE_ID } from '../../../types/const'
 import { FM } from '../../../react-intl-messages'
 import ErrorInjectionEditor from '../../../components/modals/ErrorInjectionEditor'
 import { injectIntl, InjectedIntlProps, defineMessages, FormattedMessage } from 'react-intl'
@@ -363,29 +364,29 @@ class Settings extends React.Component<Props, ComponentState> {
                             />
                         </div>
                     </div>
-                    {this.props.user.name === 'demo' &&
-                    <div>
-                        <OF.TextField
-                            className={OF.FontClassNames.mediumPlus}
-                            onChanged={(text) => this.onChangedMarkdown(text)}
-                            label={intl.formatMessage({
-                                id: FM.SETTINGS_FIELDS_MARKDOWNLABEL,
-                                defaultMessage: 'Markdown'
-                            })}
-                            value={this.state.markdownVal}
-                            multiline={true}
-                            rows={5}
-                        />
-                        <OF.TextField
-                            className={OF.FontClassNames.mediumPlus}
-                            onChanged={(text) => this.onChangedVideo(text)}
-                            label={intl.formatMessage({
-                                id: FM.SETTINGS_FIELDS_VIDEOLABEL,
-                                defaultMessage: 'Video'
-                            })}
-                            value={this.state.videoVal}
-                        />
-                    </div>
+                    {this.props.user.id === BLIS_SAMPLE_ID &&
+                        <div>
+                            <OF.TextField
+                                className={OF.FontClassNames.mediumPlus}
+                                onChanged={(text) => this.onChangedMarkdown(text)}
+                                label={intl.formatMessage({
+                                    id: FM.SETTINGS_FIELDS_MARKDOWNLABEL,
+                                    defaultMessage: 'Markdown'
+                                })}
+                                value={this.state.markdownVal}
+                                multiline={true}
+                                rows={5}
+                            />
+                            <OF.TextField
+                                className={OF.FontClassNames.mediumPlus}
+                                onChanged={(text) => this.onChangedVideo(text)}
+                                label={intl.formatMessage({
+                                    id: FM.SETTINGS_FIELDS_VIDEOLABEL,
+                                    defaultMessage: 'Video'
+                                })}
+                                value={this.state.videoVal}
+                            />
+                        </div>
                     }
                     <div className="blis-modal-buttons_primary" style={buttonsDivStyle}>
                         <OF.PrimaryButton
@@ -399,7 +400,9 @@ class Settings extends React.Component<Props, ComponentState> {
                             ariaDescription={intl.formatMessage(messages.discard)}
                             text={intl.formatMessage(messages.discard)}
                         />
-                        {this.props.user.name === 'demo' &&
+                    </div>
+                    <div className="blis-modal-buttons_secondary">
+                        {this.props.user.id === BLIS_SAMPLE_ID &&
                             <OF.DefaultButton
                                 onClick={() => this.onOpenDebugErrors()}
                                 ariaDescription={intl.formatMessage(messages.discard)}
