@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import * as OF from 'office-ui-fabric-react';
 import { State } from '../../../types'
-import { BlisAppBase, Teach, TrainDialog, TeachWithHistory, ActionBase } from 'blis-models'
+import { BlisAppBase, Teach, TrainDialog, TeachWithHistory, ActionBase, EntityBase } from 'blis-models'
 import { TeachSessionModal, TrainDialogModal } from '../../../components/modals'
 import { fetchHistoryThunkAsync, fetchApplicationTrainingStatusThunkAsync } from '../../../actions/fetchActions'
 import {
@@ -150,11 +150,46 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         actionFilter: null
     }
 
+    toActionFilter(action: ActionBase) : OF.IDropdownOption {
+        return { 
+            key: action.actionId,
+            text: ActionBase.GetPayload(action)
+        }
+    }
+     
+    toEntityFilter(entity: EntityBase) : OF.IDropdownOption {
+        return { 
+            key: entity.entityId,
+            text: entity.entityName,
+            data: entity.negativeId
+        }
+    }
+
     componentDidMount() {
         this.newTeachSessionButton.focus();
+        if (this.props.filteredAction) {
+            this.setState({
+                actionFilter: this.toActionFilter(this.props.filteredAction)
+            })
+        }
+        if (this.props.filteredEntity) {
+            this.setState({
+                entityFilter: this.toEntityFilter(this.props.filteredEntity)
+            })
+        }
     }
 
     componentWillReceiveProps(newProps: Props) {
+        if (newProps.filteredAction && this.props.filteredAction !== newProps.filteredAction) {
+            this.setState({
+                actionFilter: this.toActionFilter(this.props.filteredAction)
+            })
+        }
+        if (newProps.filteredEntity && this.props.filteredEntity !== newProps.filteredEntity) {
+            this.setState({
+                entityFilter: this.toEntityFilter(this.props.filteredEntity)
+            })
+        }
         // If train dialogs have been updated, update selected trainDialog too
         if (this.props.trainDialogs !== newProps.trainDialogs) {
             if (this.state.trainDialogId) {
@@ -479,11 +514,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         options={this.props.entities
                             // Only show positive versions of negatable entities
                             .filter(e => e.positiveId == null)
-                            .map(e => ({ 
-                                key: e.entityId,
-                                text: e.entityName,
-                                data: e.negativeId
-                            }))
+                            .map(e => this.toEntityFilter(e))
                             .concat({key: null, text: '---', data: null})
                         }
                     /> 
@@ -494,10 +525,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         onChanged={this.onSelectActionFilter}
                         placeHolder="Filter by Action"
                         options={this.props.actions
-                            .map(a => ({ 
-                                key: a.actionId,
-                                text: ActionBase.GetPayload(a)
-                            }))
+                            .map(a => this.toActionFilter(a))
                             .concat({key: null, text: '---'})
                         }
                     />
@@ -549,7 +577,9 @@ const mapStateToProps = (state: State) => {
 }
 
 export interface ReceivedProps {
-    app: BlisAppBase
+    app: BlisAppBase,
+    filteredAction?: ActionBase,
+    filteredEntity?: EntityBase
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps

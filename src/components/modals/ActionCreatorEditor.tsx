@@ -20,6 +20,11 @@ import { BlisTagItem, IBlisPickerItemProps } from './BlisTagItem'
 import BlisTagPicker from '../BlisTagPicker'
 import './ActionCreatorEditor.css'
 import HelpIcon from '../HelpIcon';
+import { withRouter } from 'react-router-dom'
+import { RouteComponentProps } from 'react-router'
+import { autobind } from 'office-ui-fabric-react/lib/Utilities';
+import { injectIntl, InjectedIntlProps } from 'react-intl'
+import { FM } from '../../react-intl-messages'
 
 const TEXT_SLOT = '#API_SLOT#';
 
@@ -591,6 +596,12 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         : !this.state.isPayloadValid)
     }
 
+    @autobind
+    onClickTrainDialogs() {
+        const { history } = this.props
+        history.push(`/home/${this.props.app.appId}/trainDialogs`, { app: this.props.app, actionFilter: this.props.action })
+    }
+
     render() {
         // Disable payload if we're editing existing action and no API or CARD data available
         const isPayloadDisabled = 
@@ -605,6 +616,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         const optionsAvailableForPayload = this.props.entities
             .filter(e => !unavailableTags.some(t => t.key === e.entityId))
             .map(convertEntityToOption)
+
+        const { intl } = this.props
 
         return (
             <Modal
@@ -840,24 +853,66 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                         <OF.PrimaryButton
                             disabled={this.saveDisabled()}
                             onClick={() => this.onClickSubmit()}
-                            ariaDescription="Submit"
-                            text={this.state.isEditing ? 'Save' : 'Create'}
+                            ariaDescription={this.state.isEditing ? 
+                                intl.formatMessage({
+                                    id: FM.ACTIONCREATOREDITOR_SAVEBUTTON_ARIADESCRIPTION,
+                                    defaultMessage: 'Save'
+                                }) : 
+                                intl.formatMessage({
+                                    id: FM.ACTIONCREATOREDITOR_CREATEBUTTON_ARIADESCRIPTION,
+                                    defaultMessage: 'Create'
+                                })}
+                            text={this.state.isEditing ? 
+                                intl.formatMessage({
+                                    id: FM.ACTIONCREATOREDITOR_SAVEBUTTON_TEXT,
+                                    defaultMessage: 'Save'
+                                }) : 
+                                intl.formatMessage({
+                                    id: FM.ACTIONCREATOREDITOR_CREATEBUTTON_TEXT,
+                                    defaultMessage: 'Create'
+                                })}
                         />
 
                         <OF.DefaultButton
                             onClick={() => this.onClickCancel()}
-                            ariaDescription="Cancel"
-                            text="Cancel"
+                            ariaDescription={intl.formatMessage({
+                                id: FM.ACTIONCREATOREDITOR_CANCELBUTTON_ARIADESCRIPTION,
+                                defaultMessage: 'Cancel'
+                            })}
+                            text={intl.formatMessage({
+                                id: FM.ACTIONCREATOREDITOR_CANCELBUTTON_TEXT,
+                                defaultMessage: 'Cancel'
+                            })}
                         />
 
                         {this.state.isEditing &&
                             <OF.DefaultButton
                                 onClick={() => this.onClickDelete()}
-                                ariaDescription="Delete"
-                                text="Delete"
+                                ariaDescription={intl.formatMessage({
+                                    id: FM.ACTIONCREATOREDITOR_DELETEBUTTON_ARIADESCRIPTION,
+                                    defaultMessage: 'Delete'
+                                })}
+                                text={intl.formatMessage({
+                                    id: FM.ACTIONCREATOREDITOR_DELETEBUTTON_TEXT,
+                                    defaultMessage: 'Delete'
+                                })}
                             />}
                     </div>
                     <div className="blis-modal-buttons_secondary">
+                        {this.state.isEditing &&
+                            <OF.PrimaryButton
+                                onClick={this.onClickTrainDialogs}
+                                iconProps={{ iconName: 'QueryList' }}
+                                ariaDescription={intl.formatMessage({
+                                    id: FM.ACTIONCREATOREDITOR_TRAINDIALOGSBUTTON_ARIADESCRIPTION,
+                                    defaultMessage: 'Train Dialogs'
+                                })}
+                                text={intl.formatMessage({
+                                    id: FM.ACTIONCREATOREDITOR_TRAINDIALOGSBUTTON_TEXT,
+                                    defaultMessage: 'Trail Dialogs'
+                                })}
+                            />
+                        }
                         <OF.PrimaryButton
                             onClick={() => this.onClickCreateEntity()}
                             ariaDescription="Create Entity"
@@ -915,6 +970,6 @@ export interface ReceiveProps {
 // Props types inferred from mapStateToProps & dispatchToProps
 const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
-type Props = typeof stateProps & typeof dispatchProps & ReceiveProps;
+type Props = typeof stateProps & typeof dispatchProps & ReceiveProps & InjectedIntlProps & RouteComponentProps<any>
 
-export default connect<typeof stateProps, typeof dispatchProps, ReceiveProps>(mapStateToProps, mapDispatchToProps)(ActionCreatorEditor)
+export default connect<typeof stateProps, typeof dispatchProps, ReceiveProps>(mapStateToProps, mapDispatchToProps)(withRouter(injectIntl(ActionCreatorEditor)))

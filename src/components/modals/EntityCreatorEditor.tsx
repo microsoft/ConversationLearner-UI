@@ -16,6 +16,9 @@ import { BlisAppBase, EntityBase, EntityType, ActionBase } from 'blis-models'
 import './EntityCreatorEditor.css'
 import { FM } from '../../react-intl-messages'
 import { defineMessages, injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
+import { withRouter } from 'react-router-dom'
+import { RouteComponentProps } from 'react-router'
+import { autobind } from 'office-ui-fabric-react/lib/Utilities';
 
 const messages = defineMessages({
     fieldErrorRequired: {
@@ -284,6 +287,12 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
         );
     }
 
+    @autobind
+    onClickTrainDialogs() {
+        const { history } = this.props
+        history.push(`/home/${this.props.app.appId}/trainDialogs`, { app: this.props.app, entityFilter: this.props.entity })
+    }
+
     renderEdit() {
         const { intl } = this.props
         return (
@@ -411,63 +420,76 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                             this.renderEdit()
                         )}
                 </div>
-                <div className="blis-modal_footer">
-                    <div className="blis-modal-buttons">
-                        <div className="blis-modal-buttons_primary">
-                            {!this.state.editing &&
-                                <OF.PrimaryButton
-                                    disabled={(this.onGetNameErrorMessage(this.state.entityNameVal) !== '') && !this.state.isPrebuilt}
-                                    onClick={this.onClickSubmit}
-                                    ariaDescription={intl.formatMessage({
-                                        id: FM.ENTITYCREATOREDITOR_CREATEBUTTON_ARIADESCRIPTION,
-                                        defaultMessage: 'Create'
-                                    })}
-                                    text={intl.formatMessage({
-                                        id: FM.ENTITYCREATOREDITOR_CREATEBUTTON_TEXT,
-                                        defaultMessage: 'Create'
-                                    })}
-                                />
-                            }
-                            {!this.state.editing &&
-                                <OF.DefaultButton
-                                    onClick={this.onClickCancel}
-                                    ariaDescription={intl.formatMessage({
-                                        id: FM.ENTITYCREATOREDITOR_CANCELBUTTON_ARIADESCRIPTION,
-                                        defaultMessage: 'Cancel'
-                                    })}
-                                    text={intl.formatMessage({
-                                        id: FM.ENTITYCREATOREDITOR_CANCELBUTTON_TEXT,
-                                        defaultMessage: 'Cancel'
-                                    })}
-                                />
-                            }
-                            {this.state.editing &&
-                                <OF.PrimaryButton
-                                    onClick={this.onClickCancel}
-                                    ariaDescription={intl.formatMessage({
-                                        id: FM.ENTITYCREATOREDITOR_DONEBUTTON_ARIADESCRIPTION,
-                                        defaultMessage: 'Done'
-                                    })}
-                                    text={intl.formatMessage({
-                                        id: FM.ENTITYCREATOREDITOR_DONEBUTTON_TEXT,
-                                        defaultMessage: 'Done'
-                                    })}
-                                />
-                            }
-                            {this.state.editing && this.props.handleOpenDeleteModal &&
-                                <OF.DefaultButton
-                                    onClick={() => this.props.handleOpenDeleteModal(this.props.entity.entityId)}
-                                    ariaDescription={intl.formatMessage({
-                                        id: FM.ENTITYCREATOREDITOR_DELETEBUTTON_ARIADESCRIPTION,
-                                        defaultMessage: 'Delete'
-                                    })}
-                                    text={intl.formatMessage({
-                                        id: FM.ENTITYCREATOREDITOR_DELETEBUTTON_TEXT,
-                                        defaultMessage: 'Delete'
-                                    })}
-                                />}
-                        </div>
-                        <div className="blis-modal-button_secondary" />
+                <div className="blis-modal_footer blis-modal-buttons">
+                    <div className="blis-modal-buttons_primary">
+                        {!this.state.editing &&
+                            <OF.PrimaryButton
+                                disabled={(this.onGetNameErrorMessage(this.state.entityNameVal) !== '') && !this.state.isPrebuilt}
+                                onClick={this.onClickSubmit}
+                                ariaDescription={intl.formatMessage({
+                                    id: FM.ENTITYCREATOREDITOR_CREATEBUTTON_ARIADESCRIPTION,
+                                    defaultMessage: 'Create'
+                                })}
+                                text={intl.formatMessage({
+                                    id: FM.ENTITYCREATOREDITOR_CREATEBUTTON_TEXT,
+                                    defaultMessage: 'Create'
+                                })}
+                            />
+                        }
+                        {!this.state.editing &&
+                            <OF.DefaultButton
+                                onClick={this.onClickCancel}
+                                ariaDescription={intl.formatMessage({
+                                    id: FM.ENTITYCREATOREDITOR_CANCELBUTTON_ARIADESCRIPTION,
+                                    defaultMessage: 'Cancel'
+                                })}
+                                text={intl.formatMessage({
+                                    id: FM.ENTITYCREATOREDITOR_CANCELBUTTON_TEXT,
+                                    defaultMessage: 'Cancel'
+                                })}
+                            />
+                        }
+                        {this.state.editing &&
+                            <OF.PrimaryButton
+                                onClick={this.onClickCancel}
+                                ariaDescription={intl.formatMessage({
+                                    id: FM.ENTITYCREATOREDITOR_DONEBUTTON_ARIADESCRIPTION,
+                                    defaultMessage: 'Done'
+                                })}
+                                text={intl.formatMessage({
+                                    id: FM.ENTITYCREATOREDITOR_DONEBUTTON_TEXT,
+                                    defaultMessage: 'Done'
+                                })}
+                            />
+                        }
+                        {this.state.editing && this.props.handleOpenDeleteModal &&
+                            <OF.DefaultButton
+                                onClick={() => this.props.handleOpenDeleteModal(this.props.entity.entityId)}
+                                ariaDescription={intl.formatMessage({
+                                    id: FM.ENTITYCREATOREDITOR_DELETEBUTTON_ARIADESCRIPTION,
+                                    defaultMessage: 'Delete'
+                                })}
+                                text={intl.formatMessage({
+                                    id: FM.ENTITYCREATOREDITOR_DELETEBUTTON_TEXT,
+                                    defaultMessage: 'Delete'
+                                })}
+                            />}
+                    </div>
+                    <div className="blis-modal-buttons_secondary">
+                        {this.state.editing && 
+                            <OF.PrimaryButton
+                                onClick={this.onClickTrainDialogs}
+                                iconProps={{ iconName: 'QueryList' }}
+                                ariaDescription={intl.formatMessage({
+                                    id: FM.ENTITYCREATOREDITOR_TRAINDIALOGSBUTTON_ARIADESCRIPTION,
+                                    defaultMessage: 'Train Dialogs'
+                                })}
+                                text={intl.formatMessage({
+                                    id: FM.ENTITYCREATOREDITOR_TRAINDIALOGSBUTTON_TEXT,
+                                    defaultMessage: 'Trail Dialogs'
+                                })}
+                            />
+                        }
                     </div>
                 </div>
             </Modal>
@@ -501,6 +523,6 @@ export interface ReceivedProps {
 // Props types inferred from mapStateToProps & dispatchToProps
 const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
-type Props = typeof stateProps & typeof dispatchProps & ReceivedProps & InjectedIntlProps
+type Props = typeof stateProps & typeof dispatchProps & ReceivedProps & InjectedIntlProps & RouteComponentProps<any>
 
-export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(EntityCreatorEditor))
+export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(withRouter(injectIntl(EntityCreatorEditor)))
