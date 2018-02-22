@@ -348,18 +348,11 @@ export function Prebuilt(memoryValue: MemoryValue, content: JSX.Element): JSX.El
         <span>
             <OF.TooltipHost
                 tooltipProps={{
-                    onRenderContent: () => {
-                        let key = 0;
-                        return (
-                            <span>
-                                <span><b>{memoryValue.builtinType}</b><br /><br /></span>
-                                {memoryValue.resolution &&
-                                    <span key={key++}>{JSON.stringify(memoryValue.resolution, null, 2).split('\n')
-                                        .map(s => { return (<div key={key++}>{s.split(' ').map(u => { return <span key={key++}>&nbsp;{u}</span>; })}</div>) })}</span>
-                                }
-                            </span>
-                        );
-                    }
+                    onRenderContent: () =>
+                        <span>
+                            <b>{memoryValue.builtinType}</b><br />
+                            {memoryValue.resolution && <pre>{JSON.stringify(memoryValue.resolution, null, 2)}</pre>}
+                        </span>
                 }}
                 calloutProps={{ gapSpace: 0 }}
             >
