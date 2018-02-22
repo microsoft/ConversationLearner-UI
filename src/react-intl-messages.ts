@@ -190,6 +190,20 @@ export enum FM {
     // TextVariation
     TEXTVARIATION_PLACEHOLDER = 'TextVariationCreator.placeholder',
 
+    // ActionCreatorEditor
+    ACTIONCREATOREDITOR_SAVEBUTTON_ARIADESCRIPTION = 'ActionCreatorEditor.saveButton.ariaDescription',
+    ACTIONCREATOREDITOR_SAVEBUTTON_TEXT = 'ActionCreatorEditor.saveButton.text',
+    ACTIONCREATOREDITOR_CREATEBUTTON_ARIADESCRIPTION = 'ActionCreatorEditor.createButton.ariaDescription',
+    ACTIONCREATOREDITOR_CREATEBUTTON_TEXT = 'ActionCreatorEditor.createButton.text',
+    ACTIONCREATOREDITOR_CANCELBUTTON_ARIADESCRIPTION = 'ActionCreatorEditor.cancelButton.ariaDescription',
+    ACTIONCREATOREDITOR_CANCELBUTTON_TEXT = 'ActionCreatorEditor.cancelButton.text',
+    ACTIONCREATOREDITOR_DONEBUTTON_ARIADESCRIPTION = 'ActionCreatorEditor.doneButton.ariaDescription',
+    ACTIONCREATOREDITOR_DONEBUTTON_TEXT = 'ActionCreatorEditor.doneButton.text',
+    ACTIONCREATOREDITOR_DELETEBUTTON_ARIADESCRIPTION = 'ActionCreatorEditor.deleteButton.ariaDescription',
+    ACTIONCREATOREDITOR_DELETEBUTTON_TEXT = 'ActionCreatorEditor.deleteButton.text',
+    ACTIONCREATOREDITOR_TRAINDIALOGSBUTTON_ARIADESCRIPTION = 'ActionCreatorEditor.traindialogsButton.ariaDescription',
+    ACTIONCREATOREDITOR_TRAINDIALOGSBUTTON_TEXT = 'ActionCreatorEditor.traindialogsButton.text',
+
     // ActionScorer
     ACTIONSCORER_COLUMNS_RESPONSE = 'ActionScorer.columns.response',
     ACTIONSCORER_COLUMNS_ARGUMENTS = 'ActionScorer.columns.arguments',
@@ -255,6 +269,8 @@ export enum FM {
     ENTITYCREATOREDITOR_DONEBUTTON_TEXT = 'EntityCreatorEditor.doneButton.text',
     ENTITYCREATOREDITOR_DELETEBUTTON_ARIADESCRIPTION = 'EntityCreatorEditor.deleteButton.ariaDescription',
     ENTITYCREATOREDITOR_DELETEBUTTON_TEXT = 'EntityCreatorEditor.deleteButton.text',
+    ENTITYCREATOREDITOR_TRAINDIALOGSBUTTON_ARIADESCRIPTION = 'EntityCreatorEditor.traindialogsButton.ariaDescription',
+    ENTITYCREATOREDITOR_TRAINDIALOGSBUTTON_TEXT = 'EntityCreatorEditor.traindialogsButton.text',
 
     // Error
     ERROR_ERROR = 'Error.error',
@@ -523,6 +539,20 @@ export default {
         // TextVariationCreator
         [FM.TEXTVARIATION_PLACEHOLDER]: 'Add alternative input...',
 
+        // ActionCreatorEditor
+        [FM.ACTIONCREATOREDITOR_SAVEBUTTON_ARIADESCRIPTION]: 'Save',
+        [FM.ACTIONCREATOREDITOR_SAVEBUTTON_TEXT]: 'Save',
+        [FM.ACTIONCREATOREDITOR_CREATEBUTTON_ARIADESCRIPTION]: 'Create',
+        [FM.ACTIONCREATOREDITOR_CREATEBUTTON_TEXT]: 'Create',
+        [FM.ACTIONCREATOREDITOR_CANCELBUTTON_ARIADESCRIPTION]: 'Cancel',
+        [FM.ACTIONCREATOREDITOR_CANCELBUTTON_TEXT]: 'Cancel',
+        [FM.ACTIONCREATOREDITOR_DONEBUTTON_ARIADESCRIPTION]: 'Done',
+        [FM.ACTIONCREATOREDITOR_DONEBUTTON_TEXT]: 'Done',
+        [FM.ACTIONCREATOREDITOR_DELETEBUTTON_ARIADESCRIPTION]: 'Delete',
+        [FM.ACTIONCREATOREDITOR_DELETEBUTTON_TEXT]: 'Delete',
+        [FM.ACTIONCREATOREDITOR_TRAINDIALOGSBUTTON_ARIADESCRIPTION]: 'Train Dialogs',
+        [FM.ACTIONCREATOREDITOR_TRAINDIALOGSBUTTON_TEXT]: 'Train Dialogs',
+
         // ActionScorer
         [FM.ACTIONSCORER_COLUMNS_RESPONSE]: 'Response',
         [FM.ACTIONSCORER_COLUMNS_ARGUMENTS]: 'Arguments',
@@ -584,6 +614,8 @@ export default {
         [FM.ENTITYCREATOREDITOR_DONEBUTTON_TEXT]: 'Done',
         [FM.ENTITYCREATOREDITOR_DELETEBUTTON_ARIADESCRIPTION]: 'Delete',
         [FM.ENTITYCREATOREDITOR_DELETEBUTTON_TEXT]: 'Delete',
+        [FM.ENTITYCREATOREDITOR_TRAINDIALOGSBUTTON_ARIADESCRIPTION]: 'Train Dialogs',
+        [FM.ENTITYCREATOREDITOR_TRAINDIALOGSBUTTON_TEXT]: 'Train Dialogs',
 
         // Error
         [FM.ERROR_ERROR]: 'Error',
