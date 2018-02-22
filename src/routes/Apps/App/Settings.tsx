@@ -64,14 +64,17 @@ interface ComponentState {
     localeVal: string
     appIdVal: string
     appNameVal: string
-    luisKeyVal: string
     markdownVal: string
     videoVal: string
     edited: boolean
     botFrameworkAppsVal: any[],
     newBotVal: string,
-    isPasswordVisible: boolean,
-    passwordShowHideText: string,
+    isLuisAuthoringKeyVisible: boolean,
+    luisAuthoringKeyShowHideText: string,
+    luisAuthoringKeyVal: string
+    isLuisConsumptionKeyVisible: boolean,
+    luisConsumptionKeyShowHideText: string,
+    luisConsumptionKeyVal: string,
     debugErrorsOpen: boolean
 }
 
@@ -83,24 +86,29 @@ class Settings extends React.Component<Props, ComponentState> {
             localeVal: '',
             appIdVal: '',
             appNameVal: '',
-            luisKeyVal: '',
             markdownVal: '',
             videoVal: '',
             edited: false,
             botFrameworkAppsVal: [],
             newBotVal: "",
-            isPasswordVisible: false,
-            passwordShowHideText: this.props.intl.formatMessage(messages.passwordHidden),
-            debugErrorsOpen: false
+            isLuisAuthoringKeyVisible: false,
+            luisAuthoringKeyShowHideText: this.props.intl.formatMessage(messages.passwordHidden),
+            luisAuthoringKeyVal: '',
+            isLuisConsumptionKeyVisible: false,
+            luisConsumptionKeyShowHideText: this.props.intl.formatMessage(messages.passwordHidden),
+            luisConsumptionKeyVal: '',
+            debugErrorsOpen: false,
         }
 
         this.onChangedVideo = this.onChangedVideo.bind(this)
         this.onChangedMarkdown = this.onChangedMarkdown.bind(this)
-        this.onChangedLuisKey = this.onChangedLuisKey.bind(this)
+        this.onChangedLuisAuthoringKey = this.onChangedLuisAuthoringKey.bind(this)
+        this.onChangedLuisConsumptionKey = this.onChangedLuisConsumptionKey.bind(this)
         this.onChangedBotId = this.onChangedBotId.bind(this)
         this.onChangedName = this.onChangedName.bind(this)
         this.onRenderBotListRow = this.onRenderBotListRow.bind(this)
-        this.onClickShowPassword = this.onClickShowPassword.bind(this)
+        this.onClickToggleLuisAuthoringKey = this.onClickToggleLuisAuthoringKey.bind(this)
+        this.onClickToggleLuisConsumptionKey = this.onClickToggleLuisConsumptionKey.bind(this)
         this.onClickAddBot = this.onClickAddBot.bind(this)
         this.onClickSave = this.onClickSave.bind(this)
         this.onClickDiscard = this.onClickDiscard.bind(this)
@@ -111,7 +119,8 @@ class Settings extends React.Component<Props, ComponentState> {
             localeVal: app.locale,
             appIdVal: app.appId,
             appNameVal: app.appName,
-            luisKeyVal: app.luisKey,
+            luisAuthoringKeyVal: app.luisKey,
+            luisConsumptionKeyVal: '', // TODO: When apps schema allows saving consumption key use it here
             markdownVal: app.metadata ? app.metadata.markdown : null,
             videoVal: app.metadata ? app.metadata.video : null,
             botFrameworkAppsVal: app.metadata.botFrameworkApps,
@@ -123,7 +132,7 @@ class Settings extends React.Component<Props, ComponentState> {
         if (this.state.edited == false && (this.state.localeVal !== app.locale ||
             this.state.appIdVal !== app.appId ||
             this.state.appNameVal !== app.appName ||
-            this.state.luisKeyVal !== app.luisKey ||
+            this.state.luisAuthoringKeyVal !== app.luisKey ||
             this.state.markdownVal !== app.metadata.markdown ||
             this.state.videoVal !== app.metadata.video ||
             this.state.botFrameworkAppsVal !== app.metadata.botFrameworkApps)) {
@@ -131,7 +140,7 @@ class Settings extends React.Component<Props, ComponentState> {
                 localeVal: app.locale,
                 appIdVal: app.appId,
                 appNameVal: app.appName,
-                luisKeyVal: app.luisKey,
+                luisAuthoringKeyVal: app.luisKey,
                 markdownVal: app.metadata ? app.metadata.markdown : null,
                 videoVal: app.metadata ? app.metadata.video : null,
                 botFrameworkAppsVal: app.metadata.botFrameworkApps
@@ -150,9 +159,15 @@ class Settings extends React.Component<Props, ComponentState> {
             edited: true
         })
     }
-    onChangedLuisKey(text: string) {
+    onChangedLuisAuthoringKey(text: string) {
         this.setState({
-            luisKeyVal: text,
+            luisAuthoringKeyVal: text,
+            edited: true
+        })
+    }
+    onChangedLuisConsumptionKey(text: string) {
+        this.setState({
+            luisConsumptionKeyVal: text,
             edited: true
         })
     }
@@ -188,7 +203,7 @@ class Settings extends React.Component<Props, ComponentState> {
             localeVal: app.locale,
             appIdVal: app.appId,
             appNameVal: app.appName,
-            luisKeyVal: app.luisKey,
+            luisAuthoringKeyVal: app.luisKey,
             markdownVal: app.metadata ? app.metadata.markdown : null,
             videoVal: app.metadata ? app.metadata.video : null,
             botFrameworkAppsVal: app.metadata.botFrameworkApps,
@@ -201,7 +216,10 @@ class Settings extends React.Component<Props, ComponentState> {
         let modifiedApp: BlisAppBase = {
             appName: this.state.appNameVal,
             appId: app.appId,
-            luisKey: this.state.luisKeyVal,
+            luisKey: this.state.luisAuthoringKeyVal,
+            // TODO: Enable when updated app schema allows consumption keys
+            // luisAuthoringKey: this.state.luisAuthoringKeyVal,
+            // luisConsumptionKey: this.state.luisConsumptionKeyVal,
             locale: app.locale,
             metadata: {
                 botFrameworkApps: this.state.botFrameworkAppsVal,
@@ -217,7 +235,7 @@ class Settings extends React.Component<Props, ComponentState> {
             localeVal: app.locale,
             appIdVal: app.appId,
             appNameVal: app.appName,
-            luisKeyVal: app.luisKey,
+            luisAuthoringKeyVal: app.luisKey,
             markdownVal: app.metadata ? app.metadata.markdown : null,
             videoVal: app.metadata ? app.metadata.video : null,
             botFrameworkAppsVal: app.metadata.botFrameworkApps,
@@ -245,10 +263,19 @@ class Settings extends React.Component<Props, ComponentState> {
         return ""
     }
 
-    onClickShowPassword() {
+    onClickToggleLuisAuthoringKey() {
         this.setState((prevState: ComponentState) => ({
-            isPasswordVisible: !prevState.isPasswordVisible,
-            passwordShowHideText: !prevState.isPasswordVisible
+            isLuisAuthoringKeyVisible: !prevState.isLuisAuthoringKeyVisible,
+            luisAuthoringKeyShowHideText: !prevState.isLuisAuthoringKeyVisible
+                ? this.props.intl.formatMessage(messages.passwordVisible)
+                : this.props.intl.formatMessage(messages.passwordHidden)
+        }))
+    }
+
+    onClickToggleLuisConsumptionKey() {
+        this.setState((prevState: ComponentState) => ({
+            isLuisConsumptionKeyVisible: !prevState.isLuisConsumptionKeyVisible,
+            luisConsumptionKeyShowHideText: !prevState.isLuisConsumptionKeyVisible
                 ? this.props.intl.formatMessage(messages.passwordVisible)
                 : this.props.intl.formatMessage(messages.passwordHidden)
         }))
@@ -287,7 +314,7 @@ class Settings extends React.Component<Props, ComponentState> {
                         defaultMessage="Control your application versions, who has access to it and whether it is public or private..."
                     />
                 </span>
-                <div>
+                <div className="blis-settings-fields">
                     <OF.TextField
                         className={OF.FontClassNames.mediumPlus}
                         onChanged={(text) => this.onChangedName(text)}
@@ -307,38 +334,70 @@ class Settings extends React.Component<Props, ComponentState> {
                         })}
                         value={this.state.appIdVal}
                     />
-                    <OF.Label className={OF.FontClassNames.mediumPlus}>
-                        <FormattedMessage
-                            id={FM.SETTINGS_BOTFRAMEWORKLUISKEYLABEL}
-                            defaultMessage="LUIS Key"
-                        />
-                    </OF.Label>
-                    <div className="blis-settings-textfieldwithbutton">
-                        <OF.TextField
-                            id="luis-key"
+                    <div>
+                        <OF.Label className={OF.FontClassNames.mediumPlus}>
+                            <FormattedMessage
+                                id={FM.SETTINGS_BOTFRAMEWORKLUISKEY_AUTHORING_LABEL}
+                                defaultMessage="LUIS Authoring Key"
+                            />
+                        </OF.Label>
+                        <div className="blis-settings-textfieldwithbutton">
+                            <OF.TextField
+                                className={OF.FontClassNames.mediumPlus}
+                                onChanged={(text) => this.onChangedLuisAuthoringKey(text)}
+                                type={this.state.isLuisAuthoringKeyVisible ? "text" : "password"}
+                                value={this.state.luisAuthoringKeyVal}
+                                placeholder={intl.formatMessage({
+                                    id: FM.SETTINGS_BOTFRAMEWORKLUISKEY_AUTHORING_PLACEHOLDER,
+                                    defaultMessage: "Authoring Key..."
+                                })}
+                            />
+                            <OF.PrimaryButton
+                                onClick={this.onClickToggleLuisAuthoringKey}
+                                ariaDescription={this.state.luisAuthoringKeyShowHideText}
+                                text={this.state.luisAuthoringKeyShowHideText}
+                            />
+                        </div>
+                    </div>
+                    <div>
+                        <OF.Label className={OF.FontClassNames.mediumPlus}>
+                            <FormattedMessage
+                                id={FM.SETTINGS_BOTFRAMEWORKLUISKEY_CONSUMPTION_LABEL}
+                                defaultMessage="LUIS Consumption Key"
+                            />
+                        </OF.Label>
+                        <div className="blis-settings-textfieldwithbutton">
+                            <OF.TextField
+                                className={OF.FontClassNames.mediumPlus}
+                                onChanged={(text) => this.onChangedLuisConsumptionKey(text)}
+                                type={this.state.isLuisConsumptionKeyVisible ? "text" : "password"}
+                                value={this.state.luisConsumptionKeyVal}
+                                placeholder={intl.formatMessage({
+                                    id: FM.SETTINGS_BOTFRAMEWORKLUISKEY_CONSUMPTION_PLACEHOLDER,
+                                    defaultMessage: "Consumption Key..."
+                                })}
+                            />
+                            <OF.PrimaryButton
+                                onClick={this.onClickToggleLuisConsumptionKey}
+                                ariaDescription={this.state.luisConsumptionKeyShowHideText}
+                                text={this.state.luisConsumptionKeyShowHideText}
+                            />
+                        </div>
+                    </div>
+                    <div>
+                        <OF.Label className={OF.FontClassNames.mediumPlus}>
+                            <FormattedMessage
+                                id={FM.SETTINGS_BOTFRAMEWORKLOCALELABEL}
+                                defaultMessage="Locale"
+                            />
+                        </OF.Label>
+                        <OF.Dropdown
                             className={OF.FontClassNames.mediumPlus}
-                            onChanged={(text) => this.onChangedLuisKey(text)}
-                            type={this.state.isPasswordVisible ? "text" : "password"}
-                            value={this.state.luisKeyVal}
-                        />
-                        <OF.PrimaryButton
-                            onClick={this.onClickShowPassword}
-                            ariaDescription={this.state.passwordShowHideText}
-                            text={this.state.passwordShowHideText}
+                            options={options}
+                            selectedKey={this.state.localeVal}
+                            disabled={true}
                         />
                     </div>
-                    <OF.Label className={OF.FontClassNames.mediumPlus}>
-                        <FormattedMessage
-                            id={FM.SETTINGS_BOTFRAMEWORKLOCALELABEL}
-                            defaultMessage="Locale"
-                        />
-                    </OF.Label>
-                    <OF.Dropdown
-                        className={OF.FontClassNames.mediumPlus}
-                        options={options}
-                        selectedKey={this.state.localeVal}
-                        disabled={true}
-                    />
                     <div>
                         <OF.Label className={OF.FontClassNames.mediumPlus}>
                             <FormattedMessage
@@ -410,9 +469,9 @@ class Settings extends React.Component<Props, ComponentState> {
                             />
                         }
                     </div>
-                    <ErrorInjectionEditor 
+                    <ErrorInjectionEditor
                         open={this.state.debugErrorsOpen}
-                        onClose={()=>this.onCloseDebugErrors()}
+                        onClose={() => this.onCloseDebugErrors()}
                     />
                 </div>
             </div>

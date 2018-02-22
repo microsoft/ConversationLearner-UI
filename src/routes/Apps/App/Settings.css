@@ -3,3 +3,9 @@
     grid-template-columns: 1fr 100px;
     grid-gap: 1em;
 }
+
+.blis-settings-fields {
+    display: grid;
+    grid-auto-flow: row;
+    grid-gap: 1em 0;
+}
