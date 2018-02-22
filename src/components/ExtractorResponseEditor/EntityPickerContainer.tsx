@@ -161,12 +161,7 @@ export default class EntityPickerContainer extends React.Component<Props, State>
             ? this.defaultMatchedOptions
             : this.fuse.search<FuseResult<IOption>>(normalizedSearchText)
                 .filter((_, i) => i < this.props.maxDisplayedOptions)
-                .map(result => {
-                    // TODO: For some reason the Fuse.io library returns the end index before the last character instead of after
-                    // I opened issue here for explanation: https://github.com/krisk/Fuse/issues/212
-                    const indices = result.matches[0].indices.map<[number, number]>(([start, end]) => [start, end + 1])
-                    return convertMatchedTextIntoMatchedOption(result.item.name, indices, result.item)
-                })
+                .map(result => convertMatchedTextIntoMatchedOption(result.item.name, result.matches[0].indices, result.item))
 
         this.setState(prevState => ({
             searchText,

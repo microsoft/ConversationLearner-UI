@@ -155,10 +155,8 @@ export const convertEntitiesAndTextToEditorValue = (text: string, customEntities
 
 export const convertMatchedTextIntoMatchedOption = <T>(text: string, matches: [number, number][], original: T): models.MatchedOption<T> => {
     const matchedStrings = matches.reduce<models.ISegement[]>((segements, [startIndex, originalEndIndex]) => {
-        // if (startIndex === endIndex) {
-        //     return segements
-        // }
-
+        // TODO: For some reason the Fuse.io library returns the end index before the last character instead of after
+        // I opened issue here for explanation: https://github.com/krisk/Fuse/issues/212
         let endIndex = originalEndIndex + 1
         const segementIndexWhereEntityBelongs = segements.findIndex(seg => seg.startIndex <= startIndex && endIndex <= seg.endIndex)
         const prevSegements = segements.slice(0, segementIndexWhereEntityBelongs)
