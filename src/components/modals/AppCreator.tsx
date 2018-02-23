@@ -9,6 +9,8 @@ import { State, localStorageKeyForLuisAuthoringKey, localStorageKeyForLuisSubscr
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps, defineMessages, FormattedMessage } from 'react-intl'
 import { AppInput } from '../../types/models';
+import HelpIcon from '../HelpIcon';
+import * as ToolTips from '../ToolTips'
 
 const messages = defineMessages({
     fieldErrorRequired: {
@@ -236,11 +238,12 @@ class AppCreator extends React.Component<Props, ComponentState> {
                             id={FM.APPCREATOR_FIELDS_LUISKEY_AUTHORING_LABEL}
                             defaultMessage="LUIS Key"
                         /> <a href="https://www.luis.ai/user/settings" tabIndex={-1} className={OF.FontClassNames.xSmall} target="_blank">
-                            (<FormattedMessage
+                            <FormattedMessage
                                 id={FM.APPCREATOR_FIELDS_LUISKEY_AUTHORING_HELPTEXT}
                                 defaultMessage="Find your authoring key"
-                            />)
+                            />
                         </a>
+                        <HelpIcon tipType={ToolTips.TipType.LUIS_AUTHORING_KEY} />
                     </OF.Label>
                     <div className="blis-settings-textfieldwithbutton">
                         <OF.TextField
@@ -263,13 +266,14 @@ class AppCreator extends React.Component<Props, ComponentState> {
                     <OF.Label>
                         <FormattedMessage
                             id={FM.APPCREATOR_FIELDS_LUISKEY_SUBSCRIPTION_LABEL}
-                            defaultMessage="LUIS Key"
+                            defaultMessage="LUIS Subscription Key"
                         /> <a href="https://portal.azure.com" tabIndex={-1} className={OF.FontClassNames.xSmall} target="_blank">
-                            (<FormattedMessage
+                            <FormattedMessage
                                 id={FM.APPCREATOR_FIELDS_LUISKEY_SUBSCRIPTION_HELPTEXT}
                                 defaultMessage="Find your subscription key"
-                            />)
+                            />
                         </a>
+                        <HelpIcon tipType={ToolTips.TipType.LUIS_SUBSCRIPTION_KEY} />
                     </OF.Label>
                     <div className="blis-settings-textfieldwithbutton">
                         <OF.TextField

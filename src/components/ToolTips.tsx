@@ -31,6 +31,9 @@ export enum TipType {
     ENTITY_TYPE = 'entityType',
     ENTITY_VALUE = 'entityValues',
 
+    LUIS_AUTHORING_KEY = 'luisAuthoringKey',
+    LUIS_SUBSCRIPTION_KEY = 'luisSubscriptionKey',
+
     MEMORY_MANAGER = 'memoryManager'
 }
 
@@ -310,6 +313,46 @@ export function GetTip(tipType: string) {
                     <ul>
                         <li>Pre-Built entities in blue are not editable</li>
                     </ul>
+                </div>
+            )
+        case TipType.LUIS_AUTHORING_KEY:
+        case TipType.LUIS_SUBSCRIPTION_KEY:
+            return (
+                <div>
+                    <h1>LUIS Keys:</h1>
+                    <p>There are two different keys for LUIS. The authoring key and the subscription key.</p>
+                    
+                    <h2>Find your LUIS Authoring Key:</h2>
+                    <ol>
+                        <li>Go to <a href="https://luis.ai" target="_blank">https://luis.ai</a></li>
+                        <li>Sign in if you are not already</li>
+                        <li>Click on your name in the top-right corner to open the dropdown menu</li>
+                        <li>Select 'settings' from the menu</li>
+                        <li>Copy the "Authoring Key"</li>
+                    </ol>
+
+                    <img src="https://media.giphy.com/media/vvy3OmwK356vRuPyLa/giphy.gif" />
+
+                    <h2>Find your LUIS Subscription key:</h2>
+                    <ol>
+                        <li>Go to <a href="http://portal.azure.com" target="_blank">http://portal.azure.com</a></li>
+                        <li>Sign in if you are not already</li>
+                        <li>Open the Cognitive Services blade</li>
+                        <li>Open or create your instance of Language Understanding (LUIS) service</li>
+                        <li>Select 'Keys' blade under 'Resource Managment' section</li>
+                        <li>Copy the "Key 1" value</li>
+                    </ol>
+
+                    <img src="https://media.giphy.com/media/1yTgrvilEWUSB8TkJl/giphy.gif" />
+
+                    <h3>Why does BLIS need my authoring key?</h3>
+                    <p>The authoring key is used to access the LUIS authoring APIs and is used by BLIS to manage your LUIS account on your behalf.  As you make changes to your BLIS app such as adding entities and labeling entities during training the BLIS service creates the associated LUIS apps with matching entities and utterance phrases.</p>
+
+                    <h3>What does BLIS need my subscription key?</h3>
+                    <p>The subscription key is used to access the LUIS endpoint APIs and is used by BLIS to get predictions from LUIS.  By using the subscription key when possible it avoids using up the quota for your Authoring key which would block further usage of BLIS.</p>
+                    <p>When ready to publish your bot you can increase the pricing teir of your subscription key to 50 calls per second instead of 5</p>
+
+                    <p>See official docs on <a href="https://docs.microsoft.com/en-us/azure/cognitive-services/luis/home#accessing-luis" target="_blank">Accessing LUIS</a></p>
                 </div>
             )
         default:
