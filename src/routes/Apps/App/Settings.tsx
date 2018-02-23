@@ -72,9 +72,9 @@ interface ComponentState {
     isLuisAuthoringKeyVisible: boolean,
     luisAuthoringKeyShowHideText: string,
     luisAuthoringKeyVal: string
-    isLuisConsumptionKeyVisible: boolean,
-    luisConsumptionKeyShowHideText: string,
-    luisConsumptionKeyVal: string,
+    isLuisSubscriptionKeyVisible: boolean,
+    luisSubscriptionKeyShowHideText: string,
+    luisSubscriptionKeyVal: string,
     debugErrorsOpen: boolean
 }
 
@@ -94,21 +94,21 @@ class Settings extends React.Component<Props, ComponentState> {
             isLuisAuthoringKeyVisible: false,
             luisAuthoringKeyShowHideText: this.props.intl.formatMessage(messages.passwordHidden),
             luisAuthoringKeyVal: '',
-            isLuisConsumptionKeyVisible: false,
-            luisConsumptionKeyShowHideText: this.props.intl.formatMessage(messages.passwordHidden),
-            luisConsumptionKeyVal: '',
+            isLuisSubscriptionKeyVisible: false,
+            luisSubscriptionKeyShowHideText: this.props.intl.formatMessage(messages.passwordHidden),
+            luisSubscriptionKeyVal: '',
             debugErrorsOpen: false,
         }
 
         this.onChangedVideo = this.onChangedVideo.bind(this)
         this.onChangedMarkdown = this.onChangedMarkdown.bind(this)
         this.onChangedLuisAuthoringKey = this.onChangedLuisAuthoringKey.bind(this)
-        this.onChangedLuisConsumptionKey = this.onChangedLuisConsumptionKey.bind(this)
+        this.onChangedLuisSubscriptionKey = this.onChangedLuisSubscriptionKey.bind(this)
         this.onChangedBotId = this.onChangedBotId.bind(this)
         this.onChangedName = this.onChangedName.bind(this)
         this.onRenderBotListRow = this.onRenderBotListRow.bind(this)
         this.onClickToggleLuisAuthoringKey = this.onClickToggleLuisAuthoringKey.bind(this)
-        this.onClickToggleLuisConsumptionKey = this.onClickToggleLuisConsumptionKey.bind(this)
+        this.onClickToggleLuisSubscriptionKey = this.onClickToggleLuisSubscriptionKey.bind(this)
         this.onClickAddBot = this.onClickAddBot.bind(this)
         this.onClickSave = this.onClickSave.bind(this)
         this.onClickDiscard = this.onClickDiscard.bind(this)
@@ -120,7 +120,7 @@ class Settings extends React.Component<Props, ComponentState> {
             appIdVal: app.appId,
             appNameVal: app.appName,
             luisAuthoringKeyVal: app.luisKey,
-            luisConsumptionKeyVal: '', // TODO: When apps schema allows saving consumption key use it here
+            luisSubscriptionKeyVal: '', // TODO: When apps schema allows saving subscription key use it here
             markdownVal: app.metadata ? app.metadata.markdown : null,
             videoVal: app.metadata ? app.metadata.video : null,
             botFrameworkAppsVal: app.metadata.botFrameworkApps,
@@ -165,9 +165,9 @@ class Settings extends React.Component<Props, ComponentState> {
             edited: true
         })
     }
-    onChangedLuisConsumptionKey(text: string) {
+    onChangedLuisSubscriptionKey(text: string) {
         this.setState({
-            luisConsumptionKeyVal: text,
+            luisSubscriptionKeyVal: text,
             edited: true
         })
     }
@@ -217,9 +217,9 @@ class Settings extends React.Component<Props, ComponentState> {
             appName: this.state.appNameVal,
             appId: app.appId,
             luisKey: this.state.luisAuthoringKeyVal,
-            // TODO: Enable when updated app schema allows consumption keys
+            // TODO: Enable when updated app schema allows subscription keys
             // luisAuthoringKey: this.state.luisAuthoringKeyVal,
-            // luisConsumptionKey: this.state.luisConsumptionKeyVal,
+            // luisSubscriptionKey: this.state.luisSubscriptionKeyVal,
             locale: app.locale,
             metadata: {
                 botFrameworkApps: this.state.botFrameworkAppsVal,
@@ -272,10 +272,10 @@ class Settings extends React.Component<Props, ComponentState> {
         }))
     }
 
-    onClickToggleLuisConsumptionKey() {
+    onClickToggleLuisSubscriptionKey() {
         this.setState((prevState: ComponentState) => ({
-            isLuisConsumptionKeyVisible: !prevState.isLuisConsumptionKeyVisible,
-            luisConsumptionKeyShowHideText: !prevState.isLuisConsumptionKeyVisible
+            isLuisSubscriptionKeyVisible: !prevState.isLuisSubscriptionKeyVisible,
+            luisSubscriptionKeyShowHideText: !prevState.isLuisSubscriptionKeyVisible
                 ? this.props.intl.formatMessage(messages.passwordVisible)
                 : this.props.intl.formatMessage(messages.passwordHidden)
         }))
@@ -362,25 +362,25 @@ class Settings extends React.Component<Props, ComponentState> {
                     <div>
                         <OF.Label className={OF.FontClassNames.mediumPlus}>
                             <FormattedMessage
-                                id={FM.SETTINGS_BOTFRAMEWORKLUISKEY_CONSUMPTION_LABEL}
-                                defaultMessage="LUIS Consumption Key"
+                                id={FM.SETTINGS_BOTFRAMEWORKLUISKEY_SUBSCRIPTION_LABEL}
+                                defaultMessage="LUIS Subscription Key"
                             />
                         </OF.Label>
                         <div className="blis-settings-textfieldwithbutton">
                             <OF.TextField
                                 className={OF.FontClassNames.mediumPlus}
-                                onChanged={(text) => this.onChangedLuisConsumptionKey(text)}
-                                type={this.state.isLuisConsumptionKeyVisible ? "text" : "password"}
-                                value={this.state.luisConsumptionKeyVal}
+                                onChanged={(text) => this.onChangedLuisSubscriptionKey(text)}
+                                type={this.state.isLuisSubscriptionKeyVisible ? "text" : "password"}
+                                value={this.state.luisSubscriptionKeyVal}
                                 placeholder={intl.formatMessage({
-                                    id: FM.SETTINGS_BOTFRAMEWORKLUISKEY_CONSUMPTION_PLACEHOLDER,
-                                    defaultMessage: "Consumption Key..."
+                                    id: FM.SETTINGS_BOTFRAMEWORKLUISKEY_SUBSCRIPTION_PLACEHOLDER,
+                                    defaultMessage: "Subscription Key..."
                                 })}
                             />
                             <OF.PrimaryButton
-                                onClick={this.onClickToggleLuisConsumptionKey}
-                                ariaDescription={this.state.luisConsumptionKeyShowHideText}
-                                text={this.state.luisConsumptionKeyShowHideText}
+                                onClick={this.onClickToggleLuisSubscriptionKey}
+                                ariaDescription={this.state.luisSubscriptionKeyShowHideText}
+                                text={this.state.luisSubscriptionKeyShowHideText}
                             />
                         </div>
                     </div>

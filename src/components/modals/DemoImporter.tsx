@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import * as OF from 'office-ui-fabric-react'
-import { State, localStorageKeyForLuisAuthoringKey, localStorageKeyForLuisConsumptionKey } from '../../types'
+import { State, localStorageKeyForLuisAuthoringKey, localStorageKeyForLuisSubscriptionKey } from '../../types'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps, defineMessages, FormattedMessage } from 'react-intl'
 
@@ -17,20 +17,20 @@ const messages = defineMessages({
 
 interface ComponentState {
     luisAuthoringKeyVal: string
-    luisConsumptionKeyVal: string
+    luisSubscriptionKeyVal: string
 }
 
 class DemoImporter extends React.Component<Props, ComponentState> {
     state: ComponentState = {
         luisAuthoringKeyVal: localStorage.getItem(localStorageKeyForLuisAuthoringKey),
-        luisConsumptionKeyVal: localStorage.getItem(localStorageKeyForLuisConsumptionKey),
+        luisSubscriptionKeyVal: localStorage.getItem(localStorageKeyForLuisSubscriptionKey),
     }
 
     constructor(p: Props) {
         super(p)
 
         this.luisAuthoringKeyChanged = this.luisAuthoringKeyChanged.bind(this)
-        this.luisConsumptionKeyChanged = this.luisConsumptionKeyChanged.bind(this)
+        this.luisSubscriptionKeyChanged = this.luisSubscriptionKeyChanged.bind(this)
         this.onKeyDown = this.onKeyDown.bind(this)
         this.onClickCreate = this.onClickCreate.bind(this)
         this.onClickCancel = this.onClickCancel.bind(this)
@@ -41,7 +41,7 @@ class DemoImporter extends React.Component<Props, ComponentState> {
         if (this.props.open === false && nextProps.open === true) {
             this.setState({
                 luisAuthoringKeyVal: localStorage.getItem(localStorageKeyForLuisAuthoringKey),
-                luisConsumptionKeyVal: localStorage.getItem(localStorageKeyForLuisConsumptionKey),
+                luisSubscriptionKeyVal: localStorage.getItem(localStorageKeyForLuisSubscriptionKey),
             })
         }
     }
@@ -58,9 +58,9 @@ class DemoImporter extends React.Component<Props, ComponentState> {
         })
     }
 
-    luisConsumptionKeyChanged(text: string) {
+    luisSubscriptionKeyChanged(text: string) {
         this.setState({
-            luisConsumptionKeyVal: text
+            luisSubscriptionKeyVal: text
         })
     }
 
@@ -129,24 +129,24 @@ class DemoImporter extends React.Component<Props, ComponentState> {
                     />
                     <OF.Label>
                         <FormattedMessage
-                            id={FM.APPCREATOR_FIELDS_LUISKEY_CONSUMPTION_LABEL}
-                            defaultMessage="LUIS Consumption Key"
+                            id={FM.APPCREATOR_FIELDS_LUISKEY_SUBSCRIPTION_LABEL}
+                            defaultMessage="LUIS Subscription Key"
                         /> <a href="https://portal.azure.com" tabIndex={-1} className={OF.FontClassNames.xSmall} target="_blank">
                             (<FormattedMessage
-                                id={FM.APPCREATOR_FIELDS_LUISKEY_CONSUMPTION_HELPTEXT}
-                                defaultMessage="Find your consumption key"
+                                id={FM.APPCREATOR_FIELDS_LUISKEY_SUBSCRIPTION_HELPTEXT}
+                                defaultMessage="Find your subscription key"
                             />)
                         </a>
                     </OF.Label>
                     <OF.TextField
-                        onChanged={this.luisConsumptionKeyChanged}
+                        onChanged={this.luisSubscriptionKeyChanged}
                         placeholder={intl.formatMessage({
-                            id: FM.APPCREATOR_FIELDS_LUISKEY_CONSUMPTION_PLACEHOLDER,
-                            defaultMessage: 'Consumption Key...'
+                            id: FM.APPCREATOR_FIELDS_LUISKEY_SUBSCRIPTION_PLACEHOLDER,
+                            defaultMessage: 'Subscription Key...'
                         })}
                         type="password"
                         onKeyDown={this.onKeyDown}
-                        value={this.state.luisConsumptionKeyVal}
+                        value={this.state.luisSubscriptionKeyVal}
                     />
                 </div>
                 <div className="blis-modal_footer">
