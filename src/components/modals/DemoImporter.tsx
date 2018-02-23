@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import * as OF from 'office-ui-fabric-react'
-import { State } from '../../types'
+import { State, localStorageKeyForLuisAuthoringKey, localStorageKeyForLuisSubscriptionKey } from '../../types'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps, defineMessages, FormattedMessage } from 'react-intl'
 
@@ -16,32 +16,51 @@ const messages = defineMessages({
 })
 
 interface ComponentState {
-    luisKeyVal: string
+    luisAuthoringKeyVal: string
+    luisSubscriptionKeyVal: string
 }
 
 class DemoImporter extends React.Component<Props, ComponentState> {
     state: ComponentState = {
-        luisKeyVal: ''
+        luisAuthoringKeyVal: localStorage.getItem(localStorageKeyForLuisAuthoringKey),
+        luisSubscriptionKeyVal: localStorage.getItem(localStorageKeyForLuisSubscriptionKey),
     }
 
     constructor(p: Props) {
         super(p)
 
-        this.luisKeyChanged = this.luisKeyChanged.bind(this)
+        this.luisAuthoringKeyChanged = this.luisAuthoringKeyChanged.bind(this)
+        this.luisSubscriptionKeyChanged = this.luisSubscriptionKeyChanged.bind(this)
         this.onKeyDown = this.onKeyDown.bind(this)
         this.onClickCreate = this.onClickCreate.bind(this)
         this.onClickCancel = this.onClickCancel.bind(this)
     }
 
+    componentWillReceiveProps(nextProps: Props) {
+        // Reset when opening modal
+        if (this.props.open === false && nextProps.open === true) {
+            this.setState({
+                luisAuthoringKeyVal: localStorage.getItem(localStorageKeyForLuisAuthoringKey),
+                luisSubscriptionKeyVal: localStorage.getItem(localStorageKeyForLuisSubscriptionKey),
+            })
+        }
+    }
+
     resetState() {
         this.setState({
-            luisKeyVal: ''
+            luisAuthoringKeyVal: ''
         })
     }
 
-    luisKeyChanged(text: string) {
+    luisAuthoringKeyChanged(text: string) {
         this.setState({
-            luisKeyVal: text
+            luisAuthoringKeyVal: text
+        })
+    }
+
+    luisSubscriptionKeyChanged(text: string) {
+        this.setState({
+            luisSubscriptionKeyVal: text
         })
     }
 
@@ -52,14 +71,14 @@ class DemoImporter extends React.Component<Props, ComponentState> {
 
     onClickCreate() {
        this.resetState();
-       this.props.onSubmit(this.state.luisKeyVal);
+       this.props.onSubmit(this.state.luisAuthoringKeyVal);
     }
 
     // TODO: Refactor to use default form submission instead of manually listening for keys
     // Also has benefit of native browser validation for required fields
-    onKeyDown(key: React.KeyboardEvent<HTMLElement>) {
+    onKeyDown(event: React.KeyboardEvent<HTMLElement>) {
         // On enter attempt to create the app if required fields are set
-        if (key.keyCode === 13 && this.state.luisKeyVal) {
+        if (event.keyCode === 13 && this.state.luisAuthoringKeyVal) {
             this.onClickCreate();
         }
     }
@@ -88,32 +107,53 @@ class DemoImporter extends React.Component<Props, ComponentState> {
                 <div>
                     <OF.Label>
                         <FormattedMessage
-                            id={FM.APPCREATOR_FIELDS_LUISKEY_LABEL}
-                            defaultMessage="LUIS Key"
+                            id={FM.APPCREATOR_FIELDS_LUISKEY_AUTHORING_LABEL}
+                            defaultMessage="LUIS Authoring Key"
                         /> <a href="https://www.luis.ai/user/settings" tabIndex={-1} className={OF.FontClassNames.xSmall} target="_blank">
                             (<FormattedMessage
-                                id={FM.APPCREATOR_FIELDS_LUISKEY_HELPTEXT}
-                                defaultMessage="Find your key"
+                                id={FM.APPCREATOR_FIELDS_LUISKEY_AUTHORING_HELPTEXT}
+                                defaultMessage="Find your authoring key"
                             />)
                         </a>
                     </OF.Label>
                     <OF.TextField
                         onGetErrorMessage={value => this.onGetKeyErrorMessage(value)}
-                        onChanged={this.luisKeyChanged}
+                        onChanged={this.luisAuthoringKeyChanged}
                         placeholder={intl.formatMessage({
-                            id: FM.APPCREATOR_FIELDS_LUISKEY_PLACEHOLDER,
-                            defaultMessage: 'Key...'
+                            id: FM.APPCREATOR_FIELDS_LUISKEY_AUTHORING_PLACEHOLDER,
+                            defaultMessage: 'Authoring Key...'
                         })}
                         type="password"
                         onKeyDown={this.onKeyDown}
-                        value={this.state.luisKeyVal} 
+                        value={this.state.luisAuthoringKeyVal} 
+                    />
+                    <OF.Label>
+                        <FormattedMessage
+                            id={FM.APPCREATOR_FIELDS_LUISKEY_SUBSCRIPTION_LABEL}
+                            defaultMessage="LUIS Subscription Key"
+                        /> <a href="https://portal.azure.com" tabIndex={-1} className={OF.FontClassNames.xSmall} target="_blank">
+                            (<FormattedMessage
+                                id={FM.APPCREATOR_FIELDS_LUISKEY_SUBSCRIPTION_HELPTEXT}
+                                defaultMessage="Find your subscription key"
+                            />)
+                        </a>
+                    </OF.Label>
+                    <OF.TextField
+                        onChanged={this.luisSubscriptionKeyChanged}
+                        placeholder={intl.formatMessage({
+                            id: FM.APPCREATOR_FIELDS_LUISKEY_SUBSCRIPTION_PLACEHOLDER,
+                            defaultMessage: 'Subscription Key...'
+                        })}
+                        type="password"
+                        onKeyDown={this.onKeyDown}
+                        value={this.state.luisSubscriptionKeyVal}
                     />
                 </div>
                 <div className="blis-modal_footer">
                     <div className="blis-modal-buttons">
                         <div className="blis-modal-buttons_primary">
                             <OF.PrimaryButton
-                                disabled={!this.state.luisKeyVal}
+                                disabled={!this.state.luisAuthoringKeyVal}
                                 onClick={this.onClickCreate}
                                 ariaDescription={intl.formatMessage({
                                     id: FM.DEMOIMPORT_BUTTON_ARIADESCRIPTION,
