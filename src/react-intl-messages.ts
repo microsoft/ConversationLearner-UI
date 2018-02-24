@@ -46,6 +46,7 @@ export enum FM {
     APPSLIST_COLUMN_NAME = 'AppsList.columns.name',
     APPSLIST_COLUMNS_LOCALE = 'AppsList.columns.locale',
     APPSLIST_COLUMNS_LINKEDBOTS = 'AppsList.columns.linkedBots',
+    APPSLIST_COLUMNS_LOGGING = 'AppsList.columns.logging',
     APPSLIST_COLUMNS_ACTIONS = 'AppsList.columns.actions',
 
     // Dashboard
@@ -77,6 +78,7 @@ export enum FM {
     LOGDIALOGS_LASTINPUT = 'LogDialogs.lastInput',
     LOGDIALOGS_LASTRESPONSE = 'LogDialogs.lastResponse',
     LOGDIALOGS_TURNS = 'LogDialogs.turns',
+    LOGDIALOGS_LOGDISABLED = 'LogDialogs.logdisabled',
 
     // Settings
     SETTINGS_TITLE = 'Settings.title',
@@ -100,6 +102,7 @@ export enum FM {
     SETTINGS_BOTFRAMEWORKLISTLABEL = 'Settings.botFrameworkListLabel',
     SETTINGS_SAVECHANGES = 'Settings.saveChanges',
     SETTINGS_DISCARD = 'Settings.discard',
+    SETTINGS_LOGGINGON_LABEL = 'Settings.loggingon',
 
     // ToolTip
     TOOLTIP_ACTION_API = 'ToolTop.ACTION_API',
@@ -161,7 +164,7 @@ export enum FM {
     TOOLTIP_ENTITY_VALUE = 'ToolTip.ENTITY_VALUE',
     TOOLTIP_ENTITY_TYPE = 'ToolTip.ENTITY_TYPE',
     TOOLTIP_EXAMPLE = 'ToolTip.EXAMPLE',
-
+    TOOLTIP_LOGGING_TOGGLE = 'ToolTip.LOGGING_TOGGLE',
     TOOLTIP_MEMORYMANAGER = 'ToolTip.ACTION_MEMORYMANAGER',
     TOOLTIP_MEMORYMANAGER_TITLE = 'ToolTip.ACTION_MEMORYMANAGER_TITLE',
 
@@ -399,6 +402,7 @@ export default {
         [FM.APPSLIST_COLUMN_NAME]: 'Name',
         [FM.APPSLIST_COLUMNS_LOCALE]: 'Locale',
         [FM.APPSLIST_COLUMNS_LINKEDBOTS]: 'Linked Bots',
+        [FM.APPSLIST_COLUMNS_LOGGING]: 'Logging Enabled',
         [FM.APPSLIST_COLUMNS_ACTIONS]: 'Actions',
 
         // Dashboard
@@ -430,6 +434,7 @@ export default {
         [FM.LOGDIALOGS_LASTINPUT]: 'Last Input',
         [FM.LOGDIALOGS_LASTRESPONSE]: 'Last Response',
         [FM.LOGDIALOGS_TURNS]: 'Turns',
+        [FM.LOGDIALOGS_LOGDISABLED]: 'Logging is disabled',
 
         // Settings
         [FM.SETTINGS_TITLE]: 'Settings',
@@ -453,6 +458,7 @@ export default {
         [FM.SETTINGS_BOTFRAMEWORKLISTLABEL]: 'Bot Framework Apps',
         [FM.SETTINGS_SAVECHANGES]: 'Save Changes',
         [FM.SETTINGS_DISCARD]: 'Discard',
+        [FM.SETTINGS_LOGGINGON_LABEL]: 'Log Conversations',
 
         // ToolTip
         [FM.TOOLTIP_ACTION_API]: 'APIs exposed in the running Bot of the form:',
@@ -516,7 +522,7 @@ export default {
         [FM.TOOLTIP_ENTITY_VALUE]: 'What the Bot currently has in Memory for this Entity',
         [FM.TOOLTIP_ENTITY_TYPE]: 'Type of Entity: CUSTOM or name existing of Pre-Built Entity',
         [FM.TOOLTIP_EXAMPLE]: 'For Example:',
-
+        [FM.TOOLTIP_LOGGING_TOGGLE]: 'Enables or disables logging of user conversations. When logging is enabled, Bot performance can be improved by providing corrections to Logs that contain undesired Bot responses.  The corrected Log Dialogs become new Training Dialogs',
         [FM.TOOLTIP_MEMORYMANAGER]: `The memory manager provides the following functions for manipulating the Bot's memory:`,
         [FM.TOOLTIP_MEMORYMANAGER_TITLE]: 'Memory Manager',
 

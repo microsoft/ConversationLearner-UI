@@ -31,6 +31,19 @@ function getColumns(intl: InjectedIntl): ISortableRenderableColumn[] {
             isResizable: true,
             getSortValue: app => app.appName,
             render: (app, component) => <span className={OF.FontClassNames.mediumPlus}><OF.Link onClick={() => component.onClickApp(app)}>{app.appName}</OF.Link></span>
+        },        
+        {
+            key: 'isLoggingOn',
+            name: intl.formatMessage({
+                id: FM.APPSLIST_COLUMNS_LOGGING,
+                defaultMessage: 'Logging Enabled'
+            }),
+            fieldName: 'isloggingon',
+            minWidth: 100,
+            maxWidth: 200,
+            isResizable: true,
+            getSortValue: app => (app.metadata.isLoggingOn !== false) ? 'a' : 'b',
+            render: app => <OF.Icon iconName={(app.metadata.isLoggingOn !== false) ? "CheckMark" : "Remove"} className="blis-icon" />
         },
         {
             key: 'locale',

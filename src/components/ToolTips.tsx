@@ -31,6 +31,7 @@ export enum TipType {
     ENTITY_TYPE = 'entityType',
     ENTITY_VALUE = 'entityValues',
 
+    LOGGING_TOGGLE = 'loggingToggle',
     LUIS_AUTHORING_KEY = 'luisAuthoringKey',
     LUIS_SUBSCRIPTION_KEY = 'luisSubscriptionKey',
 
@@ -315,6 +316,8 @@ export function GetTip(tipType: string) {
                     </ul>
                 </div>
             )
+        case TipType.LOGGING_TOGGLE:
+            return (<FormattedMessage id={FM.TOOLTIP_LOGGING_TOGGLE} defaultMessage="Logging Enable/Disable" />);
         case TipType.LUIS_AUTHORING_KEY:
         case TipType.LUIS_SUBSCRIPTION_KEY:
             return (

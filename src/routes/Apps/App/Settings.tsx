@@ -11,6 +11,9 @@ import { BLIS_SAMPLE_ID } from '../../../types/const'
 import { FM } from '../../../react-intl-messages'
 import ErrorInjectionEditor from '../../../components/modals/ErrorInjectionEditor'
 import { injectIntl, InjectedIntlProps, defineMessages, FormattedMessage } from 'react-intl'
+import { autobind } from 'office-ui-fabric-react/lib/Utilities';
+import * as TC from '../../../components/tipComponents/Components'
+import * as ToolTip from '../../../components/ToolTips'
 
 const messages = defineMessages({
     fieldErrorRequired: {
@@ -76,6 +79,7 @@ interface ComponentState {
     luisSubscriptionKeyShowHideText: string,
     luisSubscriptionKeyVal: string,
     debugErrorsOpen: boolean
+    isLoggingOnVal: boolean
 }
 
 class Settings extends React.Component<Props, ComponentState> {
@@ -90,7 +94,7 @@ class Settings extends React.Component<Props, ComponentState> {
             videoVal: '',
             edited: false,
             botFrameworkAppsVal: [],
-            newBotVal: "",
+            newBotVal: '',
             isLuisAuthoringKeyVisible: false,
             luisAuthoringKeyShowHideText: this.props.intl.formatMessage(messages.passwordHidden),
             luisAuthoringKeyVal: '',
@@ -98,23 +102,11 @@ class Settings extends React.Component<Props, ComponentState> {
             luisSubscriptionKeyShowHideText: this.props.intl.formatMessage(messages.passwordHidden),
             luisSubscriptionKeyVal: '',
             debugErrorsOpen: false,
+            isLoggingOnVal: true
         }
+   }
 
-        this.onChangedVideo = this.onChangedVideo.bind(this)
-        this.onChangedMarkdown = this.onChangedMarkdown.bind(this)
-        this.onChangedLuisAuthoringKey = this.onChangedLuisAuthoringKey.bind(this)
-        this.onChangedLuisSubscriptionKey = this.onChangedLuisSubscriptionKey.bind(this)
-        this.onChangedBotId = this.onChangedBotId.bind(this)
-        this.onChangedName = this.onChangedName.bind(this)
-        this.onRenderBotListRow = this.onRenderBotListRow.bind(this)
-        this.onClickToggleLuisAuthoringKey = this.onClickToggleLuisAuthoringKey.bind(this)
-        this.onClickToggleLuisSubscriptionKey = this.onClickToggleLuisSubscriptionKey.bind(this)
-        this.onClickAddBot = this.onClickAddBot.bind(this)
-        this.onClickSave = this.onClickSave.bind(this)
-        this.onClickDiscard = this.onClickDiscard.bind(this)
-    }
-    componentWillMount() {
-        let app = this.props.app
+   updateAppState(app: BlisAppBase) {
         this.setState({
             localeVal: app.locale,
             appIdVal: app.appId,
@@ -124,9 +116,14 @@ class Settings extends React.Component<Props, ComponentState> {
             markdownVal: app.metadata ? app.metadata.markdown : null,
             videoVal: app.metadata ? app.metadata.video : null,
             botFrameworkAppsVal: app.metadata.botFrameworkApps,
+            isLoggingOnVal: (app.metadata.isLoggingOn !== false),   // For backward compatibility to cover undefined
             newBotVal: ''
         })
+   }
+    componentWillMount() {
+        this.updateAppState(this.props.app)
     }
+
     componentDidUpdate() {
         let app = this.props.app
         if (this.state.edited == false && (this.state.localeVal !== app.locale ||
@@ -135,61 +132,78 @@ class Settings extends React.Component<Props, ComponentState> {
             this.state.luisAuthoringKeyVal !== app.luisKey ||
             this.state.markdownVal !== app.metadata.markdown ||
             this.state.videoVal !== app.metadata.video ||
-            this.state.botFrameworkAppsVal !== app.metadata.botFrameworkApps)) {
-            this.setState({
-                localeVal: app.locale,
-                appIdVal: app.appId,
-                appNameVal: app.appName,
-                luisAuthoringKeyVal: app.luisKey,
-                markdownVal: app.metadata ? app.metadata.markdown : null,
-                videoVal: app.metadata ? app.metadata.video : null,
-                botFrameworkAppsVal: app.metadata.botFrameworkApps
-            })
+            this.state.botFrameworkAppsVal !== app.metadata.botFrameworkApps ||
+            this.state.isLoggingOnVal !== (app.metadata.isLoggingOn !== false))) {  // For backward compatibility to cover undefined
+                this.updateAppState(this.props.app)
         }
     }
+
+    @autobind
     onChangedName(text: string) {
         this.setState({
             appNameVal: text,
             edited: true
         })
     }
+
+    @autobind
     onChangedBotId(text: string) {
         this.setState({
             newBotVal: text,
             edited: true
         })
     }
+
+    @autobind
     onChangedLuisAuthoringKey(text: string) {
         this.setState({
             luisAuthoringKeyVal: text,
             edited: true
         })
     }
+
+    @autobind
     onChangedLuisSubscriptionKey(text: string) {
         this.setState({
             luisSubscriptionKeyVal: text,
             edited: true
         })
     }
+
+    @autobind
     onChangedMarkdown(text: string) {
         this.setState({
             markdownVal: text,
             edited: true
         })
     }
+    
+    @autobind
     onChangedVideo(text: string) {
         this.setState({
             videoVal: text,
             edited: true
         })
     }
+
+    @autobind
     onClickAddBot() {
         let newBotApps = this.state.botFrameworkAppsVal.concat(this.state.newBotVal);
         this.setState({
             botFrameworkAppsVal: newBotApps,
-            newBotVal: ""
+            newBotVal: ''
         })
     }
+
+    @autobind
+    onToggleLoggingOn() {
+        this.setState({
+            isLoggingOnVal: !this.state.isLoggingOnVal,
+            edited: true
+        })
+    }
+
+    @autobind
     onRenderBotListRow(item?: any, index?: number) {
         return (
             <div>
@@ -197,6 +211,8 @@ class Settings extends React.Component<Props, ComponentState> {
             </div>
         )
     }
+
+    @autobind
     onClickDiscard() {
         let app = this.props.app
         this.setState({
@@ -207,10 +223,13 @@ class Settings extends React.Component<Props, ComponentState> {
             markdownVal: app.metadata ? app.metadata.markdown : null,
             videoVal: app.metadata ? app.metadata.video : null,
             botFrameworkAppsVal: app.metadata.botFrameworkApps,
+            isLoggingOnVal: app.metadata.isLoggingOn,
             edited: false,
             newBotVal: ''
         })
     }
+
+    @autobind
     onClickSave() {
         let app = this.props.app
         let modifiedApp: BlisAppBase = {
@@ -225,6 +244,7 @@ class Settings extends React.Component<Props, ComponentState> {
                 botFrameworkApps: this.state.botFrameworkAppsVal,
                 markdown: this.state.markdownVal,
                 video: this.state.videoVal,
+                isLoggingOn: this.state.isLoggingOnVal
             },
             trainingFailureMessage: undefined,
             trainingStatus: TrainingStatusCode.Completed,
@@ -239,6 +259,7 @@ class Settings extends React.Component<Props, ComponentState> {
             markdownVal: app.metadata ? app.metadata.markdown : null,
             videoVal: app.metadata ? app.metadata.video : null,
             botFrameworkAppsVal: app.metadata.botFrameworkApps,
+            isLoggingOnVal: app.metadata.isLoggingOn,
             edited: false,
             newBotVal: ''
         })
@@ -255,7 +276,7 @@ class Settings extends React.Component<Props, ComponentState> {
         }
 
         // Check that name isn't in use
-        let foundApp = this.props.apps.find(a => (a.appName == value && a.appId != this.props.app.appId));
+        let foundApp = this.props.apps.find(a => (a.appName === value && a.appId !== this.props.app.appId));
         if (foundApp) {
             return intl.formatMessage(messages.fieldErrorDistinct)
         }
@@ -263,6 +284,7 @@ class Settings extends React.Component<Props, ComponentState> {
         return ""
     }
 
+    @autobind
     onClickToggleLuisAuthoringKey() {
         this.setState((prevState: ComponentState) => ({
             isLuisAuthoringKeyVisible: !prevState.isLuisAuthoringKeyVisible,
@@ -272,6 +294,7 @@ class Settings extends React.Component<Props, ComponentState> {
         }))
     }
 
+    @autobind
     onClickToggleLuisSubscriptionKey() {
         this.setState((prevState: ComponentState) => ({
             isLuisSubscriptionKeyVisible: !prevState.isLuisSubscriptionKeyVisible,
@@ -396,6 +419,17 @@ class Settings extends React.Component<Props, ComponentState> {
                             options={options}
                             selectedKey={this.state.localeVal}
                             disabled={true}
+                        />
+                    </div>
+                    <div className="blis-entity-creator-checkbox">
+                        <TC.Checkbox
+                            label={intl.formatMessage({
+                                id: FM.SETTINGS_LOGGINGON_LABEL,
+                                defaultMessage: 'Log Conversations'
+                            })}
+                            checked={this.state.isLoggingOnVal}
+                            onChange={this.onToggleLoggingOn}
+                            tipType={ToolTip.TipType.LOGGING_TOGGLE}
                         />
                     </div>
                     <div>
