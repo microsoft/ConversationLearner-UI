@@ -318,10 +318,11 @@ export default class BlisClient {
             .then(response => response.data.sessions)
     }
 
-    chatSessionsCreate(appId: string): Promise<models.Session> {
+    chatSessionsCreate(appId: string, sessionCreateParams: models.SessionCreateParams): Promise<models.Session> {
         return this.send<models.Session>({
             method: 'post',
-            url: `${this.baseUrl}/app/${appId}/session`
+            url: `${this.baseUrl}/app/${appId}/session`,
+            data: sessionCreateParams
         })
             .then(response => response.data)
     }

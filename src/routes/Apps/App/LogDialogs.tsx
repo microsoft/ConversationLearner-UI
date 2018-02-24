@@ -336,6 +336,14 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                         defaultMessage="Use this tool to test the current versions of your application, to check if you are progressing on the right track..."
                     />
                 </span>
+                {this.props.app.metadata.isLoggingOn === false && 
+                    <span className="ms-TextField-errorMessage label-error">
+                        <FormattedMessage
+                            id={FM.LOGDIALOGS_LOGDISABLED}
+                            defaultMessage="Logging is Disabled"
+                        />
+                    </span>
+                }
                 <div>
                     <OF.PrimaryButton
                         onClick={() => this.onClickNewChatSession()}

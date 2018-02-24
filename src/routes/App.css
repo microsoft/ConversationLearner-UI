@@ -145,7 +145,12 @@
     border-bottom: 2px solid var(--color-neutralQuaternary);
 }
 
+.label-error {
+    color: var(--color-red);
+}
+
 /* Office Fabric doesn't natively support a search label */
 .blisSearch-label {
     margin-bottom: -10px;
 } 
+

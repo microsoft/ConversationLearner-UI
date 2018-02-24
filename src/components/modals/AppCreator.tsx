@@ -139,7 +139,8 @@ class AppCreator extends React.Component<Props, ComponentState> {
             metadata: {
                 botFrameworkApps: [],
                 markdown: null,
-                video: null
+                video: null,
+                isLoggingOn: true
             }
         }
 
