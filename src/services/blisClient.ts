@@ -48,22 +48,19 @@ export default class BlisClient {
     }
 
     send<T = any>(config: AxiosRequestConfig) {
-
         if (this.forceError) {
             return Promise.reject(new Error("Injected Error"));
         }
 
-        const joinCharacter = /\?/g.test(config.url) ? '&' : '?'
-        const urlWithKey = `${config.url}${joinCharacter}key=${this.getMemoryKey()}`
-
+        const memoryKey = this.getMemoryKey()
         const finalConfig = {
             ...this.defaultConfig,
-            ...config,
-            url: urlWithKey
+            ...config
         }
 
         finalConfig.headers.Authorization = `Bearer ${this.getAccessToken()}`
-
+        finalConfig.headers['x-blis-memory-key'] = memoryKey
+        
         return axios(finalConfig) as Promise<TypedAxiosResponse<T>>
     }
 
@@ -262,7 +259,7 @@ export default class BlisClient {
     trainDialogsUpdateExtractStep(appId: string, trainDialogId: string, turnIndex: number, userInput: models.UserInput): Promise<models.UIExtractResponse> {
         return this.send({
             method: 'put',
-            url: `${this.baseUrl}/app/${appId}/traindialog/${trainDialogId}/extractor/${turnIndex}`,
+            url: `${this.baseUrl}/app/${appId}/traindialog/${trainDialogId}/extractor/${turnIndex}?includeDefinitions=true`,
             data: userInput
         })
             .then(response => response.data)
