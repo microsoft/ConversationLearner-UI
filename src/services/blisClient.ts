@@ -48,19 +48,14 @@ export default class BlisClient {
     }
 
     send<T = any>(config: AxiosRequestConfig) {
-
         if (this.forceError) {
             return Promise.reject(new Error("Injected Error"));
         }
 
         const memoryKey = this.getMemoryKey()
-        const joinCharacter = /\?/g.test(config.url) ? '&' : '?'
-        const urlWithKey = `${config.url}${joinCharacter}key=${memoryKey}`
-
         const finalConfig = {
             ...this.defaultConfig,
-            ...config,
-            url: urlWithKey
+            ...config
         }
 
         finalConfig.headers.Authorization = `Bearer ${this.getAccessToken()}`
