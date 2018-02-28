@@ -40,6 +40,11 @@ export type UpdateAction = {
 } | {
     type: AT.EDIT_TRAINDIALOG_FULFILLED,
     trainDialog: TrainDialog
+} | {
+    type: AT.EDIT_CHAT_SESSION_EXPIRE_ASYNC,
+    key: string,
+    appId: string,
+    sessionId: string,
 }
 
 export type DisplayAction = {

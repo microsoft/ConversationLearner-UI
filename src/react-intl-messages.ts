@@ -240,6 +240,8 @@ export enum FM {
     // ChatSessionModal
     CHATSESSIONMODAL_PRIMARYBUTTON_ARIADESCRIPTION = 'ChatSessionModal.primaryButton.ariaDescription',
     CHATSESSIONMODAL_PRIMARYBUTTON_TEXT = 'ChatSessionModal.primaryButton.text',
+    CHATSESSIONMODAL_EXPIREBUTTON_ARIADESCRIPTION = 'ChatSessionModal.expireButton.ariaDescription',
+    CHATSESSIONMODAL_EXPIREBUTTON_TEXT = 'ChatSessionModal.expireButton.text',
 
     // ConfirmDeleteModal
     CONFIRMDELETEMODAL_PRIMARYBUTTON_TEXT = 'ConfirmDeleteModal.primaryButton.text',
@@ -603,6 +605,8 @@ export default {
         // ChatSessionModal
         [FM.CHATSESSIONMODAL_PRIMARYBUTTON_ARIADESCRIPTION]: 'Done Testing',
         [FM.CHATSESSIONMODAL_PRIMARYBUTTON_TEXT]: 'Done Testing',
+        [FM.CHATSESSIONMODAL_EXPIREBUTTON_ARIADESCRIPTION]: 'Session Timeout',
+        [FM.CHATSESSIONMODAL_EXPIREBUTTON_TEXT]: 'Session Timeout',
 
         // ConfirmDeleteModal
         [FM.CONFIRMDELETEMODAL_PRIMARYBUTTON_TEXT]: 'Confirm',

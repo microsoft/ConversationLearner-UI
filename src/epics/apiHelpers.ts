@@ -283,6 +283,15 @@ export const deleteChatSession = (key: string, appId: string, session: Session):
     .catch(err => handleError(obs, err, AT.DELETE_CHAT_SESSION_ASYNC)));
 };
 
+export const expireChatSession = (key: string, appId: string, sessionId: string): Observable<ActionObject> => {
+  const blisClient = ClientFactory.getInstance(AT.EDIT_CHAT_SESSION_EXPIRE_ASYNC) 
+  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.chatSessionsExpire(appId, sessionId)
+    .then(() => {
+      obs.complete();
+    })
+    .catch(err => handleError(obs, err, AT.EDIT_CHAT_SESSION_EXPIRE_ASYNC))); 
+};
+
 export const getAllSessionsForBlisApp = (key: string, appId: string): Observable<ActionObject> => {
   const blisClient = ClientFactory.getInstance(AT.FETCH_CHAT_SESSIONS_ASYNC)
   return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.chatSessions(appId)

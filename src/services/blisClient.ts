@@ -324,6 +324,16 @@ export default class BlisClient {
             .then(response => response.data)
     }
 
+    // AT.EDIT_CHAT_SESSION_EXPIRE_ASYNC
+    chatSessionsExpire(appId: string, sessionId: string): Promise<void> {
+        return this.send<void>({
+            method: 'put',
+            url: `${this.baseUrl}/app/${appId}/session/${sessionId}`
+        })
+            .then(response => { })
+    }
+
+    // AT.DELETE_CHAT_SESSION_ASYNC
     chatSessionsDelete(appId: string, sessionId: string): Promise<void> {
         return this.send({
             method: 'delete',

@@ -8,6 +8,7 @@ export enum AT {
     EDIT_ACTION_FULFILLED = 'EDIT_ACTION_FULFILLED',
     EDIT_TRAINDIALOG_ASYNC = 'EDIT_TRAINDIALOG_ASYNC',
     EDIT_TRAINDIALOG_FULFILLED = 'EDIT_TRAINDIALOG_FULFILLED',
+    EDIT_CHAT_SESSION_EXPIRE_ASYNC = 'EDIT_CHAT_SESSION_EXPIRE_ASYNC',
 
     // TODO: Remove / Replace this. Don't think 'display' related state changes should exist here.
     // This implies couplin with display logic, but display logic should be responsibility of components.
