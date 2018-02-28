@@ -64,6 +64,8 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
         case AT.EDIT_BLIS_APPLICATION_ASYNC:
         case AT.EDIT_ENTITY_ASYNC:
 
+        // case AT.EXPIRE_CHAT_SESSION_AYSNC: Don't block
+        
         case AT.FETCH_APPSOURCE_ASYNC:
         case AT.FETCH_ACTIONS_ASYNC:
         case AT.FETCH_APPLICATIONS_ASYNC:

@@ -2,12 +2,13 @@ import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { PrimaryButton } from 'office-ui-fabric-react';
+import { PrimaryButton, DefaultButton } from 'office-ui-fabric-react';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { State } from '../../types';
 import Webchat from '../Webchat'
 import { BlisAppBase } from 'blis-models'
 import { deleteChatSessionAsync } from '../../actions/deleteActions'
+import { editChatSessionExpireAsync } from '../../actions/updateActions'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 
@@ -21,6 +22,13 @@ class SessionWindow extends React.Component<Props, ComponentState> {
         }
 
         this.props.onClose();
+    }
+
+    // Force timeout of the session
+    onClickExpire() {
+        if (this.props.chatSession.current !== null) {
+            this.props.editChatSessionExpireAsync(this.props.user.id, this.props.app.appId, this.props.chatSession.current.sessionId)
+        }
     }
 
     render() {
@@ -55,6 +63,17 @@ class SessionWindow extends React.Component<Props, ComponentState> {
                         <div className="blis-modal-buttons_primary">
                         </div>
                         <div className="blis-modal-buttons_secondary">
+                            <DefaultButton
+                                onClick={() => this.onClickExpire()}
+                                ariaDescription={intl.formatMessage({
+                                    id: FM.CHATSESSIONMODAL_EXPIREBUTTON_ARIADESCRIPTION,
+                                    defaultMessage: 'Expire Session'
+                                })}
+                                text={intl.formatMessage({
+                                    id: FM.CHATSESSIONMODAL_EXPIREBUTTON_TEXT,
+                                    defaultMessage: 'Expire Session'
+                                })}
+                            />
                             <PrimaryButton
                                 onClick={() => this.onClickDone()}
                                 ariaDescription={intl.formatMessage({
@@ -75,7 +94,8 @@ class SessionWindow extends React.Component<Props, ComponentState> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        deleteChatSessionAsync
+        deleteChatSessionAsync,
+        editChatSessionExpireAsync
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {

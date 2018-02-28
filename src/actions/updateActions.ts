@@ -87,3 +87,12 @@ export const editTrainDialogFulfilled = (trainDialog: TrainDialog): ActionObject
         trainDialog: trainDialog
     }
 }
+
+export const editChatSessionExpireAsync = (key: string, appId: string, sessionId: string): ActionObject => {
+    return {
+        type: AT.EDIT_CHAT_SESSION_EXPIRE_ASYNC,
+        key: key,
+        appId: appId,
+        sessionId: sessionId
+    }
+}
