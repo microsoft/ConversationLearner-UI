@@ -28,7 +28,7 @@ export interface Session {
 export const microsoftProvider: IProvider<Session> = {
     buildAuthorizeUrl() {
         return `https://login.microsoftonline.com/common/oauth2/v2.0/authorize?response_type=id_token+token
-&scope=https%3A%2F%2Fgraph.microsoft.com%2Fuser.read%20openid%20profile
+&scope=${encodeURIComponent('https://graph.microsoft.com/user.read openid profile email')}
 &client_id=${process.env.REACT_APP_AAD_APP_ID}
 &redirect_uri=${encodeURIComponent(`${window.location.origin}/redirect.html`)}
 &state=${guid()}
