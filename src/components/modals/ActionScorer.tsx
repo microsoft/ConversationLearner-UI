@@ -359,16 +359,39 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         }
     }
     handleActionSelection(actionId: string) {
-
-        let scoredAction: ScoredAction = this.props.scoreResponse.scoredActions.find(a => a.actionId === actionId);
+        const { scoredActions, unscoredActions } = this.props.scoreResponse
+        let scoredAction: ScoredAction = scoredActions.find(a => a.actionId === actionId);
         if (!scoredAction) {
-            let unscoredAction = this.props.scoreResponse.unscoredActions.find(a => a.actionId === actionId);
-            const { reason, ...scoredBase } = unscoredAction
-            scoredAction = {
-                ...scoredBase,
-                score: undefined
+            let unscoredAction = unscoredActions.find(a => a.actionId === actionId);
+            if (unscoredAction) {
+                const { reason, ...scoredBase } = unscoredAction
+                scoredAction = {
+                    ...scoredBase,
+                    score: undefined
+                }
+            }
+            // TODO: Modify handleActionSelection to be passed action instead of finding action again from list by ID
+            // TODO: If score can be undefined on train dialog, what is the value in actually having the real score?
+            // if it doesn't matter, then skipp all this steps for scored, unscored, missing and just find action within props.actions
+            else {
+                const responseActions = [...scoredActions, ...unscoredActions]
+                const otherActions = this.props.actions.filter(a => responseActions.every(sa => sa.actionId !== a.actionId))
+                const action = otherActions.find(a => a.actionId === actionId)
+
+                scoredAction = {
+                    actionId: action.actionId,
+                    payload: action.actionId,
+                    isTerminal: action.isTerminal,
+                    actionType: action.actionType,
+                    score: undefined
+                }
             }
         }
+
+        if (!scoredAction) {
+            throw new Error(`Scored action could not be found in list of available actions`)
+        }
+
         let trainScorerStep: TrainScorerStep = {
             input: this.props.scoreInput,
             labelAction: actionId,
