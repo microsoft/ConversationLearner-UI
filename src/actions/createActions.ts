@@ -1,6 +1,6 @@
 import { ActionObject, ErrorType } from '../types'
 import { AT } from '../types/ActionTypes'
-import { BlisAppBase, EntityBase, ActionBase, TrainDialog, LogDialog, Teach, Session, TrainingStatusCode, TeachWithHistory } from 'blis-models'
+import { BlisAppBase, EntityBase, ActionBase, TrainDialog, LogDialog, Teach, Session, TrainingStatusCode, TeachWithHistory, UITeachResponse } from 'blis-models'
 import { Dispatch } from 'redux'
 import { setErrorDisplay } from './displayActions'
 import * as ClientFactory from '../services/clientFactory'
@@ -165,10 +165,11 @@ export const createTeachSessionRejected = (): ActionObject =>
         type: AT.CREATE_TEACH_SESSION_REJECTED
     })
 
-export const createTeachSessionFulfilled = (teachSession: Teach): ActionObject =>
+export const createTeachSessionFulfilled = (uiTeachResponse: UITeachResponse): ActionObject =>
     ({
         type: AT.CREATE_TEACH_SESSION_FULFILLED,
-        teachSession
+        teachSession: uiTeachResponse.teachResponse as Teach,
+        memories: uiTeachResponse.memories
     })
 
 export const createTeachSessionThunkAsync = (key: string, appId: string) => {
@@ -177,9 +178,9 @@ export const createTeachSessionThunkAsync = (key: string, appId: string) => {
         dispatch(createTeachSessionAsync())
 
         try {
-            const session = await blisClient.teachSessionsCreate(appId)
-            dispatch(createTeachSessionFulfilled(session))
-            return session
+            const uiTeachResponse = await blisClient.teachSessionsCreate(appId)
+            dispatch(createTeachSessionFulfilled(uiTeachResponse))
+            return uiTeachResponse
         }
         catch (error) {
             dispatch(setErrorDisplay(ErrorType.Error, error.message, [error.response], AT.CREATE_TEACH_SESSION_ASYNC))

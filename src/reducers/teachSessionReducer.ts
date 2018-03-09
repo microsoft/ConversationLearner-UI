@@ -27,7 +27,7 @@ const teachSessionReducer: Reducer<TeachSessionState> = (state = initialState, a
             // Start with a clean slate
             return { ...initialState, all: state.all };
         case AT.CREATE_TEACH_SESSION_FULFILLED:
-            return { ...state, all: [...state.all, action.teachSession], current: action.teachSession, mode: DialogMode.Wait }
+            return { ...state, all: [...state.all, action.teachSession], current: action.teachSession, mode: DialogMode.Wait, memories: action.memories }
         case AT.CREATE_TEACH_SESSION_FROMUNDOFULFILLED:
         case AT.CREATE_TEACH_SESSION_FROMHISTORYFULFILLED:
             // Only update state if there were no discrepancies
@@ -45,6 +45,8 @@ const teachSessionReducer: Reducer<TeachSessionState> = (state = initialState, a
             return { ...state };
         case AT.DELETE_TEACH_SESSION_FULFILLED:
             return { ...initialState, all: state.all.filter(t => t.teachId !== action.teachSessionGUID) }
+        case AT.DELETE_MEMORY_FULFILLED:
+            return { ...state, memories: [] }
         case AT.TEACH_MESSAGE_RECEIVED:
             return { ...state, input: action.message, scoreInput: null, scoreResponse: null, extractResponses: [] };
         case AT.RUN_EXTRACTOR_FULFILLED:

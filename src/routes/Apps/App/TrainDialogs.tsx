@@ -4,15 +4,15 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import * as OF from 'office-ui-fabric-react';
 import { State } from '../../../types'
-import { BlisAppBase, Teach, TrainDialog, TeachWithHistory, ActionBase, EntityBase } from 'blis-models'
-import { TeachSessionModal, TrainDialogModal } from '../../../components/modals'
+import { BlisAppBase, Teach, TrainDialog, TeachWithHistory, ActionBase, EntityBase, UITeachResponse } from 'blis-models'
+import { TeachSessionModal, TrainDialogModal, SessionMemoryCheck } from '../../../components/modals'
 import { fetchHistoryThunkAsync, fetchApplicationTrainingStatusThunkAsync } from '../../../actions/fetchActions'
 import {
     createTeachSessionThunkAsync,
     createTeachSessionFromUndoThunkAsync,
     createTeachSessionFromHistoryThunkAsync
 } from '../../../actions/createActions'
-import { deleteTrainDialogThunkAsync } from '../../../actions/deleteActions';
+import { deleteTrainDialogThunkAsync, deleteMemoryThunkAsync } from '../../../actions/deleteActions';
 import { editTrainDialogThunkAsync } from '../../../actions/updateActions';
 import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { FM } from '../../../react-intl-messages'
@@ -127,6 +127,7 @@ interface ComponentState {
     activities: Activity[]
     isTeachDialogModalOpen: boolean
     isTrainDialogModalOpen: boolean
+    isSessionMemoryCheckOpen: boolean
     trainDialogId: string
     searchValue: string,
     dialogKey: number,
@@ -143,6 +144,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         activities: [],
         isTeachDialogModalOpen: false,
         isTrainDialogModalOpen: false,
+        isSessionMemoryCheckOpen: false,
         trainDialogId: null,
         searchValue: '',
         dialogKey: 0,
@@ -218,11 +220,12 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
     onClickNewTeachSession() {
         // TODO: Find cleaner solution for the types.  Thunks return functions but when using them on props they should be returning result of the promise.
-        ((this.props.createTeachSessionThunkAsync(this.props.user.id, this.props.app.appId) as any) as Promise<Teach>)
-            .then(teachSession => {
+        ((this.props.createTeachSessionThunkAsync(this.props.user.id, this.props.app.appId) as any) as Promise<UITeachResponse>)
+            .then(uiTeachResponse => {
                 this.setState({
-                    teachSession,
-                    isTeachDialogModalOpen: true
+                    teachSession: uiTeachResponse.teachResponse as Teach,
+                    isTeachDialogModalOpen: true,
+                    isSessionMemoryCheckOpen: uiTeachResponse.memories.length > 0
                 })
             })
             .catch(error => {
@@ -400,6 +403,25 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         })
     }
 
+    onCloseSessionMemoryCheck(saveMemory: boolean) {
+
+        if (saveMemory) {
+            this.setState({
+                isSessionMemoryCheckOpen: false
+            })
+        } else {
+            ((this.props.deleteMemoryThunkAsync(this.props.user.id, this.props.app.appId) as any) as Promise<void>)
+            .then(() => {
+                this.setState({
+                    isSessionMemoryCheckOpen: false
+                })
+            })
+            .catch(error => {
+                console.warn(`Error when attempting to clear memory: `, error)
+            })
+        }
+    }
+
     onChangeSearchString(newValue: string) {
         let lcString = newValue.toLowerCase();
         this.setState({
@@ -490,7 +512,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         app={this.props.app}
                         teachSession={this.props.teachSessions.current}
                         dialogMode={this.props.teachSessions.mode}
-                        open={this.state.isTeachDialogModalOpen}
+                        open={this.state.isTeachDialogModalOpen && !this.state.isSessionMemoryCheckOpen}
                         onClose={() => this.onCloseTeachSession()}
                         onUndo={(popRound) => this.onUndoTeachStep(popRound)}
                         history={this.state.isTeachDialogModalOpen ? this.state.activities : null}
@@ -550,6 +572,11 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     trainDialog={trainDialog}
                     history={this.state.isTrainDialogModalOpen ? this.state.activities : null}
                 />
+                <SessionMemoryCheck
+                    open={this.state.isSessionMemoryCheckOpen}
+                    onClose={(saveMemory: boolean) => this.onCloseSessionMemoryCheck(saveMemory)}
+                    memories={this.props.teachSessions.memories}
+                />
             </div>
         );
     }
@@ -560,6 +587,7 @@ const mapDispatchToProps = (dispatch: any) => {
         fetchHistoryThunkAsync,
         fetchApplicationTrainingStatusThunkAsync,
         deleteTrainDialogThunkAsync,
+        deleteMemoryThunkAsync,
         createTeachSessionFromUndoThunkAsync,
         createTeachSessionFromHistoryThunkAsync,
         editTrainDialogThunkAsync,

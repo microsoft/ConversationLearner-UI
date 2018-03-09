@@ -56,6 +56,7 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
         case AT.DELETE_BLIS_APPLICATION_ASYNC:
         // case AT.DELETE_CHAT_SESSION_ASYNC: Don't block
         case AT.DELETE_ENTITY_ASYNC:
+        case AT.DELETE_MEMORY_ASYNC:
         // case AT.DELETE_LOG_DIALOG_ASYNC: Don't block
         // case AT.DELETE_TEACH_SESSION_ASYNC: Don't block
         // case AT.DELETE_TRAIN_DIALOG_ASYNC: Don't block
@@ -98,6 +99,7 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
         case AT.DELETE_BLIS_APPLICATION_FULFILLED:
         // case AT.DELETE_CHAT_SESSION_FULFILLED: Doesn't block
         case AT.DELETE_ENTITY_FULFILLED:
+        case AT.DELETE_MEMORY_FULFILLED:
         // case AT.DELETE_LOG_DIALOG_FULFILLED: Doesn't block
         // case AT.DELETE_TEACH_SESSION_FULFILLED: Doesn't block
         // case AT.DELETE_TRAIN_DIALOG_FULFILLED: Doesn't block

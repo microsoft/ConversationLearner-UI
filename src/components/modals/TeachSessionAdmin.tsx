@@ -125,7 +125,6 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                     </div>
                     <div>
                         <MemoryTable
-                            dialogMode={this.props.teachSession.mode}
                             memories={this.props.teachSession.memories}
                             prevMemories={this.props.teachSession.prevMemories}
                         />

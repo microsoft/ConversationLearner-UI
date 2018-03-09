@@ -310,7 +310,6 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                             />
                         </div>
                         <MemoryTable
-                            dialogMode={renderData.dialogMode}
                             memories={renderData.memories}
                             prevMemories={renderData.prevMemories}
                         />

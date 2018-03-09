@@ -1,6 +1,6 @@
 import {
     BlisAppBase,
-    BotInfo, 
+    BotInfo, Memory,
     AppDefinition,
     EntityBase,
     ActionBase, TeachWithHistory,
@@ -240,7 +240,8 @@ export type CreateAction = {
     type: AT.CREATE_TEACH_SESSION_REJECTED
 }| {
     type: AT.CREATE_TEACH_SESSION_FULFILLED,
-    teachSession: Teach
+    teachSession: Teach,
+    memories: Memory[]
 } | {
     type: AT.CREATE_TEACH_SESSION_FROMUNDOASYNC,
     blisAppID: string,
@@ -324,6 +325,12 @@ export type DeleteAction = {
     teachSessionGUID: string,
     key: string,
     currentAppId: string,
+}| {
+    type: AT.DELETE_MEMORY_ASYNC,
+    key: string,
+    currentAppId: string
+} | {
+    type: AT.DELETE_MEMORY_FULFILLED
 } | {
     type: AT.DELETE_OPERATION_FULFILLED
 }

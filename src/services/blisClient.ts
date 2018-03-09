@@ -349,8 +349,8 @@ export default class BlisClient {
             .then(response => response.data.teaches)
     }
 
-    teachSessionsCreate(appId: string): Promise<models.Teach> {
-        return this.send<models.Teach>({
+    teachSessionsCreate(appId: string): Promise<models.UITeachResponse> {
+        return this.send<models.UITeachResponse>({
             method: 'post',
             url: `${this.baseUrl}/app/${appId}/teach`
         })
@@ -426,5 +426,14 @@ export default class BlisClient {
             url: `${this.baseUrl}/app/${appId}/teachwithhistory?username=${userName}&userid=${userId}&ignoreLastExtract=${lastExtractChanged}`,
             data: trainDialog
         }).then(response => response.data)
+    }
+
+    // DELETE_MEMORY_ASYNC
+    memoryDelete(appId: string): Promise<void> {
+        return this.send({
+            method: 'delete',
+            url: `${this.baseUrl}/app/${appId}/botmemory`
+        })
+        .then(response => { })
     }
 }
