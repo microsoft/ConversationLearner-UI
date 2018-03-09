@@ -295,25 +295,17 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
   border-color: var(--color-blueMid);
 }
 
-.blis-dropdownWithButton-buttoncontainer {
-  height: 100%;
-  margin-bottom: 8px;
-  float: right;
-}
-
 .blis-dropdownWithButton-dropdown {
-  width: calc(100% - 35px);
-  float: left;
-}
-
-.blis-dropdownWith2Buttons-dropdown {
-  width: calc(100% - 68px);
-  float: left;
+  display: grid;
+  grid-template: auto / 1fr auto auto;
+  grid-auto-columns: min-content;
+  grid-gap: 0.1em;
 }
 
 .blis-dropdownWithButton-button {
   width: 30px !important;
   min-width: 30px !important;
+  align-self: end;
 }
 
 .blis-spinner
