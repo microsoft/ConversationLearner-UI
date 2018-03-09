@@ -642,10 +642,9 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                         />
 
                         {this.state.selectedActionTypeOptionKey === ActionTypes.API_LOCAL
-                            && (<div>
+                            && (<div className="blis-dropdownWithButton-dropdown">
                                 <TC.Dropdown
                                     label="API"
-                                    className="blis-dropdownWithButton-dropdown"
                                     options={this.state.apiOptions}
                                     onChanged={(apiOption) => this.onChangedApiOption(apiOption)}
                                     selectedKey={this.state.selectedApiOptionKey}
@@ -653,23 +652,20 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                     placeHolder={this.state.apiOptions.length === 0 ? 'NONE DEFINED' : 'API name...'}
                                     tipType={ToolTip.TipType.ACTION_API}
                                 />
-                                <div className="blis-dropdownWithButton-buttoncontainer">
-                                    <OF.PrimaryButton
-                                        className="blis-dropdownWithButton-button"
-                                        onClick={() => this.onClickSyncBotInfo()}
-                                        ariaDescription="Refresh"
-                                        text=""
-                                        iconProps={{ iconName: 'Sync' }}
-                                    />
-                                </div>
+                                <OF.PrimaryButton
+                                    className="blis-dropdownWithButton-button"
+                                    onClick={() => this.onClickSyncBotInfo()}
+                                    ariaDescription="Refresh"
+                                    text=""
+                                    iconProps={{ iconName: 'Sync' }}
+                                />
                             </div>
                             )}
 
                         {this.state.selectedActionTypeOptionKey === ActionTypes.CARD
-                            && (<div>
+                            && (<div className="blis-dropdownWithButton-dropdown">
                                 <TC.Dropdown
                                     label="Template"
-                                    className="blis-dropdownWith2Buttons-dropdown"
                                     options={this.state.cardOptions}
                                     onChanged={(cardOption) => this.onChangedCardOption(cardOption)}
                                     selectedKey={this.state.selectedCardOptionKey}
@@ -677,25 +673,21 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                     placeHolder={this.state.cardOptions.length === 0 ? 'NONE DEFINED' : 'Template name...'}
                                     tipType={ToolTip.TipType.ACTION_CARD}
                                 />
-                                <div className="blis-dropdownWithButton-buttoncontainer">
-                                    <OF.PrimaryButton
-                                        className="blis-dropdownWithButton-button"
-                                        onClick={() => this.onClickViewCard()}
-                                        ariaDescription="Refresh"
-                                        text=""
-                                        iconProps={{ iconName: 'RedEye' }}
-                                        disabled={this.state.selectedCardOptionKey == null}
-                                    />
-                                </div>
-                                <div className="blis-dropdownWithButton-buttoncontainer">
-                                    <OF.PrimaryButton
-                                        className="blis-dropdownWithButton-button"
-                                        onClick={() => this.onClickSyncBotInfo()}
-                                        ariaDescription="Refresh"
-                                        text=""
-                                        iconProps={{ iconName: 'Sync' }}
-                                    />
-                                </div>
+                                <OF.PrimaryButton
+                                    className="blis-dropdownWithButton-button"
+                                    onClick={() => this.onClickViewCard()}
+                                    ariaDescription="Refresh"
+                                    text=""
+                                    iconProps={{ iconName: 'RedEye' }}
+                                    disabled={this.state.selectedCardOptionKey == null}
+                                />
+                                <OF.PrimaryButton
+                                    className="blis-dropdownWithButton-button"
+                                    onClick={() => this.onClickSyncBotInfo()}
+                                    ariaDescription="Refresh"
+                                    text=""
+                                    iconProps={{ iconName: 'Sync' }}
+                                />
                             </div>
                         )}
 
