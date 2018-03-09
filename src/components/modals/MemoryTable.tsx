@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { State } from '../../types'
 import * as OF from 'office-ui-fabric-react';
 import { onRenderDetailsHeader, Prebuilt } from '../ToolTips'
-import { EntityBase, EntityType, Memory, DialogMode } from 'blis-models'
+import { EntityBase, EntityType, Memory } from 'blis-models'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 
@@ -283,6 +283,7 @@ class MemoryTable extends React.Component<Props, ComponentState> {
                         onColumnHeaderClick={this.onColumnClick}
                         onRenderItemColumn={this.renderItemColumn}
                         checkboxVisibility={OF.CheckboxVisibility.hidden}
+                        constrainMode={OF.ConstrainMode.horizontalConstrained}
                         onRenderDetailsHeader={(
                             detailsHeaderProps: OF.IDetailsHeaderProps,
                             defaultRender: OF.IRenderFunction<OF.IDetailsHeaderProps>) =>
@@ -304,7 +305,6 @@ const mapStateToProps = (state: State, ownProps: any) => {
 }
 
 export interface ReceivedProps {
-    dialogMode: DialogMode,
     memories: Memory[],
     prevMemories: Memory[]
 }

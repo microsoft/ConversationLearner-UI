@@ -211,7 +211,6 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
                     (<div className="blis-dialog-admin__content">
                         <div className="blis-dialog-admin-title">Memory</div>
                         <MemoryTable
-                            dialogMode={dialogMode}
                             memories={memories}
                             prevMemories={prevMemories}
                         />

@@ -82,6 +82,9 @@ export const deleteChatSessionFulfilled = (sessionId: string): ActionObject => {
     }
 }
 
+// ---------------------
+// Delete Teach Session
+// ---------------------
 export const deleteTeachSessionAsync = (key: string, teachSession: Teach, currentAppId: string, save: boolean): ActionObject => {
     return {
         type: AT.DELETE_TEACH_SESSION_ASYNC,
@@ -122,8 +125,42 @@ export const deleteTeachSessionThunkAsync = (key: string, teachSession: Teach, c
 }
 
 // -----------------
-// TRAIN DIALOG
+//  Delete Memory
 // -----------------
+export const deleteMemoryAsync = (key: string, currentAppId: string): ActionObject => {
+    return {
+        type: AT.DELETE_MEMORY_ASYNC,
+        key: key,
+        currentAppId: currentAppId
+    }
+}
+
+export const deleteMemoryFulfilled = (): ActionObject => {
+    return {
+        type: AT.DELETE_MEMORY_FULFILLED
+    }
+}
+
+export const deleteMemoryThunkAsync = (key: string, currentAppId: string) => {
+    return async (dispatch: Dispatch<any>) => {
+        dispatch(deleteMemoryAsync(key, currentAppId))
+        const blisClient = ClientFactory.getInstance(AT.DELETE_MEMORY_ASYNC)
+
+        try {
+            await blisClient.memoryDelete(currentAppId);
+            dispatch(deleteMemoryFulfilled());
+            return true;
+        } catch (e) {
+            const error = e as Error
+            dispatch(setErrorDisplay(ErrorType.Error, error.name, [error.message], AT.DELETE_MEMORY_ASYNC))
+            return false;
+        }
+    }
+}
+
+// ------------------
+// Delete TrainDialog
+// ------------------
 export const deleteTrainDialogAsync = (trainDialogId: string, appId: string): ActionObject => {
     return {
         type: AT.DELETE_TRAIN_DIALOG_ASYNC,

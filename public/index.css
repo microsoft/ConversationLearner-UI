@@ -102,6 +102,12 @@ html {
   display: inline-block !important;
 }
 
+
+.blis-label--padded {
+  margin-left: 20px;
+  margin-right: 20px;
+}
+
 .blis-link {
   color: var(--color-wc-user);
 }
@@ -169,6 +175,12 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
 .blis-modal.blis-modal--log {
   grid-template-rows: 1fr min-content;
   border-top: 8px solid var(--color-blueMid);
+}
+
+.blis-modal.blis-modal--wide {
+  width: 80%;
+  grid-row-gap: 2em;
+  padding: 1em;
 }
 
 .blis-modal.blis-modal--large {

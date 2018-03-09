@@ -8,6 +8,7 @@ import TeachSessionModal from './TeachSessionModal'
 import TrainDialogModal from './TrainDialogModal'
 import ErrorPanel from './ErrorPanel'
 import SpinnerWindow from './SpinnerWindow'
+import SessionMemoryCheck from './SessionMemoryCheck'
 
 export {
     ActionCreatorEditor,
@@ -20,4 +21,5 @@ export {
     TrainDialogModal,
     ErrorPanel,
     SpinnerWindow,
+    SessionMemoryCheck
 }

@@ -306,6 +306,14 @@ export enum FM {
     // MemoryTable
     MEMORYTABLE_EMPTY = 'MemoryTable.empty',
 
+    // SessionMemoryCheck
+    SESSIONMEMORYCHECK_KEEPBUTTON_ARIADESCRIPTION = 'SessionMemoryCheck.keepButton.ariaDescription',
+    SESSIONMEMORYCHECK_KEEPBUTTON_TEXT = 'SessionMemoryCheck.keepButton.text',
+    SESSIONMEMORYCHECK_CLEARBUTTON_ARIADESCRIPTION = 'SessionMemoryCheck.clearButton.ariaDescription',
+    SESSIONMEMORYCHECK_CLEARBUTTON_TEXT = 'SessionMemoryCheck.clearButton.text',
+    SESSIONMEMORYCHECK_DESCRIPTION_ARIADESCRIPTION = 'SessionMemoryCheck.description.ariaDescription',
+    SESSIONMEMORYCHECK_DESCRIPTION_TEXT = 'SessionMemoryCheck.description.text',
+
     // TeachSessionAdmin
     TEACHSESSIONADMIN_DIALOGMODE_USER = 'TeachSessionAdmin.dialogMode.user',
     TEACHSESSIONADMIN_DIALOGMODE_BOT = 'TeachSessionAdmin.dialogMode.bot',
@@ -661,6 +669,14 @@ export default {
 
         // MemoryTable
         [FM.MEMORYTABLE_EMPTY]: 'Empty',
+
+        // SessionMemoryCheck
+        [FM.SESSIONMEMORYCHECK_KEEPBUTTON_ARIADESCRIPTION]: 'Keep',
+        [FM.SESSIONMEMORYCHECK_KEEPBUTTON_TEXT]: 'Keep',
+        [FM.SESSIONMEMORYCHECK_CLEARBUTTON_ARIADESCRIPTION]: 'Clear',
+        [FM.SESSIONMEMORYCHECK_CLEARBUTTON_TEXT]: 'Clear',
+        [FM.SESSIONMEMORYCHECK_DESCRIPTION_ARIADESCRIPTION]: 'The above memories were preserved in the "OnSessionEndCallback".  What would you like to do with them for this session?',
+        [FM.SESSIONMEMORYCHECK_DESCRIPTION_TEXT]: 'The above memories were preserved in the "OnSessionEndCallback".  What would you like to do with them for this session?',
 
         // TeachSessionAdmin
         [FM.TEACHSESSIONADMIN_DIALOGMODE_USER]: 'User Input',
