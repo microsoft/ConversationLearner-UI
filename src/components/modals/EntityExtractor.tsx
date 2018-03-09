@@ -352,7 +352,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                                 <OF.Icon iconName="IncidentTriangle" className="editor-button-invalid" />,
                                 ToolTips.TipType.ENTITY_EXTRACTOR_WARNING)}
                         </div>}
-                        {!isValid && <div className="ms-TextField-errorMessage css-84 errorMessage_d666ced5">
+                        {!isValid && <div className="ms-TextField-errorMessage css-84 errorMessage_9719d15e">
                             <FormattedMessage id={FM.TOOLTIP_ENTITY_EXTRACTOR_WARNING} defaultMessage="Text Variations must contain the same detected Entities and the primary input text." />
                         </div>}
                     </div>
