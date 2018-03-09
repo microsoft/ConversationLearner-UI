@@ -53,6 +53,7 @@
     "cibuild": "cross-env REACT_APP_AAD_APP_ID=38f847d3-2b83-43ef-b833-50573ef2eda1 CI=false react-scripts-ts build",
     "cibuildprod": "cross-env CI=false react-scripts-ts build",
     "test": "react-scripts-ts test --env=jsdom",
+    "test:debug": "react-scripts-ts --inspect-brk test --runInBand --env=jsdom",
     "eject": "react-scripts-ts eject",
     "tsc": "tsc",
     "builduipackage": "tsc -p ./publish/tsconfig.json && tsc -p ./scripts/tsconfig.json && node ./scripts/publish.js"
