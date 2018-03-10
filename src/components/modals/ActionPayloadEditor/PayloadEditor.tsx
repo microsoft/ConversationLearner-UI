@@ -44,7 +44,7 @@ interface State {
     menuProps: IPickerProps
 }
 
-export default class MentionEditor extends React.Component<Props, State> {
+export default class PayloadEditor extends React.Component<Props, State> {
     fuse: Fuse
     menu: HTMLElement
     plugins: any[]
@@ -68,6 +68,12 @@ export default class MentionEditor extends React.Component<Props, State> {
                 onChangeMenuProps: this.onChangePickerProps
             })
         ]
+    }
+
+    componentWillReceiveProps(nextProps: Props) {
+        if (this.props.options.length !== nextProps.options.length) {
+            this.fuse = new Fuse(nextProps.options, fuseOptions)
+        }
     }
 
     getDefaultMatchedOptions() {
