@@ -7,7 +7,7 @@ import Plain from 'slate-plain-serializer'
 import { fetchBotInfoAsync } from '../../actions/fetchActions'
 import { Modal } from 'office-ui-fabric-react/lib/Modal'
 import { ActionBase, ActionTypes, ActionPayload, 
-    ActionArgument, BlisAppBase, EntityBase, TextPayload } from 'blis-models'
+    ActionArgument, BlisAppBase, EntityBase, TextPayload, EntityType } from 'blis-models'
 import ConfirmDeleteModal from './ConfirmDeleteModal'
 import EntityCreatorEditor from './EntityCreatorEditor'
 import AdaptiveCardViewer from './AdaptiveCardViewer/AdaptiveCardViewer'
@@ -19,10 +19,10 @@ import * as OF from 'office-ui-fabric-react';
 import { BlisTagItem, IBlisPickerItemProps } from './BlisTagItem'
 import BlisTagPicker from '../BlisTagPicker'
 import './ActionCreatorEditor.css'
-import HelpIcon from '../HelpIcon';
+import HelpIcon from '../HelpIcon'
 import { withRouter } from 'react-router-dom'
 import { RouteComponentProps } from 'react-router'
-import { autobind } from 'office-ui-fabric-react/lib/Utilities';
+import { autobind } from 'office-ui-fabric-react/lib/Utilities'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../react-intl-messages'
 
@@ -105,6 +105,7 @@ interface ComponentState {
     isPayloadFocused: boolean
     isPayloadValid: boolean
     selectedActionTypeOptionKey: string | number
+    availableExpectedEntityTags: OF.ITag[]
     entityTags: OF.ITag[]
     expectedEntityTags: OF.ITag[]
     requiredEntityTagsFromPayload: OF.ITag[]
@@ -126,6 +127,7 @@ const initialState: ComponentState = {
     isPayloadFocused: false,
     isPayloadValid: false,
     selectedActionTypeOptionKey: actionTypeOptions[0].key,
+    availableExpectedEntityTags: [],
     entityTags: [],
     expectedEntityTags: [],
     requiredEntityTagsFromPayload: [],
@@ -143,11 +145,19 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
     componentWillMount() {
         const { entities, botInfo } = this.props
-        let entityTags = entities.map<OF.ITag>(e =>
+        const entityTags = entities.map<OF.ITag>(e =>
             ({
                 key: e.entityId,
                 name: e.entityName
             }))
+
+        const availableExpectedEntityTags = entities
+            .filter(e => e.entityType !== EntityType.LOCAL)
+            .map<OF.ITag>(e =>
+                ({
+                    key: e.entityId,
+                    name: e.entityName
+                }))
 
         const callbacks = (botInfo && botInfo.callbacks || [])
         const apiOptions = callbacks.map<OF.IDropdownOption>(v =>
@@ -167,6 +177,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             ...initialState,
             apiOptions,
             cardOptions,
+            availableExpectedEntityTags,
             entityTags,
             isEditing: !!this.props.action
         }
@@ -185,8 +196,17 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     name: e.entityName
                 }))
 
+            const availableExpectedEntityTags = nextProps.entities
+                .filter(e => e.entityType !== EntityType.LOCAL)
+                .map<OF.ITag>(e =>
+                    ({
+                        key: e.entityId,
+                        name: e.entityName
+                    }))
+
             nextState = {
                 ...nextState,
+                availableExpectedEntityTags,
                 entityTags
             }
         }
@@ -487,7 +507,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
         return getSuggestedTags(
             filterText,
-            this.state.entityTags,
+            this.state.availableExpectedEntityTags,
             [...selectedTags, ...this.state.requiredEntityTagsFromPayload, ...this.state.requiredEntityTags]
         )
     }
