@@ -8,9 +8,11 @@ import { AppCreator, ConfirmDeleteModal } from '../../components/modals'
 import * as OF from 'office-ui-fabric-react';
 import { State } from '../../types';
 import { BlisAppBase } from 'blis-models'
+import { BLIS_SAMPLE_ID } from '../../types/const'
 import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { FM } from '../../react-intl-messages'
 import DemoImporter from '../../components/modals/DemoImporter';
+import { autobind } from 'office-ui-fabric-react/lib/Utilities';
 
 interface ISortableRenderableColumn extends OF.IColumn {
     render: (app: BlisAppBase, component: AppsList) => JSX.Element
@@ -91,6 +93,9 @@ interface ComponentState {
     isAppCreateModalOpen: boolean
     isDemoImporterOpen: boolean
     isConfirmDeleteAppModalOpen: boolean
+    isConfirmDeleteDemosOpen: boolean
+    isImportNotificationOpen: boolean
+    isImportButtonDisabled: boolean
     appToDelete: BlisAppBase
     columns: ISortableRenderableColumn[]
     sortColumn: ISortableRenderableColumn
@@ -112,13 +117,17 @@ class AppsList extends React.Component<Props, ComponentState> {
             isAppCreateModalOpen: false,
             isDemoImporterOpen: false,
             isConfirmDeleteAppModalOpen: false,
+            isConfirmDeleteDemosOpen: false,
+            isImportNotificationOpen: false,
+            isImportButtonDisabled: false,
             appToDelete: null,
             columns,
             sortColumn: defaultSortColumn
         }
     }
 
-    onConfirmDeleteModal() {
+    @autobind
+    onConfirmDeleteApp() {
         this.props.onClickDeleteApp(this.state.appToDelete)
         this.setState({
             isConfirmDeleteAppModalOpen: false,
@@ -126,6 +135,7 @@ class AppsList extends React.Component<Props, ComponentState> {
         })
     }
 
+    @autobind
     onCancelDeleteModal() {
         this.setState({
             isConfirmDeleteAppModalOpen: false,
@@ -133,15 +143,43 @@ class AppsList extends React.Component<Props, ComponentState> {
         })
     }
 
-    onClickCreateNewApp = () => {
+    @autobind
+    onConfirmDeleteDemos() {
+        this.setState({
+            isConfirmDeleteDemosOpen: false,
+        })
+        for (let app of this.props.apps) {
+            if (app.appName.startsWith('Tutorial-')) {
+                this.props.onClickDeleteApp(app);
+            }
+        }
+    }
+
+    @autobind
+    onCancelDeleteDemos() {
+        this.setState({
+            isConfirmDeleteDemosOpen: false
+        })
+    }
+
+    @autobind
+    onClickCreateNewApp() {
         this.setState({
             isAppCreateModalOpen: true
         })
     }
 
-    onClickImportDemoApps = () => {
+    @autobind
+    onClickImportDemoApps() {
         this.setState({
             isDemoImporterOpen: true
+        })
+    }
+
+    @autobind
+    onClickDeleteDemoApps() {
+        this.setState({
+            isConfirmDeleteDemosOpen: true,
         })
     }
 
@@ -154,6 +192,13 @@ class AppsList extends React.Component<Props, ComponentState> {
     onClickApp(app: BlisAppBase) {
         const { match, history } = this.props
         history.push(`${match.url}/${app.appId}`, { app })
+    }
+
+    @autobind
+    onCloseImportNotification() {
+        this.setState({
+            isImportNotificationOpen: false
+        })
     }
 
     onColumnClick = (event: any, column: ISortableRenderableColumn) => {
@@ -195,7 +240,9 @@ class AppsList extends React.Component<Props, ComponentState> {
 
     onSubmitDemoImporterModal = (luisKey: string) => {
         this.setState({
-            isDemoImporterOpen: false
+            isDemoImporterOpen: false,
+            isImportNotificationOpen: true,
+            isImportButtonDisabled: true
         })
         this.props.onImportDemoApps(luisKey);
     }
@@ -244,7 +291,7 @@ class AppsList extends React.Component<Props, ComponentState> {
                 </span>
                 <div className="blis-modal-buttons_primary">
                     <OF.PrimaryButton
-                        onClick={() => this.onClickCreateNewApp()}
+                        onClick={this.onClickCreateNewApp}
                         ariaDescription={this.props.intl.formatMessage({
                             id: FM.APPSLIST_CREATEBUTTONARIADESCRIPTION,
                             defaultMessage: 'Create a New Application'
@@ -254,17 +301,27 @@ class AppsList extends React.Component<Props, ComponentState> {
                             defaultMessage: 'New App'
                         })}
                     />
-                    <OF.DefaultButton
-                        onClick={() => this.onClickImportDemoApps()}
-                        ariaDescription={this.props.intl.formatMessage({
-                            id: FM.APPSLIST_IMPORTBUTTONARIADESCRIPTION,
-                            defaultMessage: 'Import Demo Applicaitons'
-                        })}
-                        text={this.props.intl.formatMessage({
-                            id: FM.APPSLIST_IMPORTBUTTONTEXT,
-                            defaultMessage: 'Import Demos'
-                        })}
-                    />
+                    {this.props.user.id !== BLIS_SAMPLE_ID &&
+                        <OF.DefaultButton
+                            disabled={this.state.isImportButtonDisabled}
+                            onClick={this.onClickImportDemoApps}
+                            ariaDescription={this.props.intl.formatMessage({
+                                id: FM.APPSLIST_IMPORTBUTTONARIADESCRIPTION,
+                                defaultMessage: 'Import Demo Applicaitons'
+                            })}
+                            text={this.props.intl.formatMessage({
+                                id: FM.APPSLIST_IMPORTBUTTONTEXT,
+                                defaultMessage: 'Import Tutorials'
+                            })}
+                        />
+                    }
+                    {this.props.user.id !== BLIS_SAMPLE_ID && this.props.apps.find(app => app.appName.startsWith('Tutorial-')) && 
+                        <OF.DefaultButton
+                            onClick={this.onClickDeleteDemoApps}
+                            ariaDescription="Remove Tutorials"
+                            text="Remove Tutorials"
+                        />
+                    }   
                 </div>
                 <OF.DetailsList
                     className={OF.FontClassNames.mediumPlus}
@@ -286,13 +343,50 @@ class AppsList extends React.Component<Props, ComponentState> {
                 />
                 <ConfirmDeleteModal
                     open={this.state.isConfirmDeleteAppModalOpen}
-                    onCancel={() => this.onCancelDeleteModal()}
-                    onConfirm={() => this.onConfirmDeleteModal()}
+                    onCancel={this.onCancelDeleteModal}
+                    onConfirm={this.onConfirmDeleteApp}
                     title={this.props.intl.formatMessage({
                         id: FM.APPSLIST_CONFIRMDELETEMODALTITLE,
                         defaultMessage: 'Are you sure you want to delete this application?'
                     })}
                 />
+                <OF.Dialog
+                    hidden={!this.state.isImportNotificationOpen}
+                    onDismiss={this.onCloseImportNotification}
+                    dialogContentProps={ {
+                        type: OF.DialogType.normal,
+                        title: 'Importing Demos & Tutorials',
+                        subText: 'This may take a few minutes.'
+                    } }
+                    modalProps={ {
+                        isBlocking: true,
+                        containerClassName: 'ms-dialogMainOverride'
+                    } }
+                >
+                    <OF.DialogFooter>
+                        <OF.PrimaryButton onClick={this.onCloseImportNotification} text="OK"/>
+                    </OF.DialogFooter>
+                </OF.Dialog>
+                <OF.Dialog
+                    hidden={!this.state.isConfirmDeleteDemosOpen}
+                    onDismiss={this.onCancelDeleteDemos}
+                    dialogContentProps={ {
+                        type: OF.DialogType.normal,
+                        title: 'Delete Tutorials from your account?',
+                        subText: 'This will delete all apps whose names start with "Tutorial-"'
+                    } }
+                    modalProps={ {
+                        titleAriaId: 'myLabelId',
+                        subtitleAriaId: 'mySubTextId',
+                        isBlocking: false,
+                        containerClassName: 'ms-dialogMainOverride'
+                    } }
+                >
+                    <OF.DialogFooter>
+                        <OF.PrimaryButton onClick={this.onConfirmDeleteDemos} text="OK"/>
+                        <OF.DefaultButton onClick={this.onCancelDeleteDemos} text="Cancel"/>       
+                    </OF.DialogFooter>
+                </OF.Dialog>
             </div>
         );
     }
@@ -303,6 +397,7 @@ const mapDispatchToProps = (dispatch: any) => {
 }
 const mapStateToProps = (state: State) => {
     return {
+        user: state.user
     }
 }
 
