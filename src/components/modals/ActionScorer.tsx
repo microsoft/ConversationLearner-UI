@@ -6,13 +6,14 @@ import { State } from '../../types'
 import {
     BlisAppBase, TrainScorerStep, Memory, ScoredBase, ScoreInput, ScoreResponse,
     ActionBase, ScoredAction, UnscoredAction, ScoreReason, DialogType, ActionTypes,
-    Template, ActionArgument, DialogMode
+    Template, DialogMode, RenderedActionArgument
 } from 'blis-models';
 import { createActionAsync } from '../../actions/createActions'
 import { toggleAutoTeach } from '../../actions/teachActions'
 import { PrimaryButton } from 'office-ui-fabric-react';
 import * as OF from 'office-ui-fabric-react';
 import ActionCreatorEditor from './ActionCreatorEditor'
+import { EntityIdSerializer } from './ActionPayloadEditor'
 import { onRenderDetailsHeader } from '../ToolTips'
 import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../react-intl-messages'
@@ -71,8 +72,10 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             isMultiline: true,
             isResizable: true,
             render: (action: ActionBase, component) => {
-                const args = ActionBase.GetActionArgumentValuesAsPlainText(action)
-                    .filter(value => !Util.isNullOrWhiteSpace(value))
+                const entityMap = Util.getDefaultEntityMap(component.props.entities)
+                const args = ActionBase.GetActionArguments(action)
+                    .map<string>(aa => EntityIdSerializer.serialize(aa.value.json, entityMap))
+                    .filter(aa => !Util.isNullOrWhiteSpace(aa))
                     
                 return (
                     <div>
@@ -85,7 +88,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                             iconProps={{ iconName: 'RedEye' }}
                         />
                     }
-                    <span className={OF.FontClassNames.mediumPlus}>{ActionBase.GetPayload(action as ActionBase)}</span>
+                    <span className={OF.FontClassNames.mediumPlus}>{ActionBase.GetPayload(action, entityMap)}</span>
                     {   args.length !== 0 &&
                         args.map((argument, i) => <div className="ms-ListItem-primaryText" key={i}>{argument}</div>)
                     }
@@ -585,12 +588,18 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         }
 
         let template: Template = null;
-        let actionArguments: ActionArgument[] = [];
+        let actionArguments: RenderedActionArgument[] = [];
         if (this.state.cardViewerAction) {
-            let actionPayload = ActionBase.GetPayload(this.state.cardViewerAction);
+            const entityMap = Util.getDefaultEntityMap(this.props.entities)
+            const actionPayload = ActionBase.GetPayload(this.state.cardViewerAction, entityMap);
             template = this.props.templates.find((t) => t.name === actionPayload);
-            actionArguments = ActionBase.GetActionArguments(this.state.cardViewerAction);
+            actionArguments = ActionBase.GetActionArguments(this.state.cardViewerAction)
+                .map(aa => ({
+                    ...aa,
+                    value: EntityIdSerializer.serialize(aa.value.json, entityMap)
+                }))
         }
+
         return (
             <div>
                 <OF.DetailsList

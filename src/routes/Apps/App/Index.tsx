@@ -65,11 +65,12 @@ class Index extends React.Component<Props, ComponentState> {
     actionValidationErrors(actions: ActionBase[]): string[] {
         let errors: string[] = [];
 
+        const emptyMap = new Map<string, string>()
         // Check for missing APIs
         let apiActions = actions.filter(a => a.actionType === ActionTypes.API_LOCAL);
-        let actionsMissingApis = apiActions.filter(a => !this.props.botInfo.callbacks || !this.props.botInfo.callbacks.find(cb => cb.name === ActionBase.GetPayload(a)));
+        let actionsMissingApis = apiActions.filter(a => !this.props.botInfo.callbacks || !this.props.botInfo.callbacks.find(cb => cb.name === ActionBase.GetPayload(a, emptyMap)));
         // Make unique list of missing APIs
-        let missingAPIs = actionsMissingApis.map(a => `${ActionBase.GetPayload(a)}`)
+        let missingAPIs = actionsMissingApis.map(a => `${ActionBase.GetPayload(a, emptyMap)}`)
                                             .filter((item, i, ar) => ar.indexOf(item) === i);
         errors = missingAPIs.map(api => `Action references API "${api}" not contained by running Bot`);
 
@@ -79,9 +80,9 @@ class Index extends React.Component<Props, ComponentState> {
 
         // Check for missing templates
         let cardActions = actions.filter(a => a.actionType === ActionTypes.CARD);
-        let actionsMissingTemplates = cardActions.filter(a => !this.props.botInfo.templates || !this.props.botInfo.templates.find(cb => cb.name === ActionBase.GetPayload(a)));
+        let actionsMissingTemplates = cardActions.filter(a => !this.props.botInfo.templates || !this.props.botInfo.templates.find(cb => cb.name === ActionBase.GetPayload(a, emptyMap)));
         // Make unique list of missing templates
-        let missingTemplates = actionsMissingTemplates.map(a => `${ActionBase.GetPayload(a)}`)
+        let missingTemplates = actionsMissingTemplates.map(a => `${ActionBase.GetPayload(a, emptyMap)}`)
                                                     .filter((item, i, ar) => ar.indexOf(item) === i);
         errors = errors.concat(missingTemplates.map(template => `Action references Template "${template}" not contained by running Bot`));
  

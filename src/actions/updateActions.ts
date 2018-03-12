@@ -21,11 +21,11 @@ export const editBLISApplicationFulfilled = (application: BlisAppBase): ActionOb
     }
 }
 
-export const editEntityAsync = (key: string, entity: EntityBase): ActionObject => {
-
+export const editEntityAsync = (appId: string, entity: EntityBase): ActionObject => {
     return {
         type: AT.EDIT_ENTITY_ASYNC,
-        entity: entity
+        appId,
+        entity
     }
 }
 

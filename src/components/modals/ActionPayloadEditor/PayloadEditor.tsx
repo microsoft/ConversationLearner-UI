@@ -327,7 +327,7 @@ export default class PayloadEditor extends React.Component<Props, State> {
 
         const matchedOptions = (typeof menuProps.searchText !== 'string' || menuProps.searchText === "")
             ? this.getDefaultMatchedOptions()
-            : this.fuse.search<FuseResult<IOption>>(menuProps.searchText!)
+            : this.fuse.search<FuseResult<IOption>>(menuProps.searchText)
                 .filter((_, i) => i < this.state.maxDisplayedOptions)
                 .map(result => convertMatchedTextIntoMatchedOption(result.item.name, result.matches[0].indices, result.item))
 

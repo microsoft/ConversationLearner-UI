@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
 import { connect } from 'react-redux';
-import { ActionBase, ActionTypes, Template, ActionArgument } from 'blis-models'
+import { ActionBase, ActionTypes, Template, RenderedActionArgument } from 'blis-models'
 import { State } from '../types'
 import * as OF from 'office-ui-fabric-react';
 import { onRenderDetailsHeader } from './ToolTips'
@@ -9,6 +9,7 @@ import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../react-intl-messages'
 import * as Util from '../util'
 import AdaptiveCardViewer from './modals/AdaptiveCardViewer/AdaptiveCardViewer'
+import { EntityIdSerializer } from './modals/ActionPayloadEditor'
 
 class ActionDetailsList extends React.Component<Props, ComponentState> {
     constructor(p: any) {
@@ -89,12 +90,18 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
         let sortedActions = this.sortActions();
 
         let template: Template = null;
-        let actionArguments: ActionArgument[] = [];
+        let actionArguments: RenderedActionArgument[] = [];
         if (this.state.cardViewerAction) {
-            let actionPayload = ActionBase.GetPayload(this.state.cardViewerAction);
+            const entityMap = Util.getDefaultEntityMap(this.props.entities)
+            const actionPayload = ActionBase.GetPayload(this.state.cardViewerAction, entityMap);
             template = this.props.templates.find((t) => t.name === actionPayload);
+            // TODO: This is hack to make adaptive card viewer accept action arguments with pre-rendered values
             actionArguments = ActionBase.GetActionArguments(this.state.cardViewerAction)
-            console.log(`actionArguments: `, actionArguments)
+                .map(aa => ({
+                    ...aa,
+                    value: EntityIdSerializer.serialize(aa.value.json, entityMap)
+                }))
+                .filter(aa => !Util.isNullOrWhiteSpace(aa.value))
         }
 
         return (
@@ -154,10 +161,12 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             maxWidth: 400,
             isResizable: true,
             isMultiline: true,
-            getSortValue: action => ActionBase.GetPayload(action),
+            getSortValue: (action, component) => ActionBase.GetPayload(action, Util.getDefaultEntityMap(component.props.entities)),
             render: (action, component) => {
-                const args = ActionBase.GetActionArgumentValuesAsPlainText(action)
-                        .filter(value => !Util.isNullOrWhiteSpace(value))
+                const entityMap = Util.getDefaultEntityMap(component.props.entities)
+                const args = ActionBase.GetActionArguments(action)
+                    .map<string>(aa => EntityIdSerializer.serialize(aa.value.json, entityMap))
+                    .filter(aa => !Util.isNullOrWhiteSpace(aa))
 
                 return (
                     <div>
@@ -174,7 +183,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                             className={OF.FontClassNames.mediumPlus} 
                             onClick={() => component.props.onSelectAction ? component.props.onSelectAction(action) : null}
                         >
-                            {ActionBase.GetPayload(action)}
+                            {ActionBase.GetPayload(action, entityMap)}
                         </span>
                         {args.length !== 0 &&
                             args.map((argument, i) => <div className="ms-ListItem-primaryText" key={i}>{argument}</div>)

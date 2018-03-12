@@ -24,10 +24,18 @@ export const editActionEpic: Epic<ActionObject, State> = (action$: ActionsObserv
 }
 
 export const editEntityEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
+    return action$.ofType(AT.EDIT_ENTITY_ASYNC)
+        .flatMap(action =>
+            (action.type === AT.EDIT_ENTITY_ASYNC)
+                ? editBlisEntity(action.appId, action.entity)
+                : assertNever())
+}
+
+export const updatePostiveEntityEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
     return action$.ofType(AT.CREATE_ENTITY_FULFILLEDNEGATIVE)
         .flatMap(action =>
             (action.type === AT.CREATE_ENTITY_FULFILLEDNEGATIVE)
-                ? editBlisEntity('', action.currentAppId, action.positiveEntity)
+                ? editBlisEntity(action.currentAppId, action.positiveEntity)
                 : assertNever())
 }
 
