@@ -20,6 +20,7 @@ import { setErrorDisplay } from '../../../actions/displayActions';
 import { ErrorType } from '../../../types/const';
 import { Activity } from 'botframework-directlinejs';
 import { autobind } from 'office-ui-fabric-react/lib/Utilities';
+import { getDefaultEntityMap } from '../../../util';
 
 interface IRenderableColumn extends OF.IColumn {
     render: (x: TrainDialog, component: TrainDialogs) => React.ReactNode
@@ -95,7 +96,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                         let actionId = scorerSteps[scorerSteps.length - 1].labelAction;
                         let action = component.props.actions.find(a => a.actionId == actionId);
                         if (action) {
-                            return <span className={OF.FontClassNames.mediumPlus}>{ActionBase.GetPayload(action)}</span>;
+                            return <span className={OF.FontClassNames.mediumPlus}>{ActionBase.GetPayload(action, getDefaultEntityMap(component.props.entities))}</span>;
                         }
                     }
                 }
@@ -152,10 +153,10 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         actionFilter: null
     }
 
-    toActionFilter(action: ActionBase) : OF.IDropdownOption {
+    toActionFilter(action: ActionBase, entities: EntityBase[]) : OF.IDropdownOption {
         return { 
             key: action.actionId,
-            text: ActionBase.GetPayload(action)
+            text: ActionBase.GetPayload(action, getDefaultEntityMap(this.props.entities))
         }
     }
      
@@ -171,7 +172,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         this.newTeachSessionButton.focus();
         if (this.props.filteredAction) {
             this.setState({
-                actionFilter: this.toActionFilter(this.props.filteredAction)
+                actionFilter: this.toActionFilter(this.props.filteredAction, this.props.entities)
             })
         }
         if (this.props.filteredEntity) {
@@ -184,12 +185,12 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     componentWillReceiveProps(newProps: Props) {
         if (newProps.filteredAction && this.props.filteredAction !== newProps.filteredAction) {
             this.setState({
-                actionFilter: this.toActionFilter(this.props.filteredAction)
+                actionFilter: this.toActionFilter(newProps.filteredAction, newProps.entities)
             })
         }
         if (newProps.filteredEntity && this.props.filteredEntity !== newProps.filteredEntity) {
             this.setState({
-                entityFilter: this.toEntityFilter(this.props.filteredEntity)
+                entityFilter: this.toEntityFilter(newProps.filteredEntity)
             })
         }
         // If train dialogs have been updated, update selected trainDialog too
@@ -468,7 +469,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         }
 
             let entityNames = entitiesInTD.map(e => e.entityName);
-            let actionPayloads = actionsInTD.map(a => ActionBase.GetPayload(a));
+            let actionPayloads = actionsInTD.map(a => ActionBase.GetPayload(a, getDefaultEntityMap(this.props.entities)));
 
             // Then check search terms
             let searchString = variationText.concat(actionPayloads).concat(entityNames).join(' ').toLowerCase();
@@ -547,7 +548,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         onChanged={this.onSelectActionFilter}
                         placeHolder="Filter by Action"
                         options={this.props.actions
-                            .map(a => this.toActionFilter(a))
+                            .map(a => this.toActionFilter(a, this.props.entities))
                             .concat({key: null, text: '---'})
                         }
                     />

@@ -1,4 +1,5 @@
 import * as models from 'blis-models'
+import { EntityBase } from 'blis-models';
 
 export function generateGUID(): string {
     let d = new Date().getTime();
@@ -33,4 +34,9 @@ export function entityDisplayName(entity: models.EntityBase) {
     else {
         return entity.entityName;
     }
+}
+
+// TODO: Remove coupling with the start character on ActionPayloadEditor
+export function getDefaultEntityMap(entities: EntityBase[]): Map<string, string> {
+    return entities.reduce((m, e) => m.set(e.entityId, `$${e.entityName}`), new Map<string, string>())
 }

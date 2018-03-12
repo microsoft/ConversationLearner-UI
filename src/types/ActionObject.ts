@@ -22,6 +22,7 @@ export type UpdateAction = {
     blisApp: BlisAppBase,
 } | {
     type: AT.EDIT_ENTITY_ASYNC,
+    appId: string,
     entity: EntityBase,
 } | {
     type: AT.EDIT_ENTITY_FULFILLED,

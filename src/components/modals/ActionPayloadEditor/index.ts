@@ -1,18 +1,21 @@
 import Editor, { SlateValue } from './PayloadEditor'
 import { defaultOptions } from './MentionPlugin'
 import initialValue from './value'
-import { getEntitiesFromValue, createTextValue } from './utilities'
+import { getEntitiesFromValue } from './utilities'
+import EntityIdSerializer from './slateSerializer'
+import SlateTransformer from './slateTransformer'
 import { IOption } from './models'
 
 const triggerCharacter = defaultOptions.triggerCharacter
 const Utilities = {
     getEntitiesFromValue,
-    createTextValue
+    updateOptionNames: SlateTransformer.updateOptionNames
 }
 export {
     triggerCharacter, 
     SlateValue,
     Editor,
+    EntityIdSerializer,
     IOption,
     initialValue,
     Utilities

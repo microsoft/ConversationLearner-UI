@@ -7,7 +7,7 @@ import Plain from 'slate-plain-serializer'
 import { fetchBotInfoAsync } from '../../actions/fetchActions'
 import { Modal } from 'office-ui-fabric-react/lib/Modal'
 import { ActionBase, ActionTypes, ActionPayload, 
-    ActionArgument, BlisAppBase, EntityBase, TextPayload, EntityType } from 'blis-models'
+    ActionArgument, BlisAppBase, EntityBase, TextPayload, EntityType, RenderedActionArgument } from 'blis-models'
 import ConfirmDeleteModal from './ConfirmDeleteModal'
 import EntityCreatorEditor from './EntityCreatorEditor'
 import AdaptiveCardViewer from './AdaptiveCardViewer/AdaptiveCardViewer'
@@ -25,8 +25,9 @@ import { RouteComponentProps } from 'react-router'
 import { autobind } from 'office-ui-fabric-react/lib/Utilities'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../react-intl-messages'
+import * as Utilities from '../../util'
 
-const TEXT_SLOT = '#API_SLOT#';
+const TEXT_SLOT = '#TEXT_SLOT#';
 
 const convertEntityToOption = (entity: EntityBase): ActionPayloadEditor.IOption =>
     ({
@@ -66,21 +67,25 @@ const getSuggestedTags = (filterText: string, allTags: OF.ITag[], tagsToExclude:
         .filter(tag => tag.name.toLowerCase().startsWith(filterText.toLowerCase()))
 }
 
-const createSlateValue = (content: TextPayload | string): ActionPayloadEditor.SlateValue => {
+const createSlateValue = (content: TextPayload | string, options: ActionPayloadEditor.IOption[]): ActionPayloadEditor.SlateValue => {
     // In the case that we're initiating from ActionArgument.value which is TextPayload instead of serialized TextPayload
     if (typeof content !== 'string') {
-        return Value.fromJSON(content.json)
+        const updatedJson = ActionPayloadEditor.Utilities.updateOptionNames(content.json, options)
+        console.log(`Updated slate value with latest option names: `, updatedJson)
+        return Value.fromJSON(updatedJson)
     }
 
     // If string does not starts with { assume it's the old simple string based payload and user will have to manually load and re-save
     // Otherwise, treat as json as load the json respresentation of the editor which has fully saved entities and doesn't need manual reconstruction
     if (!content.startsWith('{')) {
         console.warn(`You created slate value from basic string: ${content} which may have had entities that are not detected. Please update the payload to fix and re-save.`)
-        return ActionPayloadEditor.Utilities.createTextValue(content)
+        return Plain.deserialize(content)
     }
 
     const payload = JSON.parse(content) as TextPayload
-    const value = Value.fromJSON(payload.json)
+    const updatedJson = ActionPayloadEditor.Utilities.updateOptionNames(payload.json, options)
+    console.log(`Updated slate value with latest option names: `, updatedJson)
+    const value = Value.fromJSON(updatedJson)
 
     return value
 }
@@ -134,7 +139,7 @@ const initialState: ComponentState = {
     requiredEntityTags: [],
     negativeEntityTags: [],
     slateValuesMap: {
-        [TEXT_SLOT]: createSlateValue('')
+        [TEXT_SLOT]: Plain.deserialize('')
     },
     isTerminal: true
 }
@@ -223,6 +228,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             if (nextProps.action && nextProps.action !== this.props.action) {
                 const action = nextProps.action
 
+                const payloadOptions = this.props.entities.map(convertEntityToOption)
                 const negativeEntityTags = convertEntityIdsToTags(action.negativeEntities, nextProps.entities)
                 const expectedEntityTags = convertEntityIdsToTags((action.suggestedEntity ? [action.suggestedEntity] : []), nextProps.entities)
                 /**
@@ -236,14 +242,14 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
                 let slateValuesMap = {}
                 if (action.actionType === ActionTypes.TEXT) {
-                    slateValuesMap[TEXT_SLOT] = createSlateValue(action.payload)
+                    slateValuesMap[TEXT_SLOT] = createSlateValue(action.payload, payloadOptions)
                 }
                 else {
                     let actionPayload = JSON.parse(action.payload) as ActionPayload;
                     if (action.actionType === ActionTypes.API_LOCAL) {
                         selectedApiOptionKey = actionPayload.payload;
                         for (let actionArgument of actionPayload.arguments) {
-                            slateValuesMap[actionArgument.parameter] = createSlateValue(actionArgument.value)
+                            slateValuesMap[actionArgument.parameter] = createSlateValue(actionArgument.value, payloadOptions)
                         }
                     } else if (action.actionType === ActionTypes.CARD) {
                         selectedCardOptionKey = actionPayload.payload;
@@ -253,7 +259,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                             for (let cardTemplateVariable of template.variables) {
                                 const argument = actionPayload.arguments.find(a => a.parameter === cardTemplateVariable.key)
                                 const initialValue = argument ? argument.value : ''
-                                slateValuesMap[cardTemplateVariable.key] = createSlateValue(initialValue)
+                                slateValuesMap[cardTemplateVariable.key] = createSlateValue(initialValue, payloadOptions)
                             }
                         }
                     }
@@ -303,7 +309,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         // Initialize a new empyt slate value for each of the arguments in the callback
         const newSlateValues = apiCallback.arguments
             .reduce((values, argument) => {
-                values[argument] = createSlateValue("")
+                values[argument] = Plain.deserialize('')
                 return values
             }, {})
 
@@ -322,7 +328,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         // Initialize a new empyt slate value for each of the arguments in the callback
         const newSlateValues = template.variables
             .reduce((values, variable) => {
-                values[variable.key] = createSlateValue("")
+                values[variable.key] = Plain.deserialize('')
                 return values
             }, {})
 
@@ -351,12 +357,22 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     getActionArguments(slateValuesMap: {[slot: string]: ActionPayloadEditor.SlateValue}): ActionArgument[] {
         return Object.entries(slateValuesMap)
             .filter(([parameter, value]) => value.document.text.length > 0)
-            .map(([parameter, value]) => ({
+            .map<ActionArgument>(([parameter, value]) => ({
                 parameter,
                 value: {
-                    text: Plain.serialize(value),
                     json: value.toJSON()
                 }
+            }))
+    }
+
+    getRenderedActionArguments(slateValuesMap: {[slot: string]: ActionPayloadEditor.SlateValue}, entities: EntityBase[]): RenderedActionArgument[] {
+        const entityValueMap = Utilities.getDefaultEntityMap(entities)
+
+        return Object.entries(slateValuesMap)
+            .filter(([parameter, value]) => value.document.text.length > 0)
+            .map<RenderedActionArgument>(([parameter, value]) => ({
+                parameter,
+                value: ActionPayloadEditor.EntityIdSerializer.serialize(value, entityValueMap)
             }))
     }
 
@@ -386,7 +402,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             case ActionTypes.TEXT: {
                 const value = this.state.slateValuesMap[TEXT_SLOT]
                 payload = JSON.stringify({
-                    text: Plain.serialize(value),
+                    text: ActionPayloadEditor.EntityIdSerializer.serialize(value, new Map<string, string>(), true),
                     json: value.toJSON()
                 })
                 break;
@@ -492,7 +508,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             isPayloadValid,
             selectedActionTypeOptionKey: actionTypeOption.key,
             slateValuesMap: {
-                [TEXT_SLOT]: createSlateValue('')
+                [TEXT_SLOT]: Plain.deserialize('')
             }
         })
     }
@@ -951,7 +967,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     open={this.state.isCardViewerModalOpen && this.state.selectedCardOptionKey != null}
                     onDismiss={() => this.onCloseCardViewer()}
                     template={this.state.selectedCardOptionKey && this.props.botInfo.templates.find(t => t.name === this.state.selectedCardOptionKey)}
-                    actionArguments={this.state.isCardViewerModalOpen && this.getActionArguments(this.state.slateValuesMap)}
+                    actionArguments={this.state.isCardViewerModalOpen && this.getRenderedActionArguments(this.state.slateValuesMap, this.props.entities)}
                     hideUndefined={false}
                 />
             </Modal>

@@ -43,7 +43,8 @@ const initState: ComponentState = {
     isNegatableVal: false,
     isProgrammaticVal: false,
     editing: false,
-    title: ''
+    title: '',
+    hasPendingChanges: false
 };
 
 interface ComponentState {
@@ -55,6 +56,7 @@ interface ComponentState {
     isProgrammaticVal: boolean
     editing: boolean
     title: string
+    hasPendingChanges: boolean
 }
 
 class EntityCreatorEditor extends React.Component<Props, ComponentState> {
@@ -183,10 +185,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
         } else {
             // Set entity id if we're editing existing id.
             entity.entityId = this.props.entity.entityId
-
-            // TODO: Currently it's not possible to edit an entity, 
-            // and the code below is incorrect because it doesn't pass the app id.
-            // this.props.editEntityAsync(this.props.user.id, entity)
+            this.props.editEntityAsync(appId, entity)
         }
 
         this.props.fetchApplicationTrainingStatusThunkAsync(appId)
@@ -198,8 +197,11 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
     }
 
     onChangedName = (text: string) => {
+        const { entity } = this.props
+        const hasPendingChanges = entity && entity.entityName !== text
         this.setState({
-            entityNameVal: text
+            entityNameVal: text,
+            hasPendingChanges
         })
     }
     onChangedType = (obj: BlisDropdownOption) => {
@@ -322,7 +324,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                     })}
                     required={true}
                     value={this.state.isPrebuilt ? this.getPrebuiltEntityName(this.state.entityTypeVal) : this.state.entityNameVal}
-                    disabled={this.state.editing || this.state.isPrebuilt}
+                    disabled={this.state.isPrebuilt}
                 />
                 <br />
                 <div className="blis-entity-creator-checkbox">
@@ -422,46 +424,41 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                 </div>
                 <div className="blis-modal_footer blis-modal-buttons">
                     <div className="blis-modal-buttons_primary">
-                        {!this.state.editing &&
-                            <OF.PrimaryButton
-                                disabled={(this.onGetNameErrorMessage(this.state.entityNameVal) !== '') && !this.state.isPrebuilt}
-                                onClick={this.onClickSubmit}
-                                ariaDescription={intl.formatMessage({
+                        <OF.PrimaryButton
+                            disabled={(this.onGetNameErrorMessage(this.state.entityNameVal) !== '') && !this.state.isPrebuilt || (this.state.editing && !this.state.hasPendingChanges)}
+                            onClick={this.onClickSubmit}
+                            ariaDescription={this.state.editing
+                                ? intl.formatMessage({
+                                    id: FM.ENTITYCREATOREDITOR_SAVEBUTTON_ARIADESCRIPTION,
+                                    defaultMessage: 'Save'
+                                })
+                                : intl.formatMessage({
                                     id: FM.ENTITYCREATOREDITOR_CREATEBUTTON_ARIADESCRIPTION,
                                     defaultMessage: 'Create'
                                 })}
-                                text={intl.formatMessage({
+                            text={this.state.editing
+                                ? intl.formatMessage({
+                                    id: FM.ENTITYCREATOREDITOR_SAVEBUTTON_TEXT,
+                                    defaultMessage: 'Save'
+                                })
+                                : intl.formatMessage({
                                     id: FM.ENTITYCREATOREDITOR_CREATEBUTTON_TEXT,
                                     defaultMessage: 'Create'
                                 })}
-                            />
-                        }
-                        {!this.state.editing &&
-                            <OF.DefaultButton
-                                onClick={this.onClickCancel}
-                                ariaDescription={intl.formatMessage({
-                                    id: FM.ENTITYCREATOREDITOR_CANCELBUTTON_ARIADESCRIPTION,
-                                    defaultMessage: 'Cancel'
-                                })}
-                                text={intl.formatMessage({
-                                    id: FM.ENTITYCREATOREDITOR_CANCELBUTTON_TEXT,
-                                    defaultMessage: 'Cancel'
-                                })}
-                            />
-                        }
-                        {this.state.editing &&
-                            <OF.PrimaryButton
-                                onClick={this.onClickCancel}
-                                ariaDescription={intl.formatMessage({
-                                    id: FM.ENTITYCREATOREDITOR_DONEBUTTON_ARIADESCRIPTION,
-                                    defaultMessage: 'Done'
-                                })}
-                                text={intl.formatMessage({
-                                    id: FM.ENTITYCREATOREDITOR_DONEBUTTON_TEXT,
-                                    defaultMessage: 'Done'
-                                })}
-                            />
-                        }
+                        />
+
+                        <OF.DefaultButton
+                            onClick={this.onClickCancel}
+                            ariaDescription={intl.formatMessage({
+                                id: FM.ENTITYCREATOREDITOR_CANCELBUTTON_ARIADESCRIPTION,
+                                defaultMessage: 'Cancel'
+                            })}
+                            text={intl.formatMessage({
+                                id: FM.ENTITYCREATOREDITOR_CANCELBUTTON_TEXT,
+                                defaultMessage: 'Cancel'
+                            })}
+                        />
+
                         {this.state.editing && this.props.handleOpenDeleteModal &&
                             <OF.DefaultButton
                                 onClick={() => this.props.handleOpenDeleteModal(this.props.entity.entityId)}
@@ -476,7 +473,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                             />}
                     </div>
                     <div className="blis-modal-buttons_secondary">
-                        {this.state.editing && 
+                        {this.state.editing &&
                             <OF.PrimaryButton
                                 onClick={this.onClickTrainDialogs}
                                 iconProps={{ iconName: 'QueryList' }}
