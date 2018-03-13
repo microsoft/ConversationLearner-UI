@@ -6,7 +6,7 @@ import {
     ActionBase,
     TrainDialog, LogDialog, Teach, Session,
     Memory, UIScoreInput, ScoreInput, ExtractResponse, ScoreResponse
-} from 'blis-models';
+} from 'blis-models'
 import { ErrorType } from '../types/const'
 import { AT } from '../types/ActionTypes'
 import { TipType } from '../components/ToolTips'
