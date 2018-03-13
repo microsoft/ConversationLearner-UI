@@ -6,14 +6,13 @@ import { State } from '../../types'
 import {
     BlisAppBase, TrainScorerStep, Memory, ScoredBase, ScoreInput, ScoreResponse,
     ActionBase, ScoredAction, UnscoredAction, ScoreReason, DialogType, ActionTypes,
-    Template, DialogMode, RenderedActionArgument
-} from 'blis-models';
+    Template, DialogMode, RenderedActionArgument, CardAction
+} from 'blis-models'
 import { createActionAsync } from '../../actions/createActions'
 import { toggleAutoTeach } from '../../actions/teachActions'
 import { PrimaryButton } from 'office-ui-fabric-react';
 import * as OF from 'office-ui-fabric-react';
 import ActionCreatorEditor from './ActionCreatorEditor'
-import { EntityIdSerializer } from './ActionPayloadEditor'
 import { onRenderDetailsHeader } from '../ToolTips'
 import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../react-intl-messages'
@@ -74,8 +73,8 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             render: (action: ActionBase, component) => {
                 const entityMap = Util.getDefaultEntityMap(component.props.entities)
                 const args = ActionBase.GetActionArguments(action)
-                    .map<string>(aa => EntityIdSerializer.serialize(aa.value.json, entityMap))
-                    .filter(aa => !Util.isNullOrWhiteSpace(aa))
+                    .map(aa => aa.renderValue(entityMap))
+                    .filter(s => !Util.isNullOrWhiteSpace(s))
                     
                 return (
                     <div>
@@ -588,16 +587,12 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         }
 
         let template: Template = null;
-        let actionArguments: RenderedActionArgument[] = [];
+        let renderedActionArguments: RenderedActionArgument[] = [];
         if (this.state.cardViewerAction) {
+            const cardAction = new CardAction(this.state.cardViewerAction)
             const entityMap = Util.getDefaultEntityMap(this.props.entities)
-            const actionPayload = ActionBase.GetPayload(this.state.cardViewerAction, entityMap);
-            template = this.props.templates.find((t) => t.name === actionPayload);
-            actionArguments = ActionBase.GetActionArguments(this.state.cardViewerAction)
-                .map(aa => ({
-                    ...aa,
-                    value: EntityIdSerializer.serialize(aa.value.json, entityMap)
-                }))
+            template = this.props.templates.find((t) => t.name === cardAction.templateName)
+            renderedActionArguments = cardAction.renderArguments(entityMap)
         }
 
         return (
@@ -628,7 +623,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                     open={this.state.cardViewerAction != null}
                     onDismiss={() => this.onCloseCardViewer()}
                     template={template}
-                    actionArguments={actionArguments}
+                    actionArguments={renderedActionArguments}
                     hideUndefined={true} 
                 />
             </div>

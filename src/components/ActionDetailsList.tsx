@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
 import { connect } from 'react-redux';
-import { ActionBase, ActionTypes, Template, RenderedActionArgument } from 'blis-models'
+import { ActionBase, ActionTypes, Template, RenderedActionArgument, CardAction, TextAction, ApiAction } from 'blis-models'
 import { State } from '../types'
 import * as OF from 'office-ui-fabric-react';
 import { onRenderDetailsHeader } from './ToolTips'
@@ -9,7 +9,6 @@ import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../react-intl-messages'
 import * as Util from '../util'
 import AdaptiveCardViewer from './modals/AdaptiveCardViewer/AdaptiveCardViewer'
-import { EntityIdSerializer } from './modals/ActionPayloadEditor'
 
 class ActionDetailsList extends React.Component<Props, ComponentState> {
     constructor(p: any) {
@@ -90,17 +89,13 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
         let sortedActions = this.sortActions();
 
         let template: Template = null;
-        let actionArguments: RenderedActionArgument[] = [];
+        let renderedActionArguments: RenderedActionArgument[] = [];
         if (this.state.cardViewerAction) {
+            const cardAction = new CardAction(this.state.cardViewerAction)
             const entityMap = Util.getDefaultEntityMap(this.props.entities)
-            const actionPayload = ActionBase.GetPayload(this.state.cardViewerAction, entityMap);
-            template = this.props.templates.find((t) => t.name === actionPayload);
+            template = this.props.templates.find((t) => t.name === cardAction.templateName);
             // TODO: This is hack to make adaptive card viewer accept action arguments with pre-rendered values
-            actionArguments = ActionBase.GetActionArguments(this.state.cardViewerAction)
-                .map(aa => ({
-                    ...aa,
-                    value: EntityIdSerializer.serialize(aa.value.json, entityMap)
-                }))
+            renderedActionArguments = cardAction.renderArguments(entityMap)
                 .filter(aa => !Util.isNullOrWhiteSpace(aa.value))
         }
 
@@ -122,7 +117,7 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
                     open={this.state.cardViewerAction != null}
                     onDismiss={() => this.onCloseCardViewer()}
                     template={template}
-                    actionArguments={actionArguments}
+                    actionArguments={renderedActionArguments}
                     hideUndefined={true}
                 />
             </div>
@@ -161,12 +156,33 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             maxWidth: 400,
             isResizable: true,
             isMultiline: true,
-            getSortValue: (action, component) => ActionBase.GetPayload(action, Util.getDefaultEntityMap(component.props.entities)),
+            getSortValue: (action, component) => {
+                const entityMap = Util.getDefaultEntityMap(component.props.entities)
+                
+                switch (action.actionType) {
+                    case ActionTypes.TEXT: {
+                        const textAction = new TextAction(action)
+                        return textAction.renderValue(entityMap)
+                    }
+                    case ActionTypes.API_LOCAL: {
+                        const apiAction = new ApiAction(action)
+                        return apiAction.name
+                    }
+                    case ActionTypes.CARD: {
+                        const cardAction = new CardAction(action)
+                        return cardAction.templateName
+                    }
+                    default: {
+                        console.warn(`Could not get sort value for unknown action type: ${action.actionType}`)
+                        return ''
+                    }
+                }
+            },
             render: (action, component) => {
                 const entityMap = Util.getDefaultEntityMap(component.props.entities)
                 const args = ActionBase.GetActionArguments(action)
-                    .map<string>(aa => EntityIdSerializer.serialize(aa.value.json, entityMap))
-                    .filter(aa => !Util.isNullOrWhiteSpace(aa))
+                    .map(aa => aa.renderValue(entityMap))
+                    .filter(s => !Util.isNullOrWhiteSpace(s))
 
                 return (
                     <div>

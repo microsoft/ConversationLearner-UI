@@ -12,7 +12,6 @@ import * as ReactMarkdown from 'react-markdown'
 class Dashboard extends React.Component<Props, {}> {
 
     render() {
-        let key = 0;
         return (
             <div className="blis-page">
                 <span className={FontClassNames.xxLarge}>
@@ -30,9 +29,11 @@ class Dashboard extends React.Component<Props, {}> {
                 {this.props.validationErrors.length > 0 && 
                 (
                     <div className="blis-errorpanel" >
-                        <div className={FontClassNames.medium}></div>
-                        {this.props.validationErrors.map((message: any) => { 
-                                return message.length === 0 ? <br key={key++}></br> : <div key={key++} className={FontClassNames.medium}>{message}</div>;
+                        <div className={FontClassNames.medium}>Please ensure that your bot code is the correct version and running the expected file.</div>
+                        {this.props.validationErrors.map((message: any, i) => { 
+                                return message.length === 0
+                                    ? <br key={i}></br>
+                                    : <div key={i} className={FontClassNames.medium}>{message}</div>
                             })
                         }
                     </div>

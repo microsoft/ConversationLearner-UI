@@ -8,7 +8,7 @@ import { RouteComponentProps } from 'react-router'
 import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { BlisAppBase, ActionBase, ActionTypes } from 'blis-models'
+import { BlisAppBase, ActionBase, ActionTypes, ApiAction, CardAction } from 'blis-models'
 import { State } from '../../../types';
 import { setErrorDisplay } from '../../../actions/displayActions';
 import { Icon } from 'office-ui-fabric-react/lib/Icon'
@@ -58,35 +58,47 @@ class Index extends React.Component<Props, ComponentState> {
 
         if (newProps.actions !== this.props.actions) {
             let validationErrors = this.actionValidationErrors(newProps.actions);
-            this.setState({validationErrors: validationErrors});
+            this.setState({ validationErrors: validationErrors });
         }
     }
 
     actionValidationErrors(actions: ActionBase[]): string[] {
-        let errors: string[] = [];
-
-        const emptyMap = new Map<string, string>()
         // Check for missing APIs
-        let apiActions = actions.filter(a => a.actionType === ActionTypes.API_LOCAL);
-        let actionsMissingApis = apiActions.filter(a => !this.props.botInfo.callbacks || !this.props.botInfo.callbacks.find(cb => cb.name === ActionBase.GetPayload(a, emptyMap)));
+        const actionsMissingCallbacks = actions
+            .filter(a => a.actionType === ActionTypes.API_LOCAL)
+            .map(a => new ApiAction(a))
+            .filter(a => !this.props.botInfo.callbacks || !this.props.botInfo.callbacks.some(cb => cb.name === a.name))
+
         // Make unique list of missing APIs
-        let missingAPIs = actionsMissingApis.map(a => `${ActionBase.GetPayload(a, emptyMap)}`)
-                                            .filter((item, i, ar) => ar.indexOf(item) === i);
-        errors = missingAPIs.map(api => `Action references API "${api}" not contained by running Bot`);
+        const uniqueCallbackNames = actionsMissingCallbacks
+            .map(a => a.name)
+            .filter((item, i, ar) => ar.indexOf(item) === i)
+
+        const apiActionErrors = uniqueCallbackNames.map(api => `Action references API "${api}" not contained by running Bot.`)
 
         // Check for bad templates
-        let badTemplates = this.props.botInfo.templates.filter(t => t.validationError != null);
-        errors = errors.concat(badTemplates.map(a => a.validationError));
+        const badTemplateErrors = this.props.botInfo.templates
+            .filter(t => t.validationError !== null)
+            .map(t => t.validationError)
 
         // Check for missing templates
-        let cardActions = actions.filter(a => a.actionType === ActionTypes.CARD);
-        let actionsMissingTemplates = cardActions.filter(a => !this.props.botInfo.templates || !this.props.botInfo.templates.find(cb => cb.name === ActionBase.GetPayload(a, emptyMap)));
+        const actionsMissingTemplates = actions
+            .filter(a => a.actionType === ActionTypes.CARD)
+            .map(a => new CardAction(a))
+            .filter(a => !this.props.botInfo.templates || !this.props.botInfo.templates.some(cb => cb.name === a.templateName))
+
         // Make unique list of missing templates
-        let missingTemplates = actionsMissingTemplates.map(a => `${ActionBase.GetPayload(a, emptyMap)}`)
-                                                    .filter((item, i, ar) => ar.indexOf(item) === i);
-        errors = errors.concat(missingTemplates.map(template => `Action references Template "${template}" not contained by running Bot`));
- 
-        return errors;
+        const uniqueTemplateNames = actionsMissingTemplates
+            .map(a => a.templateName)
+            .filter((item, i, ar) => ar.indexOf(item) === i)
+
+        const missingTemplateErrors = uniqueTemplateNames.map(template => `Action references Template "${template}" not contained by running Bot`)
+
+        return [
+            ...apiActionErrors,
+            ...badTemplateErrors,
+            ...missingTemplateErrors
+        ]
     }
 
     render() {
