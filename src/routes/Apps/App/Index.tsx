@@ -148,20 +148,28 @@ class Index extends React.Component<Props, ComponentState> {
                         app={app}
                     />
                     <div className={`blis-nav ${FontClassNames.mediumPlus}`}>
-                        <div className="blis-nav_section">
-                            <NavLink className="blis-nav-link" to={{ pathname: `${match.url}/settings`, state: { app } }}>
-                                <Icon iconName="Settings" />&nbsp;&nbsp;Settings
+                        <div className={`blis-nav_section`}>
+                            <NavLink className="blis-nav-link" exact to={{ pathname: `${match.url}`, state: { app } }}>
+                                <Icon iconName="BIDashboard" /><span>Dashboard</span>
                             </NavLink>
-                        </div>
-                        <div className={`blis-nav_section blis-nav_section--links ${FontClassNames.medium}`}>
-                            <NavLink className="blis-nav-link" exact to={{ pathname: `${match.url}`, state: { app } }}>Dashboard</NavLink>
-                            <NavLink className="blis-nav-link" to={{ pathname: `${match.url}/entities`, state: { app } }}>Entities</NavLink>
-                            <NavLink className="blis-nav-link" to={{ pathname: `${match.url}/actions`, state: { app } }}>Actions</NavLink>
-                            <NavLink className="blis-nav-link" to={{ pathname: `${match.url}/trainDialogs`, state: { app } }}>Train Dialogs</NavLink>
-                            <NavLink className="blis-nav-link" to={{ pathname: `${match.url}/logDialogs`, state: { app } }}>Log Dialogs</NavLink>
-                        </div>
-                        <div className="blis-nav_section">
-                            <NavLink className="blis-nav-link" exact={true} to="/home"><Icon iconName="Back" />&nbsp;&nbsp;App List</NavLink>
+                            <NavLink className="blis-nav-link" to={{ pathname: `${match.url}/entities`, state: { app } }}>
+                                <Icon iconName="List" /><span>Entities</span><span className="count">10</span>
+                            </NavLink>
+                            <NavLink className="blis-nav-link" to={{ pathname: `${match.url}/actions`, state: { app } }}>
+                                <Icon iconName="List" /><span>Actions</span><span className="count">9</span>
+                            </NavLink>
+                            <NavLink className="blis-nav-link" to={{ pathname: `${match.url}/trainDialogs`, state: { app } }}>
+                                <Icon iconName="List" /><span>Train Dialogs</span><span className="count">9</span>
+                            </NavLink>
+                            <NavLink className="blis-nav-link" to={{ pathname: `${match.url}/logDialogs`, state: { app } }}>
+                                <Icon iconName="List" /><span>Log Dialogs</span><span className="count">9</span>
+                            </NavLink>
+                            <NavLink className="blis-nav-link" to={{ pathname: `${match.url}/settings`, state: { app } }}>
+                                <Icon iconName="Settings" /><span>Settings</span>
+                            </NavLink>
+                            <NavLink className="blis-nav-link" exact={true} to="/home">
+                                <Icon iconName="Back" /><span>App List</span>
+                            </NavLink>
                         </div>
                     </div>
                 </div>

@@ -17,22 +17,12 @@
     border-top: 1px solid var(--color-neutralQuaternary);
     color: var(--color-neutralSecondaryAlt);
 }
-.blis-nav_section--links .blis-nav-link {
-    margin-left: 0.8em;
-}
-.blis-nav_section--links .blis-nav-link:first-of-type {
-    padding-top: 1.2em;
-}
-.blis-nav_section--links .blis-nav-link:last-of-type {
-    padding-bottom: 1.2em;
-}
-.blis-nav_section:last-of-type {
-    border-bottom: 1px solid var(--color-neutralQuaternary);
-}
 
 .blis-nav-link {
-    display: block;
-    padding: 0.6em 0;
+    display: grid;
+    grid-template: auto / min-content 1fr min-content;
+    grid-gap: 1em;
+    padding: 0.6em;
 }
 .blis-nav-link:link,
 .blis-nav-link:visited {
@@ -41,6 +31,7 @@
 }
 .blis-nav-link.active,
 .blis-nav-link:hover {
+    background: rgba(0,0,0,0.05);
     color: var(--color-neutralSecondary);
 }
 
