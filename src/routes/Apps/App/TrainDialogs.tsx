@@ -506,11 +506,11 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         onClick={() => this.onClickNewTeachSession()}
                         ariaDescription={intl.formatMessage({
                             id: FM.TRAINDIALOGS_CREATEBUTTONARIALDESCRIPTION,
-                            defaultMessage: 'Create a New Teach Session'
+                            defaultMessage: 'Create a New Train Dialog'
                         })}
                         text={intl.formatMessage({
                             id: FM.TRAINDIALOGS_CREATEBUTTONTITLE,
-                            defaultMessage: 'New Teach Session'
+                            defaultMessage: 'New Train Dialog'
                         })}
                         componentRef={component => this.newTeachSessionButton = component}
                     />

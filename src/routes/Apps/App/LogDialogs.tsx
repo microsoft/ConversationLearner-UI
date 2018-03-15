@@ -397,11 +397,11 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                         onClick={this.onClickNewChatSession}
                         ariaDescription={this.props.intl.formatMessage({
                             id: FM.LOGDIALOGS_CREATEBUTTONARIALDESCRIPTION,
-                            defaultMessage: 'Create a New Chat Session'
+                            defaultMessage: 'Create a New Log Dialog'
                         })}
                         text={this.props.intl.formatMessage({
                             id: FM.LOGDIALOGS_CREATEBUTTONTITLE,
-                            defaultMessage: 'New Chat Session'
+                            defaultMessage: 'New Log Dialog'
                         })}
                         componentRef={component => this.newChatSessionButton = component}
                     />

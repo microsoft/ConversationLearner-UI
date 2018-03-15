@@ -467,8 +467,8 @@ export default {
         // LogDialogs
         [FM.LOGDIALOGS_TITLE]: 'Log Dialogs',
         [FM.LOGDIALOGS_SUBTITLE]: 'Use this tool to test the current versions of your application, to check if you are progressing on the right track...',
-        [FM.LOGDIALOGS_CREATEBUTTONTITLE]: 'New Chat Session',
-        [FM.LOGDIALOGS_CREATEBUTTONARIALDESCRIPTION]: 'Create a New Chat Session',
+        [FM.LOGDIALOGS_CREATEBUTTONTITLE]: 'New Log Dialog',
+        [FM.LOGDIALOGS_CREATEBUTTONARIALDESCRIPTION]: 'Create a New Log Dialog',
         [FM.LOGDIALOGS_SESSIONCREATIONWARNING_TITLE]: 'You may not create chat session at this time. Please try again after training as completed.',
         [FM.LOGDIALOGS_SESSIONCREATIONWARNING_PRIMARYBUTTON]: 'Ok',
         [FM.LOGDIALOGS_FIRSTINPUT]: 'First Input',
@@ -589,8 +589,8 @@ export default {
         // Train Dialogs
         [FM.TRAINDIALOGS_TITLE]: 'Train Dialogs',
         [FM.TRAINDIALOGS_SUBTITLE]: 'Use this tool to train and improve the current versions of your application...',
-        [FM.TRAINDIALOGS_CREATEBUTTONTITLE]: 'New Teach Session',
-        [FM.TRAINDIALOGS_CREATEBUTTONARIALDESCRIPTION]: 'Create a New Teach Session',
+        [FM.TRAINDIALOGS_CREATEBUTTONTITLE]: 'New Train Dialog',
+        [FM.TRAINDIALOGS_CREATEBUTTONARIALDESCRIPTION]: 'Create a New Train Dialog',
         [FM.TRAINDIALOGS_FIRSTINPUT]: 'First Input',
         [FM.TRAINDIALOGS_LASTINPUT]: 'Last Input',
         [FM.TRAINDIALOGS_LASTRESPONSE]: 'Last Response',
