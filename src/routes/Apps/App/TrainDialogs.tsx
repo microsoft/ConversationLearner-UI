@@ -485,6 +485,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         return (
             <div className="blis-page">
                 <div className={`blis-dialog-title blis-dialog-title--teach ${OF.FontClassNames.xxLarge}`}>
+                    <OF.Icon iconName="EditContact" />
                     <FormattedMessage
                         id={FM.TRAINDIALOGS_TITLE}
                         defaultMessage="Train Dialogs"
@@ -533,14 +534,17 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         trainDialog={null}
                     />
                 </div>
-                <span className={`blisSearch-label ${OF.FontClassNames.medium}`}>
-                    Search:
-                </span>
-                <OF.SearchBox
-                    className={OF.FontClassNames.medium}
-                    onChange={(newValue) => this.onChangeSearchString(newValue)}
-                    onSearch={(newValue) => this.onChangeSearchString(newValue)}
-                />
+                <div>
+                    <OF.Label htmlFor="search" className={OF.FontClassNames.medium}>
+                        Search:
+                    </OF.Label>
+                    <OF.SearchBox
+                        id="search"
+                        className={OF.FontClassNames.medium}
+                        onChange={(newValue) => this.onChangeSearchString(newValue)}
+                        onSearch={(newValue) => this.onChangeSearchString(newValue)}
+                    />
+                </div>
                 <div className="blis-modal-dropdowns">             
                     <OF.Dropdown
                         label="Entity:"

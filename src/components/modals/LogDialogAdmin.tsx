@@ -218,6 +218,9 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
 
         return (
             <div className={`blis-dialog-admin ${OF.FontClassNames.large}`}>
+                <div className={OF.FontClassNames.xxLarge}>
+                    <OF.Icon iconName="UserFollowed" />&nbsp;Log Dialog
+                </div>
                 {this.props.selectedActivity && (this.state.senderType === SenderType.User ? (
                     <div className="blis-dialog-admin__content">
                         <div className="blis-wc-message blis-wc-message--user">User Input</div>
@@ -238,7 +241,6 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
                     </div>
                     ) : (
                         <div className="blis-dialog-admin__content">
-                            <div className="blis-dialog-admin-title">Log Dialog</div>
                             <div>Click on User or Bot dialogs to the left to view how the Bot handled the User's conversation.</div>
                             <div>You can then make corrections to the Bot's behavior.</div>
                         </div>

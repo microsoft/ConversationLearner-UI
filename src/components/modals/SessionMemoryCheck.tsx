@@ -22,9 +22,8 @@ class SessionMemoryCheck extends React.Component<Props, {}> {
             <Modal
                 isOpen={this.props.open}
                 isBlocking={false}
-                containerClassName="blis-modal blis-modal--wide blis-modal--border"
+                containerClassName="blis-modal blis-modal--wide"
             >
-
                 <MemoryTable
                     memories={this.props.memories}
                     prevMemories={[]}

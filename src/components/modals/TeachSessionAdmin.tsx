@@ -14,7 +14,7 @@ import ActionScorer from './ActionScorer';
 import EntityExtractor from './EntityExtractor';
 import MemoryTable from './MemoryTable';
 import { FM } from '../../react-intl-messages'
-import { FontClassNames } from 'office-ui-fabric-react'
+import { Icon, FontClassNames } from 'office-ui-fabric-react'
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import './TeachSessionAdmin.css'
 
@@ -96,6 +96,9 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
 
         return (
             <div className={`blis-dialog-admin ${FontClassNames.large}`}>
+                <div className={FontClassNames.xxLarge}>
+                    <Icon iconName="EditContact" />&nbsp;Train Dialog
+                </div>
                 {this.props.teachSession.mode === DialogMode.Extractor ? (
                     <div className="blis-dialog-admin__content">
                         <div className="blis-wc-message blis-wc-message--user">

@@ -55,7 +55,7 @@ class AdaptiveCardViewer extends React.Component<Props, {}> {
                 isOpen={this.props.open}
                 onDismiss={this.onDismiss}
                 isBlocking={false}
-                containerClassName="blis-modal blis-modal--border"
+                containerClassName="blis-modal"
             >
                <div className="blis-wc-disabled wc-app wc-card wc-adaptive-card">
                     <div dangerouslySetInnerHTML={{__html: card.outerHTML}} />

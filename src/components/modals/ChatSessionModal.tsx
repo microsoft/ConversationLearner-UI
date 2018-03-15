@@ -2,7 +2,7 @@ import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { PrimaryButton, DefaultButton } from 'office-ui-fabric-react';
+import { FontClassNames, Icon, PrimaryButton, DefaultButton } from 'office-ui-fabric-react';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { State } from '../../types';
 import Webchat from '../Webchat'
@@ -53,6 +53,11 @@ class SessionWindow extends React.Component<Props, ComponentState> {
                         </div>
                         <div className="blis-chatmodal_controls">
                             <div className="blis-chatmodal_admin-controls">
+                                <div className={`blis-dialog-admin ${FontClassNames.large}`}>
+                                    <div className={FontClassNames.xxLarge}>
+                                        <Icon iconName="UserFollowed" />&nbsp;Log Dialog
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

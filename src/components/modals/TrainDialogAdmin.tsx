@@ -15,7 +15,6 @@ import {
     TrainScorerStep, Memory, UnscoredAction, ScoreResponse,
     TextVariation, ExtractResponse, DialogType, SenderType, DialogMode
 } from 'blis-models'
-import { FontClassNames } from 'office-ui-fabric-react'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 
@@ -279,7 +278,10 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
 
         let renderData = this.getRenderData();
         return (
-            <div className={`blis-dialog-admin ${FontClassNames.large}`}>
+            <div className={`blis-dialog-admin ${OF.FontClassNames.large}`}>
+                <div className={OF.FontClassNames.xxLarge}>
+                    <OF.Icon iconName="EditContact" />&nbsp;Train Dialog
+                </div>
                 {this.props.selectedActivity && (this.state.senderType === SenderType.User
                     ? (
                         <div className="blis-dialog-admin__content">
