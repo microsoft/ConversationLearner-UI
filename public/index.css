@@ -459,7 +459,7 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
 .blis-dialog-admin-title {
   font-weight: bold;
   padding: 0.5rem 0;
-  border-bottom: 1px solid black;
+  border-bottom: 1px solid rgba(0,0,0,0.25);
 }
 
 .blis-dialog-admin-chosen-action {
