@@ -6,8 +6,7 @@ import { connect } from 'react-redux'
 import Plain from 'slate-plain-serializer'
 import { fetchBotInfoAsync } from '../../actions/fetchActions'
 import { Modal } from 'office-ui-fabric-react/lib/Modal'
-import { ActionBase, ActionTypes, ActionPayload, 
-    ActionArgument, BlisAppBase, EntityBase, TextPayload, EntityType } from 'blis-models'
+import { ActionBase, ActionTypes, BlisAppBase, EntityBase, EntityType, RenderedActionArgument, TextAction, ApiAction, CardAction, IActionArgument } from 'blis-models'
 import ConfirmDeleteModal from './ConfirmDeleteModal'
 import EntityCreatorEditor from './EntityCreatorEditor'
 import AdaptiveCardViewer from './AdaptiveCardViewer/AdaptiveCardViewer'
@@ -26,7 +25,7 @@ import { autobind } from 'office-ui-fabric-react/lib/Utilities'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../react-intl-messages'
 
-const TEXT_SLOT = '#API_SLOT#';
+const TEXT_SLOT = '#TEXT_SLOT#';
 
 const convertEntityToOption = (entity: EntityBase): ActionPayloadEditor.IOption =>
     ({
@@ -45,7 +44,7 @@ const convertOptionToTag = (option: ActionPayloadEditor.IOption): OF.ITag =>
         key: option.id,
         name: option.name
     })
-    
+
 const convertEntityIdsToTags = (ids: string[], entities: EntityBase[]): OF.ITag[] => {
     return ids
         .map<EntityBase>(entityId => entities.find(e => e.entityId === entityId))
@@ -66,23 +65,21 @@ const getSuggestedTags = (filterText: string, allTags: OF.ITag[], tagsToExclude:
         .filter(tag => tag.name.toLowerCase().startsWith(filterText.toLowerCase()))
 }
 
-const createSlateValue = (content: TextPayload | string): ActionPayloadEditor.SlateValue => {
-    // In the case that we're initiating from ActionArgument.value which is TextPayload instead of serialized TextPayload
-    if (typeof content !== 'string') {
-        return Value.fromJSON(content.json)
+const createSlateValue = (content: object | string, options: ActionPayloadEditor.IOption[]): ActionPayloadEditor.SlateValue => {
+    if (typeof content === 'string') {
+        // If string does not starts with { assume it's the old simple string based payload and user will have to manually load and re-save
+        // Otherwise, treat as json as load the json respresentation of the editor which has fully saved entities and doesn't need manual reconstruction
+        if (!content.startsWith('{')) {
+            console.warn(`You created slate value from basic string: ${content} which may have had entities that are not detected. Please update the payload to fix and re-save.`)
+            return Plain.deserialize(content)
+        }
+
+        content = JSON.parse(content) as object
     }
 
-    // If string does not starts with { assume it's the old simple string based payload and user will have to manually load and re-save
-    // Otherwise, treat as json as load the json respresentation of the editor which has fully saved entities and doesn't need manual reconstruction
-    if (!content.startsWith('{')) {
-        console.warn(`You created slate value from basic string: ${content} which may have had entities that are not detected. Please update the payload to fix and re-save.`)
-        return ActionPayloadEditor.Utilities.createTextValue(content)
-    }
-
-    const payload = JSON.parse(content) as TextPayload
-    const value = Value.fromJSON(payload.json)
-
-    return value
+    const updatedJson = ActionPayloadEditor.Utilities.updateOptionNames(content, options)
+    console.log(`Updated slate value with latest option names: `, updatedJson)
+    return Value.fromJSON(updatedJson)
 }
 
 const actionTypeOptions = Object.values(ActionTypes)
@@ -97,7 +94,7 @@ interface ComponentState {
     apiOptions: OF.IDropdownOption[]
     cardOptions: OF.IDropdownOption[]
     selectedApiOptionKey: string | number | null
-    selectedCardOptionKey: string | number  | null
+    selectedCardOptionKey: string | number | null
     isEditing: boolean
     isEntityEditorModalOpen: boolean
     isCardViewerModalOpen: boolean
@@ -111,7 +108,7 @@ interface ComponentState {
     requiredEntityTagsFromPayload: OF.ITag[]
     requiredEntityTags: OF.ITag[]
     negativeEntityTags: OF.ITag[]
-    slateValuesMap: {[slot: string]: ActionPayloadEditor.SlateValue}
+    slateValuesMap: { [slot: string]: ActionPayloadEditor.SlateValue }
     isTerminal: boolean
 }
 
@@ -134,7 +131,7 @@ const initialState: ComponentState = {
     requiredEntityTags: [],
     negativeEntityTags: [],
     slateValuesMap: {
-        [TEXT_SLOT]: createSlateValue('')
+        [TEXT_SLOT]: Plain.deserialize('')
     },
     isTerminal: true
 }
@@ -223,38 +220,32 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             if (nextProps.action && nextProps.action !== this.props.action) {
                 const action = nextProps.action
 
+                const payloadOptions = this.props.entities.map(convertEntityToOption)
                 const negativeEntityTags = convertEntityIdsToTags(action.negativeEntities, nextProps.entities)
                 const expectedEntityTags = convertEntityIdsToTags((action.suggestedEntity ? [action.suggestedEntity] : []), nextProps.entities)
-                /**
-                 * Special processing for local API responses:
-                 * TODO: Remove this after schema redesign
-                 * Current this is depending on knowledge that the name of function is the first part of the payload separated by a space
-                 * It should be explicit field of the payload object instead of substring.
-                 */
                 let selectedApiOptionKey: string | null = null;
                 let selectedCardOptionKey: string | null = null;
 
                 let slateValuesMap = {}
                 if (action.actionType === ActionTypes.TEXT) {
-                    slateValuesMap[TEXT_SLOT] = createSlateValue(action.payload)
-                }
-                else {
-                    let actionPayload = JSON.parse(action.payload) as ActionPayload;
-                    if (action.actionType === ActionTypes.API_LOCAL) {
-                        selectedApiOptionKey = actionPayload.payload;
-                        for (let actionArgument of actionPayload.arguments) {
-                            slateValuesMap[actionArgument.parameter] = createSlateValue(actionArgument.value)
-                        }
-                    } else if (action.actionType === ActionTypes.CARD) {
-                        selectedCardOptionKey = actionPayload.payload;
-                        const template = this.props.botInfo.templates.find(t => t.name === selectedCardOptionKey)
-                        if (template) {
-                            // For each template variable initialize to the associated argument value or default to empty string
-                            for (let cardTemplateVariable of template.variables) {
-                                const argument = actionPayload.arguments.find(a => a.parameter === cardTemplateVariable.key)
-                                const initialValue = argument ? argument.value : ''
-                                slateValuesMap[cardTemplateVariable.key] = createSlateValue(initialValue)
-                            }
+                    const textAction = new TextAction(action)
+                    slateValuesMap[TEXT_SLOT] = createSlateValue(textAction.value, payloadOptions)
+                } else if (action.actionType === ActionTypes.API_LOCAL) {
+                    const apiAction = new ApiAction(action)
+                    selectedApiOptionKey = apiAction.name
+                    for (let actionArgument of apiAction.arguments) {
+                        slateValuesMap[actionArgument.parameter] = createSlateValue(actionArgument.value, payloadOptions)
+                    }
+                } else if (action.actionType === ActionTypes.CARD) {
+                    const cardAction = new CardAction(action)
+                    selectedCardOptionKey = cardAction.templateName
+                    const template = this.props.botInfo.templates.find(t => t.name === selectedCardOptionKey)
+                    if (template) {
+                        // For each template variable initialize to the associated argument value or default to empty string
+                        for (let cardTemplateVariable of template.variables) {
+                            const argument = cardAction.arguments.find(a => a.parameter === cardTemplateVariable.key)
+                            const initialValue = argument ? argument.value : ''
+                            slateValuesMap[cardTemplateVariable.key] = createSlateValue(initialValue, payloadOptions)
                         }
                     }
                 }
@@ -264,7 +255,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                         const newEntities = ActionPayloadEditor.Utilities.getEntitiesFromValue(value).map(convertOptionToTag)
                         return [...entities, ...newEntities]
                     }, [])
-                    
+
                 const requiredEntityTags = convertEntityIdsToTags(action.requiredEntities, nextProps.entities)
                     .filter(t => !requiredEntityTagsFromPayload.some(tag => tag.key === t.key))
 
@@ -303,7 +294,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         // Initialize a new empyt slate value for each of the arguments in the callback
         const newSlateValues = apiCallback.arguments
             .reduce((values, argument) => {
-                values[argument] = createSlateValue("")
+                values[argument] = Plain.deserialize('')
                 return values
             }, {})
 
@@ -322,7 +313,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         // Initialize a new empyt slate value for each of the arguments in the callback
         const newSlateValues = template.variables
             .reduce((values, variable) => {
-                values[variable.key] = createSlateValue("")
+                values[variable.key] = Plain.deserialize('')
                 return values
             }, {})
 
@@ -348,21 +339,30 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         })
     }
 
-    getActionArguments(slateValuesMap: {[slot: string]: ActionPayloadEditor.SlateValue}): ActionArgument[] {
+    getActionArguments(slateValuesMap: { [slot: string]: ActionPayloadEditor.SlateValue }): IActionArgument[] {
         return Object.entries(slateValuesMap)
             .filter(([parameter, value]) => value.document.text.length > 0)
-            .map(([parameter, value]) => ({
+            .map<IActionArgument>(([parameter, value]) => ({
                 parameter,
                 value: {
-                    text: Plain.serialize(value),
                     json: value.toJSON()
                 }
             }))
     }
 
+    // TODO: Investigate alternative to get around need to use EntityIdSerializer directly is to construct mock CardAction and call .renderArguments()
+    getRenderedActionArguments(slateValuesMap: { [slot: string]: ActionPayloadEditor.SlateValue }, entities: EntityBase[]): RenderedActionArgument[] {
+        return Object.entries(slateValuesMap)
+            .filter(([parameter, value]) => value.document.text.length > 0)
+            .map<RenderedActionArgument>(([parameter, value]) => ({
+                parameter,
+                value: Plain.serialize(value)// ActionPayloadEditor.EntityIdSerializer.serialize(value, entityValueMap)
+            }))
+    }
+
     onClickSubmit = () => {
         let payload: string = null;
-        
+
         /**
          * If action type if TEXT
          * Then payload map has single value named TEXT_SLOT:
@@ -386,7 +386,6 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             case ActionTypes.TEXT: {
                 const value = this.state.slateValuesMap[TEXT_SLOT]
                 payload = JSON.stringify({
-                    text: Plain.serialize(value),
                     json: value.toJSON()
                 })
                 break;
@@ -492,7 +491,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             isPayloadValid,
             selectedActionTypeOptionKey: actionTypeOption.key,
             slateValuesMap: {
-                [TEXT_SLOT]: createSlateValue('')
+                [TEXT_SLOT]: Plain.deserialize('')
             }
         })
     }
@@ -589,19 +588,19 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
     onChangePayloadEditor = (value: ActionPayloadEditor.SlateValue, slot: string = null) => {
         console.log(`ActionCreatorEditor.onChangePayloadEditor: `, slot)
-        let newArguments = {...this.state.slateValuesMap}
+        let newArguments = { ...this.state.slateValuesMap }
         newArguments[slot] = value;
 
         const requiredEntityTagsFromPayload = Object.values(newArguments)
             .map(value => ActionPayloadEditor.Utilities.getEntitiesFromValue(value).map(convertOptionToTag))
-            .reduce((a,b) => a.concat(b))
-            
+            .reduce((a, b) => a.concat(b))
+
         // If we added entity to a payload which was already in the list of required entities remove it to avoid duplicates.
         const requiredEntityTags = this.state.requiredEntityTags.filter(tag => !requiredEntityTagsFromPayload.some(t => t.key === tag.key))
         const isPayloadValid = this.state.selectedActionTypeOptionKey !== ActionTypes.TEXT
             ? true
             : value.document.text.length !== 0
-        
+
         this.setState({
             isPayloadValid,
             slateValuesMap: newArguments,
@@ -612,8 +611,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
     saveDisabled(): boolean {
         return (this.state.selectedActionTypeOptionKey === ActionTypes.API_LOCAL
-        ? this.state.selectedApiOptionKey === null
-        : !this.state.isPayloadValid)
+            ? this.state.selectedApiOptionKey === null
+            : !this.state.isPayloadValid)
     }
 
     @autobind
@@ -624,7 +623,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
     render() {
         // Disable payload if we're editing existing action and no API or CARD data available
-        const isPayloadDisabled = 
+        const isPayloadDisabled =
             (this.state.selectedActionTypeOptionKey === ActionTypes.API_LOCAL
                 && (this.state.isEditing || this.state.apiOptions.length === 0))
             ||
@@ -709,14 +708,13 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                     iconProps={{ iconName: 'Sync' }}
                                 />
                             </div>
-                        )}
+                            )}
 
-                        {this.state.selectedActionTypeOptionKey === ActionTypes.CARD 
+                        {this.state.selectedActionTypeOptionKey === ActionTypes.CARD
                             && this.state.selectedCardOptionKey
                             && (this.props.botInfo.templates.find(t => t.name === this.state.selectedCardOptionKey) ?
                                 (this.props.botInfo.templates.find(t => t.name === this.state.selectedCardOptionKey).variables
-                                    .map(cardTemplateVariable =>
-                                    {
+                                    .map(cardTemplateVariable => {
                                         return (
                                             <React.Fragment key={cardTemplateVariable.key}>
                                                 <OF.Label className="blis-label">{cardTemplateVariable.key} <HelpIcon tipType={ToolTip.TipType.ACTION_ARGUMENTS}></HelpIcon></OF.Label>
@@ -731,82 +729,81 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                             </React.Fragment>
                                         )
                                     })
-                                ) : 
+                                ) :
                                 <div className="blis-errorpanel" >
                                     <div>ERROR: Can't Find Template: ${this.state.selectedCardOptionKey}</div>
                                 </div>
                             )
                         }
 
-                        {this.state.selectedActionTypeOptionKey === ActionTypes.API_LOCAL 
+                        {this.state.selectedActionTypeOptionKey === ActionTypes.API_LOCAL
                             && this.state.selectedApiOptionKey
                             && (this.props.botInfo.callbacks.find(t => t.name === this.state.selectedApiOptionKey) ?
                                 (this.props.botInfo.callbacks.find(t => t.name === this.state.selectedApiOptionKey).arguments
-                                    .map(apiArgument =>
-                                    {
+                                    .map(apiArgument => {
                                         return (
                                             <React.Fragment key={apiArgument}>
-                                            <OF.Label>{apiArgument} <HelpIcon tipType={ToolTip.TipType.ACTION_ARGUMENTS}></HelpIcon></OF.Label>
-                                            <ActionPayloadEditor.Editor
-                                                options={optionsAvailableForPayload}
-                                                value={this.state.slateValuesMap[apiArgument]}
-                                                placeholder={''}
-                                                onChange={eState => this.onChangePayloadEditor(eState, apiArgument)}
-                                                onSubmit={() => this.onSubmitPayloadEditor()}
-                                                disabled={isPayloadDisabled}
-                                            />
+                                                <OF.Label>{apiArgument} <HelpIcon tipType={ToolTip.TipType.ACTION_ARGUMENTS}></HelpIcon></OF.Label>
+                                                <ActionPayloadEditor.Editor
+                                                    options={optionsAvailableForPayload}
+                                                    value={this.state.slateValuesMap[apiArgument]}
+                                                    placeholder={''}
+                                                    onChange={eState => this.onChangePayloadEditor(eState, apiArgument)}
+                                                    onSubmit={() => this.onSubmitPayloadEditor()}
+                                                    disabled={isPayloadDisabled}
+                                                />
                                             </React.Fragment>
                                         )
                                     })
-                                ) : 
-                                    <div className="blis-errorpanel" >
-                                        <div>ERROR: Missing API: ${this.state.selectedApiOptionKey}</div>
-                                    </div>
+                                ) :
+                                <div className="blis-errorpanel" >
+                                    <div>ERROR: Missing API: ${this.state.selectedApiOptionKey}</div>
+                                </div>
                             )
                         }
 
                         {this.state.selectedActionTypeOptionKey === ActionTypes.TEXT
-                        && (<div className={(this.state.isPayloadValid ? '' : 'editor--error')}>
-                            <div>
-                                <OF.Label>Response... <HelpIcon tipType={this.state.selectedActionTypeOptionKey === ActionTypes.API_LOCAL ?
+                            && (<div className={(this.state.isPayloadValid ? '' : 'editor--error')}>
+                                <div>
+                                    <OF.Label>Response... <HelpIcon tipType={this.state.selectedActionTypeOptionKey === ActionTypes.API_LOCAL ?
                                         ToolTip.TipType.ACTION_ARGUMENTS : ToolTip.TipType.ACTION_RESPONSE_TEXT} /></OF.Label>
-                                <ActionPayloadEditor.Editor
-                                    options={optionsAvailableForPayload}
-                                    value={this.state.slateValuesMap[TEXT_SLOT]}
-                                    placeholder="Phrase..."
-                                    onChange={eState => this.onChangePayloadEditor(eState, TEXT_SLOT)}
-                                    onSubmit={() => this.onSubmitPayloadEditor()}
-                                    disabled={isPayloadDisabled}
-                                />
+                                    <ActionPayloadEditor.Editor
+                                        options={optionsAvailableForPayload}
+                                        value={this.state.slateValuesMap[TEXT_SLOT]}
+                                        placeholder="Phrase..."
+                                        onChange={eState => this.onChangePayloadEditor(eState, TEXT_SLOT)}
+                                        onSubmit={() => this.onSubmitPayloadEditor()}
+                                        disabled={isPayloadDisabled}
+                                    />
+                                </div>
+                                {!this.state.isPayloadValid &&
+                                    (<div>
+                                        <p className="ms-TextField-errorMessage css-83 errorMessage_9719d15e">
+                                            <OF.Icon iconName="Error" /><span aria-live="assertive" data-automation-id="error-message">Response is required</span>
+                                        </p>
+                                    </div>)}
                             </div>
-                            {!this.state.isPayloadValid &&
-                                (<div>
-                                    <p className="ms-TextField-errorMessage css-83 errorMessage_9719d15e">
-                                        <OF.Icon iconName="Error" /><span aria-live="assertive" data-automation-id="error-message">Response is required</span>
-                                    </p>
-                                </div>)}
-                        </div>
-                        )}
+                            )}
 
                         {this.state.selectedActionTypeOptionKey !== ActionTypes.CARD
-                        && (<div className="blis-action-creator--expected-entities">
-                            <TC.TagPicker
-                                label="Expected Entity in Response..."
-                                onResolveSuggestions={(text, tags) => this.onResolveExpectedEntityTags(text, tags)}
-                                onRenderItem={this.onRenderExpectedTag}
-                                getTextFromItem={item => item.name}
-                                onChange={tags => this.onChangeExpectedEntityTags(tags)}
-                                pickerSuggestionsProps={
-                                    {
-                                        suggestionsHeaderText: 'Entities',
-                                        noResultsFoundText: 'No Entities Found'
+                            && (<div className="blis-action-creator--expected-entities">
+                                <TC.TagPicker
+                                    label="Expected Entity in Response..."
+                                    onResolveSuggestions={(text, tags) => this.onResolveExpectedEntityTags(text, tags)}
+                                    onRenderItem={this.onRenderExpectedTag}
+                                    getTextFromItem={item => item.name}
+                                    onChange={tags => this.onChangeExpectedEntityTags(tags)}
+                                    pickerSuggestionsProps={
+                                        {
+                                            suggestionsHeaderText: 'Entities',
+                                            noResultsFoundText: 'No Entities Found'
+                                        }
                                     }
-                                }
-                                selectedItems={this.state.expectedEntityTags}
-                                tipType={ToolTip.TipType.ACTION_SUGGESTED}
-                            />
-                        </div>
-                        )}
+                                    selectedItems={this.state.expectedEntityTags}
+                                    tipType={ToolTip.TipType.ACTION_SUGGESTED}
+                                />
+                            </div>
+                            )}
 
                         <div className="blis-action-creator--required-entities">
                             <BlisTagPicker
@@ -865,20 +862,20 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                         <OF.PrimaryButton
                             disabled={this.saveDisabled()}
                             onClick={() => this.onClickSubmit()}
-                            ariaDescription={this.state.isEditing ? 
+                            ariaDescription={this.state.isEditing ?
                                 intl.formatMessage({
                                     id: FM.ACTIONCREATOREDITOR_SAVEBUTTON_ARIADESCRIPTION,
                                     defaultMessage: 'Save'
-                                }) : 
+                                }) :
                                 intl.formatMessage({
                                     id: FM.ACTIONCREATOREDITOR_CREATEBUTTON_ARIADESCRIPTION,
                                     defaultMessage: 'Create'
                                 })}
-                            text={this.state.isEditing ? 
+                            text={this.state.isEditing ?
                                 intl.formatMessage({
                                     id: FM.ACTIONCREATOREDITOR_SAVEBUTTON_TEXT,
                                     defaultMessage: 'Save'
-                                }) : 
+                                }) :
                                 intl.formatMessage({
                                     id: FM.ACTIONCREATOREDITOR_CREATEBUTTON_TEXT,
                                     defaultMessage: 'Create'
@@ -944,14 +941,14 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     open={this.state.isEntityEditorModalOpen}
                     entity={null}
                     handleClose={() => this.onCloseEntityEditor()}
-                    handleOpenDeleteModal={() => {}}
+                    handleOpenDeleteModal={() => { }}
                     entityTypeFilter={null}
                 />
                 <AdaptiveCardViewer
                     open={this.state.isCardViewerModalOpen && this.state.selectedCardOptionKey != null}
                     onDismiss={() => this.onCloseCardViewer()}
                     template={this.state.selectedCardOptionKey && this.props.botInfo.templates.find(t => t.name === this.state.selectedCardOptionKey)}
-                    actionArguments={this.state.isCardViewerModalOpen && this.getActionArguments(this.state.slateValuesMap)}
+                    actionArguments={this.state.isCardViewerModalOpen && this.getRenderedActionArguments(this.state.slateValuesMap, this.props.entities)}
                     hideUndefined={false}
                 />
             </Modal>

@@ -157,6 +157,13 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
     // Return merge of extract responses and text variations
     allResponses(): ExtractResponse[] {
         return [...ModelUtils.ToExtractResponses(this.state.newTextVariations).map(er => addMissingEntityData(er, this.props.entities)), ...this.props.extractResponses]
+            .map(e => ({
+                ...e,
+                definitions: {
+                    ...e.definitions,
+                    entities: this.props.entities
+                }
+            }))
     }
     onClickUndoChanges() {
         this.props.clearExtractResponses();

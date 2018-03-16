@@ -17,6 +17,7 @@ import { deleteLogDialogThunkAsync } from '../../../actions/deleteActions';
 import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { FM } from '../../../react-intl-messages'
 import { Activity } from 'botframework-directlinejs';
+import { getDefaultEntityMap } from '../../../util';
 
 interface IRenderableColumn extends OF.IColumn {
     render: (x: LogDialog, component: LogDialogs) => React.ReactNode
@@ -118,7 +119,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                         let actionId = scorerSteps[scorerSteps.length - 1].predictedAction;
                         let action = component.props.actions.find(a => a.actionId == actionId);
                         if (action) {
-                            return <span className={OF.FontClassNames.mediumPlus}>{ActionBase.GetPayload(action)}</span>;
+                            return <span className={OF.FontClassNames.mediumPlus}>{ActionBase.GetPayload(action, getDefaultEntityMap(component.props.entities))}</span>;
                         }
                     }
                 }

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
 import { connect } from 'react-redux';
-import { ActionBase, ActionTypes, Template, ActionArgument } from 'blis-models'
+import { ActionBase, ActionTypes, Template, RenderedActionArgument, CardAction, TextAction, ApiAction } from 'blis-models'
 import { State } from '../types'
 import * as OF from 'office-ui-fabric-react';
 import { onRenderDetailsHeader } from './ToolTips'
@@ -89,12 +89,14 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
         let sortedActions = this.sortActions();
 
         let template: Template = null;
-        let actionArguments: ActionArgument[] = [];
+        let renderedActionArguments: RenderedActionArgument[] = [];
         if (this.state.cardViewerAction) {
-            let actionPayload = ActionBase.GetPayload(this.state.cardViewerAction);
-            template = this.props.templates.find((t) => t.name === actionPayload);
-            actionArguments = ActionBase.GetActionArguments(this.state.cardViewerAction)
-            console.log(`actionArguments: `, actionArguments)
+            const cardAction = new CardAction(this.state.cardViewerAction)
+            const entityMap = Util.getDefaultEntityMap(this.props.entities)
+            template = this.props.templates.find((t) => t.name === cardAction.templateName);
+            // TODO: This is hack to make adaptive card viewer accept action arguments with pre-rendered values
+            renderedActionArguments = cardAction.renderArguments(entityMap)
+                .filter(aa => !Util.isNullOrWhiteSpace(aa.value))
         }
 
         return (
@@ -115,7 +117,7 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
                     open={this.state.cardViewerAction != null}
                     onDismiss={() => this.onCloseCardViewer()}
                     template={template}
-                    actionArguments={actionArguments}
+                    actionArguments={renderedActionArguments}
                     hideUndefined={true}
                 />
             </div>
@@ -154,10 +156,33 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             maxWidth: 400,
             isResizable: true,
             isMultiline: true,
-            getSortValue: action => ActionBase.GetPayload(action),
+            getSortValue: (action, component) => {
+                const entityMap = Util.getDefaultEntityMap(component.props.entities)
+                
+                switch (action.actionType) {
+                    case ActionTypes.TEXT: {
+                        const textAction = new TextAction(action)
+                        return textAction.renderValue(entityMap)
+                    }
+                    case ActionTypes.API_LOCAL: {
+                        const apiAction = new ApiAction(action)
+                        return apiAction.name
+                    }
+                    case ActionTypes.CARD: {
+                        const cardAction = new CardAction(action)
+                        return cardAction.templateName
+                    }
+                    default: {
+                        console.warn(`Could not get sort value for unknown action type: ${action.actionType}`)
+                        return ''
+                    }
+                }
+            },
             render: (action, component) => {
-                const args = ActionBase.GetActionArgumentValuesAsPlainText(action)
-                        .filter(value => !Util.isNullOrWhiteSpace(value))
+                const entityMap = Util.getDefaultEntityMap(component.props.entities)
+                const args = ActionBase.GetActionArguments(action)
+                    .map(aa => aa.renderValue(entityMap))
+                    .filter(s => !Util.isNullOrWhiteSpace(s))
 
                 return (
                     <div>
@@ -174,7 +199,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                             className={OF.FontClassNames.mediumPlus} 
                             onClick={() => component.props.onSelectAction ? component.props.onSelectAction(action) : null}
                         >
-                            {ActionBase.GetPayload(action)}
+                            {ActionBase.GetPayload(action, entityMap)}
                         </span>
                         {args.length !== 0 &&
                             args.map((argument, i) => <div className="ms-ListItem-primaryText" key={i}>{argument}</div>)

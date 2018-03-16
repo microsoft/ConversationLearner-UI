@@ -1,5 +1,3 @@
-import { Value } from 'slate'
-import initialValue from "./value"
 import { IOption, NodeTypes } from "./models"
 
 /**
@@ -104,15 +102,4 @@ const depthFirstSearch = (root: INode, predicate: (n: INode) => boolean, exclude
             .reduce((a, b) => [...a, ...b], [])
 
     return [...nodes, ...childNodes]
-}
-
-export const createTextValue = (text?: string) => {
-    const slateValue = Value.fromJSON(initialValue)
-
-    return typeof text !== "string"
-        ? slateValue
-        : slateValue
-            .change()
-            .insertText(text)
-            .value
 }

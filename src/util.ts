@@ -1,4 +1,5 @@
 import * as models from 'blis-models'
+import { EntityBase } from 'blis-models';
 
 export function generateGUID(): string {
     let d = new Date().getTime();
@@ -39,7 +40,7 @@ export function packageReferences(app: models.BlisAppBase): models.PackageRefere
     return [...app.packageVersions || [], {packageId: app.devPackageId, packageVersion: 'Master'}] as models.PackageReference[]
 }
 
-export function editingPackageId(app: models.BlisAppBase, activeApps: { [appId: string]: string}): string {
-    // If no editing version has been set, use master (i.e. devPackage)
-    return activeApps[app.appId] || app.devPackageId;          
+// TODO: Remove coupling with the start character on ActionPayloadEditor
+export function getDefaultEntityMap(entities: EntityBase[]): Map<string, string> {
+    return entities.reduce((m, e) => m.set(e.entityId, `$${e.entityName}`), new Map<string, string>())
 }

@@ -258,7 +258,7 @@ export const editBlisAction = (key: string, appId: string, blisActionId: string,
     })
     .catch(err => handleError(obs, err, AT.EDIT_ACTION_ASYNC)));
 };
-export const editBlisEntity = (key: string, appId: string, entity: EntityBase): Observable<ActionObject> => {
+export const editBlisEntity = (appId: string, entity: EntityBase): Observable<ActionObject> => {
   const blisClient = ClientFactory.getInstance(AT.EDIT_ENTITY_ASYNC)
   return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.entitiesUpdate(appId, entity)
     .then(updatedEntity => {

@@ -18,7 +18,7 @@
   "dependencies": {
     "adaptivecards": "^1.0.0-beta9",
     "axios": "^0.16.2",
-    "blis-models": "0.127.0",
+    "blis-models": "0.129.0",
     "blis-webchat": "^0.100.2",
     "botframework-directlinejs": "^0.9.12",
     "draft-js": "^0.10.4",
@@ -37,7 +37,7 @@
     "react-redux-typescript": "^2.3.0",
     "react-router-dom": "^4.2.2",
     "react-scoped-style": "^0.3.0",
-    "react-scripts-ts": "2.6.0",
+    "react-scripts-ts": "2.13.0",
     "react-simple-auth": "^1.0.0",
     "redux": "^3.7.2",
     "redux-auth-wrapper": "^2.0.2",
@@ -53,6 +53,7 @@
     "cibuild": "cross-env REACT_APP_AAD_APP_ID=38f847d3-2b83-43ef-b833-50573ef2eda1 CI=false react-scripts-ts build",
     "cibuildprod": "cross-env CI=false react-scripts-ts build",
     "test": "react-scripts-ts test --env=jsdom",
+    "test:debug": "react-scripts-ts --inspect-brk test --runInBand --env=jsdom",
     "eject": "react-scripts-ts eject",
     "tsc": "tsc",
     "builduipackage": "tsc -p ./publish/tsconfig.json && tsc -p ./scripts/tsconfig.json && node ./scripts/publish.js"
