@@ -13,7 +13,7 @@ import {
     Memory, TrainDialog, TrainRound,
     LogDialog, LogRound, LogScorerStep,
     ActionBase, ExtractResponse, DialogMode,
-    DialogType, ModelUtils, SenderType
+    DialogType, ModelUtils, SenderType, FilledEntity
 } from 'blis-models'
 
 interface ComponentState {
@@ -155,14 +155,20 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
             let round = this.props.logDialog.rounds[prevIndex];
             if (round.scorerSteps.length > 0) {
                 let scorerStep = round.scorerSteps[0];
-                memories = scorerStep.input.filledEntities.map<Memory>((fe) => 
-                    ({
-                        entityName: this.props.entities.find(e => e.entityId === fe.entityId).entityName,
-                        entityValues: fe.values
-                    }))
+                memories = this.filledEntities2Memory(scorerStep.input.filledEntities);
             }
         }
         return memories;
+    }
+
+    filledEntities2Memory(filledEntities: FilledEntity[]): Memory[] {
+        return  filledEntities.map<Memory>((fe) => {
+            let entity = this.props.entities.find(e => e.entityId === fe.entityId);
+            return ({
+                entityName: entity ? entity.entityName : `MISSING ENTITY`,
+                entityValues: fe.values
+            })
+        });
     }
 
     render() {
@@ -185,11 +191,7 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
                 scorerStep = round.scorerSteps[this.state.scoreIndex]
                 if (scorerStep && scorerStep.predictedAction) {
                     action = this.props.actions.find(a => a.actionId === scorerStep.predictedAction);
-                    memories = scorerStep.input.filledEntities.map<Memory>((fe) => 
-                        ({
-                            entityName: this.props.entities.find(e => e.entityId === fe.entityId).entityName,
-                            entityValues: fe.values
-                        }));
+                    memories = this.filledEntities2Memory(scorerStep.input.filledEntities);
                 }
             }
             prevMemories = this.getPrevMemories();
@@ -249,20 +251,18 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
                     <div className="blis-dialog-admin__content">
                         <div className="blis-dialog-admin-title">Action</div>
                         <div>
-                            {action &&
-                                <ActionScorer
-                                    app={this.props.app}
-                                    canEdit={this.props.canEdit}
-                                    dialogType={DialogType.LOGDIALOG}
-                                    sessionId={this.props.logDialog.logDialogId}
-                                    autoTeach={false}
-                                    dialogMode={dialogMode}
-                                    scoreResponse={scorerStep.predictionDetails}
-                                    scoreInput={scorerStep.input}
-                                    memories={memories}
-                                    onActionSelected={this.onActionScorerSubmit}
-                                />
-                            }
+                            <ActionScorer
+                                app={this.props.app}
+                                canEdit={this.props.canEdit}
+                                dialogType={DialogType.LOGDIALOG}
+                                sessionId={this.props.logDialog.logDialogId}
+                                autoTeach={false}
+                                dialogMode={dialogMode}
+                                scoreResponse={scorerStep.predictionDetails}
+                                scoreInput={scorerStep.input}
+                                memories={memories}
+                                onActionSelected={this.onActionScorerSubmit}
+                            />
                         </div>
                     </div>
                 }

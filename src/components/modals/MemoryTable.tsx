@@ -51,7 +51,7 @@ const columns: IRenderableColumn[] = [
         render: (entity, component) => {
             const entityValues = component.getEntityValues(entity)
             
-            return <React.Fragment>
+            return (<React.Fragment>
                 {entityValues.map((value, i) => {
                     const changeClass = memoryChangeClassMap[value.changeStatus] || ''
                     let renderedValue = <span>{value.prefix}<span className={`${changeClass} ${value.isPrebuilt ? 'blis-font--action' : ''}`}>{value.displayText}</span></span>
@@ -62,7 +62,7 @@ const columns: IRenderableColumn[] = [
                     
                     return <span className={`${OF.FontClassNames.mediumPlus} blis-font--preserve`} key={i}>{renderedValue}</span>
                 })}
-            </React.Fragment>
+            </React.Fragment>)
         },
         getSortValue: entity => ''
     },
@@ -227,7 +227,8 @@ class MemoryTable extends React.Component<Props, ComponentState> {
         const entity = this.props.entities.find(e => e.entityName == entityName)
         if (!entity) {
             console.warn(`Attempted to render entity: ${entityName} for column: ${column.name} but the entity could not be found.`)
-            return 'ERROR';
+            return (column.key === `entityName`) ? 
+                <span className="blis-font--warning">MISSING ENTITY</span> : '';
         }
 
         return column.render(entity, this)

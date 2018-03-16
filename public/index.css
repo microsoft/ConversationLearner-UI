@@ -279,6 +279,18 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
   padding: 1em;
 }
 
+
+.blis-modal_subheader {
+  display: block;
+  text-align: center;
+  padding-bottom: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+.blis-underline {
+  border-bottom: 1px solid black;
+}
+
 .blis-modal_body {
   position: relative;
   overflow-y: auto;

@@ -540,10 +540,16 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         // Need to reassemble to scored item has full action info and reason
         scoredItems = scoredItems.map(e => {
             let action = this.props.actions.find(ee => ee.actionId === e.actionId);
-            let score = (e as ScoredAction).score;
-            let reason = score ? null : this.calculateReason(e as UnscoredAction);
-            return { ...action, reason: reason, score: score }
-        });
+            if (action) {
+                let score = (e as ScoredAction).score;
+                let reason = score ? null : this.calculateReason(e as UnscoredAction);
+                return { ...action, reason: reason, score: score }
+            }
+            else {
+                // Don't include actions that no longer exist
+                return null;
+            }
+        }).filter(i => i != null);
 
         // Add any new actions that weren't included in scores
         // NOTE: This will go away when we always rescore the step

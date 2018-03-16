@@ -246,7 +246,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     onUndoTeachStep(popRound: boolean) {
         ((this.props.createTeachSessionFromUndoThunkAsync(this.props.app.appId, this.state.teachSession, popRound, this.props.user.name, this.props.user.id) as any) as Promise<TeachWithHistory>)
             .then(teachWithHistory => {
-                if (teachWithHistory.discrepancies.length === 0) {
+                if (teachWithHistory.replayDiscrepancies.length === 0 && teachWithHistory.validationErrors.length === 0) {
                     this.setState({
                         teachSession: teachWithHistory.teach,
                         activities: teachWithHistory.history,
@@ -263,7 +263,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     })
                     this.props.setErrorDisplay(
                         ErrorType.Error, unable,
-                        [reason, ...teachWithHistory.discrepancies], null);
+                        [reason, ...teachWithHistory.replayDiscrepancies, ...teachWithHistory.validationErrors], null);
                 }
             })
             .catch(error => {
@@ -298,7 +298,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
         ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app.appId, newTrainDialog, this.props.user.name, this.props.user.id) as any) as Promise<TeachWithHistory>)
             .then(teachWithHistory => {
-                if (teachWithHistory.discrepancies.length === 0) {
+                if (teachWithHistory.replayDiscrepancies.length === 0 && teachWithHistory.validationErrors.length === 0) {
                     this.setState({
                         teachSession: teachWithHistory.teach,
                         activities: teachWithHistory.history,
@@ -318,7 +318,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     })
                     this.props.setErrorDisplay(
                         ErrorType.Error, unable,
-                        [reason, ...teachWithHistory.discrepancies], null);
+                        [reason, ...teachWithHistory.replayDiscrepancies, ...teachWithHistory.validationErrors], null);
                 }
             })
             .catch(error => {
@@ -330,7 +330,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
         ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app.appId, newTrainDialog, this.props.user.name, this.props.user.id, sourceTrainDialogId, lastExtractChanged) as any) as Promise<TeachWithHistory>)
             .then(teachWithHistory => {
-                if (teachWithHistory.discrepancies.length === 0) {
+                if (teachWithHistory.replayDiscrepancies.length === 0 && teachWithHistory.validationErrors.length === 0) {
                     this.setState({
                         teachSession: teachWithHistory.teach,
                         activities: teachWithHistory.history,
@@ -350,7 +350,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     })
                     this.props.setErrorDisplay(
                         ErrorType.Error, unable,
-                        [reason, ...teachWithHistory.discrepancies], null);
+                        [reason, ...teachWithHistory.replayDiscrepancies, ...teachWithHistory.validationErrors], null);
                 }
             })
             .catch(error => {

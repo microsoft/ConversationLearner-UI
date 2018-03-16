@@ -11,11 +11,11 @@ import {
     TrainingStatus,
     TrainingStatusCode,
     AppDefinition, 
-    UIAppList
+    UIAppList,
+    TeachWithHistory
 } from 'blis-models'
 import { Dispatch } from 'redux'
 import * as ClientFactory from '../services/clientFactory'
-import { Activity } from 'botframework-directlinejs';
 
 export const fetchAllTrainDialogsAsync = (key: string, blisAppID: string): ActionObject => {
     return {
@@ -37,9 +37,9 @@ export const fetchHistoryThunkAsync = (appId: string, trainDialog: TrainDialog, 
         const blisClient = ClientFactory.getInstance(AT.FETCH_HISTORY_ASYNC,)
         dispatch(fetchHistoryAsync(appId, trainDialog, userName, userId))
 
-        const activities = await blisClient.history(appId, trainDialog, userName, userId)
-        dispatch(fetchHistoryFulfilled(activities))
-        return activities
+        const teachWithHistory = await blisClient.history(appId, trainDialog, userName, userId)
+        dispatch(fetchHistoryFulfilled(teachWithHistory))
+        return teachWithHistory
     }
 }
 
@@ -53,11 +53,11 @@ export const fetchHistoryAsync = (blisAppID: string, trainDialog: TrainDialog, u
     }
 }
 
-export const fetchHistoryFulfilled = (activities: Activity[]): ActionObject => {
+export const fetchHistoryFulfilled = (teachWithHistory: TeachWithHistory): ActionObject => {
     // Needs a fulfilled version to handle response from Epic
     return {
         type: AT.FETCH_HISTORY_FULFILLED,
-        activities: activities
+        teachWithHistory: teachWithHistory
     }
 }
 

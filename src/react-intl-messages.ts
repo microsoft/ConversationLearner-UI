@@ -49,6 +49,9 @@ export enum FM {
     APPSLIST_COLUMNS_LOGGING = 'AppsList.columns.logging',
     APPSLIST_COLUMNS_ACTIONS = 'AppsList.columns.actions',
 
+    // Generic Buttons
+    BUTTON_OK = 'Button.OK',
+
     // Dashboard
     DASHBOARD_TITLE = 'Dashboard.title',
     DASHBOARD_SUBTITLE = 'Dashboard.subtitle',
@@ -79,6 +82,8 @@ export enum FM {
     LOGDIALOGS_LASTRESPONSE = 'LogDialogs.lastResponse',
     LOGDIALOGS_TURNS = 'LogDialogs.turns',
     LOGDIALOGS_LOGDISABLED = 'LogDialogs.logdisabled',
+    LOGDIALOGS_VALIDATION_MODAL_TITLE = 'LogDialogs.validationmodal.title',
+    LOGDIALOGS_VALIDATION_MODAL_MESSAGE = 'LogDialogs.validation.modal.message',
 
     // Settings
     SETTINGS_TITLE = 'Settings.title',
@@ -428,6 +433,9 @@ export default {
         [FM.APPSLIST_COLUMNS_LOGGING]: 'Logging Enabled',
         [FM.APPSLIST_COLUMNS_ACTIONS]: 'Actions',
 
+        // Generic Buttons
+        [FM.BUTTON_OK]: 'OK',
+
         // Dashboard
         [FM.DASHBOARD_TITLE]: 'Overview',
         [FM.DASHBOARD_SUBTITLE]: `Facts & statistics about the app's data at any period of time...`,
@@ -458,6 +466,8 @@ export default {
         [FM.LOGDIALOGS_LASTRESPONSE]: 'Last Response',
         [FM.LOGDIALOGS_TURNS]: 'Turns',
         [FM.LOGDIALOGS_LOGDISABLED]: 'Logging is disabled',
+        [FM.LOGDIALOGS_VALIDATION_MODAL_TITLE]: 'Validation Errors',
+        [FM.LOGDIALOGS_VALIDATION_MODAL_MESSAGE]: 'This LogDialog is incompatible with the current version of the application',
 
         // Settings
         [FM.SETTINGS_TITLE]: 'Settings',

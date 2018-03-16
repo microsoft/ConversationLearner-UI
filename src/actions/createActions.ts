@@ -240,7 +240,7 @@ export const createTeachSessionFromHistoryThunkAsync = (appId: string, trainDial
             const teachWithHistory = await blisClient.teachSessionFromHistory(appId, trainDialog, userName, userId, lastExtractChanged);
             
             // Delete source trainDialog if requested and no discrepancies during replay
-            if (deleteSourceId && teachWithHistory.discrepancies.length === 0) {
+            if (deleteSourceId && teachWithHistory.replayDiscrepancies.length === 0 && teachWithHistory.validationErrors.length === 0) {
                 dispatch(deleteTrainDialogThunkAsync(userId, appId, deleteSourceId));
             }
             dispatch(createTeachSessionFromHistoryFulfilled(teachWithHistory))
