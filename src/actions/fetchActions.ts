@@ -1,7 +1,6 @@
 import { ActionObject } from '../types'
 import { AT } from '../types/ActionTypes'
 import {
-    BlisAppBase,
     BotInfo,
     EntityBase,
     ActionBase,
@@ -11,7 +10,8 @@ import {
     Teach,
     TrainingStatus,
     TrainingStatusCode,
-    AppDefinition
+    AppDefinition, 
+    UIAppList
 } from 'blis-models'
 import { Dispatch } from 'redux'
 import * as ClientFactory from '../services/clientFactory'
@@ -61,11 +61,12 @@ export const fetchHistoryFulfilled = (activities: Activity[]): ActionObject => {
     }
 }
 
-export const fetchAllLogDialogsAsync = (key: string, blisAppID: string): ActionObject => {
+export const fetchAllLogDialogsAsync = (key: string, blisAppID: string, packageId: string): ActionObject => {
     return {
         type: AT.FETCH_LOG_DIALOGS_ASYNC,
         key: key,
-        blisAppID: blisAppID
+        blisAppID: blisAppID,
+        packageId: packageId
     }
 }
 
@@ -99,10 +100,10 @@ export const fetchApplicationsAsync = (key: string, userId: string): ActionObjec
     }
 }
 
-export const fetchApplicationsFulfilled = (apps: BlisAppBase[]): ActionObject => {
+export const fetchApplicationsFulfilled = (uiAppList: UIAppList): ActionObject => {
     return {
         type: AT.FETCH_APPLICATIONS_FULFILLED,
-        allBlisApps: apps
+        uiAppList: uiAppList
     }
 }
 
@@ -189,11 +190,12 @@ export const fetchAllEntitiesFulfilled = (entities: EntityBase[]): ActionObject 
     }
 }
 
-export const fetchAppSourceAsync = (key: string, blisAppID: string): ActionObject => {
+export const fetchAppSourceAsync = (key: string, blisAppID: string, packageId: string): ActionObject => {
     //needs a fulfilled version to handle response from Epic
     return {
         type: AT.FETCH_APPSOURCE_ASYNC,
-        blisAppID: blisAppID
+        blisAppID: blisAppID,
+        packageId: packageId
     }
 }
 

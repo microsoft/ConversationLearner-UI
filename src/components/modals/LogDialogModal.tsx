@@ -74,7 +74,7 @@ class LogDialogModal extends React.Component<Props, ComponentState> {
 
     render() {
         const { intl } = this.props;
-        let chatDisable = this.state.pendingExtractionChanges ? <div className="wc-disable"/> : null;
+        let chatDisable = this.state.pendingExtractionChanges ? <div className="blis-overlay"/> : null;
 
         return (
             <div>
@@ -93,7 +93,6 @@ class LogDialogModal extends React.Component<Props, ComponentState> {
                                     onPostActivity={activity => this.onPostWebChatActivity(activity)}
                                     hideInput={true}
                                     focusInput={true}
-                                    viewOnly={true}
                                 />
                                 {chatDisable}
                             </div>
@@ -101,6 +100,7 @@ class LogDialogModal extends React.Component<Props, ComponentState> {
                                 <div className="blis-chatmodal_admin-controls">
                                     <LogDialogAdmin
                                         app={this.props.app}
+                                        canEdit={this.props.canEdit}
                                         logDialog={this.props.logDialog}
                                         selectedActivity={this.state.selectedActivity}
                                         onEdit={(logDialogId: string, newTrainDialog: TrainDialog, lastExtractChanged: boolean) => this.props.onEdit(logDialogId, newTrainDialog, lastExtractChanged)}
@@ -116,7 +116,7 @@ class LogDialogModal extends React.Component<Props, ComponentState> {
                             </div>
                             <div className="blis-modal-buttons_secondary">
                                 <DefaultButton
-                                    disabled={this.state.pendingExtractionChanges}
+                                    disabled={this.state.pendingExtractionChanges || !this.props.canEdit}
                                     onClick={() => this.onClickDelete()}
                                     ariaDescription={intl.formatMessage({
                                         id: FM.LOGDIALOGMODAL_DEFAULTBUTTON_ARIADESCRIPTION,
@@ -171,6 +171,7 @@ const mapStateToProps = (state: State, ownProps: ReceivedProps) => {
 
 export interface ReceivedProps {
     open: boolean,
+    canEdit: boolean,
     onClose: () => void,
     onEdit: (logDialogId: string, newTrainDialog: TrainDialog, lastExtractChanged: boolean) => void,
     onDelete: ()=> void,

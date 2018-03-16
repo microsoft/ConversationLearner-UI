@@ -1,6 +1,6 @@
 import { ActionObject, ErrorType } from '../types'
 import { AT } from '../types/ActionTypes'
-import { BlisAppBase, EntityBase, ActionBase, TrainDialog, LogDialog, Teach, Session, TrainingStatusCode, TeachWithHistory, UITeachResponse } from 'blis-models'
+import { BlisAppBase, EntityBase, ActionBase, TrainDialog, LogDialog, Teach, Session, TrainingStatusCode, TeachWithHistory, UITeachResponse, SessionCreateParams } from 'blis-models'
 import { Dispatch } from 'redux'
 import { setErrorDisplay } from './displayActions'
 import * as ClientFactory from '../services/clientFactory'
@@ -121,6 +121,44 @@ export const createActionFulfilled = (action: ActionBase, actionId: string): Act
     }
 }
 
+// --------------------------
+// createAppTag
+// --------------------------
+export const createAppTagAsync = (currentAppId: string, tagName: string, makeLive: boolean): ActionObject =>
+    ({
+        type: AT.CREATE_APP_TAG_ASYNC,
+        tagName: tagName,
+        makeLive: makeLive,
+        currentAppId: currentAppId
+    })
+
+export const createAppTagFulfilled = (app: BlisAppBase): ActionObject => {
+    return {
+        type: AT.CREATE_APP_TAG_FULFILLED,
+        blisApp: app
+    }
+}
+
+export const createAppTagThunkAsync = (key: string, appId: string, tagName: string, makeLive: boolean) => {
+    return async (dispatch: Dispatch<any>) => {
+        const blisClient = ClientFactory.getInstance(AT.CREATE_TEACH_SESSION_ASYNC)
+        dispatch(createAppTagAsync(appId, tagName, makeLive))
+
+        try {
+            const updatedApp = await blisClient.appCreateTag(appId, tagName, makeLive)
+            dispatch(createAppTagFulfilled(updatedApp))
+            return updatedApp
+        }
+        catch (error) {
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, [error.response], AT.CREATE_APP_TAG_ASYNC))
+            throw error
+        }
+    }
+}
+
+// --------------------------
+// createChatSession
+// --------------------------
 export const createChatSessionAsync = (key: string): ActionObject =>
     ({
         type: AT.CREATE_CHAT_SESSION_ASYNC
@@ -137,7 +175,7 @@ export const createChatSessionFulfilled = (session: Session): ActionObject =>
         session: session
     })
 
-export const createChatSessionThunkAsync = (key: string, appId: string) => {
+export const createChatSessionThunkAsync = (key: string, appId: string, packageId: string) => {
     return async (dispatch: Dispatch<any>) => {
         const blisClient = ClientFactory.getInstance(AT.CREATE_CHAT_SESSION_ASYNC)
         dispatch(createChatSessionAsync(key))
@@ -147,7 +185,7 @@ export const createChatSessionThunkAsync = (key: string, appId: string) => {
             throw new Error(`Application is still training. You may not create chat session at this time. Please try again later.`)
         }
 
-        const sessionCreateParams = {saveToLog: app.metadata.isLoggingOn !== false }
+        const sessionCreateParams = {saveToLog: app.metadata.isLoggingOn !== false, packageId: packageId } as SessionCreateParams
         const session = await blisClient.chatSessionsCreate(appId, sessionCreateParams)
         dispatch(createChatSessionFulfilled(session))
 
@@ -155,6 +193,9 @@ export const createChatSessionThunkAsync = (key: string, appId: string) => {
     }
 }
 
+// --------------------------
+// createTeachSession
+// --------------------------
 export const createTeachSessionAsync = (): ActionObject =>
     ({
         type: AT.CREATE_TEACH_SESSION_ASYNC

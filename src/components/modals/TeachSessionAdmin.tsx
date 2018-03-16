@@ -142,6 +142,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                             {(mode === DialogMode.Extractor || autoTeachWithRound) &&
                                 <EntityExtractor
                                     app={this.props.app}
+                                    canEdit={true}
                                     extractType={DialogType.TEACH}
                                     sessionId={this.props.teachSession.current.teachId}
                                     roundIndex={null}
@@ -203,6 +204,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                         {(mode === DialogMode.Scorer || autoTeachWithRound)
                             && <ActionScorer
                                 app={this.props.app}
+                                canEdit={true}
                                 dialogType={DialogType.TEACH}
                                 sessionId={this.props.teachSession.current.teachId}
                                 autoTeach={this.props.teachSession.autoTeach}

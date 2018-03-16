@@ -349,6 +349,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                             {renderData.round ?
                                 <EntityExtractor
                                     app={this.props.app}
+                                    canEdit={this.props.canEdit} 
                                     extractType={DialogType.TRAINDIALOG}
                                     sessionId={this.props.trainDialog.trainDialogId}
                                     roundIndex={this.state.roundIndex}
@@ -380,6 +381,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                         <div>
                             <ActionScorer
                                 app={this.props.app}
+                                canEdit={this.props.canEdit}
                                 dialogType={DialogType.TRAINDIALOG}
                                 sessionId={this.props.trainDialog.trainDialogId}
                                 autoTeach={false}
@@ -460,6 +462,7 @@ export interface ReceivedProps {
     trainDialog: TrainDialog,
     app: BlisAppBase,
     selectedActivity: Activity,
+    canEdit: boolean,
     onEdit: (sourceTrainDialogId: string, editedTrainDialog: TrainDialog, lastExtractChanged: boolean) => void
     onReplace: (editedTrainDialog: TrainDialog) => void
     onExtractionsChanged: (changed: boolean) => void

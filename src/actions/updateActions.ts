@@ -96,3 +96,71 @@ export const editChatSessionExpireAsync = (key: string, appId: string, sessionId
         sessionId: sessionId
     }
 }
+
+// --------------------------
+// editAppLiveTag
+// --------------------------
+export const editAppLiveTagAsync = (currentAppId: string, packageId: string): ActionObject =>
+    ({
+        type: AT.EDIT_APP_LIVE_TAG_ASYNC,
+        packageId: packageId,
+        currentAppId: currentAppId
+    })
+
+export const editAppLiveTagFulfilled = (app: BlisAppBase): ActionObject => {
+    return {
+        type: AT.EDIT_APP_LIVE_TAG_FULFILLED,
+        blisApp: app
+    }
+}
+
+export const editAppLiveTagThunkAsync = (key: string, appId: string, tagId: string) => {
+    return async (dispatch: Dispatch<any>) => {
+        const blisClient = ClientFactory.getInstance(AT.EDIT_APP_LIVE_TAG_ASYNC)
+        dispatch(editAppLiveTagAsync(appId, tagId))
+
+        try {
+            const updatedApp = await blisClient.appSetLiveTag(appId, tagId)
+            dispatch(editAppLiveTagFulfilled(updatedApp))
+            return updatedApp
+        }
+        catch (error) {
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, [error.response], AT.EDIT_APP_LIVE_TAG_ASYNC))
+            throw error
+        }
+    }
+}
+
+// --------------------------
+// editAppEditingTag
+// --------------------------
+export const editAppEditingTagAsync = (currentAppId: string, packageId: string): ActionObject =>
+    ({
+        type: AT.EDIT_APP_EDITING_TAG_ASYNC,
+        packageId: packageId,
+        currentAppId: currentAppId
+    })
+
+export const editAppEditingTagFulfilled = (activeApps: { [appId: string]: string }): ActionObject => {
+    return {
+        type: AT.EDIT_APP_EDITING_TAG_FULFILLED,
+        activeApps: activeApps
+    }
+}
+
+export const editAppEditingTagThunkAsync = (key: string, appId: string, packageId: string) => {
+    return async (dispatch: Dispatch<any>) => {
+        const blisClient = ClientFactory.getInstance(AT.EDIT_APP_EDITING_TAG_ASYNC)
+        dispatch(editAppEditingTagAsync(appId, packageId))
+
+        try {
+            const activeApps = await blisClient.appSetEditingTag(appId, packageId)
+            dispatch(editAppEditingTagFulfilled(activeApps))
+            return activeApps
+        }
+        catch (error) {
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, [error.response], AT.EDIT_APP_EDITING_TAG_ASYNC))
+            throw error
+        }
+    }
+}

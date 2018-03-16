@@ -489,14 +489,19 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         defaultMessage="Train Dialogs"
                     />
                 </div>
-                <span className={OF.FontClassNames.mediumPlus}>
-                    <FormattedMessage
-                        id={FM.TRAINDIALOGS_SUBTITLE}
-                        defaultMessage="Use this tool to train and improve the current versions of your application..."
-                    />
-                </span>
+                {this.props.editingPackageId === this.props.app.devPackageId ?
+                    <span className={OF.FontClassNames.mediumPlus}>
+                        <FormattedMessage
+                            id={FM.TRAINDIALOGS_SUBTITLE}
+                            defaultMessage="Use this tool to train and improve the current versions of your application..."
+                        />
+                    </span>
+                    :
+                    <span className="blis-errorpanel">Editing is only allowed in Master Tag</span>
+                }
                 <div>
                     <OF.PrimaryButton
+                        disabled={this.props.editingPackageId !== this.props.app.devPackageId}
                         onClick={() => this.onClickNewTeachSession()}
                         ariaDescription={intl.formatMessage({
                             id: FM.TRAINDIALOGS_CREATEBUTTONARIALDESCRIPTION,
@@ -510,6 +515,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     />
                     <TeachSessionModal
                         app={this.props.app}
+                        editingPackageId={this.props.editingPackageId}
                         teachSession={this.props.teachSessions.current}
                         dialogMode={this.props.teachSessions.mode}
                         open={this.state.isTeachDialogModalOpen && !this.state.isSessionMemoryCheckOpen}
@@ -563,6 +569,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 />
                 <TrainDialogModal
                     app={this.props.app}
+                    canEdit={this.props.editingPackageId === this.props.app.devPackageId}
                     open={this.state.isTrainDialogModalOpen}
                     onClose={() => this.onCloseTrainDialogModal()}
                     onBranch={(turnIndex: number) => this.onBranchTrainDialog(turnIndex)}
@@ -606,6 +613,7 @@ const mapStateToProps = (state: State) => {
 
 export interface ReceivedProps {
     app: BlisAppBase,
+    editingPackageId: string,
     filteredAction?: ActionBase,
     filteredEntity?: EntityBase
 }

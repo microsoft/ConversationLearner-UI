@@ -35,7 +35,7 @@ export const fetchSourceEpic: Epic<ActionObject, State> = (action$: ActionsObser
     return action$.ofType(AT.FETCH_APPSOURCE_ASYNC)
         .flatMap(action =>
             (action.type === AT.FETCH_APPSOURCE_ASYNC)
-                ? getSourceForBlisApp('', action.blisAppID)
+                ? getSourceForBlisApp('', action.blisAppID, action.packageId)
                 : assertNever())
 }
 
@@ -59,7 +59,7 @@ export const fetchLogDialogsEpic: Epic<ActionObject, State> = (action$: ActionsO
     return action$.ofType(AT.FETCH_LOG_DIALOGS_ASYNC)
         .flatMap(action =>
             (action.type === AT.FETCH_LOG_DIALOGS_ASYNC)
-                ? getAllLogDialogsForBlisApp(action.key, action.blisAppID)
+                ? getAllLogDialogsForBlisApp(action.key, action.blisAppID, action.packageId)
                 : assertNever())
 }
 

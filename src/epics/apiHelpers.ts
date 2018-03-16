@@ -72,10 +72,10 @@ export const getBotInfo = (key: string): Observable<ActionObject> => {
 export const getAllBlisApps = (key: string, userId: string): Observable<ActionObject> => {
   const blisClient = ClientFactory.getInstance(AT.FETCH_APPLICATIONS_ASYNC)
   return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.apps(userId)
-    .then(apps => {
+    .then(uiAppList => {
       // Set datetime on each app
-      apps.forEach(app => app.datetime = new Date())
-      obs.next(actions.fetch.fetchApplicationsFulfilled(apps));
+      uiAppList.appList.apps.forEach(app => app.datetime = new Date())
+      obs.next(actions.fetch.fetchApplicationsFulfilled(uiAppList));
       obs.complete();
     })
     .catch(err => handleError(obs, err, AT.FETCH_APPLICATIONS_ASYNC)));
@@ -91,9 +91,9 @@ export const getAllEntitiesForBlisApp = (key: string, appId: string): Observable
     .catch(err => handleError(obs, err, AT.FETCH_ENTITIES_ASYNC)));
 };
 
-export const getSourceForBlisApp = (key: string, appId: string): Observable<ActionObject> => {
+export const getSourceForBlisApp = (key: string, appId: string, packageId: string): Observable<ActionObject> => {
   const blisClient = ClientFactory.getInstance(AT.FETCH_APPSOURCE_ASYNC)
-  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.source(appId)
+  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.source(appId, packageId)
     .then(source => {
       obs.next(actions.fetch.fetchAppSourceFulfilled(source));
       obs.complete();
@@ -121,9 +121,9 @@ export const getAllTrainDialogsForBlisApp = (key: string, appId: string): Observ
     .catch(err => handleError(obs, err, AT.FETCH_TRAIN_DIALOGS_ASYNC)));
 };
 
-export const getAllLogDialogsForBlisApp = (key: string, appId: string): Observable<ActionObject> => {
+export const getAllLogDialogsForBlisApp = (key: string, appId: string, packageId: string): Observable<ActionObject> => {
   const blisClient = ClientFactory.getInstance(AT.FETCH_LOG_DIALOGS_ASYNC)
-  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.logDialogs(appId)
+  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.logDialogs(appId, packageId)
     .then(logDialogs => {
       obs.next(actions.fetch.fetchAllLogDialogsFulfilled(logDialogs));
       obs.complete();
@@ -272,12 +272,12 @@ export const editBlisEntity = (key: string, appId: string, entity: EntityBase): 
 // SESSION ROUTES
 //========================================================
 
-export const deleteChatSession = (key: string, appId: string, session: Session): Observable<ActionObject> => {
+export const deleteChatSession = (key: string, appId: string, session: Session, packageId: string): Observable<ActionObject> => {
   const blisClient = ClientFactory.getInstance(AT.DELETE_CHAT_SESSION_ASYNC)
   return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.chatSessionsDelete(appId, session.sessionId)
     .then(() => {
       obs.next(actions.delete.deleteChatSessionFulfilled(session.sessionId));
-      obs.next(actions.fetch.fetchAllLogDialogsAsync(key, appId));
+      obs.next(actions.fetch.fetchAllLogDialogsAsync(key, appId, packageId));
       obs.complete();
     })
     .catch(err => handleError(obs, err, AT.DELETE_CHAT_SESSION_ASYNC)));

@@ -35,7 +35,9 @@ export enum TipType {
     LUIS_AUTHORING_KEY = 'luisAuthoringKey',
     LUIS_SUBSCRIPTION_KEY = 'luisSubscriptionKey',
 
-    MEMORY_MANAGER = 'memoryManager'
+    MEMORY_MANAGER = 'memoryManager',
+
+    PACKAGECREATOR_LIVE_TOGGLE = 'packageCreatorLiveToggle',
 }
 
 export function onRenderDetailsHeader(detailsHeaderProps: OF.IDetailsHeaderProps, defaultRender: OF.IRenderFunction<OF.IDetailsHeaderProps>) {
@@ -358,6 +360,9 @@ export function GetTip(tipType: string) {
                     <p>See official docs on <a href="https://docs.microsoft.com/en-us/azure/cognitive-services/luis/home#accessing-luis" target="_blank">Accessing LUIS</a></p>
                 </div>
             )
+        case TipType.PACKAGECREATOR_LIVE_TOGGLE:
+            return (<FormattedMessage id={FM.TOOLTIP_PACKAGECREATOR_LIVE_TOGGLE} defaultMessage="Make new Tag the live version" />);
+
         default:
             return (<div>{tipType}</div>);
     }

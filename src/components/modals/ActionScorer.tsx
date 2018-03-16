@@ -35,28 +35,31 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             maxWidth: 80,
             isResizable: true,
             render: (action, component, index) => {
-                let buttonText = (component.props.dialogType !== DialogType.TEACH && index === 0) ? "Selected" : "Select";
-                let isAvailable = component.isUnscoredActionAvailable(action as UnscoredAction);
-                if (!isAvailable) {
-                    return (
-                        <PrimaryButton
-                            disabled={true}
-                            ariaDescription={buttonText}
-                            text={buttonText}
-                        />
-                    )
+                if (component.props.canEdit) {
+                    let buttonText = (component.props.dialogType !== DialogType.TEACH && index === 0) ? "Selected" : "Select";
+                    let isAvailable = component.isUnscoredActionAvailable(action as UnscoredAction);
+                    if (!isAvailable) {
+                        return (
+                            <PrimaryButton
+                                disabled={true}
+                                ariaDescription={buttonText}
+                                text={buttonText}
+                            />
+                        )
+                    }
+                    else {
+                        let refFn = (index === 0) ? ((ref: any) => { component.primaryScoreButton = ref }) : null;
+                        return (
+                            <PrimaryButton
+                                onClick={() => component.handleActionSelection(action.actionId)}
+                                ariaDescription={buttonText}
+                                text={buttonText}
+                                componentRef={refFn}
+                            />
+                        )
+                    }
                 }
-                else {
-                    let refFn = (index === 0) ? ((ref: any) => { component.primaryScoreButton = ref }) : null;
-                    return (
-                        <PrimaryButton
-                            onClick={() => component.handleActionSelection(action.actionId)}
-                            ariaDescription={buttonText}
-                            text={buttonText}
-                            componentRef={refFn}
-                        />
-                    )
-                }
+                return null;
             }
         },
         {
@@ -580,7 +583,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         let scores: (ScoredBase | string)[] = this.getScoredItems();
 
         // If editing allowed and Action creation button
-        if (scores && !this.props.autoTeach) {
+        if (scores && !this.props.autoTeach && this.props.canEdit) {
             scores.push(ACTION_BUTTON);
         }
 
@@ -635,7 +638,8 @@ export interface ReceivedProps {
     dialogMode: DialogMode,
     scoreResponse: ScoreResponse,
     scoreInput: ScoreInput,
-    memories: Memory[]
+    memories: Memory[],
+    canEdit: boolean
     onActionSelected: (trainScorerStep: TrainScorerStep) => void,
 }
 

@@ -18,7 +18,7 @@ interface ComponentState {
 class SessionWindow extends React.Component<Props, ComponentState> {
     onClickDone() {
         if (this.props.chatSession.current !== null) {
-            this.props.deleteChatSessionAsync(this.props.user.id, this.props.chatSession.current, this.props.app.appId)
+            this.props.deleteChatSessionAsync(this.props.user.id, this.props.chatSession.current, this.props.app.appId, this.props.editingPackageId)
         }
 
         this.props.onClose();
@@ -49,7 +49,6 @@ class SessionWindow extends React.Component<Props, ComponentState> {
                                 onSelectActivity={() => { }}
                                 hideInput={false}
                                 focusInput={true}
-                                viewOnly={false}
                             />
                         </div>
                         <div className="blis-chatmodal_controls">
@@ -109,7 +108,8 @@ const mapStateToProps = (state: State) => {
 export interface ReceivedProps {
     open: boolean
     onClose: () => void
-    app: BlisAppBase
+    app: BlisAppBase,
+    editingPackageId: string
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps

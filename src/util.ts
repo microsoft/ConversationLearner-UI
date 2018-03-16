@@ -34,3 +34,12 @@ export function entityDisplayName(entity: models.EntityBase) {
         return entity.entityName;
     }
 }
+
+export function packageReferences(app: models.BlisAppBase): models.PackageReference[] { 
+    return [...app.packageVersions || [], {packageId: app.devPackageId, packageVersion: 'Master'}] as models.PackageReference[]
+}
+
+export function editingPackageId(app: models.BlisAppBase, activeApps: { [appId: string]: string}): string {
+    // If no editing version has been set, use master (i.e. devPackage)
+    return activeApps[app.appId] || app.devPackageId;          
+}

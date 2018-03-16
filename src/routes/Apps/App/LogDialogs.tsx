@@ -38,6 +38,32 @@ const returnErrorStringWhenError = returnStringWhenError("ERR")
 function getColumns(intl: InjectedIntl): IRenderableColumn[] {
     return [
         {
+            key: 'tag',
+            name: 'Tag',
+            fieldName: 'tag',
+            minWidth: 100,
+            maxWidth: 500,
+            isResizable: true,
+            render: (logDialog, component) => {
+                // Only show tag column on Master branch it's the only one containing multiple tag types
+                if (component.props.editingPackageId !== component.props.app.devPackageId) {
+                    return null;
+                }
+                let tagName = `UNKNOWN`; // Cover bug case of missing package
+                if (logDialog.packageId === component.props.app.devPackageId) {
+                    tagName = 'Master';
+                }
+                else 
+                {
+                    let packageVersion = component.props.app.packageVersions.find(pv => pv.packageId === logDialog.packageId);
+                    if (packageVersion) {
+                        tagName = packageVersion.packageVersion;
+                    }
+                }
+                return <span className={OF.FontClassNames.mediumPlus}>{tagName}</span>;
+            }
+        },
+        {
             key: 'firstInput',
             name: intl.formatMessage({
                 id: FM.LOGDIALOGS_FIRSTINPUT,
@@ -151,7 +177,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
 
     onClickNewChatSession() {
         // TODO: Find cleaner solution for the types.  Thunks return functions but when using them on props they should be returning result of the promise.
-        ((this.props.createChatSessionThunkAsync(this.props.user.id, this.props.app.appId) as any) as Promise<Session>)
+        ((this.props.createChatSessionThunkAsync(this.props.user.id, this.props.app.appId, this.props.editingPackageId) as any) as Promise<Session>)
             .then(chatSession => {
                 this.setState({
                     chatSession,
@@ -214,11 +240,11 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     }
 
     onClickSync() {
-        this.props.fetchAllLogDialogsAsync(this.props.user.id, this.props.app.appId);
+        this.props.fetchAllLogDialogsAsync(this.props.user.id, this.props.app.appId, this.props.editingPackageId);
     }
 
     onDeleteLogDialog() {      
-        this.props.deleteLogDialogThunkAsync(this.props.user.id, this.props.app.appId, this.state.currentLogDialog.logDialogId)
+        this.props.deleteLogDialogThunkAsync(this.props.user.id, this.props.app.appId, this.state.currentLogDialog.logDialogId, this.props.editingPackageId)
         this.onCloseLogDialogModal();
     }
 
@@ -330,12 +356,16 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                         defaultMessage="Log Dialogs"
                     />
                 </div>
-                <span className={OF.FontClassNames.mediumPlus}>
-                    <FormattedMessage
-                        id={FM.LOGDIALOGS_SUBTITLE}
-                        defaultMessage="Use this tool to test the current versions of your application, to check if you are progressing on the right track..."
-                    />
-                </span>
+                {this.props.editingPackageId === this.props.app.devPackageId ?
+                    <span className={OF.FontClassNames.mediumPlus}>
+                        <FormattedMessage
+                            id={FM.LOGDIALOGS_SUBTITLE}
+                            defaultMessage="Use this tool to test the current versions of your application, to check if you are progressing on the right track..."
+                        />
+                    </span>
+                    :
+                    <span className="blis-errorpanel">Editing is only allowed in Master Tag</span>
+                }
                 {this.props.app.metadata.isLoggingOn === false && 
                     <span className="ms-TextField-errorMessage label-error">
                         <FormattedMessage
@@ -346,6 +376,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 }
                 <div>
                     <OF.PrimaryButton
+                        disabled={this.props.editingPackageId !== this.props.app.devPackageId}                      
                         onClick={() => this.onClickNewChatSession()}
                         ariaDescription={this.props.intl.formatMessage({
                             id: FM.LOGDIALOGS_CREATEBUTTONARIALDESCRIPTION,
@@ -359,6 +390,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     />
                     <ChatSessionModal
                         app={this.props.app}
+                        editingPackageId={this.props.editingPackageId}
                         open={this.state.isChatSessionWindowOpen}
                         onClose={() => this.onCloseChatSessionWindow()}
                     />
@@ -386,6 +418,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 />
                 <LogDialogModal
                     open={this.state.isLogDialogWindowOpen}
+                    canEdit={this.props.editingPackageId === this.props.app.devPackageId}
                     app={this.props.app}
                     onClose={() => this.onCloseLogDialogModal()}
                     onEdit={(logDialogId: string, newTrainDialog: TrainDialog, lastExtractionChanged: boolean) => this.onEditLogDialog(logDialogId, newTrainDialog, lastExtractionChanged)}
@@ -395,6 +428,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 />
                 <TeachSessionModal
                         app={this.props.app}
+                        editingPackageId={this.props.editingPackageId}
                         teachSession={this.props.teachSessions.current}
                         dialogMode={this.props.teachSessions.mode}
                         open={this.state.isTeachDialogModalOpen}
@@ -452,7 +486,8 @@ const mapStateToProps = (state: State) => {
 }
 
 export interface ReceivedProps {
-    app: BlisAppBase
+    app: BlisAppBase,
+    editingPackageId: string
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps

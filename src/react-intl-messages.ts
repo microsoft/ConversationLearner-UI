@@ -167,6 +167,7 @@ export enum FM {
     TOOLTIP_LOGGING_TOGGLE = 'ToolTip.LOGGING_TOGGLE',
     TOOLTIP_MEMORYMANAGER = 'ToolTip.ACTION_MEMORYMANAGER',
     TOOLTIP_MEMORYMANAGER_TITLE = 'ToolTip.ACTION_MEMORYMANAGER_TITLE',
+    TOOLTIP_PACKAGECREATOR_LIVE_TOGGLE = 'ToolTip.PACKAGECREATOR_LIVE_TOGGLE',
 
     // Train Dialogs
     TRAINDIALOGS_TITLE = 'TrainDialogs.title',
@@ -305,6 +306,16 @@ export enum FM {
 
     // MemoryTable
     MEMORYTABLE_EMPTY = 'MemoryTable.empty',
+
+    // PackageCreator
+    PACKAGECREATOR_TITLE = 'PackageCreator.title',
+    PACKAGECREATOR_TAG_LABEL = 'PackageCreator.tagLabel',
+    PACKAGECREATOR_TAG_PLACEHOLDER = 'PackageCreator.tagPlaceholder',
+    PACKAGECREATOR_LIVE_LABEL = 'PackageCreator.liveLabel',
+    PACKAGECREATOR_CREATEBUTTON_ARIADESCRIPTION = 'PackageCreator.createButton.ariaDescription',
+    PACKAGECREATOR_CREATEBUTTON_TEXT = 'PackageCreator.createButton.text',
+    PACKAGECREATOR_CANCELBUTTON_ARIADESCRIPTION = 'PackageCreator.cancelButton.ariaDescription',
+    PACKAGECREATOR_CANCELBUTTON_TEXT = 'PackageCreator.cancelButton.text',
 
     // SessionMemoryCheck
     SESSIONMEMORYCHECK_KEEPBUTTON_ARIADESCRIPTION = 'SessionMemoryCheck.keepButton.ariaDescription',
@@ -535,7 +546,8 @@ export default {
         [FM.TOOLTIP_LOGGING_TOGGLE]: 'Enables or disables logging of user conversations. When logging is enabled, Bot performance can be improved by providing corrections to Logs that contain undesired Bot responses.  The corrected Log Dialogs become new Training Dialogs',
         [FM.TOOLTIP_MEMORYMANAGER]: `The memory manager provides the following functions for manipulating the Bot's memory:`,
         [FM.TOOLTIP_MEMORYMANAGER_TITLE]: 'Memory Manager',
-
+        [FM.TOOLTIP_PACKAGECREATOR_LIVE_TOGGLE]: 'When checked the new Tag will become the Live app served to users',
+        
         // Train Dialogs
         [FM.TRAINDIALOGS_TITLE]: 'Train Dialogs',
         [FM.TRAINDIALOGS_SUBTITLE]: 'Use this tool to train and improve the current versions of your application...',
@@ -669,6 +681,16 @@ export default {
 
         // MemoryTable
         [FM.MEMORYTABLE_EMPTY]: 'Empty',
+
+        // PackageCreator
+        [FM.PACKAGECREATOR_TITLE]: 'Create a new Tag',
+        [FM.PACKAGECREATOR_TAG_LABEL]: 'Name',
+        [FM.PACKAGECREATOR_TAG_PLACEHOLDER]: 'Tag Name',
+        [FM.PACKAGECREATOR_LIVE_LABEL]: 'Make Live Version',
+        [FM.PACKAGECREATOR_CREATEBUTTON_ARIADESCRIPTION]: 'Create',
+        [FM.PACKAGECREATOR_CREATEBUTTON_TEXT]: 'Create',
+        [FM.PACKAGECREATOR_CANCELBUTTON_ARIADESCRIPTION]: 'Cancel',
+        [FM.PACKAGECREATOR_CANCELBUTTON_TEXT]: 'Cancel',
 
         // SessionMemoryCheck
         [FM.SESSIONMEMORYCHECK_KEEPBUTTON_ARIADESCRIPTION]: 'Keep',

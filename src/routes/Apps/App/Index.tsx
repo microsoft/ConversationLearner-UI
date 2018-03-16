@@ -28,11 +28,32 @@ import './Index.css'
 
 interface ComponentState {
     validationErrors: string[];
+    packageId: string;
 }
 
 class Index extends React.Component<Props, ComponentState> {
     state: ComponentState = {
-        validationErrors: []
+        validationErrors: [],
+        packageId: null
+    }
+
+    loadApp(app: BlisAppBase, packageId: string): void {
+        
+        this.setState({ packageId: packageId})
+
+        // LARS temp
+        let allPackages =
+             (packageId === app.devPackageId) ?
+                app.packageVersions.map(pv => pv.packageId).join(",") + `,${packageId}`
+                :
+                packageId;
+        
+        this.props.setCurrentBLISApp(this.props.user.id, app)
+        this.props.fetchAllLogDialogsAsync(this.props.user.id, app.appId, allPackages) // Note: a separate call as eventurlaly we want to page
+        this.props.fetchAppSource(this.props.user.id, app.appId, packageId)
+        this.props.fetchBotInfoAsync()
+        // this.props.fetchAllChatSessionsAsync(this.props.user.id, app.appId)
+        // this.props.fetchAllTeachSessions(this.props.user.id, app.appId)
     }
 
     componentWillMount() {
@@ -46,15 +67,17 @@ class Index extends React.Component<Props, ComponentState> {
             return
         }
 
-        this.props.setCurrentBLISApp(this.props.user.id, app)
-        this.props.fetchAllLogDialogsAsync(this.props.user.id, app.appId) // Note: a separate call as eventurlaly we want to page
-        this.props.fetchAppSource(this.props.user.id, app.appId)
-        this.props.fetchBotInfoAsync()
-        // this.props.fetchAllChatSessionsAsync(this.props.user.id, app.appId)
-        // this.props.fetchAllTeachSessions(this.props.user.id, app.appId)
+        let editPackageId = this.props.activeApps[app.appId] || app.devPackageId;
+        this.loadApp(app, editPackageId);
     }
 
     componentWillReceiveProps(newProps: Props) {
+ 
+        const app: BlisAppBase | null = newProps.location.state && newProps.location.state.app
+        let editPackageId = newProps.activeApps[app.appId] || app.devPackageId;
+        if (this.state.packageId !== editPackageId) {
+            this.loadApp(app, editPackageId);
+        }
 
         if (newProps.actions !== this.props.actions) {
             let validationErrors = this.actionValidationErrors(newProps.actions);
@@ -91,10 +114,23 @@ class Index extends React.Component<Props, ComponentState> {
     render() {
         const { match, location } = this.props
         const app: BlisAppBase = location.state.app
+        const editPackageId = this.state.packageId
+        const tag = (editPackageId === app.devPackageId) ? 
+            'Master' :
+            app.packageVersions.find(pv => pv.packageId === editPackageId).packageVersion;
+       
         return (
             <div className="blis-app-page">
                 <div>
-                    <div className={`blis-app-title ${FontClassNames.xxLarge}`}>{app.appName}</div>
+                    <div className="blis-app-title">
+                        <div className={FontClassNames.xxLarge}>{app.appName}</div>
+                        <div className={FontClassNames.smallPlus}>
+                            Tag: {tag}
+                            { editPackageId === app.livePackageId && 
+                                <span className="blis-font--warning">LIVE</span>
+                            }
+                        </div>
+                    </div>
                     <TrainingStatus
                         app={app}
                     />
@@ -117,11 +153,11 @@ class Index extends React.Component<Props, ComponentState> {
                     </div>
                 </div>
                 <Switch>
-                    <Route path={`${match.url}/settings`} render={props => <Settings {...props} app={app} />} />
-                    <Route path={`${match.url}/entities`} render={props => <Entities {...props} app={app} />} />
-                    <Route path={`${match.url}/actions`} render={props => <Actions {...props} app={app} />} />
-                    <Route path={`${match.url}/trainDialogs`} render={props => <TrainDialogs {...props} app={app} filteredAction={location.state.actionFilter} filteredEntity={location.state.entityFilter} />} />
-                    <Route path={`${match.url}/logDialogs`} render={props => <LogDialogs {...props} app={app} />} />
+                    <Route path={`${match.url}/settings`} render={props => <Settings {...props} app={app} editingPackageId={editPackageId} />} />
+                    <Route path={`${match.url}/entities`} render={props => <Entities {...props} app={app} editingPackageId={editPackageId} />} />
+                    <Route path={`${match.url}/actions`} render={props => <Actions {...props} app={app} editingPackageId={editPackageId}/>} />
+                    <Route path={`${match.url}/trainDialogs`} render={props => <TrainDialogs {...props} app={app} editingPackageId={editPackageId} filteredAction={location.state.actionFilter} filteredEntity={location.state.entityFilter} />} />
+                    <Route path={`${match.url}/logDialogs`} render={props => <LogDialogs {...props} app={app} editingPackageId={editPackageId} />} />
                     <Route
                         exact={true}
                         path={match.url}
@@ -148,7 +184,8 @@ const mapStateToProps = (state: State) => {
         trainDialogs: state.trainDialogs,
         display: state.display,
         botInfo: state.bot.botInfo,
-        user: state.user
+        user: state.user,
+        activeApps: state.apps.activeApps
     }
 }
 

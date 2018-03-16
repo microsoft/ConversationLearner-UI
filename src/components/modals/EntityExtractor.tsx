@@ -307,7 +307,8 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         }
 
         // Don't show edit components when in auto TEACH or on score step
-        const canEdit = (!this.props.autoTeach && this.props.dialogMode === DialogMode.Extractor)
+        const canEdit = (!this.props.autoTeach && this.props.dialogMode === DialogMode.Extractor && this.props.canEdit) 
+        
         // If editing is not allowed, only show the primary response which is the first response
         const extractResponsesToRender = canEdit ? allResponses : [primaryExtractResponse]
         const extractResponsesForDisplay = extractResponsesToRender
@@ -460,6 +461,7 @@ const mapStateToProps = (state: State, ownProps: any) => {
 
 export interface ReceivedProps {
     app: BlisAppBase
+    canEdit: boolean
     extractType: DialogType
     sessionId: string
     roundIndex: number

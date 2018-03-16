@@ -110,7 +110,7 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
 
     render() {
         const { intl } = this.props
-        let chatDisable = this.state.pendingExtractionChanges ? <div className="wc-disable"/> : null;
+        let chatDisable = this.state.pendingExtractionChanges ? <div className="blis-overlay"/> : null;
 
         return (
             <Modal
@@ -129,14 +129,14 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
                                 onSelectActivity={activity => this.onWebChatSelectActivity(activity)}
                                 hideInput={true}
                                 focusInput={false}
-                                viewOnly={true}
                             />
                             {chatDisable}
                         </div>
-                        <div className="blis-chatmodal_controls">
+                        <div className="blis-chatmodal_controls"> 
                             <div className="blis-chatmodal_admin-controls">
                                 <TrainDialogAdmin
                                     app={this.props.app}
+                                    canEdit={this.props.canEdit}
                                     trainDialog={this.props.trainDialog}
                                     selectedActivity={this.state.selectedActivity}
                                     onEdit={(sourceTrainDialogId: string, editedTrainDialog: TrainDialog, lastExtractChanged: boolean) => this.props.onEdit(sourceTrainDialogId, editedTrainDialog, lastExtractChanged)}
@@ -144,6 +144,7 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
                                     onExtractionsChanged={(changed: boolean) => this.onExtractionsChanged(changed)}
                                 />
                             </div>
+                            {!this.props.canEdit && <div className="blis-overlay"/>} 
                         </div>
                     </div>
                 </div>
@@ -153,7 +154,7 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
                         <div className="blis-modal-buttons_secondary">
                             <div  ref={ (menuButton) => this._refBranchButton = menuButton}>
                                 <DefaultButton
-                                        disabled={this.state.pendingExtractionChanges}
+                                        disabled={this.state.pendingExtractionChanges || !this.props.canEdit}
                                         onClick={() => this.onClickBranch()}
                                         ariaDescription={intl.formatMessage({
                                             id: FM.TRAINDIALOGMODAL_BRANCH_ARIADESCRIPTION,
@@ -166,7 +167,7 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
                                 />
                             </div>
                             <DefaultButton
-                                disabled={this.state.pendingExtractionChanges}
+                                disabled={this.state.pendingExtractionChanges || !this.props.canEdit}
                                 onClick={() => this.onClickDelete()}
                                 ariaDescription={intl.formatMessage({
                                     id: FM.TRAINDIALOGMODAL_DEFAULTBUTTON_ARIADESCRIPTION,
@@ -235,7 +236,8 @@ const mapStateToProps = (state: State) => {
 }
 
 export interface ReceivedProps {
-    app: BlisAppBase
+    app: BlisAppBase,
+    canEdit: boolean,
     onClose: () => void,
     onBranch: (turnIndex: number) => void,
     onEdit: (sourceTrainDialogId: string, newTrainDialog: TrainDialog, lastExtractChanged: boolean) => void,
