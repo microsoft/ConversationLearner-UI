@@ -371,6 +371,11 @@ body .wc-app, .wc-app button, .wc-app input, .wc-app textarea {
   float: right;
   margin-right: 6px; }
 
+  
+.wc-message-error-from-me {
+    border-left: 8px solid #ce2e2e;
+}
+
 .wc-message-from-me.wc-message-from {
   text-align: right; }
 
@@ -391,6 +396,10 @@ body .wc-app, .wc-app button, .wc-app input, .wc-app textarea {
 .wc-message-from-bot {
   float: left;
   margin-left: 8px; }
+
+.wc-message-error-from-bot {
+    border-right: 8px solid #ce2e2e;
+}
 
 .wc-message-from-bot .wc-message-content {
   background-color: #eceff1;

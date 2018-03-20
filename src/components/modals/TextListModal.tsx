@@ -7,12 +7,13 @@ import * as OF from 'office-ui-fabric-react'
 import { State, localStorageKeyForLuisAuthoringKey, localStorageKeyForLuisSubscriptionKey } from '../../types'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
+import { ReplayError, ReplayErrorType, ReplayErrorMissingAction, ReplayErrorMissingEntity, ReplayErrorActionUnavailable, ReplayErrorEntityDiscrepancy } from 'blis-models'
 
 class TextListModal extends React.Component<Props, {}> {
 
     componentWillReceiveProps(nextProps: Props) {
         // Reset when opening modal
-        if (this.props.open === false && nextProps.open === true) {
+        if (this.props.textItems  !== nextProps.textItems) {
             this.setState({
                 luisAuthoringKeyVal: localStorage.getItem(localStorageKeyForLuisAuthoringKey),
                 luisSubscriptionKeyVal: localStorage.getItem(localStorageKeyForLuisSubscriptionKey),
@@ -20,12 +21,43 @@ class TextListModal extends React.Component<Props, {}> {
         }
     }
 
-    onRenderCell(item: any, index: number): JSX.Element {
-        return (
-                <div className={OF.FontClassNames.mediumPlus}>
-                    {item}
-                </div>
-            )
+    onRenderCell(item: ReplayError, index: number): JSX.Element {
+
+        switch (item.type) {
+            case ReplayErrorType.MissingAction:
+                return (
+                    <div className={OF.FontClassNames.mediumPlus}>
+                        {`Missing action in response to "${(item as ReplayErrorMissingAction).lastUserInput}"`}
+                    </div>
+                )
+            case ReplayErrorType.MissingEntity:
+                return (
+                    <div className={OF.FontClassNames.mediumPlus}>
+                        {`Missing entity for "${(item as ReplayErrorMissingEntity).value}"`}
+                    </div>
+                )
+            case ReplayErrorType.ActionUnavailable:
+                return (
+                    <div className={OF.FontClassNames.mediumPlus}>
+                        {`Action unavailable in reponse to "${(item as ReplayErrorActionUnavailable).lastUserInput}"`}
+                    </div>
+                )
+            case ReplayErrorType.EntityDiscrepancy:
+                let entityDiscrepancy = item as ReplayErrorEntityDiscrepancy;
+                return (
+                    <div>
+                        <div className={OF.FontClassNames.mediumPlus}>
+                            {`APIs returned different actions after user input ${entityDiscrepancy.lastUserInput}`}
+                        </div>
+                        <div className={OF.FontClassNames.mediumPlus}>
+                            Original Entities:
+                            {entityDiscrepancy.originalEntities.map(e => (<div className={OF.FontClassNames.mediumPlus}>e</div>))}
+                            New Entities:
+                            {entityDiscrepancy.newEntities.map(e => (<div className={OF.FontClassNames.mediumPlus}>e</div>))}
+                        </div>
+                    </div>
+                )
+        }
     }
 
     render() {
@@ -93,7 +125,7 @@ export interface ReceivedProps {
     open: boolean
     formattedTitleId: string
     formattedMessageId: string
-    textItems: string[]
+    textItems: ReplayError[]
     onClose: () => void
 }
 
@@ -103,3 +135,4 @@ const dispatchProps = returntypeof(mapDispatchToProps);
 type Props = typeof stateProps & typeof dispatchProps & ReceivedProps & InjectedIntlProps
 
 export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(TextListModal))
+

@@ -50,13 +50,25 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
         }
     }
 
+    // Wipe out any missing entities resulting from change in model since log dialog was created
+    purgeMissingEntities(rounds: TrainRound[]) : TrainRound[] {
+        for (let round of rounds) {
+            for (let textVariation of round.extractorStep.textVariations) {
+                textVariation.labelEntities = textVariation.labelEntities.filter(
+                    le => this.props.entities.find(e => e.entityId == le.entityId)
+                )
+            }
+        }
+        return rounds;
+    }
+
     onClickSaveCheckYes() {
         let newTrainDialog: TrainDialog = {
             trainDialogId: undefined,
             version: undefined,
             packageCreationId: undefined,
             packageDeletionId: undefined,
-            rounds: this.state.newTrainDialog.rounds,
+            rounds: this.purgeMissingEntities(this.state.newTrainDialog.rounds),
             definitions: {
                 entities: this.props.entities,
                 actions: this.props.actions,

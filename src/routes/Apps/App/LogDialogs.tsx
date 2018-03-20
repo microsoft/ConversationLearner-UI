@@ -4,9 +4,8 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import * as OF from 'office-ui-fabric-react';
 import { State } from '../../../types'
-import { BlisAppBase, LogDialog, Session, ModelUtils, Teach, TeachWithHistory, TrainDialog, ActionBase } from 'blis-models'
+import { BlisAppBase, LogDialog, Session, ModelUtils, Teach, TeachWithHistory, TrainDialog, ActionBase, ReplayError } from 'blis-models'
 import { ChatSessionModal, LogDialogModal, TeachSessionModal } from '../../../components/modals'
-import { ErrorType } from '../../../types/const';
 import { 
     createChatSessionThunkAsync, 
     createTeachSessionFromHistoryThunkAsync,
@@ -157,7 +156,7 @@ interface ComponentState {
     activities: Activity[],
     teachSession: Teach,
     // Errors if LogDialog isn't compatible with current model
-    validationErrors: string[]
+    validationErrors: ReplayError[]
 }
 
 class LogDialogs extends React.Component<Props, ComponentState> {
@@ -228,8 +227,8 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 activities: teachWithHistory.history,
                 currentLogDialog: logDialog,
                 isLogDialogWindowOpen: true,
-                validationErrors: teachWithHistory.validationErrors,
-                isValidationWarningOpen: teachWithHistory.validationErrors.length > 0
+                validationErrors: teachWithHistory.replayErrors,
+                isValidationWarningOpen: teachWithHistory.replayErrors.length > 0
             })
         })
         .catch(error => {
@@ -268,7 +267,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         // Create a new teach session from the train dialog
         ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app.appId, newTrainDialog, this.props.user.name, this.props.user.id, null, lastExtractionChanged) as any) as Promise<TeachWithHistory>)
         .then(teachWithHistory => {
-            if (teachWithHistory.replayDiscrepancies.length === 0 && teachWithHistory.validationErrors.length === 0) {
+            if (teachWithHistory.replayErrors.length === 0) {
                 // Note: Don't clear currentLogDialog so I can delete it if I save my edits
                 this.setState({
                     teachSession: teachWithHistory.teach, 
@@ -278,17 +277,10 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 })
             }
             else {
-                let unable = this.props.intl.formatMessage({
-                    id: FM.VALIDATE_UNABLE_TO_EDIT,
-                    defaultMessage: 'Unable to Edit'
+                this.setState({
+                    validationErrors: teachWithHistory.replayErrors,
+                    isValidationWarningOpen: true
                 })
-                let reason = this.props.intl.formatMessage({
-                    id: FM.VALIDATE_ENTITY_REASON,
-                    defaultMessage: `Entities don't match.`
-                })
-                this.props.setErrorDisplay(
-                    ErrorType.Error, unable, 
-                    [reason, ...teachWithHistory.replayDiscrepancies, ...teachWithHistory.validationErrors], null);
             }
         })
         .catch(error => {
@@ -313,6 +305,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             isValidationWarningOpen: false
         })
     }
+    
     onUndoTeachStep(popRound: boolean) {
         // Clear history first
         this.setState({
@@ -321,23 +314,16 @@ class LogDialogs extends React.Component<Props, ComponentState> {
 
         ((this.props.createTeachSessionFromUndoThunkAsync(this.props.app.appId, this.state.teachSession, popRound, this.props.user.name, this.props.user.id) as any) as Promise<TeachWithHistory>)
         .then(teachWithHistory => {
-            if (teachWithHistory.replayDiscrepancies.length === 0 && teachWithHistory.validationErrors.length === 0) {
+            if (teachWithHistory.replayErrors.length === 0) {
                 this.setState({
                     teachSession: teachWithHistory.teach, 
                     activities: teachWithHistory.history,
                 })
-            } else {
-                let unable = this.props.intl.formatMessage({
-                    id: FM.VALIDATE_UNABLE_TO_UNDO,
-                    defaultMessage: 'Unable to Undo'
+            } else {    
+                this.setState({
+                    validationErrors: teachWithHistory.replayErrors,
+                    isValidationWarningOpen: true
                 })
-                let reason = this.props.intl.formatMessage({
-                    id: FM.VALIDATE_ENTITY_REASON,
-                    defaultMessage: `Entities don't match.`
-                })
-                this.props.setErrorDisplay(
-                    ErrorType.Error, unable, 
-                    [reason, ...teachWithHistory.replayDiscrepancies, ...teachWithHistory.validationErrors], null); 
             }
         })
         .catch(error => {

@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import * as OF from 'office-ui-fabric-react';
 import { State } from '../../../types'
-import { BlisAppBase, Teach, TrainDialog, TeachWithHistory, ActionBase, EntityBase, UITeachResponse } from 'blis-models'
+import { BlisAppBase, Teach, TrainDialog, TeachWithHistory, ActionBase, EntityBase, UITeachResponse, ReplayError } from 'blis-models'
 import { TeachSessionModal, TrainDialogModal, SessionMemoryCheck } from '../../../components/modals'
 import { fetchHistoryThunkAsync, fetchApplicationTrainingStatusThunkAsync } from '../../../actions/fetchActions'
 import {
@@ -17,10 +17,10 @@ import { editTrainDialogThunkAsync } from '../../../actions/updateActions';
 import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { FM } from '../../../react-intl-messages'
 import { setErrorDisplay } from '../../../actions/displayActions';
-import { ErrorType } from '../../../types/const';
 import { Activity } from 'botframework-directlinejs';
 import { autobind } from 'office-ui-fabric-react/lib/Utilities';
 import { getDefaultEntityMap } from '../../../util';
+import TextListModal from '../../../components/modals/TextListModal';
 
 interface IRenderableColumn extends OF.IColumn {
     render: (x: TrainDialog, component: TrainDialogs) => React.ReactNode
@@ -129,11 +129,13 @@ interface ComponentState {
     isTeachDialogModalOpen: boolean
     isTrainDialogModalOpen: boolean
     isSessionMemoryCheckOpen: boolean
+    isValidationWarningOpen: boolean
     trainDialogId: string
     searchValue: string,
     dialogKey: number,
     entityFilter: OF.IDropdownOption,
     actionFilter: OF.IDropdownOption
+    validationErrors: ReplayError[]
 }
 
 class TrainDialogs extends React.Component<Props, ComponentState> {
@@ -146,11 +148,13 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         isTeachDialogModalOpen: false,
         isTrainDialogModalOpen: false,
         isSessionMemoryCheckOpen: false,
+        isValidationWarningOpen: false,
         trainDialogId: null,
         searchValue: '',
         dialogKey: 0,
         entityFilter: null,
-        actionFilter: null
+        actionFilter: null,
+        validationErrors: []
     }
 
     toActionFilter(action: ActionBase, entities: EntityBase[]) : OF.IDropdownOption {
@@ -246,24 +250,17 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     onUndoTeachStep(popRound: boolean) {
         ((this.props.createTeachSessionFromUndoThunkAsync(this.props.app.appId, this.state.teachSession, popRound, this.props.user.name, this.props.user.id) as any) as Promise<TeachWithHistory>)
             .then(teachWithHistory => {
-                if (teachWithHistory.replayDiscrepancies.length === 0 && teachWithHistory.validationErrors.length === 0) {
+                if (teachWithHistory.replayErrors.length === 0) {
                     this.setState({
                         teachSession: teachWithHistory.teach,
                         activities: teachWithHistory.history,
                     })
                 }
                 else {
-                    let unable = this.props.intl.formatMessage({
-                        id: FM.VALIDATE_UNABLE_TO_UNDO,
-                        defaultMessage: 'Unable to Undo'
+                    this.setState({
+                        validationErrors: teachWithHistory.replayErrors,
+                        isValidationWarningOpen: true
                     })
-                    let reason = this.props.intl.formatMessage({
-                        id: FM.VALIDATE_ENTITY_REASON,
-                        defaultMessage: `Entities don't match.`
-                    })
-                    this.props.setErrorDisplay(
-                        ErrorType.Error, unable,
-                        [reason, ...teachWithHistory.replayDiscrepancies, ...teachWithHistory.validationErrors], null);
                 }
             })
             .catch(error => {
@@ -298,7 +295,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
         ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app.appId, newTrainDialog, this.props.user.name, this.props.user.id) as any) as Promise<TeachWithHistory>)
             .then(teachWithHistory => {
-                if (teachWithHistory.replayDiscrepancies.length === 0 && teachWithHistory.validationErrors.length === 0) {
+                if (teachWithHistory.replayErrors.length === 0) {
                     this.setState({
                         teachSession: teachWithHistory.teach,
                         activities: teachWithHistory.history,
@@ -308,17 +305,10 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     })
                 }
                 else {
-                    let unable = this.props.intl.formatMessage({
-                        id: FM.VALIDATE_UNABLE_TO_BRANCH,
-                        defaultMessage: 'Unable to Branch'
+                    this.setState({
+                        validationErrors: teachWithHistory.replayErrors,
+                        isValidationWarningOpen: true
                     })
-                    let reason = this.props.intl.formatMessage({
-                        id: FM.VALIDATE_ENTITY_REASON,
-                        defaultMessage: `Entities don't match.`
-                    })
-                    this.props.setErrorDisplay(
-                        ErrorType.Error, unable,
-                        [reason, ...teachWithHistory.replayDiscrepancies, ...teachWithHistory.validationErrors], null);
                 }
             })
             .catch(error => {
@@ -330,7 +320,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
         ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app.appId, newTrainDialog, this.props.user.name, this.props.user.id, sourceTrainDialogId, lastExtractChanged) as any) as Promise<TeachWithHistory>)
             .then(teachWithHistory => {
-                if (teachWithHistory.replayDiscrepancies.length === 0 && teachWithHistory.validationErrors.length === 0) {
+                if (teachWithHistory.replayErrors.length === 0) {
                     this.setState({
                         teachSession: teachWithHistory.teach,
                         activities: teachWithHistory.history,
@@ -340,17 +330,11 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     })
                 }
                 else {
-                    let unable = this.props.intl.formatMessage({
-                        id: FM.VALIDATE_UNABLE_TO_EDIT,
-                        defaultMessage: 'Unable to Edit'
+                    //LARS unable to edit
+                    this.setState({
+                        validationErrors: teachWithHistory.replayErrors,
+                        isValidationWarningOpen: true
                     })
-                    let reason = this.props.intl.formatMessage({
-                        id: FM.VALIDATE_ENTITY_REASON,
-                        defaultMessage: `Entities don't match.`
-                    })
-                    this.props.setErrorDisplay(
-                        ErrorType.Error, unable,
-                        [reason, ...teachWithHistory.replayDiscrepancies, ...teachWithHistory.validationErrors], null);
                 }
             })
             .catch(error => {
@@ -427,6 +411,13 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         let lcString = newValue.toLowerCase();
         this.setState({
             searchValue: lcString
+        })
+    }
+
+    @autobind
+    onCloseValidationWarning() {
+        this.setState({
+            isValidationWarningOpen: false
         })
     }
 
@@ -513,6 +504,13 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                             defaultMessage: 'New Teach Session'
                         })}
                         componentRef={component => this.newTeachSessionButton = component}
+                    />
+                    <TextListModal  
+                        open={this.state.isValidationWarningOpen}
+                        onClose={this.onCloseValidationWarning}
+                        textItems={this.state.validationErrors}
+                        formattedTitleId={FM.LOGDIALOGS_VALIDATION_MODAL_TITLE}
+                        formattedMessageId={FM.LOGDIALOGS_VALIDATION_MODAL_MESSAGE}
                     />
                     <TeachSessionModal
                         app={this.props.app}

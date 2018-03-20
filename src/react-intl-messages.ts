@@ -186,7 +186,7 @@ export enum FM {
 
     // Validations
     VALIDATE_UNABLE_TO_EDIT = 'Validate.unableToEdit',
-    VALIDATE_UNABLE_TO_BRANCH = 'Validate.unableToEdit',
+    VALIDATE_UNABLE_TO_BRANCH = 'Validate.unableToBranch',
     VALIDATE_UNABLE_TO_UNDO = 'Validate.unableToUndo',
     VALIDATE_ENTITY_REASON = 'Validate.entityReason',
 
