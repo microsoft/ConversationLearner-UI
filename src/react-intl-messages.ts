@@ -82,8 +82,16 @@ export enum FM {
     LOGDIALOGS_LASTRESPONSE = 'LogDialogs.lastResponse',
     LOGDIALOGS_TURNS = 'LogDialogs.turns',
     LOGDIALOGS_LOGDISABLED = 'LogDialogs.logdisabled',
-    LOGDIALOGS_VALIDATION_MODAL_TITLE = 'LogDialogs.validationmodal.title',
-    LOGDIALOGS_VALIDATION_MODAL_MESSAGE = 'LogDialogs.validation.modal.message',
+
+    // ReplayErrorList
+    REPLAYERROR_LOGDIALOG_VALIDATION_TITLE = 'ReplayError.logdialogvalidation.title',
+    REPLAYERROR_LOGDIALOG_VALIDATION_MESSAGE = 'ReplayError.logdialogvalidation.message',
+    REPLAYERROR_UNDO_TITLE = 'ReplayError.undo.title',
+    REPLAYERROR_UNDO_MESSAGE = 'ReplayError.undo.message',
+    REPLAYERROR_EDIT_TITLE = 'ReplayError.edit.title',
+    REPLAYERROR_EDIT_MESSAGE = 'ReplayError.edit.message',
+    REPLAYERROR_BRANCH_TITLE = 'ReplayError.branch.title',
+    REPLAYERROR_BRANCH_MESSAGE = 'ReplayError.branch.message',
 
     // Settings
     SETTINGS_TITLE = 'Settings.title',
@@ -466,8 +474,18 @@ export default {
         [FM.LOGDIALOGS_LASTRESPONSE]: 'Last Response',
         [FM.LOGDIALOGS_TURNS]: 'Turns',
         [FM.LOGDIALOGS_LOGDISABLED]: 'Logging is disabled',
-        [FM.LOGDIALOGS_VALIDATION_MODAL_TITLE]: 'Validation Errors',
-        [FM.LOGDIALOGS_VALIDATION_MODAL_MESSAGE]: 'This LogDialog is incompatible with the current version of the application',
+        [FM.REPLAYERROR_LOGDIALOG_VALIDATION_TITLE]: 'Validation Errors',
+        [FM.REPLAYERROR_LOGDIALOG_VALIDATION_MESSAGE]: 'This LogDialog is incompatible with the current version of the application',
+
+        // ReplayErrorList
+        [FM.REPLAYERROR_LOGDIALOG_VALIDATION_TITLE]: 'Validation Errors',
+        [FM.REPLAYERROR_LOGDIALOG_VALIDATION_MESSAGE]: 'This LogDialog is incompatible with the current version of the application.  The following issues must be resolved before it can be turned into Training Dialog',
+        [FM.REPLAYERROR_UNDO_TITLE]: 'Unable to Undo',
+        [FM.REPLAYERROR_UNDO_MESSAGE]: 'The following issues occurred when attempting to replay the dialog',
+        [FM.REPLAYERROR_EDIT_TITLE]: 'Unable to Edit',
+        [FM.REPLAYERROR_EDIT_MESSAGE]: 'The following issues occurred when attempting to replay the dialog',
+        [FM.REPLAYERROR_BRANCH_TITLE]: 'Unable to Branch',
+        [FM.REPLAYERROR_BRANCH_MESSAGE]: 'The following issues occurred when attempting to replay the dialog',
 
         // Settings
         [FM.SETTINGS_TITLE]: 'Settings',

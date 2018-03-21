@@ -18,7 +18,7 @@ import { FM } from '../../../react-intl-messages'
 import { Activity } from 'botframework-directlinejs';
 import { getDefaultEntityMap } from '../../../util';
 import { autobind } from 'office-ui-fabric-react/lib/Utilities'
-import TextListModal from '../../../components/modals/TextListModal';
+import ReplayErrorList from '../../../components/modals/ReplayErrorList';
 
 interface IRenderableColumn extends OF.IColumn {
     render: (x: LogDialog, component: LogDialogs) => React.ReactNode
@@ -155,8 +155,9 @@ interface ComponentState {
     dialogKey: number,   // Allows user to re-open modal for same row ()
     activities: Activity[],
     teachSession: Teach,
-    // Errors if LogDialog isn't compatible with current model
-    validationErrors: ReplayError[]
+    validationErrors: ReplayError[],
+    validationErrorTitle: string, 
+    validationErrorMessage: string,
 }
 
 class LogDialogs extends React.Component<Props, ComponentState> {
@@ -175,7 +176,9 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         dialogKey: 0,
         activities: [],
         teachSession: null,
-        validationErrors: []
+        validationErrors: [],
+        validationErrorTitle: null,
+        validationErrorMessage: null
     }
 
     componentDidMount() {
@@ -228,7 +231,9 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 currentLogDialog: logDialog,
                 isLogDialogWindowOpen: true,
                 validationErrors: teachWithHistory.replayErrors,
-                isValidationWarningOpen: teachWithHistory.replayErrors.length > 0
+                isValidationWarningOpen: teachWithHistory.replayErrors.length > 0,
+                validationErrorTitle: FM.REPLAYERROR_LOGDIALOG_VALIDATION_TITLE,
+                validationErrorMessage: FM.REPLAYERROR_LOGDIALOG_VALIDATION_MESSAGE
             })
         })
         .catch(error => {
@@ -279,7 +284,9 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             else {
                 this.setState({
                     validationErrors: teachWithHistory.replayErrors,
-                    isValidationWarningOpen: true
+                    isValidationWarningOpen: true,
+                    validationErrorTitle: FM.REPLAYERROR_EDIT_TITLE,
+                    validationErrorMessage: FM.REPLAYERROR_EDIT_MESSAGE
                 })
             }
         })
@@ -305,7 +312,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             isValidationWarningOpen: false
         })
     }
-    
+
     onUndoTeachStep(popRound: boolean) {
         // Clear history first
         this.setState({
@@ -322,7 +329,9 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             } else {    
                 this.setState({
                     validationErrors: teachWithHistory.replayErrors,
-                    isValidationWarningOpen: true
+                    isValidationWarningOpen: true,
+                    validationErrorTitle: FM.REPLAYERROR_UNDO_TITLE,
+                    validationErrorMessage: FM.REPLAYERROR_UNDO_MESSAGE
                 })
             }
         })
@@ -424,12 +433,12 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     onRenderItemColumn={(logDialog, i, column: IRenderableColumn) => returnErrorStringWhenError(() => column.render(logDialog, this))}
                     onActiveItemChanged={logDialog => this.onClickLogDialogItem(logDialog)}
                 />
-                <TextListModal  
+                <ReplayErrorList  
                     open={this.state.isValidationWarningOpen}
                     onClose={this.onCloseValidationWarning}
                     textItems={this.state.validationErrors}
-                    formattedTitleId={FM.LOGDIALOGS_VALIDATION_MODAL_TITLE}
-                    formattedMessageId={FM.LOGDIALOGS_VALIDATION_MODAL_MESSAGE}
+                    formattedTitleId={this.state.validationErrorTitle}
+                    formattedMessageId={this.state.validationErrorMessage}
                 />
                 <LogDialogModal
                     open={this.state.isLogDialogWindowOpen && !this.state.isValidationWarningOpen}

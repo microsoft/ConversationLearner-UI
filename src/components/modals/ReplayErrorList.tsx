@@ -9,7 +9,7 @@ import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { ReplayError, ReplayErrorType, ReplayErrorMissingAction, ReplayErrorMissingEntity, ReplayErrorActionUnavailable, ReplayErrorEntityDiscrepancy } from 'blis-models'
 
-class TextListModal extends React.Component<Props, {}> {
+class ReplayErrorList extends React.Component<Props, {}> {
 
     componentWillReceiveProps(nextProps: Props) {
         // Reset when opening modal
@@ -45,17 +45,34 @@ class TextListModal extends React.Component<Props, {}> {
             case ReplayErrorType.EntityDiscrepancy:
                 let entityDiscrepancy = item as ReplayErrorEntityDiscrepancy;
                 return (
-                    <div>
-                        <div className={OF.FontClassNames.mediumPlus}>
-                            {`APIs returned different actions after user input ${entityDiscrepancy.lastUserInput}`}
-                        </div>
-                        <div className={OF.FontClassNames.mediumPlus}>
-                            Original Entities:
-                            {entityDiscrepancy.originalEntities.map(e => (<div className={OF.FontClassNames.mediumPlus}>e</div>))}
-                            New Entities:
-                            {entityDiscrepancy.newEntities.map(e => (<div className={OF.FontClassNames.mediumPlus}>e</div>))}
-                        </div>
-                    </div>
+                        <OF.TooltipHost  
+                            id='myID' 
+                            delay={ OF.TooltipDelay.zero }
+                            calloutProps={ { gapSpace: 0 } }
+                            tooltipProps={ {
+                                onRenderContent: () => {
+                                    return (
+                                        <div className={OF.FontClassNames.mediumPlus}>
+                                            <div className="blis-font--emphasis">Original Entities:</div>
+                                            {entityDiscrepancy.originalEntities.length > 0 ?
+                                                entityDiscrepancy.originalEntities.map(e => (<div className={OF.FontClassNames.mediumPlus}>{e}</div>))
+                                                : <div className={OF.FontClassNames.mediumPlus}>-none-</div>
+                                            }
+                                            <div className="blis-font--emphasis">New Entities:</div>
+                                            {entityDiscrepancy.newEntities.length > 0 ?
+                                                entityDiscrepancy.newEntities.map(e => (<div className={OF.FontClassNames.mediumPlus}>{e}</div>))
+                                                : <div className={OF.FontClassNames.mediumPlus}>-none-</div>
+                                            }
+                                        </div>
+                                    );
+                                    }
+                              } }
+                            >
+                            <div className={OF.FontClassNames.mediumPlus}>
+                                {`APIs returned different actions after user input "${entityDiscrepancy.lastUserInput}"`}
+                                <OF.Icon iconName="Info" className="blis-icon" />
+                            </div>
+                        </OF.TooltipHost>
                 )
         }
     }
@@ -134,5 +151,5 @@ const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
 type Props = typeof stateProps & typeof dispatchProps & ReceivedProps & InjectedIntlProps
 
-export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(TextListModal))
+export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(ReplayErrorList))
 

@@ -20,7 +20,7 @@ import { setErrorDisplay } from '../../../actions/displayActions';
 import { Activity } from 'botframework-directlinejs';
 import { autobind } from 'office-ui-fabric-react/lib/Utilities';
 import { getDefaultEntityMap } from '../../../util';
-import TextListModal from '../../../components/modals/TextListModal';
+import ReplayErrorList from '../../../components/modals/ReplayErrorList';
 
 interface IRenderableColumn extends OF.IColumn {
     render: (x: TrainDialog, component: TrainDialogs) => React.ReactNode
@@ -129,13 +129,15 @@ interface ComponentState {
     isTeachDialogModalOpen: boolean
     isTrainDialogModalOpen: boolean
     isSessionMemoryCheckOpen: boolean
-    isValidationWarningOpen: boolean
     trainDialogId: string
     searchValue: string,
     dialogKey: number,
     entityFilter: OF.IDropdownOption,
     actionFilter: OF.IDropdownOption
-    validationErrors: ReplayError[]
+    isValidationWarningOpen: boolean
+    validationErrors: ReplayError[],
+    validationErrorTitle: string,
+    validationErrorMessage: string
 }
 
 class TrainDialogs extends React.Component<Props, ComponentState> {
@@ -148,13 +150,15 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         isTeachDialogModalOpen: false,
         isTrainDialogModalOpen: false,
         isSessionMemoryCheckOpen: false,
-        isValidationWarningOpen: false,
         trainDialogId: null,
         searchValue: '',
         dialogKey: 0,
         entityFilter: null,
         actionFilter: null,
-        validationErrors: []
+        isValidationWarningOpen: false,
+        validationErrors: [],
+        validationErrorTitle: null,
+        validationErrorMessage: null
     }
 
     toActionFilter(action: ActionBase, entities: EntityBase[]) : OF.IDropdownOption {
@@ -259,7 +263,9 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 else {
                     this.setState({
                         validationErrors: teachWithHistory.replayErrors,
-                        isValidationWarningOpen: true
+                        isValidationWarningOpen: true,
+                        validationErrorTitle: FM.REPLAYERROR_UNDO_TITLE,
+                        validationErrorMessage: FM.REPLAYERROR_UNDO_MESSAGE
                     })
                 }
             })
@@ -307,7 +313,9 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 else {
                     this.setState({
                         validationErrors: teachWithHistory.replayErrors,
-                        isValidationWarningOpen: true
+                        isValidationWarningOpen: true,
+                        validationErrorTitle: FM.REPLAYERROR_BRANCH_TITLE,
+                        validationErrorMessage: FM.REPLAYERROR_BRANCH_MESSAGE
                     })
                 }
             })
@@ -333,7 +341,9 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     //LARS unable to edit
                     this.setState({
                         validationErrors: teachWithHistory.replayErrors,
-                        isValidationWarningOpen: true
+                        isValidationWarningOpen: true,
+                        validationErrorTitle: FM.REPLAYERROR_EDIT_TITLE,
+                        validationErrorMessage: FM.REPLAYERROR_EDIT_MESSAGE
                     })
                 }
             })
@@ -505,12 +515,12 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         })}
                         componentRef={component => this.newTeachSessionButton = component}
                     />
-                    <TextListModal  
+                    <ReplayErrorList  
                         open={this.state.isValidationWarningOpen}
                         onClose={this.onCloseValidationWarning}
                         textItems={this.state.validationErrors}
-                        formattedTitleId={FM.LOGDIALOGS_VALIDATION_MODAL_TITLE}
-                        formattedMessageId={FM.LOGDIALOGS_VALIDATION_MODAL_MESSAGE}
+                        formattedTitleId={this.state.validationErrorTitle}
+                        formattedMessageId={this.state.validationErrorMessage}
                     />
                     <TeachSessionModal
                         app={this.props.app}
