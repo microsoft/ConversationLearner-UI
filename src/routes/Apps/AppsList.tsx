@@ -13,6 +13,7 @@ import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'r
 import { FM } from '../../react-intl-messages'
 import DemoImporter from '../../components/modals/DemoImporter';
 import { autobind } from 'office-ui-fabric-react/lib/Utilities';
+import * as util from '../../util'
 
 interface ISortableRenderableColumn extends OF.IColumn {
     render: (app: BlisAppBase, component: AppsList) => JSX.Element
@@ -33,6 +34,35 @@ function getColumns(intl: InjectedIntl): ISortableRenderableColumn[] {
             isResizable: true,
             getSortValue: app => app.appName,
             render: (app, component) => <span className={OF.FontClassNames.mediumPlus}><OF.Link onClick={() => component.onClickApp(app)}>{app.appName}</OF.Link></span>
+        },
+        {
+            key: 'isEditing',
+            name: 'Editing',
+            fieldName: 'isEditing',
+            minWidth: 100,
+            maxWidth: 100,
+            isResizable: true,
+            getSortValue: app => (app.metadata.isLoggingOn !== false) ? 'a' : 'b',
+            render: (app, component) => {
+                const editPackage = component.props.activeApps[app.appId];
+                const tag = (!editPackage || editPackage === app.devPackageId) ? 
+                    'Master' :
+                    app.packageVersions.find(pv => pv.packageId === editPackage).packageVersion;
+                return <span className={OF.FontClassNames.mediumPlus}>{tag}</span>;
+            }
+        },
+        {
+            key: 'isLive',
+            name: 'Live Tag',
+            fieldName: 'isLive',
+            minWidth: 100,
+            maxWidth: 100,
+            isResizable: true,
+            getSortValue: app => (app.metadata.isLoggingOn !== false) ? 'a' : 'b',
+            render: (app) => {
+                const tag = util.packageReferences(app).find(pv => pv.packageId === app.livePackageId).packageVersion;
+                return <span className={OF.FontClassNames.mediumPlus}>{tag}</span>;
+            }
         },        
         {
             key: 'isLoggingOn',
@@ -45,7 +75,7 @@ function getColumns(intl: InjectedIntl): ISortableRenderableColumn[] {
             maxWidth: 200,
             isResizable: true,
             getSortValue: app => (app.metadata.isLoggingOn !== false) ? 'a' : 'b',
-            render: app => <OF.Icon iconName={(app.metadata.isLoggingOn !== false) ? "CheckMark" : "Remove"} className="blis-icon" />
+            render: (app) => <OF.Icon iconName={(app.metadata.isLoggingOn !== false) ? "CheckMark" : "Remove"} className="blis-icon" />
         },
         {
             key: 'locale',
@@ -59,19 +89,6 @@ function getColumns(intl: InjectedIntl): ISortableRenderableColumn[] {
             isResizable: false,
             getSortValue: app => app.locale,
             render: app => <span className={OF.FontClassNames.mediumPlus}>{app.locale}</span>
-        },
-        {
-            key: 'bots',
-            name: intl.formatMessage({
-                id: FM.APPSLIST_COLUMNS_LINKEDBOTS,
-                defaultMessage: 'Linked Bots'
-            }),
-            fieldName: 'metadata',
-            minWidth: 100,
-            maxWidth: 100,
-            isResizable: false,
-            getSortValue: app => app.metadata.botFrameworkApps.length,
-            render: app => <span className={OF.FontClassNames.mediumPlus}>{app.metadata.botFrameworkApps.length}</span>
         },
         {
             key: 'actions',
@@ -397,7 +414,8 @@ const mapDispatchToProps = (dispatch: any) => {
 }
 const mapStateToProps = (state: State) => {
     return {
-        user: state.user
+        user: state.user,
+        activeApps: state.apps.activeApps
     }
 }
 

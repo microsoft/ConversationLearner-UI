@@ -93,7 +93,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
             .then((success) => {
                     // Delete source log dialog if there was one
                     if (success && deleteLogId) {  
-                        this.props.deleteLogDialogThunkAsync(this.props.user.id, this.props.app.appId, deleteLogId);
+                        this.props.deleteLogDialogThunkAsync(this.props.user.id, this.props.app.appId, deleteLogId, this.props.editingPackageId);
                     }
                 }
             );
@@ -153,7 +153,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
         // Put mask of webchat if not in input mode
         let chatDisable = (this.props.dialogMode !== DialogMode.Wait) ?
-            <div className="wc-disable"></div>
+            <div className="blis-overlayc"></div>
             : null;
 
         return (
@@ -173,7 +173,6 @@ class TeachModal extends React.Component<Props, ComponentState> {
                                 onSelectActivity={() => { }}
                                 hideInput={false}
                                 focusInput={this.props.dialogMode === DialogMode.Wait}
-                                viewOnly={false}
                             />
                             {chatDisable}
                         </div>
@@ -263,6 +262,7 @@ export interface ReceivedProps {
     onClose: Function,
     onUndo: (popRound: boolean) => void,
     app: BlisAppBase,
+    editingPackageId: string,
     teachSession: Teach,
     dialogMode: DialogMode,
     // When editing and exitins log or train dialog

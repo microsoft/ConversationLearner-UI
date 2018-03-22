@@ -45,6 +45,7 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
         case AT.SET_CURRENT_BLIS_APP_ASYNC:
 
         case AT.CREATE_ACTION_ASYNC:
+        case AT.CREATE_APP_TAG_ASYNC: 
         case AT.CREATE_BLIS_APPLICATION_ASYNC:
         case AT.CREATE_TEACH_SESSION_ASYNC:
         case AT.CREATE_TEACH_SESSION_FROMUNDOASYNC:
@@ -64,7 +65,9 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
         case AT.EDIT_ACTION_ASYNC:
         case AT.EDIT_BLIS_APPLICATION_ASYNC:
         case AT.EDIT_ENTITY_ASYNC:
-
+        case AT.EDIT_APP_LIVE_TAG_ASYNC:
+        case AT.EDIT_APP_EDITING_TAG_ASYNC:
+        
         // case AT.EXPIRE_CHAT_SESSION_AYSNC: Don't block
         
         case AT.FETCH_APPSOURCE_ASYNC:
@@ -84,6 +87,7 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
             return { ...state, displaySpinner: addSpinner(state.displaySpinner, action.type) }
 
         case AT.CREATE_ACTION_FULFILLED:
+        case AT.CREATE_APP_TAG_FULFILLED: 
         //case AT.CREATE_BLIS_APPLICATION_FULFILLED: Handled above
         case AT.CREATE_CHAT_SESSION_REJECTED:
         case AT.CREATE_CHAT_SESSION_FULFILLED:
@@ -108,6 +112,8 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
         case AT.EDIT_ACTION_FULFILLED:
         case AT.EDIT_BLIS_APPLICATION_FULFILLED:
         case AT.EDIT_ENTITY_FULFILLED:
+        case AT.EDIT_APP_LIVE_TAG_FULFILLED:
+        case AT.EDIT_APP_EDITING_TAG_FULFILLED:
 
         case AT.FETCH_APPSOURCE_FULFILLED:
         case AT.FETCH_ACTIONS_FULFILLED:

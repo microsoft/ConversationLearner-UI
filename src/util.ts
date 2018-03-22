@@ -36,6 +36,10 @@ export function entityDisplayName(entity: models.EntityBase) {
     }
 }
 
+export function packageReferences(app: models.BlisAppBase): models.PackageReference[] { 
+    return [...app.packageVersions || [], {packageId: app.devPackageId, packageVersion: 'Master'}] as models.PackageReference[]
+}
+
 // TODO: Remove coupling with the start character on ActionPayloadEditor
 export function getDefaultEntityMap(entities: EntityBase[]): Map<string, string> {
     return entities.reduce((m, e) => m.set(e.entityId, `$${e.entityName}`), new Map<string, string>())

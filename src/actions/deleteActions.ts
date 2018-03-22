@@ -66,12 +66,13 @@ export const deleteActionFulfilled = (actionGUID: string): ActionObject => {
     }
 }
 
-export const deleteChatSessionAsync = (key: string, session: Session, currentAppId: string): ActionObject => {
+export const deleteChatSessionAsync = (key: string, session: Session, currentAppId: string, packageId: string): ActionObject => {
     return {
         type: AT.DELETE_CHAT_SESSION_ASYNC,
         key: key,
         session: session,
-        currentAppId: currentAppId
+        currentAppId: currentAppId,
+        packageId: packageId
     }
 }
 
@@ -223,7 +224,7 @@ export const deleteLogDialogRejected = (): ActionObject => {
     }
 }
 
-export const deleteLogDialogThunkAsync = (userId: string, appId: string, logDialogId: string) => {
+export const deleteLogDialogThunkAsync = (userId: string, appId: string, logDialogId: string, packageId: string) => {
     return async (dispatch: Dispatch<any>) => {
         dispatch(deleteLogDialogAsync(appId, logDialogId))
         const blisClient = ClientFactory.getInstance(AT.DELETE_LOG_DIALOG_ASYNC)
@@ -236,7 +237,7 @@ export const deleteLogDialogThunkAsync = (userId: string, appId: string, logDial
             const error = e as Error
             dispatch(setErrorDisplay(ErrorType.Error, error.message, [error.message], AT.DELETE_LOG_DIALOG_ASYNC))
             dispatch(deleteLogDialogRejected())
-            dispatch(fetchAllLogDialogsAsync(userId, appId));
+            dispatch(fetchAllLogDialogsAsync(userId, appId, packageId));
         }
     }
 }

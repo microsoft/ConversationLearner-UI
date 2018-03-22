@@ -20,6 +20,7 @@ import * as Util from '../../util'
 import AdaptiveCardViewer from './AdaptiveCardViewer/AdaptiveCardViewer'
 
 const ACTION_BUTTON = 'action_button';
+const MISSING_ACTION = 'missing_action';
 
 interface IRenderableColumn extends OF.IColumn {
     render: (x: ScoredBase, component: ActionScorer, index: number) => React.ReactNode
@@ -35,28 +36,31 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             maxWidth: 80,
             isResizable: true,
             render: (action, component, index) => {
-                let buttonText = (component.props.dialogType !== DialogType.TEACH && index === 0) ? "Selected" : "Select";
-                let isAvailable = component.isUnscoredActionAvailable(action as UnscoredAction);
-                if (!isAvailable) {
-                    return (
-                        <PrimaryButton
-                            disabled={true}
-                            ariaDescription={buttonText}
-                            text={buttonText}
-                        />
-                    )
+                if (component.props.canEdit) {
+                    let buttonText = (component.props.dialogType !== DialogType.TEACH && index === 0) ? "Selected" : "Select";
+                    let isAvailable = component.isUnscoredActionAvailable(action as UnscoredAction);
+                    if (!isAvailable) {
+                        return (
+                            <PrimaryButton
+                                disabled={true}
+                                ariaDescription={buttonText}
+                                text={buttonText}
+                            />
+                        )
+                    }
+                    else {
+                        let refFn = (index === 0) ? ((ref: any) => { component.primaryScoreButton = ref }) : null;
+                        return (
+                            <PrimaryButton
+                                onClick={() => component.handleActionSelection(action.actionId)}
+                                ariaDescription={buttonText}
+                                text={buttonText}
+                                componentRef={refFn}
+                            />
+                        )
+                    }
                 }
-                else {
-                    let refFn = (index === 0) ? ((ref: any) => { component.primaryScoreButton = ref }) : null;
-                    return (
-                        <PrimaryButton
-                            onClick={() => component.handleActionSelection(action.actionId)}
-                            ariaDescription={buttonText}
-                            text={buttonText}
-                            componentRef={refFn}
-                        />
-                    )
-                }
+                return null;
             }
         },
         {
@@ -122,7 +126,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                     let isAvailable = component.isUnscoredActionAvailable(action as UnscoredAction);
                     if (isAvailable) {
                         fieldContent = (component.props.dialogType !== DialogType.TEACH) ?
-                            '' : "Training...";
+                            'Unknown' : "Training...";
                     }
                     else {
                         fieldContent = "Disqualified";
@@ -320,6 +324,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         });
     }
     getValue(scoredBase: ScoredBase, col: OF.IColumn): any {
+
         let value = scoredBase[col.fieldName]
         if (col.fieldName === 'score') {
             // Sort new actions to the top
@@ -504,9 +509,9 @@ class ActionScorer extends React.Component<Props, ComponentState> {
     isMasked(actionId: string): boolean {
         return (this.props.scoreInput.maskedActions && this.props.scoreInput.maskedActions.indexOf(actionId) > -1);
     }
-    renderItemColumn(action: ScoredBase | string, index: number, column: IRenderableColumn) {
+    renderItemColumn(action: ScoredBase, index: number, column: IRenderableColumn) {
         // Null is action create button
-        if (action === ACTION_BUTTON) {
+        if (action.actionId === ACTION_BUTTON) {
             if (column.key === 'select') {
                 // Will focus on new action button if no scores
                 let ref = (index === 0) ? ((ref: any) => { this.primaryScoreButton = ref }) : null;
@@ -523,9 +528,42 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                 return '';
             }
         }
+        // Handle deleted actions
+        else if (action.actionId === MISSING_ACTION) {
+            if (column.key === 'select') {
+                let buttonText = (this.props.dialogType !== DialogType.TEACH && index === 0) ? "Selected" : "Select";
+                return (
+                    <PrimaryButton
+                        disabled={true}
+                        ariaDescription={buttonText}
+                        text={buttonText}
+                    />
+                )
+            } else if (column.key === 'actionResponse') {
+                return <span className="blis-font--warning">MISSING ACTION</span>; 
+            }
+            else if (column.key === 'actionScore') {
+                return column.render(action as ScoredBase, this, index)
+            }
+            else {
+                return '';
+            }
+        }
 
         return column.render(action as ScoredBase, this, index)
     }
+
+    // Create dummy item for injecting non-actions into list
+    makeDummyItem(dummyType: string, score: number): ScoredAction {
+        return {
+            actionId: dummyType,
+            payload: dummyType,
+            score: score,
+            isTerminal: false,
+            actionType: ActionTypes.TEXT
+        };
+    }
+
     getScoredItems(): ScoredBase[] {
         if (!this.props.scoreResponse) {
             return null;
@@ -539,7 +577,13 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             let action = this.props.actions.find(ee => ee.actionId === e.actionId);
             let score = (e as ScoredAction).score;
             let reason = score ? null : this.calculateReason(e as UnscoredAction);
-            return { ...action, reason: reason, score: score }
+            if (action) {
+                return { ...action, reason: reason, score: score }
+            }
+            else {
+                // Action that no longer exists (was deleted)
+                return this.makeDummyItem(MISSING_ACTION, score);
+            }
         });
 
         // Add any new actions that weren't included in scores
@@ -568,6 +612,11 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             });
         }
 
+        // If editing allowed and Action creation button
+        if (scoredItems && !this.props.autoTeach && this.props.canEdit) {
+            scoredItems.push(this.makeDummyItem(ACTION_BUTTON, 0));
+        }
+
         // Add null for action createtion button at end
         return scoredItems;
     }
@@ -579,12 +628,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             return null;
         }
 
-        let scores: (ScoredBase | string)[] = this.getScoredItems();
-
-        // If editing allowed and Action creation button
-        if (scores && !this.props.autoTeach) {
-            scores.push(ACTION_BUTTON);
-        }
+        let scores: ScoredBase[] = this.getScoredItems();
 
         let template: Template = null;
         let renderedActionArguments: RenderedActionArgument[] = [];
@@ -639,7 +683,8 @@ export interface ReceivedProps {
     dialogMode: DialogMode,
     scoreResponse: ScoreResponse,
     scoreInput: ScoreInput,
-    memories: Memory[]
+    memories: Memory[],
+    canEdit: boolean
     onActionSelected: (trainScorerStep: TrainScorerStep) => void,
 }
 

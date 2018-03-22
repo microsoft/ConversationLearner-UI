@@ -48,10 +48,12 @@ class Actions extends React.Component<Props, ComponentState> {
     }
 
     onSelectAction(action: ActionBase) {
-        this.setState({
-            actionSelected: action,
-            isActionEditorOpen: true
-        })
+        if (this.props.editingPackageId === this.props.app.devPackageId) {
+            this.setState({
+                actionSelected: action,
+                isActionEditorOpen: true
+            })
+        }
     }
 
     onClickOpenActionEditor() {
@@ -144,14 +146,19 @@ class Actions extends React.Component<Props, ComponentState> {
                         defaultMessage="Actions"
                     />
                 </span>
-                <span className={OF.FontClassNames.mediumPlus}>
-                    <FormattedMessage
-                        id={FM.ACTIONS_SUBTITLE}
-                        defaultMessage="Actions that your application can take..."
-                    />
-                </span>
+                {this.props.editingPackageId === this.props.app.devPackageId ?
+                    <span className={OF.FontClassNames.mediumPlus}>
+                        <FormattedMessage
+                            id={FM.ACTIONS_SUBTITLE}
+                            defaultMessage="Actions that your application can take..."
+                        />
+                    </span>
+                    :
+                    <span className="blis-errorpanel">Editing is only allowed in Master Tag</span>
+                }
                 <div>
                     <OF.PrimaryButton
+                        disabled={this.props.editingPackageId !== this.props.app.devPackageId}
                         onClick={() => this.onClickOpenActionEditor()}
                         ariaDescription={this.props.intl.formatMessage({
                             id: FM.ACTIONS_CREATEBUTTONARIADESCRIPTION,
@@ -205,6 +212,7 @@ const mapStateToProps = (state: State) => {
 
 export interface ReceivedProps {
     app: BlisAppBase
+    editingPackageId: string
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps

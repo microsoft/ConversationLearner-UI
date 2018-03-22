@@ -49,6 +49,9 @@ export enum FM {
     APPSLIST_COLUMNS_LOGGING = 'AppsList.columns.logging',
     APPSLIST_COLUMNS_ACTIONS = 'AppsList.columns.actions',
 
+    // Generic Buttons
+    BUTTON_OK = 'Button.OK',
+
     // Dashboard
     DASHBOARD_TITLE = 'Dashboard.title',
     DASHBOARD_SUBTITLE = 'Dashboard.subtitle',
@@ -79,6 +82,22 @@ export enum FM {
     LOGDIALOGS_LASTRESPONSE = 'LogDialogs.lastResponse',
     LOGDIALOGS_TURNS = 'LogDialogs.turns',
     LOGDIALOGS_LOGDISABLED = 'LogDialogs.logdisabled',
+
+    // LogDialogAdmin
+    LOGDIALOGADMIN_CONFIRMTITLE = 'LogDialogAdmin.confirmTitle',
+
+    // ReplayErrorList
+    REPLAYERROR_LOGDIALOG_VALIDATION_TITLE = 'ReplayError.logdialogvalidation.title',
+    REPLAYERROR_LOGDIALOG_VALIDATION_MESSAGE = 'ReplayError.logdialogvalidation.message',
+    REPLAYERROR_CONVERT_TITLE = 'ReplayError.logdialogvalidation.convert.title',
+    REPLAYERROR_FAILMESSAGE = 'ReplayError.failMessage',
+    REPLAYERROR_UNDO_TITLE = 'ReplayError.undo.title',
+    REPLAYERROR_EDIT_TITLE = 'ReplayError.edit.title',
+    REPLAYERROR_BRANCH_TITLE = 'ReplayError.branch.title',
+    REPLAYERROR_DESC_MISSING_ACTION = 'ReplayError.Desc.missingAction',
+    REPLAYERROR_DESC_MISSING_ENTITY = 'ReplayError.Desc.missingEntity',
+    REPLAYERROR_DESC_UNAVAILABLE_ACTION = 'ReplayError.Desc.unavailableAction',
+    REPLAYERROR_DESC_CHANGED_ENTITIES = 'ReplayError.Desc.changedEntities',
 
     // Settings
     SETTINGS_TITLE = 'Settings.title',
@@ -167,6 +186,9 @@ export enum FM {
     TOOLTIP_LOGGING_TOGGLE = 'ToolTip.LOGGING_TOGGLE',
     TOOLTIP_MEMORYMANAGER = 'ToolTip.ACTION_MEMORYMANAGER',
     TOOLTIP_MEMORYMANAGER_TITLE = 'ToolTip.ACTION_MEMORYMANAGER_TITLE',
+    TOOLTIP_PACKAGECREATOR_LIVE_TOGGLE = 'ToolTip.PACKAGECREATOR_LIVE_TOGGLE',
+    TOOLTIP_TAG_EDITING = 'ToolTip.TAG_EDITING',
+    TOOLTIP_TAG_LIVE = 'ToolTip.TAG_LIVE',
 
     // Train Dialogs
     TRAINDIALOGS_TITLE = 'TrainDialogs.title',
@@ -180,7 +202,7 @@ export enum FM {
 
     // Validations
     VALIDATE_UNABLE_TO_EDIT = 'Validate.unableToEdit',
-    VALIDATE_UNABLE_TO_BRANCH = 'Validate.unableToEdit',
+    VALIDATE_UNABLE_TO_BRANCH = 'Validate.unableToBranch',
     VALIDATE_UNABLE_TO_UNDO = 'Validate.unableToUndo',
     VALIDATE_ENTITY_REASON = 'Validate.entityReason',
 
@@ -308,6 +330,16 @@ export enum FM {
     // MemoryTable
     MEMORYTABLE_EMPTY = 'MemoryTable.empty',
 
+    // PackageCreator
+    PACKAGECREATOR_TITLE = 'PackageCreator.title',
+    PACKAGECREATOR_TAG_LABEL = 'PackageCreator.tagLabel',
+    PACKAGECREATOR_TAG_PLACEHOLDER = 'PackageCreator.tagPlaceholder',
+    PACKAGECREATOR_LIVE_LABEL = 'PackageCreator.liveLabel',
+    PACKAGECREATOR_CREATEBUTTON_ARIADESCRIPTION = 'PackageCreator.createButton.ariaDescription',
+    PACKAGECREATOR_CREATEBUTTON_TEXT = 'PackageCreator.createButton.text',
+    PACKAGECREATOR_CANCELBUTTON_ARIADESCRIPTION = 'PackageCreator.cancelButton.ariaDescription',
+    PACKAGECREATOR_CANCELBUTTON_TEXT = 'PackageCreator.cancelButton.text',
+
     // SessionMemoryCheck
     SESSIONMEMORYCHECK_KEEPBUTTON_ARIADESCRIPTION = 'SessionMemoryCheck.keepButton.ariaDescription',
     SESSIONMEMORYCHECK_KEEPBUTTON_TEXT = 'SessionMemoryCheck.keepButton.text',
@@ -417,6 +449,9 @@ export default {
         [FM.APPSLIST_COLUMNS_LOGGING]: 'Logging Enabled',
         [FM.APPSLIST_COLUMNS_ACTIONS]: 'Actions',
 
+        // Generic Buttons
+        [FM.BUTTON_OK]: 'OK',
+
         // Dashboard
         [FM.DASHBOARD_TITLE]: 'Overview',
         [FM.DASHBOARD_SUBTITLE]: `Facts & statistics about the app's data at any period of time...`,
@@ -448,6 +483,22 @@ export default {
         [FM.LOGDIALOGS_TURNS]: 'Turns',
         [FM.LOGDIALOGS_LOGDISABLED]: 'Logging is disabled',
 
+        // LogDialogAdmin
+        [FM.LOGDIALOGADMIN_CONFIRMTITLE]: 'This will attempt to replay the Log Dialog against the bot and convert it into a new Train Dialog',
+
+        // ReplayErrorList
+        [FM.REPLAYERROR_LOGDIALOG_VALIDATION_TITLE]: 'Application definition has changed',
+        [FM.REPLAYERROR_LOGDIALOG_VALIDATION_MESSAGE]: 'This Log Dialog was created with a earlier version of the application.  The following incomptibilities were found:',
+        [FM.REPLAYERROR_CONVERT_TITLE]: 'Unable to convert to Train Dialog',
+        [FM.REPLAYERROR_FAILMESSAGE]: 'The following issues occurred when attempting to replay the dialog',
+        [FM.REPLAYERROR_UNDO_TITLE]: 'Unable to Undo',
+        [FM.REPLAYERROR_EDIT_TITLE]: 'Unable to Edit',
+        [FM.REPLAYERROR_BRANCH_TITLE]: 'Unable to Branch',
+        [FM.REPLAYERROR_DESC_MISSING_ACTION]: 'Missing action in response to',
+        [FM.REPLAYERROR_DESC_MISSING_ENTITY]: 'Missing entity for',
+        [FM.REPLAYERROR_DESC_UNAVAILABLE_ACTION]: 'Action unavailable in reponse to',
+        [FM.REPLAYERROR_DESC_CHANGED_ENTITIES]: 'Entites inconsistent after user input',
+        
         // Settings
         [FM.SETTINGS_TITLE]: 'Settings',
         [FM.SETTINGS_SUBTITLE]: 'Control your application versions, who has access to it and whether it is public or private...',
@@ -537,6 +588,9 @@ export default {
         [FM.TOOLTIP_LOGGING_TOGGLE]: 'Enables or disables logging of user conversations. When logging is enabled, Bot performance can be improved by providing corrections to Logs that contain undesired Bot responses.  The corrected Log Dialogs become new Training Dialogs',
         [FM.TOOLTIP_MEMORYMANAGER]: `The memory manager provides the following functions for manipulating the Bot's memory:`,
         [FM.TOOLTIP_MEMORYMANAGER_TITLE]: 'Memory Manager',
+        [FM.TOOLTIP_PACKAGECREATOR_LIVE_TOGGLE]: 'When checked the new Tag will become the Live app served to users',
+        [FM.TOOLTIP_TAG_EDITING]: 'The version (tag) of the application to edit in UI',
+        [FM.TOOLTIP_TAG_LIVE]: 'The version (tag) of the application used when published to external channels (e.g. Skype)',
 
         // Train Dialogs
         [FM.TRAINDIALOGS_TITLE]: 'Train Dialogs',
@@ -673,6 +727,16 @@ export default {
 
         // MemoryTable
         [FM.MEMORYTABLE_EMPTY]: 'Empty',
+
+        // PackageCreator
+        [FM.PACKAGECREATOR_TITLE]: 'Create a new Tag',
+        [FM.PACKAGECREATOR_TAG_LABEL]: 'Name',
+        [FM.PACKAGECREATOR_TAG_PLACEHOLDER]: 'Tag Name',
+        [FM.PACKAGECREATOR_LIVE_LABEL]: 'Make Live Version',
+        [FM.PACKAGECREATOR_CREATEBUTTON_ARIADESCRIPTION]: 'Create',
+        [FM.PACKAGECREATOR_CREATEBUTTON_TEXT]: 'Create',
+        [FM.PACKAGECREATOR_CANCELBUTTON_ARIADESCRIPTION]: 'Cancel',
+        [FM.PACKAGECREATOR_CANCELBUTTON_TEXT]: 'Cancel',
 
         // SessionMemoryCheck
         [FM.SESSIONMEMORYCHECK_KEEPBUTTON_ARIADESCRIPTION]: 'Keep',

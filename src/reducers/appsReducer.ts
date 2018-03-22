@@ -7,7 +7,8 @@ import { TrainingStatusCode } from 'blis-models'
 import { App } from '../types/models'
 
 const initialState: AppsState = {
-    all: []
+    all: [],
+    activeApps: {}
 };
 
 const appsReducer: Reducer<AppsState> = (state = initialState, action: ActionObject): AppsState => {
@@ -15,7 +16,7 @@ const appsReducer: Reducer<AppsState> = (state = initialState, action: ActionObj
         case AT.USER_LOGOUT:
             return { ...initialState };
         case AT.FETCH_APPLICATIONS_FULFILLED:
-            return { ...state, all: action.allBlisApps }
+            return { ...state, all: action.uiAppList.appList.apps, activeApps: action.uiAppList.activeApps } 
         case AT.FETCH_APPLICATION_TRAININGSTATUS_ASYNC: {
             const app = state.all.find(app => app.appId === action.appId)
             const newApp: App = {
@@ -26,7 +27,7 @@ const appsReducer: Reducer<AppsState> = (state = initialState, action: ActionObj
             return { ...state, all: replace(state.all, newApp, a => a.appId) }
         }
         case AT.FETCH_APPLICATION_TRAININGSTATUS_EXPIRED: {
-            const app = state.all.find(app => app.appId === action.appId)
+            const app = state.all.find(a => a.appId === action.appId)
             const newApp: App = {
                 ...app,
                 didPollingExpire: true
@@ -57,7 +58,11 @@ const appsReducer: Reducer<AppsState> = (state = initialState, action: ActionObj
         case AT.DELETE_BLIS_APPLICATION_FULFILLED:
             return { ...state, all: state.all.filter(app => app.appId !== action.blisAppGUID) };
         case AT.EDIT_BLIS_APPLICATION_FULFILLED:
+        case AT.CREATE_APP_TAG_FULFILLED:
+        case AT.EDIT_APP_LIVE_TAG_FULFILLED:
             return { ...state, all: replace(state.all, action.blisApp, app => app.appId) }
+        case AT.EDIT_APP_EDITING_TAG_FULFILLED:
+            return { ...state, activeApps: action.activeApps}
         default:
             return state;
     }

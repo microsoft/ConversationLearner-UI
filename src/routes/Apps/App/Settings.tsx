@@ -1,10 +1,12 @@
 import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
-import { editBLISApplicationAsync } from '../../../actions/updateActions';
+import { editBLISApplicationAsync, editAppEditingTagThunkAsync, editAppLiveTagThunkAsync } from '../../../actions/updateActions';
 import { bindActionCreators } from 'redux';
+import PackageTable from '../../../components/modals/PackageTable'
 import { connect } from 'react-redux';
 import { State } from '../../../types';
 import * as OF from 'office-ui-fabric-react';
+import { Expando } from '../../../components/modals'
 import { BlisAppBase, TrainingStatusCode } from 'blis-models'
 import './Settings.css'
 import { BLIS_SAMPLE_ID } from '../../../types/const'
@@ -14,11 +16,12 @@ import { injectIntl, InjectedIntlProps, defineMessages, FormattedMessage } from 
 import { autobind } from 'office-ui-fabric-react/lib/Utilities';
 import * as TC from '../../../components/tipComponents/Components'
 import * as ToolTip from '../../../components/ToolTips'
+import * as util from '../../../util'
 
 const messages = defineMessages({
     fieldErrorRequired: {
         id: FM.SETTINGS_FIELDERROR_REQUIREDVALUE,
-        defaultMessage: "Required Value"
+        defaultMessage: 'Required Value'
     },
     fieldErrorAlphanumeric: {
         id: FM.SETTINGS_FIELDERROR_ALPHANUMERIC,
@@ -67,6 +70,8 @@ interface ComponentState {
     localeVal: string
     appIdVal: string
     appNameVal: string
+    selectedEditingTagOptionKey: string | number,
+    selectedLiveTagOptionKey: string | number,
     markdownVal: string
     videoVal: string
     edited: boolean
@@ -79,7 +84,9 @@ interface ComponentState {
     luisSubscriptionKeyShowHideText: string,
     luisSubscriptionKeyVal: string,
     debugErrorsOpen: boolean
-    isLoggingOnVal: boolean
+    isLoggingOnVal: boolean,
+    isPackageExpandoOpen: boolean,
+    isSettingsExpandoOpen: boolean
 }
 
 class Settings extends React.Component<Props, ComponentState> {
@@ -90,6 +97,8 @@ class Settings extends React.Component<Props, ComponentState> {
             localeVal: '',
             appIdVal: '',
             appNameVal: '',
+            selectedEditingTagOptionKey: null,
+            selectedLiveTagOptionKey: null,
             markdownVal: '',
             videoVal: '',
             edited: false,
@@ -102,7 +111,9 @@ class Settings extends React.Component<Props, ComponentState> {
             luisSubscriptionKeyShowHideText: this.props.intl.formatMessage(messages.passwordHidden),
             luisSubscriptionKeyVal: '',
             debugErrorsOpen: false,
-            isLoggingOnVal: true
+            isLoggingOnVal: true,
+            isPackageExpandoOpen: false,
+            isSettingsExpandoOpen: false
         }
    }
 
@@ -111,6 +122,8 @@ class Settings extends React.Component<Props, ComponentState> {
             localeVal: app.locale,
             appIdVal: app.appId,
             appNameVal: app.appName,
+            selectedEditingTagOptionKey: this.props.editingPackageId,
+            selectedLiveTagOptionKey: app.livePackageId,
             luisAuthoringKeyVal: app.luisKey,
             luisSubscriptionKeyVal: '', // TODO: When apps schema allows saving subscription key use it here
             markdownVal: app.metadata ? app.metadata.markdown : null,
@@ -246,6 +259,9 @@ class Settings extends React.Component<Props, ComponentState> {
                 video: this.state.videoVal,
                 isLoggingOn: this.state.isLoggingOnVal
             },
+            // packageVersions: DON'T SEND
+            // devPackageId: DON'T SEND
+            livePackageId: this.props.app.livePackageId,  
             trainingFailureMessage: undefined,
             trainingStatus: TrainingStatusCode.Completed,
             datetime: new Date()
@@ -281,7 +297,7 @@ class Settings extends React.Component<Props, ComponentState> {
             return intl.formatMessage(messages.fieldErrorDistinct)
         }
 
-        return ""
+        return ''
     }
 
     @autobind
@@ -316,6 +332,32 @@ class Settings extends React.Component<Props, ComponentState> {
         })
     }
 
+    onChangedEditingTag = (editingOption: OF.IDropdownOption) => {
+        this.props.editAppEditingTagThunkAsync(this.props.user.id, this.props.app.appId, editingOption.key as string)
+        this.setState({
+            selectedEditingTagOptionKey: editingOption.key,
+        })
+    }
+
+    onChangedLiveTag = (liveOption: OF.IDropdownOption) => {
+        this.props.editAppLiveTagThunkAsync(this.props.user.id, this.props.app.appId, liveOption.key as string)
+        this.setState({
+            selectedLiveTagOptionKey: liveOption.key,
+        })
+    }
+
+    packageOptions() {
+        let packageReferences = util.packageReferences(this.props.app);
+
+        return Object.values(packageReferences)
+        .map<OF.IDropdownOption>(pr => {
+            return {
+                key: pr.packageId,
+                text: pr.packageVersion
+            }
+        })
+    }
+
     render() {
         const { intl } = this.props
         let options = [{
@@ -323,6 +365,7 @@ class Settings extends React.Component<Props, ComponentState> {
             text: this.state.localeVal,
         }]
         let buttonsDivStyle = this.state.edited === true ? styles.shown : styles.hidden;
+        let packageOptions = this.packageOptions();
         return (
             <div className="blis-page">
                 <span className={OF.FontClassNames.xxLarge}>
@@ -343,7 +386,7 @@ class Settings extends React.Component<Props, ComponentState> {
                         onChanged={(text) => this.onChangedName(text)}
                         label={intl.formatMessage({
                             id: FM.SETTINGS_FIELDS_NAMELABEL,
-                            defaultMessage: "Name"
+                            defaultMessage: 'Name'
                         })}
                         onGetErrorMessage={value => this.onGetNameErrorMessage(value)}
                         value={this.state.appNameVal}
@@ -353,147 +396,166 @@ class Settings extends React.Component<Props, ComponentState> {
                         disabled={true}
                         label={intl.formatMessage({
                             id: FM.SETTINGS_FILEDS_APPIDLABEL,
-                            defaultMessage: "App ID"
+                            defaultMessage: 'App ID'
                         })}
                         value={this.state.appIdVal}
                     />
-                    <div>
-                        <OF.Label className={OF.FontClassNames.mediumPlus}>
-                            <FormattedMessage
-                                id={FM.SETTINGS_BOTFRAMEWORKLUISKEY_AUTHORING_LABEL}
-                                defaultMessage="LUIS Authoring Key"
-                            />
-                        </OF.Label>
-                        <div className="blis-settings-textfieldwithbutton">
-                            <OF.TextField
-                                className={OF.FontClassNames.mediumPlus}
-                                onChanged={(text) => this.onChangedLuisAuthoringKey(text)}
-                                type={this.state.isLuisAuthoringKeyVisible ? "text" : "password"}
-                                value={this.state.luisAuthoringKeyVal}
-                                placeholder={intl.formatMessage({
-                                    id: FM.SETTINGS_BOTFRAMEWORKLUISKEY_AUTHORING_PLACEHOLDER,
-                                    defaultMessage: "Authoring Key..."
-                                })}
-                            />
-                            <OF.PrimaryButton
-                                onClick={this.onClickToggleLuisAuthoringKey}
-                                ariaDescription={this.state.luisAuthoringKeyShowHideText}
-                                text={this.state.luisAuthoringKeyShowHideText}
-                            />
-                        </div>
-                    </div>
-                    <div>
-                        <OF.Label className={OF.FontClassNames.mediumPlus}>
-                            <FormattedMessage
-                                id={FM.SETTINGS_BOTFRAMEWORKLUISKEY_SUBSCRIPTION_LABEL}
-                                defaultMessage="LUIS Subscription Key"
-                            />
-                        </OF.Label>
-                        <div className="blis-settings-textfieldwithbutton">
-                            <OF.TextField
-                                className={OF.FontClassNames.mediumPlus}
-                                onChanged={(text) => this.onChangedLuisSubscriptionKey(text)}
-                                type={this.state.isLuisSubscriptionKeyVisible ? "text" : "password"}
-                                value={this.state.luisSubscriptionKeyVal}
-                                placeholder={intl.formatMessage({
-                                    id: FM.SETTINGS_BOTFRAMEWORKLUISKEY_SUBSCRIPTION_PLACEHOLDER,
-                                    defaultMessage: "Subscription Key..."
-                                })}
-                            />
-                            <OF.PrimaryButton
-                                onClick={this.onClickToggleLuisSubscriptionKey}
-                                ariaDescription={this.state.luisSubscriptionKeyShowHideText}
-                                text={this.state.luisSubscriptionKeyShowHideText}
-                            />
-                        </div>
-                    </div>
-                    <div>
-                        <OF.Label className={OF.FontClassNames.mediumPlus}>
-                            <FormattedMessage
-                                id={FM.SETTINGS_BOTFRAMEWORKLOCALELABEL}
-                                defaultMessage="Locale"
-                            />
-                        </OF.Label>
-                        <OF.Dropdown
-                            className={OF.FontClassNames.mediumPlus}
-                            options={options}
-                            selectedKey={this.state.localeVal}
-                            disabled={true}
+                    <div className="blis-command-bar">
+                        <TC.Dropdown
+                                label="Editing Tag"
+                                options={packageOptions}
+                                onChanged={acionTypeOption => this.onChangedEditingTag(acionTypeOption)}
+                                selectedKey={this.state.selectedEditingTagOptionKey}
+                                tipType={ToolTip.TipType.TAG_EDITING}
+                        />
+                        <TC.Dropdown
+                                label="Live Tag"
+                                options={packageOptions}
+                                onChanged={acionTypeOption => this.onChangedLiveTag(acionTypeOption)}
+                                selectedKey={this.state.selectedLiveTagOptionKey}
+                                tipType={ToolTip.TipType.TAG_LIVE}
                         />
                     </div>
-                    <div className="blis-entity-creator-checkbox">
-                        <TC.Checkbox
-                            label={intl.formatMessage({
-                                id: FM.SETTINGS_LOGGINGON_LABEL,
-                                defaultMessage: 'Log Conversations'
-                            })}
-                            checked={this.state.isLoggingOnVal}
-                            onChange={this.onToggleLoggingOn}
-                            tipType={ToolTip.TipType.LOGGING_TOGGLE}
+
+
+                    <Expando 
+                        className={'blis-dialog-admin-title'}
+                        isOpen={this.state.isPackageExpandoOpen}
+                        text="Version Tags"
+                        onToggle={() => this.setState({isPackageExpandoOpen: !this.state.isPackageExpandoOpen})}
+                    />
+                    {this.state.isPackageExpandoOpen &&
+                        <PackageTable
+                            app={this.props.app}
+                            editingPackageId={this.props.editingPackageId}
                         />
-                    </div>
-                    <div>
-                        <OF.Label className={OF.FontClassNames.mediumPlus}>
-                            <FormattedMessage
-                                id={FM.SETTINGS_BOTFRAMEWORKLISTLABEL}
-                                defaultMessage="Bot Framework Apps"
-                            />
-                        </OF.Label>
-                        <OF.List
-                            items={this.state.botFrameworkAppsVal}
-                            onRenderCell={this.onRenderBotListRow}
-                        />
-                        <div className="blis-settings-textfieldwithbutton">
-                            <OF.TextField
-                                className={OF.FontClassNames.mediumPlus}
-                                onChanged={(text) => this.onChangedBotId(text)}
-                                placeholder={intl.formatMessage(messages.botFrameworkAppIdFieldLabel)}
-                                value={this.state.newBotVal}
-                            />
-                            <OF.PrimaryButton
-                                onClick={this.onClickAddBot}
-                                ariaDescription={intl.formatMessage(messages.botFrameworkAddBotButtonText)}
-                                text={intl.formatMessage(messages.botFrameworkAddBotButtonText)}
-                            />
-                        </div>
-                    </div>
-                    {this.props.user.id === BLIS_SAMPLE_ID &&
+                    }
+
+                    
+                    <Expando 
+                        className={'blis-dialog-admin-title'}
+                        isOpen={this.state.isSettingsExpandoOpen}
+                        text="Settings"
+                        onToggle={() => this.setState({isSettingsExpandoOpen: !this.state.isSettingsExpandoOpen})}
+                    />
+                    {this.state.isSettingsExpandoOpen &&
                         <div>
-                            <OF.TextField
-                                className={OF.FontClassNames.mediumPlus}
-                                onChanged={(text) => this.onChangedMarkdown(text)}
-                                label={intl.formatMessage({
-                                    id: FM.SETTINGS_FIELDS_MARKDOWNLABEL,
-                                    defaultMessage: 'Markdown'
-                                })}
-                                value={this.state.markdownVal}
-                                multiline={true}
-                                rows={5}
-                            />
-                            <OF.TextField
-                                className={OF.FontClassNames.mediumPlus}
-                                onChanged={(text) => this.onChangedVideo(text)}
-                                label={intl.formatMessage({
-                                    id: FM.SETTINGS_FIELDS_VIDEOLABEL,
-                                    defaultMessage: 'Video'
-                                })}
-                                value={this.state.videoVal}
-                            />
+                            <OF.Label className={OF.FontClassNames.mediumPlus}>
+                                <FormattedMessage
+                                    id={FM.SETTINGS_BOTFRAMEWORKLUISKEY_AUTHORING_LABEL}
+                                    defaultMessage="LUIS Authoring Key"
+                                />
+                            </OF.Label>
+                            <div className="blis-settings-textfieldwithbutton">
+                                <OF.TextField
+                                    className={OF.FontClassNames.mediumPlus}
+                                    onChanged={(text) => this.onChangedLuisAuthoringKey(text)}
+                                    type={this.state.isLuisAuthoringKeyVisible ? "text" : "password"}
+                                    value={this.state.luisAuthoringKeyVal}
+                                    placeholder={intl.formatMessage({
+                                        id: FM.SETTINGS_BOTFRAMEWORKLUISKEY_AUTHORING_PLACEHOLDER,
+                                        defaultMessage: "Authoring Key..."
+                                    })}
+                                />
+                                <OF.PrimaryButton
+                                    onClick={this.onClickToggleLuisAuthoringKey}
+                                    ariaDescription={this.state.luisAuthoringKeyShowHideText}
+                                    text={this.state.luisAuthoringKeyShowHideText}
+                                />
+                            </div>
+
+                            <OF.Label className={OF.FontClassNames.mediumPlus}>
+                                <FormattedMessage
+                                    id={FM.SETTINGS_BOTFRAMEWORKLUISKEY_SUBSCRIPTION_LABEL}
+                                    defaultMessage="LUIS Subscription Key"
+                                />
+                            </OF.Label>
+                            <div className="blis-settings-textfieldwithbutton">
+                                <OF.TextField
+                                    className={OF.FontClassNames.mediumPlus}
+                                    onChanged={(text) => this.onChangedLuisSubscriptionKey(text)}
+                                    type={this.state.isLuisSubscriptionKeyVisible ? "text" : "password"}
+                                    value={this.state.luisSubscriptionKeyVal}
+                                    placeholder={intl.formatMessage({
+                                        id: FM.SETTINGS_BOTFRAMEWORKLUISKEY_SUBSCRIPTION_PLACEHOLDER,
+                                        defaultMessage: "Subscription Key..."
+                                    })}
+                                />
+                                <OF.PrimaryButton
+                                    onClick={this.onClickToggleLuisSubscriptionKey}
+                                    ariaDescription={this.state.luisSubscriptionKeyShowHideText}
+                                    text={this.state.luisSubscriptionKeyShowHideText}
+                                />
+                            </div>
+                            <div>
+                                <OF.Label className={OF.FontClassNames.mediumPlus}>
+                                    <FormattedMessage
+                                        id={FM.SETTINGS_BOTFRAMEWORKLOCALELABEL}
+                                        defaultMessage="Locale"
+                                    />
+                                </OF.Label>
+                                <OF.Dropdown
+                                    className={OF.FontClassNames.mediumPlus}
+                                    options={options}
+                                    selectedKey={this.state.localeVal}
+                                    disabled={true}
+                                />
+                            </div>
+                            <div className="blis-entity-creator-checkbox">
+                                <TC.Checkbox
+                                    label={intl.formatMessage({
+                                        id: FM.SETTINGS_LOGGINGON_LABEL,
+                                        defaultMessage: 'Log Conversations'
+                                    })}
+                                    checked={this.state.isLoggingOnVal}
+                                    onChange={this.onToggleLoggingOn}
+                                    tipType={ToolTip.TipType.LOGGING_TOGGLE}
+                                />
+                            </div>
+                            <div className="blis-modal-buttons_primary" style={buttonsDivStyle}>
+                                <OF.PrimaryButton
+                                    disabled={this.onGetNameErrorMessage(this.state.appNameVal) !== ''}
+                                    onClick={this.onClickSave}
+                                    ariaDescription={intl.formatMessage(messages.saveChanges)}
+                                    text={intl.formatMessage(messages.saveChanges)}
+                                />
+                                <OF.DefaultButton
+                                    onClick={this.onClickDiscard}
+                                    ariaDescription={intl.formatMessage(messages.discard)}
+                                    text={intl.formatMessage(messages.discard)}
+                                />
+                            </div>
                         </div>
                     }
-                    <div className="blis-modal-buttons_primary" style={buttonsDivStyle}>
-                        <OF.PrimaryButton
-                            disabled={this.onGetNameErrorMessage(this.state.appNameVal) !== ""}
-                            onClick={this.onClickSave}
-                            ariaDescription={intl.formatMessage(messages.saveChanges)}
-                            text={intl.formatMessage(messages.saveChanges)}
-                        />
-                        <OF.DefaultButton
-                            onClick={this.onClickDiscard}
-                            ariaDescription={intl.formatMessage(messages.discard)}
-                            text={intl.formatMessage(messages.discard)}
-                        />
-                    </div>
+
+
+                    {this.props.user.id === BLIS_SAMPLE_ID &&
+                        <div>
+                            <div className="blis-dialog-admin-title">Demo Settings</div>
+                            <div>
+                                <OF.TextField
+                                    className={OF.FontClassNames.mediumPlus}
+                                    onChanged={(text) => this.onChangedMarkdown(text)}
+                                    label={intl.formatMessage({
+                                        id: FM.SETTINGS_FIELDS_MARKDOWNLABEL,
+                                        defaultMessage: 'Markdown'
+                                    })}
+                                    value={this.state.markdownVal}
+                                    multiline={true}
+                                    rows={5}
+                                />
+                                <OF.TextField
+                                    className={OF.FontClassNames.mediumPlus}
+                                    onChanged={(text) => this.onChangedVideo(text)}
+                                    label={intl.formatMessage({
+                                        id: FM.SETTINGS_FIELDS_VIDEOLABEL,
+                                        defaultMessage: 'Video'
+                                    })}
+                                    value={this.state.videoVal}
+                                />
+                            </div>
+                        </div>
+                    }
                     <div className="blis-modal-buttons_secondary">
                         {this.props.user.id === BLIS_SAMPLE_ID &&
                             <OF.DefaultButton
@@ -514,7 +576,9 @@ class Settings extends React.Component<Props, ComponentState> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        editBLISApplicationAsync
+        editBLISApplicationAsync,
+        editAppEditingTagThunkAsync,
+        editAppLiveTagThunkAsync
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {
@@ -525,7 +589,8 @@ const mapStateToProps = (state: State) => {
 }
 
 export interface ReceivedProps {
-    app: BlisAppBase
+    app: BlisAppBase,
+    editingPackageId: string
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps

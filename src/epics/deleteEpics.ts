@@ -47,7 +47,7 @@ export const deleteSessionEpic: Epic<ActionObject, State> = (action$: ActionsObs
     return action$.ofType(AT.DELETE_CHAT_SESSION_ASYNC)
         .flatMap(action =>
             (action.type === AT.DELETE_CHAT_SESSION_ASYNC)
-                ? deleteChatSession(action.key, action.currentAppId, action.session)
+                ? deleteChatSession(action.key, action.currentAppId, action.session, action.packageId)
                 : assertNever()
         )
 }

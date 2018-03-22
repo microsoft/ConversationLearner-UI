@@ -9,6 +9,7 @@ import TrainDialogModal from './TrainDialogModal'
 import ErrorPanel from './ErrorPanel'
 import SpinnerWindow from './SpinnerWindow'
 import SessionMemoryCheck from './SessionMemoryCheck'
+import Expando from './Expando'
 
 export {
     ActionCreatorEditor,
@@ -21,5 +22,6 @@ export {
     TrainDialogModal,
     ErrorPanel,
     SpinnerWindow,
-    SessionMemoryCheck
+    SessionMemoryCheck,
+    Expando
 }

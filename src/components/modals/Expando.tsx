@@ -1,0 +1,31 @@
+import * as React from 'react';
+import { connect } from 'react-redux';
+import { ActionButton } from 'office-ui-fabric-react/lib/Button';
+
+class Expando extends React.Component<Props, {}> {
+
+    render() {
+        return (
+            <div className={this.props.className}>
+                <ActionButton
+                    iconProps={ this.props.isOpen ? { iconName: 'ChevronUpSmall' } : { iconName: 'ChevronDownSmall' }}
+                    checked={ true }
+                    onClick={this.props.onToggle}
+                >
+                    {this.props.text}
+                </ActionButton>
+            </div>
+        )
+    }
+}
+
+export interface ReceivedProps {
+    isOpen: boolean,
+    text: string,
+    className: string
+    onToggle: () => void
+}
+
+type Props = ReceivedProps
+
+export default connect<ReceivedProps>(null, null)(Expando)

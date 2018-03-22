@@ -7,12 +7,11 @@ import {
     TrainDialog, LogDialog, Session, Teach, ScoreInput,
     UserInput, ExtractResponse, DialogType,
     UIExtractResponse, UITrainScorerStep,
-    UITeachResponse, UIScoreInput, UIScoreResponse, TrainingStatus
+    UITeachResponse, UIScoreInput, UIScoreResponse, UIAppList, TrainingStatus
 } from 'blis-models'
 import { TipType } from '../components/ToolTips'
 import { ErrorType } from '../types/const'
 import { AT } from '../types/ActionTypes'
-import { Activity } from 'botframework-directlinejs';
 
 export type UpdateAction = {
     type: AT.EDIT_BLIS_APPLICATION_ASYNC,
@@ -46,6 +45,20 @@ export type UpdateAction = {
     key: string,
     appId: string,
     sessionId: string,
+} | {
+    type: AT.EDIT_APP_LIVE_TAG_ASYNC,
+    packageId: string,
+    currentAppId: string
+} | {
+    type: AT.EDIT_APP_LIVE_TAG_FULFILLED,
+    blisApp: BlisAppBase
+} | {
+    type: AT.EDIT_APP_EDITING_TAG_ASYNC,
+    packageId: string,
+    currentAppId: string
+} | {
+    type: AT.EDIT_APP_EDITING_TAG_FULFILLED,
+    activeApps: { [appId: string]: string }
 }
 
 export type DisplayAction = {
@@ -111,7 +124,8 @@ export type FetchAction = {
     blisAppID: string
 } | {
     type: AT.FETCH_APPSOURCE_ASYNC,
-    blisAppID: string
+    blisAppID: string,
+    packageId: string
 } | {
     type: AT.FETCH_CHAT_SESSIONS_ASYNC,
     key: string,
@@ -131,17 +145,18 @@ export type FetchAction = {
     trainDialog: TrainDialog
 } | {
     type: AT.FETCH_HISTORY_FULFILLED,
-    activities: Activity[],
+    teachWithHistory: TeachWithHistory,
 } | {
     type: AT.FETCH_LOG_DIALOGS_ASYNC,
     key: string,
-    blisAppID: string
+    blisAppID: string,
+    packageId: string
 } | {
     type: AT.FETCH_LOG_DIALOGS_FULFILLED,
     allLogDialogs: LogDialog[],
 } | {
     type: AT.FETCH_APPLICATIONS_FULFILLED,
-    allBlisApps: BlisAppBase[],
+    uiAppList: UIAppList,
 } | {
     type: AT.FETCH_ENTITIES_FULFILLED,
     allEntities: EntityBase[],
@@ -202,6 +217,14 @@ export type CreateAction = {
     type: AT.CREATE_ACTION_FULFILLED,
     actionId: string,
     action: ActionBase
+} | {
+    type: AT.CREATE_APP_TAG_ASYNC,
+    tagName: string,
+    makeLive: boolean,
+    currentAppId: string
+} | {
+    type: AT.CREATE_APP_TAG_FULFILLED,
+    blisApp: BlisAppBase
 } | {
     type: AT.CREATE_TRAIN_DIALOG_ASYNC,
     key: string,
@@ -311,7 +334,8 @@ export type DeleteAction = {
     type: AT.DELETE_CHAT_SESSION_ASYNC,
     key: string,
     session: Session,
-    currentAppId: string
+    currentAppId: string,
+    packageId: string
 } | {
     type: AT.DELETE_CHAT_SESSION_FULFILLED,
     sessionId: string,

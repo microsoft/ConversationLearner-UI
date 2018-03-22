@@ -1,7 +1,6 @@
 import * as models from 'blis-models'
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios'
 import { AppInput } from '../types/models';
-import { Activity } from 'botframework-directlinejs';
 
 interface TypedAxiosResponse<T> extends AxiosResponse {
     data: T
@@ -90,10 +89,10 @@ export default class BlisClient {
             .then(response => response.data)
     }
 
-    apps(userId: string): Promise<models.BlisAppBase[]> {
-        return this.send<models.BlisAppList>({
+    apps(userId: string): Promise<models.UIAppList> {
+        return this.send<models.UIAppList>({
             url: `${this.baseUrl}/apps?userId=${userId}`
-        }).then(response => response.data.apps)
+        }).then(response => response.data)
     }
 
     appGet(appId: string): Promise<models.BlisAppBase> {
@@ -110,23 +109,13 @@ export default class BlisClient {
             .then(response => response.data)
     }
 
+    // AT.CREATE_BLIS_APPLICATION_ASYNC
     appsCreate(userId: string, appInput: AppInput): Promise<models.BlisAppBase> {
-        return this.send<string>({
+        return this.send<models.BlisAppBase>({
             method: 'post',
             url: `${this.baseUrl}/app?userId=${userId}`,
             data: appInput
-        }).then(response => {
-            // TODO: Fix API to return full object instead of faking it
-            // Alternative is to send another request for app
-            return {
-                ...appInput,
-                appId: response.data,
-                datetime: new Date(),
-                trainingFailureMessage: null,
-                trainingStatus: models.TrainingStatusCode.Completed,
-                latestPackageId: 0
-            }
-        })
+        }).then(response => response.data)
     }
 
     // AT.COPY_APPLICATIONS_ASYNC
@@ -154,6 +143,30 @@ export default class BlisClient {
             data: app
         })
             .then(response => app)
+    }
+
+    appCreateTag(appId: string, tagName: string, makeLive: boolean): Promise<models.BlisAppBase> {
+        return this.send<models.BlisAppBase>({
+            method: 'put',
+            url: `${this.baseUrl}/app/${appId}/publish?version=${tagName}&makeLive=${makeLive}`
+        })
+            .then(response => response.data)
+    }
+
+    appSetLiveTag(appId: string, tagName: string): Promise<models.BlisAppBase> {
+        return this.send<models.BlisAppBase>({
+            method: 'post',
+            url: `${this.baseUrl}/app/${appId}/publish/${tagName}`
+        })
+            .then(response => response.data)
+    }
+
+    appSetEditingTag(appId: string, tagName: string): Promise<{ [appId: string]: string }> {
+        return this.send<{ [appId: string]: string }>({
+            method: 'post',
+            url: `${this.baseUrl}/app/${appId}/edit/${tagName}`
+        })
+            .then(response => response.data)
     }
 
     entities(appId: string): Promise<models.EntityBase[]> {
@@ -191,9 +204,9 @@ export default class BlisClient {
             .then(response => entity)
     }
 
-    source(appId: string): Promise<models.AppDefinition> {
+    source(appId: string, packageId: string): Promise<models.AppDefinition> {
         return this.send<models.AppDefinition>({
-            url: `${this.baseUrl}/app/${appId}/source`
+            url: `${this.baseUrl}/app/${appId}/source?packageId=${packageId}`
         }).then(response => response.data)
     }
 
@@ -265,17 +278,17 @@ export default class BlisClient {
             .then(response => response.data)
     }
 
-    history(appId: string, trainDialog: models.TrainDialog, userName: string, userId: string): Promise<Activity[]> {
-        return this.send<Activity[]>({
+    history(appId: string, trainDialog: models.TrainDialog, userName: string, userId: string): Promise<models.TeachWithHistory> {
+        return this.send<models.TeachWithHistory>({
             method: 'post',
             url: `${this.baseUrl}/app/${appId}/history?username=${userName}&userid=${userId}`,
             data: trainDialog
         }).then(response => response.data)
     }
 
-    logDialogs(appId: string): Promise<models.LogDialog[]> {
+    logDialogs(appId: string, packageId: string): Promise<models.LogDialog[]> {
         return this.send<models.LogDialogList>({
-            url: `${this.baseUrl}/app/${appId}/logdialogs`
+            url: `${this.baseUrl}/app/${appId}/logdialogs?packageId=${packageId}`
         }).then(response => response.data.logDialogs)
     }
 
