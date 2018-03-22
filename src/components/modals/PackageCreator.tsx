@@ -138,7 +138,7 @@ class PackageCreator extends React.Component<Props, ComponentState> {
                                 })}
                                 checked={this.state.isLiveVal}
                                 onChange={this.onToggleSetLive}
-                                tipType={ToolTips.TipType.LOGGING_TOGGLE}
+                                tipType={ToolTips.TipType.PACKAGECREATOR_LIVE_TOGGLE}
                             />
                         </div>
                     <div className="blis-modal_footer">

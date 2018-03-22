@@ -27,19 +27,31 @@ class ReplayErrorList extends React.Component<Props, {}> {
             case ReplayErrorType.MissingAction:
                 return (
                     <div className={OF.FontClassNames.mediumPlus}>
-                        {`Missing action in response to "${(item as ReplayErrorMissingAction).lastUserInput}"`}
+                        <FormattedMessage
+                            id={FM.REPLAYERROR_DESC_MISSING_ACTION}
+                            defaultMessage={FM.REPLAYERROR_DESC_MISSING_ACTION}
+                        />
+                        {` "${(item as ReplayErrorMissingAction).lastUserInput}"`}
                     </div>
                 )
             case ReplayErrorType.MissingEntity:
                 return (
                     <div className={OF.FontClassNames.mediumPlus}>
-                        {`Missing entity for "${(item as ReplayErrorMissingEntity).value}"`}
+                        <FormattedMessage
+                            id={FM.REPLAYERROR_DESC_MISSING_ENTITY}
+                            defaultMessage={FM.REPLAYERROR_DESC_MISSING_ENTITY}
+                        />
+                        {` "${(item as ReplayErrorMissingEntity).value}"`}
                     </div>
                 )
             case ReplayErrorType.ActionUnavailable:
                 return (
                     <div className={OF.FontClassNames.mediumPlus}>
-                        {`Action unavailable in reponse to "${(item as ReplayErrorActionUnavailable).lastUserInput}"`}
+                        <FormattedMessage
+                            id={FM.REPLAYERROR_DESC_UNAVAILABLE_ACTION}
+                            defaultMessage={FM.REPLAYERROR_DESC_UNAVAILABLE_ACTION}
+                        />
+                        {` "${(item as ReplayErrorActionUnavailable).lastUserInput}"`}
                     </div>
                 )
             case ReplayErrorType.EntityDiscrepancy:
@@ -69,11 +81,17 @@ class ReplayErrorList extends React.Component<Props, {}> {
                               } }
                             >
                             <div className={OF.FontClassNames.mediumPlus}>
-                                {`APIs returned different actions after user input "${entityDiscrepancy.lastUserInput}"`}
+                                <FormattedMessage
+                                    id={FM.REPLAYERROR_DESC_CHANGED_ENTITIES}
+                                    defaultMessage={FM.REPLAYERROR_DESC_CHANGED_ENTITIES}
+                                />
+                                {` "${entityDiscrepancy.lastUserInput}"`}
                                 <OF.Icon iconName="Info" className="blis-icon" />
                             </div>
                         </OF.TooltipHost>
                 )
+            default:
+                throw new Error('Unhandled ReplayErrorType case');
         }
     }
 

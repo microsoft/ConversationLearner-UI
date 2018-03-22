@@ -285,8 +285,8 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 this.setState({
                     validationErrors: teachWithHistory.replayErrors,
                     isValidationWarningOpen: true,
-                    validationErrorTitle: FM.REPLAYERROR_EDIT_TITLE,
-                    validationErrorMessage: FM.REPLAYERROR_EDIT_MESSAGE
+                    validationErrorTitle: FM.REPLAYERROR_CONVERT_TITLE,
+                    validationErrorMessage: FM.REPLAYERROR_FAILMESSAGE
                 })
             }
         })
@@ -331,7 +331,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     validationErrors: teachWithHistory.replayErrors,
                     isValidationWarningOpen: true,
                     validationErrorTitle: FM.REPLAYERROR_UNDO_TITLE,
-                    validationErrorMessage: FM.REPLAYERROR_UNDO_MESSAGE
+                    validationErrorMessage: FM.REPLAYERROR_FAILMESSAGE
                 })
             }
         })
@@ -433,15 +433,8 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     onRenderItemColumn={(logDialog, i, column: IRenderableColumn) => returnErrorStringWhenError(() => column.render(logDialog, this))}
                     onActiveItemChanged={logDialog => this.onClickLogDialogItem(logDialog)}
                 />
-                <ReplayErrorList  
-                    open={this.state.isValidationWarningOpen}
-                    onClose={this.onCloseValidationWarning}
-                    textItems={this.state.validationErrors}
-                    formattedTitleId={this.state.validationErrorTitle}
-                    formattedMessageId={this.state.validationErrorMessage}
-                />
                 <LogDialogModal
-                    open={this.state.isLogDialogWindowOpen && !this.state.isValidationWarningOpen}
+                    open={this.state.isLogDialogWindowOpen}
                     canEdit={this.props.editingPackageId === this.props.app.devPackageId}
                     app={this.props.app}
                     onClose={this.onCloseLogDialogModal}
@@ -449,6 +442,13 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     onDelete={this.onDeleteLogDialog}
                     logDialog={currentLogDialog}
                     history={this.state.isLogDialogWindowOpen ? this.state.activities : null}
+                />
+                <ReplayErrorList  
+                    open={this.state.isValidationWarningOpen}
+                    onClose={this.onCloseValidationWarning}
+                    textItems={this.state.validationErrors}
+                    formattedTitleId={this.state.validationErrorTitle}
+                    formattedMessageId={this.state.validationErrorMessage}
                 />
                 <TeachSessionModal
                         app={this.props.app}

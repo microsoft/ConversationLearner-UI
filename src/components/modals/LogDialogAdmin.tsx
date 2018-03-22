@@ -8,6 +8,8 @@ import ActionScorer from './ActionScorer';
 import MemoryTable from './MemoryTable';
 import * as OF from 'office-ui-fabric-react'
 import { Activity } from 'botframework-directlinejs'
+import { FM } from '../../react-intl-messages'
+import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import {
     BlisAppBase, TrainScorerStep, TextVariation,
     Memory, TrainDialog, TrainRound,
@@ -55,7 +57,12 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
         for (let round of rounds) {
             for (let textVariation of round.extractorStep.textVariations) {
                 textVariation.labelEntities = textVariation.labelEntities.filter(
-                    le => this.props.entities.find(e => e.entityId == le.entityId)
+                    le => this.props.entities.find(e => e.entityId === le.entityId)
+                )
+            } 
+            for (let scorerStep of round.scorerSteps) {
+                scorerStep.input.filledEntities = scorerStep.input.filledEntities.filter(
+                    fe => this.props.entities.find(e => e.entityId === fe.entityId)
                 )
             }
         }
@@ -259,7 +266,7 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
                         </div>
                     </div>
                 }
-                {this.state.senderType === SenderType.Bot &&
+                {this.state.senderType === SenderType.Bot && this.props.logDialog &&
                     <div className="blis-dialog-admin__content">
                         <div className="blis-dialog-admin-title">Action</div>
                         <div>
@@ -283,16 +290,21 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
                         hidden={!this.state.newTrainDialog}
                         onDismiss={() => this.onClickSaveCheckNo()}
                         dialogContentProps={{
-                            type: OF.DialogType.normal,
-                            title: 'Are you sure you want to save changes?',
-                            subText: 'This will create a new training dialog based on your changes'
-                        }}
+                            type: OF.DialogType.normal}}
                         modalProps={{
                             isBlocking: true
                         }}
                     >
+                        <div className="blis-modal_header">
+                            <span className={OF.FontClassNames.medium}>
+                                <FormattedMessage
+                                    id={FM.LOGDIALOGADMIN_CONFIRMTITLE}
+                                    defaultMessage={FM.LOGDIALOGADMIN_CONFIRMTITLE}
+                                />
+                            </span>
+                        </div>
                         <OF.DialogFooter>
-                            <OF.PrimaryButton onClick={() => this.onClickSaveCheckYes()} text='Save' />
+                            <OF.PrimaryButton onClick={() => this.onClickSaveCheckYes()} text='OK' />
                             <OF.DefaultButton onClick={() => this.onClickSaveCheckNo()} text='Cancel' />
                         </OF.DialogFooter>
                     </OF.Dialog>
@@ -325,6 +337,6 @@ export interface ReceivedProps {
 // Props types inferred from mapStateToProps & dispatchToProps
 const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
-type Props = typeof stateProps & typeof dispatchProps & ReceivedProps;
+type Props = typeof stateProps & typeof dispatchProps & ReceivedProps & InjectedIntlProps;
 
-export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(LogDialogAdmin);
+export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(LogDialogAdmin));

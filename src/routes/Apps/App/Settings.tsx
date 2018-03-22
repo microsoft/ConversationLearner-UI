@@ -406,14 +406,14 @@ class Settings extends React.Component<Props, ComponentState> {
                                 options={packageOptions}
                                 onChanged={acionTypeOption => this.onChangedEditingTag(acionTypeOption)}
                                 selectedKey={this.state.selectedEditingTagOptionKey}
-                                tipType={ToolTip.TipType.ACTION_TYPE}
+                                tipType={ToolTip.TipType.TAG_EDITING}
                         />
                         <TC.Dropdown
                                 label="Live Tag"
                                 options={packageOptions}
                                 onChanged={acionTypeOption => this.onChangedLiveTag(acionTypeOption)}
                                 selectedKey={this.state.selectedLiveTagOptionKey}
-                                tipType={ToolTip.TipType.PACKAGECREATOR_LIVE_TOGGLE}
+                                tipType={ToolTip.TipType.TAG_LIVE}
                         />
                     </div>
 

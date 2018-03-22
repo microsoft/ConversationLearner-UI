@@ -83,15 +83,21 @@ export enum FM {
     LOGDIALOGS_TURNS = 'LogDialogs.turns',
     LOGDIALOGS_LOGDISABLED = 'LogDialogs.logdisabled',
 
+    // LogDialogAdmin
+    LOGDIALOGADMIN_CONFIRMTITLE = 'LogDialogAdmin.confirmTitle',
+
     // ReplayErrorList
     REPLAYERROR_LOGDIALOG_VALIDATION_TITLE = 'ReplayError.logdialogvalidation.title',
     REPLAYERROR_LOGDIALOG_VALIDATION_MESSAGE = 'ReplayError.logdialogvalidation.message',
+    REPLAYERROR_CONVERT_TITLE = 'ReplayError.logdialogvalidation.convert.title',
+    REPLAYERROR_FAILMESSAGE = 'ReplayError.failMessage',
     REPLAYERROR_UNDO_TITLE = 'ReplayError.undo.title',
-    REPLAYERROR_UNDO_MESSAGE = 'ReplayError.undo.message',
     REPLAYERROR_EDIT_TITLE = 'ReplayError.edit.title',
-    REPLAYERROR_EDIT_MESSAGE = 'ReplayError.edit.message',
     REPLAYERROR_BRANCH_TITLE = 'ReplayError.branch.title',
-    REPLAYERROR_BRANCH_MESSAGE = 'ReplayError.branch.message',
+    REPLAYERROR_DESC_MISSING_ACTION = 'ReplayError.Desc.missingAction',
+    REPLAYERROR_DESC_MISSING_ENTITY = 'ReplayError.Desc.missingEntity',
+    REPLAYERROR_DESC_UNAVAILABLE_ACTION = 'ReplayError.Desc.unavailableAction',
+    REPLAYERROR_DESC_CHANGED_ENTITIES = 'ReplayError.Desc.changedEntities',
 
     // Settings
     SETTINGS_TITLE = 'Settings.title',
@@ -181,6 +187,8 @@ export enum FM {
     TOOLTIP_MEMORYMANAGER = 'ToolTip.ACTION_MEMORYMANAGER',
     TOOLTIP_MEMORYMANAGER_TITLE = 'ToolTip.ACTION_MEMORYMANAGER_TITLE',
     TOOLTIP_PACKAGECREATOR_LIVE_TOGGLE = 'ToolTip.PACKAGECREATOR_LIVE_TOGGLE',
+    TOOLTIP_TAG_EDITING = 'ToolTip.TAG_EDITING',
+    TOOLTIP_TAG_LIVE = 'ToolTip.TAG_LIVE',
 
     // Train Dialogs
     TRAINDIALOGS_TITLE = 'TrainDialogs.title',
@@ -474,19 +482,23 @@ export default {
         [FM.LOGDIALOGS_LASTRESPONSE]: 'Last Response',
         [FM.LOGDIALOGS_TURNS]: 'Turns',
         [FM.LOGDIALOGS_LOGDISABLED]: 'Logging is disabled',
-        [FM.REPLAYERROR_LOGDIALOG_VALIDATION_TITLE]: 'Validation Errors',
-        [FM.REPLAYERROR_LOGDIALOG_VALIDATION_MESSAGE]: 'This LogDialog is incompatible with the current version of the application',
+
+        // LogDialogAdmin
+        [FM.LOGDIALOGADMIN_CONFIRMTITLE]: 'This will attempt to replay the Log Dialog against the bot and convert it into a new Train Dialog',
 
         // ReplayErrorList
-        [FM.REPLAYERROR_LOGDIALOG_VALIDATION_TITLE]: 'Validation Errors',
-        [FM.REPLAYERROR_LOGDIALOG_VALIDATION_MESSAGE]: 'This LogDialog is incompatible with the current version of the application.  The following issues must be resolved before it can be turned into Training Dialog',
+        [FM.REPLAYERROR_LOGDIALOG_VALIDATION_TITLE]: 'Application definition has changed',
+        [FM.REPLAYERROR_LOGDIALOG_VALIDATION_MESSAGE]: 'This Log Dialog was created with a earlier version of the application.  The following incomptibilities were found:',
+        [FM.REPLAYERROR_CONVERT_TITLE]: 'Unable to convert to Train Dialog',
+        [FM.REPLAYERROR_FAILMESSAGE]: 'The following issues occurred when attempting to replay the dialog',
         [FM.REPLAYERROR_UNDO_TITLE]: 'Unable to Undo',
-        [FM.REPLAYERROR_UNDO_MESSAGE]: 'The following issues occurred when attempting to replay the dialog',
         [FM.REPLAYERROR_EDIT_TITLE]: 'Unable to Edit',
-        [FM.REPLAYERROR_EDIT_MESSAGE]: 'The following issues occurred when attempting to replay the dialog',
         [FM.REPLAYERROR_BRANCH_TITLE]: 'Unable to Branch',
-        [FM.REPLAYERROR_BRANCH_MESSAGE]: 'The following issues occurred when attempting to replay the dialog',
-
+        [FM.REPLAYERROR_DESC_MISSING_ACTION]: 'Missing action in response to',
+        [FM.REPLAYERROR_DESC_MISSING_ENTITY]: 'Missing entity for',
+        [FM.REPLAYERROR_DESC_UNAVAILABLE_ACTION]: 'Action unavailable in reponse to',
+        [FM.REPLAYERROR_DESC_CHANGED_ENTITIES]: 'Entites inconsistent after user input',
+        
         // Settings
         [FM.SETTINGS_TITLE]: 'Settings',
         [FM.SETTINGS_SUBTITLE]: 'Control your application versions, who has access to it and whether it is public or private...',
@@ -577,7 +589,9 @@ export default {
         [FM.TOOLTIP_MEMORYMANAGER]: `The memory manager provides the following functions for manipulating the Bot's memory:`,
         [FM.TOOLTIP_MEMORYMANAGER_TITLE]: 'Memory Manager',
         [FM.TOOLTIP_PACKAGECREATOR_LIVE_TOGGLE]: 'When checked the new Tag will become the Live app served to users',
-        
+        [FM.TOOLTIP_TAG_EDITING]: 'The version (tag) of the application to edit in UI',
+        [FM.TOOLTIP_TAG_LIVE]: 'The version (tag) of the application used when published to external channels (e.g. Skype)',
+
         // Train Dialogs
         [FM.TRAINDIALOGS_TITLE]: 'Train Dialogs',
         [FM.TRAINDIALOGS_SUBTITLE]: 'Use this tool to train and improve the current versions of your application...',

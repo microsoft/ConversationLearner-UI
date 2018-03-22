@@ -265,7 +265,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         validationErrors: teachWithHistory.replayErrors,
                         isValidationWarningOpen: true,
                         validationErrorTitle: FM.REPLAYERROR_UNDO_TITLE,
-                        validationErrorMessage: FM.REPLAYERROR_UNDO_MESSAGE
+                        validationErrorMessage: FM.REPLAYERROR_FAILMESSAGE
                     })
                 }
             })
@@ -315,7 +315,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         validationErrors: teachWithHistory.replayErrors,
                         isValidationWarningOpen: true,
                         validationErrorTitle: FM.REPLAYERROR_BRANCH_TITLE,
-                        validationErrorMessage: FM.REPLAYERROR_BRANCH_MESSAGE
+                        validationErrorMessage: FM.REPLAYERROR_FAILMESSAGE
                     })
                 }
             })
@@ -343,7 +343,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         validationErrors: teachWithHistory.replayErrors,
                         isValidationWarningOpen: true,
                         validationErrorTitle: FM.REPLAYERROR_EDIT_TITLE,
-                        validationErrorMessage: FM.REPLAYERROR_EDIT_MESSAGE
+                        validationErrorMessage: FM.REPLAYERROR_FAILMESSAGE
                     })
                 }
             })
@@ -376,10 +376,10 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             },
         };
 
-        ((this.props.fetchHistoryThunkAsync(this.props.app.appId, trainDialogWithDefinitions, this.props.user.name, this.props.user.id) as any) as Promise<Activity[]>)
-            .then(activities => {
+        ((this.props.fetchHistoryThunkAsync(this.props.app.appId, trainDialogWithDefinitions, this.props.user.name, this.props.user.id) as any) as Promise<TeachWithHistory>)
+            .then(teachWithHistory => {
                 this.setState({
-                    activities: activities,
+                    activities: teachWithHistory.history,
                     trainDialogId: trainDialog.trainDialogId,
                     isTrainDialogModalOpen: true
                 })
