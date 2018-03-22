@@ -338,7 +338,6 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     })
                 }
                 else {
-                    //LARS unable to edit
                     this.setState({
                         validationErrors: teachWithHistory.replayErrors,
                         isValidationWarningOpen: true,

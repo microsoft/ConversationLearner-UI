@@ -41,7 +41,7 @@ class Index extends React.Component<Props, ComponentState> {
         
         this.setState({ packageId: packageId})
 
-        // LARS temp
+        // Note: In future chagen fetch log dialogs to default to all package if no package set
         let allPackages =
              (packageId === app.devPackageId) ?
                 app.packageVersions.map(pv => pv.packageId).join(",") + `,${packageId}`
@@ -49,7 +49,7 @@ class Index extends React.Component<Props, ComponentState> {
                 packageId;
         
         this.props.setCurrentBLISApp(this.props.user.id, app)
-        this.props.fetchAllLogDialogsAsync(this.props.user.id, app.appId, allPackages) // Note: a separate call as eventurlaly we want to page
+        this.props.fetchAllLogDialogsAsync(this.props.user.id, app.appId, allPackages) // Note: a separate call as eventually we want to page
         this.props.fetchAppSource(this.props.user.id, app.appId, packageId)
         this.props.fetchBotInfoAsync()
         // this.props.fetchAllChatSessionsAsync(this.props.user.id, app.appId)
