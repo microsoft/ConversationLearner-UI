@@ -4,25 +4,13 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import * as OF from 'office-ui-fabric-react'
-import { State, localStorageKeyForLuisAuthoringKey, localStorageKeyForLuisSubscriptionKey } from '../../types'
+import { State } from '../../types'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { ReplayError, ReplayErrorType, ReplayErrorMissingAction, ReplayErrorMissingEntity, ReplayErrorActionUnavailable, ReplayErrorEntityDiscrepancy } from 'blis-models'
 
 class ReplayErrorList extends React.Component<Props, {}> {
-
-    componentWillReceiveProps(nextProps: Props) {
-        // Reset when opening modal
-        if (this.props.textItems  !== nextProps.textItems) {
-            this.setState({
-                luisAuthoringKeyVal: localStorage.getItem(localStorageKeyForLuisAuthoringKey),
-                luisSubscriptionKeyVal: localStorage.getItem(localStorageKeyForLuisSubscriptionKey),
-            })
-        }
-    }
-
     onRenderCell(item: ReplayError, index: number): JSX.Element {
-
         switch (item.type) {
             case ReplayErrorType.MissingAction:
                 return (

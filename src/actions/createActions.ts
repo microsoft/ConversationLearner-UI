@@ -23,12 +23,11 @@ export const createApplicationFulfilled = (blisApp: BlisAppBase): ActionObject =
     }
 }
 
-export const copyApplicationsAsync = (srcUserId: string, destUserId: string, luisSubscriptionKey: string): ActionObject => {
+export const copyApplicationsAsync = (srcUserId: string, destUserId: string): ActionObject => {
     return {
         type: AT.COPY_APPLICATIONS_ASYNC,
         srcUserId: srcUserId,
-        destUserId: destUserId,
-        luisSubscriptionKey: luisSubscriptionKey,
+        destUserId: destUserId
     }
 }
 
@@ -38,12 +37,12 @@ export const copyApplicationsFulfilled = (): ActionObject => {
     }
 }
 
-export const copyApplicationsThunkAsync = (srcUserId: string, destUserId: string, luisSubscriptionKey: string) => {
+export const copyApplicationsThunkAsync = (srcUserId: string, destUserId: string) => {
     return async (dispatch: Dispatch<any>) => {
         const blisClient = ClientFactory.getInstance(AT.COPY_APPLICATIONS_ASYNC)
         try {
-            dispatch(copyApplicationsAsync(srcUserId, destUserId, luisSubscriptionKey))
-            await blisClient.appsCopy(srcUserId, destUserId, luisSubscriptionKey)
+            dispatch(copyApplicationsAsync(srcUserId, destUserId))
+            await blisClient.appsCopy(srcUserId, destUserId)
             dispatch(fetchApplicationsAsync(destUserId, destUserId))
             dispatch(copyApplicationsFulfilled())
         }

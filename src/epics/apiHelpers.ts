@@ -156,9 +156,9 @@ export const createBlisApp = (key: string, userId: string, app: BlisAppBase): Ob
     .catch(err => handleError(obs, err, AT.CREATE_BLIS_APPLICATION_ASYNC)));
 };
 
-export const copyApplications = (srcUserId: string, destUserId: string, luisSubscriptionKey: string): Observable<ActionObject> => {
+export const copyApplications = (srcUserId: string, destUserId: string): Observable<ActionObject> => {
   const blisClient = ClientFactory.getInstance(AT.COPY_APPLICATIONS_ASYNC)
-  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.appsCopy(srcUserId, destUserId, luisSubscriptionKey)
+  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.appsCopy(srcUserId, destUserId)
     .then(() => {
       obs.next(actions.create.copyApplicationsFulfilled())
       obs.complete();

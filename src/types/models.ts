@@ -6,7 +6,6 @@ export interface App extends BlisAppBase {
 
 export interface AppInput {
     appName: string
-    luisKey: string
     locale: string
     metadata: BlisAppMetaData
 }
