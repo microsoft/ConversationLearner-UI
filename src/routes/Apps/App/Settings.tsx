@@ -77,12 +77,6 @@ interface ComponentState {
     edited: boolean
     botFrameworkAppsVal: any[],
     newBotVal: string,
-    isLuisAuthoringKeyVisible: boolean,
-    luisAuthoringKeyShowHideText: string,
-    luisAuthoringKeyVal: string
-    isLuisSubscriptionKeyVisible: boolean,
-    luisSubscriptionKeyShowHideText: string,
-    luisSubscriptionKeyVal: string,
     debugErrorsOpen: boolean
     isLoggingOnVal: boolean,
     isPackageExpandoOpen: boolean,
@@ -104,12 +98,6 @@ class Settings extends React.Component<Props, ComponentState> {
             edited: false,
             botFrameworkAppsVal: [],
             newBotVal: '',
-            isLuisAuthoringKeyVisible: false,
-            luisAuthoringKeyShowHideText: this.props.intl.formatMessage(messages.passwordHidden),
-            luisAuthoringKeyVal: '',
-            isLuisSubscriptionKeyVisible: false,
-            luisSubscriptionKeyShowHideText: this.props.intl.formatMessage(messages.passwordHidden),
-            luisSubscriptionKeyVal: '',
             debugErrorsOpen: false,
             isLoggingOnVal: true,
             isPackageExpandoOpen: false,
@@ -124,8 +112,6 @@ class Settings extends React.Component<Props, ComponentState> {
             appNameVal: app.appName,
             selectedEditingTagOptionKey: this.props.editingPackageId,
             selectedLiveTagOptionKey: app.livePackageId,
-            luisAuthoringKeyVal: app.luisKey,
-            luisSubscriptionKeyVal: '', // TODO: When apps schema allows saving subscription key use it here
             markdownVal: app.metadata ? app.metadata.markdown : null,
             videoVal: app.metadata ? app.metadata.video : null,
             botFrameworkAppsVal: app.metadata.botFrameworkApps,
@@ -142,7 +128,6 @@ class Settings extends React.Component<Props, ComponentState> {
         if (this.state.edited == false && (this.state.localeVal !== app.locale ||
             this.state.appIdVal !== app.appId ||
             this.state.appNameVal !== app.appName ||
-            this.state.luisAuthoringKeyVal !== app.luisKey ||
             this.state.markdownVal !== app.metadata.markdown ||
             this.state.videoVal !== app.metadata.video ||
             this.state.botFrameworkAppsVal !== app.metadata.botFrameworkApps ||
@@ -163,22 +148,6 @@ class Settings extends React.Component<Props, ComponentState> {
     onChangedBotId(text: string) {
         this.setState({
             newBotVal: text,
-            edited: true
-        })
-    }
-
-    @autobind
-    onChangedLuisAuthoringKey(text: string) {
-        this.setState({
-            luisAuthoringKeyVal: text,
-            edited: true
-        })
-    }
-
-    @autobind
-    onChangedLuisSubscriptionKey(text: string) {
-        this.setState({
-            luisSubscriptionKeyVal: text,
             edited: true
         })
     }
@@ -232,7 +201,6 @@ class Settings extends React.Component<Props, ComponentState> {
             localeVal: app.locale,
             appIdVal: app.appId,
             appNameVal: app.appName,
-            luisAuthoringKeyVal: app.luisKey,
             markdownVal: app.metadata ? app.metadata.markdown : null,
             videoVal: app.metadata ? app.metadata.video : null,
             botFrameworkAppsVal: app.metadata.botFrameworkApps,
@@ -248,10 +216,6 @@ class Settings extends React.Component<Props, ComponentState> {
         let modifiedApp: BlisAppBase = {
             appName: this.state.appNameVal,
             appId: app.appId,
-            luisKey: this.state.luisAuthoringKeyVal,
-            // TODO: Enable when updated app schema allows subscription keys
-            // luisAuthoringKey: this.state.luisAuthoringKeyVal,
-            // luisSubscriptionKey: this.state.luisSubscriptionKeyVal,
             locale: app.locale,
             metadata: {
                 botFrameworkApps: this.state.botFrameworkAppsVal,
@@ -271,7 +235,6 @@ class Settings extends React.Component<Props, ComponentState> {
             localeVal: app.locale,
             appIdVal: app.appId,
             appNameVal: app.appName,
-            luisAuthoringKeyVal: app.luisKey,
             markdownVal: app.metadata ? app.metadata.markdown : null,
             videoVal: app.metadata ? app.metadata.video : null,
             botFrameworkAppsVal: app.metadata.botFrameworkApps,
@@ -298,26 +261,6 @@ class Settings extends React.Component<Props, ComponentState> {
         }
 
         return ''
-    }
-
-    @autobind
-    onClickToggleLuisAuthoringKey() {
-        this.setState((prevState: ComponentState) => ({
-            isLuisAuthoringKeyVisible: !prevState.isLuisAuthoringKeyVisible,
-            luisAuthoringKeyShowHideText: !prevState.isLuisAuthoringKeyVisible
-                ? this.props.intl.formatMessage(messages.passwordVisible)
-                : this.props.intl.formatMessage(messages.passwordHidden)
-        }))
-    }
-
-    @autobind
-    onClickToggleLuisSubscriptionKey() {
-        this.setState((prevState: ComponentState) => ({
-            isLuisSubscriptionKeyVisible: !prevState.isLuisSubscriptionKeyVisible,
-            luisSubscriptionKeyShowHideText: !prevState.isLuisSubscriptionKeyVisible
-                ? this.props.intl.formatMessage(messages.passwordVisible)
-                : this.props.intl.formatMessage(messages.passwordHidden)
-        }))
     }
 
     onCloseDebugErrors() {
@@ -431,7 +374,6 @@ class Settings extends React.Component<Props, ComponentState> {
                         />
                     }
 
-                    
                     <Expando 
                         className={'blis-dialog-admin-title'}
                         isOpen={this.state.isSettingsExpandoOpen}
@@ -440,53 +382,6 @@ class Settings extends React.Component<Props, ComponentState> {
                     />
                     {this.state.isSettingsExpandoOpen &&
                         <div>
-                            <OF.Label className={OF.FontClassNames.mediumPlus}>
-                                <FormattedMessage
-                                    id={FM.SETTINGS_BOTFRAMEWORKLUISKEY_AUTHORING_LABEL}
-                                    defaultMessage="LUIS Authoring Key"
-                                />
-                            </OF.Label>
-                            <div className="blis-settings-textfieldwithbutton">
-                                <OF.TextField
-                                    className={OF.FontClassNames.mediumPlus}
-                                    onChanged={(text) => this.onChangedLuisAuthoringKey(text)}
-                                    type={this.state.isLuisAuthoringKeyVisible ? "text" : "password"}
-                                    value={this.state.luisAuthoringKeyVal}
-                                    placeholder={intl.formatMessage({
-                                        id: FM.SETTINGS_BOTFRAMEWORKLUISKEY_AUTHORING_PLACEHOLDER,
-                                        defaultMessage: "Authoring Key..."
-                                    })}
-                                />
-                                <OF.PrimaryButton
-                                    onClick={this.onClickToggleLuisAuthoringKey}
-                                    ariaDescription={this.state.luisAuthoringKeyShowHideText}
-                                    text={this.state.luisAuthoringKeyShowHideText}
-                                />
-                            </div>
-
-                            <OF.Label className={OF.FontClassNames.mediumPlus}>
-                                <FormattedMessage
-                                    id={FM.SETTINGS_BOTFRAMEWORKLUISKEY_SUBSCRIPTION_LABEL}
-                                    defaultMessage="LUIS Subscription Key"
-                                />
-                            </OF.Label>
-                            <div className="blis-settings-textfieldwithbutton">
-                                <OF.TextField
-                                    className={OF.FontClassNames.mediumPlus}
-                                    onChanged={(text) => this.onChangedLuisSubscriptionKey(text)}
-                                    type={this.state.isLuisSubscriptionKeyVisible ? "text" : "password"}
-                                    value={this.state.luisSubscriptionKeyVal}
-                                    placeholder={intl.formatMessage({
-                                        id: FM.SETTINGS_BOTFRAMEWORKLUISKEY_SUBSCRIPTION_PLACEHOLDER,
-                                        defaultMessage: "Subscription Key..."
-                                    })}
-                                />
-                                <OF.PrimaryButton
-                                    onClick={this.onClickToggleLuisSubscriptionKey}
-                                    ariaDescription={this.state.luisSubscriptionKeyShowHideText}
-                                    text={this.state.luisSubscriptionKeyShowHideText}
-                                />
-                            </div>
                             <div>
                                 <OF.Label className={OF.FontClassNames.mediumPlus}>
                                     <FormattedMessage

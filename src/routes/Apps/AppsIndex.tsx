@@ -72,12 +72,12 @@ class AppsIndex extends React.Component<Props, ComponentState> {
         this.props.createBLISApplicationAsync(this.props.user.id, this.props.user.id, appToCreate)
     }
 
-    onImportDemoApps = (luiskey: string) => {
+    onImportDemoApps = () => {
         let srcUserId = BLIS_SAMPLE_ID;  
         let destUserId = this.props.user.id;
 
         // TODO: Find cleaner solution for the types.  Thunks return functions but when using them on props they should be returning result of the promise.
-        this.props.copyApplicationsThunkAsync(srcUserId, destUserId, luiskey);
+        this.props.copyApplicationsThunkAsync(srcUserId, destUserId)
     }
 
     render() {

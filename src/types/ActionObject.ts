@@ -191,8 +191,7 @@ export type CreateAction = {
 } | {
     type: AT.COPY_APPLICATIONS_ASYNC,
     srcUserId: string, 
-    destUserId: string, 
-    luisSubscriptionKey: string
+    destUserId: string
 } | {
     type: AT.COPY_APPLICATIONS_FULFILLED
 } | {

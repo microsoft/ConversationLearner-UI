@@ -11,7 +11,6 @@ import { BlisAppBase } from 'blis-models'
 import { BLIS_SAMPLE_ID } from '../../types/const'
 import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { FM } from '../../react-intl-messages'
-import DemoImporter from '../../components/modals/DemoImporter';
 import { autobind } from 'office-ui-fabric-react/lib/Utilities';
 import * as util from '../../util'
 
@@ -108,7 +107,6 @@ function getColumns(intl: InjectedIntl): ISortableRenderableColumn[] {
 
 interface ComponentState {
     isAppCreateModalOpen: boolean
-    isDemoImporterOpen: boolean
     isConfirmDeleteAppModalOpen: boolean
     isConfirmDeleteDemosOpen: boolean
     isImportNotificationOpen: boolean
@@ -132,7 +130,6 @@ class AppsList extends React.Component<Props, ComponentState> {
 
         this.state = {
             isAppCreateModalOpen: false,
-            isDemoImporterOpen: false,
             isConfirmDeleteAppModalOpen: false,
             isConfirmDeleteDemosOpen: false,
             isImportNotificationOpen: false,
@@ -188,9 +185,7 @@ class AppsList extends React.Component<Props, ComponentState> {
 
     @autobind
     onClickImportDemoApps() {
-        this.setState({
-            isDemoImporterOpen: true
-        })
+        this.onSubmitDemoImporterModal()
     }
 
     @autobind
@@ -255,19 +250,12 @@ class AppsList extends React.Component<Props, ComponentState> {
         })
     }
 
-    onSubmitDemoImporterModal = (luisKey: string) => {
+    onSubmitDemoImporterModal = () => {
         this.setState({
-            isDemoImporterOpen: false,
             isImportNotificationOpen: true,
             isImportButtonDisabled: true
         })
-        this.props.onImportDemoApps(luisKey);
-    }
-
-    onCancelDemoImporterModal = () => {
-        this.setState({
-            isDemoImporterOpen: false
-        })
+        this.props.onImportDemoApps()
     }
 
     getSortedApplications(): BlisAppBase[] {
@@ -353,11 +341,6 @@ class AppsList extends React.Component<Props, ComponentState> {
                     onSubmit={this.onSubmitAppCreateModal}
                     onCancel={this.onCancelAppCreateModal}
                 />
-                <DemoImporter
-                    open={this.state.isDemoImporterOpen}
-                    onSubmit={this.onSubmitDemoImporterModal}
-                    onCancel={this.onCancelDemoImporterModal}
-                />
                 <ConfirmDeleteModal
                     open={this.state.isConfirmDeleteAppModalOpen}
                     onCancel={this.onCancelDeleteModal}
@@ -423,7 +406,7 @@ export interface ReceivedProps {
     apps: BlisAppBase[]
     onCreateApp: (app: BlisAppBase) => void
     onClickDeleteApp: (app: BlisAppBase) => void
-    onImportDemoApps: (luisKey: string) => void
+    onImportDemoApps: () => void
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps

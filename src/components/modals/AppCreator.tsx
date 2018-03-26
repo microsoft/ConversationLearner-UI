@@ -5,12 +5,10 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import * as OF from 'office-ui-fabric-react'
-import { State, localStorageKeyForLuisAuthoringKey, localStorageKeyForLuisSubscriptionKey } from '../../types'
+import { State } from '../../types'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps, defineMessages, FormattedMessage } from 'react-intl'
 import { AppInput } from '../../types/models';
-import HelpIcon from '../HelpIcon';
-import * as ToolTips from '../ToolTips'
 
 const messages = defineMessages({
     fieldErrorRequired: {
@@ -38,33 +36,19 @@ const messages = defineMessages({
 interface ComponentState {
     appNameVal: string
     localeVal: string
-    luisAuthoringKeyVal: string
-    luisSubscriptionKeyVal: string
     localeOptions: OF.IDropdownOption[],
-    isLuisAuthoringKeyVisible: boolean,
-    luisAuthoringKeyShowHideText: string,
-    isLuisSubscriptionKeyVisible: boolean,
-    luisSubscriptionKeyShowHideText: string,
 }
 
 class AppCreator extends React.Component<Props, ComponentState> {
     state: ComponentState = {
         appNameVal: '',
         localeVal: '',
-        luisAuthoringKeyVal: '',
-        luisSubscriptionKeyVal: '',
         localeOptions: [],
-        isLuisAuthoringKeyVisible: false,
-        luisAuthoringKeyShowHideText: this.props.intl.formatMessage(messages.passwordHidden),
-        isLuisSubscriptionKeyVisible: false,
-        luisSubscriptionKeyShowHideText: this.props.intl.formatMessage(messages.passwordHidden),
     }
 
     constructor(p: Props) {
         super(p)
 
-        this.luisAuthoringKeyChanged = this.luisAuthoringKeyChanged.bind(this)
-        this.luisSubscriptionKeyChanged = this.luisSubscriptionKeyChanged.bind(this)
         this.onKeyDown = this.onKeyDown.bind(this)
         this.localeChanged = this.localeChanged.bind(this)
         this.onClickCreate = this.onClickCreate.bind(this)
@@ -94,12 +78,6 @@ class AppCreator extends React.Component<Props, ComponentState> {
             this.setState({
                 appNameVal: '',
                 localeVal: firstValue,
-                isLuisAuthoringKeyVisible: false,
-                luisAuthoringKeyShowHideText: this.props.intl.formatMessage(messages.passwordHidden),
-                luisAuthoringKeyVal: localStorage.getItem(localStorageKeyForLuisAuthoringKey),
-                isLuisSubscriptionKeyVisible: false,
-                luisSubscriptionKeyShowHideText: this.props.intl.formatMessage(messages.passwordHidden),
-                luisSubscriptionKeyVal: localStorage.getItem(localStorageKeyForLuisSubscriptionKey),
             })
         }
     }
@@ -114,16 +92,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
             localeVal: obj.text
         })
     }
-    luisAuthoringKeyChanged(text: string) {
-        this.setState({
-            luisAuthoringKeyVal: text
-        })
-    }
-    luisSubscriptionKeyChanged(text: string) {
-        this.setState({
-            luisSubscriptionKeyVal: text
-        })
-    }
+
     onClickCancel() {
         this.props.onCancel()
     }
@@ -131,10 +100,6 @@ class AppCreator extends React.Component<Props, ComponentState> {
     onClickCreate() {
         const appToAdd: AppInput = {
             appName: this.state.appNameVal,
-            luisKey: this.state.luisAuthoringKeyVal,
-            // TODO: Enable when schema is updated to allow authoring and subscription
-            //luisAuthoringKey: this.state.luisAuthoringKeyVal,
-            //luisSubscriptionKey: this.state.luisSubscriptionKeyVal,
             locale: this.state.localeVal,
             metadata: {
                 botFrameworkApps: [],
@@ -144,12 +109,6 @@ class AppCreator extends React.Component<Props, ComponentState> {
             }
         }
 
-        // TODO: This was the simplest solution to isolate locale storage usage of luis key to this component
-        // but it seems like poor practice to scatter this around the app.
-        // Alternate solution which seems more idomatic is to create LocalStorage state object with reducer which reacts to actions, and component which maps the state
-        // to the browser's localStorage on ever update; however, this seems overly complicated for the simple tasks we have
-        localStorage.setItem(localStorageKeyForLuisAuthoringKey, this.state.luisAuthoringKeyVal)
-        localStorage.setItem(localStorageKeyForLuisSubscriptionKey, this.state.luisSubscriptionKeyVal)
         this.props.onSubmit(appToAdd)
     }
 
@@ -157,7 +116,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
     // Also has benefit of native browser validation for required fields
     onKeyDown(event: React.KeyboardEvent<HTMLElement>) {
         // On enter attempt to create the app if required fields are set
-        if (event.keyCode === 13 && this.state.appNameVal && this.state.luisAuthoringKeyVal) {
+        if (event.keyCode === 13 && this.state.appNameVal) {
             this.onClickCreate();
         }
     }
@@ -183,24 +142,6 @@ class AppCreator extends React.Component<Props, ComponentState> {
 
     onGetPasswordErrorMessage(value: string): string {
         return value ? "" : this.props.intl.formatMessage(messages.fieldErrorRequired);
-    }
-
-    onClickToggleLuisAuthoringKeyVisibility = () => {
-        this.setState((prevState: ComponentState) => ({
-            isLuisAuthoringKeyVisible: !prevState.isLuisAuthoringKeyVisible,
-            luisAuthoringKeyShowHideText: !prevState.isLuisAuthoringKeyVisible
-                ? this.props.intl.formatMessage(messages.passwordVisible)
-                : this.props.intl.formatMessage(messages.passwordHidden)
-        }))
-    }
-
-    onClickToggleLuisSubscriptionKeyVisibility = () => {
-        this.setState((prevState: ComponentState) => ({
-            isLuisSubscriptionKeyVisible: !prevState.isLuisSubscriptionKeyVisible,
-            luisSubscriptionKeyShowHideText: !prevState.isLuisSubscriptionKeyVisible
-                ? this.props.intl.formatMessage(messages.passwordVisible)
-                : this.props.intl.formatMessage(messages.passwordHidden)
-        }))
     }
 
     render() {
@@ -234,65 +175,6 @@ class AppCreator extends React.Component<Props, ComponentState> {
                         })}
                         onKeyDown={key => this.onKeyDown(key)}
                         value={this.state.appNameVal} />
-                    <OF.Label>
-                        <FormattedMessage
-                            id={FM.APPCREATOR_FIELDS_LUISKEY_AUTHORING_LABEL}
-                            defaultMessage="LUIS Key"
-                        /> <a href="https://www.luis.ai/user/settings" tabIndex={-1} className={OF.FontClassNames.xSmall} target="_blank">
-                            <FormattedMessage
-                                id={FM.APPCREATOR_FIELDS_LUISKEY_AUTHORING_HELPTEXT}
-                                defaultMessage="Find your authoring key"
-                            />
-                        </a>
-                        <HelpIcon tipType={ToolTips.TipType.LUIS_AUTHORING_KEY} />
-                    </OF.Label>
-                    <div className="blis-settings-textfieldwithbutton">
-                        <OF.TextField
-                            onGetErrorMessage={value => this.onGetPasswordErrorMessage(value)}
-                            onChanged={this.luisAuthoringKeyChanged}
-                            placeholder={intl.formatMessage({
-                                id: FM.APPCREATOR_FIELDS_LUISKEY_AUTHORING_PLACEHOLDER,
-                                defaultMessage: "Authoring Key..."
-                            })}
-                            type={this.state.isLuisAuthoringKeyVisible ? "text" : "password"}
-                            onKeyDown={this.onKeyDown}
-                            value={this.state.luisAuthoringKeyVal}
-                        />
-                        <OF.PrimaryButton
-                            onClick={this.onClickToggleLuisAuthoringKeyVisibility}
-                            ariaDescription={this.state.luisAuthoringKeyShowHideText}
-                            text={this.state.luisAuthoringKeyShowHideText}
-                        />
-                    </div>
-                    <OF.Label>
-                        <FormattedMessage
-                            id={FM.APPCREATOR_FIELDS_LUISKEY_SUBSCRIPTION_LABEL}
-                            defaultMessage="LUIS Subscription Key"
-                        /> <a href="https://portal.azure.com" tabIndex={-1} className={OF.FontClassNames.xSmall} target="_blank">
-                            <FormattedMessage
-                                id={FM.APPCREATOR_FIELDS_LUISKEY_SUBSCRIPTION_HELPTEXT}
-                                defaultMessage="Find your subscription key"
-                            />
-                        </a>
-                        <HelpIcon tipType={ToolTips.TipType.LUIS_SUBSCRIPTION_KEY} />
-                    </OF.Label>
-                    <div className="blis-settings-textfieldwithbutton">
-                        <OF.TextField
-                            onChanged={this.luisSubscriptionKeyChanged}
-                            placeholder={intl.formatMessage({
-                                id: FM.APPCREATOR_FIELDS_LUISKEY_SUBSCRIPTION_PLACEHOLDER,
-                                defaultMessage: "Subscription Key..."
-                            })}
-                            type={this.state.isLuisSubscriptionKeyVisible ? "text" : "password"}
-                            onKeyDown={this.onKeyDown}
-                            value={this.state.luisSubscriptionKeyVal}
-                        />
-                        <OF.PrimaryButton
-                            onClick={this.onClickToggleLuisSubscriptionKeyVisibility}
-                            ariaDescription={this.state.luisSubscriptionKeyShowHideText}
-                            text={this.state.luisSubscriptionKeyShowHideText}
-                        />
-                    </div>
                     <OF.Dropdown
                         label={intl.formatMessage({
                             id: FM.APPCREATOR_FIELDS_LOCALE_LABEL,
@@ -307,7 +189,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
                     <div className="blis-modal-buttons">
                         <div className="blis-modal-buttons_primary">
                             <OF.PrimaryButton
-                                disabled={!this.state.appNameVal || !this.state.luisAuthoringKeyVal}
+                                disabled={!this.state.appNameVal}
                                 onClick={this.onClickCreate}
                                 ariaDescription={intl.formatMessage({
                                     id: FM.APPCREATOR_CREATEBUTTON_ARIADESCRIPTION,

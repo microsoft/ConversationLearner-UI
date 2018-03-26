@@ -119,10 +119,10 @@ export default class BlisClient {
     }
 
     // AT.COPY_APPLICATIONS_ASYNC
-    appsCopy(srcUserId: string, destUserId: string, luisSubscriptionKey: string): Promise<void> {
+    appsCopy(srcUserId: string, destUserId: string): Promise<void> {
         return this.send<string>({
             method: 'post',
-            url: `${this.baseUrl}/apps/copy?srcUserId=${srcUserId}&destUserId=${destUserId}&luisSubscriptionKey=${luisSubscriptionKey}`
+            url: `${this.baseUrl}/apps/copy?srcUserId=${srcUserId}&destUserId=${destUserId}`
         }).then(response => {
             return null;
         })
