@@ -35,7 +35,7 @@ export interface BlisAppForUpdate extends BlisAppBase {
 //=========================================================
 
 /* Tell SDK what the currently selected AppId is */
-export const setBlisApp = (key: string, app: BlisAppBase): Observable<ActionObject> => {
+export const setBlisApp = (app: BlisAppBase): Observable<ActionObject> => {
   const blisClient = ClientFactory.getInstance(AT.SET_CURRENT_BLIS_APP_ASYNC)
   return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.setBlisApp(app)
     .then(response => {
@@ -59,7 +59,7 @@ export const setConversationId = (userName: string, userId: string, conversation
 // GET ROUTES
 //=========================================================
 
-export const getBotInfo = (key: string): Observable<ActionObject> => {
+export const getBotInfo = (): Observable<ActionObject> => {
   const blisClient = ClientFactory.getInstance(AT.FETCH_BOTINFO_ASYNC)
   return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.getBotInfo()
     .then(botInfo => {
@@ -69,7 +69,7 @@ export const getBotInfo = (key: string): Observable<ActionObject> => {
     .catch(err => handleError(obs, err, AT.FETCH_BOTINFO_ASYNC)));
 };
 
-export const getAllBlisApps = (key: string, userId: string): Observable<ActionObject> => {
+export const getAllBlisApps = (userId: string): Observable<ActionObject> => {
   const blisClient = ClientFactory.getInstance(AT.FETCH_APPLICATIONS_ASYNC)
   return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.apps(userId)
     .then(uiAppList => {
@@ -81,7 +81,7 @@ export const getAllBlisApps = (key: string, userId: string): Observable<ActionOb
     .catch(err => handleError(obs, err, AT.FETCH_APPLICATIONS_ASYNC)));
 };
 
-export const getAllEntitiesForBlisApp = (key: string, appId: string): Observable<ActionObject> => {
+export const getAllEntitiesForBlisApp = (appId: string): Observable<ActionObject> => {
   const blisClient = ClientFactory.getInstance(AT.FETCH_ENTITIES_ASYNC)
   return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.entities(appId)
     .then(entities => {
@@ -91,7 +91,7 @@ export const getAllEntitiesForBlisApp = (key: string, appId: string): Observable
     .catch(err => handleError(obs, err, AT.FETCH_ENTITIES_ASYNC)));
 };
 
-export const getSourceForBlisApp = (key: string, appId: string, packageId: string): Observable<ActionObject> => {
+export const getSourceForBlisApp = (appId: string, packageId: string): Observable<ActionObject> => {
   const blisClient = ClientFactory.getInstance(AT.FETCH_APPSOURCE_ASYNC)
   return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.source(appId, packageId)
     .then(source => {
@@ -101,7 +101,7 @@ export const getSourceForBlisApp = (key: string, appId: string, packageId: strin
     .catch(err => handleError(obs, err, AT.FETCH_APPSOURCE_ASYNC)));
 };
 
-export const getAllActionsForBlisApp = (key: string, appId: string): Observable<ActionObject> => {
+export const getAllActionsForBlisApp = (appId: string): Observable<ActionObject> => {
   const blisClient = ClientFactory.getInstance(AT.FETCH_ACTIONS_ASYNC)
   return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.actions(appId)
     .then(botActions => {
@@ -111,7 +111,7 @@ export const getAllActionsForBlisApp = (key: string, appId: string): Observable<
     .catch(err => handleError(obs, err, AT.FETCH_ACTIONS_ASYNC)));
 };
 
-export const getAllTrainDialogsForBlisApp = (key: string, appId: string): Observable<ActionObject> => {
+export const getAllTrainDialogsForBlisApp = (appId: string): Observable<ActionObject> => {
   const blisClient = ClientFactory.getInstance(AT.FETCH_TRAIN_DIALOGS_ASYNC);
   return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.trainDialogs(appId)
     .then(trainDialogs => {
@@ -121,7 +121,7 @@ export const getAllTrainDialogsForBlisApp = (key: string, appId: string): Observ
     .catch(err => handleError(obs, err, AT.FETCH_TRAIN_DIALOGS_ASYNC)));
 };
 
-export const getAllLogDialogsForBlisApp = (key: string, appId: string, packageId: string): Observable<ActionObject> => {
+export const getAllLogDialogsForBlisApp = (appId: string, packageId: string): Observable<ActionObject> => {
   const blisClient = ClientFactory.getInstance(AT.FETCH_LOG_DIALOGS_ASYNC)
   return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.logDialogs(appId, packageId)
     .then(logDialogs => {
@@ -144,7 +144,7 @@ export const getLuisApplicationCultures = (): Promise<CultureObject[]> => {
     .then(response => response.data)
 }
 
-export const createBlisApp = (key: string, userId: string, app: BlisAppBase): Observable<ActionObject> => {
+export const createBlisApp = (userId: string, app: BlisAppBase): Observable<ActionObject> => {
   const blisClient = ClientFactory.getInstance(AT.CREATE_BLIS_APPLICATION_ASYNC)
   //remove the appId property from the object
   const { appId, ...appToSend } = app
@@ -166,7 +166,7 @@ export const copyApplications = (srcUserId: string, destUserId: string): Observa
     .catch(err => handleError(obs, err, AT.COPY_APPLICATIONS_ASYNC)));
 };
 
-export const createBlisEntity = (key: string, entity: EntityBase, appId: string, reverseEntity?: EntityBase): Observable<ActionObject> => {
+export const createBlisEntity = (entity: EntityBase, appId: string, reverseEntity?: EntityBase): Observable<ActionObject> => {
   const blisClient = ClientFactory.getInstance(AT.CREATE_ENTITY_ASYNC)
   //remove property from the object that the route will not accept
   const { version, packageCreationId, packageDeletionId, entityId, ...entityToSend } = entity;
@@ -176,17 +176,17 @@ export const createBlisEntity = (key: string, entity: EntityBase, appId: string,
         obs.next(actions.create.createEntityFulfilled(newEntity, newEntity.entityId));
       }
       else if (entity.positiveId) {
-        obs.next(actions.create.createNegativeEntityFulfilled(key, reverseEntity, newEntity, newEntity.entityId, appId));
+        obs.next(actions.create.createNegativeEntityFulfilled(reverseEntity, newEntity, newEntity.entityId, appId));
       }
       else {
-        obs.next(actions.create.createPositiveEntityFulfilled(key, newEntity, newEntity.entityId, appId));
+        obs.next(actions.create.createPositiveEntityFulfilled(newEntity, newEntity.entityId, appId));
       }
       obs.complete();
     })
     .catch(err => handleError(obs, err, AT.CREATE_ENTITY_ASYNC)));
 };
 
-export const createBlisAction = (key: string, action: ActionBase, appId: string): Observable<ActionObject> => {
+export const createBlisAction = (action: ActionBase, appId: string): Observable<ActionObject> => {
   const blisClient = ClientFactory.getInstance(AT.CREATE_ACTION_ASYNC)
   //remove property from the object that the route will not accept
   const { actionId, version, packageCreationId, packageDeletionId, ...actionToSend } = action;
@@ -202,7 +202,7 @@ export const createBlisAction = (key: string, action: ActionBase, appId: string)
 // DELETE ROUTES
 //=========================================================
 
-export const deleteBlisApp = (key: string, blisApp: BlisAppBase): Observable<ActionObject> => {
+export const deleteBlisApp = (blisApp: BlisAppBase): Observable<ActionObject> => {
   const blisClient = ClientFactory.getInstance(AT.DELETE_BLIS_APPLICATION_ASYNC)
   return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.appsDelete(blisApp.appId)
     .then(response => {
@@ -212,21 +212,21 @@ export const deleteBlisApp = (key: string, blisApp: BlisAppBase): Observable<Act
     .catch(err => handleError(obs, err, AT.DELETE_BLIS_APPLICATION_ASYNC)));
 };
 
-export const deleteBlisEntity = (key: string, appId: string, deleteEntityId: string, reverseEntityId: string): Observable<ActionObject> => {
+export const deleteBlisEntity = (appId: string, deleteEntityId: string, reverseEntityId: string): Observable<ActionObject> => {
   const blisClient = ClientFactory.getInstance(AT.DELETE_ENTITY_ASYNC)
   return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.entitiesDelete(appId, deleteEntityId)
     .then(() => {
       if (reverseEntityId) {
-        obs.next(actions.delete.deleteReverseEntityAsnyc(key, deleteEntityId, reverseEntityId, appId));
+        obs.next(actions.delete.deleteReverseEntityAsnyc(deleteEntityId, reverseEntityId, appId));
       }
       else {
-        obs.next(actions.delete.deleteEntityFulfilled(key, deleteEntityId, appId));
+        obs.next(actions.delete.deleteEntityFulfilled(deleteEntityId, appId));
       }
       obs.complete();
     })
     .catch(err => handleError(obs, err, AT.DELETE_ENTITY_ASYNC)));
 };
-export const deleteBlisAction = (key: string, appId: string, action: ActionBase): Observable<ActionObject> => {
+export const deleteBlisAction = (appId: string, action: ActionBase): Observable<ActionObject> => {
   const blisClient = ClientFactory.getInstance(AT.DELETE_ACTION_ASYNC)
   return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.actionsDelete(appId, action.actionId)
     .then(() => {
@@ -240,16 +240,16 @@ export const deleteBlisAction = (key: string, appId: string, action: ActionBase)
 // EDIT ROUTES
 //=========================================================
 
-export const editBlisApp = (key: string, blisAppId: string, blisApp: BlisAppBase): Observable<ActionObject> => {
+export const editBlisApp = (appId: string, app: BlisAppBase): Observable<ActionObject> => {
   const blisClient = ClientFactory.getInstance(AT.EDIT_BLIS_APPLICATION_ASYNC)
-  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.appsUpdate(blisAppId, blisApp)
+  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.appsUpdate(appId, app)
     .then(updatedApp => {
       obs.next(actions.update.editBLISApplicationFulfilled(updatedApp));
       obs.complete();
     })
     .catch(err => handleError(obs, err, AT.EDIT_BLIS_APPLICATION_ASYNC)));
 }
-export const editBlisAction = (key: string, appId: string, blisActionId: string, action: ActionBase): Observable<ActionObject> => {
+export const editBlisAction = (appId: string, action: ActionBase): Observable<ActionObject> => {
   const blisClient = ClientFactory.getInstance(AT.EDIT_ACTION_ASYNC)
   return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.actionsUpdate(appId, action)
     .then(updateAction => {
@@ -283,7 +283,7 @@ export const deleteChatSession = (key: string, appId: string, session: Session, 
     .catch(err => handleError(obs, err, AT.DELETE_CHAT_SESSION_ASYNC)));
 };
 
-export const expireChatSession = (key: string, appId: string, sessionId: string): Observable<ActionObject> => {
+export const expireChatSession = (appId: string, sessionId: string): Observable<ActionObject> => {
   const blisClient = ClientFactory.getInstance(AT.EDIT_CHAT_SESSION_EXPIRE_ASYNC) 
   return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.chatSessionsExpire(appId, sessionId)
     .then(() => {
@@ -292,7 +292,7 @@ export const expireChatSession = (key: string, appId: string, sessionId: string)
     .catch(err => handleError(obs, err, AT.EDIT_CHAT_SESSION_EXPIRE_ASYNC))); 
 };
 
-export const getAllSessionsForBlisApp = (key: string, appId: string): Observable<ActionObject> => {
+export const getAllSessionsForBlisApp = (appId: string): Observable<ActionObject> => {
   const blisClient = ClientFactory.getInstance(AT.FETCH_CHAT_SESSIONS_ASYNC)
   return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.chatSessions(appId)
     .then(sessions => {
@@ -306,7 +306,7 @@ export const getAllSessionsForBlisApp = (key: string, appId: string): Observable
 // Teach
 // ========================================================
 
-export const getAllTeachSessionsForBlisApp = (key: string, appId: string): Observable<ActionObject> => {
+export const getAllTeachSessionsForBlisApp = (appId: string): Observable<ActionObject> => {
   const blisClient = ClientFactory.getInstance(AT.FETCH_TEACH_SESSIONS_ASYNC)
   return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.teachSessions(appId)
     .then(teachSessions => {

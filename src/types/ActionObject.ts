@@ -128,7 +128,6 @@ export type FetchAction = {
     packageId: string
 } | {
     type: AT.FETCH_CHAT_SESSIONS_ASYNC,
-    key: string,
     blisAppID: string
 } | {
     type: AT.FETCH_TRAIN_DIALOGS_ASYNC,
@@ -185,7 +184,6 @@ export type FetchAction = {
 
 export type CreateAction = {
     type: AT.CREATE_BLIS_APPLICATION_ASYNC,
-    key: string,
     userId: string,
     blisApp: BlisAppBase,
 } | {
@@ -241,7 +239,6 @@ export type CreateAction = {
     blisApp: BlisAppBase
 } | {
     type: AT.CREATE_ENTITY_FULFILLEDPOSITIVE,
-    key: string,
     negativeEntity: EntityBase,
     positiveEntity: EntityBase,
     currentAppId: string
@@ -300,13 +297,11 @@ export type DeleteAction = {
     entity: EntityBase
 } | {
     type: AT.DELETE_REVERSE_ENTITY_ASYNC,
-    key: string,
     deletedEntityId: string,
     reverseEntityId: string,
     currentAppId: string
 } | {
     type: AT.DELETE_ENTITY_FULFILLED,
-    key: string,
     deletedEntityId: string,
     currentAppId: string
 } | {

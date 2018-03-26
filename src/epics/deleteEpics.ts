@@ -11,7 +11,7 @@ export const deleteApplicationEpic: Epic<ActionObject, State> = (action$: Action
     return action$.ofType(AT.DELETE_BLIS_APPLICATION_ASYNC)
         .flatMap(action =>
             (action.type === AT.DELETE_BLIS_APPLICATION_ASYNC)
-                ? deleteBlisApp('', action.blisApp)
+                ? deleteBlisApp(action.blisApp)
                 : assertNever()
         )
 }
@@ -20,7 +20,7 @@ export const deleteEntityEpic: Epic<ActionObject, State> = (action$: ActionsObse
     return action$.ofType(AT.DELETE_ENTITY_ASYNC)
         .flatMap(action =>
             (action.type === AT.DELETE_ENTITY_ASYNC)
-                ? deleteBlisEntity('', action.currentAppId, action.entity.entityId, action.entity.negativeId || action.entity.positiveId)
+                ? deleteBlisEntity(action.currentAppId, action.entity.entityId, action.entity.negativeId || action.entity.positiveId)
                 : assertNever()
         )
 }
@@ -29,7 +29,7 @@ export const deleteReverseEntityEpic: Epic<ActionObject, State> = (action$: Acti
     return action$.ofType(AT.DELETE_REVERSE_ENTITY_ASYNC)
         .flatMap(action =>
             (action.type === AT.DELETE_REVERSE_ENTITY_ASYNC)
-                ? deleteBlisEntity(action.key, action.currentAppId, action.reverseEntityId, null)
+                ? deleteBlisEntity(action.currentAppId, action.reverseEntityId, null)
                 : assertNever()
         )
 }
@@ -38,7 +38,7 @@ export const deleteActionEpic: Epic<ActionObject, State> = (action$: ActionsObse
     return action$.ofType(AT.DELETE_ACTION_ASYNC)
         .flatMap(action =>
             (action.type === AT.DELETE_ACTION_ASYNC)
-                ? deleteBlisAction('', action.currentAppId, action.action)
+                ? deleteBlisAction(action.currentAppId, action.action)
                 : assertNever()
         )
 }

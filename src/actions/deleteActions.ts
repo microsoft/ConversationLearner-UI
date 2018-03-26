@@ -5,8 +5,7 @@ import { setErrorDisplay } from './displayActions'
 import { fetchAllTrainDialogsAsync, fetchAllLogDialogsAsync, fetchApplicationTrainingStatusThunkAsync } from './fetchActions'
 import * as ClientFactory from '../services/clientFactory'
 
-export const deleteBLISApplicationAsync = (key: string, blisApp: BlisAppBase): ActionObject => {
-
+export const deleteBLISApplicationAsync = (blisApp: BlisAppBase): ActionObject => {
     return {
         type: AT.DELETE_BLIS_APPLICATION_ASYNC,
         blisAppGUID: blisApp.appId,
@@ -21,8 +20,7 @@ export const deleteBLISApplicationFulfilled = (blisAppGUID: string): ActionObjec
     }
 }
 
-export const deleteEntityAsync = (key: string, GUID: string, entity: EntityBase, currentAppId: string): ActionObject => {
-
+export const deleteEntityAsync = (GUID: string, entity: EntityBase, currentAppId: string): ActionObject => {
     return {
         type: AT.DELETE_ENTITY_ASYNC,
         entityGUID: GUID,
@@ -31,26 +29,24 @@ export const deleteEntityAsync = (key: string, GUID: string, entity: EntityBase,
     }
 }
 
-export const deleteReverseEntityAsnyc = (key: string, deletedEntityId: string, reverseEntityId: string, currentAppId: string): ActionObject => {
+export const deleteReverseEntityAsnyc = (deletedEntityId: string, reverseEntityId: string, currentAppId: string): ActionObject => {
     return {
         type: AT.DELETE_REVERSE_ENTITY_ASYNC,
-        key: key,
         currentAppId: currentAppId,
         deletedEntityId: deletedEntityId,
         reverseEntityId: reverseEntityId
     }
 }
 
-export const deleteEntityFulfilled = (key: string, deletedEntityId: string, currentAppId: string): ActionObject => {
+export const deleteEntityFulfilled = (deletedEntityId: string, currentAppId: string): ActionObject => {
     return {
         type: AT.DELETE_ENTITY_FULFILLED,
-        key: key,
         currentAppId: currentAppId,
         deletedEntityId: deletedEntityId
     }
 }
 
-export const deleteActionAsync = (key: string, GUID: string, action: ActionBase, currentAppId: string): ActionObject => {
+export const deleteActionAsync = (GUID: string, action: ActionBase, currentAppId: string): ActionObject => {
     return {
         type: AT.DELETE_ACTION_ASYNC,
         actionGUID: GUID,

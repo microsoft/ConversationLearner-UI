@@ -4,8 +4,10 @@ import { ErrorInjector } from '../ErrorInjector';
 //import DebugErrors from '../components/modals/DebugErrors'
 
 let sdkPort = 5000
-let getAccessToken = (): string => { throw new Error(`You attempted to use the BlisClient before its getAccessToken method was properly configured. Call setAccessToken to configure`) }
-let getMemoryKey = (): string => { throw new Error(`You attempted to use the BlisClient before its getMemoryKey method was properly configured. Call setMemoryKey to configure`) }
+let getMemoryKey = (): string => {
+    console.warn(`You attempted to use the BlisClient before its getMemoryKey method was properly configured. Call setMemoryKey to configure`)
+    return ''
+}
 
 export const getInstance = (actionType: AT): BlisClient => {
     let forceError = (actionType && ErrorInjector.ShouldError(actionType));
@@ -16,15 +18,11 @@ export const getInstance = (actionType: AT): BlisClient => {
      */
     // TODO: Refactor out the force error argument and need to take in paramter. This should be implemented in another layer as extension not modifcation
     // TODO: Allow configuration whole URI for SDK to enable communicating with hosted version (Likely change to getter function like access token)
-    return new BlisClient(`http://localhost:${sdkPort}`, () => getAccessToken(), () => getMemoryKey(), null, forceError)
+    return new BlisClient(`http://localhost:${sdkPort}`, () => getMemoryKey(), null, forceError)
 }
 
 export const setPort = (port: number) => {
     sdkPort = port
-}
-
-export const setAccessToken = (newGetAccessToken: () => string) => {
-    getAccessToken = newGetAccessToken
 }
 
 export const setMemoryKey = (newGetMemoryKey: () => string) => {
