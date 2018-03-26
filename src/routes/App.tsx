@@ -9,7 +9,7 @@ import { State } from '../types'
 import AppsIndex from './Apps/AppsIndex'
 import About from './About'
 import Docs from './Docs'
-import Profile from './Profile'
+import Settings from './Settings'
 import Support from './Support'
 import NoMatch from './NoMatch'
 import HelpPanel from '../components/HelpPanel'
@@ -65,7 +65,7 @@ class App extends React.Component<Props, ComponentState> {
                 />
               </NavLink>
             </nav>
-            <NavLink className="blis-header_user" to="/profile">Settings</NavLink>
+            <NavLink className="blis-header_user" to="/settings">Settings</NavLink>
           </header>
           <div className="blis-app_header-placeholder" />
           <div className="blis-app_content">
@@ -75,7 +75,7 @@ class App extends React.Component<Props, ComponentState> {
               <Route path="/about" component={About} />
               <Route path="/docs" component={Docs} />
               <Route path="/support" component={Support} />
-              <Route path="/profile" component={Profile} />
+              <Route path="/settings" component={Settings} />
               <Route component={NoMatch} />
             </Switch>
           </div>

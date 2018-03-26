@@ -8,7 +8,7 @@ import { FormattedMessage } from 'react-intl'
 import { FM } from '../react-intl-messages'
 import { FontClassNames, Label } from 'office-ui-fabric-react'
 import * as SdkPort from '../services/sdkPort'
-import './Profile.css'
+import './Settings.css'
 
 interface ComponentState {
     sdkPort: number
@@ -18,7 +18,7 @@ const initialState: ComponentState = {
     sdkPort: SdkPort.get()
 }
 
-class Profile extends React.Component<Props, ComponentState> {
+class Settings extends React.Component<Props, ComponentState> {
     state = initialState
 
     onChangeSdkPort = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -75,4 +75,4 @@ const stateProps = returntypeof(mapStateToProps)
 const dispatchProps = returntypeof(mapDispatchToProps)
 type Props = typeof stateProps & typeof dispatchProps & RouteComponentProps<any>
 
-export default connect<typeof stateProps, typeof dispatchProps, RouteComponentProps<any>>(mapStateToProps, mapDispatchToProps)(Profile)
+export default connect<typeof stateProps, typeof dispatchProps, RouteComponentProps<any>>(mapStateToProps, mapDispatchToProps)(Settings)
