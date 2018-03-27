@@ -72,7 +72,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
     get NEW_ENTITY(): string {
         return this.props.intl.formatMessage({
             id: FM.ENTITYCREATOREDITOR_ENTITYOPTION_NEW,
-            defaultMessage: 'Custom'
+            defaultMessage: 'custom'
         });
     }
 
