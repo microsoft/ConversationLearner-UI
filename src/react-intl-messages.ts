@@ -668,7 +668,7 @@ export default {
         [FM.ENTITYCREATOREDITOR_FIELDERROR_REQUIREDVALUE]: 'Required Value',
         [FM.ENTITYCREATOREDITOR_FIELDERROR_ALPHANUMERIC]: 'Entity name may only contain alphanumeric characters with no spaces.',
         [FM.ENTITYCREATOREDITOR_FIELDERROR_DISTINCT]: 'Name is already in use.',
-        [FM.ENTITYCREATOREDITOR_ENTITYOPTION_NEW]: 'New Type',
+        [FM.ENTITYCREATOREDITOR_ENTITYOPTION_NEW]: 'custom',
         [FM.ENTITYCREATOREDITOR_TITLE_CREATE]: 'Create an Entity',
         [FM.ENTITYCREATOREDITOR_TITLE_EDIT]: 'Edit Entity',
         [FM.ENTITYCREATOREDITOR_FIELDS_NAME_LABEL]: 'Entity Name',
