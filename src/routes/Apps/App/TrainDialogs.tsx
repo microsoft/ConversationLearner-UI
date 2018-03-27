@@ -164,7 +164,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     toActionFilter(action: ActionBase, entities: EntityBase[]) : OF.IDropdownOption {
         return { 
             key: action.actionId,
-            text: ActionBase.GetPayload(action, getDefaultEntityMap(this.props.entities))
+            text: ActionBase.GetPayload(action, getDefaultEntityMap(entities))
         }
     }
      
@@ -229,7 +229,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
     onClickNewTeachSession() {
         // TODO: Find cleaner solution for the types.  Thunks return functions but when using them on props they should be returning result of the promise.
-        ((this.props.createTeachSessionThunkAsync(this.props.user.id, this.props.app.appId) as any) as Promise<UITeachResponse>)
+        ((this.props.createTeachSessionThunkAsync(this.props.app.appId) as any) as Promise<UITeachResponse>)
             .then(uiTeachResponse => {
                 this.setState({
                     teachSession: uiTeachResponse.teachResponse as Teach,

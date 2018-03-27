@@ -92,7 +92,7 @@ export const fetchBotInfoFulfilled = (botInfo: BotInfo): ActionObject => {
     }
 }
 
-export const fetchApplicationsAsync = (key: string, userId: string): ActionObject => {
+export const fetchApplicationsAsync = (userId: string): ActionObject => {
     //needs a fulfilled version to handle response from Epic
     return {
         type: AT.FETCH_APPLICATIONS_ASYNC,
@@ -134,7 +134,7 @@ const pollTrainingStatusUntilResolvedOrMaxDuration = (dispatch: Dispatch<any>, a
     const end = start.getTime() + maxDuration
     const blisClient = ClientFactory.getInstance(null)
     
-    return new Promise<void>((resolve, reject) => {
+    return new Promise<void>((resolve) => {
         const timerId = setInterval(async () => {
             // If current time is after max allowed polling duration then resolve
             const now = (new Date()).getTime()
@@ -175,7 +175,7 @@ export const fetchApplicationTrainingStatusThunkAsync = (appId: string) => {
     }
 }
 
-export const fetchAllEntitiesAsync = (key: string, blisAppID: string): ActionObject => {
+export const fetchAllEntitiesAsync = (blisAppID: string): ActionObject => {
     //needs a fulfilled version to handle response from Epic
     return {
         type: AT.FETCH_ENTITIES_ASYNC,
@@ -190,11 +190,11 @@ export const fetchAllEntitiesFulfilled = (entities: EntityBase[]): ActionObject 
     }
 }
 
-export const fetchAppSourceAsync = (key: string, blisAppID: string, packageId: string): ActionObject => {
+export const fetchAppSourceAsync = (appId: string, packageId: string): ActionObject => {
     //needs a fulfilled version to handle response from Epic
     return {
         type: AT.FETCH_APPSOURCE_ASYNC,
-        blisAppID: blisAppID,
+        blisAppID: appId,
         packageId: packageId
     }
 }
@@ -206,7 +206,7 @@ export const fetchAppSourceFulfilled = (appDefinition: AppDefinition): ActionObj
     }
 }
 
-export const fetchAllActionsAsync = (key: string, blisAppID: string): ActionObject => {
+export const fetchAllActionsAsync = (blisAppID: string): ActionObject => {
     //needs a fulfilled version to handle response from Epic
     return {
         type: AT.FETCH_ACTIONS_ASYNC,
@@ -221,11 +221,10 @@ export const fetchAllActionsFulfilled = (actions: ActionBase[]): ActionObject =>
     }
 }
 
-export const fetchAllChatSessionsAsync = (key: string, blisAppID: string): ActionObject => {
+export const fetchAllChatSessionsAsync = (blisAppID: string): ActionObject => {
     //needs a fulfilled version to handle response from Epic
     return {
         type: AT.FETCH_CHAT_SESSIONS_ASYNC,
-        key: key,
         blisAppID: blisAppID
     }
 }

@@ -74,7 +74,7 @@ class PackageTable extends React.Component<Props, ComponentState> {
 
     @autobind
     onSubmitPackageCreator(tagName: string, setLive: boolean) {
-        this.props.createAppTagThunkAsync(this.props.user.id, this.props.app.appId, tagName, setLive)
+        this.props.createAppTagThunkAsync(this.props.app.appId, tagName, setLive)
         this.setState({
             isPackageCreatorOpen: false
         })

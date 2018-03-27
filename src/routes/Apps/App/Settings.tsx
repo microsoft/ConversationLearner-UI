@@ -230,7 +230,7 @@ class Settings extends React.Component<Props, ComponentState> {
             trainingStatus: TrainingStatusCode.Completed,
             datetime: new Date()
         }
-        this.props.editBLISApplicationAsync(this.props.user.id, modifiedApp);
+        this.props.editBLISApplicationAsync(modifiedApp)
         this.setState({
             localeVal: app.locale,
             appIdVal: app.appId,
@@ -276,14 +276,14 @@ class Settings extends React.Component<Props, ComponentState> {
     }
 
     onChangedEditingTag = (editingOption: OF.IDropdownOption) => {
-        this.props.editAppEditingTagThunkAsync(this.props.user.id, this.props.app.appId, editingOption.key as string)
+        this.props.editAppEditingTagThunkAsync(this.props.app.appId, editingOption.key as string)
         this.setState({
             selectedEditingTagOptionKey: editingOption.key,
         })
     }
 
     onChangedLiveTag = (liveOption: OF.IDropdownOption) => {
-        this.props.editAppLiveTagThunkAsync(this.props.user.id, this.props.app.appId, liveOption.key as string)
+        this.props.editAppLiveTagThunkAsync(this.props.app.appId, liveOption.key as string)
         this.setState({
             selectedLiveTagOptionKey: liveOption.key,
         })

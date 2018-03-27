@@ -18,7 +18,7 @@
   "dependencies": {
     "adaptivecards": "^1.0.0-beta9",
     "axios": "^0.16.2",
-    "blis-models": "0.131.0",
+    "blis-models": "0.132.0",
     "blis-webchat": "0.102.0",
     "botframework-directlinejs": "^0.9.12",
     "draft-js": "^0.10.4",
@@ -38,9 +38,7 @@
     "react-router-dom": "^4.2.2",
     "react-scoped-style": "^0.3.0",
     "react-scripts-ts": "2.13.0",
-    "react-simple-auth": "^1.0.0",
     "redux": "^3.7.2",
-    "redux-auth-wrapper": "^2.0.2",
     "redux-observable": "^0.17.0",
     "redux-thunk": "^2.2.0",
     "rxjs": "^5.4.3",

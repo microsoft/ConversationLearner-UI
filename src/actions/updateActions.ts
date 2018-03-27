@@ -5,7 +5,7 @@ import * as ClientFactory from '../services/clientFactory'
 import { setErrorDisplay } from './displayActions'
 import { Dispatch } from 'redux'
 
-export const editBLISApplicationAsync = (key: string, application: BlisAppBase): ActionObject => {
+export const editBLISApplicationAsync = (application: BlisAppBase): ActionObject => {
 
     return {
         type: AT.EDIT_BLIS_APPLICATION_ASYNC,
@@ -30,15 +30,13 @@ export const editEntityAsync = (appId: string, entity: EntityBase): ActionObject
 }
 
 export const editEntityFulfilled = (entity: EntityBase): ActionObject => {
-
     return {
         type: AT.EDIT_ENTITY_FULFILLED,
         entity: entity
     }
 }
 
-export const editActionAsync = (key: string, action: ActionBase, currentAppId: string): ActionObject => {
-
+export const editActionAsync = (action: ActionBase, currentAppId: string): ActionObject => {
     return {
         type: AT.EDIT_ACTION_ASYNC,
         blisAction: action,
@@ -47,7 +45,6 @@ export const editActionAsync = (key: string, action: ActionBase, currentAppId: s
 }
 
 export const editActionFulfilled = (action: ActionBase): ActionObject => {
-
     return {
         type: AT.EDIT_ACTION_FULFILLED,
         blisAction: action,
@@ -114,7 +111,7 @@ export const editAppLiveTagFulfilled = (app: BlisAppBase): ActionObject => {
     }
 }
 
-export const editAppLiveTagThunkAsync = (key: string, appId: string, tagId: string) => {
+export const editAppLiveTagThunkAsync = (appId: string, tagId: string) => {
     return async (dispatch: Dispatch<any>) => {
         const blisClient = ClientFactory.getInstance(AT.EDIT_APP_LIVE_TAG_ASYNC)
         dispatch(editAppLiveTagAsync(appId, tagId))
@@ -148,7 +145,7 @@ export const editAppEditingTagFulfilled = (activeApps: { [appId: string]: string
     }
 }
 
-export const editAppEditingTagThunkAsync = (key: string, appId: string, packageId: string) => {
+export const editAppEditingTagThunkAsync = (appId: string, packageId: string) => {
     return async (dispatch: Dispatch<any>) => {
         const blisClient = ClientFactory.getInstance(AT.EDIT_APP_EDITING_TAG_ASYNC)
         dispatch(editAppEditingTagAsync(appId, packageId))
