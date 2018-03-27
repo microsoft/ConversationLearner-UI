@@ -148,7 +148,7 @@ class Index extends React.Component<Props, ComponentState> {
                         app={app}
                     />
                     <div className={`blis-nav ${FontClassNames.mediumPlus}`}>
-                        <div className={`blis-nav_section`}>
+                        <div className="blis-nav_section">
                             <NavLink className="blis-nav-link" exact to={{ pathname: `${match.url}`, state: { app } }}>
                                 <Icon iconName="BIDashboard" /><span>Dashboard</span>
                             </NavLink>
@@ -167,6 +167,8 @@ class Index extends React.Component<Props, ComponentState> {
                             <NavLink className="blis-nav-link" to={{ pathname: `${match.url}/settings`, state: { app } }}>
                                 <Icon iconName="Settings" /><span>Settings</span>
                             </NavLink>
+                        </div>
+                        <div className="blis-nav_section">
                             <NavLink className="blis-nav-link" exact={true} to="/home">
                                 <Icon iconName="Back" /><span>App List</span>
                             </NavLink>

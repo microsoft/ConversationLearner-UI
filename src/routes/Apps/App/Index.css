@@ -29,9 +29,16 @@
     color: var(--color-neutralSecondaryAlt);
     text-decoration: none;
 }
-.blis-nav-link.active,
-.blis-nav-link:hover {
+.blis-nav-link.active {
     background: rgba(0,0,0,0.05);
     color: var(--color-neutralSecondary);
+}
+.blis-nav-link:hover:not(.active) {
+    background: rgba(0,0,0,0.03);
+    color: var(--color-neutralSecondary);
+}
+
+.blis-nav-link i[role="presentation"] {
+    margin-top: 3px;
 }
 
