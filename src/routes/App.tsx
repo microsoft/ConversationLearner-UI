@@ -7,10 +7,7 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { State } from '../types'
 import AppsIndex from './Apps/AppsIndex'
-import About from './About'
-import Docs from './Docs'
 import Settings from './Settings'
-import Support from './Support'
 import NoMatch from './NoMatch'
 import HelpPanel from '../components/HelpPanel'
 import { FontClassNames } from 'office-ui-fabric-react'
@@ -46,24 +43,6 @@ class App extends React.Component<Props, ComponentState> {
                   defaultMessage="Home"
                 />
               </NavLink>
-              <NavLink to="/about">
-                <FormattedMessage
-                  id={FM.APP_HEADER_ABOUT}
-                  defaultMessage="About"
-                />
-              </NavLink>
-              <NavLink to="/docs">
-                <FormattedMessage
-                  id={FM.APP_HEADER_DOCS}
-                  defaultMessage="Docs"
-                />
-              </NavLink>
-              <NavLink to="/support">
-                <FormattedMessage
-                  id={FM.APP_HEADER_SUPPORT}
-                  defaultMessage="Support"
-                />
-              </NavLink>
             </nav>
             <NavLink className="blis-header_user" to="/settings">Settings</NavLink>
           </header>
@@ -72,9 +51,6 @@ class App extends React.Component<Props, ComponentState> {
             <Switch>
               <Route exact path="/" render={() => <Redirect to="/home" />} />
               <Route path="/home" component={AppsIndex} />
-              <Route path="/about" component={About} />
-              <Route path="/docs" component={Docs} />
-              <Route path="/support" component={Support} />
               <Route path="/settings" component={Settings} />
               <Route component={NoMatch} />
             </Switch>
