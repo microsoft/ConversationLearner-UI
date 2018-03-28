@@ -418,13 +418,14 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     onChange={(newValue) => this.onChange(newValue)}
                     onSearch={(newValue) => this.onChange(newValue)}
                 />
-                <OF.PrimaryButton
-                    className="blis-dropdownWithButton-button"
-                    onClick={() => this.onClickSync()}
-                    ariaDescription="Refresh"
-                    text=""
-                    iconProps={{ iconName: 'Sync' }}
-                />
+                <div>
+                    <OF.PrimaryButton
+                        onClick={() => this.onClickSync()}
+                        ariaDescription="Refresh"
+                        text="Refresh"
+                        iconProps={{ iconName: 'Sync' }}
+                    />
+                </div>
                 <OF.DetailsList
                     key={this.state.dialogKey}
                     className={OF.FontClassNames.mediumPlus}
