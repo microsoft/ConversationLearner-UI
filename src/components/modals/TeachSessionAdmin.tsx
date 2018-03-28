@@ -96,8 +96,8 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
 
         return (
             <div className={`blis-dialog-admin ${FontClassNames.large}`}>
-                <div className={FontClassNames.xxLarge}>
-                    <Icon iconName="EditContact" />&nbsp;Train Dialog
+                <div className={`blis-dialog-title ${FontClassNames.xxLarge}`}>
+                    <Icon iconName="EditContact" />Train Dialog
                 </div>
                 {this.props.teachSession.mode === DialogMode.Extractor ? (
                     <div className="blis-dialog-admin__content">

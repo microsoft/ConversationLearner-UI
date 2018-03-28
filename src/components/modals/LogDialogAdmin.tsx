@@ -218,8 +218,8 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
 
         return (
             <div className={`blis-dialog-admin ${OF.FontClassNames.large}`}>
-                <div className={OF.FontClassNames.xxLarge}>
-                    <OF.Icon iconName="UserFollowed" />&nbsp;Log Dialog
+                <div className={`blis-dialog-title ${OF.FontClassNames.xxLarge}`}>
+                    <OF.Icon iconName="UserFollowed" />Log Dialog
                 </div>
                 {this.props.selectedActivity && (this.state.senderType === SenderType.User ? (
                     <div className="blis-dialog-admin__content">

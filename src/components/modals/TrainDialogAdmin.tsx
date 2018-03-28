@@ -279,8 +279,8 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
         let renderData = this.getRenderData();
         return (
             <div className={`blis-dialog-admin ${OF.FontClassNames.large}`}>
-                <div className={OF.FontClassNames.xxLarge}>
-                    <OF.Icon iconName="EditContact" />&nbsp;Train Dialog
+                <div className={`blis-dialog-title ${OF.FontClassNames.xxLarge}`}>
+                    <OF.Icon iconName="EditContact" />Train Dialog
                 </div>
                 {this.props.selectedActivity && (this.state.senderType === SenderType.User
                     ? (

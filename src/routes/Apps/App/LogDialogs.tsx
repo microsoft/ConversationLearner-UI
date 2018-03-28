@@ -367,7 +367,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         const currentLogDialog = this.state.currentLogDialog;
         return (
             <div className="blis-page">
-                <div className={`blis-dialog-title blis-dialog-title--log ${OF.FontClassNames.xxLarge}`}>
+                <div className={`blis-dialog-title ${OF.FontClassNames.xxLarge}`}>
                     <OF.Icon iconName="UserFollowed" />
                     <FormattedMessage
                         id={FM.LOGDIALOGS_TITLE}
