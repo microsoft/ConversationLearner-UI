@@ -141,7 +141,7 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
 .blis-font--warning {
   background-color: #FDE7E9;
   margin: 5px;
-  padding: 5px;
+  padding: 0.25em 0.5em;
 }
 
 .blis-font--preserve {
@@ -187,12 +187,12 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
 
 .blis-modal.blis-modal--teach {
   grid-template-rows: 1fr min-content;
-  border-top: 8px solid var(--color-magentaDark);
+  /* border-top: 8px solid var(--color-magentaDark); */
 }
 
 .blis-modal.blis-modal--log {
   grid-template-rows: 1fr min-content;
-  border-top: 8px solid var(--color-blueMid);
+  /* border-top: 8px solid var(--color-blueMid); */
 }
 
 .blis-modal.blis-modal--wide {
@@ -203,6 +203,12 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
 
 .blis-modal.blis-modal--large {
   width: 90%;
+  height: 90%;
+}
+
+/** Matches width of webchat **/
+.blis-modal.blis-modal--fixed {
+  width: 400px;
   height: 90%;
 }
 
@@ -269,10 +275,6 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
   }
 }
 
-.blis-modal.blis-modal--border {
-  border: 2px solid #004b50;
-}
-
 .blis-modal_header {
   display: block;
   text-align: center;
@@ -302,29 +304,23 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
 
 .blis-modal_footer {
   padding-top: 1em;
+  border-top: 1px solid rgba(0, 0, 0, 0.125);
 }
 
 .blis-modal.blis-modal--teach .blis-modal_footer {
-  padding: 5px;
-  background-color: var(--color-magentaDark);
+  padding: 1em;
+  /* background-color: var(--color-magentaDark); */
 }
 
 .blis-modal.blis-modal--log .blis-modal_footer{
-  padding: 5px;
-  background-color: var(--color-blueMid);
+  padding: 1em;
+  /* background-color: var(--color-blueMid); */
 }
 
-.blis-dialog-title {
-  padding-bottom: 0.6em;
-  border-bottom: 8px solid transparent;
+.blis-dialog-title i[role="presentation"] {
+  margin-right: 0.5em;
+  vertical-align: sub;
 }
-.blis-dialog-title.blis-dialog-title--teach {
-  border-color: var(--color-magentaDark);
-}
-.blis-dialog-title.blis-dialog-title--log {
-  border-color: var(--color-blueMid);
-}
-
 .blis-dropdownWithButton-dropdown {
   display: grid;
   grid-template: auto / 1fr auto auto;
@@ -371,6 +367,15 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
 }
 .blis-chatmodal_admin-controls {
   padding: 1em;
+}
+
+.blis-sessionmodal {
+  height: 100%;
+  display: grid;
+  grid-template-rows: min-content auto;
+}
+.blis-sessionmodal-title {
+  padding: 1rem;
 }
 
 /** Office UI Fabric Theme Overrides */
@@ -438,7 +443,7 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
 }
 */
 
-.ms-Button.is-disabled, .ms-Button:disabled {
+.ms-Button--primary.is-disabled, .ms-Button--primary:disabled {
   background-color: var(--color-yellow-lighter) !important;
 }
 
@@ -459,7 +464,7 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
 /** Log Dialog Admin */
 .blis-dialog-admin {
   display: grid;
-  grid-gap: 1.3rem;
+  grid-gap: 0.8em;
 }
 .blis-dialog-admin__content {
   display: grid;
@@ -469,7 +474,7 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
 .blis-dialog-admin-title {
   font-weight: bold;
   padding: 0.5rem 0;
-  border-bottom: 1px solid black;
+  border-bottom: 1px solid rgba(0,0,0,0.25);
 }
 
 .blis-dialog-admin-chosen-action {

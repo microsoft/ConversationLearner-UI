@@ -327,7 +327,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         const allExtractResponsesValid = extractResponsesForDisplay.every(e => e.isValid)
 
         return (
-            <div>
+            <div className="entity-extractor">
                 <OF.Label className={`entity-extractor-help-text ${OF.FontClassNames.smallPlus}`}>
                     <FormattedMessage
                         id={FM.TOOLTIP_ENTITY_EXTRACTOR_HELP}

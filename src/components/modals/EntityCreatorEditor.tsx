@@ -372,7 +372,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
             <Modal
                 isOpen={this.props.open}
                 isBlocking={false}
-                containerClassName="blis-modal blis-modal--medium blis-modal--border"
+                containerClassName="blis-modal blis-modal--medium"
             >
                 <div className="blis-modal_header">
                     <span className={OF.FontClassNames.xxLarge}>{this.state.editing ? this.props.entity.entityName : this.state.title}</span>

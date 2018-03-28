@@ -362,7 +362,7 @@ class Settings extends React.Component<Props, ComponentState> {
 
 
                     <Expando 
-                        className={'blis-dialog-admin-title'}
+                        className={'blis-settings-container-header'}
                         isOpen={this.state.isPackageExpandoOpen}
                         text="Version Tags"
                         onToggle={() => this.setState({isPackageExpandoOpen: !this.state.isPackageExpandoOpen})}
@@ -375,13 +375,13 @@ class Settings extends React.Component<Props, ComponentState> {
                     }
 
                     <Expando 
-                        className={'blis-dialog-admin-title'}
+                        className={'blis-settings-container-header'}
                         isOpen={this.state.isSettingsExpandoOpen}
                         text="Settings"
                         onToggle={() => this.setState({isSettingsExpandoOpen: !this.state.isSettingsExpandoOpen})}
                     />
                     {this.state.isSettingsExpandoOpen &&
-                        <div>
+                        <div className="blis-settings-fields">
                             <div>
                                 <OF.Label className={OF.FontClassNames.mediumPlus}>
                                     <FormattedMessage
@@ -426,7 +426,7 @@ class Settings extends React.Component<Props, ComponentState> {
 
                     {this.props.user.id === BLIS_SAMPLE_ID &&
                         <div>
-                            <div className="blis-dialog-admin-title">Demo Settings</div>
+                            <div>Demo Settings</div>
                             <div>
                                 <OF.TextField
                                     className={OF.FontClassNames.mediumPlus}
@@ -451,7 +451,7 @@ class Settings extends React.Component<Props, ComponentState> {
                             </div>
                         </div>
                     }
-                    <div className="blis-modal-buttons_secondary">
+                    <div>
                         {this.props.user.id === BLIS_SAMPLE_ID &&
                             <OF.DefaultButton
                                 onClick={() => this.onOpenDebugErrors()}

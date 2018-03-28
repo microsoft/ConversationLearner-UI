@@ -151,7 +151,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
                 isOpen={this.props.open}
                 onDismiss={() => this.onClickCancel()}
                 isBlocking={false}
-                containerClassName='blis-modal blis-modal--small blis-modal--border'
+                containerClassName='blis-modal blis-modal--small'
             >
                 <div className='blis-modal_header'>
                     <span className={OF.FontClassNames.xxLarge}>
