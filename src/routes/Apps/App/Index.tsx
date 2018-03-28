@@ -41,12 +41,10 @@ class Index extends React.Component<Props, ComponentState> {
         
         this.setState({ packageId: packageId})
 
-        // Note: In future chagen fetch log dialogs to default to all package if no package set
-        let allPackages =
-             (packageId === app.devPackageId) ?
-                app.packageVersions.map(pv => pv.packageId).join(",") + `,${packageId}`
-                :
-                packageId;
+        // Note: In future change fetch log dialogs to default to all package if no package set
+        let allPackages = (packageId === app.devPackageId)
+                ? app.packageVersions.map(pv => pv.packageId).join(",") + `,${packageId}`
+                : packageId
         
         this.props.setCurrentBLISApp(this.props.user.id, app)
         this.props.fetchAllLogDialogsAsync(this.props.user.id, app.appId, allPackages) // Note: a separate call as eventually we want to page
@@ -153,16 +151,16 @@ class Index extends React.Component<Props, ComponentState> {
                                 <Icon iconName="BIDashboard" /><span>Dashboard</span>
                             </NavLink>
                             <NavLink className="blis-nav-link" to={{ pathname: `${match.url}/entities`, state: { app } }}>
-                                <Icon iconName="List" /><span>Entities</span><span className="count">10</span>
+                                <Icon iconName="List" /><span>Entities</span><span className="count">{this.props.entities.length}</span>
                             </NavLink>
                             <NavLink className="blis-nav-link" to={{ pathname: `${match.url}/actions`, state: { app } }}>
-                                <Icon iconName="List" /><span>Actions</span><span className="count">9</span>
+                                <Icon iconName="List" /><span>Actions</span><span className="count">{this.props.actions.length}</span>
                             </NavLink>
                             <NavLink className="blis-nav-link" to={{ pathname: `${match.url}/trainDialogs`, state: { app } }}>
-                                <Icon iconName="List" /><span>Train Dialogs</span><span className="count">9</span>
+                                <Icon iconName="List" /><span>Train Dialogs</span><span className="count">{this.props.trainDialogs.length}</span>
                             </NavLink>
                             <NavLink className="blis-nav-link" to={{ pathname: `${match.url}/logDialogs`, state: { app } }}>
-                                <Icon iconName="List" /><span>Log Dialogs</span><span className="count">9</span>
+                                <Icon iconName="List" /><span>Log Dialogs</span>
                             </NavLink>
                             <NavLink className="blis-nav-link" to={{ pathname: `${match.url}/settings`, state: { app } }}>
                                 <Icon iconName="Settings" /><span>Settings</span>
