@@ -206,6 +206,12 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
   height: 90%;
 }
 
+/** Matches width of webchat **/
+.blis-modal.blis-modal--fixed {
+  width: 400px;
+  height: 90%;
+}
+
 .blis-modal.blis-modal--medium{
   width: 60%;
   height: 70%;
@@ -361,6 +367,15 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
 }
 .blis-chatmodal_admin-controls {
   padding: 1em;
+}
+
+.blis-sessionmodal {
+  height: 100%;
+  display: grid;
+  grid-template-rows: min-content auto;
+}
+.blis-sessionmodal-title {
+  padding: 1rem;
 }
 
 /** Office UI Fabric Theme Overrides */

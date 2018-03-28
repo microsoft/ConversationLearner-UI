@@ -37,10 +37,13 @@ class SessionWindow extends React.Component<Props, ComponentState> {
             <Modal
                 isOpen={this.props.open && this.props.error == null}
                 isBlocking={true}
-                containerClassName='blis-modal blis-modal--large blis-modal--log'
+                containerClassName='blis-modal blis-modal--fixed blis-modal--log'
             >
                 <div className="blis-modal_body">
-                    <div className="blis-chatmodal">
+                    <div className="blis-sessionmodal">
+                        <div className={`blis-sessionmodal-title ${FontClassNames.xxLarge}`}>
+                            <Icon iconName="UserFollowed" />&nbsp;Log Dialog
+                        </div>
                         <div className="blis-chatmodal_webchat">
                             <Webchat
                                 app={this.props.app}
@@ -50,15 +53,6 @@ class SessionWindow extends React.Component<Props, ComponentState> {
                                 hideInput={false}
                                 focusInput={true}
                             />
-                        </div>
-                        <div className="blis-chatmodal_controls">
-                            <div className="blis-chatmodal_admin-controls">
-                                <div className={`blis-dialog-admin ${FontClassNames.large}`}>
-                                    <div className={FontClassNames.xxLarge}>
-                                        <Icon iconName="UserFollowed" />&nbsp;Log Dialog
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
