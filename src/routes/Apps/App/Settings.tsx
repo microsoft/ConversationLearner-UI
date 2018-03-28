@@ -57,15 +57,6 @@ const messages = defineMessages({
     }
 })
 
-const styles = {
-    shown: {
-        visibility: "visible"
-    },
-    hidden: {
-        visibility: "hidden"
-    }
-}
-
 interface ComponentState {
     localeVal: string
     appIdVal: string
@@ -103,9 +94,9 @@ class Settings extends React.Component<Props, ComponentState> {
             isPackageExpandoOpen: false,
             isSettingsExpandoOpen: false
         }
-   }
+    }
 
-   updateAppState(app: BlisAppBase) {
+    updateAppState(app: BlisAppBase) {
         this.setState({
             localeVal: app.locale,
             appIdVal: app.appId,
@@ -118,7 +109,7 @@ class Settings extends React.Component<Props, ComponentState> {
             isLoggingOnVal: (app.metadata.isLoggingOn !== false),   // For backward compatibility to cover undefined
             newBotVal: ''
         })
-   }
+    }
     componentWillMount() {
         this.updateAppState(this.props.app)
     }
@@ -132,7 +123,7 @@ class Settings extends React.Component<Props, ComponentState> {
             this.state.videoVal !== app.metadata.video ||
             this.state.botFrameworkAppsVal !== app.metadata.botFrameworkApps ||
             this.state.isLoggingOnVal !== (app.metadata.isLoggingOn !== false))) {  // For backward compatibility to cover undefined
-                this.updateAppState(this.props.app)
+            this.updateAppState(this.props.app)
         }
     }
 
@@ -159,7 +150,7 @@ class Settings extends React.Component<Props, ComponentState> {
             edited: true
         })
     }
-    
+
     @autobind
     onChangedVideo(text: string) {
         this.setState({
@@ -214,9 +205,8 @@ class Settings extends React.Component<Props, ComponentState> {
     onClickSave() {
         let app = this.props.app
         let modifiedApp: BlisAppBase = {
+            ...app,
             appName: this.state.appNameVal,
-            appId: app.appId,
-            locale: app.locale,
             metadata: {
                 botFrameworkApps: this.state.botFrameworkAppsVal,
                 markdown: this.state.markdownVal,
@@ -225,7 +215,6 @@ class Settings extends React.Component<Props, ComponentState> {
             },
             // packageVersions: DON'T SEND
             // devPackageId: DON'T SEND
-            livePackageId: this.props.app.livePackageId,  
             trainingFailureMessage: undefined,
             trainingStatus: TrainingStatusCode.Completed,
             datetime: new Date()
@@ -293,12 +282,12 @@ class Settings extends React.Component<Props, ComponentState> {
         let packageReferences = util.packageReferences(this.props.app);
 
         return Object.values(packageReferences)
-        .map<OF.IDropdownOption>(pr => {
-            return {
-                key: pr.packageId,
-                text: pr.packageVersion
-            }
-        })
+            .map<OF.IDropdownOption>(pr => {
+                return {
+                    key: pr.packageId,
+                    text: pr.packageVersion
+                }
+            })
     }
 
     render() {
@@ -307,7 +296,6 @@ class Settings extends React.Component<Props, ComponentState> {
             key: this.state.localeVal,
             text: this.state.localeVal,
         }]
-        let buttonsDivStyle = this.state.edited === true ? styles.shown : styles.hidden;
         let packageOptions = this.packageOptions();
         return (
             <div className="blis-page">
@@ -343,29 +331,43 @@ class Settings extends React.Component<Props, ComponentState> {
                         })}
                         value={this.state.appIdVal}
                     />
+                    <div>
+                        <OF.Label className={OF.FontClassNames.mediumPlus}>
+                            LUIS Application Link
+                        </OF.Label>
+                        <div>
+                            <a href={`https://www.luis.ai/applications/${this.props.app.luisAppId}/versions/0.1/publish`} target="_blank">
+                                <OF.DefaultButton
+                                    iconProps={{ iconName: "OpenInNewWindow" }}
+                                    ariaDescription="View in LUIS"
+                                    text="View in LUIS"
+                                />
+                            </a>
+                        </div>
+                    </div>
                     <div className="blis-command-bar">
                         <TC.Dropdown
-                                label="Editing Tag"
-                                options={packageOptions}
-                                onChanged={acionTypeOption => this.onChangedEditingTag(acionTypeOption)}
-                                selectedKey={this.state.selectedEditingTagOptionKey}
-                                tipType={ToolTip.TipType.TAG_EDITING}
+                            label="Editing Tag"
+                            options={packageOptions}
+                            onChanged={acionTypeOption => this.onChangedEditingTag(acionTypeOption)}
+                            selectedKey={this.state.selectedEditingTagOptionKey}
+                            tipType={ToolTip.TipType.TAG_EDITING}
                         />
                         <TC.Dropdown
-                                label="Live Tag"
-                                options={packageOptions}
-                                onChanged={acionTypeOption => this.onChangedLiveTag(acionTypeOption)}
-                                selectedKey={this.state.selectedLiveTagOptionKey}
-                                tipType={ToolTip.TipType.TAG_LIVE}
+                            label="Live Tag"
+                            options={packageOptions}
+                            onChanged={acionTypeOption => this.onChangedLiveTag(acionTypeOption)}
+                            selectedKey={this.state.selectedLiveTagOptionKey}
+                            tipType={ToolTip.TipType.TAG_LIVE}
                         />
                     </div>
 
 
-                    <Expando 
+                    <Expando
                         className={'blis-settings-container-header'}
                         isOpen={this.state.isPackageExpandoOpen}
                         text="Version Tags"
-                        onToggle={() => this.setState({isPackageExpandoOpen: !this.state.isPackageExpandoOpen})}
+                        onToggle={() => this.setState({ isPackageExpandoOpen: !this.state.isPackageExpandoOpen })}
                     />
                     {this.state.isPackageExpandoOpen &&
                         <PackageTable
@@ -374,59 +376,34 @@ class Settings extends React.Component<Props, ComponentState> {
                         />
                     }
 
-                    <Expando 
-                        className={'blis-settings-container-header'}
-                        isOpen={this.state.isSettingsExpandoOpen}
-                        text="Settings"
-                        onToggle={() => this.setState({isSettingsExpandoOpen: !this.state.isSettingsExpandoOpen})}
-                    />
-                    {this.state.isSettingsExpandoOpen &&
-                        <div className="blis-settings-fields">
-                            <div>
-                                <OF.Label className={OF.FontClassNames.mediumPlus}>
-                                    <FormattedMessage
-                                        id={FM.SETTINGS_BOTFRAMEWORKLOCALELABEL}
-                                        defaultMessage="Locale"
-                                    />
-                                </OF.Label>
-                                <OF.Dropdown
-                                    className={OF.FontClassNames.mediumPlus}
-                                    options={options}
-                                    selectedKey={this.state.localeVal}
-                                    disabled={true}
-                                />
-                            </div>
-                            <div className="blis-entity-creator-checkbox">
-                                <TC.Checkbox
-                                    label={intl.formatMessage({
-                                        id: FM.SETTINGS_LOGGINGON_LABEL,
-                                        defaultMessage: 'Log Conversations'
-                                    })}
-                                    checked={this.state.isLoggingOnVal}
-                                    onChange={this.onToggleLoggingOn}
-                                    tipType={ToolTip.TipType.LOGGING_TOGGLE}
-                                />
-                            </div>
-                            <div className="blis-modal-buttons_primary" style={buttonsDivStyle}>
-                                <OF.PrimaryButton
-                                    disabled={this.onGetNameErrorMessage(this.state.appNameVal) !== ''}
-                                    onClick={this.onClickSave}
-                                    ariaDescription={intl.formatMessage(messages.saveChanges)}
-                                    text={intl.formatMessage(messages.saveChanges)}
-                                />
-                                <OF.DefaultButton
-                                    onClick={this.onClickDiscard}
-                                    ariaDescription={intl.formatMessage(messages.discard)}
-                                    text={intl.formatMessage(messages.discard)}
-                                />
-                            </div>
-                        </div>
-                    }
-
+                    <div>
+                        <OF.Label className={OF.FontClassNames.mediumPlus}>
+                            <FormattedMessage
+                                id={FM.SETTINGS_BOTFRAMEWORKLOCALELABEL}
+                                defaultMessage="Locale"
+                            />
+                        </OF.Label>
+                        <OF.Dropdown
+                            className={OF.FontClassNames.mediumPlus}
+                            options={options}
+                            selectedKey={this.state.localeVal}
+                            disabled={true}
+                        />
+                    </div>
+                    <div className="blis-entity-creator-checkbox">
+                        <TC.Checkbox
+                            label={intl.formatMessage({
+                                id: FM.SETTINGS_LOGGINGON_LABEL,
+                                defaultMessage: 'Log Conversations'
+                            })}
+                            checked={this.state.isLoggingOnVal}
+                            onChange={this.onToggleLoggingOn}
+                            tipType={ToolTip.TipType.LOGGING_TOGGLE}
+                        />
+                    </div>
 
                     {this.props.user.id === BLIS_SAMPLE_ID &&
-                        <div>
-                            <div>Demo Settings</div>
+                        <React.Fragment>
                             <div>
                                 <OF.TextField
                                     className={OF.FontClassNames.mediumPlus}
@@ -449,17 +426,31 @@ class Settings extends React.Component<Props, ComponentState> {
                                     value={this.state.videoVal}
                                 />
                             </div>
-                        </div>
+                            <div>
+                                <OF.DefaultButton
+                                    onClick={() => this.onOpenDebugErrors()}
+                                    ariaDescription={intl.formatMessage(messages.discard)}
+                                    text={'Inject Errors'}
+                                />
+                            </div>
+                        </React.Fragment>
                     }
-                    <div>
-                        {this.props.user.id === BLIS_SAMPLE_ID &&
-                            <OF.DefaultButton
-                                onClick={() => this.onOpenDebugErrors()}
-                                ariaDescription={intl.formatMessage(messages.discard)}
-                                text={'Inject Errors'}
-                            />
-                        }
+
+                    <div className="blis-modal-buttons_primary">
+                        <OF.PrimaryButton
+                            disabled={this.state.edited === false || this.onGetNameErrorMessage(this.state.appNameVal) !== ''}
+                            onClick={this.onClickSave}
+                            ariaDescription={intl.formatMessage(messages.saveChanges)}
+                            text={intl.formatMessage(messages.saveChanges)}
+                        />
+                        <OF.DefaultButton
+                            disabled={this.state.edited === false}
+                            onClick={this.onClickDiscard}
+                            ariaDescription={intl.formatMessage(messages.discard)}
+                            text={intl.formatMessage(messages.discard)}
+                        />
                     </div>
+                    
                     <ErrorInjectionEditor
                         open={this.state.debugErrorsOpen}
                         onClose={() => this.onCloseDebugErrors()}
