@@ -545,7 +545,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         onSearch={(newValue) => this.onChangeSearchString(newValue)}
                     />
                 </div>
-                <div className="blis-modal-dropdowns">             
+                <div className="blis-list-filters">
                     <OF.Dropdown
                         label="Entity:"
                         selectedKey={(this.state.entityFilter ? this.state.entityFilter.key : undefined)}
