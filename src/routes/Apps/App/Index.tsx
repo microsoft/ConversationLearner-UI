@@ -135,12 +135,12 @@ class Index extends React.Component<Props, ComponentState> {
                 <div>
                     <div className="blis-app-title">
                         <div className={FontClassNames.xxLarge}>{app.appName}</div>
-                        <div className={FontClassNames.smallPlus}>
-                            Tag: {tag}
-                            { editPackageId === app.livePackageId && 
-                                <span className="blis-font--warning">LIVE</span>
-                            }
-                        </div>
+                    </div>
+                    <div className={`blis-app-tag-status ${FontClassNames.mediumPlus}`}>
+                        Tag: {tag}
+                        {editPackageId === app.livePackageId && 
+                            <span className="blis-font--warning">LIVE</span>
+                        }
                     </div>
                     <TrainingStatus
                         app={app}

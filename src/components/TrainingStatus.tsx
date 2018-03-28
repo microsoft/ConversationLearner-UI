@@ -64,7 +64,7 @@ export interface Props {
 const Component: React.SFC<Props> = (props: Props) => {
     const uiState = internalStatusToUiStateMap.get(props.status)
     return (
-        <div className={`blis-training-status ${FontClassNames.large}`}>
+        <div className={`blis-training-status ${FontClassNames.mediumPlus}`}>
             <div className={`blis-training-status__icon-row ${uiState.className} ${props.didPollingExpire ? 'blis-training-status__icon-row--expired': ''}`}>
                 <FormattedMessage
                     id={FM.APP_TRAINING_STATUS_STATUS}

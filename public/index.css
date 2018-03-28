@@ -141,7 +141,7 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
 .blis-font--warning {
   background-color: #FDE7E9;
   margin: 5px;
-  padding: 5px;
+  padding: 0.25em 0.5em;
 }
 
 .blis-font--preserve {

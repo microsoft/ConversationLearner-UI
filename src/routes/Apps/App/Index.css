@@ -7,6 +7,10 @@
     padding-bottom: 0.9rem;
 }
 
+.blis-app-tag-status {
+    padding: 0.125em 0 0.5em;
+}
+
 .blis-page {
     display: grid;
     grid-gap: 1rem;
