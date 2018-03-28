@@ -343,6 +343,20 @@ class Settings extends React.Component<Props, ComponentState> {
                         })}
                         value={this.state.appIdVal}
                     />
+                    <div>
+                        <OF.Label className={OF.FontClassNames.mediumPlus}>
+                            LUIS Application Link
+                        </OF.Label>
+                        <div>
+                            <a href={`https://www.luis.ai/applications/${this.props.app.luisAppId}/versions/0.1/publish`} target="_blank">
+                                <OF.DefaultButton
+                                    iconProps={{ iconName: "OpenInNewWindow" }}
+                                    ariaDescription="View in LUIS"
+                                    text="View in LUIS"
+                                />
+                            </a>
+                        </div>
+                    </div>
                     <div className="blis-command-bar">
                         <TC.Dropdown
                                 label="Editing Tag"
