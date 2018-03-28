@@ -428,7 +428,7 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
 }
 */
 
-.ms-Button.is-disabled, .ms-Button:disabled {
+.ms-Button--primary.is-disabled, .ms-Button--primary:disabled {
   background-color: var(--color-yellow-lighter) !important;
 }
 
