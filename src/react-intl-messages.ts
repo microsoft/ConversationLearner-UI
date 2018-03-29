@@ -16,7 +16,7 @@ export enum FM {
     ACTIONS_SUBTITLE = 'Actions.subtitle',
     ACTIONS_CREATEBUTTONARIADESCRIPTION = 'Actions.createButtonAriaDescription',
     ACTIONS_CREATEBUTTONTITLE = 'Actions.createButtonTitle',
-    ACTIONS_CONFIRMDELETEMODALTITLE = 'Actions.confirmDeleteModalTitle',
+    ACTIONS_CONFIRMCANCELMODALTITLE = 'Actions.CONFIRMCANCELMODALTitle',
 
     // App
     APP_HEADER_HOME = 'App.header.home',
@@ -42,7 +42,7 @@ export enum FM {
     APPSLIST_CREATEBUTTONTEXT = 'AppsList.createButtonText',
     APPSLIST_IMPORTBUTTONARIADESCRIPTION = 'AppsList.importButtonAriaDescription',
     APPSLIST_IMPORTBUTTONTEXT = 'AppsList.importButtonText',
-    APPSLIST_CONFIRMDELETEMODALTITLE = 'AppsList.confirmDeleteModalTitle',
+    APPSLIST_CONFIRMCANCELMODALTITLE = 'AppsList.CONFIRMCANCELMODALTitle',
     APPSLIST_COLUMN_NAME = 'AppsList.columns.name',
     APPSLIST_COLUMNS_LOCALE = 'AppsList.columns.locale',
     APPSLIST_COLUMNS_LINKEDBOTS = 'AppsList.columns.linkedBots',
@@ -66,7 +66,7 @@ export enum FM {
     ENTITIES_COLUMNS_IS_PROGRAMMATIC = 'Entities.columns.isProgrammatic',
     ENTITIES_COLUMNS_IS_BUCKETABLE = 'Entities.columns.isBucketable',
     ENTITIES_COLUMNS_IS_NEGATABLE = 'Entities.columns.isNegatable',
-    ENTITIES_CONFIRMDELETEMODALTITLE = 'Entities.confirmDeleteModalTitle',
+    ENTITIES_CONFIRMCANCELMODALTITLE = 'Entities.CONFIRMCANCELMODALTitle',
     ENTITIES_DELETEWARNINGTITLE = 'Entities.deleteWarningTitle',
     ENTITIES_DELETEWARNINGPRIMARYBUTTONTEXT = 'Entities.deleteWarningPrimaryButtonText',
 
@@ -231,7 +231,10 @@ export enum FM {
     ACTIONCREATOREDITOR_DELETEBUTTON_TEXT = 'ActionCreatorEditor.deleteButton.text',
     ACTIONCREATOREDITOR_TRAINDIALOGSBUTTON_ARIADESCRIPTION = 'ActionCreatorEditor.traindialogsButton.ariaDescription',
     ACTIONCREATOREDITOR_TRAINDIALOGSBUTTON_TEXT = 'ActionCreatorEditor.traindialogsButton.text',
-
+    ACTIONCREATOREDITOR_CONFIRM_DELETE_TITLE = 'ActionCreatorEditor.confirmDeleteTitle',
+    ACTIONCREATOREDITOR_CONFIRM_DELETE_WARNING = 'ActionCreatorEditor.confirmDeleteWarning',
+    ACTIONCREATOREDITOR_CONFIRM_EDIT_TITLE = 'ActionCreatorEditor.confirmEditTitle',
+    ACTIONCREATOREDITOR_CONFIRM_EDIT_WARNING = 'ActionCreatorEditor.confirmEditWarning',
     // ActionScorer
     ACTIONSCORER_COLUMNS_RESPONSE = 'ActionScorer.columns.response',
     ACTIONSCORER_COLUMNS_ARGUMENTS = 'ActionScorer.columns.arguments',
@@ -265,9 +268,9 @@ export enum FM {
     CHATSESSIONMODAL_EXPIREBUTTON_ARIADESCRIPTION = 'ChatSessionModal.expireButton.ariaDescription',
     CHATSESSIONMODAL_EXPIREBUTTON_TEXT = 'ChatSessionModal.expireButton.text',
 
-    // ConfirmDeleteModal
-    CONFIRMDELETEMODAL_PRIMARYBUTTON_TEXT = 'ConfirmDeleteModal.primaryButton.text',
-    CONFIRMDELETEMODAL_DEFAULTBUTTON_TEXT = 'ConfirmDeleteModal.defaultButton.text',
+    // ConfirmCancelModal
+    CONFIRMCANCELMODAL_PRIMARYBUTTON_TEXT = 'ConfirmCancelModal.primaryButton.text',
+    CONFIRMCANCELMODAL_DEFAULTBUTTON_TEXT = 'ConfirmCancelModal.defaultButton.text',
 
     // DemoImporter
     DEMOIMPORT_TITLE = 'DemoImporter.title',
@@ -416,7 +419,7 @@ export default {
         [FM.ACTIONS_SUBTITLE]: `Actions that the application can take...`,
         [FM.ACTIONS_CREATEBUTTONARIADESCRIPTION]: 'Create a New Action',
         [FM.ACTIONS_CREATEBUTTONTITLE]: 'New Action',
-        [FM.ACTIONS_CONFIRMDELETEMODALTITLE]: 'Are you sure you want to delete this action?',
+        [FM.ACTIONS_CONFIRMCANCELMODALTITLE]: 'Are you sure you want to delete this action?',
 
         // App
         [FM.APP_HEADER_HOME]: 'Home',
@@ -442,7 +445,7 @@ export default {
         [FM.APPSLIST_CREATEBUTTONTEXT]: 'New App',
         [FM.APPSLIST_IMPORTBUTTONARIADESCRIPTION]: 'Import Tutorials Applications',
         [FM.APPSLIST_IMPORTBUTTONTEXT]: 'Import Tutorials',
-        [FM.APPSLIST_CONFIRMDELETEMODALTITLE]: 'Are you sure you want to delete this application?',
+        [FM.APPSLIST_CONFIRMCANCELMODALTITLE]: 'Are you sure you want to delete this application?',
         [FM.APPSLIST_COLUMN_NAME]: 'Name',
         [FM.APPSLIST_COLUMNS_LOCALE]: 'Locale',
         [FM.APPSLIST_COLUMNS_LINKEDBOTS]: 'Linked Bots',
@@ -466,7 +469,7 @@ export default {
         [FM.ENTITIES_COLUMNS_IS_PROGRAMMATIC]: 'Programmatic',
         [FM.ENTITIES_COLUMNS_IS_BUCKETABLE]: 'Multi-Value',
         [FM.ENTITIES_COLUMNS_IS_NEGATABLE]: 'Negatable',
-        [FM.ENTITIES_CONFIRMDELETEMODALTITLE]: 'Are you sure you want to delete this entity?',
+        [FM.ENTITIES_CONFIRMCANCELMODALTITLE]: 'Are you sure you want to delete this entity?',
         [FM.ENTITIES_DELETEWARNINGTITLE]: 'You cannot delete this entity because it is being used in an action.',
         [FM.ENTITIES_DELETEWARNINGPRIMARYBUTTONTEXT]: 'Close',
 
@@ -633,7 +636,11 @@ export default {
         [FM.ACTIONCREATOREDITOR_DELETEBUTTON_TEXT]: 'Delete',
         [FM.ACTIONCREATOREDITOR_TRAINDIALOGSBUTTON_ARIADESCRIPTION]: 'Train Dialogs',
         [FM.ACTIONCREATOREDITOR_TRAINDIALOGSBUTTON_TEXT]: 'Train Dialogs',
-
+        [FM.ACTIONCREATOREDITOR_CONFIRM_DELETE_TITLE]: 'Are you sure you want to delete this action?',
+        [FM.ACTIONCREATOREDITOR_CONFIRM_DELETE_WARNING]: 'This Action is used by one or more Training Dialogs.  If you proceed you will need they will removed from training until fixed.',
+        [FM.ACTIONCREATOREDITOR_CONFIRM_EDIT_TITLE]: 'Are you sure you want to edit this action?',
+        [FM.ACTIONCREATOREDITOR_CONFIRM_EDIT_WARNING]: 'This edit will invalidate one or more Training Dialogs.  If you proceed you will need they will removed from training until fixed.',
+   
         // ActionScorer
         [FM.ACTIONSCORER_COLUMNS_RESPONSE]: 'Response',
         [FM.ACTIONSCORER_COLUMNS_ARGUMENTS]: 'Arguments',
@@ -672,9 +679,9 @@ export default {
         [FM.CHATSESSIONMODAL_EXPIREBUTTON_ARIADESCRIPTION]: 'Session Timeout',
         [FM.CHATSESSIONMODAL_EXPIREBUTTON_TEXT]: 'Session Timeout',
 
-        // ConfirmDeleteModal
-        [FM.CONFIRMDELETEMODAL_PRIMARYBUTTON_TEXT]: 'Confirm',
-        [FM.CONFIRMDELETEMODAL_DEFAULTBUTTON_TEXT]: 'Cancel',
+        // ConfirmCancelModal
+        [FM.CONFIRMCANCELMODAL_PRIMARYBUTTON_TEXT]: 'Confirm',
+        [FM.CONFIRMCANCELMODAL_DEFAULTBUTTON_TEXT]: 'Cancel',
 
         // EntityCreatorEditor
         [FM.ENTITYCREATOREDITOR_FIELDERROR_REQUIREDVALUE]: 'Required Value',
@@ -806,7 +813,7 @@ export default {
         [FM.APP_HEADER_ABOUT]: '약',
         [FM.APP_HEADER_DOCS]: '선적 서류 비치',
         [FM.APP_HEADER_SUPPORT]: '지원하다',
-        [FM.APPSLIST_CONFIRMDELETEMODALTITLE]: '이 애플리케이션을 삭제 하시겠습니까?',
+        [FM.APPSLIST_CONFIRMCANCELMODALTITLE]: '이 애플리케이션을 삭제 하시겠습니까?',
         [FM.APPSLIST_COLUMN_NAME]: '이름',
         [FM.APPSLIST_COLUMNS_LOCALE]: '장소',
         [FM.APPSLIST_COLUMNS_LINKEDBOTS]: '연결된 봇',

@@ -1,4 +1,4 @@
-import { ActionObject } from '../types'
+import { ActionObject, ErrorType } from '../types'
 import { AT } from '../types/ActionTypes'
 import {
     BotInfo,
@@ -16,6 +16,7 @@ import {
 } from 'blis-models'
 import { Dispatch } from 'redux'
 import * as ClientFactory from '../services/clientFactory'
+import { setErrorDisplay } from './displayActions'
 
 export const fetchAllTrainDialogsAsync = (key: string, blisAppID: string): ActionObject => {
     return {
@@ -34,7 +35,7 @@ export const fetchAllTrainDialogsFulfilled = (trainDialogs: TrainDialog[]): Acti
 
 export const fetchHistoryThunkAsync = (appId: string, trainDialog: TrainDialog, userName: string, userId: string) => {
     return async (dispatch: Dispatch<any>) => {
-        const blisClient = ClientFactory.getInstance(AT.FETCH_HISTORY_ASYNC,)
+        const blisClient = ClientFactory.getInstance(AT.FETCH_HISTORY_ASYNC)
         dispatch(fetchHistoryAsync(appId, trainDialog, userName, userId))
 
         const teachWithHistory = await blisClient.history(appId, trainDialog, userName, userId)
@@ -253,3 +254,140 @@ export const fetchAllTeachSessionsFulfilled = (teachSessions: Teach[]): ActionOb
     }
 }
 
+// ---------------------------------------
+// Validation Checks
+// --------------------------------------
+export const fetchEntityDeleteValidationThunkAsync = (appId: string, packageId: string, entityId: string) => {
+    return async (dispatch: Dispatch<any>) => {
+        const blisClient = ClientFactory.getInstance(AT.FETCH_ENTITY_DELETE_VALIDATION_ASYNC)
+        dispatch(fetchEntityDeleteValidationAsync(appId, packageId, entityId))
+
+        try {
+            const invalidTrainDialogIds = await blisClient.entitiesDeleteValidation(appId, packageId, entityId)
+            dispatch(fetchEntityDeleteValidationFulfilled())
+            return invalidTrainDialogIds
+        } catch (e) {
+            const error = e as Error
+            dispatch(setErrorDisplay(ErrorType.Error, error.name, [error.message], AT.FETCH_ENTITY_DELETE_VALIDATION_ASYNC))
+            return null;
+        }
+    }
+}
+
+export const fetchEntityDeleteValidationAsync = (appId: string, packageId: string, entityId: string): ActionObject => {
+    return {
+        type: AT.FETCH_ENTITY_DELETE_VALIDATION_ASYNC,
+        appId: appId,
+        packageId: packageId,
+        entityId: entityId
+    }
+}
+
+export const fetchEntityDeleteValidationFulfilled = (): ActionObject => {
+    return {
+        type: AT.FETCH_ENTITY_DELETE_VALIDATION_FULFILLED
+    }
+}
+
+// -----------------------------------------------
+
+export const fetchEntityEditValidationThunkAsync = (appId: string, packageId: string, entity: EntityBase) => {
+    return async (dispatch: Dispatch<any>) => {
+        const blisClient = ClientFactory.getInstance(AT.FETCH_ENTITY_EDIT_VALIDATION_ASYNC)
+        dispatch(fetchEntityEditValidationAsync(appId, packageId, entity))
+
+        try {
+            const invalidTrainDialogIds = await blisClient.entitiesUpdateValidation(appId, packageId, entity)
+            dispatch(fetchEntityEditValidationFulfilled())
+            return invalidTrainDialogIds
+        } catch (e) {
+            const error = e as Error
+            dispatch(setErrorDisplay(ErrorType.Error, error.name, [error.message], AT.FETCH_ENTITY_EDIT_VALIDATION_ASYNC))
+            return null;
+        }
+    }
+}
+
+export const fetchEntityEditValidationAsync = (appId: string, packageId: string, entity: EntityBase): ActionObject => {
+    return {
+        type: AT.FETCH_ENTITY_EDIT_VALIDATION_ASYNC,
+        appId: appId,
+        packageId: packageId,
+        entity: entity
+    }
+}
+
+export const fetchEntityEditValidationFulfilled = (): ActionObject => {
+    return {
+        type: AT.FETCH_ENTITY_EDIT_VALIDATION_FULFILLED
+    }
+}
+
+// -----------------------------------------------
+export const fetchActionDeleteValidationThunkAsync = (appId: string, packageId: string, actionId: string) => {
+    return async (dispatch: Dispatch<any>) => {
+        const blisClient = ClientFactory.getInstance(AT.FETCH_ACTION_DELETE_VALIDATION_ASYNC)
+        dispatch(fetchActionDeleteValidationAsync(appId, packageId, actionId))
+
+        try {
+            const invalidTrainDialogIds = await blisClient.actionsDeleteValidation(appId, packageId, actionId)
+            dispatch(fetchActionDeleteValidationFulfilled())
+            return invalidTrainDialogIds
+        } catch (e) {
+            const error = e as Error
+            dispatch(setErrorDisplay(ErrorType.Error, error.name, [error.message], AT.FETCH_ACTION_DELETE_VALIDATION_ASYNC))
+            return null;
+        }
+    }
+}
+
+export const fetchActionDeleteValidationAsync = (appId: string, packageId: string, actionId: string): ActionObject => {
+    return {
+        type: AT.FETCH_ACTION_DELETE_VALIDATION_ASYNC,
+        appId: appId,
+        packageId: packageId,
+        actionId: actionId
+    }
+}
+
+export const fetchActionDeleteValidationFulfilled = (): ActionObject => {
+    return {
+        type: AT.FETCH_ACTION_DELETE_VALIDATION_FULFILLED
+    }
+}
+
+// -----------------------------------------------
+
+export const fetchActionEditValidationThunkAsync = (appId: string, packageId: string, action: ActionBase) => {
+    return async (dispatch: Dispatch<any>) => {
+        const blisClient = ClientFactory.getInstance(AT.FETCH_ACTION_EDIT_VALIDATION_ASYNC)
+        dispatch(fetchActionEditValidationAsync(appId, packageId, action))
+
+        try {
+            const invalidTrainDialogIds = await blisClient.actionsUpdateValidation(appId, packageId, action)
+            dispatch(fetchActionEditValidationFulfilled())
+            return invalidTrainDialogIds
+        } catch (e) {
+            const error = e as Error
+            dispatch(setErrorDisplay(ErrorType.Error, error.name, [error.message], AT.FETCH_ACTION_EDIT_VALIDATION_ASYNC))
+            return null;
+        }
+    }
+}
+
+export const fetchActionEditValidationAsync = (appId: string, packageId: string, action: ActionBase): ActionObject => {
+    return {
+        type: AT.FETCH_ACTION_EDIT_VALIDATION_ASYNC,
+        appId: appId,
+        packageId: packageId,
+        action: action
+    }
+}
+
+export const fetchActionEditValidationFulfilled = (): ActionObject => {
+    return {
+        type: AT.FETCH_ACTION_EDIT_VALIDATION_FULFILLED
+    }
+}
+
+// -----------------------------------------------

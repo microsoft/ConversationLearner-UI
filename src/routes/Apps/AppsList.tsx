@@ -4,7 +4,7 @@ import { RouteComponentProps } from 'react-router'
 import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { AppCreator, ConfirmDeleteModal } from '../../components/modals'
+import { AppCreator, ConfirmCancelModal } from '../../components/modals'
 import * as OF from 'office-ui-fabric-react';
 import { State } from '../../types';
 import { BlisAppBase } from 'blis-models'
@@ -358,12 +358,12 @@ class AppsList extends React.Component<Props, ComponentState> {
                     onSubmit={this.onSubmitDemoImporterModal}
                     onCancel={this.onCancelDemoImporterModal}
                 />
-                <ConfirmDeleteModal
+                <ConfirmCancelModal
                     open={this.state.isConfirmDeleteAppModalOpen}
                     onCancel={this.onCancelDeleteModal}
                     onConfirm={this.onConfirmDeleteApp}
                     title={this.props.intl.formatMessage({
-                        id: FM.APPSLIST_CONFIRMDELETEMODALTITLE,
+                        id: FM.APPSLIST_CONFIRMCANCELMODALTITLE,
                         defaultMessage: 'Are you sure you want to delete this application?'
                     })}
                 />

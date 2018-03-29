@@ -181,7 +181,35 @@ export type FetchAction = {
 } | {
     type: AT.FETCH_PROFILE_FULFILLED,
     profile: any
-}
+} | {
+    type: AT.FETCH_ENTITY_DELETE_VALIDATION_ASYNC,
+    appId: string,
+    packageId: string,
+    entityId: string
+} | {
+    type: AT.FETCH_ENTITY_DELETE_VALIDATION_FULFILLED
+} | {
+    type: AT.FETCH_ACTION_DELETE_VALIDATION_ASYNC,
+    appId: string,
+    packageId: string, 
+    actionId: string
+} | {
+    type: AT.FETCH_ACTION_DELETE_VALIDATION_FULFILLED
+} | {
+    type: AT.FETCH_ENTITY_EDIT_VALIDATION_ASYNC,
+    appId: string,
+    packageId: string,
+    entity: EntityBase
+} | {
+    type: AT.FETCH_ENTITY_EDIT_VALIDATION_FULFILLED
+} | {
+    type: AT.FETCH_ACTION_EDIT_VALIDATION_ASYNC,
+    appId: string,
+    packageId: string,
+    action: ActionBase
+} | {
+    type: AT.FETCH_ACTION_EDIT_VALIDATION_FULFILLED
+} 
 
 export type CreateAction = {
     type: AT.CREATE_BLIS_APPLICATION_ASYNC,

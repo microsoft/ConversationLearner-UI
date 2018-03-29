@@ -656,6 +656,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
 
                 <ActionCreatorEditor
                     app={this.props.app}
+                    editingPackageId={this.props.editingPackageId}
                     open={this.state.actionModalOpen}
                     action={null}
                     onClickCancel={() => this.onClickCancelActionEditor()}
@@ -677,6 +678,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
 
 export interface ReceivedProps {
     app: BlisAppBase
+    editingPackageId: string,
     dialogType: DialogType,
     sessionId: string,
     autoTeach: boolean,

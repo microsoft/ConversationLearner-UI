@@ -204,6 +204,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                         {(mode === DialogMode.Scorer || autoTeachWithRound)
                             && <ActionScorer
                                 app={this.props.app}
+                                editingPackageId={this.props.editingPackageId}
                                 canEdit={true}
                                 dialogType={DialogType.TEACH}
                                 sessionId={this.props.teachSession.current.teachId}
@@ -240,6 +241,7 @@ const mapStateToProps = (state: State) => {
 export interface ReceivedProps {
     onScoredAction: () => void;
     app: BlisAppBase
+    editingPackageId: string
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps

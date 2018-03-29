@@ -2,17 +2,19 @@ import * as React from 'react';
 import { PrimaryButton, DefaultButton, Dialog, DialogType, DialogFooter } from 'office-ui-fabric-react';
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
+import { FontClassNames } from 'office-ui-fabric-react'
 
 interface ReceivedProps {
     onConfirm: Function;
     onCancel: Function;
     open: boolean;
     title: string;
+    warning?: string;
 }
 
 type Props = ReceivedProps & InjectedIntlProps
 
-const ConfirmDeleteModal: React.SFC<Props> = (props: Props) => {
+const ConfirmCancelModal: React.SFC<Props> = (props: Props) => {
     const { intl } = props
     return (
         <Dialog
@@ -26,18 +28,24 @@ const ConfirmDeleteModal: React.SFC<Props> = (props: Props) => {
                 isBlocking: false
             }}
         >
+            {props.warning && 
+                (
+                    <div className="blis-errorpanel" >
+                        <div className={FontClassNames.medium}>{props.warning}</div>
+                    </div>
+                )}
             <DialogFooter>
                 <PrimaryButton
                     onClick={() => props.onConfirm()}
                     text={intl.formatMessage({
-                        id: FM.CONFIRMDELETEMODAL_PRIMARYBUTTON_TEXT,
+                        id: FM.CONFIRMCANCELMODAL_PRIMARYBUTTON_TEXT,
                         defaultMessage: 'Confirm'
                     })}
                 />
                 <DefaultButton
                     onClick={() => props.onCancel()}
                     text={intl.formatMessage({
-                        id: FM.CONFIRMDELETEMODAL_DEFAULTBUTTON_TEXT,
+                        id: FM.CONFIRMCANCELMODAL_DEFAULTBUTTON_TEXT,
                         defaultMessage: 'Cancel'
                     })}
                 />
@@ -45,4 +53,4 @@ const ConfirmDeleteModal: React.SFC<Props> = (props: Props) => {
         </Dialog>
     )
 }
-export default injectIntl(ConfirmDeleteModal)
+export default injectIntl(ConfirmCancelModal)

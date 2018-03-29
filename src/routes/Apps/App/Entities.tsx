@@ -3,7 +3,7 @@ import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import * as OF from 'office-ui-fabric-react';
-import { EntityCreatorEditor, ConfirmDeleteModal } from '../../../components/modals'
+import { EntityCreatorEditor, ConfirmCancelModal } from '../../../components/modals'
 import { deleteEntityAsync } from '../../../actions/deleteActions'
 import { fetchApplicationTrainingStatusThunkAsync } from '../../../actions/fetchActions'
 import { State } from '../../../types';
@@ -312,12 +312,12 @@ class Entities extends React.Component<Props, ComponentState> {
                     onColumnHeaderClick={this.onClickColumnHeader}
                     onActiveItemChanged={entity => this.onSelectEntity(entity)}
                 />
-                <ConfirmDeleteModal
+                <ConfirmCancelModal
                     open={this.state.confirmDeleteEntityModalOpen}
                     onCancel={() => this.onClickCancelDelete()}
                     onConfirm={() => this.onClickConfirmDelete()}
                     title={this.props.intl.formatMessage({
-                        id: FM.ENTITIES_CONFIRMDELETEMODALTITLE,
+                        id: FM.ENTITIES_CONFIRMCANCELMODALTITLE,
                         defaultMessage: 'Are you sure you want to delete this entity?'
                     })}
                 />

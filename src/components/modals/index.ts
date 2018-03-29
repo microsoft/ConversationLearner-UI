@@ -1,7 +1,7 @@
 import ActionCreatorEditor from './ActionCreatorEditor'
 import AppCreator from './AppCreator'
 import EntityCreatorEditor from './EntityCreatorEditor'
-import ConfirmDeleteModal from './ConfirmDeleteModal'
+import ConfirmCancelModal from './ConfirmCancelModal'
 import ChatSessionModal from './ChatSessionModal'
 import LogDialogModal from './LogDialogModal'
 import TeachSessionModal from './TeachSessionModal'
@@ -15,7 +15,7 @@ export {
     ActionCreatorEditor,
     AppCreator,
     EntityCreatorEditor,
-    ConfirmDeleteModal,
+    ConfirmCancelModal,
     ChatSessionModal,
     LogDialogModal,
     TeachSessionModal,

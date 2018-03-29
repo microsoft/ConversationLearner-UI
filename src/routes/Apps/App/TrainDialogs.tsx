@@ -577,6 +577,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 />
                 <TrainDialogModal
                     app={this.props.app}
+                    editingPackageId={this.props.editingPackageId}
                     canEdit={this.props.editingPackageId === this.props.app.devPackageId}
                     open={this.state.isTrainDialogModalOpen}
                     onClose={() => this.onCloseTrainDialogModal()}
