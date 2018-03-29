@@ -207,9 +207,19 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
 }
 
 /** Matches width of webchat **/
-.blis-modal.blis-modal--fixed {
-  width: 400px;
+.blis-modal.blis-modal--narrow {
+  width: 50%;
   height: 90%;
+}
+@media (min-width: 701px) and (max-width: 800px) {
+  .blis-modal.blis-modal--narrow {
+    width: 65%;
+  }
+}
+@media (max-width: 700px) {
+  .blis-modal.blis-modal--narrow {
+    width: 80%;
+  }
 }
 
 .blis-modal.blis-modal--medium{
