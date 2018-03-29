@@ -16,7 +16,7 @@ export enum FM {
     ACTIONS_SUBTITLE = 'Actions.subtitle',
     ACTIONS_CREATEBUTTONARIADESCRIPTION = 'Actions.createButtonAriaDescription',
     ACTIONS_CREATEBUTTONTITLE = 'Actions.createButtonTitle',
-    ACTIONS_CONFIRMCANCELMODALTITLE = 'Actions.CONFIRMCANCELMODALTitle',
+    ACTIONS_CONFIRMCANCELMODALTITLE = 'Actions.confirmCancelModalTitle',
 
     // App
     APP_HEADER_HOME = 'App.header.home',
@@ -42,7 +42,7 @@ export enum FM {
     APPSLIST_CREATEBUTTONTEXT = 'AppsList.createButtonText',
     APPSLIST_IMPORTBUTTONARIADESCRIPTION = 'AppsList.importButtonAriaDescription',
     APPSLIST_IMPORTBUTTONTEXT = 'AppsList.importButtonText',
-    APPSLIST_CONFIRMCANCELMODALTITLE = 'AppsList.CONFIRMCANCELMODALTitle',
+    APPSLIST_CONFIRMCANCELMODALTITLE = 'AppsList.confirmCancelModalTitle',
     APPSLIST_COLUMN_NAME = 'AppsList.columns.name',
     APPSLIST_COLUMNS_LOCALE = 'AppsList.columns.locale',
     APPSLIST_COLUMNS_LINKEDBOTS = 'AppsList.columns.linkedBots',
@@ -66,7 +66,7 @@ export enum FM {
     ENTITIES_COLUMNS_IS_PROGRAMMATIC = 'Entities.columns.isProgrammatic',
     ENTITIES_COLUMNS_IS_BUCKETABLE = 'Entities.columns.isBucketable',
     ENTITIES_COLUMNS_IS_NEGATABLE = 'Entities.columns.isNegatable',
-    ENTITIES_CONFIRMCANCELMODALTITLE = 'Entities.CONFIRMCANCELMODALTitle',
+    ENTITIES_CONFIRMCANCELMODALTITLE = 'Entities.confirmCancelModalTitle',
  
     // LogDialogs
     LOGDIALOGS_TITLE = 'LogDialogs.title',
