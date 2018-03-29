@@ -145,7 +145,6 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
 interface ComponentState {
     columns: IRenderableColumn[]
     chatSession: Session
-    isChatSessionWarningWindowOpen: boolean
     isChatSessionWindowOpen: boolean
     isLogDialogWindowOpen: boolean
     isTeachDialogModalOpen: boolean
@@ -166,7 +165,6 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     state: ComponentState = {
         columns: getColumns(this.props.intl),
         chatSession: null,
-        isChatSessionWarningWindowOpen: false,
         isChatSessionWindowOpen: false,
         isLogDialogWindowOpen: false,
         isTeachDialogModalOpen: false,
@@ -197,9 +195,6 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             })
             .catch(error => {
                 console.warn(`Error when attempting to opening chat window: `, error)
-                this.setState({
-                    isChatSessionWarningWindowOpen: true
-                })
             })
     }
 
@@ -247,13 +242,6 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             isLogDialogWindowOpen: false,
             currentLogDialog: null,
             dialogKey: this.state.dialogKey + 1
-        })
-    }
-
-    @autobind
-    onClickWarningWindowOk() {
-        this.setState({
-            isChatSessionWarningWindowOpen: false
         })
     }
 
@@ -464,27 +452,6 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                         trainDialog={null}
                         logDialog={this.state.currentLogDialog}
                 />
-                <OF.Dialog
-                    hidden={!this.state.isChatSessionWarningWindowOpen}
-                    dialogContentProps={{
-                        type: OF.DialogType.normal,
-                        title: this.props.intl.formatMessage({
-                            id: FM.LOGDIALOGS_SESSIONCREATIONWARNING_TITLE,
-                            defaultMessage: 'You may not create chat session at this time. Please try again after training as completed.'
-                        })
-                    }}
-                    onDismiss={this.onClickWarningWindowOk}
-                >
-                    <OF.DialogFooter>
-                        <OF.PrimaryButton
-                            onClick={this.onClickWarningWindowOk}
-                            text={this.props.intl.formatMessage({
-                                id: FM.LOGDIALOGS_SESSIONCREATIONWARNING_PRIMARYBUTTON,
-                                defaultMessage: 'Ok'
-                            })}
-                        />
-                    </OF.DialogFooter>
-                </OF.Dialog>
             </div>
         );
     }
