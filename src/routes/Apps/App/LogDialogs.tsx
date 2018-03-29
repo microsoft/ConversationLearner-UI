@@ -188,7 +188,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     @autobind
     onClickNewChatSession() {
         // TODO: Find cleaner solution for the types.  Thunks return functions but when using them on props they should be returning result of the promise.
-        ((this.props.createChatSessionThunkAsync(this.props.app.appId, this.props.editingPackageId) as any) as Promise<Session>)
+        ((this.props.createChatSessionThunkAsync(this.props.app.appId, this.props.editingPackageId, this.props.app.metadata.isLoggingOn !== false) as any) as Promise<Session>)
             .then(chatSession => {
                 this.setState({
                     chatSession,

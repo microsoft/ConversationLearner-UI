@@ -172,20 +172,12 @@ export const createChatSessionFulfilled = (session: Session): ActionObject =>
         session: session
     })
 
-export const createChatSessionThunkAsync = (appId: string, packageId: string) => {
+export const createChatSessionThunkAsync = (appId: string, packageId: string, saveToLog: boolean) => {
     return async (dispatch: Dispatch<any>) => {
         const blisClient = ClientFactory.getInstance(AT.CREATE_CHAT_SESSION_ASYNC)
         dispatch(createChatSessionAsync())
-        const app = await blisClient.appGet(appId)
-        if (app.trainingStatus !== TrainingStatusCode.Completed) {
-            dispatch(createChatSessionRejected())
-            throw new Error(`Application is still training. You may not create chat session at this time. Please try again later.`)
-        }
-
-        const sessionCreateParams = {saveToLog: app.metadata.isLoggingOn !== false, packageId: packageId } as SessionCreateParams
-        const session = await blisClient.chatSessionsCreate(appId, sessionCreateParams)
+        const session = await blisClient.chatSessionsCreate(appId, { saveToLog, packageId })
         dispatch(createChatSessionFulfilled(session))
-
         return session
     }
 }
