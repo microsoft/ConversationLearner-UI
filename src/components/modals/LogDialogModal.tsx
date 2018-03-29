@@ -6,7 +6,7 @@ import { PrimaryButton, DefaultButton } from 'office-ui-fabric-react';
 import { State } from '../../types';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import Webchat from '../Webchat'
-import ConfirmDeleteModal from './ConfirmDeleteModal'
+import ConfirmCancelModal from './ConfirmCancelModal'
 import LogDialogAdmin from './LogDialogAdmin'
 import { Activity } from 'botframework-directlinejs'
 import { createTrainDialogAsync } from '../../actions/createActions'
@@ -16,13 +16,13 @@ import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 
 interface ComponentState {
-    isConfirmDeleteModalOpen: boolean
+    isConfirmCancelModalOpen: boolean
     selectedActivity: Activity | null
     pendingExtractionChanges: boolean
 }
 
 const initialState: ComponentState = {
-    isConfirmDeleteModalOpen: false,
+    isConfirmCancelModalOpen: false,
     selectedActivity: null,
     pendingExtractionChanges: false
 }
@@ -38,20 +38,20 @@ class LogDialogModal extends React.Component<Props, ComponentState> {
 
     onClickDelete() {
         this.setState({
-            isConfirmDeleteModalOpen: true
+            isConfirmCancelModalOpen: true
         })
     }
 
     onClickCancelDelete = () => {
         this.setState({
-            isConfirmDeleteModalOpen: false
+            isConfirmCancelModalOpen: false
         })
     }
 
     onClickConfirmDelete = async () => {
         this.props.onDelete();
         this.setState(
-            { isConfirmDeleteModalOpen: false }
+            { isConfirmCancelModalOpen: false }
         );
     }
 
@@ -100,6 +100,7 @@ class LogDialogModal extends React.Component<Props, ComponentState> {
                                 <div className="blis-chatmodal_admin-controls">
                                     <LogDialogAdmin
                                         app={this.props.app}
+                                        editingPackageId={this.props.editingPackageId}
                                         canEdit={this.props.canEdit}
                                         logDialog={this.props.logDialog}
                                         selectedActivity={this.state.selectedActivity}
@@ -142,8 +143,8 @@ class LogDialogModal extends React.Component<Props, ComponentState> {
                             </div>
                         </div>
                     </div>
-                    <ConfirmDeleteModal
-                        open={this.state.isConfirmDeleteModalOpen}
+                    <ConfirmCancelModal
+                        open={this.state.isConfirmCancelModalOpen}
                         onCancel={() => this.onClickCancelDelete()}
                         onConfirm={() => this.onClickConfirmDelete()}
                         title={intl.formatMessage({
@@ -170,13 +171,14 @@ const mapStateToProps = (state: State, ownProps: ReceivedProps) => {
 }
 
 export interface ReceivedProps {
+    app: BlisAppBase,
+    editingPackageId: string,
     open: boolean,
     canEdit: boolean,
     onClose: () => void,
     onEdit: (logDialogId: string, newTrainDialog: TrainDialog, lastExtractChanged: boolean) => void,
     onDelete: ()=> void,
     logDialog: LogDialog,
-    app: BlisAppBase,
     history: Activity[]
 }
 

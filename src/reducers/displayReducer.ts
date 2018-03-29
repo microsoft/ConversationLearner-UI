@@ -79,6 +79,10 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
         case AT.FETCH_TEACH_SESSIONS_ASYNC:
         // case AT.FETCH_TRAIN_DIALOGS_ASYNC: Don't block
         // case AT.FETCH_LOG_DIALOGS_ASYNC: Don't block
+        case AT.FETCH_ENTITY_DELETE_VALIDATION_ASYNC:
+        case AT.FETCH_ENTITY_EDIT_VALIDATION_ASYNC:
+        case AT.FETCH_ACTION_DELETE_VALIDATION_ASYNC:
+        case AT.FETCH_ACTION_EDIT_VALIDATION_ASYNC:
 
         case AT.RUN_EXTRACTOR_ASYNC:
         case AT.GET_SCORES_ASYNC:
@@ -124,7 +128,11 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
         case AT.FETCH_TEACH_SESSIONS_FULFILLED:
         // case AT.FETCH_TRAIN_DIALOGS_FULFILLED: Doesn't block
         // case AT.FETCH_LOG_DIALOGS_FULFILLED: Doeesn't block
-
+        case AT.FETCH_ENTITY_DELETE_VALIDATION_FULFILLED:
+        case AT.FETCH_ENTITY_EDIT_VALIDATION_FULFILLED:
+        case AT.FETCH_ACTION_DELETE_VALIDATION_FULFILLED:
+        case AT.FETCH_ACTION_EDIT_VALIDATION_FULFILLED:
+    
         case AT.RUN_EXTRACTOR_FULFILLED:
         case AT.GET_SCORES_FULFILLED:
         case AT.RUN_SCORER_FULFILLED:

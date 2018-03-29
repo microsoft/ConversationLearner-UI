@@ -191,6 +191,14 @@ export default class BlisClient {
             .then(response => { })
     }
 
+    entitiesDeleteValidation(appId: string, packageId: string, entityId: string): Promise<string[]> {
+        return this.send({
+            method: 'get',
+            url: `${this.baseUrl}/app/${appId}/entity/${entityId}/deleteValidation?packageId=${packageId}`
+        })
+            .then(response => response.data)
+    }
+
     entitiesUpdate(appId: string, entity: models.EntityBase): Promise<models.EntityBase> {
         const { version, packageCreationId, packageDeletionId, ...entityToSend } = entity;
         return this.send({
@@ -199,6 +207,16 @@ export default class BlisClient {
             data: entityToSend
         })
             .then(response => entity)
+    }
+
+    entitiesUpdateValidation(appId: string, packageId: string, entity: models.EntityBase): Promise<string[]> {
+        const { version, packageCreationId, packageDeletionId, ...entityToSend } = entity;
+        return this.send({
+            method: 'post',
+            url: `${this.baseUrl}/app/${appId}/entity/${entity.entityId}/editValidation?packageId=${packageId}`,
+            data: entityToSend
+        })
+            .then(response => response.data)
     }
 
     source(appId: string, packageId: string): Promise<models.AppDefinition> {
@@ -233,6 +251,14 @@ export default class BlisClient {
             .then(response => { })
     }
 
+    actionsDeleteValidation(appId: string, packageId: string, actionId: string): Promise<string[]> {
+        return this.send({
+            method: 'get',
+            url: `${this.baseUrl}/app/${appId}/action/${actionId}/deleteValidation?packageId=${packageId}`
+        })
+            .then(response => response.data)
+    }
+
     actionsUpdate(appId: string, action: models.ActionBase): Promise<models.ActionBase> {
         const { actionId, version, packageCreationId, packageDeletionId, ...actionToSend } = action
         return this.send({
@@ -243,6 +269,16 @@ export default class BlisClient {
             .then(response => action)
     }
 
+    actionsUpdateValidation(appId: string, packageId: string, action: models.ActionBase): Promise<string[]> {
+        const { actionId, version, packageCreationId, packageDeletionId, ...actionToSend } = action
+        return this.send({
+            method: 'post',
+            url: `${this.baseUrl}/app/${appId}/action/${action.actionId}/editValidation?packageId=${packageId}`,
+            data: actionToSend
+        })
+            .then(response => response.data)
+    }
+      
     //AT.EDIT_TRAINDIALOG_ASYNC
     trainDialogEdit(appId: string, trainDialog: models.TrainDialog): Promise<models.TrainResponse> {
         return this.send<models.TrainResponse>({

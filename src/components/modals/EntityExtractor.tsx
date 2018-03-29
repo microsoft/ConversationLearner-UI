@@ -410,10 +410,11 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                 <div className="blis-dialog-admin__dialogs">
                     <EntityCreatorEditor
                         app={this.props.app}
+                        editingPackageId={this.props.editingPackageId}
                         open={this.state.entityModalOpen}
                         entity={null}
                         handleClose={this.entityEditorHandleClose}
-                        handleOpenDeleteModal={() => { }}
+                        handleDelete={() => {}}
                         entityTypeFilter={EntityType.LUIS}
                     />
                     <OF.Dialog
@@ -468,6 +469,7 @@ const mapStateToProps = (state: State, ownProps: any) => {
 
 export interface ReceivedProps {
     app: BlisAppBase
+    editingPackageId: string
     canEdit: boolean
     extractType: DialogType
     sessionId: string

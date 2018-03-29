@@ -56,7 +56,7 @@ class ErrorPanel extends React.Component<Props, {}> {
             {this.props.error.error != null &&
                 <Panel 
                     isOpen={this.props.error.error != null}
-                    type={PanelType.smallFixedNear}
+                    type={PanelType.medium}
                     onDismiss={() => this.handleClose(this.props.error.actionType)}
                     isFooterAtBottom={ true }
                     closeButtonAriaLabel='Close'

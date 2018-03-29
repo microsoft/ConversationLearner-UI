@@ -656,12 +656,13 @@ class ActionScorer extends React.Component<Props, ComponentState> {
 
                 <ActionCreatorEditor
                     app={this.props.app}
+                    editingPackageId={this.props.editingPackageId}
                     open={this.state.actionModalOpen}
                     action={null}
-                    onClickCancel={() => this.onClickCancelActionEditor()}
+                    handleClose={() => this.onClickCancelActionEditor()}
                     /* It is not possible to delete from this modal since you cannot select existing action so disregard implementation of delete */
-                    onClickDelete={action => { }}
-                    onClickSubmit={action => this.onClickSubmitActionEditor(action)}
+                    handleDelete={action => { }}
+                    handleEdit={action => this.onClickSubmitActionEditor(action)}
                 />
                 <AdaptiveCardViewer
                     open={this.state.cardViewerAction != null}
@@ -677,6 +678,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
 
 export interface ReceivedProps {
     app: BlisAppBase
+    editingPackageId: string,
     dialogType: DialogType,
     sessionId: string,
     autoTeach: boolean,
