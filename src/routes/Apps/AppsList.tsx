@@ -341,11 +341,6 @@ class AppsList extends React.Component<Props, ComponentState> {
                     onSubmit={this.onSubmitAppCreateModal}
                     onCancel={this.onCancelAppCreateModal}
                 />
-                <DemoImporter
-                    open={this.state.isDemoImporterOpen}
-                    onSubmit={this.onSubmitDemoImporterModal}
-                    onCancel={this.onCancelDemoImporterModal}
-                />
                 <ConfirmCancelModal
                     open={this.state.isConfirmDeleteAppModalOpen}
                     onCancel={this.onCancelDeleteModal}

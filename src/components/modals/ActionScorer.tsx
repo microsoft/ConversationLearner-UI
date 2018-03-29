@@ -659,10 +659,10 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                     editingPackageId={this.props.editingPackageId}
                     open={this.state.actionModalOpen}
                     action={null}
-                    onClickCancel={() => this.onClickCancelActionEditor()}
+                    handleClose={() => this.onClickCancelActionEditor()}
                     /* It is not possible to delete from this modal since you cannot select existing action so disregard implementation of delete */
-                    onClickDelete={action => { }}
-                    onClickSubmit={action => this.onClickSubmitActionEditor(action)}
+                    handleDelete={action => { }}
+                    handleEdit={action => this.onClickSubmitActionEditor(action)}
                 />
                 <AdaptiveCardViewer
                     open={this.state.cardViewerAction != null}

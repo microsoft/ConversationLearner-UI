@@ -351,6 +351,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                             {renderData.round ?
                                 <EntityExtractor
                                     app={this.props.app}
+                                    editingPackageId={this.props.editingPackageId}
                                     canEdit={this.props.canEdit} 
                                     extractType={DialogType.TRAINDIALOG}
                                     sessionId={this.props.trainDialog.trainDialogId}

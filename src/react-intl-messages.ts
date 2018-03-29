@@ -67,9 +67,7 @@ export enum FM {
     ENTITIES_COLUMNS_IS_BUCKETABLE = 'Entities.columns.isBucketable',
     ENTITIES_COLUMNS_IS_NEGATABLE = 'Entities.columns.isNegatable',
     ENTITIES_CONFIRMCANCELMODALTITLE = 'Entities.CONFIRMCANCELMODALTitle',
-    ENTITIES_DELETEWARNINGTITLE = 'Entities.deleteWarningTitle',
-    ENTITIES_DELETEWARNINGPRIMARYBUTTONTEXT = 'Entities.deleteWarningPrimaryButtonText',
-
+ 
     // LogDialogs
     LOGDIALOGS_TITLE = 'LogDialogs.title',
     LOGDIALOGS_SUBTITLE = 'LogDialogs.subtitle',
@@ -235,6 +233,7 @@ export enum FM {
     ACTIONCREATOREDITOR_CONFIRM_DELETE_WARNING = 'ActionCreatorEditor.confirmDeleteWarning',
     ACTIONCREATOREDITOR_CONFIRM_EDIT_TITLE = 'ActionCreatorEditor.confirmEditTitle',
     ACTIONCREATOREDITOR_CONFIRM_EDIT_WARNING = 'ActionCreatorEditor.confirmEditWarning',
+    
     // ActionScorer
     ACTIONSCORER_COLUMNS_RESPONSE = 'ActionScorer.columns.response',
     ACTIONSCORER_COLUMNS_ARGUMENTS = 'ActionScorer.columns.arguments',
@@ -303,6 +302,12 @@ export enum FM {
     ENTITYCREATOREDITOR_DELETEBUTTON_TEXT = 'EntityCreatorEditor.deleteButton.text',
     ENTITYCREATOREDITOR_TRAINDIALOGSBUTTON_ARIADESCRIPTION = 'EntityCreatorEditor.traindialogsButton.ariaDescription',
     ENTITYCREATOREDITOR_TRAINDIALOGSBUTTON_TEXT = 'EntityCreatorEditor.traindialogsButton.text',
+    ENTITYCREATOREDITOR_CONFIRM_DELETE_TITLE = 'EntityCreatorEditor.confirmDeleteTitle',
+    ENTITYCREATOREDITOR_CONFIRM_DELETE_WARNING = 'EntityCreatorEditor.confirmDeleteWarning',
+    ENTITYCREATOREDITOR_CONFIRM_EDIT_TITLE = 'EntityCreatorEditor.confirmEditTitle',
+    ENTITYCREATOREDITOR_CONFIRM_EDIT_WARNING = 'EntityCreatorEditor.confirmEditWarning',
+    ENTITYCREATOREDITOR_DELETE_ERROR_TITLE = 'EntityCreatorEditor.deleteErrorTitle',
+    ENTITYCREATOREDITOR_DELETE_ERROR_WARNING = 'EntityCreatorEditor.deleteErrorWarning',
 
     // Error
     ERROR_ERROR = 'Error.error',
@@ -464,8 +469,6 @@ export default {
         [FM.ENTITIES_COLUMNS_IS_BUCKETABLE]: 'Multi-Value',
         [FM.ENTITIES_COLUMNS_IS_NEGATABLE]: 'Negatable',
         [FM.ENTITIES_CONFIRMCANCELMODALTITLE]: 'Are you sure you want to delete this entity?',
-        [FM.ENTITIES_DELETEWARNINGTITLE]: 'You cannot delete this entity because it is being used in an action.',
-        [FM.ENTITIES_DELETEWARNINGPRIMARYBUTTONTEXT]: 'Close',
 
         // LogDialogs
         [FM.LOGDIALOGS_TITLE]: 'Log Dialogs',
@@ -631,9 +634,9 @@ export default {
         [FM.ACTIONCREATOREDITOR_TRAINDIALOGSBUTTON_ARIADESCRIPTION]: 'Train Dialogs',
         [FM.ACTIONCREATOREDITOR_TRAINDIALOGSBUTTON_TEXT]: 'Train Dialogs',
         [FM.ACTIONCREATOREDITOR_CONFIRM_DELETE_TITLE]: 'Are you sure you want to delete this action?',
-        [FM.ACTIONCREATOREDITOR_CONFIRM_DELETE_WARNING]: 'This Action is used by one or more Training Dialogs.  If you proceed you will need they will removed from training until fixed.',
+        [FM.ACTIONCREATOREDITOR_CONFIRM_DELETE_WARNING]: 'This Action is used by one or more Training Dialogs.  If you proceed they will removed from training until fixed.',
         [FM.ACTIONCREATOREDITOR_CONFIRM_EDIT_TITLE]: 'Are you sure you want to edit this action?',
-        [FM.ACTIONCREATOREDITOR_CONFIRM_EDIT_WARNING]: 'This edit will invalidate one or more Training Dialogs.  If you proceed you will need they will removed from training until fixed.',
+        [FM.ACTIONCREATOREDITOR_CONFIRM_EDIT_WARNING]: 'This edit will invalidate one or more Training Dialogs.  If you proceed they will removed from training until fixed.',
    
         // ActionScorer
         [FM.ACTIONSCORER_COLUMNS_RESPONSE]: 'Response',
@@ -699,6 +702,12 @@ export default {
         [FM.ENTITYCREATOREDITOR_DELETEBUTTON_TEXT]: 'Delete',
         [FM.ENTITYCREATOREDITOR_TRAINDIALOGSBUTTON_ARIADESCRIPTION]: 'Train Dialogs',
         [FM.ENTITYCREATOREDITOR_TRAINDIALOGSBUTTON_TEXT]: 'Train Dialogs',
+        [FM.ENTITYCREATOREDITOR_CONFIRM_DELETE_TITLE]: 'Are you sure you want to delete this Entity?',
+        [FM.ENTITYCREATOREDITOR_CONFIRM_DELETE_WARNING]: 'This Entity is used by one or more Training Dialogs.  If you proceed they will removed from training until fixed.',
+        [FM.ENTITYCREATOREDITOR_CONFIRM_EDIT_TITLE]: 'Are you sure you want to edit this Entity?',
+        [FM.ENTITYCREATOREDITOR_CONFIRM_EDIT_WARNING]: 'This edit will invalidate one or more Training Dialogs.  If you proceed they will removed from training until fixed.',
+        [FM.ENTITYCREATOREDITOR_DELETE_ERROR_TITLE]: 'Unable to delete this Entity',
+        [FM.ENTITYCREATOREDITOR_DELETE_ERROR_WARNING]: 'It is used by one or more Actions',
 
         // Error
         [FM.ERROR_ERROR]: 'Error',

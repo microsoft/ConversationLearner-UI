@@ -253,6 +253,7 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
                             {round &&
                                 <EntityExtractor
                                     app={this.props.app}
+                                    editingPackageId={this.props.editingPackageId}
                                     canEdit={this.props.canEdit}
                                     extractType={DialogType.LOGDIALOG}
                                     sessionId={this.props.logDialog.logDialogId}

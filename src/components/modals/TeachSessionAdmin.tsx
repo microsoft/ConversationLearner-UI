@@ -145,6 +145,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                             {(mode === DialogMode.Extractor || autoTeachWithRound) &&
                                 <EntityExtractor
                                     app={this.props.app}
+                                    editingPackageId={this.props.editingPackageId}
                                     canEdit={true}
                                     extractType={DialogType.TEACH}
                                     sessionId={this.props.teachSession.current.teachId}

@@ -101,11 +101,12 @@ interface ComponentState {
     isEditing: boolean
     isEntityEditorModalOpen: boolean
     isCardViewerModalOpen: boolean
-    isConfirmCancelModalOpen: boolean
+    isConfirmDeleteModalOpen: boolean
     isConfirmEditModalOpen: boolean
     showValidationWarning: boolean
     isPayloadFocused: boolean
     isPayloadValid: boolean
+    newOrEditedAction: ActionBase
     selectedActionTypeOptionKey: string | number
     availableExpectedEntityTags: OF.ITag[]
     entityTags: OF.ITag[]
@@ -125,11 +126,12 @@ const initialState: ComponentState = {
     isEditing: false,
     isEntityEditorModalOpen: false,
     isCardViewerModalOpen: false,
-    isConfirmCancelModalOpen: false,
+    isConfirmDeleteModalOpen: false,
     isConfirmEditModalOpen: false,
     showValidationWarning: null,
     isPayloadFocused: false,
     isPayloadValid: false,
+    newOrEditedAction: null,
     selectedActionTypeOptionKey: actionTypeOptions[0].key,
     availableExpectedEntityTags: [],
     entityTags: [],
@@ -398,7 +400,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             }))
     }
 
-    createNewOrEditedAction(): ActionBase {
+    convertStateToEntity(): ActionBase {
         let payload: string = null;
 
         /**
@@ -478,12 +480,11 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
     @autobind
     onClickSaveCreate() {
-        let newOrEditedAction = this.createNewOrEditedAction();
+        let newOrEditedAction = this.convertStateToEntity();
 
         // If a new action just create it
-        if (!this.state.isEditing)
-        {
-            this.props.onClickSubmit(newOrEditedAction);
+        if (!this.state.isEditing) {
+            this.props.handleEdit(newOrEditedAction);
             return;
         }
 
@@ -492,24 +493,26 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         .then(invalidTrainingDialogIds => {
 
             if (invalidTrainingDialogIds) {
-                this.setState(
-                {
-                    isConfirmEditModalOpen: true,
-                    showValidationWarning: invalidTrainingDialogIds.length > 0
-                });
+                if (invalidTrainingDialogIds.length > 0) {
+                    this.setState(
+                    {
+                        isConfirmEditModalOpen: true,
+                        showValidationWarning: true,
+                        newOrEditedAction: newOrEditedAction
+                    });
+                } else {
+                    this.props.handleEdit(newOrEditedAction);
+                }
             }
         })
         .catch(error => {
             console.warn(`Error when attempting to validate edit: `, error)
-        }
-    )
-
-        this.props.onClickSubmit(newOrEditedAction)
+        })
     }
 
     @autobind
     onClickCancel() {
-        this.props.onClickCancel()
+        this.props.handleClose()
     }
 
     @autobind
@@ -521,7 +524,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 if (invalidTrainingDialogIds) {
                     this.setState(
                     {
-                        isConfirmCancelModalOpen: true,
+                        isConfirmDeleteModalOpen: true,
                         showValidationWarning: invalidTrainingDialogIds.length > 0
                     });
                 }
@@ -535,16 +538,33 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     @autobind
     onCancelDelete() {
         this.setState({
-            isConfirmCancelModalOpen: false
+            isConfirmDeleteModalOpen: false
+        })
+    }
+
+    @autobind
+    onCancelEdit() {
+        this.setState({
+            isConfirmEditModalOpen: false,
+            newOrEditedAction: null
+        })
+    }
+
+    @autobind
+    onConfirmEdit() {
+        this.props.handleEdit(this.state.newOrEditedAction);
+        this.setState({
+            isConfirmEditModalOpen: false,
+            newOrEditedAction: null
         })
     }
 
     @autobind
     onConfirmDelete() {
         this.setState(
-            { isConfirmCancelModalOpen: false },
+            { isConfirmDeleteModalOpen: false },
             () => {
-                this.props.onClickDelete(this.props.action)
+                this.props.handleDelete(this.props.action)
             })
     }
 
@@ -566,7 +586,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
     @autobind
     onDismissModal() {
-        this.props.onClickCancel()
+        this.props.handleClose()
     }
 
     onChangedActionType = (actionTypeOption: OF.IDropdownOption) => {
@@ -1020,7 +1040,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     </div>
                 </div>
                 <ConfirmCancelModal
-                    open={this.state.isConfirmCancelModalOpen}
+                    open={this.state.isConfirmDeleteModalOpen}
                     onCancel={this.onCancelDelete}
                     onConfirm={this.onConfirmDelete}
                     title={intl.formatMessage({
@@ -1035,8 +1055,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 />
                 <ConfirmCancelModal
                     open={this.state.isConfirmEditModalOpen}
-                    onCancel={() => this.onCancelDelete()} // LARS
-                    onConfirm={() => this.onConfirmDelete()}  // LARS
+                    onCancel={this.onCancelEdit} 
+                    onConfirm={this.onConfirmEdit}
                     title={intl.formatMessage({
                             id: FM.ACTIONCREATOREDITOR_CONFIRM_EDIT_TITLE,
                             defaultMessage: 'Are you sure you want to edit this action?'
@@ -1049,10 +1069,11 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 />
                 <EntityCreatorEditor
                     app={this.props.app}
+                    editingPackageId={this.props.editingPackageId}
                     open={this.state.isEntityEditorModalOpen}
                     entity={null}
                     handleClose={this.onCloseEntityEditor}
-                    handleOpenDeleteModal={() => { }}
+                    handleDelete={() => {}}
                     entityTypeFilter={null}
                 />
                 <AdaptiveCardViewer
@@ -1085,9 +1106,9 @@ export interface ReceiveProps {
     editingPackageId: string
     open: boolean
     action: ActionBase | null
-    onClickSubmit: (action: ActionBase) => void
-    onClickCancel: () => void
-    onClickDelete: (action: ActionBase) => void
+    handleEdit: (action: ActionBase) => void
+    handleClose: () => void
+    handleDelete: (action: ActionBase) => void
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps

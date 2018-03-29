@@ -35,13 +35,15 @@ const ConfirmCancelModal: React.SFC<Props> = (props: Props) => {
                     </div>
                 )}
             <DialogFooter>
-                <PrimaryButton
-                    onClick={() => props.onConfirm()}
-                    text={intl.formatMessage({
-                        id: FM.CONFIRMCANCELMODAL_PRIMARYBUTTON_TEXT,
-                        defaultMessage: 'Confirm'
-                    })}
-                />
+                {props.onConfirm &&
+                    <PrimaryButton
+                        onClick={() => props.onConfirm()}
+                        text={intl.formatMessage({
+                            id: FM.CONFIRMCANCELMODAL_PRIMARYBUTTON_TEXT,
+                            defaultMessage: 'Confirm'
+                        })}
+                    />
+                }
                 <DefaultButton
                     onClick={() => props.onCancel()}
                     text={intl.formatMessage({
