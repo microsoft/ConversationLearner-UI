@@ -164,7 +164,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     toActionFilter(action: ActionBase, entities: EntityBase[]) : OF.IDropdownOption {
         return { 
             key: action.actionId,
-            text: ActionBase.GetPayload(action, getDefaultEntityMap(this.props.entities))
+            text: ActionBase.GetPayload(action, getDefaultEntityMap(entities))
         }
     }
      
@@ -229,7 +229,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
     onClickNewTeachSession() {
         // TODO: Find cleaner solution for the types.  Thunks return functions but when using them on props they should be returning result of the promise.
-        ((this.props.createTeachSessionThunkAsync(this.props.user.id, this.props.app.appId) as any) as Promise<UITeachResponse>)
+        ((this.props.createTeachSessionThunkAsync(this.props.app.appId) as any) as Promise<UITeachResponse>)
             .then(uiTeachResponse => {
                 this.setState({
                     teachSession: uiTeachResponse.teachResponse as Teach,
@@ -484,7 +484,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         let trainDialog = this.props.trainDialogs.find((td) => td.trainDialogId === this.state.trainDialogId);
         return (
             <div className="blis-page">
-                <div className={`blis-dialog-title blis-dialog-title--teach ${OF.FontClassNames.xxLarge}`}>
+                <div className={`blis-dialog-title ${OF.FontClassNames.xxLarge}`}>
+                    <OF.Icon iconName="EditContact" />
                     <FormattedMessage
                         id={FM.TRAINDIALOGS_TITLE}
                         defaultMessage="Train Dialogs"
@@ -506,11 +507,11 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         onClick={() => this.onClickNewTeachSession()}
                         ariaDescription={intl.formatMessage({
                             id: FM.TRAINDIALOGS_CREATEBUTTONARIALDESCRIPTION,
-                            defaultMessage: 'Create a New Teach Session'
+                            defaultMessage: 'Create a New Train Dialog'
                         })}
                         text={intl.formatMessage({
                             id: FM.TRAINDIALOGS_CREATEBUTTONTITLE,
-                            defaultMessage: 'New Teach Session'
+                            defaultMessage: 'New Train Dialog'
                         })}
                         componentRef={component => this.newTeachSessionButton = component}
                     />
@@ -533,15 +534,18 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         trainDialog={null}
                     />
                 </div>
-                <span className={`blisSearch-label ${OF.FontClassNames.medium}`}>
-                    Search:
-                </span>
-                <OF.SearchBox
-                    className={OF.FontClassNames.medium}
-                    onChange={(newValue) => this.onChangeSearchString(newValue)}
-                    onSearch={(newValue) => this.onChangeSearchString(newValue)}
-                />
-                <div className="blis-modal-dropdowns">             
+                <div>
+                    <OF.Label htmlFor="search" className={OF.FontClassNames.medium}>
+                        Search:
+                    </OF.Label>
+                    <OF.SearchBox
+                        id="search"
+                        className={OF.FontClassNames.medium}
+                        onChange={(newValue) => this.onChangeSearchString(newValue)}
+                        onSearch={(newValue) => this.onChangeSearchString(newValue)}
+                    />
+                </div>
+                <div className="blis-list-filters">
                     <OF.Dropdown
                         label="Entity:"
                         selectedKey={(this.state.entityFilter ? this.state.entityFilter.key : undefined)}

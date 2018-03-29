@@ -11,7 +11,7 @@ export const createNewApplicationEpic: Epic<ActionObject, State> = (action$: Act
     return action$.ofType(AT.CREATE_BLIS_APPLICATION_ASYNC)
         .flatMap(action =>
             (action.type === AT.CREATE_BLIS_APPLICATION_ASYNC)
-                ? createBlisApp(action.key, action.userId, action.blisApp)
+                ? createBlisApp(action.userId, action.blisApp)
                 : assertNever()
         )
 }
@@ -20,7 +20,7 @@ export const createNewActionEpic: Epic<ActionObject, State> = (action$: ActionsO
     return action$.ofType(AT.CREATE_ACTION_ASYNC)
         .flatMap(action =>
             (action.type === AT.CREATE_ACTION_ASYNC)
-                ? createBlisAction('', action.action, action.currentAppId)
+                ? createBlisAction(action.action, action.currentAppId)
                 : assertNever()
         )
 }
@@ -29,7 +29,7 @@ export const createNewEntityEpic: Epic<ActionObject, State> = (action$: ActionsO
     return action$.ofType(AT.CREATE_ENTITY_ASYNC)
         .flatMap(action =>
             (action.type === AT.CREATE_ENTITY_ASYNC)
-                ? createBlisEntity(action.key, action.entity, action.currentAppId)
+                ? createBlisEntity(action.entity, action.currentAppId)
                 : assertNever()
         )
 }
@@ -38,7 +38,7 @@ export const createNegativeEntity: Epic<ActionObject, State> = (action$: Actions
     return action$.ofType(AT.CREATE_ENTITY_FULFILLEDPOSITIVE)
         .flatMap(action =>
             (action.type === AT.CREATE_ENTITY_FULFILLEDPOSITIVE)
-                ? createBlisEntity(action.key, action.negativeEntity, action.currentAppId, action.positiveEntity)
+                ? createBlisEntity(action.negativeEntity, action.currentAppId, action.positiveEntity)
                 : assertNever()
         )
 

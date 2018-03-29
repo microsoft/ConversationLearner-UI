@@ -72,7 +72,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
     get NEW_ENTITY(): string {
         return this.props.intl.formatMessage({
             id: FM.ENTITYCREATOREDITOR_ENTITYOPTION_NEW,
-            defaultMessage: 'New Entity Type'
+            defaultMessage: 'custom'
         });
     }
 
@@ -372,7 +372,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
             <Modal
                 isOpen={this.props.open}
                 isBlocking={false}
-                containerClassName="blis-modal blis-modal--medium blis-modal--border"
+                containerClassName="blis-modal blis-modal--medium"
             >
                 <div className="blis-modal_header">
                     <span className={OF.FontClassNames.xxLarge}>{this.state.editing ? this.props.entity.entityName : this.state.title}</span>

@@ -7,6 +7,10 @@
     padding-bottom: 0.9rem;
 }
 
+.blis-app-tag-status {
+    padding: 0.125em 0 0.5em;
+}
+
 .blis-page {
     display: grid;
     grid-gap: 1rem;
@@ -17,30 +21,28 @@
     border-top: 1px solid var(--color-neutralQuaternary);
     color: var(--color-neutralSecondaryAlt);
 }
-.blis-nav_section--links .blis-nav-link {
-    margin-left: 0.8em;
-}
-.blis-nav_section--links .blis-nav-link:first-of-type {
-    padding-top: 1.2em;
-}
-.blis-nav_section--links .blis-nav-link:last-of-type {
-    padding-bottom: 1.2em;
-}
-.blis-nav_section:last-of-type {
-    border-bottom: 1px solid var(--color-neutralQuaternary);
-}
 
 .blis-nav-link {
-    display: block;
-    padding: 0.6em 0;
+    display: grid;
+    grid-template: auto / min-content 1fr min-content;
+    grid-gap: 1em;
+    padding: 0.6em;
 }
 .blis-nav-link:link,
 .blis-nav-link:visited {
     color: var(--color-neutralSecondaryAlt);
     text-decoration: none;
 }
-.blis-nav-link.active,
-.blis-nav-link:hover {
+.blis-nav-link.active {
+    background: rgba(0,0,0,0.05);
     color: var(--color-neutralSecondary);
+}
+.blis-nav-link:hover:not(.active) {
+    background: rgba(0,0,0,0.03);
+    color: var(--color-neutralSecondary);
+}
+
+.blis-nav-link i[role="presentation"] {
+    margin-top: 3px;
 }
 

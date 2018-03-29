@@ -11,7 +11,7 @@ export const editApplicationEpic: Epic<ActionObject, State> = (action$: ActionsO
     return action$.ofType(AT.EDIT_BLIS_APPLICATION_ASYNC)
         .flatMap(action =>
             (action.type === AT.EDIT_BLIS_APPLICATION_ASYNC)
-                ? editBlisApp('', action.blisApp.appId, action.blisApp)
+                ? editBlisApp(action.blisApp.appId, action.blisApp)
                 : assertNever())
 }
 
@@ -19,7 +19,7 @@ export const editActionEpic: Epic<ActionObject, State> = (action$: ActionsObserv
     return action$.ofType(AT.EDIT_ACTION_ASYNC)
         .flatMap(action =>
             (action.type === AT.EDIT_ACTION_ASYNC)
-                ? editBlisAction('', action.currentAppId, action.blisAction.actionId, action.blisAction)
+                ? editBlisAction(action.currentAppId, action.blisAction)
                 : assertNever())
 }
 
@@ -43,7 +43,7 @@ export const editChatSessionExpireEpic: Epic<ActionObject, State> = (action$: Ac
     return action$.ofType(AT.EDIT_CHAT_SESSION_EXPIRE_ASYNC)
         .flatMap(action =>
             (action.type === AT.EDIT_CHAT_SESSION_EXPIRE_ASYNC)
-                ? expireChatSession(action.key, action.appId, action.sessionId)
+                ? expireChatSession(action.appId, action.sessionId)
                 : assertNever())
 }
 
@@ -51,7 +51,7 @@ export const setBlisApplicationEpic: Epic<ActionObject, State> = (action$: Actio
     return action$.ofType(AT.SET_CURRENT_BLIS_APP_ASYNC)
         .flatMap(action =>
             (action.type === AT.SET_CURRENT_BLIS_APP_ASYNC)
-                ? setBlisApp(action.key, action.app)
+                ? setBlisApp(action.app)
                 : assertNever())
 }
 

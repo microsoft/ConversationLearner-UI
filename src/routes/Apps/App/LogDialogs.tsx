@@ -188,7 +188,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     @autobind
     onClickNewChatSession() {
         // TODO: Find cleaner solution for the types.  Thunks return functions but when using them on props they should be returning result of the promise.
-        ((this.props.createChatSessionThunkAsync(this.props.user.id, this.props.app.appId, this.props.editingPackageId) as any) as Promise<Session>)
+        ((this.props.createChatSessionThunkAsync(this.props.app.appId, this.props.editingPackageId) as any) as Promise<Session>)
             .then(chatSession => {
                 this.setState({
                     chatSession,
@@ -367,7 +367,8 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         const currentLogDialog = this.state.currentLogDialog;
         return (
             <div className="blis-page">
-                <div className={`blis-dialog-title blis-dialog-title--log ${OF.FontClassNames.xxLarge}`}>
+                <div className={`blis-dialog-title ${OF.FontClassNames.xxLarge}`}>
+                    <OF.Icon iconName="UserFollowed" />
                     <FormattedMessage
                         id={FM.LOGDIALOGS_TITLE}
                         defaultMessage="Log Dialogs"
@@ -397,11 +398,11 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                         onClick={this.onClickNewChatSession}
                         ariaDescription={this.props.intl.formatMessage({
                             id: FM.LOGDIALOGS_CREATEBUTTONARIALDESCRIPTION,
-                            defaultMessage: 'Create a New Chat Session'
+                            defaultMessage: 'Create a New Log Dialog'
                         })}
                         text={this.props.intl.formatMessage({
                             id: FM.LOGDIALOGS_CREATEBUTTONTITLE,
-                            defaultMessage: 'New Chat Session'
+                            defaultMessage: 'New Log Dialog'
                         })}
                         componentRef={component => this.newChatSessionButton = component}
                     />
@@ -417,13 +418,14 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     onChange={(newValue) => this.onChange(newValue)}
                     onSearch={(newValue) => this.onChange(newValue)}
                 />
-                <OF.PrimaryButton
-                    className="blis-dropdownWithButton-button"
-                    onClick={() => this.onClickSync()}
-                    ariaDescription="Refresh"
-                    text=""
-                    iconProps={{ iconName: 'Sync' }}
-                />
+                <div>
+                    <OF.PrimaryButton
+                        onClick={() => this.onClickSync()}
+                        ariaDescription="Refresh"
+                        text="Refresh"
+                        iconProps={{ iconName: 'Sync' }}
+                    />
+                </div>
                 <OF.DetailsList
                     key={this.state.dialogKey}
                     className={OF.FontClassNames.mediumPlus}

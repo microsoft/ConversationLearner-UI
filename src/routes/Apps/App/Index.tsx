@@ -41,19 +41,17 @@ class Index extends React.Component<Props, ComponentState> {
         
         this.setState({ packageId: packageId})
 
-        // Note: In future chagen fetch log dialogs to default to all package if no package set
-        let allPackages =
-             (packageId === app.devPackageId) ?
-                app.packageVersions.map(pv => pv.packageId).join(",") + `,${packageId}`
-                :
-                packageId;
+        // Note: In future change fetch log dialogs to default to all package if no package set
+        let allPackages = (packageId === app.devPackageId)
+                ? app.packageVersions.map(pv => pv.packageId).join(",") + `,${packageId}`
+                : packageId
         
         this.props.setCurrentBLISApp(this.props.user.id, app)
         this.props.fetchAllLogDialogsAsync(this.props.user.id, app.appId, allPackages) // Note: a separate call as eventually we want to page
-        this.props.fetchAppSource(this.props.user.id, app.appId, packageId)
+        this.props.fetchAppSource(app.appId, packageId)
         this.props.fetchBotInfoAsync()
-        // this.props.fetchAllChatSessionsAsync(this.props.user.id, app.appId)
-        // this.props.fetchAllTeachSessions(this.props.user.id, app.appId)
+        // this.props.fetchAllChatSessionsAsync(app.appId)
+        // this.props.fetchAllTeachSessions(app.appId)
     }
 
     componentWillMount() {
@@ -137,31 +135,41 @@ class Index extends React.Component<Props, ComponentState> {
                 <div>
                     <div className="blis-app-title">
                         <div className={FontClassNames.xxLarge}>{app.appName}</div>
-                        <div className={FontClassNames.smallPlus}>
-                            Tag: {tag}
-                            { editPackageId === app.livePackageId && 
-                                <span className="blis-font--warning">LIVE</span>
-                            }
-                        </div>
+                    </div>
+                    <div className={`blis-app-tag-status ${FontClassNames.mediumPlus}`}>
+                        Tag: {tag}
+                        {editPackageId === app.livePackageId && 
+                            <span className="blis-font--warning">LIVE</span>
+                        }
                     </div>
                     <TrainingStatus
                         app={app}
                     />
                     <div className={`blis-nav ${FontClassNames.mediumPlus}`}>
                         <div className="blis-nav_section">
+                            <NavLink className="blis-nav-link" exact to={{ pathname: `${match.url}`, state: { app } }}>
+                                <Icon iconName="BIDashboard" /><span>Dashboard</span>
+                            </NavLink>
+                            <NavLink className="blis-nav-link" to={{ pathname: `${match.url}/entities`, state: { app } }}>
+                                <Icon iconName="List" /><span>Entities</span><span className="count">{this.props.entities.length}</span>
+                            </NavLink>
+                            <NavLink className="blis-nav-link" to={{ pathname: `${match.url}/actions`, state: { app } }}>
+                                <Icon iconName="List" /><span>Actions</span><span className="count">{this.props.actions.length}</span>
+                            </NavLink>
+                            <NavLink className="blis-nav-link" to={{ pathname: `${match.url}/trainDialogs`, state: { app } }}>
+                                <Icon iconName="List" /><span>Train Dialogs</span><span className="count">{this.props.trainDialogs.length}</span>
+                            </NavLink>
+                            <NavLink className="blis-nav-link" to={{ pathname: `${match.url}/logDialogs`, state: { app } }}>
+                                <Icon iconName="List" /><span>Log Dialogs</span>
+                            </NavLink>
                             <NavLink className="blis-nav-link" to={{ pathname: `${match.url}/settings`, state: { app } }}>
-                                <Icon iconName="Settings" />&nbsp;&nbsp;Settings
+                                <Icon iconName="Settings" /><span>Settings</span>
                             </NavLink>
                         </div>
-                        <div className={`blis-nav_section blis-nav_section--links ${FontClassNames.medium}`}>
-                            <NavLink className="blis-nav-link" exact to={{ pathname: `${match.url}`, state: { app } }}>Dashboard</NavLink>
-                            <NavLink className="blis-nav-link" to={{ pathname: `${match.url}/entities`, state: { app } }}>Entities</NavLink>
-                            <NavLink className="blis-nav-link" to={{ pathname: `${match.url}/actions`, state: { app } }}>Actions</NavLink>
-                            <NavLink className="blis-nav-link" to={{ pathname: `${match.url}/trainDialogs`, state: { app } }}>Train Dialogs</NavLink>
-                            <NavLink className="blis-nav-link" to={{ pathname: `${match.url}/logDialogs`, state: { app } }}>Log Dialogs</NavLink>
-                        </div>
                         <div className="blis-nav_section">
-                            <NavLink className="blis-nav-link" exact={true} to="/home"><Icon iconName="Back" />&nbsp;&nbsp;App List</NavLink>
+                            <NavLink className="blis-nav-link" exact={true} to="/home">
+                                <Icon iconName="Back" /><span>App List</span>
+                            </NavLink>
                         </div>
                     </div>
                 </div>

@@ -215,6 +215,36 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             }
         }
 
+        if (nextProps.botInfo.callbacks !== this.props.botInfo.callbacks) {
+            const { botInfo } = nextProps
+            const callbacks = (botInfo && botInfo.callbacks || [])
+            const apiOptions = callbacks.map<OF.IDropdownOption>(v =>
+                ({
+                    key: v.name,
+                    text: v.name
+                }))
+
+            nextState = {
+                ...nextState,
+                apiOptions
+            }
+        }
+
+        if (nextProps.botInfo.templates !== this.props.botInfo.templates) {
+            const { botInfo } = nextProps
+            const templates = (botInfo && botInfo.templates || [])
+            const cardOptions = templates.map<OF.IDropdownOption>(v =>
+                ({
+                    key: v.name,
+                    text: v.name
+                }))
+
+            nextState = {
+                ...nextState,
+                cardOptions
+            }
+        }
+
         if (nextProps.open === true) {
             // Reset state every time dialog was closed and is opened
             if (this.props.open === false) {
@@ -701,7 +731,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 isOpen={this.props.open}
                 onDismiss={this.onDismissModal}
                 isBlocking={false}
-                containerClassName="blis-modal blis-modal--medium blis-modal--border"
+                containerClassName="blis-modal blis-modal--medium"
             >
                 <div className="blis-modal_header">
                     <span className={OF.FontClassNames.xxLarge}>{this.state.isEditing ? 'Edit Action' : 'Create an Action'}</span>

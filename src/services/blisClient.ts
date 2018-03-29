@@ -33,14 +33,12 @@ export default class BlisClient {
     }
     forceError: boolean = false
 
-    getAccessToken: () => string
     // The memory is key is used by BLIS-SDK to access the memory partition for a particular user
     // TODO: Need to further find out why this is required. (I would expect this to also partition on session)
     getMemoryKey: () => string
 
-    constructor(baseUrl: string, getAccessToken: () => string, getMemoryKey: () => string, defaultHeaders?: { [x: string]: string }, forceError: boolean = false) {
+    constructor(baseUrl: string, getMemoryKey: () => string, defaultHeaders?: { [x: string]: string }, forceError: boolean = false) {
         this.baseUrl = baseUrl
-        this.getAccessToken = getAccessToken
         this.getMemoryKey = getMemoryKey
         this.defaultConfig.headers = { ...this.defaultConfig.headers, ...defaultHeaders }
         this.forceError = forceError
@@ -57,7 +55,6 @@ export default class BlisClient {
             ...config
         }
 
-        finalConfig.headers.Authorization = `Bearer ${this.getAccessToken()}`
         finalConfig.headers['x-blis-memory-key'] = memoryKey
         
         return axios(finalConfig) as Promise<TypedAxiosResponse<T>>
@@ -119,10 +116,10 @@ export default class BlisClient {
     }
 
     // AT.COPY_APPLICATIONS_ASYNC
-    appsCopy(srcUserId: string, destUserId: string, luisSubscriptionKey: string): Promise<void> {
+    appsCopy(srcUserId: string, destUserId: string): Promise<void> {
         return this.send<string>({
             method: 'post',
-            url: `${this.baseUrl}/apps/copy?srcUserId=${srcUserId}&destUserId=${destUserId}&luisSubscriptionKey=${luisSubscriptionKey}`
+            url: `${this.baseUrl}/apps/copy?srcUserId=${srcUserId}&destUserId=${destUserId}`
         }).then(response => {
             return null;
         })

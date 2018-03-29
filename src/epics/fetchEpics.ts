@@ -11,7 +11,7 @@ export const fetchBotInfoEpic: Epic<ActionObject, State> = (action$: ActionsObse
     return action$.ofType(AT.FETCH_BOTINFO_ASYNC)
         .flatMap(action =>
             (action.type === AT.FETCH_BOTINFO_ASYNC)
-                ? getBotInfo('')
+                ? getBotInfo()
                 : assertNever())
 }
 
@@ -19,7 +19,7 @@ export const fetchApplicationsEpic: Epic<ActionObject, State> = (action$: Action
     return action$.ofType(AT.FETCH_APPLICATIONS_ASYNC)
         .flatMap(action =>
             (action.type === AT.FETCH_APPLICATIONS_ASYNC)
-                ? getAllBlisApps('', action.userId)
+                ? getAllBlisApps(action.userId)
                 : assertNever())
 }
 
@@ -27,7 +27,7 @@ export const fetchEntitiesEpic: Epic<ActionObject, State> = (action$: ActionsObs
     return action$.ofType(AT.FETCH_ENTITIES_ASYNC)
         .flatMap(action =>
             (action.type === AT.FETCH_ENTITIES_ASYNC)
-                ? getAllEntitiesForBlisApp('', action.blisAppID)
+                ? getAllEntitiesForBlisApp(action.blisAppID)
                 : assertNever())
 }
 
@@ -35,7 +35,7 @@ export const fetchSourceEpic: Epic<ActionObject, State> = (action$: ActionsObser
     return action$.ofType(AT.FETCH_APPSOURCE_ASYNC)
         .flatMap(action =>
             (action.type === AT.FETCH_APPSOURCE_ASYNC)
-                ? getSourceForBlisApp('', action.blisAppID, action.packageId)
+                ? getSourceForBlisApp(action.blisAppID, action.packageId)
                 : assertNever())
 }
 
@@ -43,7 +43,7 @@ export const fetchActionsEpic: Epic<ActionObject, State> = (action$: ActionsObse
     return action$.ofType(AT.FETCH_ACTIONS_ASYNC)
         .flatMap(action =>
             (action.type === AT.FETCH_ACTIONS_ASYNC)
-                ? getAllActionsForBlisApp('', action.blisAppID)
+                ? getAllActionsForBlisApp(action.blisAppID)
                 : assertNever())
 }
 
@@ -51,7 +51,7 @@ export const fetchTrainDialogsEpic: Epic<ActionObject, State> = (action$: Action
     return action$.ofType(AT.FETCH_TRAIN_DIALOGS_ASYNC)
         .flatMap(action =>
             (action.type === AT.FETCH_TRAIN_DIALOGS_ASYNC)
-                ? getAllTrainDialogsForBlisApp(action.key, action.blisAppID)
+                ? getAllTrainDialogsForBlisApp(action.blisAppID)
                 : assertNever())
 }
 
@@ -59,7 +59,7 @@ export const fetchLogDialogsEpic: Epic<ActionObject, State> = (action$: ActionsO
     return action$.ofType(AT.FETCH_LOG_DIALOGS_ASYNC)
         .flatMap(action =>
             (action.type === AT.FETCH_LOG_DIALOGS_ASYNC)
-                ? getAllLogDialogsForBlisApp(action.key, action.blisAppID, action.packageId)
+                ? getAllLogDialogsForBlisApp(action.blisAppID, action.packageId)
                 : assertNever())
 }
 
@@ -67,7 +67,7 @@ export const fetchChatSessionsEpic: Epic<ActionObject, State> = (action$: Action
     return action$.ofType(AT.FETCH_CHAT_SESSIONS_ASYNC)
         .flatMap(action =>
             (action.type === AT.FETCH_CHAT_SESSIONS_ASYNC)
-                ? getAllSessionsForBlisApp(action.key, action.blisAppID)
+                ? getAllSessionsForBlisApp(action.blisAppID)
                 : assertNever())
 }
 
@@ -75,6 +75,6 @@ export const fetchTeachSessionsEpic: Epic<ActionObject, State> = (action$: Actio
     return action$.ofType(AT.FETCH_TEACH_SESSIONS_ASYNC)
         .flatMap(action =>
             (action.type === AT.FETCH_TEACH_SESSIONS_ASYNC)
-                ? getAllTeachSessionsForBlisApp(action.key, action.blisAppID)
+                ? getAllTeachSessionsForBlisApp(action.blisAppID)
                 : assertNever())
 }

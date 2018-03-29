@@ -53,7 +53,6 @@ export type DisplayState = {
     tipType: TipType
 }
 export type UserState = {
-    isLoggedIn: boolean,
     name: string | null,
     id: string | null,
 }

@@ -6,29 +6,20 @@ import { State } from '../types'
 import { bindActionCreators } from 'redux'
 import { FormattedMessage } from 'react-intl'
 import { FM } from '../react-intl-messages'
-import { FontClassNames, PrimaryButton, Label } from 'office-ui-fabric-react'
-import { logout } from '../actions/userActions'
-import { fetchProfile } from '../actions/graphApiActions'
+import { FontClassNames, Label } from 'office-ui-fabric-react'
 import * as SdkPort from '../services/sdkPort'
-import './Profile.css'
+import './Settings.css'
 
 interface ComponentState {
-    isLogoutWindowOpen: boolean
     sdkPort: number
 }
 
 const initialState: ComponentState = {
-    isLogoutWindowOpen: false,
     sdkPort: SdkPort.get()
 }
 
-class Profile extends React.Component<Props, ComponentState> {
+class Settings extends React.Component<Props, ComponentState> {
     state = initialState
-
-    onClickLogout = () => {
-        this.props.logout()
-        this.props.history.push('/home')
-    }
 
     onChangeSdkPort = (event: React.ChangeEvent<HTMLInputElement>) => {
         const sdkPort = parseInt(event.target.value)
@@ -39,30 +30,9 @@ class Profile extends React.Component<Props, ComponentState> {
     }
 
     render() {
-        const { user } = this.props
         return (
             <div className="blis-page">
                 <div className={FontClassNames.superLarge}>
-                    <FormattedMessage
-                        id={FM.PROFILE_TITLE}
-                        defaultMessage="Profile"
-                    />
-                </div>
-                <div className={FontClassNames.mediumPlus}>
-                    <FormattedMessage
-                        id={FM.PROFILE_NAME}
-                        defaultMessage="Name"
-                    />: {user.name}
-                </div>
-                <div>
-                    <PrimaryButton onClick={this.onClickLogout}>
-                        <FormattedMessage
-                            id={FM.LOGOUT_PRIMARYBUTTON_TEXT}
-                            defaultMessage="Log Out"
-                        />
-                    </PrimaryButton>
-                </div>
-                <div className={FontClassNames.xxLarge}>
                     <FormattedMessage
                         id={FM.PROFILE_SETTINGS_TITLE}
                         defaultMessage="Settings"
@@ -92,14 +62,11 @@ class Profile extends React.Component<Props, ComponentState> {
 
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        fetchProfile,
-        logout
     }, dispatch)
 }
 
-const mapStateToProps = (state: State) => {
+const mapStateToProps = (_state: State) => {
     return {
-        user: state.user
     }
 }
 
@@ -108,4 +75,4 @@ const stateProps = returntypeof(mapStateToProps)
 const dispatchProps = returntypeof(mapDispatchToProps)
 type Props = typeof stateProps & typeof dispatchProps & RouteComponentProps<any>
 
-export default connect<typeof stateProps, typeof dispatchProps, RouteComponentProps<any>>(mapStateToProps, mapDispatchToProps)(Profile)
+export default connect<typeof stateProps, typeof dispatchProps, RouteComponentProps<any>>(mapStateToProps, mapDispatchToProps)(Settings)

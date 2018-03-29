@@ -1,16 +1,15 @@
-import * as React from 'react';
-import { connect } from 'react-redux';
-import { ActionButton } from 'office-ui-fabric-react/lib/Button';
+import * as React from 'react'
+import { connect } from 'react-redux'
+import { ActionButton } from 'office-ui-fabric-react/lib/Button'
+import './Expando.css'
 
 class Expando extends React.Component<Props, {}> {
-
     render() {
         return (
-            <div className={this.props.className}>
+            <div className={`blis-expando ${this.props.className}`} onClick={this.props.onToggle}>
                 <ActionButton
                     iconProps={ this.props.isOpen ? { iconName: 'ChevronUpSmall' } : { iconName: 'ChevronDownSmall' }}
                     checked={ true }
-                    onClick={this.props.onToggle}
                 >
                     {this.props.text}
                 </ActionButton>

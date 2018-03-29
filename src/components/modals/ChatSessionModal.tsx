@@ -2,7 +2,7 @@ import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { PrimaryButton, DefaultButton } from 'office-ui-fabric-react';
+import { FontClassNames, Icon, PrimaryButton, DefaultButton } from 'office-ui-fabric-react';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { State } from '../../types';
 import Webchat from '../Webchat'
@@ -37,10 +37,15 @@ class SessionWindow extends React.Component<Props, ComponentState> {
             <Modal
                 isOpen={this.props.open && this.props.error == null}
                 isBlocking={true}
-                containerClassName='blis-modal blis-modal--large blis-modal--log'
+                containerClassName='blis-modal blis-modal--fixed blis-modal--log'
             >
                 <div className="blis-modal_body">
-                    <div className="blis-chatmodal">
+                    <div className="blis-sessionmodal">
+                        <div className="blis-sessionmodal-title">
+                            <div className={`blis-dialog-title ${FontClassNames.xxLarge}`}>
+                                <Icon iconName="UserFollowed" />Log Dialog
+                            </div>
+                        </div>
                         <div className="blis-chatmodal_webchat">
                             <Webchat
                                 app={this.props.app}
@@ -50,10 +55,6 @@ class SessionWindow extends React.Component<Props, ComponentState> {
                                 hideInput={false}
                                 focusInput={true}
                             />
-                        </div>
-                        <div className="blis-chatmodal_controls">
-                            <div className="blis-chatmodal_admin-controls">
-                            </div>
                         </div>
                     </div>
                 </div>

@@ -36,16 +36,16 @@ class AppsIndex extends React.Component<Props, ComponentState> {
             return
         }
 
-        if (this.props.user.isLoggedIn) {
-            this.props.fetchApplicationsAsync(this.props.user.id, this.props.user.id)
+        if (this.props.user.id !== null) {
+            this.props.fetchApplicationsAsync(this.props.user.id)
             this.props.fetchBotInfoAsync()
         }
     }
 
-    componentDidUpdate(prevProps: Props, prevState: ComponentState) {
+    componentDidUpdate(prevProps: Props, _prevState: ComponentState) {
         // TODO: See if this code can be removed. It seems like componentWillMount is called every time the user navigates to /home route
         if (typeof (this.props.user.id) === 'string' && this.props.user.id !== prevProps.user.id) {
-            this.props.fetchApplicationsAsync(this.props.user.id, this.props.user.id);
+            this.props.fetchApplicationsAsync(this.props.user.id)
             this.props.fetchBotInfoAsync();
         }
 
@@ -65,19 +65,19 @@ class AppsIndex extends React.Component<Props, ComponentState> {
     }
 
     onClickDeleteApp = (appToDelete: BlisAppBase) => {
-        this.props.deleteBLISApplicationAsync(this.props.user.id, appToDelete)
+        this.props.deleteBLISApplicationAsync(appToDelete)
     }
 
     onCreateApp = (appToCreate: BlisAppBase) => {
-        this.props.createBLISApplicationAsync(this.props.user.id, this.props.user.id, appToCreate)
+        this.props.createBLISApplicationAsync(this.props.user.id, appToCreate)
     }
 
-    onImportDemoApps = (luiskey: string) => {
+    onImportDemoApps = () => {
         let srcUserId = BLIS_SAMPLE_ID;  
         let destUserId = this.props.user.id;
 
         // TODO: Find cleaner solution for the types.  Thunks return functions but when using them on props they should be returning result of the promise.
-        this.props.copyApplicationsThunkAsync(srcUserId, destUserId, luiskey);
+        this.props.copyApplicationsThunkAsync(srcUserId, destUserId)
     }
 
     render() {
