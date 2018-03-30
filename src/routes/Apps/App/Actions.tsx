@@ -183,11 +183,12 @@ class Actions extends React.Component<Props, ComponentState> {
 
                 <ActionCreatorEditor
                     app={this.props.app}
+                    editingPackageId={this.props.editingPackageId}
                     open={this.state.isActionEditorOpen}
                     action={this.state.actionSelected}
-                    onClickCancel={() => this.onClickCancelActionEditor()}
-                    onClickDelete={action => this.onClickDeleteActionEditor(action)}
-                    onClickSubmit={action => this.onClickSubmitActionEditor(action)}
+                    handleClose={() => this.onClickCancelActionEditor()}
+                    handleDelete={action => this.onClickDeleteActionEditor(action)}
+                    handleEdit={action => this.onClickSubmitActionEditor(action)}
                 />
             </div>
         );

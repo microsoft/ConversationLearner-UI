@@ -436,9 +436,10 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     onActiveItemChanged={logDialog => this.onClickLogDialogItem(logDialog)}
                 />
                 <LogDialogModal
+                    app={this.props.app}
+                    editingPackageId={this.props.editingPackageId}
                     open={this.state.isLogDialogWindowOpen}
                     canEdit={this.props.editingPackageId === this.props.app.devPackageId}
-                    app={this.props.app}
                     onClose={this.onCloseLogDialogModal}
                     onEdit={(logDialogId: string, newTrainDialog: TrainDialog, lastExtractionChanged: boolean) => this.onEditLogDialog(logDialogId, newTrainDialog, lastExtractionChanged)}
                     onDelete={this.onDeleteLogDialog}

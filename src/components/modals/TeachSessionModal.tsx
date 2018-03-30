@@ -15,7 +15,7 @@ import { Activity } from 'botframework-directlinejs'
 import { deleteTeachSessionThunkAsync, deleteLogDialogThunkAsync } from '../../actions/deleteActions'
 import { toggleAutoTeach, runExtractorAsync } from '../../actions/teachActions'
 import { fetchApplicationTrainingStatusThunkAsync } from '../../actions/fetchActions'
-import ConfirmDeleteModal from './ConfirmDeleteModal'
+import ConfirmCancelModal from './ConfirmCancelModal'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { autobind } from 'office-ui-fabric-react/lib/Utilities';
@@ -180,6 +180,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                             <div className="blis-chatmodal_admin-controls">
                                 <TeachSessionAdmin
                                     app={this.props.app}
+                                    editingPackageId={this.props.editingPackageId}
                                     onScoredAction={() => {this.setState({hasOneRound: true})}}
                                 />
                             </div>
@@ -228,7 +229,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                         </div>
                     </div>
                 </div>
-                <ConfirmDeleteModal
+                <ConfirmCancelModal
                     open={this.state.isConfirmDeleteOpen}
                     onCancel={() => this.onClickCancelDelete()}
                     onConfirm={() => this.onClickConfirmDelete()}

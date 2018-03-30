@@ -253,6 +253,7 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
                             {round &&
                                 <EntityExtractor
                                     app={this.props.app}
+                                    editingPackageId={this.props.editingPackageId}
                                     canEdit={this.props.canEdit}
                                     extractType={DialogType.LOGDIALOG}
                                     sessionId={this.props.logDialog.logDialogId}
@@ -274,6 +275,7 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
                         <div>
                             <ActionScorer
                                 app={this.props.app}
+                                editingPackageId={this.props.editingPackageId}
                                 canEdit={this.props.canEdit}
                                 dialogType={DialogType.LOGDIALOG}
                                 sessionId={this.props.logDialog.logDialogId}
@@ -329,6 +331,7 @@ const mapStateToProps = (state: State) => {
 
 export interface ReceivedProps {
     app: BlisAppBase
+    editingPackageId: string
     logDialog: LogDialog
     selectedActivity: Activity,
     canEdit: boolean,
