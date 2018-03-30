@@ -155,8 +155,8 @@ interface ComponentState {
     activities: Activity[],
     teachSession: Teach,
     validationErrors: ReplayError[],
-    validationErrorTitle: string, 
-    validationErrorMessage: string,
+    validationErrorTitleId: string | null, 
+    validationErrorMessageId: string | null,
 }
 
 class LogDialogs extends React.Component<Props, ComponentState> {
@@ -175,8 +175,8 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         activities: [],
         teachSession: null,
         validationErrors: [],
-        validationErrorTitle: null,
-        validationErrorMessage: null
+        validationErrorTitleId: null,
+        validationErrorMessageId: null
     }
 
     componentDidMount() {
@@ -227,8 +227,8 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 isLogDialogWindowOpen: true,
                 validationErrors: teachWithHistory.replayErrors,
                 isValidationWarningOpen: teachWithHistory.replayErrors.length > 0,
-                validationErrorTitle: FM.REPLAYERROR_LOGDIALOG_VALIDATION_TITLE,
-                validationErrorMessage: FM.REPLAYERROR_LOGDIALOG_VALIDATION_MESSAGE
+                validationErrorTitleId: FM.REPLAYERROR_LOGDIALOG_VALIDATION_TITLE,
+                validationErrorMessageId: FM.REPLAYERROR_LOGDIALOG_VALIDATION_MESSAGE
             })
         })
         .catch(error => {
@@ -273,8 +273,8 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 this.setState({
                     validationErrors: teachWithHistory.replayErrors,
                     isValidationWarningOpen: true,
-                    validationErrorTitle: FM.REPLAYERROR_CONVERT_TITLE,
-                    validationErrorMessage: FM.REPLAYERROR_FAILMESSAGE
+                    validationErrorTitleId: FM.REPLAYERROR_CONVERT_TITLE,
+                    validationErrorMessageId: FM.REPLAYERROR_FAILMESSAGE
                 })
             }
         })
@@ -318,8 +318,8 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 this.setState({
                     validationErrors: teachWithHistory.replayErrors,
                     isValidationWarningOpen: true,
-                    validationErrorTitle: FM.REPLAYERROR_UNDO_TITLE,
-                    validationErrorMessage: FM.REPLAYERROR_FAILMESSAGE
+                    validationErrorTitleId: FM.REPLAYERROR_UNDO_TITLE,
+                    validationErrorMessageId: FM.REPLAYERROR_FAILMESSAGE
                 })
             }
         })
@@ -438,8 +438,8 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     open={this.state.isValidationWarningOpen}
                     onClose={this.onCloseValidationWarning}
                     textItems={this.state.validationErrors}
-                    formattedTitleId={this.state.validationErrorTitle}
-                    formattedMessageId={this.state.validationErrorMessage}
+                    formattedTitleId={this.state.validationErrorTitleId}
+                    formattedMessageId={this.state.validationErrorMessageId}
                 />
                 <TeachSessionModal
                         app={this.props.app}
