@@ -42,7 +42,7 @@ class SessionWindow extends React.Component<Props, ComponentState> {
                 <div className="blis-modal_body">
                     <div className="blis-sessionmodal">
                         <div className="blis-sessionmodal-title">
-                            <div className={`blis-dialog-title ${FontClassNames.xxLarge}`}>
+                            <div className={`blis-dialog-title blis-dialog-title--log ${FontClassNames.xxLarge}`}>
                                 <Icon iconName="UserFollowed" />Log Dialog
                             </div>
                         </div>

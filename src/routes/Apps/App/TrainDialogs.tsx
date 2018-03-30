@@ -484,7 +484,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         let trainDialog = this.props.trainDialogs.find((td) => td.trainDialogId === this.state.trainDialogId);
         return (
             <div className="blis-page">
-                <div className={`blis-dialog-title ${OF.FontClassNames.xxLarge}`}>
+                <div className={`blis-dialog-title blis-dialog-title--train ${OF.FontClassNames.xxLarge}`}>
                     <OF.Icon iconName="EditContact" />
                     <FormattedMessage
                         id={FM.TRAINDIALOGS_TITLE}
