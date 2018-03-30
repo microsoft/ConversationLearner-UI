@@ -3,7 +3,7 @@ import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import * as OF from 'office-ui-fabric-react';
-import { EntityCreatorEditor, ConfirmDeleteModal } from '../../../components/modals'
+import { EntityCreatorEditor } from '../../../components/modals'
 import { deleteEntityAsync } from '../../../actions/deleteActions'
 import { fetchApplicationTrainingStatusThunkAsync } from '../../../actions/fetchActions'
 import { State } from '../../../types';
@@ -11,6 +11,7 @@ import { onRenderDetailsHeader } from '../../../components/ToolTips'
 import { BlisAppBase, EntityBase, EntityType } from 'blis-models'
 import { FM } from '../../../react-intl-messages'
 import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
+import { autobind } from 'office-ui-fabric-react/lib/Utilities';
 
 interface IRenderableColumn extends OF.IColumn {
     render: (entity: EntityBase, component: Entities) => JSX.Element | JSX.Element[]
@@ -97,11 +98,8 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
 
 interface ComponentState {
     searchValue: string
-    confirmDeleteEntityModalOpen: boolean
     createEditModalOpen: boolean
     entitySelected: EntityBase | null
-    entityIDToDelete: string
-    errorModalOpen: boolean
     columns: IRenderableColumn[]
     sortColumn: IRenderableColumn
 }
@@ -111,55 +109,35 @@ class Entities extends React.Component<Props, ComponentState> {
 
     state: ComponentState = {
         searchValue: '',
-        confirmDeleteEntityModalOpen: false,
         createEditModalOpen: false,
         entitySelected: null,
-        entityIDToDelete: null,
-        errorModalOpen: false,
         columns: getColumns(this.props.intl),
         sortColumn: null
-    }
-
-    constructor(p: any) {
-        super(p);
-
-        this.onClickConfirmDelete = this.onClickConfirmDelete.bind(this)
-        this.onChange = this.onChange.bind(this)
-        this.onClickColumnHeader = this.onClickColumnHeader.bind(this)
-        this.getFilteredAndSortedEntities = this.getFilteredAndSortedEntities.bind(this)
-        this.handleOpenCreateModal = this.handleOpenCreateModal.bind(this)
-        this.handleCloseCreateModal = this.handleCloseCreateModal.bind(this)
-        this.openDeleteModal = this.openDeleteModal.bind(this)
     }
 
     componentDidMount() {
         this.newEntityButton.focus()
     }
 
-    onClickConfirmDelete() {
-        let entityToDelete = this.props.entities.find(entity => entity.entityId === this.state.entityIDToDelete)
-        this.props.deleteEntityAsync(this.state.entityIDToDelete, entityToDelete, this.props.app.appId)
+    @autobind
+    handleDelete(entityId: string) {
+        let entityToDelete = this.props.entities.find(entity => entity.entityId === entityId)
+        this.props.deleteEntityAsync(entityId, entityToDelete, this.props.app.appId)
         this.props.fetchApplicationTrainingStatusThunkAsync(this.props.app.appId)
         this.setState({
-            confirmDeleteEntityModalOpen: false,
-            createEditModalOpen: false,
-            entityIDToDelete: null
+            createEditModalOpen: false
         })
     }
 
-    onClickCancelDelete() {
-        this.setState({
-            confirmDeleteEntityModalOpen: false,
-            entityIDToDelete: null,
-            errorModalOpen: false
-        })
-    }
+    @autobind
     handleOpenCreateModal() {
         this.setState({
             createEditModalOpen: true,
             entitySelected: null
         })
     }
+
+    @autobind
     handleCloseCreateModal() {
         this.setState({
             createEditModalOpen: false,
@@ -169,20 +147,7 @@ class Entities extends React.Component<Props, ComponentState> {
             this.newEntityButton.focus();
         }, 500);
     }
-    openDeleteModal(guid: string) {
-        let tiedToAction = this.props.actions
-            .some(a => a.negativeEntities.includes(guid) || a.requiredEntities.includes(guid))
-        if (tiedToAction === true) {
-            this.setState({
-                errorModalOpen: true
-            })
-        } else {
-            this.setState({
-                confirmDeleteEntityModalOpen: true,
-                entityIDToDelete: guid
-            })
-        }
-    }
+
     onSelectEntity(entity: EntityBase) {
         if (this.props.editingPackageId === this.props.app.devPackageId) {
             this.setState({
@@ -191,6 +156,8 @@ class Entities extends React.Component<Props, ComponentState> {
             })
         }
     }
+
+    @autobind
     onClickColumnHeader(event: any, clickedColumn: IRenderableColumn) {
         let { columns } = this.state;
         let isSortedDescending = clickedColumn.isSortedDescending;
@@ -215,6 +182,7 @@ class Entities extends React.Component<Props, ComponentState> {
         });
     }
 
+    @autobind
     getFilteredAndSortedEntities(): EntityBase[] {
         //runs when user changes the text or sort
         let lcString = this.state.searchValue.toLowerCase();
@@ -243,6 +211,7 @@ class Entities extends React.Component<Props, ComponentState> {
         return filteredEntities;
     }
 
+    @autobind
     onChange(newValue: string) {
         // runs when user changes the text 
         let lcString = newValue.toLowerCase();
@@ -287,10 +256,11 @@ class Entities extends React.Component<Props, ComponentState> {
                     />
                     <EntityCreatorEditor
                         app={this.props.app}
+                        editingPackageId={this.props.editingPackageId}
                         open={this.state.createEditModalOpen}
                         entity={this.state.entitySelected}
                         handleClose={this.handleCloseCreateModal}
-                        handleOpenDeleteModal={this.openDeleteModal}
+                        handleDelete={this.handleDelete}
                         entityTypeFilter={null}
                     />
                 </div>
@@ -312,39 +282,6 @@ class Entities extends React.Component<Props, ComponentState> {
                     onColumnHeaderClick={this.onClickColumnHeader}
                     onActiveItemChanged={entity => this.onSelectEntity(entity)}
                 />
-                <ConfirmDeleteModal
-                    open={this.state.confirmDeleteEntityModalOpen}
-                    onCancel={() => this.onClickCancelDelete()}
-                    onConfirm={() => this.onClickConfirmDelete()}
-                    title={this.props.intl.formatMessage({
-                        id: FM.ENTITIES_CONFIRMDELETEMODALTITLE,
-                        defaultMessage: 'Are you sure you want to delete this entity?'
-                    })}
-                />
-                <OF.Dialog
-                    hidden={!this.state.errorModalOpen}
-                    onDismiss={() => this.onClickCancelDelete()}
-                    dialogContentProps={{
-                        type: OF.DialogType.normal,
-                        title: this.props.intl.formatMessage({
-                            id: FM.ENTITIES_DELETEWARNINGTITLE,
-                            defaultMessage: 'Are you sure you want to delete this entity?'
-                        })
-                    }}
-                    modalProps={{
-                        isBlocking: false
-                    }}
-                >
-                    <OF.DialogFooter>
-                        <OF.PrimaryButton
-                            onClick={() => this.onClickCancelDelete()}
-                            text={this.props.intl.formatMessage({
-                                id: FM.ENTITIES_DELETEWARNINGPRIMARYBUTTONTEXT,
-                                defaultMessage: 'Close'
-                            })}
-                        />
-                    </OF.DialogFooter>
-                </OF.Dialog>
             </div>
         );
     }

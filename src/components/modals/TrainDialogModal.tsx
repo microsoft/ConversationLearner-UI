@@ -9,12 +9,12 @@ import Webchat from '../Webchat'
 import TrainDialogAdmin from './TrainDialogAdmin'
 import { BlisAppBase, TrainDialog} from 'blis-models'
 import { Activity } from 'botframework-directlinejs';
-import ConfirmDeleteModal from './ConfirmDeleteModal'
+import ConfirmCancelModal from './ConfirmCancelModal'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 
 interface ComponentState {
-    isConfirmDeleteModalOpen: boolean,
+    isConfirmCancelModalOpen: boolean,
     calloutOpen: boolean,
     selectedActivity: Activity | null,
     webchatKey: number,
@@ -23,7 +23,7 @@ interface ComponentState {
 }
 
 const initialState: ComponentState = {
-    isConfirmDeleteModalOpen: false,
+    isConfirmCancelModalOpen: false,
     calloutOpen: false,
     selectedActivity: null,
     webchatKey: 0,
@@ -72,20 +72,20 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
 
     onClickDelete() {
         this.setState({
-            isConfirmDeleteModalOpen: true
+            isConfirmCancelModalOpen: true
         })
     }
 
     onClickCancelDelete = () => {
         this.setState({
-            isConfirmDeleteModalOpen: false
+            isConfirmCancelModalOpen: false
         })
     }
 
     onClickConfirmDelete = () => {
         this.props.onDelete();
         this.setState(
-            { isConfirmDeleteModalOpen: false }
+            { isConfirmCancelModalOpen: false }
         );
     }
 
@@ -136,6 +136,7 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
                             <div className="blis-chatmodal_admin-controls">
                                 <TrainDialogAdmin
                                     app={this.props.app}
+                                    editingPackageId={this.props.editingPackageId}
                                     canEdit={this.props.canEdit}
                                     trainDialog={this.props.trainDialog}
                                     selectedActivity={this.state.selectedActivity}
@@ -193,8 +194,8 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
                         </div>
                     </div>
                 </div>
-                <ConfirmDeleteModal
-                    open={this.state.isConfirmDeleteModalOpen}
+                <ConfirmCancelModal
+                    open={this.state.isConfirmCancelModalOpen}
                     onCancel={() => this.onClickCancelDelete()}
                     onConfirm={() => this.onClickConfirmDelete()}
                     title={intl.formatMessage({
@@ -237,6 +238,7 @@ const mapStateToProps = (state: State) => {
 
 export interface ReceivedProps {
     app: BlisAppBase,
+    editingPackageId: string,
     canEdit: boolean,
     onClose: () => void,
     onBranch: (turnIndex: number) => void,

@@ -1,6 +1,9 @@
 import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
-import { fetchApplicationTrainingStatusThunkAsync } from '../../actions/fetchActions'
+import { 
+    fetchApplicationTrainingStatusThunkAsync,
+    fetchEntityEditValidationThunkAsync,
+    fetchEntityDeleteValidationThunkAsync } from '../../actions/fetchActions'
 import { createEntityAsync } from '../../actions/createActions';
 import { editEntityAsync } from '../../actions/updateActions';
 import { bindActionCreators } from 'redux';
@@ -9,6 +12,7 @@ import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import * as OF from 'office-ui-fabric-react';
 import * as TC from '../tipComponents/Components'
 import ActionDetailsList from '../ActionDetailsList'
+import ConfirmCancelModal from './ConfirmCancelModal'
 import { State, PreBuiltEntities } from '../../types';
 import { BlisDropdownOption } from './BlisDropDownOption'
 import * as ToolTip from '../ToolTips'
@@ -42,9 +46,14 @@ const initState: ComponentState = {
     isMultivalueVal: false,
     isNegatableVal: false,
     isProgrammaticVal: false,
-    editing: false,
+    isEditing: false,
     title: '',
-    hasPendingChanges: false
+    hasPendingChanges: false,
+    isConfirmEditModalOpen: false,
+    isConfirmDeleteModalOpen: false,
+    isDeleteErrorModalOpen: false,
+    showValidationWarning: false,
+    newOrEditedEntity: null
 };
 
 interface ComponentState {
@@ -54,9 +63,14 @@ interface ComponentState {
     isMultivalueVal: boolean
     isNegatableVal: boolean
     isProgrammaticVal: boolean
-    editing: boolean
+    isEditing: boolean
     title: string
     hasPendingChanges: boolean
+    isConfirmEditModalOpen: boolean,
+    isConfirmDeleteModalOpen: boolean,
+    isDeleteErrorModalOpen: boolean,
+    showValidationWarning: boolean,
+    newOrEditedEntity: EntityBase
 }
 
 class EntityCreatorEditor extends React.Component<Props, ComponentState> {
@@ -142,7 +156,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                     isMultivalueVal: nextProps.entity.isMultivalue,
                     isNegatableVal: nextProps.entity.isNegatible,
                     isProgrammaticVal: isProgrammatic,
-                    editing: true,
+                    isEditing: true,
                     title: nextProps.intl.formatMessage({
                         id: FM.ENTITYCREATOREDITOR_TITLE_EDIT,
                         defaultMessage: 'Edit Entity'
@@ -162,7 +176,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
             entityType = this.state.isProgrammaticVal ? EntityType.LOCAL : EntityType.LUIS
         }
 
-        return {
+        const newOrEditedEntity = {
             entityId: undefined,
             entityName,
             isMultivalue: this.state.isMultivalueVal,
@@ -173,23 +187,49 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
             version: null,
             packageCreationId: null,
             packageDeletionId: null
+        } as EntityBase;
+
+        // Set entity id if we're editing existing id.
+        if (this.state.isEditing) {
+            newOrEditedEntity.entityId = this.props.entity.entityId
         }
+
+        return newOrEditedEntity;
     }
 
-    onClickSubmit = () => {
-        const entity = this.convertStateToEntity(this.state)
-        const appId = this.props.app.appId
+    @autobind
+    onClickSaveCreate() {
+        const newOrEditedEntity = this.convertStateToEntity(this.state)
 
-        if (this.state.editing === false) {
-            this.props.createEntityAsync(this.props.user.id, entity, appId)
-        } else {
-            // Set entity id if we're editing existing id.
-            entity.entityId = this.props.entity.entityId
-            this.props.editEntityAsync(appId, entity)
-        }
+        if (!this.state.isEditing) {
+            this.props.createEntityAsync(this.props.user.id, newOrEditedEntity, this.props.app.appId)
+            this.props.handleClose();
+            return;
+        } 
+        
+        // Otherwise need to validate changes
+        ((this.props.fetchEntityEditValidationThunkAsync(this.props.app.appId, this.props.editingPackageId, newOrEditedEntity) as any) as Promise<string[]>)
+        .then(invalidTrainingDialogIds => {
 
-        this.props.fetchApplicationTrainingStatusThunkAsync(appId)
-        this.props.handleClose()
+            if (invalidTrainingDialogIds) {
+                if (invalidTrainingDialogIds.length > 0) {
+                    this.setState(
+                    {
+                        isConfirmEditModalOpen: true,
+                        showValidationWarning: true,
+                        newOrEditedEntity: newOrEditedEntity
+                    });
+                } else {
+                    this.props.editEntityAsync(this.props.app.appId, newOrEditedEntity);
+                    // TODO: Convert edit to Thunk and include fetch in thunk
+                    this.props.fetchApplicationTrainingStatusThunkAsync(this.props.app.appId);
+                    this.props.handleClose();
+                }
+            }
+        })
+        .catch(error => {
+            console.warn(`Error when attempting to validate edit: `, error)
+        })
     }
 
     onClickCancel = () => {
@@ -246,7 +286,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
         }
 
         // Check that name isn't in use
-        if (!this.state.editing) {
+        if (!this.state.isEditing) {
             let foundEntity = this.props.entities.find(e => e.entityName === this.state.entityNameVal);
             if (foundEntity) {
                 return intl.formatMessage(messages.fieldErrorDistinct)
@@ -259,7 +299,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
     onKeyDownName = (event: React.KeyboardEvent<HTMLInputElement>) => {
         // On enter attempt to create the entity as long as name is set
         if (event.key === 'Enter' && this.onGetNameErrorMessage(this.state.entityNameVal) === '') {
-            this.onClickSubmit();
+            this.onClickSaveCreate();
         }
     }
 
@@ -290,6 +330,73 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
     }
 
     @autobind
+    onClickDelete() {
+
+        // Check if used by actions
+        let tiedToAction = this.props.actions
+            .some(a => a.negativeEntities.includes(this.props.entity.entityId) || a.requiredEntities.includes(this.props.entity.entityId))
+        if (tiedToAction === true) {
+            this.setState({
+                isDeleteErrorModalOpen: true
+            })
+            return
+        }
+
+        ((this.props.fetchEntityDeleteValidationThunkAsync(this.props.app.appId, this.props.editingPackageId, this.props.entity.entityId) as any) as Promise<string[]>)
+            .then(invalidTrainingDialogIds => {
+
+                if (invalidTrainingDialogIds) {
+                    this.setState(
+                    {
+                        isConfirmDeleteModalOpen: true,
+                        showValidationWarning: invalidTrainingDialogIds.length > 0
+                    });
+                }
+            })
+            .catch(error => {
+                console.warn(`Error when attempting to validate delete: `, error)
+            }
+        )
+    }
+
+    @autobind
+    onCancelDelete() {
+        this.setState({
+            isConfirmDeleteModalOpen: false,
+            isDeleteErrorModalOpen: false
+        })
+    }
+
+    @autobind
+    onConfirmDelete() {
+        this.setState(
+            { isConfirmDeleteModalOpen: false },
+            () => {
+                this.props.handleDelete(this.props.entity.entityId)
+            })
+    }
+
+    @autobind
+    onCancelEdit() {
+        this.setState({
+            isConfirmEditModalOpen: false,
+            newOrEditedEntity: null
+        })
+    }
+
+    @autobind
+    onConfirmEdit() {
+        this.props.editEntityAsync(this.props.app.appId, this.state.newOrEditedEntity);
+        // TODO: Convert edit to Thunk and include fetch in thunk
+        this.props.fetchApplicationTrainingStatusThunkAsync(this.props.app.appId);
+
+        this.setState({
+            isConfirmEditModalOpen: false,
+            newOrEditedEntity: null
+        })
+    }
+
+    @autobind
     onClickTrainDialogs() {
         const { history } = this.props
         history.push(`/home/${this.props.app.appId}/trainDialogs`, { app: this.props.app, entityFilter: this.props.entity })
@@ -308,7 +415,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                     onChanged={this.onChangedType}
                     onRenderOption={(option) => this.onRenderOption(option as BlisDropdownOption)}
                     selectedKey={this.state.entityTypeVal}
-                    disabled={this.state.editing || this.props.entityTypeFilter != null}
+                    disabled={this.state.isEditing || this.props.entityTypeFilter != null}
                 />
                 <OF.TextField
                     onGetErrorMessage={this.onGetNameErrorMessage}
@@ -335,7 +442,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                         })}
                         checked={this.state.isProgrammaticVal}
                         onChange={this.onChangeProgrammatic}
-                        disabled={this.state.editing || this.state.isPrebuilt}
+                        disabled={this.state.isEditing || this.state.isPrebuilt}
                         tipType={ToolTip.TipType.ENTITY_PROGAMMATIC}
                     />
                 </div>
@@ -347,7 +454,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                         })}
                         checked={this.state.isMultivalueVal}
                         onChange={this.onChangeMultivalue}
-                        disabled={this.state.editing}
+                        disabled={this.state.isEditing}
                         tipType={ToolTip.TipType.ENTITY_MULTIVALUE}
                     />
                 </div>
@@ -359,7 +466,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                         })}
                         checked={this.state.isNegatableVal}
                         onChange={this.onChangeReversible}
-                        disabled={this.state.editing || this.state.isPrebuilt}
+                        disabled={this.state.isEditing || this.state.isPrebuilt}
                         tipType={ToolTip.TipType.ENTITY_NEGATABLE}
                     />
                 </div>
@@ -375,10 +482,10 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                 containerClassName="blis-modal blis-modal--medium"
             >
                 <div className="blis-modal_header">
-                    <span className={OF.FontClassNames.xxLarge}>{this.state.editing ? this.props.entity.entityName : this.state.title}</span>
+                    <span className={OF.FontClassNames.xxLarge}>{this.state.isEditing ? this.props.entity.entityName : this.state.title}</span>
                 </div>
                 <div className="blis-modal_body">
-                    {this.state.editing
+                    {this.state.isEditing
                         ? (
                             <div>
                                 <OF.Pivot linkSize={OF.PivotLinkSize.large}>
@@ -425,9 +532,9 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                 <div className="blis-modal_footer blis-modal-buttons">
                     <div className="blis-modal-buttons_primary">
                         <OF.PrimaryButton
-                            disabled={(this.onGetNameErrorMessage(this.state.entityNameVal) !== '') && !this.state.isPrebuilt || (this.state.editing && !this.state.hasPendingChanges)}
-                            onClick={this.onClickSubmit}
-                            ariaDescription={this.state.editing
+                            disabled={(this.onGetNameErrorMessage(this.state.entityNameVal) !== '') && !this.state.isPrebuilt || (this.state.isEditing && !this.state.hasPendingChanges)}
+                            onClick={this.onClickSaveCreate}
+                            ariaDescription={this.state.isEditing
                                 ? intl.formatMessage({
                                     id: FM.ENTITYCREATOREDITOR_SAVEBUTTON_ARIADESCRIPTION,
                                     defaultMessage: 'Save'
@@ -436,7 +543,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                                     id: FM.ENTITYCREATOREDITOR_CREATEBUTTON_ARIADESCRIPTION,
                                     defaultMessage: 'Create'
                                 })}
-                            text={this.state.editing
+                            text={this.state.isEditing
                                 ? intl.formatMessage({
                                     id: FM.ENTITYCREATOREDITOR_SAVEBUTTON_TEXT,
                                     defaultMessage: 'Save'
@@ -459,9 +566,9 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                             })}
                         />
 
-                        {this.state.editing && this.props.handleOpenDeleteModal &&
+                        {this.state.isEditing && this.props.handleDelete &&
                             <OF.DefaultButton
-                                onClick={() => this.props.handleOpenDeleteModal(this.props.entity.entityId)}
+                                onClick={this.onClickDelete}
                                 ariaDescription={intl.formatMessage({
                                     id: FM.ENTITYCREATOREDITOR_DELETEBUTTON_ARIADESCRIPTION,
                                     defaultMessage: 'Delete'
@@ -473,7 +580,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                             />}
                     </div>
                     <div className="blis-modal-buttons_secondary">
-                        {this.state.editing &&
+                        {this.state.isEditing &&
                             <OF.PrimaryButton
                                 onClick={this.onClickTrainDialogs}
                                 iconProps={{ iconName: 'QueryList' }}
@@ -489,6 +596,48 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                         }
                     </div>
                 </div>
+                <ConfirmCancelModal
+                    open={this.state.isConfirmDeleteModalOpen}
+                    onCancel={this.onCancelDelete}
+                    onConfirm={this.onConfirmDelete}
+                    title={intl.formatMessage({
+                            id: FM.ENTITYCREATOREDITOR_CONFIRM_DELETE_TITLE,
+                            defaultMessage: 'Are you sure you want to delete this Entity?'
+                        })}
+                    warning={this.state.showValidationWarning &&
+                        intl.formatMessage({
+                            id: FM.ENTITYCREATOREDITOR_CONFIRM_DELETE_WARNING,
+                            defaultMessage: 'This will invalidate one or more Training Dialogs'
+                        })}
+                />
+                <ConfirmCancelModal
+                    open={this.state.isConfirmEditModalOpen}
+                    onCancel={this.onCancelEdit} 
+                    onConfirm={this.onConfirmEdit}
+                    title={intl.formatMessage({
+                            id: FM.ENTITYCREATOREDITOR_CONFIRM_EDIT_TITLE,
+                            defaultMessage: 'Are you sure you want to edit this Entity?'
+                        })}
+                    warning={this.state.showValidationWarning &&
+                        intl.formatMessage({
+                            id: FM.ENTITYCREATOREDITOR_CONFIRM_EDIT_WARNING,
+                            defaultMessage: 'This will invalidate one or more Training Dialogs'
+                        })}
+                />
+                <ConfirmCancelModal
+                    open={this.state.isDeleteErrorModalOpen}
+                    onCancel={this.onCancelDelete} 
+                    onConfirm={null}
+                    title={intl.formatMessage({
+                        id: FM.ENTITYCREATOREDITOR_DELETE_ERROR_TITLE,
+                        defaultMessage: 'Unable to delete'
+                    })}
+                    warning={
+                        intl.formatMessage({
+                            id: FM.ENTITYCREATOREDITOR_DELETE_ERROR_WARNING,
+                            defaultMessage: 'Used by one or more Actions'
+                        })}
+                />
             </Modal>
         )
     }
@@ -497,7 +646,9 @@ const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         createEntityAsync,
         editEntityAsync,
-        fetchApplicationTrainingStatusThunkAsync
+        fetchApplicationTrainingStatusThunkAsync,
+        fetchEntityDeleteValidationThunkAsync,
+        fetchEntityEditValidationThunkAsync
     }, dispatch);
 }
 const mapStateToProps = (state: State, ownProps: any) => {
@@ -509,12 +660,13 @@ const mapStateToProps = (state: State, ownProps: any) => {
 }
 
 export interface ReceivedProps {
+    app: BlisAppBase,
+    editingPackageId: string,
     open: boolean,
     entity: EntityBase | null,
-    handleClose: Function,
-    entityTypeFilter: EntityType | null,
-    app: BlisAppBase
-    handleOpenDeleteModal: (entityId: string) => void
+    entityTypeFilter: EntityType | null
+    handleClose: () => void,
+    handleDelete: (entityId: string) => void
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps

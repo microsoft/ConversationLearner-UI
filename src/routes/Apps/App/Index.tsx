@@ -43,7 +43,7 @@ class Index extends React.Component<Props, ComponentState> {
 
         // Note: In future change fetch log dialogs to default to all package if no package set
         let allPackages = (packageId === app.devPackageId)
-                ? app.packageVersions.map(pv => pv.packageId).join(",") + `,${packageId}`
+                ? app.packageVersions.map(pv => pv.packageId).concat(packageId).join(',')
                 : packageId
         
         this.props.setCurrentBLISApp(this.props.user.id, app)

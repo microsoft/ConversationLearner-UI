@@ -4,10 +4,13 @@ import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import Plain from 'slate-plain-serializer'
-import { fetchBotInfoAsync } from '../../actions/fetchActions'
+import { 
+    fetchBotInfoAsync,
+    fetchActionDeleteValidationThunkAsync,
+    fetchActionEditValidationThunkAsync } from '../../actions/fetchActions'
 import { Modal } from 'office-ui-fabric-react/lib/Modal'
 import { ActionBase, ActionTypes, BlisAppBase, EntityBase, EntityType, RenderedActionArgument, TextAction, ApiAction, CardAction, IActionArgument } from 'blis-models'
-import ConfirmDeleteModal from './ConfirmDeleteModal'
+import ConfirmCancelModal from './ConfirmCancelModal'
 import EntityCreatorEditor from './EntityCreatorEditor'
 import AdaptiveCardViewer from './AdaptiveCardViewer/AdaptiveCardViewer'
 import * as ActionPayloadEditor from './ActionPayloadEditor'
@@ -99,8 +102,11 @@ interface ComponentState {
     isEntityEditorModalOpen: boolean
     isCardViewerModalOpen: boolean
     isConfirmDeleteModalOpen: boolean
+    isConfirmEditModalOpen: boolean
+    showValidationWarning: boolean
     isPayloadFocused: boolean
     isPayloadValid: boolean
+    newOrEditedAction: ActionBase
     selectedActionTypeOptionKey: string | number
     availableExpectedEntityTags: OF.ITag[]
     entityTags: OF.ITag[]
@@ -121,8 +127,11 @@ const initialState: ComponentState = {
     isEntityEditorModalOpen: false,
     isCardViewerModalOpen: false,
     isConfirmDeleteModalOpen: false,
+    isConfirmEditModalOpen: false,
+    showValidationWarning: null,
     isPayloadFocused: false,
     isPayloadValid: false,
+    newOrEditedAction: null,
     selectedActionTypeOptionKey: actionTypeOptions[0].key,
     availableExpectedEntityTags: [],
     entityTags: [],
@@ -309,7 +318,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         this.setState(prevState => nextState)
     }
 
-    onChangeWaitCheckbox = () => {
+    @autobind
+    onChangeWaitCheckbox() {
         this.setState(prevState => ({
             isTerminal: !prevState.isTerminal
         }))
@@ -390,7 +400,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             }))
     }
 
-    onClickSubmit = () => {
+    convertStateToEntity(): ActionBase {
         let payload: string = null;
 
         /**
@@ -465,41 +475,108 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         if (this.state.isEditing) {
             newOrEditedAction.actionId = this.props.action.actionId
         }
-
-        this.props.onClickSubmit(newOrEditedAction)
+        return newOrEditedAction;
     }
 
-    onClickCancel = () => {
-        this.props.onClickCancel()
-    }
+    @autobind
+    onClickSaveCreate() {
+        let newOrEditedAction = this.convertStateToEntity();
 
-    onClickDelete = () => {
-        this.setState({
-            isConfirmDeleteModalOpen: true
+        // If a new action just create it
+        if (!this.state.isEditing) {
+            this.props.handleEdit(newOrEditedAction);
+            return;
+        }
+
+        // Otherwise need to validate changes
+        ((this.props.fetchActionEditValidationThunkAsync(this.props.app.appId, this.props.editingPackageId, newOrEditedAction) as any) as Promise<string[]>)
+        .then(invalidTrainingDialogIds => {
+
+            if (invalidTrainingDialogIds) {
+                if (invalidTrainingDialogIds.length > 0) {
+                    this.setState(
+                    {
+                        isConfirmEditModalOpen: true,
+                        showValidationWarning: true,
+                        newOrEditedAction: newOrEditedAction
+                    });
+                } else {
+                    this.props.handleEdit(newOrEditedAction);
+                }
+            }
+        })
+        .catch(error => {
+            console.warn(`Error when attempting to validate edit: `, error)
         })
     }
 
-    onCancelDelete = () => {
+    @autobind
+    onClickCancel() {
+        this.props.handleClose()
+    }
+
+    @autobind
+    onClickDelete() {
+
+        ((this.props.fetchActionDeleteValidationThunkAsync(this.props.app.appId, this.props.editingPackageId, this.props.action.actionId) as any) as Promise<string[]>)
+            .then(invalidTrainingDialogIds => {
+
+                if (invalidTrainingDialogIds) {
+                    this.setState(
+                    {
+                        isConfirmDeleteModalOpen: true,
+                        showValidationWarning: invalidTrainingDialogIds.length > 0
+                    });
+                }
+            })
+            .catch(error => {
+                console.warn(`Error when attempting to validate delete: `, error)
+            }
+        )
+    }
+
+    @autobind
+    onCancelDelete() {
         this.setState({
             isConfirmDeleteModalOpen: false
         })
     }
 
-    onConfirmDelete = () => {
+    @autobind
+    onCancelEdit() {
+        this.setState({
+            isConfirmEditModalOpen: false,
+            newOrEditedAction: null
+        })
+    }
+
+    @autobind
+    onConfirmEdit() {
+        this.props.handleEdit(this.state.newOrEditedAction);
+        this.setState({
+            isConfirmEditModalOpen: false,
+            newOrEditedAction: null
+        })
+    }
+
+    @autobind
+    onConfirmDelete() {
         this.setState(
             { isConfirmDeleteModalOpen: false },
             () => {
-                this.props.onClickDelete(this.props.action)
+                this.props.handleDelete(this.props.action)
             })
     }
 
-    onClickCreateEntity = () => {
+    @autobind
+    onClickCreateEntity() {
         this.setState({
             isEntityEditorModalOpen: true
         })
     }
 
-    onCloseEntityEditor = () => {
+    @autobind
+    onCloseEntityEditor() {
         this.setState({
             isEntityEditorModalOpen: false,
             selectedApiOptionKey: null,
@@ -507,8 +584,9 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         })
     }
 
-    onDismissModal = () => {
-        this.props.onClickCancel()
+    @autobind
+    onDismissModal() {
+        this.props.handleClose()
     }
 
     onChangedActionType = (actionTypeOption: OF.IDropdownOption) => {
@@ -612,7 +690,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     // Payload editor is trying to submit action
     onSubmitPayloadEditor(): void {
         if (!this.saveDisabled()) {
-            this.onClickSubmit();
+            this.onClickSaveCreate();
         }
     }
 
@@ -671,7 +749,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         return (
             <Modal
                 isOpen={this.props.open}
-                onDismiss={() => this.onDismissModal()}
+                onDismiss={this.onDismissModal}
                 isBlocking={false}
                 containerClassName="blis-modal blis-modal--medium"
             >
@@ -795,7 +873,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                         {this.state.selectedActionTypeOptionKey === ActionTypes.TEXT
                             && (<div className={(this.state.isPayloadValid ? '' : 'editor--error')}>
                                 <div>
-                                    <OF.Label>Response... <HelpIcon tipType={this.state.selectedActionTypeOptionKey === ActionTypes.API_LOCAL ?
+                                    <OF.Label>Response... <HelpIcon 
+                                        tipType={this.state.selectedActionTypeOptionKey === ActionTypes.API_LOCAL ?
                                         ToolTip.TipType.ACTION_ARGUMENTS : ToolTip.TipType.ACTION_RESPONSE_TEXT} /></OF.Label>
                                     <ActionPayloadEditor.Editor
                                         options={optionsAvailableForPayload}
@@ -878,7 +957,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                             <TC.Checkbox
                                 label="Wait for Response?"
                                 checked={this.state.isTerminal}
-                                onChange={() => this.onChangeWaitCheckbox()}
+                                onChange={this.onChangeWaitCheckbox}
                                 style={{ marginTop: '1em', display: 'inline-block' }}
                                 disabled={this.state.isEditing}
                                 tipType={ToolTip.TipType.ACTION_WAIT}
@@ -891,7 +970,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     <div className="blis-modal-buttons_primary">
                         <OF.PrimaryButton
                             disabled={this.saveDisabled()}
-                            onClick={() => this.onClickSubmit()}
+                            onClick={this.onClickSaveCreate}
                             ariaDescription={this.state.isEditing ?
                                 intl.formatMessage({
                                     id: FM.ACTIONCREATOREDITOR_SAVEBUTTON_ARIADESCRIPTION,
@@ -913,7 +992,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                         />
 
                         <OF.DefaultButton
-                            onClick={() => this.onClickCancel()}
+                            onClick={this.onClickCancel}
                             ariaDescription={intl.formatMessage({
                                 id: FM.ACTIONCREATOREDITOR_CANCELBUTTON_ARIADESCRIPTION,
                                 defaultMessage: 'Cancel'
@@ -926,7 +1005,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
                         {this.state.isEditing &&
                             <OF.DefaultButton
-                                onClick={() => this.onClickDelete()}
+                                onClick={this.onClickDelete}
                                 ariaDescription={intl.formatMessage({
                                     id: FM.ACTIONCREATOREDITOR_DELETEBUTTON_ARIADESCRIPTION,
                                     defaultMessage: 'Delete'
@@ -953,25 +1032,48 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                             />
                         }
                         <OF.PrimaryButton
-                            onClick={() => this.onClickCreateEntity()}
+                            onClick={this.onClickCreateEntity}
                             ariaDescription="Create Entity"
                             text="Entity"
                             iconProps={{ iconName: 'CirclePlus' }}
                         />
                     </div>
                 </div>
-                <ConfirmDeleteModal
+                <ConfirmCancelModal
                     open={this.state.isConfirmDeleteModalOpen}
-                    onCancel={() => this.onCancelDelete()}
-                    onConfirm={() => this.onConfirmDelete()}
-                    title="Are you sure you want to delete this action?"
+                    onCancel={this.onCancelDelete}
+                    onConfirm={this.onConfirmDelete}
+                    title={intl.formatMessage({
+                            id: FM.ACTIONCREATOREDITOR_CONFIRM_DELETE_TITLE,
+                            defaultMessage: 'Are you sure you want to delete this action?'
+                        })}
+                    warning={this.state.showValidationWarning &&
+                        intl.formatMessage({
+                            id: FM.ACTIONCREATOREDITOR_CONFIRM_DELETE_WARNING,
+                            defaultMessage: 'This will invalidate one or more Training Dialogs'
+                        })}
+                />
+                <ConfirmCancelModal
+                    open={this.state.isConfirmEditModalOpen}
+                    onCancel={this.onCancelEdit} 
+                    onConfirm={this.onConfirmEdit}
+                    title={intl.formatMessage({
+                            id: FM.ACTIONCREATOREDITOR_CONFIRM_EDIT_TITLE,
+                            defaultMessage: 'Are you sure you want to edit this action?'
+                        })}
+                    warning={this.state.showValidationWarning &&
+                        intl.formatMessage({
+                            id: FM.ACTIONCREATOREDITOR_CONFIRM_EDIT_WARNING,
+                            defaultMessage: 'This will invalidate one or more Training Dialogs'
+                        })}
                 />
                 <EntityCreatorEditor
                     app={this.props.app}
+                    editingPackageId={this.props.editingPackageId}
                     open={this.state.isEntityEditorModalOpen}
                     entity={null}
-                    handleClose={() => this.onCloseEntityEditor()}
-                    handleOpenDeleteModal={() => { }}
+                    handleClose={this.onCloseEntityEditor}
+                    handleDelete={() => {}}
                     entityTypeFilter={null}
                 />
                 <AdaptiveCardViewer
@@ -987,7 +1089,9 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        fetchBotInfoAsync
+        fetchBotInfoAsync,
+        fetchActionDeleteValidationThunkAsync,
+        fetchActionEditValidationThunkAsync
     }, dispatch);
 }
 const mapStateToProps = (state: State, ownProps: any) => {
@@ -999,11 +1103,12 @@ const mapStateToProps = (state: State, ownProps: any) => {
 
 export interface ReceiveProps {
     app: BlisAppBase
+    editingPackageId: string
     open: boolean
     action: ActionBase | null
-    onClickSubmit: (action: ActionBase) => void
-    onClickCancel: () => void
-    onClickDelete: (action: ActionBase) => void
+    handleEdit: (action: ActionBase) => void
+    handleClose: () => void
+    handleDelete: (action: ActionBase) => void
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
