@@ -84,7 +84,7 @@ class ReplayErrorList extends React.Component<Props, {}> {
     }
 
     render() {
-        const { intl } = this.props
+        const { intl, formattedTitleId, formattedMessageId } = this.props
         return (
             <Modal
                 isOpen={this.props.open}
@@ -94,18 +94,18 @@ class ReplayErrorList extends React.Component<Props, {}> {
             >
                 <div className="blis-modal_header">
                     <span className={OF.FontClassNames.xxLarge}>
-                        <FormattedMessage
+                        {formattedTitleId && <FormattedMessage
                             id={this.props.formattedTitleId}
-                            defaultMessage={this.props.formattedTitleId}
-                        />
+                            defaultMessage="Default Error Title"
+                        />}
                     </span>
                 </div>
                 <div className="blis-modal_subheader blis-underline">
                     <span className={OF.FontClassNames.mediumPlus}>
-                        <FormattedMessage
+                        {formattedMessageId && <FormattedMessage
                             id={this.props.formattedMessageId}
-                            defaultMessage={this.props.formattedMessageId}
-                        />
+                            defaultMessage="Default Error Message"
+                        />}
                     </span>
                 </div>
                 <OF.List
