@@ -18,7 +18,7 @@
   "dependencies": {
     "adaptivecards": "^1.0.0-beta9",
     "axios": "^0.16.2",
-    "blis-models": "0.133.0",
+    "blis-models": "0.134.0",
     "blis-webchat": "0.102.0",
     "botframework-directlinejs": "^0.9.12",
     "draft-js": "^0.10.4",
