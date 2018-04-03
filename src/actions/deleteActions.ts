@@ -32,13 +32,20 @@ export const deleteEntityThunkAsync = (appId: string, entityId: string, reverseE
         const blisClient = ClientFactory.getInstance(AT.DELETE_ENTITY_ASYNC)
 
         try {
-            await blisClient.entitiesDelete(appId, entityId);
+            let deleteReverseResponse = null;
+            const deleteEditResponse = await blisClient.entitiesDelete(appId, entityId);
             dispatch(deleteEntityFulfilled(entityId));
 
             // If it's a negatable entity
             if (reverseEntityId) {
-                await blisClient.entitiesDelete(appId, reverseEntityId);
+                deleteReverseResponse = await blisClient.entitiesDelete(appId, reverseEntityId);
                 dispatch(deleteEntityFulfilled(reverseEntityId));
+            }
+
+            // Fetch train dialogs if any train dialogs were impacted
+            if ((deleteEditResponse.trainDialogIds && deleteEditResponse.trainDialogIds.length > 0) ||
+                (deleteReverseResponse && deleteReverseResponse.trainDialogIds && deleteReverseResponse.trainDialogIds.length > 0)) {
+                dispatch(fetchAllTrainDialogsAsync(appId));
             }
 
             dispatch(fetchApplicationTrainingStatusThunkAsync(appId));
@@ -67,7 +74,7 @@ const deleteEntityFulfilled = (entityId: string): ActionObject => {
 }
 
 // ---------------------
-// Delete Action
+// Action
 // ---------------------
 export const deleteActionThunkAsync = (appId: string, actionId: string) => {
     return async (dispatch: Dispatch<any>) => {
@@ -75,8 +82,14 @@ export const deleteActionThunkAsync = (appId: string, actionId: string) => {
         const blisClient = ClientFactory.getInstance(AT.DELETE_ACTION_ASYNC)
 
         try {
-            await blisClient.actionsDelete(appId, actionId);
+            const deleteEditResponse = await blisClient.actionsDelete(appId, actionId);
             dispatch(deleteActionFulfilled(actionId));
+
+            // Fetch train dialogs if any train dialogs were impacted
+            if (deleteEditResponse.trainDialogIds && deleteEditResponse.trainDialogIds.length > 0) {
+                dispatch(fetchAllTrainDialogsAsync(appId));
+            }
+
             dispatch(fetchApplicationTrainingStatusThunkAsync(appId));
             return true;
         } catch (e) {

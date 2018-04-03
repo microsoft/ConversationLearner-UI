@@ -183,12 +183,12 @@ export default class BlisClient {
             })
     }
 
-    entitiesDelete(appId: string, entityId: string): Promise<void> {
+    entitiesDelete(appId: string, entityId: string): Promise<models.DeleteEditResponse> {
         return this.send({
             method: 'delete',
             url: `${this.baseUrl}/app/${appId}/entity/${entityId}`
         })
-            .then(response => { })
+            .then(response => response.data)
     }
 
     entitiesDeleteValidation(appId: string, packageId: string, entityId: string): Promise<string[]> {
@@ -243,12 +243,12 @@ export default class BlisClient {
             })
     }
 
-    actionsDelete(appId: string, actionId: string): Promise<void> {
+    actionsDelete(appId: string, actionId: string): Promise<models.DeleteEditResponse> {
         return this.send({
             method: 'delete',
             url: `${this.baseUrl}/app/${appId}/action/${actionId}`
         })
-            .then(response => { })
+            .then(response => response.data)
     }
 
     actionsDeleteValidation(appId: string, packageId: string, actionId: string): Promise<string[]> {
@@ -259,14 +259,14 @@ export default class BlisClient {
             .then(response => response.data)
     }
 
-    actionsUpdate(appId: string, action: models.ActionBase): Promise<models.ActionBase> {
+    actionsUpdate(appId: string, action: models.ActionBase): Promise<models.DeleteEditResponse> {
         const { actionId, version, packageCreationId, packageDeletionId, ...actionToSend } = action
         return this.send({
             method: 'put',
             url: `${this.baseUrl}/app/${appId}/action/${action.actionId}`,
             data: actionToSend
         })
-            .then(response => action)
+            .then(response => response.data)
     }
 
     actionsUpdateValidation(appId: string, packageId: string, action: models.ActionBase): Promise<string[]> {
