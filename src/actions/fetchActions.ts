@@ -18,10 +18,9 @@ import { Dispatch } from 'redux'
 import * as ClientFactory from '../services/clientFactory'
 import { setErrorDisplay } from './displayActions'
 
-export const fetchAllTrainDialogsAsync = (key: string, blisAppID: string): ActionObject => {
+export const fetchAllTrainDialogsAsync = (blisAppID: string): ActionObject => {
     return {
         type: AT.FETCH_TRAIN_DIALOGS_ASYNC,
-        key: key,
         blisAppID: blisAppID
     }
 }
@@ -44,7 +43,7 @@ export const fetchHistoryThunkAsync = (appId: string, trainDialog: TrainDialog, 
     }
 }
 
-export const fetchHistoryAsync = (blisAppID: string, trainDialog: TrainDialog, userName: string, userId: string): ActionObject => {
+const fetchHistoryAsync = (blisAppID: string, trainDialog: TrainDialog, userName: string, userId: string): ActionObject => {
     return {
         type: AT.FETCH_HISTORY_ASYNC,
         blisAppID: blisAppID,
@@ -54,7 +53,7 @@ export const fetchHistoryAsync = (blisAppID: string, trainDialog: TrainDialog, u
     }
 }
 
-export const fetchHistoryFulfilled = (teachWithHistory: TeachWithHistory): ActionObject => {
+const fetchHistoryFulfilled = (teachWithHistory: TeachWithHistory): ActionObject => {
     // Needs a fulfilled version to handle response from Epic
     return {
         type: AT.FETCH_HISTORY_FULFILLED,

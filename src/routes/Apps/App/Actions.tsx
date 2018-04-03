@@ -2,9 +2,9 @@ import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { createActionAsync } from '../../../actions/createActions'
-import { editActionAsync } from '../../../actions/updateActions'
-import { deleteActionAsync } from '../../../actions/deleteActions'
+import { createActionThunkAsync } from '../../../actions/createActions'
+import { editActionThunkAsync } from '../../../actions/updateActions'
+import { deleteActionThunkAsync } from '../../../actions/deleteActions'
 import { fetchApplicationTrainingStatusThunkAsync } from '../../../actions/fetchActions'
 import ActionDetailsList from '../../../components/ActionDetailsList'
 import * as OF from 'office-ui-fabric-react';
@@ -71,31 +71,32 @@ class Actions extends React.Component<Props, ComponentState> {
     }
 
     onClickDeleteActionEditor(action: ActionBase) {
-        this.setState({
+        this.setState(
+            {
             isActionEditorOpen: false,
             actionSelected: null
-        }, () => {
-            this.props.deleteActionAsync(action.actionId, action, this.props.app.appId)
-            this.props.fetchApplicationTrainingStatusThunkAsync(this.props.app.appId)
-        })
+            }, 
+            () => {
+                this.props.deleteActionThunkAsync(this.props.app.appId, action.actionId)
+            }
+        )
     }
 
     onClickSubmitActionEditor(action: ActionBase) {
         const wasEditing = this.state.actionSelected
 
-        this.setState({
-            isActionEditorOpen: false,
-            actionSelected: null
-        }, () => {
-            if (wasEditing) {
-                this.props.editActionAsync(action, this.props.app.appId)
-            }
-            else {
-                this.props.createActionAsync(action, this.props.app.appId)
-            }
-
-            this.props.fetchApplicationTrainingStatusThunkAsync(this.props.app.appId)
-        })
+        this.setState(
+            {
+                isActionEditorOpen: false,
+                actionSelected: null
+            }, 
+            () => {
+                if (wasEditing) {
+                    this.props.editActionThunkAsync(this.props.app.appId, action)
+                } else {
+                    this.props.createActionThunkAsync(this.props.app.appId, action)
+                }
+            })
     }
 
     getFilteredActions(): ActionBase[] {
@@ -197,9 +198,9 @@ class Actions extends React.Component<Props, ComponentState> {
 
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        createActionAsync,
-        editActionAsync,
-        deleteActionAsync,
+        createActionThunkAsync,
+        editActionThunkAsync,
+        deleteActionThunkAsync,
         fetchApplicationTrainingStatusThunkAsync
     }, dispatch)
 }

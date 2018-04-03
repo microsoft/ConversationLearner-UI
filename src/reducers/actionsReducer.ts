@@ -17,10 +17,9 @@ const actionsReducer: Reducer<ActionState> = (state = initialState, actionObject
         case AT.CREATE_BLIS_APPLICATION_FULFILLED:
             return [...initialState]
         case AT.CREATE_ACTION_FULFILLED:
-            let newAction = { ...actionObject.action, actionId: actionObject.actionId };
-            return [...state, newAction];
+            return [...state, actionObject.action];
         case AT.DELETE_ACTION_FULFILLED:
-            return state.filter(a => a.actionId !== actionObject.actionGUID)
+            return state.filter(a => a.actionId !== actionObject.actionId)
         case AT.EDIT_ACTION_FULFILLED:
             return replace(state, actionObject.blisAction, a => a.actionId)
         default:

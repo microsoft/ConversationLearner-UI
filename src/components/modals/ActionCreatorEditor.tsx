@@ -146,11 +146,15 @@ const initialState: ComponentState = {
 }
 
 class ActionCreatorEditor extends React.Component<Props, ComponentState> {
-    private openState: ComponentState = initialState;
     state = initialState;
 
     componentWillMount() {
+        this.setState(this.initProps())
+    }
+
+    initProps(): ComponentState {
         const { entities, botInfo } = this.props
+
         const entityTags = entities.map<OF.ITag>(e =>
             ({
                 key: e.entityId,
@@ -178,80 +182,78 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 key: v.name,
                 text: v.name
             }))
-
-        this.openState = {
-            ...initialState,
+    
+        return {
+           ...initialState,
             apiOptions,
             cardOptions,
             availableExpectedEntityTags,
             entityTags,
             isEditing: !!this.props.action
         }
-
-        this.setState(this.openState)
     }
 
     componentWillReceiveProps(nextProps: Props) {
         let nextState = {}
 
-        // Update local copy of entity tags if they have changed
-        if (nextProps.entities !== this.props.entities) {
-            const entityTags = nextProps.entities.map<OF.ITag>(e =>
-                ({
-                    key: e.entityId,
-                    name: e.entityName
-                }))
-
-            const availableExpectedEntityTags = nextProps.entities
-                .filter(e => e.entityType !== EntityType.LOCAL)
-                .map<OF.ITag>(e =>
-                    ({
-                        key: e.entityId,
-                        name: e.entityName
-                    }))
-
-            nextState = {
-                ...nextState,
-                availableExpectedEntityTags,
-                entityTags
-            }
-        }
-
-        if (nextProps.botInfo.callbacks !== this.props.botInfo.callbacks) {
-            const { botInfo } = nextProps
-            const callbacks = (botInfo && botInfo.callbacks || [])
-            const apiOptions = callbacks.map<OF.IDropdownOption>(v =>
-                ({
-                    key: v.name,
-                    text: v.name
-                }))
-
-            nextState = {
-                ...nextState,
-                apiOptions
-            }
-        }
-
-        if (nextProps.botInfo.templates !== this.props.botInfo.templates) {
-            const { botInfo } = nextProps
-            const templates = (botInfo && botInfo.templates || [])
-            const cardOptions = templates.map<OF.IDropdownOption>(v =>
-                ({
-                    key: v.name,
-                    text: v.name
-                }))
-
-            nextState = {
-                ...nextState,
-                cardOptions
-            }
-        }
-
         if (nextProps.open === true) {
+
             // Reset state every time dialog was closed and is opened
             if (this.props.open === false) {
-                nextState = {
-                    ...this.openState
+                nextState = this.initProps();
+            }
+            // Otherwise reset only if props have changed
+            else {
+                if (nextProps.entities !== this.props.entities) {
+                    const entityTags = nextProps.entities.map<OF.ITag>(e =>
+                        ({
+                            key: e.entityId,
+                            name: e.entityName
+                        }))
+
+                    const availableExpectedEntityTags = nextProps.entities
+                        .filter(e => e.entityType !== EntityType.LOCAL)
+                        .map<OF.ITag>(e =>
+                            ({
+                                key: e.entityId,
+                                name: e.entityName
+                            }))
+
+                    nextState = {
+                        ...nextState,
+                        availableExpectedEntityTags,
+                        entityTags
+                    }
+                }
+
+                if (nextProps.botInfo.callbacks !== this.props.botInfo.callbacks) {
+                    const { botInfo } = nextProps
+                    const callbacks = (botInfo && botInfo.callbacks || [])
+                    const apiOptions = callbacks.map<OF.IDropdownOption>(v =>
+                        ({
+                            key: v.name,
+                            text: v.name
+                        }))
+
+                    nextState = {
+                        ...nextState,
+                        apiOptions
+                    }
+                }
+
+                if (nextProps.botInfo.templates !== this.props.botInfo.templates) {
+                    const { botInfo } = nextProps
+                    const templates = (botInfo && botInfo.templates || [])
+                    const cardOptions = templates.map<OF.IDropdownOption>(v =>
+                        ({
+                            key: v.name,
+                            text: v.name
+                        }))
+
+                    nextState = {
+                        ...nextState,
+                        cardOptions
+                    }
                 }
             }
 
@@ -331,10 +333,12 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             throw new Error(`Could not find api callback with name: ${apiOption.key}`)
         }
 
-        // Initialize a new empyt slate value for each of the arguments in the callback
+        // Initialize a new empty slate value for each of the arguments in the callback
         const newSlateValues = apiCallback.arguments
             .reduce((values, argument) => {
-                values[argument] = Plain.deserialize('')
+                // Preserve old values if any transfer
+                const oldValue = this.state.slateValuesMap[argument];
+                values[argument] = oldValue || Plain.deserialize('')
                 return values
             }, {})
 
@@ -733,12 +737,12 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         // Disable payload if we're editing existing action and no API or CARD data available
         const isPayloadDisabled =
             (this.state.selectedActionTypeOptionKey === ActionTypes.API_LOCAL
-                && (this.state.isEditing || this.state.apiOptions.length === 0))
+                && (this.state.apiOptions.length === 0))
             ||
             (this.state.selectedActionTypeOptionKey === ActionTypes.CARD
-                && (this.state.isEditing || this.state.cardOptions.length === 0));
+                && (this.state.cardOptions.length === 0));
 
-        // Available Mentions: All entities - expected entity - required entities from payload - blocking entities
+        // Available Mentions: All entities - expected entity - required entities from payload - disqualified entities
         const unavailableTags = [...this.state.expectedEntityTags, ...this.state.requiredEntityTagsFromPayload, ...this.state.negativeEntityTags]
         const optionsAvailableForPayload = this.props.entities
             .filter(e => !unavailableTags.some(t => t.key === e.entityId))
@@ -775,7 +779,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                     options={this.state.apiOptions}
                                     onChanged={(apiOption) => this.onChangedApiOption(apiOption)}
                                     selectedKey={this.state.selectedApiOptionKey}
-                                    disabled={this.state.apiOptions.length === 0 || this.state.isEditing}
+                                    disabled={this.state.apiOptions.length === 0}
                                     placeHolder={this.state.apiOptions.length === 0 ? 'NONE DEFINED' : 'API name...'}
                                     tipType={ToolTip.TipType.ACTION_API}
                                 />
@@ -796,7 +800,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                     options={this.state.cardOptions}
                                     onChanged={(cardOption) => this.onChangedCardOption(cardOption)}
                                     selectedKey={this.state.selectedCardOptionKey}
-                                    disabled={this.state.cardOptions.length === 0 || this.state.isEditing}
+                                    disabled={this.state.cardOptions.length === 0}
                                     placeHolder={this.state.cardOptions.length === 0 ? 'NONE DEFINED' : 'Template name...'}
                                     tipType={ToolTip.TipType.ACTION_CARD}
                                 />
@@ -839,7 +843,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                     })
                                 ) :
                                 <div className="blis-errorpanel" >
-                                    <div>ERROR: Can't Find Template: ${this.state.selectedCardOptionKey}</div>
+                                    <div>ERROR: Bot missing Template: ${this.state.selectedCardOptionKey}</div>
                                 </div>
                             )
                         }
@@ -865,7 +869,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                     })
                                 ) :
                                 <div className="blis-errorpanel" >
-                                    <div>ERROR: Missing API: ${this.state.selectedApiOptionKey}</div>
+                                    <div>ERROR: Bot Missing API: ${this.state.selectedApiOptionKey}</div>
                                 </div>
                             )
                         }
@@ -934,9 +938,9 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                             />
                         </div>
 
-                        <div className="blis-action-creator--blocking-entities">
+                        <div className="blis-action-creator--disqualifying-entities">
                             <TC.TagPicker
-                                label="Blocking Entities"
+                                label="Disqualifying Entities"
                                 onResolveSuggestions={(text, tags) => this.onResolveNegativeEntityTags(text, tags)}
                                 onRenderItem={this.onRenderNegativeEntityTag}
                                 getTextFromItem={item => item.name}

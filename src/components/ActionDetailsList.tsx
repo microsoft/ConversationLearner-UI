@@ -8,6 +8,7 @@ import { onRenderDetailsHeader } from './ToolTips'
 import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../react-intl-messages'
 import * as Util from '../util'
+import { Icon } from 'office-ui-fabric-react/lib/Icon'
 import AdaptiveCardViewer from './modals/AdaptiveCardViewer/AdaptiveCardViewer'
 
 class ActionDetailsList extends React.Component<Props, ComponentState> {
@@ -19,6 +20,26 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
             cardViewerAction: null
         }
         this.onClickColumnHeader = this.onClickColumnHeader.bind(this);
+    }
+
+    validationError(action: ActionBase): boolean {
+        switch (action.actionType) {
+            case ActionTypes.TEXT: {
+                return null;
+            }
+            case ActionTypes.API_LOCAL: {
+                const apiAction = new ApiAction(action)
+                return (!this.props.botInfo.callbacks || !this.props.botInfo.callbacks.find(t => t.name === apiAction.name)) 
+            }
+            case ActionTypes.CARD: {
+                const cardAction = new CardAction(action)
+                return (!this.props.botInfo.templates || !this.props.botInfo.templates.find(cb => cb.name === cardAction.templateName))
+            }
+            default: {
+                console.warn(`Could not get validation for unknown action type: ${action.actionType}`)
+                return true;
+            }
+        }
     }
 
     sortActions(): ActionBase[] {
@@ -93,7 +114,7 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
         if (this.state.cardViewerAction) {
             const cardAction = new CardAction(this.state.cardViewerAction)
             const entityMap = Util.getDefaultEntityMap(this.props.entities)
-            template = this.props.templates.find((t) => t.name === cardAction.templateName);
+            template = this.props.botInfo.templates.find((t) => t.name === cardAction.templateName);
             // TODO: This is hack to make adaptive card viewer accept action arguments with pre-rendered values
             renderedActionArguments = cardAction.renderArguments(entityMap)
                 .filter(aa => !Util.isNullOrWhiteSpace(aa.value))
@@ -128,7 +149,7 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
 const mapStateToProps = (state: State) => {
     return {
         entities: state.entities,
-        templates: state.bot.botInfo && state.bot.botInfo.templates
+        botInfo: state.bot.botInfo
     }
 }
 
@@ -184,10 +205,16 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                     .map(aa => aa.renderValue(entityMap))
                     .filter(s => !Util.isNullOrWhiteSpace(s))
 
+                const validationError = component.validationError(action);
+
+                const textClassName = validationError ?
+                    `${OF.FontClassNames.mediumPlus} blis-font--highlight`: OF.FontClassNames.mediumPlus;
+
                 return (
                     <div>
                         {action.actionType === ActionTypes.CARD &&
                             <OF.PrimaryButton
+                                disabled={validationError}
                                 className="blis-button--viewCard"
                                 onClick={() => component.onClickViewCard(action)}
                                 ariaDescription="ViewCard"
@@ -196,10 +223,11 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                             />
                         }
                         <span 
-                            className={OF.FontClassNames.mediumPlus} 
+                            className={textClassName} 
                             onClick={() => component.props.onSelectAction ? component.props.onSelectAction(action) : null}
                         >
                             {ActionBase.GetPayload(action, entityMap)}
+                            {validationError && <Icon className="blis-icon" iconName="IncidentTriangle" />}
                         </span>
                         {args.length !== 0 &&
                             args.map((argument, i) => <div className="ms-ListItem-primaryText" key={i}>{argument}</div>)
@@ -249,8 +277,8 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
         {
             key: 'negativeEntities',
             name: intl.formatMessage({
-                id: FM.ACTIONDETAILSLIST_COLUMNS_BLOCKINGENTITIES,
-                defaultMessage: 'Blocking Entities'
+                id: FM.ACTIONDETAILSLIST_COLUMNS_DISQUALIFYINGENTITIES,
+                defaultMessage: 'Disqualifying Entities'
             }),
             fieldName: 'negativeEntities',
             minWidth: 100,

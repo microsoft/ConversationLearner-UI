@@ -8,12 +8,18 @@ import { State } from '../../types'
 import { ErrorHandler } from '../../ErrorHandler'
 import { FontClassNames } from 'office-ui-fabric-react'
 import { DefaultButton } from 'office-ui-fabric-react/lib/Button';
-import { injectIntl, InjectedIntlProps } from 'react-intl'
+import { injectIntl, InjectedIntlProps, InjectedIntl } from 'react-intl'
 import { AT } from '../../types/ActionTypes'
+import { FM } from '../../react-intl-messages'
 
 class ErrorPanel extends React.Component<Props, {}> {
 
     static callbacks: ((actionType: AT) => void)[] = [];
+
+    static customErrors = 
+        {
+            'Network Error' : FM.CUSTOMERROR_NETWORK_ERROR
+        };
 
     public static registerCallback(actionType: AT, callback: (at: AT) => void[]): void {
         if (!ErrorPanel.callbacks[actionType]) {
@@ -49,8 +55,22 @@ class ErrorPanel extends React.Component<Props, {}> {
         );
       }
 
+    getCustomError(intl: InjectedIntl): string {
+        if (this.props.error) {
+            let fm = ErrorPanel.customErrors[this.props.error.error];
+            return fm &&
+                intl.formatMessage({
+                    id: fm,
+                    defaultMessage: fm
+                })
+        }
+        return null;
+    }
+
     render() {
         let key = 0;
+        const { intl } = this.props
+        let customError = this.getCustomError(intl);
         return (
             <div>
             {this.props.error.error != null &&
@@ -77,6 +97,8 @@ class ErrorPanel extends React.Component<Props, {}> {
                             return message.length === 0 ? <br key={key++}></br> : <div key={key++} className={FontClassNames.medium}>{message}</div>;
                         })
                     }
+                    {customError &&
+                        <div className={FontClassNames.medium}>{customError}</div>}
                 </div>
                 </Panel>
             }

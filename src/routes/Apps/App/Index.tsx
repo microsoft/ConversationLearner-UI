@@ -8,7 +8,9 @@ import { RouteComponentProps } from 'react-router'
 import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { BlisAppBase, ActionBase, ActionTypes, ApiAction, CardAction } from 'blis-models'
+import { BlisAppBase, ActionBase, ActionTypes, ApiAction, CardAction, BotInfo } from 'blis-models'
+import { injectIntl, InjectedIntlProps } from 'react-intl'
+import { FM } from '../../../react-intl-messages'
 import { State } from '../../../types';
 import { setErrorDisplay } from '../../../actions/displayActions';
 import { Icon } from 'office-ui-fabric-react/lib/Icon'
@@ -19,6 +21,7 @@ import Dashboard from './Dashboard'
 import Settings from './Settings'
 import LogDialogs from './LogDialogs'
 import { FontClassNames } from 'office-ui-fabric-react'
+import { TooltipHost } from 'office-ui-fabric-react/lib/Tooltip';
 import TrainingStatus from '../../../components/TrainingStatusContainer'
 import actions from '../../../actions'
 import './Index.css'
@@ -77,18 +80,18 @@ class Index extends React.Component<Props, ComponentState> {
             this.loadApp(app, editPackageId);
         }
 
-        if (newProps.actions !== this.props.actions) {
-            let validationErrors = this.actionValidationErrors(newProps.actions);
+        if (newProps.actions !== this.props.actions || newProps.botInfo !== this.props.botInfo) {
+            let validationErrors = this.actionValidationErrors(newProps.botInfo, newProps.actions);
             this.setState({ validationErrors: validationErrors });
         }
     }
 
-    actionValidationErrors(actions: ActionBase[]): string[] {
+    actionValidationErrors(botInfo: BotInfo, actions: ActionBase[]): string[] {
         // Check for missing APIs
         const actionsMissingCallbacks = actions
             .filter(a => a.actionType === ActionTypes.API_LOCAL)
             .map(a => new ApiAction(a))
-            .filter(a => !this.props.botInfo.callbacks || !this.props.botInfo.callbacks.some(cb => cb.name === a.name))
+            .filter(a => !botInfo.callbacks || !botInfo.callbacks.some(cb => cb.name === a.name))
 
         // Make unique list of missing APIs
         const uniqueCallbackNames = actionsMissingCallbacks
@@ -98,7 +101,7 @@ class Index extends React.Component<Props, ComponentState> {
         const apiActionErrors = uniqueCallbackNames.map(api => `Action references API "${api}" not contained by running Bot.`)
 
         // Check for bad templates
-        const badTemplateErrors = this.props.botInfo.templates
+        const badTemplateErrors = botInfo.templates
             .filter(t => t.validationError !== null)
             .map(t => t.validationError)
 
@@ -106,7 +109,7 @@ class Index extends React.Component<Props, ComponentState> {
         const actionsMissingTemplates = actions
             .filter(a => a.actionType === ActionTypes.CARD)
             .map(a => new CardAction(a))
-            .filter(a => !this.props.botInfo.templates || !this.props.botInfo.templates.some(cb => cb.name === a.templateName))
+            .filter(a => !botInfo.templates || !botInfo.templates.some(cb => cb.name === a.templateName))
 
         // Make unique list of missing templates
         const uniqueTemplateNames = actionsMissingTemplates
@@ -122,13 +125,18 @@ class Index extends React.Component<Props, ComponentState> {
         ]
     }
 
+    hasInvalidTrainDialogs(): boolean {
+        return this.props.trainDialogs.filter(td => td.invalid === true).length > 0;
+    }
     render() {
-        const { match, location } = this.props
+        const { match, location, intl } = this.props
         const app: BlisAppBase = location.state.app
         const editPackageId = this.state.packageId
         const tag = (editPackageId === app.devPackageId) ? 
             'Master' :
             app.packageVersions.find(pv => pv.packageId === editPackageId).packageVersion;
+        const invalidTrainDialogs = this.hasInvalidTrainDialogs();
+        const invalidBot = this.state.validationErrors && this.state.validationErrors.length > 0;
        
         return (
             <div className="blis-app-page">
@@ -148,7 +156,19 @@ class Index extends React.Component<Props, ComponentState> {
                     <div className={`blis-nav ${FontClassNames.mediumPlus}`}>
                         <div className="blis-nav_section">
                             <NavLink className="blis-nav-link" exact to={{ pathname: `${match.url}`, state: { app } }}>
-                                <Icon iconName="BIDashboard" /><span>Dashboard</span>
+                                <Icon iconName="Home" />
+                                    <span className={invalidBot ? 'blis-font--highlight' : ''}>Home
+                                        {invalidBot &&
+                                            <TooltipHost 
+                                                content={intl.formatMessage({
+                                                    id: FM.TOOLTIP_BOTINFO_INVALID,
+                                                    defaultMessage: 'Bot not compatible'
+                                                })} 
+                                                calloutProps={{ gapSpace: 0 }}
+                                            >
+                                                <Icon className="blis-icon" iconName="IncidentTriangle" />
+                                            </TooltipHost>
+                                        }</span>
                             </NavLink>
                             <NavLink className="blis-nav-link" to={{ pathname: `${match.url}/entities`, state: { app } }}>
                                 <Icon iconName="List" /><span>Entities</span><span className="count">{this.props.entities.length}</span>
@@ -157,7 +177,20 @@ class Index extends React.Component<Props, ComponentState> {
                                 <Icon iconName="List" /><span>Actions</span><span className="count">{this.props.actions.length}</span>
                             </NavLink>
                             <NavLink className="blis-nav-link" to={{ pathname: `${match.url}/trainDialogs`, state: { app } }}>
-                                <Icon iconName="List" /><span>Train Dialogs</span><span className="count">{this.props.trainDialogs.length}</span>
+                                <Icon iconName="List" />
+                                    <span className={invalidTrainDialogs ? 'blis-font--highlight' : ''}>Train Dialogs
+                                        {invalidTrainDialogs && 
+                                            <TooltipHost 
+                                                content={intl.formatMessage({
+                                                    id: FM.TOOLTIP_TRAINDIALOG_INVALID,
+                                                    defaultMessage: 'Contains Invalid Train Dialogs'
+                                                })} 
+                                                calloutProps={{ gapSpace: 0 }}
+                                            >
+                                                <Icon className="blis-icon" iconName="IncidentTriangle" />
+                                            </TooltipHost>
+                                        }</span>
+                                    <span className="count">{this.props.trainDialogs.length}</span>
                             </NavLink>
                             <NavLink className="blis-nav-link" to={{ pathname: `${match.url}/logDialogs`, state: { app } }}>
                                 <Icon iconName="List" /><span>Log Dialogs</span>
@@ -174,11 +207,21 @@ class Index extends React.Component<Props, ComponentState> {
                     </div>
                 </div>
                 <Switch>
-                    <Route path={`${match.url}/settings`} render={props => <Settings {...props} app={app} editingPackageId={editPackageId} />} />
-                    <Route path={`${match.url}/entities`} render={props => <Entities {...props} app={app} editingPackageId={editPackageId} />} />
-                    <Route path={`${match.url}/actions`} render={props => <Actions {...props} app={app} editingPackageId={editPackageId}/>} />
-                    <Route path={`${match.url}/trainDialogs`} render={props => <TrainDialogs {...props} app={app} editingPackageId={editPackageId} filteredAction={location.state.actionFilter} filteredEntity={location.state.entityFilter} />} />
-                    <Route path={`${match.url}/logDialogs`} render={props => <LogDialogs {...props} app={app} editingPackageId={editPackageId} />} />
+                    <Route 
+                        path={`${match.url}/settings`} 
+                        render={props => <Settings {...props} app={app} editingPackageId={editPackageId} />} />
+                    <Route 
+                        path={`${match.url}/entities`} 
+                        render={props => <Entities {...props} app={app} editingPackageId={editPackageId} />} />
+                    <Route 
+                        path={`${match.url}/actions`} 
+                        render={props => <Actions {...props} app={app} editingPackageId={editPackageId}/>} />
+                    <Route 
+                        path={`${match.url}/trainDialogs`} 
+                        render={props => <TrainDialogs {...props} app={app} editingPackageId={editPackageId} filteredAction={location.state.actionFilter} filteredEntity={location.state.entityFilter} />} />
+                    <Route 
+                        path={`${match.url}/logDialogs`} 
+                        render={props => <LogDialogs {...props} app={app} editingPackageId={editPackageId} />} />
                     <Route
                         exact={true}
                         path={match.url}
@@ -216,6 +259,6 @@ export interface ReceivedProps {
 // Props types inferred from mapStateToProps & dispatchToProps
 const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
-type Props = typeof stateProps & typeof dispatchProps & RouteComponentProps<any> & ReceivedProps;
+type Props = typeof stateProps & typeof dispatchProps & RouteComponentProps<any> & ReceivedProps & InjectedIntlProps;
 
-export default connect<typeof stateProps, typeof dispatchProps, RouteComponentProps<any> & ReceivedProps>(mapStateToProps, mapDispatchToProps)(Index);
+export default connect<typeof stateProps, typeof dispatchProps, RouteComponentProps<any> & ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(Index));

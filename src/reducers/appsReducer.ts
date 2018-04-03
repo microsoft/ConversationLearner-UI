@@ -19,6 +19,10 @@ const appsReducer: Reducer<AppsState> = (state = initialState, action: ActionObj
             return { ...state, all: action.uiAppList.appList.apps, activeApps: action.uiAppList.activeApps } 
         case AT.FETCH_APPLICATION_TRAININGSTATUS_ASYNC: {
             const app = state.all.find(app => app.appId === action.appId)
+            // User may have delete the app
+            if (!app) {
+                return state;
+            }
             const newApp: App = {
                 ...app,
                 didPollingExpire: false
@@ -28,6 +32,10 @@ const appsReducer: Reducer<AppsState> = (state = initialState, action: ActionObj
         }
         case AT.FETCH_APPLICATION_TRAININGSTATUS_EXPIRED: {
             const app = state.all.find(a => a.appId === action.appId)
+            // User may have delete the app
+            if (!app) {
+                return state;
+            }
             const newApp: App = {
                 ...app,
                 didPollingExpire: true
@@ -37,6 +45,10 @@ const appsReducer: Reducer<AppsState> = (state = initialState, action: ActionObj
         }
         case AT.FETCH_APPLICATION_TRAININGSTATUS_FULFILLED: {
             const app = state.all.find(app => app.appId === action.appId)
+            // User may have delete the app
+            if (!app) {
+                return state;
+            }
             const newApp: App = {
                 ...app,
                 didPollingExpire: false,
@@ -56,7 +68,7 @@ const appsReducer: Reducer<AppsState> = (state = initialState, action: ActionObj
         case AT.SET_CURRENT_BLIS_APP_FULFILLED:
             return { ...state };
         case AT.DELETE_BLIS_APPLICATION_FULFILLED:
-            return { ...state, all: state.all.filter(app => app.appId !== action.blisAppGUID) };
+            return { ...state, all: state.all.filter(app => app.appId !== action.appId) };
         case AT.EDIT_BLIS_APPLICATION_FULFILLED:
         case AT.CREATE_APP_TAG_FULFILLED:
         case AT.EDIT_APP_LIVE_TAG_FULFILLED:

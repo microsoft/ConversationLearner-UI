@@ -1,73 +1,117 @@
 import { AT, ActionObject, ErrorType } from '../types'
 import { Dispatch } from 'redux'
-import { BlisAppBase, EntityBase, ActionBase, Session, Teach } from 'blis-models'
+import { BlisAppBase, Session, Teach } from 'blis-models'
 import { setErrorDisplay } from './displayActions'
 import { fetchAllTrainDialogsAsync, fetchAllLogDialogsAsync, fetchApplicationTrainingStatusThunkAsync } from './fetchActions'
 import * as ClientFactory from '../services/clientFactory'
 
+// ---------------------
+// App
+// ---------------------
 export const deleteBLISApplicationAsync = (blisApp: BlisAppBase): ActionObject => {
     return {
         type: AT.DELETE_BLIS_APPLICATION_ASYNC,
-        blisAppGUID: blisApp.appId,
+        appId: blisApp.appId,
         blisApp: blisApp
     }
 }
 
-export const deleteBLISApplicationFulfilled = (blisAppGUID: string): ActionObject => {
+export const deleteBLISApplicationFulfilled = (appId: string): ActionObject => {
     return {
         type: AT.DELETE_BLIS_APPLICATION_FULFILLED,
-        blisAppGUID: blisAppGUID
+        appId: appId
     }
 }
 
-export const deleteEntityAsync = (GUID: string, entity: EntityBase, currentAppId: string): ActionObject => {
+// ---------------------
+// Entity
+// ---------------------
+export const deleteEntityThunkAsync = (appId: string, entityId: string, reverseEntityId?: string) => {
+    return async (dispatch: Dispatch<any>) => {
+        dispatch(deleteEntityAsync(appId, entityId))
+        const blisClient = ClientFactory.getInstance(AT.DELETE_ENTITY_ASYNC)
+
+        try {
+            await blisClient.entitiesDelete(appId, entityId);
+            dispatch(deleteEntityFulfilled(entityId));
+
+            // If it's a negatable entity
+            if (reverseEntityId) {
+                await blisClient.entitiesDelete(appId, reverseEntityId);
+                dispatch(deleteEntityFulfilled(reverseEntityId));
+            }
+
+            dispatch(fetchApplicationTrainingStatusThunkAsync(appId));
+            return true;
+        } catch (e) {
+            const error = e as Error
+            dispatch(setErrorDisplay(ErrorType.Error, error.name, [error.message], AT.DELETE_ENTITY_ASYNC))
+            return false;
+        }
+    }
+}
+
+const deleteEntityAsync = (appId: string, entityId: string): ActionObject => {
     return {
         type: AT.DELETE_ENTITY_ASYNC,
-        entityGUID: GUID,
-        entity: entity,
-        currentAppId: currentAppId
+        entityId: entityId,
+        appId: appId
     }
 }
 
-export const deleteReverseEntityAsnyc = (deletedEntityId: string, reverseEntityId: string, currentAppId: string): ActionObject => {
-    return {
-        type: AT.DELETE_REVERSE_ENTITY_ASYNC,
-        currentAppId: currentAppId,
-        deletedEntityId: deletedEntityId,
-        reverseEntityId: reverseEntityId
-    }
-}
-
-export const deleteEntityFulfilled = (deletedEntityId: string, currentAppId: string): ActionObject => {
+const deleteEntityFulfilled = (entityId: string): ActionObject => {
     return {
         type: AT.DELETE_ENTITY_FULFILLED,
-        currentAppId: currentAppId,
-        deletedEntityId: deletedEntityId
+        entityId: entityId
     }
 }
 
-export const deleteActionAsync = (GUID: string, action: ActionBase, currentAppId: string): ActionObject => {
+// ---------------------
+// Delete Action
+// ---------------------
+export const deleteActionThunkAsync = (appId: string, actionId: string) => {
+    return async (dispatch: Dispatch<any>) => {
+        dispatch(deleteActionAsync(appId, actionId))
+        const blisClient = ClientFactory.getInstance(AT.DELETE_ACTION_ASYNC)
+
+        try {
+            await blisClient.actionsDelete(appId, actionId);
+            dispatch(deleteActionFulfilled(actionId));
+            dispatch(fetchApplicationTrainingStatusThunkAsync(appId));
+            return true;
+        } catch (e) {
+            const error = e as Error
+            dispatch(setErrorDisplay(ErrorType.Error, error.name, [error.message], AT.DELETE_ACTION_ASYNC))
+            return false;
+        }
+    }
+}
+
+const deleteActionAsync = (appId: string, actionId: string): ActionObject => {
     return {
         type: AT.DELETE_ACTION_ASYNC,
-        actionGUID: GUID,
-        action: action,
-        currentAppId: currentAppId
+        actionId: actionId,
+        appId: appId
     }
 }
 
-export const deleteActionFulfilled = (actionGUID: string): ActionObject => {
+const deleteActionFulfilled = (actionId: string): ActionObject => {
     return {
         type: AT.DELETE_ACTION_FULFILLED,
-        actionGUID: actionGUID
+        actionId: actionId
     }
 }
 
-export const deleteChatSessionAsync = (key: string, session: Session, currentAppId: string, packageId: string): ActionObject => {
+// ---------------------
+// Delete Chat Session
+// TODO: Conver to thunk & add status fetch
+// ---------------------
+export const deleteChatSessionAsync = (key: string, session: Session, appId: string, packageId: string): ActionObject => {
     return {
         type: AT.DELETE_CHAT_SESSION_ASYNC,
         key: key,
         session: session,
-        currentAppId: currentAppId,
+        appId: appId,
         packageId: packageId
     }
 }
@@ -80,64 +124,50 @@ export const deleteChatSessionFulfilled = (sessionId: string): ActionObject => {
 }
 
 // ---------------------
-// Delete Teach Session
+// TeachSession
 // ---------------------
-export const deleteTeachSessionAsync = (key: string, teachSession: Teach, currentAppId: string, save: boolean): ActionObject => {
-    return {
-        type: AT.DELETE_TEACH_SESSION_ASYNC,
-        key: key,
-        teachSession: teachSession,
-        currentAppId: currentAppId,
-        save: save
-    }
-}
-
-export const deleteTeachSessionFulfilled = (key: string, teachSessionGUID: string, currentAppId: string): ActionObject => {
-    return {
-        type: AT.DELETE_TEACH_SESSION_FULFILLED,
-        key: key,
-        currentAppId: currentAppId,
-        teachSessionGUID: teachSessionGUID
-    }
-}
-
-export const deleteTeachSessionThunkAsync = (key: string, teachSession: Teach, currentAppId: string, save: boolean) => {
+export const deleteTeachSessionThunkAsync = (key: string, teachSession: Teach, appId: string, save: boolean) => {
     return async (dispatch: Dispatch<any>) => {
-        dispatch(deleteTeachSessionAsync(key, teachSession, currentAppId, save))
+        dispatch(deleteTeachSessionAsync(key, teachSession, appId, save))
         const blisClient = ClientFactory.getInstance(AT.DELETE_TEACH_SESSION_ASYNC)
 
         try {
-            await blisClient.teachSessionsDelete(currentAppId, teachSession, save);
-            dispatch(deleteTeachSessionFulfilled(key, currentAppId, teachSession.teachId));
-            dispatch(fetchAllTrainDialogsAsync(key, currentAppId));
-            dispatch(fetchApplicationTrainingStatusThunkAsync(currentAppId));
+            await blisClient.teachSessionsDelete(appId, teachSession, save);
+            dispatch(deleteTeachSessionFulfilled(key, appId, teachSession.teachId));
+            dispatch(fetchAllTrainDialogsAsync(appId));
+            dispatch(fetchApplicationTrainingStatusThunkAsync(appId));
             return true;
         } catch (e) {
             const error = e as Error
             dispatch(setErrorDisplay(ErrorType.Error, error.name, [error.message], AT.DELETE_TRAIN_DIALOG_REJECTED))
-            dispatch(fetchAllTrainDialogsAsync(key, currentAppId));
+            dispatch(fetchAllTrainDialogsAsync(appId));
             return false;
         }
     }
 }
 
-// -----------------
-//  Delete Memory
-// -----------------
-export const deleteMemoryAsync = (key: string, currentAppId: string): ActionObject => {
+const deleteTeachSessionAsync = (key: string, teachSession: Teach, appId: string, save: boolean): ActionObject => {
     return {
-        type: AT.DELETE_MEMORY_ASYNC,
+        type: AT.DELETE_TEACH_SESSION_ASYNC,
         key: key,
-        currentAppId: currentAppId
+        teachSession: teachSession,
+        appId: appId,
+        save: save
     }
 }
 
-export const deleteMemoryFulfilled = (): ActionObject => {
+const deleteTeachSessionFulfilled = (key: string, teachSessionGUID: string, appId: string): ActionObject => {
     return {
-        type: AT.DELETE_MEMORY_FULFILLED
+        type: AT.DELETE_TEACH_SESSION_FULFILLED,
+        key: key,
+        appId: appId,
+        teachSessionGUID: teachSessionGUID
     }
 }
 
+// -----------------
+//  Memory
+// -----------------
 export const deleteMemoryThunkAsync = (key: string, currentAppId: string) => {
     return async (dispatch: Dispatch<any>) => {
         dispatch(deleteMemoryAsync(key, currentAppId))
@@ -155,30 +185,23 @@ export const deleteMemoryThunkAsync = (key: string, currentAppId: string) => {
     }
 }
 
+const deleteMemoryAsync = (key: string, currentAppId: string): ActionObject => {
+    return {
+        type: AT.DELETE_MEMORY_ASYNC,
+        key: key,
+        appId: currentAppId
+    }
+}
+
+const deleteMemoryFulfilled = (): ActionObject => {
+    return {
+        type: AT.DELETE_MEMORY_FULFILLED
+    }
+}
+
 // ------------------
-// Delete TrainDialog
+// TrainDialog
 // ------------------
-export const deleteTrainDialogAsync = (trainDialogId: string, appId: string): ActionObject => {
-    return {
-        type: AT.DELETE_TRAIN_DIALOG_ASYNC,
-        appId,
-        trainDialogId
-    }
-}
-
-export const deleteTrainDialogRejected = (): ActionObject => {
-    return {
-        type: AT.DELETE_TRAIN_DIALOG_REJECTED
-    }
-}
-
-export const deleteTrainDialogFulfilled = (trainDialogId: string): ActionObject => {
-    return {
-        type: AT.DELETE_TRAIN_DIALOG_FULFILLED,
-        trainDialogId
-    }
-}
-
 export const deleteTrainDialogThunkAsync = (userId: string, appId: string, trainDialogId: string) => {
     return async (dispatch: Dispatch<any>) => {
         dispatch(deleteTrainDialogAsync(trainDialogId, appId))
@@ -187,39 +210,39 @@ export const deleteTrainDialogThunkAsync = (userId: string, appId: string, train
         try {
             await blisClient.trainDialogsDelete(appId, trainDialogId)
             dispatch(deleteTrainDialogFulfilled(trainDialogId))
+            dispatch(fetchApplicationTrainingStatusThunkAsync(appId));
         } catch (e) {
             const error = e as Error
             dispatch(setErrorDisplay(ErrorType.Error, error.name, [error.message], AT.DELETE_TRAIN_DIALOG_REJECTED))
             dispatch(deleteTrainDialogRejected())
-            dispatch(fetchAllTrainDialogsAsync(userId, appId));
+            dispatch(fetchAllTrainDialogsAsync(appId));
         }
+    }
+}
+const deleteTrainDialogAsync = (trainDialogId: string, appId: string): ActionObject => {
+    return {
+        type: AT.DELETE_TRAIN_DIALOG_ASYNC,
+        appId,
+        trainDialogId
+    }
+}
+
+const deleteTrainDialogRejected = (): ActionObject => {
+    return {
+        type: AT.DELETE_TRAIN_DIALOG_REJECTED
+    }
+}
+
+const deleteTrainDialogFulfilled = (trainDialogId: string): ActionObject => {
+    return {
+        type: AT.DELETE_TRAIN_DIALOG_FULFILLED,
+        trainDialogId
     }
 }
 
 // -----------------
 // LOG DIALOG
 // -----------------
-export const deleteLogDialogAsync = (appId: string, logDialogId: string): ActionObject => {
-    return {
-        type: AT.DELETE_LOG_DIALOG_ASYNC,
-        appId,
-        logDialogId
-    }
-}
-
-export const deleteLogDialogFulfilled = (logDialogId: string): ActionObject => {
-    return {
-        type: AT.DELETE_LOG_DIALOG_FULFILLED,
-        logDialogId
-    }
-}
-
-export const deleteLogDialogRejected = (): ActionObject => {
-    return {
-        type: AT.DELETE_LOG_DIALOG_REJECTED
-    }
-}
-
 export const deleteLogDialogThunkAsync = (userId: string, appId: string, logDialogId: string, packageId: string) => {
     return async (dispatch: Dispatch<any>) => {
         dispatch(deleteLogDialogAsync(appId, logDialogId))
@@ -235,5 +258,26 @@ export const deleteLogDialogThunkAsync = (userId: string, appId: string, logDial
             dispatch(deleteLogDialogRejected())
             dispatch(fetchAllLogDialogsAsync(userId, appId, packageId));
         }
+    }
+}
+
+const deleteLogDialogAsync = (appId: string, logDialogId: string): ActionObject => {
+    return {
+        type: AT.DELETE_LOG_DIALOG_ASYNC,
+        appId,
+        logDialogId
+    }
+}
+
+const deleteLogDialogFulfilled = (logDialogId: string): ActionObject => {
+    return {
+        type: AT.DELETE_LOG_DIALOG_FULFILLED,
+        logDialogId
+    }
+}
+
+const deleteLogDialogRejected = (): ActionObject => {
+    return {
+        type: AT.DELETE_LOG_DIALOG_REJECTED
     }
 }

@@ -21,7 +21,7 @@ export enum TipType {
     ACTION_WAIT = 'isTerminal',
 
     ENTITY_ACTION_REQUIRED = 'entityActionRequired',
-    ENTITY_ACTION_BLOCKED = 'entityActionBlocked',
+    ENTITY_ACTION_DISQUALIFIED = 'entityActionDisqualified',
     ENTITY_EXTRACTOR_HELP = 'entityExtractorHelp',
     ENTITY_EXTRACTOR_WARNING = 'extractorWarning',
     ENTITY_MULTIVALUE = 'isBucketable',
@@ -161,26 +161,26 @@ export function GetTip(tipType: string) {
                     <dl className="blis-tooltip-example">
                         <dt><span className="blis-entity blis-entity--match">Required</span></dt>
                         <dd><FormattedMessage id={FM.TOOLTIP_ACTION_ENTITIES_REQ} /></dd>
-                        <dt><span className="blis-entity blis-entity--match"><del>Blocking</del></span></dt>
-                        <dd><FormattedMessage id={FM.TOOLTIP_ACTION_ENTITIES_BLOCK_NOT} /></dd>
+                        <dt><span className="blis-entity blis-entity--match"><del>Disqualifying</del></span></dt>
+                        <dd><FormattedMessage id={FM.TOOLTIP_ACTION_ENTITIES_DISQUAL_NOT} /></dd>
                         <dt><span className="blis-entity blis-entity--mismatch">Required</span></dt>
                         <dd><FormattedMessage id={FM.TOOLTIP_ACTION_ENTITIES_REQ_NOT} /></dd>
-                        <dt><span className="blis-entity blis-entity--mismatch"><del>Blocking</del></span></dt>
-                        <dd><FormattedMessage id={FM.TOOLTIP_ACTION_ENTITIES_BLOCK} /></dd>
+                        <dt><span className="blis-entity blis-entity--mismatch"><del>Disqualifying</del></span></dt>
+                        <dd><FormattedMessage id={FM.TOOLTIP_ACTION_ENTITIES_DISQUAL} /></dd>
                     </dl>
                 </div>
             )
         case TipType.ACTION_NEGATIVE:
             return render(
-                FM.TOOLTIP_ACTION_NEGATIVE_TITLE,
-                [FM.TOOLTIP_ACTION_NEGATIVE],
+                FM.TOOLTIP_ACTION_DISQUAL_TITLE,
+                [FM.TOOLTIP_ACTION_DISQUAL],
                 FM.TOOLTIP_EXAMPLE,
                 [
-                    { key: 'Response:', value: FM.TOOLTIP_ACTION_NEGATIVE_ROW1 },
-                    { key: 'Blocking:', value: FM.TOOLTIP_ACTION_NEGATIVE_ROW2 },
+                    { key: 'Response:', value: FM.TOOLTIP_ACTION_DISQUAL_ROW1 },
+                    { key: 'Disqualifying:', value: FM.TOOLTIP_ACTION_DISQUAL_ROW2 },
                     { key: '--', value: null },
-                    { key: 'Response:', value: FM.TOOLTIP_ACTION_NEGATIVE_ROW3 },
-                    { key: 'Blocking:', value: FM.TOOLTIP_ACTION_NEGATIVE_ROW4 }
+                    { key: 'Response:', value: FM.TOOLTIP_ACTION_DISQUAL_ROW3 },
+                    { key: 'Disqualifying:', value: FM.TOOLTIP_ACTION_DISQUAL_ROW4 }
                 ]);
         case TipType.ACTION_REQUIRED:
             return render(
@@ -243,8 +243,8 @@ export function GetTip(tipType: string) {
             return render(FM.TOOLTIP_ACTION_WAIT_TITLE, [FM.TOOLTIP_ACTION_WAIT]);
         case TipType.ENTITY_NAME:
             return (<FormattedMessage id={FM.TOOLTIP_ENTITY_NAME} defaultMessage="Wait" />);
-        case TipType.ENTITY_ACTION_BLOCKED:
-            return (<FormattedMessage id={FM.TOOLTIP_ENTITY_ACTION_BLOCKED} defaultMessage="Blocked Actions" />)
+        case TipType.ENTITY_ACTION_DISQUALIFIED:
+            return (<FormattedMessage id={FM.TOOLTIP_ENTITY_ACTION_DISQUALIFIED} defaultMessage="Disqualified Actions" />)
         case TipType.ENTITY_ACTION_REQUIRED:
             return (<FormattedMessage id={FM.TOOLTIP_ENTITY_ACTION_REQUIRED} defaultMessage="Required For Actions" />)
         case TipType.ENTITY_EXTRACTOR_WARNING:
@@ -284,7 +284,7 @@ export function GetTip(tipType: string) {
                     <dl className="blis-tooltip-example">
                         <dt>Entity:</dt><dd>isLoggedIn</dd>
                     </dl>
-                    The "isLoggedIn" Entity is set in code. When not set, it can be used to block Actions that require authorized users
+                    The "isLoggedIn" Entity is set in code. When not set, it can be used to disqualify Actions that require authorized users
                 </div>
             )
         case TipType.ENTITY_TYPE:

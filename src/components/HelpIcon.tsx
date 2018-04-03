@@ -11,7 +11,7 @@ class HelpIcon extends React.Component<Props, {}> {
     render() {
         return (
             <a onClick={() => { this.props.setTipType(this.props.tipType) }}>
-                <Icon iconName="Info" className="blis-icon" />
+                <Icon iconName={this.props.iconName || 'Info'} className="blis-icon" />
             </a>
         )
     }
@@ -27,7 +27,8 @@ const mapStateToProps = (state: State, ownProps: any) => {
 }
 
 export interface ReceivedProps {
-    tipType: TipType
+    tipType: TipType,
+    iconName?: string
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps

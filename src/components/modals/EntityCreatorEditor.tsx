@@ -4,8 +4,8 @@ import {
     fetchApplicationTrainingStatusThunkAsync,
     fetchEntityEditValidationThunkAsync,
     fetchEntityDeleteValidationThunkAsync } from '../../actions/fetchActions'
-import { createEntityAsync } from '../../actions/createActions';
-import { editEntityAsync } from '../../actions/updateActions';
+import { createEntityThunkAsync } from '../../actions/createActions';
+import { editEntityThunkAsync } from '../../actions/updateActions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
@@ -201,8 +201,12 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
     onClickSaveCreate() {
         const newOrEditedEntity = this.convertStateToEntity(this.state)
 
-        if (!this.state.isEditing) {
-            this.props.createEntityAsync(this.props.user.id, newOrEditedEntity, this.props.app.appId)
+        if (this.state.isEditing) {
+            // Include non-editable fields
+            newOrEditedEntity.positiveId = this.props.entity.positiveId;
+            newOrEditedEntity.negativeId = this.props.entity.negativeId;
+        } else {
+            this.props.createEntityThunkAsync(this.props.app.appId, newOrEditedEntity)
             this.props.handleClose();
             return;
         } 
@@ -220,9 +224,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                         newOrEditedEntity: newOrEditedEntity
                     });
                 } else {
-                    this.props.editEntityAsync(this.props.app.appId, newOrEditedEntity);
-                    // TODO: Convert edit to Thunk and include fetch in thunk
-                    this.props.fetchApplicationTrainingStatusThunkAsync(this.props.app.appId);
+                    this.props.editEntityThunkAsync(this.props.app.appId, newOrEditedEntity);
                     this.props.handleClose();
                 }
             }
@@ -303,11 +305,11 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
         }
     }
 
-    getBlockedActions(): ActionBase[] {
-        let blockedActions = this.props.actions.filter(a => {
+    getDisqualifiedActions(): ActionBase[] {
+        let disqualifiedActions = this.props.actions.filter(a => {
             return a.negativeEntities.find(id => id === this.props.entity.entityId) != null;
         });
-        return blockedActions;
+        return disqualifiedActions;
     }
 
     getRequiredActions(): ActionBase[] {
@@ -386,9 +388,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
 
     @autobind
     onConfirmEdit() {
-        this.props.editEntityAsync(this.props.app.appId, this.state.newOrEditedEntity);
-        // TODO: Convert edit to Thunk and include fetch in thunk
-        this.props.fetchApplicationTrainingStatusThunkAsync(this.props.app.appId);
+        this.props.editEntityThunkAsync(this.props.app.appId, this.state.newOrEditedEntity);
 
         this.setState({
             isConfirmEditModalOpen: false,
@@ -511,15 +511,15 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                                         />
                                     </OF.PivotItem>
                                     <OF.PivotItem
-                                        ariaLabel={ToolTip.TipType.ENTITY_ACTION_BLOCKED}
-                                        linkText={intl.formatMessage({ id: FM.ENTITYCREATOREDITOR_PIVOT_BLOCKEDACTIONS, defaultMessage: 'Blocked Actions' })}
+                                        ariaLabel={ToolTip.TipType.ENTITY_ACTION_DISQUALIFIED}
+                                        linkText={intl.formatMessage({ id: FM.ENTITYCREATOREDITOR_PIVOT_DISQUALIFIEDACTIONS, defaultMessage: 'Disqualified Actions' })}
                                         onRenderItemLink={(
                                             pivotItemProps: OF.IPivotItemProps,
                                             defaultRender: (link: OF.IPivotItemProps) => JSX.Element) =>
                                             ToolTip.onRenderPivotItem(pivotItemProps, defaultRender)}
                                     >
                                         <ActionDetailsList
-                                            actions={this.getBlockedActions()}
+                                            actions={this.getDisqualifiedActions()}
                                             onSelectAction={null}
                                         />
                                     </OF.PivotItem>
@@ -644,8 +644,8 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        createEntityAsync,
-        editEntityAsync,
+        createEntityThunkAsync,
+        editEntityThunkAsync,
         fetchApplicationTrainingStatusThunkAsync,
         fetchEntityDeleteValidationThunkAsync,
         fetchEntityEditValidationThunkAsync

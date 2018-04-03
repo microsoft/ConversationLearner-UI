@@ -1,13 +1,7 @@
 import * as React from 'react';
-import { returntypeof } from 'react-redux-typescript';
-import { fetchApplicationTrainingStatusThunkAsync } from '../../actions/fetchActions'
-import { createEntityAsync } from '../../actions/createActions';
-import { editEntityAsync } from '../../actions/updateActions';
-import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import * as OF from 'office-ui-fabric-react';
-import { State } from '../../types';
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { Memory } from 'blis-models'
 import MemoryTable from './MemoryTable';
@@ -64,20 +58,6 @@ class SessionMemoryCheck extends React.Component<Props, {}> {
         )
     }
 }
-const mapDispatchToProps = (dispatch: any) => {
-    return bindActionCreators({
-        createEntityAsync,
-        editEntityAsync,
-        fetchApplicationTrainingStatusThunkAsync
-    }, dispatch);
-}
-const mapStateToProps = (state: State, ownProps: any) => {
-    return {
-        user: state.user,
-        entities: state.entities,
-        actions: state.actions,
-    }
-}
 
 export interface ReceivedProps {
     open: boolean,
@@ -85,9 +65,6 @@ export interface ReceivedProps {
     onClose: (saveMemory: boolean) => void
 }
 
-// Props types inferred from mapStateToProps & dispatchToProps
-const stateProps = returntypeof(mapStateToProps);
-const dispatchProps = returntypeof(mapDispatchToProps);
-type Props = typeof stateProps & typeof dispatchProps & ReceivedProps & InjectedIntlProps
+type Props =  ReceivedProps & InjectedIntlProps
 
-export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(SessionMemoryCheck))
+export default connect<ReceivedProps>(null, null)(injectIntl(SessionMemoryCheck))

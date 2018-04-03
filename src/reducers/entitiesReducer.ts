@@ -1,7 +1,6 @@
 import { ActionObject } from '../types'
 import { EntityState } from '../types'
 import { AT } from '../types/ActionTypes'
-import { EntityBase } from 'blis-models';
 import { Reducer } from 'redux'
 import { replace } from '../util'
 
@@ -18,14 +17,9 @@ const entitiesReducer: Reducer<EntityState> = (state = initialState, action: Act
         case AT.CREATE_BLIS_APPLICATION_FULFILLED:
             return [...initialState]
         case AT.CREATE_ENTITY_FULFILLED:
-            let newEntity = { ...action.entity, entityId: action.entityId };
-            return [...state, newEntity];
-        case AT.CREATE_ENTITY_FULFILLEDNEGATIVE:
-            let entities: EntityBase[] = [action.positiveEntity, action.negativeEntity];
-            return [...state, ...entities]
+            return [...state, action.entity];
         case AT.DELETE_ENTITY_FULFILLED:
-        case AT.DELETE_REVERSE_ENTITY_ASYNC:
-            return state.filter(ent => ent.entityId !== action.deletedEntityId);
+            return state.filter(ent => ent.entityId !== action.entityId);
         case AT.EDIT_ENTITY_FULFILLED:
             return replace(state, action.entity, e => e.entityId)
         default:
