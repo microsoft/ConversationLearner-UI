@@ -147,8 +147,8 @@ interface ComponentState {
     actionFilter: OF.IDropdownOption
     isValidationWarningOpen: boolean
     validationErrors: ReplayError[],
-    validationErrorTitle: string,
-    validationErrorMessage: string
+    validationErrorTitleId: string | null,
+    validationErrorMessageId: string | null
 }
 
 class TrainDialogs extends React.Component<Props, ComponentState> {
@@ -168,8 +168,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         actionFilter: null,
         isValidationWarningOpen: false,
         validationErrors: [],
-        validationErrorTitle: null,
-        validationErrorMessage: null
+        validationErrorTitleId: null,
+        validationErrorMessageId: null
     }
 
     toActionFilter(action: ActionBase, entities: EntityBase[]) : OF.IDropdownOption {
@@ -275,8 +275,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     this.setState({
                         validationErrors: teachWithHistory.replayErrors,
                         isValidationWarningOpen: true,
-                        validationErrorTitle: FM.REPLAYERROR_UNDO_TITLE,
-                        validationErrorMessage: FM.REPLAYERROR_FAILMESSAGE
+                        validationErrorTitleId: FM.REPLAYERROR_UNDO_TITLE,
+                        validationErrorMessageId: FM.REPLAYERROR_FAILMESSAGE
                     })
                 }
             })
@@ -325,8 +325,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     this.setState({
                         validationErrors: teachWithHistory.replayErrors,
                         isValidationWarningOpen: true,
-                        validationErrorTitle: FM.REPLAYERROR_BRANCH_TITLE,
-                        validationErrorMessage: FM.REPLAYERROR_FAILMESSAGE
+                        validationErrorTitleId: FM.REPLAYERROR_BRANCH_TITLE,
+                        validationErrorMessageId: FM.REPLAYERROR_FAILMESSAGE
                     })
                 }
             })
@@ -352,8 +352,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     this.setState({
                         validationErrors: teachWithHistory.replayErrors,
                         isValidationWarningOpen: true,
-                        validationErrorTitle: FM.REPLAYERROR_EDIT_TITLE,
-                        validationErrorMessage: FM.REPLAYERROR_FAILMESSAGE
+                        validationErrorTitleId: FM.REPLAYERROR_EDIT_TITLE,
+                        validationErrorMessageId: FM.REPLAYERROR_FAILMESSAGE
                     })
                 }
             })
@@ -507,7 +507,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         let trainDialog = this.props.trainDialogs.find((td) => td.trainDialogId === this.state.trainDialogId);
         return (
             <div className="blis-page">
-                <div className={`blis-dialog-title ${OF.FontClassNames.xxLarge}`}>
+                <div className={`blis-dialog-title blis-dialog-title--train ${OF.FontClassNames.xxLarge}`}>
                     <OF.Icon iconName="EditContact" />
                     <FormattedMessage
                         id={FM.TRAINDIALOGS_TITLE}
@@ -542,8 +542,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         open={this.state.isValidationWarningOpen}
                         onClose={this.onCloseValidationWarning}
                         textItems={this.state.validationErrors}
-                        formattedTitleId={this.state.validationErrorTitle}
-                        formattedMessageId={this.state.validationErrorMessage}
+                        formattedTitleId={this.state.validationErrorTitleId}
+                        formattedMessageId={this.state.validationErrorMessageId}
                     />
                     <TeachSessionModal
                         app={this.props.app}

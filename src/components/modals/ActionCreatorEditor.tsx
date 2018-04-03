@@ -162,7 +162,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             }))
 
         const availableExpectedEntityTags = entities
-            .filter(e => e.entityType !== EntityType.LOCAL)
+            .filter(e => e.entityType === EntityType.LUIS)
             .map<OF.ITag>(e =>
                 ({
                     key: e.entityId,

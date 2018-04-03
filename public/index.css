@@ -218,9 +218,19 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
 }
 
 /** Matches width of webchat **/
-.blis-modal.blis-modal--fixed {
-  width: 400px;
+.blis-modal.blis-modal--narrow {
+  width: 50%;
   height: 90%;
+}
+@media (min-width: 701px) and (max-width: 800px) {
+  .blis-modal.blis-modal--narrow {
+    width: 65%;
+  }
+}
+@media (max-width: 700px) {
+  .blis-modal.blis-modal--narrow {
+    width: 80%;
+  }
 }
 
 .blis-modal.blis-modal--medium{
@@ -329,9 +339,19 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
 }
 
 .blis-dialog-title i[role="presentation"] {
-  margin-right: 0.5em;
+  margin: -0.4em 0.5em -0.4em 0;
+  padding: 0.4em 0.3em 0.4em 0.5em;
+  border-radius: 50%;
+  color: white;
   vertical-align: sub;
 }
+.blis-dialog-title.blis-dialog-title--log i[role="presentation"] {
+  background-color: var(--color-themePrimary);
+}
+.blis-dialog-title.blis-dialog-title--train i[role="presentation"] {
+  background-color: var(--color-error);
+}
+
 .blis-dropdownWithButton-dropdown {
   display: grid;
   grid-template: auto / 1fr auto auto;

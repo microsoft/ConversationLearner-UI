@@ -145,7 +145,6 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
 interface ComponentState {
     columns: IRenderableColumn[]
     chatSession: Session
-    isChatSessionWarningWindowOpen: boolean
     isChatSessionWindowOpen: boolean
     isLogDialogWindowOpen: boolean
     isTeachDialogModalOpen: boolean
@@ -156,8 +155,8 @@ interface ComponentState {
     activities: Activity[],
     teachSession: Teach,
     validationErrors: ReplayError[],
-    validationErrorTitle: string, 
-    validationErrorMessage: string,
+    validationErrorTitleId: string | null, 
+    validationErrorMessageId: string | null,
 }
 
 class LogDialogs extends React.Component<Props, ComponentState> {
@@ -166,7 +165,6 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     state: ComponentState = {
         columns: getColumns(this.props.intl),
         chatSession: null,
-        isChatSessionWarningWindowOpen: false,
         isChatSessionWindowOpen: false,
         isLogDialogWindowOpen: false,
         isTeachDialogModalOpen: false,
@@ -177,8 +175,8 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         activities: [],
         teachSession: null,
         validationErrors: [],
-        validationErrorTitle: null,
-        validationErrorMessage: null
+        validationErrorTitleId: null,
+        validationErrorMessageId: null
     }
 
     componentDidMount() {
@@ -188,7 +186,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     @autobind
     onClickNewChatSession() {
         // TODO: Find cleaner solution for the types.  Thunks return functions but when using them on props they should be returning result of the promise.
-        ((this.props.createChatSessionThunkAsync(this.props.app.appId, this.props.editingPackageId) as any) as Promise<Session>)
+        ((this.props.createChatSessionThunkAsync(this.props.app.appId, this.props.editingPackageId, this.props.app.metadata.isLoggingOn !== false) as any) as Promise<Session>)
             .then(chatSession => {
                 this.setState({
                     chatSession,
@@ -197,9 +195,6 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             })
             .catch(error => {
                 console.warn(`Error when attempting to opening chat window: `, error)
-                this.setState({
-                    isChatSessionWarningWindowOpen: true
-                })
             })
     }
 
@@ -232,8 +227,8 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 isLogDialogWindowOpen: true,
                 validationErrors: teachWithHistory.replayErrors,
                 isValidationWarningOpen: teachWithHistory.replayErrors.length > 0,
-                validationErrorTitle: FM.REPLAYERROR_LOGDIALOG_VALIDATION_TITLE,
-                validationErrorMessage: FM.REPLAYERROR_LOGDIALOG_VALIDATION_MESSAGE
+                validationErrorTitleId: FM.REPLAYERROR_LOGDIALOG_VALIDATION_TITLE,
+                validationErrorMessageId: FM.REPLAYERROR_LOGDIALOG_VALIDATION_MESSAGE
             })
         })
         .catch(error => {
@@ -247,13 +242,6 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             isLogDialogWindowOpen: false,
             currentLogDialog: null,
             dialogKey: this.state.dialogKey + 1
-        })
-    }
-
-    @autobind
-    onClickWarningWindowOk() {
-        this.setState({
-            isChatSessionWarningWindowOpen: false
         })
     }
 
@@ -285,8 +273,8 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 this.setState({
                     validationErrors: teachWithHistory.replayErrors,
                     isValidationWarningOpen: true,
-                    validationErrorTitle: FM.REPLAYERROR_CONVERT_TITLE,
-                    validationErrorMessage: FM.REPLAYERROR_FAILMESSAGE
+                    validationErrorTitleId: FM.REPLAYERROR_CONVERT_TITLE,
+                    validationErrorMessageId: FM.REPLAYERROR_FAILMESSAGE
                 })
             }
         })
@@ -330,8 +318,8 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 this.setState({
                     validationErrors: teachWithHistory.replayErrors,
                     isValidationWarningOpen: true,
-                    validationErrorTitle: FM.REPLAYERROR_UNDO_TITLE,
-                    validationErrorMessage: FM.REPLAYERROR_FAILMESSAGE
+                    validationErrorTitleId: FM.REPLAYERROR_UNDO_TITLE,
+                    validationErrorMessageId: FM.REPLAYERROR_FAILMESSAGE
                 })
             }
         })
@@ -367,7 +355,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         const currentLogDialog = this.state.currentLogDialog;
         return (
             <div className="blis-page">
-                <div className={`blis-dialog-title ${OF.FontClassNames.xxLarge}`}>
+                <div className={`blis-dialog-title blis-dialog-title--log ${OF.FontClassNames.xxLarge}`}>
                     <OF.Icon iconName="UserFollowed" />
                     <FormattedMessage
                         id={FM.LOGDIALOGS_TITLE}
@@ -450,8 +438,8 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     open={this.state.isValidationWarningOpen}
                     onClose={this.onCloseValidationWarning}
                     textItems={this.state.validationErrors}
-                    formattedTitleId={this.state.validationErrorTitle}
-                    formattedMessageId={this.state.validationErrorMessage}
+                    formattedTitleId={this.state.validationErrorTitleId}
+                    formattedMessageId={this.state.validationErrorMessageId}
                 />
                 <TeachSessionModal
                         app={this.props.app}
@@ -465,27 +453,6 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                         trainDialog={null}
                         logDialog={this.state.currentLogDialog}
                 />
-                <OF.Dialog
-                    hidden={!this.state.isChatSessionWarningWindowOpen}
-                    dialogContentProps={{
-                        type: OF.DialogType.normal,
-                        title: this.props.intl.formatMessage({
-                            id: FM.LOGDIALOGS_SESSIONCREATIONWARNING_TITLE,
-                            defaultMessage: 'You may not create chat session at this time. Please try again after training as completed.'
-                        })
-                    }}
-                    onDismiss={this.onClickWarningWindowOk}
-                >
-                    <OF.DialogFooter>
-                        <OF.PrimaryButton
-                            onClick={this.onClickWarningWindowOk}
-                            text={this.props.intl.formatMessage({
-                                id: FM.LOGDIALOGS_SESSIONCREATIONWARNING_PRIMARYBUTTON,
-                                defaultMessage: 'Ok'
-                            })}
-                        />
-                    </OF.DialogFooter>
-                </OF.Dialog>
             </div>
         );
     }

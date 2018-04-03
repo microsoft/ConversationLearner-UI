@@ -37,12 +37,12 @@ class SessionWindow extends React.Component<Props, ComponentState> {
             <Modal
                 isOpen={this.props.open && this.props.error == null}
                 isBlocking={true}
-                containerClassName='blis-modal blis-modal--fixed blis-modal--log'
+                containerClassName='blis-modal blis-modal--narrow blis-modal--log'
             >
                 <div className="blis-modal_body">
                     <div className="blis-sessionmodal">
                         <div className="blis-sessionmodal-title">
-                            <div className={`blis-dialog-title ${FontClassNames.xxLarge}`}>
+                            <div className={`blis-dialog-title blis-dialog-title--log ${FontClassNames.xxLarge}`}>
                                 <Icon iconName="UserFollowed" />Log Dialog
                             </div>
                         </div>
