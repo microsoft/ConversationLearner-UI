@@ -29,7 +29,7 @@ export type UpdateAction = {
 } | {
     type: AT.EDIT_ACTION_ASYNC,
     blisAction: ActionBase,
-    currentAppId: string
+    appId: string
 } | {
     type: AT.EDIT_ACTION_FULFILLED,
     blisAction: ActionBase
@@ -48,14 +48,14 @@ export type UpdateAction = {
 } | {
     type: AT.EDIT_APP_LIVE_TAG_ASYNC,
     packageId: string,
-    currentAppId: string
+    appId: string
 } | {
     type: AT.EDIT_APP_LIVE_TAG_FULFILLED,
     blisApp: BlisAppBase
 } | {
     type: AT.EDIT_APP_EDITING_TAG_ASYNC,
     packageId: string,
-    currentAppId: string
+    appId: string
 } | {
     type: AT.EDIT_APP_EDITING_TAG_FULFILLED,
     activeApps: { [appId: string]: string }
@@ -131,7 +131,6 @@ export type FetchAction = {
     blisAppID: string
 } | {
     type: AT.FETCH_TRAIN_DIALOGS_ASYNC,
-    key: string,
     blisAppID: string
 } | {
     type: AT.FETCH_TRAIN_DIALOGS_FULFILLED,
@@ -222,31 +221,23 @@ export type CreateAction = {
     type: AT.COPY_APPLICATIONS_FULFILLED
 } | {
     type: AT.CREATE_ENTITY_ASYNC,
-    key: string,
     entity: EntityBase,
-    currentAppId: string
+    appId: string
 } | {
     type: AT.CREATE_ENTITY_FULFILLED,
-    entityId: string,
     entity: EntityBase
-} | {
-    type: AT.CREATE_REVERSIBLE_ENTITY,
-    key: string,
-    entity: EntityBase,
-    currentAppId: string
 } | {
     type: AT.CREATE_ACTION_ASYNC,
     action: ActionBase,
-    currentAppId: string
+    appId: string
 } | {
     type: AT.CREATE_ACTION_FULFILLED,
-    actionId: string,
     action: ActionBase
 } | {
     type: AT.CREATE_APP_TAG_ASYNC,
     tagName: string,
     makeLive: boolean,
-    currentAppId: string
+    appId: string
 } | {
     type: AT.CREATE_APP_TAG_FULFILLED,
     blisApp: BlisAppBase
@@ -265,16 +256,6 @@ export type CreateAction = {
 } | {
     type: AT.CREATE_BLIS_APPLICATION_FULFILLED,
     blisApp: BlisAppBase
-} | {
-    type: AT.CREATE_ENTITY_FULFILLEDPOSITIVE,
-    negativeEntity: EntityBase,
-    positiveEntity: EntityBase,
-    currentAppId: string
-} | {
-    type: AT.CREATE_ENTITY_FULFILLEDNEGATIVE,
-    negativeEntity: EntityBase,
-    positiveEntity: EntityBase,
-    currentAppId: string
 } | {
     type: AT.CREATE_CHAT_SESSION_ASYNC
 } | {
@@ -313,33 +294,25 @@ export type CreateAction = {
 
 export type DeleteAction = {
     type: AT.DELETE_BLIS_APPLICATION_ASYNC,
-    blisAppGUID: string,
+    appId: string,
     blisApp: BlisAppBase
 } | {
     type: AT.DELETE_BLIS_APPLICATION_FULFILLED,
-    blisAppGUID: string
+    appId: string
 } | {
     type: AT.DELETE_ENTITY_ASYNC,
-    entityGUID: string,
-    currentAppId: string,
-    entity: EntityBase
-} | {
-    type: AT.DELETE_REVERSE_ENTITY_ASYNC,
-    deletedEntityId: string,
-    reverseEntityId: string,
-    currentAppId: string
+    entityId: string,
+    appId: string
 } | {
     type: AT.DELETE_ENTITY_FULFILLED,
-    deletedEntityId: string,
-    currentAppId: string
+    entityId: string
 } | {
     type: AT.DELETE_ACTION_ASYNC,
-    actionGUID: string,
-    action: ActionBase,
-    currentAppId: string
+    actionId: string,
+    appId: string
 } | {
     type: AT.DELETE_ACTION_FULFILLED,
-    actionGUID: string
+    actionId: string
 } | {
     type: AT.DELETE_TRAIN_DIALOG_ASYNC,
     appId: string,
@@ -356,7 +329,7 @@ export type DeleteAction = {
     type: AT.DELETE_CHAT_SESSION_ASYNC,
     key: string,
     session: Session,
-    currentAppId: string,
+    appId: string,
     packageId: string
 } | {
     type: AT.DELETE_CHAT_SESSION_FULFILLED,
@@ -365,17 +338,17 @@ export type DeleteAction = {
     type: AT.DELETE_TEACH_SESSION_ASYNC,
     key: string,
     teachSession: Teach,
-    currentAppId: string,
+    appId: string,
     save: boolean
 } | {
     type: AT.DELETE_TEACH_SESSION_FULFILLED,
     teachSessionGUID: string,
     key: string,
-    currentAppId: string,
+    appId: string,
 }| {
     type: AT.DELETE_MEMORY_ASYNC,
     key: string,
-    currentAppId: string
+    appId: string
 } | {
     type: AT.DELETE_MEMORY_FULFILLED
 } | {

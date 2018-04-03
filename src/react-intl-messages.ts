@@ -52,6 +52,9 @@ export enum FM {
     // Generic Buttons
     BUTTON_OK = 'Button.OK',
 
+    // Custom Errors
+    CUSTOMERROR_NETWORK_ERROR = 'CustomError.networkError',
+
     // Dashboard
     DASHBOARD_TITLE = 'Dashboard.title',
     DASHBOARD_SUBTITLE = 'Dashboard.subtitle',
@@ -131,14 +134,14 @@ export enum FM {
     TOOLTIP_ACTION_ENTITIES = 'ToolTip.ACTION_ENTITIES',
     TOOLTIP_ACTION_ENTITIES_REQ = 'ToolTip.ACTION_ENTITIES_REQ',
     TOOLTIP_ACTION_ENTITIES_REQ_NOT = 'ToolTip.ACTION_ENTITIES_REQ_NOT',
-    TOOLTIP_ACTION_ENTITIES_BLOCK = 'ToolTip.ACTION_ENTITIES_BLOCK',
-    TOOLTIP_ACTION_ENTITIES_BLOCK_NOT = 'ToolTip.ACTION_ENTITIES_BLOCK_NOT',
-    TOOLTIP_ACTION_NEGATIVE = 'ToolTip.ACTION_NEGATIVE',
-    TOOLTIP_ACTION_NEGATIVE_TITLE = 'ToolTip.ACTION_NEGATIVE_TITLE',
-    TOOLTIP_ACTION_NEGATIVE_ROW1 = 'ToolTip.ACTION_NEGATIVE_TITLE_ROW1',
-    TOOLTIP_ACTION_NEGATIVE_ROW2 = 'ToolTip.ACTION_NEGATIVE_TITLE_ROW2',
-    TOOLTIP_ACTION_NEGATIVE_ROW3 = 'ToolTip.ACTION_NEGATIVE_TITLE_ROW3',
-    TOOLTIP_ACTION_NEGATIVE_ROW4 = 'ToolTip.ACTION_NEGATIVE_TITLE_ROW4',
+    TOOLTIP_ACTION_ENTITIES_DISQUAL = 'ToolTip.ACTION_ENTITIES_BLOCK',
+    TOOLTIP_ACTION_ENTITIES_DISQUAL_NOT = 'ToolTip.ACTION_ENTITIES_BLOCK_NOT',
+    TOOLTIP_ACTION_DISQUAL = 'ToolTip.ACTION_NEGATIVE',
+    TOOLTIP_ACTION_DISQUAL_TITLE = 'ToolTip.ACTION_NEGATIVE_TITLE',
+    TOOLTIP_ACTION_DISQUAL_ROW1 = 'ToolTip.ACTION_NEGATIVE_TITLE_ROW1',
+    TOOLTIP_ACTION_DISQUAL_ROW2 = 'ToolTip.ACTION_NEGATIVE_TITLE_ROW2',
+    TOOLTIP_ACTION_DISQUAL_ROW3 = 'ToolTip.ACTION_NEGATIVE_TITLE_ROW3',
+    TOOLTIP_ACTION_DISQUAL_ROW4 = 'ToolTip.ACTION_NEGATIVE_TITLE_ROW4',
 
     TOOLTIP_ACTION_RESPONSE = 'ToolTip.ACTION_RESPONSE',
     TOOLTIP_ACTION_RESPONSE_TEXT1 = 'ToolTip.ACTION_RESPONSE_TEXT1',
@@ -173,8 +176,9 @@ export enum FM {
     TOOLTIP_ACTION_TYPE_CARD = 'ToolTip.ACTION_TYPE.Card',
     TOOLTIP_ACTION_WAIT = 'ToolTip.ACTION_WAIT',
     TOOLTIP_ACTION_WAIT_TITLE = 'ToolTip.ACTION_WAIT_TITLE',
+    TOOLTIP_BOTINFO_INVALID = 'ToolTip.BOTINFO_INVALID',
     TOOLTIP_ENTITY_ACTION_REQUIRED = 'ToolTip.ENTITY_ACTION_REQUIRED',
-    TOOLTIP_ENTITY_ACTION_BLOCKED = 'ToolTip.ENTITY_ACTION_BLOCKED',
+    TOOLTIP_ENTITY_ACTION_DISQUALIFIED = 'ToolTip.ENTITY_ACTION_BLOCKED',
     TOOLTIP_ENTITY_EXTRACTOR_HELP = 'ToolTipo.ENTITY_EXTRACTOR_HELP',
     TOOLTIP_ENTITY_EXTRACTOR_WARNING = 'ToolTip.ENTITY_EXTRACTOR_WARNING',
     TOOLTIP_ENTITY_NAME = 'ToolTip.ENTITY_NAME',
@@ -187,6 +191,7 @@ export enum FM {
     TOOLTIP_PACKAGECREATOR_LIVE_TOGGLE = 'ToolTip.PACKAGECREATOR_LIVE_TOGGLE',
     TOOLTIP_TAG_EDITING = 'ToolTip.TAG_EDITING',
     TOOLTIP_TAG_LIVE = 'ToolTip.TAG_LIVE',
+    TOOLTIP_TRAINDIALOG_INVALID = 'ToolTip.TRAINDIALOG_INVALID',
 
     // Train Dialogs
     TRAINDIALOGS_TITLE = 'TrainDialogs.title',
@@ -209,7 +214,7 @@ export enum FM {
     ACTIONDETAILSLIST_COLUMNS_ARGUMENTS = 'ActionDetailsList.columns.arguments',
     ACTIONDETAILSLIST_COLUMNS_TYPE = 'ActionDetailsList.columns.type',
     ACTIONDETAILSLIST_COLUMNS_REQUIREDENTITIES = 'ActionDetailsList.columns.requiredEntities',
-    ACTIONDETAILSLIST_COLUMNS_BLOCKINGENTITIES = 'ActionDetailsList.columns.blockingEntities',
+    ACTIONDETAILSLIST_COLUMNS_DISQUALIFYINGENTITIES = 'ActionDetailsList.columns.disqualifyingEntities',
     ACTIONDETAILSLIST_COLUMNS_SUGGESTEDENTITY = 'ActionDetailsList.columns.suggestedEntity',
     ACTIONDETAILSLIST_COLUMNS_ISTERMINAL = 'ActionDetailsList.columns.isTerminal',
 
@@ -289,7 +294,7 @@ export enum FM {
     ENTITYCREATOREDITOR_FIELDS_NEGATABLE_HELPTEXT = 'EntityCreatorEditor.fields.negatable.helpText',
     ENTITYCREATOREDITOR_PIVOT_EDIT = 'EntityCreatorEditor.pivot.editEntity',
     ENTITYCREATOREDITOR_PIVOT_REQUIREDFOR = 'EntityCreatorEditor.pivot.requiredForActions',
-    ENTITYCREATOREDITOR_PIVOT_BLOCKEDACTIONS = 'EntityCreatorEditor.pivot.blockedActions',
+    ENTITYCREATOREDITOR_PIVOT_DISQUALIFIEDACTIONS = 'EntityCreatorEditor.pivot.disqualifiedActions',
     ENTITYCREATOREDITOR_CREATEBUTTON_ARIADESCRIPTION = 'EntityCreatorEditor.createButton.ariaDescription',
     ENTITYCREATOREDITOR_CREATEBUTTON_TEXT = 'EntityCreatorEditor.createButton.text',
     ENTITYCREATOREDITOR_SAVEBUTTON_ARIADESCRIPTION = 'EntityCreatorEditor.saveButton.ariaDescription',
@@ -454,6 +459,9 @@ export default {
         // Generic Buttons
         [FM.BUTTON_OK]: 'OK',
 
+        // Custom Errors
+        [FM.CUSTOMERROR_NETWORK_ERROR]: 'Is your Bot running?',
+
         // Dashboard
         [FM.DASHBOARD_TITLE]: 'Overview',
         [FM.DASHBOARD_SUBTITLE]: `Facts & statistics about the app's data at any period of time...`,
@@ -533,15 +541,15 @@ export default {
         [FM.TOOLTIP_ACTION_ENTITIES]: 'Status of Entity requirements for this action:',
         [FM.TOOLTIP_ACTION_ENTITIES_REQ]: 'Required Entity is present',
         [FM.TOOLTIP_ACTION_ENTITIES_REQ_NOT]: 'Required Enitity is missing (DISQUALIFIES ACTION)',
-        [FM.TOOLTIP_ACTION_ENTITIES_BLOCK]: 'Blocking Entity is present (DISQUALIFIES ACTION)',
-        [FM.TOOLTIP_ACTION_ENTITIES_BLOCK_NOT]: 'Blocking Entity is missing',
+        [FM.TOOLTIP_ACTION_ENTITIES_DISQUAL]: 'Disqualifying Entity is present (DISQUALIFIES ACTION)',
+        [FM.TOOLTIP_ACTION_ENTITIES_DISQUAL_NOT]: 'Disqualifying Entity is missing',
 
-        [FM.TOOLTIP_ACTION_NEGATIVE]: 'Action will not be selected if Memory already contains value for these Entities',
-        [FM.TOOLTIP_ACTION_NEGATIVE_TITLE]: 'Blocking Entities',
-        [FM.TOOLTIP_ACTION_NEGATIVE_ROW1]: '"How would you like to pay?"',
-        [FM.TOOLTIP_ACTION_NEGATIVE_ROW2]: '$paymentDetails',
-        [FM.TOOLTIP_ACTION_NEGATIVE_ROW3]: '"When were you born?"',
-        [FM.TOOLTIP_ACTION_NEGATIVE_ROW4]: '$birthdate',
+        [FM.TOOLTIP_ACTION_DISQUAL]: 'Action will not be selected if Memory already contains value for these Entities',
+        [FM.TOOLTIP_ACTION_DISQUAL_TITLE]: 'Disqualifying Entities',
+        [FM.TOOLTIP_ACTION_DISQUAL_ROW1]: '"How would you like to pay?"',
+        [FM.TOOLTIP_ACTION_DISQUAL_ROW2]: '$paymentDetails',
+        [FM.TOOLTIP_ACTION_DISQUAL_ROW3]: '"When were you born?"',
+        [FM.TOOLTIP_ACTION_DISQUAL_ROW4]: '$birthdate',
 
         [FM.TOOLTIP_ACTION_RESPONSE]: 'Value of Response that Bot will take',
         [FM.TOOLTIP_ACTION_RESPONSE_TEXT1]: 'Text the Bot will display to the user.',
@@ -577,7 +585,8 @@ export default {
         [FM.TOOLTIP_ACTION_TYPE_CARD]: 'Renders an Adaptive Card template',
         [FM.TOOLTIP_ACTION_WAIT]: 'When selected, Bot will wait for more user input before taking another action',
         [FM.TOOLTIP_ACTION_WAIT_TITLE]: 'Wait For Response',
-        [FM.TOOLTIP_ENTITY_ACTION_BLOCKED]: `Actions that are blocked from use if this Entity is set`,
+        [FM.TOOLTIP_BOTINFO_INVALID]: 'This application contains Card or API references that do not exist in the running Bot',
+        [FM.TOOLTIP_ENTITY_ACTION_DISQUALIFIED]: `Actions that are blocked from use if this Entity is set`,
         [FM.TOOLTIP_ENTITY_ACTION_REQUIRED]: `Actions that are only employed when this Entity is set`,
         [FM.TOOLTIP_ENTITY_EXTRACTOR_HELP]: `Select text to label it as an entity`,
         [FM.TOOLTIP_ENTITY_EXTRACTOR_WARNING]: 'Text Variations must contain the same detected Entities and the primary input text.',
@@ -591,6 +600,7 @@ export default {
         [FM.TOOLTIP_PACKAGECREATOR_LIVE_TOGGLE]: 'When checked the new Tag will become the Live app served to users',
         [FM.TOOLTIP_TAG_EDITING]: 'The version (tag) of the application to edit in UI',
         [FM.TOOLTIP_TAG_LIVE]: 'The version (tag) of the application used when published to external channels (e.g. Skype)',
+        [FM.TOOLTIP_TRAINDIALOG_INVALID]: 'This application contains Train Dialogs that have been invalided.  They must be edited and fixed to be included in training',
 
         // Train Dialogs
         [FM.TRAINDIALOGS_TITLE]: 'Train Dialogs',
@@ -613,7 +623,7 @@ export default {
         [FM.ACTIONDETAILSLIST_COLUMNS_ARGUMENTS]: 'Arguments',
         [FM.ACTIONDETAILSLIST_COLUMNS_TYPE]: 'Action Type',
         [FM.ACTIONDETAILSLIST_COLUMNS_REQUIREDENTITIES]: 'Required Entities',
-        [FM.ACTIONDETAILSLIST_COLUMNS_BLOCKINGENTITIES]: 'Blocking Entities',
+        [FM.ACTIONDETAILSLIST_COLUMNS_DISQUALIFYINGENTITIES]: 'Disqualifying Entities',
         [FM.ACTIONDETAILSLIST_COLUMNS_SUGGESTEDENTITY]: 'Expected Entity',
         [FM.ACTIONDETAILSLIST_COLUMNS_ISTERMINAL]: 'Wait',
 
@@ -689,7 +699,7 @@ export default {
         [FM.ENTITYCREATOREDITOR_FIELDS_NEGATAABLE_LABEL]: 'Negatable',
         [FM.ENTITYCREATOREDITOR_PIVOT_EDIT]: 'Edit Entity',
         [FM.ENTITYCREATOREDITOR_PIVOT_REQUIREDFOR]: 'Required For Actions',
-        [FM.ENTITYCREATOREDITOR_PIVOT_BLOCKEDACTIONS]: 'Blocked Actions',
+        [FM.ENTITYCREATOREDITOR_PIVOT_DISQUALIFIEDACTIONS]: 'Blocked Actions',
         [FM.ENTITYCREATOREDITOR_CREATEBUTTON_ARIADESCRIPTION]: 'Create',
         [FM.ENTITYCREATOREDITOR_CREATEBUTTON_TEXT]: 'Create',
         [FM.ENTITYCREATOREDITOR_SAVEBUTTON_ARIADESCRIPTION]: 'Save',

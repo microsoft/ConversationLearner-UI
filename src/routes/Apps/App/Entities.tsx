@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import * as OF from 'office-ui-fabric-react';
 import { EntityCreatorEditor } from '../../../components/modals'
-import { deleteEntityAsync } from '../../../actions/deleteActions'
+import { deleteEntityThunkAsync } from '../../../actions/deleteActions'
 import { fetchApplicationTrainingStatusThunkAsync } from '../../../actions/fetchActions'
 import { State } from '../../../types';
 import { onRenderDetailsHeader } from '../../../components/ToolTips'
@@ -122,8 +122,7 @@ class Entities extends React.Component<Props, ComponentState> {
     @autobind
     handleDelete(entityId: string) {
         let entityToDelete = this.props.entities.find(entity => entity.entityId === entityId)
-        this.props.deleteEntityAsync(entityId, entityToDelete, this.props.app.appId)
-        this.props.fetchApplicationTrainingStatusThunkAsync(this.props.app.appId)
+        this.props.deleteEntityThunkAsync(this.props.app.appId, entityId, entityToDelete.negativeId)
         this.setState({
             createEditModalOpen: false
         })
@@ -288,7 +287,7 @@ class Entities extends React.Component<Props, ComponentState> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        deleteEntityAsync,
+        deleteEntityThunkAsync,
         fetchApplicationTrainingStatusThunkAsync
     }, dispatch)
 }

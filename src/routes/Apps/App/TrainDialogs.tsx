@@ -12,6 +12,7 @@ import {
     createTeachSessionFromUndoThunkAsync,
     createTeachSessionFromHistoryThunkAsync
 } from '../../../actions/createActions'
+import { Icon } from 'office-ui-fabric-react/lib/Icon'
 import { deleteTrainDialogThunkAsync, deleteMemoryThunkAsync } from '../../../actions/deleteActions';
 import { editTrainDialogThunkAsync } from '../../../actions/updateActions';
 import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
@@ -39,6 +40,13 @@ const returnStringWhenError = (s: string) => {
 
 const returnErrorStringWhenError = returnStringWhenError("ERR")
 
+function textClassName(trainDialog: TrainDialog): string {
+    if (trainDialog.invalid === true) {
+        return `${OF.FontClassNames.mediumPlus} blis-font--highlight`;
+    }
+    return OF.FontClassNames.mediumPlus;
+}
+
 function getColumns(intl: InjectedIntl): IRenderableColumn[] {
     return [
         {
@@ -54,7 +62,10 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             render: trainDialog => {
                 if (trainDialog.rounds && trainDialog.rounds.length > 0) {
                     const text = trainDialog.rounds[0].extractorStep.textVariations[0].text
-                    return <span className={OF.FontClassNames.mediumPlus}>{text}</span>
+                    return (<span className={textClassName(trainDialog)}>
+                            {trainDialog.invalid === true && <Icon className="blis-icon" iconName="IncidentTriangle" />}
+                            {text}
+                        </span>)
                 }
                 return <OF.Icon iconName="Remove" className="notFoundIcon" />
             }
@@ -72,7 +83,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             render: trainDialog => {
                 if (trainDialog.rounds && trainDialog.rounds.length > 0) {
                     const text = trainDialog.rounds[trainDialog.rounds.length - 1].extractorStep.textVariations[0].text;
-                    return <span className={OF.FontClassNames.mediumPlus}>{text}</span>
+                    return <span className={textClassName(trainDialog)}>{text}</span>
                 }
                 return <OF.Icon iconName="Remove" className="notFoundIcon" />
             }
@@ -96,7 +107,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                         let actionId = scorerSteps[scorerSteps.length - 1].labelAction;
                         let action = component.props.actions.find(a => a.actionId == actionId);
                         if (action) {
-                            return <span className={OF.FontClassNames.mediumPlus}>{ActionBase.GetPayload(action, getDefaultEntityMap(component.props.entities))}</span>;
+                            return <span className={textClassName(trainDialog)}>{ActionBase.GetPayload(action, getDefaultEntityMap(component.props.entities))}</span>;
                         }
                     }
                 }
@@ -116,7 +127,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             isResizable: true,
             render: trainDialog => {
                 let count = trainDialog.rounds ? trainDialog.rounds.length : 0
-                return <span className={OF.FontClassNames.mediumPlus}>{count}</span>
+                return <span className={textClassName(trainDialog)}>{count}</span>
             }
         }
     ]
@@ -431,49 +442,61 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     }
 
     renderTrainDialogItems(): TrainDialog[] {
-        if (!this.state.searchValue && ! this.state.entityFilter && !this.state.actionFilter) {
-            return this.props.trainDialogs;
-        }
-        // TODO: Consider caching as not very efficient
-        let filteredTrainDialogs = this.props.trainDialogs.filter((t: TrainDialog) => {
-            let entitiesInTD = [];
-            let actionsInTD = [];
-            let variationText = [];
+        let filteredTrainDialogs : TrainDialog[] = null;
 
-            for (let round of t.rounds) {
-                for (let variation of round.extractorStep.textVariations) {
-                    variationText.push(variation.text);
-                    for (let le of variation.labelEntities) {
-                        // Include pos and neg examples of entity if reversable
-                        let entity = this.props.entities.find(e => e.entityId === le.entityId);
-                        entitiesInTD.push(entity);
-                        if (entity.negativeId) {
-                            entitiesInTD.push(this.props.entities.find(e => e.entityId === entity.negativeId));
+        if (!this.state.searchValue && ! this.state.entityFilter && !this.state.actionFilter) {
+            filteredTrainDialogs = this.props.trainDialogs;
+        } else {
+            // TODO: Consider caching as not very efficient
+            filteredTrainDialogs = this.props.trainDialogs.filter((t: TrainDialog) => {
+                let entitiesInTD = [];
+                let actionsInTD = [];
+                let variationText = [];
+
+                for (let round of t.rounds) {
+                    for (let variation of round.extractorStep.textVariations) {
+                        variationText.push(variation.text);
+                        for (let le of variation.labelEntities) {
+                            // Include pos and neg examples of entity if reversable
+                            let entity = this.props.entities.find(e => e.entityId === le.entityId);
+                            entitiesInTD.push(entity);
+                            if (entity.negativeId) {
+                                entitiesInTD.push(this.props.entities.find(e => e.entityId === entity.negativeId));
+                            }
+                        }
+                    }
+                    for (let ss of round.scorerSteps) {
+                        let foundAction = this.props.actions.find(a => a.actionId === ss.labelAction);
+                        // Invalid train dialogs can contain delted actions
+                        if (foundAction) {
+                            actionsInTD.push(foundAction);
                         }
                     }
                 }
-                for (let ss of round.scorerSteps) {
-                    actionsInTD.push(this.props.actions.find(a => a.actionId === ss.labelAction));
-                }
-            }
 
-            // Filter out train dialogs that don't match filters (data = negativeId for multivalue)
-            if (this.state.entityFilter && this.state.entityFilter.key
-                    && !entitiesInTD.find(en => en.entityId === this.state.entityFilter.key)
-                    && !entitiesInTD.find(en => en.entityId === this.state.entityFilter.data)) {
+                // Filter out train dialogs that don't match filters (data = negativeId for multivalue)
+                if (this.state.entityFilter && this.state.entityFilter.key
+                        && !entitiesInTD.find(en => en.entityId === this.state.entityFilter.key)
+                        && !entitiesInTD.find(en => en.entityId === this.state.entityFilter.data)) {
+                    return false;
+                }
+                if (this.state.actionFilter && this.state.actionFilter.key
+                    && !actionsInTD.find(a => a.actionId === this.state.actionFilter.key)) {
                 return false;
             }
-            if (this.state.actionFilter && this.state.actionFilter.key
-                && !actionsInTD.find(a => a.actionId === this.state.actionFilter.key)) {
-            return false;
+
+                let entityNames = entitiesInTD.map(e => e.entityName);
+                let actionPayloads = actionsInTD.map(a => ActionBase.GetPayload(a, getDefaultEntityMap(this.props.entities)));
+
+                // Then check search terms
+                let searchString = variationText.concat(actionPayloads).concat(entityNames).join(' ').toLowerCase();
+                return searchString.indexOf(this.state.searchValue) > -1;
+            })
         }
-
-            let entityNames = entitiesInTD.map(e => e.entityName);
-            let actionPayloads = actionsInTD.map(a => ActionBase.GetPayload(a, getDefaultEntityMap(this.props.entities)));
-
-            // Then check search terms
-            let searchString = variationText.concat(actionPayloads).concat(entityNames).join(' ').toLowerCase();
-            return searchString.indexOf(this.state.searchValue) > -1;
+        // Sort to put invalid ones at the top
+        filteredTrainDialogs
+        .sort((a, b) => {
+            return (a.invalid === true) ? -1 : 1;
         })
         return filteredTrainDialogs;
     }

@@ -8,7 +8,7 @@ import {
     ActionBase, ScoredAction, UnscoredAction, ScoreReason, DialogType, ActionTypes,
     Template, DialogMode, RenderedActionArgument, CardAction
 } from 'blis-models'
-import { createActionAsync } from '../../actions/createActions'
+import { createActionThunkAsync } from '../../actions/createActions'
 import { toggleAutoTeach } from '../../actions/teachActions'
 import { PrimaryButton } from 'office-ui-fabric-react';
 import * as OF from 'office-ui-fabric-react';
@@ -288,11 +288,14 @@ class ActionScorer extends React.Component<Props, ComponentState> {
     }
 
     onClickSubmitActionEditor(action: ActionBase) {
-        this.setState({
+        this.setState(
+            {
             actionModalOpen: false
-        }, () => {
-            this.props.createActionAsync(action, this.props.app.appId)
-        })
+            }, 
+            () => {
+                this.props.createActionThunkAsync(this.props.app.appId, action)
+            }
+        )
     }
 
     handleOpenActionModal() {
@@ -455,13 +458,11 @@ class ActionScorer extends React.Component<Props, ComponentState> {
     }
 
     isUnscoredActionAvailable(action: UnscoredAction): boolean {
-        if (action.reason === ScoreReason.NotCalculated) {
+        if (action.reason === ScoreReason.NotAvailable) {
+            return false;
+        } else {
             return this.isActionIdAvailable(action.actionId);
         }
-        else if (action.reason === ScoreReason.NotAvailable) {
-            return false;
-        }
-        return true;
     }
 
     // Returns true if ActionId is available given Entities in Memory
@@ -692,7 +693,7 @@ export interface ReceivedProps {
 
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        createActionAsync,
+        createActionThunkAsync,
         toggleAutoTeach,
     }, dispatch);
 }

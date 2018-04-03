@@ -100,8 +100,6 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
         case AT.CREATE_TEACH_SESSION_FROMUNDOFULFILLED:
         case AT.CREATE_TEACH_SESSION_FROMHISTORYFULFILLED:
         case AT.CREATE_ENTITY_FULFILLED:
-        //case AT.CREATE_ENTITY_FULFILLEDNEGATIVE: Do not clear spinner until positive is complete
-        case AT.CREATE_ENTITY_FULFILLEDPOSITIVE:
 
         case AT.DELETE_ACTION_FULFILLED:
         case AT.DELETE_BLIS_APPLICATION_FULFILLED:

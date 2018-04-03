@@ -102,6 +102,11 @@ html {
   font-size: 16px;
   vertical-align: middle;
 }
+.blis-icon[data-icon-name="IncidentTriangle"] {
+  padding-left: 5px;
+  padding-right: 5px;
+  color: var(--color-red)
+}
 
 .blis-label{
   display: inline-block !important;
@@ -128,15 +133,20 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
 
 .blis-font--emphasis 
 {
-  font-weight: bold;
+  font-weight: bold !important;
   color: #000000;
 }
 .blis-font--deleted
 {
   text-decoration: line-through;
 }
+
 .blis-font--action {
   color: var(--color-blue);
+}
+
+.blis-font--highlight {
+  color: var(--color-error);
 }
 
 .blis-font--warning {

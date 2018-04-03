@@ -12,7 +12,7 @@ import { Activity } from 'botframework-directlinejs'
 import * as OF from 'office-ui-fabric-react';
 import {
     ActionBase, BlisAppBase, TrainDialog, TrainRound, ScoreReason, ScoredAction,
-    TrainScorerStep, Memory, UnscoredAction, ScoreResponse,
+    TrainScorerStep, Memory, UnscoredAction, ScoreResponse, ActionTypes,
     TextVariation, ExtractResponse, DialogType, SenderType, DialogMode
 } from 'blis-models'
 import { FM } from '../../react-intl-messages'
@@ -216,7 +216,23 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
             if (round.scorerSteps.length > 0) {
                 scorerStep = round.scorerSteps[this.state.scoreIndex];
 
-                selectedAction = this.props.actions.find(action => action.actionId === scorerStep.labelAction)
+                selectedAction = this.props.actions.find(action => action.actionId === scorerStep.labelAction);
+
+                if (!selectedAction) {
+                    // Action may have been deleted.  If so create dummy action to render
+                    selectedAction = {
+                        actionId: scorerStep.labelAction,
+                        payload: 'MISSING ACTION',
+                        isTerminal: false,
+                        actionType: ActionTypes.TEXT,
+                        requiredEntities: [],
+                        negativeEntities: [],
+                        suggestedEntity: null,
+                        version: 0,
+                        packageCreationId: 0,
+                        packageDeletionId: 0
+                    }
+                }
                 memories = scorerStep.input.filledEntities.map<Memory>((fe) => {
                     let entity = this.props.entities.find(e => e.entityId === fe.entityId);
                     let entityName = entity ? entity.entityName : 'UNKNOWN ENTITY';
@@ -230,15 +246,16 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                 prevMemories = this.getPrevMemories();
 
                 let scoredAction: ScoredAction = {
-                    actionId: selectedAction.actionId,
-                    payload: selectedAction.payload,
-                    isTerminal: selectedAction.isTerminal,
-                    score: 1.0,
-                    actionType: selectedAction.actionType
-                }
+                        actionId: selectedAction.actionId,
+                        payload: selectedAction.payload,
+                        isTerminal: selectedAction.isTerminal,
+                        score: 1.0,
+                        actionType: selectedAction.actionType
+                    }
+
                 // Generate list of all actions (apart from selected) for ScoreResponse as I have no scores
                 let unscoredActions = this.props.actions
-                    .filter(a => a.actionId !== selectedAction.actionId)
+                    .filter(a => !selectedAction || a.actionId !== selectedAction.actionId)
                     .map<UnscoredAction>(action => 
                         ({
                             actionId: action.actionId,

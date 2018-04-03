@@ -3,7 +3,7 @@ import * as Rx from 'rxjs';
 import { ActionsObservable, Epic } from 'redux-observable'
 import { State, ActionObject } from '../types'
 import { AT } from '../types/ActionTypes'
-import { deleteBlisApp, deleteBlisEntity, deleteBlisAction, deleteChatSession } from './apiHelpers';
+import { deleteBlisApp, deleteChatSession } from './apiHelpers';
 
 const assertNever = () => { throw Error(`Should not reach here`) }
 
@@ -16,38 +16,11 @@ export const deleteApplicationEpic: Epic<ActionObject, State> = (action$: Action
         )
 }
 
-export const deleteEntityEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
-    return action$.ofType(AT.DELETE_ENTITY_ASYNC)
-        .flatMap(action =>
-            (action.type === AT.DELETE_ENTITY_ASYNC)
-                ? deleteBlisEntity(action.currentAppId, action.entity.entityId, action.entity.negativeId || action.entity.positiveId)
-                : assertNever()
-        )
-}
-
-export const deleteReverseEntityEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
-    return action$.ofType(AT.DELETE_REVERSE_ENTITY_ASYNC)
-        .flatMap(action =>
-            (action.type === AT.DELETE_REVERSE_ENTITY_ASYNC)
-                ? deleteBlisEntity(action.currentAppId, action.reverseEntityId, null)
-                : assertNever()
-        )
-}
-
-export const deleteActionEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
-    return action$.ofType(AT.DELETE_ACTION_ASYNC)
-        .flatMap(action =>
-            (action.type === AT.DELETE_ACTION_ASYNC)
-                ? deleteBlisAction(action.currentAppId, action.action)
-                : assertNever()
-        )
-}
-
 export const deleteSessionEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
     return action$.ofType(AT.DELETE_CHAT_SESSION_ASYNC)
         .flatMap(action =>
             (action.type === AT.DELETE_CHAT_SESSION_ASYNC)
-                ? deleteChatSession(action.key, action.currentAppId, action.session, action.packageId)
+                ? deleteChatSession(action.key, action.appId, action.session, action.packageId)
                 : assertNever()
         )
 }

@@ -155,7 +155,8 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
                         <div className="blis-modal-buttons_secondary">
                             <div  ref={ (menuButton) => this._refBranchButton = menuButton}>
                                 <DefaultButton
-                                        disabled={this.state.pendingExtractionChanges || !this.props.canEdit}
+                                        disabled={this.state.pendingExtractionChanges || !this.props.canEdit || 
+                                            (this.props.trainDialog && this.props.trainDialog.invalid === true)}
                                         onClick={() => this.onClickBranch()}
                                         ariaDescription={intl.formatMessage({
                                             id: FM.TRAINDIALOGMODAL_BRANCH_ARIADESCRIPTION,

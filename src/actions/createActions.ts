@@ -5,8 +5,11 @@ import { Dispatch } from 'redux'
 import { setErrorDisplay } from './displayActions'
 import * as ClientFactory from '../services/clientFactory'
 import { deleteTrainDialogThunkAsync } from './deleteActions';  
-import { fetchApplicationsAsync } from './fetchActions';
+import { fetchApplicationsAsync, fetchApplicationTrainingStatusThunkAsync } from './fetchActions';
 
+// --------------------------
+// App
+// --------------------------
 export const createBLISApplicationAsync = (userId: string, application: BlisAppBase): ActionObject => {
     return {
         type: AT.CREATE_BLIS_APPLICATION_ASYNC,
@@ -22,20 +25,9 @@ export const createApplicationFulfilled = (blisApp: BlisAppBase): ActionObject =
     }
 }
 
-export const copyApplicationsAsync = (srcUserId: string, destUserId: string): ActionObject => {
-    return {
-        type: AT.COPY_APPLICATIONS_ASYNC,
-        srcUserId: srcUserId,
-        destUserId: destUserId
-    }
-}
-
-export const copyApplicationsFulfilled = (): ActionObject => {
-    return {
-        type: AT.COPY_APPLICATIONS_FULFILLED
-    }
-}
-
+// --------------------------
+// CopyApps
+// --------------------------
 export const copyApplicationsThunkAsync = (srcUserId: string, destUserId: string) => {
     return async (dispatch: Dispatch<any>) => {
         const blisClient = ClientFactory.getInstance(AT.COPY_APPLICATIONS_ASYNC)
@@ -53,89 +45,114 @@ export const copyApplicationsThunkAsync = (srcUserId: string, destUserId: string
     }
 }
 
-export const createEntityAsync = (key: string, entity: EntityBase, currentAppId: string): ActionObject => {
+const copyApplicationsAsync = (srcUserId: string, destUserId: string): ActionObject => {
+    return {
+        type: AT.COPY_APPLICATIONS_ASYNC,
+        srcUserId: srcUserId,
+        destUserId: destUserId
+    }
+}
+
+const copyApplicationsFulfilled = (): ActionObject => {
+    return {
+        type: AT.COPY_APPLICATIONS_FULFILLED
+    }
+}
+
+// --------------------------
+// Entity
+// --------------------------
+export const createEntityThunkAsync = (appId: string, entity: EntityBase) => {
+    return async (dispatch: Dispatch<any>) => {
+        dispatch(createEntityAsync(appId, entity))
+        const blisClient = ClientFactory.getInstance(AT.CREATE_ENTITY_ASYNC)
+
+        try {
+            let posEntity = await blisClient.entitiesCreate(appId, entity);
+            
+            // If it's a negatable entity
+            if (posEntity.isNegatible) {
+                // Create negative entity with ref to positive entity
+                let negEntity = {
+                    ...entity, 
+                    entityName: `~${entity.entityName}`,
+                    positiveId: posEntity.entityId
+                }
+                // Remove pos entityId from negative entity
+                delete negEntity.entityId;
+
+                negEntity = await blisClient.entitiesCreate(appId, negEntity);
+                dispatch(createEntityFulfilled(negEntity));
+
+                // Update positive entity with ref to negative entity
+                posEntity.negativeId = negEntity.entityId;
+                posEntity = await blisClient.entitiesUpdate(appId, posEntity);
+            }
+            dispatch(createEntityFulfilled(posEntity));
+            dispatch(fetchApplicationTrainingStatusThunkAsync(appId));
+            return true;
+        } catch (e) {
+            const error = e as Error
+            dispatch(setErrorDisplay(ErrorType.Error, error.name, [error.message], AT.CREATE_ENTITY_ASYNC))
+            return false;
+        }
+    }
+}
+
+const createEntityAsync = (appId: string, entity: EntityBase): ActionObject => {
     return {
         type: AT.CREATE_ENTITY_ASYNC,
-        key: key,
         entity: entity,
-        currentAppId: currentAppId
+        appId: appId
     }
 }
 
-export const createEntityFulfilled = (entity: EntityBase, entityId: string): ActionObject => {
+const createEntityFulfilled = (entity: EntityBase): ActionObject => {
     return {
         type: AT.CREATE_ENTITY_FULFILLED,
-        entity: entity,
-        entityId: entityId
+        entity: entity
     }
 }
 
-// After positive entity has been created, create the negative entity with a reference to the positiveId
-export const createPositiveEntityFulfilled = (positiveEntity: EntityBase, positiveEntityId: string, currentAppId: string): ActionObject => {
-    let negativeEntity: EntityBase = { 
-        ...positiveEntity, 
-        entityName: `~${positiveEntity.entityName}`, 
-        isMultivalue: positiveEntity.isMultivalue,
-        isNegatible: true,
-        positiveId: positiveEntityId,
-        negativeId: null,
-    } as EntityBase;
-    return {
-        type: AT.CREATE_ENTITY_FULFILLEDPOSITIVE,
-        negativeEntity: negativeEntity,
-        positiveEntity: positiveEntity,
-        currentAppId: currentAppId
+// --------------------------
+// Action
+// --------------------------
+export const createActionThunkAsync = (appId: string, action: ActionBase) => {
+    return async (dispatch: Dispatch<any>) => {
+        dispatch(createActionAsync(appId, action))
+        const blisClient = ClientFactory.getInstance(AT.CREATE_ACTION_ASYNC)
+
+        try {
+            const newAction = await blisClient.actionsCreate(appId, action);
+            dispatch(createActionFulfilled(newAction));
+            dispatch(fetchApplicationTrainingStatusThunkAsync(appId));
+            return true;
+        } catch (e) {
+            const error = e as Error
+            dispatch(setErrorDisplay(ErrorType.Error, error.name, [error.message], AT.CREATE_ACTION_ASYNC))
+            return false;
+        }
     }
 }
 
-export const createNegativeEntityFulfilled = (positiveEntity: EntityBase, negativeEntity: EntityBase, negativeEntityId: string, currentAppId: string): ActionObject => {
-    let posEntity: EntityBase = positiveEntity;
-    posEntity.negativeId = negativeEntityId;
-    posEntity.entityId = negativeEntity.positiveId;
-    negativeEntity.entityId = negativeEntityId;
-    //send both to store to be saved locally, and send the positive entity back to the service to update its metadata
-    return {
-        type: AT.CREATE_ENTITY_FULFILLEDNEGATIVE,
-        positiveEntity: posEntity,
-        negativeEntity: negativeEntity,
-        currentAppId: currentAppId
-    }
-}
-
-export const createActionAsync = (action: ActionBase, currentAppId: string): ActionObject => {
+const createActionAsync = (appId: string, action: ActionBase): ActionObject => {
     return {
         type: AT.CREATE_ACTION_ASYNC,
         action: action,
-        currentAppId: currentAppId
+        appId: appId
     }
 }
 
-export const createActionFulfilled = (action: ActionBase, actionId: string): ActionObject => {
+const createActionFulfilled = (action: ActionBase): ActionObject => {
     return {
         type: AT.CREATE_ACTION_FULFILLED,
-        action: action,
-        actionId: actionId
+        action: action
     }
 }
 
 // --------------------------
-// createAppTag
+// AppTag
 // --------------------------
-export const createAppTagAsync = (currentAppId: string, tagName: string, makeLive: boolean): ActionObject =>
-    ({
-        type: AT.CREATE_APP_TAG_ASYNC,
-        tagName: tagName,
-        makeLive: makeLive,
-        currentAppId: currentAppId
-    })
-
-export const createAppTagFulfilled = (app: BlisAppBase): ActionObject => {
-    return {
-        type: AT.CREATE_APP_TAG_FULFILLED,
-        blisApp: app
-    }
-}
-
 export const createAppTagThunkAsync = (appId: string, tagName: string, makeLive: boolean) => {
     return async (dispatch: Dispatch<any>) => {
         const blisClient = ClientFactory.getInstance(AT.CREATE_TEACH_SESSION_ASYNC)
@@ -153,25 +170,24 @@ export const createAppTagThunkAsync = (appId: string, tagName: string, makeLive:
     }
 }
 
+const createAppTagAsync = (currentAppId: string, tagName: string, makeLive: boolean): ActionObject =>
+    ({
+        type: AT.CREATE_APP_TAG_ASYNC,
+        tagName: tagName,
+        makeLive: makeLive,
+        appId: currentAppId
+    })
+
+const createAppTagFulfilled = (app: BlisAppBase): ActionObject => {
+    return {
+        type: AT.CREATE_APP_TAG_FULFILLED,
+        blisApp: app
+    }
+}
+
 // --------------------------
-// createChatSession
+// ChatSession
 // --------------------------
-export const createChatSessionAsync = (): ActionObject =>
-    ({
-        type: AT.CREATE_CHAT_SESSION_ASYNC
-    })
-
-export const createChatSessionRejected = (): ActionObject =>
-    ({
-        type: AT.CREATE_CHAT_SESSION_REJECTED
-    })
-
-export const createChatSessionFulfilled = (session: Session): ActionObject =>
-    ({
-        type: AT.CREATE_CHAT_SESSION_FULFILLED,
-        session: session
-    })
-
 export const createChatSessionThunkAsync = (appId: string, packageId: string) => {
     return async (dispatch: Dispatch<any>) => {
         const blisClient = ClientFactory.getInstance(AT.CREATE_CHAT_SESSION_ASYNC)
@@ -190,26 +206,25 @@ export const createChatSessionThunkAsync = (appId: string, packageId: string) =>
     }
 }
 
+const createChatSessionAsync = (): ActionObject =>
+    ({
+        type: AT.CREATE_CHAT_SESSION_ASYNC
+    })
+
+const createChatSessionRejected = (): ActionObject =>
+    ({
+        type: AT.CREATE_CHAT_SESSION_REJECTED
+    })
+
+const createChatSessionFulfilled = (session: Session): ActionObject =>
+    ({
+        type: AT.CREATE_CHAT_SESSION_FULFILLED,
+        session: session
+    })
+
 // --------------------------
-// createTeachSession
+// TeachSession
 // --------------------------
-export const createTeachSessionAsync = (): ActionObject =>
-    ({
-        type: AT.CREATE_TEACH_SESSION_ASYNC
-    })
-
-export const createTeachSessionRejected = (): ActionObject =>
-    ({
-        type: AT.CREATE_TEACH_SESSION_REJECTED
-    })
-
-export const createTeachSessionFulfilled = (uiTeachResponse: UITeachResponse): ActionObject =>
-    ({
-        type: AT.CREATE_TEACH_SESSION_FULFILLED,
-        teachSession: uiTeachResponse.teachResponse as Teach,
-        memories: uiTeachResponse.memories
-    })
-
 export const createTeachSessionThunkAsync = (appId: string) => {
     return async (dispatch: Dispatch<any>) => {
         const blisClient = ClientFactory.getInstance(AT.CREATE_TEACH_SESSION_ASYNC)
@@ -227,7 +242,26 @@ export const createTeachSessionThunkAsync = (appId: string) => {
         }
     }
 }
+const createTeachSessionAsync = (): ActionObject =>
+    ({
+        type: AT.CREATE_TEACH_SESSION_ASYNC
+    })
 
+const createTeachSessionRejected = (): ActionObject =>
+    ({
+        type: AT.CREATE_TEACH_SESSION_REJECTED
+    })
+
+const createTeachSessionFulfilled = (uiTeachResponse: UITeachResponse): ActionObject =>
+    ({
+        type: AT.CREATE_TEACH_SESSION_FULFILLED,
+        teachSession: uiTeachResponse.teachResponse as Teach,
+        memories: uiTeachResponse.memories
+    })
+
+// --------------------------
+// TeachSessionFromHistory
+// --------------------------
 export const createTeachSessionFromHistoryThunkAsync = (appId: string, trainDialog: TrainDialog, userName: string, userId: string, deleteSourceId: string = null, lastExtractChanged: boolean = false) => {
     return async (dispatch: Dispatch<any>) => {
         const blisClient = ClientFactory.getInstance(AT.CREATE_TEACH_SESSION_FROMHISTORYASYNC)
@@ -251,7 +285,7 @@ export const createTeachSessionFromHistoryThunkAsync = (appId: string, trainDial
     }
 }
 
-export const createTeachSessionFromHistoryAsync = (blisAppID: string, trainDialog: TrainDialog, userName: string, userId: string): ActionObject => {
+const createTeachSessionFromHistoryAsync = (blisAppID: string, trainDialog: TrainDialog, userName: string, userId: string): ActionObject => {
     return {
         type: AT.CREATE_TEACH_SESSION_FROMHISTORYASYNC,
         blisAppID: blisAppID,
@@ -261,7 +295,7 @@ export const createTeachSessionFromHistoryAsync = (blisAppID: string, trainDialo
     }
 }
 
-export const createTeachSessionFromHistoryFulfilled = (teachWithHistory: TeachWithHistory): ActionObject => {
+const createTeachSessionFromHistoryFulfilled = (teachWithHistory: TeachWithHistory): ActionObject => {
     // Needs a fulfilled version to handle response from Epic
     return {
         type: AT.CREATE_TEACH_SESSION_FROMHISTORYFULFILLED,
@@ -269,6 +303,9 @@ export const createTeachSessionFromHistoryFulfilled = (teachWithHistory: TeachWi
     }
 }
 
+// --------------------------
+// TeachSessionFromUndo
+// --------------------------
 export const createTeachSessionFromUndoThunkAsync = (appId: string, teach: Teach, popRound: boolean, userName: string, userId: string) => {
     return async (dispatch: Dispatch<any>) => {
         const blisClient = ClientFactory.getInstance(AT.CREATE_TEACH_SESSION_FROMUNDOASYNC)
@@ -287,7 +324,7 @@ export const createTeachSessionFromUndoThunkAsync = (appId: string, teach: Teach
     }
 }
 
-export const createTeachSessionFromUndoAsync = (blisAppID: string, teach: Teach, popRound: boolean, userName: string, userId: string): ActionObject => {
+const createTeachSessionFromUndoAsync = (blisAppID: string, teach: Teach, popRound: boolean, userName: string, userId: string): ActionObject => {
     return {
         type: AT.CREATE_TEACH_SESSION_FROMUNDOASYNC,
         blisAppID: blisAppID,
@@ -298,7 +335,7 @@ export const createTeachSessionFromUndoAsync = (blisAppID: string, teach: Teach,
     }
 }
 
-export const createTeachSessionFromUndoFulfilled = (teachWithHistory: TeachWithHistory): ActionObject => {
+const createTeachSessionFromUndoFulfilled = (teachWithHistory: TeachWithHistory): ActionObject => {
     // Needs a fulfilled version to handle response from Epic
     return {
         type: AT.CREATE_TEACH_SESSION_FROMUNDOFULFILLED,
@@ -306,6 +343,9 @@ export const createTeachSessionFromUndoFulfilled = (teachWithHistory: TeachWithH
     }
 }
 
+// --------------------------
+// TrainDialog
+// --------------------------
 export const createTrainDialogAsync = (key: string, appId: string, trainDialog: TrainDialog, logDialogId: string): ActionObject =>
     ({
         type: AT.CREATE_TRAIN_DIALOG_ASYNC,
@@ -321,6 +361,9 @@ export const createTrainDialogFulfilled = (trainDialog: TrainDialog): ActionObje
         trainDialog
     })
 
+// --------------------------
+// LogDialog
+// --------------------------
 // TODO: should be async with fulfillment
 export const createLogDialog = (logDialog: LogDialog): ActionObject => {
     return {

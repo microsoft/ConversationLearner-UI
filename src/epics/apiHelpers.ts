@@ -2,8 +2,6 @@ import 'rxjs'
 import axios from 'axios'
 import {
   BlisAppBase,
-  EntityBase,
-  ActionBase,
   UserInput,
   UIExtractResponse,
   UITrainScorerStep,
@@ -156,48 +154,6 @@ export const createBlisApp = (userId: string, app: BlisAppBase): Observable<Acti
     .catch(err => handleError(obs, err, AT.CREATE_BLIS_APPLICATION_ASYNC)));
 };
 
-export const copyApplications = (srcUserId: string, destUserId: string): Observable<ActionObject> => {
-  const blisClient = ClientFactory.getInstance(AT.COPY_APPLICATIONS_ASYNC)
-  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.appsCopy(srcUserId, destUserId)
-    .then(() => {
-      obs.next(actions.create.copyApplicationsFulfilled())
-      obs.complete();
-    })
-    .catch(err => handleError(obs, err, AT.COPY_APPLICATIONS_ASYNC)));
-};
-
-export const createBlisEntity = (entity: EntityBase, appId: string, reverseEntity?: EntityBase): Observable<ActionObject> => {
-  const blisClient = ClientFactory.getInstance(AT.CREATE_ENTITY_ASYNC)
-  //remove property from the object that the route will not accept
-  const { version, packageCreationId, packageDeletionId, entityId, ...entityToSend } = entity;
-  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.entitiesCreate(appId, entityToSend as EntityBase)
-    .then(newEntity => {
-      if (!entity.isNegatible) {
-        obs.next(actions.create.createEntityFulfilled(newEntity, newEntity.entityId));
-      }
-      else if (entity.positiveId) {
-        obs.next(actions.create.createNegativeEntityFulfilled(reverseEntity, newEntity, newEntity.entityId, appId));
-      }
-      else {
-        obs.next(actions.create.createPositiveEntityFulfilled(newEntity, newEntity.entityId, appId));
-      }
-      obs.complete();
-    })
-    .catch(err => handleError(obs, err, AT.CREATE_ENTITY_ASYNC)));
-};
-
-export const createBlisAction = (action: ActionBase, appId: string): Observable<ActionObject> => {
-  const blisClient = ClientFactory.getInstance(AT.CREATE_ACTION_ASYNC)
-  //remove property from the object that the route will not accept
-  const { actionId, version, packageCreationId, packageDeletionId, ...actionToSend } = action;
-  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.actionsCreate(appId, actionToSend as ActionBase)
-    .then(action => {
-      obs.next(actions.create.createActionFulfilled(action, action.actionId));
-      obs.complete();
-    })
-    .catch(err => handleError(obs, err, AT.CREATE_ACTION_ASYNC)));
-};
-
 //=========================================================
 // DELETE ROUTES
 //=========================================================
@@ -212,30 +168,6 @@ export const deleteBlisApp = (blisApp: BlisAppBase): Observable<ActionObject> =>
     .catch(err => handleError(obs, err, AT.DELETE_BLIS_APPLICATION_ASYNC)));
 };
 
-export const deleteBlisEntity = (appId: string, deleteEntityId: string, reverseEntityId: string): Observable<ActionObject> => {
-  const blisClient = ClientFactory.getInstance(AT.DELETE_ENTITY_ASYNC)
-  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.entitiesDelete(appId, deleteEntityId)
-    .then(() => {
-      if (reverseEntityId) {
-        obs.next(actions.delete.deleteReverseEntityAsnyc(deleteEntityId, reverseEntityId, appId));
-      }
-      else {
-        obs.next(actions.delete.deleteEntityFulfilled(deleteEntityId, appId));
-      }
-      obs.complete();
-    })
-    .catch(err => handleError(obs, err, AT.DELETE_ENTITY_ASYNC)));
-};
-export const deleteBlisAction = (appId: string, action: ActionBase): Observable<ActionObject> => {
-  const blisClient = ClientFactory.getInstance(AT.DELETE_ACTION_ASYNC)
-  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.actionsDelete(appId, action.actionId)
-    .then(() => {
-      obs.next(actions.delete.deleteActionFulfilled(action.actionId));
-      obs.complete();
-    })
-    .catch(err => handleError(obs, err, AT.DELETE_ACTION_ASYNC)));
-};
-
 //=========================================================
 // EDIT ROUTES
 //=========================================================
@@ -248,24 +180,6 @@ export const editBlisApp = (appId: string, app: BlisAppBase): Observable<ActionO
       obs.complete();
     })
     .catch(err => handleError(obs, err, AT.EDIT_BLIS_APPLICATION_ASYNC)));
-}
-export const editBlisAction = (appId: string, action: ActionBase): Observable<ActionObject> => {
-  const blisClient = ClientFactory.getInstance(AT.EDIT_ACTION_ASYNC)
-  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.actionsUpdate(appId, action)
-    .then(updateAction => {
-      obs.next(actions.update.editActionFulfilled(updateAction));
-      obs.complete();
-    })
-    .catch(err => handleError(obs, err, AT.EDIT_ACTION_ASYNC)));
-};
-export const editBlisEntity = (appId: string, entity: EntityBase): Observable<ActionObject> => {
-  const blisClient = ClientFactory.getInstance(AT.EDIT_ENTITY_ASYNC)
-  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.entitiesUpdate(appId, entity)
-    .then(updatedEntity => {
-      obs.next(actions.update.editEntityFulfilled(updatedEntity));
-      obs.complete();
-    })
-    .catch(err => handleError(obs, err, AT.EDIT_ENTITY_ASYNC)));
 }
 
 //========================================================
