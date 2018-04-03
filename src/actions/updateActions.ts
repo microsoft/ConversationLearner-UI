@@ -87,10 +87,14 @@ export const editActionThunkAsync = (appId: string, action: ActionBase) => {
         dispatch(editActionAsync(appId, action))
 
         try {
-            await blisClient.actionsUpdate(appId, action)
+            let deleteEditResponse = await blisClient.actionsUpdate(appId, action)
             dispatch(editActionFulfilled(action))
-            // Fetch train dialogs as some may have been outdated
-            dispatch(fetchAllTrainDialogsAsync(appId));
+
+            // Fetch train dialogs if any train dialogs were impacted
+            if (deleteEditResponse.trainDialogIds && deleteEditResponse.trainDialogIds.length > 0) {
+                dispatch(fetchAllTrainDialogsAsync(appId));
+            }
+            
             dispatch(fetchApplicationTrainingStatusThunkAsync(appId))
             return action
         }
