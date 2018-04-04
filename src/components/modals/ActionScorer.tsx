@@ -37,9 +37,10 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             isResizable: true,
             render: (action, component, index) => {
                 if (component.props.canEdit) {
-                    let buttonText = (component.props.dialogType !== DialogType.TEACH && index === 0) ? "Selected" : "Select";
+                    const selected = (component.props.dialogType !== DialogType.TEACH && index === 0);
+                    let buttonText = selected ? 'Selected' : 'Select';
                     let isAvailable = component.isUnscoredActionAvailable(action as UnscoredAction);
-                    if (!isAvailable) {
+                    if (!isAvailable || selected) {
                         return (
                             <PrimaryButton
                                 disabled={true}

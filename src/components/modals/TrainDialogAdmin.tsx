@@ -96,6 +96,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
             newRounds[roundIndex].scorerSteps = [];
             updatedTrainDialog = { ...updatedTrainDialog, rounds: rounds };
 
+            // LARS??
             // Save prompt will be shown to user
             this.setState({
                 saveTrainDialog: updatedTrainDialog,
@@ -148,22 +149,29 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
         newRounds[this.state.roundIndex] = newRound;
         let updatedTrainDialog = { ...this.props.trainDialog, rounds: newRounds };
 
-        // Save prompt will be shown to user
-        this.setState({
-            saveTrainDialog: updatedTrainDialog,
-            saveSliceRound: this.state.roundIndex,
-            saveExtractChanged: false
-        });
+        if (this.props.trainDialog.rounds.length !== newRounds.length) {
+            // Truncation prompt will be shown to user
+            this.setState({
+                saveTrainDialog: updatedTrainDialog,
+                saveSliceRound: this.state.roundIndex,
+                saveExtractChanged: false
+            });
+        } else {
+            this.editTrainDialog(updatedTrainDialog, this.state.roundIndex, false);
+        }
     }
 
     onClickSaveCheckYes() {
+        this.editTrainDialog(this.state.saveTrainDialog, this.state.saveSliceRound, false);
+    }
 
+    editTrainDialog(sourceDialog: TrainDialog, sliceRound: number, extractChanged: boolean) {
         let trainDialog: TrainDialog = {
             trainDialogId: undefined,
             version: undefined,
             packageCreationId: undefined,
             packageDeletionId: undefined,
-            rounds: this.state.saveTrainDialog.rounds,
+            rounds: sourceDialog.rounds,
             definitions: {
                 entities: this.props.entities,
                 actions: this.props.actions,
@@ -171,7 +179,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
             }
         }
 
-        this.props.onEdit(this.state.saveTrainDialog.trainDialogId, trainDialog, this.state.saveExtractChanged);
+        this.props.onEdit(sourceDialog.trainDialogId, trainDialog, extractChanged);
          
         this.props.clearExtractResponses();
 
@@ -179,9 +187,10 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
             saveTrainDialog: null,
             saveSliceRound: 0,
             saveExtractChanged: false,
-            roundIndex: this.state.saveSliceRound
+            roundIndex: sliceRound
         });
     }
+
     onClickSaveCheckNo() {
         // Reset the entity extractor
         this.setState({ saveTrainDialog: null, saveSliceRound: 0 });
