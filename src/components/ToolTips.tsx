@@ -96,19 +96,18 @@ export function Wrap(content: JSX.Element, tooltip: string, directionalHint: OF.
 }
 
 let apiCodeSample =
-    `blisdk.APICallback("Multiply", async (memoryManager, argArray) =>
-{
-    try {
-        var num1 = parseInt(argArray[0]);
-        var num2 = parseInt(argArray[1]);
-        var product = num1*num2;
-        return product.toString();
-    }
-    catch (err)
-    {
-        return "Invalid number";
-    }
-})`;
+    `Blis.AddAPICallback("Multiply", async (memoryManager: ClientMemoryManager, num1string: string, num2string: string) => {
+
+        // convert base and exponent to ints
+        var num1int = parseInt(num1string);
+        var num2int = parseInt(num2string);
+    
+        // compute product
+        var result = num1int * num2int;
+    
+        // return result as message
+        return num1int.toString() + " * " + num2int.toString() + " = " + result.toString();
+    })`;
 
 let memoryManagerSample =
     `async RememberEntityAsync(entityName : string, value : string) 
