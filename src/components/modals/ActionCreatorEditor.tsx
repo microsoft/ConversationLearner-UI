@@ -700,12 +700,13 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
     onChangePayloadEditor = (value: ActionPayloadEditor.SlateValue, slot: string = null) => {
         console.log(`ActionCreatorEditor.onChangePayloadEditor: `, slot)
-        let newArguments = { ...this.state.slateValuesMap }
-        newArguments[slot] = value;
+        const slateValuesMap = { ...this.state.slateValuesMap }
+        slateValuesMap[slot] = value;
 
-        const requiredEntityTagsFromPayload = Object.values(newArguments)
+        const requiredEntityTagsFromPayload = Object.values(slateValuesMap)
             .map(value => ActionPayloadEditor.Utilities.getEntitiesFromValue(value).map(convertOptionToTag))
             .reduce((a, b) => a.concat(b))
+            .filter((t, i, xs) => i === xs.findIndex(tag => tag.key === t.key))
 
         // If we added entity to a payload which was already in the list of required entities remove it to avoid duplicates.
         const requiredEntityTags = this.state.requiredEntityTags.filter(tag => !requiredEntityTagsFromPayload.some(t => t.key === tag.key))
@@ -715,7 +716,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
         this.setState({
             isPayloadValid,
-            slateValuesMap: newArguments,
+            slateValuesMap,
             requiredEntityTagsFromPayload,
             requiredEntityTags
         })
@@ -743,7 +744,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 && (this.state.cardOptions.length === 0));
 
         // Available Mentions: All entities - expected entity - required entities from payload - disqualified entities
-        const unavailableTags = [...this.state.expectedEntityTags, ...this.state.requiredEntityTagsFromPayload, ...this.state.negativeEntityTags]
+        const unavailableTags = [...this.state.expectedEntityTags, ...this.state.negativeEntityTags]
         const optionsAvailableForPayload = this.props.entities
             .filter(e => !unavailableTags.some(t => t.key === e.entityId))
             .map(convertEntityToOption)
