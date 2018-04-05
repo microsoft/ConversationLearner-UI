@@ -110,29 +110,25 @@ let apiCodeSample =
     })`;
 
 let memoryManagerSample =
-    `async RememberEntityAsync(entityName : string, value : string) 
-    -> Promise<void> 
+`    // Values in bot memory
+    async EntityValueAsync(entityName: string): Promise<string>;
+    async EntityValueAsPrebuiltAsync(entityName: string): Promise<MemoryValue[]>;
+    async EntityValueAsListAsync(entityName: string): Promise<string[]>;
+    async EntityValueAsObject<T>(entityName: string): Promise<T | null> {
 
-async ForgetEntityAsync(entityName : string, value : string = null) 
-    -> Promise<void> 
- 
-async CopyEntityAsync(entityNameFrom : string, entityNameTo: string) 
-    -> Promise<void> 
- 
-async EntityValueAsync(entityName : string) 
-    -> Promise<string> 
+    // Values in memory before new Entity detection
+    PrevEntityValue(entityName: string): (string | null)
+    PrevEntityValueAsPrebuilt(entityName: string): MemoryValue[]
+    PrevEntityValueAsList(entityName: string): string[]
+    PrevValueAsObject<T>(entityName: string): (T | null)
 
-async EntityValueAsPrebuiltAsync(entityName : string) 
-    -> Promise<MemoryValue[]> 
+    // Memory manipulation methods
+    async RememberEntityAsync(entityName: string, entityValue: string): Promise<void>;
+    async RememberEntitiesAsync(entityName: string, entityValues: string[]): Promise<void>;
+    async ForgetEntityAsync(entityName: string, value?: string): Promise<void>;
+    async CopyEntityAsync(entityNameFrom: string, entityNameTo: string): Promise<void>;
 
-async EntityValueAsListAsync(entityName : string) 
-    -> Promise<string[]> 
-
-async GetFilledEntitiesAsync() 
-    -> Promise<string[]> 
-
-async AppNameAsync() 
-    -> Promise<string> 
+    async GetFilledEntitiesAsync(): Promise<FilledEntity[]>;
 `;
 
 export function GetTip(tipType: string) {
