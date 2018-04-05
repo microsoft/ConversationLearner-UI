@@ -530,7 +530,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 }
                 <div>
                     <OF.PrimaryButton
-                        disabled={this.props.editingPackageId !== this.props.app.devPackageId}
+                        disabled={this.props.editingPackageId !== this.props.app.devPackageId || this.props.invalidBot}
                         onClick={() => this.onClickNewTeachSession()}
                         ariaDescription={intl.formatMessage({
                             id: FM.TRAINDIALOGS_CREATEBUTTONARIALDESCRIPTION,
@@ -609,7 +609,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 <TrainDialogModal
                     app={this.props.app}
                     editingPackageId={this.props.editingPackageId}
-                    canEdit={this.props.editingPackageId === this.props.app.devPackageId}
+                    canEdit={this.props.editingPackageId === this.props.app.devPackageId && !this.props.invalidBot}
                     open={this.state.isTrainDialogModalOpen}
                     onClose={() => this.onCloseTrainDialogModal()}
                     onBranch={(turnIndex: number) => this.onBranchTrainDialog(turnIndex)}
@@ -653,6 +653,7 @@ const mapStateToProps = (state: State) => {
 
 export interface ReceivedProps {
     app: BlisAppBase,
+    invalidBot: boolean,
     editingPackageId: string,
     filteredAction?: ActionBase,
     filteredEntity?: EntityBase
