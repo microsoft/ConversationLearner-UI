@@ -471,6 +471,10 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         if (foundAction) {
                             actionsInTD.push(foundAction);
                         }
+                        // Need to check filledEntities for programmatic only entities
+                        for (let filledEntity of ss.input.filledEntities) {
+                            entitiesInTD.push(this.props.entities.find(e => e.entityId === filledEntity.entityId));
+                        }
                     }
                 }
 
