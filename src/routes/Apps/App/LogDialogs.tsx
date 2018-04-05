@@ -382,7 +382,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 }
                 <div>
                     <OF.PrimaryButton
-                        disabled={this.props.editingPackageId !== this.props.app.devPackageId}                      
+                        disabled={this.props.editingPackageId !== this.props.app.devPackageId || this.props.invalidBot}                      
                         onClick={this.onClickNewChatSession}
                         ariaDescription={this.props.intl.formatMessage({
                             id: FM.LOGDIALOGS_CREATEBUTTONARIALDESCRIPTION,
@@ -427,7 +427,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     app={this.props.app}
                     editingPackageId={this.props.editingPackageId}
                     open={this.state.isLogDialogWindowOpen}
-                    canEdit={this.props.editingPackageId === this.props.app.devPackageId}
+                    canEdit={this.props.editingPackageId === this.props.app.devPackageId && !this.props.invalidBot}
                     onClose={this.onCloseLogDialogModal}
                     onEdit={(logDialogId: string, newTrainDialog: TrainDialog, lastExtractionChanged: boolean) => this.onEditLogDialog(logDialogId, newTrainDialog, lastExtractionChanged)}
                     onDelete={this.onDeleteLogDialog}
@@ -481,6 +481,7 @@ const mapStateToProps = (state: State) => {
 
 export interface ReceivedProps {
     app: BlisAppBase,
+    invalidBot: boolean,
     editingPackageId: string
 }
 

@@ -218,10 +218,10 @@ class Index extends React.Component<Props, ComponentState> {
                         render={props => <Actions {...props} app={app} editingPackageId={editPackageId}/>} />
                     <Route 
                         path={`${match.url}/trainDialogs`} 
-                        render={props => <TrainDialogs {...props} app={app} editingPackageId={editPackageId} filteredAction={location.state.actionFilter} filteredEntity={location.state.entityFilter} />} />
+                        render={props => <TrainDialogs {...props} app={app} editingPackageId={editPackageId} invalidBot={invalidBot} filteredAction={location.state.actionFilter} filteredEntity={location.state.entityFilter} />} />
                     <Route 
                         path={`${match.url}/logDialogs`} 
-                        render={props => <LogDialogs {...props} app={app} editingPackageId={editPackageId} />} />
+                        render={props => <LogDialogs {...props} app={app} editingPackageId={editPackageId} invalidBot={invalidBot} />} />
                     <Route
                         exact={true}
                         path={match.url}
