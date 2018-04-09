@@ -12,7 +12,8 @@ import {
     TrainingStatusCode,
     AppDefinition, 
     UIAppList,
-    TeachWithHistory
+    TeachWithHistory,
+    BlisAppBase
 } from 'blis-models'
 import { Dispatch } from 'redux'
 import * as ClientFactory from '../services/clientFactory'
@@ -61,12 +62,18 @@ const fetchHistoryFulfilled = (teachWithHistory: TeachWithHistory): ActionObject
     }
 }
 
-export const fetchAllLogDialogsAsync = (key: string, blisAppID: string, packageId: string): ActionObject => {
+export const fetchAllLogDialogsAsync = (key: string, app: BlisAppBase, packageId: string): ActionObject => {
+      
+    // Note: In future change fetch log dialogs to default to all package if packageId is dev
+    let allPackages = (packageId === app.devPackageId)
+            ? app.packageVersions.map(pv => pv.packageId).concat(packageId).join(',')
+            : packageId
+    
     return {
         type: AT.FETCH_LOG_DIALOGS_ASYNC,
         key: key,
-        blisAppID: blisAppID,
-        packageId: packageId
+        blisAppID: app.appId,
+        packageId: allPackages
     }
 }
 

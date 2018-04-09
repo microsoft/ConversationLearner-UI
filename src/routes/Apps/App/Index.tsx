@@ -44,13 +44,8 @@ class Index extends React.Component<Props, ComponentState> {
         
         this.setState({ packageId: packageId})
 
-        // Note: In future change fetch log dialogs to default to all package if no package set
-        let allPackages = (packageId === app.devPackageId)
-                ? app.packageVersions.map(pv => pv.packageId).concat(packageId).join(',')
-                : packageId
-        
         this.props.setCurrentBLISApp(this.props.user.id, app)
-        this.props.fetchAllLogDialogsAsync(this.props.user.id, app.appId, allPackages) // Note: a separate call as eventually we want to page
+        this.props.fetchAllLogDialogsAsync(this.props.user.id, app, packageId) // Note: a separate call as eventually we want to page
         this.props.fetchAppSource(app.appId, packageId)
         this.props.fetchBotInfoAsync()
         // this.props.fetchAllChatSessionsAsync(app.appId)
