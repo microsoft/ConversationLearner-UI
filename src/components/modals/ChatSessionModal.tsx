@@ -7,7 +7,7 @@ import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { State } from '../../types';
 import Webchat from '../Webchat'
 import { BlisAppBase } from 'blis-models'
-import { deleteChatSessionAsync } from '../../actions/deleteActions'
+import { deleteChatSessionThunkAsync } from '../../actions/deleteActions'
 import { editChatSessionExpireAsync } from '../../actions/updateActions'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
@@ -18,7 +18,7 @@ interface ComponentState {
 class SessionWindow extends React.Component<Props, ComponentState> {
     onClickDone() {
         if (this.props.chatSession.current !== null) {
-            this.props.deleteChatSessionAsync(this.props.user.id, this.props.chatSession.current, this.props.app.appId, this.props.editingPackageId)
+            this.props.deleteChatSessionThunkAsync(this.props.user.id, this.props.chatSession.current, this.props.app, this.props.editingPackageId)
         }
 
         this.props.onClose();
@@ -94,7 +94,7 @@ class SessionWindow extends React.Component<Props, ComponentState> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        deleteChatSessionAsync,
+        deleteChatSessionThunkAsync,
         editChatSessionExpireAsync
     }, dispatch);
 }

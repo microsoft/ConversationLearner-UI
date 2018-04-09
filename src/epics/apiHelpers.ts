@@ -5,7 +5,6 @@ import {
   UserInput,
   UIExtractResponse,
   UITrainScorerStep,
-  Session,
   ScoreInput,
   UIScoreInput,
   DialogType
@@ -19,18 +18,18 @@ import { AT } from '../types/ActionTypes'
 import ApiConfig from '../epics/config'
 import * as ClientFactory from '../services/clientFactory'
 
-//=========================================================
+// =========================================================
 // PARAMETER REQUIREMENTS
-//=========================================================
+// =========================================================
 
 export interface BlisAppForUpdate extends BlisAppBase {
   trainingRequired: boolean
   latestPackageId: number
 }
 
-//=========================================================
+// =========================================================
 // STATE ROUTES
-//=========================================================
+// =========================================================
 
 /* Tell SDK what the currently selected AppId is */
 export const setBlisApp = (app: BlisAppBase): Observable<ActionObject> => {
@@ -182,20 +181,9 @@ export const editBlisApp = (appId: string, app: BlisAppBase): Observable<ActionO
     .catch(err => handleError(obs, err, AT.EDIT_BLIS_APPLICATION_ASYNC)));
 }
 
-//========================================================
+// ========================================================
 // SESSION ROUTES
-//========================================================
-
-export const deleteChatSession = (key: string, appId: string, session: Session, packageId: string): Observable<ActionObject> => {
-  const blisClient = ClientFactory.getInstance(AT.DELETE_CHAT_SESSION_ASYNC)
-  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.chatSessionsDelete(appId, session.sessionId)
-    .then(() => {
-      obs.next(actions.delete.deleteChatSessionFulfilled(session.sessionId));
-      obs.next(actions.fetch.fetchAllLogDialogsAsync(key, appId, packageId));
-      obs.complete();
-    })
-    .catch(err => handleError(obs, err, AT.DELETE_CHAT_SESSION_ASYNC)));
-};
+// ========================================================
 
 export const expireChatSession = (appId: string, sessionId: string): Observable<ActionObject> => {
   const blisClient = ClientFactory.getInstance(AT.EDIT_CHAT_SESSION_EXPIRE_ASYNC) 

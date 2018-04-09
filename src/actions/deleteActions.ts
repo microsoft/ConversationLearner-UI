@@ -116,10 +116,27 @@ const deleteActionFulfilled = (actionId: string): ActionObject => {
 }
 
 // ---------------------
-// Delete Chat Session
-// TODO: Conver to thunk & add status fetch
+// ChatSession
 // ---------------------
-export const deleteChatSessionAsync = (key: string, session: Session, appId: string, packageId: string): ActionObject => {
+export const deleteChatSessionThunkAsync = (key: string, session: Session, app: BlisAppBase, packageId: string) => {
+    return async (dispatch: Dispatch<any>) => {
+        dispatch(deleteChatSessionAsync(key, session, app.appId, packageId))
+        const blisClient = ClientFactory.getInstance(AT.DELETE_CHAT_SESSION_ASYNC)
+
+        try {
+            await blisClient.chatSessionsDelete(app.appId, session.sessionId);
+            dispatch(deleteChatSessionFulfilled(session.sessionId));
+            dispatch(fetchAllLogDialogsAsync(key, app, packageId))
+            return true;
+        } catch (e) {
+            const error = e as Error
+            dispatch(setErrorDisplay(ErrorType.Error, error.name, [error.message], AT.DELETE_CHAT_SESSION_ASYNC))
+            return false;
+        }
+    }
+}
+
+const deleteChatSessionAsync = (key: string, session: Session, appId: string, packageId: string): ActionObject => {
     return {
         type: AT.DELETE_CHAT_SESSION_ASYNC,
         key: key,
@@ -129,7 +146,7 @@ export const deleteChatSessionAsync = (key: string, session: Session, appId: str
     }
 }
 
-export const deleteChatSessionFulfilled = (sessionId: string): ActionObject => {
+const deleteChatSessionFulfilled = (sessionId: string): ActionObject => {
     return {
         type: AT.DELETE_CHAT_SESSION_FULFILLED,
         sessionId
@@ -254,22 +271,22 @@ const deleteTrainDialogFulfilled = (trainDialogId: string): ActionObject => {
 }
 
 // -----------------
-// LOG DIALOG
+// LogDialog
 // -----------------
-export const deleteLogDialogThunkAsync = (userId: string, appId: string, logDialogId: string, packageId: string) => {
+export const deleteLogDialogThunkAsync = (userId: string, app: BlisAppBase, logDialogId: string, packageId: string) => {
     return async (dispatch: Dispatch<any>) => {
-        dispatch(deleteLogDialogAsync(appId, logDialogId))
+        dispatch(deleteLogDialogAsync(app.appId, logDialogId))
         const blisClient = ClientFactory.getInstance(AT.DELETE_LOG_DIALOG_ASYNC)
 
         try {
-            await blisClient.logDialogsDelete(appId, logDialogId)
+            await blisClient.logDialogsDelete(app.appId, logDialogId)
             dispatch(deleteLogDialogFulfilled(logDialogId))
         }
         catch (e) {
             const error = e as Error
             dispatch(setErrorDisplay(ErrorType.Error, error.message, [error.message], AT.DELETE_LOG_DIALOG_ASYNC))
             dispatch(deleteLogDialogRejected())
-            dispatch(fetchAllLogDialogsAsync(userId, appId, packageId));
+            dispatch(fetchAllLogDialogsAsync(userId, app, packageId));
         }
     }
 }

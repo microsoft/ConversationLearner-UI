@@ -246,12 +246,12 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     }
 
     onClickSync() {
-        this.props.fetchAllLogDialogsAsync(this.props.user.id, this.props.app.appId, this.props.editingPackageId);
+        this.props.fetchAllLogDialogsAsync(this.props.user.id, this.props.app, this.props.editingPackageId);
     }
 
     @autobind
     onDeleteLogDialog() {      
-        this.props.deleteLogDialogThunkAsync(this.props.user.id, this.props.app.appId, this.state.currentLogDialog.logDialogId, this.props.editingPackageId)
+        this.props.deleteLogDialogThunkAsync(this.props.user.id, this.props.app, this.state.currentLogDialog.logDialogId, this.props.editingPackageId)
         this.onCloseLogDialogModal();
     }
 
@@ -338,10 +338,10 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             for (let round of l.rounds) {
                 keys.push(round.extractorStep.text);
                 for (let le of round.extractorStep.predictedEntities) {
-                    keys.push(this.props.entities.find(e => e.entityId == le.entityId).entityName);
+                    keys.push(this.props.entities.find(e => e.entityId === le.entityId).entityName);
                 }
                 for (let ss of round.scorerSteps) {
-                    keys.push(this.props.actions.find(a => a.actionId == ss.predictedAction).payload);
+                    keys.push(this.props.actions.find(a => a.actionId === ss.predictedAction).payload);
                 }
             }
             let searchString = keys.join(' ').toLowerCase();

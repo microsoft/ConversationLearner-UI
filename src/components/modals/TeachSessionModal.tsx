@@ -93,7 +93,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
             .then((success) => {
                     // Delete source log dialog if there was one
                     if (success && deleteLogId) {  
-                        this.props.deleteLogDialogThunkAsync(this.props.user.id, this.props.app.appId, deleteLogId, this.props.editingPackageId);
+                        this.props.deleteLogDialogThunkAsync(this.props.user.id, this.props.app, deleteLogId, this.props.editingPackageId);
                     }
                 }
             );
