@@ -9,7 +9,7 @@ import { TipType } from '../components/ToolTips';
 class HelpLink extends React.Component<Props, {}> {
     render() {
         return (
-            <a className="blis-link" onClick={() => { this.props.setTipType(this.props.tipType) }}>
+            <a className="cl-link" onClick={() => { this.props.setTipType(this.props.tipType) }}>
                 {this.props.label}
             </a>
         )

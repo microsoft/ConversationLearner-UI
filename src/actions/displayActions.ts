@@ -1,12 +1,12 @@
 import { ActionObject } from '../types'
 import { AT } from '../types/ActionTypes'
 import { ErrorType } from '../types/const'
-import { BlisAppBase } from 'blis-models';
+import { AppBase } from 'conversationlearner-models';
 import { TipType } from '../components/ToolTips'
 
-export const setCurrentBLISApp = (key: string, app: BlisAppBase): ActionObject => {
+export const setCurrentApp = (key: string, app: AppBase): ActionObject => {
     return {
-        type: AT.SET_CURRENT_BLIS_APP_ASYNC,
+        type: AT.SET_CURRENT_APP_ASYNC,
         key,
         app
     }
@@ -21,9 +21,9 @@ export const setConversationId = (userName: string, userId: string, conversation
     }
 }
 
-export const setCurrentBLISAppFulfilled = (app: BlisAppBase): ActionObject => {
+export const setCurrentAppFulfilled = (app: AppBase): ActionObject => {
     return {
-        type: AT.SET_CURRENT_BLIS_APP_FULFILLED,
+        type: AT.SET_CURRENT_APP_FULFILLED,
         app
     }
 }

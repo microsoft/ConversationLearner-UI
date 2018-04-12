@@ -1,38 +1,38 @@
-.blis-training-status {
+.cl-training-status {
     margin-bottom: 1em;
     color: var(--color-neutralSecondary);
 }
-.blis-training-status__icon-row {
+.cl-training-status__icon-row {
     color: var(--color-neutralSecondaryAlt);
     margin-bottom: 0.3em;
 }
-.blis-training-status__icon-row i[role="presentation"] {
+.cl-training-status__icon-row i[role="presentation"] {
     vertical-align: text-bottom;
     padding: 0.125em 0;
 }
-.blis-training-status__icon-row--success i[role="presentation"] {
+.cl-training-status__icon-row--success i[role="presentation"] {
     color: var(--color-success);
 }
-.blis-training-status__icon-row--error i[role="presentation"] {
+.cl-training-status__icon-row--error i[role="presentation"] {
     color: var(--color-error);
 }
-.blis-training-status__icon-row--expired i[data-icon-name="Warning"] {
+.cl-training-status__icon-row--expired i[data-icon-name="Warning"] {
     cursor: pointer;
     color: var(--color-alert);
 }
-.blis-training-status__icon-label {
+.cl-training-status__icon-label {
     color: var(--color-neutralPrimary);
 }
 
-.blis-training-status__text-row {
+.cl-training-status__text-row {
     white-space: nowrap;
 }
 
-.blis-training-status__time {
+.cl-training-status__time {
     color: var(--color-neutralPrimary);
 }
 
-.blis-training-status__trigger {
+.cl-training-status__trigger {
     padding: 0;
     margin: 0;
     margin-left: 1em;

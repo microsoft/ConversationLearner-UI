@@ -11,7 +11,7 @@ import LogDialogAdmin from './LogDialogAdmin'
 import { Activity } from 'botframework-directlinejs'
 import { createTrainDialogAsync } from '../../actions/createActions'
 import { fetchApplicationTrainingStatusThunkAsync } from '../../actions/fetchActions'
-import { BlisAppBase, TrainDialog, LogDialog } from 'blis-models'
+import { AppBase, TrainDialog, LogDialog } from 'conversationlearner-models'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 
@@ -74,18 +74,18 @@ class LogDialogModal extends React.Component<Props, ComponentState> {
 
     render() {
         const { intl } = this.props;
-        let chatDisable = this.state.pendingExtractionChanges ? <div className="blis-overlay"/> : null;
+        let chatDisable = this.state.pendingExtractionChanges ? <div className="cl-overlay"/> : null;
 
         return (
             <div>
                 <Modal
                     isOpen={this.props.open}
                     isBlocking={true}
-                    containerClassName='blis-modal blis-modal--large blis-modal--log'
+                    containerClassName='cl-modal cl-modal--large cl-modal--log'
                 >
-                    <div className="blis-modal_body">
-                        <div className="blis-chatmodal">
-                            <div className="blis-chatmodal_webchat">
+                    <div className="cl-modal_body">
+                        <div className="cl-chatmodal">
+                            <div className="cl-chatmodal_webchat">
                                 <Webchat
                                     app={this.props.app}
                                     history={this.props.history}
@@ -96,8 +96,8 @@ class LogDialogModal extends React.Component<Props, ComponentState> {
                                 />
                                 {chatDisable}
                             </div>
-                            <div className="blis-chatmodal_controls">
-                                <div className="blis-chatmodal_admin-controls">
+                            <div className="cl-chatmodal_controls">
+                                <div className="cl-chatmodal_admin-controls">
                                     <LogDialogAdmin
                                         app={this.props.app}
                                         editingPackageId={this.props.editingPackageId}
@@ -111,11 +111,11 @@ class LogDialogModal extends React.Component<Props, ComponentState> {
                             </div>
                         </div>
                     </div>
-                    <div className="blis-modal_footer">
-                        <div className="blis-modal-buttons">
-                            <div className="blis-modal-buttons_primary">
+                    <div className="cl-modal_footer">
+                        <div className="cl-modal-buttons">
+                            <div className="cl-modal-buttons_primary">
                             </div>
-                            <div className="blis-modal-buttons_secondary">
+                            <div className="cl-modal-buttons_secondary">
                                 <DefaultButton
                                     disabled={this.state.pendingExtractionChanges || !this.props.canEdit}
                                     onClick={() => this.onClickDelete()}
@@ -171,7 +171,7 @@ const mapStateToProps = (state: State, ownProps: ReceivedProps) => {
 }
 
 export interface ReceivedProps {
-    app: BlisAppBase,
+    app: AppBase,
     editingPackageId: string,
     open: boolean,
     canEdit: boolean,

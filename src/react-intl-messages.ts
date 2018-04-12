@@ -442,7 +442,7 @@ export default {
 
         // Apps List
         [FM.APPSLIST_TITLE]: 'My Apps',
-        [FM.APPSLIST_SUBTITLE]: 'Create and Manage your BLIS applications...',
+        [FM.APPSLIST_SUBTITLE]: 'Create and Manage your Conversation Learner applications...',
         [FM.APPSLIST_CREATEBUTTONARIADESCRIPTION]: 'Create a New Application',
         [FM.APPSLIST_CREATEBUTTONTEXT]: 'New App',
         [FM.APPSLIST_IMPORTBUTTONARIADESCRIPTION]: 'Import Tutorials Applications',
@@ -564,11 +564,11 @@ export default {
         [FM.TOOLTIP_ACTION_REQUIRED_ROW4]: '$name',
 
         [FM.TOOLTIP_ACTION_SCORE]: 'Score:',
-        [FM.TOOLTIP_ACTION_SCORE_PERCENT]: 'BLIS confidence in performing an Action',
-        [FM.TOOLTIP_ACTION_SCORE_TRAINING]: `Action can't be scored yet as BLIS is still training`,
+        [FM.TOOLTIP_ACTION_SCORE_PERCENT]: 'Conversation Learner confidence in performing an Action',
+        [FM.TOOLTIP_ACTION_SCORE_TRAINING]: `Action can't be scored yet as Conversation Learner is still training`,
         [FM.TOOLTIP_ACTION_SCORE_DISQUALIFIED]: 'Action has been disqualified - Required Entities are missing or Blocked Entites are present',
 
-        [FM.TOOLTIP_ACTION_SUGGESTED]: `Hint to BLIS that the user's reply to this Action will likely be a value for this Entity`,
+        [FM.TOOLTIP_ACTION_SUGGESTED]: `Hint to Conversation Learner that the user's reply to this Action will likely be a value for this Entity`,
         [FM.TOOLTIP_ACTION_SUGGESTED_TITLE]: 'Expected Response',
         [FM.TOOLTIP_ACTION_SUGGESTED_ROW1]: '"What is your name?"',
         [FM.TOOLTIP_ACTION_SUGGESTED_ROW2]: '$name',
@@ -656,7 +656,7 @@ export default {
         [FM.APPCREATOR_FIELDERROR_REQUIREDVALUE]: 'Required Value',
         [FM.APPCREATOR_FIELDERROR_ALPHANUMERIC]: 'Application name may only contain alphanumeric characters',
         [FM.APPCREATOR_FIELDERROR_DISTINCT]: 'Name is already in use.',
-        [FM.APPCREATOR_TITLE]: 'Create a BLIS App',
+        [FM.APPCREATOR_TITLE]: 'Create a Conversation Learner App',
         [FM.APPCREATOR_FIELDS_NAME_LABEL]: 'Name',
         [FM.APPCREATOR_FIELDS_NAME_PLACEHOLDER]: 'Application Name...',
         [FM.APPCREATOR_FIELDS_LOCALE_LABEL]: 'Locale',
@@ -824,7 +824,7 @@ export default {
 
         // Apps List
         [FM.APPSLIST_SUBTITLE]: '내 앱',
-        [FM.APPSLIST_SUBTITLE]: 'BLIS 응용 프로그램 작성 및 관리 ...',
+        [FM.APPSLIST_SUBTITLE]: 'Conversation Learner 응용 프로그램 작성 및 관리 ...',
         [FM.APPSLIST_CREATEBUTTONARIADESCRIPTION]: '새 응용 프로그램 만들기',
         [FM.APPSLIST_CREATEBUTTONTEXT]: '새 앱',
 

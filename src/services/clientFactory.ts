@@ -1,15 +1,15 @@
-import BlisClient from './blisClient'
+import CLClient from './CLClient'
 import { AT } from '../types/ActionTypes'
 import { ErrorInjector } from '../ErrorInjector';
 //import DebugErrors from '../components/modals/DebugErrors'
 
 let sdkPort = 5000
 let getMemoryKey = (): string => {
-    console.warn(`You attempted to use the BlisClient before its getMemoryKey method was properly configured. Call setMemoryKey to configure`)
+    console.warn(`You attempted to use the Conversation Learner Client before its getMemoryKey method was properly configured. Call setMemoryKey to configure`)
     return ''
 }
 
-export const getInstance = (actionType: AT): BlisClient => {
+export const getInstance = (actionType: AT): CLClient => {
     let forceError = (actionType && ErrorInjector.ShouldError(actionType));
 
     /**
@@ -18,7 +18,7 @@ export const getInstance = (actionType: AT): BlisClient => {
      */
     // TODO: Refactor out the force error argument and need to take in paramter. This should be implemented in another layer as extension not modifcation
     // TODO: Allow configuration whole URI for SDK to enable communicating with hosted version (Likely change to getter function like access token)
-    return new BlisClient(`http://localhost:${sdkPort}`, () => getMemoryKey(), null, forceError)
+    return new CLClient(`http://localhost:${sdkPort}`, () => getMemoryKey(), null, forceError)
 }
 
 export const setPort = (port: number) => {

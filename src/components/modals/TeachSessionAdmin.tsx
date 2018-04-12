@@ -6,10 +6,10 @@ import { State } from '../../types'
 import { fetchApplicationTrainingStatusThunkAsync } from '../../actions/fetchActions'
 import { getScoresAsync, runScorerAsync, postScorerFeedbackAsync } from '../../actions/teachActions'
 import {
-    BlisAppBase, TextVariation, ExtractResponse,
+    AppBase, TextVariation, ExtractResponse,
     DialogType, TrainScorerStep, TrainingStatusCode,
     UITrainScorerStep, UIScoreInput, DialogMode
-} from 'blis-models'
+} from 'conversationlearner-models'
 import ActionScorer from './ActionScorer';
 import EntityExtractor from './EntityExtractor';
 import MemoryTable from './MemoryTable';
@@ -95,13 +95,13 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
         const autoTeachWithRound = this.props.teachSession.autoTeach 
 
         return (
-            <div className={`blis-dialog-admin ${FontClassNames.large}`}>
-                <div className={`blis-dialog-title blis-dialog-title--train ${FontClassNames.xxLarge}`}>
+            <div className={`cl-dialog-admin ${FontClassNames.large}`}>
+                <div className={`cl-dialog-title cl-dialog-title--train ${FontClassNames.xxLarge}`}>
                     <Icon iconName="EditContact" />Train Dialog
                 </div>
                 {this.props.teachSession.mode === DialogMode.Extractor ? (
-                    <div className="blis-dialog-admin__content">
-                        <div className="blis-wc-message blis-wc-message--user">
+                    <div className="cl-dialog-admin__content">
+                        <div className="cl-wc-message cl-wc-message--user">
                             <FormattedMessage
                                 id={FM.TEACHSESSIONADMIN_DIALOGMODE_USER}
                                 defaultMessage="User Input"
@@ -109,8 +109,8 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                         </div>
                     </div>
                 ) : (this.props.teachSession.mode === DialogMode.Scorer ? (
-                    <div className="blis-dialog-admin__content">
-                        <div className="blis-wc-message blis-wc-message--bot">
+                    <div className="cl-dialog-admin__content">
+                        <div className="cl-wc-message cl-wc-message--bot">
                             <FormattedMessage
                                 id={FM.TEACHSESSIONADMIN_DIALOGMODE_BOT}
                                 defaultMessage="Bot Response"
@@ -119,8 +119,8 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                     </div>) : null
                     )
                 }
-                <div className="blis-dialog-admin__content">
-                    <div className="blis-dialog-admin-title">
+                <div className="cl-dialog-admin__content">
+                    <div className="cl-dialog-admin-title">
                         <FormattedMessage
                             id={FM.TEACHSESSIONADMIN_MEMORY_TITLE}
                             defaultMessage="Entity Memory"
@@ -134,8 +134,8 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                     </div>
                 </div>
                 {this.props.teachSession.mode === DialogMode.Extractor &&
-                    <div className="blis-dialog-admin__content">
-                        <div className="blis-dialog-admin-title">
+                    <div className="cl-dialog-admin__content">
+                        <div className="cl-dialog-admin-title">
                             <FormattedMessage
                                 id={FM.TEACHSESSIONADMIN_ENTITYDETECTION_TITLE}
                                 defaultMessage="Entity Detection"
@@ -160,14 +160,14 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                     </div>
                 }
                 {this.props.teachSession.mode === DialogMode.Scorer &&
-                    <div className="blis-dialog-admin__content">
-                        <div className="blis-dialog-admin-title">
+                    <div className="cl-dialog-admin__content">
+                        <div className="cl-dialog-admin-title">
                             <FormattedMessage
                                 id={FM.TEACHSESSIONADMIN_ACTION_TITLE}
                                 defaultMessage="Action"
                             />
                             {/* Consider making this a component although it's display is very custom to the location it's used in the header */}
-                            <span className="blis-training-status-inline">
+                            <span className="cl-training-status-inline">
                                 {this.props.app.trainingStatus === TrainingStatusCode.Completed
                                     ? <span>
                                         <FormattedMessage
@@ -182,7 +182,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                                                 /> (
                                                 <button
                                                     type="button"
-                                                    className={`blis-training-status-inline__button ${FontClassNames.large}`}
+                                                    className={`cl-training-status-inline__button ${FontClassNames.large}`}
                                                     onClick={this.onClickRefreshScores}>
                                                     <FormattedMessage
                                                         id={FM.TEACHSESSIONADMIN_TRAINSTATUS_REFRESH}
@@ -244,7 +244,7 @@ const mapStateToProps = (state: State) => {
 
 export interface ReceivedProps {
     onScoredAction: () => void;
-    app: BlisAppBase
+    app: AppBase
     editingPackageId: string
 }
 

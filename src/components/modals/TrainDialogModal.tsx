@@ -7,7 +7,7 @@ import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { State } from '../../types';
 import Webchat from '../Webchat'
 import TrainDialogAdmin from './TrainDialogAdmin'
-import { BlisAppBase, TrainDialog} from 'blis-models'
+import { AppBase, TrainDialog, CL_USER_NAME_ID } from 'conversationlearner-models'
 import { Activity } from 'botframework-directlinejs';
 import ConfirmCancelModal from './ConfirmCancelModal'
 import { FM } from '../../react-intl-messages'
@@ -52,7 +52,7 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
         if (this.state.selectedActivity) {
             let branchRound = this.state.selectedActivity.channelData.roundIndex;
             // If bot response branch one later
-            if (this.state.selectedActivity.from.id === 'BlisTrainer') {
+            if (this.state.selectedActivity.from.id === CL_USER_NAME_ID) {
                 branchRound++;
             }
             if (branchRound > 0) {
@@ -110,17 +110,17 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
 
     render() {
         const { intl } = this.props
-        let chatDisable = this.state.pendingExtractionChanges ? <div className="blis-overlay"/> : null;
+        let chatDisable = this.state.pendingExtractionChanges ? <div className="cl-overlay"/> : null;
 
         return (
             <Modal
                 isOpen={this.props.open}
                 isBlocking={true}
-                containerClassName="blis-modal blis-modal--large blis-modal--teach"
+                containerClassName="cl-modal cl-modal--large cl-modal--teach"
             >
-                <div className="blis-modal_body">  
-                    <div className="blis-chatmodal">
-                        <div className="blis-chatmodal_webchat">
+                <div className="cl-modal_body">  
+                    <div className="cl-chatmodal">
+                        <div className="cl-chatmodal_webchat">
                             <Webchat
                                 key={this.state.webchatKey}
                                 app={this.props.app}
@@ -132,8 +132,8 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
                             />
                             {chatDisable}
                         </div>
-                        <div className="blis-chatmodal_controls"> 
-                            <div className="blis-chatmodal_admin-controls">
+                        <div className="cl-chatmodal_controls"> 
+                            <div className="cl-chatmodal_admin-controls">
                                 <TrainDialogAdmin
                                     app={this.props.app}
                                     editingPackageId={this.props.editingPackageId}
@@ -145,14 +145,14 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
                                     onExtractionsChanged={(changed: boolean) => this.onExtractionsChanged(changed)}
                                 />
                             </div>
-                            {!this.props.canEdit && <div className="blis-overlay"/>} 
+                            {!this.props.canEdit && <div className="cl-overlay"/>} 
                         </div>
                     </div>
                 </div>
-                <div className="blis-modal_footer">
-                    <div className="blis-modal-buttons">
-                        <div className="blis-modal-buttons_primary" />
-                        <div className="blis-modal-buttons_secondary">
+                <div className="cl-modal_footer">
+                    <div className="cl-modal-buttons">
+                        <div className="cl-modal-buttons_primary" />
+                        <div className="cl-modal-buttons_secondary">
                             <div  ref={ (menuButton) => this._refBranchButton = menuButton}>
                                 <DefaultButton
                                         disabled={this.state.pendingExtractionChanges || !this.props.canEdit || 
@@ -213,7 +213,7 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
                         setInitialFocus={ true }
                     >
                         <div>
-                        <p className='blis-callout'>
+                        <p className='cl-callout'>
                             {intl.formatMessage({
                                 id: FM.TRAINDIALOGMODAL_BRANCH_TIP,
                                 defaultMessage: `Select a round first`
@@ -238,7 +238,7 @@ const mapStateToProps = (state: State) => {
 }
 
 export interface ReceivedProps {
-    app: BlisAppBase,
+    app: AppBase,
     editingPackageId: string,
     canEdit: boolean,
     onClose: () => void,

@@ -7,7 +7,7 @@ import * as OF from 'office-ui-fabric-react'
 import { State } from '../../types'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
-import { ReplayError, ReplayErrorType, ReplayErrorMissingAction, ReplayErrorMissingEntity, ReplayErrorActionUnavailable, ReplayErrorEntityDiscrepancy } from 'blis-models'
+import { ReplayError, ReplayErrorType, ReplayErrorMissingAction, ReplayErrorMissingEntity, ReplayErrorActionUnavailable, ReplayErrorEntityDiscrepancy } from 'conversationlearner-models'
 
 class ReplayErrorList extends React.Component<Props, {}> {
     onRenderCell(item: ReplayError, index: number): JSX.Element {
@@ -53,12 +53,12 @@ class ReplayErrorList extends React.Component<Props, {}> {
                                 onRenderContent: () => {
                                     return (
                                         <div className={OF.FontClassNames.mediumPlus}>
-                                            <div className="blis-font--emphasis">Original Entities:</div>
+                                            <div className="cl-font--emphasis">Original Entities:</div>
                                             {entityDiscrepancy.originalEntities.length > 0 ?
                                                 entityDiscrepancy.originalEntities.map(e => (<div className={OF.FontClassNames.mediumPlus}>{e}</div>))
                                                 : <div className={OF.FontClassNames.mediumPlus}>-none-</div>
                                             }
-                                            <div className="blis-font--emphasis">New Entities:</div>
+                                            <div className="cl-font--emphasis">New Entities:</div>
                                             {entityDiscrepancy.newEntities.length > 0 ?
                                                 entityDiscrepancy.newEntities.map(e => (<div className={OF.FontClassNames.mediumPlus}>{e}</div>))
                                                 : <div className={OF.FontClassNames.mediumPlus}>-none-</div>
@@ -74,7 +74,7 @@ class ReplayErrorList extends React.Component<Props, {}> {
                                     defaultMessage={FM.REPLAYERROR_DESC_CHANGED_ENTITIES}
                                 />
                                 {` "${entityDiscrepancy.lastUserInput}"`}
-                                <OF.Icon iconName="Info" className="blis-icon" />
+                                <OF.Icon iconName="Info" className="cl-icon" />
                             </div>
                         </OF.TooltipHost>
                 )
@@ -90,9 +90,9 @@ class ReplayErrorList extends React.Component<Props, {}> {
                 isOpen={this.props.open}
                 onDismiss={this.props.onClose}
                 isBlocking={true}
-                containerClassName="blis-modal blis-modal--small"
+                containerClassName="cl-modal cl-modal--small"
             >
-                <div className="blis-modal_header">
+                <div className="cl-modal_header">
                     <span className={OF.FontClassNames.xxLarge}>
                         {formattedTitleId && <FormattedMessage
                             id={this.props.formattedTitleId}
@@ -100,7 +100,7 @@ class ReplayErrorList extends React.Component<Props, {}> {
                         />}
                     </span>
                 </div>
-                <div className="blis-modal_subheader blis-underline">
+                <div className="cl-modal_subheader cl-underline">
                     <span className={OF.FontClassNames.mediumPlus}>
                         {formattedMessageId && <FormattedMessage
                             id={this.props.formattedMessageId}
@@ -113,9 +113,9 @@ class ReplayErrorList extends React.Component<Props, {}> {
                     items={this.props.textItems}
                     onRenderCell={this.onRenderCell}
                 />
-                <div className="blis-modal_footer">
-                    <div className="blis-modal-buttons">
-                        <div className="blis-modal-buttons_primary">
+                <div className="cl-modal_footer">
+                    <div className="cl-modal-buttons">
+                        <div className="cl-modal-buttons_primary">
                             <OF.PrimaryButton
                                 onClick={this.props.onClose}
                                 ariaDescription={intl.formatMessage({

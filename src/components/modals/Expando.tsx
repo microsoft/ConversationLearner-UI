@@ -6,7 +6,7 @@ import './Expando.css'
 class Expando extends React.Component<Props, {}> {
     render() {
         return (
-            <div className={`blis-expando ${this.props.className}`} onClick={this.props.onToggle}>
+            <div className={`cl-expando ${this.props.className}`} onClick={this.props.onToggle}>
                 <ActionButton
                     iconProps={ this.props.isOpen ? { iconName: 'ChevronUpSmall' } : { iconName: 'ChevronDownSmall' }}
                     checked={ true }

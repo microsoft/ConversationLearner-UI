@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import * as OF from 'office-ui-fabric-react';
 import { State } from '../../../types'
-import { BlisAppBase, Teach, TrainDialog, TeachWithHistory, ActionBase, EntityBase, UITeachResponse, ReplayError } from 'blis-models'
+import { AppBase, Teach, TrainDialog, TeachWithHistory, ActionBase, EntityBase, UITeachResponse, ReplayError } from 'conversationlearner-models'
 import { TeachSessionModal, TrainDialogModal, SessionMemoryCheck } from '../../../components/modals'
 import { fetchHistoryThunkAsync, fetchApplicationTrainingStatusThunkAsync } from '../../../actions/fetchActions'
 import {
@@ -42,7 +42,7 @@ const returnErrorStringWhenError = returnStringWhenError("ERR")
 
 function textClassName(trainDialog: TrainDialog): string {
     if (trainDialog.invalid === true) {
-        return `${OF.FontClassNames.mediumPlus} blis-font--highlight`;
+        return `${OF.FontClassNames.mediumPlus} cl-font--highlight`;
     }
     return OF.FontClassNames.mediumPlus;
 }
@@ -63,7 +63,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                 if (trainDialog.rounds && trainDialog.rounds.length > 0) {
                     const text = trainDialog.rounds[0].extractorStep.textVariations[0].text
                     return (<span className={textClassName(trainDialog)}>
-                            {trainDialog.invalid === true && <Icon className="blis-icon" iconName="IncidentTriangle" />}
+                            {trainDialog.invalid === true && <Icon className="cl-icon" iconName="IncidentTriangle" />}
                             {text}
                         </span>)
                 }
@@ -510,8 +510,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         let trainDialogItems = this.renderTrainDialogItems()
         let trainDialog = this.props.trainDialogs.find((td) => td.trainDialogId === this.state.trainDialogId);
         return (
-            <div className="blis-page">
-                <div className={`blis-dialog-title blis-dialog-title--train ${OF.FontClassNames.xxLarge}`}>
+            <div className="cl-page">
+                <div className={`cl-dialog-title cl-dialog-title--train ${OF.FontClassNames.xxLarge}`}>
                     <OF.Icon iconName="EditContact" />
                     <FormattedMessage
                         id={FM.TRAINDIALOGS_TITLE}
@@ -526,7 +526,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         />
                     </span>
                     :
-                    <span className="blis-errorpanel">Editing is only allowed in Master Tag</span>
+                    <span className="cl-errorpanel">Editing is only allowed in Master Tag</span>
                 }
                 <div>
                     <OF.PrimaryButton
@@ -572,7 +572,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         onSearch={(newValue) => this.onChangeSearchString(newValue)}
                     />
                 </div>
-                <div className="blis-list-filters">
+                <div className="cl-list-filters">
                     <OF.Dropdown
                         label="Entity:"
                         selectedKey={(this.state.entityFilter ? this.state.entityFilter.key : undefined)}
@@ -652,7 +652,7 @@ const mapStateToProps = (state: State) => {
 }
 
 export interface ReceivedProps {
-    app: BlisAppBase,
+    app: AppBase,
     invalidBot: boolean,
     editingPackageId: string,
     filteredAction?: ActionBase,

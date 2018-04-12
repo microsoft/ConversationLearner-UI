@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import * as OF from 'office-ui-fabric-react';
 import { State } from '../../../types'
-import { BlisAppBase, LogDialog, Session, ModelUtils, Teach, TeachWithHistory, TrainDialog, ActionBase, ReplayError } from 'blis-models'
+import { AppBase, LogDialog, Session, ModelUtils, Teach, TeachWithHistory, TrainDialog, ActionBase, ReplayError } from 'conversationlearner-models'
 import { ChatSessionModal, LogDialogModal, TeachSessionModal } from '../../../components/modals'
 import { 
     createChatSessionThunkAsync, 
@@ -354,8 +354,8 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         let logDialogItems = this.renderLogDialogItems()
         const currentLogDialog = this.state.currentLogDialog;
         return (
-            <div className="blis-page">
-                <div className={`blis-dialog-title blis-dialog-title--log ${OF.FontClassNames.xxLarge}`}>
+            <div className="cl-page">
+                <div className={`cl-dialog-title cl-dialog-title--log ${OF.FontClassNames.xxLarge}`}>
                     <OF.Icon iconName="UserFollowed" />
                     <FormattedMessage
                         id={FM.LOGDIALOGS_TITLE}
@@ -370,7 +370,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                         />
                     </span>
                     :
-                    <span className="blis-errorpanel">Editing is only allowed in Master Tag</span>
+                    <span className="cl-errorpanel">Editing is only allowed in Master Tag</span>
                 }
                 {this.props.app.metadata.isLoggingOn === false && 
                     <span className="ms-TextField-errorMessage label-error">
@@ -480,7 +480,7 @@ const mapStateToProps = (state: State) => {
 }
 
 export interface ReceivedProps {
-    app: BlisAppBase,
+    app: AppBase,
     invalidBot: boolean,
     editingPackageId: string
 }

@@ -11,12 +11,12 @@ import { Activity } from 'botframework-directlinejs'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import {
-    BlisAppBase, TrainScorerStep, TextVariation,
+    AppBase, TrainScorerStep, TextVariation,
     Memory, TrainDialog, TrainRound,
     LogDialog, LogRound, LogScorerStep,
     ActionBase, ExtractResponse, DialogMode,
     DialogType, ModelUtils, SenderType, FilledEntity
-} from 'blis-models'
+} from 'conversationlearner-models'
 
 interface ComponentState {
     senderType: SenderType,
@@ -217,38 +217,38 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
         }
 
         return (
-            <div className={`blis-dialog-admin ${OF.FontClassNames.large}`}>
-                <div className={`blis-dialog-title blis-dialog-title--log ${OF.FontClassNames.xxLarge}`}>
+            <div className={`cl-dialog-admin ${OF.FontClassNames.large}`}>
+                <div className={`cl-dialog-title cl-dialog-title--log ${OF.FontClassNames.xxLarge}`}>
                     <OF.Icon iconName="UserFollowed" />Log Dialog
                 </div>
                 {this.props.selectedActivity && (this.state.senderType === SenderType.User ? (
-                    <div className="blis-dialog-admin__content">
-                        <div className="blis-wc-message blis-wc-message--user">User Input</div>
+                    <div className="cl-dialog-admin__content">
+                        <div className="cl-wc-message cl-wc-message--user">User Input</div>
                     </div>
                 ) : (
-                        <div className="blis-dialog-admin__content">
-                            <div className="blis-wc-message blis-wc-message--bot">Bot Response</div>
+                        <div className="cl-dialog-admin__content">
+                            <div className="cl-wc-message cl-wc-message--bot">Bot Response</div>
                         </div>
                     ))
                 }
                 {logDialog && selectedActivity ?
-                    (<div className="blis-dialog-admin__content">
-                        <div className="blis-dialog-admin-title">Memory</div>
+                    (<div className="cl-dialog-admin__content">
+                        <div className="cl-dialog-admin-title">Memory</div>
                         <MemoryTable
                             memories={memories}
                             prevMemories={prevMemories}
                         />
                     </div>
                     ) : (
-                        <div className="blis-dialog-admin__content">
+                        <div className="cl-dialog-admin__content">
                             <div>Click on User or Bot dialogs to the left to view how the Bot handled the User's conversation.</div>
                             <div>You can then make corrections to the Bot's behavior.</div>
                         </div>
                     )
                 }
                 {this.state.senderType === SenderType.User &&
-                    <div className="blis-dialog-admin__content">
-                        <div className="blis-dialog-admin-title">Entity Detection</div>
+                    <div className="cl-dialog-admin__content">
+                        <div className="cl-dialog-admin-title">Entity Detection</div>
                         <div>
                             {round &&
                                 <EntityExtractor
@@ -270,8 +270,8 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
                     </div>
                 }
                 {this.state.senderType === SenderType.Bot && this.props.logDialog &&
-                    <div className="blis-dialog-admin__content">
-                        <div className="blis-dialog-admin-title">Action</div>
+                    <div className="cl-dialog-admin__content">
+                        <div className="cl-dialog-admin-title">Action</div>
                         <div>
                             <ActionScorer
                                 app={this.props.app}
@@ -289,7 +289,7 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
                         </div>
                     </div>
                 }
-                <div className="blis-dialog-admin__dialogs">
+                <div className="cl-dialog-admin__dialogs">
                     <OF.Dialog
                         hidden={!this.state.newTrainDialog}
                         onDismiss={() => this.onClickSaveCheckNo()}
@@ -299,7 +299,7 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
                             isBlocking: true
                         }}
                     >
-                        <div className="blis-modal_header">
+                        <div className="cl-modal_header">
                             <span className={OF.FontClassNames.medium}>
                                 <FormattedMessage
                                     id={FM.LOGDIALOGADMIN_CONFIRMTITLE}
@@ -330,7 +330,7 @@ const mapStateToProps = (state: State) => {
 }
 
 export interface ReceivedProps {
-    app: BlisAppBase
+    app: AppBase
     editingPackageId: string
     logDialog: LogDialog
     selectedActivity: Activity,

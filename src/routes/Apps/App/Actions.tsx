@@ -8,7 +8,7 @@ import { deleteActionThunkAsync } from '../../../actions/deleteActions'
 import { fetchApplicationTrainingStatusThunkAsync } from '../../../actions/fetchActions'
 import ActionDetailsList from '../../../components/ActionDetailsList'
 import * as OF from 'office-ui-fabric-react';
-import { BlisAppBase, ActionBase } from 'blis-models'
+import { AppBase, ActionBase } from 'conversationlearner-models'
 import { ActionCreatorEditor } from '../../../components/modals'
 import { State } from '../../../types'
 import { FM } from '../../../react-intl-messages'
@@ -140,7 +140,7 @@ class Actions extends React.Component<Props, ComponentState> {
         // TODO: Look to move this up to the set state calls instead of forcing it to be on every render
         const actions = this.getFilteredActions();
         return (
-            <div className="blis-page">
+            <div className="cl-page">
                 <span className={OF.FontClassNames.xxLarge}>
                     <FormattedMessage
                         id={FM.ACTIONS_TITLE}
@@ -155,7 +155,7 @@ class Actions extends React.Component<Props, ComponentState> {
                         />
                     </span>
                     :
-                    <span className="blis-errorpanel">Editing is only allowed in Master Tag</span>
+                    <span className="cl-errorpanel">Editing is only allowed in Master Tag</span>
                 }
                 <div>
                     <OF.PrimaryButton
@@ -213,7 +213,7 @@ const mapStateToProps = (state: State) => {
 }
 
 export interface ReceivedProps {
-    app: BlisAppBase
+    app: AppBase
     editingPackageId: string
 }
 

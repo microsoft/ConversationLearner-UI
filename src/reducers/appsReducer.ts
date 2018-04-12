@@ -3,7 +3,7 @@ import { ActionObject } from '../types'
 import { AT } from '../types/ActionTypes'
 import { Reducer } from 'redux'
 import { replace } from '../util'
-import { TrainingStatusCode } from 'blis-models'
+import { TrainingStatusCode } from 'conversationlearner-models'
 import { App } from '../types/models'
 
 const initialState: AppsState = {
@@ -63,16 +63,16 @@ const appsReducer: Reducer<AppsState> = (state = initialState, action: ActionObj
 
             return { ...state, all: replace(state.all, newApp, a => a.appId) }
         }
-        case AT.CREATE_BLIS_APPLICATION_FULFILLED:
-            return { ...state, all: [...state.all, action.blisApp] }
-        case AT.SET_CURRENT_BLIS_APP_FULFILLED:
+        case AT.CREATE_APPLICATION_FULFILLED:
+            return { ...state, all: [...state.all, action.app] }
+        case AT.SET_CURRENT_APP_FULFILLED:
             return { ...state };
-        case AT.DELETE_BLIS_APPLICATION_FULFILLED:
+        case AT.DELETE_APPLICATION_FULFILLED:
             return { ...state, all: state.all.filter(app => app.appId !== action.appId) };
-        case AT.EDIT_BLIS_APPLICATION_FULFILLED:
+        case AT.EDIT_APPLICATION_FULFILLED:
         case AT.CREATE_APP_TAG_FULFILLED:
         case AT.EDIT_APP_LIVE_TAG_FULFILLED:
-            return { ...state, all: replace(state.all, action.blisApp, app => app.appId) }
+            return { ...state, all: replace(state.all, action.app, app => app.appId) }
         case AT.EDIT_APP_EDITING_TAG_FULFILLED:
             return { ...state, activeApps: action.activeApps}
         default:

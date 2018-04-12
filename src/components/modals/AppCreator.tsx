@@ -151,13 +151,13 @@ class AppCreator extends React.Component<Props, ComponentState> {
                 isOpen={this.props.open}
                 onDismiss={() => this.onClickCancel()}
                 isBlocking={false}
-                containerClassName='blis-modal blis-modal--small'
+                containerClassName='cl-modal cl-modal--small'
             >
-                <div className='blis-modal_header'>
+                <div className='cl-modal_header'>
                     <span className={OF.FontClassNames.xxLarge}>
                         <FormattedMessage
                             id={FM.APPCREATOR_TITLE}
-                            defaultMessage="Create a BLIS App"
+                            defaultMessage="Create a Conversation Learner App"
                         />
                     </span>
                 </div>
@@ -185,9 +185,9 @@ class AppCreator extends React.Component<Props, ComponentState> {
                         onChanged={this.localeChanged}
                     />
                 </div>
-                <div className='blis-modal_footer'>
-                    <div className="blis-modal-buttons">
-                        <div className="blis-modal-buttons_primary">
+                <div className='cl-modal_footer'>
+                    <div className="cl-modal-buttons">
+                        <div className="cl-modal-buttons_primary">
                             <OF.PrimaryButton
                                 disabled={!this.state.appNameVal}
                                 onClick={this.onClickCreate}

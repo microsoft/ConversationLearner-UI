@@ -1,4 +1,4 @@
-import { EntityBase, PredictedEntity } from "blis-models"
+import { EntityBase, PredictedEntity } from "conversationlearner-models"
 
 export interface IEditorProps {
     options: IOption[]

@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { State } from '../../types'
 import * as OF from 'office-ui-fabric-react';
 import { onRenderDetailsHeader, Prebuilt } from '../ToolTips'
-import { EntityBase, EntityType, Memory } from 'blis-models'
+import { EntityBase, EntityType, Memory } from 'conversationlearner-models'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 
@@ -21,8 +21,8 @@ enum MemoryChangeStatus {
 }
 
 const memoryChangeClassMap = {
-    [MemoryChangeStatus.Added]: 'blis-font--emphasis',
-    [MemoryChangeStatus.Removed]: 'blis-font--deleted',
+    [MemoryChangeStatus.Added]: 'cl-font--emphasis',
+    [MemoryChangeStatus.Removed]: 'cl-font--deleted',
 }
 
 const columns: IRenderableColumn[] = [
@@ -54,13 +54,13 @@ const columns: IRenderableColumn[] = [
             return (<React.Fragment>
                 {entityValues.map((value, i) => {
                     const changeClass = memoryChangeClassMap[value.changeStatus] || ''
-                    let renderedValue = <span>{value.prefix}<span className={`${changeClass} ${value.isPrebuilt ? 'blis-font--action' : ''}`}>{value.displayText}</span></span>
+                    let renderedValue = <span>{value.prefix}<span className={`${changeClass} ${value.isPrebuilt ? 'cl-font--action' : ''}`}>{value.displayText}</span></span>
 
                     if (value.isPrebuilt) {
                         renderedValue = Prebuilt(value.memoryValue, renderedValue)
                     }
                     
-                    return <span className={`${OF.FontClassNames.mediumPlus} blis-font--preserve`} key={i}>{renderedValue}</span>
+                    return <span className={`${OF.FontClassNames.mediumPlus} cl-font--preserve`} key={i}>{renderedValue}</span>
                 })}
             </React.Fragment>)
         },
@@ -86,7 +86,7 @@ const columns: IRenderableColumn[] = [
         minWidth: 100,
         maxWidth: 100,
         isResizable: true,
-        render: entity => <OF.Icon iconName={entity.entityType === EntityType.LOCAL ? "CheckMark" : "Remove"} className="blis-icon" />,
+        render: entity => <OF.Icon iconName={entity.entityType === EntityType.LOCAL ? "CheckMark" : "Remove"} className="cl-icon" />,
         getSortValue: entity => entity.entityType === EntityType.LOCAL ? 'a' : 'b'
     },
     {
@@ -96,7 +96,7 @@ const columns: IRenderableColumn[] = [
         minWidth: 80,
         maxWidth: 100,
         isResizable: true,
-        render: entity => <OF.Icon iconName={entity.isMultivalue ? "CheckMark" : "Remove"} className="blis-icon" />,
+        render: entity => <OF.Icon iconName={entity.isMultivalue ? "CheckMark" : "Remove"} className="cl-icon" />,
         getSortValue: entity => entity.isMultivalue ? 'a' : 'b'
     },
     {
@@ -106,7 +106,7 @@ const columns: IRenderableColumn[] = [
         minWidth: 80,
         maxWidth: 100,
         isResizable: true,
-        render: entity => <OF.Icon iconName={entity.isNegatible ? "CheckMark" : "Remove"} className="blis-icon" />,
+        render: entity => <OF.Icon iconName={entity.isNegatible ? "CheckMark" : "Remove"} className="cl-icon" />,
         getSortValue: entity => entity.isNegatible ? 'a' : 'b'
     }
 ]
@@ -228,7 +228,7 @@ class MemoryTable extends React.Component<Props, ComponentState> {
         if (!entity) {
             console.warn(`Attempted to render entity: ${entityName} for column: ${column.name} but the entity could not be found.`)
             return (column.key === `entityName`) ? 
-                <span className="blis-font--warning">MISSING ENTITY</span> : '';
+                <span className="cl-font--warning">MISSING ENTITY</span> : '';
         }
 
         return column.render(entity, this)

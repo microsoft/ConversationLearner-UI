@@ -1,5 +1,5 @@
 import {
-    BlisAppBase,
+    AppBase,
     BotInfo, Memory,
     AppDefinition,
     EntityBase,
@@ -8,17 +8,17 @@ import {
     UserInput, ExtractResponse, DialogType,
     UIExtractResponse, UITrainScorerStep,
     UITeachResponse, UIScoreInput, UIScoreResponse, UIAppList, TrainingStatus
-} from 'blis-models'
+} from 'conversationlearner-models'
 import { TipType } from '../components/ToolTips'
 import { ErrorType } from '../types/const'
 import { AT } from '../types/ActionTypes'
 
 export type UpdateAction = {
-    type: AT.EDIT_BLIS_APPLICATION_ASYNC,
-    blisApp: BlisAppBase,
+    type: AT.EDIT_APPLICATION_ASYNC,
+    app: AppBase,
 } | {
-    type: AT.EDIT_BLIS_APPLICATION_FULFILLED,
-    blisApp: BlisAppBase,
+    type: AT.EDIT_APPLICATION_FULFILLED,
+    app: AppBase,
 } | {
     type: AT.EDIT_ENTITY_ASYNC,
     appId: string,
@@ -28,14 +28,14 @@ export type UpdateAction = {
     entity: EntityBase,
 } | {
     type: AT.EDIT_ACTION_ASYNC,
-    blisAction: ActionBase,
+    action: ActionBase,
     appId: string
 } | {
     type: AT.EDIT_ACTION_FULFILLED,
-    blisAction: ActionBase
+    action: ActionBase
 } | {
     type: AT.EDIT_TRAINDIALOG_ASYNC,
-    blisAppId: string,
+    appId: string,
     trainDialog: TrainDialog
 } | {
     type: AT.EDIT_TRAINDIALOG_FULFILLED,
@@ -51,7 +51,7 @@ export type UpdateAction = {
     appId: string
 } | {
     type: AT.EDIT_APP_LIVE_TAG_FULFILLED,
-    blisApp: BlisAppBase
+    app: AppBase
 } | {
     type: AT.EDIT_APP_EDITING_TAG_ASYNC,
     packageId: string,
@@ -62,12 +62,12 @@ export type UpdateAction = {
 }
 
 export type DisplayAction = {
-    type: AT.SET_CURRENT_BLIS_APP_ASYNC,
+    type: AT.SET_CURRENT_APP_ASYNC,
     key: string,
-    app: BlisAppBase,
+    app: AppBase,
 } | {
-    type: AT.SET_CURRENT_BLIS_APP_FULFILLED,
-    app: BlisAppBase
+    type: AT.SET_CURRENT_APP_FULFILLED,
+    app: AppBase
 } | {
     type: AT.SET_CONVERSATION_ID_ASYNC,
     userName: string,
@@ -118,26 +118,26 @@ export type FetchAction = {
     botInfo: BotInfo,
 } | {
     type: AT.FETCH_ENTITIES_ASYNC,
-    blisAppID: string
+    clAppID: string
 } | {
     type: AT.FETCH_ACTIONS_ASYNC,
-    blisAppID: string
+    clAppID: string
 } | {
     type: AT.FETCH_APPSOURCE_ASYNC,
-    blisAppID: string,
+    clAppID: string,
     packageId: string
 } | {
     type: AT.FETCH_CHAT_SESSIONS_ASYNC,
-    blisAppID: string
+    clAppID: string
 } | {
     type: AT.FETCH_TRAIN_DIALOGS_ASYNC,
-    blisAppID: string
+    clAppID: string
 } | {
     type: AT.FETCH_TRAIN_DIALOGS_FULFILLED,
     allTrainDialogs: TrainDialog[],
 } | {
     type: AT.FETCH_HISTORY_ASYNC,
-    blisAppID: string,
+    clAppID: string,
     userName: string,
     userId: string,
     trainDialog: TrainDialog
@@ -147,7 +147,7 @@ export type FetchAction = {
 } | {
     type: AT.FETCH_LOG_DIALOGS_ASYNC,
     key: string,
-    blisAppID: string,
+    clAppID: string,
     packageId: string
 } | {
     type: AT.FETCH_LOG_DIALOGS_FULFILLED,
@@ -173,7 +173,7 @@ export type FetchAction = {
 } | {
     type: AT.FETCH_TEACH_SESSIONS_ASYNC,
     key: string,
-    blisAppID: string
+    clAppID: string
 } | {
     type: AT.FETCH_PROFILE_ASYNC
 } | {
@@ -210,9 +210,9 @@ export type FetchAction = {
 } 
 
 export type CreateAction = {
-    type: AT.CREATE_BLIS_APPLICATION_ASYNC,
+    type: AT.CREATE_APPLICATION_ASYNC,
     userId: string,
-    blisApp: BlisAppBase,
+    app: AppBase,
 } | {
     type: AT.COPY_APPLICATIONS_ASYNC,
     srcUserId: string, 
@@ -240,7 +240,7 @@ export type CreateAction = {
     appId: string
 } | {
     type: AT.CREATE_APP_TAG_FULFILLED,
-    blisApp: BlisAppBase
+    app: AppBase
 } | {
     type: AT.CREATE_TRAIN_DIALOG_ASYNC,
     key: string,
@@ -254,8 +254,8 @@ export type CreateAction = {
     type: AT.CREATE_LOG_DIALOG,
     logDialog: LogDialog,
 } | {
-    type: AT.CREATE_BLIS_APPLICATION_FULFILLED,
-    blisApp: BlisAppBase
+    type: AT.CREATE_APPLICATION_FULFILLED,
+    app: AppBase
 } | {
     type: AT.CREATE_CHAT_SESSION_ASYNC
 } | {
@@ -273,7 +273,7 @@ export type CreateAction = {
     memories: Memory[]
 } | {
     type: AT.CREATE_TEACH_SESSION_FROMUNDOASYNC,
-    blisAppID: string,
+    clAppID: string,
     teach: Teach,
     popRound: boolean,
     userName: string,
@@ -283,7 +283,7 @@ export type CreateAction = {
     teachWithHistory: TeachWithHistory
 } | {
     type: AT.CREATE_TEACH_SESSION_FROMHISTORYASYNC,
-    blisAppID: string,
+    clAppID: string,
     userName: string,
     userId: string,
     trainDialog: TrainDialog
@@ -293,11 +293,11 @@ export type CreateAction = {
 }
 
 export type DeleteAction = {
-    type: AT.DELETE_BLIS_APPLICATION_ASYNC,
+    type: AT.DELETE_APPLICATION_ASYNC,
     appId: string,
-    blisApp: BlisAppBase
+    app: AppBase
 } | {
-    type: AT.DELETE_BLIS_APPLICATION_FULFILLED,
+    type: AT.DELETE_APPLICATION_FULFILLED,
     appId: string
 } | {
     type: AT.DELETE_ENTITY_ASYNC,

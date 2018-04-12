@@ -3,7 +3,7 @@ import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { State } from '../types'
-import { BlisAppBase, TrainingStatusCode } from 'blis-models'
+import { AppBase, TrainingStatusCode } from 'conversationlearner-models'
 import { fetchApplicationTrainingStatusThunkAsync } from '../actions/fetchActions'
 import { InternalTrainingStatus, default as TrainingStatus } from './TrainingStatus'
 import { App } from '../types/models';
@@ -62,7 +62,7 @@ const mapStateToProps = (state: State, ownProps: any) => {
 }
 
 export interface ReceivedProps {
-    app: BlisAppBase
+    app: AppBase
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps

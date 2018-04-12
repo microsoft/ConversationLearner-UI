@@ -10,7 +10,7 @@ import { PrimaryButton, DefaultButton } from 'office-ui-fabric-react';
 import { State } from '../../types';
 import Webchat from '../Webchat'
 import TeachSessionAdmin from './TeachSessionAdmin'
-import { BlisAppBase, UserInput, DialogType, TrainDialog, LogDialog, Teach, DialogMode } from 'blis-models'
+import { AppBase, UserInput, DialogType, TrainDialog, LogDialog, Teach, DialogMode } from 'conversationlearner-models'
 import { Activity } from 'botframework-directlinejs'
 import { deleteTeachSessionThunkAsync, deleteLogDialogThunkAsync } from '../../actions/deleteActions'
 import { toggleAutoTeach, runExtractorAsync } from '../../actions/teachActions'
@@ -153,18 +153,18 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
         // Put mask of webchat if not in input mode
         let chatDisable = (this.props.dialogMode !== DialogMode.Wait) ?
-            <div className="blis-overlayc"></div>
+            <div className="cl-overlayc"></div>
             : null;
 
         return (
             <Modal
                 isOpen={this.props.open}
                 isBlocking={true}
-                containerClassName="blis-modal blis-modal--large blis-modal--teach"
+                containerClassName="cl-modal cl-modal--large cl-modal--teach"
             >
-                <div className="blis-modal_body">
-                    <div className="blis-chatmodal">
-                        <div className="blis-chatmodal_webchat">
+                <div className="cl-modal_body">
+                    <div className="cl-chatmodal">
+                        <div className="cl-chatmodal_webchat">
                             <Webchat
                                 key={this.state.webchatKey}
                                 app={this.props.app}
@@ -176,8 +176,8 @@ class TeachModal extends React.Component<Props, ComponentState> {
                             />
                             {chatDisable}
                         </div>
-                        <div className="blis-chatmodal_controls">
-                            <div className="blis-chatmodal_admin-controls">
+                        <div className="cl-chatmodal_controls">
+                            <div className="cl-chatmodal_admin-controls">
                                 <TeachSessionAdmin
                                     app={this.props.app}
                                     editingPackageId={this.props.editingPackageId}
@@ -187,10 +187,10 @@ class TeachModal extends React.Component<Props, ComponentState> {
                         </div>
                     </div>
                 </div>
-                <div className="blis-modal_footer">
-                    <div className="blis-modal-buttons">
-                        <div className="blis-modal-buttons_primary" />
-                        <div className="blis-modal-buttons_secondary">
+                <div className="cl-modal_footer">
+                    <div className="cl-modal-buttons">
+                        <div className="cl-modal-buttons_primary" />
+                        <div className="cl-modal-buttons_secondary">
                             <DefaultButton
                                 disabled={!this.state.hasOneRound}
                                 onClick={() => this.onClickUndo()}
@@ -262,7 +262,7 @@ export interface ReceivedProps {
     open: boolean,
     onClose: Function,
     onUndo: (popRound: boolean) => void,
-    app: BlisAppBase,
+    app: AppBase,
     editingPackageId: string,
     teachSession: Teach,
     dialogMode: DialogMode,

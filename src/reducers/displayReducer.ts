@@ -26,9 +26,9 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
             return { ...initialState };
         case AT.SET_TIP_TYPE:
             return { ...state, tipType: action.tipType };
-        case AT.CREATE_BLIS_APPLICATION_FULFILLED:
+        case AT.CREATE_APPLICATION_FULFILLED:
             return { ...state, displaySpinner: removeSpinner(state.displaySpinner, action.type) }
-        case AT.SET_CURRENT_BLIS_APP_FULFILLED:
+        case AT.SET_CURRENT_APP_FULFILLED:
             return { ...state, displaySpinner: removeSpinner(state.displaySpinner, action.type) }
         case AT.SET_ERROR_DISPLAY:
             // If I fail to load critical data, return to home page
@@ -42,11 +42,11 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
                 default:
                     return { ...state, displaySpinner: [] }
             }
-        case AT.SET_CURRENT_BLIS_APP_ASYNC:
+        case AT.SET_CURRENT_APP_ASYNC:
 
         case AT.CREATE_ACTION_ASYNC:
         case AT.CREATE_APP_TAG_ASYNC: 
-        case AT.CREATE_BLIS_APPLICATION_ASYNC:
+        case AT.CREATE_APPLICATION_ASYNC:
         case AT.CREATE_TEACH_SESSION_ASYNC:
         case AT.CREATE_TEACH_SESSION_FROMUNDOASYNC:
         case AT.CREATE_TEACH_SESSION_FROMHISTORYASYNC:
@@ -54,7 +54,7 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
         case AT.CREATE_ENTITY_ASYNC:
 
         case AT.DELETE_ACTION_ASYNC:
-        case AT.DELETE_BLIS_APPLICATION_ASYNC:
+        case AT.DELETE_APPLICATION_ASYNC:
         // case AT.DELETE_CHAT_SESSION_ASYNC: Don't block
         case AT.DELETE_ENTITY_ASYNC:
         case AT.DELETE_MEMORY_ASYNC:
@@ -63,7 +63,7 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
         // case AT.DELETE_TRAIN_DIALOG_ASYNC: Don't block
 
         case AT.EDIT_ACTION_ASYNC:
-        case AT.EDIT_BLIS_APPLICATION_ASYNC:
+        case AT.EDIT_APPLICATION_ASYNC:
         case AT.EDIT_ENTITY_ASYNC:
         case AT.EDIT_APP_LIVE_TAG_ASYNC:
         case AT.EDIT_APP_EDITING_TAG_ASYNC:
@@ -92,7 +92,7 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
 
         case AT.CREATE_ACTION_FULFILLED:
         case AT.CREATE_APP_TAG_FULFILLED: 
-        //case AT.CREATE_BLIS_APPLICATION_FULFILLED: Handled above
+        //case AT.CREATE_APPLICATION_FULFILLED: Handled above
         case AT.CREATE_CHAT_SESSION_REJECTED:
         case AT.CREATE_CHAT_SESSION_FULFILLED:
         case AT.CREATE_TEACH_SESSION_REJECTED:
@@ -102,7 +102,7 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
         case AT.CREATE_ENTITY_FULFILLED:
 
         case AT.DELETE_ACTION_FULFILLED:
-        case AT.DELETE_BLIS_APPLICATION_FULFILLED:
+        case AT.DELETE_APPLICATION_FULFILLED:
         // case AT.DELETE_CHAT_SESSION_FULFILLED: Doesn't block
         case AT.DELETE_ENTITY_FULFILLED:
         case AT.DELETE_MEMORY_FULFILLED:
@@ -112,7 +112,7 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
         case AT.DELETE_TRAIN_DIALOG_REJECTED:
 
         case AT.EDIT_ACTION_FULFILLED:
-        case AT.EDIT_BLIS_APPLICATION_FULFILLED:
+        case AT.EDIT_APPLICATION_FULFILLED:
         case AT.EDIT_ENTITY_FULFILLED:
         case AT.EDIT_APP_LIVE_TAG_FULFILLED:
         case AT.EDIT_APP_EDITING_TAG_FULFILLED:

@@ -18,22 +18,22 @@ export const CustomEntity = (props: Props) => {
     const { name, isEditing, readOnly } = props
     
     return (
-        <span className={`blis-entity-node blis-entity-node--custom ${isEditing ? 'blis-entity-node--is-editing' : ''} ${readOnly ? 'blis-entity-node--read-only' : ''}`}>
-            <div className="blis-entity-node-indicator noselect">
-                <div className="blis-entity-node-indicator__mincontent">
-                    <div className="blis-entity-node-indicator__controls">
+        <span className={`cl-entity-node cl-entity-node--custom ${isEditing ? 'cl-entity-node--is-editing' : ''} ${readOnly ? 'cl-entity-node--read-only' : ''}`}>
+            <div className="cl-entity-node-indicator noselect">
+                <div className="cl-entity-node-indicator__mincontent">
+                    <div className="cl-entity-node-indicator__controls">
                         {isEditing && <button type="button" onClick={props.onClickDelete}>&#10006;</button>}
                     </div>
-                    <div className="blis-entity-node-indicator__name noselect" spellCheck={false}>
+                    <div className="cl-entity-node-indicator__name noselect" spellCheck={false}>
                         <button type="button" onClick={props.onClickName} tabIndex={-1}>
                             {name}
                         </button>
                     </div>
                 </div>
-                <div className="blis-entity-node-indicator__bracket">
+                <div className='cl-entity-node-indicator__bracket'>
                 </div>
             </div>
-            <span className="blis-entity-node__text" onClick={props.onClickName}>
+            <span className="cl-entity-node__text" onClick={props.onClickName}>
                 {props.children}
             </span>
         </span>

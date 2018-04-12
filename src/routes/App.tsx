@@ -33,10 +33,10 @@ class App extends React.Component<Props, ComponentState> {
   render() {
     return (
       <Router>
-        <div className="blis-app">
-          <div className="blis-app_header-placeholder"></div>
-          <header className={`blis-app_header blis-header ${FontClassNames.mediumPlus}`}>
-            <nav className="blis-header_links ">
+        <div className="cl-app">
+          <div className="cl-app_header-placeholder"></div>
+          <header className={`cl-app_header cl-header ${FontClassNames.mediumPlus}`}>
+            <nav className="cl-header_links ">
               <NavLink to="/home">
                 <FormattedMessage
                   id={FM.APP_HEADER_HOME}
@@ -44,10 +44,10 @@ class App extends React.Component<Props, ComponentState> {
                 />
               </NavLink>
             </nav>
-            <NavLink className="blis-header_user" to="/settings">Settings</NavLink>
+            <NavLink className="cl-header_user" to="/settings">Settings</NavLink>
           </header>
-          <div className="blis-app_header-placeholder" />
-          <div className="blis-app_content">
+          <div className="cl-app_header-placeholder" />
+          <div className="cl-app_content">
             <Switch>
               <Route exact path="/" render={() => <Redirect to="/home" />} />
               <Route path="/home" component={AppsIndex} />
@@ -55,7 +55,7 @@ class App extends React.Component<Props, ComponentState> {
               <Route component={NoMatch} />
             </Switch>
           </div>
-          <div className="blis-app_modals">
+          <div className="cl-app_modals">
             <ErrorPanel />
             <HelpPanel />
             <SpinnerWindow />

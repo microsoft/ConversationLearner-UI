@@ -1,5 +1,5 @@
 import { IDropdownOption } from 'office-ui-fabric-react';
 
-export interface BlisDropdownOption extends IDropdownOption {
+export interface CLDropdownOption extends IDropdownOption {
     style: string
 }

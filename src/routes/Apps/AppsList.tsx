@@ -7,16 +7,16 @@ import { connect } from 'react-redux';
 import { AppCreator, ConfirmCancelModal } from '../../components/modals'
 import * as OF from 'office-ui-fabric-react';
 import { State } from '../../types';
-import { BlisAppBase } from 'blis-models'
-import { BLIS_SAMPLE_ID } from '../../types/const'
+import { AppBase } from 'conversationlearner-models'
+import { CL_SAMPLE_ID } from '../../types/const'
 import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { FM } from '../../react-intl-messages'
 import { autobind } from 'office-ui-fabric-react/lib/Utilities';
 import * as util from '../../util'
 
 interface ISortableRenderableColumn extends OF.IColumn {
-    render: (app: BlisAppBase, component: AppsList) => JSX.Element
-    getSortValue: (app: BlisAppBase, component: AppsList) => number | string
+    render: (app: AppBase, component: AppsList) => JSX.Element
+    getSortValue: (app: AppBase, component: AppsList) => number | string
 }
 
 function getColumns(intl: InjectedIntl): ISortableRenderableColumn[] {
@@ -74,7 +74,7 @@ function getColumns(intl: InjectedIntl): ISortableRenderableColumn[] {
             maxWidth: 200,
             isResizable: true,
             getSortValue: app => (app.metadata.isLoggingOn !== false) ? 'a' : 'b',
-            render: (app) => <OF.Icon iconName={(app.metadata.isLoggingOn !== false) ? "CheckMark" : "Remove"} className="blis-icon" />
+            render: (app) => <OF.Icon iconName={(app.metadata.isLoggingOn !== false) ? "CheckMark" : "Remove"} className="cl-icon" />
         },
         {
             key: 'locale',
@@ -100,7 +100,7 @@ function getColumns(intl: InjectedIntl): ISortableRenderableColumn[] {
             maxWidth: 100,
             isResizable: false,
             getSortValue: app => 0,
-            render: (app, component) => <a onClick={() => component.onClickDeleteApp(app)}><OF.Icon iconName="Delete" className="blis-icon" />&nbsp;&nbsp;</a>
+            render: (app, component) => <a onClick={() => component.onClickDeleteApp(app)}><OF.Icon iconName="Delete" className="cl-icon" />&nbsp;&nbsp;</a>
         },
     ]
 }
@@ -111,7 +111,7 @@ interface ComponentState {
     isConfirmDeleteDemosOpen: boolean
     isImportNotificationOpen: boolean
     isImportButtonDisabled: boolean
-    appToDelete: BlisAppBase
+    appToDelete: AppBase
     columns: ISortableRenderableColumn[]
     sortColumn: ISortableRenderableColumn
 }
@@ -195,13 +195,13 @@ class AppsList extends React.Component<Props, ComponentState> {
         })
     }
 
-    onClickDeleteApp(app: BlisAppBase) {
+    onClickDeleteApp(app: AppBase) {
         this.setState({
             isConfirmDeleteAppModalOpen: true,
             appToDelete: app
         })
     }
-    onClickApp(app: BlisAppBase) {
+    onClickApp(app: AppBase) {
         const { match, history } = this.props
         history.push(`${match.url}/${app.appId}`, { app })
     }
@@ -237,7 +237,7 @@ class AppsList extends React.Component<Props, ComponentState> {
         });
     }
 
-    onSubmitAppCreateModal = (app: BlisAppBase) => {
+    onSubmitAppCreateModal = (app: AppBase) => {
         this.setState({
             isAppCreateModalOpen: false
         })
@@ -258,7 +258,7 @@ class AppsList extends React.Component<Props, ComponentState> {
         this.props.onImportDemoApps()
     }
 
-    getSortedApplications(): BlisAppBase[] {
+    getSortedApplications(): AppBase[] {
         let sortedApps = this.props.apps
 
         if (this.state.sortColumn) {
@@ -281,7 +281,7 @@ class AppsList extends React.Component<Props, ComponentState> {
     render() {
         let apps = this.getSortedApplications();
         return (
-            <div className="blis-page">
+            <div className="cl-page">
                 <span className={OF.FontClassNames.superLarge}>
                     <FormattedMessage
                         id={FM.APPSLIST_TITLE}
@@ -291,10 +291,10 @@ class AppsList extends React.Component<Props, ComponentState> {
                 <span className={OF.FontClassNames.mediumPlus}>
                     <FormattedMessage
                         id={FM.APPSLIST_SUBTITLE}
-                        defaultMessage="Create and Manage your BLIS applications..."
+                        defaultMessage="Create and Manage your Conversation Learner applications..."
                     />
                 </span>
-                <div className="blis-modal-buttons_primary">
+                <div className="cl-modal-buttons_primary">
                     <OF.PrimaryButton
                         onClick={this.onClickCreateNewApp}
                         ariaDescription={this.props.intl.formatMessage({
@@ -306,7 +306,7 @@ class AppsList extends React.Component<Props, ComponentState> {
                             defaultMessage: 'New App'
                         })}
                     />
-                    {this.props.user.id !== BLIS_SAMPLE_ID &&
+                    {this.props.user.id !== CL_SAMPLE_ID &&
                         <OF.DefaultButton
                             disabled={this.state.isImportButtonDisabled}
                             onClick={this.onClickImportDemoApps}
@@ -320,7 +320,7 @@ class AppsList extends React.Component<Props, ComponentState> {
                             })}
                         />
                     }
-                    {this.props.user.id !== BLIS_SAMPLE_ID && this.props.apps.find(app => app.appName.startsWith('Tutorial-')) && 
+                    {this.props.user.id !== CL_SAMPLE_ID && this.props.apps.find(app => app.appName.startsWith('Tutorial-')) && 
                         <OF.DefaultButton
                             onClick={this.onClickDeleteDemoApps}
                             ariaDescription="Remove Tutorials"
@@ -403,9 +403,9 @@ const mapStateToProps = (state: State) => {
 }
 
 export interface ReceivedProps {
-    apps: BlisAppBase[]
-    onCreateApp: (app: BlisAppBase) => void
-    onClickDeleteApp: (app: BlisAppBase) => void
+    apps: AppBase[]
+    onCreateApp: (app: AppBase) => void
+    onClickDeleteApp: (app: AppBase) => void
     onImportDemoApps: () => void
 }
 

@@ -1,12 +1,12 @@
 import {
     DialogMode,
-    BlisAppBase,
+    AppBase,
     BotInfo,
     EntityBase,
     ActionBase,
     TrainDialog, LogDialog, Teach, Session,
     Memory, UIScoreInput, ScoreInput, ExtractResponse, ScoreResponse
-} from 'blis-models'
+} from 'conversationlearner-models'
 import { ErrorType } from '../types/const'
 import { AT } from '../types/ActionTypes'
 import { TipType } from '../components/ToolTips'
@@ -25,7 +25,7 @@ export type LogDialogState = {
     all: LogDialog[]
 }
 export type AppsState = {
-    all: BlisAppBase[],
+    all: AppBase[],
     activeApps: { [appId: string]: string };  // appId: packageId
 }
 export type BotState = {

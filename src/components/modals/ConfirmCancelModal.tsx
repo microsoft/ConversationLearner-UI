@@ -30,7 +30,7 @@ const ConfirmCancelModal: React.SFC<Props> = (props: Props) => {
         >
             {props.warning && 
                 (
-                    <div className="blis-errorpanel" >
+                    <div className="cl-errorpanel" >
                         <div className={FontClassNames.medium}>{props.warning}</div>
                     </div>
                 )}

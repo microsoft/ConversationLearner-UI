@@ -15,31 +15,31 @@ export enum InternalTrainingStatus {
 
 const internalStatusToUiStateMap = new Map<InternalTrainingStatus, StatusUI>([
     [InternalTrainingStatus.Unknown, {
-        className: "blis-training-status__icon-row--unknown",
+        className: "training-status__icon-row--unknown",
         iconName: "Unknown",
         iconLabelMessageId: FM.APP_TRAINING_STATUS_UNKNOWN,
         additionalIconClasses: ''
     }],
     [InternalTrainingStatus.Queued, {
-        className: "blis-training-status__icon-row--queued",
+        className: "cl-training-status__icon-row--queued",
         iconName: "Recent",
         iconLabelMessageId: FM.APP_TRAINING_STATUS_QUEUED,
         additionalIconClasses: ''
     }],
     [InternalTrainingStatus.Running, {
-        className: "blis-training-status__icon-row--running",
+        className: "cl-training-status__icon-row--running",
         iconName: "Sync",
         iconLabelMessageId: FM.APP_TRAINING_STATUS_RUNNING,
-        additionalIconClasses: 'blis-icon--spin'
+        additionalIconClasses: 'cl-icon--spin'
     }],
     [InternalTrainingStatus.Completed, {
-        className: "blis-training-status__icon-row--success",
+        className: "cl-training-status__icon-row--success",
         iconName: "CompletedSolid",
         iconLabelMessageId: FM.APP_TRAINING_STATUS_COMPLETED,
         additionalIconClasses: ''
     }],
     [InternalTrainingStatus.Failed, {
-        className: "blis-training-status__icon-row--error",
+        className: "cl-training-status__icon-row--error",
         iconName: "StatusErrorFull",
         iconLabelMessageId: FM.APP_TRAINING_STATUS_FAILED,
         additionalIconClasses: ''
@@ -64,13 +64,13 @@ export interface Props {
 const Component: React.SFC<Props> = (props: Props) => {
     const uiState = internalStatusToUiStateMap.get(props.status)
     return (
-        <div className={`blis-training-status ${FontClassNames.mediumPlus}`}>
-            <div className={`blis-training-status__icon-row ${uiState.className} ${props.didPollingExpire ? 'blis-training-status__icon-row--expired': ''}`}>
+        <div className={`cl-training-status ${FontClassNames.mediumPlus}`}>
+            <div className={`cl-training-status__icon-row ${uiState.className} ${props.didPollingExpire ? 'cl-training-status__icon-row--expired': ''}`}>
                 <FormattedMessage
                     id={FM.APP_TRAINING_STATUS_STATUS}
                     defaultMessage="Status"
                 />: &nbsp;<Icon iconName={uiState.iconName} className={uiState.additionalIconClasses} />
-                &nbsp;<span className="blis-training-status__icon-label">
+                &nbsp;<span className="cl-training-status__icon-label">
                     <FormattedMessage
                         id={uiState.iconLabelMessageId}
                         defaultMessage="Status Placeholder"
@@ -78,7 +78,7 @@ const Component: React.SFC<Props> = (props: Props) => {
                 </span>
                 {props.status === InternalTrainingStatus.Failed
                     && <TooltipHost content={props.failureMessage}>
-                        <Icon iconName="Info" className="blis-icon" />
+                        <Icon iconName="Info" className="cl-icon" />
                     </TooltipHost>}
                 {props.didPollingExpire
                     && <TooltipHost
@@ -90,18 +90,18 @@ const Component: React.SFC<Props> = (props: Props) => {
                                 />
                         }}
                     >
-                         &nbsp;<Icon iconName="Warning" className="blis-icon" />
+                         &nbsp;<Icon iconName="Warning" className="cl-icon" />
                     </TooltipHost>}
             </div>
-            <div className={`blis-training-status__text-row ${FontClassNames.small}`}>
+            <div className={`cl-training-status__text-row ${FontClassNames.small}`}>
                 <FormattedMessage
                     id={FM.APP_TRAINING_STATUS_LAST_UPDATE}
                     defaultMessage="Last Update"
                 />: &nbsp;
-                    <span className="blis-training-status__time">
+                    <span className="cl-training-status__time">
                     {props.lastUpdatedDatetime ? <FormattedRelative value={props.lastUpdatedDatetime} /> : ''}
                 </span>
-                <button className={`blis-training-status__trigger ${FontClassNames.small}`} onClick={props.onClickRefresh}>
+                <button className={`cl-training-status__trigger ${FontClassNames.small}`} onClick={props.onClickRefresh}>
                     <FormattedMessage
                         id={FM.APP_TRAINING_STATUS_REFRESH}
                         defaultMessage="Refresh"

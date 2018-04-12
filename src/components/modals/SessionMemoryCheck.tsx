@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import * as OF from 'office-ui-fabric-react';
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
-import { Memory } from 'blis-models'
+import { Memory } from 'conversationlearner-models'
 import MemoryTable from './MemoryTable';
 import './EntityCreatorEditor.css'
 import { FM } from '../../react-intl-messages'
@@ -16,14 +16,14 @@ class SessionMemoryCheck extends React.Component<Props, {}> {
             <Modal
                 isOpen={this.props.open}
                 isBlocking={false}
-                containerClassName="blis-modal blis-modal--wide"
+                containerClassName="cl-modal cl-modal--wide"
             >
                 <MemoryTable
                     memories={this.props.memories}
                     prevMemories={[]}
                 />
 
-                <span className={`blis-label--padded ${OF.FontClassNames.large}`}>
+                <span className={`cl-label--padded ${OF.FontClassNames.large}`}>
                     <FormattedMessage
                         id={FM.SESSIONMEMORYCHECK_DESCRIPTION_ARIADESCRIPTION}
                         defaultMessage={FM.SESSIONMEMORYCHECK_DESCRIPTION_ARIADESCRIPTION}

@@ -3,7 +3,7 @@ import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../../types'
-import { BlisAppBase, ModelUtils, ExtractResponse, TextVariation, DialogType, EntityType, EntityBase, UserInput, DialogMode, PredictedEntity } from 'blis-models'
+import { AppBase, ModelUtils, ExtractResponse, TextVariation, DialogType, EntityType, EntityBase, UserInput, DialogMode, PredictedEntity } from 'conversationlearner-models'
 import * as OF from 'office-ui-fabric-react';
 import * as ExtractorResponseEditor from '../ExtractorResponseEditor'
 import EntityCreatorEditor from './EntityCreatorEditor';
@@ -380,7 +380,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                     }}
                 />}
                 {canEdit && this.props.extractType !== DialogType.TEACH &&
-                    <div className="blis-buttons-row">
+                    <div className="cl-buttons-row">
                         <OF.PrimaryButton
                             disabled={!this.state.extractionChanged || !allExtractResponsesValid || this.state.pendingVariationChange}
                             onClick={this.onClickSubmitExtractions}
@@ -397,7 +397,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                     </div>
                 }
                 {canEdit && this.props.extractType === DialogType.TEACH &&
-                    <div className="blis-buttons-row">
+                    <div className="cl-buttons-row">
                         <OF.PrimaryButton
                             disabled={!allExtractResponsesValid || this.state.pendingVariationChange}
                             onClick={this.onClickSubmitExtractions}
@@ -407,7 +407,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                         />
                     </div>
                 }
-                <div className="blis-dialog-admin__dialogs">
+                <div className="cl-dialog-admin__dialogs">
                     <EntityCreatorEditor
                         app={this.props.app}
                         editingPackageId={this.props.editingPackageId}
@@ -468,7 +468,7 @@ const mapStateToProps = (state: State, ownProps: any) => {
 }
 
 export interface ReceivedProps {
-    app: BlisAppBase
+    app: AppBase
     editingPackageId: string
     canEdit: boolean
     extractType: DialogType

@@ -1,14 +1,14 @@
 import 'rxjs'
 import axios from 'axios'
 import {
-  BlisAppBase,
+  AppBase,
   UserInput,
   UIExtractResponse,
   UITrainScorerStep,
   ScoreInput,
   UIScoreInput,
   DialogType
-} from 'blis-models'
+} from 'conversationlearner-models'
 import * as Rx from 'rxjs';
 import { Observable, Observer } from 'rxjs'
 import actions from '../actions'
@@ -22,7 +22,7 @@ import * as ClientFactory from '../services/clientFactory'
 // PARAMETER REQUIREMENTS
 // =========================================================
 
-export interface BlisAppForUpdate extends BlisAppBase {
+export interface AppForUpdate extends AppBase {
   trainingRequired: boolean
   latestPackageId: number
 }
@@ -32,20 +32,20 @@ export interface BlisAppForUpdate extends BlisAppBase {
 // =========================================================
 
 /* Tell SDK what the currently selected AppId is */
-export const setBlisApp = (app: BlisAppBase): Observable<ActionObject> => {
-  const blisClient = ClientFactory.getInstance(AT.SET_CURRENT_BLIS_APP_ASYNC)
-  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.setBlisApp(app)
+export const setApp = (app: AppBase): Observable<ActionObject> => {
+  const clClient = ClientFactory.getInstance(AT.SET_CURRENT_APP_ASYNC)
+  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => clClient.setApp(app)
     .then(response => {
-      obs.next(actions.display.setCurrentBLISAppFulfilled(app));
+      obs.next(actions.display.setCurrentAppFulfilled(app));
       obs.complete();
     })
-    .catch(err => handleError(obs, err, AT.SET_CURRENT_BLIS_APP_ASYNC)));
+    .catch(err => handleError(obs, err, AT.SET_CURRENT_APP_ASYNC)));
 };
 
 /* Tell SDK what conversationId webchat is using */
 export const setConversationId = (userName: string, userId: string, conversationId: string): Observable<ActionObject> => {
-  const blisClient = ClientFactory.getInstance(AT.SET_CONVERSATION_ID_ASYNC)
-  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.setConversationId(userName, userId, conversationId)
+  const clClient = ClientFactory.getInstance(AT.SET_CONVERSATION_ID_ASYNC)
+  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => clClient.setConversationId(userName, userId, conversationId)
     .then(response => {
       obs.complete();
     })
@@ -57,8 +57,8 @@ export const setConversationId = (userName: string, userId: string, conversation
 //=========================================================
 
 export const getBotInfo = (): Observable<ActionObject> => {
-  const blisClient = ClientFactory.getInstance(AT.FETCH_BOTINFO_ASYNC)
-  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.getBotInfo()
+  const clClient = ClientFactory.getInstance(AT.FETCH_BOTINFO_ASYNC)
+  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => clClient.getBotInfo()
     .then(botInfo => {
       obs.next(actions.fetch.fetchBotInfoFulfilled(botInfo));
       obs.complete();
@@ -66,9 +66,9 @@ export const getBotInfo = (): Observable<ActionObject> => {
     .catch(err => handleError(obs, err, AT.FETCH_BOTINFO_ASYNC)));
 };
 
-export const getAllBlisApps = (userId: string): Observable<ActionObject> => {
-  const blisClient = ClientFactory.getInstance(AT.FETCH_APPLICATIONS_ASYNC)
-  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.apps(userId)
+export const getAllApps = (userId: string): Observable<ActionObject> => {
+  const clClient = ClientFactory.getInstance(AT.FETCH_APPLICATIONS_ASYNC)
+  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => clClient.apps(userId)
     .then(uiAppList => {
       // Set datetime on each app
       uiAppList.appList.apps.forEach(app => app.datetime = new Date())
@@ -78,9 +78,9 @@ export const getAllBlisApps = (userId: string): Observable<ActionObject> => {
     .catch(err => handleError(obs, err, AT.FETCH_APPLICATIONS_ASYNC)));
 };
 
-export const getAllEntitiesForBlisApp = (appId: string): Observable<ActionObject> => {
-  const blisClient = ClientFactory.getInstance(AT.FETCH_ENTITIES_ASYNC)
-  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.entities(appId)
+export const getAllEntitiesForApp = (appId: string): Observable<ActionObject> => {
+  const clClient = ClientFactory.getInstance(AT.FETCH_ENTITIES_ASYNC)
+  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => clClient.entities(appId)
     .then(entities => {
       obs.next(actions.fetch.fetchAllEntitiesFulfilled(entities));
       obs.complete();
@@ -88,9 +88,9 @@ export const getAllEntitiesForBlisApp = (appId: string): Observable<ActionObject
     .catch(err => handleError(obs, err, AT.FETCH_ENTITIES_ASYNC)));
 };
 
-export const getSourceForBlisApp = (appId: string, packageId: string): Observable<ActionObject> => {
-  const blisClient = ClientFactory.getInstance(AT.FETCH_APPSOURCE_ASYNC)
-  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.source(appId, packageId)
+export const getSourceForApp = (appId: string, packageId: string): Observable<ActionObject> => {
+  const clClient = ClientFactory.getInstance(AT.FETCH_APPSOURCE_ASYNC)
+  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => clClient.source(appId, packageId)
     .then(source => {
       obs.next(actions.fetch.fetchAppSourceFulfilled(source));
       obs.complete();
@@ -98,9 +98,9 @@ export const getSourceForBlisApp = (appId: string, packageId: string): Observabl
     .catch(err => handleError(obs, err, AT.FETCH_APPSOURCE_ASYNC)));
 };
 
-export const getAllActionsForBlisApp = (appId: string): Observable<ActionObject> => {
-  const blisClient = ClientFactory.getInstance(AT.FETCH_ACTIONS_ASYNC)
-  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.actions(appId)
+export const getAllActionsForApp = (appId: string): Observable<ActionObject> => {
+  const clClient = ClientFactory.getInstance(AT.FETCH_ACTIONS_ASYNC)
+  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => clClient.actions(appId)
     .then(botActions => {
       obs.next(actions.fetch.fetchAllActionsFulfilled(botActions));
       obs.complete();
@@ -108,9 +108,9 @@ export const getAllActionsForBlisApp = (appId: string): Observable<ActionObject>
     .catch(err => handleError(obs, err, AT.FETCH_ACTIONS_ASYNC)));
 };
 
-export const getAllTrainDialogsForBlisApp = (appId: string): Observable<ActionObject> => {
-  const blisClient = ClientFactory.getInstance(AT.FETCH_TRAIN_DIALOGS_ASYNC);
-  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.trainDialogs(appId)
+export const getAllTrainDialogsForApp = (appId: string): Observable<ActionObject> => {
+  const clClient = ClientFactory.getInstance(AT.FETCH_TRAIN_DIALOGS_ASYNC);
+  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => clClient.trainDialogs(appId)
     .then(trainDialogs => {
       obs.next(actions.fetch.fetchAllTrainDialogsFulfilled(trainDialogs));
       obs.complete();
@@ -118,9 +118,9 @@ export const getAllTrainDialogsForBlisApp = (appId: string): Observable<ActionOb
     .catch(err => handleError(obs, err, AT.FETCH_TRAIN_DIALOGS_ASYNC)));
 };
 
-export const getAllLogDialogsForBlisApp = (appId: string, packageId: string): Observable<ActionObject> => {
-  const blisClient = ClientFactory.getInstance(AT.FETCH_LOG_DIALOGS_ASYNC)
-  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.logDialogs(appId, packageId)
+export const getAllLogDialogsForApp = (appId: string, packageId: string): Observable<ActionObject> => {
+  const clClient = ClientFactory.getInstance(AT.FETCH_LOG_DIALOGS_ASYNC)
+  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => clClient.logDialogs(appId, packageId)
     .then(logDialogs => {
       obs.next(actions.fetch.fetchAllLogDialogsFulfilled(logDialogs));
       obs.complete();
@@ -141,44 +141,44 @@ export const getLuisApplicationCultures = (): Promise<CultureObject[]> => {
     .then(response => response.data)
 }
 
-export const createBlisApp = (userId: string, app: BlisAppBase): Observable<ActionObject> => {
-  const blisClient = ClientFactory.getInstance(AT.CREATE_BLIS_APPLICATION_ASYNC)
+export const createApp = (userId: string, app: AppBase): Observable<ActionObject> => {
+  const clClient = ClientFactory.getInstance(AT.CREATE_APPLICATION_ASYNC)
   //remove the appId property from the object
   const { appId, ...appToSend } = app
-  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.appsCreate(userId, appToSend as BlisAppBase)
+  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => clClient.appsCreate(userId, appToSend as AppBase)
     .then(app => {
       obs.next(actions.create.createApplicationFulfilled(app))
       obs.complete();
     })
-    .catch(err => handleError(obs, err, AT.CREATE_BLIS_APPLICATION_ASYNC)));
+    .catch(err => handleError(obs, err, AT.CREATE_APPLICATION_ASYNC)));
 };
 
 //=========================================================
 // DELETE ROUTES
 //=========================================================
 
-export const deleteBlisApp = (blisApp: BlisAppBase): Observable<ActionObject> => {
-  const blisClient = ClientFactory.getInstance(AT.DELETE_BLIS_APPLICATION_ASYNC)
-  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.appsDelete(blisApp.appId)
+export const deleteApp = (app: AppBase): Observable<ActionObject> => {
+  const clClient = ClientFactory.getInstance(AT.DELETE_APPLICATION_ASYNC)
+  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => clClient.appsDelete(app.appId)
     .then(response => {
-      obs.next(actions.delete.deleteBLISApplicationFulfilled(blisApp.appId));
+      obs.next(actions.delete.deleteApplicationFulfilled(app.appId));
       obs.complete();
     })
-    .catch(err => handleError(obs, err, AT.DELETE_BLIS_APPLICATION_ASYNC)));
+    .catch(err => handleError(obs, err, AT.DELETE_APPLICATION_ASYNC)));
 };
 
 //=========================================================
 // EDIT ROUTES
 //=========================================================
 
-export const editBlisApp = (appId: string, app: BlisAppBase): Observable<ActionObject> => {
-  const blisClient = ClientFactory.getInstance(AT.EDIT_BLIS_APPLICATION_ASYNC)
-  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.appsUpdate(appId, app)
+export const editApp = (appId: string, app: AppBase): Observable<ActionObject> => {
+  const clClient = ClientFactory.getInstance(AT.EDIT_APPLICATION_ASYNC)
+  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => clClient.appsUpdate(appId, app)
     .then(updatedApp => {
-      obs.next(actions.update.editBLISApplicationFulfilled(updatedApp));
+      obs.next(actions.update.editApplicationFulfilled(updatedApp));
       obs.complete();
     })
-    .catch(err => handleError(obs, err, AT.EDIT_BLIS_APPLICATION_ASYNC)));
+    .catch(err => handleError(obs, err, AT.EDIT_APPLICATION_ASYNC)));
 }
 
 // ========================================================
@@ -186,17 +186,17 @@ export const editBlisApp = (appId: string, app: BlisAppBase): Observable<ActionO
 // ========================================================
 
 export const expireChatSession = (appId: string, sessionId: string): Observable<ActionObject> => {
-  const blisClient = ClientFactory.getInstance(AT.EDIT_CHAT_SESSION_EXPIRE_ASYNC) 
-  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.chatSessionsExpire(appId, sessionId)
+  const clClient = ClientFactory.getInstance(AT.EDIT_CHAT_SESSION_EXPIRE_ASYNC) 
+  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => clClient.chatSessionsExpire(appId, sessionId)
     .then(() => {
       obs.complete();
     })
     .catch(err => handleError(obs, err, AT.EDIT_CHAT_SESSION_EXPIRE_ASYNC))); 
 };
 
-export const getAllSessionsForBlisApp = (appId: string): Observable<ActionObject> => {
-  const blisClient = ClientFactory.getInstance(AT.FETCH_CHAT_SESSIONS_ASYNC)
-  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.chatSessions(appId)
+export const getAllSessionsForApp = (appId: string): Observable<ActionObject> => {
+  const clClient = ClientFactory.getInstance(AT.FETCH_CHAT_SESSIONS_ASYNC)
+  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => clClient.chatSessions(appId)
     .then(sessions => {
       obs.next(actions.fetch.fetchAllChatSessionsFulfilled(sessions));
       obs.complete();
@@ -208,9 +208,9 @@ export const getAllSessionsForBlisApp = (appId: string): Observable<ActionObject
 // Teach
 // ========================================================
 
-export const getAllTeachSessionsForBlisApp = (appId: string): Observable<ActionObject> => {
-  const blisClient = ClientFactory.getInstance(AT.FETCH_TEACH_SESSIONS_ASYNC)
-  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.teachSessions(appId)
+export const getAllTeachSessionsForApp = (appId: string): Observable<ActionObject> => {
+  const clClient = ClientFactory.getInstance(AT.FETCH_TEACH_SESSIONS_ASYNC)
+  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => clClient.teachSessions(appId)
     .then(teachSessions => {
       obs.next(actions.fetch.fetchAllTeachSessionsFulfilled(teachSessions));
       obs.complete();
@@ -224,18 +224,18 @@ export const getAllTeachSessionsForBlisApp = (appId: string): Observable<ActionO
  * doesn't affect the trainDialog maintained.
  */
 export const putExtract = (key: string, appId: string, extractType: DialogType, sessionId: string, turnIndex: number, userInput: UserInput): Observable<ActionObject> => {
-  const blisClient = ClientFactory.getInstance(AT.RUN_EXTRACTOR_ASYNC)
+  const clClient = ClientFactory.getInstance(AT.RUN_EXTRACTOR_ASYNC)
   let putExtractPromise: Promise<UIExtractResponse> = null
 
   switch (extractType) {
     case DialogType.TEACH:
-      putExtractPromise = blisClient.teachSessionsAddExtractStep(appId, sessionId, userInput)
+      putExtractPromise = clClient.teachSessionsAddExtractStep(appId, sessionId, userInput)
       break;
     case DialogType.TRAINDIALOG:
-      putExtractPromise = blisClient.trainDialogsUpdateExtractStep(appId, sessionId, turnIndex, userInput)
+      putExtractPromise = clClient.trainDialogsUpdateExtractStep(appId, sessionId, turnIndex, userInput)
       break;
     case DialogType.LOGDIALOG:
-      putExtractPromise = blisClient.logDialogsUpdateExtractStep(appId, sessionId, turnIndex, userInput)
+      putExtractPromise = clClient.logDialogsUpdateExtractStep(appId, sessionId, turnIndex, userInput)
       break;
   }
 
@@ -248,8 +248,8 @@ export const putExtract = (key: string, appId: string, extractType: DialogType, 
 };
 
 export const getScore = (key: string, appId: string, teachId: string, scoreInput: ScoreInput): Observable<ActionObject> => {
-  const blisClient = ClientFactory.getInstance(AT.GET_SCORES_ASYNC)
-  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.teachSessionRescore(appId, teachId, scoreInput)
+  const clClient = ClientFactory.getInstance(AT.GET_SCORES_ASYNC)
+  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => clClient.teachSessionRescore(appId, teachId, scoreInput)
     .then(uiScoreResponse => {
       obs.next(actions.teach.getScoresFulfilled(key, appId, teachId, uiScoreResponse))
       obs.complete()
@@ -267,8 +267,8 @@ export const getScore = (key: string, appId: string, teachId: string, scoreInput
  * This doesn't affect the trainDialog maintained by the teaching session.
  */
 export const putScore = (key: string, appId: string, teachId: string, uiScoreInput: UIScoreInput): Observable<ActionObject> => {
-  const blisClient = ClientFactory.getInstance(AT.RUN_SCORER_ASYNC)
-  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.teachSessionUpdateScorerStep(appId, teachId, uiScoreInput)
+  const clClient = ClientFactory.getInstance(AT.RUN_SCORER_ASYNC)
+  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => clClient.teachSessionUpdateScorerStep(appId, teachId, uiScoreInput)
     .then(uiScoreResponse => {
       obs.next(actions.teach.runScorerFulfilled(key, appId, teachId, uiScoreResponse));
       obs.complete();
@@ -281,8 +281,8 @@ export const putScore = (key: string, appId: string, teachId: string, uiScoreInp
  * trainDialog, and advancing the dialog. This may yield produce a new package.
  */
 export const postScore = (key: string, appId: string, teachId: string, uiTrainScorerStep: UITrainScorerStep, waitForUser: boolean, uiScoreInput: UIScoreInput): Observable<ActionObject> => {
-  const blisClient = ClientFactory.getInstance(AT.POST_SCORE_FEEDBACK_ASYNC)
-  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => blisClient.teachSessionAddScorerStep(appId, teachId, uiTrainScorerStep)
+  const clClient = ClientFactory.getInstance(AT.POST_SCORE_FEEDBACK_ASYNC)
+  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => clClient.teachSessionAddScorerStep(appId, teachId, uiTrainScorerStep)
     .then(uiTeachResponse => {
       if (!waitForUser) {
         // Don't re-send predicted entities on subsequent score call -todo on non train path

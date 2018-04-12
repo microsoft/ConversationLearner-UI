@@ -13,7 +13,7 @@ const logDialogsReducer: Reducer<LogDialogState> = (state = initialState, action
             return { ...initialState };
         case AT.FETCH_LOG_DIALOGS_FULFILLED:
             return { ...state, all: action.allLogDialogs };
-        case AT.CREATE_BLIS_APPLICATION_FULFILLED:
+        case AT.CREATE_APPLICATION_FULFILLED:
             return { ...initialState }
         case AT.CREATE_LOG_DIALOG:
             return { ...state, all: [...state.all, action.logDialog] };

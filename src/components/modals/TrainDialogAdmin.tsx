@@ -11,10 +11,10 @@ import MemoryTable from './MemoryTable';
 import { Activity } from 'botframework-directlinejs'
 import * as OF from 'office-ui-fabric-react';
 import {
-    ActionBase, BlisAppBase, TrainDialog, TrainRound, ScoreReason, ScoredAction,
+    ActionBase, AppBase, TrainDialog, TrainRound, ScoreReason, ScoredAction,
     TrainScorerStep, Memory, UnscoredAction, ScoreResponse, ActionTypes,
     TextVariation, ExtractResponse, DialogType, SenderType, DialogMode
-} from 'blis-models'
+} from 'conversationlearner-models'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 
@@ -304,14 +304,14 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
 
         let renderData = this.getRenderData();
         return (
-            <div className={`blis-dialog-admin ${OF.FontClassNames.large}`}>
-                <div className={`blis-dialog-title blis-dialog-title--train ${OF.FontClassNames.xxLarge}`}>
+            <div className={`cl-dialog-admin ${OF.FontClassNames.large}`}>
+                <div className={`cl-dialog-title cl-dialog-title--train ${OF.FontClassNames.xxLarge}`}>
                     <OF.Icon iconName="EditContact" />Train Dialog
                 </div>
                 {this.props.selectedActivity && (this.state.senderType === SenderType.User
                     ? (
-                        <div className="blis-dialog-admin__content">
-                            <div className="blis-wc-message blis-wc-message--user">
+                        <div className="cl-dialog-admin__content">
+                            <div className="cl-wc-message cl-wc-message--user">
                                 <FormattedMessage
                                     id={FM.TRAINDIALOGADMIN_DIALOGMODE_USER}
                                     defaultMessage="User Input"
@@ -319,8 +319,8 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                             </div>
                         </div>
                     ) : (
-                        <div className="blis-dialog-admin__content">
-                            <div className="blis-wc-message blis-wc-message--bot">
+                        <div className="cl-dialog-admin__content">
+                            <div className="cl-wc-message cl-wc-message--bot">
                                 <FormattedMessage
                                     id={FM.TRAINDIALOGADMIN_DIALOGMODE_TEXT}
                                     defaultMessage="Bot Response"
@@ -330,8 +330,8 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                     ))
                 }
                 {this.props.selectedActivity ?
-                    (<div className="blis-dialog-admin__content">
-                        <div className="blis-dialog-admin-title">
+                    (<div className="cl-dialog-admin__content">
+                        <div className="cl-dialog-admin-title">
                             <FormattedMessage
                                 id={FM.TRAINDIALOGADMIN_MEMORY_TITLE}
                                 defaultMessage="Memory"
@@ -343,8 +343,8 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                         />
                     </div>
                     ) : (
-                        <div className="blis-dialog-admin__content">
-                            <div className="blis-dialog-admin-title">
+                        <div className="cl-dialog-admin__content">
+                            <div className="cl-dialog-admin-title">
                                 <FormattedMessage
                                     id={FM.TRAINDIALOGADMIN_HELPTEXT_TITLE}
                                     defaultMessage="Train Dialog"
@@ -366,8 +366,8 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                     )
                 }
                 {this.state.senderType === SenderType.User &&
-                    <div className="blis-dialog-admin__content">
-                        <div className="blis-dialog-admin-title">
+                    <div className="cl-dialog-admin__content">
+                        <div className="cl-dialog-admin-title">
                             <FormattedMessage
                                 id={FM.TRAINDIALOGADMIN_ENTITYDETECTION_TITLE}
                                 defaultMessage="Entity Detection"
@@ -400,8 +400,8 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                     </div>
                 }
                 {renderData.selectedAction && this.state.senderType === SenderType.Bot &&
-                    <div className="blis-dialog-admin__content">
-                        <div className="blis-dialog-admin-title">
+                    <div className="cl-dialog-admin__content">
+                        <div className="cl-dialog-admin-title">
                             <FormattedMessage
                                 id={FM.TRAINDIALOGADMIN_ACTION_TITLE}
                                 defaultMessage="Action"
@@ -424,7 +424,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                         </div>
                     </div>
                 }
-                <div className="blis-dialog-admin__dialogs">
+                <div className="cl-dialog-admin__dialogs">
                     <OF.Dialog
                         hidden={this.state.saveTrainDialog === null}
                         onDismiss={() => this.onClickSaveCheckNo()}
@@ -489,7 +489,7 @@ interface ComponentState {
 };
 
 export interface ReceivedProps {
-    app: BlisAppBase,
+    app: AppBase,
     editingPackageId: string,
     trainDialog: TrainDialog,
     selectedActivity: Activity,

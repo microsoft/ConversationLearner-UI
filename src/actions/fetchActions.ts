@@ -13,16 +13,16 @@ import {
     AppDefinition, 
     UIAppList,
     TeachWithHistory,
-    BlisAppBase
-} from 'blis-models'
+    AppBase
+} from 'conversationlearner-models'
 import { Dispatch } from 'redux'
 import * as ClientFactory from '../services/clientFactory'
 import { setErrorDisplay } from './displayActions'
 
-export const fetchAllTrainDialogsAsync = (blisAppID: string): ActionObject => {
+export const fetchAllTrainDialogsAsync = (clAppID: string): ActionObject => {
     return {
         type: AT.FETCH_TRAIN_DIALOGS_ASYNC,
-        blisAppID: blisAppID
+        clAppID: clAppID
     }
 }
 
@@ -35,19 +35,19 @@ export const fetchAllTrainDialogsFulfilled = (trainDialogs: TrainDialog[]): Acti
 
 export const fetchHistoryThunkAsync = (appId: string, trainDialog: TrainDialog, userName: string, userId: string) => {
     return async (dispatch: Dispatch<any>) => {
-        const blisClient = ClientFactory.getInstance(AT.FETCH_HISTORY_ASYNC)
+        const clClient = ClientFactory.getInstance(AT.FETCH_HISTORY_ASYNC)
         dispatch(fetchHistoryAsync(appId, trainDialog, userName, userId))
 
-        const teachWithHistory = await blisClient.history(appId, trainDialog, userName, userId)
+        const teachWithHistory = await clClient.history(appId, trainDialog, userName, userId)
         dispatch(fetchHistoryFulfilled(teachWithHistory))
         return teachWithHistory
     }
 }
 
-const fetchHistoryAsync = (blisAppID: string, trainDialog: TrainDialog, userName: string, userId: string): ActionObject => {
+const fetchHistoryAsync = (clAppID: string, trainDialog: TrainDialog, userName: string, userId: string): ActionObject => {
     return {
         type: AT.FETCH_HISTORY_ASYNC,
-        blisAppID: blisAppID,
+        clAppID: clAppID,
         userName: userName,
         userId: userId,
         trainDialog: trainDialog
@@ -62,7 +62,7 @@ const fetchHistoryFulfilled = (teachWithHistory: TeachWithHistory): ActionObject
     }
 }
 
-export const fetchAllLogDialogsAsync = (key: string, app: BlisAppBase, packageId: string): ActionObject => {
+export const fetchAllLogDialogsAsync = (key: string, app: AppBase, packageId: string): ActionObject => {
       
     // Note: In future change fetch log dialogs to default to all package if packageId is dev
     let allPackages = (packageId === app.devPackageId)
@@ -72,7 +72,7 @@ export const fetchAllLogDialogsAsync = (key: string, app: BlisAppBase, packageId
     return {
         type: AT.FETCH_LOG_DIALOGS_ASYNC,
         key: key,
-        blisAppID: app.appId,
+        clAppID: app.appId,
         packageId: allPackages
     }
 }
@@ -139,7 +139,7 @@ export const fetchApplicationTrainingStatusExpired = (appId: string): ActionObje
 const pollTrainingStatusUntilResolvedOrMaxDuration = (dispatch: Dispatch<any>, appId: string, resolvedStates: TrainingStatusCode[], interval: number, maxDuration: number): Promise<void> => {
     const start = new Date()
     const end = start.getTime() + maxDuration
-    const blisClient = ClientFactory.getInstance(null)
+    const clClient = ClientFactory.getInstance(null)
     
     return new Promise<void>((resolve) => {
         const timerId = setInterval(async () => {
@@ -157,7 +157,7 @@ const pollTrainingStatusUntilResolvedOrMaxDuration = (dispatch: Dispatch<any>, a
             }
 
             // Get training status and if it's one of the resolved states resolve promise
-            const trainingStatus = await blisClient.appGetTrainingStatus(appId)
+            const trainingStatus = await clClient.appGetTrainingStatus(appId)
             console.log(`Poll app: ${appId} training status: `, end, now, trainingStatus.trainingStatus)
             dispatch(fetchApplicationTrainingStatusFulfilled(appId, trainingStatus))
 
@@ -182,11 +182,11 @@ export const fetchApplicationTrainingStatusThunkAsync = (appId: string) => {
     }
 }
 
-export const fetchAllEntitiesAsync = (blisAppID: string): ActionObject => {
+export const fetchAllEntitiesAsync = (clAppID: string): ActionObject => {
     //needs a fulfilled version to handle response from Epic
     return {
         type: AT.FETCH_ENTITIES_ASYNC,
-        blisAppID: blisAppID
+        clAppID: clAppID
     }
 }
 
@@ -201,7 +201,7 @@ export const fetchAppSourceAsync = (appId: string, packageId: string): ActionObj
     //needs a fulfilled version to handle response from Epic
     return {
         type: AT.FETCH_APPSOURCE_ASYNC,
-        blisAppID: appId,
+        clAppID: appId,
         packageId: packageId
     }
 }
@@ -213,11 +213,11 @@ export const fetchAppSourceFulfilled = (appDefinition: AppDefinition): ActionObj
     }
 }
 
-export const fetchAllActionsAsync = (blisAppID: string): ActionObject => {
+export const fetchAllActionsAsync = (clAppID: string): ActionObject => {
     //needs a fulfilled version to handle response from Epic
     return {
         type: AT.FETCH_ACTIONS_ASYNC,
-        blisAppID: blisAppID
+        clAppID: clAppID
     }
 }
 
@@ -228,11 +228,11 @@ export const fetchAllActionsFulfilled = (actions: ActionBase[]): ActionObject =>
     }
 }
 
-export const fetchAllChatSessionsAsync = (blisAppID: string): ActionObject => {
+export const fetchAllChatSessionsAsync = (clAppID: string): ActionObject => {
     //needs a fulfilled version to handle response from Epic
     return {
         type: AT.FETCH_CHAT_SESSIONS_ASYNC,
-        blisAppID: blisAppID
+        clAppID: clAppID
     }
 }
 
@@ -243,12 +243,12 @@ export const fetchAllChatSessionsFulfilled = (sessions: Session[]): ActionObject
     }
 }
 
-export const fetchAllTeachSessionsAsync = (key: string, blisAppID: string): ActionObject => {
+export const fetchAllTeachSessionsAsync = (key: string, clAppID: string): ActionObject => {
     //needs a fulfilled version to handle response from Epic
     return {
         type: AT.FETCH_TEACH_SESSIONS_ASYNC,
         key: key,
-        blisAppID: blisAppID
+        clAppID: clAppID
     }
 }
 
@@ -264,11 +264,11 @@ export const fetchAllTeachSessionsFulfilled = (teachSessions: Teach[]): ActionOb
 // --------------------------------------
 export const fetchEntityDeleteValidationThunkAsync = (appId: string, packageId: string, entityId: string) => {
     return async (dispatch: Dispatch<any>) => {
-        const blisClient = ClientFactory.getInstance(AT.FETCH_ENTITY_DELETE_VALIDATION_ASYNC)
+        const clClient = ClientFactory.getInstance(AT.FETCH_ENTITY_DELETE_VALIDATION_ASYNC)
         dispatch(fetchEntityDeleteValidationAsync(appId, packageId, entityId))
 
         try {
-            const invalidTrainDialogIds = await blisClient.entitiesDeleteValidation(appId, packageId, entityId)
+            const invalidTrainDialogIds = await clClient.entitiesDeleteValidation(appId, packageId, entityId)
             dispatch(fetchEntityDeleteValidationFulfilled())
             return invalidTrainDialogIds
         } catch (e) {
@@ -298,11 +298,11 @@ export const fetchEntityDeleteValidationFulfilled = (): ActionObject => {
 
 export const fetchEntityEditValidationThunkAsync = (appId: string, packageId: string, entity: EntityBase) => {
     return async (dispatch: Dispatch<any>) => {
-        const blisClient = ClientFactory.getInstance(AT.FETCH_ENTITY_EDIT_VALIDATION_ASYNC)
+        const clClient = ClientFactory.getInstance(AT.FETCH_ENTITY_EDIT_VALIDATION_ASYNC)
         dispatch(fetchEntityEditValidationAsync(appId, packageId, entity))
 
         try {
-            const invalidTrainDialogIds = await blisClient.entitiesUpdateValidation(appId, packageId, entity)
+            const invalidTrainDialogIds = await clClient.entitiesUpdateValidation(appId, packageId, entity)
             dispatch(fetchEntityEditValidationFulfilled())
             return invalidTrainDialogIds
         } catch (e) {
@@ -331,11 +331,11 @@ export const fetchEntityEditValidationFulfilled = (): ActionObject => {
 // -----------------------------------------------
 export const fetchActionDeleteValidationThunkAsync = (appId: string, packageId: string, actionId: string) => {
     return async (dispatch: Dispatch<any>) => {
-        const blisClient = ClientFactory.getInstance(AT.FETCH_ACTION_DELETE_VALIDATION_ASYNC)
+        const clClient = ClientFactory.getInstance(AT.FETCH_ACTION_DELETE_VALIDATION_ASYNC)
         dispatch(fetchActionDeleteValidationAsync(appId, packageId, actionId))
 
         try {
-            const invalidTrainDialogIds = await blisClient.actionsDeleteValidation(appId, packageId, actionId)
+            const invalidTrainDialogIds = await clClient.actionsDeleteValidation(appId, packageId, actionId)
             dispatch(fetchActionDeleteValidationFulfilled())
             return invalidTrainDialogIds
         } catch (e) {
@@ -365,11 +365,11 @@ export const fetchActionDeleteValidationFulfilled = (): ActionObject => {
 
 export const fetchActionEditValidationThunkAsync = (appId: string, packageId: string, action: ActionBase) => {
     return async (dispatch: Dispatch<any>) => {
-        const blisClient = ClientFactory.getInstance(AT.FETCH_ACTION_EDIT_VALIDATION_ASYNC)
+        const clClient = ClientFactory.getInstance(AT.FETCH_ACTION_EDIT_VALIDATION_ASYNC)
         dispatch(fetchActionEditValidationAsync(appId, packageId, action))
 
         try {
-            const invalidTrainDialogIds = await blisClient.actionsUpdateValidation(appId, packageId, action)
+            const invalidTrainDialogIds = await clClient.actionsUpdateValidation(appId, packageId, action)
             dispatch(fetchActionEditValidationFulfilled())
             return invalidTrainDialogIds
         } catch (e) {
