@@ -1,6 +1,6 @@
-.blis-action-creator--expected-entities .ms-TagItem-text--highlight {
+.cl-action-creator--expected-entities .ms-TagItem-text--highlight {
     background-color: var(--color-successBackground);
 }
-.blis-action-creator--disqualifying-entities .ms-TagItem-text--highlight {
+.cl-action-creator--disqualifying-entities .ms-TagItem-text--highlight {
     background-color: var(--color-successBackground);
 }

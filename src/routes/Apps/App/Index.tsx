@@ -8,7 +8,7 @@ import { RouteComponentProps } from 'react-router'
 import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { BlisAppBase, ActionBase, ActionTypes, ApiAction, CardAction, BotInfo } from 'blis-models'
+import { AppBase, ActionBase, ActionTypes, ApiAction, CardAction, BotInfo } from 'conversationlearner-models'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../../react-intl-messages'
 import { State } from '../../../types';
@@ -40,11 +40,11 @@ class Index extends React.Component<Props, ComponentState> {
         packageId: null
     }
 
-    loadApp(app: BlisAppBase, packageId: string): void {
+    loadApp(app: AppBase, packageId: string): void {
         
         this.setState({ packageId: packageId})
 
-        this.props.setCurrentBLISApp(this.props.user.id, app)
+        this.props.setCurrentApp(this.props.user.id, app)
         this.props.fetchAllLogDialogsAsync(this.props.user.id, app, packageId) // Note: a separate call as eventually we want to page
         this.props.fetchAppSource(app.appId, packageId)
         this.props.fetchBotInfoAsync()
@@ -56,7 +56,7 @@ class Index extends React.Component<Props, ComponentState> {
         // If we're loading Index due to page refresh where app is not in router state
         // force back to /home route to mimic old behavior and allow user to login again
         const { location, history } = this.props
-        const app: BlisAppBase | null = location.state && location.state.app
+        const app: AppBase | null = location.state && location.state.app
         if (!app) {
             console.log(`${this.constructor.name} componentWillMount. location.state.app is undefined: Redirect to /home`)
             history.push('/home')
@@ -69,7 +69,7 @@ class Index extends React.Component<Props, ComponentState> {
 
     componentWillReceiveProps(newProps: Props) {
  
-        const app: BlisAppBase | null = newProps.location.state && newProps.location.state.app
+        const app: AppBase | null = newProps.location.state && newProps.location.state.app
         let editPackageId = newProps.activeApps[app.appId] || app.devPackageId;
         if (this.state.packageId !== editPackageId) {
             this.loadApp(app, editPackageId);
@@ -125,7 +125,7 @@ class Index extends React.Component<Props, ComponentState> {
     }
     render() {
         const { match, location, intl } = this.props
-        const app: BlisAppBase = location.state.app
+        const app: AppBase = location.state.app
         const editPackageId = this.state.packageId
         const tag = (editPackageId === app.devPackageId) ? 
             'Master' :
@@ -134,25 +134,25 @@ class Index extends React.Component<Props, ComponentState> {
         const invalidBot = this.state.validationErrors && this.state.validationErrors.length > 0;
        
         return (
-            <div className="blis-app-page">
+            <div className="cl-app-page">
                 <div>
-                    <div className="blis-app-title">
+                    <div className="cl-app-title">
                         <div className={FontClassNames.xxLarge}>{app.appName}</div>
                     </div>
-                    <div className={`blis-app-tag-status ${FontClassNames.mediumPlus}`}>
+                    <div className={`cl-app-tag-status ${FontClassNames.mediumPlus}`}>
                         Tag: {tag}
                         {editPackageId === app.livePackageId && 
-                            <span className="blis-font--warning">LIVE</span>
+                            <span className="cl-font--warning">LIVE</span>
                         }
                     </div>
                     <TrainingStatus
                         app={app}
                     />
-                    <div className={`blis-nav ${FontClassNames.mediumPlus}`}>
-                        <div className="blis-nav_section">
-                            <NavLink className="blis-nav-link" exact to={{ pathname: `${match.url}`, state: { app } }}>
+                    <div className={`cl-nav ${FontClassNames.mediumPlus}`}>
+                        <div className="cl-nav_section">
+                            <NavLink className="cl-nav-link" exact to={{ pathname: `${match.url}`, state: { app } }}>
                                 <Icon iconName="Home" />
-                                    <span className={invalidBot ? 'blis-font--highlight' : ''}>Home
+                                    <span className={invalidBot ? 'cl-font--highlight' : ''}>Home
                                         {invalidBot &&
                                             <TooltipHost 
                                                 content={intl.formatMessage({
@@ -161,19 +161,19 @@ class Index extends React.Component<Props, ComponentState> {
                                                 })} 
                                                 calloutProps={{ gapSpace: 0 }}
                                             >
-                                                <Icon className="blis-icon" iconName="IncidentTriangle" />
+                                                <Icon className="cl-icon" iconName="IncidentTriangle" />
                                             </TooltipHost>
                                         }</span>
                             </NavLink>
-                            <NavLink className="blis-nav-link" to={{ pathname: `${match.url}/entities`, state: { app } }}>
+                            <NavLink className="cl-nav-link" to={{ pathname: `${match.url}/entities`, state: { app } }}>
                                 <Icon iconName="List" /><span>Entities</span><span className="count">{this.props.entities.filter(e => typeof e.positiveId === 'undefined').length}</span>
                             </NavLink>
-                            <NavLink className="blis-nav-link" to={{ pathname: `${match.url}/actions`, state: { app } }}>
+                            <NavLink className="cl-nav-link" to={{ pathname: `${match.url}/actions`, state: { app } }}>
                                 <Icon iconName="List" /><span>Actions</span><span className="count">{this.props.actions.length}</span>
                             </NavLink>
-                            <NavLink className="blis-nav-link" to={{ pathname: `${match.url}/trainDialogs`, state: { app } }}>
+                            <NavLink className="cl-nav-link" to={{ pathname: `${match.url}/trainDialogs`, state: { app } }}>
                                 <Icon iconName="List" />
-                                    <span className={invalidTrainDialogs ? 'blis-font--highlight' : ''}>Train Dialogs
+                                    <span className={invalidTrainDialogs ? 'cl-font--highlight' : ''}>Train Dialogs
                                         {invalidTrainDialogs && 
                                             <TooltipHost 
                                                 content={intl.formatMessage({
@@ -182,20 +182,20 @@ class Index extends React.Component<Props, ComponentState> {
                                                 })} 
                                                 calloutProps={{ gapSpace: 0 }}
                                             >
-                                                <Icon className="blis-icon" iconName="IncidentTriangle" />
+                                                <Icon className="cl-icon" iconName="IncidentTriangle" />
                                             </TooltipHost>
                                         }</span>
                                     <span className="count">{this.props.trainDialogs.length}</span>
                             </NavLink>
-                            <NavLink className="blis-nav-link" to={{ pathname: `${match.url}/logDialogs`, state: { app } }}>
+                            <NavLink className="cl-nav-link" to={{ pathname: `${match.url}/logDialogs`, state: { app } }}>
                                 <Icon iconName="List" /><span>Log Dialogs</span>
                             </NavLink>
-                            <NavLink className="blis-nav-link" to={{ pathname: `${match.url}/settings`, state: { app } }}>
+                            <NavLink className="cl-nav-link" to={{ pathname: `${match.url}/settings`, state: { app } }}>
                                 <Icon iconName="Settings" /><span>Settings</span>
                             </NavLink>
                         </div>
-                        <div className="blis-nav_section">
-                            <NavLink className="blis-nav-link" exact={true} to="/home">
+                        <div className="cl-nav_section">
+                            <NavLink className="cl-nav-link" exact={true} to="/home">
                                 <Icon iconName="Back" /><span>App List</span>
                             </NavLink>
                         </div>
@@ -230,7 +230,7 @@ class Index extends React.Component<Props, ComponentState> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         setErrorDisplay,
-        setCurrentBLISApp: actions.display.setCurrentBLISApp,
+        setCurrentApp: actions.display.setCurrentApp,
         fetchAppSource: actions.fetch.fetchAppSourceAsync,
         fetchAllLogDialogsAsync: actions.fetch.fetchAllLogDialogsAsync,
         fetchBotInfoAsync: actions.fetch.fetchBotInfoAsync

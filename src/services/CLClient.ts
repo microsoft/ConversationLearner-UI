@@ -1,4 +1,4 @@
-import * as models from 'blis-models'
+import * as models from 'conversationlearner-models'
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios'
 import { AppInput } from '../types/models';
 
@@ -8,22 +8,22 @@ interface TypedAxiosResponse<T> extends AxiosResponse {
 
 // shape of client
 /*
-const blisClient = new BlisClient(getAccessToken, { ... })
+const clClient = new CLClient(getAccessToken, { ... })
 
-const apps = await blisClient.apps.list()
-const app = await blisClient.apps(appId)
-const app = await blisClient.apps.create({ ... })
+const apps = await clClient.apps.list()
+const app = await clClient.apps(appId)
+const app = await clClient.apps.create({ ... })
 
-const app = await blisClient.apps(appId).update({ ... })
-await blisClient.apps(appId).delete()
+const app = await clClient.apps(appId).update({ ... })
+await clClient.apps(appId).delete()
 
-const entities = await blisClient.apps(appId).entries()
-const actions = await blisClient.apps(appId).actions()
-const logDialogs = await blisClient.apps(appId).logDialogs()
-const trainDialogs = await blisClient.apps(appId).trainDialogs()
+const entities = await clClient.apps(appId).entries()
+const actions = await clClient.apps(appId).actions()
+const logDialogs = await clClient.apps(appId).logDialogs()
+const trainDialogs = await clClient.apps(appId).trainDialogs()
 */
 
-export default class BlisClient {
+export default class CLClient {
     baseUrl: string
     defaultConfig: AxiosRequestConfig = {
         method: 'get',
@@ -33,7 +33,7 @@ export default class BlisClient {
     }
     forceError: boolean = false
 
-    // The memory is key is used by BLIS-SDK to access the memory partition for a particular user
+    // The memory is key is used by ConversationLearner-SDK to access the memory partition for a particular user
     // TODO: Need to further find out why this is required. (I would expect this to also partition on session)
     getMemoryKey: () => string
 
@@ -55,13 +55,14 @@ export default class BlisClient {
             ...config
         }
 
+        // TODO: Rename to remove BLIS ref
         finalConfig.headers['x-blis-memory-key'] = memoryKey
         
         return axios(finalConfig) as Promise<TypedAxiosResponse<T>>
     }
 
-    // AT.SET_CURRENT_BLIS_APP_ASYN
-    setBlisApp(app: models.BlisAppBase): Promise<void> {
+    // AT.SET_CURRENT_APP_ASYN
+    setApp(app: models.AppBase): Promise<void> {
         return this.send({
             method: 'put',
             url: `${this.baseUrl}/state/app`,
@@ -92,8 +93,8 @@ export default class BlisClient {
         }).then(response => response.data)
     }
 
-    appGet(appId: string): Promise<models.BlisAppBase> {
-        return this.send<models.BlisAppBase>({
+    appGet(appId: string): Promise<models.AppBase> {
+        return this.send<models.AppBase>({
             url: `${this.baseUrl}/app/${appId}`
         })
             .then(response => response.data)
@@ -106,9 +107,9 @@ export default class BlisClient {
             .then(response => response.data)
     }
 
-    // AT.CREATE_BLIS_APPLICATION_ASYNC
-    appsCreate(userId: string, appInput: AppInput): Promise<models.BlisAppBase> {
-        return this.send<models.BlisAppBase>({
+    // AT.CREATE_APPLICATION_ASYNC
+    appsCreate(userId: string, appInput: AppInput): Promise<models.AppBase> {
+        return this.send<models.AppBase>({
             method: 'post',
             url: `${this.baseUrl}/app?userId=${userId}`,
             data: appInput
@@ -133,7 +134,7 @@ export default class BlisClient {
             .then(response => { })
     }
 
-    appsUpdate(appId: string, app: models.BlisAppBase): Promise<models.BlisAppBase> {
+    appsUpdate(appId: string, app: models.AppBase): Promise<models.AppBase> {
         return this.send({
             method: 'put',
             url: `${this.baseUrl}/app/${appId}`,
@@ -142,16 +143,16 @@ export default class BlisClient {
             .then(response => app)
     }
 
-    appCreateTag(appId: string, tagName: string, makeLive: boolean): Promise<models.BlisAppBase> {
-        return this.send<models.BlisAppBase>({
+    appCreateTag(appId: string, tagName: string, makeLive: boolean): Promise<models.AppBase> {
+        return this.send<models.AppBase>({
             method: 'put',
             url: `${this.baseUrl}/app/${appId}/publish?version=${tagName}&makeLive=${makeLive}`
         })
             .then(response => response.data)
     }
 
-    appSetLiveTag(appId: string, tagName: string): Promise<models.BlisAppBase> {
-        return this.send<models.BlisAppBase>({
+    appSetLiveTag(appId: string, tagName: string): Promise<models.AppBase> {
+        return this.send<models.AppBase>({
             method: 'post',
             url: `${this.baseUrl}/app/${appId}/publish/${tagName}`
         })

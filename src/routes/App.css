@@ -66,70 +66,70 @@
     --gutter-width: 100px;
     --nav-link-padding: 1.5em 2em;
 }
-.blis-app {
+.cl-app {
     display: grid;
     grid-template: min-content 1fr / var(--gutter-width) 1fr var(--gutter-width)
 }
-.blis-app_header-placeholder {
+.cl-app_header-placeholder {
     background-color: var(--color-tealDark)
 }
-.blis-app_header {
+.cl-app_header {
     background-color: var(--color-tealDark)
 }
-.blis-app_content {
+.cl-app_content {
     grid-column: 2;
     padding: 2em 0;
 }
-.blis-app_modals {
+.cl-app_modals {
     grid-row: 3;
     grid-column: 2;
 }
 
-.blis-header {
+.cl-header {
     display: grid;
     grid-template-columns: 1fr min-content;
     color: white;
     font-size: 1.2rem;
 }
-.blis-header a {
+.cl-header a {
     padding: var(--nav-link-padding);
     white-space: nowrap;
 }
-.blis-header_links {
+.cl-header_links {
     display: flex;
     flex-direction: row;
 }
-.blis-header_links a {
+.cl-header_links a {
     text-decoration: none;
     color: white;
 }
-.blis-header_links a:link,
-.blis-header_links a:visisted {
+.cl-header_links a:link,
+.cl-header_links a:visisted {
     color: white;
 }
-.blis-header_links a.active,
-.blis-header_links a:hover {
+.cl-header_links a.active,
+.cl-header_links a:hover {
     background-color: var(--color-yellow);
     color: black;
 }
-.blis-header_user {
+.cl-header_user {
     text-decoration: none;
     color: white;
 }
-.blis-header_user.active,
-.blis-header_user:hover {
+.cl-header_user.active,
+.cl-header_user:hover {
     background-color: var(--color-yellow);
     color: black;
 }
 
-.blis-modal-buttons {
+.cl-modal-buttons {
     display: grid;
     grid-template-columns: 1fr min-content;
     grid-gap: 1em;
 }
-.blis-buttons-row, /* TODO: This was one-off for EntityExtractor. Doesn't really comply to BEM but is temporary solution */
-.blis-modal-buttons_primary,
-.blis-modal-buttons_secondary {
+.cl-buttons-row, /* TODO: This was one-off for EntityExtractor. Doesn't really comply to BEM but is temporary solution */
+.cl-modal-buttons_primary,
+.cl-modal-buttons_secondary {
     display: grid;
     grid-auto-flow: column;
     grid-gap: 0.75em;
@@ -137,7 +137,7 @@
     white-space: nowrap;
 }
 
-.blis-list-filters {
+.cl-list-filters {
     display: grid;
     grid-auto-flow: column;
     grid-gap: 0.75em;

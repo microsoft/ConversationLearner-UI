@@ -12,7 +12,7 @@ class CheckboxWithTip extends OF.BaseComponent<ICheckboxWithTipProps, OF.ICheckb
         return (
             <div>
                 <OF.Checkbox
-                    className="blis-tip"
+                    className="cl-tip"
                     checked={this.props.checked}
                     onChange={this.props.onChange}
                     style={{ marginTop: '1em', display: 'inline-block' }}

@@ -8,7 +8,7 @@ import { deleteEntityThunkAsync } from '../../../actions/deleteActions'
 import { fetchApplicationTrainingStatusThunkAsync } from '../../../actions/fetchActions'
 import { State } from '../../../types';
 import { onRenderDetailsHeader } from '../../../components/ToolTips'
-import { BlisAppBase, EntityBase, EntityType } from 'blis-models'
+import { AppBase, EntityBase, EntityType } from 'conversationlearner-models'
 import { FM } from '../../../react-intl-messages'
 import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { autobind } from 'office-ui-fabric-react/lib/Utilities';
@@ -65,7 +65,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             maxWidth: 200,
             isResizable: true,
             getSortValue: entity => (entity.entityType === EntityType.LOCAL) ? 'a' : 'b',
-            render: entity => <OF.Icon iconName={entity.entityType === EntityType.LOCAL ? "CheckMark" : "Remove"} className="blis-icon" />
+            render: entity => <OF.Icon iconName={entity.entityType === EntityType.LOCAL ? "CheckMark" : "Remove"} className="cl-icon" />
         },
         {
             key: 'isBucketable',
@@ -78,7 +78,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             maxWidth: 200,
             isResizable: true,
             getSortValue: entity => entity.isMultivalue ? 'a' : 'b',
-            render: entity => <OF.Icon iconName={entity.isMultivalue ? "CheckMark" : "Remove"} className="blis-icon" />
+            render: entity => <OF.Icon iconName={entity.isMultivalue ? "CheckMark" : "Remove"} className="cl-icon" />
         },
         {
             key: 'isNegatable',
@@ -91,7 +91,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             maxWidth: 200,
             isResizable: true,
             getSortValue: entity => entity.isNegatible ? 'a' : 'b',
-            render: entity => <OF.Icon iconName={entity.isNegatible ? "CheckMark" : "Remove"} className="blis-icon" />
+            render: entity => <OF.Icon iconName={entity.isNegatible ? "CheckMark" : "Remove"} className="cl-icon" />
         }
     ]
 }
@@ -222,7 +222,7 @@ class Entities extends React.Component<Props, ComponentState> {
         let entityItems = this.getFilteredAndSortedEntities()
 
         return (
-            <div className="blis-page">
+            <div className="cl-page">
                 <span className={OF.FontClassNames.xxLarge}>
                     <FormattedMessage
                         id={FM.ENTITIES_TITLE}
@@ -237,7 +237,7 @@ class Entities extends React.Component<Props, ComponentState> {
                         />
                     </span> 
                     :
-                    <span className="blis-errorpanel">Editing is only allowed in Master Tag</span>
+                    <span className="cl-errorpanel">Editing is only allowed in Master Tag</span>
                 }
                 <div>
                     <OF.PrimaryButton
@@ -300,7 +300,7 @@ const mapStateToProps = (state: State) => {
 }
 
 export interface ReceivedProps {
-    app: BlisAppBase
+    app: AppBase
     editingPackageId: string
 }
 

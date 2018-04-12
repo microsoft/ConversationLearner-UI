@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import * as OF from 'office-ui-fabric-react'
-import { PackageReference } from 'blis-models'
+import { PackageReference } from 'conversationlearner-models'
 import { State } from '../../types'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps, defineMessages, FormattedMessage } from 'react-intl'
@@ -103,10 +103,10 @@ class PackageCreator extends React.Component<Props, ComponentState> {
                 isOpen={this.props.open}
                 onDismiss={() => this.onClickCancel()}
                 isBlocking={false}
-                containerClassName="blis-modal blis-modal--small"
+                containerClassName="cl-modal cl-modal--small"
             >
-                <div className="blis-page">
-                    <div className="blis-modal_header">
+                <div className="cl-page">
+                    <div className="cl-modal_header">
                         <span className={OF.FontClassNames.xxLarge}>
                             <FormattedMessage
                                 id={FM.PACKAGECREATOR_TITLE}
@@ -130,7 +130,7 @@ class PackageCreator extends React.Component<Props, ComponentState> {
                             value={this.state.tagNameVal} 
                         />
                     </div>    
-                    <div className="blis-entity-creator-checkbox">
+                    <div className="cl-entity-creator-checkbox">
                             <TC.Checkbox
                                 label={intl.formatMessage({
                                     id: FM.PACKAGECREATOR_LIVE_LABEL,
@@ -141,9 +141,9 @@ class PackageCreator extends React.Component<Props, ComponentState> {
                                 tipType={ToolTips.TipType.PACKAGECREATOR_LIVE_TOGGLE}
                             />
                         </div>
-                    <div className="blis-modal_footer">
-                        <div className="blis-modal-buttons">
-                            <div className="blis-modal-buttons_primary">
+                    <div className="cl-modal_footer">
+                        <div className="cl-modal-buttons">
+                            <div className="cl-modal-buttons_primary">
                                 <OF.PrimaryButton
                                     disabled={!this.state.tagNameVal || this.onGetNameErrorMessage(this.state.tagNameVal).length > 0}
                                     onClick={this.onClickCreate}

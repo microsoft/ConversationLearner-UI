@@ -4,10 +4,10 @@ import { connect } from 'react-redux';
 import { returntypeof } from 'react-redux-typescript';
 import { State } from '../../types'
 import {
-    BlisAppBase, TrainScorerStep, Memory, ScoredBase, ScoreInput, ScoreResponse,
+    AppBase, TrainScorerStep, Memory, ScoredBase, ScoreInput, ScoreResponse,
     ActionBase, ScoredAction, UnscoredAction, ScoreReason, DialogType, ActionTypes,
     Template, DialogMode, RenderedActionArgument, CardAction
-} from 'blis-models'
+} from 'conversationlearner-models'
 import { createActionThunkAsync } from '../../actions/createActions'
 import { toggleAutoTeach } from '../../actions/teachActions'
 import { PrimaryButton } from 'office-ui-fabric-react';
@@ -85,7 +85,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                     <div>
                     {action.actionType === ActionTypes.CARD &&
                         <OF.PrimaryButton
-                            className="blis-button--viewCard"
+                            className="cl-button--viewCard"
                             onClick={() => component.onClickViewCard(action)}
                             ariaDescription="Refresh"
                             text=""
@@ -158,7 +158,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             minWidth: 50,
             maxWidth: 50,
             isResizable: true,
-            render: action => <OF.Icon iconName={(action.isTerminal ? "CheckMark" : "Remove")} className={"blis-icon" + (action.isTerminal ? " checkIcon" : " notFoundIcon")} />
+            render: action => <OF.Icon iconName={(action.isTerminal ? "CheckMark" : "Remove")} className={"cl-icon" + (action.isTerminal ? " checkIcon" : " notFoundIcon")} />
         },
         {
             key: 'actionType',
@@ -438,14 +438,14 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             let found = this.entityInMemory(entityId);
             items.push({
                 name: found.name, type: found.match ?
-                    "blis-entity blis-entity--match" : "blis-entity blis-entity--mismatch", neg: false
+                    'cl-entity cl-entity--match' : 'cl-entity cl-entity--mismatch', neg: false
             });
         }
         for (let entityId of action.negativeEntities) {
             let found = this.entityInMemory(entityId);
             items.push({
                 name: found.name, type: found.match ?
-                    "blis-entity blis-entity--mismatch" : "blis-entity blis-entity--match", neg: true
+                    'cl-entity cl-entity--mismatch' : 'cl-entity cl-entity--match', neg: true
             });
         }
         return (
@@ -542,7 +542,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                     />
                 )
             } else if (column.key === 'actionResponse') {
-                return <span className="blis-font--warning">MISSING ACTION</span>; 
+                return <span className="cl-font--warning">MISSING ACTION</span>; 
             }
             else if (column.key === 'actionScore') {
                 return column.render(action as ScoredBase, this, index)
@@ -679,7 +679,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
 }
 
 export interface ReceivedProps {
-    app: BlisAppBase
+    app: AppBase
     editingPackageId: string,
     dialogType: DialogType,
     sessionId: string,

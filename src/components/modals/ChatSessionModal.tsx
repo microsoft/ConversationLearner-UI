@@ -6,7 +6,7 @@ import { FontClassNames, Icon, PrimaryButton, DefaultButton } from 'office-ui-fa
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { State } from '../../types';
 import Webchat from '../Webchat'
-import { BlisAppBase } from 'blis-models'
+import { AppBase } from 'conversationlearner-models'
 import { deleteChatSessionThunkAsync } from '../../actions/deleteActions'
 import { editChatSessionExpireAsync } from '../../actions/updateActions'
 import { FM } from '../../react-intl-messages'
@@ -37,16 +37,16 @@ class SessionWindow extends React.Component<Props, ComponentState> {
             <Modal
                 isOpen={this.props.open && this.props.error == null}
                 isBlocking={true}
-                containerClassName='blis-modal blis-modal--narrow blis-modal--log'
+                containerClassName="cl-modal cl-modal--narrow cl-modal--log"
             >
-                <div className="blis-modal_body">
-                    <div className="blis-sessionmodal">
-                        <div className="blis-sessionmodal-title">
-                            <div className={`blis-dialog-title blis-dialog-title--log ${FontClassNames.xxLarge}`}>
+                <div className="cl-modal_body">
+                    <div className="cl-sessionmodal">
+                        <div className="cl-sessionmodal-title">
+                            <div className={`cl-dialog-title cl-dialog-title--log ${FontClassNames.xxLarge}`}>
                                 <Icon iconName="UserFollowed" />Log Dialog
                             </div>
                         </div>
-                        <div className="blis-chatmodal_webchat">
+                        <div className="cl-chatmodal_webchat">
                             <Webchat
                                 app={this.props.app}
                                 history={null}
@@ -58,11 +58,11 @@ class SessionWindow extends React.Component<Props, ComponentState> {
                         </div>
                     </div>
                 </div>
-                <div className="blis-modal_footer">
-                    <div className="blis-modal-buttons">
-                        <div className="blis-modal-buttons_primary">
+                <div className="cl-modal_footer">
+                    <div className="cl-modal-buttons">
+                        <div className="cl-modal-buttons_primary">
                         </div>
-                        <div className="blis-modal-buttons_secondary">
+                        <div className="cl-modal-buttons_secondary">
                             <DefaultButton
                                 onClick={() => this.onClickExpire()}
                                 ariaDescription={intl.formatMessage({
@@ -109,7 +109,7 @@ const mapStateToProps = (state: State) => {
 export interface ReceivedProps {
     open: boolean
     onClose: () => void
-    app: BlisAppBase,
+    app: AppBase,
     editingPackageId: string
 }
 

@@ -14,14 +14,14 @@ const actionsReducer: Reducer<ActionState> = (state = initialState, actionObject
             return actionObject.allActions;
         case AT.FETCH_APPSOURCE_FULFILLED:
             return actionObject.appDefinition.actions;
-        case AT.CREATE_BLIS_APPLICATION_FULFILLED:
+        case AT.CREATE_APPLICATION_FULFILLED:
             return [...initialState]
         case AT.CREATE_ACTION_FULFILLED:
             return [...state, actionObject.action];
         case AT.DELETE_ACTION_FULFILLED:
             return state.filter(a => a.actionId !== actionObject.actionId)
         case AT.EDIT_ACTION_FULFILLED:
-            return replace(state, actionObject.blisAction, a => a.actionId)
+            return replace(state, actionObject.action, a => a.actionId)
         default:
             return state;
     }

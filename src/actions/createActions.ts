@@ -1,6 +1,6 @@
 import { ActionObject, ErrorType } from '../types'
 import { AT } from '../types/ActionTypes'
-import { BlisAppBase, EntityBase, ActionBase, TrainDialog, LogDialog, Teach, Session, TeachWithHistory, UITeachResponse } from 'blis-models'
+import { AppBase, EntityBase, ActionBase, TrainDialog, LogDialog, Teach, Session, TeachWithHistory, UITeachResponse } from 'conversationlearner-models'
 import { Dispatch } from 'redux'
 import { setErrorDisplay } from './displayActions'
 import * as ClientFactory from '../services/clientFactory'
@@ -10,18 +10,18 @@ import { fetchApplicationsAsync, fetchApplicationTrainingStatusThunkAsync } from
 // --------------------------
 // App
 // --------------------------
-export const createBLISApplicationAsync = (userId: string, application: BlisAppBase): ActionObject => {
+export const createApplicationAsync = (userId: string, application: AppBase): ActionObject => {
     return {
-        type: AT.CREATE_BLIS_APPLICATION_ASYNC,
+        type: AT.CREATE_APPLICATION_ASYNC,
         userId: userId,
-        blisApp: application,
+        app: application,
     }
 }
 
-export const createApplicationFulfilled = (blisApp: BlisAppBase): ActionObject => {
+export const createApplicationFulfilled = (app: AppBase): ActionObject => {
     return {
-        type: AT.CREATE_BLIS_APPLICATION_FULFILLED,
-        blisApp: blisApp
+        type: AT.CREATE_APPLICATION_FULFILLED,
+        app: app
     }
 }
 
@@ -30,10 +30,10 @@ export const createApplicationFulfilled = (blisApp: BlisAppBase): ActionObject =
 // --------------------------
 export const copyApplicationsThunkAsync = (srcUserId: string, destUserId: string) => {
     return async (dispatch: Dispatch<any>) => {
-        const blisClient = ClientFactory.getInstance(AT.COPY_APPLICATIONS_ASYNC)
+        const clClient = ClientFactory.getInstance(AT.COPY_APPLICATIONS_ASYNC)
         try {
             dispatch(copyApplicationsAsync(srcUserId, destUserId))
-            await blisClient.appsCopy(srcUserId, destUserId)
+            await clClient.appsCopy(srcUserId, destUserId)
             dispatch(fetchApplicationsAsync(destUserId))
             dispatch(copyApplicationsFulfilled())
         }
@@ -65,10 +65,10 @@ const copyApplicationsFulfilled = (): ActionObject => {
 export const createEntityThunkAsync = (appId: string, entity: EntityBase) => {
     return async (dispatch: Dispatch<any>) => {
         dispatch(createEntityAsync(appId, entity))
-        const blisClient = ClientFactory.getInstance(AT.CREATE_ENTITY_ASYNC)
+        const clClient = ClientFactory.getInstance(AT.CREATE_ENTITY_ASYNC)
 
         try {
-            let posEntity = await blisClient.entitiesCreate(appId, entity);
+            let posEntity = await clClient.entitiesCreate(appId, entity);
             
             // If it's a negatable entity
             if (posEntity.isNegatible) {
@@ -81,12 +81,12 @@ export const createEntityThunkAsync = (appId: string, entity: EntityBase) => {
                 // Remove pos entityId from negative entity
                 delete negEntity.entityId;
 
-                negEntity = await blisClient.entitiesCreate(appId, negEntity);
+                negEntity = await clClient.entitiesCreate(appId, negEntity);
                 dispatch(createEntityFulfilled(negEntity));
 
                 // Update positive entity with ref to negative entity
                 posEntity.negativeId = negEntity.entityId;
-                posEntity = await blisClient.entitiesUpdate(appId, posEntity);
+                posEntity = await clClient.entitiesUpdate(appId, posEntity);
             }
             dispatch(createEntityFulfilled(posEntity));
             dispatch(fetchApplicationTrainingStatusThunkAsync(appId));
@@ -120,10 +120,10 @@ const createEntityFulfilled = (entity: EntityBase): ActionObject => {
 export const createActionThunkAsync = (appId: string, action: ActionBase) => {
     return async (dispatch: Dispatch<any>) => {
         dispatch(createActionAsync(appId, action))
-        const blisClient = ClientFactory.getInstance(AT.CREATE_ACTION_ASYNC)
+        const clClient = ClientFactory.getInstance(AT.CREATE_ACTION_ASYNC)
 
         try {
-            const newAction = await blisClient.actionsCreate(appId, action);
+            const newAction = await clClient.actionsCreate(appId, action);
             dispatch(createActionFulfilled(newAction));
             dispatch(fetchApplicationTrainingStatusThunkAsync(appId));
             return true;
@@ -155,11 +155,11 @@ const createActionFulfilled = (action: ActionBase): ActionObject => {
 // --------------------------
 export const createAppTagThunkAsync = (appId: string, tagName: string, makeLive: boolean) => {
     return async (dispatch: Dispatch<any>) => {
-        const blisClient = ClientFactory.getInstance(AT.CREATE_TEACH_SESSION_ASYNC)
+        const clClient = ClientFactory.getInstance(AT.CREATE_TEACH_SESSION_ASYNC)
         dispatch(createAppTagAsync(appId, tagName, makeLive))
 
         try {
-            const updatedApp = await blisClient.appCreateTag(appId, tagName, makeLive)
+            const updatedApp = await clClient.appCreateTag(appId, tagName, makeLive)
             dispatch(createAppTagFulfilled(updatedApp))
             return updatedApp
         }
@@ -178,10 +178,10 @@ const createAppTagAsync = (currentAppId: string, tagName: string, makeLive: bool
         appId: currentAppId
     })
 
-const createAppTagFulfilled = (app: BlisAppBase): ActionObject => {
+const createAppTagFulfilled = (app: AppBase): ActionObject => {
     return {
         type: AT.CREATE_APP_TAG_FULFILLED,
-        blisApp: app
+        app: app
     }
 }
 
@@ -190,11 +190,11 @@ const createAppTagFulfilled = (app: BlisAppBase): ActionObject => {
 // --------------------------
 export const createChatSessionThunkAsync = (appId: string, packageId: string, saveToLog: boolean) => {
     return async (dispatch: Dispatch<any>) => {
-        const blisClient = ClientFactory.getInstance(AT.CREATE_CHAT_SESSION_ASYNC)
+        const clClient = ClientFactory.getInstance(AT.CREATE_CHAT_SESSION_ASYNC)
         dispatch(createChatSessionAsync())
 
         try {
-            const session = await blisClient.chatSessionsCreate(appId, { saveToLog, packageId })
+            const session = await clClient.chatSessionsCreate(appId, { saveToLog, packageId })
             dispatch(createChatSessionFulfilled(session))
             return session
         }
@@ -221,11 +221,11 @@ const createChatSessionFulfilled = (session: Session): ActionObject =>
 // --------------------------
 export const createTeachSessionThunkAsync = (appId: string) => {
     return async (dispatch: Dispatch<any>) => {
-        const blisClient = ClientFactory.getInstance(AT.CREATE_TEACH_SESSION_ASYNC)
+        const clClient = ClientFactory.getInstance(AT.CREATE_TEACH_SESSION_ASYNC)
         dispatch(createTeachSessionAsync())
 
         try {
-            const uiTeachResponse = await blisClient.teachSessionsCreate(appId)
+            const uiTeachResponse = await clClient.teachSessionsCreate(appId)
             dispatch(createTeachSessionFulfilled(uiTeachResponse))
             return uiTeachResponse
         }
@@ -258,11 +258,11 @@ const createTeachSessionFulfilled = (uiTeachResponse: UITeachResponse): ActionOb
 // --------------------------
 export const createTeachSessionFromHistoryThunkAsync = (appId: string, trainDialog: TrainDialog, userName: string, userId: string, deleteSourceId: string = null, lastExtractChanged: boolean = false) => {
     return async (dispatch: Dispatch<any>) => {
-        const blisClient = ClientFactory.getInstance(AT.CREATE_TEACH_SESSION_FROMHISTORYASYNC)
+        const clClient = ClientFactory.getInstance(AT.CREATE_TEACH_SESSION_FROMHISTORYASYNC)
         dispatch(createTeachSessionFromHistoryAsync(appId, trainDialog, userName, userId))
 
         try {
-            const teachWithHistory = await blisClient.teachSessionFromHistory(appId, trainDialog, userName, userId, lastExtractChanged);
+            const teachWithHistory = await clClient.teachSessionFromHistory(appId, trainDialog, userName, userId, lastExtractChanged);
             
             // Delete source trainDialog if requested and no discrepancies during replay
             if (deleteSourceId && teachWithHistory.replayErrors.length === 0) {
@@ -279,10 +279,10 @@ export const createTeachSessionFromHistoryThunkAsync = (appId: string, trainDial
     }
 }
 
-const createTeachSessionFromHistoryAsync = (blisAppID: string, trainDialog: TrainDialog, userName: string, userId: string): ActionObject => {
+const createTeachSessionFromHistoryAsync = (clAppID: string, trainDialog: TrainDialog, userName: string, userId: string): ActionObject => {
     return {
         type: AT.CREATE_TEACH_SESSION_FROMHISTORYASYNC,
-        blisAppID: blisAppID,
+        clAppID: clAppID,
         userName: userName,
         userId: userId,
         trainDialog: trainDialog
@@ -302,11 +302,11 @@ const createTeachSessionFromHistoryFulfilled = (teachWithHistory: TeachWithHisto
 // --------------------------
 export const createTeachSessionFromUndoThunkAsync = (appId: string, teach: Teach, popRound: boolean, userName: string, userId: string) => {
     return async (dispatch: Dispatch<any>) => {
-        const blisClient = ClientFactory.getInstance(AT.CREATE_TEACH_SESSION_FROMUNDOASYNC)
+        const clClient = ClientFactory.getInstance(AT.CREATE_TEACH_SESSION_FROMUNDOASYNC)
         dispatch(createTeachSessionFromUndoAsync(appId, teach, popRound, userName, userId))
 
         try {
-            const teachWithHistory = await blisClient.teachSessionFromUndo(appId, teach, popRound, userName, userId)
+            const teachWithHistory = await clClient.teachSessionFromUndo(appId, teach, popRound, userName, userId)
             dispatch(createTeachSessionFromUndoFulfilled(teachWithHistory))
             return teachWithHistory
         }
@@ -318,10 +318,10 @@ export const createTeachSessionFromUndoThunkAsync = (appId: string, teach: Teach
     }
 }
 
-const createTeachSessionFromUndoAsync = (blisAppID: string, teach: Teach, popRound: boolean, userName: string, userId: string): ActionObject => {
+const createTeachSessionFromUndoAsync = (clAppID: string, teach: Teach, popRound: boolean, userName: string, userId: string): ActionObject => {
     return {
         type: AT.CREATE_TEACH_SESSION_FROMUNDOASYNC,
-        blisAppID: blisAppID,
+        clAppID: clAppID,
         teach: teach,
         popRound: popRound,
         userName: userName,

@@ -1,10 +1,10 @@
-# Building blis-ui package
+# Building conversationlearner-ui package
 
 - Why do we create npm package of CRA output?
 
-  The build output of create-reat-app projects is a single folder of static assets and these would normally be served through CDN, Azure BlobStorage, or AWS S3 and viewed through wellknown address such as blis-ui.azurewebsites.net; however, this works best when the user can always use the most up-to-date UI without worrying about versions.
+  The build output of create-reat-app projects is a single folder of static assets and these would normally be served through CDN, Azure BlobStorage, or AWS S3 and viewed through wellknown address such as onversationlearner-ui.azurewebsites.net; however, this works best when the user can always use the most up-to-date UI without worrying about versions.
   
-  BLIS has the unique situation where the UI is only useful if it can make calls to a locally running service which hosts the BLIS-SDK. The HTTP calls made by UI to the SDK change as the product is developed these to be synchronized to avoid conflicts due to version mismatches (E.g. user goes to blis-ui.azurewebsites.net which is alwasy latest but yet has an older version of the SDK running locally).
+  Conversation Learner has the unique situation where the UI is only useful if it can make calls to a locally running service which hosts the ConversationLearner-SDK. The HTTP calls made by UI to the SDK change as the product is developed these to be synchronized to avoid conflicts due to version mismatches (E.g. user goes to onversationlearner-ui.azurewebsites.net which is alwasy latest but yet has an older version of the SDK running locally).
 
   To avoid this scenario, the SDK comes with the version of the UI that is known to work with it. To do this we create a npm package of the static resources and then use express to host them.
 

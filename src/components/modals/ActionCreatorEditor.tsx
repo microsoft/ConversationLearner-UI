@@ -9,7 +9,7 @@ import {
     fetchActionDeleteValidationThunkAsync,
     fetchActionEditValidationThunkAsync } from '../../actions/fetchActions'
 import { Modal } from 'office-ui-fabric-react/lib/Modal'
-import { ActionBase, ActionTypes, BlisAppBase, EntityBase, EntityType, RenderedActionArgument, TextAction, ApiAction, CardAction, IActionArgument } from 'blis-models'
+import { ActionBase, ActionTypes, AppBase, EntityBase, EntityType, RenderedActionArgument, TextAction, ApiAction, CardAction, IActionArgument } from 'conversationlearner-models'
 import ConfirmCancelModal from './ConfirmCancelModal'
 import EntityCreatorEditor from './EntityCreatorEditor'
 import AdaptiveCardViewer from './AdaptiveCardViewer/AdaptiveCardViewer'
@@ -18,8 +18,8 @@ import { State } from '../../types'
 import * as ToolTip from '../ToolTips'
 import * as TC from '../tipComponents/Components'
 import * as OF from 'office-ui-fabric-react';
-import { BlisTagItem, IBlisPickerItemProps } from './BlisTagItem'
-import BlisTagPicker from '../BlisTagPicker'
+import { CLTagItem, ICLPickerItemProps } from './CLTagItem'
+import CLTagPicker from '../CLTagPicker'
 import './ActionCreatorEditor.css'
 import HelpIcon from '../HelpIcon'
 import { withRouter } from 'react-router-dom'
@@ -623,10 +623,10 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         )
     }
 
-    onRenderExpectedTag = (props: IBlisPickerItemProps<OF.ITag>): JSX.Element => {
+    onRenderExpectedTag = (props: ICLPickerItemProps<OF.ITag>): JSX.Element => {
         const renderProps = { ...props }
         renderProps.highlight = true
-        return <BlisTagItem key={props.index} {...renderProps}>{props.item.name}</BlisTagItem>
+        return <CLTagItem key={props.index} {...renderProps}>{props.item.name}</CLTagItem>
     }
 
     onChangeExpectedEntityTags = (tags: OF.ITag[]) => {
@@ -653,7 +653,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         })
     }
 
-    onRenderRequiredEntityTag = (props: IBlisPickerItemProps<OF.ITag>): JSX.Element => {
+    onRenderRequiredEntityTag = (props: ICLPickerItemProps<OF.ITag>): JSX.Element => {
         const renderProps = { ...props }
         const locked = this.state.requiredEntityTagsFromPayload.some(t => t.key === props.key)
 
@@ -662,7 +662,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         renderProps.locked = locked
         renderProps.highlight = locked
 
-        return <BlisTagItem key={props.index} {...renderProps}>{props.item.name}</BlisTagItem>
+        return <CLTagItem key={props.index} {...renderProps}>{props.item.name}</CLTagItem>
     }
 
     onResolveNegativeEntityTags(filterText: string, selectedTags: OF.ITag[]): OF.ITag[] {
@@ -679,7 +679,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         })
     }
 
-    onRenderNegativeEntityTag = (props: IBlisPickerItemProps<OF.ITag>): JSX.Element => {
+    onRenderNegativeEntityTag = (props: ICLPickerItemProps<OF.ITag>): JSX.Element => {
         const renderProps = { ...props }
         const suggestedEntityKey = this.state.expectedEntityTags.length > 0 ? this.state.expectedEntityTags[0].key : null
 
@@ -688,7 +688,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         renderProps.locked = false
         renderProps.highlight = suggestedEntityKey === props.key
 
-        return <BlisTagItem key={props.index} {...renderProps}>{props.item.name}</BlisTagItem>
+        return <CLTagItem key={props.index} {...renderProps}>{props.item.name}</CLTagItem>
     }
 
     // Payload editor is trying to submit action
@@ -756,13 +756,13 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 isOpen={this.props.open}
                 onDismiss={this.onDismissModal}
                 isBlocking={false}
-                containerClassName="blis-modal blis-modal--medium"
+                containerClassName="cl-modal cl-modal--medium"
             >
-                <div className="blis-modal_header">
+                <div className="cl-modal_header">
                     <span className={OF.FontClassNames.xxLarge}>{this.state.isEditing ? 'Edit Action' : 'Create an Action'}</span>
                 </div>
 
-                <div className="blis-modal_body">
+                <div className="cl-modal_body">
                     <div>
                         <TC.Dropdown
                             label="Action Type"
@@ -774,7 +774,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                         />
 
                         {this.state.selectedActionTypeOptionKey === ActionTypes.API_LOCAL
-                            && (<div className="blis-dropdownWithButton-dropdown">
+                            && (<div className="cl-dropdownWithButton-dropdown">
                                 <TC.Dropdown
                                     label="API"
                                     options={this.state.apiOptions}
@@ -785,7 +785,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                     tipType={ToolTip.TipType.ACTION_API}
                                 />
                                 <OF.PrimaryButton
-                                    className="blis-dropdownWithButton-button"
+                                    className="cl-dropdownWithButton-button"
                                     onClick={() => this.onClickSyncBotInfo()}
                                     ariaDescription="Refresh"
                                     text=""
@@ -795,7 +795,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                             )}
 
                         {this.state.selectedActionTypeOptionKey === ActionTypes.CARD
-                            && (<div className="blis-dropdownWithButton-dropdown">
+                            && (<div className="cl-dropdownWithButton-dropdown">
                                 <TC.Dropdown
                                     label="Template"
                                     options={this.state.cardOptions}
@@ -806,7 +806,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                     tipType={ToolTip.TipType.ACTION_CARD}
                                 />
                                 <OF.PrimaryButton
-                                    className="blis-dropdownWithButton-button"
+                                    className="cl-dropdownWithButton-button"
                                     onClick={() => this.onClickViewCard()}
                                     ariaDescription="Refresh"
                                     text=""
@@ -814,7 +814,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                     disabled={this.state.selectedCardOptionKey == null}
                                 />
                                 <OF.PrimaryButton
-                                    className="blis-dropdownWithButton-button"
+                                    className="cl-dropdownWithButton-button"
                                     onClick={() => this.onClickSyncBotInfo()}
                                     ariaDescription="Refresh"
                                     text=""
@@ -830,7 +830,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                     .map(cardTemplateVariable => {
                                         return (
                                             <React.Fragment key={cardTemplateVariable.key}>
-                                                <OF.Label className="blis-label">{cardTemplateVariable.key} <HelpIcon tipType={ToolTip.TipType.ACTION_ARGUMENTS}></HelpIcon></OF.Label>
+                                                <OF.Label className="cl-label">{cardTemplateVariable.key} <HelpIcon tipType={ToolTip.TipType.ACTION_ARGUMENTS}></HelpIcon></OF.Label>
                                                 <ActionPayloadEditor.Editor
                                                     options={optionsAvailableForPayload}
                                                     value={this.state.slateValuesMap[cardTemplateVariable.key]}
@@ -843,7 +843,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                         )
                                     })
                                 ) :
-                                <div className="blis-errorpanel" >
+                                <div className="cl-errorpanel" >
                                     <div>ERROR: Bot missing Template: ${this.state.selectedCardOptionKey}</div>
                                 </div>
                             )
@@ -869,7 +869,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                         )
                                     })
                                 ) :
-                                <div className="blis-errorpanel" >
+                                <div className="cl-errorpanel" >
                                     <div>ERROR: Bot Missing API: ${this.state.selectedApiOptionKey}</div>
                                 </div>
                             )
@@ -900,7 +900,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                             )}
 
                         {this.state.selectedActionTypeOptionKey !== ActionTypes.CARD
-                            && (<div className="blis-action-creator--expected-entities">
+                            && (<div className="cl-action-creator--expected-entities">
                                 <TC.TagPicker
                                     label="Expected Entity in Response..."
                                     onResolveSuggestions={(text, tags) => this.onResolveExpectedEntityTags(text, tags)}
@@ -919,8 +919,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                             </div>
                             )}
 
-                        <div className="blis-action-creator--required-entities">
-                            <BlisTagPicker
+                        <div className="cl-action-creator--required-entities">
+                            <CLTagPicker
                                 nonRemovableTags={this.state.requiredEntityTagsFromPayload}
                                 nonRemoveableStrikethrough={false}
                                 label="Required Entities"
@@ -939,7 +939,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                             />
                         </div>
 
-                        <div className="blis-action-creator--disqualifying-entities">
+                        <div className="cl-action-creator--disqualifying-entities">
                             <TC.TagPicker
                                 label="Disqualifying Entities"
                                 onResolveSuggestions={(text, tags) => this.onResolveNegativeEntityTags(text, tags)}
@@ -971,8 +971,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     </div>
                 </div>
 
-                <div className="blis-modal_footer blis-modal-buttons">
-                    <div className="blis-modal-buttons_primary">
+                <div className="cl-modal_footer cl-modal-buttons">
+                    <div className="cl-modal-buttons_primary">
                         <OF.PrimaryButton
                             disabled={this.saveDisabled()}
                             onClick={this.onClickSaveCreate}
@@ -1021,7 +1021,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                 })}
                             />}
                     </div>
-                    <div className="blis-modal-buttons_secondary">
+                    <div className="cl-modal-buttons_secondary">
                         {this.state.isEditing &&
                             <OF.PrimaryButton
                                 onClick={this.onClickTrainDialogs}
@@ -1107,7 +1107,7 @@ const mapStateToProps = (state: State, ownProps: any) => {
 }
 
 export interface ReceiveProps {
-    app: BlisAppBase
+    app: AppBase
     editingPackageId: string
     open: boolean
     action: ActionBase | null

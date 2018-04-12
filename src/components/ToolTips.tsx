@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as OF from 'office-ui-fabric-react';
 import { FormattedMessage } from 'react-intl'
 import { FM } from '../react-intl-messages'
-import { MemoryValue } from 'blis-models'
+import { MemoryValue } from 'conversationlearner-models'
 import HelpLink from '../components/HelpLink'
 import './ToolTips.css'
 
@@ -96,7 +96,7 @@ export function Wrap(content: JSX.Element, tooltip: string, directionalHint: OF.
 }
 
 let apiCodeSample =
-    `Blis.AddAPICallback("Multiply", async (memoryManager: ClientMemoryManager, num1string: string, num2string: string) => {
+    `CL.AddAPICallback("Multiply", async (memoryManager: ClientMemoryManager, num1string: string, num2string: string) => {
 
         // convert base and exponent to ints
         var num1int = parseInt(num1string);
@@ -137,10 +137,10 @@ export function GetTip(tipType: string) {
             return (
                 <div>
                     {render(FM.TOOLTIP_ACTION_API_TITLE, [FM.TOOLTIP_ACTION_API])}
-                    <div><br />blisdk.APICallback("<i>[API NAME]</i>", async (memoryManager, argArray) => <i>[API BODY]</i>)</div>
-                    <div className="blis-tooltop-example"><FormattedMessage id={FM.TOOLTIP_EXAMPLE} /></div>
+                    <div><br />cl.APICallback("<i>[API NAME]</i>", async (memoryManager, argArray) => <i>[API BODY]</i>)</div>
+                    <div className="cl-tooltop-example"><FormattedMessage id={FM.TOOLTIP_EXAMPLE} /></div>
                     <pre>{apiCodeSample}</pre>
-                    <div className="blis-tooltop-example"><FormattedMessage id={FM.TOOLTIP_ACTION_ARGUMENTS_TITLE} /></div>
+                    <div className="cl-tooltop-example"><FormattedMessage id={FM.TOOLTIP_ACTION_ARGUMENTS_TITLE} /></div>
                     <div>$number1 $number2<br /></div>
                     <div><br />More about the <HelpLink label="Memory Manager" tipType={TipType.MEMORY_MANAGER} /></div>
                 </div>
@@ -153,14 +153,14 @@ export function GetTip(tipType: string) {
             return (
                 <div>
                     <FormattedMessage id={FM.TOOLTIP_ACTION_ENTITIES} defaultMessage="Response" />
-                    <dl className="blis-tooltip-example">
-                        <dt><span className="blis-entity blis-entity--match">Required</span></dt>
+                    <dl className="cl-tooltip-example">
+                        <dt><span className="cl-entity cl-entity--match">Required</span></dt>
                         <dd><FormattedMessage id={FM.TOOLTIP_ACTION_ENTITIES_REQ} /></dd>
-                        <dt><span className="blis-entity blis-entity--match"><del>Disqualifying</del></span></dt>
+                        <dt><span className="cl-entity cl-entity--match"><del>Disqualifying</del></span></dt>
                         <dd><FormattedMessage id={FM.TOOLTIP_ACTION_ENTITIES_DISQUAL_NOT} /></dd>
-                        <dt><span className="blis-entity blis-entity--mismatch">Required</span></dt>
+                        <dt><span className="cl-entity cl-entity--mismatch">Required</span></dt>
                         <dd><FormattedMessage id={FM.TOOLTIP_ACTION_ENTITIES_REQ_NOT} /></dd>
-                        <dt><span className="blis-entity blis-entity--mismatch"><del>Disqualifying</del></span></dt>
+                        <dt><span className="cl-entity cl-entity--mismatch"><del>Disqualifying</del></span></dt>
                         <dd><FormattedMessage id={FM.TOOLTIP_ACTION_ENTITIES_DISQUAL} /></dd>
                     </dl>
                 </div>
@@ -207,7 +207,7 @@ export function GetTip(tipType: string) {
             return (
                 <div>
                     <FormattedMessage id={FM.TOOLTIP_ACTION_SCORE} defaultMessage="Response" />
-                    <dl className="blis-tooltip-example">
+                    <dl className="cl-tooltip-example">
                         <dt>%:</dt><dd><FormattedMessage id={FM.TOOLTIP_ACTION_SCORE_PERCENT} /></dd>
                         <dt>Training:</dt><dd><FormattedMessage id={FM.TOOLTIP_ACTION_SCORE_TRAINING} /></dd>
                         <dt>Disqualified:</dt><dd><FormattedMessage id={FM.TOOLTIP_ACTION_SCORE_DISQUALIFIED} /></dd>
@@ -251,7 +251,7 @@ export function GetTip(tipType: string) {
                 <div>
                     When checked additional occurences of the Entity add to list of previous values. For non multi-value entites new values replace previous values.<br /><br />
                     <b>Example: Multiple toppings on a pizza</b>
-                    <dl className="blis-tooltip-example">
+                    <dl className="cl-tooltip-example">
                         <dt>Entity:</dt><dd>toppings</dd>
                         <dt>Phrase:</dt><dd>I would like <i>cheese</i> and <i>pepperoni</i>.</dd>
                         <dt>Memory:</dt><dd>cheese, pepperoni</dd>
@@ -263,7 +263,7 @@ export function GetTip(tipType: string) {
                 <div>
                     When checked this creates a corresponding 'negatable' entity that can be used to remove or delete previous memory values.<br /><br />
                     <b>Example: Changing existing pizza order</b>
-                    <dl className="blis-tooltip-example">
+                    <dl className="cl-tooltip-example">
                         <dt>Entity:</dt><dd>toppings</dd>
                         <dt>Memory:</dt><dd>cheese, pepperoni</dd>
                         <dt>Phrase:</dt><dd>Actually, please add <i>sausage</i> instead of <i>pepperoni</i>.</dd>
@@ -276,7 +276,7 @@ export function GetTip(tipType: string) {
                 <div>
                     When checked Entities are not extracted from user utterances.  They are set in code you write for your Bot<br /><br />
                     <b>Example: Restrict Actions for authorized users</b>
-                    <dl className="blis-tooltip-example">
+                    <dl className="cl-tooltip-example">
                         <dt>Entity:</dt><dd>isLoggedIn</dd>
                     </dl>
                     The "isLoggedIn" Entity is set in code. When not set, it can be used to disqualify Actions that require authorized users
@@ -348,11 +348,11 @@ export function GetTip(tipType: string) {
 
                     <img src="https://media.giphy.com/media/1yTgrvilEWUSB8TkJl/giphy.gif" />
 
-                    <h3>Why does BLIS need my authoring key?</h3>
-                    <p>The authoring key is used to access the LUIS authoring APIs and is used by BLIS to manage your LUIS account on your behalf.  As you make changes to your BLIS app such as adding entities and labeling entities during training the BLIS service creates the associated LUIS apps with matching entities and utterance phrases.</p>
+                    <h3>Why does Conversation Learner need my authoring key?</h3>
+                    <p>The authoring key is used to access the LUIS authoring APIs and is used by Conversation Learner to manage your LUIS account on your behalf.  As you make changes to your Conversation Learner app such as adding entities and labeling entities during training the Conversation Learner service creates the associated LUIS apps with matching entities and utterance phrases.</p>
 
-                    <h3>What does BLIS need my subscription key?</h3>
-                    <p>The subscription key is used to access the LUIS endpoint APIs and is used by BLIS to get predictions from LUIS.  By using the subscription key when possible it avoids using up the quota for your Authoring key which would block further usage of BLIS.</p>
+                    <h3>What does Conversation Learner need my subscription key?</h3>
+                    <p>The subscription key is used to access the LUIS endpoint APIs and is used by Conversation Learner to get predictions from LUIS.  By using the subscription key when possible it avoids using up the quota for your Authoring key which would block further usage of Conversation Learner.</p>
                     <p>When ready to publish your bot you can increase the pricing teir of your subscription key to 50 calls per second instead of 5</p>
 
                     <p>See official docs on <a href="https://docs.microsoft.com/en-us/azure/cognitive-services/luis/home#accessing-luis" target="_blank">Accessing LUIS</a></p>
@@ -376,13 +376,13 @@ function render(title: FM, body: FM[], example: string = null, tableItems: { key
     let key = 0;
     return (
         <div>
-            <div className="blis-tooltop-headerText"><FormattedMessage id={title} /></div>
+            <div className="cl-tooltop-headerText"><FormattedMessage id={title} /></div>
             {body.map(b => { return (<div key={key++}><FormattedMessage id={b} /><br /></div>) })}
             {example &&
-                <div className="blis-tooltop-example"><FormattedMessage id={example} /></div>}
+                <div className="cl-tooltop-example"><FormattedMessage id={example} /></div>}
             {tableItems.length > 0 ?
                 (
-                    <dl className="blis-tooltip-example">
+                    <dl className="cl-tooltip-example">
                         <dt>{tableItems[0] && tableItems[0].key}</dt><dd>{tableItems[0] && tableItems[0].value && <FormattedMessage id={tableItems[0].value} />}</dd>
                         <dt>{tableItems[1] && tableItems[1].key}</dt><dd>{tableItems[1] && tableItems[1].value && <FormattedMessage id={tableItems[1].value} />}</dd>
                         <dt>{tableItems[2] && tableItems[2].key}</dt><dd>{tableItems[2] && tableItems[2].value && <FormattedMessage id={tableItems[2].value} />}</dd>

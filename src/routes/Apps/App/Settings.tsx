@@ -1,15 +1,15 @@
 import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
-import { editBLISApplicationAsync, editAppEditingTagThunkAsync, editAppLiveTagThunkAsync } from '../../../actions/updateActions';
+import { editApplicationAsync, editAppEditingTagThunkAsync, editAppLiveTagThunkAsync } from '../../../actions/updateActions';
 import { bindActionCreators } from 'redux';
 import PackageTable from '../../../components/modals/PackageTable'
 import { connect } from 'react-redux';
 import { State } from '../../../types';
 import * as OF from 'office-ui-fabric-react';
 import { Expando } from '../../../components/modals'
-import { BlisAppBase, TrainingStatusCode } from 'blis-models'
+import { AppBase, TrainingStatusCode } from 'conversationlearner-models'
 import './Settings.css'
-import { BLIS_SAMPLE_ID } from '../../../types/const'
+import { CL_SAMPLE_ID } from '../../../types/const'
 import { FM } from '../../../react-intl-messages'
 import ErrorInjectionEditor from '../../../components/modals/ErrorInjectionEditor'
 import { injectIntl, InjectedIntlProps, defineMessages, FormattedMessage } from 'react-intl'
@@ -96,7 +96,7 @@ class Settings extends React.Component<Props, ComponentState> {
         }
     }
 
-    updateAppState(app: BlisAppBase) {
+    updateAppState(app: AppBase) {
         this.setState({
             localeVal: app.locale,
             appIdVal: app.appId,
@@ -204,7 +204,7 @@ class Settings extends React.Component<Props, ComponentState> {
     @autobind
     onClickSave() {
         let app = this.props.app
-        let modifiedApp: BlisAppBase = {
+        let modifiedApp: AppBase = {
             ...app,
             appName: this.state.appNameVal,
             metadata: {
@@ -219,7 +219,7 @@ class Settings extends React.Component<Props, ComponentState> {
             trainingStatus: TrainingStatusCode.Completed,
             datetime: new Date()
         }
-        this.props.editBLISApplicationAsync(modifiedApp)
+        this.props.editApplicationAsync(modifiedApp)
         this.setState({
             localeVal: app.locale,
             appIdVal: app.appId,
@@ -298,7 +298,7 @@ class Settings extends React.Component<Props, ComponentState> {
         }]
         let packageOptions = this.packageOptions();
         return (
-            <div className="blis-page">
+            <div className="cl-page">
                 <span className={OF.FontClassNames.xxLarge}>
                     <FormattedMessage
                         id={FM.SETTINGS_TITLE}
@@ -311,7 +311,7 @@ class Settings extends React.Component<Props, ComponentState> {
                         defaultMessage="Control your application versions, who has access to it and whether it is public or private..."
                     />
                 </span>
-                <div className="blis-settings-fields">
+                <div className="cl-settings-fields">
                     <OF.TextField
                         className={OF.FontClassNames.mediumPlus}
                         onChanged={(text) => this.onChangedName(text)}
@@ -345,7 +345,7 @@ class Settings extends React.Component<Props, ComponentState> {
                             </a>
                         </div>
                     </div>
-                    <div className="blis-command-bar">
+                    <div className="cl-command-bar">
                         <TC.Dropdown
                             label="Editing Tag"
                             options={packageOptions}
@@ -364,7 +364,7 @@ class Settings extends React.Component<Props, ComponentState> {
 
 
                     <Expando
-                        className={'blis-settings-container-header'}
+                        className={'cl-settings-container-header'}
                         isOpen={this.state.isPackageExpandoOpen}
                         text="Version Tags"
                         onToggle={() => this.setState({ isPackageExpandoOpen: !this.state.isPackageExpandoOpen })}
@@ -390,7 +390,7 @@ class Settings extends React.Component<Props, ComponentState> {
                             disabled={true}
                         />
                     </div>
-                    <div className="blis-entity-creator-checkbox">
+                    <div className="cl-entity-creator-checkbox">
                         <TC.Checkbox
                             label={intl.formatMessage({
                                 id: FM.SETTINGS_LOGGINGON_LABEL,
@@ -402,7 +402,7 @@ class Settings extends React.Component<Props, ComponentState> {
                         />
                     </div>
 
-                    {this.props.user.id === BLIS_SAMPLE_ID &&
+                    {this.props.user.id === CL_SAMPLE_ID &&
                         <React.Fragment>
                             <div>
                                 <OF.TextField
@@ -436,7 +436,7 @@ class Settings extends React.Component<Props, ComponentState> {
                         </React.Fragment>
                     }
 
-                    <div className="blis-modal-buttons_primary">
+                    <div className="cl-modal-buttons_primary">
                         <OF.PrimaryButton
                             disabled={this.state.edited === false || this.onGetNameErrorMessage(this.state.appNameVal) !== ''}
                             onClick={this.onClickSave}
@@ -462,7 +462,7 @@ class Settings extends React.Component<Props, ComponentState> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        editBLISApplicationAsync,
+        editApplicationAsync,
         editAppEditingTagThunkAsync,
         editAppLiveTagThunkAsync
     }, dispatch);
@@ -475,7 +475,7 @@ const mapStateToProps = (state: State) => {
 }
 
 export interface ReceivedProps {
-    app: BlisAppBase,
+    app: AppBase,
     editingPackageId: string
 }
 

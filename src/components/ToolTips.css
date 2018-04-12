@@ -1,12 +1,12 @@
-.blis-tooltip-example {
+.cl-tooltip-example {
     display: grid;
     grid-template-columns: min-content 1fr;
 }
-.blis-tooltip-example dt {
+.cl-tooltip-example dt {
     margin: 0;
 }
 
-.blis-tooltop-headerText {
+.cl-tooltop-headerText {
     font-size: 21px;
     font-weight: 100;
     color: #333333;
@@ -14,7 +14,7 @@
     margin-bottom: 20px;
 }
 
-.blis-tooltop-example {
+.cl-tooltop-example {
     font-weight: bolder;
     margin-bottom: 5px;
     margin-top: 8px;

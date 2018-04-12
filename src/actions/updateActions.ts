@@ -1,6 +1,6 @@
 import { ActionObject, ErrorType } from '../types'
 import { AT } from '../types/ActionTypes'
-import { BlisAppBase, EntityBase, ActionBase, TrainDialog } from 'blis-models';
+import { AppBase, EntityBase, ActionBase, TrainDialog } from 'conversationlearner-models';
 import * as ClientFactory from '../services/clientFactory'
 import { setErrorDisplay } from './displayActions'
 import { Dispatch } from 'redux'
@@ -9,19 +9,19 @@ import { fetchAllTrainDialogsAsync, fetchApplicationTrainingStatusThunkAsync } f
 // ----------------------------------------
 // App
 // ----------------------------------------
-export const editBLISApplicationAsync = (application: BlisAppBase): ActionObject => {
+export const editApplicationAsync = (application: AppBase): ActionObject => {
 
     return {
-        type: AT.EDIT_BLIS_APPLICATION_ASYNC,
-        blisApp: application
+        type: AT.EDIT_APPLICATION_ASYNC,
+        app: application
     }
 }
 
-export const editBLISApplicationFulfilled = (application: BlisAppBase): ActionObject => {
+export const editApplicationFulfilled = (application: AppBase): ActionObject => {
 
     return {
-        type: AT.EDIT_BLIS_APPLICATION_FULFILLED,
-        blisApp: application
+        type: AT.EDIT_APPLICATION_FULFILLED,
+        app: application
     }
 }
 
@@ -30,11 +30,11 @@ export const editBLISApplicationFulfilled = (application: BlisAppBase): ActionOb
 // ----------------------------------------
 export const editEntityThunkAsync = (appId: string, entity: EntityBase) => {
     return async (dispatch: Dispatch<any>) => {
-        const blisClient = ClientFactory.getInstance(AT.EDIT_ENTITY_ASYNC)
+        const clClient = ClientFactory.getInstance(AT.EDIT_ENTITY_ASYNC)
         dispatch(editEntityAsync(appId, entity))
 
         try {
-            let posEntity = await blisClient.entitiesUpdate(appId, entity)
+            let posEntity = await clClient.entitiesUpdate(appId, entity)
 
             // If it's a negatable entity
             if (posEntity.isNegatible) {
@@ -48,7 +48,7 @@ export const editEntityThunkAsync = (appId: string, entity: EntityBase) => {
                 // Clear neg ref
                 delete negEntity.negativeId;
 
-                negEntity = await blisClient.entitiesUpdate(appId, negEntity);
+                negEntity = await clClient.entitiesUpdate(appId, negEntity);
                 dispatch(editEntityFulfilled(negEntity));
             }
 
@@ -83,11 +83,11 @@ const editEntityFulfilled = (entity: EntityBase): ActionObject => {
 // ----------------------------------------
 export const editActionThunkAsync = (appId: string, action: ActionBase) => {
     return async (dispatch: Dispatch<any>) => {
-        const blisClient = ClientFactory.getInstance(AT.EDIT_ACTION_ASYNC)
+        const clClient = ClientFactory.getInstance(AT.EDIT_ACTION_ASYNC)
         dispatch(editActionAsync(appId, action))
 
         try {
-            let deleteEditResponse = await blisClient.actionsUpdate(appId, action)
+            let deleteEditResponse = await clClient.actionsUpdate(appId, action)
             dispatch(editActionFulfilled(action))
 
             // Fetch train dialogs if any train dialogs were impacted
@@ -108,7 +108,7 @@ export const editActionThunkAsync = (appId: string, action: ActionBase) => {
 const editActionAsync = (appId: string, action: ActionBase): ActionObject => {
     return {
         type: AT.EDIT_ACTION_ASYNC,
-        blisAction: action,
+        action: action,
         appId: appId
     }
 }
@@ -116,7 +116,7 @@ const editActionAsync = (appId: string, action: ActionBase): ActionObject => {
 const editActionFulfilled = (action: ActionBase): ActionObject => {
     return {
         type: AT.EDIT_ACTION_FULFILLED,
-        blisAction: action,
+        action: action,
     }
 }
 
@@ -125,11 +125,11 @@ const editActionFulfilled = (action: ActionBase): ActionObject => {
 // ----------------------------------------
 export const editTrainDialogThunkAsync = (appId: string, trainDialog: TrainDialog) => {
     return async (dispatch: Dispatch<any>) => {
-        const blisClient = ClientFactory.getInstance(AT.EDIT_TRAINDIALOG_ASYNC)
+        const clClient = ClientFactory.getInstance(AT.EDIT_TRAINDIALOG_ASYNC)
         dispatch(editTrainDialogAsync(appId, trainDialog))
 
         try {
-            await blisClient.trainDialogEdit(appId, trainDialog)
+            await clClient.trainDialogEdit(appId, trainDialog)
             dispatch(editTrainDialogFulfilled(trainDialog))
             return trainDialog
         }
@@ -140,10 +140,10 @@ export const editTrainDialogThunkAsync = (appId: string, trainDialog: TrainDialo
     }
 }
 
-const editTrainDialogAsync = (blisAppId: string, trainDialog: TrainDialog): ActionObject => {
+const editTrainDialogAsync = (appId: string, trainDialog: TrainDialog): ActionObject => {
     return {
         type: AT.EDIT_TRAINDIALOG_ASYNC,
-        blisAppId: blisAppId,
+        appId: appId,
         trainDialog: trainDialog
     }
 }
@@ -173,11 +173,11 @@ export const editChatSessionExpireAsync = (key: string, appId: string, sessionId
 // --------------------------
 export const editAppLiveTagThunkAsync = (appId: string, tagId: string) => {
     return async (dispatch: Dispatch<any>) => {
-        const blisClient = ClientFactory.getInstance(AT.EDIT_APP_LIVE_TAG_ASYNC)
+        const clClient = ClientFactory.getInstance(AT.EDIT_APP_LIVE_TAG_ASYNC)
         dispatch(editAppLiveTagAsync(appId, tagId))
 
         try {
-            const updatedApp = await blisClient.appSetLiveTag(appId, tagId)
+            const updatedApp = await clClient.appSetLiveTag(appId, tagId)
             dispatch(editAppLiveTagFulfilled(updatedApp))
             return updatedApp
         }
@@ -195,10 +195,10 @@ const editAppLiveTagAsync = (appId: string, packageId: string): ActionObject =>
         appId: appId
     })
 
-const editAppLiveTagFulfilled = (app: BlisAppBase): ActionObject => {
+const editAppLiveTagFulfilled = (app: AppBase): ActionObject => {
     return {
         type: AT.EDIT_APP_LIVE_TAG_FULFILLED,
-        blisApp: app
+        app: app
     }
 }
 
@@ -207,11 +207,11 @@ const editAppLiveTagFulfilled = (app: BlisAppBase): ActionObject => {
 // --------------------------
 export const editAppEditingTagThunkAsync = (appId: string, packageId: string) => {
     return async (dispatch: Dispatch<any>) => {
-        const blisClient = ClientFactory.getInstance(AT.EDIT_APP_EDITING_TAG_ASYNC)
+        const clClient = ClientFactory.getInstance(AT.EDIT_APP_EDITING_TAG_ASYNC)
         dispatch(editAppEditingTagAsync(appId, packageId))
 
         try {
-            const activeApps = await blisClient.appSetEditingTag(appId, packageId)
+            const activeApps = await clClient.appSetEditingTag(appId, packageId)
             dispatch(editAppEditingTagFulfilled(activeApps))
             return activeApps
         }

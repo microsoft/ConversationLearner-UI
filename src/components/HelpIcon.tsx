@@ -11,7 +11,7 @@ class HelpIcon extends React.Component<Props, {}> {
     render() {
         return (
             <a onClick={() => { this.props.setTipType(this.props.tipType) }}>
-                <Icon iconName={this.props.iconName || 'Info'} className="blis-icon" />
+                <Icon iconName={this.props.iconName || 'Info'} className="cl-icon" />
             </a>
         )
     }

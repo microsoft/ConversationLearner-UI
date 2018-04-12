@@ -10,7 +10,7 @@ const initialState: UserState = {
 }
 
 const intializeClientFactory = (id: string) => {
-    // Update the BlisClient configuration to access token and user id for memory for all future requests
+    // Update the Client configuration to access token and user id for memory for all future requests
     ClientFactory.setMemoryKey(() => id)
 }
 

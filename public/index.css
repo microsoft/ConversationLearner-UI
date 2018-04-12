@@ -14,19 +14,19 @@ html {
 * {
   box-sizing: border-box;
 }
-.blis-button--right {
+.cl-button--right {
   float: right;
 }
-.blis-button--widemargin {
+.cl-button--widemargin {
   margin: 20px;
 }
-.blis-button--hidden {
+.cl-button--hidden {
   width: 1px;
   height: 1px;
   opacity: 0.0;
 }
 
-.blis-button--viewCard {
+.cl-button--viewCard {
   margin-right: 10px;
   border-radius: 20px;
   padding: 0px !important;
@@ -34,11 +34,11 @@ html {
   min-width: 32px !important;
 }
 
-.blis-wc-disabled {
+.cl-wc-disabled {
   pointer-events: none;
 }
 
-.blis-callout {
+.cl-callout {
   margin: 0;
   font-size: 12px;
   font-weight: 400;
@@ -48,12 +48,12 @@ html {
   max-width: 300px;
 }
 
-.blis-errorpanel {
+.cl-errorpanel {
   background-color: #FDE7E9;
   padding: 5px
 }
 
-.blis-action {
+.cl-action {
   border: none;
   background: none;
   padding: 0.3em 0.2em 0.2em 0.2em;
@@ -61,64 +61,64 @@ html {
   cursor: pointer;
 }
 
-.blis-icon--spin {
-  animation-name: blis-icon-spin;
+.cl-icon--spin {
+  animation-name: cl-icon-spin;
   animation-duration: 2000ms;
   animation-iteration-count: infinite;
   animation-timing-function: linear;
 }
-@keyframes blis-icon-spin {
+@keyframes cl-icon-spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
 
-.blis-icon[data-icon-name="CheckMark"] {
+.cl-icon[data-icon-name="CheckMark"] {
   color: green;
   font-size: 20px;
 }
-.blis-icon[data-icon-name="Remove"]{
+.cl-icon[data-icon-name="Remove"]{
   color: lightgrey;
   font-size: 18px
 }
 
-.blis-icon[data-icon-name="Info"] {
+.cl-icon[data-icon-name="Info"] {
   font-size: 12px;
   margin-left: 8px;
   color: var(--color-wc-user);
 }
 
-.blis-icon[data-icon-name="ChevronUp"] {
+.cl-icon[data-icon-name="ChevronUp"] {
   font-size: 12px;
   margin-right: 8px;
   color: var(--color-wc-user);
 }
 
-.blis-icon[data-icon-name="ChevronDown"] {
+.cl-icon[data-icon-name="ChevronDown"] {
   font-size: 12px;
   margin-right: 8px;
   color: var(--color-wc-user);
 }
-.blis-icon[data-icon-name="Delete"] {
+.cl-icon[data-icon-name="Delete"] {
   font-size: 16px;
   vertical-align: middle;
 }
-.blis-icon[data-icon-name="IncidentTriangle"] {
+.cl-icon[data-icon-name="IncidentTriangle"] {
   padding-left: 5px;
   padding-right: 5px;
   color: var(--color-red)
 }
 
-.blis-label{
+.cl-label{
   display: inline-block !important;
 }
 
 
-.blis-label--padded {
+.cl-label--padded {
   margin-left: 20px;
   margin-right: 20px;
 }
 
-.blis-link {
+.cl-link {
   color: var(--color-wc-user);
 }
 
@@ -126,51 +126,51 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
   cursor: pointer;
 }
 
-.blis-tip.ms-Checkbox{
+.cl-tip.ms-Checkbox{
   display: inline-block;
 }
 
 
-.blis-font--emphasis 
+.cl-font--emphasis 
 {
   font-weight: bold !important;
   color: #000000;
 }
-.blis-font--deleted
+.cl-font--deleted
 {
   text-decoration: line-through;
 }
 
-.blis-font--action {
+.cl-font--action {
   color: var(--color-blue);
 }
 
-.blis-font--highlight {
+.cl-font--highlight {
   color: var(--color-error);
 }
 
-.blis-font--warning {
+.cl-font--warning {
   background-color: #FDE7E9;
   margin: 5px;
   padding: 0.25em 0.5em;
 }
 
-.blis-font--preserve {
+.cl-font--preserve {
   white-space: pre-wrap;
 }
 
-.blis-wc-message {
+.cl-wc-message {
   border-radius: 2px;
   box-shadow: 0px 1px 1px 0px rgba(0, 0, 0, 0.2);
   padding: 8px;
   word-break: break-word;
 }
-.blis-wc-message--user {
+.cl-wc-message--user {
   background-color: var(--color-wc-user);
   color: #ffffff;
 }
 
-.blis-wc-message--bot {
+.cl-wc-message--bot {
   background-color: var(--color-wc-bot);
   color: #000000;
 }
@@ -180,7 +180,7 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
   outline: 0;
 }
 
-.blis-overlay{
+.cl-overlay{
   width: 100%;
   height: 100%;
   opacity: 0.09;
@@ -191,187 +191,187 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
 
 /** Modals */
 
-.blis-modal {
+.cl-modal {
   display: grid;
   grid-template-rows: min-content 1fr min-content;
 }
 
-.blis-modal.blis-modal--teach {
+.cl-modal.cl-modal--teach {
   grid-template-rows: 1fr min-content;
   /* border-top: 8px solid var(--color-magentaDark); */
 }
 
-.blis-modal.blis-modal--log {
+.cl-modal.cl-modal--log {
   grid-template-rows: 1fr min-content;
   /* border-top: 8px solid var(--color-blueMid); */
 }
 
-.blis-modal.blis-modal--wide {
+.cl-modal.cl-modal--wide {
   width: 80%;
   grid-row-gap: 2em;
   padding: 1em;
 }
 
-.blis-modal.blis-modal--large {
+.cl-modal.cl-modal--large {
   width: 90%;
   height: 90%;
 }
 
 /** Matches width of webchat **/
-.blis-modal.blis-modal--narrow {
+.cl-modal.cl-modal--narrow {
   width: 50%;
   height: 90%;
 }
 @media (min-width: 701px) and (max-width: 800px) {
-  .blis-modal.blis-modal--narrow {
+  .cl-modal.cl-modal--narrow {
     width: 65%;
   }
 }
 @media (max-width: 700px) {
-  .blis-modal.blis-modal--narrow {
+  .cl-modal.cl-modal--narrow {
     width: 80%;
   }
 }
 
-.blis-modal.blis-modal--medium{
+.cl-modal.cl-modal--medium{
   width: 60%;
   height: 70%;
   /* TODO: Remove padding here, it should be the content inside that decides padding, otherwise all modals should have padding */
   padding: 1em;
 }
 @media (max-width: 600px) {
-  .blis-modal.blis-modal--medium {
+  .cl-modal.cl-modal--medium {
     width: 90%;
   }
 }
 @media (max-height: 700px) {
-  .blis-modal.blis-modal--medium {
+  .cl-modal.cl-modal--medium {
     height: 90%;
   }
 }
 
 @media (min-width: 601px) and (max-width: 1200px) {
-  .blis-modal.blis-modal--medium {
+  .cl-modal.cl-modal--medium {
     width: 75%;
   }
 }
 @media (min-height: 701px) and (max-height: 800px) {
-  .blis-modal.blis-modal--medium {
+  .cl-modal.cl-modal--medium {
     height: 80%;
   }
 }
 
 @media (min-width: 1201px) {
-  .blis-modal.blis-modal--medium {
+  .cl-modal.cl-modal--medium {
     width: 50%;
   }
 }
 
-.blis-modal.blis-modal--small{
+.cl-modal.cl-modal--small{
   width: 50%;
   /* TODO: Remove padding here, it should be the content inside that decides padding, otherwise all modals should have padding */
   padding: 1em;
 }
 @media (max-width: 600px) {
-  .blis-modal.blis-modal--small {
+  .cl-modal.cl-modal--small {
     width: 80%;
   }
 }
 
 @media (min-width: 601px) and (max-width: 800px) {
-  .blis-modal.blis-modal--small {
+  .cl-modal.cl-modal--small {
     width: 70%;
   }
 }
 
 @media (min-width: 801px) and (max-width: 1200px) {
-  .blis-modal.blis-modal--small {
+  .cl-modal.cl-modal--small {
     width: 60%;
   }
 }
 
 @media (min-width: 1400px) {
-  .blis-modal.blis-modal--small {
+  .cl-modal.cl-modal--small {
     width: 40%;
   }
 }
 
-.blis-modal_header {
+.cl-modal_header {
   display: block;
   text-align: center;
   padding: 1em;
 }
 
 
-.blis-modal_subheader {
+.cl-modal_subheader {
   display: block;
   text-align: center;
   padding-bottom: 0.5em;
   margin-bottom: 0.5em;
 }
 
-.blis-underline {
+.cl-underline {
   border-bottom: 1px solid black;
 }
 
-.blis-modal_body {
+.cl-modal_body {
   position: relative;
   overflow-y: auto;
 }
-.blis-modal_body > * {
+.cl-modal_body > * {
   position: absolute;
   width: 100%;
 }
 
-.blis-modal_footer {
+.cl-modal_footer {
   padding-top: 1em;
   border-top: 1px solid rgba(0, 0, 0, 0.125);
 }
 
-.blis-modal.blis-modal--teach .blis-modal_footer {
+.cl-modal.cl-modal--teach .cl-modal_footer {
   padding: 1em;
   /* background-color: var(--color-magentaDark); */
 }
 
-.blis-modal.blis-modal--log .blis-modal_footer{
+.cl-modal.cl-modal--log .cl-modal_footer{
   padding: 1em;
   /* background-color: var(--color-blueMid); */
 }
 
-.blis-dialog-title i[role="presentation"] {
+.cl-dialog-title i[role="presentation"] {
   margin: -0.4em 0.5em -0.4em 0;
   padding: 0.4em 0.3em 0.4em 0.5em;
   border-radius: 50%;
   color: white;
   vertical-align: sub;
 }
-.blis-dialog-title.blis-dialog-title--log i[role="presentation"] {
+.cl-dialog-title.cl-dialog-title--log i[role="presentation"] {
   background-color: var(--color-themePrimary);
 }
-.blis-dialog-title.blis-dialog-title--train i[role="presentation"] {
+.cl-dialog-title.cl-dialog-title--train i[role="presentation"] {
   background-color: var(--color-error);
 }
 
-.blis-dropdownWithButton-dropdown {
+.cl-dropdownWithButton-dropdown {
   display: grid;
   grid-template: auto / 1fr auto auto;
   grid-auto-columns: min-content;
   grid-gap: 0.1em;
 }
 
-.blis-dropdownWithButton-button {
+.cl-dropdownWithButton-button {
   width: 30px !important;
   min-width: 30px !important;
   align-self: end;
 }
 
-.blis-command-bar {
+.cl-command-bar {
   display: grid;
   grid-gap: 1em;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
 }
 
-.blis-spinner
+.cl-spinner
 {
     width: 500px;
     height: 500px;
@@ -381,31 +381,31 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
     position: relative;
 }
 
-.blis-chatmodal {
+.cl-chatmodal {
   height: 100%;
   display: grid;
   grid-template-columns: 400px 1fr;
 }
-.blis-chatmodal_webchat {
+.cl-chatmodal_webchat {
   position: relative;
 }
-.blis-chatmodal_controls {
+.cl-chatmodal_controls {
   border-left: 1px solid var(--color-botchat-grey);
   display: grid;
   grid-template-rows: 1fr min-content;
   /* This could causing clipping of the entity picker menu. Tried to mitigate by making menu stay within boundary of parent but it's not as ideal */
   overflow-x: auto;
 }
-.blis-chatmodal_admin-controls {
+.cl-chatmodal_admin-controls {
   padding: 1em;
 }
 
-.blis-sessionmodal {
+.cl-sessionmodal {
   height: 100%;
   display: grid;
   grid-template-rows: min-content auto;
 }
-.blis-sessionmodal-title {
+.cl-sessionmodal-title {
   padding: 1rem;
 }
 
@@ -493,42 +493,42 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
 
 
 /** Log Dialog Admin */
-.blis-dialog-admin {
+.cl-dialog-admin {
   display: grid;
   grid-gap: 0.8em;
 }
-.blis-dialog-admin__content {
+.cl-dialog-admin__content {
   display: grid;
   grid-gap: 1rem;
 }
 
-.blis-dialog-admin-title {
+.cl-dialog-admin-title {
   font-weight: bold;
   padding: 0.5rem 0;
   border-bottom: 1px solid rgba(0,0,0,0.25);
 }
 
-.blis-dialog-admin-chosen-action {
+.cl-dialog-admin-chosen-action {
   padding: 1em 0;
   font-weight: bold
 }
 /** TODO: Remove after find better pattern for consumers */
-.blis-dialog-creation-buttons {
+.cl-dialog-creation-buttons {
   text-align: right;
   padding-bottom: 0.5em;
 }
 
 /** Scorer Classes */
-.blis-action-icon {
+.cl-action-icon {
   font-size: 24px;
 }
-.blis-action-icon.i[data-icon-name="ChromeClose"] {
+.cl-action-icon.i[data-icon-name="ChromeClose"] {
   color: #cc0000;
 }
-.blis-action-icon.i[data-icon-name="CompletedSolid"] {
+.cl-action-icon.i[data-icon-name="CompletedSolid"] {
   color: #ffb900;
 }
-.blis-action-icon.i[data-icon-name="Remove"] {
+.cl-action-icon.i[data-icon-name="Remove"] {
     color: lightgrey;
     font-size: 18px
 }
@@ -540,7 +540,7 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
   font-size: 15px;
 }
 
-.blis-entity {
+.cl-entity {
   flex-shrink: 1;
   margin: 1px;
   display: inline-block;
@@ -549,9 +549,9 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
   padding: 4px;
   text-align: center;
 }
-.blis-entity--match {
+.cl-entity--match {
   background: #e0ffe0;
 }
-.blis-entity--mismatch {
+.cl-entity--mismatch {
   background: #ffe0e0;
 }

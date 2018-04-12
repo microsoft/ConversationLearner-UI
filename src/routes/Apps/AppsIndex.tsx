@@ -5,19 +5,19 @@ import {
 } from 'react-router-dom'
 import { RouteComponentProps } from 'react-router'
 import { returntypeof } from 'react-redux-typescript';
-import { createBLISApplicationAsync, copyApplicationsThunkAsync } from '../../actions/createActions'
-import { deleteBLISApplicationAsync } from '../../actions/deleteActions'
+import { createApplicationAsync, copyApplicationsThunkAsync } from '../../actions/createActions'
+import { deleteApplicationAsync } from '../../actions/deleteActions'
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../../types'
-import { BlisAppBase } from 'blis-models'
+import { AppBase } from 'conversationlearner-models'
 import actions from '../../actions'
 import AppIndex from './App/Index'
 import AppsList from './AppsList'
-import { BLIS_SAMPLE_ID } from '../../types/const'
+import { CL_SAMPLE_ID } from '../../types/const'
 
 interface ComponentState {
-    selectedApp: BlisAppBase | null
+    selectedApp: AppBase | null
 }
 
 class AppsIndex extends React.Component<Props, ComponentState> {
@@ -50,7 +50,7 @@ class AppsIndex extends React.Component<Props, ComponentState> {
         }
 
         const { history, location } = this.props
-        const appFromLocationState: BlisAppBase | null = location.state && location.state.app
+        const appFromLocationState: AppBase | null = location.state && location.state.app
         if (appFromLocationState) {
             const app = this.props.apps.find(a => a.appId === appFromLocationState.appId)
             if (!app) {
@@ -64,16 +64,16 @@ class AppsIndex extends React.Component<Props, ComponentState> {
         }
     }
 
-    onClickDeleteApp = (appToDelete: BlisAppBase) => {
-        this.props.deleteBLISApplicationAsync(appToDelete)
+    onClickDeleteApp = (appToDelete: AppBase) => {
+        this.props.deleteApplicationAsync(appToDelete)
     }
 
-    onCreateApp = (appToCreate: BlisAppBase) => {
-        this.props.createBLISApplicationAsync(this.props.user.id, appToCreate)
+    onCreateApp = (appToCreate: AppBase) => {
+        this.props.createApplicationAsync(this.props.user.id, appToCreate)
     }
 
     onImportDemoApps = () => {
-        let srcUserId = BLIS_SAMPLE_ID;  
+        let srcUserId = CL_SAMPLE_ID;  
         let destUserId = this.props.user.id;
 
         // TODO: Find cleaner solution for the types.  Thunks return functions but when using them on props they should be returning result of the promise.
@@ -106,8 +106,8 @@ const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         fetchApplicationsAsync: actions.fetch.fetchApplicationsAsync,
         fetchBotInfoAsync: actions.fetch.fetchBotInfoAsync,
-        createBLISApplicationAsync,
-        deleteBLISApplicationAsync,
+        createApplicationAsync,
+        deleteApplicationAsync,
         copyApplicationsThunkAsync
     }, dispatch)
 }

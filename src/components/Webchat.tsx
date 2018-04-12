@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../types';
 import * as BotChat from 'blis-webchat'
-import { BlisAppBase } from 'blis-models'
+import { AppBase, CL_USER_NAME_ID } from 'conversationlearner-models'
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Activity } from 'botframework-directlinejs';
 import actions from '../actions'
@@ -97,7 +97,7 @@ class Webchat extends React.Component<Props, {}> {
                     showHeader: false
                 },
                 user: { name: this.props.user.name, id: this.props.user.id },
-                bot: { name: 'BlisTrainer', id: 'BlisTrainer' },
+                bot: { name: CL_USER_NAME_ID, id: CL_USER_NAME_ID },
                 resize: 'detect',
                 hideInput: this.props.hideInput,
                 focusInput: this.props.focusInput
@@ -133,7 +133,7 @@ const mapStateToProps = (state: State, ownProps: any) => {
 }
 
 export interface ReceivedProps {
-    app: BlisAppBase,
+    app: AppBase,
     history: Activity[],
     hideInput: boolean,
     focusInput: boolean,

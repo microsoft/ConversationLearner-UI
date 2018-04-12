@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../../types'
 import * as OF from 'office-ui-fabric-react';
-import { BlisAppBase, PackageReference } from 'blis-models'
+import { AppBase, PackageReference } from 'conversationlearner-models'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { createAppTagThunkAsync } from '../../actions/createActions'
 import { autobind } from 'office-ui-fabric-react/lib/Utilities';
@@ -34,7 +34,7 @@ const columns: IRenderableColumn[] = [
         minWidth: 100,
         maxWidth: 100,
         isResizable: true,
-        render: (packageReference, component) => <OF.Icon iconName={packageReference.packageId === component.props.editingPackageId ? 'CheckMark' : 'Remove'} className="blis-icon" />,
+        render: (packageReference, component) => <OF.Icon iconName={packageReference.packageId === component.props.editingPackageId ? 'CheckMark' : 'Remove'} className="cl-icon" />,
     },
     {
         key: 'isLive',
@@ -43,7 +43,7 @@ const columns: IRenderableColumn[] = [
         minWidth: 100,
         maxWidth: 100,
         isResizable: true,
-        render: (packageReference, component) => <OF.Icon iconName={packageReference.packageId === component.props.app.livePackageId ? 'CheckMark' : 'Remove'} className="blis-icon" />,
+        render: (packageReference, component) => <OF.Icon iconName={packageReference.packageId === component.props.app.livePackageId ? 'CheckMark' : 'Remove'} className="cl-icon" />,
     }
 ]
 
@@ -126,7 +126,7 @@ const mapStateToProps = (state: State, ownProps: any) => {
 }
 
 export interface ReceivedProps {
-    app: BlisAppBase,
+    app: AppBase,
     editingPackageId: string
 }
 

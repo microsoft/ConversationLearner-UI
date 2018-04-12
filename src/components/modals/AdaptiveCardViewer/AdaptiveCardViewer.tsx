@@ -3,7 +3,7 @@ import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
-import { Template, RenderedActionArgument } from 'blis-models'
+import { Template, RenderedActionArgument } from 'conversationlearner-models'
 import { State } from '../../../types'
 import * as AdaptiveCards from 'adaptivecards';
 import { injectIntl, InjectedIntlProps } from 'react-intl'
@@ -55,9 +55,9 @@ class AdaptiveCardViewer extends React.Component<Props, {}> {
                 isOpen={this.props.open}
                 onDismiss={this.onDismiss}
                 isBlocking={false}
-                containerClassName="blis-modal"
+                containerClassName="cl-modal"
             >
-               <div className="blis-wc-disabled wc-app wc-card wc-adaptive-card">
+               <div className="cl-wc-disabled wc-app wc-card wc-adaptive-card">
                     <div dangerouslySetInnerHTML={{__html: card.outerHTML}} />
                 </div>
             </Modal>

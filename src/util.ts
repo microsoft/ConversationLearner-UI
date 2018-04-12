@@ -1,5 +1,5 @@
-import * as models from 'blis-models'
-import { EntityBase } from 'blis-models';
+import * as models from 'conversationlearner-models'
+import { EntityBase } from 'conversationlearner-models';
 
 export function generateGUID(): string {
     let d = new Date().getTime();
@@ -36,7 +36,7 @@ export function entityDisplayName(entity: models.EntityBase) {
     }
 }
 
-export function packageReferences(app: models.BlisAppBase): models.PackageReference[] { 
+export function packageReferences(app: models.AppBase): models.PackageReference[] { 
     return [...app.packageVersions || [], {packageId: app.devPackageId, packageVersion: 'Master'}] as models.PackageReference[]
 }
 

@@ -14,9 +14,9 @@ import * as TC from '../tipComponents/Components'
 import ActionDetailsList from '../ActionDetailsList'
 import ConfirmCancelModal from './ConfirmCancelModal'
 import { State, PreBuiltEntities } from '../../types';
-import { BlisDropdownOption } from './BlisDropDownOption'
+import { CLDropdownOption } from './CLDropDownOption'
 import * as ToolTip from '../ToolTips'
-import { BlisAppBase, EntityBase, EntityType, ActionBase } from 'blis-models'
+import { AppBase, EntityBase, EntityType, ActionBase } from 'conversationlearner-models'
 import './EntityCreatorEditor.css'
 import { FM } from '../../react-intl-messages'
 import { defineMessages, injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
@@ -74,8 +74,8 @@ interface ComponentState {
 }
 
 class EntityCreatorEditor extends React.Component<Props, ComponentState> {
-    staticEntityOptions: BlisDropdownOption[]
-    entityOptions: BlisDropdownOption[]
+    staticEntityOptions: CLDropdownOption[]
+    entityOptions: CLDropdownOption[]
 
     constructor(props: Props) {
         super(props)
@@ -90,19 +90,19 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
         });
     }
 
-    getStaticEntityOptions(intl: InjectedIntl): BlisDropdownOption[] {
+    getStaticEntityOptions(intl: InjectedIntl): CLDropdownOption[] {
         return [
             {
                 key: this.NEW_ENTITY,
                 text: this.NEW_ENTITY,
                 itemType: OF.DropdownMenuItemType.Normal,
-                style: 'blisDropdown--command'
+                style: 'clDropdown--command'
             },
             {
                 key: 'divider',
                 text: '-',
                 itemType: OF.DropdownMenuItemType.Divider,
-                style: 'blisDropdown--normal'
+                style: 'clDropdown--normal'
             }
         ]
     }
@@ -113,12 +113,12 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
             const currentAppLocale = nextProps.app.locale
             const localePreBuiltOptions = PreBuiltEntities
                 .find(entitiesList => entitiesList.locale === currentAppLocale).preBuiltEntities
-                .map<BlisDropdownOption>(entityName =>
+                .map<CLDropdownOption>(entityName =>
                     ({
                         key: entityName,
                         text: entityName,
                         itemType: OF.DropdownMenuItemType.Normal,
-                        style: 'blisDropdown--normal'
+                        style: 'clDropdown--normal'
                     }))
 
             if (nextProps.entity === null) {
@@ -246,7 +246,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
             hasPendingChanges
         })
     }
-    onChangedType = (obj: BlisDropdownOption) => {
+    onChangedType = (obj: CLDropdownOption) => {
         const isPrebuilt = obj.text !== this.NEW_ENTITY
         const isNegatableVal = isPrebuilt ? false : this.state.isNegatableVal
         const isProgrammaticVal = isPrebuilt ? false : this.state.isProgrammaticVal
@@ -323,7 +323,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
         return `luis-${preBuiltType.toLowerCase()}`
     }
 
-    onRenderOption = (option: BlisDropdownOption): JSX.Element => {
+    onRenderOption = (option: CLDropdownOption): JSX.Element => {
         return (
             <div className="dropdownExample-option">
                 <span className={option.style}>{option.text}</span>
@@ -413,7 +413,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                     })}
                     options={this.entityOptions}
                     onChanged={this.onChangedType}
-                    onRenderOption={(option) => this.onRenderOption(option as BlisDropdownOption)}
+                    onRenderOption={(option) => this.onRenderOption(option as CLDropdownOption)}
                     selectedKey={this.state.entityTypeVal}
                     disabled={this.state.isEditing || this.props.entityTypeFilter != null}
                 />
@@ -434,7 +434,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                     disabled={this.state.isPrebuilt}
                 />
                 <br />
-                <div className="blis-entity-creator-checkbox">
+                <div className="cl-entity-creator-checkbox">
                     <TC.Checkbox
                         label={intl.formatMessage({
                             id: FM.ENTITYCREATOREDITOR_FIELDS_PROGRAMMATICONLY_LABEL,
@@ -446,7 +446,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                         tipType={ToolTip.TipType.ENTITY_PROGAMMATIC}
                     />
                 </div>
-                <div className="blis-entity-creator-checkbox">
+                <div className="cl-entity-creator-checkbox">
                     <TC.Checkbox
                         label={intl.formatMessage({
                             id: FM.ENTITYCREATOREDITOR_FIELDS_MULTIVALUE_LABEL,
@@ -458,7 +458,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                         tipType={ToolTip.TipType.ENTITY_MULTIVALUE}
                     />
                 </div>
-                <div className="blis-entity-creator-checkbox">
+                <div className="cl-entity-creator-checkbox">
                     <TC.Checkbox
                         label={intl.formatMessage({
                             id: FM.ENTITYCREATOREDITOR_FIELDS_NEGATAABLE_LABEL,
@@ -479,12 +479,12 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
             <Modal
                 isOpen={this.props.open}
                 isBlocking={false}
-                containerClassName="blis-modal blis-modal--medium"
+                containerClassName="cl-modal cl-modal--medium"
             >
-                <div className="blis-modal_header">
+                <div className="cl-modal_header">
                     <span className={OF.FontClassNames.xxLarge}>{this.state.isEditing ? this.props.entity.entityName : this.state.title}</span>
                 </div>
-                <div className="blis-modal_body">
+                <div className="cl-modal_body">
                     {this.state.isEditing
                         ? (
                             <div>
@@ -529,8 +529,8 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                             this.renderEdit()
                         )}
                 </div>
-                <div className="blis-modal_footer blis-modal-buttons">
-                    <div className="blis-modal-buttons_primary">
+                <div className="cl-modal_footer cl-modal-buttons">
+                    <div className="cl-modal-buttons_primary">
                         <OF.PrimaryButton
                             disabled={(this.onGetNameErrorMessage(this.state.entityNameVal) !== '') && !this.state.isPrebuilt || (this.state.isEditing && !this.state.hasPendingChanges)}
                             onClick={this.onClickSaveCreate}
@@ -579,7 +579,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                                 })}
                             />}
                     </div>
-                    <div className="blis-modal-buttons_secondary">
+                    <div className="cl-modal-buttons_secondary">
                         {this.state.isEditing &&
                             <OF.PrimaryButton
                                 onClick={this.onClickTrainDialogs}
@@ -660,7 +660,7 @@ const mapStateToProps = (state: State, ownProps: any) => {
 }
 
 export interface ReceivedProps {
-    app: BlisAppBase,
+    app: AppBase,
     editingPackageId: string,
     open: boolean,
     entity: EntityBase | null,

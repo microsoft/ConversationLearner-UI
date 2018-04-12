@@ -31,7 +31,7 @@ class Settings extends React.Component<Props, ComponentState> {
 
     render() {
         return (
-            <div className="blis-page">
+            <div className="cl-page">
                 <div className={FontClassNames.superLarge}>
                     <FormattedMessage
                         id={FM.PROFILE_SETTINGS_TITLE}
@@ -46,7 +46,7 @@ class Settings extends React.Component<Props, ComponentState> {
                         />
                     </Label>
                     <input
-                        className="blis-input"
+                        className="cl-input"
                         type="number"
                         min={0}
                         max={99999}

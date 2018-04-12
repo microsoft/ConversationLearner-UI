@@ -2,7 +2,7 @@ import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
 import { connect } from 'react-redux';
 import { State } from '../../../types'
-import { BlisAppBase } from 'blis-models'
+import { AppBase } from 'conversationlearner-models'
 import { FormattedMessage } from 'react-intl'
 import { bindActionCreators } from 'redux'
 import { FontClassNames, PrimaryButton } from 'office-ui-fabric-react'
@@ -16,7 +16,7 @@ class Dashboard extends React.Component<Props, {}> {
     render() {
         // TODO: internationalize text
         return (
-            <div className="blis-page">
+            <div className="cl-page">
                 <span className={FontClassNames.xxLarge}>
                     <FormattedMessage
                         id={FM.DASHBOARD_TITLE}
@@ -31,8 +31,8 @@ class Dashboard extends React.Component<Props, {}> {
                 </span>
                 {this.props.validationErrors.length > 0 && 
                 (
-                    <div className="blis-errorpanel" >
-                        <div className={`blis-font--emphasis ${FontClassNames.medium}`}>Please check that the correct version of your Bot is running.</div>
+                    <div className="cl-errorpanel" >
+                        <div className={`cl-font--emphasis ${FontClassNames.medium}`}>Please check that the correct version of your Bot is running.</div>
                         {this.props.validationErrors.map((message: any, i) => { 
                                 return message.length === 0
                                     ? <br key={i}></br>
@@ -76,7 +76,7 @@ const mapDispatchToProps = (dispatch: any) => {
 }
 
 export interface ReceivedProps {
-    app: BlisAppBase, 
+    app: AppBase, 
     validationErrors: string[]
 }
 

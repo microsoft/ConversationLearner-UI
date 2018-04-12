@@ -2,27 +2,27 @@ import * as React from 'react';
 import * as OF from 'office-ui-fabric-react'
 import HelpIcon from './HelpIcon'
 import { TipType } from '../components/ToolTips'
-import './BlisTagPicker.css'
+import './CLTagPicker.css'
 
 /**
  * It would be better to take in render functions or components instead of declarative options such as highlight or strike through which are not flexible
- * Also, this has overlap with the BlisTagItem component which could be used here.
+ * Also, this has overlap with the CLTagItem component which could be used here.
  */
-export interface IBlisTagPickerProps extends OF.ITagPickerProps {
+export interface ICLTagPickerProps extends OF.ITagPickerProps {
     label: string
     tipType: TipType
     nonRemovableTags: OF.ITag[]
     nonRemoveableHighlight?: boolean
     nonRemoveableStrikethrough?: boolean
 }
-export const component = (props: IBlisTagPickerProps) => {
+export const component = (props: ICLTagPickerProps) => {
     const { nonRemovableTags, nonRemoveableHighlight = true, nonRemoveableStrikethrough = true, ...tagPickerProps } = props
     return (
         <div>
             <OF.Label>{props.label}
                 <HelpIcon tipType={props.tipType} />
             </OF.Label>
-            <div className="blis-tagpicker">
+            <div className="cl-tagpicker">
                 <div className="ms-BasePicker-text ms-BasePicker-text--static pickerText_42b0a43b" role="list">
                     {nonRemovableTags.map(tag => (
                         <div className={`ms-TagItem ${nonRemoveableHighlight ? 'ms-TagItem-text--highlight' : ''}`} tabIndex={0} key={tag.key}>

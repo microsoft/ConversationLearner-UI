@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
 import { connect } from 'react-redux';
-import { ActionBase, ActionTypes, Template, RenderedActionArgument, CardAction, TextAction, ApiAction } from 'blis-models'
+import { ActionBase, ActionTypes, Template, RenderedActionArgument, CardAction, TextAction, ApiAction } from 'conversationlearner-models'
 import { State } from '../types'
 import * as OF from 'office-ui-fabric-react';
 import { onRenderDetailsHeader } from './ToolTips'
@@ -208,14 +208,14 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                 const validationError = component.validationError(action);
 
                 const textClassName = validationError ?
-                    `${OF.FontClassNames.mediumPlus} blis-font--highlight`: OF.FontClassNames.mediumPlus;
+                    `${OF.FontClassNames.mediumPlus} cl-font--highlight`: OF.FontClassNames.mediumPlus;
 
                 return (
                     <div>
                         {action.actionType === ActionTypes.CARD &&
                             <OF.PrimaryButton
                                 disabled={validationError}
-                                className="blis-button--viewCard"
+                                className="cl-button--viewCard"
                                 onClick={() => component.onClickViewCard(action)}
                                 ariaDescription="ViewCard"
                                 text=""
@@ -227,7 +227,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                             onClick={() => component.props.onSelectAction ? component.props.onSelectAction(action) : null}
                         >
                             {ActionBase.GetPayload(action, entityMap)}
-                            {validationError && <Icon className="blis-icon" iconName="IncidentTriangle" />}
+                            {validationError && <Icon className="cl-icon" iconName="IncidentTriangle" />}
                         </span>
                         {args.length !== 0 &&
                             args.map((argument, i) => <div className="ms-ListItem-primaryText" key={i}>{argument}</div>)
@@ -264,7 +264,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             // This lookup should be done ahead of time instead of on every render
             getSortValue: action => '',
             render: (action, component) => action.requiredEntities.length === 0
-                ? <OF.Icon iconName="Remove" className="blis-icon" />
+                ? <OF.Icon iconName="Remove" className="cl-icon" />
                 : action.requiredEntities.map(entityId => {
                     const entity = component.props.entities.find(e => e.entityId === entityId)
                     return (
@@ -289,7 +289,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             // This lookup should be done ahead of time instead of on every render
             getSortValue: action => '',
             render: (action, component) => action.negativeEntities.length === 0
-                ? <OF.Icon iconName="Remove" className="blis-icon" />
+                ? <OF.Icon iconName="Remove" className="cl-icon" />
                 : action.negativeEntities.map(entityId => {
                     const entity = component.props.entities.find(e => e.entityId == entityId)
                     return (
@@ -312,7 +312,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             getSortValue: action => '',
             render: (action, component) => {
                 if (!action.suggestedEntity) {
-                    return <OF.Icon iconName="Remove" className="blis-icon" />
+                    return <OF.Icon iconName="Remove" className="cl-icon" />
                 }
 
                 const expectedEntity = component.props.entities.find(e => e.entityId === action.suggestedEntity)
@@ -334,7 +334,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             maxWidth: 50,
             isResizable: true,
             getSortValue: action => action.isTerminal ? 'a' : 'b',
-            render: action => <OF.Icon iconName={action.isTerminal ? 'CheckMark' : 'Remove'} className="blis-icon" />
+            render: action => <OF.Icon iconName={action.isTerminal ? 'CheckMark' : 'Remove'} className="cl-icon" />
         }
     ]
 }

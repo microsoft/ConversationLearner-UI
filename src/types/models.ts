@@ -1,11 +1,11 @@
-import { BlisAppBase, BlisAppMetaData } from "blis-models"
+import { AppBase, AppMetaData } from "conversationlearner-models"
 
-export interface App extends BlisAppBase {
+export interface App extends AppBase {
     didPollingExpire: boolean
 }
 
 export interface AppInput {
     appName: string
     locale: string
-    metadata: BlisAppMetaData
+    metadata: AppMetaData
 }

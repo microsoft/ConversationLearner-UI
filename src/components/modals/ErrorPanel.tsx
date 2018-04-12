@@ -83,7 +83,7 @@ class ErrorPanel extends React.Component<Props, {}> {
                     onRenderFooterContent={() =>this.onRenderFooterContent() }
                     customWidth='600px'
                 >
-                <div className="blis-errorpanel" >
+                <div className="cl-errorpanel" >
                     {this.props.error.actionType && <div className={FontClassNames.large}>{this.props.error.actionType} Failed</div>}
                     <div className={FontClassNames.medium}>{this.props.error.error}</div>
                     {this.props.error && this.props.error.messages.map((message: any) => { 

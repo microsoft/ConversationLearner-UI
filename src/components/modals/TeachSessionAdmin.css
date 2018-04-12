@@ -1,8 +1,8 @@
-.blis-training-status-inline {
+.cl-training-status-inline {
     margin-left: 2em;
     color: var(--color-neutralTertiary);
 }
-.blis-training-status-inline__button {
+.cl-training-status-inline__button {
     color: var(--color-themePrimary);
     border: none;
     background: none;
@@ -11,6 +11,6 @@
     font-weight: bold;
     cursor: pointer;
 }
-.blis-training-status-inline__button:hover {
+.cl-training-status-inline__button:hover {
     text-decoration: underline;
 }

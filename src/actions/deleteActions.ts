@@ -1,6 +1,6 @@
 import { AT, ActionObject, ErrorType } from '../types'
 import { Dispatch } from 'redux'
-import { BlisAppBase, Session, Teach } from 'blis-models'
+import { AppBase, Session, Teach } from 'conversationlearner-models'
 import { setErrorDisplay } from './displayActions'
 import { fetchAllTrainDialogsAsync, fetchAllLogDialogsAsync, fetchApplicationTrainingStatusThunkAsync } from './fetchActions'
 import * as ClientFactory from '../services/clientFactory'
@@ -8,17 +8,17 @@ import * as ClientFactory from '../services/clientFactory'
 // ---------------------
 // App
 // ---------------------
-export const deleteBLISApplicationAsync = (blisApp: BlisAppBase): ActionObject => {
+export const deleteApplicationAsync = (app: AppBase): ActionObject => {
     return {
-        type: AT.DELETE_BLIS_APPLICATION_ASYNC,
-        appId: blisApp.appId,
-        blisApp: blisApp
+        type: AT.DELETE_APPLICATION_ASYNC,
+        appId: app.appId,
+        app: app
     }
 }
 
-export const deleteBLISApplicationFulfilled = (appId: string): ActionObject => {
+export const deleteApplicationFulfilled = (appId: string): ActionObject => {
     return {
-        type: AT.DELETE_BLIS_APPLICATION_FULFILLED,
+        type: AT.DELETE_APPLICATION_FULFILLED,
         appId: appId
     }
 }
@@ -29,16 +29,16 @@ export const deleteBLISApplicationFulfilled = (appId: string): ActionObject => {
 export const deleteEntityThunkAsync = (appId: string, entityId: string, reverseEntityId?: string) => {
     return async (dispatch: Dispatch<any>) => {
         dispatch(deleteEntityAsync(appId, entityId))
-        const blisClient = ClientFactory.getInstance(AT.DELETE_ENTITY_ASYNC)
+        const clClient = ClientFactory.getInstance(AT.DELETE_ENTITY_ASYNC)
 
         try {
             let deleteReverseResponse = null;
-            const deleteEditResponse = await blisClient.entitiesDelete(appId, entityId);
+            const deleteEditResponse = await clClient.entitiesDelete(appId, entityId);
             dispatch(deleteEntityFulfilled(entityId));
 
             // If it's a negatable entity
             if (reverseEntityId) {
-                deleteReverseResponse = await blisClient.entitiesDelete(appId, reverseEntityId);
+                deleteReverseResponse = await clClient.entitiesDelete(appId, reverseEntityId);
                 dispatch(deleteEntityFulfilled(reverseEntityId));
             }
 
@@ -79,10 +79,10 @@ const deleteEntityFulfilled = (entityId: string): ActionObject => {
 export const deleteActionThunkAsync = (appId: string, actionId: string) => {
     return async (dispatch: Dispatch<any>) => {
         dispatch(deleteActionAsync(appId, actionId))
-        const blisClient = ClientFactory.getInstance(AT.DELETE_ACTION_ASYNC)
+        const clClient = ClientFactory.getInstance(AT.DELETE_ACTION_ASYNC)
 
         try {
-            const deleteEditResponse = await blisClient.actionsDelete(appId, actionId);
+            const deleteEditResponse = await clClient.actionsDelete(appId, actionId);
             dispatch(deleteActionFulfilled(actionId));
 
             // Fetch train dialogs if any train dialogs were impacted
@@ -118,13 +118,13 @@ const deleteActionFulfilled = (actionId: string): ActionObject => {
 // ---------------------
 // ChatSession
 // ---------------------
-export const deleteChatSessionThunkAsync = (key: string, session: Session, app: BlisAppBase, packageId: string) => {
+export const deleteChatSessionThunkAsync = (key: string, session: Session, app: AppBase, packageId: string) => {
     return async (dispatch: Dispatch<any>) => {
         dispatch(deleteChatSessionAsync(key, session, app.appId, packageId))
-        const blisClient = ClientFactory.getInstance(AT.DELETE_CHAT_SESSION_ASYNC)
+        const clClient = ClientFactory.getInstance(AT.DELETE_CHAT_SESSION_ASYNC)
 
         try {
-            await blisClient.chatSessionsDelete(app.appId, session.sessionId);
+            await clClient.chatSessionsDelete(app.appId, session.sessionId);
             dispatch(deleteChatSessionFulfilled(session.sessionId));
             dispatch(fetchAllLogDialogsAsync(key, app, packageId))
             return true;
@@ -159,10 +159,10 @@ const deleteChatSessionFulfilled = (sessionId: string): ActionObject => {
 export const deleteTeachSessionThunkAsync = (key: string, teachSession: Teach, appId: string, save: boolean) => {
     return async (dispatch: Dispatch<any>) => {
         dispatch(deleteTeachSessionAsync(key, teachSession, appId, save))
-        const blisClient = ClientFactory.getInstance(AT.DELETE_TEACH_SESSION_ASYNC)
+        const clClient = ClientFactory.getInstance(AT.DELETE_TEACH_SESSION_ASYNC)
 
         try {
-            await blisClient.teachSessionsDelete(appId, teachSession, save);
+            await clClient.teachSessionsDelete(appId, teachSession, save);
             dispatch(deleteTeachSessionFulfilled(key, appId, teachSession.teachId));
             dispatch(fetchAllTrainDialogsAsync(appId));
             dispatch(fetchApplicationTrainingStatusThunkAsync(appId));
@@ -201,10 +201,10 @@ const deleteTeachSessionFulfilled = (key: string, teachSessionGUID: string, appI
 export const deleteMemoryThunkAsync = (key: string, currentAppId: string) => {
     return async (dispatch: Dispatch<any>) => {
         dispatch(deleteMemoryAsync(key, currentAppId))
-        const blisClient = ClientFactory.getInstance(AT.DELETE_MEMORY_ASYNC)
+        const clClient = ClientFactory.getInstance(AT.DELETE_MEMORY_ASYNC)
 
         try {
-            await blisClient.memoryDelete(currentAppId);
+            await clClient.memoryDelete(currentAppId);
             dispatch(deleteMemoryFulfilled());
             return true;
         } catch (e) {
@@ -235,10 +235,10 @@ const deleteMemoryFulfilled = (): ActionObject => {
 export const deleteTrainDialogThunkAsync = (userId: string, appId: string, trainDialogId: string) => {
     return async (dispatch: Dispatch<any>) => {
         dispatch(deleteTrainDialogAsync(trainDialogId, appId))
-        const blisClient = ClientFactory.getInstance(AT.DELETE_TRAIN_DIALOG_ASYNC)
+        const clClient = ClientFactory.getInstance(AT.DELETE_TRAIN_DIALOG_ASYNC)
 
         try {
-            await blisClient.trainDialogsDelete(appId, trainDialogId)
+            await clClient.trainDialogsDelete(appId, trainDialogId)
             dispatch(deleteTrainDialogFulfilled(trainDialogId))
             dispatch(fetchApplicationTrainingStatusThunkAsync(appId));
         } catch (e) {
@@ -273,13 +273,13 @@ const deleteTrainDialogFulfilled = (trainDialogId: string): ActionObject => {
 // -----------------
 // LogDialog
 // -----------------
-export const deleteLogDialogThunkAsync = (userId: string, app: BlisAppBase, logDialogId: string, packageId: string) => {
+export const deleteLogDialogThunkAsync = (userId: string, app: AppBase, logDialogId: string, packageId: string) => {
     return async (dispatch: Dispatch<any>) => {
         dispatch(deleteLogDialogAsync(app.appId, logDialogId))
-        const blisClient = ClientFactory.getInstance(AT.DELETE_LOG_DIALOG_ASYNC)
+        const clClient = ClientFactory.getInstance(AT.DELETE_LOG_DIALOG_ASYNC)
 
         try {
-            await blisClient.logDialogsDelete(app.appId, logDialogId)
+            await clClient.logDialogsDelete(app.appId, logDialogId)
             dispatch(deleteLogDialogFulfilled(logDialogId))
         }
         catch (e) {
