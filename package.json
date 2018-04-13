@@ -11,7 +11,7 @@
   "author": "Microsoft Conversation Learner Team",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Microsoft/BLIS-UI.git"
+    "url": "https://github.com/Microsoft/ConversationLearner-UI.git"
   },
   "license": "MIT",
   "private": true,

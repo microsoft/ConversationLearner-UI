@@ -55,7 +55,6 @@ export default class CLClient {
             ...config
         }
 
-        // TODO: Rename to remove BLIS ref
         finalConfig.headers['x-blis-memory-key'] = memoryKey
         
         return axios(finalConfig) as Promise<TypedAxiosResponse<T>>
