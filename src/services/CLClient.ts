@@ -55,7 +55,7 @@ export default class CLClient {
             ...config
         }
 
-        finalConfig.headers['x-blis-memory-key'] = memoryKey
+        finalConfig.headers[models.MEMORY_KEY_HEADER_NAME] = memoryKey
         
         return axios(finalConfig) as Promise<TypedAxiosResponse<T>>
     }
