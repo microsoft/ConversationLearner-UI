@@ -137,7 +137,7 @@ export interface CultureObject {
 }
 
 export const getLuisApplicationCultures = (): Promise<CultureObject[]> => {
-  return axios.get(ApiConfig.BlisLocaleEndpoint)
+  return axios.get(ApiConfig.CLLocaleEndpoint)
     .then(response => response.data)
 }
 
