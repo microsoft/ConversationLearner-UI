@@ -416,3 +416,21 @@ export function Prebuilt(memoryValue: MemoryValue, content: JSX.Element): JSX.El
         </span>
     )
 }
+
+export function EntityObject(object: Object, content: JSX.Element): JSX.Element {
+    return (
+        <span>
+            <OF.TooltipHost
+                tooltipProps={{
+                    onRenderContent: () =>
+                        <span>
+                            {object && <pre>{JSON.stringify(object, null, 2)}</pre>}
+                        </span>
+                }}
+                calloutProps={{ gapSpace: 0 }}
+            >
+                {content}
+            </OF.TooltipHost>
+        </span>
+    )
+}

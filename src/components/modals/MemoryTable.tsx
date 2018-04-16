@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../../types'
 import * as OF from 'office-ui-fabric-react';
-import { onRenderDetailsHeader, Prebuilt } from '../ToolTips'
+import { onRenderDetailsHeader, Prebuilt, EntityObject } from '../ToolTips'
 import { EntityBase, EntityType, Memory } from 'conversationlearner-models'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
@@ -54,12 +54,21 @@ const columns: IRenderableColumn[] = [
             return (<React.Fragment>
                 {entityValues.map((value, i) => {
                     const changeClass = memoryChangeClassMap[value.changeStatus] || ''
-                    let renderedValue = <span>{value.prefix}<span className={`${changeClass} ${value.isPrebuilt ? 'cl-font--action' : ''}`}>{value.displayText}</span></span>
+                    let renderedValue;
 
-                    if (value.isPrebuilt) {
-                        renderedValue = Prebuilt(value.memoryValue, renderedValue)
+                    let valuesAsObject = component.valuesAsObject(value.displayText);
+                    if (valuesAsObject) {
+                        renderedValue = <span>{value.prefix}<span className={`${changeClass} cl-font--action`}>{value.displayText.slice(0,20)}...</span></span>
+                        renderedValue = EntityObject(valuesAsObject, renderedValue)
                     }
-                    
+                    else {
+                        renderedValue = <span>{value.prefix}<span className={`${changeClass} ${value.isPrebuilt ? 'cl-font--action' : ''}`}>{value.displayText}</span></span>
+                        
+                        if (value.isPrebuilt) {
+                        renderedValue = Prebuilt(value.memoryValue, renderedValue)
+                        }
+                    }
+
                     return <span className={`${OF.FontClassNames.mediumPlus} cl-font--preserve`} key={i}>{renderedValue}</span>
                 })}
             </React.Fragment>)
@@ -176,6 +185,14 @@ class MemoryTable extends React.Component<Props, ComponentState> {
         return (entity.entityName.startsWith('luis-'));
     }
 
+    // If text parses as an object, return it
+    valuesAsObject(entityValues: string): Object | null {
+        try {
+            return JSON.parse(entityValues);
+        } catch (err) {
+            return null;
+        }
+    }
     getEntityValues(entity: EntityBase) {
         // Current entity values
         let curMemory = this.props.memories.find(m => m.entityName === entity.entityName);
