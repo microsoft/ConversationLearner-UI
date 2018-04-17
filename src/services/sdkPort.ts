@@ -1,7 +1,7 @@
 import * as ClientFactory from '../services/clientFactory'
 
 const defaultPort = 5000
-const localStorageSdkPortKey = 'blis-sdk-port'
+const localStorageSdkPortKey = 'conversationlearner-sdk-port'
 
 export function initialize() {
     const existingSdkPort = get()
