@@ -58,7 +58,7 @@ class SessionWindow extends React.Component<Props, ComponentState> {
                         </div>
                     </div>
                 </div>
-                <div className="cl-modal_footer">
+                <div className="cl-modal_footer cl-modal_footer--border">
                     <div className="cl-modal-buttons">
                         <div className="cl-modal-buttons_primary">
                         </div>

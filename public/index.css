@@ -325,6 +325,8 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
 
 .cl-modal_footer {
   padding-top: 1em;
+}
+.cl-modal_footer--border {
   border-top: 1px solid rgba(0, 0, 0, 0.125);
 }
 
