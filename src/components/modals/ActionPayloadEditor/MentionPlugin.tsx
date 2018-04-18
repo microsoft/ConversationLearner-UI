@@ -63,11 +63,14 @@ export default function mentionPlugin(inputOptions: Partial<IOptions> = {}) {
             }
 
             if (isWithinMentionNode) {
-                const isNodeCompleted = change.value.inlines.last().data.get('completed')
+                const lastInlineNode = change.value.inlines.last()
+                const isNodeCompleted = lastInlineNode.data.get('completed')
                 if (!isNodeCompleted && event.key === options.closingCharacter) {
                     event.preventDefault()
 
                     change
+                        .removeNodeByKey(lastInlineNode.key)
+                        .insertText(lastInlineNode.text)
                         .collapseToStartOfNextText()
                         .insertText(options.closingCharacter)
 
