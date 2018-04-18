@@ -18,9 +18,9 @@
   "dependencies": {
     "adaptivecards": "^1.0.0-beta9",
     "axios": "^0.16.2",
-    "conversationlearner-models": "0.143.0",
-    "conversationlearner-webchat": "0.103.0",
     "botframework-directlinejs": "^0.9.12",
+    "conversationlearner-models": "0.145.0",
+    "conversationlearner-webchat": "0.103.0",
     "draft-js": "^0.10.4",
     "draft-js-mention-plugin": "^2.0.1",
     "draft-js-plugins-editor": "^2.0.4",
