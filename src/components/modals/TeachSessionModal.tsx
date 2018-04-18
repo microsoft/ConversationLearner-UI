@@ -153,7 +153,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
         // Put mask of webchat if not in input mode
         let chatDisable = (this.props.dialogMode !== DialogMode.Wait) ?
-            <div className="cl-overlayc"></div>
+            <div className="cl-overlay"></div>
             : null;
 
         return (
