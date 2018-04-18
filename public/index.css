@@ -348,10 +348,10 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
   vertical-align: sub;
 }
 .cl-dialog-title.cl-dialog-title--log i[role="presentation"] {
-  background-color: var(--color-themePrimary);
+  background-color: var(--color-green);
 }
 .cl-dialog-title.cl-dialog-title--train i[role="presentation"] {
-  background-color: var(--color-error);
+  background-color: var(--color-magentaDark);
 }
 
 .cl-dropdownWithButton-dropdown {
