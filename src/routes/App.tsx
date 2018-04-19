@@ -43,8 +43,8 @@ class App extends React.Component<Props, ComponentState> {
             <nav className="cl-header_links ">
               <NavLink to="/home">
                 <FormattedMessage
-                  id={FM.APP_HEADER_HOME}
-                  defaultMessage="Home"
+                  id={FM.APP_HEADER_MYAPPS}
+                  defaultMessage="My Apps"
                 />
               </NavLink>
             </nav>

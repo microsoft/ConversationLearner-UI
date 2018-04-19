@@ -200,7 +200,7 @@ class Index extends React.Component<Props, ComponentState> {
                         </div>
                         <div className="cl-nav_section">
                             <NavLink className="cl-nav-link" exact={true} to="/home">
-                                <Icon iconName="Back" /><span>App List</span>
+                                <Icon iconName="Back" /><span>My Apps</span>
                             </NavLink>
                         </div>
                     </div>

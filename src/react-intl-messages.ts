@@ -23,7 +23,7 @@ export enum FM {
     ACTIONS_CONFIRMCANCELMODALTITLE = 'Actions.confirmCancelModalTitle',
 
     // App
-    APP_HEADER_HOME = 'App.header.home',
+    APP_HEADER_MYAPPS = 'App.header.home',
     APP_HEADER_ABOUT = 'App.header.about',
     APP_HEADER_DOCS = 'App.header.docs',
     APP_HEADER_SUPPORT = 'App.header.support',
@@ -40,7 +40,6 @@ export enum FM {
     APP_TRAINING_STATUS_EXPIRED = 'TrainingStatus.expired',
 
     // Apps List
-    APPSLIST_TITLE = 'AppsList.title',
     APPSLIST_SUBTITLE = 'AppsList.subtitle',
     APPSLIST_CREATEBUTTONARIADESCRIPTION = 'AppsList.createButtonAriaDescription',
     APPSLIST_CREATEBUTTONTEXT = 'AppsList.createButtonText',
@@ -417,7 +416,7 @@ export default {
         [FM.PROFILE_SETTINGS_SDKPORT]: 'SDK Port',
         [FM.SUPPORT_TITLE]: 'Support',
         [FM.NOMATCH_TITLE]: 'That page was not found.',
-        [FM.NOMATCH_HOME]: 'Home',
+        [FM.NOMATCH_HOME]: 'My Apps',
         [FM.PAGE_COMINGSOON]: 'Coming soon...',
 
         // Actions
@@ -428,7 +427,7 @@ export default {
         [FM.ACTIONS_CONFIRMCANCELMODALTITLE]: 'Are you sure you want to delete this action?',
 
         // App
-        [FM.APP_HEADER_HOME]: 'Home',
+        [FM.APP_HEADER_MYAPPS]: 'My Apps',
         [FM.APP_HEADER_ABOUT]: 'About',
         [FM.APP_HEADER_DOCS]: 'Docs',
         [FM.APP_HEADER_SUPPORT]: 'Support',
@@ -445,7 +444,6 @@ export default {
         [FM.APP_TRAINING_STATUS_EXPIRED]: 'Polling was stopped before training status was finalized. Please Refresh',
 
         // Apps List
-        [FM.APPSLIST_TITLE]: 'My Apps',
         [FM.APPSLIST_SUBTITLE]: 'Create and Manage your Conversation Learner applications...',
         [FM.APPSLIST_CREATEBUTTONARIADESCRIPTION]: 'Create a New Application',
         [FM.APPSLIST_CREATEBUTTONTEXT]: 'New App',
@@ -816,7 +814,7 @@ export default {
         [FM.PAGE_COMINGSOON]: '출시 예정 ...',
 
         // App
-        [FM.APP_HEADER_HOME]: '집',
+        [FM.APP_HEADER_MYAPPS]: '집',
         [FM.APP_HEADER_ABOUT]: '약',
         [FM.APP_HEADER_DOCS]: '선적 서류 비치',
         [FM.APP_HEADER_SUPPORT]: '지원하다',
