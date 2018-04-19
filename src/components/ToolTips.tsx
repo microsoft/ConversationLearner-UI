@@ -118,13 +118,13 @@ let memoryManagerSample =
     async EntityValueAsync(entityName: string): Promise<string>;
     async EntityValueAsPrebuiltAsync(entityName: string): Promise<MemoryValue[]>;
     async EntityValueAsListAsync(entityName: string): Promise<string[]>;
-    async EntityValueAsObject<T>(entityName: string): Promise<T | null> {
+    async EntityValueAsObjectAsync<T>(entityName: string): Promise<T | null> {
 
     // Values in memory before new Entity detection
     PrevEntityValue(entityName: string): (string | null)
     PrevEntityValueAsPrebuilt(entityName: string): MemoryValue[]
     PrevEntityValueAsList(entityName: string): string[]
-    PrevValueAsObject<T>(entityName: string): (T | null)
+    PrevEntityValueAsObject<T>(entityName: string): (T | null)
 
     // Memory manipulation methods
     async RememberEntityAsync(entityName: string, entityValue: string): Promise<void>;
