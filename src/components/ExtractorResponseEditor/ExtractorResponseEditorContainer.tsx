@@ -1,3 +1,7 @@
+/**
+ * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Licensed under the MIT License.
+ */
 import * as React from 'react'
 import { convertExtractorResponseToEditorModels, convertGenericEntityToPredictedEntity } from './utilities'
 import { IGenericEntity, IGenericEntityData, IEditorProps } from './models';

@@ -1,3 +1,7 @@
+/**
+ * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Licensed under the MIT License.
+ */
 import { BotState } from '../types'
 import { AT } from '../types/ActionTypes'
 import { ActionObject } from '../types'

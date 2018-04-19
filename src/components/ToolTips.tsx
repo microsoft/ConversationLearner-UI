@@ -1,3 +1,7 @@
+/**
+ * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Licensed under the MIT License.
+ */
 import * as React from 'react';
 import * as OF from 'office-ui-fabric-react';
 import { FormattedMessage } from 'react-intl'

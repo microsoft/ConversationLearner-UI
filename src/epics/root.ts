@@ -1,3 +1,7 @@
+/**
+ * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Licensed under the MIT License.
+ */
 import 'rxjs';
 import { combineEpics, Epic } from 'redux-observable'
 import { State, ActionObject } from '../types'

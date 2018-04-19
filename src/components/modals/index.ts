@@ -1,3 +1,7 @@
+/**
+ * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Licensed under the MIT License.
+ */
 import ActionCreatorEditor from './ActionCreatorEditor'
 import AppCreator from './AppCreator'
 import EntityCreatorEditor from './EntityCreatorEditor'

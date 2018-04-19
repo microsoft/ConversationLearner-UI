@@ -1,3 +1,7 @@
+/**
+ * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Licensed under the MIT License.
+ */
 import { NodeTypes, IOption } from './models'
 
 function updateOptionNames(value: any, options: IOption[]) {

@@ -1,3 +1,7 @@
+/**
+ * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Licensed under the MIT License.
+ */
 import { Value } from 'slate'
 import Plain from 'slate-plain-serializer'
 import * as models from './models'
