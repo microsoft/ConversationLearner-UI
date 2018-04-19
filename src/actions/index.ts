@@ -1,3 +1,7 @@
+/**
+ * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Licensed under the MIT License.
+ */
 import * as create from './createActions'
 // delete is a reserved word, so we must use alternative
 import * as deleteActions from './deleteActions'

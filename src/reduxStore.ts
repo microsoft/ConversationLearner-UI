@@ -1,3 +1,7 @@
+/**
+ * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Licensed under the MIT License.
+ */
 import { createStore, applyMiddleware, Store } from 'redux';
 import { createEpicMiddleware } from 'redux-observable';
 import thunkMiddleware from 'redux-thunk'

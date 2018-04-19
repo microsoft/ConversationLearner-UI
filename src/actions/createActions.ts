@@ -1,3 +1,7 @@
+/**
+ * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Licensed under the MIT License.
+ */
 import { ActionObject, ErrorType } from '../types'
 import { AT } from '../types/ActionTypes'
 import { AppBase, EntityBase, ActionBase, TrainDialog, LogDialog, Teach, Session, TeachWithHistory, UITeachResponse } from 'conversationlearner-models'

@@ -1,3 +1,7 @@
+/**
+ * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Licensed under the MIT License.
+ */
 export enum FM {
     ABOUT_TITLE = 'About.title',
     DOCS_TITLE = 'Docs.title',

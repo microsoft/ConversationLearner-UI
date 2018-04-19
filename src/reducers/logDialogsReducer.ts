@@ -1,3 +1,7 @@
+/**
+ * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Licensed under the MIT License.
+ */
 import { ActionObject } from '../types'
 import { LogDialogState } from '../types'
 import { AT } from '../types/ActionTypes'
