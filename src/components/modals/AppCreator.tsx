@@ -55,7 +55,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
         this.onClickCancel = this.onClickCancel.bind(this)
     }
 
-    componentWillMount() {
+    componentDidMount() {
         getLuisApplicationCultures()
             .then(cultures => {
                 const cultureOptions = cultures.map<OF.IDropdownOption>(c =>

@@ -148,8 +148,9 @@ const initialState: ComponentState = {
 class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     state = initialState;
 
-    componentWillMount() {
-        this.setState(this.initProps())
+    constructor(props: Props) {
+        super(props)
+        this.state = this.initProps()
     }
 
     initProps(): ComponentState {
@@ -184,7 +185,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             }))
     
         return {
-           ...initialState,
+            ...initialState,
             apiOptions,
             cardOptions,
             availableExpectedEntityTags,

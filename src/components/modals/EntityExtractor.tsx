@@ -74,11 +74,9 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         this.onUpdateExtractResponse = this.onUpdateExtractResponse.bind(this)
         this.focusPrimaryButton = this.focusPrimaryButton.bind(this);
     }
-    componentWillMount() {
-        this.setState({ newTextVariations: this.props.originalTextVariations })
-    }
-
+    
     componentDidMount() {
+        this.setState({ newTextVariations: this.props.originalTextVariations })
         setTimeout(this.focusPrimaryButton, 500);
     }
     focusPrimaryButton(): void {
