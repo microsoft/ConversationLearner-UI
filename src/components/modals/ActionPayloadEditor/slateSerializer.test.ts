@@ -17,6 +17,33 @@ describe('EntityIdSerializer', () => {
         expect(entityIdString).toEqual(plainString)
     })
 
+    test('given slate value with incomplete inline nodes, should serialize the same way as Plain serializer', () => {
+        const testValue = Plain.deserialize('').change()
+            .insertText('some text to start ')
+            .insertInline({
+                type: NodeTypes.Mention,
+                data: {
+                    completed: false
+                },
+                nodes: [
+                    {
+                        kind: 'text',
+                        leaves: [
+                            {
+                                text: '$entityName'
+                            }
+                        ]
+                    }
+                ]
+            })
+            .value
+
+        const plainString = Plain.serialize(testValue)
+        const entityIdString = EntityIdSerializer.serialize(testValue, emptyMap)
+
+        expect(entityIdString).toEqual(plainString)
+    })
+
     test('given slate value which has required inline node and fallback of false that doesnt have matching option, throw error', () => {
         const testValue = Plain.deserialize('').change()
             .insertText('some text to start ')

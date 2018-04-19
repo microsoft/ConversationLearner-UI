@@ -81,6 +81,11 @@ function serializeNode(node: any, entityValues: Map<string, string>, fallbackToO
         const data = typeof node.data.toJS === 'function'
             ? node.data.toJS()
             : node.data
+
+        if (!data.completed) {
+            return serializedChildNodes.join('')
+        }
+
         const option = data.option
 
         if (!option) {

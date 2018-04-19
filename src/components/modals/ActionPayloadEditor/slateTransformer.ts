@@ -20,8 +20,11 @@ function updateNodeOptionNames(node: any, options: IOption[], newName?: string) 
         return node
     } else if (node.kind === 'inline' && node.type === NodeTypes.Mention) {
         const data = node.data
-        const option = data.option
+        if (!data.completed) {
+            return node
+        }
 
+        const option = data.option
         if (!option) {
             throw new Error(`Attempting to update option name on inline node but it did not have option`)
         }

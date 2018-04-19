@@ -187,6 +187,8 @@ class AppCreator extends React.Component<Props, ComponentState> {
                         defaultSelectedKey={this.state.localeVal}
                         options={this.state.localeOptions}
                         onChanged={this.localeChanged}
+                        disabled={true}
+                        /* Disabled until trainer can support more than english */
                     />
                 </div>
                 <div className='cl-modal_footer'>

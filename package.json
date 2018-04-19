@@ -18,12 +18,9 @@
   "dependencies": {
     "adaptivecards": "^1.0.0-beta9",
     "axios": "^0.16.2",
-    "conversationlearner-models": "0.143.0",
-    "conversationlearner-webchat": "0.103.0",
     "botframework-directlinejs": "^0.9.12",
-    "draft-js": "^0.10.4",
-    "draft-js-mention-plugin": "^2.0.1",
-    "draft-js-plugins-editor": "^2.0.4",
+    "conversationlearner-models": "0.145.0",
+    "conversationlearner-webchat": "0.103.0",
     "fuse.js": "^3.2.0",
     "immutable": "^3.8.2",
     "inline-css": "^2.2.3",
@@ -58,7 +55,6 @@
     "builduipackage": "tsc -p ./publish/tsconfig.json && tsc -p ./scripts/tsconfig.json && node ./scripts/publish.js"
   },
   "devDependencies": {
-    "@types/draft-js": "^0.10.16",
     "@types/execa": "^0.8.1",
     "@types/fs-extra": "^5.0.0",
     "@types/jest": "^20.0.8",

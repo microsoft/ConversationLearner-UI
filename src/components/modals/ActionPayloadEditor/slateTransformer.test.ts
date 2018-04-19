@@ -5,6 +5,64 @@
 import { IOption } from './models'
 import SlateTransformer from './slateTransformer'
 
+const testJsonValueIncomplete = {
+    "kind": "value",
+    "document": {
+        "kind": "document",
+        "data": {},
+        "nodes": [
+            {
+                "kind": "block",
+                "type": "paragraph",
+                "isVoid": false,
+                "data": {},
+                "nodes": [
+                    {
+                        "kind": "text",
+                        "leaves": [
+                            {
+                                "kind": "leaf",
+                                "text": "This is ",
+                                "marks": [] as any[]
+                            }
+                        ]
+                    },
+                    {
+                        "kind": "inline",
+                        "type": "mention-inline-node",
+                        "isVoid": false,
+                        "data": {
+                            "completed": false
+                        },
+                        "nodes": [
+                            {
+                                "kind": "text",
+                                "leaves": [
+                                    {
+                                        "kind": "leaf",
+                                        "text": "$otherspecial",
+                                        "marks": [] as any[]
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "kind": "text",
+                        "leaves": [
+                            {
+                                "kind": "leaf",
+                                "text": "",
+                                "marks": []
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}
+
 const testJsonValue = {
     "kind": "value",
     "document": {
@@ -199,6 +257,11 @@ const expectedJsonValue = {
 
 describe('SlateTransformer', () => {
     describe('updateOptionNames', () => {
+        test('given slate value which has incomplete inline node option return the node unmodified', () => {
+            const newJsonValue = SlateTransformer.updateOptionNames(testJsonValueIncomplete, [])
+            expect(newJsonValue).toEqual(testJsonValueIncomplete)
+        })
+
         test('given slate value which has inline node option that doesnt have matching option, throw error', () => {
             const action = () => SlateTransformer.updateOptionNames(testJsonValue, [])
             expect(action).toThrow()

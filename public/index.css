@@ -269,6 +269,7 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
 
 .cl-modal.cl-modal--small{
   width: 50%;
+  max-height: 90%;
   /* TODO: Remove padding here, it should be the content inside that decides padding, otherwise all modals should have padding */
   padding: 1em;
 }
