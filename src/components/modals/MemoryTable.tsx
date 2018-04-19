@@ -192,7 +192,11 @@ class MemoryTable extends React.Component<Props, ComponentState> {
     // If text parses as an object, return it
     valuesAsObject(entityValues: string): Object | null {
         try {
-            return JSON.parse(entityValues);
+            let obj = JSON.parse(entityValues);
+            if (typeof obj !== 'number') {
+                return obj;
+            }
+            return null;
         } catch (err) {
             return null;
         }
