@@ -1,3 +1,7 @@
+/**
+ * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Licensed under the MIT License.
+ */
 import { AT, ActionObject, ErrorType } from '../types'
 import { Dispatch } from 'redux'
 import { AppBase, Session, Teach } from 'conversationlearner-models'

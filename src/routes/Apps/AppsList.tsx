@@ -1,3 +1,7 @@
+/**
+ * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Licensed under the MIT License.
+ */
 import * as React from 'react';
 import { withRouter } from 'react-router-dom'
 import { RouteComponentProps } from 'react-router'
@@ -282,12 +286,6 @@ class AppsList extends React.Component<Props, ComponentState> {
         let apps = this.getSortedApplications();
         return (
             <div className="cl-page">
-                <span className={OF.FontClassNames.superLarge}>
-                    <FormattedMessage
-                        id={FM.APPSLIST_TITLE}
-                        defaultMessage="My Apps"
-                    />
-                </span>
                 <span className={OF.FontClassNames.mediumPlus}>
                     <FormattedMessage
                         id={FM.APPSLIST_SUBTITLE}

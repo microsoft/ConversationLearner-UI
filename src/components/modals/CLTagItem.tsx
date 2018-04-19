@@ -1,3 +1,7 @@
+/**
+ * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Licensed under the MIT License.
+ */
 import * as React from 'react';
 import { IPickerItemProps, Icon, ITag } from 'office-ui-fabric-react'
 

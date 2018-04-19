@@ -1,3 +1,7 @@
+/**
+ * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Licensed under the MIT License.
+ */
 import { combineReducers, Reducer } from 'redux';
 import appsReducer from './appsReducer';
 import botReducer from './botReducer';

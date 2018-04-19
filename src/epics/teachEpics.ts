@@ -1,3 +1,7 @@
+/**
+ * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Licensed under the MIT License.
+ */
 import 'rxjs';
 import * as Rx from 'rxjs';
 import { ActionsObservable, Epic } from 'redux-observable'

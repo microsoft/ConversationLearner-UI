@@ -1,3 +1,7 @@
+/**
+ * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Licensed under the MIT License.
+ */
 import { ActionObject, ChatSessionState } from '../types'
 import { AT } from '../types/ActionTypes'
 import { Reducer } from 'redux'

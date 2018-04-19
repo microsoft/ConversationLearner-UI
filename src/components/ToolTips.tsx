@@ -1,3 +1,7 @@
+/**
+ * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Licensed under the MIT License.
+ */
 import * as React from 'react';
 import * as OF from 'office-ui-fabric-react';
 import { FormattedMessage } from 'react-intl'
@@ -114,13 +118,13 @@ let memoryManagerSample =
     async EntityValueAsync(entityName: string): Promise<string>;
     async EntityValueAsPrebuiltAsync(entityName: string): Promise<MemoryValue[]>;
     async EntityValueAsListAsync(entityName: string): Promise<string[]>;
-    async EntityValueAsObject<T>(entityName: string): Promise<T | null> {
+    async EntityValueAsObjectAsync<T>(entityName: string): Promise<T | null> {
 
     // Values in memory before new Entity detection
     PrevEntityValue(entityName: string): (string | null)
     PrevEntityValueAsPrebuilt(entityName: string): MemoryValue[]
     PrevEntityValueAsList(entityName: string): string[]
-    PrevValueAsObject<T>(entityName: string): (T | null)
+    PrevEntityValueAsObject<T>(entityName: string): (T | null)
 
     // Memory manipulation methods
     async RememberEntityAsync(entityName: string, entityValue: string): Promise<void>;

@@ -1,3 +1,7 @@
+/**
+ * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Licensed under the MIT License.
+ */
 // tslint:disable:no-console
 // In production, we register a service worker to serve assets from local cache.
 

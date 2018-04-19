@@ -1,3 +1,7 @@
+/**
+ * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Licensed under the MIT License.
+ */
 import * as React from 'react'
 import {
   BrowserRouter as Router, Redirect, Route, NavLink, Switch
@@ -39,8 +43,8 @@ class App extends React.Component<Props, ComponentState> {
             <nav className="cl-header_links ">
               <NavLink to="/home">
                 <FormattedMessage
-                  id={FM.APP_HEADER_HOME}
-                  defaultMessage="Home"
+                  id={FM.APP_HEADER_MYAPPS}
+                  defaultMessage="My Apps"
                 />
               </NavLink>
             </nav>

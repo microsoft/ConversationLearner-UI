@@ -1,3 +1,7 @@
+/**
+ * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Licensed under the MIT License.
+ */
 import * as React from 'react'
 import { FontClassNames } from 'office-ui-fabric-react'
 import { FormattedMessage } from 'react-intl'
@@ -16,7 +20,7 @@ const component = () => (
             <NavLink to="/">
                 <FormattedMessage
                     id={FM.NOMATCH_HOME}
-                    defaultMessage="Home"
+                    defaultMessage="My Apps"
                 />
             </NavLink>
         </div>
