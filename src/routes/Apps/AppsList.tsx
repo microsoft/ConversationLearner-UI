@@ -286,12 +286,6 @@ class AppsList extends React.Component<Props, ComponentState> {
         let apps = this.getSortedApplications();
         return (
             <div className="cl-page">
-                <span className={OF.FontClassNames.superLarge}>
-                    <FormattedMessage
-                        id={FM.APPSLIST_TITLE}
-                        defaultMessage="My Apps"
-                    />
-                </span>
                 <span className={OF.FontClassNames.mediumPlus}>
                     <FormattedMessage
                         id={FM.APPSLIST_SUBTITLE}
