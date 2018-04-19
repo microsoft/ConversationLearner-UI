@@ -33,6 +33,10 @@ class Webchat extends React.Component<Props, {}> {
         this.selectedActivity$ = this.selectedActivity$.bind(this)
     }
 
+    componentWillUnmount() {
+        this.dl.end();
+    }
+
     componentWillReceiveProps(nextProps: Props) {
         if (this.props.history !== nextProps.history) {
             this.chatProps = null;
