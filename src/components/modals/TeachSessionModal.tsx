@@ -42,7 +42,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
     private callbacksId: string = null;
 
-    componentWillMount() {
+    componentDidMount() {
         this.callbacksId = ErrorHandler.registerCallbacks(
             [
                 {actionType: AT.POST_SCORE_FEEDBACK_ASYNC, callback: this.onDismissError},
