@@ -29,6 +29,7 @@ import ReplayErrorList from '../../../components/modals/ReplayErrorList';
 
 interface IRenderableColumn extends OF.IColumn {
     render: (x: TrainDialog, component: TrainDialogs) => React.ReactNode
+    getSortValue: (trainDialog: TrainDialog, component: TrainDialogs) => string
 }
 
 const returnStringWhenError = (s: string) => {
@@ -51,6 +52,38 @@ function textClassName(trainDialog: TrainDialog): string {
     return OF.FontClassNames.mediumPlus;
 }
 
+function getFirstInput(trainDialog: TrainDialog) : string {
+    if (trainDialog.rounds && trainDialog.rounds.length > 0) {
+        const text = trainDialog.rounds[0].extractorStep.textVariations[0].text
+        return text;
+    }
+    return null;
+}
+
+function getLastInput(trainDialog: TrainDialog) : string {
+    if (trainDialog.rounds && trainDialog.rounds.length > 0) {
+        const text = trainDialog.rounds[trainDialog.rounds.length - 1].extractorStep.textVariations[0].text;
+        return text
+    }
+    return null;
+}
+
+function getLastResponse(trainDialog: TrainDialog, component: TrainDialogs): string {
+    // Find last action of last scorer step of last round
+    // If found, return payload, otherwise return not found icon
+    if (trainDialog.rounds && trainDialog.rounds.length > 0) {
+        let scorerSteps = trainDialog.rounds[trainDialog.rounds.length - 1].scorerSteps;
+        if (scorerSteps.length > 0) {
+            let actionId = scorerSteps[scorerSteps.length - 1].labelAction;
+            let action = component.props.actions.find(a => a.actionId == actionId);
+            if (action) {
+                return ActionBase.GetPayload(action, getDefaultEntityMap(component.props.entities))
+            } 
+        }
+    }
+    return null;
+}
+
 function getColumns(intl: InjectedIntl): IRenderableColumn[] {
     return [
         {
@@ -64,14 +97,18 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             maxWidth: 500,
             isResizable: true,
             render: trainDialog => {
-                if (trainDialog.rounds && trainDialog.rounds.length > 0) {
-                    const text = trainDialog.rounds[0].extractorStep.textVariations[0].text
+                let firstInput = getFirstInput(trainDialog);
+                if (firstInput) {
                     return (<span className={textClassName(trainDialog)}>
                             {trainDialog.invalid === true && <Icon className="cl-icon" iconName="IncidentTriangle" />}
-                            {text}
+                            {firstInput}
                         </span>)
                 }
                 return <OF.Icon iconName="Remove" className="notFoundIcon" />
+            },
+            getSortValue: trainDialog => {
+                let firstInput = getFirstInput(trainDialog)
+                return firstInput.toLowerCase();
             }
         },
         {
@@ -85,11 +122,15 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             maxWidth: 500,
             isResizable: true,
             render: trainDialog => {
-                if (trainDialog.rounds && trainDialog.rounds.length > 0) {
-                    const text = trainDialog.rounds[trainDialog.rounds.length - 1].extractorStep.textVariations[0].text;
-                    return <span className={textClassName(trainDialog)}>{text}</span>
+                let lastInput = getLastInput(trainDialog)
+                if (lastInput) {
+                    return <span className={textClassName(trainDialog)}>{lastInput}</span>
                 }
                 return <OF.Icon iconName="Remove" className="notFoundIcon" />
+            },
+            getSortValue: trainDialog => {
+                let lastInput = getLastInput(trainDialog)
+                return lastInput.toLowerCase()
             }
         },
         {
@@ -103,20 +144,15 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             maxWidth: 500,
             isResizable: true,
             render: (trainDialog, component) => {
-                // Find last action of last scorer step of last round
-                // If found, return payload, otherwise return not found icon
-                if (trainDialog.rounds && trainDialog.rounds.length > 0) {
-                    let scorerSteps = trainDialog.rounds[trainDialog.rounds.length - 1].scorerSteps;
-                    if (scorerSteps.length > 0) {
-                        let actionId = scorerSteps[scorerSteps.length - 1].labelAction;
-                        let action = component.props.actions.find(a => a.actionId == actionId);
-                        if (action) {
-                            return <span className={textClassName(trainDialog)}>{ActionBase.GetPayload(action, getDefaultEntityMap(component.props.entities))}</span>;
-                        }
-                    }
+                let lastResponse = getLastResponse(trainDialog, component);
+                if (lastResponse) {
+                    return <span className={textClassName(trainDialog)}>{lastResponse}</span>;
                 }
-
                 return <OF.Icon iconName="Remove" className="notFoundIcon" />;
+            },
+            getSortValue: (trainDialog, component) => {
+                let lastResponse = getLastResponse(trainDialog, component)
+                return lastResponse.toLowerCase()
             }
         },
         {
@@ -132,13 +168,15 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             render: trainDialog => {
                 let count = trainDialog.rounds ? trainDialog.rounds.length : 0
                 return <span className={textClassName(trainDialog)}>{count}</span>
-            }
+            },
+            getSortValue: trainDialog => (trainDialog.rounds ? trainDialog.rounds.length : 0).toString()
         }
     ]
 }
 
 interface ComponentState {
     columns: OF.IColumn[],
+    sortColumn: IRenderableColumn,
     teachSession: Teach,
     activities: Activity[]
     isTeachDialogModalOpen: boolean
@@ -160,6 +198,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
     state: ComponentState = {
         columns: getColumns(this.props.intl),
+        sortColumn: null,
         teachSession: null,
         activities: [],
         isTeachDialogModalOpen: false,
@@ -174,6 +213,40 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         validationErrors: [],
         validationErrorTitleId: null,
         validationErrorMessageId: null
+    }
+
+    
+    sortTrainDialogs(trainDialogs: TrainDialog[]): TrainDialog[] {
+        // If column header selected sort the items
+        if (this.state.sortColumn) {
+            trainDialogs
+                .sort((a, b) => {
+                    const firstValue = this.state.sortColumn.getSortValue(a, this)
+                    const secondValue = this.state.sortColumn.getSortValue(b, this)
+                    const compareValue = firstValue.localeCompare(secondValue)
+                    return this.state.sortColumn.isSortedDescending
+                        ? compareValue
+                        : compareValue * -1
+                })
+        }
+
+        return trainDialogs;
+    }
+
+    @autobind
+    onClickColumnHeader(event: any, clickedColumn: IRenderableColumn) {
+        let { columns } = this.state;
+        let isSortedDescending = !clickedColumn.isSortedDescending;
+
+        // Reset the items and columns to match the state.
+        this.setState({
+            columns: columns.map(column => {
+                column.isSorted = (column.key === clickedColumn.key);
+                column.isSortedDescending = isSortedDescending;
+                return column;
+            }),
+            sortColumn: clickedColumn
+        });
     }
 
     toActionFilter(action: ActionBase, entities: EntityBase[]) : OF.IDropdownOption {
@@ -507,6 +580,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         .sort((a, b) => {
             return (a.invalid === true) ? -1 : 1;
         })
+
+        filteredTrainDialogs = this.sortTrainDialogs(filteredTrainDialogs);
         return filteredTrainDialogs;
     }
 
@@ -608,6 +683,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     items={trainDialogItems}
                     columns={this.state.columns}
                     checkboxVisibility={OF.CheckboxVisibility.hidden}
+                    onColumnHeaderClick={this.onClickColumnHeader}
                     onRenderItemColumn={(trainDialog, i, column: IRenderableColumn) => returnErrorStringWhenError(() => column.render(trainDialog, this))}
                     onActiveItemChanged={trainDialog => this.onClickTrainDialogItem(trainDialog)}
                 />

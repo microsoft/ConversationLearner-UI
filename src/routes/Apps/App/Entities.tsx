@@ -163,22 +163,13 @@ class Entities extends React.Component<Props, ComponentState> {
     @autobind
     onClickColumnHeader(event: any, clickedColumn: IRenderableColumn) {
         let { columns } = this.state;
-        let isSortedDescending = clickedColumn.isSortedDescending;
-
-        // If we've sorted this column, flip it.
-        if (clickedColumn.isSorted) {
-            isSortedDescending = !isSortedDescending;
-        }
+        let isSortedDescending = !clickedColumn.isSortedDescending;
 
         // Reset the items and columns to match the state.
         this.setState({
             columns: columns.map(col => {
                 col.isSorted = (col.key === clickedColumn.key);
-
-                if (col.isSorted) {
-                    col.isSortedDescending = isSortedDescending;
-                }
-
+                col.isSortedDescending = isSortedDescending;
                 return col;
             }),
             sortColumn: clickedColumn

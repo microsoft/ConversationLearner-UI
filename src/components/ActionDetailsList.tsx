@@ -66,22 +66,13 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
 
     onClickColumnHeader(event: any, clickedColumn: IRenderableColumn) {
         let { columns } = this.state;
-        let isSortedDescending = clickedColumn.isSortedDescending;
-
-        // If we've sorted this column, flip it.
-        if (clickedColumn.isSorted) {
-            isSortedDescending = !isSortedDescending;
-        }
+        let isSortedDescending = !clickedColumn.isSortedDescending;
 
         // Reset the items and columns to match the state.
         this.setState({
             columns: columns.map(column => {
                 column.isSorted = (column.key === clickedColumn.key);
-
-                if (column.isSorted) {
-                    column.isSortedDescending = isSortedDescending;
-                }
-
+                column.isSortedDescending = isSortedDescending;
                 return column;
             }),
             sortColumn: clickedColumn
