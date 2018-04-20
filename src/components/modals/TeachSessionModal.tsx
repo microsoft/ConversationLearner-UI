@@ -16,7 +16,7 @@ import Webchat from '../Webchat'
 import TeachSessionAdmin from './TeachSessionAdmin'
 import { AppBase, UserInput, DialogType, TrainDialog, LogDialog, Teach, DialogMode } from 'conversationlearner-models'
 import { Activity } from 'botframework-directlinejs'
-import { deleteTeachSessionThunkAsync, deleteLogDialogThunkAsync } from '../../actions/deleteActions'
+import { deleteTeachSessionThunkAsync } from '../../actions/deleteActions'
 import { toggleAutoTeach, runExtractorAsync } from '../../actions/teachActions'
 import { fetchApplicationTrainingStatusThunkAsync } from '../../actions/fetchActions'
 import ConfirmCancelModal from './ConfirmCancelModal'
@@ -57,7 +57,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
  
     @autobind
     onDismissError(errorType: AT) : void {
-        this.props.deleteTeachSessionThunkAsync(this.props.user.id, this.props.teachSession, this.props.app.appId, false); // False = abandon
+        this.props.deleteTeachSessionThunkAsync(this.props.user.id, this.props.teachSession, this.props.app, this.props.editingPackageId, false); // False = abandon
         this.props.onClose();
     }
     componentWillReceiveProps(newProps: Props) {
@@ -92,25 +92,21 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
     onClickSave() {
 
-        let deleteLogId = this.props.logDialog ? this.props.logDialog.logDialogId : null;
-        ((this.props.deleteTeachSessionThunkAsync(this.props.user.id, this.props.teachSession, this.props.app.appId, true  /* True = save to train dialog */) as any) as Promise<Activity[]>)
-            .then((success) => {
-                    // Delete source log dialog if there was one
-                    if (success && deleteLogId) {  
-                        this.props.deleteLogDialogThunkAsync(this.props.user.id, this.props.app, deleteLogId, this.props.editingPackageId);
-                    }
-                }
-            );
+        let deleteLogId = this.props.sourceLogDialog ? this.props.sourceLogDialog.logDialogId : null;
+        let deleteTrainId = this.props.sourceTrainDialog ? this.props.sourceTrainDialog.trainDialogId : null;
+        this.props.deleteTeachSessionThunkAsync(this.props.user.id, this.props.teachSession, this.props.app, this.props.editingPackageId, true, deleteLogId, deleteTrainId);
         this.props.onClose()
     }
 
     onClickConfirmDelete() {
-        this.setState({
-            isConfirmDeleteOpen: false
-        }, () => {
-            this.props.deleteTeachSessionThunkAsync(this.props.user.id, this.props.teachSession, this.props.app.appId, false); // False = abandon
-            this.props.onClose()
-        })
+        this.setState(
+            {
+                isConfirmDeleteOpen: false
+            },
+            () => {
+                this.props.deleteTeachSessionThunkAsync(this.props.user.id, this.props.teachSession, this.props.app, this.props.editingPackageId, false); // False = abandon
+                this.props.onClose()
+            })
     }
 
     onClickCancelDelete() {
@@ -149,6 +145,51 @@ class TeachModal extends React.Component<Props, ComponentState> {
             }
 
             this.props.runExtractorAsync(this.props.user.id, this.props.app.appId, DialogType.TEACH, this.props.teachSession.teachId, null, userInput);
+        }
+    }
+
+    renderAbandonText(intl: ReactIntl.InjectedIntl) {
+        if (this.props.sourceLogDialog || this.props.sourceTrainDialog) {
+            return intl.formatMessage({
+                id: FM.TEACHSESSIONMODAL_EDIT_ABANDON_BUTTON_TEXT,
+                defaultMessage: 'Abandon Edit'
+            })
+        }
+        else {
+            return intl.formatMessage({
+                id: FM.TEACHSESSIONMODAL_TEACH_ABANDON_BUTTON_TEXT,
+                defaultMessage: 'Abandon Teach'
+            })
+        }
+    }
+
+    renderDoneText(intl: ReactIntl.InjectedIntl) {
+        if (this.props.sourceLogDialog || this.props.sourceTrainDialog) {
+            return intl.formatMessage({
+                id: FM.TEACHSESSIONMODAL_EDIT_DONE_BUTTON_TEXT,
+                defaultMessage: 'Done Editing'
+            })
+        }
+        else {
+            return intl.formatMessage({
+                id: FM.TEACHSESSIONMODAL_TEACH_DONE_BUTTON_TEXT,
+                defaultMessage: 'Done Teaching'
+            })
+        }
+    }
+
+    renderConfirmText(intl: ReactIntl.InjectedIntl) {
+        if (this.props.sourceLogDialog || this.props.sourceTrainDialog) {
+            return intl.formatMessage({
+                id: FM.TEACHSESSIONMODAL_EDIT_CONFIRMDELETE_TITLE,
+                defaultMessage: 'Are you sure you want to abandon editing?'
+            })
+        }
+        else {
+            return intl.formatMessage({
+                id: FM.TEACHSESSIONMODAL_TEACH_CONFIRMDELETE_TITLE,
+                defaultMessage: 'Are you sure you want to abandon this teach session?'
+            })
         }
     }
 
@@ -209,26 +250,14 @@ class TeachModal extends React.Component<Props, ComponentState> {
                             />
                             <DefaultButton
                                 onClick={() => this.onClickAbandonTeach()}
-                                ariaDescription={intl.formatMessage({
-                                    id: FM.TEACHSESSIONMODAL_DEFAULTBUTTON_ARIADESCRIPTION,
-                                    defaultMessage: "Abandon Teach"
-                                })}
-                                text={intl.formatMessage({
-                                    id: FM.TEACHSESSIONMODAL_DEFAULTBUTTON_TEXT,
-                                    defaultMessage: "Abandon Teach"
-                                })}
+                                ariaDescription={this.renderAbandonText(intl)}
+                                text={this.renderAbandonText(intl)}
                             />
                             <PrimaryButton
                                 disabled={!this.state.hasOneRound}
                                 onClick={() => this.onClickSave()}
-                                ariaDescription={intl.formatMessage({
-                                    id: FM.TEACHSESSIONMODAL_PRIMARYBUTTON_ARIADESCRIPTION,
-                                    defaultMessage: "Done Teaching"
-                                })}
-                                text={intl.formatMessage({
-                                    id: FM.TEACHSESSIONMODAL_PRIMARYBUTTON_TEXT,
-                                    defaultMessage: "Done Teaching"
-                                })}
+                                ariaDescription={this.renderDoneText(intl)}
+                                text={this.renderDoneText(intl)}
                             />
                         </div>
                     </div>
@@ -237,10 +266,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                     open={this.state.isConfirmDeleteOpen}
                     onCancel={() => this.onClickCancelDelete()}
                     onConfirm={() => this.onClickConfirmDelete()}
-                    title={intl.formatMessage({
-                        id: FM.TEACHSESSIONMODAL_CONFIRMDELETE_TITLE,
-                        defaultMessage: "Are you sure you want to abandon this teach session?"
-                    })}
+                    title={this.renderConfirmText(intl)}
                 />
             </Modal>
         );
@@ -250,7 +276,6 @@ class TeachModal extends React.Component<Props, ComponentState> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         deleteTeachSessionThunkAsync,
-        deleteLogDialogThunkAsync,
         fetchApplicationTrainingStatusThunkAsync,
         runExtractorAsync,
         toggleAutoTeach
@@ -270,9 +295,9 @@ export interface ReceivedProps {
     editingPackageId: string,
     teachSession: Teach,
     dialogMode: DialogMode,
-    // When editing and exitins log or train dialog
-    trainDialog: TrainDialog,
-    logDialog?: LogDialog,
+    // When editing and existing log or train dialog
+    sourceTrainDialog?: TrainDialog,
+    sourceLogDialog?: LogDialog,
     history: Activity[]       
 }
 

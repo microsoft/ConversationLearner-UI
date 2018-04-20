@@ -14,9 +14,9 @@ import {
     createChatSessionThunkAsync, 
     createTeachSessionFromHistoryThunkAsync,
     createTeachSessionFromUndoThunkAsync } from '../../../actions/createActions'
+import { deleteLogDialogThunkAsync } from '../../../actions/deleteActions';
 import { fetchAllLogDialogsAsync, fetchHistoryThunkAsync } from '../../../actions/fetchActions';
 import { setErrorDisplay } from '../../../actions/displayActions';
-import { deleteLogDialogThunkAsync } from '../../../actions/deleteActions';
 import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { FM } from '../../../react-intl-messages'
 import { Activity } from 'botframework-directlinejs';
@@ -187,6 +187,19 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         this.newChatSessionButton.focus()
     }
 
+    componentWillReceiveProps(newProps: Props) {
+
+        // If log dialogs have been updated, update selected logDialog too
+        if (this.props.logDialogs !== newProps.logDialogs) {
+            if (this.state.currentLogDialog) {
+                let newLogDialog = newProps.logDialogs.find(t => t.logDialogId === this.state.currentLogDialog.logDialogId);
+                this.setState({
+                    currentLogDialog: newLogDialog
+                })
+            }
+        }
+    }
+
     @autobind
     onClickNewChatSession() {
         // TODO: Find cleaner solution for the types.  Thunks return functions but when using them on props they should be returning result of the promise.
@@ -262,7 +275,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     onEditLogDialog(logDialogId: string, newTrainDialog: TrainDialog, lastExtractionChanged: boolean) {
         
         // Create a new teach session from the train dialog
-        ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app.appId, newTrainDialog, this.props.user.name, this.props.user.id, null, lastExtractionChanged) as any) as Promise<TeachWithHistory>)
+        ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app, newTrainDialog, this.props.user.name, this.props.user.id, lastExtractionChanged) as any) as Promise<TeachWithHistory>)
         .then(teachWithHistory => {
             if (teachWithHistory.replayErrors.length === 0) {
                 // Note: Don't clear currentLogDialog so I can delete it if I save my edits
@@ -334,10 +347,10 @@ class LogDialogs extends React.Component<Props, ComponentState> {
 
     renderLogDialogItems(): LogDialog[] {
         if (!this.state.searchValue) {
-            return this.props.logDialogs.all;
+            return this.props.logDialogs;
         }
         // TODO: Consider caching as not very efficient
-        let filteredTrainDialogs = this.props.logDialogs.all.filter((l: LogDialog) => {
+        let filteredTrainDialogs = this.props.logDialogs.filter((l: LogDialog) => {
             let keys = [];
             for (let round of l.rounds) {
                 keys.push(round.extractorStep.text);
@@ -454,8 +467,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                         onClose={this.onCloseTeachSession} 
                         onUndo={(popRound) => this.onUndoTeachStep(popRound)}
                         history={this.state.isTeachDialogModalOpen ? this.state.activities : null}
-                        trainDialog={null}
-                        logDialog={this.state.currentLogDialog}
+                        sourceLogDialog={this.state.currentLogDialog}
                 />
             </div>
         );

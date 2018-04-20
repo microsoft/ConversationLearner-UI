@@ -23,7 +23,7 @@ const trainDialogsReducer: Reducer<TrainDialogState> = (state = initialState, ac
         case AT.CREATE_TRAIN_DIALOG_FULFILLED:
             return [...state, action.trainDialog];
         case AT.DELETE_TRAIN_DIALOG_ASYNC:
-            // Delete train dialog optimistically.  Will reload train dialogs on failure
+            // Delete train dialog optimistically to update UI.  Will reload train dialogs on failure
             return state.filter(dialog => dialog.trainDialogId !== action.trainDialogId);
         case AT.EDIT_TRAINDIALOG_FULFILLED:
             return replace(state, action.trainDialog, a => a.trainDialogId);

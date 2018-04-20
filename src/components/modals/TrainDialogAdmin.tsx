@@ -440,7 +440,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                             }),
                             title: intl.formatMessage({
                                 id: FM.TRAINDIALOGADMIN_SAVECHANGES_DESCRIPTION,
-                                defaultMessage: 'Do you want to proceed and truncate the Train Dialog at this step?'
+                                defaultMessage: 'Truncate the Train Dialog at this step?'
                             })
                         }}
                         modalProps={{

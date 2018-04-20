@@ -371,11 +371,12 @@ export enum FM {
     // TeachSessionModal
     TEACHSESSIONMODAL_UNDO_ARIADESCRIPTION = 'TeachSessionModal.undo.ariaDescription',
     TEACHSESSIONMODAL_UNDO_TEXT = 'TeachSessionModal.undo.text',
-    TEACHSESSIONMODAL_DEFAULTBUTTON_ARIADESCRIPTION = 'TeachSessionModal.defaultButton.ariaDescription',
-    TEACHSESSIONMODAL_DEFAULTBUTTON_TEXT = 'TeachSessionModal.defaultButton.text',
-    TEACHSESSIONMODAL_PRIMARYBUTTON_ARIADESCRIPTION = 'TeachSessionModal.primaryButton.ariaDescription',
-    TEACHSESSIONMODAL_PRIMARYBUTTON_TEXT = 'TeachSessionModal.primaryButton.text',
-    TEACHSESSIONMODAL_CONFIRMDELETE_TITLE = 'TeachSessionModal.confirmDelete.title',
+    TEACHSESSIONMODAL_EDIT_ABANDON_BUTTON_TEXT = 'TeachSessionModal.edit.abandon.buttontext',
+    TEACHSESSIONMODAL_TEACH_ABANDON_BUTTON_TEXT = 'TeachSessionModal.teach.abandon.buttontext',
+    TEACHSESSIONMODAL_EDIT_DONE_BUTTON_TEXT = 'TeachSessionModal.edit.done.buttontext',
+    TEACHSESSIONMODAL_TEACH_DONE_BUTTON_TEXT = 'TeachSessionModal.teach.done.buttontext',
+    TEACHSESSIONMODAL_TEACH_CONFIRMDELETE_TITLE = 'TeachSessionModal.teach.confirmDelete.title',
+    TEACHSESSIONMODAL_EDIT_CONFIRMDELETE_TITLE = 'TeachSessionModal.edit.confirmDelete.title',
 
     // TrainDialogAdmin
     TRAINDIALOGADMIN_DIALOGMODE_USER = 'TrainDialogAdmin.dialogMode.user',
@@ -773,11 +774,12 @@ export default {
         // TeachSessionModal
         [FM.TEACHSESSIONMODAL_UNDO_ARIADESCRIPTION]: 'Undo Step',
         [FM.TEACHSESSIONMODAL_UNDO_TEXT]: 'Undo Step',
-        [FM.TEACHSESSIONMODAL_DEFAULTBUTTON_ARIADESCRIPTION]: 'Abandon Teach',
-        [FM.TEACHSESSIONMODAL_DEFAULTBUTTON_TEXT]: 'Abandon Teach',
-        [FM.TEACHSESSIONMODAL_PRIMARYBUTTON_ARIADESCRIPTION]: 'Done Teaching',
-        [FM.TEACHSESSIONMODAL_PRIMARYBUTTON_TEXT]: 'Done Teaching',
-        [FM.TEACHSESSIONMODAL_CONFIRMDELETE_TITLE]: 'Are you sure you want to abandon this teach session?',
+        [FM.TEACHSESSIONMODAL_EDIT_ABANDON_BUTTON_TEXT]: 'Abandon Edit',
+        [FM.TEACHSESSIONMODAL_TEACH_ABANDON_BUTTON_TEXT]: 'Abandon Teach',
+        [FM.TEACHSESSIONMODAL_EDIT_DONE_BUTTON_TEXT]: 'Done Editing',
+        [FM.TEACHSESSIONMODAL_TEACH_DONE_BUTTON_TEXT]: 'Done Teaching',
+        [FM.TEACHSESSIONMODAL_TEACH_CONFIRMDELETE_TITLE]: 'Are you sure you want to abandon this teach session?',
+        [FM.TEACHSESSIONMODAL_EDIT_CONFIRMDELETE_TITLE]: 'Are you sure you want to cancel editing?',
 
         // TrainDialogAdmin
         [FM.TRAINDIALOGADMIN_DIALOGMODE_USER]: 'User Input',
@@ -790,7 +792,7 @@ export default {
         [FM.TRAINDIALOGADMIN_ENTITYDETECTION_HELPTEXT]: 'Click on text from the dialog to the left.',
         [FM.TRAINDIALOGADMIN_ACTION_TITLE]: 'Action',
         [FM.TRAINDIALOGADMIN_SAVECHANGES_TITLE]: 'Your changes will invalidate the subsequent steps in the Train Dialog',
-        [FM.TRAINDIALOGADMIN_SAVECHANGES_DESCRIPTION]: 'Do you want to proceed and truncate the Train Dialog at this step?',
+        [FM.TRAINDIALOGADMIN_SAVECHANGES_DESCRIPTION]: 'Truncate and edit the Train Dialog at this step?',
         [FM.TRAINDIALOGADMIN_SAVECHANGES_PRIMARYBUTTON_TEXT]: 'Yes',
         [FM.TRAINDIALOGADMIN_SAVECHANGES_DEFAULTBUTTON_TEXT]: 'No',
 
