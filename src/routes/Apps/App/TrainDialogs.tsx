@@ -108,7 +108,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             },
             getSortValue: trainDialog => {
                 let firstInput = getFirstInput(trainDialog)
-                return firstInput.toLowerCase();
+                return firstInput ? firstInput.toLowerCase() : ''
             }
         },
         {
@@ -130,7 +130,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             },
             getSortValue: trainDialog => {
                 let lastInput = getLastInput(trainDialog)
-                return lastInput.toLowerCase()
+                return lastInput ? lastInput.toLowerCase() : ''
             }
         },
         {
@@ -152,7 +152,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             },
             getSortValue: (trainDialog, component) => {
                 let lastResponse = getLastResponse(trainDialog, component)
-                return lastResponse.toLowerCase()
+                return lastResponse ? lastResponse.toLowerCase() : ''
             }
         },
         {
@@ -169,7 +169,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                 let count = trainDialog.rounds ? trainDialog.rounds.length : 0
                 return <span className={textClassName(trainDialog)}>{count}</span>
             },
-            getSortValue: trainDialog => (trainDialog.rounds ? trainDialog.rounds.length : 0).toString()
+            getSortValue: trainDialog => (trainDialog.rounds ? trainDialog.rounds.length : 0).toString().padStart(4, '0')
         }
     ]
 }
@@ -215,7 +215,6 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         validationErrorMessageId: null
     }
 
-    
     sortTrainDialogs(trainDialogs: TrainDialog[]): TrainDialog[] {
         // If column header selected sort the items
         if (this.state.sortColumn) {
