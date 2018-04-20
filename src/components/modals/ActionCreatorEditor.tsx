@@ -587,9 +587,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     @autobind
     onCloseEntityEditor() {
         this.setState({
-            isEntityEditorModalOpen: false,
-            selectedApiOptionKey: null,
-            selectedCardOptionKey: null
+            isEntityEditorModalOpen: false
         })
     }
 
