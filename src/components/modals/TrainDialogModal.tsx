@@ -144,7 +144,7 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
                                     canEdit={this.props.canEdit}
                                     trainDialog={this.props.trainDialog}
                                     selectedActivity={this.state.selectedActivity}
-                                    onEdit={(sourceTrainDialogId: string, editedTrainDialog: TrainDialog, lastExtractChanged: boolean) => this.props.onEdit(sourceTrainDialogId, editedTrainDialog, lastExtractChanged)}
+                                    onEdit={(sourceTrainDialogId: string, editedTrainDialog: TrainDialog, lastExtractChanged: boolean) => this.props.onEdit(editedTrainDialog, lastExtractChanged)}
                                     onReplace={(editedTrainDialog: TrainDialog) => this.props.onReplace(editedTrainDialog)}
                                     onExtractionsChanged={(changed: boolean) => this.onExtractionsChanged(changed)}
                                 />
@@ -247,7 +247,7 @@ export interface ReceivedProps {
     canEdit: boolean,
     onClose: () => void,
     onBranch: (turnIndex: number) => void,
-    onEdit: (sourceTrainDialogId: string, newTrainDialog: TrainDialog, lastExtractChanged: boolean) => void,
+    onEdit: (newTrainDialog: TrainDialog, lastExtractChanged: boolean) => void,
     onReplace: (newTrainDialog: TrainDialog) => void,
     onDelete: () => void
     open: boolean

@@ -7,8 +7,7 @@ import { AT } from '../types/ActionTypes'
 import { AppBase, EntityBase, ActionBase, TrainDialog, LogDialog, Teach, Session, TeachWithHistory, UITeachResponse } from 'conversationlearner-models'
 import { Dispatch } from 'redux'
 import { setErrorDisplay } from './displayActions'
-import * as ClientFactory from '../services/clientFactory'
-import { deleteTrainDialogThunkAsync } from './deleteActions';  
+import * as ClientFactory from '../services/clientFactory' 
 import { fetchApplicationsAsync, fetchApplicationTrainingStatusThunkAsync } from './fetchActions';
 
 // --------------------------
@@ -260,18 +259,13 @@ const createTeachSessionFulfilled = (uiTeachResponse: UITeachResponse): ActionOb
 // --------------------------
 // TeachSessionFromHistory
 // --------------------------
-export const createTeachSessionFromHistoryThunkAsync = (appId: string, trainDialog: TrainDialog, userName: string, userId: string, deleteSourceId: string = null, lastExtractChanged: boolean = false) => {
+export const createTeachSessionFromHistoryThunkAsync = (app: AppBase, trainDialog: TrainDialog, userName: string, userId: string, lastExtractChanged: boolean = false) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.CREATE_TEACH_SESSION_FROMHISTORYASYNC)
-        dispatch(createTeachSessionFromHistoryAsync(appId, trainDialog, userName, userId))
+        dispatch(createTeachSessionFromHistoryAsync(app.appId, trainDialog, userName, userId))
 
         try {
-            const teachWithHistory = await clClient.teachSessionFromHistory(appId, trainDialog, userName, userId, lastExtractChanged);
-            
-            // Delete source trainDialog if requested and no discrepancies during replay
-            if (deleteSourceId && teachWithHistory.replayErrors.length === 0) {
-                dispatch(deleteTrainDialogThunkAsync(userId, appId, deleteSourceId));
-            }
+            const teachWithHistory = await clClient.teachSessionFromHistory(app.appId, trainDialog, userName, userId, lastExtractChanged);
             dispatch(createTeachSessionFromHistoryFulfilled(teachWithHistory))
             return teachWithHistory
         }

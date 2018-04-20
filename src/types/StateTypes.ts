@@ -25,9 +25,8 @@ export type ErrorState = {
 }
 export type TrainDialogState = TrainDialog[];
 
-export type LogDialogState = {
-    all: LogDialog[]
-}
+export type LogDialogState = LogDialog[]
+
 export type AppsState = {
     all: AppBase[],
     activeApps: { [appId: string]: string };  // appId: packageId
