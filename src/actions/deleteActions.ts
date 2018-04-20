@@ -160,21 +160,32 @@ const deleteChatSessionFulfilled = (sessionId: string): ActionObject => {
 // ---------------------
 // TeachSession
 // ---------------------
-export const deleteTeachSessionThunkAsync = (key: string, teachSession: Teach, appId: string, save: boolean) => {
+export const deleteTeachSessionThunkAsync = (key: string, teachSession: Teach, app: AppBase, packageId: string, save: boolean, sourceLogId?: string, sourceTeachId?: string) => {
     return async (dispatch: Dispatch<any>) => {
-        dispatch(deleteTeachSessionAsync(key, teachSession, appId, save))
+        dispatch(deleteTeachSessionAsync(key, teachSession, app.appId, save))
         const clClient = ClientFactory.getInstance(AT.DELETE_TEACH_SESSION_ASYNC)
 
         try {
-            await clClient.teachSessionsDelete(appId, teachSession, save);
-            dispatch(deleteTeachSessionFulfilled(key, appId, teachSession.teachId));
-            dispatch(fetchAllTrainDialogsAsync(appId));
-            dispatch(fetchApplicationTrainingStatusThunkAsync(appId));
+            await clClient.teachSessionsDelete(app.appId, teachSession, save);
+            dispatch(deleteTeachSessionFulfilled(key, app.appId, teachSession.teachId));
+
+            // If saving to a TrainDialog, delete any source dialog (original Log or edited TrainDialog)
+            if (save) {
+                if (sourceLogId) {  
+                    await dispatch(deleteLogDialogThunkAsync(key, app, sourceLogId, packageId));
+                }
+                if (sourceTeachId) {
+                    await dispatch(deleteTrainDialogThunkAsync(key, app, sourceTeachId));
+                }
+            }
+
+            dispatch(fetchAllTrainDialogsAsync(app.appId));
+            dispatch(fetchApplicationTrainingStatusThunkAsync(app.appId));
             return true;
         } catch (e) {
             const error = e as Error
             dispatch(setErrorDisplay(ErrorType.Error, error.name, [error.message], AT.DELETE_TRAIN_DIALOG_REJECTED))
-            dispatch(fetchAllTrainDialogsAsync(appId));
+            dispatch(fetchAllTrainDialogsAsync(app.appId));
             return false;
         }
     }
@@ -236,20 +247,20 @@ const deleteMemoryFulfilled = (): ActionObject => {
 // ------------------
 // TrainDialog
 // ------------------
-export const deleteTrainDialogThunkAsync = (userId: string, appId: string, trainDialogId: string) => {
+export const deleteTrainDialogThunkAsync = (userId: string, app: AppBase, trainDialogId: string) => {
     return async (dispatch: Dispatch<any>) => {
-        dispatch(deleteTrainDialogAsync(trainDialogId, appId))
+        dispatch(deleteTrainDialogAsync(trainDialogId, app.appId))
         const clClient = ClientFactory.getInstance(AT.DELETE_TRAIN_DIALOG_ASYNC)
 
         try {
-            await clClient.trainDialogsDelete(appId, trainDialogId)
+            await clClient.trainDialogsDelete(app.appId, trainDialogId)
             dispatch(deleteTrainDialogFulfilled(trainDialogId))
-            dispatch(fetchApplicationTrainingStatusThunkAsync(appId));
+            dispatch(fetchApplicationTrainingStatusThunkAsync(app.appId));
         } catch (e) {
             const error = e as Error
             dispatch(setErrorDisplay(ErrorType.Error, error.name, [error.message], AT.DELETE_TRAIN_DIALOG_REJECTED))
             dispatch(deleteTrainDialogRejected())
-            dispatch(fetchAllTrainDialogsAsync(appId));
+            dispatch(fetchAllTrainDialogsAsync(app.appId));
         }
     }
 }

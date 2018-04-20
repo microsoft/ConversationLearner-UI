@@ -144,7 +144,7 @@ interface ComponentState {
     isTeachDialogModalOpen: boolean
     isTrainDialogModalOpen: boolean
     isSessionMemoryCheckOpen: boolean
-    trainDialogId: string
+    currentTrainDialog: TrainDialog
     searchValue: string,
     dialogKey: number,
     entityFilter: OF.IDropdownOption,
@@ -165,7 +165,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         isTeachDialogModalOpen: false,
         isTrainDialogModalOpen: false,
         isSessionMemoryCheckOpen: false,
-        trainDialogId: null,
+        currentTrainDialog: null,
         searchValue: '',
         dialogKey: 0,
         entityFilter: null,
@@ -218,10 +218,10 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         }
         // If train dialogs have been updated, update selected trainDialog too
         if (this.props.trainDialogs !== newProps.trainDialogs) {
-            if (this.state.trainDialogId) {
-                let newTrainDialog = newProps.trainDialogs.find(t => t.trainDialogId === this.state.trainDialogId);
+            if (this.state.currentTrainDialog) {
+                let newTrainDialog = newProps.trainDialogs.find(t => t.trainDialogId === this.state.currentTrainDialog.trainDialogId);
                 this.setState({
-                    trainDialogId: newTrainDialog ? newTrainDialog.trainDialogId : null
+                    currentTrainDialog: newTrainDialog
                 })
             }
             this.newTeachSessionButton.focus();
@@ -262,6 +262,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             teachSession: null,
             isTeachDialogModalOpen: false,
             activities: null,
+            currentTrainDialog: null,
             dialogKey: this.state.dialogKey + 1
         })
     }
@@ -291,14 +292,14 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
     onDeleteTrainDialog() {
 
-        this.props.deleteTrainDialogThunkAsync(this.props.user.id, this.props.app.appId, this.state.trainDialogId)
+        this.props.deleteTrainDialogThunkAsync(this.props.user.id, this.props.app, this.state.currentTrainDialog.trainDialogId)
         this.props.fetchApplicationTrainingStatusThunkAsync(this.props.app.appId)
         this.onCloseTrainDialogModal();
     }
 
     onBranchTrainDialog(turnIndex: number) {
 
-        let trainDialog = this.props.trainDialogs.find(td => td.trainDialogId === this.state.trainDialogId);
+        let trainDialog = this.props.trainDialogs.find(td => td.trainDialogId === this.state.currentTrainDialog.trainDialogId);
 
         // Create new train dialog, removing turns above the branch
         let newTrainDialog: TrainDialog = {
@@ -314,13 +315,13 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             }
         };
 
-        ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app.appId, newTrainDialog, this.props.user.name, this.props.user.id) as any) as Promise<TeachWithHistory>)
+        ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app, newTrainDialog, this.props.user.name, this.props.user.id) as any) as Promise<TeachWithHistory>)
             .then(teachWithHistory => {
                 if (teachWithHistory.replayErrors.length === 0) {
                     this.setState({
                         teachSession: teachWithHistory.teach,
                         activities: teachWithHistory.history,
-                        trainDialogId: null,
+                        currentTrainDialog: null,
                         isTrainDialogModalOpen: false,
                         isTeachDialogModalOpen: true
                     })
@@ -339,15 +340,15 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             })
     }
 
-    onEditTrainDialog(sourceTrainDialogId: string, newTrainDialog: TrainDialog, lastExtractChanged: boolean) {
+    onEditTrainDialog(newTrainDialog: TrainDialog, lastExtractChanged: boolean) {
 
-        ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app.appId, newTrainDialog, this.props.user.name, this.props.user.id, sourceTrainDialogId, lastExtractChanged) as any) as Promise<TeachWithHistory>)
+        ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app, newTrainDialog, this.props.user.name, this.props.user.id, lastExtractChanged) as any) as Promise<TeachWithHistory>)
             .then(teachWithHistory => {
                 if (teachWithHistory.replayErrors.length === 0) {
+                    // Note: Don't clear currentTrainDialog so I can delete it if I save my edits
                     this.setState({
                         teachSession: teachWithHistory.teach,
                         activities: teachWithHistory.history,
-                        trainDialogId: null,
                         isTrainDialogModalOpen: false,
                         isTeachDialogModalOpen: true
                     })
@@ -394,7 +395,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             .then(teachWithHistory => {
                 this.setState({
                     activities: teachWithHistory.history,
-                    trainDialogId: trainDialog.trainDialogId,
+                    currentTrainDialog: trainDialog,
                     isTrainDialogModalOpen: true
                 })
             })
@@ -406,7 +407,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     onCloseTrainDialogModal() {
         this.setState({
             isTrainDialogModalOpen: false,
-            trainDialogId: null,
+            currentTrainDialog: null,
             activities: null,
             dialogKey: this.state.dialogKey + 1
         })
@@ -512,7 +513,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     render() {
         const { intl } = this.props
         let trainDialogItems = this.renderTrainDialogItems()
-        let trainDialog = this.props.trainDialogs.find((td) => td.trainDialogId === this.state.trainDialogId);
+        let currentTrainDialog = this.state.currentTrainDialog
         return (
             <div className="cl-page">
                 <div className={`cl-dialog-title cl-dialog-title--train ${OF.FontClassNames.xxLarge}`}>
@@ -562,7 +563,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         onClose={() => this.onCloseTeachSession()}
                         onUndo={(popRound) => this.onUndoTeachStep(popRound)}
                         history={this.state.isTeachDialogModalOpen ? this.state.activities : null}
-                        trainDialog={null}
+                        sourceTrainDialog={this.state.currentTrainDialog}
                     />
                 </div>
                 <div>
@@ -618,9 +619,9 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     onClose={() => this.onCloseTrainDialogModal()}
                     onBranch={(turnIndex: number) => this.onBranchTrainDialog(turnIndex)}
                     onDelete={() => this.onDeleteTrainDialog()}
-                    onEdit={(sourceTrainDialogId: string, editedTrainDialog: TrainDialog, lastExtractChanged: boolean) => this.onEditTrainDialog(sourceTrainDialogId, editedTrainDialog, lastExtractChanged)}
+                    onEdit={(editedTrainDialog: TrainDialog, lastExtractChanged: boolean) => this.onEditTrainDialog(editedTrainDialog, lastExtractChanged)}
                     onReplace={(editedTrainDialog: TrainDialog) => this.onReplaceTrainDialog(editedTrainDialog)}
-                    trainDialog={trainDialog}
+                    trainDialog={currentTrainDialog}
                     history={this.state.isTrainDialogModalOpen ? this.state.activities : null}
                 />
                 <SessionMemoryCheck
