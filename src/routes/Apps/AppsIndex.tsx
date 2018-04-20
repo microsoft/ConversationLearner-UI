@@ -39,7 +39,9 @@ class AppsIndex extends React.Component<Props, ComponentState> {
             history.replace('/home', null)
             return
         }
+    }
 
+    componentDidMount() {
         if (this.props.user.id !== null) {
             this.props.fetchApplicationsAsync(this.props.user.id)
             this.props.fetchBotInfoAsync()

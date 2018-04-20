@@ -30,7 +30,7 @@ const initialState: ComponentState = {
 class App extends React.Component<Props, ComponentState> {
   state = initialState
 
-  componentWillMount() {
+  componentDidMount() {
     this.props.fetchBotInfoAsync()
   }
 

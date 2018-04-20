@@ -114,7 +114,7 @@ class Settings extends React.Component<Props, ComponentState> {
             newBotVal: ''
         })
     }
-    componentWillMount() {
+    componentDidMount() {
         this.updateAppState(this.props.app)
     }
 
