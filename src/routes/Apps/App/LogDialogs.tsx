@@ -26,6 +26,7 @@ import ReplayErrorList from '../../../components/modals/ReplayErrorList';
 
 interface IRenderableColumn extends OF.IColumn {
     render: (x: LogDialog, component: LogDialogs) => React.ReactNode
+    getSortValue: (logDialog: LogDialog, component: LogDialogs) => string
 }
 
 const returnStringWhenError = (s: string) => {
@@ -41,6 +42,56 @@ const returnStringWhenError = (s: string) => {
 
 const returnErrorStringWhenError = returnStringWhenError("ERR")
 
+function getTagName(logDialog: LogDialog, component: LogDialogs): string {
+    // Only show tag column on Master branch it's the only one containing multiple tag types
+    if (component.props.editingPackageId !== component.props.app.devPackageId) {
+        return '';
+    }
+    let tagName = `UNKNOWN`; // Cover bug case of missing package
+    if (logDialog.packageId === component.props.app.devPackageId) {
+        tagName = 'Master';
+    }
+    else 
+    {
+        let packageVersion = component.props.app.packageVersions.find(pv => pv.packageId === logDialog.packageId);
+        if (packageVersion) {
+            tagName = packageVersion.packageVersion;
+        }
+    }
+    return tagName;
+}
+
+function getFirstInput(logDialog: LogDialog): string {
+    if (logDialog.rounds && logDialog.rounds.length > 0) {
+        let text = logDialog.rounds[0].extractorStep.text;
+        return text;
+    }
+    return null;
+}
+
+function getLastInput(logDialog: LogDialog): string {
+    if (logDialog.rounds && logDialog.rounds.length > 0) {
+        let text = logDialog.rounds[logDialog.rounds.length - 1].extractorStep.text;
+        return text;
+    }
+    return null;
+}
+
+function getLastResponse(logDialog: LogDialog, component: LogDialogs): string {
+    // Find last action of last scorer step of last round
+    // If found, return payload, otherwise return not found icon
+    if (logDialog.rounds && logDialog.rounds.length > 0) {
+        let scorerSteps = logDialog.rounds[logDialog.rounds.length - 1].scorerSteps;
+        if (scorerSteps.length > 0) {
+            let actionId = scorerSteps[scorerSteps.length - 1].predictedAction;
+            let action = component.props.actions.find(a => a.actionId == actionId);
+            if (action) {
+                return ActionBase.GetPayload(action, getDefaultEntityMap(component.props.entities))
+            }
+        }
+    }
+    return null;
+}
 function getColumns(intl: InjectedIntl): IRenderableColumn[] {
     return [
         {
@@ -51,22 +102,12 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             maxWidth: 500,
             isResizable: true,
             render: (logDialog, component) => {
-                // Only show tag column on Master branch it's the only one containing multiple tag types
-                if (component.props.editingPackageId !== component.props.app.devPackageId) {
-                    return null;
-                }
-                let tagName = `UNKNOWN`; // Cover bug case of missing package
-                if (logDialog.packageId === component.props.app.devPackageId) {
-                    tagName = 'Master';
-                }
-                else 
-                {
-                    let packageVersion = component.props.app.packageVersions.find(pv => pv.packageId === logDialog.packageId);
-                    if (packageVersion) {
-                        tagName = packageVersion.packageVersion;
-                    }
-                }
+                let tagName = getTagName(logDialog, component);
                 return <span className={OF.FontClassNames.mediumPlus}>{tagName}</span>;
+            },
+            getSortValue: (logDialog, component) => {
+                let tagName = getTagName(logDialog, component)
+                return tagName ? tagName.toLowerCase() : ''
             }
         },
         {
@@ -80,11 +121,15 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             maxWidth: 500,
             isResizable: true,
             render: logDialog => {
-                if (logDialog.rounds && logDialog.rounds.length > 0) {
-                    let text = logDialog.rounds[0].extractorStep.text;
-                    return <span className={OF.FontClassNames.mediumPlus}>{text}</span>;
+                let firstInput = getFirstInput(logDialog);
+                if (firstInput) {
+                    return <span className={OF.FontClassNames.mediumPlus}>{firstInput}</span>;
                 }
                 return <OF.Icon iconName="Remove" className="notFoundIcon" />
+            },
+            getSortValue: logDialog => {
+                let firstInput = getFirstInput(logDialog)
+                return firstInput ? firstInput.toLowerCase() : ''
             }
         },
         {
@@ -98,11 +143,15 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             maxWidth: 500,
             isResizable: true,
             render: logDialog => {
-                if (logDialog.rounds && logDialog.rounds.length > 0) {
-                    let text = logDialog.rounds[logDialog.rounds.length - 1].extractorStep.text;
-                    return <span className={OF.FontClassNames.mediumPlus}>{text}</span>;
+                let lastInput = getLastInput(logDialog)
+                if (lastInput) {
+                     return <span className={OF.FontClassNames.mediumPlus}>{lastInput}</span>;
                 }
                 return <OF.Icon iconName="Remove" className="notFoundIcon" />
+            },
+            getSortValue: logDialog => {
+                let lastInput = getLastInput(logDialog)
+                return lastInput ? lastInput.toLowerCase() : ''
             }
         },
         {
@@ -116,20 +165,15 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             maxWidth: 500,
             isResizable: true,
             render: (logDialog, component) => {
-                // Find last action of last scorer step of last round
-                // If found, return payload, otherwise return not found icon
-                if (logDialog.rounds && logDialog.rounds.length > 0) {
-                    let scorerSteps = logDialog.rounds[logDialog.rounds.length - 1].scorerSteps;
-                    if (scorerSteps.length > 0) {
-                        let actionId = scorerSteps[scorerSteps.length - 1].predictedAction;
-                        let action = component.props.actions.find(a => a.actionId == actionId);
-                        if (action) {
-                            return <span className={OF.FontClassNames.mediumPlus}>{ActionBase.GetPayload(action, getDefaultEntityMap(component.props.entities))}</span>;
-                        }
-                    }
+                let lastResponse = getLastResponse(logDialog, component);
+                if (lastResponse) {
+                    return <span className={OF.FontClassNames.mediumPlus}>{lastResponse}</span>;
                 }
-
                 return <OF.Icon iconName="Remove" className="notFoundIcon" />;
+            },
+            getSortValue: (logDialog, component) => {
+                let lastResponse = getLastResponse(logDialog, component)
+                return lastResponse ? lastResponse.toLowerCase() : ''
             }
         },
         {
@@ -141,13 +185,15 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             fieldName: 'dialog',
             minWidth: 30,
             maxWidth: 50,
-            render: logDialog => <span className={OF.FontClassNames.mediumPlus}>{logDialog.rounds.length}</span>
+            render: logDialog => <span className={OF.FontClassNames.mediumPlus}>{logDialog.rounds.length}</span>,
+            getSortValue: logDialog => logDialog.rounds.length.toString().padStart(4, '0')
         }
     ]
 }
 
 interface ComponentState {
-    columns: IRenderableColumn[]
+    columns: IRenderableColumn[],
+    sortColumn: IRenderableColumn,
     chatSession: Session
     isChatSessionWindowOpen: boolean
     isLogDialogWindowOpen: boolean
@@ -168,6 +214,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
 
     state: ComponentState = {
         columns: getColumns(this.props.intl),
+        sortColumn: null,
         chatSession: null,
         isChatSessionWindowOpen: false,
         isLogDialogWindowOpen: false,
@@ -181,6 +228,39 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         validationErrors: [],
         validationErrorTitleId: null,
         validationErrorMessageId: null
+    }
+
+    sortLogDialogs(logDialogs: LogDialog[]): LogDialog[] {
+        // If column header selected sort the items
+        if (this.state.sortColumn) {
+            logDialogs
+                .sort((a, b) => {
+                    const firstValue = this.state.sortColumn.getSortValue(a, this)
+                    const secondValue = this.state.sortColumn.getSortValue(b, this)
+                    const compareValue = firstValue.localeCompare(secondValue)
+                    return this.state.sortColumn.isSortedDescending
+                        ? compareValue
+                        : compareValue * -1
+                })
+        }
+
+        return logDialogs;
+    }
+
+    @autobind
+    onClickColumnHeader(event: any, clickedColumn: IRenderableColumn) {
+        let { columns } = this.state;
+        let isSortedDescending = !clickedColumn.isSortedDescending;
+
+        // Reset the items and columns to match the state.
+        this.setState({
+            columns: columns.map(column => {
+                column.isSorted = (column.key === clickedColumn.key);
+                column.isSortedDescending = isSortedDescending;
+                return column;
+            }),
+            sortColumn: clickedColumn
+        });
     }
 
     componentDidMount() {
@@ -346,25 +426,31 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     }
 
     renderLogDialogItems(): LogDialog[] {
+        let filteredLogDialogs: LogDialog[] = null;
+
         if (!this.state.searchValue) {
-            return this.props.logDialogs;
+            filteredLogDialogs = this.props.logDialogs;
         }
+        else {
         // TODO: Consider caching as not very efficient
-        let filteredTrainDialogs = this.props.logDialogs.filter((l: LogDialog) => {
-            let keys = [];
-            for (let round of l.rounds) {
-                keys.push(round.extractorStep.text);
-                for (let le of round.extractorStep.predictedEntities) {
-                    keys.push(this.props.entities.find(e => e.entityId === le.entityId).entityName);
+            filteredLogDialogs = this.props.logDialogs.filter((l: LogDialog) => {
+                let keys = [];
+                for (let round of l.rounds) {
+                    keys.push(round.extractorStep.text);
+                    for (let le of round.extractorStep.predictedEntities) {
+                        keys.push(this.props.entities.find(e => e.entityId === le.entityId).entityName);
+                    }
+                    for (let ss of round.scorerSteps) {
+                        keys.push(this.props.actions.find(a => a.actionId === ss.predictedAction).payload);
+                    }
                 }
-                for (let ss of round.scorerSteps) {
-                    keys.push(this.props.actions.find(a => a.actionId === ss.predictedAction).payload);
-                }
-            }
-            let searchString = keys.join(' ').toLowerCase();
-            return searchString.indexOf(this.state.searchValue) > -1;
-        })
-        return filteredTrainDialogs;
+                let searchString = keys.join(' ').toLowerCase();
+                return searchString.indexOf(this.state.searchValue) > -1;
+            })
+        }
+
+        filteredLogDialogs = this.sortLogDialogs(filteredLogDialogs);
+        return filteredLogDialogs;
     }
 
     render() {
@@ -437,6 +523,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     items={logDialogItems}
                     columns={this.state.columns}
                     checkboxVisibility={OF.CheckboxVisibility.hidden}
+                    onColumnHeaderClick={this.onClickColumnHeader}
                     onRenderItemColumn={(logDialog, i, column: IRenderableColumn) => returnErrorStringWhenError(() => column.render(logDialog, this))}
                     onActiveItemChanged={logDialog => this.onClickLogDialogItem(logDialog)}
                 />
