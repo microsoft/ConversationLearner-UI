@@ -16,7 +16,7 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "adaptivecards": "^1.0.0-beta9",
+    "adaptivecards": "1.0.0-beta9",
     "axios": "^0.16.2",
     "botframework-directlinejs": "^0.9.12",
     "conversationlearner-models": "0.145.0",
