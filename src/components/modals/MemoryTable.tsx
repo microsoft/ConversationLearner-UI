@@ -193,7 +193,7 @@ class MemoryTable extends React.Component<Props, ComponentState> {
     valuesAsObject(entityValues: string): Object | null {
         try {
             let obj = JSON.parse(entityValues);
-            if (typeof obj !== 'number') {
+            if (typeof obj !== 'number' && typeof obj !== 'boolean') {
                 return obj;
             }
             return null;
