@@ -87,7 +87,9 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
         case AT.FETCH_ENTITY_EDIT_VALIDATION_ASYNC:
         case AT.FETCH_ACTION_DELETE_VALIDATION_ASYNC:
         case AT.FETCH_ACTION_EDIT_VALIDATION_ASYNC:
+        case AT.FETCH_TUTORIALS_ASYNC:
 
+        case AT.COPY_APPLICATION_ASYNC:
         case AT.RUN_EXTRACTOR_ASYNC:
         case AT.GET_SCORES_ASYNC:
         case AT.RUN_SCORER_ASYNC:
@@ -134,7 +136,9 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
         case AT.FETCH_ENTITY_EDIT_VALIDATION_FULFILLED:
         case AT.FETCH_ACTION_DELETE_VALIDATION_FULFILLED:
         case AT.FETCH_ACTION_EDIT_VALIDATION_FULFILLED:
+        case AT.FETCH_TUTORIALS_FULFILLED:
     
+        case AT.COPY_APPLICATION_FULFILLED:
         case AT.RUN_EXTRACTOR_FULFILLED:
         case AT.GET_SCORES_FULFILLED:
         case AT.RUN_SCORER_FULFILLED:

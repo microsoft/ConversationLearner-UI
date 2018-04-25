@@ -211,18 +211,25 @@ export type FetchAction = {
     action: ActionBase
 } | {
     type: AT.FETCH_ACTION_EDIT_VALIDATION_FULFILLED
-} 
+} | {
+    type: AT.FETCH_TUTORIALS_ASYNC,
+    userId: string
+} | {
+    type: AT.FETCH_TUTORIALS_FULFILLED,
+    tutorials: AppBase[]
+}
 
 export type CreateAction = {
     type: AT.CREATE_APPLICATION_ASYNC,
     userId: string,
     app: AppBase,
 } | {
-    type: AT.COPY_APPLICATIONS_ASYNC,
+    type: AT.COPY_APPLICATION_ASYNC,
     srcUserId: string, 
-    destUserId: string
+    destUserId: string,
+    appId: string
 } | {
-    type: AT.COPY_APPLICATIONS_FULFILLED
+    type: AT.COPY_APPLICATION_FULFILLED
 } | {
     type: AT.CREATE_ENTITY_ASYNC,
     entity: EntityBase,

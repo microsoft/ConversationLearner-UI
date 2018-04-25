@@ -23,6 +23,9 @@ import { Dispatch } from 'redux'
 import * as ClientFactory from '../services/clientFactory'
 import { setErrorDisplay } from './displayActions'
 
+// ----------------------------------------
+// Train Dialogs
+// ----------------------------------------
 export const fetchAllTrainDialogsAsync = (clAppID: string): ActionObject => {
     return {
         type: AT.FETCH_TRAIN_DIALOGS_ASYNC,
@@ -37,6 +40,9 @@ export const fetchAllTrainDialogsFulfilled = (trainDialogs: TrainDialog[]): Acti
     }
 }
 
+// ----------------------------------------
+// History
+// ----------------------------------------
 export const fetchHistoryThunkAsync = (appId: string, trainDialog: TrainDialog, userName: string, userId: string) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.FETCH_HISTORY_ASYNC)
@@ -66,6 +72,9 @@ const fetchHistoryFulfilled = (teachWithHistory: TeachWithHistory): ActionObject
     }
 }
 
+// ----------------------------------------
+// Log Dialogs
+// ----------------------------------------
 export const fetchAllLogDialogsAsync = (key: string, app: AppBase, packageId: string): ActionObject => {
       
     // Note: In future change fetch log dialogs to default to all package if packageId is dev
@@ -88,23 +97,26 @@ export const fetchAllLogDialogsFulfilled = (logDialogs: LogDialog[]): ActionObje
     }
 }
 
+// ----------------------------------------
+// Bot Info
+// ----------------------------------------
 export const fetchBotInfoAsync = (): ActionObject => {
-    // Needs a fulfilled version to handle response from Epic
     return {
         type: AT.FETCH_BOTINFO_ASYNC
     }
 }
 
 export const fetchBotInfoFulfilled = (botInfo: BotInfo): ActionObject => {
-    // Needs a fulfilled version to handle response from Epic
     return {
         type: AT.FETCH_BOTINFO_FULFILLED,
         botInfo: botInfo
     }
 }
 
+// ----------------------------------------
+// Applications
+// ----------------------------------------
 export const fetchApplicationsAsync = (userId: string): ActionObject => {
-    //needs a fulfilled version to handle response from Epic
     return {
         type: AT.FETCH_APPLICATIONS_ASYNC,
         userId: userId
@@ -118,14 +130,62 @@ export const fetchApplicationsFulfilled = (uiAppList: UIAppList): ActionObject =
     }
 }
 
-export const fetchApplicationTrainingStatusAsync = (appId: string): ActionObject => {
+// ----------------------------------------
+// Tutorials
+// ----------------------------------------
+export const fetchTutorialsThunkAsync = (userId: string) => {
+    return async (dispatch: Dispatch<any>) => {
+        const clClient = ClientFactory.getInstance(AT.FETCH_TUTORIALS_ASYNC)
+        dispatch(fetchTutorialsAsync(userId))
+
+        try {
+            const tutorials = await clClient.tutorials(userId)
+            dispatch(fetchTutorialsFulfilled(tutorials))
+            return tutorials
+        } catch (e) {
+            const error = e as Error
+            dispatch(setErrorDisplay(ErrorType.Error, error.name, [error.message], AT.FETCH_TUTORIALS_ASYNC))
+            return null;
+        }
+    }
+}
+
+const fetchTutorialsAsync = (userId: string): ActionObject => {
+    return {
+        type: AT.FETCH_TUTORIALS_ASYNC,
+        userId: userId
+    }
+}
+
+const fetchTutorialsFulfilled = (tutorials: AppBase[]): ActionObject => {
+    return {
+        type: AT.FETCH_TUTORIALS_FULFILLED,
+        tutorials: tutorials
+    }
+}
+
+// ----------------------------------------
+// Training Status
+// ----------------------------------------
+const delay = <T>(ms: number, value: T = null): Promise<T> => new Promise<T>(resolve => setTimeout(() => resolve(value), ms))
+
+export const fetchApplicationTrainingStatusThunkAsync = (appId: string) => {
+    return async (dispatch: Dispatch<any>) => {
+        dispatch(fetchApplicationTrainingStatusAsync(appId))
+        // Wait 1 second before polling to ensure service has time to change status from previous to queued / running
+        await delay(1000)
+        pollTrainingStatusUntilResolvedOrMaxDuration(dispatch, appId, [TrainingStatusCode.Completed, TrainingStatusCode.Failed], 2000, 30000)
+    }
+}
+
+const fetchApplicationTrainingStatusAsync = (appId: string): ActionObject => {
     return {
         type: AT.FETCH_APPLICATION_TRAININGSTATUS_ASYNC,
         appId
     }
 }
 
-export const fetchApplicationTrainingStatusFulfilled = (appId: string, trainingStatus: TrainingStatus): ActionObject => {
+const fetchApplicationTrainingStatusFulfilled = (appId: string, trainingStatus: TrainingStatus): ActionObject => {
     return {
         type: AT.FETCH_APPLICATION_TRAININGSTATUS_FULFILLED,
         appId,
@@ -133,7 +193,7 @@ export const fetchApplicationTrainingStatusFulfilled = (appId: string, trainingS
     }
 }
 
-export const fetchApplicationTrainingStatusExpired = (appId: string): ActionObject => {
+const fetchApplicationTrainingStatusExpired = (appId: string): ActionObject => {
     return {
         type: AT.FETCH_APPLICATION_TRAININGSTATUS_EXPIRED,
         appId
@@ -175,19 +235,10 @@ const pollTrainingStatusUntilResolvedOrMaxDuration = (dispatch: Dispatch<any>, a
     })
 }
 
-const delay = <T>(ms: number, value: T = null): Promise<T> => new Promise<T>(resolve => setTimeout(() => resolve(value), ms))
-
-export const fetchApplicationTrainingStatusThunkAsync = (appId: string) => {
-    return async (dispatch: Dispatch<any>) => {
-        dispatch(fetchApplicationTrainingStatusAsync(appId))
-        // Wait 1 second before polling to ensure service has time to change status from previous to queued / running
-        await delay(1000)
-        pollTrainingStatusUntilResolvedOrMaxDuration(dispatch, appId, [TrainingStatusCode.Completed, TrainingStatusCode.Failed], 2000, 30000)
-    }
-}
-
+// -------------------------
+//  Entities
+// -------------------------
 export const fetchAllEntitiesAsync = (clAppID: string): ActionObject => {
-    //needs a fulfilled version to handle response from Epic
     return {
         type: AT.FETCH_ENTITIES_ASYNC,
         clAppID: clAppID
@@ -201,8 +252,10 @@ export const fetchAllEntitiesFulfilled = (entities: EntityBase[]): ActionObject 
     }
 }
 
+// -------------------------
+//  App Source
+// -------------------------
 export const fetchAppSourceAsync = (appId: string, packageId: string): ActionObject => {
-    //needs a fulfilled version to handle response from Epic
     return {
         type: AT.FETCH_APPSOURCE_ASYNC,
         clAppID: appId,
@@ -217,8 +270,10 @@ export const fetchAppSourceFulfilled = (appDefinition: AppDefinition): ActionObj
     }
 }
 
+// -------------------------
+//  Actions
+// -------------------------
 export const fetchAllActionsAsync = (clAppID: string): ActionObject => {
-    //needs a fulfilled version to handle response from Epic
     return {
         type: AT.FETCH_ACTIONS_ASYNC,
         clAppID: clAppID
@@ -232,8 +287,10 @@ export const fetchAllActionsFulfilled = (actions: ActionBase[]): ActionObject =>
     }
 }
 
+// -------------------------
+//  Chat Sessions
+// -------------------------
 export const fetchAllChatSessionsAsync = (clAppID: string): ActionObject => {
-    //needs a fulfilled version to handle response from Epic
     return {
         type: AT.FETCH_CHAT_SESSIONS_ASYNC,
         clAppID: clAppID
@@ -247,8 +304,10 @@ export const fetchAllChatSessionsFulfilled = (sessions: Session[]): ActionObject
     }
 }
 
+// -------------------------
+//  Teach Sessions
+// -------------------------
 export const fetchAllTeachSessionsAsync = (key: string, clAppID: string): ActionObject => {
-    //needs a fulfilled version to handle response from Epic
     return {
         type: AT.FETCH_TEACH_SESSIONS_ASYNC,
         key: key,
@@ -283,7 +342,7 @@ export const fetchEntityDeleteValidationThunkAsync = (appId: string, packageId: 
     }
 }
 
-export const fetchEntityDeleteValidationAsync = (appId: string, packageId: string, entityId: string): ActionObject => {
+const fetchEntityDeleteValidationAsync = (appId: string, packageId: string, entityId: string): ActionObject => {
     return {
         type: AT.FETCH_ENTITY_DELETE_VALIDATION_ASYNC,
         appId: appId,
@@ -292,14 +351,15 @@ export const fetchEntityDeleteValidationAsync = (appId: string, packageId: strin
     }
 }
 
-export const fetchEntityDeleteValidationFulfilled = (): ActionObject => {
+const fetchEntityDeleteValidationFulfilled = (): ActionObject => {
     return {
         type: AT.FETCH_ENTITY_DELETE_VALIDATION_FULFILLED
     }
 }
 
-// -----------------------------------------------
-
+// -------------------------
+//  Entity Edit Validation
+// -------------------------
 export const fetchEntityEditValidationThunkAsync = (appId: string, packageId: string, entity: EntityBase) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.FETCH_ENTITY_EDIT_VALIDATION_ASYNC)
@@ -317,7 +377,7 @@ export const fetchEntityEditValidationThunkAsync = (appId: string, packageId: st
     }
 }
 
-export const fetchEntityEditValidationAsync = (appId: string, packageId: string, entity: EntityBase): ActionObject => {
+const fetchEntityEditValidationAsync = (appId: string, packageId: string, entity: EntityBase): ActionObject => {
     return {
         type: AT.FETCH_ENTITY_EDIT_VALIDATION_ASYNC,
         appId: appId,
@@ -326,13 +386,15 @@ export const fetchEntityEditValidationAsync = (appId: string, packageId: string,
     }
 }
 
-export const fetchEntityEditValidationFulfilled = (): ActionObject => {
+const fetchEntityEditValidationFulfilled = (): ActionObject => {
     return {
         type: AT.FETCH_ENTITY_EDIT_VALIDATION_FULFILLED
     }
 }
 
-// -----------------------------------------------
+// --------------------------
+//  Action Delete Validation
+// --------------------------
 export const fetchActionDeleteValidationThunkAsync = (appId: string, packageId: string, actionId: string) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.FETCH_ACTION_DELETE_VALIDATION_ASYNC)
@@ -350,7 +412,7 @@ export const fetchActionDeleteValidationThunkAsync = (appId: string, packageId: 
     }
 }
 
-export const fetchActionDeleteValidationAsync = (appId: string, packageId: string, actionId: string): ActionObject => {
+const fetchActionDeleteValidationAsync = (appId: string, packageId: string, actionId: string): ActionObject => {
     return {
         type: AT.FETCH_ACTION_DELETE_VALIDATION_ASYNC,
         appId: appId,
@@ -359,14 +421,15 @@ export const fetchActionDeleteValidationAsync = (appId: string, packageId: strin
     }
 }
 
-export const fetchActionDeleteValidationFulfilled = (): ActionObject => {
+const fetchActionDeleteValidationFulfilled = (): ActionObject => {
     return {
         type: AT.FETCH_ACTION_DELETE_VALIDATION_FULFILLED
     }
 }
 
-// -----------------------------------------------
-
+// -------------------------
+//  Action Edit Validation
+// -------------------------
 export const fetchActionEditValidationThunkAsync = (appId: string, packageId: string, action: ActionBase) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.FETCH_ACTION_EDIT_VALIDATION_ASYNC)
@@ -384,7 +447,7 @@ export const fetchActionEditValidationThunkAsync = (appId: string, packageId: st
     }
 }
 
-export const fetchActionEditValidationAsync = (appId: string, packageId: string, action: ActionBase): ActionObject => {
+const fetchActionEditValidationAsync = (appId: string, packageId: string, action: ActionBase): ActionObject => {
     return {
         type: AT.FETCH_ACTION_EDIT_VALIDATION_ASYNC,
         appId: appId,
@@ -393,10 +456,8 @@ export const fetchActionEditValidationAsync = (appId: string, packageId: string,
     }
 }
 
-export const fetchActionEditValidationFulfilled = (): ActionObject => {
+const fetchActionEditValidationFulfilled = (): ActionObject => {
     return {
         type: AT.FETCH_ACTION_EDIT_VALIDATION_FULFILLED
     }
 }
-
-// -----------------------------------------------

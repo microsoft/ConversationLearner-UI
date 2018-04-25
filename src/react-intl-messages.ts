@@ -54,6 +54,9 @@ export enum FM {
 
     // Generic Buttons
     BUTTON_OK = 'Button.OK',
+    BUTTON_CANCEL = 'Button.CANCEL',
+    BUTTON_INFO = 'Button.INFO',
+    BUTTON_IMPORT = 'Button.IMPORT',
 
     // Custom Errors
     CUSTOMERROR_NETWORK_ERROR = 'CustomError.networkError',
@@ -203,6 +206,9 @@ export enum FM {
     TRAINDIALOGS_LASTINPUT = 'TrainDialogs.lastInput',
     TRAINDIALOGS_LASTRESPONSE = 'TrainDialogs.lastResponse',
     TRAINDIALOGS_TURNS = 'TrainDialogs.turns',
+
+    // Tutorial Importer
+    TUTORIALIMPORTER_TITLE = 'TutorialImporter.Title',
 
     // Validations
     VALIDATE_UNABLE_TO_EDIT = 'Validate.unableToEdit',
@@ -459,6 +465,9 @@ export default {
 
         // Generic Buttons
         [FM.BUTTON_OK]: 'OK',
+        [FM.BUTTON_CANCEL]: 'Cancel',
+        [FM.BUTTON_IMPORT]: 'Import',
+        [FM.BUTTON_INFO]: 'Info',
 
         // Custom Errors
         [FM.CUSTOMERROR_NETWORK_ERROR]: 'Is your Bot running?',
@@ -610,6 +619,9 @@ export default {
         [FM.TRAINDIALOGS_LASTINPUT]: 'Last Input',
         [FM.TRAINDIALOGS_LASTRESPONSE]: 'Last Response',
         [FM.TRAINDIALOGS_TURNS]: 'Turns',
+
+        // Tutorial Importer
+        [FM.TUTORIALIMPORTER_TITLE]: 'Tutorials',
 
         // Validation
         [FM.VALIDATE_UNABLE_TO_EDIT]: 'Unable to Edit',

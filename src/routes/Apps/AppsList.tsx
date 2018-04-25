@@ -8,6 +8,7 @@ import { RouteComponentProps } from 'react-router'
 import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import { fetchTutorialsThunkAsync } from '../../actions/fetchActions'
 import { AppCreator, ConfirmCancelModal } from '../../components/modals'
 import * as OF from 'office-ui-fabric-react';
 import { State } from '../../types';
@@ -17,6 +18,7 @@ import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'r
 import { FM } from '../../react-intl-messages'
 import { autobind } from 'office-ui-fabric-react/lib/Utilities';
 import * as util from '../../util'
+import TutorialImporter from '../../components/modals/TutorialImporter';
 
 interface ISortableRenderableColumn extends OF.IColumn {
     render: (app: AppBase, component: AppsList) => JSX.Element
@@ -112,12 +114,11 @@ function getColumns(intl: InjectedIntl): ISortableRenderableColumn[] {
 interface ComponentState {
     isAppCreateModalOpen: boolean
     isConfirmDeleteAppModalOpen: boolean
-    isConfirmDeleteDemosOpen: boolean
-    isImportNotificationOpen: boolean
-    isImportButtonDisabled: boolean
+    isImportTutorialsOpen: boolean
     appToDelete: AppBase
     columns: ISortableRenderableColumn[]
     sortColumn: ISortableRenderableColumn
+    tutorials: AppBase[]
 }
 
 const ifStringReturnLowerCase = (s: string | number) => {
@@ -135,12 +136,11 @@ class AppsList extends React.Component<Props, ComponentState> {
         this.state = {
             isAppCreateModalOpen: false,
             isConfirmDeleteAppModalOpen: false,
-            isConfirmDeleteDemosOpen: false,
-            isImportNotificationOpen: false,
-            isImportButtonDisabled: false,
+            isImportTutorialsOpen: false,
             appToDelete: null,
             columns,
-            sortColumn: defaultSortColumn
+            sortColumn: defaultSortColumn,
+            tutorials: null
         }
     }
 
@@ -162,25 +162,6 @@ class AppsList extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    onConfirmDeleteDemos() {
-        this.setState({
-            isConfirmDeleteDemosOpen: false,
-        })
-        for (let app of this.props.apps) {
-            if (app.appName.startsWith('Tutorial-')) {
-                this.props.onClickDeleteApp(app);
-            }
-        }
-    }
-
-    @autobind
-    onCancelDeleteDemos() {
-        this.setState({
-            isConfirmDeleteDemosOpen: false
-        })
-    }
-
-    @autobind
     onClickCreateNewApp() {
         this.setState({
             isAppCreateModalOpen: true
@@ -189,14 +170,23 @@ class AppsList extends React.Component<Props, ComponentState> {
 
     @autobind
     onClickImportDemoApps() {
-        this.onSubmitDemoImporterModal()
-    }
-
-    @autobind
-    onClickDeleteDemoApps() {
-        this.setState({
-            isConfirmDeleteDemosOpen: true,
-        })
+        if (this.state.tutorials === null) {
+            ((this.props.fetchTutorialsThunkAsync(CL_SAMPLE_ID) as any) as Promise<AppBase[]>)
+            .then(tutorials => {
+                this.setState({
+                    tutorials: tutorials,
+                    isImportTutorialsOpen: true
+                })
+            })
+            .catch(error => {
+                console.warn(`Error when attempting get tutorials: `, error)
+            })
+        }
+        else {
+            this.setState({
+                isImportTutorialsOpen: true
+            })
+        }
     }
 
     onClickDeleteApp(app: AppBase) {
@@ -213,7 +203,7 @@ class AppsList extends React.Component<Props, ComponentState> {
     @autobind
     onCloseImportNotification() {
         this.setState({
-            isImportNotificationOpen: false
+            isImportTutorialsOpen: false
         })
     }
 
@@ -252,14 +242,6 @@ class AppsList extends React.Component<Props, ComponentState> {
         this.setState({
             isAppCreateModalOpen: false
         })
-    }
-
-    onSubmitDemoImporterModal = () => {
-        this.setState({
-            isImportNotificationOpen: true,
-            isImportButtonDisabled: true
-        })
-        this.props.onImportDemoApps()
     }
 
     getSortedApplications(): AppBase[] {
@@ -306,7 +288,6 @@ class AppsList extends React.Component<Props, ComponentState> {
                     />
                     {this.props.user.id !== CL_SAMPLE_ID &&
                         <OF.DefaultButton
-                            disabled={this.state.isImportButtonDisabled}
                             onClick={this.onClickImportDemoApps}
                             ariaDescription={this.props.intl.formatMessage({
                                 id: FM.APPSLIST_IMPORTBUTTONARIADESCRIPTION,
@@ -317,14 +298,7 @@ class AppsList extends React.Component<Props, ComponentState> {
                                 defaultMessage: 'Import Tutorials'
                             })}
                         />
-                    }
-                    {this.props.user.id !== CL_SAMPLE_ID && this.props.apps.find(app => app.appName.startsWith('Tutorial-')) && 
-                        <OF.DefaultButton
-                            onClick={this.onClickDeleteDemoApps}
-                            ariaDescription="Remove Tutorials"
-                            text="Remove Tutorials"
-                        />
-                    }   
+                    }  
                 </div>
                 <OF.DetailsList
                     className={OF.FontClassNames.mediumPlus}
@@ -348,49 +322,20 @@ class AppsList extends React.Component<Props, ComponentState> {
                         defaultMessage: 'Are you sure you want to delete this application?'
                     })}
                 />
-                <OF.Dialog
-                    hidden={!this.state.isImportNotificationOpen}
-                    onDismiss={this.onCloseImportNotification}
-                    dialogContentProps={ {
-                        type: OF.DialogType.normal,
-                        title: 'Importing Demos & Tutorials',
-                        subText: 'This may take a few minutes.'
-                    } }
-                    modalProps={ {
-                        isBlocking: true,
-                        containerClassName: 'ms-dialogMainOverride'
-                    } }
-                >
-                    <OF.DialogFooter>
-                        <OF.PrimaryButton onClick={this.onCloseImportNotification} text="OK"/>
-                    </OF.DialogFooter>
-                </OF.Dialog>
-                <OF.Dialog
-                    hidden={!this.state.isConfirmDeleteDemosOpen}
-                    onDismiss={this.onCancelDeleteDemos}
-                    dialogContentProps={ {
-                        type: OF.DialogType.normal,
-                        title: 'Delete Tutorials from your account?',
-                        subText: 'This will delete all apps whose names start with "Tutorial-"'
-                    } }
-                    modalProps={ {
-                        titleAriaId: 'myLabelId',
-                        subtitleAriaId: 'mySubTextId',
-                        isBlocking: false,
-                        containerClassName: 'ms-dialogMainOverride'
-                    } }
-                >
-                    <OF.DialogFooter>
-                        <OF.PrimaryButton onClick={this.onConfirmDeleteDemos} text="OK"/>
-                        <OF.DefaultButton onClick={this.onCancelDeleteDemos} text="Cancel"/>       
-                    </OF.DialogFooter>
-                </OF.Dialog>
+                <TutorialImporter
+                    open={this.state.isImportTutorialsOpen}
+                    apps={this.props.apps}
+                    tutorials={this.state.tutorials}
+                    handleClose={this.onCloseImportNotification}
+                    onTutorialSelected={(tutorial) => this.props.onImportTutorial(tutorial)}
+                />
             </div>
         );
     }
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
+        fetchTutorialsThunkAsync
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {
@@ -404,7 +349,7 @@ export interface ReceivedProps {
     apps: AppBase[]
     onCreateApp: (app: AppBase) => void
     onClickDeleteApp: (app: AppBase) => void
-    onImportDemoApps: () => void
+    onImportTutorial: (tutorial: AppBase) => void
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
