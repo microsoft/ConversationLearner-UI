@@ -100,8 +100,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
             newRounds[roundIndex].scorerSteps = [];
             updatedTrainDialog = { ...updatedTrainDialog, rounds: rounds };
 
-            // LARS??
-            // Save prompt will be shown to user
+            // Save choice prompt will be shown to user
             this.setState({
                 saveTrainDialog: updatedTrainDialog,
                 saveSliceRound: roundIndex,

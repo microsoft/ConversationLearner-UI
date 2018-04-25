@@ -115,22 +115,28 @@ let apiCodeSample =
 
 let memoryManagerSample =
 `    // Values in bot memory
-    async EntityValueAsync(entityName: string): Promise<string>;
-    async EntityValueAsPrebuiltAsync(entityName: string): Promise<MemoryValue[]>;
-    async EntityValueAsListAsync(entityName: string): Promise<string[]>;
-    async EntityValueAsObjectAsync<T>(entityName: string): Promise<T | null> {
+    async EntityValueAsync(entityName: string): Promise<string>
+    async EntityValueAsPrebuiltAsync(entityName: string): Promise<MemoryValue[]>
+    async EntityValueAsListAsync(entityName: string): Promise<string[]>
+    async EntityValueAsObjectAsync<T>(entityName: string): Promise<T | null>
+    async EntityValueAsBooleanAsync(entityName: string): Promise<boolean | null>
+    async EntityValueAsNumberAsync(entityName: string): Promise<boolean | null>
 
     // Values in memory before new Entity detection
     PrevEntityValue(entityName: string): (string | null)
     PrevEntityValueAsPrebuilt(entityName: string): MemoryValue[]
     PrevEntityValueAsList(entityName: string): string[]
     PrevEntityValueAsObject<T>(entityName: string): (T | null)
+    PrevValueAsBoolean(entityName: string): boolean | null
+    PrevValueAsNumber(entityName: string): boolean | null
 
     // Memory manipulation methods
-    async RememberEntityAsync(entityName: string, entityValue: string): Promise<void>;
-    async RememberEntitiesAsync(entityName: string, entityValues: string[]): Promise<void>;
-    async ForgetEntityAsync(entityName: string, value?: string): Promise<void>;
-    async CopyEntityAsync(entityNameFrom: string, entityNameTo: string): Promise<void>;
+    async RememberEntityAsync(entityName: string, entityValue: string): Promise<void>
+    async RememberEntitiesAsync(entityName: string, entityValues: string[]): Promise<void>
+    async ForgetEntityAsync(entityName: string, value?: string): Promise<void>
+    async ForgetAllEntitiesAsync(saveEntityNames: string[]): Promise<void>
+    
+    async CopyEntityAsync(entityNameFrom: string, entityNameTo: string): Promise<void>
 
     async GetFilledEntitiesAsync(): Promise<FilledEntity[]>;
 `;

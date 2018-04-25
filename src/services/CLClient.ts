@@ -119,11 +119,11 @@ export default class CLClient {
         }).then(response => response.data)
     }
 
-    // AT.COPY_APPLICATIONS_ASYNC
-    appsCopy(srcUserId: string, destUserId: string): Promise<void> {
+    // AT.COPY_APPLICATION_ASYNC
+    appCopy(srcUserId: string, destUserId: string, appId: string): Promise<void> {
         return this.send<string>({
             method: 'post',
-            url: `${this.baseUrl}/apps/copy?srcUserId=${srcUserId}&destUserId=${destUserId}`
+            url: `${this.baseUrl}/apps/copy?srcUserId=${srcUserId}&destUserId=${destUserId}&appId=${appId}`
         }).then(response => {
             return null;
         })
@@ -313,6 +313,12 @@ export default class CLClient {
             data: userInput
         })
             .then(response => response.data)
+    }
+
+    tutorials(userId: string): Promise<models.AppBase[]> {
+        return this.send<models.UIAppList>({
+            url: `${this.baseUrl}/apps?userId=${userId}`
+        }).then(response => response.data.appList.apps)
     }
 
     history(appId: string, trainDialog: models.TrainDialog, userName: string, userId: string): Promise<models.TeachWithHistory> {
