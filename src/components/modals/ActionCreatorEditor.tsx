@@ -279,8 +279,13 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 } else if (action.actionType === ActionTypes.API_LOCAL) {
                     const apiAction = new ApiAction(action)
                     selectedApiOptionKey = apiAction.name
-                    for (let actionArgument of apiAction.arguments) {
-                        slateValuesMap[actionArgument.parameter] = createSlateValue(actionArgument.value, payloadOptions)
+                    const callback = this.props.botInfo.callbacks.find(t => t.name === selectedApiOptionKey)
+                    if (callback) {
+                        for (let actionArgumentName of callback.arguments) {
+                            const argument = apiAction.arguments.find(a => a.parameter === actionArgumentName)
+                            const initialValue = argument ? argument.value : ''
+                            slateValuesMap[actionArgumentName] = createSlateValue(initialValue, payloadOptions)
+                        }
                     }
                 } else if (action.actionType === ActionTypes.CARD) {
                     const cardAction = new CardAction(action)
