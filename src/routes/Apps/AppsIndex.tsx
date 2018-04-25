@@ -41,18 +41,20 @@ class AppsIndex extends React.Component<Props, ComponentState> {
         }
     }
 
-    componentDidMount() {
-        if (this.props.user.id !== null) {
+    updateAppsAndBot() {
+        if (this.props.user.id !== null && this.props.user.id.length > 0) {
             this.props.fetchApplicationsAsync(this.props.user.id)
             this.props.fetchBotInfoAsync()
         }
+    }
+    componentDidMount() {
+        this.updateAppsAndBot();
     }
 
     componentDidUpdate(prevProps: Props, _prevState: ComponentState) {
         // TODO: See if this code can be removed. It seems like componentWillMount is called every time the user navigates to /home route
         if (typeof (this.props.user.id) === 'string' && this.props.user.id !== prevProps.user.id) {
-            this.props.fetchApplicationsAsync(this.props.user.id)
-            this.props.fetchBotInfoAsync();
+            this.updateAppsAndBot();
         }
 
         const { history, location } = this.props
