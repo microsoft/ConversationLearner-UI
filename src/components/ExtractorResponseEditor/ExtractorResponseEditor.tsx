@@ -118,6 +118,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
         // Note: Slate value.selection can be different than the document window.getSelection()
         // From what I can tell slate's is always accurate to display.  If the selection was updated programmatically via slate API it will be reflected within Slates selection
         // and as soon as user interacts to change DOM selection, it will update both
+        // Note: Cannot test for selection.isCollapsed here, because we need the menu to open when the user clicks a word
         if (!selection) {
             return hideMenu
         }
@@ -132,8 +133,27 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
             bottom: relativeRect.height - (selectionBoundingRect.top - relativeRect.top) + 10
         }
 
+        /**
+         * If selection overlaps with existing custom entity nodes, or if it's has parent of custom entity node
+         * then set special flag isOverlappingOtherEntities which prevents adding entities
+         */
+        let isOverlappingOtherEntities = false
+        if (value.inlines.size > 0) {
+            const customEntityNodesInSelection = value.inlines.filter((n: any) => n.type === NodeType.CustomEntityNodeType)
+            if (customEntityNodesInSelection.size > 0) {
+                isOverlappingOtherEntities = true
+            }
+            else {
+                const parentOfFirstInline = value.document.getParent(value.inlines.first().key)
+                if (parentOfFirstInline.type === NodeType.CustomEntityNodeType) {
+                    console.log(`parentOfFirstInline.type === NodeType.CustomEntityNodeType`)
+                    isOverlappingOtherEntities = true
+                }
+            }
+        }
+
         return {
-            isOverlappingOtherEntities: ((value.inlines.toJS() as any[]).filter(n => n.type === NodeType.CustomEntityNodeType).length > 0),
+            isOverlappingOtherEntities,
             isVisible: true,
             position: menuPosition
         }
@@ -230,17 +250,6 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
         }
 
         const change = value.change()
-
-        if (value.inlines.size > 0) {
-            const parentOfFirstInline = value.document.getParent(value.inlines.first().key)
-
-            if (parentOfFirstInline.type === NodeType.CustomEntityNodeType) {
-                console.log(`parentOfFirstInline.type === NodeType.CustomEntityNodeType`)
-                change
-                    .unwrapInlineByKey(parentOfFirstInline.key)
-            }
-        }
-
         change
             .wrapInline({
                 type: NodeType.CustomEntityNodeType,

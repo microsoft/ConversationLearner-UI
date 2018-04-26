@@ -99,35 +99,88 @@ export const tokenizeText = (text: string, tokenRegex: RegExp): IToken[] => {
     return tokens
 }
 
+/**
+ * Similar to findIndex, but finds last index by iterating array items from end/right instead of start/left
+ * @param xs Array
+ * @param f Predicate function
+ */
+export const lastIndex = <T>(xs: T[], f: (x: T) => boolean): number => {
+    for (let i = xs.length - 1; i >= 0; i--)
+    {
+        if(f(xs[i])) {
+            return i
+        }
+    }
+
+    return -1
+}
+
 export const addTokenIndiciesToCustomEntities = (tokens: IToken[], customEntities: models.IGenericEntity<any>[]): ICustomEntityWithTokenIndicies[] => {
     return customEntities.map<ICustomEntityWithTokenIndicies>(ce => {
-        const startTokenIndex = tokens.findIndex(t => ce.startIndex < t.endIndex && t.endIndex <= ce.endIndex)
-        const endTokenIndex = tokens.findIndex(t => ce.startIndex <= t.startIndex && t.startIndex < ce.endIndex) + 1
+        const startTokenIndex = tokens.findIndex(t => t.isSelectable === true && ce.startIndex < t.endIndex && t.endIndex <= ce.endIndex)
+        const endTokenIndex = lastIndex(tokens, t => t.isSelectable === true && ce.startIndex <= t.startIndex && t.startIndex < ce.endIndex)
         if (startTokenIndex === -1 || endTokenIndex === -1) {
             console.warn(`Could not find valid token for custom entity: `, ce.data)
         }
 
+//         if (startTokenIndex !== -1 && endTokenIndex !== -1) {
+//             const startToken = tokens[startTokenIndex]
+//             const endToken = tokens[endTokenIndex]
+
+//             console.log(`
+// token indicies found:
+// ce.startIndex: ${ce.startIndex}
+// ce.endIndex: ${ce.endIndex}
+
+// startTokenIndex: ${startTokenIndex}
+// startToken.isSelectable: ${startToken.isSelectable}
+// startToken.startIndex: ${startToken.startIndex}
+// startToken.endIndex: ${startToken.endIndex}
+
+// endTokenIndex: ${endTokenIndex}
+// endToken.isSelectable: ${endToken.isSelectable}
+// endToken.startIndex: ${endToken.startIndex}
+// endToken.endIndex: ${endToken.endIndex}
+// `)
+//         }
+
         return {
             ...ce,
             startTokenIndex,
-            endTokenIndex
+            endTokenIndex: endTokenIndex + 1
         }
     })
 }
 
 export const wrapTokensWithEntities = (tokens: IToken[], customEntitiesWithTokens: ICustomEntityWithTokenIndicies[]): TokenArray => {
-    return customEntitiesWithTokens.reduce((tokenArray, cet) => {
-        return (cet.startTokenIndex === -1 || cet.endTokenIndex === -1)
-            ? tokenArray
-            : [
-                ...tokenArray.slice(0, cet.startTokenIndex),
-                {
-                    entity: cet,
-                    tokens: tokenArray.slice(cet.startTokenIndex, cet.endTokenIndex)
-                },
-                ...tokenArray.slice(cet.endTokenIndex)
-            ]
-    }, tokens)
+    // If there are no entities than no work to do, return tokens
+    if (customEntitiesWithTokens.length === 0) {
+        return tokens
+    }
+
+    // Include all non labeled tokens before first entity
+    const firstCet = customEntitiesWithTokens[0]
+    const tokenArray: TokenArray = [...tokens.slice(0, firstCet.startTokenIndex)]
+
+    for (let [i, cet] of Array.from(customEntitiesWithTokens.entries())) {
+        // push labeled tokens
+        tokenArray.push({
+            entity: cet,
+            tokens: tokens.slice(cet.startTokenIndex, cet.endTokenIndex)
+        })
+
+        // push non labeled tokens in between this and next entity
+        if (i !== customEntitiesWithTokens.length - 1) {
+            const nextCet = customEntitiesWithTokens[i+1]
+            tokenArray.push(...tokens.slice(cet.endTokenIndex, nextCet.startTokenIndex))
+        }
+    }
+
+    // Include all non labeled tokens after last entity
+    const lastCet = customEntitiesWithTokens[customEntitiesWithTokens.length - 1]
+    tokenArray.push(...tokens.slice(lastCet.endTokenIndex))
+
+    return tokenArray
 }
 
 export const labelTokens = (tokens: IToken[], customEntities: models.IGenericEntity<any>[]): TokenArray => {
@@ -207,7 +260,8 @@ export const convertToSlateValue = (tokensWithEntities: TokenArray): any => {
 }
 
 export const convertEntitiesAndTextToTokenizedEditorValue = (text: string, customEntities: models.IGenericEntity<any>[], inlineType: string) => {
-    return convertToSlateValue(labelTokens(tokenizeText(text, /\s+/g), customEntities))
+    const labeledTokens = labelTokens(tokenizeText(text, /\s+/g), customEntities)
+    return convertToSlateValue(labeledTokens)
 }
 
 export const convertEntitiesAndTextToEditorValue = (text: string, customEntities: models.IGenericEntity<any>[], inlineType: string) => {
