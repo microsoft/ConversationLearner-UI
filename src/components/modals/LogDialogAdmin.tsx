@@ -76,6 +76,7 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
     onClickSaveCheckYes() {
         let newTrainDialog: TrainDialog = {
             trainDialogId: undefined,
+            sourceLogDialogId: this.state.newTrainDialog.sourceLogDialogId,
             version: undefined,
             packageCreationId: undefined,
             packageDeletionId: undefined,
@@ -110,8 +111,9 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
             scorerSteps: []
         };
 
-        const trainDialog: TrainDialog = {
+        const newTrainDialog: TrainDialog = {
             trainDialogId: undefined,
+            sourceLogDialogId: this.props.logDialog.logDialogId,
             version: undefined,
             packageCreationId: undefined,
             packageDeletionId: undefined,
@@ -122,7 +124,7 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
         }
 
         this.setState({ 
-            newTrainDialog: trainDialog,
+            newTrainDialog: newTrainDialog,
             newExtractChanged: true
          });
     }
@@ -156,8 +158,9 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
             scorerSteps: [...scorerStepsBeforeModification, modifiedScorerStep]
         }
 
-        let trainDialog: TrainDialog = {
+        let newTrainDialog: TrainDialog = {
             trainDialogId: undefined,
+            sourceLogDialogId: this.props.logDialog.logDialogId,
             version: undefined,
             packageCreationId: undefined,
             packageDeletionId: undefined,
@@ -166,7 +169,7 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
         }
 
         this.setState({ 
-            newTrainDialog: trainDialog,
+            newTrainDialog: newTrainDialog,
             newExtractChanged: false
         });
     }

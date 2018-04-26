@@ -115,6 +115,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                 packageCreationId: undefined,
                 packageDeletionId: undefined,
                 trainDialogId: this.props.trainDialog.trainDialogId,
+                sourceLogDialogId: this.props.trainDialog.sourceLogDialogId,
                 rounds: updatedTrainDialog.rounds,
                 definitions: {
                     entities: this.props.entities,
@@ -171,6 +172,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
     editTrainDialog(sourceDialog: TrainDialog, sliceRound: number, extractChanged: boolean) {
         let trainDialog: TrainDialog = {
             trainDialogId: undefined,
+            sourceLogDialogId: sourceDialog.sourceLogDialogId,
             version: undefined,
             packageCreationId: undefined,
             packageDeletionId: undefined,
