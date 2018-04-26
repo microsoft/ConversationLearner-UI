@@ -115,10 +115,9 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
         const relativeRect = relativeParent.getBoundingClientRect()
         const selection = window.getSelection()
 
-        // console.group('getNextPickerProps')
-        // console.log(`value.selection.toJSON()`, value.selection.isCollapsed, value.selection.isExpanded, value.selection.toJSON())
-        // console.log(`window.getSelection()`, selection)
-        // console.groupEnd()
+        // Note: Slate value.selection can be different than the document window.getSelection()
+        // From what I can tell slate's is always accurate to display.  If the selection was updated programmatically via slate API it will be reflected within Slates selection
+        // and as soon as user interacts to change DOM selection, it will update both
         if (!selection) {
             return hideMenu
         }
@@ -160,6 +159,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
 
         const pickerProps = this.getNextPickerProps(value, this.menu)
         if (pickerProps) {
+            console.log(`onChange.set pickerProps`, pickerProps.isVisible)
             this.setState({
                 isSelectionOverlappingOtherEntities: pickerProps.isOverlappingOtherEntities,
                 isMenuVisible: pickerProps.isVisible,
@@ -171,7 +171,6 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
     onChangeToken = (change: any) => {
         const { value, operations } = change
         const operationsJs = operations.toJS()
-
         const containsDisallowedOperations = operationsJs.some((o: any) => disallowedOperations.includes(o.type))
         if (containsDisallowedOperations) {
             return
@@ -197,6 +196,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
 
         const pickerProps = this.getNextPickerProps(change.value, this.tokenMenu)
         if (pickerProps) {
+            console.log(`onChangeToken.set pickerProps`, pickerProps.isVisible)
             this.setState({
                 isSelectionOverlappingOtherEntities: pickerProps.isOverlappingOtherEntities,
                 isTokenMenuVisible: pickerProps.isVisible,
@@ -230,6 +230,18 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
         }
 
         const change = value.change()
+
+        if (value.inlines.size > 0) {
+            const parentOfFirstInline = value.document.getParent(value.inlines.first().key)
+
+            if (parentOfFirstInline.type === NodeType.CustomEntityNodeType) {
+                console.log(`parentOfFirstInline.type === NodeType.CustomEntityNodeType`)
+                change
+                    .unwrapInlineByKey(parentOfFirstInline.key)
+            }
+        }
+
+        change
             .wrapInline({
                 type: NodeType.CustomEntityNodeType,
                 data: {
