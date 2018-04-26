@@ -8,6 +8,7 @@ import * as models from './models'
 import * as util from '../../util'
 
 import { EntityBase, PredictedEntity, ExtractResponse, EntityType } from 'conversationlearner-models'
+import { NodeType } from './models';
 
 /**
  * Recursively walk up DOM tree until root or parent with non-static position is found.
@@ -42,6 +43,171 @@ export const valueToJSON = (value: any) => {
         selectedText: getSelectedText(value),
         selection: value.selection.toJSON()
     }
+}
+
+interface IToken {
+    text: string
+    isSelectable: boolean,
+    startIndex: number,
+    endIndex: number
+}
+
+interface ICustomEntityWithTokenIndicies extends models.IGenericEntity<any> {
+    startTokenIndex: number
+    endTokenIndex: number
+}
+
+interface IEntityPlaceholder {
+    entity: models.IGenericEntity<any>
+    tokens: IToken[]
+}
+
+type TokenArray = (IToken | IEntityPlaceholder)[]
+
+export const tokenizeText = (text: string, tokenRegex: RegExp): IToken[] => {
+    const tokens: IToken[] = []
+    let result: RegExpExecArray = null
+    let lastIndex = tokenRegex.lastIndex
+    while ((result = tokenRegex.exec(text)) !== null) {
+        const matchedText = text.substring(lastIndex, result.index)
+        tokens.push(...[
+            {
+                text: matchedText,
+                isSelectable: true,
+                startIndex: lastIndex,
+                endIndex: result.index
+            },
+            {
+                text: result[0],
+                isSelectable: false,
+                startIndex: result.index,
+                endIndex: result.index + result[0].length
+            }
+        ])
+
+        lastIndex = tokenRegex.lastIndex
+    }
+
+    const endIndex = text.length
+    tokens.push({
+        text: text.substring(lastIndex, endIndex),
+        isSelectable: true,
+        startIndex: lastIndex,
+        endIndex
+    })
+
+    return tokens
+}
+
+export const addTokenIndiciesToCustomEntities = (tokens: IToken[], customEntities: models.IGenericEntity<any>[]): ICustomEntityWithTokenIndicies[] => {
+    return customEntities.map<ICustomEntityWithTokenIndicies>(ce => {
+        const startTokenIndex = tokens.findIndex(t => ce.startIndex < t.endIndex && t.endIndex <= ce.endIndex)
+        const endTokenIndex = tokens.findIndex(t => ce.startIndex <= t.startIndex && t.startIndex < ce.endIndex) + 1
+        if (startTokenIndex === -1 || endTokenIndex === -1) {
+            console.warn(`Could not find valid token for custom entity: `, ce.data)
+        }
+
+        return {
+            ...ce,
+            startTokenIndex,
+            endTokenIndex
+        }
+    })
+}
+
+export const wrapTokensWithEntities = (tokens: IToken[], customEntitiesWithTokens: ICustomEntityWithTokenIndicies[]): TokenArray => {
+    return customEntitiesWithTokens.reduce((tokenArray, cet) => {
+        return (cet.startTokenIndex === -1 || cet.endTokenIndex === -1)
+            ? tokenArray
+            : [
+                ...tokenArray.slice(0, cet.startTokenIndex),
+                {
+                    entity: cet,
+                    tokens: tokenArray.slice(cet.startTokenIndex, cet.endTokenIndex)
+                },
+                ...tokenArray.slice(cet.endTokenIndex)
+            ]
+    }, tokens)
+}
+
+export const labelTokens = (tokens: IToken[], customEntities: models.IGenericEntity<any>[]): TokenArray => {
+    return wrapTokensWithEntities(tokens, addTokenIndiciesToCustomEntities(tokens, customEntities))
+}
+
+export const convertToSlateNodes = (tokensWithEntities: TokenArray, nodes: any[] = []): any[] => {
+    // TODO: Find better way to iterate over the nested array and determine based on flow-control / property types without casting
+    for (let tokenOrEntity of tokensWithEntities) {
+        if ((tokenOrEntity as IEntityPlaceholder).entity) {
+            const entityPlaceholder: IEntityPlaceholder = tokenOrEntity as any
+            const nestedNodes = convertToSlateNodes(entityPlaceholder.tokens)
+            nodes.push({
+                "kind": "inline",
+                "type": NodeType.CustomEntityNodeType,
+                "isVoid": false,
+                "data": entityPlaceholder.entity.data,
+                "nodes": nestedNodes
+            })
+        }
+        else {
+            const token: IToken = tokenOrEntity as any
+            if (token.isSelectable) {
+                nodes.push({
+                    "kind": "inline",
+                    "type": NodeType.TokenNodeType,
+                    "isVoid": false,
+                    "nodes": [
+                        {
+                            "kind": "text",
+                            "leaves": [
+                                {
+                                    "kind": "leaf",
+                                    "text": token.text,
+                                    "marks": []
+                                }
+                            ]
+                        }
+                    ]
+                })
+            }
+            else {
+                nodes.push({
+                    "kind": "text",
+                    "leaves": [
+                        {
+                            "kind": "leaf",
+                            "text": token.text,
+                            "marks": []
+                        }
+                    ]
+                })
+            }
+        }
+    }
+
+    return nodes
+}
+
+export const convertToSlateValue = (tokensWithEntities: TokenArray): any => {
+    const nodes = convertToSlateNodes(tokensWithEntities)
+    const document = {
+        "document": {
+            "nodes": [
+                {
+                    "kind": "block",
+                    "type": "paragraph",
+                    "isVoid": false,
+                    "data": {},
+                    "nodes": nodes
+                }
+            ]
+        }
+    }
+
+    return Value.fromJSON(document)
+}
+
+export const convertEntitiesAndTextToTokenizedEditorValue = (text: string, customEntities: models.IGenericEntity<any>[], inlineType: string) => {
+    return convertToSlateValue(labelTokens(tokenizeText(text, /\s+/g), customEntities))
 }
 
 export const convertEntitiesAndTextToEditorValue = (text: string, customEntities: models.IGenericEntity<any>[], inlineType: string) => {
@@ -348,7 +514,7 @@ export const convertExtractorResponseToEditorModels = (extractResponse: ExtractR
                 name: util.entityDisplayName(e),
                 type: e.entityType
             })
-    )
+        )
 
     const text = extractResponse.text
     const internalPredictedEntities = extractResponse.predictedEntities
@@ -376,7 +542,7 @@ export const convertExtractorResponseToEditorModels = (extractResponse: ExtractR
     }
 }
 
-export const entityName = (entities: EntityBase[], entityId: string)  => {
+export const entityName = (entities: EntityBase[], entityId: string) => {
     let entity = entities.find(e => e.entityId === entityId);
     return entity ? util.entityDisplayName(entity) : '';
 }

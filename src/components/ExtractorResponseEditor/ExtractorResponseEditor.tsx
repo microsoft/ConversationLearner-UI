@@ -4,14 +4,14 @@
  */
 import * as React from 'react'
 import { Editor } from 'slate-react'
-import { Value } from 'slate'
-import initialValue from './value'
+import Plain from 'slate-plain-serializer'
 import { IOption, IPosition, IEntityPickerProps, IGenericEntity, NodeType } from './models'
-import { convertEntitiesAndTextToEditorValue, getRelativeParent, getEntitiesFromValue, getSelectedText } from './utilities'
+import { convertEntitiesAndTextToTokenizedEditorValue, convertEntitiesAndTextToEditorValue, getRelativeParent, getEntitiesFromValue, getSelectedText } from './utilities'
 import CustomEntityNode from './CustomEntityNode'
 import PreBuiltEntityNode from './PreBuiltEntityNode'
 import EntityPicker from './EntityPickerContainer'
 import './ExtractorResponseEditor.css'
+import TokenNode from './TokenNode'
 
 // Slate doesn't have type definitions but we still want type consistency and references so we make custom type
 export type SlateValue = any
@@ -32,6 +32,9 @@ interface State {
     isMenuVisible: boolean
     menuPosition: IPosition
     value: SlateValue
+    isTokenMenuVisible: boolean
+    tokenMenuPosition: IPosition
+    tokenizedValue: SlateValue
     preBuiltEditorValues: SlateValue[]
 }
 
@@ -48,6 +51,7 @@ const externalChangeOperations = ['insert_node', 'remove_node']
  * however internally it stores as generic options list and a Slate.js value object.
  */
 class ExtractorResponseEditor extends React.Component<Props, State> {
+    tokenMenu: HTMLElement
     menu: HTMLElement
 
     state = {
@@ -58,13 +62,21 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
             left: 0,
             bottom: 0
         },
-        value: Value.fromJSON(initialValue),
+        value: Plain.deserialize(''),
+        isTokenMenuVisible: false,
+        tokenMenuPosition: {
+            top: 0,
+            left: 0,
+            bottom: 0
+        },
+        tokenizedValue: Plain.deserialize(''),
         preBuiltEditorValues: [{}]
     }
 
     constructor(props: Props) {
         super(props)
 
+        this.state.tokenizedValue = convertEntitiesAndTextToTokenizedEditorValue(props.text, props.customEntities, NodeType.CustomEntityNodeType)
         this.state.value = convertEntitiesAndTextToEditorValue(props.text, props.customEntities, NodeType.CustomEntityNodeType)
         this.state.preBuiltEditorValues = props.preBuiltEntities.map<any[]>(preBuiltEntity => convertEntitiesAndTextToEditorValue(props.text, [preBuiltEntity], NodeType.PreBuiltEntityNodeType))
     }
@@ -77,32 +89,37 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
             || nextProps.customEntities.length !== this.props.customEntities.length
             || nextProps.preBuiltEntities.length !== this.props.preBuiltEntities.length) {
             this.setState({
+                tokenizedValue: convertEntitiesAndTextToTokenizedEditorValue(nextProps.text, nextProps.customEntities, NodeType.CustomEntityNodeType),
                 value: convertEntitiesAndTextToEditorValue(nextProps.text, nextProps.customEntities, NodeType.CustomEntityNodeType),
                 preBuiltEditorValues: nextProps.preBuiltEntities.map<any[]>(preBuiltEntity => convertEntitiesAndTextToEditorValue(nextProps.text, [preBuiltEntity], NodeType.PreBuiltEntityNodeType))
             })
         }
     }
 
-    updateMenu = (value: SlateValue): IEntityPickerProps | void => {
+    getNextPickerProps = (value: SlateValue, menu: HTMLElement): IEntityPickerProps | void => {
         const hideMenu: IEntityPickerProps = {
             isOverlappingOtherEntities: false,
             isVisible: false,
             position: null
         }
-        const menu = this.menu
+
         if (!menu) {
             return hideMenu
         }
 
-        if (value.isEmpty) {
+        if (value.isEmpty || value.selection.isCollapsed) {
             return hideMenu
         }
 
-        const relativeParent = getRelativeParent(this.menu.parentElement)
+        const relativeParent = getRelativeParent(menu.parentElement)
         const relativeRect = relativeParent.getBoundingClientRect()
-
         const selection = window.getSelection()
-        if (!selection || selection.isCollapsed) {
+
+        // console.group('getNextPickerProps')
+        // console.log(`value.selection.toJSON()`, value.selection.isCollapsed, value.selection.isExpanded, value.selection.toJSON())
+        // console.log(`window.getSelection()`, selection)
+        // console.groupEnd()
+        if (!selection) {
             return hideMenu
         }
 
@@ -117,7 +134,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
         }
 
         return {
-            isOverlappingOtherEntities: (value.inlines.size > 0),
+            isOverlappingOtherEntities: ((value.inlines.toJS() as any[]).filter(n => n.type === NodeType.CustomEntityNodeType).length > 0),
             isVisible: true,
             position: menuPosition
         }
@@ -141,7 +158,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
             this.props.onChangeCustomEntities(customEntities)
         }
 
-        const pickerProps = this.updateMenu(value)
+        const pickerProps = this.getNextPickerProps(value, this.menu)
         if (pickerProps) {
             this.setState({
                 isSelectionOverlappingOtherEntities: pickerProps.isOverlappingOtherEntities,
@@ -151,20 +168,67 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
         }
     }
 
+    onChangeToken = (change: any) => {
+        const { value, operations } = change
+        const operationsJs = operations.toJS()
+
+        const containsDisallowedOperations = operationsJs.some((o: any) => disallowedOperations.includes(o.type))
+        if (containsDisallowedOperations) {
+            return
+        }
+        
+        const tokenNodes = value.inlines.filter((n: any) => n.type === NodeType.TokenNodeType)
+        if (tokenNodes.size > 0) {
+            const firstInline = value.inlines.first()
+            const lastInline = value.inlines.last()
+
+            change
+                .collapseToStartOf(firstInline)
+                .extendToEndOf(lastInline)
+        }
+
+        this.setState({ tokenizedValue: change.value })
+        
+        const containsExternalChangeOperation = operationsJs.some((o: any) => externalChangeOperations.includes(o.type))
+        if (containsExternalChangeOperation) {
+            const customEntities = getEntitiesFromValue(change)
+            this.props.onChangeCustomEntities(customEntities)
+        }
+
+        const pickerProps = this.getNextPickerProps(change.value, this.tokenMenu)
+        if (pickerProps) {
+            this.setState({
+                isSelectionOverlappingOtherEntities: pickerProps.isOverlappingOtherEntities,
+                isTokenMenuVisible: pickerProps.isVisible,
+                tokenMenuPosition: pickerProps.position
+            })
+        }
+    }
+
+    tokenMenuRef = (menu: any) => {
+        this.tokenMenu = menu
+    }
+
     menuRef = (menu: any) => {
         this.menu = menu
     }
 
     renderNode = (props: any): React.ReactNode | void => {
         switch (props.node.type) {
+            case NodeType.TokenNodeType: return <TokenNode {...props} />
             case NodeType.CustomEntityNodeType: return <CustomEntityNode {...props} />
             case NodeType.PreBuiltEntityNodeType: return <PreBuiltEntityNode {...props} />
         }
     }
 
-    onSelectOption = (option: IOption) => {
-        const value = this.state.value
+    onSelectOption = (option: IOption, value: SlateValue, onChange: (x: any) => void) => {
         const selectedText = getSelectedText(value)
+
+        if (selectedText.length === 0) {
+            console.warn(`onSelectOption was called but the value has an empty selection`)
+            return
+        }
+
         const change = value.change()
             .wrapInline({
                 type: NodeType.CustomEntityNodeType,
@@ -175,7 +239,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
             })
             .collapseToEnd()
 
-        this.onChange(change)
+        onChange(change)
     }
 
     render() {
@@ -186,10 +250,30 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
                         <Editor
                             className="slate-editor"
                             placeholder="Enter some text..."
+                            value={this.state.tokenizedValue}
+                            onChange={this.onChangeToken}
+                            renderNode={this.renderNode}
+                            readOnly={this.props.readOnly}
+                        />
+                        <Editor
+                            className="slate-editor"
+                            placeholder="Enter some text..."
                             value={this.state.value}
                             onChange={this.onChange}
                             renderNode={this.renderNode}
                             readOnly={this.props.readOnly}
+                        />
+                        <EntityPicker
+                            isOverlappingOtherEntities={this.state.isSelectionOverlappingOtherEntities}
+                            isVisible={this.state.isTokenMenuVisible}
+                            options={this.props.options}
+                            maxDisplayedOptions={4}
+                            menuRef={this.tokenMenuRef}
+                            position={this.state.tokenMenuPosition}
+                            value={this.state.tokenizedValue}
+
+                            onClickNewEntity={this.props.onClickNewEntity}
+                            onSelectOption={o => this.onSelectOption(o, this.state.tokenizedValue, this.onChangeToken)}
                         />
                         <EntityPicker
                             isOverlappingOtherEntities={this.state.isSelectionOverlappingOtherEntities}
@@ -200,9 +284,8 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
                             position={this.state.menuPosition}
                             value={this.state.value}
 
-                            onChange={this.onChange}
                             onClickNewEntity={this.props.onClickNewEntity}
-                            onSelectOption={this.onSelectOption}
+                            onSelectOption={o => this.onSelectOption(o, this.state.value, this.onChange)}
                         />
                     </div>
                 </div>

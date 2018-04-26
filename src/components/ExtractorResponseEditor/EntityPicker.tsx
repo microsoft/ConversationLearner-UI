@@ -15,7 +15,6 @@ interface MenuProps {
     maxDisplayedOptions: number
     onKeyDown: (event: React.KeyboardEvent<HTMLElement>) => void
     onChangeSearchText: (value: string) => void
-    onChange: (change: any) => void
     onClickOption: (o: IOption) => void
     onClickNewEntity: () => void
     position: IPosition
