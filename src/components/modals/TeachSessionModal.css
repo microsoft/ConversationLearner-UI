@@ -1,0 +1,38 @@
+
+.teachVariation{
+    overflow: hidden;
+}
+
+.teachVariationButtonsBar {
+    float: right;
+}
+
+.teachVariationInvalid{
+    color: #ff0000;
+}
+
+.teachVariationButton {
+    font-size: 18px;
+    margin: 6px 0px 6px 3px
+}
+
+.teachAddVariation{
+    overflow: hidden;
+    opacity: 0.7;
+}
+
+.teachEmptyMemory
+{
+    font-style: italic;
+}
+
+.teachAutoMask
+{
+    width: 100%;
+    height: 100%;
+    opacity: 0.19;
+    background-color: #000000;
+    position: absolute;
+    z-index: 1000;
+    visibility: visible !important
+}

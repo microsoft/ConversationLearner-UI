@@ -1,0 +1,21 @@
+.cl-tooltip-example {
+    display: grid;
+    grid-template-columns: min-content 1fr;
+}
+.cl-tooltip-example dt {
+    margin: 0;
+}
+
+.cl-tooltop-headerText {
+    font-size: 21px;
+    font-weight: 100;
+    color: #333333;
+    line-height: 32px;
+    margin-bottom: 20px;
+}
+
+.cl-tooltop-example {
+    font-weight: bolder;
+    margin-bottom: 5px;
+    margin-top: 8px;
+}

@@ -1,0 +1,44 @@
+.cl-training-status {
+    margin-bottom: 1em;
+    color: var(--color-neutralSecondary);
+}
+.cl-training-status__icon-row {
+    color: var(--color-neutralSecondaryAlt);
+    margin-bottom: 0.3em;
+}
+.cl-training-status__icon-row i[role="presentation"] {
+    vertical-align: text-bottom;
+    padding: 0.125em 0;
+}
+.cl-training-status__icon-row--success i[role="presentation"] {
+    color: var(--color-success);
+}
+.cl-training-status__icon-row--error i[role="presentation"] {
+    color: var(--color-error);
+}
+.cl-training-status__icon-row--expired i[data-icon-name="Warning"] {
+    cursor: pointer;
+    color: var(--color-alert);
+}
+.cl-training-status__icon-label {
+    color: var(--color-neutralPrimary);
+}
+
+.cl-training-status__text-row {
+    white-space: nowrap;
+}
+
+.cl-training-status__time {
+    color: var(--color-neutralPrimary);
+}
+
+.cl-training-status__trigger {
+    padding: 0;
+    margin: 0;
+    margin-left: 1em;
+    border: 0;
+    background: 0;
+    color: var(--color-blue);
+    font-size: 12px;
+    cursor: pointer;
+}

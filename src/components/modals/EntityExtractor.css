@@ -1,0 +1,32 @@
+.editor-container {
+    display: grid;
+    grid-template-columns: 1fr min-content;
+    margin-bottom: -1px;
+}
+.editor-container__icons {
+    padding-left: 0.5em;
+    padding-top: 0.5em;
+    display: grid;
+    grid-auto-flow: row;
+    grid-auto-rows: min-content;
+    grid-gap: 0.25em;
+}
+
+.editor-button-delete {
+    background: none;
+    border: none;
+    padding: 0;
+}
+
+.editor-button-invalid {
+    color: var(--color-red);
+}
+
+.entity-extractor .cl-buttons-row {
+    margin-top: 0.75em;
+}
+
+.entity-extractor-help-text {
+    color: var(--color-neutralSecondaryAlt);
+    padding: 0.25rem 0;
+}

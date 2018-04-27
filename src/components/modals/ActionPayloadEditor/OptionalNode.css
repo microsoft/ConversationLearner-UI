@@ -1,0 +1,6 @@
+.optional-node {
+    border: 1px solid rgb(230, 171, 94);
+    background: rgb(255, 210, 184);
+    border-radius: 4px;
+    padding: 0.25rem 0;
+}

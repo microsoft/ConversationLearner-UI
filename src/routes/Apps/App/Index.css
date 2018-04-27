@@ -1,0 +1,48 @@
+.cl-app-page {
+    display: grid;
+    grid-template-columns: minmax(220px, min-content) 1fr;
+    grid-gap: 3rem;
+}
+.cl-app-title {
+    padding-bottom: 0.9rem;
+}
+
+.cl-app-tag-status {
+    padding: 0.125em 0 0.5em;
+}
+
+.cl-page {
+    display: grid;
+    grid-gap: 1rem;
+    grid-auto-rows: min-content;
+}
+
+.cl-nav_section {
+    border-top: 1px solid var(--color-neutralQuaternary);
+    color: var(--color-neutralSecondaryAlt);
+}
+
+.cl-nav-link {
+    display: grid;
+    grid-template: auto / min-content 1fr min-content;
+    grid-gap: 1em;
+    padding: 0.6em;
+}
+.cl-nav-link:link,
+.cl-nav-link:visited {
+    color: var(--color-neutralSecondaryAlt);
+    text-decoration: none;
+}
+.cl-nav-link.active {
+    background: rgba(0,0,0,0.05);
+    color: var(--color-neutralSecondary);
+}
+.cl-nav-link:hover:not(.active) {
+    background: rgba(0,0,0,0.03);
+    color: var(--color-neutralSecondary);
+}
+
+.cl-nav-link i[role="presentation"] {
+    margin-top: 3px;
+}
+

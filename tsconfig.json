@@ -1,0 +1,37 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "outDir": "build/dist",
+    "module": "esnext",
+    "target": "es5",
+    "lib": [
+        "es2017",
+        "dom"
+    ],
+    "sourceMap": true,
+    "allowJs": true,
+    "jsx": "react",
+    "moduleResolution": "node",
+    "rootDir": "src",
+    "experimentalDecorators": true,
+    "forceConsistentCasingInFileNames": false,  // For BotBuilder-core
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noImplicitAny": true,
+    // TODO: Enable after app is building and working
+    "strictNullChecks": false,
+    "suppressImplicitAnyIndexErrors": true,
+    "noUnusedLocals": true
+  },
+  "exclude": [
+    "node_modules",
+    "build",
+    "scripts",
+    "acceptance-tests",
+    "webpack",
+    "jest",
+    "src/setupTests.ts",
+    "publish",
+    "package"
+  ]
+}

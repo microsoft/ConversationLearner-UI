@@ -1,0 +1,151 @@
+:root {
+    /* Office UI Fabric Colors */
+    --color-themeDarker: #004578;
+    --color-themeDark: #005a9e;
+    --color-themeDarkAlt: #106ebe;
+    --color-themePrimary: #0078d7;
+    --color-themeSecondary: #2b88d8;
+    --color-themeTertiary: #71afe5;
+    --color-themeLight: #c7e0f4;
+    --color-themeLighter: #deecf9;
+    --color-themeLighterAlt: #eff6fc;
+    --color-neutralDark: #212121;
+    --color-neutralPrimary: #333333;
+    --color-neutralSecondary: #666666;
+    --color-neutralSecondaryAlt: #767676;
+    --color-neutralTertiary: #a6a6a6;
+    --color-neutralTertiaryAlt: #c8c8c8;
+    --color-neutralQuaternary: #d0d0d0;
+    --color-neutralQuaternaryAlt: #dadada;
+    --color-neutralLight: #eaeaea;
+    --color-neutralLighter: #f4f4f4;
+    --color-neutralLighterAlt: #f8f8f8;
+    --color-alert: #d83b01;
+    --color-alertBackground: #deecf9;
+    --color-black: #000000;
+    --color-blackTranslucent40: rgba(0,0,0,.4);
+    --color-blue: #0078d7;
+    --color-blueDark: #002050;
+    --color-blueLight: #00bcf2;
+    --color-blueMid: #00188f;
+    --color-error: #a80000;
+    --color-errorBackground: #fde7e9;
+    --color-green: #107c10;
+    --color-greenDark: #004b1c;
+    --color-greenLight: #bad80a;
+    --color-info: #107c10;
+    --color-infoBackground: #f4f4f4;
+    --color-magenta: #b4009e;
+    --color-magentaDark: #5c005c;
+    --color-magentaLight: #e3008c;
+    --color-orange: #d83b01;
+    --color-orangeLight: #ff8c00;
+    --color-orangeLighter: #ea4300;
+    --color-purple: #5c2d91;
+    --color-purpleDark: #32145a;
+    --color-purpleLight: #b4a0ff;
+    --color-red: #e81123;
+    --color-redDark: #a80000;
+    --color-success: #107c10;
+    --color-successBackground: #dff6dd;
+    --color-teal: #008272;
+    --color-tealDark: #004b50;
+    --color-tealLight: #00b294;
+    --color-white: #ffffff;
+    --color-whiteTranslucent40: rgba(255,255,255,.4);
+    --color-yellow: #ffb900;
+    --color-yellowLight: #fff100;
+
+    /* Custom colors */
+    --color-yellow-darker: #EEAC04;
+    --color-yellow-darkest: #9E7203;
+    --color-yellow-lighter: #FFE7A4;
+    --color-botchat-grey: #dbdee1;
+    --color-wc-user: #3a96dd;
+    --color-wc-bot: #eceff1;
+    --gutter-width: 100px;
+    --nav-link-padding: 1.5em 2em;
+}
+.cl-app {
+    display: grid;
+    grid-template: min-content 1fr / var(--gutter-width) 1fr var(--gutter-width)
+}
+.cl-app_header-placeholder {
+    background-color: var(--color-tealDark)
+}
+.cl-app_header {
+    background-color: var(--color-tealDark)
+}
+.cl-app_content {
+    grid-column: 2;
+    padding: 2em 0;
+}
+.cl-app_modals {
+    grid-row: 3;
+    grid-column: 2;
+}
+
+.cl-header {
+    display: grid;
+    grid-template-columns: 1fr min-content;
+    color: white;
+    font-size: 1.2rem;
+}
+.cl-header a {
+    padding: var(--nav-link-padding);
+    white-space: nowrap;
+}
+.cl-header_links {
+    display: flex;
+    flex-direction: row;
+}
+.cl-header_links a {
+    text-decoration: none;
+    color: white;
+}
+.cl-header_links a:link,
+.cl-header_links a:visisted {
+    color: white;
+}
+.cl-header_links a.active,
+.cl-header_links a:hover {
+    background-color: var(--color-yellow);
+    color: black;
+}
+.cl-header_user {
+    text-decoration: none;
+    color: white;
+}
+.cl-header_user.active,
+.cl-header_user:hover {
+    background-color: var(--color-yellow);
+    color: black;
+}
+
+.cl-modal-buttons {
+    display: grid;
+    grid-template-columns: 1fr min-content;
+    grid-gap: 1em;
+}
+.cl-buttons-row, /* TODO: This was one-off for EntityExtractor. Doesn't really comply to BEM but is temporary solution */
+.cl-modal-buttons_primary,
+.cl-modal-buttons_secondary {
+    display: grid;
+    grid-auto-flow: column;
+    grid-gap: 0.75em;
+    grid-auto-columns: min-content;
+    white-space: nowrap;
+}
+
+.cl-list-filters {
+    display: grid;
+    grid-auto-flow: column;
+    grid-gap: 0.75em;
+    padding-bottom: 10px;
+}
+
+.label-error {
+    color: var(--color-red);
+}
+
+
