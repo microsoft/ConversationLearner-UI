@@ -358,7 +358,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app, newTrainDialog, this.props.user.name, this.props.user.id, lastExtractionChanged) as any) as Promise<TeachWithHistory>)
         .then(teachWithHistory => {
             if (teachWithHistory.replayErrors.length === 0) {
-                // Note: Don't clear currentLogDialog so I can delete it if I save my edits
+                // Note: Don't clear currentLogDialog so I can update it if I save my edits
                 this.setState({
                     teachSession: teachWithHistory.teach, 
                     activities: teachWithHistory.history,
@@ -426,7 +426,8 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     }
 
     renderLogDialogItems(): LogDialog[] {
-        let filteredLogDialogs: LogDialog[] = null;
+        // Don't show log dialogs that have derived TrainDialogs as they've already been edited
+        let filteredLogDialogs: LogDialog[] = this.props.logDialogs.filter(l => !l.targetTrainDialogIds || l.targetTrainDialogIds.length === 0);
 
         if (!this.state.searchValue) {
             filteredLogDialogs = this.props.logDialogs;

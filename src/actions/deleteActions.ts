@@ -160,7 +160,7 @@ const deleteChatSessionFulfilled = (sessionId: string): ActionObject => {
 // ---------------------
 // TeachSession
 // ---------------------
-export const deleteTeachSessionThunkAsync = (key: string, teachSession: Teach, app: AppBase, packageId: string, save: boolean, sourceLogId?: string, sourceTeachId?: string) => {
+export const deleteTeachSessionThunkAsync = (key: string, teachSession: Teach, app: AppBase, packageId: string, save: boolean, deleteSourceId?: string) => {
     return async (dispatch: Dispatch<any>) => {
         dispatch(deleteTeachSessionAsync(key, teachSession, app.appId, save))
         const clClient = ClientFactory.getInstance(AT.DELETE_TEACH_SESSION_ASYNC)
@@ -169,14 +169,9 @@ export const deleteTeachSessionThunkAsync = (key: string, teachSession: Teach, a
             await clClient.teachSessionsDelete(app.appId, teachSession, save);
             dispatch(deleteTeachSessionFulfilled(key, app.appId, teachSession.teachId));
 
-            // If saving to a TrainDialog, delete any source dialog (original Log or edited TrainDialog)
-            if (save) {
-                if (sourceLogId) {  
-                    await dispatch(deleteLogDialogThunkAsync(key, app, sourceLogId, packageId));
-                }
-                if (sourceTeachId) {
-                    await dispatch(deleteTrainDialogThunkAsync(key, app, sourceTeachId));
-                }
+            // If saving to a TrainDialog, delete any source TrainDialog (LogDialogs not deleted)
+            if (save && deleteSourceId) {
+                await dispatch(deleteTrainDialogThunkAsync(key, app, deleteSourceId));
             }
 
             dispatch(fetchAllTrainDialogsAsync(app.appId));
