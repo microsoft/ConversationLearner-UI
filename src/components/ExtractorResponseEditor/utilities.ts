@@ -260,7 +260,7 @@ export const convertToSlateValue = (tokensWithEntities: TokenArray): any => {
 }
 
 export const convertEntitiesAndTextToTokenizedEditorValue = (text: string, customEntities: models.IGenericEntity<any>[], inlineType: string) => {
-    const labeledTokens = labelTokens(tokenizeText(text, /\s+/g), customEntities)
+    const labeledTokens = labelTokens(tokenizeText(text, /\s+|[.?,!]/g), customEntities)
     return convertToSlateValue(labeledTokens)
 }
 
