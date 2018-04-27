@@ -13,7 +13,7 @@ import * as OF from 'office-ui-fabric-react';
 import { Expando } from '../../../components/modals'
 import { AppBase, TrainingStatusCode } from 'conversationlearner-models'
 import './Settings.css'
-import { CL_SAMPLE_ID } from '../../../types/const'
+import { CL_DEMO_ID } from '../../../types/const'
 import { FM } from '../../../react-intl-messages'
 import ErrorInjectionEditor from '../../../components/modals/ErrorInjectionEditor'
 import { injectIntl, InjectedIntlProps, defineMessages, FormattedMessage } from 'react-intl'
@@ -406,7 +406,7 @@ class Settings extends React.Component<Props, ComponentState> {
                         />
                     </div>
 
-                    {this.props.user.id === CL_SAMPLE_ID &&
+                    {this.props.user.id === CL_DEMO_ID &&
                         <React.Fragment>
                             <div>
                                 <OF.TextField
