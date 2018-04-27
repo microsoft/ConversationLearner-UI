@@ -48,6 +48,7 @@ export interface IGenericEntityData<T> {
 }
 
 export enum NodeType {
+    TokenNodeType = 'token-node',
     CustomEntityNodeType = "custom-inline-node",
     PreBuiltEntityNodeType = "prebuilt-inline-node"
 }
