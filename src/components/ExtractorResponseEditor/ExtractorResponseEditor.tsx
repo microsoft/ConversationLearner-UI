@@ -190,10 +190,6 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
         }
     }
 
-    tokenMenuRef = (menu: any) => {
-        this.tokenMenu = menu
-    }
-
     menuRef = (menu: any) => {
         this.menu = menu
     }
@@ -215,7 +211,6 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
         }
 
         const change = value.change()
-        change
             .wrapInline({
                 type: NodeType.CustomEntityNodeType,
                 data: {
