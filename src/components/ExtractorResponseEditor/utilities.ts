@@ -45,10 +45,10 @@ export const valueToJSON = (value: any) => {
     }
 }
 
-interface IToken {
+export interface IToken {
     text: string
-    isSelectable: boolean,
-    startIndex: number,
+    isSelectable: boolean
+    startIndex: number
     endIndex: number
 }
 
@@ -62,10 +62,14 @@ interface IEntityPlaceholder {
     tokens: IToken[]
 }
 
-type TokenArray = (IToken | IEntityPlaceholder)[]
+export type TokenArray = (IToken | IEntityPlaceholder)[]
 
 export const tokenizeText = (text: string, tokenRegex: RegExp): IToken[] => {
     const tokens: IToken[] = []
+    if (text.length === 0) {
+        return tokens
+    }
+
     let result: RegExpExecArray = null
     let lastIndex = tokenRegex.lastIndex
     while ((result = tokenRegex.exec(text)) !== null) {
@@ -187,7 +191,26 @@ export const labelTokens = (tokens: IToken[], customEntities: models.IGenericEnt
     return wrapTokensWithEntities(tokens, addTokenIndiciesToCustomEntities(tokens, customEntities))
 }
 
-export const convertToSlateNodes = (tokensWithEntities: TokenArray, nodes: any[] = []): any[] => {
+export const convertToSlateNodes = (tokensWithEntities: TokenArray): any[] => {
+    const nodes: any[] = []
+
+    // If there are no tokens, just return empty text node to ensure valid SlateValue object
+    // In other words non-void parent nodes must have a child.
+    if (tokensWithEntities.length === 0) {
+        nodes.push({
+            "kind": "text",
+            "leaves": [
+                {
+                    "kind": "leaf",
+                    "text": '',
+                    "marks": []
+                }
+            ]
+        })
+
+        return nodes
+    }
+
     // TODO: Find better way to iterate over the nested array and determine based on flow-control / property types without casting
     for (let tokenOrEntity of tokensWithEntities) {
         if ((tokenOrEntity as IEntityPlaceholder).entity) {
@@ -259,8 +282,15 @@ export const convertToSlateValue = (tokensWithEntities: TokenArray): any => {
     return Value.fromJSON(document)
 }
 
+/**
+ * Note: this is more like a negative match used to determine characters that split the string instead of 
+ * positive match would specify characters which are tokens. Only chose this becuase it seems like a much
+ * simpler regex / smaller set of characters, but I imagine alternative approach would work
+ */
+export const tokenizeRegex = /\s+|[.?,!]/g
+
 export const convertEntitiesAndTextToTokenizedEditorValue = (text: string, customEntities: models.IGenericEntity<any>[], inlineType: string) => {
-    const labeledTokens = labelTokens(tokenizeText(text, /\s+|[.?,!]/g), customEntities)
+    const labeledTokens = labelTokens(tokenizeText(text, tokenizeRegex), customEntities)
     return convertToSlateValue(labeledTokens)
 }
 
@@ -493,7 +523,7 @@ export const getEntitiesFromValue = (change: any): models.IGenericEntity<models.
         }, [])
 }
 
-export const getEntityDisplayName = (pe: PredictedEntity): string => {
+export const getPreBuiltEntityDisplayName = (pe: PredictedEntity): string => {
     const names = pe.builtinType.split('.')
     // If builtinType is only copy of entityType
     if (names.length === 1) {
@@ -586,7 +616,7 @@ export const convertExtractorResponseToEditorModels = (extractResponse: ExtractR
 
     const preBuiltEntities = internalPredictedEntities
         .filter(({ entity }) => entity && entity.entityType !== EntityType.LUIS && entity.entityType !== EntityType.LOCAL)
-        .map(({ entity, predictedEntity }) => convertPredictedEntityToGenericEntity(predictedEntity, entity.entityName, getEntityDisplayName(predictedEntity)))
+        .map(({ entity, predictedEntity }) => convertPredictedEntityToGenericEntity(predictedEntity, entity.entityName, getPreBuiltEntityDisplayName(predictedEntity)))
 
     return {
         options,
