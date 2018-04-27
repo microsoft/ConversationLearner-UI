@@ -25,6 +25,10 @@
   transform: scale(1);
 }
 
+.custom-toolbar__warning {
+    padding: 0.25em;
+}
+
 .custom-toolbar__search {
     padding: 0.25em;
 }

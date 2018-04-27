@@ -15,7 +15,6 @@ interface MenuProps {
     maxDisplayedOptions: number
     onKeyDown: (event: React.KeyboardEvent<HTMLElement>) => void
     onChangeSearchText: (value: string) => void
-    onChange: (change: any) => void
     onClickOption: (o: IOption) => void
     onClickNewEntity: () => void
     position: IPosition
@@ -38,7 +37,7 @@ export default class EntityPicker extends React.Component<MenuProps> {
                 style={style}
             >
                 {this.props.isOverlappingOtherEntities
-                    ? <div>Cannot add overlapping entities.<br />Please change the selection.</div>
+                    ? <div className="custom-toolbar__warning">Cannot add overlapping entities.<br />Remove the entity or change the selection.</div>
                     : <React.Fragment>
                         {this.props.matchedOptions.length !== 0
                             && <ul className="custom-toolbar__results">

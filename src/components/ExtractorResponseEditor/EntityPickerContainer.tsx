@@ -34,7 +34,6 @@ interface Props {
     position: IPosition
     value: any
 
-    onChange: (change: any) => void
     onClickNewEntity: () => void
     onSelectOption: (o: IOption) => void
 }
@@ -175,6 +174,7 @@ export default class EntityPickerContainer extends React.Component<Props, State>
     }
 
     onClickResult = (option: IOption) => {
+        // TODO: Look at invoking callbacks within setState callback to ensure it occurs after reset
         this.props.onSelectOption(option)
         this.setState({
             ...initialState
@@ -183,14 +183,6 @@ export default class EntityPickerContainer extends React.Component<Props, State>
 
     onRef = (node: HTMLElement) => {
         this.element = node
-    }
-
-    getPosition = (position: IPosition) => {
-        const { bottom, left } = position
-        return {
-            bottom,
-            left
-        }
     }
 
     render() {
@@ -210,7 +202,6 @@ export default class EntityPickerContainer extends React.Component<Props, State>
                 onClickOption={this.onClickResult}
                 onClickNewEntity={this.props.onClickNewEntity}
                 onKeyDown={this.onKeyDown}
-                onChange={this.props.onChange}
             />
         )
     }

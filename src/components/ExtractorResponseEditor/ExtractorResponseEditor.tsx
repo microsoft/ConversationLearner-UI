@@ -4,14 +4,14 @@
  */
 import * as React from 'react'
 import { Editor } from 'slate-react'
-import { Value } from 'slate'
-import initialValue from './value'
+import Plain from 'slate-plain-serializer'
 import { IOption, IPosition, IEntityPickerProps, IGenericEntity, NodeType } from './models'
-import { convertEntitiesAndTextToEditorValue, getRelativeParent, getEntitiesFromValue, getSelectedText } from './utilities'
+import { convertEntitiesAndTextToTokenizedEditorValue, convertEntitiesAndTextToEditorValue, getRelativeParent, getEntitiesFromValue, getSelectedText } from './utilities'
 import CustomEntityNode from './CustomEntityNode'
 import PreBuiltEntityNode from './PreBuiltEntityNode'
 import EntityPicker from './EntityPickerContainer'
 import './ExtractorResponseEditor.css'
+import TokenNode from './TokenNode'
 
 // Slate doesn't have type definitions but we still want type consistency and references so we make custom type
 export type SlateValue = any
@@ -48,6 +48,7 @@ const externalChangeOperations = ['insert_node', 'remove_node']
  * however internally it stores as generic options list and a Slate.js value object.
  */
 class ExtractorResponseEditor extends React.Component<Props, State> {
+    tokenMenu: HTMLElement
     menu: HTMLElement
 
     state = {
@@ -58,14 +59,14 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
             left: 0,
             bottom: 0
         },
-        value: Value.fromJSON(initialValue),
+        value: Plain.deserialize(''),
         preBuiltEditorValues: [{}]
     }
 
     constructor(props: Props) {
         super(props)
 
-        this.state.value = convertEntitiesAndTextToEditorValue(props.text, props.customEntities, NodeType.CustomEntityNodeType)
+        this.state.value = convertEntitiesAndTextToTokenizedEditorValue(props.text, props.customEntities, NodeType.CustomEntityNodeType)
         this.state.preBuiltEditorValues = props.preBuiltEntities.map<any[]>(preBuiltEntity => convertEntitiesAndTextToEditorValue(props.text, [preBuiltEntity], NodeType.PreBuiltEntityNodeType))
     }
 
@@ -77,32 +78,36 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
             || nextProps.customEntities.length !== this.props.customEntities.length
             || nextProps.preBuiltEntities.length !== this.props.preBuiltEntities.length) {
             this.setState({
-                value: convertEntitiesAndTextToEditorValue(nextProps.text, nextProps.customEntities, NodeType.CustomEntityNodeType),
+                value: convertEntitiesAndTextToTokenizedEditorValue(nextProps.text, nextProps.customEntities, NodeType.CustomEntityNodeType),
                 preBuiltEditorValues: nextProps.preBuiltEntities.map<any[]>(preBuiltEntity => convertEntitiesAndTextToEditorValue(nextProps.text, [preBuiltEntity], NodeType.PreBuiltEntityNodeType))
             })
         }
     }
 
-    updateMenu = (value: SlateValue): IEntityPickerProps | void => {
+    getNextPickerProps = (value: SlateValue, menu: HTMLElement): IEntityPickerProps | void => {
         const hideMenu: IEntityPickerProps = {
             isOverlappingOtherEntities: false,
             isVisible: false,
             position: null
         }
-        const menu = this.menu
+
         if (!menu) {
             return hideMenu
         }
 
-        if (value.isEmpty) {
+        if (value.isEmpty || value.selection.isCollapsed) {
             return hideMenu
         }
 
-        const relativeParent = getRelativeParent(this.menu.parentElement)
+        const relativeParent = getRelativeParent(menu.parentElement)
         const relativeRect = relativeParent.getBoundingClientRect()
-
         const selection = window.getSelection()
-        if (!selection || selection.isCollapsed) {
+
+        // Note: Slate value.selection can be different than the document window.getSelection()
+        // From what I can tell slate's is always accurate to display.  If the selection was updated programmatically via slate API it will be reflected within Slates selection
+        // and as soon as user interacts to change DOM selection, it will update both
+        // Note: Cannot test for selection.isCollapsed here, because we need the menu to open when the user clicks a word
+        if (!selection) {
             return hideMenu
         }
 
@@ -116,8 +121,27 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
             bottom: relativeRect.height - (selectionBoundingRect.top - relativeRect.top) + 10
         }
 
+        /**
+         * If selection overlaps with existing custom entity nodes, or if it's has parent of custom entity node
+         * then set special flag isOverlappingOtherEntities which prevents adding entities
+         */
+        let isOverlappingOtherEntities = false
+        if (value.inlines.size > 0) {
+            const customEntityNodesInSelection = value.inlines.filter((n: any) => n.type === NodeType.CustomEntityNodeType)
+            if (customEntityNodesInSelection.size > 0) {
+                isOverlappingOtherEntities = true
+            }
+            else {
+                const parentOfFirstInline = value.document.getParent(value.inlines.first().key)
+                if (parentOfFirstInline.type === NodeType.CustomEntityNodeType) {
+                    console.log(`parentOfFirstInline.type === NodeType.CustomEntityNodeType`)
+                    isOverlappingOtherEntities = true
+                }
+            }
+        }
+
         return {
-            isOverlappingOtherEntities: (value.inlines.size > 0),
+            isOverlappingOtherEntities,
             isVisible: true,
             position: menuPosition
         }
@@ -126,22 +150,37 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
     onChange = (change: any) => {
         const { value, operations } = change
         const operationsJs = operations.toJS()
-
         const containsDisallowedOperations = operationsJs.some((o: any) => disallowedOperations.includes(o.type))
         if (containsDisallowedOperations) {
             return
         }
+        
+        const tokenNodes = value.inlines.filter((n: any) => n.type === NodeType.TokenNodeType)
+        if (tokenNodes.size > 0) {
+            const firstInline = value.inlines.first()
+            const lastInline = value.inlines.last()
 
-        // This must always be called to allow normal interaction with editor such as text selection
-        this.setState({ value })
+            // Note: This is kind of hack to prevent selection from expanding when the cursor/selection is within
+            // the button text of the custom entity node. This makes the Slate selection expanded and prevents
+            // the entity picker from closing after user removes the node.
+            const selectionParentElementTagName = window.getSelection().anchorNode.parentElement.tagName
+            if (selectionParentElementTagName !==  "BUTTON")
+            {
+                change
+                    .collapseToStartOf(firstInline)
+                    .extendToEndOf(lastInline)
+            }
+        }
 
+        this.setState({ value: change.value })
+        
         const containsExternalChangeOperation = operationsJs.some((o: any) => externalChangeOperations.includes(o.type))
         if (containsExternalChangeOperation) {
             const customEntities = getEntitiesFromValue(change)
             this.props.onChangeCustomEntities(customEntities)
         }
 
-        const pickerProps = this.updateMenu(value)
+        const pickerProps = this.getNextPickerProps(change.value, this.menu)
         if (pickerProps) {
             this.setState({
                 isSelectionOverlappingOtherEntities: pickerProps.isOverlappingOtherEntities,
@@ -157,14 +196,20 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
 
     renderNode = (props: any): React.ReactNode | void => {
         switch (props.node.type) {
+            case NodeType.TokenNodeType: return <TokenNode {...props} />
             case NodeType.CustomEntityNodeType: return <CustomEntityNode {...props} />
             case NodeType.PreBuiltEntityNodeType: return <PreBuiltEntityNode {...props} />
         }
     }
 
-    onSelectOption = (option: IOption) => {
-        const value = this.state.value
+    onSelectOption = (option: IOption, value: SlateValue, onChange: (x: any) => void) => {
         const selectedText = getSelectedText(value)
+
+        if (selectedText.length === 0) {
+            console.warn(`onSelectOption was called but the value has an empty selection`)
+            return
+        }
+
         const change = value.change()
             .wrapInline({
                 type: NodeType.CustomEntityNodeType,
@@ -175,7 +220,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
             })
             .collapseToEnd()
 
-        this.onChange(change)
+        onChange(change)
     }
 
     render() {
@@ -200,9 +245,8 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
                             position={this.state.menuPosition}
                             value={this.state.value}
 
-                            onChange={this.onChange}
                             onClickNewEntity={this.props.onClickNewEntity}
-                            onSelectOption={this.onSelectOption}
+                            onSelectOption={o => this.onSelectOption(o, this.state.value, this.onChange)}
                         />
                     </div>
                 </div>
