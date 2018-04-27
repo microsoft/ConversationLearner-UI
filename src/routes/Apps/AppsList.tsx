@@ -13,7 +13,7 @@ import { AppCreator, ConfirmCancelModal } from '../../components/modals'
 import * as OF from 'office-ui-fabric-react';
 import { State } from '../../types';
 import { AppBase } from 'conversationlearner-models'
-import { CL_SAMPLE_ID } from '../../types/const'
+import { CL_IMPORT_ID, CL_DEMO_ID } from '../../types/const'
 import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { FM } from '../../react-intl-messages'
 import { autobind } from 'office-ui-fabric-react/lib/Utilities';
@@ -171,7 +171,7 @@ class AppsList extends React.Component<Props, ComponentState> {
     @autobind
     onClickImportDemoApps() {
         if (this.state.tutorials === null) {
-            ((this.props.fetchTutorialsThunkAsync(CL_SAMPLE_ID) as any) as Promise<AppBase[]>)
+            ((this.props.fetchTutorialsThunkAsync(CL_IMPORT_ID) as any) as Promise<AppBase[]>)
             .then(tutorials => {
                 this.setState({
                     tutorials: tutorials,
@@ -286,7 +286,7 @@ class AppsList extends React.Component<Props, ComponentState> {
                             defaultMessage: 'New App'
                         })}
                     />
-                    {this.props.user.id !== CL_SAMPLE_ID &&
+                    {this.props.user.id !== CL_DEMO_ID &&
                         <OF.DefaultButton
                             onClick={this.onClickImportDemoApps}
                             ariaDescription={this.props.intl.formatMessage({
