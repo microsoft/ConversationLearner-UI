@@ -32,9 +32,6 @@ interface State {
     isMenuVisible: boolean
     menuPosition: IPosition
     value: SlateValue
-    isTokenMenuVisible: boolean
-    tokenMenuPosition: IPosition
-    tokenizedValue: SlateValue
     preBuiltEditorValues: SlateValue[]
 }
 
@@ -63,21 +60,13 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
             bottom: 0
         },
         value: Plain.deserialize(''),
-        isTokenMenuVisible: false,
-        tokenMenuPosition: {
-            top: 0,
-            left: 0,
-            bottom: 0
-        },
-        tokenizedValue: Plain.deserialize(''),
         preBuiltEditorValues: [{}]
     }
 
     constructor(props: Props) {
         super(props)
 
-        this.state.tokenizedValue = convertEntitiesAndTextToTokenizedEditorValue(props.text, props.customEntities, NodeType.CustomEntityNodeType)
-        this.state.value = convertEntitiesAndTextToEditorValue(props.text, props.customEntities, NodeType.CustomEntityNodeType)
+        this.state.value = convertEntitiesAndTextToTokenizedEditorValue(props.text, props.customEntities, NodeType.CustomEntityNodeType)
         this.state.preBuiltEditorValues = props.preBuiltEntities.map<any[]>(preBuiltEntity => convertEntitiesAndTextToEditorValue(props.text, [preBuiltEntity], NodeType.PreBuiltEntityNodeType))
     }
 
@@ -89,8 +78,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
             || nextProps.customEntities.length !== this.props.customEntities.length
             || nextProps.preBuiltEntities.length !== this.props.preBuiltEntities.length) {
             this.setState({
-                tokenizedValue: convertEntitiesAndTextToTokenizedEditorValue(nextProps.text, nextProps.customEntities, NodeType.CustomEntityNodeType),
-                value: convertEntitiesAndTextToEditorValue(nextProps.text, nextProps.customEntities, NodeType.CustomEntityNodeType),
+                value: convertEntitiesAndTextToTokenizedEditorValue(nextProps.text, nextProps.customEntities, NodeType.CustomEntityNodeType),
                 preBuiltEditorValues: nextProps.preBuiltEntities.map<any[]>(preBuiltEntity => convertEntitiesAndTextToEditorValue(nextProps.text, [preBuiltEntity], NodeType.PreBuiltEntityNodeType))
             })
         }
@@ -162,35 +150,6 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
     onChange = (change: any) => {
         const { value, operations } = change
         const operationsJs = operations.toJS()
-
-        const containsDisallowedOperations = operationsJs.some((o: any) => disallowedOperations.includes(o.type))
-        if (containsDisallowedOperations) {
-            return
-        }
-
-        // This must always be called to allow normal interaction with editor such as text selection
-        this.setState({ value })
-
-        const containsExternalChangeOperation = operationsJs.some((o: any) => externalChangeOperations.includes(o.type))
-        if (containsExternalChangeOperation) {
-            const customEntities = getEntitiesFromValue(change)
-            this.props.onChangeCustomEntities(customEntities)
-        }
-
-        const pickerProps = this.getNextPickerProps(value, this.menu)
-        if (pickerProps) {
-            console.log(`onChange.set pickerProps`, pickerProps.isVisible)
-            this.setState({
-                isSelectionOverlappingOtherEntities: pickerProps.isOverlappingOtherEntities,
-                isMenuVisible: pickerProps.isVisible,
-                menuPosition: pickerProps.position
-            })
-        }
-    }
-
-    onChangeToken = (change: any) => {
-        const { value, operations } = change
-        const operationsJs = operations.toJS()
         const containsDisallowedOperations = operationsJs.some((o: any) => disallowedOperations.includes(o.type))
         if (containsDisallowedOperations) {
             return
@@ -201,12 +160,19 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
             const firstInline = value.inlines.first()
             const lastInline = value.inlines.last()
 
-            change
-                .collapseToStartOf(firstInline)
-                .extendToEndOf(lastInline)
+            // Note: This is kind of hack to prevent selection from expanding when the cursor/selection is within
+            // the button text of the custom entity node. This makes the Slate selection expanded and prevents
+            // the entity picker from closing after user removes the node.
+            const selectionParentElementTagName = window.getSelection().anchorNode.parentElement.tagName
+            if (selectionParentElementTagName !==  "BUTTON")
+            {
+                change
+                    .collapseToStartOf(firstInline)
+                    .extendToEndOf(lastInline)
+            }
         }
 
-        this.setState({ tokenizedValue: change.value })
+        this.setState({ value: change.value })
         
         const containsExternalChangeOperation = operationsJs.some((o: any) => externalChangeOperations.includes(o.type))
         if (containsExternalChangeOperation) {
@@ -214,13 +180,12 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
             this.props.onChangeCustomEntities(customEntities)
         }
 
-        const pickerProps = this.getNextPickerProps(change.value, this.tokenMenu)
+        const pickerProps = this.getNextPickerProps(change.value, this.menu)
         if (pickerProps) {
-            console.log(`onChangeToken.set pickerProps`, pickerProps.isVisible)
             this.setState({
                 isSelectionOverlappingOtherEntities: pickerProps.isOverlappingOtherEntities,
-                isTokenMenuVisible: pickerProps.isVisible,
-                tokenMenuPosition: pickerProps.position
+                isMenuVisible: pickerProps.isVisible,
+                menuPosition: pickerProps.position
             })
         }
     }
@@ -271,30 +236,10 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
                         <Editor
                             className="slate-editor"
                             placeholder="Enter some text..."
-                            value={this.state.tokenizedValue}
-                            onChange={this.onChangeToken}
-                            renderNode={this.renderNode}
-                            readOnly={this.props.readOnly}
-                        />
-                        <Editor
-                            className="slate-editor"
-                            placeholder="Enter some text..."
                             value={this.state.value}
                             onChange={this.onChange}
                             renderNode={this.renderNode}
                             readOnly={this.props.readOnly}
-                        />
-                        <EntityPicker
-                            isOverlappingOtherEntities={this.state.isSelectionOverlappingOtherEntities}
-                            isVisible={this.state.isTokenMenuVisible}
-                            options={this.props.options}
-                            maxDisplayedOptions={4}
-                            menuRef={this.tokenMenuRef}
-                            position={this.state.tokenMenuPosition}
-                            value={this.state.tokenizedValue}
-
-                            onClickNewEntity={this.props.onClickNewEntity}
-                            onSelectOption={o => this.onSelectOption(o, this.state.tokenizedValue, this.onChangeToken)}
                         />
                         <EntityPicker
                             isOverlappingOtherEntities={this.state.isSelectionOverlappingOtherEntities}
