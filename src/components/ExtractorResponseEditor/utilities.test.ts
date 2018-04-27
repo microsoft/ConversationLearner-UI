@@ -1,6 +1,7 @@
 import * as utilities from './utilities'
 import * as models from './models'
-import { NodeType } from './models';
+import Plain from 'slate-plain-serializer'
+import { NodeType } from './models'
 
 describe('ExtractResponseEditor', () => {
     describe('utilities', () => {
@@ -197,6 +198,7 @@ describe('ExtractResponseEditor', () => {
                         "kind": "inline",
                         "type": NodeType.TokenNodeType,
                         "isVoid": false,
+                        "data": tokens[0],
                         "nodes": [
                             {
                                 "kind": "text",
@@ -224,6 +226,7 @@ describe('ExtractResponseEditor', () => {
                         "kind": "inline",
                         "type": NodeType.TokenNodeType,
                         "isVoid": false,
+                        "data": tokens[2],
                         "nodes": [
                             {
                                 "kind": "text",
@@ -284,6 +287,7 @@ describe('ExtractResponseEditor', () => {
                                 "kind": "inline",
                                 "type": NodeType.TokenNodeType,
                                 "isVoid": false,
+                                "data": (tokens[0] as any).tokens[0],
                                 "nodes": [
                                     {
                                         "kind": "text",
@@ -313,6 +317,7 @@ describe('ExtractResponseEditor', () => {
                         "kind": "inline",
                         "type": NodeType.TokenNodeType,
                         "isVoid": false,
+                        "data": tokens[2],
                         "nodes": [
                             {
                                 "kind": "text",
@@ -329,6 +334,62 @@ describe('ExtractResponseEditor', () => {
                 ]
 
                 expect(utilities.convertToSlateNodes(tokens)).toEqual(expectedNodes)
+            })
+        })
+
+        describe('getEntitiesFromValueUsingTokenData', () => {
+            test('given slate value with entity that does not have character index data, extract it with index data by using tokens within it', () => {
+                // Arrange
+                const tokens: utilities.TokenArray = [
+                    {
+                        text: 'a',
+                        isSelectable: true,
+                        startIndex: 0,
+                        endIndex: 1
+                    },
+                    {
+                        text: ' ',
+                        isSelectable: false,
+                        startIndex: 1,
+                        endIndex: 2
+                    },
+                    {
+                        entity: {
+                            data: {
+                                text: 'a'
+                            },
+                            startIndex: 1,
+                            endIndex: 2
+                        },
+                        tokens: [
+                            {
+                                text: 'a',
+                                isSelectable: true,
+                                startIndex: 1,
+                                endIndex: 2
+                            }
+                        ]
+                    },
+                ]
+                    
+                const slateValue = utilities.convertToSlateValue(tokens)
+                const expectedString = 'a a'
+                const expectedEntities: models.IGenericEntity<any>[] = [
+                    {
+                        data: {
+                            text: 'a'
+                        },
+                        startIndex: 1,
+                        endIndex: 2,
+                    }
+                ]
+
+                // Act
+                const actualEntities = utilities.getEntitiesFromValueUsingTokenData(slateValue.change())
+
+                // Assert
+                expect(Plain.serialize(slateValue)).toEqual(expectedString)
+                expect(actualEntities).toEqual(expectedEntities)
             })
             
         })

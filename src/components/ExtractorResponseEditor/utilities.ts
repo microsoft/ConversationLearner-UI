@@ -3,10 +3,8 @@
  * Licensed under the MIT License.
  */
 import { Value } from 'slate'
-import Plain from 'slate-plain-serializer'
 import * as models from './models'
 import * as util from '../../util'
-
 import { EntityBase, PredictedEntity, ExtractResponse, EntityType } from 'conversationlearner-models'
 import { NodeType } from './models';
 
@@ -231,6 +229,7 @@ export const convertToSlateNodes = (tokensWithEntities: TokenArray): any[] => {
                     "kind": "inline",
                     "type": NodeType.TokenNodeType,
                     "isVoid": false,
+                    "data": token,
                     "nodes": [
                         {
                             "kind": "text",
@@ -479,48 +478,27 @@ export const convertMatchedTextIntoMatchedOption = <T>(text: string, matches: [n
     }
 }
 
-export const getEntitiesFromValue = (change: any): models.IGenericEntity<models.IGenericEntityData<PredictedEntity>>[] => {
-    const inlineNodes = change.value.document.filterDescendants((node: any) => node.type === models.NodeType.CustomEntityNodeType)
+export const getEntitiesFromValueUsingTokenData = (change: any): models.IGenericEntity<models.IGenericEntityData<PredictedEntity>>[] => {
+    const entityInlineNodes = change.value.document.filterDescendants((node: any) => node.type === models.NodeType.CustomEntityNodeType)
+    return (entityInlineNodes.map((entityNode: any) => {
+        const tokenInlineNodes: any[] = entityNode.filterDescendants((node: any) => node.type === models.NodeType.TokenNodeType).toJS()
+        if (tokenInlineNodes.length === 0) {
+            console.warn(`Error 'getEntitiesFromValue': found entity node which did not contain any token nodes `)
+            return null
+        }
 
-    // TODO: One alternative might be to save absolute anchor points on the text when it's selected as part of node data like we do with text value
-    /**
-     * TODO: Find out how to properly convert inline nodes back to entities
-     * Currently the issue is that the anchorOffset and focusOffset are relative to the node they are within
-     * but the entities we operate on are absolute values relative to the start of the entire text and I know
-     * how to convert those back to absolute values.
-     * 
-     * The current implementation is kind of hack to compare selectedText with all text; however, this has issue with repeated
-     * entities on repeated words which must then be deduped.  This is relying on fact that it will hopefully not occur often.
-     * However, it should be improved.
-     */
-    return inlineNodes.map((node: any, i: number) => {
-        const data: models.IGenericEntityData<PredictedEntity> = node.data.toJS()
-        const valueAsPlaintext = Plain.serialize(change.value)
-
-        // Old method of retreiving text based on node boundary and manually moving text selection
-        // const selectionChange = change
-        //     .moveToRangeOf(node)
-        // const nodeText = getSelectedText(selectionChange.value)
-
-        const nodeText = data.text
-        const startIndex = valueAsPlaintext.search(nodeText)
-        const endIndex = startIndex + nodeText.length
+        const firstToken: IToken = tokenInlineNodes[0].data
+        const lastToken: IToken = tokenInlineNodes[tokenInlineNodes.length - 1].data
+        const data: models.IGenericEntityData<PredictedEntity> = entityNode.data.toJS()
 
         return {
-            startIndex,
-            endIndex,
+            startIndex: firstToken.startIndex,
+            endIndex: lastToken.endIndex,
             data
         }
     })
-        .toJS()
-        .reduce((entities: models.IGenericEntity<models.IGenericEntityData<PredictedEntity>>[], entity: models.IGenericEntity<models.IGenericEntityData<PredictedEntity>>) => {
-            // TODO: Can this be removed?
-            // This de-dupling logic is likely only here for the case where the use reselects text that already contains entity to over-write it;
-            // however, that senario doesn't exist anymore.
-            return entities.some(e => e.startIndex === entity.startIndex && e.endIndex === entity.endIndex)
-                ? entities
-                : [...entities, entity]
-        }, [])
+        .toJS() as any[])
+        .filter(x => x)
 }
 
 export const getPreBuiltEntityDisplayName = (pe: PredictedEntity): string => {

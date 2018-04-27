@@ -6,7 +6,7 @@ import * as React from 'react'
 import { Editor } from 'slate-react'
 import Plain from 'slate-plain-serializer'
 import { IOption, IPosition, IEntityPickerProps, IGenericEntity, NodeType } from './models'
-import { convertEntitiesAndTextToTokenizedEditorValue, convertEntitiesAndTextToEditorValue, getRelativeParent, getEntitiesFromValue, getSelectedText } from './utilities'
+import { convertEntitiesAndTextToTokenizedEditorValue, convertEntitiesAndTextToEditorValue, getRelativeParent, getEntitiesFromValueUsingTokenData, getSelectedText } from './utilities'
 import CustomEntityNode from './CustomEntityNode'
 import PreBuiltEntityNode from './PreBuiltEntityNode'
 import EntityPicker from './EntityPickerContainer'
@@ -176,7 +176,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
         
         const containsExternalChangeOperation = operationsJs.some((o: any) => externalChangeOperations.includes(o.type))
         if (containsExternalChangeOperation) {
-            const customEntities = getEntitiesFromValue(change)
+            const customEntities = getEntitiesFromValueUsingTokenData(change)
             this.props.onChangeCustomEntities(customEntities)
         }
 
