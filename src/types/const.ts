@@ -7,4 +7,4 @@ export enum ErrorType {
     Warning
 }
 
-export const CL_SAMPLE_ID = '00000000-0000-0000-d127-0ae0c3a0a206'
+export const CL_SAMPLE_ID = '9c110735ea8b440d8f31c5c68ffb767d'

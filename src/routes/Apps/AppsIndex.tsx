@@ -9,7 +9,7 @@ import {
 } from 'react-router-dom'
 import { RouteComponentProps } from 'react-router'
 import { returntypeof } from 'react-redux-typescript';
-import { createApplicationAsync, copyApplicationsThunkAsync } from '../../actions/createActions'
+import { createApplicationAsync, copyApplicationThunkAsync } from '../../actions/createActions'
 import { deleteApplicationAsync } from '../../actions/deleteActions'
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -41,18 +41,20 @@ class AppsIndex extends React.Component<Props, ComponentState> {
         }
     }
 
-    componentDidMount() {
-        if (this.props.user.id !== null) {
+    updateAppsAndBot() {
+        if (this.props.user.id !== null && this.props.user.id.length > 0) {
             this.props.fetchApplicationsAsync(this.props.user.id)
             this.props.fetchBotInfoAsync()
         }
+    }
+    componentDidMount() {
+        this.updateAppsAndBot();
     }
 
     componentDidUpdate(prevProps: Props, _prevState: ComponentState) {
         // TODO: See if this code can be removed. It seems like componentWillMount is called every time the user navigates to /home route
         if (typeof (this.props.user.id) === 'string' && this.props.user.id !== prevProps.user.id) {
-            this.props.fetchApplicationsAsync(this.props.user.id)
-            this.props.fetchBotInfoAsync();
+            this.updateAppsAndBot();
         }
 
         const { history, location } = this.props
@@ -78,12 +80,12 @@ class AppsIndex extends React.Component<Props, ComponentState> {
         this.props.createApplicationAsync(this.props.user.id, appToCreate)
     }
 
-    onImportDemoApps = () => {
+    onImportTutorial = (tutorial: AppBase) => {
         let srcUserId = CL_SAMPLE_ID;  
         let destUserId = this.props.user.id;
 
         // TODO: Find cleaner solution for the types.  Thunks return functions but when using them on props they should be returning result of the promise.
-        this.props.copyApplicationsThunkAsync(srcUserId, destUserId)
+        this.props.copyApplicationThunkAsync(srcUserId, destUserId, tutorial.appId)
     }
 
     render() {
@@ -99,7 +101,7 @@ class AppsIndex extends React.Component<Props, ComponentState> {
                             apps={this.props.apps}
                             onCreateApp={this.onCreateApp}
                             onClickDeleteApp={this.onClickDeleteApp}
-                            onImportDemoApps={this.onImportDemoApps}
+                            onImportTutorial={(tutorial) => this.onImportTutorial(tutorial)}
                         />
                     }
                 />
@@ -114,7 +116,7 @@ const mapDispatchToProps = (dispatch: any) => {
         fetchBotInfoAsync: actions.fetch.fetchBotInfoAsync,
         createApplicationAsync,
         deleteApplicationAsync,
-        copyApplicationsThunkAsync
+        copyApplicationThunkAsync
     }, dispatch)
 }
 

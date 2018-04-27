@@ -31,34 +31,35 @@ export const createApplicationFulfilled = (app: AppBase): ActionObject => {
 // --------------------------
 // CopyApps
 // --------------------------
-export const copyApplicationsThunkAsync = (srcUserId: string, destUserId: string) => {
+export const copyApplicationThunkAsync = (srcUserId: string, destUserId: string, appId: string) => {
     return async (dispatch: Dispatch<any>) => {
-        const clClient = ClientFactory.getInstance(AT.COPY_APPLICATIONS_ASYNC)
+        const clClient = ClientFactory.getInstance(AT.COPY_APPLICATION_ASYNC)
         try {
-            dispatch(copyApplicationsAsync(srcUserId, destUserId))
-            await clClient.appsCopy(srcUserId, destUserId)
+            dispatch(copyApplicationAsync(srcUserId, destUserId, appId))
+            await clClient.appCopy(srcUserId, destUserId, appId)
             dispatch(fetchApplicationsAsync(destUserId))
-            dispatch(copyApplicationsFulfilled())
+            dispatch(copyApplicationFulfilled())
         }
         catch (error) {
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, [error.response], AT.COPY_APPLICATIONS_ASYNC))
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, [error.response], AT.COPY_APPLICATION_ASYNC))
             throw error
         }
         return;
     }
 }
 
-const copyApplicationsAsync = (srcUserId: string, destUserId: string): ActionObject => {
+const copyApplicationAsync = (srcUserId: string, destUserId: string, appId: string): ActionObject => {
     return {
-        type: AT.COPY_APPLICATIONS_ASYNC,
+        type: AT.COPY_APPLICATION_ASYNC,
         srcUserId: srcUserId,
-        destUserId: destUserId
+        destUserId: destUserId,
+        appId: appId
     }
 }
 
-const copyApplicationsFulfilled = (): ActionObject => {
+const copyApplicationFulfilled = (): ActionObject => {
     return {
-        type: AT.COPY_APPLICATIONS_FULFILLED
+        type: AT.COPY_APPLICATION_FULFILLED
     }
 }
 
