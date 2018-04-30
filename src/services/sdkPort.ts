@@ -11,8 +11,7 @@ export function initialize() {
     const existingSdkPort = get()
     if (Number.isNaN(existingSdkPort)) {
         set(defaultPort)
-    }
-    else {
+    } else {
         set(existingSdkPort)
     }
 }
@@ -23,8 +22,5 @@ export const set = (port: number): void => {
 }
 
 export const get = (): number => {
-    return parseInt(localStorage.getItem(localStorageSdkPortKey))
+    return parseInt(localStorage.getItem(localStorageSdkPortKey), 10)
 }
-
-
-

@@ -2,8 +2,7 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import { ActionObject } from '../types'
-import { DisplayState } from '../types'
+import { ActionObject, DisplayState } from '../types'
 import { AT } from '../types/ActionTypes'
 import { Reducer } from 'redux'
 
@@ -12,15 +11,15 @@ const initialState: DisplayState = {
     tipType: null
 };
 
-const spinnerName = function (spinner: string): string {
+const spinnerName = (spinner: string): string => {
     let cut = spinner.lastIndexOf("_");
     return spinner.slice(0, cut);
 }
-const addSpinner = function (spinners: string[], newSpinner: string): string[] {
+const addSpinner = (spinners: string[], newSpinner: string): string[] => {
     return spinners.concat(spinnerName(newSpinner));
 }
 
-const removeSpinner = function (spinners: string[], oldSpinner: string): string[] {
+const removeSpinner = (spinners: string[], oldSpinner: string): string[] => {
     return spinners.filter(o => o !== spinnerName(oldSpinner));
 }
 

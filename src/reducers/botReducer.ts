@@ -2,9 +2,8 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import { BotState } from '../types'
+import { ActionObject, BotState } from '../types'
 import { AT } from '../types/ActionTypes'
-import { ActionObject } from '../types'
 import { Reducer } from 'redux'
 
 const initialState: BotState = {

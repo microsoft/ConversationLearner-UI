@@ -110,7 +110,7 @@ function serializeNode(node: any, entityValues: Map<string, string>, fallbackToO
         return entityValues.get(entityId)!
     }
 
-    if (node.kind == 'document') {
+    if (node.kind === 'document') {
         return serializedChildNodes.join('\n')
     }
 

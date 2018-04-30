@@ -1,7 +1,10 @@
+/**
+ * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Licensed under the MIT License.
+ */
 import * as utilities from './utilities'
 import * as models from './models'
 import Plain from 'slate-plain-serializer'
-import { NodeType } from './models'
 
 describe('ExtractResponseEditor', () => {
     describe('utilities', () => {
@@ -24,21 +27,21 @@ describe('ExtractResponseEditor', () => {
             })
         })
 
-        describe('lastIndex', () => {
+        describe('findLastIndex', () => {
             test('given empty array return -1', () => {
-                expect(utilities.lastIndex([], () => true)).toBe(-1)
+                expect(utilities.findLastIndex([], () => true)).toBe(-1)
             })
 
             test('given non-empty array and predicate that always returns false, return -1', () => {
-                expect(utilities.lastIndex([1,2,3,4], () => false)).toBe(-1)
+                expect(utilities.findLastIndex([1, 2, 3, 4], () => false)).toBe(-1)
             })
 
             test('given non-empty array and predicate that matches single item return that items index', () => {
-                expect(utilities.lastIndex([1,2,3,4], x => x === 2)).toBe(1)
+                expect(utilities.findLastIndex([1, 2, 3, 4], x => x === 2)).toBe(1)
             })
-            
+
             test('given non-empty array and predicate that matches multiple items, return the last/largest index', () => {
-                expect(utilities.lastIndex([1,2,3,4], x => x > 2)).toBe(3)
+                expect(utilities.findLastIndex([1, 2, 3, 4], x => x > 2)).toBe(3)
             })
         })
 
@@ -196,7 +199,7 @@ describe('ExtractResponseEditor', () => {
                 const expectedNodes = [
                     {
                         "kind": "inline",
-                        "type": NodeType.TokenNodeType,
+                        "type": models.NodeType.TokenNodeType,
                         "isVoid": false,
                         "data": tokens[0],
                         "nodes": [
@@ -224,7 +227,7 @@ describe('ExtractResponseEditor', () => {
                     },
                     {
                         "kind": "inline",
-                        "type": NodeType.TokenNodeType,
+                        "type": models.NodeType.TokenNodeType,
                         "isVoid": false,
                         "data": tokens[2],
                         "nodes": [
@@ -279,13 +282,13 @@ describe('ExtractResponseEditor', () => {
                 const expectedNodes = [
                     {
                         "kind": "inline",
-                        "type": NodeType.CustomEntityNodeType,
+                        "type": models.NodeType.CustomEntityNodeType,
                         "isVoid": false,
                         "data": (tokens[0] as any).entity.data,
                         "nodes": [
                             {
                                 "kind": "inline",
-                                "type": NodeType.TokenNodeType,
+                                "type": models.NodeType.TokenNodeType,
                                 "isVoid": false,
                                 "data": (tokens[0] as any).tokens[0],
                                 "nodes": [
@@ -315,7 +318,7 @@ describe('ExtractResponseEditor', () => {
                     },
                     {
                         "kind": "inline",
-                        "type": NodeType.TokenNodeType,
+                        "type": models.NodeType.TokenNodeType,
                         "isVoid": false,
                         "data": tokens[2],
                         "nodes": [
@@ -371,7 +374,7 @@ describe('ExtractResponseEditor', () => {
                         ]
                     },
                 ]
-                    
+
                 const slateValue = utilities.convertToSlateValue(tokens)
                 const expectedString = 'a a'
                 const expectedEntities: models.IGenericEntity<any>[] = [
@@ -391,7 +394,7 @@ describe('ExtractResponseEditor', () => {
                 expect(Plain.serialize(slateValue)).toEqual(expectedString)
                 expect(actualEntities).toEqual(expectedEntities)
             })
-            
+
         })
     })
 })

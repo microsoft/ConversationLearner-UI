@@ -31,11 +31,10 @@ export const valueToJSON = (value: any) => {
         marks: value.marks.toJSON(),
         texts: value.texts.toJSON(),
         characters,
-        selectedText: characters.reduce((s: string, node: any) => s += node.text, ''),
+        selectedText: characters.reduce((s: string, node: any) => s + node.text, ''),
         selection: value.selection.toJSON()
     }
 }
-
 
 export const findNodeByPath = (path: number[], root: any, nodeType: string = NodeTypes.Mention): any => {
     if (path.length === 0) {
