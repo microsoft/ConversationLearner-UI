@@ -2,8 +2,7 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import { ActionObject } from '../types'
-import { EntityState } from '../types'
+import { ActionObject, EntityState } from '../types'
 import { AT } from '../types/ActionTypes'
 import { Reducer } from 'redux'
 import { replace } from '../util'

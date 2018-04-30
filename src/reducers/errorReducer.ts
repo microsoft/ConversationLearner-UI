@@ -2,9 +2,8 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import { ActionObject } from '../types'
+import { ActionObject, ErrorState } from '../types'
 import { ErrorType } from '../types/const'
-import { ErrorState } from '../types'
 import { Reducer } from 'redux'
 import { AT } from '../types/ActionTypes'
 

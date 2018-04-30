@@ -2,8 +2,7 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import { AppsState } from '../types'
-import { ActionObject } from '../types'
+import { AppsState, ActionObject } from '../types'
 import { AT } from '../types/ActionTypes'
 import { Reducer } from 'redux'
 import { replace } from '../util'
@@ -22,7 +21,7 @@ const appsReducer: Reducer<AppsState> = (state = initialState, action: ActionObj
         case AT.FETCH_APPLICATIONS_FULFILLED:
             return { ...state, all: action.uiAppList.appList.apps, activeApps: action.uiAppList.activeApps } 
         case AT.FETCH_APPLICATION_TRAININGSTATUS_ASYNC: {
-            const app = state.all.find(app => app.appId === action.appId)
+            const app = state.all.find(a => a.appId === action.appId)
             // User may have delete the app
             if (!app) {
                 return state;
@@ -48,7 +47,7 @@ const appsReducer: Reducer<AppsState> = (state = initialState, action: ActionObj
             return { ...state, all: replace(state.all, newApp, a => a.appId) }
         }
         case AT.FETCH_APPLICATION_TRAININGSTATUS_FULFILLED: {
-            const app = state.all.find(app => app.appId === action.appId)
+            const app = state.all.find(a => a.appId === action.appId)
             // User may have delete the app
             if (!app) {
                 return state;

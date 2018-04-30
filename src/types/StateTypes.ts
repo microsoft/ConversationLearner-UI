@@ -67,7 +67,7 @@ export interface ProfileState {
 export type State = {
     profile: ProfileState,
     user: UserState,
-    bot: BotState
+    bot: BotState,
     apps: AppsState,
     entities: EntityState,
     actions: ActionState,
@@ -78,4 +78,3 @@ export type State = {
     teachSessions: TeachSessionState,
     chatSessions: ChatSessionState
 }
-

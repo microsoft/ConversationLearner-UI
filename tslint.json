@@ -1,5 +1,8 @@
 {
-    "extends": ["tslint-react"],
+    "extends": [
+        "tslint-react",
+        "tslint-microsoft-contrib"
+    ],
     "defaultSeverity": "warning",
     "rules": {
         "align": [
@@ -58,8 +61,6 @@
         "no-use-before-declare": true,
         "one-line": [
             true,
-            "check-catch",
-            "check-else",
             "check-open-brace",
             "check-whitespace"
         ],
@@ -96,6 +97,90 @@
             "check-separator",
             "check-type",
             "check-typecast"
-        ]
+        ],
+
+        "no-banned-terms": {
+            "options": true,
+            "severity": "error"
+        },
+        "no-delete-expression": {
+            "options": true,
+            "severity": "error"
+        },
+        "no-document-domain": {
+            "options": true,
+            "severity": "error"
+        },
+        "no-disable-auto-sanitization": {
+            "options": true,
+            "severity": "error"
+        },
+        "no-duplicate-parameter-names": {
+            "options": true,
+            "severity": "error"
+        },
+        "no-exec-script": {
+            "options": true,
+            "severity": "error"
+        },
+        "no-function-constructor-with-string-args": {
+            "options": true,
+            "severity": "error"
+        },
+        "no-octal-literal": {
+            "options": true,
+            "severity": "error"
+        },
+        "no-reserved-keywords": false,
+        "no-string-based-set-immediate": {
+            "options": true,
+            "severity": "error"
+        },
+        "no-string-based-set-interval": {
+            "options": true,
+            "severity": "error"
+        },
+        "no-string-based-set-timeout": {
+            "options": true,
+            "severity": "error"
+        },
+
+        "align": false,
+        "comment-format": false,
+        "cyclomatic-complexity": false,
+        "eofline": false,
+        "export-name": false,
+        "import-name": false,
+        "indent": false,
+        "insecure-random": false,
+        "interface-name": false,
+        "linebreak-style": false,
+        "max-func-body-length": false,
+        "max-line-length": false,
+        "member-access": false,
+        "mocha-no-side-effect-code": false,
+        "newline-before-return": false,
+        "no-any": false,
+        "no-backbone-get-set-outside-model": false,
+        "no-console": false,
+        "no-default-export": false,
+        "no-empty": false,
+        "no-http-string": false,
+        "no-multiline-string": false,
+        "no-non-null-assertion": false,
+        "no-relative-imports": false,
+        "no-suspicious-comment": false,
+        "no-trailing-whitespace": false,
+        "no-unnecessary-callback-wrapper": false,
+        "object-literal-key-quotes": false,
+        "ordered-imports": false,
+        "prefer-const": false,
+        "prefer-type-cast": false,
+        "quotemark": false,
+        "semicolon": false,
+        "trailing-comma": false,
+        "type-literal-delimiter": false,
+        "typedef": false,
+        "variable-name": false
     }
 }

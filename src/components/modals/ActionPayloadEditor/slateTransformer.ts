@@ -12,10 +12,10 @@ function updateOptionNames(value: any, options: IOption[]) {
 }
 
 function updateNodeOptionNames(node: any, options: IOption[], newName?: string) {
-    if (node.kind == 'document') {
+    if (node.kind === 'document') {
         node.nodes.forEach((n: any) => updateNodeOptionNames(n, options))
         return node
-    } else if (node.kind == 'block') {
+    } else if (node.kind === 'block') {
         node.nodes.forEach((n: any) => updateNodeOptionNames(n, options))
         return node
     } else if (node.kind === 'inline' && node.type === NodeTypes.Mention) {

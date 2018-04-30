@@ -6,7 +6,6 @@ import { Value } from 'slate'
 import * as models from './models'
 import * as util from '../../util'
 import { EntityBase, PredictedEntity, ExtractResponse, EntityType } from 'conversationlearner-models'
-import { NodeType } from './models';
 
 /**
  * Recursively walk up DOM tree until root or parent with non-static position is found.
@@ -27,7 +26,7 @@ export const getRelativeParent = (element: HTMLElement | null): HTMLElement => {
 
 export const getSelectedText = (value: any) => {
     const characters = value.characters ? value.characters.toJSON() : []
-    return characters.reduce((s: string, node: any) => s += node.text, '')
+    return characters.reduce((s: string, node: any) => s + node.text, '')
 }
 
 export const valueToJSON = (value: any) => {
@@ -70,6 +69,7 @@ export const tokenizeText = (text: string, tokenRegex: RegExp): IToken[] => {
 
     let result: RegExpExecArray = null
     let lastIndex = tokenRegex.lastIndex
+    // tslint:disable-next-line:no-conditional-assignment
     while ((result = tokenRegex.exec(text)) !== null) {
         const matchedText = text.substring(lastIndex, result.index)
         tokens.push(...[
@@ -106,10 +106,10 @@ export const tokenizeText = (text: string, tokenRegex: RegExp): IToken[] => {
  * @param xs Array
  * @param f Predicate function
  */
-export const lastIndex = <T>(xs: T[], f: (x: T) => boolean): number => {
-    for (let i = xs.length - 1; i >= 0; i--)
-    {
-        if(f(xs[i])) {
+export const findLastIndex = <T>(xs: T[], f: (x: T) => boolean): number => {
+    // tslint:disable-next-line:no-increment-decrement
+    for (let i = xs.length - 1; i >= 0; i--) {
+        if (f(xs[i])) {
             return i
         }
     }
@@ -120,7 +120,7 @@ export const lastIndex = <T>(xs: T[], f: (x: T) => boolean): number => {
 export const addTokenIndiciesToCustomEntities = (tokens: IToken[], customEntities: models.IGenericEntity<any>[]): ICustomEntityWithTokenIndicies[] => {
     return customEntities.map<ICustomEntityWithTokenIndicies>(ce => {
         const startTokenIndex = tokens.findIndex(t => t.isSelectable === true && ce.startIndex < t.endIndex && t.endIndex <= ce.endIndex)
-        const endTokenIndex = lastIndex(tokens, t => t.isSelectable === true && ce.startIndex <= t.startIndex && t.startIndex < ce.endIndex)
+        const endTokenIndex = findLastIndex(tokens, t => t.isSelectable === true && ce.startIndex <= t.startIndex && t.startIndex < ce.endIndex)
         if (startTokenIndex === -1 || endTokenIndex === -1) {
             console.warn(`Could not find valid token for custom entity: `, ce.data)
         }
@@ -173,7 +173,7 @@ export const wrapTokensWithEntities = (tokens: IToken[], customEntitiesWithToken
 
         // push non labeled tokens in between this and next entity
         if (i !== customEntitiesWithTokens.length - 1) {
-            const nextCet = customEntitiesWithTokens[i+1]
+            const nextCet = customEntitiesWithTokens[i + 1]
             tokenArray.push(...tokens.slice(cet.endTokenIndex, nextCet.startTokenIndex))
         }
     }
@@ -216,7 +216,7 @@ export const convertToSlateNodes = (tokensWithEntities: TokenArray): any[] => {
             const nestedNodes = convertToSlateNodes(entityPlaceholder.tokens)
             nodes.push({
                 "kind": "inline",
-                "type": NodeType.CustomEntityNodeType,
+                "type": models.NodeType.CustomEntityNodeType,
                 "isVoid": false,
                 "data": entityPlaceholder.entity.data,
                 "nodes": nestedNodes
@@ -227,7 +227,7 @@ export const convertToSlateNodes = (tokensWithEntities: TokenArray): any[] => {
             if (token.isSelectable) {
                 nodes.push({
                     "kind": "inline",
-                    "type": NodeType.TokenNodeType,
+                    "type": models.NodeType.TokenNodeType,
                     "isVoid": false,
                     "data": token,
                     "nodes": [
@@ -406,7 +406,7 @@ export const convertEntitiesAndTextToEditorValue = (text: string, customEntities
     return Value.fromJSON(document)
 }
 
-export const convertMatchedTextIntoMatchedOption = <T>(text: string, matches: [number, number][], original: T): models.MatchedOption<T> => {
+export const convertMatchedTextIntoMatchedOption = <T>(inputText: string, matches: [number, number][], original: T): models.MatchedOption<T> => {
     const matchedStrings = matches.reduce<models.ISegement[]>((segements, [startIndex, originalEndIndex]) => {
         // TODO: For some reason the Fuse.io library returns the end index before the last character instead of after
         // I opened issue here for explanation: https://github.com/krisk/Fuse/issues/212
@@ -458,9 +458,9 @@ export const convertMatchedTextIntoMatchedOption = <T>(text: string, matches: [n
         return [...prevSegements, ...newSegements, ...nextSegements]
     }, [
             {
-                text,
+                text: inputText,
                 startIndex: 0,
-                endIndex: text.length,
+                endIndex: inputText.length,
                 type: models.SegementType.Normal,
                 data: {
                     matched: false
@@ -602,9 +602,4 @@ export const convertExtractorResponseToEditorModels = (extractResponse: ExtractR
         customEntities,
         preBuiltEntities
     }
-}
-
-export const entityName = (entities: EntityBase[], entityId: string) => {
-    let entity = entities.find(e => e.entityId === entityId);
-    return entity ? util.entityDisplayName(entity) : '';
 }
