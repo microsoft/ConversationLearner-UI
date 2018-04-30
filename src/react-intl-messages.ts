@@ -456,7 +456,7 @@ export default {
         [FM.APPSLIST_CREATEBUTTONTEXT]: 'New App',
         [FM.APPSLIST_IMPORTBUTTONARIADESCRIPTION]: 'Import Tutorials Applications',
         [FM.APPSLIST_IMPORTBUTTONTEXT]: 'Import Tutorials',
-        [FM.APPSLIST_CONFIRMCANCELMODALTITLE]: 'Are you sure you want to delete this application?',
+        [FM.APPSLIST_CONFIRMCANCELMODALTITLE]: 'Are you sure you want to delete this application? {appName}',
         [FM.APPSLIST_COLUMN_NAME]: 'Name',
         [FM.APPSLIST_COLUMNS_LOCALE]: 'Locale',
         [FM.APPSLIST_COLUMNS_LINKEDBOTS]: 'Linked Bots',
