@@ -98,8 +98,8 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             key: 'tag',
             name: 'Tag',
             fieldName: 'tag',
-            minWidth: 100,
-            maxWidth: 500,
+            minWidth: 80,
+            maxWidth: 120,
             isResizable: true,
             render: (logDialog, component) => {
                 let tagName = getTagName(logDialog, component);
@@ -118,8 +118,9 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             }),
             fieldName: 'firstInput',
             minWidth: 100,
-            maxWidth: 500,
+            maxWidth: 300,
             isResizable: true,
+            isSortedDescending: true,
             render: logDialog => {
                 let firstInput = getFirstInput(logDialog);
                 if (firstInput) {
@@ -140,7 +141,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             }),
             fieldName: 'lastInput',
             minWidth: 100,
-            maxWidth: 500,
+            maxWidth: 300,
             isResizable: true,
             render: logDialog => {
                 let lastInput = getLastInput(logDialog)
@@ -162,7 +163,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             }),
             fieldName: 'lastResponse',
             minWidth: 100,
-            maxWidth: 500,
+            maxWidth: 300,
             isResizable: true,
             render: (logDialog, component) => {
                 let lastResponse = getLastResponse(logDialog, component);
@@ -211,23 +212,28 @@ interface ComponentState {
 
 class LogDialogs extends React.Component<Props, ComponentState> {
     newChatSessionButton: OF.IButton
-
-    state: ComponentState = {
-        columns: getColumns(this.props.intl),
-        sortColumn: null,
-        chatSession: null,
-        isChatSessionWindowOpen: false,
-        isLogDialogWindowOpen: false,
-        isTeachDialogModalOpen: false,
-        isValidationWarningOpen: false,
-        currentLogDialog: null,
-        searchValue: '',
-        dialogKey: 0,
-        activities: [],
-        teachSession: null,
-        validationErrors: [],
-        validationErrorTitleId: null,
-        validationErrorMessageId: null
+    state: ComponentState
+    
+    constructor(props: Props) {
+        super(props)
+        let columns = getColumns(this.props.intl);
+        this.state = {
+            columns: columns,
+            sortColumn: columns[1],
+            chatSession: null,
+            isChatSessionWindowOpen: false,
+            isLogDialogWindowOpen: false,
+            isTeachDialogModalOpen: false,
+            isValidationWarningOpen: false,
+            currentLogDialog: null,
+            searchValue: '',
+            dialogKey: 0,
+            activities: [],
+            teachSession: null,
+            validationErrors: [],
+            validationErrorTitleId: null,
+            validationErrorMessageId: null
+        }
     }
 
     sortLogDialogs(logDialogs: LogDialog[]): LogDialog[] {

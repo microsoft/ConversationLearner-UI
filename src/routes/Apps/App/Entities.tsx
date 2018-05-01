@@ -34,6 +34,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             minWidth: 100,
             maxWidth: 200,
             isResizable: true,
+            isSortedDescending: true,
             getSortValue: entity => entity.entityName.toLowerCase(),
             render: entity => <span className={OF.FontClassNames.mediumPlus}>{entity.entityName}</span>
         },
@@ -110,13 +111,18 @@ interface ComponentState {
 
 class Entities extends React.Component<Props, ComponentState> {
     newEntityButton: OF.IButton
+    state: ComponentState
 
-    state: ComponentState = {
-        searchValue: '',
-        createEditModalOpen: false,
-        entitySelected: null,
-        columns: getColumns(this.props.intl),
-        sortColumn: null
+    constructor(props: Props) {
+        super(props)
+        let columns = getColumns(this.props.intl);
+        this.state = {
+            searchValue: '',
+            createEditModalOpen: false,
+            entitySelected: null,
+            columns: columns,
+            sortColumn: columns[0]
+        }
     }
 
     componentDidMount() {

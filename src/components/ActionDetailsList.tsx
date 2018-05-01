@@ -18,9 +18,10 @@ import AdaptiveCardViewer from './modals/AdaptiveCardViewer/AdaptiveCardViewer'
 class ActionDetailsList extends React.Component<Props, ComponentState> {
     constructor(p: any) {
         super(p);
+        let columns = getColumns(this.props.intl)
         this.state = {
-            columns: getColumns(this.props.intl),
-            sortColumn: null,
+            columns: columns,
+            sortColumn: columns[0],
             cardViewerAction: null
         }
         this.onClickColumnHeader = this.onClickColumnHeader.bind(this);
@@ -172,6 +173,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             maxWidth: 400,
             isResizable: true,
             isMultiline: true,
+            isSortedDescending: true,
             getSortValue: (action, component) => {
                 const entityMap = Util.getDefaultEntityMap(component.props.entities)
                 
