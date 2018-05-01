@@ -96,6 +96,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             minWidth: 100,
             maxWidth: 500,
             isResizable: true,
+            isSortedDescending: true,
             render: trainDialog => {
                 let firstInput = getFirstInput(trainDialog);
                 if (firstInput) {
@@ -195,27 +196,33 @@ interface ComponentState {
 
 class TrainDialogs extends React.Component<Props, ComponentState> {
     newTeachSessionButton: OF.IButton
+    state: ComponentState
 
-    state: ComponentState = {
-        columns: getColumns(this.props.intl),
-        sortColumn: null,
-        teachSession: null,
-        activities: [],
-        isTeachDialogModalOpen: false,
-        isTrainDialogModalOpen: false,
-        isSessionMemoryCheckOpen: false,
-        currentTrainDialog: null,
-        searchValue: '',
-        dialogKey: 0,
-        entityFilter: null,
-        actionFilter: null,
-        isValidationWarningOpen: false,
-        validationErrors: [],
-        validationErrorTitleId: null,
-        validationErrorMessageId: null
+    constructor(props: Props) {
+        super(props)
+        let columns = getColumns(this.props.intl);
+        this.state = {
+            columns: columns,
+            sortColumn: columns[0],
+            teachSession: null,
+            activities: [],
+            isTeachDialogModalOpen: false,
+            isTrainDialogModalOpen: false,
+            isSessionMemoryCheckOpen: false,
+            currentTrainDialog: null,
+            searchValue: '',
+            dialogKey: 0,
+            entityFilter: null,
+            actionFilter: null,
+            isValidationWarningOpen: false,
+            validationErrors: [],
+            validationErrorTitleId: null,
+            validationErrorMessageId: null
+        }
     }
 
     sortTrainDialogs(trainDialogs: TrainDialog[]): TrainDialog[] {
+
         // If column header selected sort the items
         if (this.state.sortColumn) {
             trainDialogs
