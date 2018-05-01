@@ -4,7 +4,7 @@
  */
 import { ActionObject, TeachSessionState } from '../types'
 import { Reducer } from 'redux'
-import { UnscoredAction, ScoreReason, DialogMode } from 'conversationlearner-models'
+import { UnscoredAction, ScoreReason, DialogMode } from '@conversationlearner/models'
 import { AT } from '../types/ActionTypes'
 
 const initialState: TeachSessionState = {

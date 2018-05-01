@@ -2,7 +2,7 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import * as models from 'conversationlearner-models'
+import * as models from '@conversationlearner/models'
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios'
 import { AppInput } from '../types/models';
 

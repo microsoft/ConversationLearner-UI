@@ -20,7 +20,7 @@ import ConfirmCancelModal from './ConfirmCancelModal'
 import { State, PreBuiltEntities } from '../../types';
 import { CLDropdownOption } from './CLDropDownOption'
 import * as ToolTip from '../ToolTips'
-import { AppBase, EntityBase, EntityType, ActionBase } from 'conversationlearner-models'
+import { AppBase, EntityBase, EntityType, ActionBase } from '@conversationlearner/models'
 import './EntityCreatorEditor.css'
 import { FM } from '../../react-intl-messages'
 import { defineMessages, injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'

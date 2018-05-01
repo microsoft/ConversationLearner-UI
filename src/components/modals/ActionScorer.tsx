@@ -11,7 +11,7 @@ import {
     AppBase, TrainScorerStep, Memory, ScoredBase, ScoreInput, ScoreResponse,
     ActionBase, ScoredAction, UnscoredAction, ScoreReason, DialogType, ActionTypes,
     Template, DialogMode, RenderedActionArgument, CardAction
-} from 'conversationlearner-models'
+} from '@conversationlearner/models'
 import { createActionThunkAsync } from '../../actions/createActions'
 import { toggleAutoTeach } from '../../actions/teachActions'
 import { PrimaryButton } from 'office-ui-fabric-react';

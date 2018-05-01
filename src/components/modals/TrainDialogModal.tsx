@@ -11,7 +11,7 @@ import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { State } from '../../types';
 import Webchat from '../Webchat'
 import TrainDialogAdmin from './TrainDialogAdmin'
-import { AppBase, TrainDialog, CL_USER_NAME_ID } from 'conversationlearner-models'
+import { AppBase, TrainDialog, CL_USER_NAME_ID } from '@conversationlearner/models'
 import { Activity } from 'botframework-directlinejs';
 import ConfirmCancelModal from './ConfirmCancelModal'
 import { FM } from '../../react-intl-messages'

@@ -8,7 +8,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import * as OF from 'office-ui-fabric-react';
 import { State } from '../../../types'
-import { AppBase, Teach, TrainDialog, TeachWithHistory, ActionBase, EntityBase, UITeachResponse, ReplayError } from 'conversationlearner-models'
+import { AppBase, Teach, TrainDialog, TeachWithHistory, ActionBase, EntityBase, UITeachResponse, ReplayError } from '@conversationlearner/models'
 import { TeachSessionModal, TrainDialogModal, SessionMemoryCheck } from '../../../components/modals'
 import { fetchHistoryThunkAsync, fetchApplicationTrainingStatusThunkAsync } from '../../../actions/fetchActions'
 import {

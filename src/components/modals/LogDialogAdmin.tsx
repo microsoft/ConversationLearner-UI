@@ -20,7 +20,7 @@ import {
     LogDialog, LogRound, LogScorerStep,
     ActionBase, ExtractResponse, DialogMode,
     DialogType, ModelUtils, SenderType, FilledEntity
-} from 'conversationlearner-models'
+} from '@conversationlearner/models'
 
 interface ComponentState {
     senderType: SenderType,

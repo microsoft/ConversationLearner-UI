@@ -12,7 +12,7 @@ import {
     UserInput, ExtractResponse, DialogType,
     UIExtractResponse, UITrainScorerStep,
     UITeachResponse, UIScoreInput, UIScoreResponse, UIAppList, TrainingStatus
-} from 'conversationlearner-models'
+} from '@conversationlearner/models'
 import { TipType } from '../components/ToolTips'
 import { ErrorType } from '../types/const'
 import { AT } from '../types/ActionTypes'
