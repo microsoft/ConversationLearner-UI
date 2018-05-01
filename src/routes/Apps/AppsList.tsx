@@ -319,7 +319,9 @@ class AppsList extends React.Component<Props, ComponentState> {
                     onConfirm={this.onConfirmDeleteApp}
                     title={this.props.intl.formatMessage({
                         id: FM.APPSLIST_CONFIRMCANCELMODALTITLE,
-                        defaultMessage: 'Are you sure you want to delete this application?'
+                        defaultMessage: 'Are you sure you want to delete this application? {appName}'
+                    }, {
+                        appName: this.state.appToDelete ? this.state.appToDelete.appName : ''
                     })}
                 />
                 <TutorialImporter
