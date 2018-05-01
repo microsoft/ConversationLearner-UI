@@ -49,7 +49,7 @@ export interface IToken {
     endIndex: number
 }
 
-interface ICustomEntityWithTokenIndicies extends models.IGenericEntity<any> {
+interface ICustomEntityWithTokenIndices extends models.IGenericEntity<any> {
     startTokenIndex: number
     endTokenIndex: number
 }
@@ -117,8 +117,8 @@ export const findLastIndex = <T>(xs: T[], f: (x: T) => boolean): number => {
     return -1
 }
 
-export const addTokenIndiciesToCustomEntities = (tokens: IToken[], customEntities: models.IGenericEntity<any>[]): ICustomEntityWithTokenIndicies[] => {
-    return customEntities.map<ICustomEntityWithTokenIndicies>(ce => {
+export const addTokenIndicesToCustomEntities = (tokens: IToken[], customEntities: models.IGenericEntity<any>[]): ICustomEntityWithTokenIndices[] => {
+    return customEntities.map<ICustomEntityWithTokenIndices>(ce => {
         const startTokenIndex = tokens.findIndex(t => t.isSelectable === true && ce.startIndex < t.endIndex && t.endIndex <= ce.endIndex)
         const endTokenIndex = findLastIndex(tokens, t => t.isSelectable === true && ce.startIndex <= t.startIndex && t.startIndex < ce.endIndex)
         if (startTokenIndex === -1 || endTokenIndex === -1) {
@@ -130,7 +130,7 @@ export const addTokenIndiciesToCustomEntities = (tokens: IToken[], customEntitie
 //             const endToken = tokens[endTokenIndex]
 
 //             console.log(`
-// token indicies found:
+// token indices found:
 // ce.startIndex: ${ce.startIndex}
 // ce.endIndex: ${ce.endIndex}
 
@@ -154,17 +154,18 @@ export const addTokenIndiciesToCustomEntities = (tokens: IToken[], customEntitie
     })
 }
 
-export const wrapTokensWithEntities = (tokens: IToken[], customEntitiesWithTokens: ICustomEntityWithTokenIndicies[]): TokenArray => {
+export const wrapTokensWithEntities = (tokens: IToken[], customEntitiesWithTokens: ICustomEntityWithTokenIndices[]): TokenArray => {
     // If there are no entities than no work to do, return tokens
     if (customEntitiesWithTokens.length === 0) {
         return tokens
     }
-
+    
+    const sortedCustomEntities = [...customEntitiesWithTokens].sort((a, b) => a.startIndex - b.startIndex)
     // Include all non labeled tokens before first entity
-    const firstCet = customEntitiesWithTokens[0]
+    const firstCet = sortedCustomEntities[0]
     const tokenArray: TokenArray = [...tokens.slice(0, firstCet.startTokenIndex)]
 
-    for (let [i, cet] of Array.from(customEntitiesWithTokens.entries())) {
+    for (let [i, cet] of Array.from(sortedCustomEntities.entries())) {
         // push labeled tokens
         tokenArray.push({
             entity: cet,
@@ -172,21 +173,26 @@ export const wrapTokensWithEntities = (tokens: IToken[], customEntitiesWithToken
         })
 
         // push non labeled tokens in between this and next entity
-        if (i !== customEntitiesWithTokens.length - 1) {
-            const nextCet = customEntitiesWithTokens[i + 1]
+        if (i !== sortedCustomEntities.length - 1) {
+            const nextCet = sortedCustomEntities[i + 1]
             tokenArray.push(...tokens.slice(cet.endTokenIndex, nextCet.startTokenIndex))
         }
     }
 
     // Include all non labeled tokens after last entity
-    const lastCet = customEntitiesWithTokens[customEntitiesWithTokens.length - 1]
+    const lastCet = sortedCustomEntities[sortedCustomEntities.length - 1]
     tokenArray.push(...tokens.slice(lastCet.endTokenIndex))
 
     return tokenArray
 }
 
+const log = (s: string) => (x: any) => {
+    console.log(s, x)
+    return x
+}
+
 export const labelTokens = (tokens: IToken[], customEntities: models.IGenericEntity<any>[]): TokenArray => {
-    return wrapTokensWithEntities(tokens, addTokenIndiciesToCustomEntities(tokens, customEntities))
+    return wrapTokensWithEntities(tokens, log('addTokenIndicesToCustomEntities: ')(addTokenIndicesToCustomEntities(tokens, customEntities)))
 }
 
 export const convertToSlateNodes = (tokensWithEntities: TokenArray): any[] => {
@@ -297,7 +303,7 @@ export const convertEntitiesAndTextToEditorValue = (text: string, customEntities
     const normalizedSegements = customEntities.reduce<models.ISegement[]>((segements, entity) => {
         const segementIndexWhereEntityBelongs = segements.findIndex(seg => seg.startIndex <= entity.startIndex && entity.endIndex <= seg.endIndex)
         if (segementIndexWhereEntityBelongs === -1) {
-            throw new Error(`When attempting to convert entities to editor value, could not find text segement to place entity. Entity indicies are: [${entity.startIndex}, ${entity.endIndex}] but available segement ranges are: ${segements.map(s => `[${s.startIndex}, ${s.endIndex}]`).join(`, `)}`)
+            throw new Error(`When attempting to convert entities to editor value, could not find text segement to place entity. Entity indices are: [${entity.startIndex}, ${entity.endIndex}] but available segement ranges are: ${segements.map(s => `[${s.startIndex}, ${s.endIndex}]`).join(`, `)}`)
         }
         const prevSegements = segements.slice(0, segementIndexWhereEntityBelongs)
         const nextSegements = segements.slice(segementIndexWhereEntityBelongs + 1, segements.length)
