@@ -186,13 +186,8 @@ export const wrapTokensWithEntities = (tokens: IToken[], customEntitiesWithToken
     return tokenArray
 }
 
-const log = (s: string) => (x: any) => {
-    console.log(s, x)
-    return x
-}
-
 export const labelTokens = (tokens: IToken[], customEntities: models.IGenericEntity<any>[]): TokenArray => {
-    return wrapTokensWithEntities(tokens, log('addTokenIndicesToCustomEntities: ')(addTokenIndicesToCustomEntities(tokens, customEntities)))
+    return wrapTokensWithEntities(tokens, addTokenIndicesToCustomEntities(tokens, customEntities))
 }
 
 export const convertToSlateNodes = (tokensWithEntities: TokenArray): any[] => {
