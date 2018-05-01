@@ -31,7 +31,7 @@ function updateNodeOptionNames(node: any, options: IOption[], newName?: string) 
 
         const matchingOption = options.find(o => o.id === option.id)
         if (!matchingOption) {
-            throw new Error(`Attempting to update optoin name on inline node, but could not find option with id: ${option.id}(${option.name}) in given list of options`)
+            throw new Error(`Attempting to update option name on inline node, but could not find option with id: ${option.id}(${option.name}) in given list of options`)
         }
 
         // 1. Update option name
