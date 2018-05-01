@@ -4,7 +4,7 @@
  */
 import { AT, ActionObject, ErrorType } from '../types'
 import { Dispatch } from 'redux'
-import { AppBase, Session, Teach } from 'conversationlearner-models'
+import { AppBase, Session, Teach } from '@conversationlearner/models'
 import { setErrorDisplay } from './displayActions'
 import { fetchAllTrainDialogsAsync, fetchAllLogDialogsAsync, fetchApplicationTrainingStatusThunkAsync } from './fetchActions'
 import * as ClientFactory from '../services/clientFactory'

@@ -7,7 +7,7 @@ import { connect } from 'react-redux';
 import * as OF from 'office-ui-fabric-react';
 import { FM } from '../../react-intl-messages'
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
-import { AppBase } from 'conversationlearner-models';
+import { AppBase } from '@conversationlearner/models';
 import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import ReactPlayer from 'react-player'
 import * as ReactMarkdown from 'react-markdown'

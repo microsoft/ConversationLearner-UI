@@ -18,7 +18,7 @@ import {
     UIAppList,
     TeachWithHistory,
     AppBase
-} from 'conversationlearner-models'
+} from '@conversationlearner/models'
 import { Dispatch } from 'redux'
 import * as ClientFactory from '../services/clientFactory'
 import { setErrorDisplay } from './displayActions'

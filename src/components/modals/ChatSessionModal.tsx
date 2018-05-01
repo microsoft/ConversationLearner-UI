@@ -10,7 +10,7 @@ import { FontClassNames, Icon, PrimaryButton, DefaultButton } from 'office-ui-fa
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { State } from '../../types';
 import Webchat from '../Webchat'
-import { AppBase } from 'conversationlearner-models'
+import { AppBase } from '@conversationlearner/models'
 import { deleteChatSessionThunkAsync } from '../../actions/deleteActions'
 import { editChatSessionExpireAsync } from '../../actions/updateActions'
 import { FM } from '../../react-intl-messages'

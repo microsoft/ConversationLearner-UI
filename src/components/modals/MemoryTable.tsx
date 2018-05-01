@@ -9,7 +9,7 @@ import { connect } from 'react-redux';
 import { State } from '../../types'
 import * as OF from 'office-ui-fabric-react';
 import { onRenderDetailsHeader, Prebuilt, EntityObject } from '../ToolTips'
-import { EntityBase, EntityType, Memory } from 'conversationlearner-models'
+import { EntityBase, EntityType, Memory } from '@conversationlearner/models'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 

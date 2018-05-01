@@ -14,7 +14,7 @@ import { PrimaryButton, DefaultButton } from 'office-ui-fabric-react';
 import { State } from '../../types';
 import Webchat from '../Webchat'
 import TeachSessionAdmin from './TeachSessionAdmin'
-import { AppBase, UserInput, DialogType, TrainDialog, LogDialog, Teach, DialogMode } from 'conversationlearner-models'
+import { AppBase, UserInput, DialogType, TrainDialog, LogDialog, Teach, DialogMode } from '@conversationlearner/models'
 import { Activity } from 'botframework-directlinejs'
 import { deleteTeachSessionThunkAsync } from '../../actions/deleteActions'
 import { toggleAutoTeach, runExtractorAsync } from '../../actions/teachActions'

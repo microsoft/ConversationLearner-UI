@@ -16,10 +16,10 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
+    "@conversationlearner/models": "0.154.0",
     "adaptivecards": "1.0.0-beta9",
     "axios": "^0.16.2",
     "botframework-directlinejs": "^0.9.12",
-    "conversationlearner-models": "0.152.0",
     "conversationlearner-webchat": "0.103.0",
     "fuse.js": "^3.2.0",
     "immutable": "^3.8.2",

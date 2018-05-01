@@ -11,7 +11,7 @@ import {
   ScoreInput,
   UIScoreInput,
   DialogType
-} from 'conversationlearner-models'
+} from '@conversationlearner/models'
 import * as Rx from 'rxjs';
 import actions from '../actions'
 import { ActionObject } from '../types'

@@ -5,7 +5,7 @@
 import { Value } from 'slate'
 import * as models from './models'
 import * as util from '../../util'
-import { EntityBase, PredictedEntity, ExtractResponse, EntityType } from 'conversationlearner-models'
+import { EntityBase, PredictedEntity, ExtractResponse, EntityType } from '@conversationlearner/models'
 
 /**
  * Recursively walk up DOM tree until root or parent with non-static position is found.

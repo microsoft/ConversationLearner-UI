@@ -8,7 +8,7 @@ import {
     UserInput, ExtractResponse, ScoreInput, UIScoreInput, UIExtractResponse,
     UIScoreResponse, UITrainScorerStep, UITeachResponse,
     DialogType
-} from 'conversationlearner-models'
+} from '@conversationlearner/models'
 
 export const runExtractorAsync = (key: string, appId: string, extractType: DialogType, sessionId: string, turnIndex: number, userInput: UserInput): ActionObject => {
     return {
