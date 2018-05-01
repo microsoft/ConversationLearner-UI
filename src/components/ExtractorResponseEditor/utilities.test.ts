@@ -45,7 +45,7 @@ describe('ExtractResponseEditor', () => {
             })
         })
 
-        describe('addTokenIndiciesToCustomEntities', () => {
+        describe('addTokenIndicesToCustomEntities', () => {
             const tokens: utilities.IToken[] = [
                 {
                     text: 'a',
@@ -64,11 +64,23 @@ describe('ExtractResponseEditor', () => {
                     isSelectable: true,
                     startIndex: 2,
                     endIndex: 3
+                },
+                {
+                    text: ' ',
+                    isSelectable: false,
+                    startIndex: 3,
+                    endIndex: 4
+                },
+                {
+                    text: 'c',
+                    isSelectable: true,
+                    startIndex: 4,
+                    endIndex: 5
                 }
             ]
 
             test('given empty entities array return empty array', () => {
-                expect(utilities.addTokenIndiciesToCustomEntities(tokens, [])).toEqual([])
+                expect(utilities.addTokenIndicesToCustomEntities(tokens, [])).toEqual([])
             })
 
             test('given entity array return new entity array with correct token indecies', () => {
@@ -82,7 +94,7 @@ describe('ExtractResponseEditor', () => {
                 ]
 
                 // Act
-                const customEntitiesWithTokenIndex = utilities.addTokenIndiciesToCustomEntities(tokens, customEntities)
+                const customEntitiesWithTokenIndex = utilities.addTokenIndicesToCustomEntities(tokens, customEntities)
 
                 // Assert
                 const first = customEntitiesWithTokenIndex[0]
@@ -123,15 +135,20 @@ describe('ExtractResponseEditor', () => {
                 const customEntities: models.IGenericEntity<any>[] = [
                     {
                         data: {},
+                        startIndex: 2,
+                        endIndex: 3
+                    },
+                    {
+                        data: {},
                         startIndex: 0,
                         endIndex: 1
                     }
                 ]
 
-                const customEntitiesWithTokenIndex = utilities.addTokenIndiciesToCustomEntities(tokens, customEntities)
+                const customEntitiesWithTokenIndex = utilities.addTokenIndicesToCustomEntities(tokens, customEntities)
                 const expectedTokenArray: utilities.TokenArray = [
                     {
-                        entity: customEntitiesWithTokenIndex[0],
+                        entity: customEntitiesWithTokenIndex[1],
                         tokens: [tokens[0]]
                     },
                     {
@@ -141,10 +158,8 @@ describe('ExtractResponseEditor', () => {
                         endIndex: 2
                     },
                     {
-                        text: 'b',
-                        isSelectable: true,
-                        startIndex: 2,
-                        endIndex: 3
+                        entity: customEntitiesWithTokenIndex[0],
+                        tokens: [tokens[2]]
                     }
                 ]
 
