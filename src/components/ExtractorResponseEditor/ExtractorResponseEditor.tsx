@@ -91,11 +91,8 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
             position: null
         }
 
-        if (!menu) {
-            return hideMenu
-        }
-
-        if (value.isEmpty || value.selection.isCollapsed) {
+        const selectionDoesNotContainTokens = value.isEmpty || value.selection.isCollapsed || (value.inlines.size === 0)
+        if (!menu || selectionDoesNotContainTokens) {
             return hideMenu
         }
 
@@ -134,7 +131,6 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
             else {
                 const parentOfFirstInline = value.document.getParent(value.inlines.first().key)
                 if (parentOfFirstInline.type === NodeType.CustomEntityNodeType) {
-                    console.log(`parentOfFirstInline.type === NodeType.CustomEntityNodeType`)
                     isOverlappingOtherEntities = true
                 }
             }
@@ -155,17 +151,31 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
             return
         }
         
+        console.log(`value.inlines: `, value.inlines.toJS())
         const tokenNodes = value.inlines.filter((n: any) => n.type === NodeType.TokenNodeType)
         if (tokenNodes.size > 0) {
-            const firstInline = value.inlines.first()
-            const lastInline = value.inlines.last()
+            let shouldExpandSelection = true
+            const parentNodes = tokenNodes.map((n: any) => value.document.getParent(n.key))
+            const firstParent = parentNodes.first()
+
+            // If all parents nodes are the same node and the type of that node is CustomEntity then it means selection is all within a custom entity
+            // In this case we assume the user wants to delete the entity and do not expand the selection to prevent the picker menu from showing
+            if (firstParent.type === NodeType.CustomEntityNodeType && parentNodes.every((x: any) => x === firstParent)) {
+                shouldExpandSelection = false
+            }
 
             // Note: This is kind of hack to prevent selection from expanding when the cursor/selection is within
             // the button text of the custom entity node. This makes the Slate selection expanded and prevents
             // the entity picker from closing after user removes the node.
             const selectionParentElementTagName = window.getSelection().anchorNode.parentElement.tagName
-            if (selectionParentElementTagName !==  "BUTTON")
+            if (selectionParentElementTagName ===  "BUTTON")
             {
+                shouldExpandSelection = false
+            }
+
+            if (shouldExpandSelection) {
+                const firstInline = value.inlines.first()
+                const lastInline = value.inlines.last()
                 change
                     .collapseToStartOf(firstInline)
                     .extendToEndOf(lastInline)
