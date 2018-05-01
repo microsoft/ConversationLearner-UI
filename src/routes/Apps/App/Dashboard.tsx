@@ -6,7 +6,7 @@ import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
 import { connect } from 'react-redux';
 import { State } from '../../../types'
-import { AppBase } from 'conversationlearner-models'
+import { AppBase } from '@conversationlearner/models'
 import { FormattedMessage } from 'react-intl'
 import { bindActionCreators } from 'redux'
 import { FontClassNames, PrimaryButton } from 'office-ui-fabric-react'

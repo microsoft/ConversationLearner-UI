@@ -12,7 +12,7 @@ import { deleteEntityThunkAsync } from '../../../actions/deleteActions'
 import { fetchApplicationTrainingStatusThunkAsync } from '../../../actions/fetchActions'
 import { State } from '../../../types';
 import { onRenderDetailsHeader } from '../../../components/ToolTips'
-import { AppBase, EntityBase, EntityType } from 'conversationlearner-models'
+import { AppBase, EntityBase, EntityType } from '@conversationlearner/models'
 import { FM } from '../../../react-intl-messages'
 import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { autobind } from 'office-ui-fabric-react/lib/Utilities';

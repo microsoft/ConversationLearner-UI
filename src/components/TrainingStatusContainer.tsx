@@ -7,7 +7,7 @@ import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { State } from '../types'
-import { AppBase, TrainingStatusCode } from 'conversationlearner-models'
+import { AppBase, TrainingStatusCode } from '@conversationlearner/models'
 import { fetchApplicationTrainingStatusThunkAsync } from '../actions/fetchActions'
 import { InternalTrainingStatus, default as TrainingStatus } from './TrainingStatus'
 import { App } from '../types/models';

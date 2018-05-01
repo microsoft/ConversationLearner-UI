@@ -2,7 +2,7 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import { EntityBase, PredictedEntity } from "conversationlearner-models"
+import { EntityBase, PredictedEntity } from '@conversationlearner/models'
 
 export interface IEditorProps {
     options: IOption[]

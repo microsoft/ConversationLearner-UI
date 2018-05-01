@@ -15,7 +15,7 @@ import LogDialogAdmin from './LogDialogAdmin'
 import { Activity } from 'botframework-directlinejs'
 import { createTrainDialogAsync } from '../../actions/createActions'
 import { fetchApplicationTrainingStatusThunkAsync } from '../../actions/fetchActions'
-import { AppBase, TrainDialog, LogDialog } from 'conversationlearner-models'
+import { AppBase, TrainDialog, LogDialog } from '@conversationlearner/models'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 

@@ -7,7 +7,7 @@ import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
-import { Template, RenderedActionArgument } from 'conversationlearner-models'
+import { Template, RenderedActionArgument } from '@conversationlearner/models'
 import { State } from '../../../types'
 import * as AdaptiveCards from 'adaptivecards';
 import { injectIntl, InjectedIntlProps } from 'react-intl'

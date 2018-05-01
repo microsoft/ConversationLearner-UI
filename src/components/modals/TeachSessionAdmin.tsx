@@ -13,7 +13,7 @@ import {
     AppBase, TextVariation, ExtractResponse,
     DialogType, TrainScorerStep, TrainingStatusCode,
     UITrainScorerStep, UIScoreInput, DialogMode
-} from 'conversationlearner-models'
+} from '@conversationlearner/models'
 import ActionScorer from './ActionScorer';
 import EntityExtractor from './EntityExtractor';
 import MemoryTable from './MemoryTable';

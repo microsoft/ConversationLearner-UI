@@ -12,7 +12,7 @@ import { deleteActionThunkAsync } from '../../../actions/deleteActions'
 import { fetchApplicationTrainingStatusThunkAsync } from '../../../actions/fetchActions'
 import ActionDetailsList from '../../../components/ActionDetailsList'
 import * as OF from 'office-ui-fabric-react';
-import { AppBase, ActionBase } from 'conversationlearner-models'
+import { AppBase, ActionBase } from '@conversationlearner/models'
 import { ActionCreatorEditor } from '../../../components/modals'
 import { State } from '../../../types'
 import { FM } from '../../../react-intl-messages'

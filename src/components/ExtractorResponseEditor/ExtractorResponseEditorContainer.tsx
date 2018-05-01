@@ -5,7 +5,7 @@
 import * as React from 'react'
 import { convertExtractorResponseToEditorModels, convertGenericEntityToPredictedEntity } from './utilities'
 import { IGenericEntity, IGenericEntityData, IEditorProps } from './models';
-import { EntityBase, PredictedEntity, ExtractResponse } from 'conversationlearner-models'
+import { EntityBase, PredictedEntity, ExtractResponse } from '@conversationlearner/models'
 
 // Slate doesn't have type definitions but we still want type consistency and references so we make custom type
 export type SlateValue = any

@@ -8,7 +8,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../types';
 import * as BotChat from 'conversationlearner-webchat'
-import { AppBase, CL_USER_NAME_ID } from 'conversationlearner-models'
+import { AppBase, CL_USER_NAME_ID } from '@conversationlearner/models'
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Activity } from 'botframework-directlinejs';
 import actions from '../actions'

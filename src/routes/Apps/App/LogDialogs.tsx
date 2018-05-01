@@ -8,7 +8,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import * as OF from 'office-ui-fabric-react';
 import { State } from '../../../types'
-import { AppBase, LogDialog, Session, ModelUtils, Teach, TeachWithHistory, TrainDialog, ActionBase, ReplayError } from 'conversationlearner-models'
+import { AppBase, LogDialog, Session, ModelUtils, Teach, TeachWithHistory, TrainDialog, ActionBase, ReplayError } from '@conversationlearner/models'
 import { ChatSessionModal, LogDialogModal, TeachSessionModal } from '../../../components/modals'
 import { 
     createChatSessionThunkAsync, 

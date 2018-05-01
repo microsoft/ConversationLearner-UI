@@ -12,7 +12,7 @@ import { RouteComponentProps } from 'react-router'
 import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { AppBase, ActionBase, ActionTypes, ApiAction, CardAction, BotInfo } from 'conversationlearner-models'
+import { AppBase, ActionBase, ActionTypes, ApiAction, CardAction, BotInfo } from '@conversationlearner/models'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../../react-intl-messages'
 import { State } from '../../../types';

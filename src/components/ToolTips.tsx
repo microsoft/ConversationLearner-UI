@@ -6,7 +6,7 @@ import * as React from 'react';
 import * as OF from 'office-ui-fabric-react';
 import { FormattedMessage } from 'react-intl'
 import { FM } from '../react-intl-messages'
-import { MemoryValue } from 'conversationlearner-models'
+import { MemoryValue } from '@conversationlearner/models'
 import HelpLink from '../components/HelpLink'
 import './ToolTips.css'
 

@@ -11,7 +11,7 @@ import { connect } from 'react-redux';
 import { State } from '../../../types';
 import * as OF from 'office-ui-fabric-react';
 import { Expando } from '../../../components/modals'
-import { AppBase, TrainingStatusCode } from 'conversationlearner-models'
+import { AppBase, TrainingStatusCode } from '@conversationlearner/models'
 import './Settings.css'
 import { CL_DEMO_ID } from '../../../types/const'
 import { FM } from '../../../react-intl-messages'

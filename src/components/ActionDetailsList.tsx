@@ -5,7 +5,7 @@
 import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
 import { connect } from 'react-redux';
-import { ActionBase, ActionTypes, Template, RenderedActionArgument, CardAction, TextAction, ApiAction } from 'conversationlearner-models'
+import { ActionBase, ActionTypes, Template, RenderedActionArgument, CardAction, TextAction, ApiAction } from '@conversationlearner/models'
 import { State } from '../types'
 import * as OF from 'office-ui-fabric-react';
 import { onRenderDetailsHeader } from './ToolTips'

@@ -6,7 +6,7 @@ import { AppsState, ActionObject } from '../types'
 import { AT } from '../types/ActionTypes'
 import { Reducer } from 'redux'
 import { replace } from '../util'
-import { TrainingStatusCode } from 'conversationlearner-models'
+import { TrainingStatusCode } from '@conversationlearner/models'
 import { App } from '../types/models'
 
 const initialState: AppsState = {

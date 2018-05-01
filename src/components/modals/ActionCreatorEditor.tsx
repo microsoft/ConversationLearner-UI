@@ -13,7 +13,7 @@ import {
     fetchActionDeleteValidationThunkAsync,
     fetchActionEditValidationThunkAsync } from '../../actions/fetchActions'
 import { Modal } from 'office-ui-fabric-react/lib/Modal'
-import { ActionBase, ActionTypes, AppBase, EntityBase, EntityType, RenderedActionArgument, TextAction, ApiAction, CardAction, IActionArgument } from 'conversationlearner-models'
+import { ActionBase, ActionTypes, AppBase, EntityBase, EntityType, RenderedActionArgument, TextAction, ApiAction, CardAction, IActionArgument } from '@conversationlearner/models'
 import ConfirmCancelModal from './ConfirmCancelModal'
 import EntityCreatorEditor from './EntityCreatorEditor'
 import AdaptiveCardViewer from './AdaptiveCardViewer/AdaptiveCardViewer'

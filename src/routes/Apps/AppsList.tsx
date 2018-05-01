@@ -12,7 +12,7 @@ import { fetchTutorialsThunkAsync } from '../../actions/fetchActions'
 import { AppCreator, ConfirmCancelModal } from '../../components/modals'
 import * as OF from 'office-ui-fabric-react';
 import { State } from '../../types';
-import { AppBase } from 'conversationlearner-models'
+import { AppBase } from '@conversationlearner/models'
 import { CL_IMPORT_ID, CL_DEMO_ID } from '../../types/const'
 import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { FM } from '../../react-intl-messages'

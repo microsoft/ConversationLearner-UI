@@ -11,7 +11,7 @@ import * as OF from 'office-ui-fabric-react'
 import { State } from '../../types'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
-import { ReplayError, ReplayErrorType, ReplayErrorMissingAction, ReplayErrorMissingEntity, ReplayErrorActionUnavailable, ReplayErrorEntityDiscrepancy } from 'conversationlearner-models'
+import { ReplayError, ReplayErrorType, ReplayErrorMissingAction, ReplayErrorMissingEntity, ReplayErrorActionUnavailable, ReplayErrorEntityDiscrepancy } from '@conversationlearner/models'
 
 class ReplayErrorList extends React.Component<Props, {}> {
     onRenderCell(item: ReplayError, index: number): JSX.Element {

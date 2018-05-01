@@ -8,7 +8,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import * as OF from 'office-ui-fabric-react'
-import { PackageReference } from 'conversationlearner-models'
+import { PackageReference } from '@conversationlearner/models'
 import { State } from '../../types'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps, defineMessages, FormattedMessage } from 'react-intl'

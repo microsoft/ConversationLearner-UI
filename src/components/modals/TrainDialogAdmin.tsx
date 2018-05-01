@@ -18,7 +18,7 @@ import {
     ActionBase, AppBase, TrainDialog, TrainRound, ScoreReason, ScoredAction,
     TrainScorerStep, Memory, UnscoredAction, ScoreResponse, ActionTypes,
     TextVariation, ExtractResponse, DialogType, SenderType, DialogMode
-} from 'conversationlearner-models'
+} from '@conversationlearner/models'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 
