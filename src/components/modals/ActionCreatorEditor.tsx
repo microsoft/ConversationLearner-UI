@@ -72,10 +72,25 @@ const getSuggestedTags = (filterText: string, allTags: OF.ITag[], tagsToExclude:
         .filter(tag => tag.name.toLowerCase().startsWith(filterText.toLowerCase()))
 }
 
+const tryCreateSlateValue = (actionType: string, slotName: string, content: object | string, options: ActionPayloadEditor.IOption[]): ActionPayloadEditor.SlateValue => {
+    try {
+        return createSlateValue(content, options)
+    }
+    catch (e) {
+        const error = e as Error
+        console.error(`Error occurred while attempting to construct slate value for action.
+    Type: ${actionType}
+    SlotName: ${slotName}
+    content:\n`, content, options)
+        console.error(error)
+        return Plain.deserialize('Error occurred while attempting to display action. Please re-enter the value and re-save the action.')
+    }
+}
+
 const createSlateValue = (content: object | string, options: ActionPayloadEditor.IOption[]): ActionPayloadEditor.SlateValue => {
     if (typeof content === 'string') {
         // If string does not starts with { assume it's the old simple string based payload and user will have to manually load and re-save
-        // Otherwise, treat as json as load the json respresentation of the editor which has fully saved entities and doesn't need manual reconstruction
+        // Otherwise, treat as json as load the json representation of the editor which has fully saved entities and doesn't need manual reconstruction
         if (!content.startsWith('{')) {
             console.warn(`You created slate value from basic string: ${content} which may have had entities that are not detected. Please update the payload to fix and re-save.`)
             return Plain.deserialize(content)
@@ -275,7 +290,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 let slateValuesMap = {}
                 if (action.actionType === ActionTypes.TEXT) {
                     const textAction = new TextAction(action)
-                    slateValuesMap[TEXT_SLOT] = createSlateValue(textAction.value, payloadOptions)
+                    slateValuesMap[TEXT_SLOT] = tryCreateSlateValue(ActionTypes.TEXT, TEXT_SLOT, textAction.value, payloadOptions)
                 } else if (action.actionType === ActionTypes.API_LOCAL) {
                     const apiAction = new ApiAction(action)
                     selectedApiOptionKey = apiAction.name
@@ -284,7 +299,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                         for (let actionArgumentName of callback.arguments) {
                             const argument = apiAction.arguments.find(a => a.parameter === actionArgumentName)
                             const initialValue = argument ? argument.value : ''
-                            slateValuesMap[actionArgumentName] = createSlateValue(initialValue, payloadOptions)
+                            slateValuesMap[actionArgumentName] = tryCreateSlateValue(ActionTypes.API_LOCAL, actionArgumentName, initialValue, payloadOptions)
                         }
                     }
                 } else if (action.actionType === ActionTypes.CARD) {
@@ -296,7 +311,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                         for (let cardTemplateVariable of template.variables) {
                             const argument = cardAction.arguments.find(a => a.parameter === cardTemplateVariable.key)
                             const initialValue = argument ? argument.value : ''
-                            slateValuesMap[cardTemplateVariable.key] = createSlateValue(initialValue, payloadOptions)
+                            slateValuesMap[cardTemplateVariable.key] = tryCreateSlateValue(ActionTypes.CARD, cardTemplateVariable.key, initialValue, payloadOptions)
                         }
                     }
                 }
