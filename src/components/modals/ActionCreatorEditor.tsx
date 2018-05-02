@@ -78,7 +78,11 @@ const tryCreateSlateValue = (actionType: string, slotName: string, content: obje
     }
     catch (e) {
         const error = e as Error
-        console.error(`Error occurred while attempting to construct slate value for action. Type: ${actionType} slotName: ${slotName} content: `, content, options, error)
+        console.error(`Error occurred while attempting to construct slate value for action.
+    Type: ${actionType}
+    SlotName: ${slotName}
+    content:\n`, content, options)
+        console.error(error)
         return Plain.deserialize('Error occurred while attempting to display action. Please re-enter the value and re-save the action.')
     }
 }
