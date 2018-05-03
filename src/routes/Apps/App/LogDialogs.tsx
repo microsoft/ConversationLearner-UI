@@ -476,7 +476,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     <span className={OF.FontClassNames.mediumPlus}>
                         <FormattedMessage
                             id={FM.LOGDIALOGS_SUBTITLE}
-                            defaultMessage="Use this tool to test the current versions of your application, to check if you are progressing on the right track..."
+                            defaultMessage="Log Dialogs are records of conversations between users and your bot. You can make corrections to Log Dialogs to improve the bot."
                         />
                     </span>
                     :

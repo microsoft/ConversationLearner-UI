@@ -610,7 +610,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     <span className={OF.FontClassNames.mediumPlus}>
                         <FormattedMessage
                             id={FM.TRAINDIALOGS_SUBTITLE}
-                            defaultMessage="Use this tool to train and improve the current versions of your application..."
+                            defaultMessage="Train Dialogs are example conversations you want your Bot to imitate"
                         />
                     </span>
                     :

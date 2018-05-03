@@ -234,7 +234,7 @@ class Entities extends React.Component<Props, ComponentState> {
                     <span className={OF.FontClassNames.mediumPlus}>
                         <FormattedMessage
                             id={FM.ENTITIES_SUBTITLE}
-                            defaultMessage="Manage a list of entities in your application and track and control their instances within actions..."
+                            defaultMessage="Entities hold values from the user or are set by code, and are stored in the bot's memory to track state"
                         />
                     </span> 
                     :
