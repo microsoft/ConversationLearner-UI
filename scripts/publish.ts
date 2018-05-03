@@ -78,7 +78,7 @@ async function main() {
     console.log(`Reading package.json from: ${packageJsonPath}`)
     try {
         const packageJsonObj = await fs.readJson(packageJsonPath)
-        const { name, version, description, keywords, author, repository, license } = packageJsonObj
+        const { name, version, description, keywords, author, repository, license, publishConfig } = packageJsonObj
         console.log(`Found name: ${name} version: ${version}`)
 
         const newPackageJson = {
@@ -90,7 +90,8 @@ async function main() {
             repository,
             license,
             main: "index.js",
-            typings: "index.d.ts"
+            typings: "index.d.ts",
+            publishConfig
         }
 
         const newPackageJsonFilePath = path.join(uiPackagePath, 'package.json')
