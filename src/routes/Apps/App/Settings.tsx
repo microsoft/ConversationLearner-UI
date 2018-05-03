@@ -21,6 +21,7 @@ import { autobind } from 'office-ui-fabric-react/lib/Utilities';
 import * as TC from '../../../components/tipComponents/Components'
 import * as ToolTip from '../../../components/ToolTips'
 import * as util from '../../../util'
+import HelpIcon from '../../../components/HelpIcon'
 
 const messages = defineMessages({
     fieldErrorRequired: {
@@ -337,14 +338,17 @@ class Settings extends React.Component<Props, ComponentState> {
                     />
                     <div>
                         <OF.Label className={OF.FontClassNames.mediumPlus}>
-                            LUIS Application Link
+                            LUIS_SUBSCRIPTION_KEY
+                            <HelpIcon 
+                                tipType={ToolTip.TipType.LUIS_SUBSCRIPTION_KEY} 
+                            />
                         </OF.Label>
                         <div>
                             <a href={`https://www.luis.ai/applications/${this.props.app.luisAppId}/versions/0.1/publish`} target="_blank">
                                 <OF.DefaultButton
                                     iconProps={{ iconName: "OpenInNewWindow" }}
-                                    ariaDescription="View in LUIS"
-                                    text="View in LUIS"
+                                    ariaDescription="Go to LUIS"
+                                    text="Go to LUIS"
                                 />
                             </a>
                         </div>

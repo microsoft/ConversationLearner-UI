@@ -15,6 +15,7 @@ import { DefaultButton } from 'office-ui-fabric-react/lib/Button';
 import { injectIntl, InjectedIntlProps, InjectedIntl } from 'react-intl'
 import { AT } from '../../types/ActionTypes'
 import { FM } from '../../react-intl-messages'
+import { GetTip, TipType } from '../ToolTips'
 
 class ErrorPanel extends React.Component<Props, {}> {
 
@@ -97,6 +98,15 @@ class ErrorPanel extends React.Component<Props, {}> {
                             }
                             else if (typeof message !== 'string') {
                                 message = JSON.stringify(message);
+                            }
+                            // TODO: Need to not base this on string compare, but will greatly help end users so putting in for now
+                            if (message.indexOf("LUIS_AUTHORING_KEY") > -1) {
+                                return (
+                                    <div>
+                                        <div key={key++} className={FontClassNames.medium}>{message}</div>
+                                        {GetTip(TipType.LUIS_AUTHORING_KEY)}
+                                    </div>
+                                )
                             }
                             return message.length === 0 ? <br key={key++}></br> : <div key={key++} className={FontClassNames.medium}>{message}</div>;
                         })

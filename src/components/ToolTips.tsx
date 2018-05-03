@@ -37,6 +37,7 @@ export enum TipType {
 
     LOGGING_TOGGLE = 'loggingToggle',
     LUIS_AUTHORING_KEY = 'luisAuthoringKey',
+    LUIS_OVERVIEW = 'luisOverview',
     LUIS_SUBSCRIPTION_KEY = 'luisSubscriptionKey',
 
     MEMORY_MANAGER = 'memoryManager',
@@ -328,45 +329,72 @@ export function GetTip(tipType: string) {
             )
         case TipType.LOGGING_TOGGLE:
             return (<FormattedMessage id={FM.TOOLTIP_LOGGING_TOGGLE} defaultMessage="Logging Enable/Disable" />);
+        case TipType.LUIS_OVERVIEW:
+            return (
+                <div>
+                    <h1>LUIS Keys:</h1>
+                    <p>There are two different keys for LUIS. The <b>Authoring</b> key and the <b>Subscription</b> key.</p>
+                    
+                    <h4>Why does Conversation Learner need my Authoring key?</h4>
+                    <p>When building and training your bot, the LUIS_AUTHORING_KEY is by Conversation Learner to manage your LUIS account on your behalf.  As you make changes to your Conversation Learner app such as adding entities and labeling entities during training the Conversation Learner service creates the associated LUIS apps with matching entities and utterance phrases.</p>
+
+                    <h4>What does Conversation Learner need my subscription key?</h4>
+                    <p>When you publish your bot, you want to set the LUIS_SUBSCRIPTION_KEY.  When set, the Subscription Key (rather than the Authoring Key) is used by Conversation Learner to get predictions from LUIS.  Using the Subscription Key avoids using up the quota for your Authoring key (which would block further usage of Conversation Learner).</p>
+                    <p>You can also increase the pricing teir of your subscription key to 50 calls per second instead of 5</p>
+                </div>
+            )
         case TipType.LUIS_AUTHORING_KEY:
+            return (
+                <div>
+                    <h2>Find your LUIS Authoring Key:</h2>
+                    <ol>
+                        <li>Go to <a href="https://www.luis.ai" target="_blank">https://www.luis.ai</a></li>
+                        <li>Sign in if you are not already</li>
+                        <li>Click on your name in the top-right corner to open the dropdown menu</li>
+                        <li>Select 'settings' from the menu</li>
+                        <li>Copy the "Authoring Key" and use it as the LUIS_AUTHORING_KEY value for your app</li>
+                    </ol>
+
+                    <img src="https://blisstorage.blob.core.windows.net/uiimages/authoringkey.gif"/>
+
+                    <div><br /><div>
+                    <h2>LUIS Keys:</h2>
+                    <p>There are two different keys for LUIS. The <b>Authoring</b> key and the <b>Subscription</b> key.</p>
+                    
+                    <h4>Why does Conversation Learner need my Authoring key?</h4>
+                    <p>When building and training your bot, the LUIS_AUTHORING_KEY is by Conversation Learner to manage your LUIS account on your behalf.  As you make changes to your Conversation Learner app such as adding entities and labeling entities during training the Conversation Learner service creates the associated LUIS apps with matching entities and utterance phrases.</p>
+
+                    <h4>What does Conversation Learner need my Subscription key?</h4>
+                    <p>When you publish your bot, you want to set the LUIS_SUBSCRIPTION_KEY.  When set, the Subscription Key (rather than the Authoring Key) is used by Conversation Learner to get predictions from LUIS.  Using the Subscription Key avoids using up the quota for your Authoring key (which would block further usage of Conversation Learner).</p>
+                    <p>You can also increase the pricing teir of your subscription key to 50 calls per second instead of 5</p>
+                </div></div>
+                </div>
+            )
         case TipType.LUIS_SUBSCRIPTION_KEY:
             return (
                 <div>
                     <h1>LUIS Keys:</h1>
-                    <p>There are two different keys for LUIS. The authoring key and the subscription key.</p>
-                    
-                    <h2>Find your LUIS Authoring Key:</h2>
+                    <p>There are two different keys for LUIS. The <b>Authoring</b> key and the <b>Subscription</b> key.</p>
+
+                    <h3>When does Conversation Learner need a <b>Subscription key</b>?</h3>
+                    <p>When you publish your bot, you want to set the LUIS_SUBSCRIPTION_KEY.  When set, the Subscription Key (rather than the Authoring Key) is used by Conversation Learner to get predictions from LUIS.  Using the Subscription Key avoids using up the quota for your Authoring key (which would block further usage of Conversation Learner).</p>
+                    <p>You can also increase the pricing teir of your subscription key to 50 calls per second instead of 5</p>
+
+                    <h2>Find / Set your LUIS Subscription key:</h2>
                     <ol>
-                        <li>Go to <a href="https://luis.ai" target="_blank">https://luis.ai</a></li>
-                        <li>Sign in if you are not already</li>
-                        <li>Click on your name in the top-right corner to open the dropdown menu</li>
-                        <li>Select 'settings' from the menu</li>
-                        <li>Copy the "Authoring Key"</li>
+                        <li>Click on the "Go to LUIS" button in the Conversation Learner UI.  This will take you to the LUIS application associated with you app.</li>
+                        <li>In your LUIS' apps "Publish Tab", click on "Add Key"
+                            <img src="https://blisstorage.blob.core.windows.net/uiimages/addkey.PNG" width="50%"  />
+                        </li>
+                        <li>If you don't yet have an Azure Suscription key you'll need to <a href="https://docs.microsoft.com/en-us/azure/cognitive-services/luis/azureibizasubscription" target="_blank">Create One</a></li>
+                        <li>Then select the subscription and add the key to your LUIS app</li>
+                            <img src="https://blisstorage.blob.core.windows.net/uiimages/assignkey.PNG" width="50%"/>
+                        <li>Click the Key String to copy the key value and use it as the LUIS_SUBSCRIPTION_KEY value for your app
+                            <br/>
+                            <img src="https://blisstorage.blob.core.windows.net/uiimages/getkey.PNG" width="75%"/>
+                        </li>
                     </ol>
-
-                    <img src="https://media.giphy.com/media/vvy3OmwK356vRuPyLa/giphy.gif" />
-
-                    <h2>Find your LUIS Subscription key:</h2>
-                    <ol>
-                        <li>Go to <a href="http://portal.azure.com" target="_blank">http://portal.azure.com</a></li>
-                        <li>Sign in if you are not already</li>
-                        <li>Open the Cognitive Services blade</li>
-                        <li>Open or create your instance of Language Understanding (LUIS) service</li>
-                        <li>Select 'Keys' blade under 'Resource Managment' section</li>
-                        <li>Copy the "Key 1" value</li>
-                    </ol>
-
-                    <img src="https://media.giphy.com/media/1yTgrvilEWUSB8TkJl/giphy.gif" />
-
-                    <h3>Why does Conversation Learner need my authoring key?</h3>
-                    <p>The authoring key is used to access the LUIS authoring APIs and is used by Conversation Learner to manage your LUIS account on your behalf.  As you make changes to your Conversation Learner app such as adding entities and labeling entities during training the Conversation Learner service creates the associated LUIS apps with matching entities and utterance phrases.</p>
-
-                    <h3>What does Conversation Learner need my subscription key?</h3>
-                    <p>The subscription key is used to access the LUIS endpoint APIs and is used by Conversation Learner to get predictions from LUIS.  By using the subscription key when possible it avoids using up the quota for your Authoring key which would block further usage of Conversation Learner.</p>
-                    <p>When ready to publish your bot you can increase the pricing teir of your subscription key to 50 calls per second instead of 5</p>
-
-                    <p>See official docs on <a href="https://docs.microsoft.com/en-us/azure/cognitive-services/luis/home#accessing-luis" target="_blank">Accessing LUIS</a></p>
-                </div>
+               </div>
             )
         case TipType.PACKAGECREATOR_LIVE_TOGGLE:
             return (<FormattedMessage id={FM.TOOLTIP_PACKAGECREATOR_LIVE_TOGGLE} defaultMessage="Make new Tag the live version" />);
