@@ -57,7 +57,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
  
     @autobind
     onDismissError(errorType: AT) : void {
-        this.props.deleteTeachSessionThunkAsync(this.props.user.id, this.props.teachSession, this.props.app, this.props.editingPackageId, false); // False = abandon
+        this.props.deleteTeachSessionThunkAsync(this.props.user.id, this.props.teachSession, this.props.app, this.props.editingPackageId, false, null, null); // False = abandon
         this.props.onClose();
     }
     componentWillReceiveProps(newProps: Props) {
@@ -92,16 +92,10 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
     onClickSave() {
         // If source was a trainDialog, delete the original
-        let deleteTrainId = this.props.sourceTrainDialog ? this.props.sourceTrainDialog.trainDialogId : null;
+        let sourceTrainDialogId = this.props.sourceTrainDialog ? this.props.sourceTrainDialog.trainDialogId : null;
+        let sourceLogDialogId = this.props.sourceLogDialog ? this.props.sourceLogDialog.logDialogId : null;
 
-        ((this.props.deleteTeachSessionThunkAsync(this.props.user.id, this.props.teachSession, this.props.app, this.props.editingPackageId, true, deleteTrainId) as any) as Promise<boolean>)
-            .then(success => {
-                if (success && this.props.sourceLogDialog) {
-                    // If source was a log dialog, add pointer to trainDialog (server will also do this on it's enda)
-                    this.props.sourceLogDialog.targetTrainDialogIds = [this.props.teachSession.trainDialogId]
-                }
-            })
-
+        this.props.deleteTeachSessionThunkAsync(this.props.user.id, this.props.teachSession, this.props.app, this.props.editingPackageId, true, sourceTrainDialogId, sourceLogDialogId)
         this.props.onClose()
     }
 
@@ -111,7 +105,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                 isConfirmDeleteOpen: false
             },
             () => {
-                this.props.deleteTeachSessionThunkAsync(this.props.user.id, this.props.teachSession, this.props.app, this.props.editingPackageId, false); // False = abandon
+                this.props.deleteTeachSessionThunkAsync(this.props.user.id, this.props.teachSession, this.props.app, this.props.editingPackageId, false, null, null); // False = abandon
                 this.props.onClose()
             })
     }

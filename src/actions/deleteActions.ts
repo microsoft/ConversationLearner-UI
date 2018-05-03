@@ -160,18 +160,18 @@ const deleteChatSessionFulfilled = (sessionId: string): ActionObject => {
 // ---------------------
 // TeachSession
 // ---------------------
-export const deleteTeachSessionThunkAsync = (key: string, teachSession: Teach, app: AppBase, packageId: string, save: boolean, deleteSourceId?: string) => {
+export const deleteTeachSessionThunkAsync = (key: string, teachSession: Teach, app: AppBase, packageId: string, save: boolean, sourceTrainDialogId: string, sourceLogDialogId: string) => {
     return async (dispatch: Dispatch<any>) => {
         dispatch(deleteTeachSessionAsync(key, teachSession, app.appId, save))
         const clClient = ClientFactory.getInstance(AT.DELETE_TEACH_SESSION_ASYNC)
 
         try {
             await clClient.teachSessionsDelete(app.appId, teachSession, save);
-            dispatch(deleteTeachSessionFulfilled(key, app.appId, teachSession.teachId));
+            dispatch(deleteTeachSessionFulfilled(key, teachSession, sourceLogDialogId, app.appId));
 
             // If saving to a TrainDialog, delete any source TrainDialog (LogDialogs not deleted)
-            if (save && deleteSourceId) {
-                await dispatch(deleteTrainDialogThunkAsync(key, app, deleteSourceId));
+            if (save && sourceTrainDialogId) {
+                await dispatch(deleteTrainDialogThunkAsync(key, app, sourceTrainDialogId));
             }
 
             dispatch(fetchAllTrainDialogsAsync(app.appId));
@@ -196,12 +196,14 @@ const deleteTeachSessionAsync = (key: string, teachSession: Teach, appId: string
     }
 }
 
-const deleteTeachSessionFulfilled = (key: string, teachSessionGUID: string, appId: string): ActionObject => {
+const deleteTeachSessionFulfilled = (key: string, teachSession: Teach, sourceLogDialogId: string, appId: string): ActionObject => {
     return {
         type: AT.DELETE_TEACH_SESSION_FULFILLED,
         key: key,
         appId: appId,
-        teachSessionGUID: teachSessionGUID
+        teachSessionGUID: teachSession.teachId,
+        trainDialogId: teachSession.trainDialogId,
+        sourceLogDialogId: sourceLogDialogId
     }
 }
 

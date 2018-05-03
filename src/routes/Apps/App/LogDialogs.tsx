@@ -435,12 +435,9 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         // Don't show log dialogs that have derived TrainDialogs as they've already been edited
         let filteredLogDialogs: LogDialog[] = this.props.logDialogs.filter(l => !l.targetTrainDialogIds || l.targetTrainDialogIds.length === 0);
 
-        if (!this.state.searchValue) {
-            filteredLogDialogs = this.props.logDialogs;
-        }
-        else {
-        // TODO: Consider caching as not very efficient
-            filteredLogDialogs = this.props.logDialogs.filter((l: LogDialog) => {
+        if (this.state.searchValue) {
+            // TODO: Consider caching as not very efficient
+            filteredLogDialogs = filteredLogDialogs.filter((l: LogDialog) => {
                 let keys = [];
                 for (let round of l.rounds) {
                     keys.push(round.extractorStep.text);
