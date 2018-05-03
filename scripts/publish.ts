@@ -4,7 +4,6 @@ import * as execa from 'execa'
 
 const packageJsonPath = path.join(__dirname, '..', 'package.json')
 const buildPath = path.join(__dirname, '..', 'build')
-const npmRcPath = path.join(__dirname, '..', '.npmrc')
 const uiPackagePath = path.join(__dirname, '..', 'package')
 const indexJsPath = path.join(uiPackagePath, 'index.js')
 const indexDtsPath = path.join(uiPackagePath, 'index.d.ts')
@@ -36,14 +35,6 @@ async function main() {
     console.log(`Copy: ${buildPath} to ${uiPackagePath}`)
     try {
         await fs.copy(buildPath, uiPackagePath)
-    }
-    catch (e) {
-        throw e
-    }
-
-    console.log(`Copy: ${npmRcPath} to ${uiPackagePath}`)
-    try {
-        await fs.copy(npmRcPath, path.join(uiPackagePath, '.npmrc'))
     }
     catch (e) {
         throw e
