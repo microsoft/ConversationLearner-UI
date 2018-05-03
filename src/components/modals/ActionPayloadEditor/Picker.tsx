@@ -31,18 +31,20 @@ export default class Picker extends React.Component<Props, {}> {
             ref={this.props.menuRef}
             style={style}
         >
-            {this.props.matchedOptions.length === 0
-                ? <div className="mention-picker-button">No Results</div>
-                : this.props.matchedOptions.map((matchedOption, i) =>
-                <button
-                    key={matchedOption.original.id}
-                    type="button"
-                    className={`mention-picker-button ${(matchedOption as any).highlighted ? 'mention-picker-button--active' : ''}`}
-                    onMouseDown={() => this.props.onClickOption(matchedOption.original)}
-                >
-                    <FuseMatch matches={matchedOption.matchedStrings} />
-                </button>
-            )}
+            <div className="mention-picker-list">
+                {this.props.matchedOptions.length === 0
+                    ? <div className="mention-picker-button">No Results</div>
+                    : this.props.matchedOptions.map((matchedOption, i) =>
+                    <button
+                        key={matchedOption.original.id}
+                        type="button"
+                        className={`mention-picker-button ${(matchedOption as any).highlighted ? 'mention-picker-button--active' : ''}`}
+                        onMouseDown={() => this.props.onClickOption(matchedOption.original)}
+                    >
+                        <FuseMatch matches={matchedOption.matchedStrings} />
+                    </button>
+                )}
+            </div>
         </div>
     }
 }
