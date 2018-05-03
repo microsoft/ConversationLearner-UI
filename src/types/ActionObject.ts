@@ -354,6 +354,8 @@ export type DeleteAction = {
 } | {
     type: AT.DELETE_TEACH_SESSION_FULFILLED,
     teachSessionGUID: string,
+    sourceLogDialogId: string,
+    trainDialogId: string,
     key: string,
     appId: string,
 }| {
