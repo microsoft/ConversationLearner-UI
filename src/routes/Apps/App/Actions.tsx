@@ -155,7 +155,7 @@ class Actions extends React.Component<Props, ComponentState> {
                     <span className={OF.FontClassNames.mediumPlus}>
                         <FormattedMessage
                             id={FM.ACTIONS_SUBTITLE}
-                            defaultMessage="Actions that your application can take..."
+                            defaultMessage="Actions are executed by the bot in response to user input"
                         />
                     </span>
                     :

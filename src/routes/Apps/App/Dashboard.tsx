@@ -30,7 +30,7 @@ class Dashboard extends React.Component<Props, {}> {
                 <span className={FontClassNames.mediumPlus}>
                     <FormattedMessage
                         id={FM.DASHBOARD_SUBTITLE}
-                        defaultMessage="Facts & statistics about the app's data at any period of time..."
+                        defaultMessage="Notifications about this application..."
                     />
                 </span>
                 {this.props.validationErrors.length > 0 && 

@@ -313,7 +313,7 @@ class Settings extends React.Component<Props, ComponentState> {
                 <span className={OF.FontClassNames.mediumPlus}>
                     <FormattedMessage
                         id={FM.SETTINGS_SUBTITLE}
-                        defaultMessage="Control your application versions, who has access to it and whether it is public or private..."
+                        defaultMessage="Control your application version tags and other application configuration"
                     />
                 </span>
                 <div className="cl-settings-fields">
@@ -330,10 +330,7 @@ class Settings extends React.Component<Props, ComponentState> {
                     <OF.TextField
                         className={OF.FontClassNames.mediumPlus}
                         disabled={true}
-                        label={intl.formatMessage({
-                            id: FM.SETTINGS_FILEDS_APPIDLABEL,
-                            defaultMessage: 'App ID'
-                        })}
+                        label='CONVERSATION_LEARNER_APP_ID'
                         value={this.state.appIdVal}
                     />
                     <div>

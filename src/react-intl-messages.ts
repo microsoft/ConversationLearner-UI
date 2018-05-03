@@ -428,7 +428,7 @@ export default {
 
         // Actions
         [FM.ACTIONS_TITLE]: 'Actions',
-        [FM.ACTIONS_SUBTITLE]: `Actions that the application can take...`,
+        [FM.ACTIONS_SUBTITLE]: `Actions are executed by the bot in response to user input`,
         [FM.ACTIONS_CREATEBUTTONARIADESCRIPTION]: 'Create a New Action',
         [FM.ACTIONS_CREATEBUTTONTITLE]: 'New Action',
         [FM.ACTIONS_CONFIRMCANCELMODALTITLE]: 'Are you sure you want to delete this action?',
@@ -451,7 +451,7 @@ export default {
         [FM.APP_TRAINING_STATUS_EXPIRED]: 'Polling was stopped before training status was finalized. Please Refresh',
 
         // Apps List
-        [FM.APPSLIST_SUBTITLE]: 'Create and Manage your Conversation Learner applications...',
+        [FM.APPSLIST_SUBTITLE]: 'Create and manage your Conversation Learner applications',
         [FM.APPSLIST_CREATEBUTTONARIADESCRIPTION]: 'Create a New Application',
         [FM.APPSLIST_CREATEBUTTONTEXT]: 'New App',
         [FM.APPSLIST_IMPORTBUTTONARIADESCRIPTION]: 'Import Tutorials Applications',
@@ -474,11 +474,11 @@ export default {
 
         // Dashboard
         [FM.DASHBOARD_TITLE]: 'Overview',
-        [FM.DASHBOARD_SUBTITLE]: `Facts & statistics about the app's data at any period of time...`,
+        [FM.DASHBOARD_SUBTITLE]: `Notifications about this application`,
 
         // Entities
         [FM.ENTITIES_TITLE]: 'Entities',
-        [FM.ENTITIES_SUBTITLE]: 'Entities the application uses to track state...',
+        [FM.ENTITIES_SUBTITLE]: `Entities hold values from the user or are set by code, and are stored in the bot's memory to track state`,
         [FM.ENTITIES_CREATEBUTTONARIALDESCRIPTION]: 'Create a New Entity',
         [FM.ENTITIES_CREATEBUTTONTEXT]: 'New Entity',
         [FM.ENTITIES_COLUMNS_NAME]: 'Name',
@@ -490,7 +490,7 @@ export default {
 
         // LogDialogs
         [FM.LOGDIALOGS_TITLE]: 'Log Dialogs',
-        [FM.LOGDIALOGS_SUBTITLE]: 'Use this tool to test the current versions of your application, to check if you are progressing on the right track...',
+        [FM.LOGDIALOGS_SUBTITLE]: 'Log Dialogs are records of conversations between users and your bot. You can make corrections to Log Dialogs to improve the bot.',
         [FM.LOGDIALOGS_CREATEBUTTONTITLE]: 'New Log Dialog',
         [FM.LOGDIALOGS_CREATEBUTTONARIALDESCRIPTION]: 'Create a New Log Dialog',
         [FM.LOGDIALOGS_FIRSTINPUT]: 'First Input',
@@ -517,7 +517,7 @@ export default {
         
         // Settings
         [FM.SETTINGS_TITLE]: 'Settings',
-        [FM.SETTINGS_SUBTITLE]: 'Control your application versions, who has access to it and whether it is public or private...',
+        [FM.SETTINGS_SUBTITLE]: 'Control your application version tags and other application configuration',
         [FM.SETTINGS_FIELDERROR_REQUIREDVALUE]: 'Required Value',
         [FM.SETTINGS_FIELDERROR_ALPHANUMERIC]: 'Application name may only contain alphanumeric characters',
         [FM.SETTINGS_FIELDERROR_DISTINCT]: 'Name is already in use.',
@@ -612,7 +612,7 @@ export default {
 
         // Train Dialogs
         [FM.TRAINDIALOGS_TITLE]: 'Train Dialogs',
-        [FM.TRAINDIALOGS_SUBTITLE]: 'Use this tool to train and improve the current versions of your application...',
+        [FM.TRAINDIALOGS_SUBTITLE]: 'Train Dialogs are example conversations you want your bot to imitate',
         [FM.TRAINDIALOGS_CREATEBUTTONTITLE]: 'New Train Dialog',
         [FM.TRAINDIALOGS_CREATEBUTTONARIALDESCRIPTION]: 'Create a New Train Dialog',
         [FM.TRAINDIALOGS_FIRSTINPUT]: 'First Input',
