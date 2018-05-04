@@ -100,7 +100,6 @@ const createSlateValue = (content: object | string, options: ActionPayloadEditor
     }
 
     const updatedJson = ActionPayloadEditor.Utilities.updateOptionNames(content, options)
-    console.log(`Updated slate value with latest option names: `, updatedJson)
     return Value.fromJSON(updatedJson)
 }
 
@@ -722,7 +721,6 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     }
 
     onChangePayloadEditor = (value: ActionPayloadEditor.SlateValue, slot: string = null) => {
-        console.log(`ActionCreatorEditor.onChangePayloadEditor: `, slot)
         const slateValuesMap = { ...this.state.slateValuesMap }
         slateValuesMap[slot] = value;
 

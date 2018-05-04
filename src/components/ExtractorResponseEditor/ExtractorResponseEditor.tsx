@@ -151,7 +151,6 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
             return
         }
         
-        console.log(`value.inlines: `, value.inlines.toJS())
         const tokenNodes = value.inlines.filter((n: any) => n.type === NodeType.TokenNodeType)
         if (tokenNodes.size > 0) {
             let shouldExpandSelection = true
