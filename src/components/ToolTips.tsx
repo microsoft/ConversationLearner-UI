@@ -58,11 +58,14 @@ export function onRenderDetailsHeader(detailsHeaderProps: OF.IDetailsHeaderProps
                         let id = tooltipHostProps.id.split('-')[1];
                         let tip = GetTip(id);
                         if (tip) {
-                            let ttHP = { ...tooltipHostProps };
+                            let ttHP = {
+                                ...tooltipHostProps,
+                                directionalHint: OF.DirectionalHint.topLeftEdge
+                            };
                             ttHP.tooltipProps = {
                                 onRenderContent: () => { return tip },
                                 delay: OF.TooltipDelay.medium,
-                                directionalHint: OF.DirectionalHint.topCenter
+                                directionalHint: OF.DirectionalHint.topLeftEdge
                             };
                             return <OF.TooltipHost {...ttHP} />
                         } else {
