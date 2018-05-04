@@ -16,18 +16,18 @@ import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import {
     AppBase, TrainScorerStep, TextVariation,
-    Memory, TrainDialog, TrainRound,
+    Memory, TrainDialog, TrainRound, UIScoreInput,
     LogDialog, LogRound, LogScorerStep,
     ActionBase, ExtractResponse, DialogMode,
     DialogType, ModelUtils, SenderType, FilledEntity
 } from '@conversationlearner/models'
 
 interface ComponentState {
-    senderType: SenderType,
-    roundIndex: number,
-    scoreIndex: number,
+    senderType: SenderType
+    roundIndex: number
+    scoreIndex: number
     newTrainDialog: TrainDialog
-    newExtractChanged: boolean,    // Did extraction change on edit
+    newScoreInput: UIScoreInput   // Set if extraction changed on edit
 }
 
 class LogDialogAdmin extends React.Component<Props, ComponentState> {
@@ -39,7 +39,7 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
             roundIndex: null,
             scoreIndex: null,
             newTrainDialog: null,
-            newExtractChanged: false,
+            newScoreInput: null
         }
         this.onEntityExtractorSubmit = this.onEntityExtractorSubmit.bind(this);
         this.onActionScorerSubmit = this.onActionScorerSubmit.bind(this);
@@ -88,10 +88,10 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
             }
         }
 
-        this.props.onEdit( this.props.logDialog.logDialogId, newTrainDialog, this.state.newExtractChanged);
+        this.props.onEdit( this.props.logDialog.logDialogId, newTrainDialog, this.state.newScoreInput);
         this.setState({ 
             newTrainDialog: null,
-            newExtractChanged: false
+            newScoreInput: null
          });
     }
 
@@ -123,9 +123,16 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
             ]
         }
 
+        const uiScoreInput: UIScoreInput = {
+            trainExtractorStep: {
+                textVariations
+            },
+            extractResponse
+        }
+
         this.setState({ 
             newTrainDialog: newTrainDialog,
-            newExtractChanged: true
+            newScoreInput: uiScoreInput
          });
     }
 
@@ -170,7 +177,7 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
 
         this.setState({ 
             newTrainDialog: newTrainDialog,
-            newExtractChanged: false
+            newScoreInput: null
         });
     }
 
@@ -342,7 +349,7 @@ export interface ReceivedProps {
     logDialog: LogDialog
     selectedActivity: Activity,
     canEdit: boolean,
-    onEdit: (logDialogId: string, newTrainDialog: TrainDialog, lastExtractChanged: boolean) => void
+    onEdit: (logDialogId: string, newTrainDialog: TrainDialog, newScoreInput: UIScoreInput) => void
     onExtractionsChanged: (changed: boolean) => void
 }
 

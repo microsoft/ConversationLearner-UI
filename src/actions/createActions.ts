@@ -4,7 +4,7 @@
  */
 import { ActionObject, ErrorType } from '../types'
 import { AT } from '../types/ActionTypes'
-import { AppBase, EntityBase, ActionBase, TrainDialog, LogDialog, Teach, Session, TeachWithHistory, UITeachResponse } from '@conversationlearner/models'
+import { AppBase, EntityBase, ActionBase, TrainDialog, LogDialog, Teach, Session, TeachWithHistory, UITeachResponse, UIScoreInput } from '@conversationlearner/models'
 import { Dispatch } from 'redux'
 import { setErrorDisplay } from './displayActions'
 import * as ClientFactory from '../services/clientFactory' 
@@ -260,14 +260,15 @@ const createTeachSessionFulfilled = (uiTeachResponse: UITeachResponse): ActionOb
 // --------------------------
 // TeachSessionFromHistory
 // --------------------------
-export const createTeachSessionFromHistoryThunkAsync = (app: AppBase, trainDialog: TrainDialog, userName: string, userId: string, lastExtractChanged: boolean = false) => {
+export const createTeachSessionFromHistoryThunkAsync = (app: AppBase, trainDialog: TrainDialog, userName: string, userId: string, scoreInput: UIScoreInput = null) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.CREATE_TEACH_SESSION_FROMHISTORYASYNC)
         dispatch(createTeachSessionFromHistoryAsync(app.appId, trainDialog, userName, userId))
 
         try {
-            const teachWithHistory = await clClient.teachSessionFromHistory(app.appId, trainDialog, userName, userId, lastExtractChanged);
-            dispatch(createTeachSessionFromHistoryFulfilled(teachWithHistory))
+            const extractChanged = scoreInput !== null;
+            const teachWithHistory = await clClient.teachSessionFromHistory(app.appId, trainDialog, userName, userId, extractChanged);
+            dispatch(createTeachSessionFromHistoryFulfilled(teachWithHistory, scoreInput))
             return teachWithHistory
         }
         catch (error) {
@@ -288,11 +289,12 @@ const createTeachSessionFromHistoryAsync = (clAppID: string, trainDialog: TrainD
     }
 }
 
-const createTeachSessionFromHistoryFulfilled = (teachWithHistory: TeachWithHistory): ActionObject => {
+const createTeachSessionFromHistoryFulfilled = (teachWithHistory: TeachWithHistory, scoreInput: UIScoreInput): ActionObject => {
     // Needs a fulfilled version to handle response from Epic
     return {
         type: AT.CREATE_TEACH_SESSION_FROMHISTORYFULFILLED,
-        teachWithHistory: teachWithHistory
+        teachWithHistory: teachWithHistory,
+        uiScoreInput: scoreInput
     }
 }
 
@@ -332,7 +334,8 @@ const createTeachSessionFromUndoFulfilled = (teachWithHistory: TeachWithHistory)
     // Needs a fulfilled version to handle response from Epic
     return {
         type: AT.CREATE_TEACH_SESSION_FROMUNDOFULFILLED,
-        teachWithHistory: teachWithHistory
+        teachWithHistory: teachWithHistory, 
+        uiScoreInput: null
     }
 }
 
