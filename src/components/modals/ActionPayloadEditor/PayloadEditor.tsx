@@ -283,6 +283,9 @@ export default class PayloadEditor extends React.Component<Props, State> {
         change
             .collapseToStartOfNextText()
 
+        // Reset Scroll position of menuRef
+        this.menu.scrollTop = 0
+
         // Reset highlight index to be ready for next node
         this.setState({
             highlightIndex: 0
