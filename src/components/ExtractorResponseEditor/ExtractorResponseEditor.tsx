@@ -151,7 +151,6 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
             return
         }
         
-        console.log(`value.inlines: `, value.inlines.toJS())
         const tokenNodes = value.inlines.filter((n: any) => n.type === NodeType.TokenNodeType)
         if (tokenNodes.size > 0) {
             let shouldExpandSelection = true
@@ -200,6 +199,25 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
         }
     }
 
+    /**
+     * Note: This is only here to prevent an edge case bug but doesn't affect normal behavior.
+     * Bug: The user has labeled the last word in the phrase as an entity, has the cursor at the
+     * right most position of the input and presses the left arrow.
+     */
+    onKeyDown = (event: React.KeyboardEvent<HTMLInputElement>, change: any) => {
+        const blockNode = change.value.document.getBlocks().last()
+        const lastTextNode = blockNode.getLastText()
+        const isAtEnd = change.value.selection.isAtEndOf(lastTextNode)
+
+        if (isAtEnd) {
+            event.preventDefault()
+            change.collapseToEndOfPreviousText()
+            return true
+        }
+
+        return undefined
+    }
+
     menuRef = (menu: any) => {
         this.menu = menu
     }
@@ -243,6 +261,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
                             placeholder="Enter some text..."
                             value={this.state.value}
                             onChange={this.onChange}
+                            onKeyDown={this.onKeyDown}
                             renderNode={this.renderNode}
                             readOnly={this.props.readOnly}
                         />

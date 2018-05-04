@@ -143,7 +143,7 @@ export default class PayloadEditor extends React.Component<Props, State> {
 
         // const textNode = value.texts.last()
         // const textDomNode = findDOMNode(textNode)
-        // const textDomNodeRectd = textDomNode.getBoundingClientRect()
+        // const textDomNodeRect = textDomNode.getBoundingClientRect()
 
         // An alternative method:
 
@@ -174,7 +174,6 @@ export default class PayloadEditor extends React.Component<Props, State> {
     }
 
     onArrowUp(event: React.KeyboardEvent<HTMLInputElement>, change: any): boolean | void {
-        console.log(`onArrowUp`)
         if (!this.state.menuProps.isVisible) {
             return undefined
         }
@@ -195,7 +194,6 @@ export default class PayloadEditor extends React.Component<Props, State> {
     }
 
     onArrowDown(event: React.KeyboardEvent<HTMLInputElement>, change: any): boolean | void {
-        console.log('onArrowDown')
         if (!this.state.menuProps.isVisible) {
             return undefined
         }
@@ -216,7 +214,6 @@ export default class PayloadEditor extends React.Component<Props, State> {
     }
 
     onEnter(event: React.KeyboardEvent<HTMLInputElement>, change: any): boolean | void {
-        console.log(`onEnter`)
         event.preventDefault()
 
         // User is trying to submit Action as a whole
@@ -296,7 +293,6 @@ export default class PayloadEditor extends React.Component<Props, State> {
     }
 
     onEscape(event: React.KeyboardEvent<HTMLInputElement>, change: any): boolean | void {
-        console.log(`onEscape`)
         if (!this.state.menuProps.isVisible) {
             return
         }
@@ -312,7 +308,6 @@ export default class PayloadEditor extends React.Component<Props, State> {
     }
 
     onTab(event: React.KeyboardEvent<HTMLInputElement>, change: any): boolean | void {
-        console.log(`onTab`)
         if (!this.state.menuProps.isVisible || this.state.matchedOptions.length === 0) {
             return
         }
@@ -348,7 +343,6 @@ export default class PayloadEditor extends React.Component<Props, State> {
     }
 
     onClickOption = (option: IOption) => {
-        console.log(`onClickOption: `, option)
         const change = this.props.value.change()
         this.onCompleteNode(undefined, change, option)
 
