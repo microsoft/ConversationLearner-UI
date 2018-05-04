@@ -82,7 +82,6 @@ export default class PayloadEditor extends React.Component<Props, State> {
 
     getDefaultMatchedOptions() {
         return this.props.options
-            .filter((_, i) => i < this.state.maxDisplayedOptions)
             .map<MatchedOption<IOption>>((option, i) => ({
                 highlighted: this.state.highlightIndex === i,
                 matchedStrings: [{ text: option.name, matched: false }],
@@ -284,6 +283,9 @@ export default class PayloadEditor extends React.Component<Props, State> {
         change
             .collapseToStartOfNextText()
 
+        // Reset Scroll position of menuRef
+        this.menu.scrollTop = 0
+
         // Reset highlight index to be ready for next node
         this.setState({
             highlightIndex: 0
@@ -327,7 +329,6 @@ export default class PayloadEditor extends React.Component<Props, State> {
         const matchedOptions = (typeof menuProps.searchText !== 'string' || menuProps.searchText === "")
             ? this.getDefaultMatchedOptions()
             : this.fuse.search<FuseResult<IOption>>(menuProps.searchText)
-                .filter((_, i) => i < this.state.maxDisplayedOptions)
                 .map(result => convertMatchedTextIntoMatchedOption(result.item.name, result.matches[0].indices, result.item))
 
         this.setState(prevState => ({

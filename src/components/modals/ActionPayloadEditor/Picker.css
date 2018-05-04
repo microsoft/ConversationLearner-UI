@@ -5,6 +5,9 @@
     /* bottom: 10000px; */
     min-width: 220px;
     max-width: 440px;
+    max-height: 10em;
+    overflow-y: auto;
+
     background: white;
     margin-top: 0.75em;
     padding: 0.25em 0;
@@ -19,6 +22,10 @@
     grid-auto-flow: row;
     grid-auto-rows: min-content;
     text-align: left;
+}
+
+.mention-picker-list {
+    width: 100%;
 }
 
 .mention-picker--visible {
@@ -36,6 +43,8 @@
     cursor: pointer;
     padding: 0.5em;
     text-align: left;
+    display: block;
+    width: 100%;
 }
 
 .mention-picker-button:hover:not(.mention-picker-button--active) {
