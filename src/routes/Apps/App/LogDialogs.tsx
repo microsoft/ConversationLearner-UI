@@ -8,7 +8,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import * as OF from 'office-ui-fabric-react';
 import { State } from '../../../types'
-import { AppBase, LogDialog, Session, ModelUtils, Teach, TeachWithHistory, TrainDialog, ActionBase, ReplayError } from '@conversationlearner/models'
+import { AppBase, LogDialog, Session, ModelUtils, Teach, TeachWithHistory, TrainDialog, ActionBase, ReplayError, UIScoreInput } from '@conversationlearner/models'
 import { ChatSessionModal, LogDialogModal, TeachSessionModal } from '../../../components/modals'
 import { 
     createChatSessionThunkAsync, 
@@ -358,10 +358,10 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         this.onCloseLogDialogModal();
     }
 
-    onEditLogDialog(logDialogId: string, newTrainDialog: TrainDialog, lastExtractionChanged: boolean) {
+    onEditLogDialog(logDialogId: string, newTrainDialog: TrainDialog, newScoreInput: UIScoreInput) {
         
         // Create a new teach session from the train dialog
-        ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app, newTrainDialog, this.props.user.name, this.props.user.id, lastExtractionChanged) as any) as Promise<TeachWithHistory>)
+        ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app, newTrainDialog, this.props.user.name, this.props.user.id, newScoreInput) as any) as Promise<TeachWithHistory>)
         .then(teachWithHistory => {
             if (teachWithHistory.replayErrors.length === 0) {
                 // Note: Don't clear currentLogDialog so I can update it if I save my edits
@@ -435,12 +435,9 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         // Don't show log dialogs that have derived TrainDialogs as they've already been edited
         let filteredLogDialogs: LogDialog[] = this.props.logDialogs.filter(l => !l.targetTrainDialogIds || l.targetTrainDialogIds.length === 0);
 
-        if (!this.state.searchValue) {
-            filteredLogDialogs = this.props.logDialogs;
-        }
-        else {
-        // TODO: Consider caching as not very efficient
-            filteredLogDialogs = this.props.logDialogs.filter((l: LogDialog) => {
+        if (this.state.searchValue) {
+            // TODO: Consider caching as not very efficient
+            filteredLogDialogs = filteredLogDialogs.filter((l: LogDialog) => {
                 let keys = [];
                 for (let round of l.rounds) {
                     keys.push(round.extractorStep.text);
@@ -540,7 +537,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     open={this.state.isLogDialogWindowOpen}
                     canEdit={this.props.editingPackageId === this.props.app.devPackageId && !this.props.invalidBot}
                     onClose={this.onCloseLogDialogModal}
-                    onEdit={(logDialogId: string, newTrainDialog: TrainDialog, lastExtractionChanged: boolean) => this.onEditLogDialog(logDialogId, newTrainDialog, lastExtractionChanged)}
+                    onEdit={(logDialogId: string, newTrainDialog: TrainDialog, newScoreInput: UIScoreInput) => this.onEditLogDialog(logDialogId, newTrainDialog, newScoreInput)}
                     onDelete={this.onDeleteLogDialog}
                     logDialog={currentLogDialog}
                     history={this.state.isLogDialogWindowOpen ? this.state.activities : null}

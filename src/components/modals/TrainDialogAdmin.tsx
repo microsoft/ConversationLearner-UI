@@ -17,7 +17,7 @@ import * as OF from 'office-ui-fabric-react';
 import {
     ActionBase, AppBase, TrainDialog, TrainRound, ScoreReason, ScoredAction,
     TrainScorerStep, Memory, UnscoredAction, ScoreResponse, ActionTypes,
-    TextVariation, ExtractResponse, DialogType, SenderType, DialogMode
+    TextVariation, ExtractResponse, DialogType, SenderType, DialogMode, UIScoreInput
 } from '@conversationlearner/models'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
@@ -37,9 +37,9 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
     constructor(p: Props) {
         super(p);
         this.state = {
-            saveTrainDialog: null,
-            saveSliceRound: 0,
-            saveExtractChanged: false,
+            newTrainDialog: null,
+            newSliceRound: 0,
+            newScoreInput: null,
             senderType: null,
             roundIndex: null,
             scoreIndex: null
@@ -100,11 +100,18 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
             newRounds[roundIndex].scorerSteps = [];
             updatedTrainDialog = { ...updatedTrainDialog, rounds: rounds };
 
+            const uiScoreInput: UIScoreInput = {
+                trainExtractorStep: {
+                    textVariations
+                },
+                extractResponse
+            }
+
             // Save choice prompt will be shown to user
             this.setState({
-                saveTrainDialog: updatedTrainDialog,
-                saveSliceRound: roundIndex,
-                saveExtractChanged: true
+                newTrainDialog: updatedTrainDialog,
+                newSliceRound: roundIndex,
+                newScoreInput: uiScoreInput
             });
         }
         // Otherwise just save with new text variations, remaining rounds are ok
@@ -156,20 +163,20 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
         if (this.props.trainDialog.rounds.length !== newRounds.length) {
             // Truncation prompt will be shown to user
             this.setState({
-                saveTrainDialog: updatedTrainDialog,
-                saveSliceRound: this.state.roundIndex,
-                saveExtractChanged: false
+                newTrainDialog: updatedTrainDialog,
+                newSliceRound: this.state.roundIndex,
+                newScoreInput: null
             });
         } else {
-            this.editTrainDialog(updatedTrainDialog, this.state.roundIndex, false);
+            this.editTrainDialog(updatedTrainDialog, this.state.roundIndex, this.state.newScoreInput);
         }
     }
 
     onClickSaveCheckYes() {
-        this.editTrainDialog(this.state.saveTrainDialog, this.state.saveSliceRound, false);
+        this.editTrainDialog(this.state.newTrainDialog, this.state.newSliceRound, this.state.newScoreInput);
     }
 
-    editTrainDialog(sourceDialog: TrainDialog, sliceRound: number, extractChanged: boolean) {
+    editTrainDialog(sourceDialog: TrainDialog, sliceRound: number, newScoreInput: UIScoreInput) {
         let trainDialog: TrainDialog = {
             trainDialogId: undefined,
             sourceLogDialogId: sourceDialog.sourceLogDialogId,
@@ -184,21 +191,21 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
             }
         }
 
-        this.props.onEdit(sourceDialog.trainDialogId, trainDialog, extractChanged);
+        this.props.onEdit(sourceDialog.trainDialogId, trainDialog, newScoreInput);
          
         this.props.clearExtractResponses();
 
         this.setState({
-            saveTrainDialog: null,
-            saveSliceRound: 0,
-            saveExtractChanged: false,
+            newTrainDialog: null,
+            newSliceRound: 0,
+            newScoreInput: null,
             roundIndex: sliceRound
         });
     }
 
     onClickSaveCheckNo() {
         // Reset the entity extractor
-        this.setState({ saveTrainDialog: null, saveSliceRound: 0 });
+        this.setState({ newTrainDialog: null, newSliceRound: 0 });
         this.props.clearExtractResponses();
     }
     getPrevMemories(): Memory[] {
@@ -431,7 +438,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                 }
                 <div className="cl-dialog-admin__dialogs">
                     <OF.Dialog
-                        hidden={this.state.saveTrainDialog === null}
+                        hidden={this.state.newTrainDialog === null}
                         onDismiss={() => this.onClickSaveCheckNo()}
                         dialogContentProps={{
                             type: OF.DialogType.normal,
@@ -485,9 +492,9 @@ const mapStateToProps = (state: State) => {
 }
 
 interface ComponentState {
-    saveTrainDialog: TrainDialog,
-    saveSliceRound: number,
-    saveExtractChanged: boolean,    // Did extraction change on edit
+    newTrainDialog: TrainDialog,
+    newSliceRound: number,
+    newScoreInput: UIScoreInput,    // Did extraction change on edit
     senderType: SenderType,
     roundIndex: number,
     scoreIndex: number
@@ -499,7 +506,7 @@ export interface ReceivedProps {
     trainDialog: TrainDialog,
     selectedActivity: Activity,
     canEdit: boolean,
-    onEdit: (sourceTrainDialogId: string, editedTrainDialog: TrainDialog, lastExtractChanged: boolean) => void
+    onEdit: (sourceTrainDialogId: string, editedTrainDialog: TrainDialog, newScoreInput: UIScoreInput) => void
     onReplace: (editedTrainDialog: TrainDialog) => void
     onExtractionsChanged: (changed: boolean) => void
 }
