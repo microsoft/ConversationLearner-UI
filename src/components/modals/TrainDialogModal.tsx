@@ -11,7 +11,7 @@ import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { State } from '../../types';
 import Webchat from '../Webchat'
 import TrainDialogAdmin from './TrainDialogAdmin'
-import { AppBase, TrainDialog, CL_USER_NAME_ID, UIScoreInput } from '@conversationlearner/models'
+import { AppBase, TrainDialog, CL_USER_NAME_ID, UIScoreInput, SenderType } from '@conversationlearner/models'
 import { Activity } from 'botframework-directlinejs';
 import ConfirmCancelModal from './ConfirmCancelModal'
 import { FM } from '../../react-intl-messages'
@@ -116,6 +116,9 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
         const { intl } = this.props
         let chatDisable = this.state.pendingExtractionChanges ? <div className="cl-overlay"/> : null;
 
+        // Can only branch on user input 
+        let canBranch = this.state.selectedActivity && this.state.selectedActivity.channelData.senderType === SenderType.User;
+            
         return (
             <Modal
                 isOpen={this.props.open}
@@ -159,7 +162,9 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
                         <div className="cl-modal-buttons_secondary">
                             <div  ref={ (menuButton) => this._refBranchButton = menuButton}>
                                 <DefaultButton
-                                        disabled={this.state.pendingExtractionChanges || !this.props.canEdit || 
+                                        disabled={!canBranch ||
+                                            this.state.pendingExtractionChanges || 
+                                            !this.props.canEdit || 
                                             (this.props.trainDialog && this.props.trainDialog.invalid === true)}
                                         onClick={() => this.onClickBranch()}
                                         ariaDescription={intl.formatMessage({
