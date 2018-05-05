@@ -8,7 +8,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import * as OF from 'office-ui-fabric-react';
 import { State } from '../../../types'
-import { AppBase, Teach, TrainDialog, TeachWithHistory, ActionBase, EntityBase, UITeachResponse, ReplayError, UIScoreInput } from '@conversationlearner/models'
+import { AppBase, Teach, TrainDialog, TeachWithHistory, ActionBase, EntityBase, UITeachResponse, ReplayError, UIScoreInput, SenderType, TrainRound, ModelUtils } from '@conversationlearner/models'
 import { TeachSessionModal, TrainDialogModal, SessionMemoryCheck } from '../../../components/modals'
 import { fetchHistoryThunkAsync, fetchApplicationTrainingStatusThunkAsync } from '../../../actions/fetchActions'
 import {
@@ -376,9 +376,29 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         this.onCloseTrainDialogModal();
     }
 
-    onBranchTrainDialog(turnIndex: number) {
+    onBranchTrainDialog(roundIndex: number, scoreIndex: number, senderType: SenderType) {
 
         let trainDialog = this.props.trainDialogs.find(td => td.trainDialogId === this.state.currentTrainDialog.trainDialogId);
+
+        let rounds: TrainRound[];
+
+        // If message was from user, just strip that entire round (user input + score response)
+        if (senderType === SenderType.User) {
+            rounds = trainDialog.rounds.slice(0, roundIndex)
+        }
+        // Otherwise replace the round with edited score response 
+        else {
+            let lastRound = trainDialog.rounds[roundIndex]
+
+            let newTrainRound = {
+                extractorStep: lastRound.extractorStep,
+                scorerSteps: lastRound.scorerSteps.slice(0, scoreIndex)
+            }
+
+            // Strip extra rounds and add altered last round
+            rounds = trainDialog.rounds.slice(0, roundIndex)
+            rounds.push(newTrainRound);
+        }
 
         // Create new train dialog, removing turns above the branch
         let newTrainDialog: TrainDialog = {
@@ -387,7 +407,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             version: undefined,
             packageCreationId: undefined,
             packageDeletionId: undefined,
-            rounds: trainDialog.rounds.slice(0, turnIndex),
+            rounds: rounds,
             definitions: {
                 entities: this.props.entities,
                 actions: this.props.actions,
@@ -395,7 +415,22 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             }
         };
 
-        ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app, newTrainDialog, this.props.user.name, this.props.user.id) as any) as Promise<TeachWithHistory>)
+        let finalRound = newTrainDialog.rounds[rounds.length - 1];
+
+        let uiScoreInput: UIScoreInput = null;
+      
+        let tv = finalRound.extractorStep.textVariations
+        let er = ModelUtils.ToExtractResponses(finalRound.extractorStep.textVariations);
+        if (er[0]) {
+            uiScoreInput = {
+                trainExtractorStep: {
+                textVariations: tv
+                },
+                extractResponse: er[0]
+            }
+        }
+
+        ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app, newTrainDialog, this.props.user.name, this.props.user.id, uiScoreInput) as any) as Promise<TeachWithHistory>)
             .then(teachWithHistory => {
                 if (teachWithHistory.replayErrors.length === 0) {
                     this.setState({
@@ -701,7 +736,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     canEdit={this.props.editingPackageId === this.props.app.devPackageId && !this.props.invalidBot}
                     open={this.state.isTrainDialogModalOpen}
                     onClose={() => this.onCloseTrainDialogModal()}
-                    onBranch={(turnIndex: number) => this.onBranchTrainDialog(turnIndex)}
+                    onBranch={(roundIndex: number, scoreIndex: number, senderType: SenderType) => this.onBranchTrainDialog(roundIndex, scoreIndex, senderType)}
                     onDelete={() => this.onDeleteTrainDialog()}
                     onEdit={(editedTrainDialog: TrainDialog, newScoreInput: UIScoreInput) => this.onEditTrainDialog(editedTrainDialog, newScoreInput)}
                     onReplace={(editedTrainDialog: TrainDialog) => this.onReplaceTrainDialog(editedTrainDialog)}
