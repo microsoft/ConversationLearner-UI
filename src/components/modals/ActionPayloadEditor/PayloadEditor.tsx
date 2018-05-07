@@ -243,7 +243,7 @@ export default class PayloadEditor extends React.Component<Props, State> {
         // It's a little odd to have optional event here, there might be better way to refactor
         // When invoked on key events we have an event; however, on click from the Picker menu we do not
         // The alternative is moving this event logic into the key handlers but that also moves the above logic
-        // and consolidating here seemed better for consistent maitanance
+        // and consolidating here seemed better for consistent maintenance
         event && event.preventDefault()
 
         const textNode = change.value.texts.last()
