@@ -9,23 +9,21 @@ import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { Template, RenderedActionArgument } from '@conversationlearner/models'
 import { State } from '../../../types'
-import * as AdaptiveCards from 'adaptivecards';
+import * as AdaptiveCards from 'adaptivecards'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
-var hostconfig = require('./AdaptiveCardHostConfig.json')
-   
+import adaptiveCardHostConfig from './AdaptiveCardHostConfig'
+
 class AdaptiveCardViewer extends React.Component<Props, {}> {
     onDismiss = () => {
         this.props.onDismiss()
     }
 
-    renderOptions(): any {
-        return {
-            hostConfig: hostconfig
-        }
+    getAdaptiveCardHostConfig(): any {
+        return new AdaptiveCards.HostConfig(adaptiveCardHostConfig)
     }
 
     getTemplate(): any {
-        let templateString = JSON.stringify(this.props.template.body);
+        let templateString = this.props.template.body
 
         // Substitute agrument values
         for (let actionArgument of this.props.actionArguments) {
@@ -52,8 +50,11 @@ class AdaptiveCardViewer extends React.Component<Props, {}> {
         if (!this.props.open || !this.props.template) {
             return null;
         }
-        let template = this.getTemplate();
-        let card = AdaptiveCards.renderCard(template, this.renderOptions());
+        const template = this.getTemplate();
+        const adaptiveCard = new AdaptiveCards.AdaptiveCard()
+        adaptiveCard.hostConfig = this.getAdaptiveCardHostConfig()
+        adaptiveCard.parse(template)
+        const card = adaptiveCard.render()
         return (
             <Modal
                 isOpen={this.props.open}
