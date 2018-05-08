@@ -10,7 +10,7 @@ import { setErrorDisplay } from './displayActions'
 import {
     UserInput, ExtractResponse, ScoreInput, UIScoreInput, UIExtractResponse,
     UIScoreResponse, UITrainScorerStep, UITeachResponse,
-    DialogType
+    DialogType, DialogMode
 } from '@conversationlearner/models'
 
 // --------------------------
@@ -182,13 +182,13 @@ export const postScorerFeedbackThunkAsync = (key: string, appId: string, teachId
             let uiTeachResponse = await clClient.teachSessionAddScorerStep(appId, teachId, uiTrainScorerStep)
 
             if (!waitForUser) {
-                // Don't re-send predicted entities on subsequent score call -todo on non train path
+                // Don't re-send predicted entities on subsequent score call
                 uiScoreInput.extractResponse.predictedEntities = [];
-                dispatch(postScorerFeedbackNoWaitFulfilled(key, appId, teachId, uiTeachResponse, uiScoreInput))     
-                dispatch(runScorerThunkAsync(key, appId, teachId, uiScoreInput)) // LARS is this this right score input?
+                dispatch(postScorerFeedbackFulfilled(key, appId, teachId, DialogMode.Scorer, uiTeachResponse, uiScoreInput))     
+                dispatch(runScorerThunkAsync(key, appId, teachId, uiScoreInput))
             }
             else {
-                dispatch(postScorerFeedbackWaitFulfilled(key, appId, teachId, uiTeachResponse))
+                dispatch(postScorerFeedbackFulfilled(key, appId, teachId, DialogMode.Wait, uiTeachResponse, null))
             }
             return uiTeachResponse
         }
@@ -212,23 +212,13 @@ const postScorerFeedbackAsync = (key: string, appId: string, teachId: string, ui
 }
 
 // Score has been posted.  Action is Terminal
-const postScorerFeedbackWaitFulfilled = (key: string, appId: string, teachId: string, uiTeachResponse: UITeachResponse): ActionObject => {
+const postScorerFeedbackFulfilled = (key: string, appId: string, teachId: string, dialogMode: DialogMode, uiTeachResponse: UITeachResponse, uiScoreInput: UIScoreInput): ActionObject => {
     return {
-        type: AT.POST_SCORE_FEEDBACK_FULFILLEDWAIT,
+        type: AT.POST_SCORE_FEEDBACK_FULFILLED,
         key: key,
         appId: appId,
         sessionId: teachId,
-        uiTeachResponse: uiTeachResponse
-    }
-}
-
-// Score has been posted.  Action is not Terminal
-const postScorerFeedbackNoWaitFulfilled = (key: string, appId: string, teachId: string, uiTeachResponse: UITeachResponse, uiScoreInput: UIScoreInput): ActionObject => {
-    return {
-        type: AT.POST_SCORE_FEEDBACK_FULFILLEDNOWAIT,
-        key: key,
-        appId: appId,
-        sessionId: teachId,
+        dialogMode: dialogMode,
         uiTeachResponse: uiTeachResponse,
         uiScoreInput: uiScoreInput
     }
