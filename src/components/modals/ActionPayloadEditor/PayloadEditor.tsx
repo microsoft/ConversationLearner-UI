@@ -87,6 +87,7 @@ export default class PayloadEditor extends React.Component<Props, State> {
                 matchedStrings: [{ text: option.name, matched: false }],
                 original: option
             }))
+            .sort((a, b) => a.original.name.localeCompare(b.original.name))
     }
 
     onChangeValue = (change: any) => {

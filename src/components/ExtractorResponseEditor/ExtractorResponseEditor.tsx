@@ -166,8 +166,12 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
             // Note: This is kind of hack to prevent selection from expanding when the cursor/selection is within
             // the button text of the custom entity node. This makes the Slate selection expanded and prevents
             // the entity picker from closing after user removes the node.
-            const selectionParentElementTagName = window.getSelection().anchorNode.parentElement.tagName
-            if (selectionParentElementTagName ===  "BUTTON")
+            const selection = window.getSelection()
+            const selectionParentElement = selection && selection.anchorNode && selection.anchorNode.parentElement
+            if (selectionParentElement == null) {
+                console.warn(`selectionParentElement is null or undefined. Value: ${value.document.text}`)
+            }
+            else if (selectionParentElement.tagName ===  "BUTTON")
             {
                 shouldExpandSelection = false
             }
