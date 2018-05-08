@@ -101,7 +101,7 @@ export const PreBuiltEntities: LocalePreBuilts[] = [
 		locale: "ko-kr",
 		preBuiltEntities: []
 	},
-	//Note: Dutch-Netherlands is not listed on the LUIS site and there isnt an equivalent locale so I'm leaving the array empty
+	//Note: Dutch-Netherlands is not listed on the LUIS site and there isn't an equivalent locale so I'm leaving the array empty
 	{
 		locale: "nl-nl",
 		preBuiltEntities: []

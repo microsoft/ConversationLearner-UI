@@ -130,7 +130,7 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
         case AT.FETCH_ENTITIES_FULFILLED:
         case AT.FETCH_TEACH_SESSIONS_FULFILLED:
         // case AT.FETCH_TRAIN_DIALOGS_FULFILLED: Doesn't block
-        // case AT.FETCH_LOG_DIALOGS_FULFILLED: Doeesn't block
+        // case AT.FETCH_LOG_DIALOGS_FULFILLED: Doesn't block
         case AT.FETCH_ENTITY_DELETE_VALIDATION_FULFILLED:
         case AT.FETCH_ENTITY_EDIT_VALIDATION_FULFILLED:
         case AT.FETCH_ACTION_DELETE_VALIDATION_FULFILLED:

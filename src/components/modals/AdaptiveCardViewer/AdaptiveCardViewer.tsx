@@ -25,7 +25,7 @@ class AdaptiveCardViewer extends React.Component<Props, {}> {
     getTemplate(): any {
         let templateString = this.props.template.body
 
-        // Substitute agrument values
+        // Substitute argument values
         for (let actionArgument of this.props.actionArguments) {
             if (actionArgument) {
                 templateString = templateString.replace(new RegExp(`{{${actionArgument.parameter}}}`, 'g'), actionArgument.value)
@@ -33,7 +33,7 @@ class AdaptiveCardViewer extends React.Component<Props, {}> {
         }
 
         if (this.props.hideUndefined) {
-            // Replace unfilled entity refrences with blank
+            // Replace unfilled entity references with blank
             templateString = templateString.replace(/{{\s*[\w\.]+\s*}}/g, '');
         } else {
             // Now replace any images that haven't been substituted with a dummy image
