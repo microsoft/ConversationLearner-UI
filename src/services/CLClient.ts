@@ -64,7 +64,7 @@ export default class CLClient {
         return axios(finalConfig) as Promise<TypedAxiosResponse<T>>
     }
 
-    // AT.SET_CURRENT_APP_ASYN
+    // AT.SET_CURRENT_APP_ASYNC
     setApp(app: models.AppBase): Promise<void> {
         return this.send({
             method: 'put',
@@ -74,7 +74,7 @@ export default class CLClient {
             .then(response => { })
     }
 
-    // AT.SET_CONVERSATION_ID_ASYN
+    // AT.SET_CONVERSATION_ID_ASYNC
     setConversationId(userName: string, userId: string, conversationId: string): Promise<void> {
         return this.send({
             method: 'put',

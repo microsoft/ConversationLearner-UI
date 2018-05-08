@@ -40,7 +40,7 @@ function getEntityIds(node: any): string[] {
 
     // If current node is inline node which we know to have entityId then save it in the list
     if (node.kind === 'inline' && node.type === NodeTypes.Mention) {
-        // This check is required becuase when input is Slate Value node is Immutable.Map object
+        // This check is required because when input is Slate Value node is Immutable.Map object
         // but it could also be a node from value.toJSON()
         const data = typeof node.data.toJS === 'function'
             ? node.data.toJS()
@@ -76,7 +76,7 @@ function serializeNode(node: any, entityValues: Map<string, string>, fallbackToO
     const serializedChildNodes = node.nodes.map((n: any) => serializeNode(n, entityValues, fallbackToOriginal))
     
     if (node.kind === 'inline' && node.type === NodeTypes.Mention) {
-        // This check is required becuase when input is Slate Value node is Immutable.Map object
+        // This check is required because when input is Slate Value node is Immutable.Map object
         // but it could also be a node from value.toJSON()
         const data = typeof node.data.toJS === 'function'
             ? node.data.toJS()
