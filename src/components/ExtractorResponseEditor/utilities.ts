@@ -284,7 +284,7 @@ export const convertToSlateValue = (tokensWithEntities: TokenArray): any => {
 
 /**
  * Note: this is more like a negative match used to determine characters that split the string instead of 
- * positive match would specify characters which are tokens. Only chose this becuase it seems like a much
+ * positive match would specify characters which are tokens. Only chose this because it seems like a much
  * simpler regex / smaller set of characters, but I imagine alternative approach would work
  */
 export const tokenizeRegex = /\s+|[.?,!]/g
@@ -523,7 +523,7 @@ export const convertPredictedEntityToGenericEntity = (pe: PredictedEntity, entit
         startIndex: pe.startCharIndex,
         // The predicted entities returned by the service treat indices as characters instead of before or after the character so add 1 to endIndex for slicing using JavaScript
         // Also, it seems when predicted entities come back from the service during Teach Session the endIndex is 1 less;
-        // howver, the entities that are returned when viewing TrainDialog are correctly matching length of text
+        // however, the entities that are returned when viewing TrainDialog are correctly matching length of text
         endIndex: pe.startCharIndex + pe.entityText.length, // pe.endCharIndex + 1,
         data: {
             option: {

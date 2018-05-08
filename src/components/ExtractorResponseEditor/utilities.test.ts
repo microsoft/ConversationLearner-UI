@@ -9,7 +9,7 @@ import Plain from 'slate-plain-serializer'
 describe('ExtractResponseEditor', () => {
     describe('utilities', () => {
         describe('tokenizeText', () => {
-            test('given empty string return empty arrar', () => {
+            test('given empty string return empty array', () => {
                 expect(utilities.tokenizeText('', /\s+/g)).toEqual([])
             })
 
@@ -83,7 +83,7 @@ describe('ExtractResponseEditor', () => {
                 expect(utilities.addTokenIndicesToCustomEntities(tokens, [])).toEqual([])
             })
 
-            test('given entity array return new entity array with correct token indecies', () => {
+            test('given entity array return new entity array with correct token indices', () => {
                 // Arrange
                 const customEntities: models.IGenericEntity<any>[] = [
                     {
@@ -189,7 +189,7 @@ describe('ExtractResponseEditor', () => {
                 expect(utilities.convertToSlateNodes([])).toEqual(expectedNodes)
             })
 
-            test('given tokens array WITHOUT entites return inline nodes for selectable tokens and text nodes for non selectable', () => {
+            test('given tokens array WITHOUT entities return inline nodes for selectable tokens and text nodes for non selectable', () => {
                 const tokens: utilities.TokenArray = [
                     {
                         text: 'a',
@@ -263,7 +263,7 @@ describe('ExtractResponseEditor', () => {
                 expect(utilities.convertToSlateNodes(tokens)).toEqual(expectedNodes)
             })
 
-            test('given tokens array WITH entities show entities as custom entitiy nodes', () => {
+            test('given tokens array WITH entities show entities as custom entity nodes', () => {
                 const tokens: utilities.TokenArray = [
                     {
                         entity: {

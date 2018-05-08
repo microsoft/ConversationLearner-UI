@@ -140,7 +140,7 @@ describe('EntityIdSerializer', () => {
         const entities = [
             {
                 id: 'entityId1',
-                name: 'entitName1'
+                name: 'entityName1'
             },
             {
                 id: 'entityId2',
@@ -161,7 +161,7 @@ describe('EntityIdSerializer', () => {
                         kind: 'text',
                         leaves: [
                             {
-                                text: '$entitName1'
+                                text: '$entityName1'
                             }
                         ]
                     }
@@ -215,7 +215,7 @@ describe('EntityIdSerializer', () => {
         ]))
 
         test(`given slate value with custom optional inline nodes without matching value in map are removed`, () => {
-            expect(plainString).toEqual(`some text to start $entitName1 some other text [some stuff $entityName2 ending optional node ]ending text`)
+            expect(plainString).toEqual(`some text to start $entityName1 some other text [some stuff $entityName2 ending optional node ]ending text`)
             expect(partialString).toEqual(`some text to start Custom Entity 1 Value some other text ending text`)
         })
         

@@ -40,7 +40,7 @@ const testJsonValueIncomplete = {
                                 "leaves": [
                                     {
                                         "kind": "leaf",
-                                        "text": "$otherspecial",
+                                        "text": "$otherSpecial",
                                         "marks": [] as any[]
                                     }
                                 ]
@@ -127,7 +127,7 @@ const testJsonValue = {
                             "completed": true,
                             "option": {
                                 "id": "f12bba59-e82e-4046-a7dd-90a66c621e04",
-                                "name": "otherspecial"
+                                "name": "otherSpecial"
                             }
                         },
                         "nodes": [
@@ -136,7 +136,7 @@ const testJsonValue = {
                                 "leaves": [
                                     {
                                         "kind": "leaf",
-                                        "text": "$otherspecial",
+                                        "text": "$otherSpecial",
                                         "marks": []
                                     }
                                 ]
@@ -223,7 +223,7 @@ const expectedJsonValue = {
                             "completed": true,
                             "option": {
                                 "id": "f12bba59-e82e-4046-a7dd-90a66c621e04",
-                                "name": "otherspecial"
+                                "name": "otherSpecial"
                             }
                         },
                         "nodes": [
@@ -232,7 +232,7 @@ const expectedJsonValue = {
                                 "leaves": [
                                     {
                                         "kind": "leaf",
-                                        "text": "$otherspecial",
+                                        "text": "$otherSpecial",
                                         "marks": []
                                     }
                                 ]
@@ -275,7 +275,7 @@ describe('SlateTransformer', () => {
                 },
                 {
                     id: "f12bba59-e82e-4046-a7dd-90a66c621e04",
-                    name: "otherspecial"
+                    name: "otherSpecial"
                 }
             ]
 

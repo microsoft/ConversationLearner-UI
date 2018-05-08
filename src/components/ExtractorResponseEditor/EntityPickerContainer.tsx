@@ -145,7 +145,7 @@ export default class EntityPickerContainer extends React.Component<Props, State>
 
     onSelectHighlightedOption = () => {
         const matchedOption = this.state.matchedOptions[this.state.highlightIndex]
-        // It's possible that highlight option is 0 even though there are no matched options becuase text doesn't match any
+        // It's possible that highlight option is 0 even though there are no matched options because text doesn't match any
         // in this case matchedOption will be null and we must disregard it
         if (!matchedOption) {
             console.warn(`onSelectOption was skipped because matchedOption was null`)

@@ -378,7 +378,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             throw new Error(`Could not find template with name: ${cardOption.key}`)
         }
 
-        // Initialize a new empyt slate value for each of the arguments in the callback
+        // Initialize a new empty slate value for each of the arguments in the callback
         const newSlateValues = template.variables
             .reduce((values, variable) => {
                 values[variable.key] = Plain.deserialize('')
@@ -679,7 +679,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         const renderProps = { ...props }
         const locked = this.state.requiredEntityTagsFromPayload.some(t => t.key === props.key)
 
-        // Strickout and lock/highlight if also the suggested entity
+        // Strike-out and lock/highlight if also the suggested entity
         renderProps.strike = false
         renderProps.locked = locked
         renderProps.highlight = locked
@@ -788,7 +788,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                         <TC.Dropdown
                             label="Action Type"
                             options={actionTypeOptions}
-                            onChanged={acionTypeOption => this.onChangedActionType(acionTypeOption)}
+                            onChanged={actionTypeOption => this.onChangedActionType(actionTypeOption)}
                             selectedKey={this.state.selectedActionTypeOptionKey}
                             disabled={this.state.isEditing}
                             tipType={ToolTip.TipType.ACTION_TYPE}

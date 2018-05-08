@@ -19,7 +19,7 @@ export enum AT {
     EDIT_APP_EDITING_TAG_FULFILLED = 'EDIT_APP_EDITING_TAG_FULFILLED',
 
     // TODO: Remove / Replace this. Don't think 'display' related state changes should exist here.
-    // This implies couplin with display logic, but display logic should be responsibility of components.
+    // This implies coupling with display logic, but display logic should be responsibility of components.
     // DISPLAY
     SET_CURRENT_APP_ASYNC = 'SET_CURRENT_APP_ASYNC',
     SET_CONVERSATION_ID_ASYNC = 'SET_CONVERSATION_ID_ASYNC',

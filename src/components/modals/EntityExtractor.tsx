@@ -53,7 +53,7 @@ interface ComponentState {
     newTextVariations: TextVariation[]
 };
 
-// TODO: Need to re-define TextVariaion / ExtractResponse class defs so we don't need
+// TODO: Need to re-define TextVariation / ExtractResponse class defs so we don't need
 // to do all the messy conversion back and forth
 class EntityExtractor extends React.Component<Props, ComponentState> {
     private doneExtractingButton: any = null;
@@ -89,7 +89,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         }
     }
     componentWillReceiveProps(newProps: Props) {
-        // If I'm swiching my round or have added/removed text variations
+        // If I'm switching my round or have added/removed text variations
         if (this.props.sessionId !== newProps.sessionId ||
             this.props.roundIndex !== newProps.roundIndex ||
             this.props.originalTextVariations.length !== newProps.originalTextVariations.length) {
@@ -224,7 +224,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
 
     onRemoveExtractResponse(extractResponse: ExtractResponse): void {
 
-        // First look for match in extract reponses
+        // First look for match in extract responses
         let foundResponse = this.props.extractResponses.find(e => e.text === extractResponse.text);
         if (foundResponse) {
             this.props.removeExtractResponse(foundResponse);
@@ -244,7 +244,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         }
     }
     onUpdateExtractResponse(extractResponse: ExtractResponse): void {
-        // First for match in extract reponses
+        // First for match in extract responses
         let foundResponse = this.props.extractResponses.find(e => e.text === extractResponse.text);
         if (foundResponse) {
             this.props.updateExtractResponse(extractResponse);
@@ -386,7 +386,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                         <OF.PrimaryButton
                             disabled={!this.state.extractionChanged || !allExtractResponsesValid || this.state.pendingVariationChange}
                             onClick={this.onClickSubmitExtractions}
-                            ariaDescription={'Sumbit Changes'}
+                            ariaDescription={'Submit Changes'}
                             text={'Submit Changes'}
                             componentRef={(ref: any) => { this.doneExtractingButton = ref }}
                         />
