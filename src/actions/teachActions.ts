@@ -7,6 +7,7 @@ import { AT } from '../types/ActionTypes'
 import { Dispatch } from 'redux'
 import * as ClientFactory from '../services/clientFactory' 
 import { setErrorDisplay } from './displayActions'
+import { fetchApplicationTrainingStatusThunkAsync } from './fetchActions'
 import {
     UserInput, ExtractResponse, ScoreInput, UIScoreInput, UIExtractResponse,
     UIScoreResponse, UITrainScorerStep, UITeachResponse,
@@ -142,6 +143,7 @@ export const runScorerThunkAsync = (key: string, appId: string, teachId: string,
         try {
             let uiScoreResponse =  await clClient.teachSessionUpdateScorerStep(appId, teachId, uiScoreInput)
             dispatch(runScorerFulfilled(key, appId, teachId, uiScoreResponse))
+            dispatch(fetchApplicationTrainingStatusThunkAsync(appId))
             return uiScoreResponse
         }
         catch (error) {

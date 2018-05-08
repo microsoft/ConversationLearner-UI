@@ -12,7 +12,7 @@ import { getScoresThunkAsync, runScorerThunkAsync, postScorerFeedbackThunkAsync 
 import {
     AppBase, TextVariation, ExtractResponse,
     DialogType, TrainScorerStep, TrainingStatusCode,
-    UITrainScorerStep, UIScoreInput, DialogMode
+    UITrainScorerStep, UIScoreInput, DialogMode, UITeachResponse
 } from '@conversationlearner/models'
 import ActionScorer from './ActionScorer';
 import EntityExtractor from './EntityExtractor';
@@ -48,7 +48,6 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
         const appId = this.props.app.appId
         const teachId = this.props.teachSession.current.teachId
         this.props.runScorerThunkAsync(this.props.user.id, appId, teachId, uiScoreInput)
-        await this.props.fetchApplicationTrainingStatusThunkAsync(appId) //LARS move into thunk above
         this.setState({
             isScoresRefreshVisible: true
         })
@@ -65,11 +64,11 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
         let waitForUser = trainScorerStep.scoredAction.isTerminal;
 
         // Pass score input (minus extractor step) for subsequent actions when this one is non-terminal
-        let uiScoreInput: UIScoreInput = { ...this.props.teachSession.uiScoreInput, trainExtractorStep: null }
+        let uiScoreInput = { ...this.props.teachSession.uiScoreInput, trainExtractorStep: null } as UIScoreInput
 
-        this.props.postScorerFeedbackThunkAsync(this.props.user.id, appId, teachId, uiTrainScorerStep, waitForUser, uiScoreInput);
-// LARS should there be a wait here?
-        this.props.onScoredAction();
+        ((this.props.postScorerFeedbackThunkAsync(this.props.user.id, appId, teachId, uiTrainScorerStep, waitForUser, uiScoreInput) as any) as Promise<UITeachResponse>)
+            .then(result => { this.props.onScoredAction() }
+            )
     }
 
     onClickRefreshScores = (event: React.MouseEvent<HTMLButtonElement>) => {
