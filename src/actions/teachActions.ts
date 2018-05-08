@@ -179,20 +179,13 @@ export const postScorerFeedbackThunkAsync = (key: string, appId: string, teachId
         dispatch(postScorerFeedbackAsync(key, appId, teachId, uiTrainScorerStep, waitForUser, uiScoreInput))
 
         try {
-            console.log("1S: client:teachSesssionAddScorerStep")
             let uiTeachResponse = await clClient.teachSessionAddScorerStep(appId, teachId, uiTrainScorerStep)
-            console.log("1F: client:teachSesssionAddScorerStep")
 
             if (!waitForUser) {
                 // Don't re-send predicted entities on subsequent score call -todo on non train path
                 uiScoreInput.extractResponse.predictedEntities = [];
-                console.log("2S: postScorerFeedbackNoWaitFulfilled")
-                dispatch(postScorerFeedbackNoWaitFulfilled(key, appId, teachId, uiTeachResponse, uiScoreInput))
-                console.log("2F: postScorerFeedbackNoWaitFulfilled")
-                
-                console.log("3S: runScorerThunkAsync")
+                dispatch(postScorerFeedbackNoWaitFulfilled(key, appId, teachId, uiTeachResponse, uiScoreInput))     
                 dispatch(runScorerThunkAsync(key, appId, teachId, uiScoreInput)) // LARS is this this right score input?
-                console.log("3S: runScorerThunkAsync")
             }
             else {
                 dispatch(postScorerFeedbackWaitFulfilled(key, appId, teachId, uiTeachResponse))
