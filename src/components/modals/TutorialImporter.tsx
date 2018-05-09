@@ -117,8 +117,22 @@ class TutorialImporter extends React.Component<Props, ComponentState> {
         })
     }
 
+    sortTutorials(): AppBase[] {
+        if (this.props.tutorials) {
+            let tutorials = [...this.props.tutorials];
+            tutorials
+                .sort((a, b) => {
+                    return a.appName.localeCompare(b.appName)
+                })
+
+            return tutorials;
+        }
+        return []
+    }
+
     render() {
         const { intl } = this.props
+        const tutorials = this.sortTutorials()
         return (
                 <Modal
                     isOpen={this.props.open}
@@ -141,7 +155,7 @@ class TutorialImporter extends React.Component<Props, ComponentState> {
                             {this.state.moreInfoApp === null ?
                                 <OF.DetailsList
                                     className={OF.FontClassNames.mediumPlus}
-                                    items={this.props.tutorials}
+                                    items={tutorials}
                                     columns={this.state.columns}
                                     onRenderItemColumn={(app, i, column: IRenderableColumn) => column.render(app, this)}
                                     checkboxVisibility={OF.CheckboxVisibility.hidden}
