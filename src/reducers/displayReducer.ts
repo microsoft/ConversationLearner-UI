@@ -75,17 +75,18 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
         
         case AT.FETCH_APPSOURCE_ASYNC:
         case AT.FETCH_ACTIONS_ASYNC:
+        case AT.FETCH_ACTION_DELETE_VALIDATION_ASYNC:
+        case AT.FETCH_ACTION_EDIT_VALIDATION_ASYNC:
         case AT.FETCH_APPLICATIONS_ASYNC:
         case AT.FETCH_BOTINFO_ASYNC:
         case AT.FETCH_CHAT_SESSIONS_ASYNC:
-        case AT.FETCH_ENTITIES_ASYNC:
-        case AT.FETCH_TEACH_SESSIONS_ASYNC:
-        // case AT.FETCH_TRAIN_DIALOGS_ASYNC: Don't block
-        // case AT.FETCH_LOG_DIALOGS_ASYNC: Don't block
         case AT.FETCH_ENTITY_DELETE_VALIDATION_ASYNC:
         case AT.FETCH_ENTITY_EDIT_VALIDATION_ASYNC:
-        case AT.FETCH_ACTION_DELETE_VALIDATION_ASYNC:
-        case AT.FETCH_ACTION_EDIT_VALIDATION_ASYNC:
+        case AT.FETCH_ENTITIES_ASYNC:
+        case AT.FETCH_HISTORY_ASYNC:
+        // case AT.FETCH_LOG_DIALOGS_ASYNC: Don't block
+        case AT.FETCH_TEACH_SESSIONS_ASYNC:
+        // case AT.FETCH_TRAIN_DIALOGS_ASYNC: Don't block
         case AT.FETCH_TUTORIALS_ASYNC:
 
         case AT.COPY_APPLICATION_ASYNC:
@@ -125,24 +126,24 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
         case AT.FETCH_APPSOURCE_FULFILLED:
         case AT.FETCH_ACTIONS_FULFILLED:
         case AT.FETCH_BOTINFO_FULFILLED:
-        case AT.FETCH_APPLICATIONS_FULFILLED:
-        case AT.FETCH_CHAT_SESSIONS_FULFILLED:
-        case AT.FETCH_ENTITIES_FULFILLED:
-        case AT.FETCH_TEACH_SESSIONS_FULFILLED:
-        // case AT.FETCH_TRAIN_DIALOGS_FULFILLED: Doesn't block
-        // case AT.FETCH_LOG_DIALOGS_FULFILLED: Doesn't block
-        case AT.FETCH_ENTITY_DELETE_VALIDATION_FULFILLED:
-        case AT.FETCH_ENTITY_EDIT_VALIDATION_FULFILLED:
         case AT.FETCH_ACTION_DELETE_VALIDATION_FULFILLED:
         case AT.FETCH_ACTION_EDIT_VALIDATION_FULFILLED:
+        case AT.FETCH_APPLICATIONS_FULFILLED:
+        case AT.FETCH_CHAT_SESSIONS_FULFILLED:
+        case AT.FETCH_ENTITY_DELETE_VALIDATION_FULFILLED:
+        case AT.FETCH_ENTITY_EDIT_VALIDATION_FULFILLED:
+        case AT.FETCH_ENTITIES_FULFILLED:
+        case AT.FETCH_HISTORY_FULFILLED:
+        // case AT.FETCH_LOG_DIALOGS_FULFILLED: Doeesn't block
+        case AT.FETCH_TEACH_SESSIONS_FULFILLED:
+        // case AT.FETCH_TRAIN_DIALOGS_FULFILLED: Doesn't block
         case AT.FETCH_TUTORIALS_FULFILLED:
     
         case AT.COPY_APPLICATION_FULFILLED:
         case AT.RUN_EXTRACTOR_FULFILLED:
         case AT.GET_SCORES_FULFILLED:
         case AT.RUN_SCORER_FULFILLED:
-        case AT.POST_SCORE_FEEDBACK_FULFILLEDWAIT:
-        case AT.POST_SCORE_FEEDBACK_FULFILLEDNOWAIT:
+        case AT.POST_SCORE_FEEDBACK_FULFILLED:
             return { ...state, displaySpinner: removeSpinner(state.displaySpinner, action.type) }
         default:
             return state;

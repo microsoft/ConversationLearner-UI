@@ -10,7 +10,7 @@ import {
     ActionBase, TeachWithHistory,
     TrainDialog, LogDialog, Session, Teach, ScoreInput,
     UserInput, ExtractResponse, DialogType,
-    UIExtractResponse, UITrainScorerStep,
+    UIExtractResponse, UITrainScorerStep, DialogMode,
     UITeachResponse, UIScoreInput, UIScoreResponse, UIAppList, TrainingStatus
 } from '@conversationlearner/models'
 import { TipType } from '../components/ToolTips'
@@ -438,16 +438,11 @@ export type TeachAction = {
     uiScoreInput: UIScoreInput
     waitForUser: boolean
 } | {
-    type: AT.POST_SCORE_FEEDBACK_FULFILLEDWAIT,
+    type: AT.POST_SCORE_FEEDBACK_FULFILLED,
     key: string,
     appId: string,
-    sessionId: string
-    uiTeachResponse: UITeachResponse
-} | {
-    type: AT.POST_SCORE_FEEDBACK_FULFILLEDNOWAIT,
-    key: string,
-    appId: string,
-    sessionId: string
+    sessionId: string,
+    dialogMode: DialogMode,
     uiTeachResponse: UITeachResponse,
     uiScoreInput: UIScoreInput
 } | {

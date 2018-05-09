@@ -11,7 +11,7 @@ import { AppBase, ModelUtils, ExtractResponse, TextVariation, DialogType, Entity
 import * as OF from 'office-ui-fabric-react';
 import * as ExtractorResponseEditor from '../ExtractorResponseEditor'
 import EntityCreatorEditor from './EntityCreatorEditor';
-import { clearExtractResponses, updateExtractResponse, removeExtractResponse, runExtractorAsync } from '../../actions/teachActions'
+import { clearExtractResponses, updateExtractResponse, removeExtractResponse, runExtractorThunkAsync } from '../../actions/teachActions'
 import * as ToolTips from '../ToolTips'
 import HelpIcon from '../HelpIcon'
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
@@ -288,7 +288,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
 
     onSubmitTextVariation() {
         const userInput: UserInput = { text: this.state.textVariationValue }
-        this.props.runExtractorAsync(
+        this.props.runExtractorThunkAsync(
             this.props.user.id,
             this.props.app.appId,
             this.props.extractType,
@@ -458,7 +458,7 @@ const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         updateExtractResponse,
         removeExtractResponse,
-        runExtractorAsync,
+        runExtractorThunkAsync,
         clearExtractResponses
     }, dispatch);
 }

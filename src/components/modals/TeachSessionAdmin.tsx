@@ -8,11 +8,11 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../../types'
 import { fetchApplicationTrainingStatusThunkAsync } from '../../actions/fetchActions'
-import { getScoresAsync, runScorerAsync, postScorerFeedbackAsync } from '../../actions/teachActions'
+import { getScoresThunkAsync, runScorerThunkAsync, postScorerFeedbackThunkAsync } from '../../actions/teachActions'
 import {
     AppBase, TextVariation, ExtractResponse,
     DialogType, TrainScorerStep, TrainingStatusCode,
-    UITrainScorerStep, UIScoreInput, DialogMode
+    UITrainScorerStep, UIScoreInput, DialogMode, UITeachResponse
 } from '@conversationlearner/models'
 import ActionScorer from './ActionScorer';
 import EntityExtractor from './EntityExtractor';
@@ -47,8 +47,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
 
         const appId = this.props.app.appId
         const teachId = this.props.teachSession.current.teachId
-        this.props.runScorerAsync(this.props.user.id, appId, teachId, uiScoreInput)
-        await this.props.fetchApplicationTrainingStatusThunkAsync(appId)
+        this.props.runScorerThunkAsync(this.props.user.id, appId, teachId, uiScoreInput)
         this.setState({
             isScoresRefreshVisible: true
         })
@@ -65,11 +64,11 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
         let waitForUser = trainScorerStep.scoredAction.isTerminal;
 
         // Pass score input (minus extractor step) for subsequent actions when this one is non-terminal
-        let uiScoreInput: UIScoreInput = { ...this.props.teachSession.uiScoreInput, trainExtractorStep: null }
+        let uiScoreInput = { ...this.props.teachSession.uiScoreInput, trainExtractorStep: null } as UIScoreInput
 
-        this.props.postScorerFeedbackAsync(this.props.user.id, appId, teachId, uiTrainScorerStep, waitForUser, uiScoreInput);
-
-        this.props.onScoredAction();
+        ((this.props.postScorerFeedbackThunkAsync(this.props.user.id, appId, teachId, uiTrainScorerStep, waitForUser, uiScoreInput) as any) as Promise<UITeachResponse>)
+            .then(result => { this.props.onScoredAction() }
+            )
     }
 
     onClickRefreshScores = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -78,7 +77,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
             throw new Error(`You attempted to refresh scores but there was no previous score input to re-use.  This is likely a problem with the code. Please open an issue.`)
         }
 
-        this.props.getScoresAsync(
+        this.props.getScoresThunkAsync(
             this.props.user.id,
             this.props.app.appId,
             this.props.teachSession.current.teachId,
@@ -233,9 +232,9 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         fetchApplicationTrainingStatusThunkAsync: fetchApplicationTrainingStatusThunkAsync,
-        getScoresAsync,
-        runScorerAsync,
-        postScorerFeedbackAsync
+        getScoresThunkAsync,
+        runScorerThunkAsync,
+        postScorerFeedbackThunkAsync
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {

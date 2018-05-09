@@ -4,13 +4,7 @@
  */
 import axios from 'axios'
 import {
-  AppBase,
-  UserInput,
-  UIExtractResponse,
-  UITrainScorerStep,
-  ScoreInput,
-  UIScoreInput,
-  DialogType
+  AppBase
 } from '@conversationlearner/models'
 import * as Rx from 'rxjs';
 import actions from '../actions'
@@ -222,87 +216,6 @@ export const getAllTeachSessionsForApp = (appId: string): Rx.Observable<ActionOb
       obs.complete();
     })
     .catch(err => handleError(obs, err, AT.FETCH_TEACH_SESSIONS_ASYNC)));
-};
-
-/** RUN EXTRACTOR: Runs entity extraction (prediction). 
- * If a more recent version of the package is available on 
- * the server, the session will first migrate to that newer version.  This 
- * doesn't affect the trainDialog maintained.
- */
-export const putExtract = (key: string, appId: string, extractType: DialogType, sessionId: string, turnIndex: number, userInput: UserInput): Rx.Observable<ActionObject> => {
-  const clClient = ClientFactory.getInstance(AT.RUN_EXTRACTOR_ASYNC)
-  let putExtractPromise: Promise<UIExtractResponse> = null
-
-  switch (extractType) {
-    case DialogType.TEACH:
-      putExtractPromise = clClient.teachSessionsAddExtractStep(appId, sessionId, userInput)
-      break;
-    case DialogType.TRAINDIALOG:
-      putExtractPromise = clClient.trainDialogsUpdateExtractStep(appId, sessionId, turnIndex, userInput)
-      break;
-    case DialogType.LOGDIALOG:
-      putExtractPromise = clClient.logDialogsUpdateExtractStep(appId, sessionId, turnIndex, userInput)
-      break;
-    default:
-      throw new Error(`Could not handle unknown extract type: ${extractType}`)
-  }
-
-  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => putExtractPromise
-    .then(uiExtractResponse => {
-      obs.next(actions.teach.runExtractorFulfilled(key, appId, sessionId, uiExtractResponse));
-      obs.complete();
-    })
-    .catch(err => handleError(obs, err, AT.RUN_EXTRACTOR_ASYNC)));
-};
-
-export const getScore = (key: string, appId: string, teachId: string, scoreInput: ScoreInput): Rx.Observable<ActionObject> => {
-  const clClient = ClientFactory.getInstance(AT.GET_SCORES_ASYNC)
-  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => clClient.teachSessionRescore(appId, teachId, scoreInput)
-    .then(uiScoreResponse => {
-      obs.next(actions.teach.getScoresFulfilled(key, appId, teachId, uiScoreResponse))
-      obs.complete()
-    })
-    .catch(err => handleError(obs, err, AT.GET_SCORES_ASYNC)))
-}
-
-/** RUN SCORER: 
- * 1) Uploads a labeled entity extraction instance
- * ie "commits" an entity extraction label, appending it to the teach session's
- * trainDialog, and advancing the dialog. This may yield produce a new package.
- * 2) Takes a turn and return distribution over actions.
- * If a more recent version of the package is 
- * available on the server, the session will first migrate to that newer version.  
- * This doesn't affect the trainDialog maintained by the teaching session.
- */
-export const putScore = (key: string, appId: string, teachId: string, uiScoreInput: UIScoreInput): Rx.Observable<ActionObject> => {
-  const clClient = ClientFactory.getInstance(AT.RUN_SCORER_ASYNC)
-  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => clClient.teachSessionUpdateScorerStep(appId, teachId, uiScoreInput)
-    .then(uiScoreResponse => {
-      obs.next(actions.teach.runScorerFulfilled(key, appId, teachId, uiScoreResponse));
-      obs.complete();
-    })
-    .catch(err => handleError(obs, err, AT.RUN_SCORER_ASYNC)));
-};
-
-/** SCORE FEEDBACK: Uploads a labeled scorer step instance 
- * – ie "commits" a scorer label, appending it to the teach session's 
- * trainDialog, and advancing the dialog. This may yield produce a new package.
- */
-export const postScore = (key: string, appId: string, teachId: string, uiTrainScorerStep: UITrainScorerStep, waitForUser: boolean, uiScoreInput: UIScoreInput): Rx.Observable<ActionObject> => {
-  const clClient = ClientFactory.getInstance(AT.POST_SCORE_FEEDBACK_ASYNC)
-  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => clClient.teachSessionAddScorerStep(appId, teachId, uiTrainScorerStep)
-    .then(uiTeachResponse => {
-      if (!waitForUser) {
-        // Don't re-send predicted entities on subsequent score call -todo on non train path
-        uiScoreInput.extractResponse.predictedEntities = [];
-        obs.next(actions.teach.postScorerFeedbackNoWaitFulfilled(key, appId, teachId, uiTeachResponse, uiScoreInput))
-      }
-      else {
-        obs.next(actions.teach.postScorerFeedbackWaitFulfilled(key, appId, teachId, uiTeachResponse));
-      }
-      obs.complete();
-    })
-    .catch(err => handleError(obs, err, AT.POST_SCORE_FEEDBACK_ASYNC)));
 };
 
 const handleError = (obs: Rx.Observer<ActionObject>, err: any, actionType: AT) => {

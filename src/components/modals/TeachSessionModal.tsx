@@ -17,7 +17,7 @@ import TeachSessionAdmin from './TeachSessionAdmin'
 import { AppBase, UserInput, DialogType, TrainDialog, LogDialog, Teach, DialogMode } from '@conversationlearner/models'
 import { Activity } from 'botframework-directlinejs'
 import { deleteTeachSessionThunkAsync } from '../../actions/deleteActions'
-import { toggleAutoTeach, runExtractorAsync } from '../../actions/teachActions'
+import { toggleAutoTeach, runExtractorThunkAsync } from '../../actions/teachActions'
 import { fetchApplicationTrainingStatusThunkAsync } from '../../actions/fetchActions'
 import ConfirmCancelModal from './ConfirmCancelModal'
 import { FM } from '../../react-intl-messages'
@@ -145,7 +145,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                 throw new Error(`Current teach session is not defined. This may be due to race condition where you attempted to chat with the bot before the teach session has been created.`)
             }
 
-            this.props.runExtractorAsync(this.props.user.id, this.props.app.appId, DialogType.TEACH, this.props.teachSession.teachId, null, userInput);
+            this.props.runExtractorThunkAsync(this.props.user.id, this.props.app.appId, DialogType.TEACH, this.props.teachSession.teachId, null, userInput);
         }
     }
 
@@ -278,7 +278,7 @@ const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         deleteTeachSessionThunkAsync,
         fetchApplicationTrainingStatusThunkAsync,
-        runExtractorAsync,
+        runExtractorThunkAsync,
         toggleAutoTeach
     }, dispatch);
 }

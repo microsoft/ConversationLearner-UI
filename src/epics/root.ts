@@ -8,14 +8,12 @@ import * as fetchEpics from './fetchEpics'
 import * as createEpics from './createEpics'
 import * as deleteEpics from './deleteEpics'
 import * as updateEpics from './updateEpics'
-import * as teachEpics from './teachEpics'
 
 const rootEpic: Epic<ActionObject, State> = combineEpics(
 	...Object.values(fetchEpics),
 	...Object.values(createEpics),
 	...Object.values(deleteEpics),
-	...Object.values(updateEpics),
-	...Object.values(teachEpics)
+	...Object.values(updateEpics)
 )
 
 export default rootEpic;
