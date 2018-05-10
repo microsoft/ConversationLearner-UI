@@ -19,7 +19,7 @@
   },
   "private": true,
   "dependencies": {
-    "@conversationlearner/models": "0.156.0",
+    "@conversationlearner/models": "0.157.0",
     "@conversationlearner/webchat": "0.105.0",
     "adaptivecards": "1.0.0",
     "axios": "^0.16.2",
