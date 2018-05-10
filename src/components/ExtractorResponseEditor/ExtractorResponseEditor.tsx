@@ -104,7 +104,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
         // From what I can tell slate's is always accurate to display.  If the selection was updated programmatically via slate API it will be reflected within Slates selection
         // and as soon as user interacts to change DOM selection, it will update both
         // Note: Cannot test for selection.isCollapsed here, because we need the menu to open when the user clicks a word
-        if (!selection) {
+        if (!selection && selection.rangeCount > 0) {
             return hideMenu
         }
 
