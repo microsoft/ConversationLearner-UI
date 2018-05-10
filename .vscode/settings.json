@@ -17,5 +17,8 @@
         "selectable",
         "to",
         "truthy"
-    ]
+    ],
+    "workbench.colorCustomizations": {
+        "activityBar.background": "#164e86"
+    }
 }

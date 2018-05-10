@@ -186,7 +186,8 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                                                 <button
                                                     type="button"
                                                     className={`cl-training-status-inline__button ${FontClassNames.large}`}
-                                                    onClick={this.onClickRefreshScores}>
+                                                    onClick={this.onClickRefreshScores}
+                                                >
                                                     <FormattedMessage
                                                         id={FM.TEACHSESSIONADMIN_TRAINSTATUS_REFRESH}
                                                         defaultMessage="Refresh"
