@@ -141,18 +141,6 @@ export const getLuisApplicationCultures = (): Promise<CultureObject[]> => {
     .then(response => response.data)
 }
 
-export const createApp = (userId: string, app: AppBase): Rx.Observable<ActionObject> => {
-  const clClient = ClientFactory.getInstance(AT.CREATE_APPLICATION_ASYNC)
-  //remove the appId property from the object
-  const { appId, ...appToSend } = app
-  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => clClient.appsCreate(userId, appToSend as AppBase)
-    .then(newApp => {
-      obs.next(actions.create.createApplicationFulfilled(newApp))
-      obs.complete();
-    })
-    .catch(err => handleError(obs, err, AT.CREATE_APPLICATION_ASYNC)));
-};
-
 //=========================================================
 // DELETE ROUTES
 //=========================================================
