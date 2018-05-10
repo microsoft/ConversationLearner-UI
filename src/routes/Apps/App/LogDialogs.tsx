@@ -241,9 +241,18 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         if (this.state.sortColumn) {
             logDialogs
                 .sort((a, b) => {
-                    const firstValue = this.state.sortColumn.getSortValue(a, this)
-                    const secondValue = this.state.sortColumn.getSortValue(b, this)
-                    const compareValue = firstValue.localeCompare(secondValue)
+                    let firstValue = this.state.sortColumn.getSortValue(a, this)
+                    let secondValue = this.state.sortColumn.getSortValue(b, this)
+                    let compareValue = firstValue.localeCompare(secondValue)
+    
+                    // If primary sort is the same do secondary sort on another column, to prevent sort jumping around
+                    if (compareValue === 0) {
+                        let sortColumn2 = ((this.state.sortColumn !== this.state.columns[1]) ? this.state.columns[1] : this.state.columns[2]) as IRenderableColumn
+                        firstValue = sortColumn2.getSortValue(a, this)
+                        secondValue = sortColumn2.getSortValue(b, this)
+                        compareValue = firstValue.localeCompare(secondValue)
+                    }
+
                     return this.state.sortColumn.isSortedDescending
                         ? compareValue
                         : compareValue * -1
