@@ -13,7 +13,7 @@ import { fetchApplicationsAsync, fetchApplicationTrainingStatusThunkAsync } from
 // --------------------------
 // App
 // --------------------------
-export const createApplicationAsync = (userId: string, application: AppBase): ActionObject => {
+const createApplicationAsync = (userId: string, application: AppBase): ActionObject => {
     return {
         type: AT.CREATE_APPLICATION_ASYNC,
         userId: userId,
@@ -21,10 +21,27 @@ export const createApplicationAsync = (userId: string, application: AppBase): Ac
     }
 }
 
-export const createApplicationFulfilled = (app: AppBase): ActionObject => {
+const createApplicationFulfilled = (app: AppBase): ActionObject => {
     return {
         type: AT.CREATE_APPLICATION_FULFILLED,
         app: app
+    }
+}
+
+export const createApplicationThunkAsync = (userId: string, application: AppBase) => {
+    return async (dispatch: Dispatch<any>) => {
+        const clClient = ClientFactory.getInstance(AT.CREATE_APPLICATION_ASYNC)
+        try {
+            dispatch(createApplicationAsync(userId, application))
+            const { appId, ...appToSend } = application
+            const newApp = await clClient.appsCreate(userId, appToSend as AppBase)
+            dispatch(createApplicationFulfilled(newApp))
+            return newApp
+        }
+        catch (error) {
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, [error.response], AT.CREATE_APPLICATION_ASYNC))
+            throw error
+        }
     }
 }
 
