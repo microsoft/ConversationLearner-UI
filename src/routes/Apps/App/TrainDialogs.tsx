@@ -223,10 +223,20 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
     sortTrainDialogs(trainDialogs: TrainDialog[]): TrainDialog[] {
 
-        // If column header selected sort the items
+        // If column header selected sort the items, always putting invald at the top
         if (this.state.sortColumn) {
             trainDialogs
                 .sort((a, b) => {
+
+                    // Always put invalid at top (values can also be undefined)
+                    if (a.invalid === true && b.invalid !== true) {
+                        return -1;
+                    }
+                    if (b.invalid === true && a.invalid !== true) {
+                        return 1;
+                    }
+
+                    // Then sort by column value
                     const firstValue = this.state.sortColumn.getSortValue(a, this)
                     const secondValue = this.state.sortColumn.getSortValue(b, this)
                     const compareValue = firstValue.localeCompare(secondValue)
@@ -583,11 +593,6 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 return searchString.indexOf(this.state.searchValue) > -1;
             })
         }
-        // Sort to put invalid ones at the top
-        filteredTrainDialogs
-        .sort((a, b) => {
-            return (a.invalid === true) ? -1 : 1;
-        })
 
         filteredTrainDialogs = this.sortTrainDialogs(filteredTrainDialogs);
         return filteredTrainDialogs;
