@@ -91,7 +91,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                         <OF.PrimaryButton
                             className="cl-button--viewCard"
                             onClick={() => component.onClickViewCard(action)}
-                            ariaDescription="Refresh"
+                            ariaDescription="View Card"
                             text=""
                             iconProps={{ iconName: 'RedEye' }}
                         />

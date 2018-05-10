@@ -249,7 +249,7 @@ class MemoryTable extends React.Component<Props, ComponentState> {
     }
 
     renderItemColumn(entityName: string, index: number, column: IRenderableColumn) {
-        const entity = this.props.entities.find(e => e.entityName == entityName)
+        const entity = this.props.entities.find(e => e.entityName === entityName)
         if (!entity) {
             console.warn(`Attempted to render entity: ${entityName} for column: ${column.name} but the entity could not be found.`)
             return (column.key === `entityName`) ? 
