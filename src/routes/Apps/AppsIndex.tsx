@@ -8,11 +8,9 @@ import {
     Switch
 } from 'react-router-dom'
 import { RouteComponentProps } from 'react-router'
-import { returntypeof } from 'react-redux-typescript';
-import { createApplicationAsync, copyApplicationThunkAsync } from '../../actions/createActions'
-import { deleteApplicationAsync } from '../../actions/deleteActions'
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
+import { returntypeof } from 'react-redux-typescript'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
 import { State } from '../../types'
 import { AppBase } from '@conversationlearner/models'
 import actions from '../../actions'
@@ -76,8 +74,10 @@ class AppsIndex extends React.Component<Props, ComponentState> {
         this.props.deleteApplicationAsync(appToDelete)
     }
 
-    onCreateApp = (appToCreate: AppBase) => {
-        this.props.createApplicationAsync(this.props.user.id, appToCreate)
+    onCreateApp = async (appToCreate: AppBase) => {
+        const app: AppBase = await this.props.createApplicationThunkAsync(this.props.user.id, appToCreate) as any
+        const { match, history } = this.props
+        history.push(`${match.url}/${app.appId}`, { app })
     }
 
     onImportTutorial = (tutorial: AppBase) => {
@@ -114,9 +114,9 @@ const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         fetchApplicationsAsync: actions.fetch.fetchApplicationsAsync,
         fetchBotInfoAsync: actions.fetch.fetchBotInfoAsync,
-        createApplicationAsync,
-        deleteApplicationAsync,
-        copyApplicationThunkAsync
+        createApplicationThunkAsync: actions.create.createApplicationThunkAsync,
+        deleteApplicationAsync: actions.delete.deleteApplicationAsync,
+        copyApplicationThunkAsync: actions.create.copyApplicationThunkAsync
     }, dispatch)
 }
 
