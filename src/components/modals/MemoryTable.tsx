@@ -186,7 +186,7 @@ class MemoryTable extends React.Component<Props, ComponentState> {
     }
 
     isPrebuilt(entity: EntityBase): boolean {
-        return (entity.entityName.startsWith('luis-'));
+        return entity.entityType !== EntityType.LUIS && entity.entityType !== EntityType.LOCAL
     }
 
     // If text parses as an object, return it

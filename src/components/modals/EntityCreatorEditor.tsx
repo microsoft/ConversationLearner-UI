@@ -324,7 +324,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
     }
 
     getPrebuiltEntityName(preBuiltType: string): string {
-        return `luis-${preBuiltType.toLowerCase()}`
+        return `builtin-${preBuiltType.toLowerCase()}`
     }
 
     onRenderOption = (option: CLDropdownOption): JSX.Element => {
