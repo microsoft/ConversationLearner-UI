@@ -5,7 +5,7 @@
 import * as React from 'react'
 import { Editor } from 'slate-react'
 import Plain from 'slate-plain-serializer'
-import { IOption, IPosition, IEntityPickerProps, IGenericEntity, NodeType } from './models'
+import { IOption, IPosition, IEntityPickerProps, IGenericEntity, NodeType, IGenericEntityData } from './models'
 import { convertEntitiesAndTextToTokenizedEditorValue, convertEntitiesAndTextToEditorValue, getRelativeParent, getEntitiesFromValueUsingTokenData, getSelectedText } from './utilities'
 import CustomEntityNode from './CustomEntityNode'
 import PreBuiltEntityNode from './PreBuiltEntityNode'
@@ -71,6 +71,35 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
     }
 
     componentWillReceiveProps(nextProps: Props) {
+        if (nextProps.options.length !== this.props.options.length) {
+            const newOptions = nextProps.options.filter(newOption => this.props.options.every(oldOption => oldOption.id !== newOption.id))
+            if (newOptions.length === 1) {
+                const newOption = newOptions[0]
+                const value = this.state.value
+                const selectedNodes: any[] = value.inlines.toJS()
+                if (selectedNodes.length > 0 && selectedNodes.every(n => n.type === NodeType.TokenNodeType)) {
+                    const startIndex = selectedNodes[0].data.startIndex
+                    const endIndex = selectedNodes[selectedNodes.length - 1].data.endIndex
+
+                    const newCustomEntity: IGenericEntity<IGenericEntityData<any>> = {
+                        startIndex,
+                        endIndex,
+                        data: {
+                            text: getSelectedText(value),
+                            displayName: newOption.name,
+                            option: newOption,
+                            // This should be the original entity, but we don't it here
+                            // This will be re-created on next setState from parents
+                            original: null 
+                        }
+                    }
+
+                    this.props.onChangeCustomEntities([...nextProps.customEntities, newCustomEntity])
+                    return
+                }
+            }
+        }
+
         // TODO: See if we can avoid all of these checks.  Currently the issue is that when we recompute a new Slate value
         // we lose the current selection that was existing in the old value and if the selection goes away this forces the EntityPicker menu to close
         // which disrupts the users interaction with menu.

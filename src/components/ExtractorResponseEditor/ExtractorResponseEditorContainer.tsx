@@ -5,7 +5,7 @@
 import * as React from 'react'
 import { convertExtractorResponseToEditorModels, convertGenericEntityToPredictedEntity } from './utilities'
 import { IGenericEntity, IGenericEntityData, IEditorProps } from './models';
-import { EntityBase, PredictedEntity, ExtractResponse } from '@conversationlearner/models'
+import { EntityBase, PredictedEntity, ExtractResponse, EntityType } from '@conversationlearner/models'
 
 // Slate doesn't have type definitions but we still want type consistency and references so we make custom type
 export type SlateValue = any
@@ -29,7 +29,7 @@ class ExtractorResponseEditorContainer extends React.Component<Props, {}> {
                 console.warn(`ExtractorResponseEditorContainer#onChangeCustomEntities: When filtering prebuilts entities out of predicted entities encountered entity with builtinType undefined`)
             }
 
-            return typeof e.builtinType === "string" && e.builtinType !== "LUIS"
+            return typeof e.builtinType === "string" && e.builtinType !== EntityType.LUIS
         })
 
         const newExtractResponse = {
