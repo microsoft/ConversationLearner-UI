@@ -71,6 +71,11 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
     }
 
     componentWillReceiveProps(nextProps: Props) {
+        /**
+         * This makes assumption that options that are added during the life-cycle of this component are likely
+         * added via users clicking the New Entity item in the menu.  We can then simulate a change of custom entities
+         * effectively auto-labeling the currently selected text with this new entity.
+         */
         if (nextProps.options.length !== this.props.options.length) {
             const newOptions = nextProps.options.filter(newOption => this.props.options.every(oldOption => oldOption.id !== newOption.id))
             if (newOptions.length === 1) {
@@ -88,7 +93,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
                             text: getSelectedText(value),
                             displayName: newOption.name,
                             option: newOption,
-                            // This should be the original entity, but we don't it here
+                            // This should be the original entity, but we don't have it here
                             // This will be re-created on next setState from parents
                             original: null 
                         }
