@@ -122,7 +122,7 @@ export const addTokenIndicesToCustomEntities = (tokens: IToken[], customEntities
         const startTokenIndex = tokens.findIndex(t => t.isSelectable === true && ce.startIndex < t.endIndex && t.endIndex <= ce.endIndex)
         const endTokenIndex = findLastIndex(tokens, t => t.isSelectable === true && ce.startIndex <= t.startIndex && t.startIndex < ce.endIndex)
         if (startTokenIndex === -1 || endTokenIndex === -1) {
-            console.warn(`Could not find valid token for custom entity: `, ce.data)
+            console.warn(`Could not find valid token for custom entity: `, ce)
         }
 
 //         if (startTokenIndex !== -1 && endTokenIndex !== -1) {
@@ -548,7 +548,7 @@ export const convertGenericEntityToPredictedEntity = (entities: EntityBase[]) =>
     const option = ge.data.option
     const text = ge.data.text || ''
 
-    if (option.type !== "LUIS") {
+    if (option.type !== EntityType.LUIS) {
         console.warn(`convertGenericEntityToPredictedEntity option selected as option type other than LUIS, this will most likely cause an error`)
     }
 
