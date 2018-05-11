@@ -48,9 +48,15 @@ export const fetchHistoryThunkAsync = (appId: string, trainDialog: TrainDialog, 
         const clClient = ClientFactory.getInstance(AT.FETCH_HISTORY_ASYNC)
         dispatch(fetchHistoryAsync(appId, trainDialog, userName, userId))
 
-        const teachWithHistory = await clClient.history(appId, trainDialog, userName, userId)
-        dispatch(fetchHistoryFulfilled(teachWithHistory))
-        return teachWithHistory
+        try {
+            const teachWithHistory = await clClient.history(appId, trainDialog, userName, userId)
+            dispatch(fetchHistoryFulfilled(teachWithHistory))
+            return teachWithHistory
+        } catch (e) {
+            const error = e as Error
+            dispatch(setErrorDisplay(ErrorType.Error, error.name, [error.message], AT.FETCH_HISTORY_ASYNC))
+            return null;
+        }
     }
 }
 
