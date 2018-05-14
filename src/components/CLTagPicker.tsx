@@ -27,7 +27,7 @@ export const component = (props: ICLTagPickerProps) => {
                 <HelpIcon tipType={props.tipType} />
             </OF.Label>
             <div className="cl-tagpicker">
-                <div className="ms-BasePicker-text ms-BasePicker-text--static pickerText_42b0a43b" role="list">
+                <div className="ms-BasePicker-text ms-BasePicker-text--static pickerText_52f33f52" role="list">
                     {nonRemovableTags.map(tag => (
                         <div className={`ms-TagItem ${nonRemoveableHighlight ? 'ms-TagItem-text--highlight' : ''}`} tabIndex={0} key={tag.key}>
                             <span className={`ms-TagItem-text ${nonRemoveableStrikethrough ? 'ms-TagItem-text--strike' : ''}`} aria-label={tag.name}>{tag.name}</span>

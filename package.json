@@ -28,7 +28,7 @@
     "immutable": "^3.8.2",
     "inline-css": "^2.2.3",
     "moment": "^2.22.0",
-    "office-ui-fabric-react": "5.61.0",
+    "office-ui-fabric-react": "5.100.0",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
     "react-intl": "^2.4.0",
