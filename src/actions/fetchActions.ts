@@ -106,16 +106,18 @@ export const fetchAllLogDialogsFulfilled = (logDialogs: LogDialog[]): ActionObje
 // ----------------------------------------
 // Bot Info
 // ----------------------------------------
-export const fetchBotInfoAsync = (): ActionObject => {
+export const fetchBotInfoAsync = (browserId: string): ActionObject => {
     return {
-        type: AT.FETCH_BOTINFO_ASYNC
+        type: AT.FETCH_BOTINFO_ASYNC,
+        browserId: browserId
     }
 }
 
-export const fetchBotInfoFulfilled = (botInfo: BotInfo): ActionObject => {
+export const fetchBotInfoFulfilled = (botInfo: BotInfo, browserId: string): ActionObject => {
     return {
         type: AT.FETCH_BOTINFO_FULFILLED,
-        botInfo: botInfo
+        botInfo: botInfo,
+        browserId: browserId
     }
 }
 

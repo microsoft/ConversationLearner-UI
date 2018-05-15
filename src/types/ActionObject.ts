@@ -116,10 +116,12 @@ export type FetchAction = {
     type: AT.FETCH_APPLICATIONS_ASYNC,
     userId: string
 } | {
-    type: AT.FETCH_BOTINFO_ASYNC
+    type: AT.FETCH_BOTINFO_ASYNC,
+    browserId: string
 } | {
     type: AT.FETCH_BOTINFO_FULFILLED,
     botInfo: BotInfo,
+    browserId: string
 } | {
     type: AT.FETCH_ENTITIES_ASYNC,
     clAppID: string

@@ -11,7 +11,7 @@ import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { State } from '../../types';
 import Webchat from '../Webchat'
 import TrainDialogAdmin from './TrainDialogAdmin'
-import { AppBase, TrainDialog, CL_USER_NAME_ID, UIScoreInput, SenderType } from '@conversationlearner/models'
+import { AppBase, TrainDialog, UIScoreInput, SenderType } from '@conversationlearner/models'
 import { Activity } from 'botframework-directlinejs';
 import ConfirmCancelModal from './ConfirmCancelModal'
 import { FM } from '../../react-intl-messages'
@@ -55,10 +55,6 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
     onClickBranch() {
         if (this.state.selectedActivity) {
             let branchRound = this.state.selectedActivity.channelData.roundIndex;
-            // If bot response branch one later
-            if (this.state.selectedActivity.from.id === CL_USER_NAME_ID) {
-                branchRound++;
-            }
             if (branchRound > 0) {
                 this.props.onBranch(branchRound);
             }

@@ -14,7 +14,7 @@ export const fetchBotInfoEpic: Epic<ActionObject, State> = (action$: ActionsObse
     return action$.ofType(AT.FETCH_BOTINFO_ASYNC)
         .flatMap(action =>
             (action.type === AT.FETCH_BOTINFO_ASYNC)
-                ? getBotInfo()
+                ? getBotInfo(action.browserId)
                 : assertNever())
 }
 

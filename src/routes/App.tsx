@@ -31,7 +31,7 @@ class App extends React.Component<Props, ComponentState> {
   state = initialState
 
   componentDidMount() {
-    this.props.fetchBotInfoAsync()
+    this.props.fetchBotInfoAsync(this.props.browserId)
   }
 
   render() {
@@ -78,7 +78,8 @@ const mapDispatchToProps = (dispatch: any) => {
 
 const mapStateToProps = (state: State) => {
   return {
-    user: state.user
+    user: state.user,
+    browserId: state.bot.browserId
   }
 }
 

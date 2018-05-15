@@ -51,7 +51,7 @@ class Index extends React.Component<Props, ComponentState> {
         this.props.setCurrentApp(this.props.user.id, app)
         this.props.fetchAllLogDialogsAsync(this.props.user.id, app, packageId) // Note: a separate call as eventually we want to page
         this.props.fetchAppSource(app.appId, packageId)
-        this.props.fetchBotInfoAsync()
+        this.props.fetchBotInfoAsync(this.props.browserId)
         // this.props.fetchAllChatSessionsAsync(app.appId)
         // this.props.fetchAllTeachSessions(app.appId)
     }
@@ -248,16 +248,14 @@ const mapStateToProps = (state: State) => {
         display: state.display,
         botInfo: state.bot.botInfo,
         user: state.user,
+        browserId: state.bot.browserId,
         activeApps: state.apps.activeApps
     }
-}
-
-export interface ReceivedProps {
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
 const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
-type Props = typeof stateProps & typeof dispatchProps & RouteComponentProps<any> & ReceivedProps & InjectedIntlProps;
+type Props = typeof stateProps & typeof dispatchProps & RouteComponentProps<any> & InjectedIntlProps;
 
-export default connect<typeof stateProps, typeof dispatchProps, RouteComponentProps<any> & ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(Index));
+export default connect<typeof stateProps, typeof dispatchProps, RouteComponentProps<any>>(mapStateToProps, mapDispatchToProps)(injectIntl(Index));

@@ -44,7 +44,7 @@ class Dashboard extends React.Component<Props, {}> {
                             })
                         }
                         <PrimaryButton
-                            onClick={() => this.props.fetchBotInfoAsync()}
+                            onClick={() => this.props.fetchBotInfoAsync(this.props.browserId)}
                             ariaDescription="Refresh"
                             text="Retry"
                             iconProps={{ iconName: 'Sync' }}
@@ -69,7 +69,8 @@ const mapStateToProps = (state: State) => {
     return {
         entities: state.entities,
         actions: state.actions,
-        trainDialogs: state.trainDialogs
+        trainDialogs: state.trainDialogs,
+        browserId: state.bot.browserId
     }
 }
 

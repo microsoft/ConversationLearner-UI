@@ -42,7 +42,7 @@ class AppsIndex extends React.Component<Props, ComponentState> {
     updateAppsAndBot() {
         if (this.props.user.id !== null && this.props.user.id.length > 0) {
             this.props.fetchApplicationsAsync(this.props.user.id)
-            this.props.fetchBotInfoAsync()
+            this.props.fetchBotInfoAsync(this.props.browserId)
         }
     }
     componentDidMount() {
@@ -124,9 +124,11 @@ const mapStateToProps = (state: State) => {
     return {
         apps: state.apps.all,
         display: state.display,
-        user: state.user
+        user: state.user, 
+        browserId: state.bot.browserId
     }
 }
+
 // Props types inferred from mapStateToProps & dispatchToProps
 const stateProps = returntypeof(mapStateToProps)
 const dispatchProps = returntypeof(mapDispatchToProps)

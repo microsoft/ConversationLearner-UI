@@ -83,9 +83,10 @@ export default class CLClient {
             .then(response => { })
     }
 
-    getBotInfo(): Promise<models.BotInfo> {
+    // Each browser instance has a different browserId
+    getBotInfo(browserId: string): Promise<models.BotInfo> {
         return this.send<models.BotInfo>({
-            url: `${this.baseUrl}/bot`
+            url: `${this.baseUrl}/bot?browserId=${browserId}`
         })
             .then(response => response.data)
     }
