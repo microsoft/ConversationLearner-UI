@@ -392,7 +392,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     }
 
     onClickSyncBotInfo() {
-        this.props.fetchBotInfoAsync();
+        this.props.fetchBotInfoAsync(this.props.browserId);
     }
 
     onClickViewCard() {
@@ -1123,7 +1123,8 @@ const mapDispatchToProps = (dispatch: any) => {
 const mapStateToProps = (state: State, ownProps: any) => {
     return {
         entities: state.entities,
-        botInfo: state.bot.botInfo
+        botInfo: state.bot.botInfo,
+        browserId: state.bot.browserId
     }
 }
 

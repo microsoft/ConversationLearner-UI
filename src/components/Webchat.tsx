@@ -105,7 +105,7 @@ class Webchat extends React.Component<Props, {}> {
                     showHeader: false
                 },
                 user: { name: this.props.user.name, id: this.props.user.id },
-                bot: { name: CL_USER_NAME_ID, id: CL_USER_NAME_ID },
+                bot: { name: CL_USER_NAME_ID, id: `BOT-${this.props.user.id}` },
                 resize: 'detect',
                 hideInput: this.props.hideInput,
                 focusInput: this.props.focusInput

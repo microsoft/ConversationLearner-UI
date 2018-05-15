@@ -33,6 +33,7 @@ export type AppsState = {
 }
 export type BotState = {
     botInfo: BotInfo
+    browserId: string
 }
 export type TeachSessionState = {
     all: Teach[],
