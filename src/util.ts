@@ -42,6 +42,16 @@ export function packageReferences(app: models.AppBase): models.PackageReference[
     return [...app.packageVersions || [], {packageId: app.devPackageId, packageVersion: 'Master'}] as models.PackageReference[]
 }
 
+export function createEntityMapFromMemories(entities: models.EntityBase[], memories: models.Memory[]): Map<string, string> {
+    return memories.reduce((map, m) => {
+        const entity = entities.find(e => e.entityName === m.entityName)
+        if (entity) {
+            map.set(entity.entityId, models.memoryValuesAsString(m.entityValues))
+        }
+        return map
+    }, new Map<string, string>())
+}
+
 // TODO: Remove coupling with the start character on ActionPayloadEditor
 export function getDefaultEntityMap(entities: models.EntityBase[]): Map<string, string> {
     return entities.reduce((m, e) => m.set(e.entityId, `$${e.entityName}`), new Map<string, string>())

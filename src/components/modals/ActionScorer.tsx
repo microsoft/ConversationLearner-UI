@@ -10,7 +10,7 @@ import { State } from '../../types'
 import {
     AppBase, TrainScorerStep, Memory, ScoredBase, ScoreInput, ScoreResponse,
     ActionBase, ScoredAction, UnscoredAction, ScoreReason, DialogType, ActionTypes,
-    Template, DialogMode, RenderedActionArgument, CardAction
+    Template, DialogMode, RenderedActionArgument, CardAction, ApiAction, TextAction
 } from '@conversationlearner/models'
 import { createActionThunkAsync } from '../../actions/createActions'
 import { toggleAutoTeach } from '../../actions/teachActions'
@@ -22,6 +22,7 @@ import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../react-intl-messages'
 import * as Util from '../../util'
 import AdaptiveCardViewer from './AdaptiveCardViewer/AdaptiveCardViewer'
+import TextPayloadRenderer from '../TextPayloadRenderer'
 
 const ACTION_BUTTON = 'action_button';
 const MISSING_ACTION = 'missing_action';
@@ -80,14 +81,31 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
             isMultiline: true,
             isResizable: true,
             render: (action: ActionBase, component) => {
-                const entityMap = Util.getDefaultEntityMap(component.props.entities)
+                const currentEntityMap = Util.createEntityMapFromMemories(component.props.entities, component.props.memories)
+                const defaultEntityMap = Util.getDefaultEntityMap(component.props.entities)
                 const args = ActionBase.GetActionArguments(action)
-                    .map(aa => aa.renderValue(entityMap))
-                    .filter(s => !Util.isNullOrWhiteSpace(s))
-                    
-                return (
-                    <div>
-                    {action.actionType === ActionTypes.CARD &&
+                    .map(aa => ({ key: aa.parameter, value: aa.renderValue(defaultEntityMap) }))
+                    .filter(kv => !Util.isNullOrWhiteSpace(kv.value))
+
+                if (action.actionType === ActionTypes.TEXT) {
+                    const textAction = new TextAction(action)
+                    return <TextPayloadRenderer
+                        original={textAction.renderValue(defaultEntityMap)}
+                        currentMemory={textAction.renderValue(currentEntityMap)}
+                    />
+                }
+                else if (action.actionType === ActionTypes.API_LOCAL) {
+                    const apiAction = new ApiAction(action)
+                    return <div>
+                        <span className={OF.FontClassNames.mediumPlus}>{apiAction.name}</span>}
+                        {args.length !== 0 &&
+                            args.map((argument, i) => <div className="ms-ListItem-primaryText" key={i}>{`${argument.key}: ${argument.value}`}</div>)
+                        }
+                    </div>
+                }
+                else if (action.actionType === ActionTypes.CARD) {
+                    const cardAction = new CardAction(action)
+                    return <div>
                         <OF.PrimaryButton
                             className="cl-button--viewCard"
                             onClick={() => component.onClickViewCard(action)}
@@ -95,13 +113,15 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
                             text=""
                             iconProps={{ iconName: 'RedEye' }}
                         />
-                    }
-                    <span className={OF.FontClassNames.mediumPlus}>{ActionBase.GetPayload(action, entityMap)}</span>
-                    {   args.length !== 0 &&
-                        args.map((argument, i) => <div className="ms-ListItem-primaryText" key={i}>{argument}</div>)
-                    }
+
+                        <span className={OF.FontClassNames.mediumPlus}>{cardAction.templateName}</span>
+                        {args.length !== 0 &&
+                            args.map((argument, i) => <div className="ms-ListItem-primaryText" key={i}>{`${argument.key}: ${argument.value}`}</div>)
+                        }
                     </div>
-                )
+                }
+
+                return <span className={OF.FontClassNames.mediumPlus}>{ActionBase.GetPayload(action, defaultEntityMap)}</span>
             }
         },
         {
@@ -300,8 +320,8 @@ class ActionScorer extends React.Component<Props, ComponentState> {
     onClickSubmitActionEditor(action: ActionBase) {
         this.setState(
             {
-            actionModalOpen: false
-            }, 
+                actionModalOpen: false
+            },
             () => {
                 this.props.createActionThunkAsync(this.props.app.appId, action)
             }
@@ -476,9 +496,9 @@ class ActionScorer extends React.Component<Props, ComponentState> {
     }
 
     // Returns true if ActionId is available given Entities in Memory
-    isActionIdAvailable(actionId: string) : boolean {
+    isActionIdAvailable(actionId: string): boolean {
         let action = this.props.actions.find(a => a.actionId === actionId);
-        if (!action) { 
+        if (!action) {
             return false;
         }
         return this.isAvailable(action);
@@ -551,7 +571,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                     />
                 )
             } else if (column.key === 'actionResponse') {
-                return <span className="cl-font--warning">MISSING ACTION</span>; 
+                return <span className="cl-font--warning">MISSING ACTION</span>;
             }
             else if (column.key === 'actionScore') {
                 return column.render(action as ScoredBase, this, index)
@@ -680,7 +700,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                     onDismiss={() => this.onCloseCardViewer()}
                     template={template}
                     actionArguments={renderedActionArguments}
-                    hideUndefined={true} 
+                    hideUndefined={true}
                 />
             </div>
         )
