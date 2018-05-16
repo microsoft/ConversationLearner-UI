@@ -135,6 +135,7 @@ export const editTrainDialogThunkAsync = (appId: string, trainDialog: TrainDialo
         try {
             await clClient.trainDialogEdit(appId, trainDialog)
             dispatch(editTrainDialogFulfilled(trainDialog))
+            dispatch(fetchApplicationTrainingStatusThunkAsync(appId))
             return trainDialog
         }
         catch (error) {
