@@ -11,6 +11,7 @@
         "autobind",
         "be",
         "conversationlearner",
+        "deserialize",
         "inlines",
         "returntypeof",
         "segoe",
