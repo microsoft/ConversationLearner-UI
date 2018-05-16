@@ -214,6 +214,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                                 app={this.props.app}
                                 editingPackageId={this.props.editingPackageId}
                                 canEdit={true}
+                                hideScore={false}
                                 dialogType={DialogType.TEACH}
                                 sessionId={this.props.teachSession.current.teachId}
                                 autoTeach={this.props.teachSession.autoTeach}

@@ -129,6 +129,9 @@ class Index extends React.Component<Props, ComponentState> {
     }
     render() {
         const { match, location, intl } = this.props
+
+        if (!location.state) return null;
+
         const app: AppBase = location.state.app
         const editPackageId = this.state.packageId
         const tag = (editPackageId === app.devPackageId) ? 

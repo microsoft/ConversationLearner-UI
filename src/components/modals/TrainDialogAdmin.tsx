@@ -424,6 +424,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                                 app={this.props.app}
                                 editingPackageId={this.props.editingPackageId}
                                 canEdit={this.props.canEdit}
+                                hideScore={true}
                                 dialogType={DialogType.TRAINDIALOG}
                                 sessionId={this.props.trainDialog.trainDialogId}
                                 autoTeach={false}
