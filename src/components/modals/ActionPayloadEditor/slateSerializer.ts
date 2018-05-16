@@ -6,10 +6,25 @@ import { NodeTypes } from "./models";
 
 // Based on: https://github.com/ianstormtaylor/slate/blob/master/packages/slate-plain-serializer/src/index.js
 
-function serialize(value: any, entityValuesMap: Map<string, string>, fallbackToOriginal: boolean = false): string {
+export interface IOptions {
+    fallbackToOriginal: boolean
+    preserveOptionalNodeWrappingCharacters: boolean
+}
+
+const defaultOptions: IOptions = {
+    fallbackToOriginal: false,
+    preserveOptionalNodeWrappingCharacters: false
+}
+
+function serialize(value: any, entityValuesMap: Map<string, string>, userOptions: Partial<IOptions> = {}): string {
+    const options = {
+        ...defaultOptions,
+        ...userOptions
+    }
+
     const valueAsJson = typeof value.toJSON === 'function' ? value.toJSON() : value
     const processedDocument = removeOptionalNodesWithoutEntityValues(valueAsJson.document, Array.from(entityValuesMap.keys()))
-    return serializeNode(processedDocument, entityValuesMap, fallbackToOriginal)
+    return serializeNode(processedDocument, entityValuesMap, options)
 }
 
 /**
@@ -68,12 +83,12 @@ function getEntityIds(node: any): string[] {
     return entityIds
 }
 
-function serializeNode(node: any, entityValues: Map<string, string>, fallbackToOriginal: boolean): string {
+function serializeNode(node: any, entityValues: Map<string, string>, options: IOptions): string {
     if (node.kind === 'text') {
         return node.leaves.map((n: any) => n.text).join('')
     }
 
-    const serializedChildNodes = node.nodes.map((n: any) => serializeNode(n, entityValues, fallbackToOriginal))
+    const serializedChildNodes = node.nodes.map((n: any) => serializeNode(n, entityValues, options))
     
     if (node.kind === 'inline' && node.type === NodeTypes.Mention) {
         // This check is required because when input is Slate Value node is Immutable.Map object
@@ -95,7 +110,7 @@ function serializeNode(node: any, entityValues: Map<string, string>, fallbackToO
         const entityId = option.id
         const mapContainsEntity = entityValues.has(entityId)
         if (!mapContainsEntity) {
-            if (fallbackToOriginal) {
+            if (options.fallbackToOriginal) {
                 return serializedChildNodes.join('')
             }
 
@@ -117,7 +132,9 @@ function serializeNode(node: any, entityValues: Map<string, string>, fallbackToO
     const serializedChildren = serializedChildNodes.join('')
 
     return (node.kind === 'inline' && node.type === NodeTypes.Optional)
-        ? serializedChildren.slice(1, -1)
+        ? options.preserveOptionalNodeWrappingCharacters
+            ? serializedChildren
+            : serializedChildren.slice(1, -1)
         : serializedChildren
 }
 

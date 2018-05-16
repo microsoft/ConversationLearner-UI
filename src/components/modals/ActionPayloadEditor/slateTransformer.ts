@@ -37,7 +37,7 @@ function updateNodeOptionNames(node: any, options: IOption[], newName?: string) 
         // 1. Update option name
         option.name = matchingOption.name
 
-        // 2. Update 
+        // 2. Update child text nodes which also contain entity name
         node.nodes.map((n: any) => updateNodeOptionNames(n, options, matchingOption.name))
         return node
     } else if (node.kind === 'text') {
