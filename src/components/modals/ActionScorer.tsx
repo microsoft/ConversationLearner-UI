@@ -30,8 +30,8 @@ interface IRenderableColumn extends OF.IColumn {
     render: (x: ScoredBase, component: ActionScorer, index: number) => React.ReactNode
 }
 
-function getColumns(intl: InjectedIntl): IRenderableColumn[] {
-    return [
+function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[] {
+    let columns = [
         {
             key: 'select',
             name: '',
@@ -176,7 +176,12 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             isResizable: true,
             render: action => action.actionType
         },
-    ]
+    ] as IRenderableColumn[]
+
+    if (hideScore) {
+        columns = columns.filter(c => c.key !== 'actionScore')
+    }
+    return columns
 }
 
 interface ComponentState {
@@ -194,7 +199,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
     constructor(p: Props) {
         super(p);
 
-        const columns = getColumns(this.props.intl)
+        const columns = getColumns(this.props.intl, this.props.hideScore)
         this.state = {
             actionModalOpen: false,
             columns,
@@ -693,6 +698,7 @@ export interface ReceivedProps {
     scoreInput: ScoreInput,
     memories: Memory[],
     canEdit: boolean
+    hideScore: boolean,
     onActionSelected: (trainScorerStep: TrainScorerStep) => void,
 }
 

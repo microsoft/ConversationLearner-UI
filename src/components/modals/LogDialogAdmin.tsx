@@ -291,6 +291,7 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
                                 app={this.props.app}
                                 editingPackageId={this.props.editingPackageId}
                                 canEdit={this.props.canEdit}
+                                hideScore={false}
                                 dialogType={DialogType.LOGDIALOG}
                                 sessionId={this.props.logDialog.logDialogId}
                                 autoTeach={false}
