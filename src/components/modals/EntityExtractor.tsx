@@ -7,7 +7,7 @@ import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../../types'
-import { AppBase, ModelUtils, ExtractResponse, TextVariation, DialogType, EntityType, EntityBase, UserInput, DialogMode, PredictedEntity } from '@conversationlearner/models'
+import { AppBase, ModelUtils, ExtractResponse, TextVariation, DialogType, EntityType, UserInput, DialogMode } from '@conversationlearner/models'
 import * as OF from 'office-ui-fabric-react';
 import * as ExtractorResponseEditor from '../ExtractorResponseEditor'
 import EntityCreatorEditor from './EntityCreatorEditor';
@@ -21,23 +21,6 @@ import './EntityExtractor.css'
 interface ExtractResponseForDisplay {
     extractResponse: ExtractResponse
     isValid: boolean
-}
-
-const addMissingEntityData = (extractResponse: ExtractResponse, entities: EntityBase[]): ExtractResponse => {
-    const predictedEntities = extractResponse.predictedEntities.map<PredictedEntity>(pe => {
-        const entity = entities.find(e => e.entityId === pe.entityId)
-        const builtinType = entity ? entity.entityType : 'UNKNOWN'
-
-        return {
-            ...pe,
-            builtinType
-        }
-    })
-
-    return {
-        ...extractResponse,
-        predictedEntities
-    }
 }
 
 interface ComponentState {
@@ -158,7 +141,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
 
     // Return merge of extract responses and text variations
     allResponses(): ExtractResponse[] {
-        return [...ModelUtils.ToExtractResponses(this.state.newTextVariations).map(er => addMissingEntityData(er, this.props.entities)), ...this.props.extractResponses]
+        return [...ModelUtils.ToExtractResponses(this.state.newTextVariations), ...this.props.extractResponses]
             .map(e => ({
                 ...e,
                 definitions: {
