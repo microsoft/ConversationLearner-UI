@@ -22,7 +22,6 @@ import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../react-intl-messages'
 import * as Util from '../../util'
 import AdaptiveCardViewer from './AdaptiveCardViewer/AdaptiveCardViewer'
-import TextPayloadRenderer from '../TextPayloadRenderer'
 
 const ACTION_BUTTON = 'action_button';
 const MISSING_ACTION = 'missing_action';
@@ -81,7 +80,7 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
             isMultiline: true,
             isResizable: true,
             render: (action: ActionBase, component) => {
-                const currentEntityMap = Util.createEntityMapFromMemories(component.props.entities, component.props.memories)
+                // const currentEntityMap = Util.createEntityMapFromMemories(component.props.entities, component.props.memories)
                 const defaultEntityMap = Util.getDefaultEntityMap(component.props.entities)
                 const args = ActionBase.GetActionArguments(action)
                     .map(aa => ({ key: aa.parameter, value: aa.renderValue(defaultEntityMap) }))
@@ -89,10 +88,7 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
 
                 if (action.actionType === ActionTypes.TEXT) {
                     const textAction = new TextAction(action)
-                    return <TextPayloadRenderer
-                        original={textAction.renderValue(defaultEntityMap)}
-                        currentMemory={textAction.renderValue(currentEntityMap)}
-                    />
+                    return <div>{textAction.renderValue(defaultEntityMap)}</div>
                 }
                 else if (action.actionType === ActionTypes.API_LOCAL) {
                     const apiAction = new ApiAction(action)
