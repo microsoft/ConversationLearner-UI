@@ -35,7 +35,7 @@ export default class Component extends React.Component<Props, State> {
     }
 
     render() {
-        
+
         const pairedArguments = this.props.substitutedArguments === null
             ? {
                 argumentPairs: this.props.originalArguments.map(oa => ({
@@ -45,41 +45,45 @@ export default class Component extends React.Component<Props, State> {
                 argumentsDiffer: false
             }
             : this.props.originalArguments.reduce<ICombinedActionArguments>((combined, originalArgument) => {
-            const matchingSubstitutedArgument = this.props.substitutedArguments.find(sa => sa.parameter ===  originalArgument.parameter)
-            combined.argumentPairs.push({
-                original: originalArgument,
-                substituted: matchingSubstitutedArgument
-            })
+                const matchingSubstitutedArgument = this.props.substitutedArguments.find(sa => sa.parameter === originalArgument.parameter)
+                combined.argumentPairs.push({
+                    original: originalArgument,
+                    substituted: matchingSubstitutedArgument
+                })
 
-            // If any of the arguments are different, set to true
-            combined.argumentsDiffer = combined.argumentsDiffer || (originalArgument.value !== matchingSubstitutedArgument.value)
+                // If any of the arguments are different, set to true
+                combined.argumentsDiffer = combined.argumentsDiffer || (originalArgument.value !== matchingSubstitutedArgument.value)
 
-            return combined
-        }, {
-            argumentPairs: [],
-            argumentsDiffer: false
-        })
+                return combined
+            }, {
+                    argumentPairs: [],
+                    argumentsDiffer: false
+                })
 
         const showToggle = pairedArguments.argumentsDiffer
 
         return <div className="cl-api-payload">
-            <div className="cl-api-payload__string">
+            <div>
                 <div className={OF.FontClassNames.mediumPlus}>{this.props.name}(memoryManager{pairedArguments.argumentPairs.length !== 0 && `, ${pairedArguments.argumentPairs.map(a => a.original.parameter).join(', ')}`})</div>
-                <div>
-                    {pairedArguments.argumentPairs.length !== 0 && pairedArguments.argumentPairs.map((argument, i) =>
-                        <div className="ms-ListItem-primaryText" key={i}>{`${argument.original.parameter}: ${(this.props.substitutedArguments === null || this.state.isOriginalVisible)
-                            ? argument.original.value
-                            : argument.substituted.value}`
-                        }</div>)}
+                <div className="cl-api-payload__arguments ms-ListItem-primaryText">
+                    {pairedArguments.argumentPairs.length !== 0
+                    && pairedArguments.argumentPairs.map((argument, i) =>
+                        <React.Fragment key={i}>
+                            <div>{argument.original.parameter}:</div>
+                            <div>{`${(this.props.substitutedArguments === null || this.state.isOriginalVisible)
+                                ? argument.original.value
+                                : argument.substituted.value}`
+                            }</div>
+                        </React.Fragment>)}
                 </div>
             </div>
             {showToggle
                 && <div>
-                <OF.Toggle
-                    checked={this.state.isOriginalVisible}
-                    onChanged={this.onChangedVisible}
-                />
-            </div>}
+                    <OF.Toggle
+                        checked={this.state.isOriginalVisible}
+                        onChanged={this.onChangedVisible}
+                    />
+                </div>}
         </div>
     }
 }

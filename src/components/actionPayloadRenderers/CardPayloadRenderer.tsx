@@ -16,7 +16,7 @@ interface ICombinedActionArguments {
 interface Props {
     isValidationError: boolean
     name: string
-    onClickViewCard: () => void
+    onClickViewCard: (showOriginal: boolean) => void
     originalArguments: RenderedActionArgument[]
     substitutedArguments: RenderedActionArgument[] | null
 }
@@ -64,14 +64,18 @@ export default class Component extends React.Component<Props, State> {
         const showToggle = pairedArguments.argumentsDiffer
 
         return <div className="cl-card-payload">
-            <div className="cl-card-payload__string">
+            <div>
                 <div className={OF.FontClassNames.mediumPlus}>{this.props.name}</div>
-                <div>
-                    {pairedArguments.argumentPairs.length !== 0 && pairedArguments.argumentPairs.map((argument, i) =>
-                        <div className="ms-ListItem-primaryText" key={i}>{`${argument.original.parameter}: ${(this.props.substitutedArguments === null || this.state.isOriginalVisible)
-                            ? argument.original.value
-                            : argument.substituted.value}`
-                        }</div>)}
+                <div className="cl-card-payload__arguments ms-ListItem-primaryText">
+                    {pairedArguments.argumentPairs.length !== 0
+                    && pairedArguments.argumentPairs.map((argument, i) =>
+                        <React.Fragment key={i}>
+                            <div>{argument.original.parameter}:</div>
+                            <div>{`${(this.props.substitutedArguments === null || this.state.isOriginalVisible)
+                                ? argument.original.value
+                                : argument.substituted.value}`
+                            }</div>
+                        </React.Fragment>)}
                 </div>
             </div>
             <div>
@@ -83,7 +87,7 @@ export default class Component extends React.Component<Props, State> {
                 <OF.PrimaryButton
                     disabled={this.props.isValidationError}
                     className="cl-button--viewCard"
-                    onClick={() => this.props.onClickViewCard()}
+                    onClick={() => this.props.onClickViewCard(this.state.isOriginalVisible)}
                     ariaDescription="ViewCard"
                     text=""
                     iconProps={{ iconName: 'RedEye' }}

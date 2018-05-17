@@ -3,3 +3,13 @@
     grid-template: auto / 1fr min-content;
     grid-gap: 1em;
 }
+
+.cl-card-payload__arguments {
+    display: grid;
+    grid-template: auto / min-content 1fr;
+    grid-gap: 0 0.5em;
+}
+
+.cl-card-payload__arguments div:nth-child(2n - 1) {
+    white-space: nowrap;
+}

@@ -8,37 +8,27 @@ interface Props {
     cardAction: CardAction
     entities: EntityBase[]
     memories: Memory[] | null
-    onClickViewCard: (cardAction: CardAction) => void
+    onClickViewCard: (cardAction: CardAction, showOriginal: boolean) => void
 }
 
 export default class Component extends React.Component<Props, {}> {
-    onClickViewCard = () => {
-        this.props.onClickViewCard(this.props.cardAction)
+    onClickViewCard = (showOriginal: boolean) => {
+        this.props.onClickViewCard(this.props.cardAction, showOriginal)
     }
 
     render() {
         const { cardAction, entities, memories } = this.props
         const defaultEntityMap = Util.getDefaultEntityMap(entities)
-        const argumentStringsUsingEntityNames = cardAction.renderArguments(defaultEntityMap, { preserveOptionalNodeWrappingCharacters: true })
-        
-        if (memories === null) {
-            return <CardPayloadRenderer
-                isValidationError={this.props.isValidationError}
-                name={cardAction.templateName}
-                originalArguments={argumentStringsUsingEntityNames}
-                substitutedArguments={null}
-                onClickViewCard={this.onClickViewCard}
-            />
-        }
-
-        const currentEntityMap = Util.createEntityMapFromMemories(entities, memories)
-        const argumentStringsUsingCurrentMemory = cardAction.renderArguments(currentEntityMap, { fallbackToOriginal: true })
+        const argumentsUsingEntityNames = cardAction.renderArguments(defaultEntityMap, { preserveOptionalNodeWrappingCharacters: true })
+        const argumentUsingCurrentMemory = memories === null
+            ? null
+            : cardAction.renderArguments(Util.createEntityMapFromMemories(entities, memories), { fallbackToOriginal: true })
 
         return <CardPayloadRenderer
             isValidationError={this.props.isValidationError}
             name={cardAction.templateName}
-            originalArguments={argumentStringsUsingEntityNames}
-            substitutedArguments={argumentStringsUsingCurrentMemory}
+            originalArguments={argumentsUsingEntityNames}
+            substitutedArguments={argumentUsingCurrentMemory}
             onClickViewCard={this.onClickViewCard}
         />
     }
