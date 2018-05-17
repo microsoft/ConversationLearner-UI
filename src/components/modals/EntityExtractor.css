@@ -30,3 +30,7 @@
     color: var(--color-neutralSecondaryAlt);
     padding: 0.25rem 0;
 }
+
+.editor-alt-offset {
+    padding-right: 24px
+}

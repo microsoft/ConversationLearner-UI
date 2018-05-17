@@ -26,6 +26,13 @@ html {
   opacity: 0.0;
 }
 
+.cl-button--inline {
+  margin-left: -1px;
+  border-right: 1px solid #a6a6a6 !important;
+  border-top: 1px solid #a6a6a6 !important;
+  border-bottom: 1px solid #a6a6a6 !important;
+}
+
 .cl-button--viewCard {
   margin-right: 10px;
   border-radius: 20px;
@@ -34,6 +41,11 @@ html {
   min-width: 32px !important;
 }
 
+.cl-textfield--withButton {
+  display: grid;
+  grid-template: auto / 1fr auto auto;
+  grid-auto-columns: min-content;
+}
 .cl-wc-disabled {
   pointer-events: none;
 }

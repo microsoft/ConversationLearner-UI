@@ -15,6 +15,7 @@ import { clearExtractResponses, updateExtractResponse, removeExtractResponse, ru
 import * as ToolTips from '../ToolTips'
 import HelpIcon from '../HelpIcon'
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
+import { autobind } from 'office-ui-fabric-react/lib/Utilities';
 import { FM } from '../../react-intl-messages'
 import './EntityExtractor.css'
 
@@ -70,19 +71,14 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
             textVariationValue: '',
             newTextVariations: []
         }
-        this.onNewEntity = this.onNewEntity.bind(this);
-        this.onClickSubmitExtractions = this.onClickSubmitExtractions.bind(this);
-        this.onClickUndoChanges = this.onClickUndoChanges.bind(this);
-        this.entityEditorHandleClose = this.entityEditorHandleClose.bind(this);
-        this.onRemoveExtractResponse = this.onRemoveExtractResponse.bind(this)
-        this.onUpdateExtractResponse = this.onUpdateExtractResponse.bind(this)
-        this.focusPrimaryButton = this.focusPrimaryButton.bind(this);
     }
     
     componentDidMount() {
         this.setState({ newTextVariations: this.props.originalTextVariations })
         setTimeout(this.focusPrimaryButton, 500);
     }
+
+    @autobind
     focusPrimaryButton(): void {
         if (this.doneExtractingButton) {
             this.doneExtractingButton.focus();
@@ -111,11 +107,15 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
             this.props.clearExtractResponses();
         }
     }
+
+    @autobind
     entityEditorHandleClose() {
         this.setState({
             entityModalOpen: false
         })
     }
+
+    @autobind
     onNewEntity() {
         this.setState({
             entityModalOpen: true
@@ -167,6 +167,8 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                 }
             }))
     }
+
+    @autobind
     onClickUndoChanges() {
         this.props.clearExtractResponses();
         this.setState({
@@ -177,6 +179,8 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
             this.props.onExtractionsChanged(false);
         }
     }
+
+    @autobind
     onClickSubmitExtractions() {
         this.setState({
             extractionChanged: false,
@@ -222,6 +226,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         })
     }
 
+    @autobind
     onRemoveExtractResponse(extractResponse: ExtractResponse): void {
 
         // First look for match in extract responses
@@ -243,6 +248,8 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
             this.props.onExtractionsChanged(true);
         }
     }
+
+    @autobind
     onUpdateExtractResponse(extractResponse: ExtractResponse): void {
         // First for match in extract responses
         let foundResponse = this.props.extractResponses.find(e => e.text === extractResponse.text);
@@ -286,6 +293,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         });
     }
 
+    @autobind
     onSubmitTextVariation() {
         const userInput: UserInput = { text: this.state.textVariationValue }
         this.props.runExtractorThunkAsync(
@@ -363,24 +371,35 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                                 ToolTips.TipType.ENTITY_EXTRACTOR_WARNING)}
                         </div>}
                         {!isValid && <div className="ms-TextField-errorMessage css-84 errorMessage_20d9206e">
-                            <FormattedMessage id={FM.TOOLTIP_ENTITY_EXTRACTOR_WARNING} defaultMessage="Text Variations must contain the same detected Entities and the primary input text." />
+                            <FormattedMessage id={FM.TOOLTIP_ENTITY_EXTRACTOR_WARNING} defaultMessage="Text Variations must contain the same detected Entities as the primary input text." />
                         </div>}
                     </div>
                 })}
-                {canEdit && this.props.extractType !== DialogType.LOGDIALOG && <OF.TextField
-                    value={this.state.textVariationValue}
-                    onChanged={this.onChangeTextVariation}
-                    placeholder={this.props.intl.formatMessage({
-                        id: FM.TEXTVARIATION_PLACEHOLDER,
-                        defaultMessage: "Add alternative input..."
-                    })}
-                    onKeyPress={(event) => {
-                        if (event.key === 'Enter') {
-                            this.onSubmitTextVariation()
-                            event.preventDefault()
-                        }
-                    }}
-                />}
+                {canEdit && this.props.extractType !== DialogType.LOGDIALOG && 
+                    <div className='cl-textfield--withButton editor-alt-offset'>
+                        <OF.TextField
+                            value={this.state.textVariationValue}
+                            onChanged={this.onChangeTextVariation}
+                            placeholder={this.props.intl.formatMessage({
+                                id: FM.TEXTVARIATION_PLACEHOLDER,
+                                defaultMessage: "Add alternative input..."
+                            })}
+                            onKeyPress={(event) => {
+                                if (event.key === 'Enter') {
+                                    this.onSubmitTextVariation()
+                                    event.preventDefault()
+                                }
+                            }}
+                        />
+                        <OF.PrimaryButton
+                            className='cl-button--inline'
+                            disabled={this.state.textVariationValue.length === 0}
+                            onClick={this.onSubmitTextVariation}
+                            ariaDescription={'Add'}
+                            text={'Add'}
+                            componentRef={(ref: any) => { this.doneExtractingButton = ref }}
+                        />
+                </div>}
                 {canEdit && this.props.extractType !== DialogType.TEACH &&
                     <div className="cl-buttons-row">
                         <OF.PrimaryButton
