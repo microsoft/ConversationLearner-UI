@@ -340,6 +340,6 @@ interface IRenderableColumn extends OF.IColumn {
 
 interface ComponentState {
     columns: IRenderableColumn[]
-    sortColumn: IRenderableColumn,
+    sortColumn: IRenderableColumn
     cardViewerAction: ActionBase
 }
