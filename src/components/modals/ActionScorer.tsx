@@ -106,7 +106,7 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
                         cardAction={cardAction}
                         entities={component.props.entities}
                         memories={component.props.memories}
-                        onClickViewCard={() => component.onClickViewCard(action)}
+                        onClickViewCard={(_, showOriginal) => component.onClickViewCard(action, showOriginal)}
                     />
                 }
 
@@ -194,12 +194,13 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
 }
 
 interface ComponentState {
-    actionModalOpen: boolean;
-    columns: OF.IColumn[];
-    sortColumn: OF.IColumn;
-    haveEdited: boolean;
-    newAction: ActionBase;
-    cardViewerAction: ActionBase;
+    actionModalOpen: boolean
+    columns: OF.IColumn[]
+    sortColumn: OF.IColumn
+    haveEdited: boolean
+    newAction: ActionBase
+    cardViewerAction: ActionBase
+    cardViewerShowOriginal: boolean
 }
 
 class ActionScorer extends React.Component<Props, ComponentState> {
@@ -215,7 +216,8 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             sortColumn: columns[2], // "score"
             haveEdited: false,
             newAction: null,
-            cardViewerAction: null
+            cardViewerAction: null,
+            cardViewerShowOriginal: false
         };
         this.handleActionSelection = this.handleActionSelection.bind(this);
         this.handleDefaultSelection = this.handleDefaultSelection.bind(this);
@@ -253,14 +255,16 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         this.autoSelect();
     }
 
-    onClickViewCard(action: ActionBase) {
+    onClickViewCard(action: ActionBase, cardViewerShowOriginal: boolean) {
         this.setState({
-            cardViewerAction: action
+            cardViewerAction: action,
+            cardViewerShowOriginal
         })
     }
     onCloseCardViewer = () => {
         this.setState({
-            cardViewerAction: null
+            cardViewerAction: null,
+            cardViewerShowOriginal: true
         })
     }
 
@@ -643,7 +647,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
 
     render() {
         // In teach mode, hide scores after selection
-        // so they can't be reselected for non-terminal actions
+        // so they can't be re-selected for non-terminal actions
         if (this.props.dialogType === DialogType.TEACH && this.state.haveEdited) {
             return null;
         }
@@ -656,7 +660,9 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             const cardAction = new CardAction(this.state.cardViewerAction)
             const entityMap = Util.getDefaultEntityMap(this.props.entities)
             template = this.props.templates.find((t) => t.name === cardAction.templateName)
-            renderedActionArguments = cardAction.renderArguments(entityMap)
+            renderedActionArguments = this.state.cardViewerShowOriginal
+                ? cardAction.renderArguments(entityMap, { preserveOptionalNodeWrappingCharacters: true })
+                : cardAction.renderArguments(Util.createEntityMapFromMemories(this.props.entities, this.props.memories), { fallbackToOriginal: true })
         }
 
         return (

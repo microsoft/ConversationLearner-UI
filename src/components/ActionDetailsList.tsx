@@ -112,7 +112,7 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
             const entityMap = Util.getDefaultEntityMap(this.props.entities)
             template = this.props.botInfo.templates.find((t) => t.name === cardAction.templateName);
             // TODO: This is hack to make adaptive card viewer accept action arguments with pre-rendered values
-            renderedActionArguments = cardAction.renderArguments(entityMap)
+            renderedActionArguments = cardAction.renderArguments(entityMap, { preserveOptionalNodeWrappingCharacters: true })
                 .filter(aa => !Util.isNullOrWhiteSpace(aa.value))
         }
 

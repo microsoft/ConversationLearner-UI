@@ -13,23 +13,15 @@ export default class Component extends React.Component<Props, {}> {
     render() {
         const { apiAction, entities, memories } = this.props
         const defaultEntityMap = Util.getDefaultEntityMap(entities)
-        const argumentStringsUsingEntityNames = apiAction.renderArguments(defaultEntityMap, { preserveOptionalNodeWrappingCharacters: true })
-        
-        if (memories === null) {
-            return <ApiPayloadRenderer
-                name={apiAction.name}
-                originalArguments={argumentStringsUsingEntityNames}
-                substitutedArguments={null}
-            />
-        }
-
-        const currentEntityMap = Util.createEntityMapFromMemories(entities, memories)
-        const argumentStringsUsingCurrentMemory = apiAction.renderArguments(currentEntityMap, { fallbackToOriginal: true })
+        const argumentsUsingEntityNames = apiAction.renderArguments(defaultEntityMap, { preserveOptionalNodeWrappingCharacters: true })
+        const argumentsUsingCurrentMemory = memories === null
+            ? null
+            : apiAction.renderArguments(Util.createEntityMapFromMemories(entities, memories), { fallbackToOriginal: true })
 
         return <ApiPayloadRenderer
             name={apiAction.name}
-            originalArguments={argumentStringsUsingEntityNames}
-            substitutedArguments={argumentStringsUsingCurrentMemory}
+            originalArguments={argumentsUsingEntityNames}
+            substitutedArguments={argumentsUsingCurrentMemory}
         />
     }
 }
