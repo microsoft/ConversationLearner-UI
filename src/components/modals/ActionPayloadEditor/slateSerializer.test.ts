@@ -130,7 +130,7 @@ describe('EntityIdSerializer', () => {
             .value
 
         const plainString = Plain.serialize(testValue)
-        const entityIdString = EntityIdSerializer.serialize(testValue, emptyMap, true)
+        const entityIdString = EntityIdSerializer.serialize(testValue, emptyMap, { fallbackToOriginal: true })
 
         expect(plainString).toEqual(`some text to start $entityName some other text`)
         expect(entityIdString).toEqual(`some text to start $entityName some other text`)
@@ -214,6 +214,13 @@ describe('EntityIdSerializer', () => {
             [entities[0].id, 'Custom Entity 1 Value']
         ]))
 
+        const partialStringWithBrackets = EntityIdSerializer.serialize(testValue, new Map<string, string>([
+            [entities[0].id, 'Custom Entity 1 Value'],
+            [entities[1].id, 'Custom Entity 2 Value']
+        ]), {
+            preserveOptionalNodeWrappingCharacters: true
+        })
+
         test(`given slate value with custom optional inline nodes without matching value in map are removed`, () => {
             expect(plainString).toEqual(`some text to start $entityName1 some other text [some stuff $entityName2 ending optional node ]ending text`)
             expect(partialString).toEqual(`some text to start Custom Entity 1 Value some other text ending text`)
@@ -221,6 +228,10 @@ describe('EntityIdSerializer', () => {
         
         test('given slate value with custom optional inline nodes with matching value in map are preserved', () => {
             expect(entityIdString).toEqual(`some text to start Custom Entity 1 Value some other text some stuff Custom Entity 2 Value ending optional node ending text`)
+        })
+
+        test('given slate value with custom optional inline nodes with matching value in map are preserved', () => {
+            expect(partialStringWithBrackets).toEqual(`some text to start Custom Entity 1 Value some other text [some stuff Custom Entity 2 Value ending optional node ]ending text`)
         })
     })
 })

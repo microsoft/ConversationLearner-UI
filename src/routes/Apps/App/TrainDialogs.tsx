@@ -572,7 +572,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     }
                     for (let ss of round.scorerSteps) {
                         let foundAction = this.props.actions.find(a => a.actionId === ss.labelAction);
-                        // Invalid train dialogs can contain delted actions
+                        // Invalid train dialogs can contain deleted actions
                         if (foundAction) {
                             actionsInTD.push(foundAction);
                         }
@@ -591,8 +591,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 }
                 if (this.state.actionFilter && this.state.actionFilter.key
                     && !actionsInTD.find(a => a.actionId === this.state.actionFilter.key)) {
-                return false;
-            }
+                    return false;
+                }
 
                 let entityNames = entitiesInTD.map(e => e.entityName);
                 let actionPayloads = actionsInTD.map(a => ActionBase.GetPayload(a, getDefaultEntityMap(this.props.entities)));

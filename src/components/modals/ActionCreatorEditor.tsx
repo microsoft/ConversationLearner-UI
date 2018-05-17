@@ -418,13 +418,17 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             }))
     }
 
-    // TODO: Investigate alternative to get around need to use EntityIdSerializer directly is to construct mock CardAction and call .renderArguments()
+    /**
+     * Pre-render slate values for display in card template
+     */
     getRenderedActionArguments(slateValuesMap: { [slot: string]: ActionPayloadEditor.SlateValue }, entities: EntityBase[]): RenderedActionArgument[] {
         return Object.entries(slateValuesMap)
             .filter(([parameter, value]) => value.document.text.length > 0)
             .map<RenderedActionArgument>(([parameter, value]) => ({
                 parameter,
-                value: Plain.serialize(value)// ActionPayloadEditor.EntityIdSerializer.serialize(value, entityValueMap)
+                // TODO: Investigate alternative to get around need to use EntityIdSerializer directly is to construct mock CardAction and call .renderArguments()
+                // ActionPayloadEditor.EntityIdSerializer.serialize(value, entityValueMap)
+                value: Plain.serialize(value)
             }))
     }
 

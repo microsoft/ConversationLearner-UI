@@ -12,8 +12,8 @@ import { onRenderDetailsHeader } from './ToolTips'
 import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../react-intl-messages'
 import * as Util from '../util'
-import { Icon } from 'office-ui-fabric-react/lib/Icon'
 import AdaptiveCardViewer from './modals/AdaptiveCardViewer/AdaptiveCardViewer'
+import * as ActionPayloadRenderers from './actionPayloadRenderers'
 
 class ActionDetailsList extends React.Component<Props, ComponentState> {
     constructor(p: any) {
@@ -34,7 +34,7 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
             }
             case ActionTypes.API_LOCAL: {
                 const apiAction = new ApiAction(action)
-                return (!this.props.botInfo.callbacks || !this.props.botInfo.callbacks.find(t => t.name === apiAction.name)) 
+                return (!this.props.botInfo.callbacks || !this.props.botInfo.callbacks.find(t => t.name === apiAction.name))
             }
             case ActionTypes.CARD: {
                 const cardAction = new CardAction(action)
@@ -112,7 +112,7 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
             const entityMap = Util.getDefaultEntityMap(this.props.entities)
             template = this.props.botInfo.templates.find((t) => t.name === cardAction.templateName);
             // TODO: This is hack to make adaptive card viewer accept action arguments with pre-rendered values
-            renderedActionArguments = cardAction.renderArguments(entityMap)
+            renderedActionArguments = cardAction.renderArguments(entityMap, { preserveOptionalNodeWrappingCharacters: true })
                 .filter(aa => !Util.isNullOrWhiteSpace(aa.value))
         }
 
@@ -176,11 +176,11 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             isSortedDescending: true,
             getSortValue: (action, component) => {
                 const entityMap = Util.getDefaultEntityMap(component.props.entities)
-                
+
                 switch (action.actionType) {
                     case ActionTypes.TEXT: {
                         const textAction = new TextAction(action)
-                        return textAction.renderValue(entityMap)
+                        return textAction.renderValue(entityMap, { preserveOptionalNodeWrappingCharacters: true })
                     }
                     case ActionTypes.API_LOCAL: {
                         const apiAction = new ApiAction(action)
@@ -198,39 +198,36 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             },
             render: (action, component) => {
                 const entityMap = Util.getDefaultEntityMap(component.props.entities)
-                const args = ActionBase.GetActionArguments(action)
-                    .map(aa => aa.renderValue(entityMap))
-                    .filter(s => !Util.isNullOrWhiteSpace(s))
+                const isValidationError = component.validationError(action)
 
-                const validationError = component.validationError(action);
+                if (action.actionType === ActionTypes.TEXT) {
+                    const textAction = new TextAction(action)
+                    return <ActionPayloadRenderers.TextPayloadRendererContainer
+                        textAction={textAction}
+                        entities={component.props.entities}
+                        memories={null}
+                    />
+                }
+                else if (action.actionType === ActionTypes.API_LOCAL) {
+                    const apiAction = new ApiAction(action)
+                    return <ActionPayloadRenderers.ApiPayloadRendererContainer
+                        apiAction={apiAction}
+                        entities={component.props.entities}
+                        memories={null}
+                    />
+                }
+                else if (action.actionType === ActionTypes.CARD) {
+                    const cardAction = new CardAction(action)
+                    return <ActionPayloadRenderers.CardPayloadRendererContainer
+                        isValidationError={isValidationError}
+                        cardAction={cardAction}
+                        entities={component.props.entities}
+                        memories={null}
+                        onClickViewCard={() => component.onClickViewCard(action)}
+                    />
+                }
 
-                const textClassName = validationError ?
-                    `${OF.FontClassNames.mediumPlus} cl-font--highlight`: OF.FontClassNames.mediumPlus;
-
-                return (
-                    <div>
-                        {action.actionType === ActionTypes.CARD &&
-                            <OF.PrimaryButton
-                                disabled={validationError}
-                                className="cl-button--viewCard"
-                                onClick={() => component.onClickViewCard(action)}
-                                ariaDescription="ViewCard"
-                                text=""
-                                iconProps={{ iconName: 'RedEye' }}
-                            />
-                        }
-                        <span 
-                            className={textClassName} 
-                            onClick={() => component.props.onSelectAction ? component.props.onSelectAction(action) : null}
-                        >
-                            {ActionBase.GetPayload(action, entityMap)}
-                            {validationError && <Icon className="cl-icon" iconName="IncidentTriangle" />}
-                        </span>
-                        {args.length !== 0 &&
-                            args.map((argument, i) => <div className="ms-ListItem-primaryText" key={i}>{argument}</div>)
-                        }
-                    </div>
-                )
+                return <span className={OF.FontClassNames.mediumPlus}>{ActionBase.GetPayload(action, entityMap)}</span>
             }
         },
         {
@@ -343,6 +340,6 @@ interface IRenderableColumn extends OF.IColumn {
 
 interface ComponentState {
     columns: IRenderableColumn[]
-    sortColumn: IRenderableColumn,
+    sortColumn: IRenderableColumn
     cardViewerAction: ActionBase
 }

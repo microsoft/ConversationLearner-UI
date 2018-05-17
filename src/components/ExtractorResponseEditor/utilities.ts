@@ -563,7 +563,7 @@ export const convertGenericEntityToPredictedEntity = (entities: EntityBase[]) =>
         endCharIndex: ge.endIndex - 1,
         entityText: text,
         resolution: {},
-        builtinType: entity.entityType,
+        builtinType: undefined,
         score: 0
     }
 }

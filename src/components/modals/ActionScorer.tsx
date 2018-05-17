@@ -10,7 +10,7 @@ import { State } from '../../types'
 import {
     AppBase, TrainScorerStep, Memory, ScoredBase, ScoreInput, ScoreResponse,
     ActionBase, ScoredAction, UnscoredAction, ScoreReason, DialogType, ActionTypes,
-    Template, DialogMode, RenderedActionArgument, CardAction
+    Template, DialogMode, RenderedActionArgument, CardAction, TextAction, ApiAction
 } from '@conversationlearner/models'
 import { createActionThunkAsync } from '../../actions/createActions'
 import { toggleAutoTeach } from '../../actions/teachActions'
@@ -22,9 +22,10 @@ import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../react-intl-messages'
 import * as Util from '../../util'
 import AdaptiveCardViewer from './AdaptiveCardViewer/AdaptiveCardViewer'
+import * as ActionPayloadRenderers from '../actionPayloadRenderers'
 
-const ACTION_BUTTON = 'action_button';
-const MISSING_ACTION = 'missing_action';
+const ACTION_BUTTON = 'action_button'
+const MISSING_ACTION = 'missing_action'
 
 interface IRenderableColumn extends OF.IColumn {
     render: (x: ScoredBase, component: ActionScorer, index: number) => React.ReactNode
@@ -80,28 +81,36 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
             isMultiline: true,
             isResizable: true,
             render: (action: ActionBase, component) => {
-                const entityMap = Util.getDefaultEntityMap(component.props.entities)
-                const args = ActionBase.GetActionArguments(action)
-                    .map(aa => aa.renderValue(entityMap))
-                    .filter(s => !Util.isNullOrWhiteSpace(s))
+                const defaultEntityMap = Util.getDefaultEntityMap(component.props.entities)
                     
-                return (
-                    <div>
-                    {action.actionType === ActionTypes.CARD &&
-                        <OF.PrimaryButton
-                            className="cl-button--viewCard"
-                            onClick={() => component.onClickViewCard(action)}
-                            ariaDescription="View Card"
-                            text=""
-                            iconProps={{ iconName: 'RedEye' }}
-                        />
-                    }
-                    <span className={OF.FontClassNames.mediumPlus}>{ActionBase.GetPayload(action, entityMap)}</span>
-                    {   args.length !== 0 &&
-                        args.map((argument, i) => <div className="ms-ListItem-primaryText" key={i}>{argument}</div>)
-                    }
-                    </div>
-                )
+                if (action.actionType === ActionTypes.TEXT) {
+                    const textAction = new TextAction(action)
+                    return <ActionPayloadRenderers.TextPayloadRendererContainer
+                        textAction={textAction}
+                        entities={component.props.entities}
+                        memories={component.props.memories}
+                    />
+                }
+                else if (action.actionType === ActionTypes.API_LOCAL) {
+                    const apiAction = new ApiAction(action)
+                    return <ActionPayloadRenderers.ApiPayloadRendererContainer
+                        apiAction={apiAction}
+                        entities={component.props.entities}
+                        memories={component.props.memories}
+                    />
+                }
+                else if (action.actionType === ActionTypes.CARD) {
+                    const cardAction = new CardAction(action)
+                    return <ActionPayloadRenderers.CardPayloadRendererContainer
+                        isValidationError={false}
+                        cardAction={cardAction}
+                        entities={component.props.entities}
+                        memories={component.props.memories}
+                        onClickViewCard={(_, showOriginal) => component.onClickViewCard(action, showOriginal)}
+                    />
+                }
+
+                return <span className={OF.FontClassNames.mediumPlus}>{ActionBase.GetPayload(action, defaultEntityMap)}</span>
             }
         },
         {
@@ -185,12 +194,13 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
 }
 
 interface ComponentState {
-    actionModalOpen: boolean;
-    columns: OF.IColumn[];
-    sortColumn: OF.IColumn;
-    haveEdited: boolean;
-    newAction: ActionBase;
-    cardViewerAction: ActionBase;
+    actionModalOpen: boolean
+    columns: OF.IColumn[]
+    sortColumn: OF.IColumn
+    haveEdited: boolean
+    newAction: ActionBase
+    cardViewerAction: ActionBase
+    cardViewerShowOriginal: boolean
 }
 
 class ActionScorer extends React.Component<Props, ComponentState> {
@@ -206,7 +216,8 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             sortColumn: columns[2], // "score"
             haveEdited: false,
             newAction: null,
-            cardViewerAction: null
+            cardViewerAction: null,
+            cardViewerShowOriginal: false
         };
         this.handleActionSelection = this.handleActionSelection.bind(this);
         this.handleDefaultSelection = this.handleDefaultSelection.bind(this);
@@ -244,14 +255,16 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         this.autoSelect();
     }
 
-    onClickViewCard(action: ActionBase) {
+    onClickViewCard(action: ActionBase, cardViewerShowOriginal: boolean) {
         this.setState({
-            cardViewerAction: action
+            cardViewerAction: action,
+            cardViewerShowOriginal
         })
     }
     onCloseCardViewer = () => {
         this.setState({
-            cardViewerAction: null
+            cardViewerAction: null,
+            cardViewerShowOriginal: true
         })
     }
 
@@ -300,8 +313,8 @@ class ActionScorer extends React.Component<Props, ComponentState> {
     onClickSubmitActionEditor(action: ActionBase) {
         this.setState(
             {
-            actionModalOpen: false
-            }, 
+                actionModalOpen: false
+            },
             () => {
                 this.props.createActionThunkAsync(this.props.app.appId, action)
             }
@@ -476,9 +489,9 @@ class ActionScorer extends React.Component<Props, ComponentState> {
     }
 
     // Returns true if ActionId is available given Entities in Memory
-    isActionIdAvailable(actionId: string) : boolean {
+    isActionIdAvailable(actionId: string): boolean {
         let action = this.props.actions.find(a => a.actionId === actionId);
-        if (!action) { 
+        if (!action) {
             return false;
         }
         return this.isAvailable(action);
@@ -551,7 +564,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                     />
                 )
             } else if (column.key === 'actionResponse') {
-                return <span className="cl-font--warning">MISSING ACTION</span>; 
+                return <span className="cl-font--warning">MISSING ACTION</span>;
             }
             else if (column.key === 'actionScore') {
                 return column.render(action as ScoredBase, this, index)
@@ -634,7 +647,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
 
     render() {
         // In teach mode, hide scores after selection
-        // so they can't be reselected for non-terminal actions
+        // so they can't be re-selected for non-terminal actions
         if (this.props.dialogType === DialogType.TEACH && this.state.haveEdited) {
             return null;
         }
@@ -647,7 +660,9 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             const cardAction = new CardAction(this.state.cardViewerAction)
             const entityMap = Util.getDefaultEntityMap(this.props.entities)
             template = this.props.templates.find((t) => t.name === cardAction.templateName)
-            renderedActionArguments = cardAction.renderArguments(entityMap)
+            renderedActionArguments = this.state.cardViewerShowOriginal
+                ? cardAction.renderArguments(entityMap, { preserveOptionalNodeWrappingCharacters: true })
+                : cardAction.renderArguments(Util.createEntityMapFromMemories(this.props.entities, this.props.memories), { fallbackToOriginal: true })
         }
 
         return (
@@ -680,7 +695,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                     onDismiss={() => this.onCloseCardViewer()}
                     template={template}
                     actionArguments={renderedActionArguments}
-                    hideUndefined={true} 
+                    hideUndefined={true}
                 />
             </div>
         )
