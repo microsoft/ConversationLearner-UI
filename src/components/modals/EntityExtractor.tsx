@@ -222,7 +222,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
     onChangeTextVariation = (value: string): void => {
         this.setState({
             textVariationValue: value,
-            pendingVariationChange: (value.length > 0)
+            pendingVariationChange: (value.trim().length > 0)
         })
     }
 
@@ -295,7 +295,11 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
 
     @autobind
     onSubmitTextVariation() {
-        const userInput: UserInput = { text: this.state.textVariationValue }
+        let text = this.state.textVariationValue.trim();
+        if (text.length === 0) {
+            return;
+        }
+        const userInput: UserInput = { text: text }
         this.props.runExtractorThunkAsync(
             this.props.user.id,
             this.props.app.appId,
@@ -393,7 +397,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                         />
                         <OF.PrimaryButton
                             className='cl-button--inline'
-                            disabled={this.state.textVariationValue.length === 0}
+                            disabled={this.state.textVariationValue.trim().length === 0}
                             onClick={this.onSubmitTextVariation}
                             ariaDescription={'Add'}
                             text={'Add'}
