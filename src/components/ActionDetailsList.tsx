@@ -180,7 +180,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                 switch (action.actionType) {
                     case ActionTypes.TEXT: {
                         const textAction = new TextAction(action)
-                        return textAction.renderValue(entityMap)
+                        return textAction.renderValue(entityMap, { preserveOptionalNodeWrappingCharacters: true })
                     }
                     case ActionTypes.API_LOCAL: {
                         const apiAction = new ApiAction(action)
@@ -197,21 +197,26 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                 }
             },
             render: (action, component) => {
-                const entityMap = Util.getDefaultEntityMap(component.props.entities)
+                const defaultEntityMap = Util.getDefaultEntityMap(component.props.entities)
                 const args = ActionBase.GetActionArguments(action)
-                    .map(aa => aa.renderValue(entityMap))
-                    .filter(s => !Util.isNullOrWhiteSpace(s))
+                    .map(aa => ({
+                        parameter: aa.parameter,
+                        original: aa.renderValue(defaultEntityMap, { preserveOptionalNodeWrappingCharacters: true }),
+                        currentMemory: null
+                    }))
+                    .filter(kv => !Util.isNullOrWhiteSpace(kv.original))
+                    
+                const isValidationError = component.validationError(action);
 
-                const validationError = component.validationError(action);
-
-                const textClassName = validationError ?
-                    `${OF.FontClassNames.mediumPlus} cl-font--highlight`: OF.FontClassNames.mediumPlus;
-
+                const textClassName = isValidationError
+                    ? `${OF.FontClassNames.mediumPlus} cl-font--highlight`
+                    : OF.FontClassNames.mediumPlus
+                    
                 return (
                     <div>
                         {action.actionType === ActionTypes.CARD &&
                             <OF.PrimaryButton
-                                disabled={validationError}
+                                disabled={isValidationError}
                                 className="cl-button--viewCard"
                                 onClick={() => component.onClickViewCard(action)}
                                 ariaDescription="ViewCard"
@@ -223,8 +228,8 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                             className={textClassName} 
                             onClick={() => component.props.onSelectAction ? component.props.onSelectAction(action) : null}
                         >
-                            {ActionBase.GetPayload(action, entityMap)}
-                            {validationError && <Icon className="cl-icon" iconName="IncidentTriangle" />}
+                            {ActionBase.GetPayload(action, defaultEntityMap)}
+                            {isValidationError && <Icon className="cl-icon" iconName="IncidentTriangle" />}
                         </span>
                         {args.length !== 0 &&
                             args.map((argument, i) => <div className="ms-ListItem-primaryText" key={i}>{argument}</div>)

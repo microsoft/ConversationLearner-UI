@@ -10,7 +10,7 @@ import { State } from '../../types'
 import {
     AppBase, TrainScorerStep, Memory, ScoredBase, ScoreInput, ScoreResponse,
     ActionBase, ScoredAction, UnscoredAction, ScoreReason, DialogType, ActionTypes,
-    Template, DialogMode, RenderedActionArgument, CardAction, ApiAction, TextAction
+    Template, DialogMode, RenderedActionArgument, CardAction, TextAction
 } from '@conversationlearner/models'
 import { createActionThunkAsync } from '../../actions/createActions'
 import { toggleAutoTeach } from '../../actions/teachActions'
@@ -22,9 +22,10 @@ import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../react-intl-messages'
 import * as Util from '../../util'
 import AdaptiveCardViewer from './AdaptiveCardViewer/AdaptiveCardViewer'
+import * as ActionPayloadRenderers from '../actionPayloadRenderers'
 
-const ACTION_BUTTON = 'action_button';
-const MISSING_ACTION = 'missing_action';
+const ACTION_BUTTON = 'action_button'
+const MISSING_ACTION = 'missing_action'
 
 interface IRenderableColumn extends OF.IColumn {
     render: (x: ScoredBase, component: ActionScorer, index: number) => React.ReactNode
@@ -80,24 +81,32 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
             isMultiline: true,
             isResizable: true,
             render: (action: ActionBase, component) => {
-                // const currentEntityMap = Util.createEntityMapFromMemories(component.props.entities, component.props.memories)
+                const currentEntityMap = Util.createEntityMapFromMemories(component.props.entities, component.props.memories)
                 const defaultEntityMap = Util.getDefaultEntityMap(component.props.entities)
                 const args = ActionBase.GetActionArguments(action)
-                    .map(aa => ({ key: aa.parameter, value: aa.renderValue(defaultEntityMap) }))
-                    .filter(kv => !Util.isNullOrWhiteSpace(kv.value))
-
+                    .map(aa => ({
+                        parameter: aa.parameter,
+                        original: aa.renderValue(defaultEntityMap, { preserveOptionalNodeWrappingCharacters: true }),
+                        currentMemory: aa.renderValue(currentEntityMap, { fallbackToOriginal: true })
+                    }))
+                    .filter(kv => !Util.isNullOrWhiteSpace(kv.original))
+                    
                 if (action.actionType === ActionTypes.TEXT) {
                     const textAction = new TextAction(action)
-                    return <div>{textAction.renderValue(defaultEntityMap)}</div>
+                    return <ActionPayloadRenderers.TextPayloadRendererContainer
+                        textAction={textAction}
+                        entities={component.props.entities}
+                        memories={component.props.memories}
+                    />
                 }
                 else if (action.actionType === ActionTypes.API_LOCAL) {
-                    const apiAction = new ApiAction(action)
-                    return <div>
-                        <span className={OF.FontClassNames.mediumPlus}>{apiAction.name}</span>}
-                        {args.length !== 0 &&
-                            args.map((argument, i) => <div className="ms-ListItem-primaryText" key={i}>{`${argument.key}: ${argument.value}`}</div>)
-                        }
-                    </div>
+                    return "test"
+                    // const apiAction = new ApiAction(action)
+                    // return "test" <ActionPayloadRenderers.ApiPayloadRendererContainer
+                    //     apiAction={apiAction}
+                    //     entities={component.props.entities}
+                    //     memories={component.props.memories}
+                    // />
                 }
                 else if (action.actionType === ActionTypes.CARD) {
                     const cardAction = new CardAction(action)
@@ -112,7 +121,7 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
 
                         <span className={OF.FontClassNames.mediumPlus}>{cardAction.templateName}</span>
                         {args.length !== 0 &&
-                            args.map((argument, i) => <div className="ms-ListItem-primaryText" key={i}>{`${argument.key}: ${argument.value}`}</div>)
+                            args.map((argument, i) => <div className="ms-ListItem-primaryText" key={i}>{`${argument.parameter}: ${argument.original}`}</div>)
                         }
                     </div>
                 }
