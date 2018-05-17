@@ -27,7 +27,7 @@ export const PreBuiltEntities: LocalePreBuilts[] = [
 	{
 		locale: "en-us",
 		preBuiltEntities: [
-			PreBuilts.DatetimeV2, PreBuilts.Datetime, PreBuilts.Number, PreBuilts.Ordinal,
+			PreBuilts.DatetimeV2, PreBuilts.Number, PreBuilts.Ordinal,
 			PreBuilts.Percentage, PreBuilts.Temperature, PreBuilts.Dimension, PreBuilts.Money, PreBuilts.Age,
 			PreBuilts.Geography, PreBuilts.Encyclopedia, PreBuilts.URL, PreBuilts.Email, PreBuilts.Phone_number
 		]
