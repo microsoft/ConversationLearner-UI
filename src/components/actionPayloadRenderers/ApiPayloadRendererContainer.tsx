@@ -12,9 +12,18 @@ interface Props {
 export default class Component extends React.Component<Props, {}> {
     render() {
         const { apiAction, entities, memories } = this.props
-        const currentEntityMap = Util.createEntityMapFromMemories(entities, memories)
         const defaultEntityMap = Util.getDefaultEntityMap(entities)
         const argumentStringsUsingEntityNames = apiAction.renderArguments(defaultEntityMap, { preserveOptionalNodeWrappingCharacters: true })
+        
+        if (memories === null) {
+            return <ApiPayloadRenderer
+                name={apiAction.name}
+                originalArguments={argumentStringsUsingEntityNames}
+                substitutedArguments={null}
+            />
+        }
+
+        const currentEntityMap = Util.createEntityMapFromMemories(entities, memories)
         const argumentStringsUsingCurrentMemory = apiAction.renderArguments(currentEntityMap, { fallbackToOriginal: true })
 
         return <ApiPayloadRenderer

@@ -4,7 +4,7 @@ import './TextPayloadRenderer.css'
 
 interface Props {
     original: string
-    currentMemory: string
+    currentMemory: string | null
 }
 
 interface State {
@@ -23,10 +23,10 @@ export default class Component extends React.Component<Props, State> {
     }
 
     render() {
-        const showToggle = this.props.currentMemory !== this.props.original
+        const showToggle = this.props.currentMemory !== null && this.props.currentMemory !== this.props.original
 
         return <div className={`${OF.FontClassNames.mediumPlus} cl-text-payload`}>
-            <div className="cl-text-payload__string">{this.state.isOriginalVisible
+            <div className="cl-text-payload__string">{(this.props.currentMemory === null || this.state.isOriginalVisible)
                 ? this.props.original
                 : this.props.currentMemory
             }</div>

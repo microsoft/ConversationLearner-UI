@@ -1,0 +1,5 @@
+.cl-card-payload {
+    display: grid;
+    grid-template: auto / 1fr min-content;
+    grid-gap: 1em;
+}

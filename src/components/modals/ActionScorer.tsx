@@ -10,7 +10,7 @@ import { State } from '../../types'
 import {
     AppBase, TrainScorerStep, Memory, ScoredBase, ScoreInput, ScoreResponse,
     ActionBase, ScoredAction, UnscoredAction, ScoreReason, DialogType, ActionTypes,
-    Template, DialogMode, RenderedActionArgument, CardAction, TextAction
+    Template, DialogMode, RenderedActionArgument, CardAction, TextAction, ApiAction
 } from '@conversationlearner/models'
 import { createActionThunkAsync } from '../../actions/createActions'
 import { toggleAutoTeach } from '../../actions/teachActions'
@@ -100,13 +100,12 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
                     />
                 }
                 else if (action.actionType === ActionTypes.API_LOCAL) {
-                    return "test"
-                    // const apiAction = new ApiAction(action)
-                    // return "test" <ActionPayloadRenderers.ApiPayloadRendererContainer
-                    //     apiAction={apiAction}
-                    //     entities={component.props.entities}
-                    //     memories={component.props.memories}
-                    // />
+                    const apiAction = new ApiAction(action)
+                    return <ActionPayloadRenderers.ApiPayloadRendererContainer
+                        apiAction={apiAction}
+                        entities={component.props.entities}
+                        memories={component.props.memories}
+                    />
                 }
                 else if (action.actionType === ActionTypes.CARD) {
                     const cardAction = new CardAction(action)

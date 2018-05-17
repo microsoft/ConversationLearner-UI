@@ -6,15 +6,25 @@ import TextPayloadRenderer from './TextPayloadRenderer'
 interface Props {
     textAction: TextAction
     entities: EntityBase[]
+    // TODO: Find better alternative than null
+    // When memories is null it's assumed parent doesn't have access to it and intends to fallback to the entity names
     memories: Memory[] | null
 }
 
 export default class Component extends React.Component<Props, {}> {
     render() {
         const { entities, memories, textAction } = this.props
-        const currentEntityMap = Util.createEntityMapFromMemories(entities, memories)
         const defaultEntityMap = Util.getDefaultEntityMap(entities)
         const renderStringUsingEntityNames = textAction.renderValue(defaultEntityMap, { preserveOptionalNodeWrappingCharacters: true })
+
+        if (memories === null) {
+            return <TextPayloadRenderer
+                original={renderStringUsingEntityNames}
+                currentMemory={null}
+            />
+        }
+
+        const currentEntityMap = Util.createEntityMapFromMemories(entities, memories)
         const renderStringUsingCurrentMemory = textAction.renderValue(currentEntityMap, { fallbackToOriginal: true })
 
         return <TextPayloadRenderer
