@@ -16,16 +16,9 @@ export default class Component extends React.Component<Props, {}> {
         const { entities, memories, textAction } = this.props
         const defaultEntityMap = Util.getDefaultEntityMap(entities)
         const renderStringUsingEntityNames = textAction.renderValue(defaultEntityMap, { preserveOptionalNodeWrappingCharacters: true })
-
-        if (memories === null) {
-            return <TextPayloadRenderer
-                original={renderStringUsingEntityNames}
-                currentMemory={null}
-            />
-        }
-
-        const currentEntityMap = Util.createEntityMapFromMemories(entities, memories)
-        const renderStringUsingCurrentMemory = textAction.renderValue(currentEntityMap, { fallbackToOriginal: true })
+        const renderStringUsingCurrentMemory = memories === null
+            ? null
+            : textAction.renderValue(Util.createEntityMapFromMemories(entities, memories), { fallbackToOriginal: true })
 
         return <TextPayloadRenderer
             original={renderStringUsingEntityNames}
