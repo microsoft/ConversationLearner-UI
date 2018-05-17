@@ -223,7 +223,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                         cardAction={cardAction}
                         entities={component.props.entities}
                         memories={null}
-                        onClickViewCard={() => {}}
+                        onClickViewCard={() => component.onClickViewCard(action)}
                     />
                 }
 

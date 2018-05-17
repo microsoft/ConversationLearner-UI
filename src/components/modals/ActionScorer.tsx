@@ -81,15 +81,7 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
             isMultiline: true,
             isResizable: true,
             render: (action: ActionBase, component) => {
-                const currentEntityMap = Util.createEntityMapFromMemories(component.props.entities, component.props.memories)
                 const defaultEntityMap = Util.getDefaultEntityMap(component.props.entities)
-                const args = ActionBase.GetActionArguments(action)
-                    .map(aa => ({
-                        parameter: aa.parameter,
-                        original: aa.renderValue(defaultEntityMap, { preserveOptionalNodeWrappingCharacters: true }),
-                        currentMemory: aa.renderValue(currentEntityMap, { fallbackToOriginal: true })
-                    }))
-                    .filter(kv => !Util.isNullOrWhiteSpace(kv.original))
                     
                 if (action.actionType === ActionTypes.TEXT) {
                     const textAction = new TextAction(action)
@@ -109,20 +101,13 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
                 }
                 else if (action.actionType === ActionTypes.CARD) {
                     const cardAction = new CardAction(action)
-                    return <div>
-                        <OF.PrimaryButton
-                            className="cl-button--viewCard"
-                            onClick={() => component.onClickViewCard(action)}
-                            ariaDescription="View Card"
-                            text=""
-                            iconProps={{ iconName: 'RedEye' }}
-                        />
-
-                        <span className={OF.FontClassNames.mediumPlus}>{cardAction.templateName}</span>
-                        {args.length !== 0 &&
-                            args.map((argument, i) => <div className="ms-ListItem-primaryText" key={i}>{`${argument.parameter}: ${argument.original}`}</div>)
-                        }
-                    </div>
+                    return <ActionPayloadRenderers.CardPayloadRendererContainer
+                        isValidationError={false}
+                        cardAction={cardAction}
+                        entities={component.props.entities}
+                        memories={component.props.memories}
+                        onClickViewCard={() => component.onClickViewCard(action)}
+                    />
                 }
 
                 return <span className={OF.FontClassNames.mediumPlus}>{ActionBase.GetPayload(action, defaultEntityMap)}</span>
