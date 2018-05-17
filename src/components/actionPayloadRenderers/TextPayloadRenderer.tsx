@@ -23,13 +23,14 @@ export default class Component extends React.Component<Props, State> {
     }
 
     render() {
-        return <div className={`${OF.FontClassNames.mediumPlus} cl-textpayload`}>
-            <div className="cl-textpayload__string">{this.state.isOriginalVisible
+        const showToggle = this.props.currentMemory !== this.props.original
+
+        return <div className={`${OF.FontClassNames.mediumPlus} cl-text-payload`}>
+            <div className="cl-text-payload__string">{this.state.isOriginalVisible
                 ? this.props.original
                 : this.props.currentMemory
             }</div>
-            {this.props.currentMemory !== this.props.original
-                && <div>
+            {showToggle && <div>
                 <OF.Toggle
                     checked={this.state.isOriginalVisible}
                     onChanged={this.onChangedVisible}
