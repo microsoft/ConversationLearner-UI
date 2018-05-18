@@ -12,7 +12,7 @@ import { getScoresThunkAsync, runScorerThunkAsync, postScorerFeedbackThunkAsync 
 import {
     AppBase, TextVariation, ExtractResponse,
     DialogType, TrainScorerStep, TrainingStatusCode,
-    UITrainScorerStep, UIScoreInput, DialogMode, UITeachResponse
+    UITrainScorerStep, UIScoreInput, DialogMode, UITeachResponse, ScoredAction
 } from '@conversationlearner/models'
 import ActionScorer from './ActionScorer';
 import EntityExtractor from './EntityExtractor';
@@ -67,7 +67,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
         let uiScoreInput = { ...this.props.teachSession.uiScoreInput, trainExtractorStep: null } as UIScoreInput
 
         ((this.props.postScorerFeedbackThunkAsync(this.props.user.id, appId, teachId, uiTrainScorerStep, waitForUser, uiScoreInput) as any) as Promise<UITeachResponse>)
-            .then(result => { this.props.onScoredAction() }
+            .then(result => { this.props.onScoredAction(trainScorerStep.scoredAction) }
             )
     }
 
@@ -248,7 +248,7 @@ const mapStateToProps = (state: State) => {
 }
 
 export interface ReceivedProps {
-    onScoredAction: () => void;
+    onScoredAction: (scoredAction: ScoredAction) => void;
     app: AppBase
     editingPackageId: string
 }

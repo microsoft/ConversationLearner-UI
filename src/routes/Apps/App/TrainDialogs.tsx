@@ -176,21 +176,22 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
 }
 
 interface ComponentState {
-    columns: OF.IColumn[],
-    sortColumn: IRenderableColumn,
-    teachSession: Teach,
-    activities: Activity[]
+    columns: OF.IColumn[]
+    sortColumn: IRenderableColumn
+    teachSession: Teach
+    history: Activity[]
+    isHistoryTerminal: boolean
     isTeachDialogModalOpen: boolean
     isTrainDialogModalOpen: boolean
     isSessionMemoryCheckOpen: boolean
     currentTrainDialog: TrainDialog
     searchValue: string,
     dialogKey: number,
-    entityFilter: OF.IDropdownOption,
+    entityFilter: OF.IDropdownOption
     actionFilter: OF.IDropdownOption
     isValidationWarningOpen: boolean
-    validationErrors: ReplayError[],
-    validationErrorTitleId: string | null,
+    validationErrors: ReplayError[]
+    validationErrorTitleId: string | null
     validationErrorMessageId: string | null
 }
 
@@ -205,7 +206,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             columns: columns,
             sortColumn: columns[0],
             teachSession: null,
-            activities: [],
+            history: [],
+            isHistoryTerminal: false,
             isTeachDialogModalOpen: false,
             isTrainDialogModalOpen: false,
             isSessionMemoryCheckOpen: false,
@@ -359,7 +361,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         this.setState({
             teachSession: null,
             isTeachDialogModalOpen: false,
-            activities: null,
+            history: null,
+            isHistoryTerminal: false,
             currentTrainDialog: null,
             dialogKey: this.state.dialogKey + 1
         })
@@ -371,7 +374,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 if (teachWithHistory.replayErrors.length === 0) {
                     this.setState({
                         teachSession: teachWithHistory.teach,
-                        activities: teachWithHistory.history,
+                        history: teachWithHistory.history,
+                        isHistoryTerminal: teachWithHistory.isLastActionTerminal
                     })
                 }
                 else {
@@ -419,7 +423,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 if (teachWithHistory.replayErrors.length === 0) {
                     this.setState({
                         teachSession: teachWithHistory.teach,
-                        activities: teachWithHistory.history,
+                        history: teachWithHistory.history,
+                        isHistoryTerminal: teachWithHistory.isLastActionTerminal,
                         currentTrainDialog: null,
                         isTrainDialogModalOpen: false,
                         isTeachDialogModalOpen: true
@@ -447,7 +452,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     // Note: Don't clear currentTrainDialog so I can delete it if I save my edits
                     this.setState({
                         teachSession: teachWithHistory.teach,
-                        activities: teachWithHistory.history,
+                        history: teachWithHistory.history,
+                        isHistoryTerminal: teachWithHistory.isLastActionTerminal,
                         isTrainDialogModalOpen: false,
                         isTeachDialogModalOpen: true
                     })
@@ -494,7 +500,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         ((this.props.fetchHistoryThunkAsync(this.props.app.appId, trainDialogWithDefinitions, this.props.user.name, this.props.user.id) as any) as Promise<TeachWithHistory>)
             .then(teachWithHistory => {
                 this.setState({
-                    activities: teachWithHistory.history,
+                    history: teachWithHistory.history,
+                    isHistoryTerminal: teachWithHistory.isLastActionTerminal,
                     currentTrainDialog: trainDialog,
                     isTrainDialogModalOpen: true
                 })
@@ -508,7 +515,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         this.setState({
             isTrainDialogModalOpen: false,
             currentTrainDialog: null,
-            activities: null,
+            history: null,
+            isHistoryTerminal: false,
             dialogKey: this.state.dialogKey + 1
         })
     }
@@ -654,12 +662,13 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     <TeachSessionModal
                         app={this.props.app}
                         editingPackageId={this.props.editingPackageId}
-                        teachSession={this.props.teachSessions.current}
+                        teach={this.props.teachSessions.current}
                         dialogMode={this.props.teachSessions.mode}
                         open={this.state.isTeachDialogModalOpen && !this.state.isSessionMemoryCheckOpen}
                         onClose={() => this.onCloseTeachSession()}
                         onUndo={(popRound) => this.onUndoTeachStep(popRound)}
-                        history={this.state.isTeachDialogModalOpen ? this.state.activities : null}
+                        history={this.state.isTeachDialogModalOpen ? this.state.history : null}
+                        isHistoryTerminal={this.state.isHistoryTerminal}
                         sourceTrainDialog={this.state.currentTrainDialog}
                     />
                 </div>
@@ -720,7 +729,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     onEdit={(editedTrainDialog: TrainDialog, newScoreInput: UIScoreInput) => this.onEditTrainDialog(editedTrainDialog, newScoreInput)}
                     onReplace={(editedTrainDialog: TrainDialog) => this.onReplaceTrainDialog(editedTrainDialog)}
                     trainDialog={currentTrainDialog}
-                    history={this.state.isTrainDialogModalOpen ? this.state.activities : null}
+                    history={this.state.isTrainDialogModalOpen ? this.state.history : null}
                 />
                 <SessionMemoryCheck
                     open={this.state.isSessionMemoryCheckOpen}
