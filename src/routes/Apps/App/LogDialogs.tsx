@@ -203,7 +203,8 @@ interface ComponentState {
     currentLogDialog: LogDialog
     searchValue: string
     dialogKey: number,   // Allows user to re-open modal for same row ()
-    activities: Activity[],
+    history: Activity[],
+    isHistoryTerminal: boolean,
     teachSession: Teach,
     validationErrors: ReplayError[],
     validationErrorTitleId: string | null, 
@@ -228,7 +229,8 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             currentLogDialog: null,
             searchValue: '',
             dialogKey: 0,
-            activities: [],
+            history: [],
+            isHistoryTerminal: false,
             teachSession: null,
             validationErrors: [],
             validationErrorTitleId: null,
@@ -334,7 +336,8 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         ((this.props.fetchHistoryThunkAsync(this.props.app.appId, trainDialog, this.props.user.name, this.props.user.id) as any) as Promise<TeachWithHistory>)
         .then(teachWithHistory => {
             this.setState({
-                activities: teachWithHistory.history,
+                history: teachWithHistory.history,
+                isHistoryTerminal: teachWithHistory.isLastActionTerminal,
                 currentLogDialog: logDialog,
                 isLogDialogWindowOpen: true,
                 validationErrors: teachWithHistory.replayErrors,
@@ -376,7 +379,8 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 // Note: Don't clear currentLogDialog so I can update it if I save my edits
                 this.setState({
                     teachSession: teachWithHistory.teach, 
-                    activities: teachWithHistory.history,
+                    history: teachWithHistory.history,
+                    isHistoryTerminal: teachWithHistory.isLastActionTerminal,
                     isLogDialogWindowOpen: false,
                     isTeachDialogModalOpen: true
                 })
@@ -400,7 +404,8 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         this.setState({
             teachSession: null,
             isTeachDialogModalOpen: false,
-            activities: null,
+            history: null,
+            isHistoryTerminal: false,
             currentLogDialog: null,
             dialogKey: this.state.dialogKey + 1
         })
@@ -416,7 +421,8 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     onUndoTeachStep(popRound: boolean) {
         // Clear history first
         this.setState({
-            activities: null
+            history: null,
+            isHistoryTerminal: false
         });
 
         ((this.props.createTeachSessionFromUndoThunkAsync(this.props.app.appId, this.state.teachSession, popRound, this.props.user.name, this.props.user.id) as any) as Promise<TeachWithHistory>)
@@ -424,7 +430,8 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             if (teachWithHistory.replayErrors.length === 0) {
                 this.setState({
                     teachSession: teachWithHistory.teach, 
-                    activities: teachWithHistory.history,
+                    history: teachWithHistory.history,
+                    isHistoryTerminal: teachWithHistory.isLastActionTerminal
                 })
             } else {    
                 this.setState({
@@ -549,7 +556,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     onEdit={(logDialogId: string, newTrainDialog: TrainDialog, newScoreInput: UIScoreInput) => this.onEditLogDialog(logDialogId, newTrainDialog, newScoreInput)}
                     onDelete={this.onDeleteLogDialog}
                     logDialog={currentLogDialog}
-                    history={this.state.isLogDialogWindowOpen ? this.state.activities : null}
+                    history={this.state.isLogDialogWindowOpen ? this.state.history : null}
                 />
                 <ReplayErrorList  
                     open={this.state.isValidationWarningOpen}
@@ -561,12 +568,13 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 <TeachSessionModal
                         app={this.props.app}
                         editingPackageId={this.props.editingPackageId}
-                        teachSession={this.props.teachSessions.current}
+                        teach={this.props.teachSessions.current}
                         dialogMode={this.props.teachSessions.mode}
                         open={this.state.isTeachDialogModalOpen}
                         onClose={this.onCloseTeachSession} 
                         onUndo={(popRound) => this.onUndoTeachStep(popRound)}
-                        history={this.state.isTeachDialogModalOpen ? this.state.activities : null}
+                        history={this.state.isTeachDialogModalOpen ? this.state.history : null}
+                        isHistoryTerminal={this.state.isHistoryTerminal}
                         sourceLogDialog={this.state.currentLogDialog}
                 />
             </div>

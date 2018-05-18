@@ -10,7 +10,7 @@ import { connect } from 'react-redux';
 import { ErrorHandler } from './../../ErrorHandler'
 import { AT } from '../../types/ActionTypes'
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
-import { PrimaryButton, DefaultButton } from 'office-ui-fabric-react';
+import * as OF from 'office-ui-fabric-react';
 import { State } from '../../types';
 import Webchat from '../Webchat'
 import TeachSessionAdmin from './TeachSessionAdmin'
@@ -28,7 +28,7 @@ interface ComponentState {
     isConfirmDeleteOpen: boolean,
     webchatKey: number,
     editing: boolean,
-    hasOneRound: boolean
+    hasTerminalAction: boolean
 }
 
 class TeachModal extends React.Component<Props, ComponentState> {
@@ -37,7 +37,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
         isConfirmDeleteOpen: false,
         webchatKey: 0,
         editing: false,
-        hasOneRound: false
+        hasTerminalAction: false
     }
 
     private callbacksId: string = null;
@@ -57,65 +57,72 @@ class TeachModal extends React.Component<Props, ComponentState> {
  
     @autobind
     onDismissError(errorType: AT) : void {
-        this.props.deleteTeachSessionThunkAsync(this.props.user.id, this.props.teachSession, this.props.app, this.props.editingPackageId, false, null, null); // False = abandon
+        this.props.deleteTeachSessionThunkAsync(this.props.user.id, this.props.teach, this.props.app, this.props.editingPackageId, false, null, null); // False = abandon
         this.props.onClose();
     }
     componentWillReceiveProps(newProps: Props) {
 
         let webchatKey = this.state.webchatKey;
-        let hasOneRound = this.state.hasOneRound;
+        let hasTerminalAction = this.state.hasTerminalAction;
 
         if (this.props.history !== newProps.history) {
             webchatKey = this.state.webchatKey + 1
         }
-        // Clear round if new session
-        if (this.props.teachSession !== newProps.teachSession) {
-            hasOneRound = false;
+        // Clear if new session
+        if (this.props.teach !== newProps.teach) {
+            hasTerminalAction = null;
         }
-        // History counts as having a round
-        if (newProps.history != null && newProps.history.length > 0) {
-            hasOneRound = true;
+        // Set terminal action from History but only if I just loaded it
+        if (this.props.history !== newProps.history && newProps.history && newProps.history.length > 0) {
+            hasTerminalAction = newProps.isHistoryTerminal
         }
-        if (webchatKey !== this.state.webchatKey || hasOneRound !== this.state.hasOneRound) {
+
+        if (webchatKey !== this.state.webchatKey || hasTerminalAction !== this.state.hasTerminalAction) {
             this.setState({
                 webchatKey: webchatKey,
-                hasOneRound: hasOneRound
+                hasTerminalAction: hasTerminalAction
             })
         }   
     }
 
+    @autobind
     onClickAbandonTeach() {
         this.setState({
             isConfirmDeleteOpen: true
         })
     }
 
+    @autobind
     onClickSave() {
+
         // If source was a trainDialog, delete the original
         let sourceTrainDialogId = this.props.sourceTrainDialog ? this.props.sourceTrainDialog.trainDialogId : null;
         let sourceLogDialogId = this.props.sourceLogDialog ? this.props.sourceLogDialog.logDialogId : null;
 
-        this.props.deleteTeachSessionThunkAsync(this.props.user.id, this.props.teachSession, this.props.app, this.props.editingPackageId, true, sourceTrainDialogId, sourceLogDialogId)
+        this.props.deleteTeachSessionThunkAsync(this.props.user.id, this.props.teach, this.props.app, this.props.editingPackageId, true, sourceTrainDialogId, sourceLogDialogId)
         this.props.onClose()
     }
 
+    @autobind
     onClickConfirmDelete() {
         this.setState(
             {
                 isConfirmDeleteOpen: false
             },
             () => {
-                this.props.deleteTeachSessionThunkAsync(this.props.user.id, this.props.teachSession, this.props.app, this.props.editingPackageId, false, null, null); // False = abandon
+                this.props.deleteTeachSessionThunkAsync(this.props.user.id, this.props.teach, this.props.app, this.props.editingPackageId, false, null, null); // False = abandon
                 this.props.onClose()
             })
     }
 
+    @autobind
     onClickCancelDelete() {
         this.setState({
             isConfirmDeleteOpen: false
         })
     }
 
+    @autobind
     onClickUndo() {
 
         // If on extractor step, just need to replay history (extractor step will be dropped)
@@ -141,11 +148,11 @@ class TeachModal extends React.Component<Props, ComponentState> {
                 userInput = { text: activity.text };
             }
 
-            if (!this.props.teachSession) {
+            if (!this.props.teach) {
                 throw new Error(`Current teach session is not defined. This may be due to race condition where you attempted to chat with the bot before the teach session has been created.`)
             }
 
-            this.props.runExtractorThunkAsync(this.props.user.id, this.props.app.appId, DialogType.TEACH, this.props.teachSession.teachId, null, userInput);
+            this.props.runExtractorThunkAsync(this.props.user.id, this.props.app.appId, DialogType.TEACH, this.props.teach.teachId, null, userInput);
         }
     }
 
@@ -227,7 +234,10 @@ class TeachModal extends React.Component<Props, ComponentState> {
                                 <TeachSessionAdmin
                                     app={this.props.app}
                                     editingPackageId={this.props.editingPackageId}
-                                    onScoredAction={() => {this.setState({hasOneRound: true})}}
+                                    onScoredAction={(scoredAction) => {
+                                        this.setState({hasTerminalAction: scoredAction.isTerminal})
+                                        }
+                                    }
                                 />
                             </div>
                         </div>
@@ -237,9 +247,9 @@ class TeachModal extends React.Component<Props, ComponentState> {
                     <div className="cl-modal-buttons">
                         <div className="cl-modal-buttons_primary" />
                         <div className="cl-modal-buttons_secondary">
-                            <DefaultButton
-                                disabled={!this.state.hasOneRound}
-                                onClick={() => this.onClickUndo()}
+                            <OF.DefaultButton
+                                disabled={!this.state.hasTerminalAction}
+                                onClick={this.onClickUndo}
                                 ariaDescription={intl.formatMessage({
                                     id: FM.TEACHSESSIONMODAL_UNDO_ARIADESCRIPTION,
                                     defaultMessage: "Undo Step"
@@ -249,14 +259,14 @@ class TeachModal extends React.Component<Props, ComponentState> {
                                     defaultMessage: "Undo Step"
                                 })}
                             />
-                            <DefaultButton
-                                onClick={() => this.onClickAbandonTeach()}
+                            <OF.DefaultButton
+                                onClick={this.onClickAbandonTeach}
                                 ariaDescription={this.renderAbandonText(intl)}
                                 text={this.renderAbandonText(intl)}
                             />
-                            <PrimaryButton
-                                disabled={!this.state.hasOneRound}
-                                onClick={() => this.onClickSave()}
+                            <OF.PrimaryButton
+                                disabled={!this.state.hasTerminalAction}
+                                onClick={this.onClickSave}
                                 ariaDescription={this.renderDoneText(intl)}
                                 text={this.renderDoneText(intl)}
                             />
@@ -265,8 +275,8 @@ class TeachModal extends React.Component<Props, ComponentState> {
                 </div>
                 <ConfirmCancelModal
                     open={this.state.isConfirmDeleteOpen}
-                    onCancel={() => this.onClickCancelDelete()}
-                    onConfirm={() => this.onClickConfirmDelete()}
+                    onCancel={this.onClickCancelDelete}
+                    onConfirm={this.onClickConfirmDelete}
                     title={this.renderConfirmText(intl)}
                 />
             </Modal>
@@ -284,7 +294,8 @@ const mapDispatchToProps = (dispatch: any) => {
 }
 const mapStateToProps = (state: State) => {
     return {
-        user: state.user
+        user: state.user,
+        teachSession: state.teachSessions
     }
 }
 
@@ -294,12 +305,13 @@ export interface ReceivedProps {
     onUndo: (popRound: boolean) => void,
     app: AppBase,
     editingPackageId: string,
-    teachSession: Teach,
+    teach: Teach,
     dialogMode: DialogMode,
     // When editing and existing log or train dialog
     sourceTrainDialog?: TrainDialog,
     sourceLogDialog?: LogDialog,
-    history: Activity[]       
+    history: Activity[],
+    isHistoryTerminal: boolean       
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
