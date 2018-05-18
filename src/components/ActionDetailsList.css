@@ -1,0 +1,4 @@
+.cl-action-error {
+    display: grid;
+    grid-template: auto / 1fr min-content;
+}

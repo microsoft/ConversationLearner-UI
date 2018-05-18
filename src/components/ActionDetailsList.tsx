@@ -14,6 +14,8 @@ import { FM } from '../react-intl-messages'
 import * as Util from '../util'
 import AdaptiveCardViewer from './modals/AdaptiveCardViewer/AdaptiveCardViewer'
 import * as ActionPayloadRenderers from './actionPayloadRenderers'
+import { Icon } from 'office-ui-fabric-react/lib/Icon'
+import './ActionDetailsList.css'
 
 class ActionDetailsList extends React.Component<Props, ComponentState> {
     constructor(p: any) {
@@ -160,6 +162,37 @@ type Props = typeof stateProps & ReceivedProps & InjectedIntlProps
 
 export default connect<typeof stateProps, {}, ReceivedProps>(mapStateToProps, null)(injectIntl(ActionDetailsList))
 
+function getActionPayloadRenderer(action: ActionBase, component: ActionDetailsList, isValidationError: boolean) {
+    if (action.actionType === ActionTypes.TEXT) {
+        const textAction = new TextAction(action)
+        return <ActionPayloadRenderers.TextPayloadRendererContainer
+            textAction={textAction}
+            entities={component.props.entities}
+            memories={null}
+        />
+    }
+    else if (action.actionType === ActionTypes.API_LOCAL) {
+        const apiAction = new ApiAction(action)
+        return <ActionPayloadRenderers.ApiPayloadRendererContainer
+            apiAction={apiAction}
+            entities={component.props.entities}
+            memories={null}
+        />
+    }
+    else if (action.actionType === ActionTypes.CARD) {
+        const cardAction = new CardAction(action)
+        return <ActionPayloadRenderers.CardPayloadRendererContainer
+            isValidationError={isValidationError}
+            cardAction={cardAction}
+            entities={component.props.entities}
+            memories={null}
+            onClickViewCard={() => component.onClickViewCard(action)}
+        />
+    }
+
+    return <span className={OF.FontClassNames.mediumPlus}>Unknown Action Type</span>
+}
+
 function getColumns(intl: InjectedIntl): IRenderableColumn[] {
     return [
         {
@@ -197,37 +230,16 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                 }
             },
             render: (action, component) => {
-                const entityMap = Util.getDefaultEntityMap(component.props.entities)
                 const isValidationError = component.validationError(action)
+                const payloadRenderer = getActionPayloadRenderer(action, component, isValidationError)
 
-                if (action.actionType === ActionTypes.TEXT) {
-                    const textAction = new TextAction(action)
-                    return <ActionPayloadRenderers.TextPayloadRendererContainer
-                        textAction={textAction}
-                        entities={component.props.entities}
-                        memories={null}
-                    />
-                }
-                else if (action.actionType === ActionTypes.API_LOCAL) {
-                    const apiAction = new ApiAction(action)
-                    return <ActionPayloadRenderers.ApiPayloadRendererContainer
-                        apiAction={apiAction}
-                        entities={component.props.entities}
-                        memories={null}
-                    />
-                }
-                else if (action.actionType === ActionTypes.CARD) {
-                    const cardAction = new CardAction(action)
-                    return <ActionPayloadRenderers.CardPayloadRendererContainer
-                        isValidationError={isValidationError}
-                        cardAction={cardAction}
-                        entities={component.props.entities}
-                        memories={null}
-                        onClickViewCard={() => component.onClickViewCard(action)}
-                    />
-                }
-
-                return <span className={OF.FontClassNames.mediumPlus}>{ActionBase.GetPayload(action, entityMap)}</span>
+                return <div className="cl-action-error">
+                    {payloadRenderer}
+                    {isValidationError &&
+                        <div className={OF.FontClassNames.mediumPlus}>
+                            <Icon className="cl-icon" iconName="IncidentTriangle" />
+                        </div>}
+                </div>
             }
         },
         {
