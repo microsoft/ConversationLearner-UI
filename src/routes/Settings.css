@@ -9,3 +9,7 @@
 .cl-input:focus {
     border-color: #0078d7;
 }
+
+.cl-input-warning {
+    padding: 0.5em 0;
+}

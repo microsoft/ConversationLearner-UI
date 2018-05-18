@@ -10,7 +10,7 @@ import { State } from '../types'
 import { bindActionCreators } from 'redux'
 import { FormattedMessage } from 'react-intl'
 import { FM } from '../react-intl-messages'
-import { FontClassNames, Label } from 'office-ui-fabric-react'
+import * as OF from 'office-ui-fabric-react'
 import * as SdkPort from '../services/sdkPort'
 import './Settings.css'
 
@@ -27,6 +27,14 @@ class Settings extends React.Component<Props, ComponentState> {
 
     onChangeSdkPort = (event: React.ChangeEvent<HTMLInputElement>) => {
         const sdkPort = parseInt(event.target.value)
+        this.setSdkPort(sdkPort)        
+    }
+
+    reset = () => {
+        this.setSdkPort(SdkPort.defaultPort)
+    }
+
+    private setSdkPort = (sdkPort: number) => {
         SdkPort.set(sdkPort)
         this.setState({
             sdkPort
@@ -36,19 +44,19 @@ class Settings extends React.Component<Props, ComponentState> {
     render() {
         return (
             <div className="cl-page">
-                <div className={FontClassNames.superLarge}>
+                <div className={OF.FontClassNames.superLarge}>
                     <FormattedMessage
                         id={FM.PROFILE_SETTINGS_TITLE}
                         defaultMessage="Settings"
                     />
                 </div>
                 <div>
-                    <Label>
+                    <OF.Label>
                         <FormattedMessage
-                            id={FM.PROFILE_SETTINGS_SDKPORT}
+                            id={FM.PROFILE_SETTINGS_SDK_PORT}
                             defaultMessage="SDK Port"
                         />
-                    </Label>
+                    </OF.Label>
                     <input
                         className="cl-input"
                         type="number"
@@ -57,6 +65,20 @@ class Settings extends React.Component<Props, ComponentState> {
                         value={this.state.sdkPort}
                         onChange={this.onChangeSdkPort}
                     />
+                    <div className="cl-input-warning">
+                        <OF.Icon className="cl-icon" iconName="IncidentTriangle" />
+                        <FormattedMessage
+                            id={FM.PROFILE_SETTINGS_SDK_PORT_WARNING}
+                            defaultMessage="Only change this value if you know what you are doing. This value must match the PORT that your SDK is listening on."
+                        />
+                    </div>
+                    <div>
+                        <OF.PrimaryButton
+                            text="Reset"
+                            ariaDescription="Reset"
+                            onClick={this.reset}
+                        />
+                    </div>
                 </div>
             </div>
         )
