@@ -318,7 +318,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 const requiredEntityTagsFromPayload = Object.values(slateValuesMap)
                     .reduce<OF.ITag[]>((entities, value) => {
                         const newEntities = ActionPayloadEditor.Utilities.getEntitiesFromValue(value).map(convertOptionToTag)
-                        return [...entities, ...newEntities]
+                        // Only add new entities which are not already included from a previous payload
+                        return [...entities, ...newEntities.filter(ne => !entities.some(e => e.key === ne.key))]
                     }, [])
 
                 const requiredEntityTags = convertEntityIdsToTags(action.requiredEntities, nextProps.entities)
