@@ -32,7 +32,7 @@ interface IRenderableColumn extends OF.IColumn {
 }
 
 function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[] {
-    let columns = [
+    return [
         {
             key: 'select',
             name: '',
@@ -115,17 +115,20 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
         },
         {
             key: 'actionScore',
-            name: intl.formatMessage({
-                id: FM.ACTIONSCORER_COLUMNS_SCORE,
-                defaultMessage: 'Score'
-            }),
+            name: hideScore ? '' : intl.formatMessage({
+                                        id: FM.ACTIONSCORER_COLUMNS_SCORE,
+                                        defaultMessage: 'Score'
+                                    }),
             fieldName: 'score',
-            minWidth: 80,
-            maxWidth: 80,
+            minWidth: hideScore ? 1 : 80,
+            maxWidth: hideScore ? 1 : 80,
             isResizable: true,
             isSorted: true,
             isSortedDescending: true,
             render: (action, component) => {
+                if (component.props.hideScore) {
+                    return null;
+                }
                 let fieldContent: number | string = (action as ScoredAction).score
                 if (fieldContent) {
                     // No scores in TrainDialogs
@@ -185,12 +188,7 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
             isResizable: true,
             render: action => action.actionType
         },
-    ] as IRenderableColumn[]
-
-    if (hideScore) {
-        columns = columns.filter(c => c.key !== 'actionScore')
-    }
-    return columns
+    ]
 }
 
 interface ComponentState {
