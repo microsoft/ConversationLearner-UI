@@ -242,6 +242,7 @@ class Entities extends React.Component<Props, ComponentState> {
                 }
                 <div>
                     <OF.PrimaryButton
+                        data-testid="entities-button-create"
                         disabled={this.props.editingPackageId !== this.props.app.devPackageId}
                         onClick={this.handleOpenCreateModal}
                         ariaDescription={this.props.intl.formatMessage({

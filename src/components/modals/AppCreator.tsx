@@ -225,6 +225,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
                 </div>
                 <div>
                     <OF.TextField
+                        data-testid="app-create-input-name"
                         onGetErrorMessage={value => this.onGetNameErrorMessage(value)}
                         onChanged={text => this.nameChanged(text)}
                         label={this.getLabel(intl)}
@@ -260,6 +261,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
                                 >
                                     <OF.PrimaryButton
                                         disabled={invalidName}          
+                                	data-testid="app-create-button-submit"
                                         ariaDescription={this.props.intl.formatMessage({
                                             id: FM.APPCREATOR_LOCATEBUTTON_ARIADESCRIPTION,
                                             defaultMessage: 'Import from File'
