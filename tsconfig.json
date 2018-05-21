@@ -14,14 +14,17 @@
     "moduleResolution": "node",
     "rootDir": "src",
     "experimentalDecorators": true,
-    "forceConsistentCasingInFileNames": false,  // For BotBuilder-core
     "noImplicitReturns": true,
     "noImplicitThis": true,
     "noImplicitAny": true,
     // TODO: Enable after app is building and working
     "strictNullChecks": false,
     "suppressImplicitAnyIndexErrors": true,
-    "noUnusedLocals": true
+    "noUnusedLocals": true,
+    "types": [
+      "node",
+      "jest"
+    ]
   },
   "exclude": [
     "node_modules",
@@ -30,6 +33,7 @@
     "acceptance-tests",
     "webpack",
     "jest",
+    "cypress",
     "src/setupTests.ts",
     "publish",
     "package"
