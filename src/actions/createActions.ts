@@ -285,7 +285,7 @@ export const createTeachSessionFromHistoryThunkAsync = (app: AppBase, trainDialo
         try {
             const extractChanged = scoreInput !== null;
             const teachWithHistory = await clClient.teachSessionFromHistory(app.appId, trainDialog, userName, userId, extractChanged);
-            dispatch(createTeachSessionFromHistoryFulfilled(teachWithHistory, scoreInput))
+            dispatch(createTeachSessionFromHistoryFulfilled(teachWithHistory))
             return teachWithHistory
         }
         catch (error) {
@@ -306,12 +306,11 @@ const createTeachSessionFromHistoryAsync = (clAppID: string, trainDialog: TrainD
     }
 }
 
-const createTeachSessionFromHistoryFulfilled = (teachWithHistory: TeachWithHistory, scoreInput: UIScoreInput): ActionObject => {
+const createTeachSessionFromHistoryFulfilled = (teachWithHistory: TeachWithHistory): ActionObject => {
     // Needs a fulfilled version to handle response from Epic
     return {
         type: AT.CREATE_TEACH_SESSION_FROMHISTORYFULFILLED,
-        teachWithHistory: teachWithHistory,
-        uiScoreInput: scoreInput
+        teachWithHistory: teachWithHistory
     }
 }
 
@@ -351,8 +350,7 @@ const createTeachSessionFromUndoFulfilled = (teachWithHistory: TeachWithHistory)
     // Needs a fulfilled version to handle response from Epic
     return {
         type: AT.CREATE_TEACH_SESSION_FROMUNDOFULFILLED,
-        teachWithHistory: teachWithHistory, 
-        uiScoreInput: null
+        teachWithHistory: teachWithHistory
     }
 }
 

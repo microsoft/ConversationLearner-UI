@@ -44,7 +44,7 @@ const teachSessionReducer: Reducer<TeachSessionState> = (state = initialState, a
                     prevMemories: action.teachWithHistory.prevMemories,
                     scoreResponse: action.teachWithHistory.scoreResponse,
                     scoreInput: action.teachWithHistory.scoreInput,
-                    uiScoreInput: action.uiScoreInput
+                    uiScoreInput: action.teachWithHistory.uiScoreInput
                 }
             }
             return { ...state };
