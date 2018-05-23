@@ -293,8 +293,7 @@ export type CreateAction = {
     userId: string
 } | {
     type: AT.CREATE_TEACH_SESSION_FROMUNDOFULFILLED,
-    teachWithHistory: TeachWithHistory,
-    uiScoreInput: UIScoreInput
+    teachWithHistory: TeachWithHistory
 } | {
     type: AT.CREATE_TEACH_SESSION_FROMHISTORYASYNC,
     clAppID: string,
@@ -303,8 +302,7 @@ export type CreateAction = {
     trainDialog: TrainDialog
 } | {
     type: AT.CREATE_TEACH_SESSION_FROMHISTORYFULFILLED,
-    teachWithHistory: TeachWithHistory,
-    uiScoreInput: UIScoreInput
+    teachWithHistory: TeachWithHistory
 }
 
 export type DeleteAction = {
