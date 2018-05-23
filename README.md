@@ -1,5 +1,7 @@
 # Contributing
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/Microsoft/ConversationLearner-UI.svg)](https://greenkeeper.io/)
+
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
 
 This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
