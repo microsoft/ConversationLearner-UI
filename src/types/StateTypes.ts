@@ -5,6 +5,7 @@
 import {
     DialogMode,
     AppBase,
+    Banner,
     BotInfo,
     EntityBase,
     ActionBase,
@@ -54,7 +55,8 @@ export type ChatSessionState = {
 }
 export type DisplayState = {
     displaySpinner: string[],
-    tipType: TipType
+    tipType: TipType,
+    clearedBanner: Banner,
 }
 export type UserState = {
     name: string | null,

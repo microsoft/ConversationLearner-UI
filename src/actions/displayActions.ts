@@ -5,7 +5,7 @@
 import { ActionObject } from '../types'
 import { AT } from '../types/ActionTypes'
 import { ErrorType } from '../types/const'
-import { AppBase } from '@conversationlearner/models';
+import { AppBase, Banner } from '@conversationlearner/models';
 import { TipType } from '../components/ToolTips'
 
 export const setCurrentApp = (key: string, app: AppBase): ActionObject => {
@@ -46,6 +46,13 @@ export const setErrorDisplay = (errorType: ErrorType, title: string, messages: s
         title: title,
         messages: messages,
         actionType: actionType
+    }
+}
+
+export const clearBanner = (clearedBanner: Banner): ActionObject => {
+    return {
+        type: AT.CLEAR_BANNER,
+        clearedBanner: clearedBanner
     }
 }
 

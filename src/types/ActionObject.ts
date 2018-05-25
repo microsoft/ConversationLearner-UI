@@ -3,7 +3,7 @@
  * Licensed under the MIT License.
  */
 import {
-    AppBase,
+    AppBase, Banner,
     BotInfo, Memory,
     AppDefinition,
     EntityBase,
@@ -89,6 +89,9 @@ export type DisplayAction = {
     messages: string[],
     actionType: AT
 } | {
+    type: AT.CLEAR_BANNER
+    clearedBanner: Banner,
+}| {
     type: AT.CLEAR_ERROR_DISPLAY
 } | {
     type: AT.UPDATE_OPERATION_FULFILLED
