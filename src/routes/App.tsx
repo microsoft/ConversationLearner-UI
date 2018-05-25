@@ -13,13 +13,15 @@ import { State } from '../types'
 import AppsIndex from './Apps/AppsIndex'
 import Settings from './Settings'
 import NoMatch from './NoMatch'
+import { Banner } from '@conversationlearner/models';
 import HelpPanel from '../components/HelpPanel'
-import { FontClassNames } from 'office-ui-fabric-react'
+import { FontClassNames, MessageBar, MessageBarType, Link } from 'office-ui-fabric-react'
 import { SpinnerWindow, ErrorPanel } from '../components/modals'
 import './App.css'
 import { FormattedMessage } from 'react-intl'
 import { FM } from '../react-intl-messages'
 import { fetchBotInfoAsync } from '../actions/fetchActions'
+import { clearBanner } from '../actions/displayActions'
 
 interface ComponentState {
 }
@@ -34,11 +36,43 @@ class App extends React.Component<Props, ComponentState> {
     this.props.fetchBotInfoAsync(this.props.browserId)
   }
 
+  dismissBanner(banner: Banner) {
+    // Can't clear error banners
+    if (banner.type.toLowerCase() !== "error") {
+      this.props.clearBanner(this.props.banner) 
+    }
+  }
+
+  shouldShowBanner(banner: Banner) {
+    if (!banner || !banner.message) {
+      return false;
+    }
+    
+    if (!this.props.clearedBanner) {
+      return true;
+    }
+      
+    if (JSON.stringify(banner) === JSON.stringify(this.props.clearedBanner)) {
+      return false;
+    }
+    return true;
+  }
+
+  getMessageBarType(type: string) {
+    if (type.toLowerCase() === "error") {
+      return MessageBarType.error
+    }
+    if (type.toLowerCase() === "warning") {
+      return MessageBarType.warning
+    }
+    return MessageBarType.success
+  }
+
   render() {
     return (
       <Router>
         <div className="cl-app">
-          <div className="cl-app_header-placeholder"></div>
+          <div className="cl-app_header-placeholder"/>
           <header className={`cl-app_header cl-header ${FontClassNames.mediumPlus}`}>
             <nav className="cl-header_links ">
               <NavLink to="/home">
@@ -50,8 +84,28 @@ class App extends React.Component<Props, ComponentState> {
             </nav>
             <NavLink className="cl-header_user" to="/settings">Settings</NavLink>
           </header>
+          
           <div className="cl-app_header-placeholder" />
           <div className="cl-app_content">
+            {this.shouldShowBanner(this.props.banner) &&
+              <MessageBar
+                className="cl-messagebar"
+                isMultiline={true}
+                onDismiss={()=>this.dismissBanner(this.props.banner) }
+                dismissButtonAriaLabel='Close'
+                messageBarType={this.getMessageBarType(this.props.banner.type)}
+              >
+                {this.props.banner.message}
+                {this.props.banner.message.link && this.props.banner.linktext &&
+                  <Link href={this.props.banner.link}>{this.props.banner.linktext}</Link>
+                }
+                {this.props.banner.datestring &&
+                  <div>
+                    <span className="cl-font--demphasis">{this.props.banner.datestring}</span>
+                  </div>
+                }
+              </MessageBar>
+            }
             <Switch>
               <Route exact path="/" render={() => <Redirect to="/home" />} />
               <Route path="/home" component={AppsIndex} />
@@ -72,14 +126,17 @@ class App extends React.Component<Props, ComponentState> {
 
 const mapDispatchToProps = (dispatch: any) => {
   return bindActionCreators({
-      fetchBotInfoAsync
+      fetchBotInfoAsync,
+      clearBanner
   }, dispatch);
 }
 
 const mapStateToProps = (state: State) => {
   return {
     user: state.user,
-    browserId: state.bot.browserId
+    browserId: state.bot.browserId,
+    banner: state.bot.botInfo ? state.bot.botInfo.banner : null,
+    clearedBanner: state.display.clearedBanner
   }
 }
 

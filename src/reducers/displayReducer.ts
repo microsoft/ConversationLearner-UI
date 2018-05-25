@@ -8,7 +8,8 @@ import { Reducer } from 'redux'
 
 const initialState: DisplayState = {
     displaySpinner: [],
-    tipType: null
+    tipType: null,
+    clearedBanner: null
 };
 
 const spinnerName = (spinner: string): string => {
@@ -27,6 +28,8 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
     switch (action.type) {
         case AT.USER_LOGOUT:
             return { ...initialState };
+        case AT.CLEAR_BANNER: 
+            return {...state, clearedBanner: action.clearedBanner}
         case AT.SET_TIP_TYPE:
             return { ...state, tipType: action.tipType };
         case AT.CREATE_APPLICATION_FULFILLED:

@@ -134,6 +134,10 @@ html {
   color: var(--color-wc-user);
 }
 
+.cl-messagebar {
+    margin-bottom: 15px;
+}
+
 i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
   cursor: pointer;
 }
@@ -148,6 +152,13 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
   font-weight: bold !important;
   color: #000000;
 }
+
+.cl-font--demphasis 
+{
+  font-weight: lighter !important;
+  color: #000000;
+}
+
 .cl-font--deleted
 {
   text-decoration: line-through;
