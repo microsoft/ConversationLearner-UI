@@ -120,6 +120,18 @@ class LogDialogModal extends React.Component<Props, ComponentState> {
                             <div className="cl-modal-buttons_primary">
                             </div>
                             <div className="cl-modal-buttons_secondary">
+                                <PrimaryButton
+                                    disabled={this.state.pendingExtractionChanges}
+                                    onClick={() => this.props.onClose()}
+                                    ariaDescription={intl.formatMessage({
+                                        id: FM.LOGDIALOGMODAL_PRIMARYBUTTON_ARIADESCRIPTION,
+                                        defaultMessage: 'Done'
+                                    })}
+                                    text={intl.formatMessage({
+                                        id: FM.LOGDIALOGMODAL_PRIMARYBUTTON_TEXT,
+                                        defaultMessage: 'Done'
+                                    })}
+                                />
                                 <DefaultButton
                                     className="cl-button-delete"
                                     disabled={this.state.pendingExtractionChanges || !this.props.canEdit}
@@ -131,18 +143,6 @@ class LogDialogModal extends React.Component<Props, ComponentState> {
                                     text={intl.formatMessage({
                                         id: FM.LOGDIALOGMODAL_DEFAULTBUTTON_TEXT,
                                         defaultMessage: 'Delete'
-                                    })}
-                                />
-                                <PrimaryButton
-                                    disabled={this.state.pendingExtractionChanges}
-                                    onClick={() => this.props.onClose()}
-                                    ariaDescription={intl.formatMessage({
-                                        id: FM.LOGDIALOGMODAL_PRIMARYBUTTON_ARIADESCRIPTION,
-                                        defaultMessage: 'Done'
-                                    })}
-                                    text={intl.formatMessage({
-                                        id: FM.LOGDIALOGMODAL_PRIMARYBUTTON_TEXT,
-                                        defaultMessage: 'Done'
                                     })}
                                 />
                             </div>

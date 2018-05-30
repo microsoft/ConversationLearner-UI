@@ -998,6 +998,28 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 </div>
 
                 <div className="cl-modal_footer cl-modal-buttons">
+                    <div className="cl-modal-buttons_secondary">
+                        {this.state.isEditing &&
+                            <OF.DefaultButton
+                                onClick={this.onClickTrainDialogs}
+                                iconProps={{ iconName: 'QueryList' }}
+                                ariaDescription={intl.formatMessage({
+                                    id: FM.ACTIONCREATOREDITOR_TRAINDIALOGSBUTTON_ARIADESCRIPTION,
+                                    defaultMessage: 'Train Dialogs'
+                                })}
+                                text={intl.formatMessage({
+                                    id: FM.ACTIONCREATOREDITOR_TRAINDIALOGSBUTTON_TEXT,
+                                    defaultMessage: 'Trail Dialogs'
+                                })}
+                            />
+                        }
+                        <OF.DefaultButton
+                            onClick={this.onClickCreateEntity}
+                            ariaDescription="Create Entity"
+                            text="Entity"
+                            iconProps={{ iconName: 'CirclePlus' }}
+                        />
+                    </div>
                     <div className="cl-modal-buttons_primary">
                         <OF.PrimaryButton
                             disabled={this.saveDisabled()}
@@ -1048,37 +1070,15 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                 })}
                             />}
                     </div>
-                    <div className="cl-modal-buttons_secondary">
-                        {this.state.isEditing &&
-                            <OF.PrimaryButton
-                                onClick={this.onClickTrainDialogs}
-                                iconProps={{ iconName: 'QueryList' }}
-                                ariaDescription={intl.formatMessage({
-                                    id: FM.ACTIONCREATOREDITOR_TRAINDIALOGSBUTTON_ARIADESCRIPTION,
-                                    defaultMessage: 'Train Dialogs'
-                                })}
-                                text={intl.formatMessage({
-                                    id: FM.ACTIONCREATOREDITOR_TRAINDIALOGSBUTTON_TEXT,
-                                    defaultMessage: 'Trail Dialogs'
-                                })}
-                            />
-                        }
-                        <OF.PrimaryButton
-                            onClick={this.onClickCreateEntity}
-                            ariaDescription="Create Entity"
-                            text="Entity"
-                            iconProps={{ iconName: 'CirclePlus' }}
-                        />
-                    </div>
                 </div>
                 <ConfirmCancelModal
                     open={this.state.isConfirmDeleteModalOpen}
                     onCancel={this.onCancelDelete}
                     onConfirm={this.onConfirmDelete}
                     title={intl.formatMessage({
-                            id: FM.ACTIONCREATOREDITOR_CONFIRM_DELETE_TITLE,
-                            defaultMessage: 'Are you sure you want to delete this action?'
-                        })}
+                        id: FM.ACTIONCREATOREDITOR_CONFIRM_DELETE_TITLE,
+                        defaultMessage: 'Are you sure you want to delete this action?'
+                    })}
                     warning={this.state.showValidationWarning &&
                         intl.formatMessage({
                             id: FM.ACTIONCREATOREDITOR_CONFIRM_DELETE_WARNING,
@@ -1087,12 +1087,12 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 />
                 <ConfirmCancelModal
                     open={this.state.isConfirmEditModalOpen}
-                    onCancel={this.onCancelEdit} 
+                    onCancel={this.onCancelEdit}
                     onConfirm={this.onConfirmEdit}
                     title={intl.formatMessage({
-                            id: FM.ACTIONCREATOREDITOR_CONFIRM_EDIT_TITLE,
-                            defaultMessage: 'Are you sure you want to edit this action?'
-                        })}
+                        id: FM.ACTIONCREATOREDITOR_CONFIRM_EDIT_TITLE,
+                        defaultMessage: 'Are you sure you want to edit this action?'
+                    })}
                     warning={this.state.showValidationWarning &&
                         intl.formatMessage({
                             id: FM.ACTIONCREATOREDITOR_CONFIRM_EDIT_WARNING,
@@ -1105,7 +1105,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     open={this.state.isEntityEditorModalOpen}
                     entity={null}
                     handleClose={this.onCloseEntityEditor}
-                    handleDelete={() => {}}
+                    handleDelete={() => { }}
                     entityTypeFilter={null}
                 />
                 <AdaptiveCardViewer

@@ -156,21 +156,33 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
                     <div className="cl-modal-buttons">
                         <div className="cl-modal-buttons_primary" />
                         <div className="cl-modal-buttons_secondary">
-                            <div  ref={ (menuButton) => this._refBranchButton = menuButton}>
+                            <PrimaryButton
+                                disabled={this.state.pendingExtractionChanges}
+                                onClick={() => this.onClickDone()}
+                                ariaDescription={intl.formatMessage({
+                                    id: FM.TRAINDIALOGMODAL_PRIMARYBUTTON_ARIADESCRIPTION,
+                                    defaultMessage: 'Done'
+                                })}
+                                text={intl.formatMessage({
+                                    id: FM.TRAINDIALOGMODAL_PRIMARYBUTTON_TEXT,
+                                    defaultMessage: 'Done'
+                                })}
+                            />
+                            <div ref={(menuButton) => this._refBranchButton = menuButton}>
                                 <DefaultButton
-                                        disabled={!canBranch ||
-                                            this.state.pendingExtractionChanges || 
-                                            !this.props.canEdit || 
-                                            (this.props.trainDialog && this.props.trainDialog.invalid === true)}
-                                        onClick={() => this.onClickBranch()}
-                                        ariaDescription={intl.formatMessage({
-                                            id: FM.TRAINDIALOGMODAL_BRANCH_ARIADESCRIPTION,
-                                            defaultMessage: 'Branch'
-                                        })}
-                                        text={intl.formatMessage({
-                                            id: FM.TRAINDIALOGMODAL_BRANCH_TEXT,
-                                            defaultMessage: 'Branch'
-                                        })}
+                                    disabled={!canBranch ||
+                                        this.state.pendingExtractionChanges ||
+                                        !this.props.canEdit ||
+                                        (this.props.trainDialog && this.props.trainDialog.invalid === true)}
+                                    onClick={() => this.onClickBranch()}
+                                    ariaDescription={intl.formatMessage({
+                                        id: FM.TRAINDIALOGMODAL_BRANCH_ARIADESCRIPTION,
+                                        defaultMessage: 'Branch'
+                                    })}
+                                    text={intl.formatMessage({
+                                        id: FM.TRAINDIALOGMODAL_BRANCH_TEXT,
+                                        defaultMessage: 'Branch'
+                                    })}
                                 />
                             </div>
                             <DefaultButton
@@ -186,18 +198,7 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
                                     defaultMessage: 'Delete'
                                 })}
                             />
-                            <PrimaryButton
-                                disabled={this.state.pendingExtractionChanges}
-                                onClick={() => this.onClickDone()}
-                                ariaDescription={intl.formatMessage({
-                                    id: FM.TRAINDIALOGMODAL_PRIMARYBUTTON_ARIADESCRIPTION,
-                                    defaultMessage: 'Done'
-                                })}
-                                text={intl.formatMessage({
-                                    id: FM.TRAINDIALOGMODAL_PRIMARYBUTTON_TEXT,
-                                    defaultMessage: 'Done'
-                                })}
-                            />
+
                         </div>
                     </div>
                 </div>
