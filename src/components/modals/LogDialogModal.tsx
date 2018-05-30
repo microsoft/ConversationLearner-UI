@@ -117,21 +117,9 @@ class LogDialogModal extends React.Component<Props, ComponentState> {
                     </div>
                     <div className="cl-modal_footer cl-modal_footer--border">
                         <div className="cl-modal-buttons">
-                            <div className="cl-modal-buttons_primary">
-                            </div>
                             <div className="cl-modal-buttons_secondary">
-                                <DefaultButton
-                                    disabled={this.state.pendingExtractionChanges || !this.props.canEdit}
-                                    onClick={() => this.onClickDelete()}
-                                    ariaDescription={intl.formatMessage({
-                                        id: FM.LOGDIALOGMODAL_DEFAULTBUTTON_ARIADESCRIPTION,
-                                        defaultMessage: 'Delete'
-                                    })}
-                                    text={intl.formatMessage({
-                                        id: FM.LOGDIALOGMODAL_DEFAULTBUTTON_TEXT,
-                                        defaultMessage: 'Delete'
-                                    })}
-                                />
+                            </div>
+                            <div className="cl-modal-buttons_primary">
                                 <PrimaryButton
                                     disabled={this.state.pendingExtractionChanges}
                                     onClick={() => this.props.onClose()}
@@ -142,6 +130,19 @@ class LogDialogModal extends React.Component<Props, ComponentState> {
                                     text={intl.formatMessage({
                                         id: FM.LOGDIALOGMODAL_PRIMARYBUTTON_TEXT,
                                         defaultMessage: 'Done'
+                                    })}
+                                />
+                                <DefaultButton
+                                    className="cl-button-delete"
+                                    disabled={this.state.pendingExtractionChanges || !this.props.canEdit}
+                                    onClick={() => this.onClickDelete()}
+                                    ariaDescription={intl.formatMessage({
+                                        id: FM.LOGDIALOGMODAL_DEFAULTBUTTON_ARIADESCRIPTION,
+                                        defaultMessage: 'Delete'
+                                    })}
+                                    text={intl.formatMessage({
+                                        id: FM.LOGDIALOGMODAL_DEFAULTBUTTON_TEXT,
+                                        defaultMessage: 'Delete'
                                     })}
                                 />
                             </div>

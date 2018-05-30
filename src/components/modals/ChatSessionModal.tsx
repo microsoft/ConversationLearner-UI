@@ -64,20 +64,9 @@ class SessionWindow extends React.Component<Props, ComponentState> {
                 </div>
                 <div className="cl-modal_footer cl-modal_footer--border">
                     <div className="cl-modal-buttons">
-                        <div className="cl-modal-buttons_primary">
-                        </div>
                         <div className="cl-modal-buttons_secondary">
-                            <DefaultButton
-                                onClick={() => this.onClickExpire()}
-                                ariaDescription={intl.formatMessage({
-                                    id: FM.CHATSESSIONMODAL_EXPIREBUTTON_ARIADESCRIPTION,
-                                    defaultMessage: 'Expire Session'
-                                })}
-                                text={intl.formatMessage({
-                                    id: FM.CHATSESSIONMODAL_EXPIREBUTTON_TEXT,
-                                    defaultMessage: 'Expire Session'
-                                })}
-                            />
+                        </div>
+                        <div className="cl-modal-buttons_primary">
                             <PrimaryButton
                                 onClick={() => this.onClickDone()}
                                 ariaDescription={intl.formatMessage({
@@ -87,6 +76,17 @@ class SessionWindow extends React.Component<Props, ComponentState> {
                                 text={intl.formatMessage({
                                     id: FM.CHATSESSIONMODAL_PRIMARYBUTTON_TEXT,
                                     defaultMessage: 'Done Testing'
+                                })}
+                            />
+                            <DefaultButton
+                                onClick={() => this.onClickExpire()}
+                                ariaDescription={intl.formatMessage({
+                                    id: FM.CHATSESSIONMODAL_EXPIREBUTTON_ARIADESCRIPTION,
+                                    defaultMessage: 'Expire Session'
+                                })}
+                                text={intl.formatMessage({
+                                    id: FM.CHATSESSIONMODAL_EXPIREBUTTON_TEXT,
+                                    defaultMessage: 'Expire Session'
                                 })}
                             />
                         </div>

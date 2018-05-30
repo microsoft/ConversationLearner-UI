@@ -98,6 +98,9 @@ html {
   margin-left: 8px;
   color: var(--color-wc-user);
 }
+.cl-icon--pointer {
+  cursor: pointer;
+}
 
 .cl-icon[data-icon-name="ChevronUp"] {
   font-size: 12px;
@@ -499,22 +502,88 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
   margin-right: 5px;
 }
 */
-
 .ms-Button--primary.is-disabled, .ms-Button--primary:disabled {
-  background-color: var(--color-yellow-lighter) !important;
+  background-color: var(--color-themeDarker) !important;
 }
 
 /** TODO: Remove usage of !important */
 .ms-Button--primary:not(:disabled) {
-  background-color: var(--color-yellow) !important;
-  color: black !important;
+  background-color: var(--color-themePrimary) !important;
+  border: 1px solid var(--color-themePrimary) !important;
+  color: white !important;
 }
 .ms-Button--primary:not(:disabled):hover {
-  background-color: var(--color-yellow-darker) !important;
+  background-color: var(--color-themeDark) !important;
+  border: 1px solid var(--color-themeDark) !important;
 }
 .ms-Button--primary:not(:disabled):focus {
-  border: 1px solid var(--color-yellow-darkest);
-  box-sizing: border-box
+  background-color: var(--color-themeDarker) !important;
+  border: 1px solid var(--color-themeDarker) !important;
+}
+.ms-Button--primary:not(:disabled):focus:not(:active)::after {
+  content: "";
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  bottom: 0px;
+  right: 0px;
+  z-index: 1;
+  border-width: 1px;
+  border-style: solid;
+  border-color: rgb(255, 255, 255);
+  border-image: initial;
+  outline: rgb(102, 102, 102) solid 1px;
+}
+
+.ms-Button--default:not(.cl-button-delete):not(:disabled) {
+  background-color: white !important;
+  border: 1px solid var(--color-themePrimary) !important;
+  color: var(--color-themePrimary) !important;
+}
+.ms-Button--default:not(.cl-button-delete):not(:disabled):hover {
+  background-color: var(--color-themeDark) !important;
+  border: 1px solid var(--color-themeDark) !important;
+  color: white !important;
+}
+.ms-Button--default:not(.cl-button-delete):not(:disabled):focus {
+  background-color: var(--color-themeDark) !important;
+  border: 1px solid var(--color-themeDark) !important;
+  color: white !important;
+}
+.ms-Button--default:not(.cl-button-delete):not(:disabled):focus:not(:active)::after {
+  content: "";
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  bottom: 0px;
+  right: 0px;
+  z-index: 1;
+  border-width: 1px;
+  border-style: solid;
+  border-color: rgb(255, 255, 255);
+  border-image: initial;
+  outline: rgb(102, 102, 102) solid 1px;
+}
+.ms-Button--default:not(.cl-button-delete):disabled {
+  background-color: white !important;
+  border: 1px solid var(--color-neutralSecondaryAlt) !important;
+  color: var(--color-neutralSecondaryAlt) !important;
+}
+
+.cl-button-delete {
+  background-color: white !important;
+  border: 1px solid var(--color-redDark) !important;
+  color: var(--color-redDark) !important;
+}
+.cl-button-delete:hover {
+  background-color: var(--color-redDark) !important;
+  border: 1px solid var(--color-redDark) !important;
+  color: white !important;
+}
+.cl-button-delete:focus {
+  background-color: var(--color-redDark) !important;
+  border: 1px solid var(--color-redDark) !important;
+  color: white !important;
 }
 
 

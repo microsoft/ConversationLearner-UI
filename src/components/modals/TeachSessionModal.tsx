@@ -245,8 +245,15 @@ class TeachModal extends React.Component<Props, ComponentState> {
                 </div>
                 <div className="cl-modal_footer cl-modal_footer--border">
                     <div className="cl-modal-buttons">
-                        <div className="cl-modal-buttons_primary" />
                         <div className="cl-modal-buttons_secondary">
+                        </div>
+                        <div className="cl-modal-buttons_primary">
+                            <OF.PrimaryButton
+                                disabled={!this.state.hasTerminalAction}
+                                onClick={this.onClickSave}
+                                ariaDescription={this.renderDoneText(intl)}
+                                text={this.renderDoneText(intl)}
+                            />
                             <OF.DefaultButton
                                 disabled={!this.state.hasTerminalAction}
                                 onClick={this.onClickUndo}
@@ -264,12 +271,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                                 ariaDescription={this.renderAbandonText(intl)}
                                 text={this.renderAbandonText(intl)}
                             />
-                            <OF.PrimaryButton
-                                disabled={!this.state.hasTerminalAction}
-                                onClick={this.onClickSave}
-                                ariaDescription={this.renderDoneText(intl)}
-                                text={this.renderDoneText(intl)}
-                            />
+                            
                         </div>
                     </div>
                 </div>
