@@ -154,8 +154,9 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
                 </div>
                 <div className="cl-modal_footer cl-modal_footer--border">
                     <div className="cl-modal-buttons">
-                        <div className="cl-modal-buttons_primary" />
                         <div className="cl-modal-buttons_secondary">
+                        </div>
+                        <div className="cl-modal-buttons_primary">
                             <PrimaryButton
                                 disabled={this.state.pendingExtractionChanges}
                                 onClick={() => this.onClickDone()}
