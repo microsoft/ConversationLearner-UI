@@ -98,6 +98,9 @@ html {
   margin-left: 8px;
   color: var(--color-wc-user);
 }
+.cl-icon--pointer {
+  cursor: pointer;
+}
 
 .cl-icon[data-icon-name="ChevronUp"] {
   font-size: 12px;
