@@ -121,6 +121,7 @@ class LogDialogModal extends React.Component<Props, ComponentState> {
                             </div>
                             <div className="cl-modal-buttons_secondary">
                                 <DefaultButton
+                                    className="cl-button-delete"
                                     disabled={this.state.pendingExtractionChanges || !this.props.canEdit}
                                     onClick={() => this.onClickDelete()}
                                     ariaDescription={intl.formatMessage({

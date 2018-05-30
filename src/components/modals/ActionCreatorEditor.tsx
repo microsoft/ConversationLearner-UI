@@ -1036,6 +1036,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
                         {this.state.isEditing &&
                             <OF.DefaultButton
+                                className="cl-button-delete"
                                 onClick={this.onClickDelete}
                                 ariaDescription={intl.formatMessage({
                                     id: FM.ACTIONCREATOREDITOR_DELETEBUTTON_ARIADESCRIPTION,

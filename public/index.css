@@ -521,38 +521,38 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
   border: 1px solid var(--color-themeDarker) !important;
 }
 
-.ms-Button--default:not(.cl-button--delete):not(:disabled) {
+.ms-Button--default:not(.cl-button-delete):not(:disabled) {
   background-color: white !important;
   border: 1px solid var(--color-themePrimary) !important;
   color: var(--color-themePrimary) !important;
 }
-.ms-Button--default:not(.cl-button--delete):not(:disabled):hover {
+.ms-Button--default:not(.cl-button-delete):not(:disabled):hover {
   background-color: var(--color-themeDark) !important;
   border: 1px solid var(--color-themeDark) !important;
   color: white !important;
 }
-.ms-Button--default:not(.cl-button--delete):not(:disabled):focus {
+.ms-Button--default:not(.cl-button-delete):not(:disabled):focus {
   background-color: var(--color-themeDark) !important;
   border: 1px solid var(--color-themeDark) !important;
   color: white !important;
 }
-.ms-Button--default:not(.cl-button--delete):disabled {
+.ms-Button--default:not(.cl-button-delete):disabled {
   background-color: white !important;
   border: 1px solid var(--color-neutralSecondaryAlt) !important;
   color: var(--color-neutralSecondaryAlt) !important;
 }
 
-.cl-button--delete {
+.cl-button-delete {
   background-color: white !important;
   border: 1px solid var(--color-redDark) !important;
   color: var(--color-redDark) !important;
 }
-.cl-button--delete:hover {
+.cl-button-delete:hover {
   background-color: var(--color-redDark) !important;
   border: 1px solid var(--color-redDark) !important;
   color: white !important;
 }
-.cl-button--delete:focus {
+.cl-button-delete:focus {
   background-color: var(--color-redDark) !important;
   border: 1px solid var(--color-redDark) !important;
   color: white !important;

@@ -572,6 +572,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
 
                         {this.state.isEditing && this.props.handleDelete &&
                             <OF.DefaultButton
+                                className="cl-button-delete"
                                 onClick={this.onClickDelete}
                                 ariaDescription={intl.formatMessage({
                                     id: FM.ENTITYCREATOREDITOR_DELETEBUTTON_ARIADESCRIPTION,

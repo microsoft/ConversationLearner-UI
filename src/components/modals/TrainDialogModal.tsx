@@ -174,6 +174,7 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
                                 />
                             </div>
                             <DefaultButton
+                                className="cl-button-delete"
                                 disabled={this.state.pendingExtractionChanges || !this.props.canEdit}
                                 onClick={() => this.onClickDelete()}
                                 ariaDescription={intl.formatMessage({
