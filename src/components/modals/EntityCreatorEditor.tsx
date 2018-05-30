@@ -465,7 +465,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                 <div className="cl-entity-creator-checkbox">
                     <TC.Checkbox
                         label={intl.formatMessage({
-                            id: FM.ENTITYCREATOREDITOR_FIELDS_NEGATAABLE_LABEL,
+                            id: FM.ENTITYCREATOREDITOR_FIELDS_NEGATABLE_LABEL,
                             defaultMessage: 'Negatable'
                         })}
                         checked={this.state.isNegatableVal}
