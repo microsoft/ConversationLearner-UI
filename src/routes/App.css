@@ -64,17 +64,17 @@
     --color-wc-user: #3a96dd;
     --color-wc-bot: #eceff1;
     --gutter-width: 100px;
-    --nav-link-padding: 1.5em 2em;
+    --nav-link-padding: 1em 2em;
 }
 .cl-app {
     display: grid;
     grid-template: min-content 1fr / var(--gutter-width) 1fr var(--gutter-width)
 }
 .cl-app_header-placeholder {
-    background-color: var(--color-tealDark)
+    background-color: var(--color-neutralDark)
 }
 .cl-app_header {
-    background-color: var(--color-tealDark)
+    background-color: var(--color-neutralDark)
 }
 .cl-app_content {
     grid-column: 2;
@@ -91,10 +91,28 @@
     color: white;
     font-size: 1.2rem;
 }
-.cl-header a {
+.cl-header a,
+.cl-header .cl-header-text {
     padding: var(--nav-link-padding);
     white-space: nowrap;
 }
+
+.cl-header-logo {
+    height: 64px;
+}
+
+.cl-header-icon {
+    width: 25px;
+    margin-right: 0.7em;
+    vertical-align: sub;
+}
+
+.cl-header-office-icon {
+    font-size: 1.4rem;
+    margin-right: 0.3em;
+    vertical-align: sub;
+}
+
 .cl-header_links {
     display: flex;
     flex-direction: row;
@@ -104,13 +122,12 @@
     color: white;
 }
 .cl-header_links a:link,
-.cl-header_links a:visisted {
+.cl-header_links a:visited {
     color: white;
 }
 .cl-header_links a.active,
 .cl-header_links a:hover {
-    background-color: var(--color-yellow);
-    color: black;
+    background-color: var(--color-neutralPrimary);
 }
 .cl-header_user {
     text-decoration: none;
@@ -118,8 +135,7 @@
 }
 .cl-header_user.active,
 .cl-header_user:hover {
-    background-color: var(--color-yellow);
-    color: black;
+    background-color: var(--color-neutralPrimary);
 }
 
 .cl-modal-buttons {

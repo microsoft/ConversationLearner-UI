@@ -15,7 +15,7 @@ import Settings from './Settings'
 import NoMatch from './NoMatch'
 import { Banner } from '@conversationlearner/models';
 import HelpPanel from '../components/HelpPanel'
-import { FontClassNames, MessageBar, MessageBarType, Link } from 'office-ui-fabric-react'
+import * as OF from 'office-ui-fabric-react'
 import { SpinnerWindow, ErrorPanel } from '../components/modals'
 import './App.css'
 import { FormattedMessage } from 'react-intl'
@@ -60,12 +60,12 @@ class App extends React.Component<Props, ComponentState> {
 
   getMessageBarType(type: string) {
     if (type.toLowerCase() === "error") {
-      return MessageBarType.error
+      return OF.MessageBarType.error
     }
     if (type.toLowerCase() === "warning") {
-      return MessageBarType.warning
+      return OF.MessageBarType.warning
     }
-    return MessageBarType.success
+    return OF.MessageBarType.success
   }
 
   render() {
@@ -73,22 +73,29 @@ class App extends React.Component<Props, ComponentState> {
       <Router>
         <div className="cl-app">
           <div className="cl-app_header-placeholder"/>
-          <header className={`cl-app_header cl-header ${FontClassNames.mediumPlus}`}>
-            <nav className="cl-header_links ">
+          <header className={`cl-app_header cl-header ${OF.FontClassNames.mediumPlus}`}>
+            <nav className="cl-header_links">
+              <img className="cl-header-logo" src="/Microsoft-logo_rgb_c-wht.png" alt="Microsoft Logo" />
+              <span className="cl-header-text">
+                <img className="cl-header-icon" src="/icon.svg" alt="ConversationLearner Logo" />
+                ConversationLearner
+              </span>
               <NavLink to="/home">
                 <FormattedMessage
                   id={FM.APP_HEADER_MYAPPS}
                   defaultMessage="My Apps"
                 />
               </NavLink>
+              <a href="https://labs.cognitive.microsoft.com/en-us/project-conversation-learner" target="_blank">Documentation</a>
+              <a href="https://cognitive.uservoice.com/forums/912199-project-conversation-learner" target="_blank">Feedback</a>
             </nav>
-            <NavLink className="cl-header_user" to="/settings">Settings</NavLink>
+            <NavLink className="cl-header_user" to="/settings"><OF.Icon className="cl-header-office-icon" iconName="Settings" /> Settings</NavLink>
           </header>
           
           <div className="cl-app_header-placeholder" />
           <div className="cl-app_content">
             {this.shouldShowBanner(this.props.banner) &&
-              <MessageBar
+              <OF.MessageBar
                 className="cl-messagebar"
                 isMultiline={true}
                 onDismiss={()=>this.dismissBanner(this.props.banner) }
@@ -97,14 +104,14 @@ class App extends React.Component<Props, ComponentState> {
               >
                 {this.props.banner.message}
                 {this.props.banner.message.link && this.props.banner.linktext &&
-                  <Link href={this.props.banner.link}>{this.props.banner.linktext}</Link>
+                  <OF.Link href={this.props.banner.link}>{this.props.banner.linktext}</OF.Link>
                 }
                 {this.props.banner.datestring &&
                   <div>
                     <span className="cl-font--demphasis">{this.props.banner.datestring}</span>
                   </div>
                 }
-              </MessageBar>
+              </OF.MessageBar>
             }
             <Switch>
               <Route exact path="/" render={() => <Redirect to="/home" />} />
