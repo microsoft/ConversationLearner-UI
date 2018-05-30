@@ -520,6 +520,20 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
   background-color: var(--color-themeDarker) !important;
   border: 1px solid var(--color-themeDarker) !important;
 }
+.ms-Button--primary:not(:disabled):focus::after {
+  content: "";
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  bottom: 0px;
+  right: 0px;
+  z-index: 1;
+  border-width: 1px;
+  border-style: solid;
+  border-color: rgb(255, 255, 255);
+  border-image: initial;
+  outline: rgb(102, 102, 102) solid 1px;
+}
 
 .ms-Button--default:not(.cl-button-delete):not(:disabled) {
   background-color: white !important;
@@ -535,6 +549,20 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
   background-color: var(--color-themeDark) !important;
   border: 1px solid var(--color-themeDark) !important;
   color: white !important;
+}
+.ms-Button--default:not(.cl-button-delete):not(:disabled):focus::after {
+  content: "";
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  bottom: 0px;
+  right: 0px;
+  z-index: 1;
+  border-width: 1px;
+  border-style: solid;
+  border-color: rgb(255, 255, 255);
+  border-image: initial;
+  outline: rgb(102, 102, 102) solid 1px;
 }
 .ms-Button--default:not(.cl-button-delete):disabled {
   background-color: white !important;
