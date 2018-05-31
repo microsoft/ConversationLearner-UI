@@ -6,11 +6,11 @@
             "_justification": "This is secret is for the public blob storage URL for retrieving locales which contains SAS (Secure Access Signature)"
         },
         {
-            "file": "test\\certificate.pem",
+            "file": "eventsource\\test\\certificate.pem",
             "_justification": "Self-signed certificate used by unit tests"
         },
         {
-            "file": "test\\key.pem",
+            "file": "eventsource\\test\\key.pem",
             "_justification": "Self-signed certificate used by unit tests"
         }
     ]
