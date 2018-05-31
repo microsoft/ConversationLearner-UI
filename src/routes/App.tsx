@@ -78,7 +78,7 @@ class App extends React.Component<Props, ComponentState> {
               <img className="cl-header-logo" src="/Microsoft-logo_rgb_c-wht.png" alt="Microsoft Logo" />
               <span className="cl-header-text">
                 <img className="cl-header-icon" src="/icon.svg" alt="ConversationLearner Logo" />
-                ConversationLearner
+                Project Conversation Learner
               </span>
               <NavLink to="/home">
                 <FormattedMessage
