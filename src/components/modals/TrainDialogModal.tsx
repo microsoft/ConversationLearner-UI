@@ -154,37 +154,9 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
                 </div>
                 <div className="cl-modal_footer cl-modal_footer--border">
                     <div className="cl-modal-buttons">
-                        <div className="cl-modal-buttons_primary" />
                         <div className="cl-modal-buttons_secondary">
-                            <div  ref={ (menuButton) => this._refBranchButton = menuButton}>
-                                <DefaultButton
-                                        disabled={!canBranch ||
-                                            this.state.pendingExtractionChanges || 
-                                            !this.props.canEdit || 
-                                            (this.props.trainDialog && this.props.trainDialog.invalid === true)}
-                                        onClick={() => this.onClickBranch()}
-                                        ariaDescription={intl.formatMessage({
-                                            id: FM.TRAINDIALOGMODAL_BRANCH_ARIADESCRIPTION,
-                                            defaultMessage: 'Branch'
-                                        })}
-                                        text={intl.formatMessage({
-                                            id: FM.TRAINDIALOGMODAL_BRANCH_TEXT,
-                                            defaultMessage: 'Branch'
-                                        })}
-                                />
-                            </div>
-                            <DefaultButton
-                                disabled={this.state.pendingExtractionChanges || !this.props.canEdit}
-                                onClick={() => this.onClickDelete()}
-                                ariaDescription={intl.formatMessage({
-                                    id: FM.TRAINDIALOGMODAL_DEFAULTBUTTON_ARIADESCRIPTION,
-                                    defaultMessage: 'Delete'
-                                })}
-                                text={intl.formatMessage({
-                                    id: FM.TRAINDIALOGMODAL_DEFAULTBUTTON_TEXT,
-                                    defaultMessage: 'Delete'
-                                })}
-                            />
+                        </div>
+                        <div className="cl-modal-buttons_primary">
                             <PrimaryButton
                                 disabled={this.state.pendingExtractionChanges}
                                 onClick={() => this.onClickDone()}
@@ -197,6 +169,37 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
                                     defaultMessage: 'Done'
                                 })}
                             />
+                            <div ref={(menuButton) => this._refBranchButton = menuButton}>
+                                <DefaultButton
+                                    disabled={!canBranch ||
+                                        this.state.pendingExtractionChanges ||
+                                        !this.props.canEdit ||
+                                        (this.props.trainDialog && this.props.trainDialog.invalid === true)}
+                                    onClick={() => this.onClickBranch()}
+                                    ariaDescription={intl.formatMessage({
+                                        id: FM.TRAINDIALOGMODAL_BRANCH_ARIADESCRIPTION,
+                                        defaultMessage: 'Branch'
+                                    })}
+                                    text={intl.formatMessage({
+                                        id: FM.TRAINDIALOGMODAL_BRANCH_TEXT,
+                                        defaultMessage: 'Branch'
+                                    })}
+                                />
+                            </div>
+                            <DefaultButton
+                                className="cl-button-delete"
+                                disabled={this.state.pendingExtractionChanges || !this.props.canEdit}
+                                onClick={() => this.onClickDelete()}
+                                ariaDescription={intl.formatMessage({
+                                    id: FM.TRAINDIALOGMODAL_DEFAULTBUTTON_ARIADESCRIPTION,
+                                    defaultMessage: 'Delete'
+                                })}
+                                text={intl.formatMessage({
+                                    id: FM.TRAINDIALOGMODAL_DEFAULTBUTTON_TEXT,
+                                    defaultMessage: 'Delete'
+                                })}
+                            />
+
                         </div>
                     </div>
                 </div>

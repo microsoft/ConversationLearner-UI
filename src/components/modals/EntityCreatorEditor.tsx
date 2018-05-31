@@ -465,7 +465,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                 <div className="cl-entity-creator-checkbox">
                     <TC.Checkbox
                         label={intl.formatMessage({
-                            id: FM.ENTITYCREATOREDITOR_FIELDS_NEGATAABLE_LABEL,
+                            id: FM.ENTITYCREATOREDITOR_FIELDS_NEGATABLE_LABEL,
                             defaultMessage: 'Negatable'
                         })}
                         checked={this.state.isNegatableVal}
@@ -534,6 +534,22 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                         )}
                 </div>
                 <div className="cl-modal_footer cl-modal-buttons">
+                    <div className="cl-modal-buttons_secondary">
+                        {this.state.isEditing &&
+                            <OF.DefaultButton
+                                onClick={this.onClickTrainDialogs}
+                                iconProps={{ iconName: 'QueryList' }}
+                                ariaDescription={intl.formatMessage({
+                                    id: FM.ENTITYCREATOREDITOR_TRAINDIALOGSBUTTON_ARIADESCRIPTION,
+                                    defaultMessage: 'Train Dialogs'
+                                })}
+                                text={intl.formatMessage({
+                                    id: FM.ENTITYCREATOREDITOR_TRAINDIALOGSBUTTON_TEXT,
+                                    defaultMessage: 'Trail Dialogs'
+                                })}
+                            />
+                        }
+                    </div>
                     <div className="cl-modal-buttons_primary">
                         <OF.PrimaryButton
                             disabled={(this.onGetNameErrorMessage(this.state.entityNameVal) !== '') && !this.state.isPrebuilt || (this.state.isEditing && !this.state.hasPendingChanges)}
@@ -572,6 +588,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
 
                         {this.state.isEditing && this.props.handleDelete &&
                             <OF.DefaultButton
+                                className="cl-button-delete"
                                 onClick={this.onClickDelete}
                                 ariaDescription={intl.formatMessage({
                                     id: FM.ENTITYCREATOREDITOR_DELETEBUTTON_ARIADESCRIPTION,
@@ -583,22 +600,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                                 })}
                             />}
                     </div>
-                    <div className="cl-modal-buttons_secondary">
-                        {this.state.isEditing &&
-                            <OF.PrimaryButton
-                                onClick={this.onClickTrainDialogs}
-                                iconProps={{ iconName: 'QueryList' }}
-                                ariaDescription={intl.formatMessage({
-                                    id: FM.ENTITYCREATOREDITOR_TRAINDIALOGSBUTTON_ARIADESCRIPTION,
-                                    defaultMessage: 'Train Dialogs'
-                                })}
-                                text={intl.formatMessage({
-                                    id: FM.ENTITYCREATOREDITOR_TRAINDIALOGSBUTTON_TEXT,
-                                    defaultMessage: 'Trail Dialogs'
-                                })}
-                            />
-                        }
-                    </div>
+
                 </div>
                 <ConfirmCancelModal
                     open={this.state.isConfirmDeleteModalOpen}
