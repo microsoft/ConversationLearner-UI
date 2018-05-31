@@ -11,9 +11,8 @@ import { connect } from 'react-redux';
 import { fetchTutorialsThunkAsync } from '../../actions/fetchActions'
 import { AppCreator, ConfirmCancelModal } from '../../components/modals'
 import * as OF from 'office-ui-fabric-react';
-import { State } from '../../types';
 import { AppBase, AppDefinition } from '@conversationlearner/models'
-import { CL_IMPORT_ID, CL_DEMO_ID } from '../../types/const'
+import { CL_IMPORT_ID, CL_DEMO_ID, State, AppCreatorType } from '../../types'
 import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { FM } from '../../react-intl-messages'
 import { autobind } from 'office-ui-fabric-react/lib/Utilities';
@@ -113,7 +112,7 @@ function getColumns(intl: InjectedIntl): ISortableRenderableColumn[] {
 
 interface ComponentState {
     isAppCreateModalOpen: boolean
-    isImportAppModalOpen: boolean
+    appCreatorType: AppCreatorType
     isConfirmDeleteAppModalOpen: boolean
     isImportTutorialsOpen: boolean
     appToDelete: AppBase
@@ -136,7 +135,7 @@ class AppsList extends React.Component<Props, ComponentState> {
 
         this.state = {
             isAppCreateModalOpen: false,
-            isImportAppModalOpen: false,
+            appCreatorType: AppCreatorType.NEW,
             isConfirmDeleteAppModalOpen: false,
             isImportTutorialsOpen: false,
             appToDelete: null,
@@ -167,15 +166,15 @@ class AppsList extends React.Component<Props, ComponentState> {
     onClickCreateNewApp() {
         this.setState({
             isAppCreateModalOpen: true,
-            isImportAppModalOpen: false
+            appCreatorType: AppCreatorType.NEW
         })
     }
 
     @autobind
     onClickImportApp() {
         this.setState({
-            isAppCreateModalOpen: false,
-            isImportAppModalOpen: true
+            isAppCreateModalOpen: true,
+            appCreatorType: AppCreatorType.IMPORT
         })
     }
 
@@ -244,15 +243,13 @@ class AppsList extends React.Component<Props, ComponentState> {
 
     onSubmitAppCreateModal = (app: AppBase, source: AppDefinition = null) => {
         this.setState({
-            isAppCreateModalOpen: false,
-            isImportAppModalOpen: false
+            isAppCreateModalOpen: false
         }, () => this.props.onCreateApp(app, source))
     }
 
     onCancelAppCreateModal = () => {
         this.setState({
-            isAppCreateModalOpen: false,
-            isImportAppModalOpen: false
+            isAppCreateModalOpen: false
         })
     }
 
@@ -332,10 +329,10 @@ class AppsList extends React.Component<Props, ComponentState> {
                     onColumnHeaderClick={this.onColumnClick}
                 />
                 <AppCreator
-                    open={this.state.isAppCreateModalOpen || this.state.isImportAppModalOpen}
+                    open={this.state.isAppCreateModalOpen}
                     onSubmit={this.onSubmitAppCreateModal}
                     onCancel={this.onCancelAppCreateModal}
-                    import={this.state.isImportAppModalOpen}
+                    creatorType={this.state.appCreatorType}
                 />
                 <ConfirmCancelModal
                     open={this.state.isConfirmDeleteAppModalOpen}

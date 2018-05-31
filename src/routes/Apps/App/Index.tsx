@@ -12,7 +12,7 @@ import { RouteComponentProps } from 'react-router'
 import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { AppBase, ActionBase, ActionTypes, ApiAction, CardAction, BotInfo } from '@conversationlearner/models'
+import { AppBase, AppDefinition, ActionBase, ActionTypes, ApiAction, CardAction, BotInfo } from '@conversationlearner/models'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../../react-intl-messages'
 import { State } from '../../../types';
@@ -83,6 +83,12 @@ class Index extends React.Component<Props, ComponentState> {
             let validationErrors = this.actionValidationErrors(newProps.botInfo, newProps.actions);
             this.setState({ validationErrors: validationErrors });
         }
+    }
+
+    onCreateApp = async (appToCreate: AppBase, source: AppDefinition = null) => {
+        const app: AppBase = await this.props.createApplicationThunkAsync(this.props.user.id, appToCreate, source) as any
+        const { history } = this.props
+        history.push(`/home/${app.appId}`, { app })
     }
 
     actionValidationErrors(botInfo: BotInfo, actions: ActionBase[]): string[] {
@@ -211,7 +217,7 @@ class Index extends React.Component<Props, ComponentState> {
                 <Switch>
                     <Route 
                         path={`${match.url}/settings`} 
-                        render={props => <Settings {...props} app={app} editingPackageId={editPackageId} />} />
+                        render={props => <Settings {...props} app={app} editingPackageId={editPackageId} onCreateApp={this.onCreateApp} />} />
                     <Route 
                         path={`${match.url}/entities`} 
                         render={props => <Entities {...props} app={app} editingPackageId={editPackageId} />} />
@@ -238,6 +244,7 @@ const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         setErrorDisplay,
         setCurrentApp: actions.display.setCurrentApp,
+        createApplicationThunkAsync: actions.create.createApplicationThunkAsync,
         fetchAppSource: actions.fetch.fetchAppSourceThunkAsync,
         fetchAllLogDialogsAsync: actions.fetch.fetchAllLogDialogsAsync,
         fetchBotInfoAsync: actions.fetch.fetchBotInfoAsync

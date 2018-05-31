@@ -8,14 +8,13 @@ import { editApplicationAsync, editAppEditingTagThunkAsync, editAppLiveTagThunkA
 import { bindActionCreators } from 'redux';
 import PackageTable from '../../../components/modals/PackageTable'
 import { connect } from 'react-redux';
-import { State } from '../../../types';
+import { State, CL_DEMO_ID, AppCreatorType } from '../../../types';
 import * as OF from 'office-ui-fabric-react';
-import { Expando } from '../../../components/modals'
+import { Expando, AppCreator } from '../../../components/modals'
 import { saveAs } from 'file-saver'
 import { AppBase, AppDefinition, TrainingStatusCode } from '@conversationlearner/models'
 import './Settings.css'
 import { fetchAppSourceThunkAsync } from '../../../actions/fetchActions'
-import { CL_DEMO_ID } from '../../../types/const'
 import { FM } from '../../../react-intl-messages'
 import ErrorInjectionEditor from '../../../components/modals/ErrorInjectionEditor'
 import { injectIntl, InjectedIntlProps, defineMessages, FormattedMessage } from 'react-intl'
@@ -78,7 +77,9 @@ interface ComponentState {
     debugErrorsOpen: boolean
     isLoggingOnVal: boolean,
     isPackageExpandoOpen: boolean,
-    isSettingsExpandoOpen: boolean
+    isSettingsExpandoOpen: boolean,
+    isAppCopyModalOpen: boolean,
+    source: AppDefinition
 }
 
 class Settings extends React.Component<Props, ComponentState> {
@@ -99,7 +100,9 @@ class Settings extends React.Component<Props, ComponentState> {
             debugErrorsOpen: false,
             isLoggingOnVal: true,
             isPackageExpandoOpen: false,
-            isSettingsExpandoOpen: false
+            isSettingsExpandoOpen: false,
+            isAppCopyModalOpen: false,
+            source: null
         }
     }
 
@@ -114,7 +117,8 @@ class Settings extends React.Component<Props, ComponentState> {
             videoVal: app.metadata ? app.metadata.video : null,
             botFrameworkAppsVal: app.metadata.botFrameworkApps,
             isLoggingOnVal: (app.metadata.isLoggingOn !== false),   // For backward compatibility to cover undefined
-            newBotVal: ''
+            newBotVal: '', 
+            source: null
         })
     }
     componentDidMount() {
@@ -123,7 +127,7 @@ class Settings extends React.Component<Props, ComponentState> {
 
     componentDidUpdate() {
         let app = this.props.app
-        if (this.state.edited == false && (this.state.localeVal !== app.locale ||
+        if (this.state.edited === false && (this.state.localeVal !== app.locale ||
             this.state.appIdVal !== app.appId ||
             this.state.appNameVal !== app.appName ||
             this.state.markdownVal !== app.metadata.markdown ||
@@ -173,6 +177,27 @@ class Settings extends React.Component<Props, ComponentState> {
             botFrameworkAppsVal: newBotApps,
             newBotVal: ''
         })
+    }
+
+    @autobind
+    onClickCopyApp() {
+        this.setState({
+            isAppCopyModalOpen: true
+        })
+    }
+
+    @autobind
+    onCancelAppCopyModal() {
+        this.setState({
+            isAppCopyModalOpen: false
+        })
+    }
+
+    @autobind
+    onSubmitAppCopyModal(app: AppBase) {
+        this.setState({
+            isAppCopyModalOpen: false
+        }, () => this.props.onCreateApp(app, this.state.source))
     }
 
     @autobind
@@ -298,6 +323,20 @@ class Settings extends React.Component<Props, ComponentState> {
             })
     }
 
+    @autobind
+    onCopy() {
+        ((this.props.fetchAppSourceThunkAsync(this.props.app.appId, this.props.editingPackageId, false) as any) as Promise<AppDefinition>)
+            .then(appDefinition => {
+                this.setState({
+                    isAppCopyModalOpen: true,
+                    source: appDefinition,
+                })
+            })
+            .catch(error => {
+                console.warn(`Error when attempting export application `, error)
+            })
+    }
+
     packageOptions() {
         let packageReferences = util.packageReferences(this.props.app);
 
@@ -352,6 +391,17 @@ class Settings extends React.Component<Props, ComponentState> {
                             text={intl.formatMessage({
                                 id: FM.SETTINGS_EXPORTBUTTONTEXT,
                                 defaultMessage: 'Export'
+                            })}
+                        />
+                        <OF.PrimaryButton
+                            onClick={this.onCopy}
+                            ariaDescription={intl.formatMessage({
+                                id: FM.SETTINGS_COPYBUTTONARIALDESCRIPTION,
+                                defaultMessage: 'Copy Application'
+                            })}
+                            text={intl.formatMessage({
+                                id: FM.SETTINGS_COPYBUTTONTEXT,
+                                defaultMessage: 'Copy'
                             })}
                         />
                     </div>
@@ -489,6 +539,12 @@ class Settings extends React.Component<Props, ComponentState> {
                         onClose={() => this.onCloseDebugErrors()}
                     />
                 </div>
+                <AppCreator
+                    open={this.state.isAppCopyModalOpen}
+                    onSubmit={this.onSubmitAppCopyModal}
+                    onCancel={this.onCancelAppCopyModal}
+                    creatorType={AppCreatorType.COPY}
+                />
             </div>
         );
     }
@@ -500,6 +556,7 @@ const mapDispatchToProps = (dispatch: any) => {
         editAppLiveTagThunkAsync,
         fetchAppSourceThunkAsync
     }, dispatch);
+
 }
 const mapStateToProps = (state: State) => {
     return {
@@ -510,7 +567,8 @@ const mapStateToProps = (state: State) => {
 
 export interface ReceivedProps {
     app: AppBase,
-    editingPackageId: string
+    editingPackageId: string,
+    onCreateApp: (app: AppBase, source: AppDefinition) => void
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps

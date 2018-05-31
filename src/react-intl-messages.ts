@@ -23,6 +23,41 @@ export enum FM {
     ACTIONS_CREATEBUTTONTITLE = 'Actions.createButtonTitle',
     ACTIONS_CONFIRMCANCELMODALTITLE = 'Actions.confirmCancelModalTitle',
 
+    // ActionCreatorEditor
+    ACTIONCREATOREDITOR_SAVEBUTTON_ARIADESCRIPTION = 'ActionCreatorEditor.saveButton.ariaDescription',
+    ACTIONCREATOREDITOR_SAVEBUTTON_TEXT = 'ActionCreatorEditor.saveButton.text',
+    ACTIONCREATOREDITOR_CREATEBUTTON_ARIADESCRIPTION = 'ActionCreatorEditor.createButton.ariaDescription',
+    ACTIONCREATOREDITOR_CREATEBUTTON_TEXT = 'ActionCreatorEditor.createButton.text',
+    ACTIONCREATOREDITOR_CANCELBUTTON_ARIADESCRIPTION = 'ActionCreatorEditor.cancelButton.ariaDescription',
+    ACTIONCREATOREDITOR_CANCELBUTTON_TEXT = 'ActionCreatorEditor.cancelButton.text',
+    ACTIONCREATOREDITOR_DONEBUTTON_ARIADESCRIPTION = 'ActionCreatorEditor.doneButton.ariaDescription',
+    ACTIONCREATOREDITOR_DONEBUTTON_TEXT = 'ActionCreatorEditor.doneButton.text',
+    ACTIONCREATOREDITOR_DELETEBUTTON_ARIADESCRIPTION = 'ActionCreatorEditor.deleteButton.ariaDescription',
+    ACTIONCREATOREDITOR_DELETEBUTTON_TEXT = 'ActionCreatorEditor.deleteButton.text',
+    ACTIONCREATOREDITOR_TRAINDIALOGSBUTTON_ARIADESCRIPTION = 'ActionCreatorEditor.traindialogsButton.ariaDescription',
+    ACTIONCREATOREDITOR_TRAINDIALOGSBUTTON_TEXT = 'ActionCreatorEditor.traindialogsButton.text',
+    ACTIONCREATOREDITOR_CONFIRM_DELETE_TITLE = 'ActionCreatorEditor.confirmDeleteTitle',
+    ACTIONCREATOREDITOR_CONFIRM_DELETE_WARNING = 'ActionCreatorEditor.confirmDeleteWarning',
+    ACTIONCREATOREDITOR_CONFIRM_EDIT_TITLE = 'ActionCreatorEditor.confirmEditTitle',
+    ACTIONCREATOREDITOR_CONFIRM_EDIT_WARNING = 'ActionCreatorEditor.confirmEditWarning',
+    
+    // ActionDetails
+    ACTIONDETAILSLIST_COLUMNS_RESPONSE = 'ActionDetailsList.columns.response',
+    ACTIONDETAILSLIST_COLUMNS_ARGUMENTS = 'ActionDetailsList.columns.arguments',
+    ACTIONDETAILSLIST_COLUMNS_TYPE = 'ActionDetailsList.columns.type',
+    ACTIONDETAILSLIST_COLUMNS_REQUIREDENTITIES = 'ActionDetailsList.columns.requiredEntities',
+    ACTIONDETAILSLIST_COLUMNS_DISQUALIFYINGENTITIES = 'ActionDetailsList.columns.disqualifyingEntities',
+    ACTIONDETAILSLIST_COLUMNS_SUGGESTEDENTITY = 'ActionDetailsList.columns.suggestedEntity',
+    ACTIONDETAILSLIST_COLUMNS_ISTERMINAL = 'ActionDetailsList.columns.isTerminal',
+   
+    // ActionScorer
+    ACTIONSCORER_COLUMNS_RESPONSE = 'ActionScorer.columns.response',
+    ACTIONSCORER_COLUMNS_ARGUMENTS = 'ActionScorer.columns.arguments',
+    ACTIONSCORER_COLUMNS_SCORE = 'ActionScorer.columns.score',
+    ACTIONSCORER_COLUMNS_ENTITIES = 'ActionScorer.columns.entities',
+    ACTIONSCORER_COLUMNS_ISTERMINAL = 'ActionScorer.columns.isTerminal',
+    ACTIONSCORER_COLUMNS_TYPE = 'ActionScorer.columns.type',
+
     // App
     APP_HEADER_MYAPPS = 'App.header.home',
     APP_HEADER_ABOUT = 'App.header.about',
@@ -40,6 +75,26 @@ export enum FM {
     APP_TRAINING_STATUS_REFRESH = 'TrainingStatus.refresh',
     APP_TRAINING_STATUS_EXPIRED = 'TrainingStatus.expired',
 
+    // AppCreator
+    APPCREATOR_FIELDERROR_REQUIREDVALUE = 'AppCreator.fieldError.requiredValue',
+    APPCREATOR_FIELDERROR_ALPHANUMERIC = 'AppCreator.fieldError.alphanumeric',
+    APPCREATOR_FIELDERROR_DISTINCT = 'AppCreator.fieldError.distinct',
+    APPCREATOR_TITLE = 'AppCreator.title',
+    APPCREATOR_COPY_TITLE = 'AppCreator.copytitle',
+    APPCREATOR_IMPORT_TITLE = 'AppCreator.importtitle',
+    APPCREATOR_FIELDS_NAME_LABEL = 'AppCreator.fields.name.label',
+    APPCREATOR_FIELDS_IMPORT_NAME_LABEL = 'AppCreator.fields.importname.label',
+    APPCREATOR_FIELDS_NAME_PLACEHOLDER = 'AppCreator.fields.name.placeholder',
+    APPCREATOR_FIELDS_LOCALE_LABEL = 'AppCreator.fields.locale.label',
+    APPCREATOR_COPYBUTTON_ARIADESCRIPTION = 'AppCreator.copyButton.ariaDescription',
+    APPCREATOR_COPYBUTTON_TEXT = 'AppCreator.copyButton.text',
+    APPCREATOR_CREATEBUTTON_ARIADESCRIPTION = 'AppCreator.createButton.ariaDescription',
+    APPCREATOR_CREATEBUTTON_TEXT = 'AppCreator.createButton.text',
+    APPCREATOR_LOCATEBUTTON_ARIADESCRIPTION = 'AppCreator.importButton.ariaDescription',
+    APPCREATOR_LOCATEBUTTON_TEXT = 'AppCreator.importButton.text',
+    APPCREATOR_CANCELBUTTON_ARIADESCRIPTION = 'AppCreator.cancelButton.ariaDescription',
+    APPCREATOR_CANCELBUTTON_TEXT = 'AppCreator.cancelButton.text',
+    
     // Apps List
     APPSLIST_SUBTITLE = 'AppsList.subtitle',
     APPSLIST_CREATEBUTTONARIADESCRIPTION = 'AppsList.createButtonAriaDescription',
@@ -61,6 +116,16 @@ export enum FM {
     BUTTON_INFO = 'Button.INFO',
     BUTTON_IMPORT = 'Button.IMPORT',
 
+    // ChatSessionModal
+    CHATSESSIONMODAL_PRIMARYBUTTON_ARIADESCRIPTION = 'ChatSessionModal.primaryButton.ariaDescription',
+    CHATSESSIONMODAL_PRIMARYBUTTON_TEXT = 'ChatSessionModal.primaryButton.text',
+    CHATSESSIONMODAL_EXPIREBUTTON_ARIADESCRIPTION = 'ChatSessionModal.expireButton.ariaDescription',
+    CHATSESSIONMODAL_EXPIREBUTTON_TEXT = 'ChatSessionModal.expireButton.text',
+
+    // ConfirmCancelModal
+    CONFIRMCANCELMODAL_PRIMARYBUTTON_TEXT = 'ConfirmCancelModal.primaryButton.text',
+    CONFIRMCANCELMODAL_DEFAULTBUTTON_TEXT = 'ConfirmCancelModal.defaultButton.text',
+
     // Custom Errors
     CUSTOMERROR_NETWORK_ERROR = 'CustomError.networkError',
 
@@ -68,6 +133,11 @@ export enum FM {
     DASHBOARD_TITLE = 'Dashboard.title',
     DASHBOARD_SUBTITLE = 'Dashboard.subtitle',
 
+    // DemoImporter
+    DEMOIMPORT_TITLE = 'DemoImporter.title',
+    DEMOIMPORT_BUTTON_ARIADESCRIPTION = 'DemoImporter.button.ariaDescription',
+    DEMOIMPORT_BUTTON_TEXT = 'DemoImporter.button.text',
+    
     // Entities
     ENTITIES_TITLE = 'Entities.title',
     ENTITIES_SUBTITLE = 'Entities.subtitle',
@@ -80,6 +150,58 @@ export enum FM {
     ENTITIES_COLUMNS_IS_NEGATABLE = 'Entities.columns.isNegatable',
     ENTITIES_CONFIRMCANCELMODALTITLE = 'Entities.confirmCancelModalTitle',
  
+    // EntityCreatorEditor
+    ENTITYCREATOREDITOR_FIELDERROR_REQUIREDVALUE = 'EntityCreatorEditor.fieldError.requiredValue',
+    ENTITYCREATOREDITOR_FIELDERROR_ALPHANUMERIC = 'EntityCreatorEditor.fieldsError.alphanumerica',
+    ENTITYCREATOREDITOR_FIELDERROR_DISTINCT = 'EntityCreatorEditor.fields.distinct',
+    ENTITYCREATOREDITOR_ENTITYOPTION_NEW = 'EntityCreatorEditor.entityOption.new',
+    ENTITYCREATOREDITOR_TITLE_CREATE = 'EntityCreatorEditor.title.create',
+    ENTITYCREATOREDITOR_TITLE_EDIT = 'EntityCreatorEditor.title.edit',
+    ENTITYCREATOREDITOR_FIELDS_NAME_LABEL = 'EntityCreatorEditor.fields.name.label',
+    ENTITYCREATOREDITOR_FIELDS_NAME_PLACEHOLDER = 'EntityCreatorEditor.fields.name.placeholder',
+    ENTITYCREATOREDITOR_FIELDS_TYPE_LABEL = 'EntityCreatorEditor.fields.type.label',
+    ENTITYCREATOREDITOR_FIELDS_PROGRAMMATICONLY_LABEL = 'EntityCreatorEditor.fields.programmatically.label',
+    ENTITYCREATOREDITOR_FIELDS_PROGRAMMATICONLY_HELPTEXT = 'EntityCreatorEditor.fields.programmatically.helptext',
+    ENTITYCREATOREDITOR_FIELDS_TOOLTIPTARGET = 'EntityCreatorEditor.fields.tooltiptarget',
+    ENTITYCREATOREDITOR_FIELDS_MULTIVALUE_LABEL = 'EntityCreatorEditor.fields.multiValue.label',
+    ENTITYCREATOREDITOR_FIELDS_MULTIVALUE_HELPTEXT = 'EntityCreatorEditor.fields.multiValue.helpText',
+    ENTITYCREATOREDITOR_FIELDS_NEGATABLE_LABEL = 'EntityCreatorEditor.fields.negatable.label',
+    ENTITYCREATOREDITOR_FIELDS_NEGATABLE_HELPTEXT = 'EntityCreatorEditor.fields.negatable.helpText',
+    ENTITYCREATOREDITOR_PIVOT_EDIT = 'EntityCreatorEditor.pivot.editEntity',
+    ENTITYCREATOREDITOR_PIVOT_REQUIREDFOR = 'EntityCreatorEditor.pivot.requiredForActions',
+    ENTITYCREATOREDITOR_PIVOT_DISQUALIFIEDACTIONS = 'EntityCreatorEditor.pivot.disqualifiedActions',
+    ENTITYCREATOREDITOR_CREATEBUTTON_ARIADESCRIPTION = 'EntityCreatorEditor.createButton.ariaDescription',
+    ENTITYCREATOREDITOR_CREATEBUTTON_TEXT = 'EntityCreatorEditor.createButton.text',
+    ENTITYCREATOREDITOR_SAVEBUTTON_ARIADESCRIPTION = 'EntityCreatorEditor.saveButton.ariaDescription',
+    ENTITYCREATOREDITOR_SAVEBUTTON_TEXT = 'EntityCreatorEditor.saveButton.text',
+    ENTITYCREATOREDITOR_CANCELBUTTON_ARIADESCRIPTION = 'EntityCreatorEditor.cancelButton.ariaDescription',
+    ENTITYCREATOREDITOR_CANCELBUTTON_TEXT = 'EntityCreatorEditor.cancelButton.text',
+    ENTITYCREATOREDITOR_DONEBUTTON_ARIADESCRIPTION = 'EntityCreatorEditor.doneButton.ariaDescription',
+    ENTITYCREATOREDITOR_DONEBUTTON_TEXT = 'EntityCreatorEditor.doneButton.text',
+    ENTITYCREATOREDITOR_DELETEBUTTON_ARIADESCRIPTION = 'EntityCreatorEditor.deleteButton.ariaDescription',
+    ENTITYCREATOREDITOR_DELETEBUTTON_TEXT = 'EntityCreatorEditor.deleteButton.text',
+    ENTITYCREATOREDITOR_TRAINDIALOGSBUTTON_ARIADESCRIPTION = 'EntityCreatorEditor.traindialogsButton.ariaDescription',
+    ENTITYCREATOREDITOR_TRAINDIALOGSBUTTON_TEXT = 'EntityCreatorEditor.traindialogsButton.text',
+    ENTITYCREATOREDITOR_CONFIRM_DELETE_TITLE = 'EntityCreatorEditor.confirmDeleteTitle',
+    ENTITYCREATOREDITOR_CONFIRM_DELETE_WARNING = 'EntityCreatorEditor.confirmDeleteWarning',
+    ENTITYCREATOREDITOR_CONFIRM_EDIT_TITLE = 'EntityCreatorEditor.confirmEditTitle',
+    ENTITYCREATOREDITOR_CONFIRM_EDIT_WARNING = 'EntityCreatorEditor.confirmEditWarning',
+    ENTITYCREATOREDITOR_DELETE_ERROR_TITLE = 'EntityCreatorEditor.deleteErrorTitle',
+    ENTITYCREATOREDITOR_DELETE_ERROR_WARNING = 'EntityCreatorEditor.deleteErrorWarning',
+
+    // Error
+    ERROR_ERROR = 'Error.error',
+    ERROR_WARNING = 'Error.warning',
+    ERROR_PRIMARYBUTTON_ARIADESCRIPTION = 'Error.ariaDescription',
+    ERROR_PRIMARYBUTTON_TEXT = 'Error.text',
+
+    // LogDialogModal
+    LOGDIALOGMODAL_DEFAULTBUTTON_ARIADESCRIPTION = 'LogDialogModal.defaultButton.ariaDescription',
+    LOGDIALOGMODAL_DEFAULTBUTTON_TEXT = 'LogDialogModal.defaultButton.text',
+    LOGDIALOGMODAL_PRIMARYBUTTON_ARIADESCRIPTION = 'LogDialogModal.primaryButton.ariaDescription',
+    LOGDIALOGMODAL_PRIMARYBUTTON_TEXT = 'LogDialogModal.primaryButton.text',
+    LOGDIALOGMODAL_CONFIRMDELETE_TITLE = 'LogDialogModal.confirmDelete.title',
+
     // LogDialogs
     LOGDIALOGS_TITLE = 'LogDialogs.title',
     LOGDIALOGS_SUBTITLE = 'LogDialogs.subtitle',
@@ -94,6 +216,26 @@ export enum FM {
     // LogDialogAdmin
     LOGDIALOGADMIN_CONFIRMTITLE = 'LogDialogAdmin.confirmTitle',
 
+    // LogOut
+    LOGOUT_TITLE = 'LogoutModal.title',
+    LOGOUT_PRIMARYBUTTON_ARIADESCRIPTION = 'LogoutModal.primaryButton.ariaDescription',
+    LOGOUT_PRIMARYBUTTON_TEXT = 'LogoutModal.primaryButton.text',
+    LOGOUT_DEFAULTBUTTON_ARIADESCRIPTION = 'LogoutModal.defaultButton.ariaDescription',
+    LOGOUT_DEFAULTBUTTON_TEXT = 'LogoutModal.defaultButton.text',
+
+    // MemoryTable
+    MEMORYTABLE_EMPTY = 'MemoryTable.empty',
+
+    // PackageCreator
+    PACKAGECREATOR_TITLE = 'PackageCreator.title',
+    PACKAGECREATOR_TAG_LABEL = 'PackageCreator.tagLabel',
+    PACKAGECREATOR_TAG_PLACEHOLDER = 'PackageCreator.tagPlaceholder',
+    PACKAGECREATOR_LIVE_LABEL = 'PackageCreator.liveLabel',
+    PACKAGECREATOR_CREATEBUTTON_ARIADESCRIPTION = 'PackageCreator.createButton.ariaDescription',
+    PACKAGECREATOR_CREATEBUTTON_TEXT = 'PackageCreator.createButton.text',
+    PACKAGECREATOR_CANCELBUTTON_ARIADESCRIPTION = 'PackageCreator.cancelButton.ariaDescription',
+    PACKAGECREATOR_CANCELBUTTON_TEXT = 'PackageCreator.cancelButton.text',
+ 
     // ReplayErrorList
     REPLAYERROR_LOGDIALOG_VALIDATION_TITLE = 'ReplayError.logdialogvalidation.title',
     REPLAYERROR_LOGDIALOG_VALIDATION_MESSAGE = 'ReplayError.logdialogvalidation.message',
@@ -107,9 +249,19 @@ export enum FM {
     REPLAYERROR_DESC_UNAVAILABLE_ACTION = 'ReplayError.Desc.unavailableAction',
     REPLAYERROR_DESC_CHANGED_ENTITIES = 'ReplayError.Desc.changedEntities',
 
+    // SessionMemoryCheck
+    SESSIONMEMORYCHECK_KEEPBUTTON_ARIADESCRIPTION = 'SessionMemoryCheck.keepButton.ariaDescription',
+    SESSIONMEMORYCHECK_KEEPBUTTON_TEXT = 'SessionMemoryCheck.keepButton.text',
+    SESSIONMEMORYCHECK_CLEARBUTTON_ARIADESCRIPTION = 'SessionMemoryCheck.clearButton.ariaDescription',
+    SESSIONMEMORYCHECK_CLEARBUTTON_TEXT = 'SessionMemoryCheck.clearButton.text',
+    SESSIONMEMORYCHECK_DESCRIPTION_ARIADESCRIPTION = 'SessionMemoryCheck.description.ariaDescription',
+    SESSIONMEMORYCHECK_DESCRIPTION_TEXT = 'SessionMemoryCheck.description.text',
+   
     // Settings
     SETTINGS_TITLE = 'Settings.title',
     SETTINGS_SUBTITLE = 'Settings.subtitle',
+    SETTINGS_COPYBUTTONARIALDESCRIPTION = 'Settings.copyButtonArielDescription',
+    SETTINGS_COPYBUTTONTEXT = 'Settings.copyButtonText',
     SETTINGS_EXPORTBUTTONARIALDESCRIPTION = 'Settings.exportButtonArielDescription',
     SETTINGS_EXPORTBUTTONTEXT = 'Settings.exportButtonText',
     SETTINGS_FIELDERROR_REQUIREDVALUE = 'Settings.fieldError.requiredValue',
@@ -133,6 +285,31 @@ export enum FM {
     SETTINGS_DISCARD = 'Settings.discard',
     SETTINGS_LOGGINGON_LABEL = 'Settings.loggingon',
 
+    // TeachSessionAdmin
+    TEACHSESSIONADMIN_DIALOGMODE_USER = 'TeachSessionAdmin.dialogMode.user',
+    TEACHSESSIONADMIN_DIALOGMODE_BOT = 'TeachSessionAdmin.dialogMode.bot',
+    TEACHSESSIONADMIN_MEMORY_TITLE = 'TeachSessionAdmin.memory.title',
+    TEACHSESSIONADMIN_ENTITYDETECTION_TITLE = 'TeachSessionAdmin.entityDetection.title',
+    TEACHSESSIONADMIN_ACTION_TITLE = 'TeachSessionAdmin.action.title',
+    TEACHSESSIONADMIN_TRAINSTATUS_COMPLETED = 'TeachSessionAdmin.trainstatus.completed',
+    TEACHSESSIONADMIN_TRAINSTATUS_NEWSCORES = 'TeachSessionAdmin.trainstatus.newscores',
+    TEACHSESSIONADMIN_TRAINSTATUS_REFRESH = 'TeachSessionAdmin.trainstatus.refresh',
+    TEACHSESSIONADMIN_TRAINSTATUS_FAILED = 'TeachSessionAdmin.trainstatus.failed',
+    TEACHSESSIONADMIN_TRAINSTATUS_RUNNING = 'TeachSessionAdmin.trainstatus.running',
+
+    // TeachSessionModal
+    TEACHSESSIONMODAL_UNDO_ARIADESCRIPTION = 'TeachSessionModal.undo.ariaDescription',
+    TEACHSESSIONMODAL_UNDO_TEXT = 'TeachSessionModal.undo.text',
+    TEACHSESSIONMODAL_EDIT_ABANDON_BUTTON_TEXT = 'TeachSessionModal.edit.abandon.buttontext',
+    TEACHSESSIONMODAL_TEACH_ABANDON_BUTTON_TEXT = 'TeachSessionModal.teach.abandon.buttontext',
+    TEACHSESSIONMODAL_EDIT_DONE_BUTTON_TEXT = 'TeachSessionModal.edit.done.buttontext',
+    TEACHSESSIONMODAL_TEACH_DONE_BUTTON_TEXT = 'TeachSessionModal.teach.done.buttontext',
+    TEACHSESSIONMODAL_TEACH_CONFIRMDELETE_TITLE = 'TeachSessionModal.teach.confirmDelete.title',
+    TEACHSESSIONMODAL_EDIT_CONFIRMDELETE_TITLE = 'TeachSessionModal.edit.confirmDelete.title',
+
+    // TextVariation
+    TEXTVARIATION_PLACEHOLDER = 'TextVariationCreator.placeholder',
+ 
     // ToolTip
     TOOLTIP_ACTION_API = 'ToolTop.ACTION_API',
     TOOLTIP_ACTION_API_TITLE = 'ToolTop.ACTION_API_TITLE',
@@ -202,197 +379,6 @@ export enum FM {
     TOOLTIP_TAG_LIVE = 'ToolTip.TAG_LIVE',
     TOOLTIP_TRAINDIALOG_INVALID = 'ToolTip.TRAINDIALOG_INVALID',
 
-    // Train Dialogs
-    TRAINDIALOGS_TITLE = 'TrainDialogs.title',
-    TRAINDIALOGS_SUBTITLE = 'TrainDialogs.subtitle',
-    TRAINDIALOGS_CREATEBUTTONTITLE = 'TrainDialogs.createButtonTitle',
-    TRAINDIALOGS_CREATEBUTTONARIALDESCRIPTION = 'TrainDialogs.createButtonAriaDescription',
-    TRAINDIALOGS_FIRSTINPUT = 'TrainDialogs.firstInput',
-    TRAINDIALOGS_LASTINPUT = 'TrainDialogs.lastInput',
-    TRAINDIALOGS_LASTRESPONSE = 'TrainDialogs.lastResponse',
-    TRAINDIALOGS_TURNS = 'TrainDialogs.turns',
-
-    // Tutorial Importer
-    TUTORIALIMPORTER_TITLE = 'TutorialImporter.Title',
-
-    // Validations
-    VALIDATE_UNABLE_TO_EDIT = 'Validate.unableToEdit',
-    VALIDATE_UNABLE_TO_BRANCH = 'Validate.unableToBranch',
-    VALIDATE_UNABLE_TO_UNDO = 'Validate.unableToUndo',
-    VALIDATE_ENTITY_REASON = 'Validate.entityReason',
-
-    // ActionDetails
-    ACTIONDETAILSLIST_COLUMNS_RESPONSE = 'ActionDetailsList.columns.response',
-    ACTIONDETAILSLIST_COLUMNS_ARGUMENTS = 'ActionDetailsList.columns.arguments',
-    ACTIONDETAILSLIST_COLUMNS_TYPE = 'ActionDetailsList.columns.type',
-    ACTIONDETAILSLIST_COLUMNS_REQUIREDENTITIES = 'ActionDetailsList.columns.requiredEntities',
-    ACTIONDETAILSLIST_COLUMNS_DISQUALIFYINGENTITIES = 'ActionDetailsList.columns.disqualifyingEntities',
-    ACTIONDETAILSLIST_COLUMNS_SUGGESTEDENTITY = 'ActionDetailsList.columns.suggestedEntity',
-    ACTIONDETAILSLIST_COLUMNS_ISTERMINAL = 'ActionDetailsList.columns.isTerminal',
-
-    // TextVariation
-    TEXTVARIATION_PLACEHOLDER = 'TextVariationCreator.placeholder',
-
-    // ActionCreatorEditor
-    ACTIONCREATOREDITOR_SAVEBUTTON_ARIADESCRIPTION = 'ActionCreatorEditor.saveButton.ariaDescription',
-    ACTIONCREATOREDITOR_SAVEBUTTON_TEXT = 'ActionCreatorEditor.saveButton.text',
-    ACTIONCREATOREDITOR_CREATEBUTTON_ARIADESCRIPTION = 'ActionCreatorEditor.createButton.ariaDescription',
-    ACTIONCREATOREDITOR_CREATEBUTTON_TEXT = 'ActionCreatorEditor.createButton.text',
-    ACTIONCREATOREDITOR_CANCELBUTTON_ARIADESCRIPTION = 'ActionCreatorEditor.cancelButton.ariaDescription',
-    ACTIONCREATOREDITOR_CANCELBUTTON_TEXT = 'ActionCreatorEditor.cancelButton.text',
-    ACTIONCREATOREDITOR_DONEBUTTON_ARIADESCRIPTION = 'ActionCreatorEditor.doneButton.ariaDescription',
-    ACTIONCREATOREDITOR_DONEBUTTON_TEXT = 'ActionCreatorEditor.doneButton.text',
-    ACTIONCREATOREDITOR_DELETEBUTTON_ARIADESCRIPTION = 'ActionCreatorEditor.deleteButton.ariaDescription',
-    ACTIONCREATOREDITOR_DELETEBUTTON_TEXT = 'ActionCreatorEditor.deleteButton.text',
-    ACTIONCREATOREDITOR_TRAINDIALOGSBUTTON_ARIADESCRIPTION = 'ActionCreatorEditor.traindialogsButton.ariaDescription',
-    ACTIONCREATOREDITOR_TRAINDIALOGSBUTTON_TEXT = 'ActionCreatorEditor.traindialogsButton.text',
-    ACTIONCREATOREDITOR_CONFIRM_DELETE_TITLE = 'ActionCreatorEditor.confirmDeleteTitle',
-    ACTIONCREATOREDITOR_CONFIRM_DELETE_WARNING = 'ActionCreatorEditor.confirmDeleteWarning',
-    ACTIONCREATOREDITOR_CONFIRM_EDIT_TITLE = 'ActionCreatorEditor.confirmEditTitle',
-    ACTIONCREATOREDITOR_CONFIRM_EDIT_WARNING = 'ActionCreatorEditor.confirmEditWarning',
-    
-    // ActionScorer
-    ACTIONSCORER_COLUMNS_RESPONSE = 'ActionScorer.columns.response',
-    ACTIONSCORER_COLUMNS_ARGUMENTS = 'ActionScorer.columns.arguments',
-    ACTIONSCORER_COLUMNS_SCORE = 'ActionScorer.columns.score',
-    ACTIONSCORER_COLUMNS_ENTITIES = 'ActionScorer.columns.entities',
-    ACTIONSCORER_COLUMNS_ISTERMINAL = 'ActionScorer.columns.isTerminal',
-    ACTIONSCORER_COLUMNS_TYPE = 'ActionScorer.columns.type',
-
-    // AppCreator
-    APPCREATOR_FIELDERROR_REQUIREDVALUE = 'AppCreator.fieldError.requiredValue',
-    APPCREATOR_FIELDERROR_ALPHANUMERIC = 'AppCreator.fieldError.alphanumeric',
-    APPCREATOR_FIELDERROR_DISTINCT = 'AppCreator.fieldError.distinct',
-    APPCREATOR_TITLE = 'AppCreator.title',
-    APPCREATOR_IMPORT_TITLE = 'AppCreator.importtitle',
-    APPCREATOR_FIELDS_NAME_LABEL = 'AppCreator.fields.name.label',
-    APPCREATOR_FIELDS_IMPORT_NAME_LABEL = 'AppCreator.fields.importname.label',
-    APPCREATOR_FIELDS_NAME_PLACEHOLDER = 'AppCreator.fields.name.placeholder',
-    APPCREATOR_FIELDS_LOCALE_LABEL = 'AppCreator.fields.locale.label',
-    APPCREATOR_CREATEBUTTON_ARIADESCRIPTION = 'AppCreator.createButton.ariaDescription',
-    APPCREATOR_CREATEBUTTON_TEXT = 'AppCreator.createButton.text',
-    APPCREATOR_LOCATEBUTTON_ARIADESCRIPTION = 'AppCreator.importButton.ariaDescription',
-    APPCREATOR_LOCATEBUTTON_TEXT = 'AppCreator.importButton.text',
-    APPCREATOR_CANCELBUTTON_ARIADESCRIPTION = 'AppCreator.cancelButton.ariaDescription',
-    APPCREATOR_CANCELBUTTON_TEXT = 'AppCreator.cancelButton.text',
-
-    // ChatSessionModal
-    CHATSESSIONMODAL_PRIMARYBUTTON_ARIADESCRIPTION = 'ChatSessionModal.primaryButton.ariaDescription',
-    CHATSESSIONMODAL_PRIMARYBUTTON_TEXT = 'ChatSessionModal.primaryButton.text',
-    CHATSESSIONMODAL_EXPIREBUTTON_ARIADESCRIPTION = 'ChatSessionModal.expireButton.ariaDescription',
-    CHATSESSIONMODAL_EXPIREBUTTON_TEXT = 'ChatSessionModal.expireButton.text',
-
-    // ConfirmCancelModal
-    CONFIRMCANCELMODAL_PRIMARYBUTTON_TEXT = 'ConfirmCancelModal.primaryButton.text',
-    CONFIRMCANCELMODAL_DEFAULTBUTTON_TEXT = 'ConfirmCancelModal.defaultButton.text',
-
-    // DemoImporter
-    DEMOIMPORT_TITLE = 'DemoImporter.title',
-    DEMOIMPORT_BUTTON_ARIADESCRIPTION = 'DemoImporter.button.ariaDescription',
-    DEMOIMPORT_BUTTON_TEXT = 'DemoImporter.button.text',
-
-    // EntityCreatorEditor
-    ENTITYCREATOREDITOR_FIELDERROR_REQUIREDVALUE = 'EntityCreatorEditor.fieldError.requiredValue',
-    ENTITYCREATOREDITOR_FIELDERROR_ALPHANUMERIC = 'EntityCreatorEditor.fieldsError.alphanumerica',
-    ENTITYCREATOREDITOR_FIELDERROR_DISTINCT = 'EntityCreatorEditor.fields.distinct',
-    ENTITYCREATOREDITOR_ENTITYOPTION_NEW = 'EntityCreatorEditor.entityOption.new',
-    ENTITYCREATOREDITOR_TITLE_CREATE = 'EntityCreatorEditor.title.create',
-    ENTITYCREATOREDITOR_TITLE_EDIT = 'EntityCreatorEditor.title.edit',
-    ENTITYCREATOREDITOR_FIELDS_NAME_LABEL = 'EntityCreatorEditor.fields.name.label',
-    ENTITYCREATOREDITOR_FIELDS_NAME_PLACEHOLDER = 'EntityCreatorEditor.fields.name.placeholder',
-    ENTITYCREATOREDITOR_FIELDS_TYPE_LABEL = 'EntityCreatorEditor.fields.type.label',
-    ENTITYCREATOREDITOR_FIELDS_PROGRAMMATICONLY_LABEL = 'EntityCreatorEditor.fields.programmatically.label',
-    ENTITYCREATOREDITOR_FIELDS_PROGRAMMATICONLY_HELPTEXT = 'EntityCreatorEditor.fields.programmatically.helptext',
-    ENTITYCREATOREDITOR_FIELDS_TOOLTIPTARGET = 'EntityCreatorEditor.fields.tooltiptarget',
-    ENTITYCREATOREDITOR_FIELDS_MULTIVALUE_LABEL = 'EntityCreatorEditor.fields.multiValue.label',
-    ENTITYCREATOREDITOR_FIELDS_MULTIVALUE_HELPTEXT = 'EntityCreatorEditor.fields.multiValue.helpText',
-    ENTITYCREATOREDITOR_FIELDS_NEGATABLE_LABEL = 'EntityCreatorEditor.fields.negatable.label',
-    ENTITYCREATOREDITOR_FIELDS_NEGATABLE_HELPTEXT = 'EntityCreatorEditor.fields.negatable.helpText',
-    ENTITYCREATOREDITOR_PIVOT_EDIT = 'EntityCreatorEditor.pivot.editEntity',
-    ENTITYCREATOREDITOR_PIVOT_REQUIREDFOR = 'EntityCreatorEditor.pivot.requiredForActions',
-    ENTITYCREATOREDITOR_PIVOT_DISQUALIFIEDACTIONS = 'EntityCreatorEditor.pivot.disqualifiedActions',
-    ENTITYCREATOREDITOR_CREATEBUTTON_ARIADESCRIPTION = 'EntityCreatorEditor.createButton.ariaDescription',
-    ENTITYCREATOREDITOR_CREATEBUTTON_TEXT = 'EntityCreatorEditor.createButton.text',
-    ENTITYCREATOREDITOR_SAVEBUTTON_ARIADESCRIPTION = 'EntityCreatorEditor.saveButton.ariaDescription',
-    ENTITYCREATOREDITOR_SAVEBUTTON_TEXT = 'EntityCreatorEditor.saveButton.text',
-    ENTITYCREATOREDITOR_CANCELBUTTON_ARIADESCRIPTION = 'EntityCreatorEditor.cancelButton.ariaDescription',
-    ENTITYCREATOREDITOR_CANCELBUTTON_TEXT = 'EntityCreatorEditor.cancelButton.text',
-    ENTITYCREATOREDITOR_DONEBUTTON_ARIADESCRIPTION = 'EntityCreatorEditor.doneButton.ariaDescription',
-    ENTITYCREATOREDITOR_DONEBUTTON_TEXT = 'EntityCreatorEditor.doneButton.text',
-    ENTITYCREATOREDITOR_DELETEBUTTON_ARIADESCRIPTION = 'EntityCreatorEditor.deleteButton.ariaDescription',
-    ENTITYCREATOREDITOR_DELETEBUTTON_TEXT = 'EntityCreatorEditor.deleteButton.text',
-    ENTITYCREATOREDITOR_TRAINDIALOGSBUTTON_ARIADESCRIPTION = 'EntityCreatorEditor.traindialogsButton.ariaDescription',
-    ENTITYCREATOREDITOR_TRAINDIALOGSBUTTON_TEXT = 'EntityCreatorEditor.traindialogsButton.text',
-    ENTITYCREATOREDITOR_CONFIRM_DELETE_TITLE = 'EntityCreatorEditor.confirmDeleteTitle',
-    ENTITYCREATOREDITOR_CONFIRM_DELETE_WARNING = 'EntityCreatorEditor.confirmDeleteWarning',
-    ENTITYCREATOREDITOR_CONFIRM_EDIT_TITLE = 'EntityCreatorEditor.confirmEditTitle',
-    ENTITYCREATOREDITOR_CONFIRM_EDIT_WARNING = 'EntityCreatorEditor.confirmEditWarning',
-    ENTITYCREATOREDITOR_DELETE_ERROR_TITLE = 'EntityCreatorEditor.deleteErrorTitle',
-    ENTITYCREATOREDITOR_DELETE_ERROR_WARNING = 'EntityCreatorEditor.deleteErrorWarning',
-
-    // Error
-    ERROR_ERROR = 'Error.error',
-    ERROR_WARNING = 'Error.warning',
-    ERROR_PRIMARYBUTTON_ARIADESCRIPTION = 'Error.ariaDescription',
-    ERROR_PRIMARYBUTTON_TEXT = 'Error.text',
-
-    // LogDialogModal
-    LOGDIALOGMODAL_DEFAULTBUTTON_ARIADESCRIPTION = 'LogDialogModal.defaultButton.ariaDescription',
-    LOGDIALOGMODAL_DEFAULTBUTTON_TEXT = 'LogDialogModal.defaultButton.text',
-    LOGDIALOGMODAL_PRIMARYBUTTON_ARIADESCRIPTION = 'LogDialogModal.primaryButton.ariaDescription',
-    LOGDIALOGMODAL_PRIMARYBUTTON_TEXT = 'LogDialogModal.primaryButton.text',
-    LOGDIALOGMODAL_CONFIRMDELETE_TITLE = 'LogDialogModal.confirmDelete.title',
-
-    // LogOut
-    LOGOUT_TITLE = 'LogoutModal.title',
-    LOGOUT_PRIMARYBUTTON_ARIADESCRIPTION = 'LogoutModal.primaryButton.ariaDescription',
-    LOGOUT_PRIMARYBUTTON_TEXT = 'LogoutModal.primaryButton.text',
-    LOGOUT_DEFAULTBUTTON_ARIADESCRIPTION = 'LogoutModal.defaultButton.ariaDescription',
-    LOGOUT_DEFAULTBUTTON_TEXT = 'LogoutModal.defaultButton.text',
-
-    // MemoryTable
-    MEMORYTABLE_EMPTY = 'MemoryTable.empty',
-
-    // PackageCreator
-    PACKAGECREATOR_TITLE = 'PackageCreator.title',
-    PACKAGECREATOR_TAG_LABEL = 'PackageCreator.tagLabel',
-    PACKAGECREATOR_TAG_PLACEHOLDER = 'PackageCreator.tagPlaceholder',
-    PACKAGECREATOR_LIVE_LABEL = 'PackageCreator.liveLabel',
-    PACKAGECREATOR_CREATEBUTTON_ARIADESCRIPTION = 'PackageCreator.createButton.ariaDescription',
-    PACKAGECREATOR_CREATEBUTTON_TEXT = 'PackageCreator.createButton.text',
-    PACKAGECREATOR_CANCELBUTTON_ARIADESCRIPTION = 'PackageCreator.cancelButton.ariaDescription',
-    PACKAGECREATOR_CANCELBUTTON_TEXT = 'PackageCreator.cancelButton.text',
-
-    // SessionMemoryCheck
-    SESSIONMEMORYCHECK_KEEPBUTTON_ARIADESCRIPTION = 'SessionMemoryCheck.keepButton.ariaDescription',
-    SESSIONMEMORYCHECK_KEEPBUTTON_TEXT = 'SessionMemoryCheck.keepButton.text',
-    SESSIONMEMORYCHECK_CLEARBUTTON_ARIADESCRIPTION = 'SessionMemoryCheck.clearButton.ariaDescription',
-    SESSIONMEMORYCHECK_CLEARBUTTON_TEXT = 'SessionMemoryCheck.clearButton.text',
-    SESSIONMEMORYCHECK_DESCRIPTION_ARIADESCRIPTION = 'SessionMemoryCheck.description.ariaDescription',
-    SESSIONMEMORYCHECK_DESCRIPTION_TEXT = 'SessionMemoryCheck.description.text',
-
-    // TeachSessionAdmin
-    TEACHSESSIONADMIN_DIALOGMODE_USER = 'TeachSessionAdmin.dialogMode.user',
-    TEACHSESSIONADMIN_DIALOGMODE_BOT = 'TeachSessionAdmin.dialogMode.bot',
-    TEACHSESSIONADMIN_MEMORY_TITLE = 'TeachSessionAdmin.memory.title',
-    TEACHSESSIONADMIN_ENTITYDETECTION_TITLE = 'TeachSessionAdmin.entityDetection.title',
-    TEACHSESSIONADMIN_ACTION_TITLE = 'TeachSessionAdmin.action.title',
-    TEACHSESSIONADMIN_TRAINSTATUS_COMPLETED = 'TeachSessionAdmin.trainstatus.completed',
-    TEACHSESSIONADMIN_TRAINSTATUS_NEWSCORES = 'TeachSessionAdmin.trainstatus.newscores',
-    TEACHSESSIONADMIN_TRAINSTATUS_REFRESH = 'TeachSessionAdmin.trainstatus.refresh',
-    TEACHSESSIONADMIN_TRAINSTATUS_FAILED = 'TeachSessionAdmin.trainstatus.failed',
-    TEACHSESSIONADMIN_TRAINSTATUS_RUNNING = 'TeachSessionAdmin.trainstatus.running',
-
-    // TeachSessionModal
-    TEACHSESSIONMODAL_UNDO_ARIADESCRIPTION = 'TeachSessionModal.undo.ariaDescription',
-    TEACHSESSIONMODAL_UNDO_TEXT = 'TeachSessionModal.undo.text',
-    TEACHSESSIONMODAL_EDIT_ABANDON_BUTTON_TEXT = 'TeachSessionModal.edit.abandon.buttontext',
-    TEACHSESSIONMODAL_TEACH_ABANDON_BUTTON_TEXT = 'TeachSessionModal.teach.abandon.buttontext',
-    TEACHSESSIONMODAL_EDIT_DONE_BUTTON_TEXT = 'TeachSessionModal.edit.done.buttontext',
-    TEACHSESSIONMODAL_TEACH_DONE_BUTTON_TEXT = 'TeachSessionModal.teach.done.buttontext',
-    TEACHSESSIONMODAL_TEACH_CONFIRMDELETE_TITLE = 'TeachSessionModal.teach.confirmDelete.title',
-    TEACHSESSIONMODAL_EDIT_CONFIRMDELETE_TITLE = 'TeachSessionModal.edit.confirmDelete.title',
-
     // TrainDialogAdmin
     TRAINDIALOGADMIN_DIALOGMODE_USER = 'TrainDialogAdmin.dialogMode.user',
     TRAINDIALOGADMIN_DIALOGMODE_TEXT = 'TrainDialogAdmin.dialogMode.text',
@@ -417,6 +403,25 @@ export enum FM {
     TRAINDIALOGMODAL_PRIMARYBUTTON_ARIADESCRIPTION = 'TrainDialogModal.primaryButton.ariaDescription',
     TRAINDIALOGMODAL_PRIMARYBUTTON_TEXT = 'TrainDialogModal.primaryButton.text',
     TRAINDIALOGMODAL_CONFIRMDELETE_TITLE = 'TrainDialogModal.confirmDelete.title',
+
+    // Train Dialogs
+    TRAINDIALOGS_TITLE = 'TrainDialogs.title',
+    TRAINDIALOGS_SUBTITLE = 'TrainDialogs.subtitle',
+    TRAINDIALOGS_CREATEBUTTONTITLE = 'TrainDialogs.createButtonTitle',
+    TRAINDIALOGS_CREATEBUTTONARIALDESCRIPTION = 'TrainDialogs.createButtonAriaDescription',
+    TRAINDIALOGS_FIRSTINPUT = 'TrainDialogs.firstInput',
+    TRAINDIALOGS_LASTINPUT = 'TrainDialogs.lastInput',
+    TRAINDIALOGS_LASTRESPONSE = 'TrainDialogs.lastResponse',
+    TRAINDIALOGS_TURNS = 'TrainDialogs.turns',
+
+    // Tutorial Importer
+    TUTORIALIMPORTER_TITLE = 'TutorialImporter.Title',
+
+    // Validations
+    VALIDATE_UNABLE_TO_EDIT = 'Validate.unableToEdit',
+    VALIDATE_UNABLE_TO_BRANCH = 'Validate.unableToBranch',
+    VALIDATE_UNABLE_TO_UNDO = 'Validate.unableToUndo',
+    VALIDATE_ENTITY_REASON = 'Validate.entityReason',
 }
 
 // Message ids follow convention of '<componentname>.<area>[.<subarea>]*`
@@ -530,6 +535,8 @@ export default {
         // Settings
         [FM.SETTINGS_TITLE]: 'Settings',
         [FM.SETTINGS_SUBTITLE]: 'Control your application version tags and other application configuration',
+        [FM.SETTINGS_COPYBUTTONARIALDESCRIPTION]: 'Copy App',
+        [FM.SETTINGS_COPYBUTTONTEXT]: 'Copy',
         [FM.SETTINGS_EXPORTBUTTONARIALDESCRIPTION]: 'Export App to File',
         [FM.SETTINGS_EXPORTBUTTONTEXT]: 'Export',
         [FM.SETTINGS_FIELDERROR_REQUIREDVALUE]: 'Required Value',
@@ -686,11 +693,14 @@ export default {
         [FM.APPCREATOR_FIELDERROR_ALPHANUMERIC]: 'Application name may only contain alphanumeric characters',
         [FM.APPCREATOR_FIELDERROR_DISTINCT]: 'Name is already in use.',
         [FM.APPCREATOR_TITLE]: 'Create a Conversation Learner App',
+        [FM.APPCREATOR_COPY_TITLE]: 'Copy a Conversation Learner App',
         [FM.APPCREATOR_IMPORT_TITLE]: 'Import a Conversation Learner App',
         [FM.APPCREATOR_FIELDS_NAME_LABEL]: 'Name',
         [FM.APPCREATOR_FIELDS_IMPORT_NAME_LABEL]: 'New App Name',
         [FM.APPCREATOR_FIELDS_NAME_PLACEHOLDER]: 'Application Name...',
         [FM.APPCREATOR_FIELDS_LOCALE_LABEL]: 'Locale',
+        [FM.APPCREATOR_COPYBUTTON_ARIADESCRIPTION]: 'Copy',
+        [FM.APPCREATOR_COPYBUTTON_TEXT]: 'Copy',
         [FM.APPCREATOR_CREATEBUTTON_ARIADESCRIPTION]: 'Create',
         [FM.APPCREATOR_CREATEBUTTON_TEXT]: 'Create',
         [FM.APPCREATOR_LOCATEBUTTON_ARIADESCRIPTION]: 'Locate File',
