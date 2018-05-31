@@ -9,7 +9,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import * as OF from 'office-ui-fabric-react'
-import { State, ErrorType } from '../../types'
+import { State, ErrorType, AppCreatorType } from '../../types'
 import { FM } from '../../react-intl-messages'
 import { AT } from '../../types/ActionTypes'
 import { FilePicker } from 'react-file-picker'
@@ -126,7 +126,8 @@ class AppCreator extends React.Component<Props, ComponentState> {
     // Also has benefit of native browser validation for required fields
     onKeyDown(event: React.KeyboardEvent<HTMLElement>) {
         // On enter attempt to create the app if required fields are set
-        if (event.keyCode === 13 && this.state.appNameVal) {
+        // Not on import as explicit button press is required to pick the file
+        if (this.props.creatorType !== AppCreatorType.IMPORT && event.keyCode === 13 && this.state.appNameVal) {
             this.onClickCreate();
         }
     }
@@ -142,7 +143,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
         }
 
         // Check that name isn't in use
-        let foundApp = this.props.apps.find(a => a.appName == value)
+        let foundApp = this.props.apps.find(a => a.appName === value)
         if (foundApp) {
             return intl.formatMessage(messages.fieldErrorDistinct)
         }
@@ -170,20 +171,32 @@ class AppCreator extends React.Component<Props, ComponentState> {
     }
 
     getTitle(): JSX.Element {
-        return this.props.import ?
-            <FormattedMessage
-                id={FM.APPCREATOR_IMPORT_TITLE}
-                defaultMessage="Import a Conversation Learner App"
-            />
-        :
-            <FormattedMessage
-                id={FM.APPCREATOR_TITLE}
-                defaultMessage="Create a Conversation Learner App"
-            />
+        switch (this.props.creatorType) {
+            case AppCreatorType.NEW:
+                return (
+                    <FormattedMessage
+                        id={FM.APPCREATOR_TITLE}
+                        defaultMessage="Create a Conversation Learner App"
+                    />)
+            case AppCreatorType.IMPORT:
+                return (
+                <FormattedMessage
+                    id={FM.APPCREATOR_IMPORT_TITLE}
+                    defaultMessage="Import a Conversation Learner App"
+                />)
+            case AppCreatorType.COPY:
+                return (
+                    <FormattedMessage
+                        id={FM.APPCREATOR_COPY_TITLE}
+                        defaultMessage="Copy a Conversation Learner App"
+                    />)
+            default:
+                return null;
+        }
     }
 
     getLabel(intl: ReactIntl.InjectedIntl): string {
-        return this.props.import ?
+        return (this.props.creatorType !== AppCreatorType.NEW) ?
             intl.formatMessage({
                 id: FM.APPCREATOR_FIELDS_IMPORT_NAME_LABEL,
                 defaultMessage: "New App Name"
@@ -220,8 +233,9 @@ class AppCreator extends React.Component<Props, ComponentState> {
                             defaultMessage: "Application Name..."
                         })}
                         onKeyDown={key => this.onKeyDown(key)}
-                        value={this.state.appNameVal} />
-                    {!this.props.import &&
+                        value={this.state.appNameVal}
+                    />
+                    {this.props.creatorType === AppCreatorType.NEW &&
                         <OF.Dropdown
                             label={intl.formatMessage({
                                 id: FM.APPCREATOR_FIELDS_LOCALE_LABEL,
@@ -238,7 +252,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
                 <div className='cl-modal_footer'>
                     <div className="cl-modal-buttons">
                         <div className="cl-modal-buttons_primary">
-                            {this.props.import ? 
+                            {this.props.creatorType === AppCreatorType.IMPORT &&
                                 <FilePicker
                                     extensions={['cl']}
                                     onChange={(fileObject: File) => this.onImport(fileObject)}
@@ -256,7 +270,8 @@ class AppCreator extends React.Component<Props, ComponentState> {
                                         })}
                                     />
                                 </FilePicker>
-                                :
+                            }
+                            {this.props.creatorType === AppCreatorType.NEW &&
                                 <OF.PrimaryButton
                                     disabled={invalidName}
                                     onClick={this.onClickCreate}
@@ -270,7 +285,21 @@ class AppCreator extends React.Component<Props, ComponentState> {
                                     })}
                                 />
                             }
-                             <OF.DefaultButton
+                            {this.props.creatorType === AppCreatorType.COPY &&
+                                <OF.PrimaryButton
+                                    disabled={invalidName}
+                                    onClick={this.onClickCreate}
+                                    ariaDescription={intl.formatMessage({
+                                        id: FM.APPCREATOR_COPYBUTTON_ARIADESCRIPTION,
+                                        defaultMessage: 'Copy'
+                                    })}
+                                    text={intl.formatMessage({
+                                        id: FM.APPCREATOR_COPYBUTTON_ARIADESCRIPTION,
+                                        defaultMessage: 'Copy'
+                                    })}
+                                />
+                            }
+                            <OF.DefaultButton
                                 onClick={this.onClickCancel}
                                 ariaDescription={intl.formatMessage({
                                     id: FM.APPCREATOR_CANCELBUTTON_ARIADESCRIPTION,
@@ -302,7 +331,7 @@ const mapStateToProps = (state: State) => {
 
 export interface ReceivedProps {
     open: boolean
-    import: boolean
+    creatorType: AppCreatorType
     onSubmit: (app: AppInput, source: AppDefinition) => void
     onCancel: () => void
 }
