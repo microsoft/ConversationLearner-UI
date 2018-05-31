@@ -6,7 +6,7 @@ import * as Rx from 'rxjs';
 import { ActionsObservable, Epic } from 'redux-observable'
 import { State, ActionObject } from '../types'
 import { AT } from '../types/ActionTypes'
-import { getBotInfo, getAllApps, getSourceForApp, getAllEntitiesForApp, getAllActionsForApp, getAllSessionsForApp, getAllTeachSessionsForApp, getAllTrainDialogsForApp, getAllLogDialogsForApp } from "./apiHelpers";
+import { getBotInfo, getAllApps, getAllEntitiesForApp, getAllActionsForApp, getAllSessionsForApp, getAllTeachSessionsForApp, getAllTrainDialogsForApp, getAllLogDialogsForApp } from "./apiHelpers";
  
 const assertNever = () => { throw Error(`Should not reach here`) }
 
@@ -31,14 +31,6 @@ export const fetchEntitiesEpic: Epic<ActionObject, State> = (action$: ActionsObs
         .flatMap(action =>
             (action.type === AT.FETCH_ENTITIES_ASYNC)
                 ? getAllEntitiesForApp(action.clAppID)
-                : assertNever())
-}
-
-export const fetchSourceEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
-    return action$.ofType(AT.FETCH_APPSOURCE_ASYNC)
-        .flatMap(action =>
-            (action.type === AT.FETCH_APPSOURCE_ASYNC)
-                ? getSourceForApp(action.clAppID, action.packageId)
                 : assertNever())
 }
 

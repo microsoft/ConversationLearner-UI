@@ -11,8 +11,10 @@ import { connect } from 'react-redux';
 import { State } from '../../../types';
 import * as OF from 'office-ui-fabric-react';
 import { Expando } from '../../../components/modals'
-import { AppBase, TrainingStatusCode } from '@conversationlearner/models'
+import { saveAs } from 'file-saver'
+import { AppBase, AppDefinition, TrainingStatusCode } from '@conversationlearner/models'
 import './Settings.css'
+import { fetchAppSourceThunkAsync } from '../../../actions/fetchActions'
 import { CL_DEMO_ID } from '../../../types/const'
 import { FM } from '../../../react-intl-messages'
 import ErrorInjectionEditor from '../../../components/modals/ErrorInjectionEditor'
@@ -283,6 +285,19 @@ class Settings extends React.Component<Props, ComponentState> {
         })
     }
 
+    @autobind
+    onExport() {
+        ((this.props.fetchAppSourceThunkAsync(this.props.app.appId, this.props.editingPackageId, false) as any) as Promise<AppDefinition>)
+            .then(appDefinition => {
+                let appDefJSON = JSON.stringify(appDefinition)
+                let blob = new Blob([appDefJSON], {type: "text/plain;charset=utf-8"});
+                saveAs(blob, `${this.props.app.appName}.cl`);
+            })
+            .catch(error => {
+                console.warn(`Error when attempting export application `, error)
+            })
+    }
+
     packageOptions() {
         let packageReferences = util.packageReferences(this.props.app);
 
@@ -327,6 +342,19 @@ class Settings extends React.Component<Props, ComponentState> {
                         onGetErrorMessage={value => this.onGetNameErrorMessage(value)}
                         value={this.state.appNameVal}
                     />
+                    <div className="cl-modal-buttons_primary">
+                        <OF.PrimaryButton
+                            onClick={this.onExport}
+                            ariaDescription={intl.formatMessage({
+                                id: FM.SETTINGS_EXPORTBUTTONARIALDESCRIPTION,
+                                defaultMessage: 'Export Application to a file'
+                            })}
+                            text={intl.formatMessage({
+                                id: FM.SETTINGS_EXPORTBUTTONTEXT,
+                                defaultMessage: 'Export'
+                            })}
+                        />
+                    </div>
                     <OF.TextField
                         className={OF.FontClassNames.mediumPlus}
                         disabled={true}
@@ -469,7 +497,8 @@ const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         editApplicationAsync,
         editAppEditingTagThunkAsync,
-        editAppLiveTagThunkAsync
+        editAppLiveTagThunkAsync,
+        fetchAppSourceThunkAsync
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {

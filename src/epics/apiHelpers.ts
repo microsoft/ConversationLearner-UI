@@ -88,16 +88,6 @@ export const getAllEntitiesForApp = (appId: string): Rx.Observable<ActionObject>
     .catch(err => handleError(obs, err, AT.FETCH_ENTITIES_ASYNC)));
 };
 
-export const getSourceForApp = (appId: string, packageId: string): Rx.Observable<ActionObject> => {
-  const clClient = ClientFactory.getInstance(AT.FETCH_APPSOURCE_ASYNC)
-  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => clClient.source(appId, packageId)
-    .then(source => {
-      obs.next(actions.fetch.fetchAppSourceFulfilled(source));
-      obs.complete();
-    })
-    .catch(err => handleError(obs, err, AT.FETCH_APPSOURCE_ASYNC)));
-};
-
 export const getAllActionsForApp = (appId: string): Rx.Observable<ActionObject> => {
   const clClient = ClientFactory.getInstance(AT.FETCH_ACTIONS_ASYNC)
   return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => clClient.actions(appId)
