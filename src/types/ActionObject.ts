@@ -24,6 +24,12 @@ export type UpdateAction = {
     type: AT.EDIT_APPLICATION_FULFILLED,
     app: AppBase,
 } | {
+    type: AT.EDIT_APPSOURCE_ASYNC,
+    appId: string,
+    source: AppDefinition,
+} | {
+    type: AT.EDIT_APPSOURCE_FULFILLED
+} | {
     type: AT.EDIT_ENTITY_ASYNC,
     appId: string,
     entity: EntityBase,

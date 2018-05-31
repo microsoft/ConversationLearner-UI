@@ -9,10 +9,14 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import * as OF from 'office-ui-fabric-react'
-import { State } from '../../types'
+import { State, ErrorType } from '../../types'
 import { FM } from '../../react-intl-messages'
+import { AT } from '../../types/ActionTypes'
+import { FilePicker } from 'react-file-picker'
+import { setErrorDisplay } from '../../actions/displayActions'
 import { injectIntl, InjectedIntlProps, defineMessages, FormattedMessage } from 'react-intl'
 import { AppInput } from '../../types/models';
+import { AppDefinition } from '@conversationlearner/models';
 
 const messages = defineMessages({
     fieldErrorRequired: {
@@ -40,14 +44,14 @@ const messages = defineMessages({
 interface ComponentState {
     appNameVal: string
     localeVal: string
-    localeOptions: OF.IDropdownOption[],
+    localeOptions: OF.IDropdownOption[]
 }
 
 class AppCreator extends React.Component<Props, ComponentState> {
     state: ComponentState = {
         appNameVal: '',
         localeVal: '',
-        localeOptions: [],
+        localeOptions: []
     }
 
     constructor(p: Props) {
@@ -101,8 +105,8 @@ class AppCreator extends React.Component<Props, ComponentState> {
         this.props.onCancel()
     }
 
-    onClickCreate() {
-        const appToAdd: AppInput = {
+    getAppInput(): AppInput {
+        return {
             appName: this.state.appNameVal,
             locale: this.state.localeVal,
             metadata: {
@@ -112,8 +116,10 @@ class AppCreator extends React.Component<Props, ComponentState> {
                 isLoggingOn: true
             }
         }
-
-        this.props.onSubmit(appToAdd)
+    }
+    onClickCreate() {
+        const appInput = this.getAppInput()
+        this.props.onSubmit(appInput, null)
     }
 
     // TODO: Refactor to use default form submission instead of manually listening for keys
@@ -148,8 +154,50 @@ class AppCreator extends React.Component<Props, ComponentState> {
         return value ? "" : this.props.intl.formatMessage(messages.fieldErrorRequired);
     }
 
+    onImport(importFile: File) {
+        let reader = new FileReader()
+        reader.onload = (e: Event) => {
+            try {
+                let source = JSON.parse(reader.result) as AppDefinition
+                const appInput = this.getAppInput();
+                this.props.onSubmit(appInput, source)
+            }
+            catch (error) {
+                this.props.setErrorDisplay(ErrorType.Error, error.message, ["Invalid file contents"], AT.CREATE_APPLICATION_ASYNC)
+            }
+        }
+        reader.readAsText(importFile);
+    }
+
+    getTitle(): JSX.Element {
+        return this.props.import ?
+            <FormattedMessage
+                id={FM.APPCREATOR_IMPORT_TITLE}
+                defaultMessage="Import a Conversation Learner App"
+            />
+        :
+            <FormattedMessage
+                id={FM.APPCREATOR_TITLE}
+                defaultMessage="Create a Conversation Learner App"
+            />
+    }
+
+    getLabel(intl: ReactIntl.InjectedIntl): string {
+        return this.props.import ?
+            intl.formatMessage({
+                id: FM.APPCREATOR_FIELDS_IMPORT_NAME_LABEL,
+                defaultMessage: "New App Name"
+            })
+        :
+            intl.formatMessage({
+                id: FM.APPCREATOR_FIELDS_NAME_LABEL,
+                defaultMessage: "Name"
+            })
+    }
+
     render() {
         const { intl } = this.props
+        const invalidName = this.onGetNameErrorMessage(this.state.appNameVal) !== ""
         return (
             <Modal
                 isOpen={this.props.open}
@@ -159,54 +207,70 @@ class AppCreator extends React.Component<Props, ComponentState> {
             >
                 <div className='cl-modal_header'>
                     <span className={OF.FontClassNames.xxLarge}>
-                        <FormattedMessage
-                            id={FM.APPCREATOR_TITLE}
-                            defaultMessage="Create a Conversation Learner App"
-                        />
+                        {this.getTitle()}
                     </span>
                 </div>
                 <div>
                     <OF.TextField
                         onGetErrorMessage={value => this.onGetNameErrorMessage(value)}
                         onChanged={text => this.nameChanged(text)}
-                        label={intl.formatMessage({
-                            id: FM.APPCREATOR_FIELDS_NAME_LABEL,
-                            defaultMessage: "Name"
-                        })}
+                        label={this.getLabel(intl)}
                         placeholder={intl.formatMessage({
                             id: FM.APPCREATOR_FIELDS_NAME_PLACEHOLDER,
                             defaultMessage: "Application Name..."
                         })}
                         onKeyDown={key => this.onKeyDown(key)}
                         value={this.state.appNameVal} />
-                    <OF.Dropdown
-                        label={intl.formatMessage({
-                            id: FM.APPCREATOR_FIELDS_LOCALE_LABEL,
-                            defaultMessage: 'Locale'
-                        })}
-                        defaultSelectedKey={this.state.localeVal}
-                        options={this.state.localeOptions}
-                        onChanged={this.localeChanged}
-                        disabled={true}
-                        /* Disabled until trainer can support more than english */
-                    />
+                    {!this.props.import &&
+                        <OF.Dropdown
+                            label={intl.formatMessage({
+                                id: FM.APPCREATOR_FIELDS_LOCALE_LABEL,
+                                defaultMessage: 'Locale'
+                            })}
+                            defaultSelectedKey={this.state.localeVal}
+                            options={this.state.localeOptions}
+                            onChanged={this.localeChanged}
+                            disabled={true}
+                            /* Disabled until trainer can support more than english */
+                        />
+                    }
                 </div>
                 <div className='cl-modal_footer'>
                     <div className="cl-modal-buttons">
                         <div className="cl-modal-buttons_primary">
-                            <OF.PrimaryButton
-                                disabled={!this.state.appNameVal}
-                                onClick={this.onClickCreate}
-                                ariaDescription={intl.formatMessage({
-                                    id: FM.APPCREATOR_CREATEBUTTON_ARIADESCRIPTION,
-                                    defaultMessage: 'Create'
-                                })}
-                                text={intl.formatMessage({
-                                    id: FM.APPCREATOR_CREATEBUTTON_TEXT,
-                                    defaultMessage: 'Create'
-                                })}
-                            />
-                            <OF.DefaultButton
+                            {this.props.import ? 
+                                <FilePicker
+                                    extensions={['cl']}
+                                    onChange={(fileObject: File) => this.onImport(fileObject)}
+                                    onError={(err: string) => setErrorDisplay(ErrorType.Error, err, null, null)}
+                                >
+                                    <OF.PrimaryButton
+                                        disabled={invalidName}          
+                                        ariaDescription={this.props.intl.formatMessage({
+                                            id: FM.APPCREATOR_LOCATEBUTTON_ARIADESCRIPTION,
+                                            defaultMessage: 'Import from File'
+                                        })}
+                                        text={this.props.intl.formatMessage({
+                                            id: FM.APPCREATOR_LOCATEBUTTON_TEXT,
+                                            defaultMessage: 'Import'
+                                        })}
+                                    />
+                                </FilePicker>
+                                :
+                                <OF.PrimaryButton
+                                    disabled={invalidName}
+                                    onClick={this.onClickCreate}
+                                    ariaDescription={intl.formatMessage({
+                                        id: FM.APPCREATOR_CREATEBUTTON_ARIADESCRIPTION,
+                                        defaultMessage: 'Create'
+                                    })}
+                                    text={intl.formatMessage({
+                                        id: FM.APPCREATOR_CREATEBUTTON_TEXT,
+                                        defaultMessage: 'Create'
+                                    })}
+                                />
+                            }
+                             <OF.DefaultButton
                                 onClick={this.onClickCancel}
                                 ariaDescription={intl.formatMessage({
                                     id: FM.APPCREATOR_CANCELBUTTON_ARIADESCRIPTION,
@@ -227,6 +291,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
 
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
+        setErrorDisplay
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {
@@ -237,7 +302,8 @@ const mapStateToProps = (state: State) => {
 
 export interface ReceivedProps {
     open: boolean
-    onSubmit: (app: AppInput) => void
+    import: boolean
+    onSubmit: (app: AppInput, source: AppDefinition) => void
     onCancel: () => void
 }
 

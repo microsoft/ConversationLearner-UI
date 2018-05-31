@@ -238,7 +238,7 @@ const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         setErrorDisplay,
         setCurrentApp: actions.display.setCurrentApp,
-        fetchAppSource: actions.fetch.fetchAppSourceAsync,
+        fetchAppSource: actions.fetch.fetchAppSourceThunkAsync,
         fetchAllLogDialogsAsync: actions.fetch.fetchAllLogDialogsAsync,
         fetchBotInfoAsync: actions.fetch.fetchBotInfoAsync
     }, dispatch);

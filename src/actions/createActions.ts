@@ -4,7 +4,7 @@
  */
 import { ActionObject, ErrorType } from '../types'
 import { AT } from '../types/ActionTypes'
-import { AppBase, EntityBase, ActionBase, TrainDialog, LogDialog, Teach, Session, TeachWithHistory, UITeachResponse, UIScoreInput } from '@conversationlearner/models'
+import { AppBase, EntityBase, ActionBase, TrainDialog, LogDialog, Teach, Session, TeachWithHistory, UITeachResponse, UIScoreInput, AppDefinition } from '@conversationlearner/models'
 import { Dispatch } from 'redux'
 import { setErrorDisplay } from './displayActions'
 import * as ClientFactory from '../services/clientFactory' 
@@ -13,6 +13,26 @@ import { fetchApplicationsAsync, fetchApplicationTrainingStatusThunkAsync } from
 // --------------------------
 // App
 // --------------------------
+export const createApplicationThunkAsync = (userId: string, application: AppBase, source: AppDefinition = null) => {
+    return async (dispatch: Dispatch<any>) => {
+        const clClient = ClientFactory.getInstance(AT.CREATE_APPLICATION_ASYNC)
+        try {
+            dispatch(createApplicationAsync(userId, application))
+            const { appId, ...appToSend } = application
+            const newApp = await clClient.appsCreate(userId, appToSend as AppBase)
+
+            if (source) {
+                await clClient.sourcepost(newApp.appId, source)
+            }
+            dispatch(createApplicationFulfilled(newApp))
+            return newApp
+        }
+        catch (error) {
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, [error.response], AT.CREATE_APPLICATION_ASYNC))
+            throw error
+        }
+    }
+}
 const createApplicationAsync = (userId: string, application: AppBase): ActionObject => {
     return {
         type: AT.CREATE_APPLICATION_ASYNC,
@@ -28,22 +48,6 @@ const createApplicationFulfilled = (app: AppBase): ActionObject => {
     }
 }
 
-export const createApplicationThunkAsync = (userId: string, application: AppBase) => {
-    return async (dispatch: Dispatch<any>) => {
-        const clClient = ClientFactory.getInstance(AT.CREATE_APPLICATION_ASYNC)
-        try {
-            dispatch(createApplicationAsync(userId, application))
-            const { appId, ...appToSend } = application
-            const newApp = await clClient.appsCreate(userId, appToSend as AppBase)
-            dispatch(createApplicationFulfilled(newApp))
-            return newApp
-        }
-        catch (error) {
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, [error.response], AT.CREATE_APPLICATION_ASYNC))
-            throw error
-        }
-    }
-}
 
 // --------------------------
 // CopyApps

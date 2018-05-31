@@ -12,7 +12,7 @@ import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { State } from '../../types'
-import { AppBase } from '@conversationlearner/models'
+import { AppBase, AppDefinition } from '@conversationlearner/models'
 import actions from '../../actions'
 import AppIndex from './App/Index'
 import AppsList from './AppsList'
@@ -74,8 +74,8 @@ class AppsIndex extends React.Component<Props, ComponentState> {
         this.props.deleteApplicationAsync(appToDelete)
     }
 
-    onCreateApp = async (appToCreate: AppBase) => {
-        const app: AppBase = await this.props.createApplicationThunkAsync(this.props.user.id, appToCreate) as any
+    onCreateApp = async (appToCreate: AppBase, source: AppDefinition = null) => {
+        const app: AppBase = await this.props.createApplicationThunkAsync(this.props.user.id, appToCreate, source) as any
         const { match, history } = this.props
         history.push(`${match.url}/${app.appId}`, { app })
     }
