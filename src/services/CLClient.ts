@@ -5,6 +5,7 @@
 import * as models from '@conversationlearner/models'
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios'
 import { AppInput } from '../types/models';
+import { AppDefinition } from '@conversationlearner/models';
 
 interface TypedAxiosResponse<T> extends AxiosResponse {
     data: T
@@ -227,6 +228,14 @@ export default class CLClient {
     source(appId: string, packageId: string): Promise<models.AppDefinition> {
         return this.send<models.AppDefinition>({
             url: `${this.baseUrl}/app/${appId}/source?packageId=${packageId}`
+        }).then(response => response.data)
+    }
+
+    sourcepost(appId: string, source: AppDefinition): Promise<any> {
+        return this.send<any>({
+            method: 'post',
+            url: `${this.baseUrl}/app/${appId}/source`,
+            data: source
         }).then(response => response.data)
     }
 

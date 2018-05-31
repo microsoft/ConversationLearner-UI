@@ -263,7 +263,24 @@ export const fetchAllEntitiesFulfilled = (entities: EntityBase[]): ActionObject 
 // -------------------------
 //  App Source
 // -------------------------
-export const fetchAppSourceAsync = (appId: string, packageId: string): ActionObject => {
+export const fetchAppSourceThunkAsync = (appId: string, packageId: string, updateState = true) => {
+    return async (dispatch: Dispatch<any>) => {
+        const clClient = ClientFactory.getInstance(AT.FETCH_APPSOURCE_ASYNC)
+        dispatch(fetchAppSourceAsync(appId, packageId))
+
+        try {
+            const appDefinition = await clClient.source(appId, packageId)
+            dispatch(fetchAppSourceFulfilled(appDefinition))
+            return appDefinition
+        } catch (e) {
+            const error = e as Error
+            dispatch(setErrorDisplay(ErrorType.Error, error.name, [error.message], AT.FETCH_APPSOURCE_ASYNC))
+            return null;
+        }
+    }
+}
+
+const fetchAppSourceAsync = (appId: string, packageId: string): ActionObject => {
     return {
         type: AT.FETCH_APPSOURCE_ASYNC,
         clAppID: appId,
@@ -271,7 +288,7 @@ export const fetchAppSourceAsync = (appId: string, packageId: string): ActionObj
     }
 }
 
-export const fetchAppSourceFulfilled = (appDefinition: AppDefinition): ActionObject => {
+const fetchAppSourceFulfilled = (appDefinition: AppDefinition): ActionObject => {
     return {
         type: AT.FETCH_APPSOURCE_FULFILLED,
         appDefinition: appDefinition

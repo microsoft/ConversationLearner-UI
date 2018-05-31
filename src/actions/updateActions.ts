@@ -4,7 +4,7 @@
  */
 import { ActionObject, ErrorType } from '../types'
 import { AT } from '../types/ActionTypes'
-import { AppBase, EntityBase, ActionBase, TrainDialog } from '@conversationlearner/models';
+import { AppBase, EntityBase, ActionBase, TrainDialog, AppDefinition } from '@conversationlearner/models';
 import * as ClientFactory from '../services/clientFactory'
 import { setErrorDisplay } from './displayActions'
 import { Dispatch } from 'redux'
@@ -238,5 +238,37 @@ const editAppEditingTagFulfilled = (activeApps: { [appId: string]: string }): Ac
     return {
         type: AT.EDIT_APP_EDITING_TAG_FULFILLED,
         activeApps: activeApps
+    }
+}
+
+// --------------------------
+// Source
+// --------------------------
+export const setAppSourceThunkAsync = (appId: string, appDefinition: AppDefinition) => {
+    return async (dispatch: Dispatch<any>) => {
+        const clClient = ClientFactory.getInstance(AT.EDIT_APPSOURCE_ASYNC)
+        try {
+            dispatch(setAppSourceAsync(appId, appDefinition))
+            await clClient.sourcepost(appId, appDefinition)
+            dispatch(setAppSourceFulfilled())
+            return true
+        }
+        catch (error) {
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, [error.response], AT.CREATE_APPLICATION_ASYNC))
+            throw error
+        }
+    }
+}
+const setAppSourceAsync = (appId: string, source: AppDefinition): ActionObject => {
+    return {
+        type: AT.EDIT_APPSOURCE_ASYNC,
+        appId: appId,
+        source: source,
+    }
+}
+
+const setAppSourceFulfilled = (): ActionObject => {
+    return {
+        type: AT.EDIT_APPSOURCE_FULFILLED
     }
 }

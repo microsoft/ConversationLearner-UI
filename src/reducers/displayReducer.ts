@@ -70,6 +70,7 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
 
         case AT.EDIT_ACTION_ASYNC:
         case AT.EDIT_APPLICATION_ASYNC:
+        case AT.EDIT_APPSOURCE_ASYNC:
         case AT.EDIT_ENTITY_ASYNC:
         case AT.EDIT_APP_LIVE_TAG_ASYNC:
         case AT.EDIT_APP_EDITING_TAG_ASYNC:
@@ -122,6 +123,7 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
 
         case AT.EDIT_ACTION_FULFILLED:
         case AT.EDIT_APPLICATION_FULFILLED:
+        case AT.EDIT_APPSOURCE_FULFILLED:
         case AT.EDIT_ENTITY_FULFILLED:
         case AT.EDIT_APP_LIVE_TAG_FULFILLED:
         case AT.EDIT_APP_EDITING_TAG_FULFILLED:
