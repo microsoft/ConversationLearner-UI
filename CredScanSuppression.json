@@ -4,6 +4,14 @@
         {
             "hash": "kZ+rjPLaOLBxWM2LQRjVNamHs7mSPJm29Mrxn4wsSys=",
             "_justification": "This is secret is for the public blob storage URL for retrieving locales which contains SAS (Secure Access Signature)"
+        },
+        {
+            "file": "test/certificate.pem",
+            "_justification": "Self-signed certificate used by unit tests"
+        },
+        {
+            "file": "test/key.pem",
+            "_justification": "Self-signed certificate used by unit tests"
         }
     ]
 }
