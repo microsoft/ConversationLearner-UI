@@ -773,6 +773,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         const unavailableTags = [...this.state.expectedEntityTags, ...this.state.negativeEntityTags]
         const optionsAvailableForPayload = this.props.entities
             .filter(e => !unavailableTags.some(t => t.key === e.entityId))
+            // Remove negative entities (Those which have a positiveId)
+            .filter(e => typeof e.positiveId !== "string")
             .map(convertEntityToOption)
 
         const { intl } = this.props
