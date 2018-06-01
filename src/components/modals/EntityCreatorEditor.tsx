@@ -335,12 +335,24 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
         );
     }
 
+    isInUse(): boolean {
+        return this.isUsedByActions() || this.isUsedByTrainingDialogs()
+    }
+
+    isUsedByActions(): boolean {
+        return this.props.actions.some(a => a.negativeEntities.includes(this.props.entity.entityId) || a.requiredEntities.includes(this.props.entity.entityId))
+    }
+
+    isUsedByTrainingDialogs() : boolean {
+        let tdString = JSON.stringify(this.props.trainDialogs)
+        return tdString.indexOf(this.props.entity.entityId) > -1
+    }
+
     @autobind
     onClickDelete() {
 
-        // Check if used by actions
-        let tiedToAction = this.props.actions
-            .some(a => a.negativeEntities.includes(this.props.entity.entityId) || a.requiredEntities.includes(this.props.entity.entityId))
+        // Check if used by actions (ok if used by TrainDialogs)
+        let tiedToAction = this.isUsedByActions()
         if (tiedToAction === true) {
             this.setState({
                 isDeleteErrorModalOpen: true
@@ -408,6 +420,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
 
     renderEdit() {
         const { intl } = this.props
+        const disabled = this.state.isEditing && this.isInUse()
         return (
             <div>
                 <OF.Dropdown
@@ -419,7 +432,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                     onChanged={this.onChangedType}
                     onRenderOption={(option) => this.onRenderOption(option as CLDropdownOption)}
                     selectedKey={this.state.entityTypeVal}
-                    disabled={this.state.isEditing || this.props.entityTypeFilter != null}
+                    disabled={disabled || this.props.entityTypeFilter != null}
                 />
                 <OF.TextField
                     onGetErrorMessage={this.onGetNameErrorMessage}
@@ -446,7 +459,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                         })}
                         checked={this.state.isProgrammaticVal}
                         onChange={this.onChangeProgrammatic}
-                        disabled={this.state.isEditing || this.state.isPrebuilt}
+                        disabled={disabled || this.state.isPrebuilt}
                         tipType={ToolTip.TipType.ENTITY_PROGAMMATIC}
                     />
                 </div>
@@ -458,7 +471,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                         })}
                         checked={this.state.isMultivalueVal}
                         onChange={this.onChangeMultivalue}
-                        disabled={this.state.isEditing}
+                        disabled={disabled}
                         tipType={ToolTip.TipType.ENTITY_MULTIVALUE}
                     />
                 </div>
@@ -470,7 +483,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                         })}
                         checked={this.state.isNegatableVal}
                         onChange={this.onChangeReversible}
-                        disabled={this.state.isEditing || this.state.isPrebuilt}
+                        disabled={disabled || this.state.isPrebuilt}
                         tipType={ToolTip.TipType.ENTITY_NEGATABLE}
                     />
                 </div>
@@ -662,6 +675,7 @@ const mapStateToProps = (state: State, ownProps: any) => {
         user: state.user,
         entities: state.entities,
         actions: state.actions,
+        trainDialogs: state.trainDialogs
     }
 }
 
