@@ -41,7 +41,7 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
             minWidth: 80,
             maxWidth: 80,
             isResizable: true,
-            getSortValue: () => '',
+            getSortValue: action => action.actionId,
             render: (action, component, index) => {
                 if (component.props.canEdit) {
                     const selected = (component.props.dialogType !== DialogType.TEACH && index === 0);
@@ -202,7 +202,7 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
             minWidth: 50,
             maxWidth: 50,
             isResizable: true,
-            getSortValue: () => '',
+            getSortValue: action => action.isTerminal ? 1 : -1,
             render: action => <OF.Icon iconName={(action.isTerminal ? "CheckMark" : "Remove")} className={"cl-icon" + (action.isTerminal ? " checkIcon" : " notFoundIcon")} />
         },
         {
