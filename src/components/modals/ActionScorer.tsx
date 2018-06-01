@@ -28,6 +28,7 @@ const ACTION_BUTTON = 'action_button'
 const MISSING_ACTION = 'missing_action'
 
 interface IRenderableColumn extends OF.IColumn {
+    getSortValue: (action: ScoredBase, component: ActionScorer) => number | string
     render: (x: ScoredBase, component: ActionScorer, index: number) => React.ReactNode
 }
 
@@ -40,6 +41,7 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
             minWidth: 80,
             maxWidth: 80,
             isResizable: true,
+            getSortValue: action => action.actionId,
             render: (action, component, index) => {
                 if (component.props.canEdit) {
                     const selected = (component.props.dialogType !== DialogType.TEACH && index === 0);
@@ -80,6 +82,7 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
             maxWidth: 500,
             isMultiline: true,
             isResizable: true,
+            getSortValue: () => '',
             render: (action: ActionBase, component) => {
                 const defaultEntityMap = Util.getDefaultEntityMap(component.props.entities)
                     
@@ -125,6 +128,30 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
             isResizable: true,
             isSorted: true,
             isSortedDescending: true,
+            getSortValue: (scoredBase, component) => {
+                // If the current action is the same as the new give it high value to put it at the top
+                if (component.state.newAction && component.state.newAction.actionId === scoredBase.actionId) {
+                    return 100
+                } 
+
+                // TODO: Fix type so we can use typed property access
+                const score = scoredBase['score']
+
+                // If score base does not have score it's either not scorable or not available
+                // prioritize not scorable over not available but both at bottom of list
+                if (!score) {
+                    if (scoredBase['reason'] === ScoreReason.NotAvailable) {
+                        return -100;
+                    } else {
+                        let isAvailable = component.isUnscoredActionAvailable(scoredBase as UnscoredAction);
+                        return isAvailable
+                            ? -1
+                            : -10
+                    }
+                }
+
+                return score
+            },
             render: (action, component) => {
                 if (component.props.hideScore) {
                     return null;
@@ -162,6 +189,7 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
             minWidth: 100,
             maxWidth: 300,
             isResizable: true,
+            getSortValue: () => '',
             render: (action, component) => component.renderEntityRequirements(action.actionId)
         },
         {
@@ -174,6 +202,7 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
             minWidth: 50,
             maxWidth: 50,
             isResizable: true,
+            getSortValue: action => action.isTerminal ? 1 : -1,
             render: action => <OF.Icon iconName={(action.isTerminal ? "CheckMark" : "Remove")} className={"cl-icon" + (action.isTerminal ? " checkIcon" : " notFoundIcon")} />
         },
         {
@@ -186,6 +215,7 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
             minWidth: 80,
             maxWidth: 80,
             isResizable: true,
+            getSortValue: action => action.actionType.toLowerCase(),
             render: action => action.actionType
         },
     ]
@@ -194,7 +224,7 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
 interface ComponentState {
     actionModalOpen: boolean
     columns: OF.IColumn[]
-    sortColumn: OF.IColumn
+    sortColumn: IRenderableColumn
     haveEdited: boolean
     newAction: ActionBase
     cardViewerAction: ActionBase
@@ -347,30 +377,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             sortColumn: column
         });
     }
-    getValue(scoredBase: ScoredBase, col: OF.IColumn): any {
 
-        let value = scoredBase[col.fieldName]
-        if (col.fieldName === 'score') {
-            // Sort new actions to the top
-            if (this.state.newAction && this.state.newAction.actionId === scoredBase.actionId) {
-                return 100;
-            } else if (!scoredBase[col.fieldName]) {
-                if (scoredBase['reason'] === ScoreReason.NotAvailable) {
-                    return -100;
-                } else {  // notScorable
-                    return -1;
-                }
-            }
-        }
-        if (!value) {
-            value = '';
-        }
-
-        if (typeof value === 'string' || value instanceof String) {
-            return value.toUpperCase();
-        }
-        return value;
-    }
     handleDefaultSelection() {
         // Look for a valid action
         let actionId = null;
@@ -457,15 +464,21 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         for (let entityId of action.requiredEntities) {
             let found = this.entityInMemory(entityId);
             items.push({
-                name: found.name, type: found.match ?
-                    'cl-entity cl-entity--match' : 'cl-entity cl-entity--mismatch', neg: false
+                name: found.name,
+                neg: false,
+                type: found.match
+                    ? 'cl-entity cl-entity--match'
+                    : 'cl-entity cl-entity--mismatch',
             });
         }
         for (let entityId of action.negativeEntities) {
             let found = this.entityInMemory(entityId);
             items.push({
-                name: found.name, type: found.match ?
-                    'cl-entity cl-entity--mismatch' : 'cl-entity cl-entity--match', neg: true
+                name: found.name,
+                neg: true,
+                type: found.match
+                    ? 'cl-entity cl-entity--mismatch'
+                    : 'cl-entity cl-entity--match',
             });
         }
         return (
@@ -486,7 +499,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         }
     }
 
-    // Returns true if ActionId is available given Entities in Memory
+    // Returns true if ActionId is available in actions
     isActionIdAvailable(actionId: string): boolean {
         let action = this.props.actions.find(a => a.actionId === actionId);
         if (!action) {
@@ -610,27 +623,37 @@ class ActionScorer extends React.Component<Props, ComponentState> {
 
         // Add any new actions that weren't included in scores
         // NOTE: This will go away when we always rescore the step
-        let missingActions = this.props.actions.filter(a => scoredItems.find(si => si.actionId === a.actionId) == null);
-        let missingItems = missingActions.map(a => {
-            let action = a;
-            let score = 0;
-            let reason = ScoreReason.NotCalculated;
-            return { ...action, reason: reason, score: score }
-        })
+        const missingActions = this.props.actions.filter(a => scoredItems.find(si => si.actionId === a.actionId) == null)
+        const missingItems = missingActions.map(action =>
+            ({
+                ...action,
+                reason: ScoreReason.NotCalculated,
+                score: 0
+            }))
         // Null is rendered as ActionCreat button
-        scoredItems = [...scoredItems, ...missingItems];
+        scoredItems = [...scoredItems, ...missingItems]
 
         if (this.state.sortColumn) {
+            const sortColumn = this.state.sortColumn
             // Sort the items.
             scoredItems = scoredItems.sort((a: ScoredBase, b: ScoredBase) => {
-                let firstValue = this.getValue(a, this.state.sortColumn);
-                let secondValue = this.getValue(b, this.state.sortColumn);
+                const firstValue = sortColumn.getSortValue(a, this)
+                const secondValue = sortColumn.getSortValue(b, this)
 
-                if (this.state.sortColumn.isSortedDescending) {
-                    return firstValue > secondValue ? -1 : 1;
-                } else {
-                    return firstValue > secondValue ? 1 : -1;
+                let isFirstGreaterThanSecond = 0
+
+                if (typeof firstValue === 'string' && typeof secondValue === 'string') {
+                    isFirstGreaterThanSecond = firstValue.localeCompare(secondValue)
                 }
+                else if (typeof firstValue === 'number' && typeof secondValue === 'number') {
+                    isFirstGreaterThanSecond = firstValue - secondValue
+                }
+                
+                const sortResult = sortColumn.isSortedDescending
+                    ? isFirstGreaterThanSecond * -1
+                    : isFirstGreaterThanSecond
+
+                return sortResult
             });
         }
 
