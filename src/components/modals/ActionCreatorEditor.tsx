@@ -760,6 +760,14 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         history.push(`/home/${this.props.app.appId}/trainDialogs`, { app: this.props.app, actionFilter: this.props.action })
     }
 
+    isUsedByTrainingDialogs(): boolean {
+        if (!this.props.action) {
+            return false
+        }
+        let tdString = JSON.stringify(this.props.trainDialogs)
+        return tdString.indexOf(this.props.action.actionId) > -1
+    }
+
     render() {
         // Disable payload if we're editing existing action and no API or CARD data available
         const isPayloadDisabled =
@@ -779,6 +787,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
         const { intl } = this.props
 
+        const disabled = this.state.isEditing && this.isUsedByTrainingDialogs()
+
         return (
             <Modal
                 isOpen={this.props.open}
@@ -797,7 +807,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                             options={actionTypeOptions}
                             onChanged={actionTypeOption => this.onChangedActionType(actionTypeOption)}
                             selectedKey={this.state.selectedActionTypeOptionKey}
-                            disabled={this.state.isEditing}
+                            disabled={disabled}
                             tipType={ToolTip.TipType.ACTION_TYPE}
                         />
 
@@ -992,7 +1002,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                 checked={this.state.isTerminal}
                                 onChange={this.onChangeWaitCheckbox}
                                 style={{ marginTop: '1em', display: 'inline-block' }}
-                                disabled={this.state.isEditing}
+                                disabled={disabled}
                                 tipType={ToolTip.TipType.ACTION_WAIT}
                             />
                         </div>
@@ -1011,7 +1021,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                 })}
                                 text={intl.formatMessage({
                                     id: FM.ACTIONCREATOREDITOR_TRAINDIALOGSBUTTON_TEXT,
-                                    defaultMessage: 'Trail Dialogs'
+                                    defaultMessage: 'Train Dialogs'
                                 })}
                             />
                         }
@@ -1131,6 +1141,7 @@ const mapDispatchToProps = (dispatch: any) => {
 const mapStateToProps = (state: State, ownProps: any) => {
     return {
         entities: state.entities,
+        trainDialogs: state.trainDialogs,
         botInfo: state.bot.botInfo,
         browserId: state.bot.browserId
     }
