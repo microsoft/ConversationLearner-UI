@@ -150,7 +150,10 @@ class Index extends React.Component<Props, ComponentState> {
             <div className="cl-app-page">
                 <div>
                     <div className="cl-app-title">
-                        <div className={FontClassNames.xxLarge}>{app.appName}</div>
+                        <div
+                            data-testid="app-index-title" 
+                            className={FontClassNames.xxLarge}
+                        >{app.appName}</div>
                     </div>
                     <div className={`cl-app-tag-status ${FontClassNames.mediumPlus}`}>
                         Tag: {tag}

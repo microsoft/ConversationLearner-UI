@@ -14,7 +14,9 @@ class CheckboxWithTip extends OF.BaseComponent<ICheckboxWithTipProps, OF.ICheckb
     }
     render() {
         return (
-            <div>
+            <div
+                data-testid={this.props['data-testid']}
+            >
                 <OF.Checkbox
                     className="cl-tip"
                     checked={this.props.checked}

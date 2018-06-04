@@ -285,6 +285,7 @@ class AppsList extends React.Component<Props, ComponentState> {
                 </span>
                 <div className="cl-modal-buttons_primary">
                     <OF.PrimaryButton
+                        data-testid="apps-list-button-create-new"
                         onClick={this.onClickCreateNewApp}
                         ariaDescription={this.props.intl.formatMessage({
                             id: FM.APPSLIST_CREATEBUTTONARIADESCRIPTION,
