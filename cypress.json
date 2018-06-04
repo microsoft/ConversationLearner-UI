@@ -1,3 +1,7 @@
 {
-  "projectId": "so64kq"
+  "projectId": "so64kq",
+  "reporterOptions": {
+    "mochaFile": "results/my-test-output.xml",
+    "toConsole": true
+  }
 }
