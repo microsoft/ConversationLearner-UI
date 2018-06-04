@@ -1,9 +1,21 @@
 language: node_js
-node_js:
-  - node
+branches:
+  only:
+    - master
+    - /^greenkeeper/.*$/
 cache:
   directories:
+    - ~/.npm
     - node_modules
+notifications:
+  email: false
+node_js:
+  - node
 script:
   - npm run cibuild
   - npm test
+deploy:
+  provider: script
+  skip_cleanup: true
+  script:
+    - npx semantic-release
