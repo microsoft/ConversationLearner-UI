@@ -12,6 +12,7 @@ package
 /coverage
 /cypress/videos
 /cypress/screenshots
+/results
 
 # production
 /build
