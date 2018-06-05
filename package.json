@@ -63,9 +63,27 @@
     "test:debug": "react-scripts-ts --inspect-brk test --runInBand --env=jsdom",
     "eject": "react-scripts-ts eject",
     "tsc": "tsc",
-    "builduipackage": "tsc -p ./publish/tsconfig.json --listFiles && tsc -p ./scripts/tsconfig.json --listFiles && node ./scripts/publish.js"
+    "builduipackage": "tsc -p ./publish/tsconfig.json --listFiles && tsc -p ./scripts/tsconfig.json --listFiles && node ./scripts/publish.js",
+    "commit": "git-cz",
+    "commitmsg": "commitlint -E GIT_PARAMS"
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  },
+  "release": {
+    "publish": [
+      {
+        "path": "@semantic-release/npm",
+        "pkgRoot": "package"
+      },
+      "@semantic-release/github"
+    ]
   },
   "devDependencies": {
+    "@commitlint/cli": "7.0.0",
+    "@commitlint/config-conventional": "7.0.1",
     "@types/execa": "^0.8.1",
     "@types/fs-extra": "^5.0.0",
     "@types/jest": "^20.0.8",
@@ -77,10 +95,12 @@
     "@types/react-redux": "^5.0.9",
     "@types/react-router-dom": "^4.0.7",
     "@types/redux-auth-wrapper": "^2.0.6",
+    "commitizen": "2.10.1",
     "cross-env": "^5.1.3",
     "cypress": "3.0.1",
     "execa": "^0.9.0",
     "fs-extra": "^5.0.0",
+    "husky": "0.14.3",
     "tslint": "^5.9.1",
     "tslint-config-prettier": "^1.12.0",
     "tslint-config-standard": "^7.0.0",
