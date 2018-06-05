@@ -1,19 +1,27 @@
 language: node_js
+
 branches:
   only:
     - master
     - /^greenkeeper/.*$/
+
 cache:
   directories:
     - ~/.npm
     - node_modules
 notifications:
   email: false
+  
 node_js:
   - node
+
 script:
   - npm run cibuild
   - npm test
+
+before_deploy:
+  - npm run builduipackage
+
 deploy:
   provider: script
   skip_cleanup: true

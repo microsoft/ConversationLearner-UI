@@ -40,32 +40,6 @@ async function main() {
         throw e
     }
 
-    console.log(`Get last release:`)
-    const gitTagsOutput = await execa.stdout('git', ['tag', '-l', '--sort=v:refname'])
-    const tagVersions = gitTagsOutput.split('\n')
-        .filter(t => /v(\d+).(\d+).(\d+)/.test(t))
-        .reduce((versions: IVersion[], t) => {
-            const match = t.match(/v(\d+).(\d+).(\d+)/)
-            if (match === null) {
-                return versions
-            }
-
-            const [breaking, feature, patch] = match.slice(1,4).map(x => parseInt(x))
-            return [...versions, {
-                breaking,
-                feature,
-                patch,
-                original: t
-            }]
-        }, [])
-
-    // TODO: Actually sort by max breaking, feature, patch since it's not clear that git will sort correctly be default
-    const highestTag = tagVersions[tagVersions.length - 1]
-    const { breaking, feature, patch } = highestTag
-    const nextVersion = `${breaking}.${feature + 1}.${patch}`
-    console.log(`Last Release: `, highestTag.original)
-    console.log(`Next Version: `, nextVersion)
-
     console.log(`Reading package.json from: ${packageJsonPath}`)
     try {
         const packageJsonObj = await fs.readJson(packageJsonPath)
@@ -74,7 +48,7 @@ async function main() {
 
         const newPackageJson = {
             name,
-            version: nextVersion,
+            version,
             description,
             keywords,
             author,
@@ -92,9 +66,6 @@ async function main() {
     catch (e) {
         throw e
     }
-
-    console.log(`Create tag on current commit using the next version: ${nextVersion}`)
-    await execa('git', ['tag', '-a', '-m', `${nextVersion}`, `v${nextVersion}`])
 }
 
 main()
