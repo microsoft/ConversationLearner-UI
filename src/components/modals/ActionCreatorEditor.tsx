@@ -28,7 +28,7 @@ import './ActionCreatorEditor.css'
 import HelpIcon from '../HelpIcon'
 import { withRouter } from 'react-router-dom'
 import { RouteComponentProps } from 'react-router'
-import { autobind } from 'office-ui-fabric-react/lib/Utilities'
+import { autobind } from 'office-ui-fabric-react'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../react-intl-messages'
 

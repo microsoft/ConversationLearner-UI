@@ -15,7 +15,7 @@ import { AppBase, AppDefinition } from '@conversationlearner/models'
 import { CL_IMPORT_ID, CL_DEMO_ID, State, AppCreatorType } from '../../types'
 import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { FM } from '../../react-intl-messages'
-import { autobind } from 'office-ui-fabric-react/lib/Utilities';
+import { autobind } from 'office-ui-fabric-react';
 import * as util from '../../util'
 import TutorialImporter from '../../components/modals/TutorialImporter';
 

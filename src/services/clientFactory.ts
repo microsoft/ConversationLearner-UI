@@ -2,7 +2,7 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import CLClient from './CLClient'
+import ClClient from './client'
 import { AT } from '../types/ActionTypes'
 import { ErrorInjector } from '../ErrorInjector';
 //import DebugErrors from '../components/modals/DebugErrors'
@@ -13,7 +13,7 @@ let getMemoryKey = (): string => {
     return ''
 }
 
-export const getInstance = (actionType: AT): CLClient => {
+export const getInstance = (actionType: AT): ClClient => {
     let forceError = (actionType && ErrorInjector.ShouldError(actionType));
 
     /**
@@ -23,7 +23,7 @@ export const getInstance = (actionType: AT): CLClient => {
     // TODO: Refactor out the force error argument and need to take in paramter. This should be implemented in another layer as extension not modification
     // TODO: Allow configuration whole URI for SDK to enable communicating with hosted version (Likely change to getter function like access token)
     
-    return new CLClient(`http://localhost:${sdkPort}`, () => getMemoryKey(), null, forceError)
+    return new ClClient(`http://localhost:${sdkPort}`, () => getMemoryKey(), null, forceError)
 }
 
 export const setPort = (port: number) => {

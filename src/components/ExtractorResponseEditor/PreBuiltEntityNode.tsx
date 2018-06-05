@@ -6,7 +6,7 @@ import * as React from 'react'
 import PreBuiltEntity from './PreBuiltEntity'
 import { IGenericEntityData } from './models'
 
-/* Simulate entity component props which have children */
+// Simulate entity component props which have children
 interface EntityComponentProps {
     node: any
     attributes: any

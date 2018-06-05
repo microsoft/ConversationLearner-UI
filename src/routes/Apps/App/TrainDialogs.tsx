@@ -54,16 +54,14 @@ function textClassName(trainDialog: TrainDialog): string {
 
 function getFirstInput(trainDialog: TrainDialog) : string {
     if (trainDialog.rounds && trainDialog.rounds.length > 0) {
-        const text = trainDialog.rounds[0].extractorStep.textVariations[0].text
-        return text;
+        return trainDialog.rounds[0].extractorStep.textVariations[0].text
     }
     return null;
 }
 
 function getLastInput(trainDialog: TrainDialog) : string {
     if (trainDialog.rounds && trainDialog.rounds.length > 0) {
-        const text = trainDialog.rounds[trainDialog.rounds.length - 1].extractorStep.textVariations[0].text;
-        return text
+        return trainDialog.rounds[trainDialog.rounds.length - 1].extractorStep.textVariations[0].text;
     }
     return null;
 }
@@ -75,7 +73,7 @@ function getLastResponse(trainDialog: TrainDialog, component: TrainDialogs): str
         let scorerSteps = trainDialog.rounds[trainDialog.rounds.length - 1].scorerSteps;
         if (scorerSteps.length > 0) {
             let actionId = scorerSteps[scorerSteps.length - 1].labelAction;
-            let action = component.props.actions.find(a => a.actionId == actionId);
+            let action = component.props.actions.find(a => a.actionId === actionId);
             if (action) {
                 return ActionBase.GetPayload(action, getDefaultEntityMap(component.props.entities))
             } 
@@ -276,14 +274,14 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         });
     }
 
-    toActionFilter(action: ActionBase, entities: EntityBase[]) : OF.IDropdownOption {
+    toActionFilter(action: ActionBase, entities: EntityBase[]): OF.IDropdownOption {
         return { 
             key: action.actionId,
             text: ActionBase.GetPayload(action, getDefaultEntityMap(entities))
         }
     }
      
-    toEntityFilter(entity: EntityBase) : OF.IDropdownOption {
+    toEntityFilter(entity: EntityBase): OF.IDropdownOption {
         return { 
             key: entity.entityId,
             text: entity.entityName,

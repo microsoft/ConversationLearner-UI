@@ -14,7 +14,7 @@ import { FM } from '../react-intl-messages'
 import * as Util from '../util'
 import AdaptiveCardViewer from './modals/AdaptiveCardViewer/AdaptiveCardViewer'
 import * as ActionPayloadRenderers from './actionPayloadRenderers'
-import { Icon } from 'office-ui-fabric-react/lib/Icon'
+import { Icon } from 'office-ui-fabric-react'
 import './ActionDetailsList.css'
 
 class ActionDetailsList extends React.Component<Props, ComponentState> {

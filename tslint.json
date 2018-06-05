@@ -181,6 +181,16 @@
         "trailing-comma": false,
         "type-literal-delimiter": false,
         "typedef": false,
-        "variable-name": false
+        "variable-name": false,
+
+        "no-import-side-effect": [true, {"ignore-module": "(\\.html|\\.css)$"}],
+        "jsx-wrap-multiline": false,
+        "completed-docs": false,
+        "prefer-method-signature": false,
+        "promise-function-async": false,
+        "strict-boolean-expressions": false,
+        "no-unsafe-any": false,
+        "no-void-expression": ["ignore-arrow-function-shorthand"],
+        "react-this-binding-issue": false
     }
 }

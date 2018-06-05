@@ -219,7 +219,6 @@ interface ReceivedProps {
     tutorials: AppBase[];
 }
 
-
 type Props = ReceivedProps & InjectedIntlProps;
 
 export default connect<{}, {}, ReceivedProps>(null, null)(injectIntl(TutorialImporter))

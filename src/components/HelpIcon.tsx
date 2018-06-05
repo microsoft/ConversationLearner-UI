@@ -9,7 +9,7 @@ import { connect } from 'react-redux';
 import { State } from '../types';
 import { setTipType } from '../actions/displayActions'
 import { TipType } from '../components/ToolTips';
-import { Icon } from 'office-ui-fabric-react/lib/Icon';
+import { Icon } from 'office-ui-fabric-react';
 
 class HelpIcon extends React.Component<Props, {}> {
     render() {

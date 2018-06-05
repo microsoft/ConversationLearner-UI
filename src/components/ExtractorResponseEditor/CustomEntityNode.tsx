@@ -4,9 +4,9 @@
  */
 import * as React from 'react'
 import CustomEntity from './CustomEntity'
-import { IGenericEntityData, IOption } from './models'
+import { IGenericEntityData } from './models'
 
-/* Simulate entity component props which have children */
+// Simulate entity component props which have children
 interface EntityComponentProps {
     editor: any
     node: any
@@ -16,7 +16,6 @@ interface EntityComponentProps {
 }
 
 interface Props extends EntityComponentProps {
-    onClickDelete: (option: IOption) => void
 }
 
 interface State {

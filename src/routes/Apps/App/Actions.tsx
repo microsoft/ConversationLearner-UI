@@ -110,11 +110,11 @@ class Actions extends React.Component<Props, ComponentState> {
             let nameMatch = a.payload.toLowerCase().includes(lcString);
             let typeMatch = a.actionType ? a.actionType.toLowerCase().includes(lcString) : true;
             let negativeEntities = a.negativeEntities.map(entityId => {
-                let found = this.props.entities.find(e => e.entityId == entityId);
+                let found = this.props.entities.find(e => e.entityId === entityId);
                 return found.entityName;
             })
             let positiveEntities = a.requiredEntities.map(entityId => {
-                let found = this.props.entities.find(e => e.entityId == entityId);
+                let found = this.props.entities.find(e => e.entityId === entityId);
                 return found.entityName;
             })
             let requiredEnts = positiveEntities.join('');

@@ -26,7 +26,7 @@ class Settings extends React.Component<Props, ComponentState> {
     state = initialState
 
     onChangeSdkPort = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const sdkPort = parseInt(event.target.value)
+        const sdkPort = parseInt(event.target.value, 10)
         this.setSdkPort(sdkPort)        
     }
 
@@ -84,7 +84,6 @@ class Settings extends React.Component<Props, ComponentState> {
         )
     }
 }
-
 
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
