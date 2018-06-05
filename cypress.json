@@ -1,0 +1,6 @@
+{
+  "projectId": "so64kq",
+  "reporterOptions": {
+    "mochaFile": "results/tests-integration.xml"
+  }
+}

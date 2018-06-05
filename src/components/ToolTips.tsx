@@ -337,7 +337,7 @@ export function GetTip(tipType: string) {
                     <p>There are two different keys for LUIS. The <b>Authoring</b> key and the <b>Subscription</b> key.</p>
                     
                     <h4>Why does Conversation Learner need my Authoring key?</h4>
-                    <p>When building and training your bot, the LUIS_AUTHORING_KEY is by Conversation Learner to manage your LUIS account on your behalf.  As you make changes to your Conversation Learner app such as adding entities and labeling entities during training the Conversation Learner service creates the associated LUIS apps with matching entities and utterance phrases.</p>
+                    <p>When building and training your bot, the LUIS_AUTHORING_KEY is by Conversation Learner to manage your LUIS account on your behalf.  As you make changes to your Conversation Learner model such as adding entities and labeling entities during training the Conversation Learner service creates the associated LUIS apps with matching entities and utterance phrases.</p>
 
                     <h4>What does Conversation Learner need my subscription key?</h4>
                     <p>When you publish your bot, you want to set the LUIS_SUBSCRIPTION_KEY.  When set, the Subscription Key (rather than the Authoring Key) is used by Conversation Learner to get predictions from LUIS.  Using the Subscription Key avoids using up the quota for your Authoring key (which would block further usage of Conversation Learner).</p>
@@ -353,7 +353,7 @@ export function GetTip(tipType: string) {
                         <li>Sign in if you are not already</li>
                         <li>Click on your name in the top-right corner to open the dropdown menu</li>
                         <li>Select 'settings' from the menu</li>
-                        <li>Copy the "Authoring Key" and use it as the LUIS_AUTHORING_KEY value for your app</li>
+                        <li>Copy the "Authoring Key" and use it as the LUIS_AUTHORING_KEY value for your model</li>
                     </ol>
 
                     <img src="https://blisstorage.blob.core.windows.net/uiimages/authoringkey.gif"/>
@@ -363,7 +363,7 @@ export function GetTip(tipType: string) {
                     <p>There are two different keys for LUIS. The <b>Authoring</b> key and the <b>Subscription</b> key.</p>
                     
                     <h4>Why does Conversation Learner need my Authoring key?</h4>
-                    <p>When building and training your bot, the LUIS_AUTHORING_KEY is by Conversation Learner to manage your LUIS account on your behalf.  As you make changes to your Conversation Learner app such as adding entities and labeling entities during training the Conversation Learner service creates the associated LUIS apps with matching entities and utterance phrases.</p>
+                    <p>When building and training your bot, the LUIS_AUTHORING_KEY is by Conversation Learner to manage your LUIS account on your behalf.  As you make changes to your Conversation Learner model such as adding entities and labeling entities during training the Conversation Learner service creates the associated LUIS apps with matching entities and utterance phrases.</p>
 
                     <h4>What does Conversation Learner need my Subscription key?</h4>
                     <p>When you publish your bot, you want to set the LUIS_SUBSCRIPTION_KEY.  When set, the Subscription Key (rather than the Authoring Key) is used by Conversation Learner to get predictions from LUIS.  Using the Subscription Key avoids using up the quota for your Authoring key (which would block further usage of Conversation Learner).</p>
@@ -383,14 +383,14 @@ export function GetTip(tipType: string) {
 
                     <h2>Find / Set your LUIS Subscription key:</h2>
                     <ol>
-                        <li>Click on the "Go to LUIS" button in the Conversation Learner UI.  This will take you to the LUIS application associated with you app.</li>
+                        <li>Click on the "Go to LUIS" button in the Conversation Learner UI.  This will take you to the LUIS application associated with you model.</li>
                         <li>In your LUIS' apps "Publish Tab", click on "Add Key"
                             <img src="https://blisstorage.blob.core.windows.net/uiimages/addkey.PNG" width="50%"  />
                         </li>
                         <li>If you don't yet have an Azure Suscription key you'll need to <a href="https://docs.microsoft.com/en-us/azure/cognitive-services/luis/azureibizasubscription" target="_blank">Create One</a></li>
-                        <li>Then select the subscription and add the key to your LUIS app</li>
+                        <li>Then select the subscription and add the key to your LUIS model</li>
                             <img src="https://blisstorage.blob.core.windows.net/uiimages/assignkey.PNG" width="50%"/>
-                        <li>Click the Key String to copy the key value and use it as the LUIS_SUBSCRIPTION_KEY value for your app
+                        <li>Click the Key String to copy the key value and use it as the LUIS_SUBSCRIPTION_KEY value for your model
                             <br/>
                             <img src="https://blisstorage.blob.core.windows.net/uiimages/getkey.PNG" width="75%"/>
                         </li>

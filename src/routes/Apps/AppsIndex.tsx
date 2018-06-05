@@ -31,7 +31,7 @@ class AppsIndex extends React.Component<Props, ComponentState> {
         const { history } = this.props
         if (history.location.pathname !== '/home') {
             // TODO: There seems to be bug where the router state is not cleared sychronously here
-            // Thus when refreshing on non home page such as entities list for an app, this will force redirect to home
+            // Thus when refreshing on non home page such as entities list for an model, this will force redirect to home
             // howver, the other component at the entities page still runs component will mount with old router state.
             // Perhaps we need to use componentDidMount to inspect router state in children?
             history.replace('/home', null)
@@ -60,7 +60,7 @@ class AppsIndex extends React.Component<Props, ComponentState> {
         if (appFromLocationState) {
             const app = this.props.apps.find(a => a.appId === appFromLocationState.appId)
             if (!app) {
-                console.warn(`Attempted to find selected app in list of apps: ${this.state.selectedApp.appId} but it could not be found.`)
+                console.warn(`Attempted to find selected model in list of models: ${this.state.selectedApp.appId} but it could not be found.`)
                 return
             }
 

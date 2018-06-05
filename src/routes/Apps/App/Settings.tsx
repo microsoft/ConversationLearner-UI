@@ -19,7 +19,7 @@ import { FM } from '../../../react-intl-messages'
 import ErrorInjectionEditor from '../../../components/modals/ErrorInjectionEditor'
 import { injectIntl, InjectedIntlProps, defineMessages, FormattedMessage } from 'react-intl'
 import { autobind } from 'office-ui-fabric-react/lib/Utilities';
-import * as TC from '../../../components/tipComponents/Components'
+import * as TC from '../../../components/tipComponents'
 import * as ToolTip from '../../../components/ToolTips'
 import * as util from '../../../util'
 import HelpIcon from '../../../components/HelpIcon'
@@ -31,7 +31,7 @@ const messages = defineMessages({
     },
     fieldErrorAlphanumeric: {
         id: FM.SETTINGS_FIELDERROR_ALPHANUMERIC,
-        defaultMessage: 'Application name may only contain alphanumeric characters'
+        defaultMessage: 'Model name may only contain alphanumeric characters'
     },
     fieldErrorDistinct: {
         id: FM.SETTINGS_FIELDERROR_DISTINCT,
@@ -47,7 +47,7 @@ const messages = defineMessages({
     },
     botFrameworkAppIdFieldLabel: {
         id: FM.SETTINGS_BOTFRAMEWORKAPPIDFIELDLABEL,
-        defaultMessage: 'Application ID'
+        defaultMessage: 'Model ID'
     },
     botFrameworkAddBotButtonText: {
         id: FM.SETTINGS_BOTFRAMEWORKADDBOTBUTTONTEXT,
@@ -319,7 +319,7 @@ class Settings extends React.Component<Props, ComponentState> {
                 saveAs(blob, `${this.props.app.appName}.cl`);
             })
             .catch(error => {
-                console.warn(`Error when attempting export application `, error)
+                console.warn(`Error when attempting export model `, error)
             })
     }
 
@@ -333,7 +333,7 @@ class Settings extends React.Component<Props, ComponentState> {
                 })
             })
             .catch(error => {
-                console.warn(`Error when attempting export application `, error)
+                console.warn(`Error when attempting export model `, error)
             })
     }
 
@@ -367,7 +367,7 @@ class Settings extends React.Component<Props, ComponentState> {
                 <span className={OF.FontClassNames.mediumPlus}>
                     <FormattedMessage
                         id={FM.SETTINGS_SUBTITLE}
-                        defaultMessage="Control your application version tags and other application configuration"
+                        defaultMessage="Control your model version tags and other model configuration"
                     />
                 </span>
                 <div className="cl-settings-fields">
@@ -386,7 +386,7 @@ class Settings extends React.Component<Props, ComponentState> {
                             onClick={this.onExport}
                             ariaDescription={intl.formatMessage({
                                 id: FM.SETTINGS_EXPORTBUTTONARIALDESCRIPTION,
-                                defaultMessage: 'Export Application to a file'
+                                defaultMessage: 'Export Model to a file'
                             })}
                             text={intl.formatMessage({
                                 id: FM.SETTINGS_EXPORTBUTTONTEXT,
@@ -397,7 +397,7 @@ class Settings extends React.Component<Props, ComponentState> {
                             onClick={this.onCopy}
                             ariaDescription={intl.formatMessage({
                                 id: FM.SETTINGS_COPYBUTTONARIALDESCRIPTION,
-                                defaultMessage: 'Copy Application'
+                                defaultMessage: 'Copy Model'
                             })}
                             text={intl.formatMessage({
                                 id: FM.SETTINGS_COPYBUTTONTEXT,

@@ -20,8 +20,9 @@ export const getInstance = (actionType: AT): CLClient => {
      * Notice we provide wrapping get functions which invoke the local functions
      * This allows the client to always access the latest of getAccessToken and getMemoryKey without reconstructing a new client
      */
-    // TODO: Refactor out the force error argument and need to take in paramter. This should be implemented in another layer as extension not modifcation
+    // TODO: Refactor out the force error argument and need to take in paramter. This should be implemented in another layer as extension not modification
     // TODO: Allow configuration whole URI for SDK to enable communicating with hosted version (Likely change to getter function like access token)
+    
     return new CLClient(`http://localhost:${sdkPort}`, () => getMemoryKey(), null, forceError)
 }
 

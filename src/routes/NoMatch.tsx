@@ -20,7 +20,7 @@ const component = () => (
             <NavLink to="/">
                 <FormattedMessage
                     id={FM.NOMATCH_HOME}
-                    defaultMessage="My Apps"
+                    defaultMessage="My Models"
                 />
             </NavLink>
         </div>

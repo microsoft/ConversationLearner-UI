@@ -82,8 +82,8 @@ class App extends React.Component<Props, ComponentState> {
               </span>
               <NavLink to="/home">
                 <FormattedMessage
-                  id={FM.APP_HEADER_MYAPPS}
-                  defaultMessage="My Apps"
+                  id={FM.APP_HEADER_MODELS}
+                  defaultMessage="My Models"
                 />
               </NavLink>
               <a href="https://labs.cognitive.microsoft.com/en-us/project-conversation-learner" target="_blank">Documentation</a>

@@ -59,7 +59,7 @@ export enum FM {
     ACTIONSCORER_COLUMNS_TYPE = 'ActionScorer.columns.type',
 
     // App
-    APP_HEADER_MYAPPS = 'App.header.home',
+    APP_HEADER_MODELS = 'App.header.home',
     APP_HEADER_ABOUT = 'App.header.about',
     APP_HEADER_DOCS = 'App.header.docs',
     APP_HEADER_SUPPORT = 'App.header.support',
@@ -438,7 +438,7 @@ export default {
         [FM.PROFILE_SETTINGS_SDK_PORT_WARNING]: 'Only change this if you know what you are doing.  This value must match the PORT that your SDK is listening on.',
         [FM.SUPPORT_TITLE]: 'Support',
         [FM.NOMATCH_TITLE]: 'That page was not found.',
-        [FM.NOMATCH_HOME]: 'My Apps',
+        [FM.NOMATCH_HOME]: 'My Models',
         [FM.PAGE_COMINGSOON]: 'Coming soon...',
 
         // Actions
@@ -449,7 +449,7 @@ export default {
         [FM.ACTIONS_CONFIRMCANCELMODALTITLE]: 'Are you sure you want to delete this action?',
 
         // App
-        [FM.APP_HEADER_MYAPPS]: 'My Apps',
+        [FM.APP_HEADER_MODELS]: 'My Models',
         [FM.APP_HEADER_ABOUT]: 'About',
         [FM.APP_HEADER_DOCS]: 'Docs',
         [FM.APP_HEADER_SUPPORT]: 'Support',
@@ -466,12 +466,12 @@ export default {
         [FM.APP_TRAINING_STATUS_EXPIRED]: 'Polling was stopped before training status was finalized. Please Refresh',
 
         // Apps List
-        [FM.APPSLIST_SUBTITLE]: 'Create and manage your Conversation Learner applications',
-        [FM.APPSLIST_CREATEBUTTONARIADESCRIPTION]: 'Create a New Application',
-        [FM.APPSLIST_CREATEBUTTONTEXT]: 'New App',
-        [FM.APPSLIST_IMPORTAPP_BUTTONARIADESCRIPTION]: 'Import Application',
-        [FM.APPSLIST_IMPORTAPP_BUTTONTEXT]: 'Import App',
-        [FM.APPSLIST_IMPORTTUTORIALS_BUTTONARIADESCRIPTION]: 'Import Tutorials Applications',
+        [FM.APPSLIST_SUBTITLE]: 'Create and manage your Conversation Learner models',
+        [FM.APPSLIST_CREATEBUTTONARIADESCRIPTION]: 'Create a New Model',
+        [FM.APPSLIST_CREATEBUTTONTEXT]: 'New Model',
+        [FM.APPSLIST_IMPORTAPP_BUTTONARIADESCRIPTION]: 'Import Model',
+        [FM.APPSLIST_IMPORTAPP_BUTTONTEXT]: 'Import Model',
+        [FM.APPSLIST_IMPORTTUTORIALS_BUTTONARIADESCRIPTION]: 'Import Tutorials Models',
         [FM.APPSLIST_IMPORTTUTORIALS_BUTTONTEXT]: 'Import Tutorials',
         [FM.APPSLIST_CONFIRMCANCELMODALTITLE]: 'Are you sure you want to delete this application? {appName}',
         [FM.APPSLIST_COLUMN_NAME]: 'Name',
@@ -491,7 +491,7 @@ export default {
 
         // Dashboard
         [FM.DASHBOARD_TITLE]: 'Overview',
-        [FM.DASHBOARD_SUBTITLE]: `Notifications about this application`,
+        [FM.DASHBOARD_SUBTITLE]: `Notifications about this model`,
 
         // Entities
         [FM.ENTITIES_TITLE]: 'Entities',
@@ -520,7 +520,7 @@ export default {
         [FM.LOGDIALOGADMIN_CONFIRMTITLE]: 'This will attempt to replay the Log Dialog against the bot and convert it into a new Train Dialog',
 
         // ReplayErrorList
-        [FM.REPLAYERROR_LOGDIALOG_VALIDATION_TITLE]: 'Application definition has changed',
+        [FM.REPLAYERROR_LOGDIALOG_VALIDATION_TITLE]: 'Model definition has changed',
         [FM.REPLAYERROR_LOGDIALOG_VALIDATION_MESSAGE]: 'This Log Dialog was created with a earlier version of the application.  The following incomptibilities were found:',
         [FM.REPLAYERROR_CONVERT_TITLE]: 'Unable to convert to Train Dialog',
         [FM.REPLAYERROR_FAILMESSAGE]: 'The following issues occurred when attempting to replay the dialog',
@@ -535,20 +535,20 @@ export default {
         // Settings
         [FM.SETTINGS_TITLE]: 'Settings',
         [FM.SETTINGS_SUBTITLE]: 'Control your application version tags and other application configuration',
-        [FM.SETTINGS_COPYBUTTONARIALDESCRIPTION]: 'Copy App',
+        [FM.SETTINGS_COPYBUTTONARIALDESCRIPTION]: 'Copy Model',
         [FM.SETTINGS_COPYBUTTONTEXT]: 'Copy',
-        [FM.SETTINGS_EXPORTBUTTONARIALDESCRIPTION]: 'Export App to File',
+        [FM.SETTINGS_EXPORTBUTTONARIALDESCRIPTION]: 'Export Model to File',
         [FM.SETTINGS_EXPORTBUTTONTEXT]: 'Export',
         [FM.SETTINGS_FIELDERROR_REQUIREDVALUE]: 'Required Value',
-        [FM.SETTINGS_FIELDERROR_ALPHANUMERIC]: 'Application name may only contain alphanumeric characters',
+        [FM.SETTINGS_FIELDERROR_ALPHANUMERIC]: 'Model name may only contain alphanumeric characters',
         [FM.SETTINGS_FIELDERROR_DISTINCT]: 'Name is already in use.',
         [FM.SETTINGS_FIELDS_NAMELABEL]: 'Name',
-        [FM.SETTINGS_FILEDS_APPIDLABEL]: 'App ID',
+        [FM.SETTINGS_FILEDS_APPIDLABEL]: 'Model ID',
         [FM.SETTINGS_FIELDS_MARKDOWNLABEL]: 'Markdown',
         [FM.SETTINGS_FIELDS_VIDEOLABEL]: 'Video',
         [FM.SETTINGS_PASSWORDHIDDEN]: 'Show',
         [FM.SETTINGS_PASSWORDVISIBLE]: 'Hide',
-        [FM.SETTINGS_BOTFRAMEWORKAPPIDFIELDLABEL]: 'Application ID',
+        [FM.SETTINGS_BOTFRAMEWORKAPPIDFIELDLABEL]: 'Model ID',
         [FM.SETTINGS_BOTFRAMEWORKADDBOTBUTTONTEXT]: 'Add',
         [FM.SETTINGS_BOTFRAMEWORKLUISKEY_AUTHORING_LABEL]: 'LUIS Authoring Key',
         [FM.SETTINGS_BOTFRAMEWORKLUISKEY_AUTHORING_PLACEHOLDER]: 'Authoring Key...',
@@ -690,14 +690,14 @@ export default {
 
         // AppCreator
         [FM.APPCREATOR_FIELDERROR_REQUIREDVALUE]: 'Required Value',
-        [FM.APPCREATOR_FIELDERROR_ALPHANUMERIC]: 'Application name may only contain alphanumeric characters',
+        [FM.APPCREATOR_FIELDERROR_ALPHANUMERIC]: 'Model name may only contain alphanumeric characters',
         [FM.APPCREATOR_FIELDERROR_DISTINCT]: 'Name is already in use.',
-        [FM.APPCREATOR_TITLE]: 'Create a Conversation Learner App',
-        [FM.APPCREATOR_COPY_TITLE]: 'Copy a Conversation Learner App',
-        [FM.APPCREATOR_IMPORT_TITLE]: 'Import a Conversation Learner App',
+        [FM.APPCREATOR_TITLE]: 'Create a Conversation Learner Model',
+        [FM.APPCREATOR_COPY_TITLE]: 'Copy a Conversation Learner Model',
+        [FM.APPCREATOR_IMPORT_TITLE]: 'Import a Conversation Learner Model',
         [FM.APPCREATOR_FIELDS_NAME_LABEL]: 'Name',
-        [FM.APPCREATOR_FIELDS_IMPORT_NAME_LABEL]: 'New App Name',
-        [FM.APPCREATOR_FIELDS_NAME_PLACEHOLDER]: 'Application Name...',
+        [FM.APPCREATOR_FIELDS_IMPORT_NAME_LABEL]: 'New Model Name',
+        [FM.APPCREATOR_FIELDS_NAME_PLACEHOLDER]: 'Model Name...',
         [FM.APPCREATOR_FIELDS_LOCALE_LABEL]: 'Locale',
         [FM.APPCREATOR_COPYBUTTON_ARIADESCRIPTION]: 'Copy',
         [FM.APPCREATOR_COPYBUTTON_TEXT]: 'Copy',
@@ -709,8 +709,8 @@ export default {
         [FM.APPCREATOR_CANCELBUTTON_TEXT]: 'Cancel',
 
         // DemoImporter
-        [FM.DEMOIMPORT_TITLE]: 'Import Demo Applications',
-        [FM.DEMOIMPORT_BUTTON_ARIADESCRIPTION]: 'Import Demo Applications',
+        [FM.DEMOIMPORT_TITLE]: 'Import Demo Models',
+        [FM.DEMOIMPORT_BUTTON_ARIADESCRIPTION]: 'Import Demo Models',
         [FM.DEMOIMPORT_BUTTON_TEXT]: 'Import',
 
         // ChatSessionModal
@@ -856,7 +856,7 @@ export default {
         [FM.PAGE_COMINGSOON]: '출시 예정 ...',
 
         // App
-        [FM.APP_HEADER_MYAPPS]: '집',
+        [FM.APP_HEADER_MODELS]: '집',
         [FM.APP_HEADER_ABOUT]: '약',
         [FM.APP_HEADER_DOCS]: '선적 서류 비치',
         [FM.APP_HEADER_SUPPORT]: '지원하다',
