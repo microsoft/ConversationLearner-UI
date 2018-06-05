@@ -12,7 +12,7 @@ import { PackageReference } from '@conversationlearner/models'
 import { State } from '../../types'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps, defineMessages, FormattedMessage } from 'react-intl'
-import * as TC from '../tipComponents/Components'
+import * as TC from '../tipComponents'
 import * as ToolTips from '../ToolTips'
 import { autobind } from 'office-ui-fabric-react/lib/Utilities';
 

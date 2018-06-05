@@ -20,7 +20,7 @@ import AdaptiveCardViewer from './AdaptiveCardViewer/AdaptiveCardViewer'
 import * as ActionPayloadEditor from './ActionPayloadEditor'
 import { State } from '../../types'
 import * as ToolTip from '../ToolTips'
-import * as TC from '../tipComponents/Components'
+import * as TC from '../tipComponents'
 import * as OF from 'office-ui-fabric-react';
 import { CLTagItem, ICLPickerItemProps } from './CLTagItem'
 import CLTagPicker from '../CLTagPicker'
@@ -803,6 +803,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 <div className="cl-modal_body">
                     <div>
                         <TC.Dropdown
+                            data-testid="dropdown-action-type"
                             label="Action Type"
                             options={actionTypeOptions}
                             onChanged={actionTypeOption => this.onChangedActionType(actionTypeOption)}
@@ -814,6 +815,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                         {this.state.selectedActionTypeOptionKey === ActionTypes.API_LOCAL
                             && (<div className="cl-dropdownWithButton-dropdown">
                                 <TC.Dropdown
+                                    data-testid="dropdown-api-option"
                                     label="API"
                                     options={this.state.apiOptions}
                                     onChanged={(apiOption) => this.onChangedApiOption(apiOption)}

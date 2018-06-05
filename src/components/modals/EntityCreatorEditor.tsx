@@ -14,7 +14,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import * as OF from 'office-ui-fabric-react';
-import * as TC from '../tipComponents/Components'
+import * as TC from '../tipComponents'
 import ActionDetailsList from '../ActionDetailsList'
 import ConfirmCancelModal from './ConfirmCancelModal'
 import { State, PreBuiltEntities } from '../../types';
