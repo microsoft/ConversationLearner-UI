@@ -4,7 +4,7 @@
  */
 import * as React from 'react'
 import { connect } from 'react-redux'
-import { ActionButton } from 'office-ui-fabric-react/lib/Button'
+import { ActionButton } from 'office-ui-fabric-react'
 import './Expando.css'
 
 class Expando extends React.Component<Props, {}> {

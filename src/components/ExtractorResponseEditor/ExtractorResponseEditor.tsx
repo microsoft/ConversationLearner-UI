@@ -205,8 +205,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
             if (selectionParentElement == null) {
                 console.warn(`selectionParentElement is null or undefined. Value: ${value.document.text}`)
             }
-            else if (selectionParentElement.tagName ===  "BUTTON")
-            {
+            else if (selectionParentElement.tagName ===  "BUTTON") {
                 shouldExpandSelection = false
             }
 
@@ -265,6 +264,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
             case NodeType.TokenNodeType: return <TokenNode {...props} />
             case NodeType.CustomEntityNodeType: return <CustomEntityNode {...props} />
             case NodeType.PreBuiltEntityNodeType: return <PreBuiltEntityNode {...props} />
+            default: return
         }
     }
 

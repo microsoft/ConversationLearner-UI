@@ -5,7 +5,7 @@
 import * as React from 'react'
 import './CustomEntity.css'
 
-/* Simulate entity component props which have children */
+// Simulate entity component props which have children
 interface EntityComponentProps {
     children?: any
 }
@@ -14,7 +14,7 @@ interface Props extends EntityComponentProps {
     name: string
 }
 
-export const CustomEntity = (props: Props) => {
+export const PreBuiltEntity = (props: Props) => {
     const { name } = props
     return (
         <span className="cl-entity-node cl-entity-node--prebuilt">
@@ -24,8 +24,7 @@ export const CustomEntity = (props: Props) => {
                         {name}
                     </div>
                 </div>
-                <div className="cl-entity-node-indicator__bracket">
-                </div>
+                <div className="cl-entity-node-indicator__bracket" />
             </div>
             <span className="cl-entity-node__text">
                 {props.children}
@@ -34,4 +33,4 @@ export const CustomEntity = (props: Props) => {
     )
 }
 
-export default CustomEntity
+export default PreBuiltEntity

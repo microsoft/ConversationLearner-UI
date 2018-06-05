@@ -15,7 +15,7 @@ import { clearExtractResponses, updateExtractResponse, removeExtractResponse, ru
 import * as ToolTips from '../ToolTips'
 import HelpIcon from '../HelpIcon'
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
-import { autobind } from 'office-ui-fabric-react/lib/Utilities';
+import { autobind } from 'office-ui-fabric-react';
 import { FM } from '../../react-intl-messages'
 import './EntityExtractor.css'
 

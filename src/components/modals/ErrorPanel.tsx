@@ -6,12 +6,10 @@ import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Panel, PanelType } from 'office-ui-fabric-react/lib/Panel';
+import { Panel, PanelType, FontClassNames, DefaultButton } from 'office-ui-fabric-react';
 import { clearErrorDisplay } from '../../actions/displayActions'
 import { State } from '../../types'
 import { ErrorHandler } from '../../ErrorHandler'
-import { FontClassNames } from 'office-ui-fabric-react'
-import { DefaultButton } from 'office-ui-fabric-react/lib/Button';
 import { injectIntl, InjectedIntlProps, InjectedIntl } from 'react-intl'
 import { AT } from '../../types/ActionTypes'
 import { FM } from '../../react-intl-messages'

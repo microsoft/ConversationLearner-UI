@@ -5,7 +5,7 @@
 import * as React from 'react'
 import './CustomEntity.css'
 
-/* Simulate entity component props which have children */
+// Simulate entity component props which have children
 interface EntityComponentProps {
     children?: any
 }
@@ -34,8 +34,7 @@ export const CustomEntity = (props: Props) => {
                         </button>
                     </div>
                 </div>
-                <div className='cl-entity-node-indicator__bracket'>
-                </div>
+                <div className='cl-entity-node-indicator__bracket' />
             </div>
             <span className="cl-entity-node__text" onClick={props.onClickName}>
                 {props.children}

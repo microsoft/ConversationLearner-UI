@@ -3,9 +3,8 @@
  * Licensed under the MIT License.
  */
 import * as models from '@conversationlearner/models'
-import axios, { AxiosRequestConfig, AxiosResponse } from 'axios'
+import Axios, { AxiosRequestConfig, AxiosResponse } from 'axios'
 import { AppInput } from '../types/models';
-import { AppDefinition } from '@conversationlearner/models';
 
 interface TypedAxiosResponse<T> extends AxiosResponse {
     data: T
@@ -28,7 +27,7 @@ const logDialogs = await clClient.apps(appId).logDialogs()
 const trainDialogs = await clClient.apps(appId).trainDialogs()
 */
 
-export default class CLClient {
+export default class ClClient {
     baseUrl: string
     defaultConfig: AxiosRequestConfig = {
         method: 'get',
@@ -62,7 +61,7 @@ export default class CLClient {
 
         finalConfig.headers[models.MEMORY_KEY_HEADER_NAME] = memoryKey
         
-        return axios(finalConfig) as Promise<TypedAxiosResponse<T>>
+        return Axios(finalConfig) as Promise<TypedAxiosResponse<T>>
     }
 
     // AT.SET_CURRENT_APP_ASYNC
@@ -231,8 +230,8 @@ export default class CLClient {
         }).then(response => response.data)
     }
 
-    sourcepost(appId: string, source: AppDefinition): Promise<any> {
-        return this.send<any>({
+    sourcepost(appId: string, source: models.AppDefinition): Promise<any> {
+        return this.send({
             method: 'post',
             url: `${this.baseUrl}/app/${appId}/source`,
             data: source

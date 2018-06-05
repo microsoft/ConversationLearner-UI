@@ -63,16 +63,14 @@ function getTagName(logDialog: LogDialog, component: LogDialogs): string {
 
 function getFirstInput(logDialog: LogDialog): string {
     if (logDialog.rounds && logDialog.rounds.length > 0) {
-        let text = logDialog.rounds[0].extractorStep.text;
-        return text;
+        return logDialog.rounds[0].extractorStep.text;
     }
     return null;
 }
 
 function getLastInput(logDialog: LogDialog): string {
     if (logDialog.rounds && logDialog.rounds.length > 0) {
-        let text = logDialog.rounds[logDialog.rounds.length - 1].extractorStep.text;
-        return text;
+        return logDialog.rounds[logDialog.rounds.length - 1].extractorStep.text;
     }
     return null;
 }

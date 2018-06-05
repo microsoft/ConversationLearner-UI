@@ -48,7 +48,6 @@ const createApplicationFulfilled = (app: AppBase): ActionObject => {
     }
 }
 
-
 // --------------------------
 // CopyApps
 // --------------------------
