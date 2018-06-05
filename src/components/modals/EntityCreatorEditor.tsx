@@ -113,7 +113,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
 
     componentWillReceiveProps(nextProps: Props) {
         if (nextProps.open !== this.props.open) {
-            // Build entity options based on current application locale
+            // Build entity options based on current model locale
             const currentAppLocale = nextProps.app.locale
             const localePreBuiltOptions = PreBuiltEntities
                 .find(entitiesList => entitiesList.locale === currentAppLocale).preBuiltEntities
