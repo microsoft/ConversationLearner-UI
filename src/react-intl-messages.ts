@@ -473,7 +473,7 @@ export default {
         [FM.APPSLIST_IMPORTAPP_BUTTONTEXT]: 'Import Model',
         [FM.APPSLIST_IMPORTTUTORIALS_BUTTONARIADESCRIPTION]: 'Import Tutorials Models',
         [FM.APPSLIST_IMPORTTUTORIALS_BUTTONTEXT]: 'Import Tutorials',
-        [FM.APPSLIST_CONFIRMCANCELMODALTITLE]: 'Are you sure you want to delete this application? {appName}',
+        [FM.APPSLIST_CONFIRMCANCELMODALTITLE]: 'Are you sure you want to delete this model? {appName}',
         [FM.APPSLIST_COLUMN_NAME]: 'Name',
         [FM.APPSLIST_COLUMNS_LOCALE]: 'Locale',
         [FM.APPSLIST_COLUMNS_LINKEDBOTS]: 'Linked Bots',
@@ -521,7 +521,7 @@ export default {
 
         // ReplayErrorList
         [FM.REPLAYERROR_LOGDIALOG_VALIDATION_TITLE]: 'Model definition has changed',
-        [FM.REPLAYERROR_LOGDIALOG_VALIDATION_MESSAGE]: 'This Log Dialog was created with a earlier version of the application.  The following incomptibilities were found:',
+        [FM.REPLAYERROR_LOGDIALOG_VALIDATION_MESSAGE]: 'This Log Dialog was created with a earlier version of the model.  The following incomptibilities were found:',
         [FM.REPLAYERROR_CONVERT_TITLE]: 'Unable to convert to Train Dialog',
         [FM.REPLAYERROR_FAILMESSAGE]: 'The following issues occurred when attempting to replay the dialog',
         [FM.REPLAYERROR_UNDO_TITLE]: 'Unable to Undo',
@@ -534,7 +534,7 @@ export default {
         
         // Settings
         [FM.SETTINGS_TITLE]: 'Settings',
-        [FM.SETTINGS_SUBTITLE]: 'Control your application version tags and other application configuration',
+        [FM.SETTINGS_SUBTITLE]: 'Control your model version tags and other model configuration',
         [FM.SETTINGS_COPYBUTTONARIALDESCRIPTION]: 'Copy Model',
         [FM.SETTINGS_COPYBUTTONTEXT]: 'Copy',
         [FM.SETTINGS_EXPORTBUTTONARIALDESCRIPTION]: 'Export Model to File',
@@ -614,7 +614,7 @@ export default {
         [FM.TOOLTIP_ACTION_TYPE_CARD]: 'Renders an Adaptive Card template',
         [FM.TOOLTIP_ACTION_WAIT]: 'When selected, Bot will wait for more user input before taking another action',
         [FM.TOOLTIP_ACTION_WAIT_TITLE]: 'Wait For Response',
-        [FM.TOOLTIP_BOTINFO_INVALID]: 'This application contains Card or API references that do not exist in the running Bot',
+        [FM.TOOLTIP_BOTINFO_INVALID]: 'This model contains Card or API references that do not exist in the running Bot',
         [FM.TOOLTIP_ENTITY_ACTION_DISQUALIFIED]: `Actions that are blocked from use if this Entity is set`,
         [FM.TOOLTIP_ENTITY_ACTION_REQUIRED]: `Actions that are only employed when this Entity is set`,
         [FM.TOOLTIP_ENTITY_EXTRACTOR_HELP]: `Select text to label it as an entity`,
@@ -627,9 +627,9 @@ export default {
         [FM.TOOLTIP_MEMORYMANAGER]: `The memory manager provides the following functions for manipulating the Bot's memory:`,
         [FM.TOOLTIP_MEMORYMANAGER_TITLE]: 'Memory Manager',
         [FM.TOOLTIP_PACKAGECREATOR_LIVE_TOGGLE]: 'When checked the new Tag will become the Live app served to users',
-        [FM.TOOLTIP_TAG_EDITING]: 'The version (tag) of the application to edit in UI',
-        [FM.TOOLTIP_TAG_LIVE]: 'The version (tag) of the application used when published to external channels (e.g. Skype)',
-        [FM.TOOLTIP_TRAINDIALOG_INVALID]: 'This application contains Train Dialogs that have been invalided.  They must be edited and fixed to be included in training',
+        [FM.TOOLTIP_TAG_EDITING]: 'The version (tag) of the model to edit in UI',
+        [FM.TOOLTIP_TAG_LIVE]: 'The version (tag) of the model used when published to external channels (e.g. Skype)',
+        [FM.TOOLTIP_TRAINDIALOG_INVALID]: 'This model contains Train Dialogs that have been invalided.  They must be edited and fixed to be included in training',
 
         // Train Dialogs
         [FM.TRAINDIALOGS_TITLE]: 'Train Dialogs',
