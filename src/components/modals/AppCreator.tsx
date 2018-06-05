@@ -25,7 +25,7 @@ const messages = defineMessages({
     },
     fieldErrorAlphanumeric: {
         id: FM.APPCREATOR_FIELDERROR_ALPHANUMERIC,
-        defaultMessage: 'Application name may only contain alphanumeric characters'
+        defaultMessage: 'Model name may only contain alphanumeric characters'
     },
     fieldErrorDistinct: {
         id: FM.APPCREATOR_FIELDERROR_DISTINCT,
@@ -125,7 +125,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
     // TODO: Refactor to use default form submission instead of manually listening for keys
     // Also has benefit of native browser validation for required fields
     onKeyDown(event: React.KeyboardEvent<HTMLElement>) {
-        // On enter attempt to create the app if required fields are set
+        // On enter attempt to create the model if required fields are set
         // Not on import as explicit button press is required to pick the file
         if (this.props.creatorType !== AppCreatorType.IMPORT && event.keyCode === 13 && this.state.appNameVal) {
             this.onClickCreate();
@@ -176,19 +176,19 @@ class AppCreator extends React.Component<Props, ComponentState> {
                 return (
                     <FormattedMessage
                         id={FM.APPCREATOR_TITLE}
-                        defaultMessage="Create a Conversation Learner App"
+                        defaultMessage="Create a Conversation Learner Model"
                     />)
             case AppCreatorType.IMPORT:
                 return (
                 <FormattedMessage
                     id={FM.APPCREATOR_IMPORT_TITLE}
-                    defaultMessage="Import a Conversation Learner App"
+                    defaultMessage="Import a Conversation Learner Model"
                 />)
             case AppCreatorType.COPY:
                 return (
                     <FormattedMessage
                         id={FM.APPCREATOR_COPY_TITLE}
-                        defaultMessage="Copy a Conversation Learner App"
+                        defaultMessage="Copy a Conversation Learner Model"
                     />)
             default:
                 return null;
@@ -199,7 +199,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
         return (this.props.creatorType !== AppCreatorType.NEW) ?
             intl.formatMessage({
                 id: FM.APPCREATOR_FIELDS_IMPORT_NAME_LABEL,
-                defaultMessage: "New App Name"
+                defaultMessage: "New Model Name"
             })
         :
             intl.formatMessage({
@@ -231,7 +231,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
                         label={this.getLabel(intl)}
                         placeholder={intl.formatMessage({
                             id: FM.APPCREATOR_FIELDS_NAME_PLACEHOLDER,
-                            defaultMessage: "Application Name..."
+                            defaultMessage: "Model Name..."
                         })}
                         onKeyDown={key => this.onKeyDown(key)}
                         value={this.state.appNameVal}

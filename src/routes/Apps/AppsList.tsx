@@ -289,22 +289,22 @@ class AppsList extends React.Component<Props, ComponentState> {
                         onClick={this.onClickCreateNewApp}
                         ariaDescription={this.props.intl.formatMessage({
                             id: FM.APPSLIST_CREATEBUTTONARIADESCRIPTION,
-                            defaultMessage: 'Create a New Application'
+                            defaultMessage: 'Create a New Model'
                         })}
                         text={this.props.intl.formatMessage({
                             id: FM.APPSLIST_CREATEBUTTONTEXT,
-                            defaultMessage: 'New App'
+                            defaultMessage: 'New Model'
                         })}
                     />
                     <OF.DefaultButton
                         onClick={this.onClickImportApp}
                         ariaDescription={this.props.intl.formatMessage({
                             id: FM.APPSLIST_IMPORTAPP_BUTTONARIADESCRIPTION,
-                            defaultMessage: 'Import Applicaiton'
+                            defaultMessage: 'Import Model'
                         })}
                         text={this.props.intl.formatMessage({
                             id: FM.APPSLIST_IMPORTAPP_BUTTONTEXT,
-                            defaultMessage: 'Import Application'
+                            defaultMessage: 'Import Model'
                         })}
                     />
                     {this.props.user.id !== CL_DEMO_ID &&
@@ -341,7 +341,7 @@ class AppsList extends React.Component<Props, ComponentState> {
                     onConfirm={this.onConfirmDeleteApp}
                     title={this.props.intl.formatMessage({
                         id: FM.APPSLIST_CONFIRMCANCELMODALTITLE,
-                        defaultMessage: 'Are you sure you want to delete this application? {appName}'
+                        defaultMessage: 'Are you sure you want to delete this model? {appName}'
                     }, {
                         appName: this.state.appToDelete ? this.state.appToDelete.appName : ''
                     })}

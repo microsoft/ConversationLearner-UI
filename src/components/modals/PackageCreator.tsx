@@ -68,7 +68,7 @@ class PackageCreator extends React.Component<Props, ComponentState> {
     // TODO: Refactor to use default form submission instead of manually listening for keys
     // Also has benefit of native browser validation for required fields
     onKeyDown(event: React.KeyboardEvent<HTMLElement>) {
-        // On enter attempt to create the app if required fields are set
+        // On enter attempt to create the model if required fields are set
         if (event.keyCode === 13 && this.state.tagNameVal) {
             this.onClickCreate();
         }

@@ -57,7 +57,7 @@ class Index extends React.Component<Props, ComponentState> {
     }
 
     componentWillMount() {
-        // If we're loading Index due to page refresh where app is not in router state
+        // If we're loading Index due to page refresh where model is not in router state
         // force back to /home route to mimic old behavior and allow user to login again
         const { location, history } = this.props
         const app: AppBase | null = location.state && location.state.app
@@ -212,7 +212,7 @@ class Index extends React.Component<Props, ComponentState> {
                         </div>
                         <div className="cl-nav_section">
                             <NavLink className="cl-nav-link" exact={true} to="/home">
-                                <Icon iconName="Back" /><span>My Apps</span>
+                                <Icon iconName="Back" /><span>My Models</span>
                             </NavLink>
                         </div>
                     </div>
