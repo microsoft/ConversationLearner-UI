@@ -1,19 +1,11 @@
 import * as fs from 'fs-extra'
 import * as path from 'path'
-import * as execa from 'execa'
 
 const packageJsonPath = path.join(__dirname, '..', 'package.json')
 const buildPath = path.join(__dirname, '..', 'build')
 const uiPackagePath = path.join(__dirname, '..', 'package')
 const indexJsPath = path.join(uiPackagePath, 'index.js')
 const indexDtsPath = path.join(uiPackagePath, 'index.d.ts')
-
-interface IVersion {
-    breaking: number
-    feature: number
-    patch: number
-    original: string
-}
 
 async function main() {
     console.log(`Verifying ${indexJsPath} exists`)
