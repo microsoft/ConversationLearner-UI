@@ -3,6 +3,7 @@ language: node_js
 branches:
   only:
     - master
+    - /^mattm/.*$/
     - /^greenkeeper/.*$/
 
 cache:
@@ -26,4 +27,5 @@ deploy:
   provider: script
   skip_cleanup: true
   script:
+    - cd package
     - npx semantic-release

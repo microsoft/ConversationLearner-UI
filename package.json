@@ -72,15 +72,6 @@
       "@commitlint/config-conventional"
     ]
   },
-  "release": {
-    "publish": [
-      {
-        "path": "@semantic-release/npm",
-        "pkgRoot": "package"
-      },
-      "@semantic-release/github"
-    ]
-  },
   "devDependencies": {
     "@commitlint/cli": "7.0.0",
     "@commitlint/config-conventional": "7.0.1",
