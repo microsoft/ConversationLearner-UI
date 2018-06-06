@@ -104,9 +104,9 @@ describe('Hello world e2e', function () {
     it('it should delete an existent model', () => {
   
       // Navigating back to home page.
-      cy.get('.cl-nav-link')
-        .contains('My Models') // TODO: Use better selector?
-        .click()
+      cy.get('.cl-nav_section')
+      .find('a[href="/home"]')
+      .click()
   
       cy.contains(newAppName)
         .parents('.ms-DetailsRow-fields')
