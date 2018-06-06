@@ -20,8 +20,11 @@ script:
   - npm run cibuild
   - npm test
 
-before_deploy:
+after_success:
   - npm run builduipackage
+
+before_deploy:
+  - cd package
 
 deploy:
   provider: script
@@ -29,5 +32,4 @@ deploy:
   on:
     branch: mattm/travis-test
   script:
-    - cd package
     - npx semantic-release
