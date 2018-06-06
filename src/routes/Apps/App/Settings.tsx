@@ -408,7 +408,7 @@ class Settings extends React.Component<Props, ComponentState> {
                     <OF.TextField
                         className={OF.FontClassNames.mediumPlus}
                         disabled={true}
-                        label='CONVERSATION_LEARNER_APP_ID'
+                        label='CONVERSATION_LEARNER_MODEL_ID'
                         value={this.state.appIdVal}
                     />
                     <div>
