@@ -1000,6 +1000,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                         <br />
                         <div>
                             <TC.Checkbox
+                                data-testid="actioncreator-checkbox-wait"
                                 label="Wait for Response?"
                                 checked={this.state.isTerminal}
                                 onChange={this.onChangeWaitCheckbox}
@@ -1036,6 +1037,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     </div>
                     <div className="cl-modal-buttons_primary">
                         <OF.PrimaryButton
+                            data-testid="action-button-create"
                             disabled={this.saveDisabled()}
                             onClick={this.onClickSaveCreate}
                             ariaDescription={this.state.isEditing ?
