@@ -19,8 +19,11 @@ script:
   - npm run cibuild
   - npm test
 
-before_deploy:
+after_success:
   - npm run builduipackage
+
+before_deploy:
+  - cd package
 
 deploy:
   provider: script
