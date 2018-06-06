@@ -27,6 +27,11 @@ jobs:
 
       - run: npm run test
       - run: npm run cibuild
+      - run: git clone https://github.com/Microsoft/ConversationLearner-Samples -b develop cl-samples
+      - run: cd cl-samples
+      - run: npm ci
+      - run: npm run build
+      - run: cd ..
       
 workflows:
   version: 2
