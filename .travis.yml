@@ -3,7 +3,6 @@ language: node_js
 branches:
   only:
     - master
-    - /^mattm/.*$/
     - /^greenkeeper/.*$/
 
 cache:
@@ -29,7 +28,5 @@ before_deploy:
 deploy:
   provider: script
   skip_cleanup: true
-  on:
-    branch: mattm/travis-test
   script:
     - npx semantic-release
