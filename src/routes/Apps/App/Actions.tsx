@@ -163,6 +163,7 @@ class Actions extends React.Component<Props, ComponentState> {
                 }
                 <div>
                     <OF.PrimaryButton
+                        data-testid="actions-button-create"
                         disabled={this.props.editingPackageId !== this.props.app.devPackageId}
                         onClick={() => this.onClickOpenActionEditor()}
                         ariaDescription={this.props.intl.formatMessage({
