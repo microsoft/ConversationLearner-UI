@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: cypress/base:8
+      - image: cypress/browsers:chrome65-ff57
         environment:
           ## this enables colors in the output
           TERM: xterm
@@ -27,6 +27,27 @@ jobs:
 
       - run: npm run test
       - run: npm run cibuild
+
+      # Clone, install, and build sample application
+      - run: git clone https://github.com/Microsoft/ConversationLearner-Samples -b develop ../cl-samples
+      - run: cd ../cl-samples && npm ci
+      - run: cd ../cl-samples && npm run build
+
+      # Run sample
+      - run: 
+          command: cd ../cl-samples && npm start
+          background: true
+
+      # Run UI
+      - run: 
+          command: npm start
+          background: true
+
+      # Run UI e2e tests
+      - run: npm run cypress -- run --browser chrome --record --key $CYPRESS_RECORD_KEY
+
+      - store_test_results:
+          path: results
       
 workflows:
   version: 2
