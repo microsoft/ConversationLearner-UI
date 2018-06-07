@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: cypress/base:8
+      - image: cypress/browsers:chrome65-ff57
         environment:
           ## this enables colors in the output
           TERM: xterm
@@ -40,7 +40,10 @@ jobs:
       - run: npm start &
 
       # Run UI e2e tests
-      - run: npm run cypress -- run --browser chrome
+      - run: npm run cypress -- run --browser chrome --record --key $CYPRESS_RECORD_KEY
+
+      - store_test_results:
+          path: results
       
 workflows:
   version: 2
