@@ -81,7 +81,10 @@
     "analyzeCommits": {
       "preset": "angular",
       "releaseRules": [
-        {"type": "style", "release": "patch"}
+        {
+          "type": "style",
+          "release": "patch"
+        }
       ]
     }
   },
@@ -105,6 +108,8 @@
     "execa": "^0.9.0",
     "fs-extra": "^5.0.0",
     "husky": "0.14.3",
+    "mocha-junit-reporter": "1.17.0",
+    "mocha-multi-reporters": "1.1.7",
     "tslint": "^5.9.1",
     "tslint-config-prettier": "^1.12.0",
     "tslint-config-standard": "^7.0.0",
