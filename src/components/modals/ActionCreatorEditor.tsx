@@ -1037,7 +1037,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     </div>
                     <div className="cl-modal-buttons_primary">
                         <OF.PrimaryButton
-                            data-testid="action-button-create"
+                            data-testid="actioncreator-button-create"
                             disabled={this.saveDisabled()}
                             onClick={this.onClickSaveCreate}
                             ariaDescription={this.state.isEditing ?
