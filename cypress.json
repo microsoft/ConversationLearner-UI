@@ -1,6 +1,7 @@
 {
   "projectId": "so64kq",
+  "reporter": "mocha-multi-reporters",
   "reporterOptions": {
-    "mochaFile": "results/tests-integration.xml"
+    "configFile": "config-mocha-reporter.json"
   }
 }
