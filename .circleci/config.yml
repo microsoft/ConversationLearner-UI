@@ -35,7 +35,7 @@ jobs:
 
       # Run sample
       - run: 
-          command: cd ../cl-samples && npx fornpm start
+          command: cd ../cl-samples && npm start
           background: true
 
       # Run UI
