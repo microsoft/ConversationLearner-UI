@@ -29,9 +29,9 @@ jobs:
       - run: npm run cibuild
 
       # Clone, install, and build sample application
-      - run: git clone https://github.com/Microsoft/ConversationLearner-Samples -b develop cl-samples
-      - run: cd cl-samples && npm ci
-      - run: cd cl-samples && npm run build
+      - run: git clone https://github.com/Microsoft/ConversationLearner-Samples -b develop ../cl-samples
+      - run: cd ../cl-samples && npm ci
+      - run: cd ../cl-samples && npm run build
 
       # Run sample
       - run: cd cl-samples && npm start &
