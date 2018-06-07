@@ -34,12 +34,14 @@ jobs:
       - run: cd ../cl-samples && npm run build
 
       # Run sample
-      - run: cd ../cl-samples && npm start
-            background: true
+      - run: 
+          command: cd ../cl-samples && npx fornpm start
+          background: true
 
       # Run UI
-      - run: npm start
-            background: true
+      - run: 
+          command: npm start
+          background: true
 
       # Run UI e2e tests
       - run: npm run cypress -- run --browser chrome --record --key $CYPRESS_RECORD_KEY
