@@ -34,7 +34,7 @@ jobs:
       - run: cd ../cl-samples && npm run build
 
       # Run sample
-      - run: cd cl-samples && npm start &
+      - run: cd ../cl-samples && npm start &
 
       # Run UI
       - run: npm start &
