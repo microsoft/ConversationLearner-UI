@@ -27,11 +27,20 @@ jobs:
 
       - run: npm run test
       - run: npm run cibuild
+
+      # Clone, install, and build sample application
       - run: git clone https://github.com/Microsoft/ConversationLearner-Samples -b develop cl-samples
-      - run: cd cl-samples
-      - run: npm ci
-      - run: npm run build
-      - run: cd ..
+      - run: cd cl-samples && npm ci
+      - run: cd cl-samples && npm run build
+
+      # Run sample
+      - run: cd cl-samples && npm start &
+
+      # Run UI
+      - run: npm start &
+
+      # Run UI e2e tests
+      - run: npm run cypress -- run --browser chrome
       
 workflows:
   version: 2
