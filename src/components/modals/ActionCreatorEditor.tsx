@@ -496,6 +496,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
              */
             payload,
             isTerminal: this.state.isTerminal,
+            requiredEntitiesFromPayload: this.state.requiredEntityTagsFromPayload.map<string>(tag => tag.key),
             requiredEntities: [...this.state.requiredEntityTagsFromPayload, ...this.state.requiredEntityTags].map<string>(tag => tag.key),
             negativeEntities: this.state.negativeEntityTags.map<string>(tag => tag.key),
             suggestedEntity: (this.state.expectedEntityTags.length > 0) ? this.state.expectedEntityTags[0].key : null,
