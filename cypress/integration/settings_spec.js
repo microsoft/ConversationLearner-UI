@@ -1,0 +1,1 @@
+<script src="/__cypress/tests?p=cypress/support/index.js"></script>

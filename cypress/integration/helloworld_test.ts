@@ -1,114 +1,124 @@
 describe('Hello world e2e', function () {
-    const newAppName = `e2e-HelloWorld-${new Date().getTime() - 1528151000000}`
-    const username = `UserName`
+    const newModelName = `e2e-HelloWorld-${new Date().getTime() - 1528151000000}`
+    const entity01 = `UserName`
+    const entity02 = `City`
     const action01 = 'Hello World!'
-    /**
-     * FEATURE: New Model
-     */
+    const trainmessage01 = 'Hello'
+    const trainmessage02 = 'Hi'
+
+    /** FEATURE: New Model */
     it('CREATE NEW MODEL with random name and verify name on application page', function () {
-      // Open application
-      cy.visit('http://localhost:5050')
+      
+      cy.launch_ConversationLearnerApp()
+
+      cy.cl_model_createnew(newModelName)
   
-      // Click the button to create app
-      cy
-        .get('[data-testid="apps-list-button-create-new"]')
-        .click()
-  
-      // Ensure that name input is focused
-      cy.focused()
-  
-      cy
-        .get('[data-testid="app-create-input-name"]')
-        .type(newAppName)
-  
-      // Click the submit button
-      cy
-        .get('[data-testid="app-create-button-submit"]')
-        .click()
-  
-      // Ensure app page displays new application title
-      cy
-        .get('[data-testid="app-index-title"]')
+      // Verify: Ensure app page displays new application title
+      cy.get('[data-testid="app-index-title"]')
         .should(el => {
-          expect(el).to.contain(newAppName)
+          expect(el).to.contain(newModelName)
         })
     })
   
-    /**
-     * FEATURE:  New Identity
-     */
-    it('it should create a NEW ENTITY', () => {
-      // Click entities navigation tab
-      cy.get('a[href$="/entities"]')
-        .click()
-  
-      // Click new entity button
-      cy.get('[data-testid="entities-button-create"]')
-        .click()
-  
-      // Enter name for entity
-      cy.get('[data-testid="entity-creator-input-name"]')
-        .type(username)
-  
-      // Select multi-value
-      cy.get('[data-testid="entity-creator-input-multivalue"]')
-        .click()
-  
-      // Select the submit button
-      cy.get('[data-testid="entity-creator-button-save"]')
-        .click()
-  
-      // Ensure new row is added to entities list with new entity name
+    /** FEATURE:  New Identity */
+    it('should create a NEW ENTITY', () => {
+
+      cy.navigateTo_Entities()
+
+      cy.entity_createNew(entity01)
+
+      cy.entity_clickOnMultivalue()
+
+      cy.entity_savechanges()
+
+      cy.entity_createNew(entity02)
+
+      cy.entity_savechanges()
+
+      // Verify: new row is added to entities list with new entity name
       cy.get('.ms-DetailsRow-cell')
-        .contains(username)
+        .contains(entity01)
+        .contains(entity02)
     })
   
-    /**
-     * FEATURE: New Action
-     */
-    it('it should be able to ADD AN ACTION', () => {
+    /** FEATURE: New Action */
+    it('should be able to ADD AN ACTION', () => {
   
-      // Click actions navigation tab
-      cy
-        .get('a[href$="/actions"]')
-        .click()
+      cy.navigateTo_ActionsPage()
   
-      // Click new action button
-      cy
-        .get('[data-testid="actions-button-create"]')
-        .click()
+      cy.cl_Action_CreateNew()
+
+      cy.cl_Action_SelectTypeText()
+
+      cy.cl_Action_Phrase(action01)  //Hello World!
   
-      // Click Action Type dropdown
-      cy
-        .get('[data-testid="dropdown-action-type"]')
-        .click()
-        .click()
-  
-      // Enter action response phrase: Hello World!
-      cy
-        .get('div[data-slate-editor="true"]')
-        .type(action01)
-  
-      // Click create button
-      cy.get('[data-testid="actioncreator-button-create"]')
-        .click()
-  
+      cy.cl_Action_Create()
+      
       // Verify that the action has been added
       cy.get('.ms-DetailsRow-cell')
         .contains(action01)
     })
   
-    /**
-     * FEATURE: Delete a Model
-     */
-    it('it should delete an existent model', () => {
-  
+    /** FEATURE: New Train Dialog */
+    it('should add a new TRAIN DIALOG', () => {
+      // error handling
+      cy.on('uncaught:exception', (err, runnable) => {
+        return false
+      })
+
+      cy.cl_navigateTo_TrainDialogsPage()
+
+      // verify: the Train Dialog page is rendered
+      cy.get('div[data-testid="train-dialogs-title"]')
+        .contains('Train Dialogs')
+
+      // first training
+      cy.cl_traindialog_createnew()
+
+      cy.cl_Webchat_NewUserMessage(trainmessage01)
+
+      cy.cl_traindialog_proceedToScoreAction()
+
+      cy.cl_ScoredAction_Select()
+
+      // Perform chat entries validation
+      cy.get('[id="botchat"]').contains(trainmessage01)
+        .get('[id="botchat"]').contains(action01)
+      
+      // finalize first training
+      cy.cl_TrainingSession_Done()
+
+      // second trainig
+      cy.cl_traindialog_createnew()
+
+      cy.cl_Webchat_NewUserMessage(trainmessage02)
+
+      cy.cl_traindialog_proceedToScoreAction()
+
+      cy.cl_ScoredAction_Select()
+
+      // Perform chat entries validation
+      cy.get('[id="botchat"]').contains(trainmessage02)
+      cy.get('[id="botchat"]').contains(action01)
+      
+      // finilize second training
+      cy.cl_TrainingSession_Done()
+    })
+
+    /** FEATURE: Delete a Model */
+    it('should delete an existent model', () => {
+
+      // error handling
+      cy.on('uncaught:exception', (err, runnable) => {
+        return false
+      })
+
       // Navigating back to home page.
       cy.get('.cl-nav_section')
       .find('a[href="/home"]')
       .click()
   
-      cy.contains(newAppName)
+      cy.contains(newModelName)
         .parents('.ms-DetailsRow-fields')
         .find('i[data-icon-name="Delete"]')
         .click()

@@ -125,6 +125,7 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
                     <div className="cl-chatmodal">
                         <div className="cl-chatmodal_webchat">
                             <Webchat
+                                data-testid="chatmodal-webchat"
                                 key={this.state.webchatKey}
                                 app={this.props.app}
                                 history={this.props.history}
@@ -138,6 +139,7 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
                         <div className="cl-chatmodal_controls"> 
                             <div className="cl-chatmodal_admin-controls">
                                 <TrainDialogAdmin
+                                    data-testid="chatmodal-traindialogadmin"
                                     app={this.props.app}
                                     editingPackageId={this.props.editingPackageId}
                                     canEdit={this.props.canEdit}
@@ -158,6 +160,7 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
                         </div>
                         <div className="cl-modal-buttons_primary">
                             <PrimaryButton
+                                data-testid="footer-button-done"
                                 disabled={this.state.pendingExtractionChanges}
                                 onClick={() => this.onClickDone()}
                                 ariaDescription={intl.formatMessage({
@@ -171,6 +174,7 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
                             />
                             <div ref={(menuButton) => this._refBranchButton = menuButton}>
                                 <DefaultButton
+                                    data-testid="footer-button-branch"
                                     disabled={!canBranch ||
                                         this.state.pendingExtractionChanges ||
                                         !this.props.canEdit ||
@@ -187,6 +191,7 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
                                 />
                             </div>
                             <DefaultButton
+                                data-testid="footer-button-delete"
                                 className="cl-button-delete"
                                 disabled={this.state.pendingExtractionChanges || !this.props.canEdit}
                                 onClick={() => this.onClickDelete()}
@@ -204,6 +209,7 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
                     </div>
                 </div>
                 <ConfirmCancelModal
+                    data-testid="confirm-delete-trainingdialog"
                     open={this.state.isConfirmCancelModalOpen}
                     onCancel={() => this.onClickCancelDelete()}
                     onConfirm={() => this.onClickConfirmDelete()}
@@ -214,6 +220,7 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
                 />
                 { this.state.calloutOpen && (
                     <Callout
+                        data-testid="alertdialog-callout-dismiss"
                         role={ 'alertdialog' }
                         gapSpace={ 0 }
                         target={ this._refBranchButton }

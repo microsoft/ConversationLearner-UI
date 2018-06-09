@@ -14,7 +14,10 @@
 // ***********************************************************
 
 // Import commands.js using ES2015 syntax:
-import './commands'
+import './actions_commands'
+import './entities_commands'
+import './homepage_commands'
+import './traindialog_commands'
 
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
