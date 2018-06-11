@@ -105,24 +105,15 @@ class Actions extends React.Component<Props, ComponentState> {
 
     getFilteredActions(): ActionBase[] {
         //runs when user changes the text 
-        let lcString = this.state.searchValue.toLowerCase();
-        let filteredActions = this.props.actions.filter(a => {
-            let nameMatch = a.payload.toLowerCase().includes(lcString);
-            let typeMatch = a.actionType ? a.actionType.toLowerCase().includes(lcString) : true;
-            let negativeEntities = a.negativeEntities.map(entityId => {
-                let found = this.props.entities.find(e => e.entityId === entityId);
-                return found.entityName;
-            })
-            let positiveEntities = a.requiredEntities.map(entityId => {
-                let found = this.props.entities.find(e => e.entityId === entityId);
-                return found.entityName;
-            })
-            let requiredEnts = positiveEntities.join('');
-            let negativeEnts = negativeEntities.join('');
-            let reqEntsMatch = requiredEnts.toLowerCase().includes(lcString);
-            let negEntsMatch = negativeEnts.toLowerCase().includes(lcString);
-            let match = nameMatch || typeMatch || reqEntsMatch || negEntsMatch
-            return match;
+        const searchStringLower = this.state.searchValue.toLowerCase()
+        const filteredActions = this.props.actions.filter(a => {
+            const nameMatch = a.payload.toLowerCase().includes(searchStringLower)
+            const typeMatch = a.actionType.toLowerCase().includes(searchStringLower)
+            const entities = this.props.entities
+                .filter(e => [...a.requiredEntities, ...a.negativeEntities, ...(a.suggestedEntity ? [a.suggestedEntity] : [])].includes(e.entityId))
+            const entityMatch = entities.some(e => e.entityName.toLowerCase().includes(searchStringLower))
+
+            return nameMatch || typeMatch || entityMatch
         })
 
         return filteredActions;

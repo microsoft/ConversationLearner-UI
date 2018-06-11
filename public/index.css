@@ -65,6 +65,14 @@ html {
   padding: 5px
 }
 
+.cl-text--error {
+  color: var(--color-error);
+}
+
+.cl-text--warning {
+  color: var(--color-alert);
+}
+
 .cl-action {
   border: none;
   background: none;
@@ -82,6 +90,17 @@ html {
 @keyframes cl-icon-spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
+}
+
+.cl-icon[data-icon-name="Warning"] {
+  color: var(--color-alert);
+  vertical-align: sub;
+  font-size: 1.2em;
+}
+.cl-icon[data-icon-name="Error"] {
+  color: var(--color-error);
+  vertical-align: sub;
+  font-size: 1.2em;
 }
 
 .cl-icon[data-icon-name="CheckMark"] {

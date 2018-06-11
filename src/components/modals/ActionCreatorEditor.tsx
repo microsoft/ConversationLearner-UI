@@ -29,7 +29,7 @@ import HelpIcon from '../HelpIcon'
 import { withRouter } from 'react-router-dom'
 import { RouteComponentProps } from 'react-router'
 import { autobind } from 'office-ui-fabric-react'
-import { injectIntl, InjectedIntlProps } from 'react-intl'
+import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { FM } from '../../react-intl-messages'
 
 const TEXT_SLOT = '#TEXT_SLOT#';
@@ -53,8 +53,8 @@ const convertOptionToTag = (option: ActionPayloadEditor.IOption): OF.ITag =>
     })
 
 const convertEntityIdsToTags = (ids: string[], entities: EntityBase[]): OF.ITag[] => {
-    return ids
-        .map<EntityBase>(entityId => entities.find(e => e.entityId === entityId))
+    return entities
+        .filter(e => ids.some(id => id === e.entityId))
         .map<OF.ITag>(convertEntityToTag)
 }
 
@@ -496,6 +496,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
              */
             payload,
             isTerminal: this.state.isTerminal,
+            requiredEntitiesFromPayload: this.state.requiredEntityTagsFromPayload.map<string>(tag => tag.key),
             requiredEntities: [...this.state.requiredEntityTagsFromPayload, ...this.state.requiredEntityTags].map<string>(tag => tag.key),
             negativeEntities: this.state.negativeEntityTags.map<string>(tag => tag.key),
             suggestedEntity: (this.state.expectedEntityTags.length > 0) ? this.state.expectedEntityTags[0].key : null,
@@ -523,24 +524,22 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
         // Otherwise need to validate changes
         ((this.props.fetchActionEditValidationThunkAsync(this.props.app.appId, this.props.editingPackageId, newOrEditedAction) as any) as Promise<string[]>)
-        .then(invalidTrainingDialogIds => {
-
-            if (invalidTrainingDialogIds) {
-                if (invalidTrainingDialogIds.length > 0) {
-                    this.setState(
-                    {
-                        isConfirmEditModalOpen: true,
-                        showValidationWarning: true,
-                        newOrEditedAction: newOrEditedAction
-                    });
-                } else {
-                    this.props.handleEdit(newOrEditedAction);
+            .then(invalidTrainingDialogIds => {
+                if (invalidTrainingDialogIds) {
+                    if (invalidTrainingDialogIds.length > 0) {
+                        this.setState({
+                            isConfirmEditModalOpen: true,
+                            showValidationWarning: true,
+                            newOrEditedAction: newOrEditedAction
+                        });
+                    } else {
+                        this.props.handleEdit(newOrEditedAction);
+                    }
                 }
-            }
-        })
-        .catch(error => {
-            console.warn(`Error when attempting to validate edit: `, error)
-        })
+            })
+            .catch(error => {
+                console.warn(`Error when attempting to validate edit: `, error)
+            })
     }
 
     @autobind
@@ -1095,11 +1094,14 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                         id: FM.ACTIONCREATOREDITOR_CONFIRM_DELETE_TITLE,
                         defaultMessage: 'Are you sure you want to delete this action?'
                     })}
-                    warning={this.state.showValidationWarning &&
-                        intl.formatMessage({
-                            id: FM.ACTIONCREATOREDITOR_CONFIRM_DELETE_WARNING,
-                            defaultMessage: 'This will invalidate one or more Training Dialogs'
-                        })}
+                    message={() => this.state.showValidationWarning &&
+                        <div className="cl-text--warning">
+                            <OF.Icon iconName="Warning" className="cl-icon" /> Warning:&nbsp;
+                            <FormattedMessage
+                                id={FM.ACTIONCREATOREDITOR_CONFIRM_DELETE_WARNING}
+                                defaultMessage='This Action is used by one or more Training Dialogs.  If you proceed they will removed from training until fixed.'
+                            />
+                    </div>}
                 />
                 <ConfirmCancelModal
                     open={this.state.isConfirmEditModalOpen}
@@ -1109,11 +1111,14 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                         id: FM.ACTIONCREATOREDITOR_CONFIRM_EDIT_TITLE,
                         defaultMessage: 'Are you sure you want to edit this action?'
                     })}
-                    warning={this.state.showValidationWarning &&
-                        intl.formatMessage({
-                            id: FM.ACTIONCREATOREDITOR_CONFIRM_EDIT_WARNING,
-                            defaultMessage: 'This will invalidate one or more Training Dialogs'
-                        })}
+                    message={() => this.state.showValidationWarning &&
+                        <div className="cl-text--warning">
+                        <OF.Icon iconName="Warning" className="cl-icon" /> Warning:&nbsp;
+                        <FormattedMessage
+                            id={FM.ACTIONCREATOREDITOR_CONFIRM_EDIT_WARNING}
+                            defaultMessage='This edit will invalidate one or more Training Dialogs.  If you proceed they will removed from training until fixed.'
+                        />
+                    </div>}
                 />
                 <EntityCreatorEditor
                     app={this.props.app}
