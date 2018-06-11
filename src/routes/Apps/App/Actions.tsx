@@ -25,7 +25,6 @@ interface ComponentState {
     isActionEditorModalOpen: boolean
     searchValue: string
     isActionEditorOpen: boolean
-    useNewActionEditor: boolean
 }
 
 class Actions extends React.Component<Props, ComponentState> {
@@ -40,7 +39,6 @@ class Actions extends React.Component<Props, ComponentState> {
             isConfirmDeleteActionModalOpen: false,
             isActionEditorModalOpen: false,
             isActionEditorOpen: false,
-            useNewActionEditor: false
         }
 
         this.onSelectAction = this.onSelectAction.bind(this)
@@ -71,36 +69,33 @@ class Actions extends React.Component<Props, ComponentState> {
         this.setState({
             isActionEditorOpen: false,
             actionSelected: null
+        }, () => {
+            setTimeout(() => this.newActionButton.focus(), 500)
         })
     }
 
     onClickDeleteActionEditor(action: ActionBase) {
-        this.setState(
-            {
+        this.setState({
             isActionEditorOpen: false,
             actionSelected: null
-            }, 
-            () => {
-                this.props.deleteActionThunkAsync(this.props.app.appId, action.actionId)
-            }
-        )
+        }, () => {
+            this.props.deleteActionThunkAsync(this.props.app.appId, action.actionId)
+            setTimeout(() => this.newActionButton.focus(), 1000)
+        })
     }
 
     onClickSubmitActionEditor(action: ActionBase) {
         const wasEditing = this.state.actionSelected
-
-        this.setState(
-            {
-                isActionEditorOpen: false,
-                actionSelected: null
-            }, 
-            () => {
-                if (wasEditing) {
-                    this.props.editActionThunkAsync(this.props.app.appId, action)
-                } else {
-                    this.props.createActionThunkAsync(this.props.app.appId, action)
-                }
-            })
+        this.setState({
+            isActionEditorOpen: false,
+            actionSelected: null
+        }, () => {
+            const apiFunc = wasEditing
+                ? () => this.props.editActionThunkAsync(this.props.app.appId, action)
+                : () => this.props.createActionThunkAsync(this.props.app.appId, action)
+            apiFunc()
+            setTimeout(() => this.newActionButton.focus(), 500)
+        })
     }
 
     getFilteredActions(): ActionBase[] {
@@ -125,12 +120,6 @@ class Actions extends React.Component<Props, ComponentState> {
         })
     }
 
-    onChangedUseNewactionEditor = (useNewActionEditor: boolean) => {
-        this.setState({
-            useNewActionEditor
-        })
-    }
-
     render() {
         // TODO: Look to move this up to the set state calls instead of forcing it to be on every render
         const actions = this.getFilteredActions();
@@ -142,15 +131,14 @@ class Actions extends React.Component<Props, ComponentState> {
                         defaultMessage="Actions"
                     />
                 </span>
-                {this.props.editingPackageId === this.props.app.devPackageId ?
-                    <span className={OF.FontClassNames.mediumPlus}>
+                {this.props.editingPackageId === this.props.app.devPackageId
+                    ? <span className={OF.FontClassNames.mediumPlus}>
                         <FormattedMessage
                             id={FM.ACTIONS_SUBTITLE}
                             defaultMessage="Actions are executed by the bot in response to user input"
                         />
                     </span>
-                    :
-                    <span className="cl-errorpanel">Editing is only allowed in Master Tag</span>
+                    : <span className="cl-errorpanel">Editing is only allowed in Master Tag</span>
                 }
                 <div>
                     <OF.PrimaryButton
