@@ -32,6 +32,8 @@ describe('Hello world e2e', function () {
       cy.entity_savechanges()
 
       cy.entity_createNew(entity02)
+      
+      cy.entity_clickOnMultivalue()
 
       cy.entity_savechanges()
 
