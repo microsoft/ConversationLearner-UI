@@ -31,15 +31,17 @@ describe('Hello world e2e', function () {
 
       cy.entity_savechanges()
 
+      cy.get('.ms-DetailsRow-cell')
+      .contains(entity01)
+
       cy.entity_createNew(entity02)
-      
+
       cy.entity_clickOnMultivalue()
 
       cy.entity_savechanges()
 
       // Verify: new row is added to entities list with new entity name
       cy.get('.ms-DetailsRow-cell')
-        .contains(entity01)
         .contains(entity02)
     })
   
