@@ -1,126 +1,91 @@
 describe('Hello world e2e', function () {
-    const newModelName = `e2e-HelloWorld-${new Date().getTime() - 1528151000000}`
-    const entity01 = `UserName`
-    const entity02 = `City`
-    const action01 = 'Hello World!'
-    const trainmessage01 = 'Hello'
-    const trainmessage02 = 'Hi'
+  const postfix = new Date().getTime() - 1528151000000
+  const modelName = `e2e-HelloWorld-${postfix}`
+  const entity01 = `UserName-${postfix}`
+  const action01 = `Hello World`
+  const trainmessage01 = `Hello`
+  const trainmessage02 = `Hi`
 
-    /** FEATURE: New Model */
-    it('CREATE NEW MODEL with random name and verify name on application page', function () {
-      
-      cy.launch_ConversationLearnerApp()
+  /** FEATURE: New Model */
+  it('CREATE NEW MODEL with random name and verify name on application page', function () {
+    var modelpage = require('../support/components/modelpage')
+    var convLearnerPage = require('../support/components/homepage')
+    convLearnerPage.NavigateTo();
+    convLearnerPage.CreateNewModel(modelName);
+    modelpage.VerifyPageTitle(modelName);
+  })
 
-      cy.cl_model_createnew(newModelName)
-  
-      // Verify: Ensure app page displays new application title
-      cy.get('[data-testid="app-index-title"]')
-        .should(el => {
-          expect(el).to.contain(newModelName)
-        })
-    })
-  
-    /** FEATURE:  New Identity */
-    it('should create a NEW ENTITY', () => {
+  /** FEATURE:  New Identity */
+  it('should create a NEW ENTITY', () => {
+    var entity = require('../support/components/entitypage')
+    var entityModal = require('../support/components/entitymodal')
 
-      cy.navigateTo_Entities()
-
-      cy.entity_createNew(entity01)
-
-      cy.entity_clickOnMultivalue()
-
-      cy.entity_savechanges()
-
-      cy.get('.ms-DetailsRow-cell')
+    entity.NavigateTo();
+    entity.createNew(entity01);
+    entityModal.clickOnMultivalue();
+    entityModal.save();
+    cy.get('.ms-DetailsRow-cell')
       .contains(entity01)
-    })
-  
-    /** FEATURE: New Action */
-    it('should be able to ADD AN ACTION', () => {
-  
-      cy.navigateTo_ActionsPage()
-  
-      cy.cl_Action_CreateNew()
+  })
 
-      cy.cl_Action_SelectTypeText()
+  /** FEATURE: New Action */
+  it('should be able to ADD AN ACTION', () => {
+    var actions = require('../support/components/actionspage')
+    var actionsModal = require('../support/components/actionsmodal')
 
-      cy.cl_Action_Phrase(action01)  //Hello World!
-  
-      cy.cl_Action_Create()
-      
-      // Verify that the action has been added
-      cy.get('.ms-DetailsRow-cell')
-        .contains(action01)
-    })
-  
-    /** FEATURE: New Train Dialog */
-    it('should add a new TRAIN DIALOG', () => {
-      // error handling
-      cy.on('uncaught:exception', (err, runnable) => {
-        return false
-      })
+    actions.NavigateTo();
+    actions.CreateNew();
+    actions.SelectTypeText();
+    actions.SetPhrase(action01);
+    actions.Save();
 
-      cy.cl_navigateTo_TrainDialogsPage()
+    // Verify that the action has been added
+    cy.get('.ms-DetailsRow-cell')
+      .contains(action01)
+  })
 
-      // verify: the Train Dialog page is rendered
-      cy.get('div[data-testid="train-dialogs-title"]')
-        .contains('Train Dialogs')
+  /** FEATURE: New Train Dialog */
+  it('should add a new TRAIN DIALOG', () => {
 
-      // first training
-      cy.cl_traindialog_createnew()
+    var conversationsModal = require('../support/components/conversationsmodal')
+    var scorerModal = require('../support/components/scorermodal')
+    var trainDialogPage = require('../support/components/traindialogspage')
 
-      cy.cl_Webchat_NewUserMessage(trainmessage01)
-
-      cy.cl_traindialog_proceedToScoreAction()
-
-      cy.cl_ScoredAction_Select()
-
-      // Perform chat entries validation
-      cy.get('[id="botchat"]').contains(trainmessage01)
-        .get('[id="botchat"]').contains(action01)
-      
-      // finalize first training
-      cy.cl_TrainingSession_Done()
-
-      // second trainig
-      cy.cl_traindialog_createnew()
-
-      cy.cl_Webchat_NewUserMessage(trainmessage02)
-
-      cy.cl_traindialog_proceedToScoreAction()
-
-      cy.cl_ScoredAction_Select()
-
-      // Perform chat entries validation
-      cy.get('[id="botchat"]').contains(trainmessage02)
-      cy.get('[id="botchat"]').contains(action01)
-      
-      // finilize second training
-      cy.cl_TrainingSession_Done()
+    // error handling
+    cy.on('uncaught:exception', (err, runnable) => {
+      return false
     })
 
-    /** FEATURE: Delete a Model */
-    it('should delete an existent model', () => {
+    trainDialogPage.NavigateTo();
+    trainDialogPage.VerifyPageTitle();
+    trainDialogPage.CreateNew();
+    conversationsModal.NewUserMessage(trainmessage01);
+    conversationsModal.ProceedToScoreAction();
+    scorerModal.SelectAnAction();
+    // Perform chat entries validation
+    cy.get('[id="botchat"]').contains(trainmessage01)
+    cy.get('[id="botchat"]').contains(action01)
+    conversationsModal.Done();
 
-      // error handling
-      cy.on('uncaught:exception', (err, runnable) => {
-        return false
-      })
+    trainDialogPage.CreateNew();
+    conversationsModal.NewUserMessage(trainmessage02);
+    conversationsModal.ProceedToScoreAction();
+    scorerModal.SelectAnAction();
+    // Perform chat entries validation
+    cy.get('[id="botchat"]').contains(trainmessage02)
+    cy.get('[id="botchat"]').contains(action01)
+    conversationsModal.Done();
+  })
 
-      // Navigating back to home page.
-      cy.get('.cl-nav_section')
-      .find('a[href="/home"]')
-      .click()
-  
-      cy.contains(newModelName)
-        .parents('.ms-DetailsRow-fields')
-        .find('i[data-icon-name="Delete"]')
-        .click()
-  
-      cy.get('.ms-Dialog-main')
-        .contains('Confirm')
-        .click()
-  
-      cy.end()
+  /** FEATURE: Delete a Model */
+  it('should delete an existent model', () => {
+    var convLearnerPage = require('../support/components/homepage')
+
+    // error handling
+    cy.on('uncaught:exception', (err, runnable) => {
+      return false
     })
-  })  
+    convLearnerPage.DeleteModel(modelName);
+    cy.end()
+  })
+})
