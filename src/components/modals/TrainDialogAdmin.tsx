@@ -246,6 +246,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                         payload: 'MISSING ACTION',
                         isTerminal: false,
                         actionType: ActionTypes.TEXT,
+                        requiredEntitiesFromPayload: [],
                         requiredEntities: [],
                         negativeEntities: [],
                         suggestedEntity: null,

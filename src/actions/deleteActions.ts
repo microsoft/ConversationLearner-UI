@@ -6,7 +6,7 @@ import { AT, ActionObject, ErrorType } from '../types'
 import { Dispatch } from 'redux'
 import { AppBase, Session, Teach } from '@conversationlearner/models'
 import { setErrorDisplay } from './displayActions'
-import { fetchAllTrainDialogsAsync, fetchAllLogDialogsAsync, fetchApplicationTrainingStatusThunkAsync } from './fetchActions'
+import { fetchAllTrainDialogsAsync, fetchAllLogDialogsAsync, fetchApplicationTrainingStatusThunkAsync, fetchAllActionsAsync } from './fetchActions'
 import * as ClientFactory from '../services/clientFactory'
 
 // ---------------------
@@ -46,7 +46,12 @@ export const deleteEntityThunkAsync = (appId: string, entityId: string, reverseE
                 dispatch(deleteEntityFulfilled(reverseEntityId));
             }
 
-            // Fetch train dialogs if any train dialogs were impacted
+            // If any actions were modified, reload them
+            if (deleteEditResponse.actionIds && deleteEditResponse.actionIds.length > 0) {
+                dispatch(fetchAllActionsAsync(appId))
+            }
+
+            // If any train dialogs were modified fetch train dialogs 
             if ((deleteEditResponse.trainDialogIds && deleteEditResponse.trainDialogIds.length > 0) ||
                 (deleteReverseResponse && deleteReverseResponse.trainDialogIds && deleteReverseResponse.trainDialogIds.length > 0)) {
                 dispatch(fetchAllTrainDialogsAsync(appId));
