@@ -171,9 +171,9 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
     }
 
     componentDidUpdate(prevProps: Props, prevState: ComponentState) {
-        const isProgrammaticChanged = this.state.isProgrammaticVal !== (this.props.entity.entityType === EntityType.LOCAL)
-        const isMultiValueChanged = this.state.isMultivalueVal !== this.props.entity.isMultivalue
-        const isNegatableChanged = this.state.isNegatableVal !== this.props.entity.isNegatible
+        const isProgrammaticChanged = this.props.entity && this.state.isProgrammaticVal !== (this.props.entity.entityType === EntityType.LOCAL)
+        const isMultiValueChanged = this.props.entity && this.state.isMultivalueVal !== this.props.entity.isMultivalue
+        const isNegatableChanged = this.props.entity && this.state.isNegatableVal !== this.props.entity.isNegatible
         const hasPendingChanges = isProgrammaticChanged || isMultiValueChanged || isNegatableChanged
 
         if (prevState.hasPendingChanges !== hasPendingChanges) {
