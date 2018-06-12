@@ -170,6 +170,19 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
         }
     }
 
+    componentDidUpdate(prevProps: Props, prevState: ComponentState) {
+        const isProgrammaticChanged = this.props.entity && this.state.isProgrammaticVal !== (this.props.entity.entityType === EntityType.LOCAL)
+        const isMultiValueChanged = this.props.entity && this.state.isMultivalueVal !== this.props.entity.isMultivalue
+        const isNegatableChanged = this.props.entity && this.state.isNegatableVal !== this.props.entity.isNegatible
+        const hasPendingChanges = isProgrammaticChanged || isMultiValueChanged || isNegatableChanged
+
+        if (prevState.hasPendingChanges !== hasPendingChanges) {
+            this.setState({
+                hasPendingChanges
+            })
+        }
+    }
+
     convertStateToEntity(state: ComponentState): EntityBase {
         let entityName = this.state.entityNameVal
         let entityType = this.state.entityTypeVal
@@ -265,19 +278,19 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
         })
     }
     onChangeProgrammatic = () => {
-        this.setState({
-            isProgrammaticVal: !this.state.isProgrammaticVal,
-        })
+        this.setState(prevState => ({
+            isProgrammaticVal: !prevState.isProgrammaticVal
+        }))
     }
     onChangeMultivalue = () => {
-        this.setState({
-            isMultivalueVal: !this.state.isMultivalueVal,
-        })
+        this.setState(prevState => ({
+            isMultivalueVal: !prevState.isMultivalueVal,
+        }))
     }
     onChangeReversible = () => {
-        this.setState({
-            isNegatableVal: !this.state.isNegatableVal,
-        })
+        this.setState(prevState => ({
+            isNegatableVal: !prevState.isNegatableVal,
+        }))
     }
 
     onGetNameErrorMessage = (value: string): string => {
