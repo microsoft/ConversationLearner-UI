@@ -171,6 +171,12 @@ export default class ClClient {
             .then(response => response.data)
     }
 
+    entity(appId: string, entityId: string): Promise<models.EntityBase> {
+        return this.send<models.EntityBase>({
+            url: `${this.baseUrl}/app/${appId}/entities/${entityId}`
+        }).then(response => response.data)
+    }
+
     entities(appId: string): Promise<models.EntityBase[]> {
         return this.send<models.EntityList>({
             url: `${this.baseUrl}/app/${appId}/entities`
