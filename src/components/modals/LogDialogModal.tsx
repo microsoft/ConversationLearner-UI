@@ -91,6 +91,7 @@ class LogDialogModal extends React.Component<Props, ComponentState> {
                         <div className="cl-chatmodal">
                             <div className="cl-chatmodal_webchat">
                                 <Webchat
+                                    data-testid="logdialogmodal-webchat"
                                     app={this.props.app}
                                     history={this.props.history}
                                     onSelectActivity={activity => this.onSelectWebChatActivity(activity)}
@@ -103,6 +104,7 @@ class LogDialogModal extends React.Component<Props, ComponentState> {
                             <div className="cl-chatmodal_controls">
                                 <div className="cl-chatmodal_admin-controls">
                                     <LogDialogAdmin
+                                        data-testid="logdialogmodal"
                                         app={this.props.app}
                                         editingPackageId={this.props.editingPackageId}
                                         canEdit={this.props.canEdit}
@@ -121,6 +123,7 @@ class LogDialogModal extends React.Component<Props, ComponentState> {
                             </div>
                             <div className="cl-modal-buttons_primary">
                                 <PrimaryButton
+                                    data-testid="logdialogmodal-button1"
                                     disabled={this.state.pendingExtractionChanges}
                                     onClick={() => this.props.onClose()}
                                     ariaDescription={intl.formatMessage({
@@ -133,6 +136,7 @@ class LogDialogModal extends React.Component<Props, ComponentState> {
                                     })}
                                 />
                                 <DefaultButton
+                                    data-testid="logdialogmodal-button2"
                                     className="cl-button-delete"
                                     disabled={this.state.pendingExtractionChanges || !this.props.canEdit}
                                     onClick={() => this.onClickDelete()}
@@ -149,6 +153,7 @@ class LogDialogModal extends React.Component<Props, ComponentState> {
                         </div>
                     </div>
                     <ConfirmCancelModal
+                        data-testid="logdialogmodal-confirmcancel"
                         open={this.state.isConfirmCancelModalOpen}
                         onCancel={() => this.onClickCancelDelete()}
                         onConfirm={() => this.onClickConfirmDelete()}

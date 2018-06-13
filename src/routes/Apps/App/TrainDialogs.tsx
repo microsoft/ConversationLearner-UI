@@ -619,7 +619,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         let currentTrainDialog = this.state.currentTrainDialog
         return (
             <div className="cl-page">
-                <div className={`cl-dialog-title cl-dialog-title--train ${OF.FontClassNames.xxLarge}`}>
+                <div data-testid="train-dialogs-title" className={`cl-dialog-title cl-dialog-title--train ${OF.FontClassNames.xxLarge}`}>
                     <OF.Icon iconName="EditContact" />
                     <FormattedMessage
                         id={FM.TRAINDIALOGS_TITLE}
@@ -627,7 +627,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     />
                 </div>
                 {this.props.editingPackageId === this.props.app.devPackageId ?
-                    <span className={OF.FontClassNames.mediumPlus}>
+                    <span data-testid="train-dialogs-subtitle" className={OF.FontClassNames.mediumPlus}>
                         <FormattedMessage
                             id={FM.TRAINDIALOGS_SUBTITLE}
                             defaultMessage="Train Dialogs are example conversations you want your Bot to imitate"
@@ -638,6 +638,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 }
                 <div>
                     <OF.PrimaryButton
+                        data-testid="button-new-train-dialog"
                         disabled={this.props.editingPackageId !== this.props.app.devPackageId || this.props.invalidBot}
                         onClick={() => this.onClickNewTeachSession()}
                         ariaDescription={intl.formatMessage({
@@ -675,6 +676,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         Search:
                     </OF.Label>
                     <OF.SearchBox
+                        data-testid="search-box"
                         id="search"
                         className={OF.FontClassNames.medium}
                         onChange={(newValue) => this.onChangeSearchString(newValue)}
@@ -683,6 +685,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 </div>
                 <div className="cl-list-filters">
                     <OF.Dropdown
+                        data-testid="dropdown-filter-by-entity"
                         label="Entity:"
                         selectedKey={(this.state.entityFilter ? this.state.entityFilter.key : undefined)}
                         onChanged={this.onSelectEntityFilter}
@@ -696,6 +699,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     /> 
         
                     <OF.Dropdown
+                        data-testid="dropdown-filter-by-action"
                         label="Action:"
                         selectedKey={(this.state.actionFilter ? this.state.actionFilter.key : undefined)}
                         onChanged={this.onSelectActionFilter}
@@ -707,6 +711,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     />
                 </div>
                 <OF.DetailsList
+                    data-testid="detail-list"
                     key={this.state.dialogKey}
                     className={OF.FontClassNames.mediumPlus}
                     items={trainDialogItems}
@@ -717,6 +722,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     onActiveItemChanged={trainDialog => this.onClickTrainDialogItem(trainDialog)}
                 />
                 <TrainDialogModal
+                    data-testid="train-dialog-modal"
                     app={this.props.app}
                     editingPackageId={this.props.editingPackageId}
                     canEdit={this.props.editingPackageId === this.props.app.devPackageId && !this.props.invalidBot}
@@ -730,6 +736,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     history={this.state.isTrainDialogModalOpen ? this.state.history : null}
                 />
                 <SessionMemoryCheck
+                    data-testid="session-memory-check"
                     open={this.state.isSessionMemoryCheckOpen}
                     onClose={(saveMemory: boolean) => this.onCloseSessionMemoryCheck(saveMemory)}
                     memories={this.props.teachSessions.memories}

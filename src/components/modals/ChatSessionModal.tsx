@@ -52,6 +52,7 @@ class SessionWindow extends React.Component<Props, ComponentState> {
                         </div>
                         <div className="cl-chatmodal_webchat">
                             <Webchat
+                                data-testid="chatsession-modal-webchat"
                                 app={this.props.app}
                                 history={null}
                                 onPostActivity={null}
@@ -68,6 +69,7 @@ class SessionWindow extends React.Component<Props, ComponentState> {
                         </div>
                         <div className="cl-modal-buttons_primary">
                             <PrimaryButton
+                                data-testid="chatsession-modal-footer-button1"
                                 onClick={() => this.onClickDone()}
                                 ariaDescription={intl.formatMessage({
                                     id: FM.CHATSESSIONMODAL_PRIMARYBUTTON_ARIADESCRIPTION,
@@ -79,6 +81,7 @@ class SessionWindow extends React.Component<Props, ComponentState> {
                                 })}
                             />
                             <DefaultButton
+                            data-testid="chatsession-modal-footer-button2"
                                 onClick={() => this.onClickExpire()}
                                 ariaDescription={intl.formatMessage({
                                     id: FM.CHATSESSIONMODAL_EXPIREBUTTON_ARIADESCRIPTION,
