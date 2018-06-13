@@ -219,6 +219,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                     <div className="cl-chatmodal">
                         <div className="cl-chatmodal_webchat">
                             <Webchat
+                                data-testid="teachsession-modal-webchat"
                                 key={this.state.webchatKey}
                                 app={this.props.app}
                                 history={this.props.history}
@@ -232,6 +233,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                         <div className="cl-chatmodal_controls">
                             <div className="cl-chatmodal_admin-controls">
                                 <TeachSessionAdmin
+                                    data-testid="teachsession-admin"
                                     app={this.props.app}
                                     editingPackageId={this.props.editingPackageId}
                                     onScoredAction={(scoredAction) => {
@@ -249,12 +251,14 @@ class TeachModal extends React.Component<Props, ComponentState> {
                         </div>
                         <div className="cl-modal-buttons_primary">
                             <OF.PrimaryButton
+                                data-testid="teachsession-footer-button-done"
                                 disabled={!this.state.hasTerminalAction}
                                 onClick={this.onClickSave}
                                 ariaDescription={this.renderDoneText(intl)}
                                 text={this.renderDoneText(intl)}
                             />
                             <OF.DefaultButton
+                                data-testid="teachsession-footer-button-undo"
                                 disabled={!this.state.hasTerminalAction}
                                 onClick={this.onClickUndo}
                                 ariaDescription={intl.formatMessage({
@@ -267,6 +271,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                                 })}
                             />
                             <OF.DefaultButton
+                                data-testid="teachsession-footer-button-abandon"
                                 onClick={this.onClickAbandonTeach}
                                 ariaDescription={this.renderAbandonText(intl)}
                                 text={this.renderAbandonText(intl)}
@@ -276,6 +281,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                     </div>
                 </div>
                 <ConfirmCancelModal
+                    data-testid="teachsession-confirm-cancel"
                     open={this.state.isConfirmDeleteOpen}
                     onCancel={this.onClickCancelDelete}
                     onConfirm={this.onClickConfirmDelete}

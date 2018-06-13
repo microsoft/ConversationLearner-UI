@@ -46,6 +46,7 @@ class TrainingStatusContainer extends React.Component<Props, ComponentState> {
     render() {
         return (
             <TrainingStatus
+                data-testid="trainingstatus-container-status"
                 status={this.state.status}
                 failureMessage={this.props.app.trainingFailureMessage}
                 lastUpdatedDatetime={this.props.app.datetime}

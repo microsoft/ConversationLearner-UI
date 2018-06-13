@@ -295,6 +295,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
                 <div className={`entity-labeler__custom-editor ${this.props.readOnly ? 'entity-labeler__custom-editor--read-only' : ''} ${this.props.isValid ? '' : 'entity-labeler__custom-editor--error'}`}>
                     <div className="entity-labeler__editor">
                         <Editor
+                            data-testid="extractorresponseeditor-editor-text"
                             className="slate-editor"
                             placeholder="Enter some text..."
                             value={this.state.value}
@@ -304,6 +305,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
                             readOnly={this.props.readOnly}
                         />
                         <EntityPicker
+                            data-testid="extractorresponseeditor-entitypicker"
                             isOverlappingOtherEntities={this.state.isSelectionOverlappingOtherEntities}
                             isVisible={this.state.isMenuVisible}
                             options={this.props.options}
@@ -323,6 +325,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
                         <div className="entity-labeler__editor entity-labeler__editor--prebuilt">
                             {this.state.preBuiltEditorValues.map((preBuiltEditorValue, i) =>
                                 <Editor
+                                data-testid="extractorresponseeditor-editor-prebuilt-text"
                                     key={i}
                                     className="slate-editor"
                                     placeholder="Enter pre-built some text..."

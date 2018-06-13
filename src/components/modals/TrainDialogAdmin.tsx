@@ -318,7 +318,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
         let renderData = this.getRenderData();
         return (
             <div className={`cl-dialog-admin ${OF.FontClassNames.large}`}>
-                <div className={`cl-dialog-title cl-dialog-title--train ${OF.FontClassNames.xxLarge}`}>
+                <div data-testid="traindialog-title" className={`cl-dialog-title cl-dialog-title--train ${OF.FontClassNames.xxLarge}`}>
                     <OF.Icon iconName="EditContact" />Train Dialog
                 </div>
                 {this.props.selectedActivity && (this.state.senderType === SenderType.User
@@ -326,6 +326,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                         <div className="cl-dialog-admin__content">
                             <div className="cl-wc-message cl-wc-message--user">
                                 <FormattedMessage
+                                    data-testid="modal-user-input"
                                     id={FM.TRAINDIALOGADMIN_DIALOGMODE_USER}
                                     defaultMessage="User Input"
                                 />
@@ -335,6 +336,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                         <div className="cl-dialog-admin__content">
                             <div className="cl-wc-message cl-wc-message--bot">
                                 <FormattedMessage
+                                    data-testid="modal-bot-response"
                                     id={FM.TRAINDIALOGADMIN_DIALOGMODE_TEXT}
                                     defaultMessage="Bot Response"
                                 />
@@ -346,11 +348,13 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                     (<div className="cl-dialog-admin__content">
                         <div className="cl-dialog-admin-title">
                             <FormattedMessage
+                                data-testid="modal-memory-title"
                                 id={FM.TRAINDIALOGADMIN_MEMORY_TITLE}
                                 defaultMessage="Memory"
                             />
                         </div>
                         <MemoryTable
+                            data-testid="modal-memory-table"
                             memories={renderData.memories}
                             prevMemories={renderData.prevMemories}
                         />
@@ -359,6 +363,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                         <div className="cl-dialog-admin__content">
                             <div className="cl-dialog-admin-title">
                                 <FormattedMessage
+                                    data-testid="dialog-admin-title-traindialog"
                                     id={FM.TRAINDIALOGADMIN_HELPTEXT_TITLE}
                                     defaultMessage="Train Dialog"
                                 />
@@ -382,6 +387,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                     <div className="cl-dialog-admin__content">
                         <div className="cl-dialog-admin-title">
                             <FormattedMessage
+                                data-testid="dialog-admin-entity-detection"
                                 id={FM.TRAINDIALOGADMIN_ENTITYDETECTION_TITLE}
                                 defaultMessage="Entity Detection"
                             />
@@ -389,6 +395,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                         <div>
                             {renderData.round ?
                                 <EntityExtractor
+                                    data-testid="dialog-admin-entity-extractor"
                                     app={this.props.app}
                                     editingPackageId={this.props.editingPackageId}
                                     canEdit={this.props.canEdit} 
@@ -416,12 +423,14 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                     <div className="cl-dialog-admin__content">
                         <div className="cl-dialog-admin-title">
                             <FormattedMessage
+                                data-testid="dialog-admin-action"
                                 id={FM.TRAINDIALOGADMIN_ACTION_TITLE}
                                 defaultMessage="Action"
                             />
                         </div>
                         <div>
                             <ActionScorer
+                                data-testid="dialog-admin-scorer"
                                 app={this.props.app}
                                 editingPackageId={this.props.editingPackageId}
                                 canEdit={this.props.canEdit}
@@ -440,6 +449,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                 }
                 <div className="cl-dialog-admin__dialogs">
                     <OF.Dialog
+                        data-testid="dialog-admin-dialog"
                         hidden={this.state.newTrainDialog === null}
                         onDismiss={() => this.onClickSaveCheckNo()}
                         dialogContentProps={{
@@ -459,6 +469,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                     >
                         <OF.DialogFooter>
                             <OF.PrimaryButton
+                                data-testid="dialog-admin-footer-yes"
                                 onClick={() => this.onClickSaveCheckYes()}
                                 text={intl.formatMessage({
                                     id: FM.TRAINDIALOGADMIN_SAVECHANGES_PRIMARYBUTTON_TEXT,
@@ -466,6 +477,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                                 })}
                             />
                             <OF.DefaultButton
+                                data-testid="dialog-admin-footer-no"
                                 onClick={() => this.onClickSaveCheckNo()}
                                 text={intl.formatMessage({
                                     id: FM.TRAINDIALOGADMIN_SAVECHANGES_DEFAULTBUTTON_TEXT,
