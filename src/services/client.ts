@@ -171,9 +171,9 @@ export default class ClClient {
             .then(response => response.data)
     }
 
-    entity(appId: string, entityId: string): Promise<models.EntityBase> {
+    entitiesGetById(appId: string, entityId: string): Promise<models.EntityBase> {
         return this.send<models.EntityBase>({
-            url: `${this.baseUrl}/app/${appId}/entities/${entityId}`
+            url: `${this.baseUrl}/app/${appId}/entity/${entityId}`
         }).then(response => response.data)
     }
 
@@ -184,14 +184,16 @@ export default class ClClient {
     }
 
     entitiesCreate(appId: string, entity: models.EntityBase): Promise<models.EntityBase> {
-        return this.send<string>({
+        return this.send<models.ChangeEntityResponse>({
             method: 'post',
             url: `${this.baseUrl}/app/${appId}/entity`,
             data: entity
         }).then(response => {
-                entity.entityId = response.data
-                return entity
-            })
+            const changeEntityResponse = response.data
+            entity.entityId = changeEntityResponse.entityId
+            entity.negativeId = changeEntityResponse.negativeEntityId
+            return entity
+        })
     }
 
     entitiesDelete(appId: string, entityId: string): Promise<models.DeleteEditResponse> {

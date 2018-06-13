@@ -97,7 +97,7 @@ export const createEntityThunkAsync = (appId: string, entity: EntityBase) => {
 
             if (posEntity.negativeId) {
                 // Need to load negative entity in order to load it into memory
-                const negEntity = await clClient.entity(appId, posEntity.negativeId)
+                const negEntity = await clClient.entitiesGetById(appId, posEntity.negativeId)
                 dispatch(createEntityFulfilled(negEntity));
             }
             
