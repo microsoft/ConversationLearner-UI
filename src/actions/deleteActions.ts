@@ -30,21 +30,14 @@ export const deleteApplicationFulfilled = (appId: string): ActionObject => {
 // ---------------------
 // Entity
 // ---------------------
-export const deleteEntityThunkAsync = (appId: string, entityId: string, reverseEntityId?: string) => {
+export const deleteEntityThunkAsync = (appId: string, entityId: string) => {
     return async (dispatch: Dispatch<any>) => {
         dispatch(deleteEntityAsync(appId, entityId))
         const clClient = ClientFactory.getInstance(AT.DELETE_ENTITY_ASYNC)
 
         try {
-            let deleteReverseResponse = null;
             const deleteEditResponse = await clClient.entitiesDelete(appId, entityId);
             dispatch(deleteEntityFulfilled(entityId));
-
-            // If it's a negatable entity
-            if (reverseEntityId) {
-                deleteReverseResponse = await clClient.entitiesDelete(appId, reverseEntityId);
-                dispatch(deleteEntityFulfilled(reverseEntityId));
-            }
 
             // If any actions were modified, reload them
             if (deleteEditResponse.actionIds && deleteEditResponse.actionIds.length > 0) {
@@ -52,8 +45,7 @@ export const deleteEntityThunkAsync = (appId: string, entityId: string, reverseE
             }
 
             // If any train dialogs were modified fetch train dialogs 
-            if ((deleteEditResponse.trainDialogIds && deleteEditResponse.trainDialogIds.length > 0) ||
-                (deleteReverseResponse && deleteReverseResponse.trainDialogIds && deleteReverseResponse.trainDialogIds.length > 0)) {
+            if (deleteEditResponse.trainDialogIds && deleteEditResponse.trainDialogIds.length > 0) {
                 dispatch(fetchAllTrainDialogsAsync(appId));
             }
 
