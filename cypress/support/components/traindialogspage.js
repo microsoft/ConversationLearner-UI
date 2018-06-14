@@ -3,20 +3,14 @@
  * Licensed under the MIT License.
  */
 
-/** navitage to train dialogs page */
-function NavigateTo() {
-  cy.get('a[href$="/trainDialogs"]')
-    .click()
-}
-
 /** Verify: the Train Dialog page is rendered */
-function VerifyPageTitle() {
+function verifyPageTitle() {
   cy.get('div[data-testid="train-dialogs-title"]')
     .contains('Train Dialogs')
 }
 
 /** starts a new train dialog */
-function CreateNew() {
+function createNew() {
   cy.on('uncaught:exception', (err, runnable) => {
     return false
   })
@@ -33,4 +27,4 @@ function CreateNew() {
   cy.wait('@putConv')
 }
 
-export { NavigateTo, VerifyPageTitle, CreateNew }
+export { verifyPageTitle, createNew }

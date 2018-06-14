@@ -4,7 +4,7 @@
  */
 
 /** Chat: Types a new user's message */
-function NewUserMessage(trainmessage) {
+function newUserMessage(trainmessage) {
     cy.on('uncaught:exception', (err, runnable) => {
         return false
     })
@@ -19,7 +19,7 @@ function NewUserMessage(trainmessage) {
 }
 
 /** Click on 'Score Action' button */
-function ProceedToScoreAction() {
+function proceedToScoreAction() {
     cy.on('uncaught:exception', (err, runnable) => {
         return false
     })
@@ -30,9 +30,9 @@ function ProceedToScoreAction() {
 }
 
 /** Finalize the training */
-function Done() {
+function done() {
     cy.get('[data-testid="teachsession-footer-button-done"]')
         .click()
 }
 
-export {NewUserMessage, ProceedToScoreAction, Done};
+export {newUserMessage, proceedToScoreAction, done};
