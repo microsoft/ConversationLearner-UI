@@ -4,7 +4,7 @@
  */
 
 /** Selects the first enabled action */
-function SelectAnAction() {
+function selectAnAction() {
     cy.server()
     cy.on('uncaught:exception', (err, runnable) => {
         return false
@@ -14,4 +14,4 @@ function SelectAnAction() {
     cy.wait('@postScore')
 }
 
-export {SelectAnAction}
+export {selectAnAction}

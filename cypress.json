@@ -1,7 +1,6 @@
 {
   "projectId": "so64kq",
   "reporter": "mocha-multi-reporters",
-  "supportFile": "cypress/support/index.js",
   "reporterOptions": {
     "configFile": "config-mocha-reporter.json"
   }
