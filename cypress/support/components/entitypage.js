@@ -3,10 +3,6 @@
  * Licensed under the MIT License.
  */
 
-/** Navigate to the Entities page */
-function NavigateTo() {
-    cy.get('a[href$="/entities"]').click().wait(1000)
-}
 
 /** Create a new entity */
 function createNew(entityName) {
@@ -18,4 +14,4 @@ function createNew(entityName) {
         .type(entityName).wait(1000);
 }
 
-export { NavigateTo, createNew }
+export { createNew }

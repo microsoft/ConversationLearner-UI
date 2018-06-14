@@ -3,7 +3,8 @@
  * Licensed under the MIT License.
  */
 
-function NavigateTo() {
+/** Navigate to the Conversation Learner Homepage */
+function navigateTo() {
   cy.server()
   cy.route('GET', '/apps?**').as('getHomePage')
 
@@ -13,12 +14,12 @@ function NavigateTo() {
 }
 
 /** Creates a New Model */
-function CreateNewModel(modelName) {
+function createNewModel(modelName) {
   cy.on('uncaught:exception', (err, runnable) => {
     return false
   })
   cy.server()
-  cy.route('POST', '/app?userId=**').as('postCreateNew')
+  cy.route('POST', '/app?userId=**').as('postcreateNew')
 
   // Click the button to create app
   cy.get('[data-testid="apps-list-button-create-new"]')
@@ -33,11 +34,11 @@ function CreateNewModel(modelName) {
   cy.get('[data-testid="app-create-button-submit"]')
     .click()
 
-  cy.wait('@postCreateNew')
+  cy.wait('@postcreateNew')
 }
 
 /** Delete an existent Model */
-function DeleteModel(modelName) {
+function deleteModel(modelName) {
   cy.server()
   cy.route('GET', '/apps?**').as('getHomePage')
   cy.visit('http://localhost:5050')
@@ -53,4 +54,4 @@ function DeleteModel(modelName) {
     .click()
 }
 
-export{NavigateTo, CreateNewModel, DeleteModel}
+export{navigateTo, createNewModel, deleteModel}
