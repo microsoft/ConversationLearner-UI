@@ -38,4 +38,9 @@ function navigateToTrainDialogs() {
     .click()
 }
 
-export {verifyPageTitle, navigateToHomepage, navigateToEntities, navigateToActions, navigateToTrainDialogs}
+/** Navigate to Log Dialogs Page */
+function navigateToLogDialogs() {
+  cy.get('a[href$="logDialogs"]')
+    .click()
+}
+export {verifyPageTitle, navigateToHomepage, navigateToEntities, navigateToActions, navigateToTrainDialogs, navigateToLogDialogs}

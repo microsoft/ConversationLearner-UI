@@ -3,12 +3,14 @@
  * Licensed under the MIT License.
  */
 
-import './components/actionspage'
-import './components/actionsmodal'
-import './components/conversationsmodal'
-import './components/entitymodal'
-import './components/entitypage'
-import './components/homepage'
-import './components/scorermodal'
-import './components/traindialogspage'
-import './components/modelpage'
+import './components/ActionsPage'
+import './components/ActionsModal'
+import './components/EntityModal'
+import './components/EntitiesPage'
+import './components/Homepage'
+import './components/LogDialogModal'
+import './components/LogDialogsPage'
+import './components/ModelPage'
+import './components/ScorerModal'
+import './components/TrainDialogsPage'
+import './components/TrainDialogModal'

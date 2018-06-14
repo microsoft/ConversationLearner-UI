@@ -39,10 +39,7 @@ function createNewModel(modelName) {
 
 /** Delete an existent Model */
 function deleteModel(modelName) {
-  cy.server()
-  cy.route('GET', '/apps?**').as('getHomePage')
-  cy.visit('http://localhost:5050')
-  cy.wait('@getHomePage')
+  cy.visit('http://localhost:5050/Home')
 
   cy.contains(modelName)
     .parents('.ms-DetailsRow-fields')
