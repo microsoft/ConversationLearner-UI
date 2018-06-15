@@ -11,7 +11,7 @@ import {
     TrainDialog, LogDialog, Session, Teach, ScoreInput,
     UserInput, ExtractResponse, DialogType,
     UIExtractResponse, UITrainScorerStep, DialogMode,
-    UITeachResponse, UIScoreInput, UIScoreResponse, UIAppList, TrainingStatus
+    UIPostScoreResponse, UIScoreInput, UIScoreResponse, UIAppList, TrainingStatus, FilledEntityMap
 } from '@conversationlearner/models'
 import { TipType } from '../components/ToolTips'
 import { ErrorType } from '../types/const'
@@ -291,8 +291,7 @@ export type CreateAction = {
     type: AT.CREATE_TEACH_SESSION_REJECTED
 }| {
     type: AT.CREATE_TEACH_SESSION_FULFILLED,
-    teachSession: Teach,
-    memories: Memory[]
+    teachSession: Teach
 } | {
     type: AT.CREATE_TEACH_SESSION_FROMUNDOASYNC,
     clAppID: string,
@@ -393,8 +392,15 @@ export type DeleteLogDialogRejectedAction = {
 }
 
 export type TeachAction = {
+    type: AT.INIT_MEMORY_ASYNC,
+    appId: string,
+    sessionId: string,
+    filledEntityMap: FilledEntityMap
+} | {
+    type: AT.INIT_MEMORY_FULFILLED,
+    memories: Memory[]
+} | {
     type: AT.RUN_EXTRACTOR_ASYNC,
-    key: string,
     appId: string,
     extractType: DialogType,
     turnIndex: number,
@@ -402,7 +408,6 @@ export type TeachAction = {
     userInput: UserInput
 } | {
     type: AT.RUN_EXTRACTOR_FULFILLED,
-    key: string,
     appId: string,
     sessionId: string,
     uiExtractResponse: UIExtractResponse
@@ -452,7 +457,7 @@ export type TeachAction = {
     appId: string,
     sessionId: string,
     dialogMode: DialogMode,
-    uiTeachResponse: UITeachResponse,
+    uiPostScoreResponse: UIPostScoreResponse,
     uiScoreInput: UIScoreInput
 } | {
     type: AT.TEACH_MESSAGE_RECEIVED,

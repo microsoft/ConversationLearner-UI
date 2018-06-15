@@ -12,7 +12,7 @@ import { getScoresThunkAsync, runScorerThunkAsync, postScorerFeedbackThunkAsync 
 import {
     AppBase, TextVariation, ExtractResponse,
     DialogType, TrainScorerStep, TrainingStatusCode,
-    UITrainScorerStep, UIScoreInput, DialogMode, UITeachResponse, ScoredAction
+    UITrainScorerStep, UIScoreInput, DialogMode, TeachResponse, ScoredAction
 } from '@conversationlearner/models'
 import ActionScorer from './ActionScorer';
 import EntityExtractor from './EntityExtractor';
@@ -66,7 +66,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
         // Pass score input (minus extractor step) for subsequent actions when this one is non-terminal
         let uiScoreInput = { ...this.props.teachSession.uiScoreInput, trainExtractorStep: null } as UIScoreInput
 
-        ((this.props.postScorerFeedbackThunkAsync(this.props.user.id, appId, teachId, uiTrainScorerStep, waitForUser, uiScoreInput) as any) as Promise<UITeachResponse>)
+        ((this.props.postScorerFeedbackThunkAsync(this.props.user.id, appId, teachId, uiTrainScorerStep, waitForUser, uiScoreInput) as any) as Promise<TeachResponse>)
             .then(result => { this.props.onScoredAction(trainScorerStep.scoredAction) }
             )
     }
@@ -102,7 +102,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                 <div className={`cl-dialog-title cl-dialog-title--train ${FontClassNames.xxLarge}`}>
                     <Icon iconName="EditContact" />Train Dialog
                 </div>
-                {this.props.teachSession.mode === DialogMode.Extractor ? (
+                {this.props.teachSession.mode === DialogMode.Extractor && (
                     <div className="cl-dialog-admin__content">
                         <div className="cl-wc-message cl-wc-message--user">
                             <FormattedMessage
@@ -111,8 +111,9 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                                 defaultMessage="User Input"
                             />
                         </div>
-                    </div>
-                ) : (this.props.teachSession.mode === DialogMode.Scorer ? (
+                    </div>)
+                }
+                {this.props.teachSession.mode === DialogMode.Scorer && (
                     <div className="cl-dialog-admin__content">
                         <div className="cl-wc-message cl-wc-message--bot">
                             <FormattedMessage
@@ -121,8 +122,17 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                                 defaultMessage="Bot Response"
                             />
                         </div>
-                    </div>) : null
-                    )
+                    </div>)
+                }
+                {this.props.teachSession.mode === DialogMode.EndSession && (
+                    <div className="cl-dialog-admin__content">
+                        <div className="cl-wc-message cl-wc-message--done">
+                            <FormattedMessage
+                                id={FM.TEACHSESSIONADMIN_DIALOGMODE_END_SESSION}
+                                defaultMessage="Session Has Ended"
+                            />
+                        </div>
+                    </div>)
                 }
                 <div className="cl-dialog-admin__content">
                     <div className="cl-dialog-admin-title">

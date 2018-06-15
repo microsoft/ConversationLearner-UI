@@ -249,14 +249,6 @@ export enum FM {
     REPLAYERROR_DESC_UNAVAILABLE_ACTION = 'ReplayError.Desc.unavailableAction',
     REPLAYERROR_DESC_CHANGED_ENTITIES = 'ReplayError.Desc.changedEntities',
 
-    // SessionMemoryCheck
-    SESSIONMEMORYCHECK_KEEPBUTTON_ARIADESCRIPTION = 'SessionMemoryCheck.keepButton.ariaDescription',
-    SESSIONMEMORYCHECK_KEEPBUTTON_TEXT = 'SessionMemoryCheck.keepButton.text',
-    SESSIONMEMORYCHECK_CLEARBUTTON_ARIADESCRIPTION = 'SessionMemoryCheck.clearButton.ariaDescription',
-    SESSIONMEMORYCHECK_CLEARBUTTON_TEXT = 'SessionMemoryCheck.clearButton.text',
-    SESSIONMEMORYCHECK_DESCRIPTION_ARIADESCRIPTION = 'SessionMemoryCheck.description.ariaDescription',
-    SESSIONMEMORYCHECK_DESCRIPTION_TEXT = 'SessionMemoryCheck.description.text',
-   
     // Settings
     SETTINGS_TITLE = 'Settings.title',
     SETTINGS_SUBTITLE = 'Settings.subtitle',
@@ -288,6 +280,7 @@ export enum FM {
     // TeachSessionAdmin
     TEACHSESSIONADMIN_DIALOGMODE_USER = 'TeachSessionAdmin.dialogMode.user',
     TEACHSESSIONADMIN_DIALOGMODE_BOT = 'TeachSessionAdmin.dialogMode.bot',
+    TEACHSESSIONADMIN_DIALOGMODE_END_SESSION = 'TeachSessionAdmin.dialogMode.endsession',
     TEACHSESSIONADMIN_MEMORY_TITLE = 'TeachSessionAdmin.memory.title',
     TEACHSESSIONADMIN_ENTITYDETECTION_TITLE = 'TeachSessionAdmin.entityDetection.title',
     TEACHSESSIONADMIN_ACTION_TITLE = 'TeachSessionAdmin.action.title',
@@ -296,6 +289,10 @@ export enum FM {
     TEACHSESSIONADMIN_TRAINSTATUS_REFRESH = 'TeachSessionAdmin.trainstatus.refresh',
     TEACHSESSIONADMIN_TRAINSTATUS_FAILED = 'TeachSessionAdmin.trainstatus.failed',
     TEACHSESSIONADMIN_TRAINSTATUS_RUNNING = 'TeachSessionAdmin.trainstatus.running',
+
+    // TeachSessionInit
+    TEACHSESSIONINIT_INPUT_PLACEHOLDER = 'TeachSessionInit.input.placeholder',
+    TEACHSESSIONINIT_TITLE = 'TeachSessionInit.title',
 
     // TeachSessionModal
     TEACHSESSIONMODAL_UNDO_ARIADESCRIPTION = 'TeachSessionModal.undo.ariaDescription',
@@ -306,7 +303,8 @@ export enum FM {
     TEACHSESSIONMODAL_TEACH_DONE_BUTTON_TEXT = 'TeachSessionModal.teach.done.buttontext',
     TEACHSESSIONMODAL_TEACH_CONFIRMDELETE_TITLE = 'TeachSessionModal.teach.confirmDelete.title',
     TEACHSESSIONMODAL_EDIT_CONFIRMDELETE_TITLE = 'TeachSessionModal.edit.confirmDelete.title',
-
+    TEACHSESSIONMODAL_INITSTATE_ARIADESCRIPTION = 'TeachSessionModal.initstate.ariaDescription',
+    TEACHSESSIONMODAL_INITSTATE_TEXT = 'TeachSessionModal.initstate.text',
     // TextVariation
     TEXTVARIATION_PLACEHOLDER = 'TextVariationCreator.placeholder',
  
@@ -317,6 +315,8 @@ export enum FM {
     TOOLTIP_ACTION_ARGUMENTS_TITLE = 'ToolTip.ACTION_ARGUMENTS_TITLE',
     TOOLTIP_ACTION_CARD = 'ToolTip.ACTION_CARD',
     TOOLTIP_ACTION_CARD_TITLE = 'ToolTip.ACTION_CARD_TITLE',
+    TOOLTIP_ACTION_END_SESSION = 'ToolTip.ACTION_END_SESSION',
+    TOOLTIP_ACTION_END_SESSION_TITLE = 'ToolTip.ACTION_CARD_END_SESSION',
     TOOLTIP_ACTION_ENTITIES = 'ToolTip.ACTION_ENTITIES',
     TOOLTIP_ACTION_ENTITIES_REQ = 'ToolTip.ACTION_ENTITIES_REQ',
     TOOLTIP_ACTION_ENTITIES_REQ_NOT = 'ToolTip.ACTION_ENTITIES_REQ_NOT',
@@ -358,7 +358,7 @@ export enum FM {
     TOOLTIP_ACTION_TYPE_TITLE = 'ToolTip.ACTION_TYPE_TITLE',
     TOOLTIP_ACTION_TYPE_TEXT = 'ToolTip.ACTION_TYPE.Text',
     TOOLTIP_ACTION_TYPE_APILOCAL = 'ToolTip.ACTION_TYPE.APILocal',
-    TOOLTIP_ACTION_TYPE_APIAZURE = 'ToolTip.ACTION_TYPE.APIAzure',
+    TOOLTIP_ACTION_TYPE_ENDSESSION = 'ToolTip.ACTION_TYPE.EndSesion',
     TOOLTIP_ACTION_TYPE_CARD = 'ToolTip.ACTION_TYPE.Card',
     TOOLTIP_ACTION_WAIT = 'ToolTip.ACTION_WAIT',
     TOOLTIP_ACTION_WAIT_TITLE = 'ToolTip.ACTION_WAIT_TITLE',
@@ -567,6 +567,8 @@ export default {
         [FM.TOOLTIP_ACTION_ARGUMENTS_TITLE]: `Arguments`,
         [FM.TOOLTIP_ACTION_CARD]: `When Action Type is a card call, a list of comma separated arguments passed to the Card. Arguments prefixed with a $ refer to Entity values.  For example: "$city"`,
         [FM.TOOLTIP_ACTION_CARD_TITLE]: `Card`,
+        [FM.TOOLTIP_ACTION_END_SESSION]: `Data to send to "onSessionEndCallback" when this Action is selected`,
+        [FM.TOOLTIP_ACTION_END_SESSION_TITLE]: `End Session`,
         [FM.TOOLTIP_ACTION_ENTITIES]: 'Status of Entity requirements for this action:',
         [FM.TOOLTIP_ACTION_ENTITIES_REQ]: 'Required Entity is present',
         [FM.TOOLTIP_ACTION_ENTITIES_REQ_NOT]: 'Required Enitity is missing (DISQUALIFIES ACTION)',
@@ -610,7 +612,7 @@ export default {
         [FM.TOOLTIP_ACTION_TYPE_TITLE]: 'Action Type',
         [FM.TOOLTIP_ACTION_TYPE_TEXT]: 'A text response',
         [FM.TOOLTIP_ACTION_TYPE_APILOCAL]: 'An API call to the Bot',
-        [FM.TOOLTIP_ACTION_TYPE_APIAZURE]: 'An API call to an Azure Function',
+        [FM.TOOLTIP_ACTION_TYPE_ENDSESSION]: 'Indicate Bot is done',
         [FM.TOOLTIP_ACTION_TYPE_CARD]: 'Renders an Adaptive Card template',
         [FM.TOOLTIP_ACTION_WAIT]: 'When selected, Bot will wait for more user input before taking another action',
         [FM.TOOLTIP_ACTION_WAIT_TITLE]: 'Wait For Response',
@@ -791,17 +793,10 @@ export default {
         [FM.PACKAGECREATOR_CANCELBUTTON_ARIADESCRIPTION]: 'Cancel',
         [FM.PACKAGECREATOR_CANCELBUTTON_TEXT]: 'Cancel',
 
-        // SessionMemoryCheck
-        [FM.SESSIONMEMORYCHECK_KEEPBUTTON_ARIADESCRIPTION]: 'Keep',
-        [FM.SESSIONMEMORYCHECK_KEEPBUTTON_TEXT]: 'Keep',
-        [FM.SESSIONMEMORYCHECK_CLEARBUTTON_ARIADESCRIPTION]: 'Clear',
-        [FM.SESSIONMEMORYCHECK_CLEARBUTTON_TEXT]: 'Clear',
-        [FM.SESSIONMEMORYCHECK_DESCRIPTION_ARIADESCRIPTION]: 'The above memories were preserved in the "OnSessionEndCallback".  What would you like to do with them for this session?',
-        [FM.SESSIONMEMORYCHECK_DESCRIPTION_TEXT]: 'The above memories were preserved in the "OnSessionEndCallback".  What would you like to do with them for this session?',
-
         // TeachSessionAdmin
         [FM.TEACHSESSIONADMIN_DIALOGMODE_USER]: 'User Input',
         [FM.TEACHSESSIONADMIN_DIALOGMODE_BOT]: 'Bot Response',
+        [FM.TEACHSESSIONADMIN_DIALOGMODE_END_SESSION]: 'Session Has Ended',
         [FM.TEACHSESSIONADMIN_MEMORY_TITLE]: 'Entity Memory',
         [FM.TEACHSESSIONADMIN_ENTITYDETECTION_TITLE]: 'Entity Detection',
         [FM.TEACHSESSIONADMIN_ACTION_TITLE]: 'Action',
@@ -810,6 +805,9 @@ export default {
         [FM.TEACHSESSIONADMIN_TRAINSTATUS_REFRESH]: 'Refresh',
         [FM.TEACHSESSIONADMIN_TRAINSTATUS_FAILED]: 'Train Status: Failed',
         [FM.TEACHSESSIONADMIN_TRAINSTATUS_RUNNING]: 'Train Status: Runnning...',
+
+        [FM.TEACHSESSIONINIT_INPUT_PLACEHOLDER]: 'Initial value...',
+        [FM.TEACHSESSIONINIT_TITLE]: 'Set Initial Entity Values',
 
         // TeachSessionModal
         [FM.TEACHSESSIONMODAL_UNDO_ARIADESCRIPTION]: 'Undo Step',
@@ -820,6 +818,8 @@ export default {
         [FM.TEACHSESSIONMODAL_TEACH_DONE_BUTTON_TEXT]: 'Done Teaching',
         [FM.TEACHSESSIONMODAL_TEACH_CONFIRMDELETE_TITLE]: 'Are you sure you want to abandon this teach session?',
         [FM.TEACHSESSIONMODAL_EDIT_CONFIRMDELETE_TITLE]: 'Are you sure you want to cancel editing?',
+        [FM.TEACHSESSIONMODAL_INITSTATE_ARIADESCRIPTION]: 'Set Initial State',
+        [FM.TEACHSESSIONMODAL_INITSTATE_TEXT]: 'Set Initial State',
 
         // TrainDialogAdmin
         [FM.TRAINDIALOGADMIN_DIALOGMODE_USER]: 'User Input',

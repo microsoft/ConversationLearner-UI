@@ -92,6 +92,7 @@ class LogDialogModal extends React.Component<Props, ComponentState> {
                             <div className="cl-chatmodal_webchat">
                                 <Webchat
                                     data-testid="logdialogmodal-webchat"
+                                    isOpen={this.props.open}
                                     app={this.props.app}
                                     history={this.props.history}
                                     onSelectActivity={activity => this.onSelectWebChatActivity(activity)}

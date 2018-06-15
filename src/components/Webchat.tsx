@@ -19,6 +19,7 @@ class Webchat extends React.Component<Props, {}> {
     private dl: BotChat.DirectLine = null;
 
     static defaultProps: ReceivedProps = {
+        isOpen: false,
         app: null,
         history: null,
         onSelectActivity: () => { },
@@ -34,7 +35,9 @@ class Webchat extends React.Component<Props, {}> {
     }
 
     componentWillUnmount() {
-        this.dl.end();
+        if (this.dl) {
+            this.dl.end();
+        }
     }
 
     componentWillReceiveProps(nextProps: Props) {
@@ -118,6 +121,10 @@ class Webchat extends React.Component<Props, {}> {
         return this.chatProps;
     }
     render() {
+        // Prevent creation of DL client if not needed
+        if (!this.props.isOpen) {
+            return null;
+        }
         let chatProps = this.GetChatProps();
 
         return (
@@ -134,13 +141,12 @@ const mapDispatchToProps = (dispatch: any) => {
 }
 const mapStateToProps = (state: State, ownProps: any) => {
     return {
-        teachSessions: state.teachSessions,
-        chatSessions: state.chatSessions,
         user: state.user
     }
 }
 
 export interface ReceivedProps {
+    isOpen: boolean,
     app: AppBase,
     history: Activity[],
     hideInput: boolean,
