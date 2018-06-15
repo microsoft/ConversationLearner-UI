@@ -1,0 +1,8 @@
+
+ .teachInitBlock {
+    margin-top: 10px;
+    border-top-color: var(--color-neutralTertiaryAlt);
+    border-top-width: 1px;
+    border-top-style: solid;
+}
+

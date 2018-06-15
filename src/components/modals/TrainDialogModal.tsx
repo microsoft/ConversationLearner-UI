@@ -126,6 +126,7 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
                         <div className="cl-chatmodal_webchat">
                             <Webchat
                                 data-testid="chatmodal-webchat"
+                                isOpen={this.props.open}
                                 key={this.state.webchatKey}
                                 app={this.props.app}
                                 history={this.props.history}

@@ -46,6 +46,11 @@ html {
   grid-template: auto / 1fr auto auto;
   grid-auto-columns: min-content;
 }
+
+.cl-textfield--inline {
+  display: inline-block;
+}
+
 .cl-wc-disabled {
   pointer-events: none;
 }
@@ -146,7 +151,6 @@ html {
   display: inline-block !important;
 }
 
-
 .cl-label--padded {
   margin-left: 20px;
   margin-right: 20px;
@@ -218,6 +222,11 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
 .cl-wc-message--bot {
   background-color: var(--color-wc-bot);
   color: #000000;
+}
+
+.cl-wc-message--done {
+  background-color: var(--color-yellow-darkest);
+  color: #ffffff;
 }
 
 /* botframework-webchat component override */
@@ -552,6 +561,11 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
   border-color: rgb(255, 255, 255);
   border-image: initial;
   outline: rgb(102, 102, 102) solid 1px;
+}
+
+.ms-Button--icon {
+  background-color: white !important;
+  color: var(--color-themePrimary) !important;
 }
 
 .ms-Button--default:not(.cl-button-delete):not(:disabled) {

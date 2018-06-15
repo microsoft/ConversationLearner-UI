@@ -10,7 +10,7 @@ import { State } from '../../types'
 import {
     AppBase, TrainScorerStep, Memory, ScoredBase, ScoreInput, ScoreResponse,
     ActionBase, ScoredAction, UnscoredAction, ScoreReason, DialogType, ActionTypes,
-    Template, DialogMode, RenderedActionArgument, CardAction, TextAction, ApiAction
+    Template, DialogMode, RenderedActionArgument, SessionAction, CardAction, TextAction, ApiAction
 } from '@conversationlearner/models'
 import { createActionThunkAsync } from '../../actions/createActions'
 import { toggleAutoTeach } from '../../actions/teachActions'
@@ -90,32 +90,45 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
                     
                 if (action.actionType === ActionTypes.TEXT) {
                     const textAction = new TextAction(action)
-                    return <ActionPayloadRenderers.TextPayloadRendererContainer
-                        data-testid="actionscorer-textaction"
-                        textAction={textAction}
-                        entities={component.props.entities}
-                        memories={component.props.memories}
-                    />
+                    return (
+                        <ActionPayloadRenderers.TextPayloadRendererContainer
+                            data-testid="actionscorer-textaction"
+                            textAction={textAction}
+                            entities={component.props.entities}
+                            memories={component.props.memories}
+                        />)
                 }
                 else if (action.actionType === ActionTypes.API_LOCAL) {
                     const apiAction = new ApiAction(action)
-                    return <ActionPayloadRenderers.ApiPayloadRendererContainer
-                        data-testid="actionscorer-apiaction"
-                        apiAction={apiAction}
-                        entities={component.props.entities}
-                        memories={component.props.memories}
-                    />
+                    return (
+                        <ActionPayloadRenderers.ApiPayloadRendererContainer
+                            data-testid="actionscorer-apiaction"
+                            apiAction={apiAction}
+                            entities={component.props.entities}
+                            memories={component.props.memories}
+                         />)
                 }
                 else if (action.actionType === ActionTypes.CARD) {
                     const cardAction = new CardAction(action)
-                    return <ActionPayloadRenderers.CardPayloadRendererContainer
-                        data-testid="actionscorer-cardaction"
-                        isValidationError={false}
-                        cardAction={cardAction}
-                        entities={component.props.entities}
-                        memories={component.props.memories}
-                        onClickViewCard={(_, showOriginal) => component.onClickViewCard(action, showOriginal)}
-                    />
+                    return (
+                        <ActionPayloadRenderers.CardPayloadRendererContainer
+                            data-testid="actionscorer-cardaction"
+                            isValidationError={false}
+                            cardAction={cardAction}
+                            entities={component.props.entities}
+                            memories={component.props.memories}
+                            onClickViewCard={(_, showOriginal) => component.onClickViewCard(action, showOriginal)}
+                        />)
+                }
+                else if (action.actionType === ActionTypes.END_SESSION) {
+                    const sessionAction = new SessionAction(action)
+                    return (
+                        <ActionPayloadRenderers.SessionPayloadRendererContainer
+                            data-testid="actionscorer-sessionaction"
+                            sessionAction={sessionAction}
+                            entities={component.props.entities}
+                            memories={component.props.memories}
+                        />)
                 }
 
                 return <span className={OF.FontClassNames.mediumPlus}>{ActionBase.GetPayload(action, defaultEntityMap)}</span>

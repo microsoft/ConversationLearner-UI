@@ -45,7 +45,7 @@ export function packageReferences(app: models.AppBase): models.PackageReference[
 export function createEntityMapFromMemories(entities: models.EntityBase[], memories: models.Memory[]): Map<string, string> {
     return memories.reduce((map, m) => {
         const entity = entities.find(e => e.entityName === m.entityName)
-        if (entity) {
+        if (entity !== undefined) {
             map.set(entity.entityId, models.memoryValuesAsString(m.entityValues))
         }
         return map

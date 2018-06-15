@@ -13,7 +13,7 @@ import {
     fetchActionDeleteValidationThunkAsync,
     fetchActionEditValidationThunkAsync } from '../../actions/fetchActions'
 import { Modal } from 'office-ui-fabric-react/lib/Modal'
-import { ActionBase, ActionTypes, AppBase, EntityBase, EntityType, RenderedActionArgument, TextAction, ApiAction, CardAction, IActionArgument } from '@conversationlearner/models'
+import { ActionBase, ActionTypes, AppBase, EntityBase, EntityType, RenderedActionArgument, SessionAction, TextAction, ApiAction, CardAction, IActionArgument } from '@conversationlearner/models'
 import ConfirmCancelModal from './ConfirmCancelModal'
 import EntityCreatorEditor from './EntityCreatorEditor'
 import AdaptiveCardViewer from './AdaptiveCardViewer/AdaptiveCardViewer'
@@ -290,6 +290,9 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 if (action.actionType === ActionTypes.TEXT) {
                     const textAction = new TextAction(action)
                     slateValuesMap[TEXT_SLOT] = tryCreateSlateValue(ActionTypes.TEXT, TEXT_SLOT, textAction.value, payloadOptions)
+                } else if (action.actionType === ActionTypes.END_SESSION) {
+                    const sessionAction = new SessionAction(action)
+                    slateValuesMap[TEXT_SLOT] = tryCreateSlateValue(ActionTypes.TEXT, TEXT_SLOT, sessionAction.value, payloadOptions)
                 } else if (action.actionType === ActionTypes.API_LOCAL) {
                     const apiAction = new ApiAction(action)
                     selectedApiOptionKey = apiAction.name
@@ -475,6 +478,12 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     arguments: this.getActionArguments(this.state.slateValuesMap)
                 })
                 break;
+            case ActionTypes.END_SESSION:
+                const value = this.state.slateValuesMap[TEXT_SLOT]
+                payload = JSON.stringify({
+                    json: value.toJSON()
+                })
+                break;
             default:
                 throw new Error(`When attempting to submit action, the selected action type: ${this.state.selectedActionTypeOptionKey} did not have matching type`)
         }
@@ -621,7 +630,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
     onChangedActionType = (actionTypeOption: OF.IDropdownOption) => {
         const textPayload = this.state.slateValuesMap[TEXT_SLOT]
-        const isPayloadValid = actionTypeOption.key !== ActionTypes.TEXT
+        const isPayloadValid = actionTypeOption.key !== ActionTypes.TEXT && actionTypeOption.key !== ActionTypes.END_SESSION
             ? true
             : textPayload && (textPayload.document.text.length !== 0)
 
@@ -735,7 +744,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
         // If we added entity to a payload which was already in the list of required entities remove it to avoid duplicates.
         const requiredEntityTags = this.state.requiredEntityTags.filter(tag => !requiredEntityTagsFromPayload.some(t => t.key === tag.key))
-        const isPayloadValid = this.state.selectedActionTypeOptionKey !== ActionTypes.TEXT
+        const isPayloadValid = this.state.selectedActionTypeOptionKey !== ActionTypes.TEXT && this.state.selectedActionTypeOptionKey !== ActionTypes.END_SESSION
             ? true
             : value.document.text.length !== 0
 
@@ -938,8 +947,31 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                             </div>
                             )}
 
-                        {this.state.selectedActionTypeOptionKey !== ActionTypes.CARD
-                            && (<div className="cl-action-creator--expected-entities">
+                        {this.state.selectedActionTypeOptionKey === ActionTypes.END_SESSION
+                            && (<div className={(this.state.isPayloadValid ? '' : 'editor--error')}>
+                                <div>
+                                    <OF.Label>Data... <HelpIcon tipType={ToolTip.TipType.ACTION_END_SESSION}/></OF.Label>
+                                    <ActionPayloadEditor.Editor
+                                        options={optionsAvailableForPayload}
+                                        value={this.state.slateValuesMap[TEXT_SLOT]}
+                                        placeholder=" "
+                                        onChange={eState => this.onChangePayloadEditor(eState, TEXT_SLOT)}
+                                        onSubmit={() => this.onSubmitPayloadEditor()}
+                                        disabled={isPayloadDisabled}
+                                    />
+                                </div>
+                                {!this.state.isPayloadValid &&
+                                    (<div>
+                                        <p className="ms-TextField-errorMessage css-83 errorMessage_20d9206e">
+                                            <OF.Icon iconName="Error" /><span aria-live="assertive" data-automation-id="error-message">Response is required</span>
+                                        </p>
+                                    </div>)}
+                            </div>
+                            )}
+
+                        {this.state.selectedActionTypeOptionKey !== ActionTypes.CARD &&
+                         this.state.selectedActionTypeOptionKey !== ActionTypes.END_SESSION &&
+                            (<div className="cl-action-creator--expected-entities">
                                 <TC.TagPicker
                                     label="Expected Entity in Response..."
                                     onResolveSuggestions={(text, tags) => this.onResolveExpectedEntityTags(text, tags)}
@@ -1004,7 +1036,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                 checked={this.state.isTerminal}
                                 onChange={this.onChangeWaitCheckbox}
                                 style={{ marginTop: '1em', display: 'inline-block' }}
-                                disabled={disabled}
+                                disabled={disabled || this.state.selectedActionTypeOptionKey === ActionTypes.END_SESSION}
                                 tipType={ToolTip.TipType.ACTION_WAIT}
                             />
                         </div>

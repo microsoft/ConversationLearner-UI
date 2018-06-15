@@ -1,3 +1,7 @@
+/**
+ * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Licensed under the MIT License.
+ */
 import * as React from 'react'
 import { ApiAction, EntityBase, Memory } from '@conversationlearner/models'
 import * as Util from '../../util'
