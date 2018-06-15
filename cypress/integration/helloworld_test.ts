@@ -105,15 +105,15 @@ describe('Hello world e2e', function () {
 })
 
 function components() {
-  const actions = require('../support/components/ActionsPage');
-  const actionsModal = require('../support/components/ActionsModal');
-  const convLearnerPage = require('../support/components/Homepage');
+  const actions = require('../support/components/actionspage');
+  const actionsModal = require('../support/components/actionsmodal');
+  const convLearnerPage = require('../support/components/homepage');
   const entity = require('../support/components/entitiespage');
   const entityModal = require('../support/components/EntityModal');
   const modelpage = require('../support/components/ModelPage');
   const logDialogPage = require('../support/components/LogDialogsPage');
   const logDialogModal = require('../support/components/LogDialogModal');
-  const scorerModal = require('../support/components/ScorerModal');
+  const scorerModal = require('../support/components/scorermodal');
   const trainDialogPage = require('../support/components/TrainDialogsPage');
   const trainDialogModal = require('../support/components/TrainDialogModal');
   return { convLearnerPage, modelpage, entity, entityModal, actions, actionsModal, trainDialogPage, trainDialogModal, scorerModal, logDialogPage, logDialogModal };
