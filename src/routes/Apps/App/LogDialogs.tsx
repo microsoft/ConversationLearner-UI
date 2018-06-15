@@ -478,7 +478,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         const currentLogDialog = this.state.currentLogDialog;
         return (
             <div className="cl-page">
-                <div className={`cl-dialog-title cl-dialog-title--log ${OF.FontClassNames.xxLarge}`}>
+                <div data-testid= "logdialogs-title" className={`cl-dialog-title cl-dialog-title--log ${OF.FontClassNames.xxLarge}`}>
                     <OF.Icon iconName="UserFollowed" />
                     <FormattedMessage
                         id={FM.LOGDIALOGS_TITLE}
@@ -505,6 +505,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 }
                 <div>
                     <OF.PrimaryButton
+                        data-testid="logdialogs-button-create"
                         disabled={this.props.editingPackageId !== this.props.app.devPackageId || this.props.invalidBot}                      
                         onClick={this.onClickNewChatSession}
                         ariaDescription={this.props.intl.formatMessage({
@@ -525,12 +526,14 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     />
                 </div>
                 <OF.SearchBox
+                    data-testid="logdialogs-search-box"
                     className={OF.FontClassNames.mediumPlus}
                     onChange={(newValue) => this.onChange(newValue)}
                     onSearch={(newValue) => this.onChange(newValue)}
                 />
                 <div>
                     <OF.PrimaryButton
+                        data-testid="logdialogs-button-refresh"
                         onClick={() => this.onClickSync()}
                         ariaDescription="Refresh"
                         text="Refresh"
@@ -538,6 +541,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     />
                 </div>
                 <OF.DetailsList
+                    data-testid="logdialogs-details-list"
                     key={this.state.dialogKey}
                     className={OF.FontClassNames.mediumPlus}
                     items={logDialogItems}

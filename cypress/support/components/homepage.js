@@ -4,6 +4,7 @@
  */
 
 /** Navigate to the Conversation Learner Homepage */
+
 function navigateTo() {
   cy.server()
   cy.route('GET', '/apps?**').as('getHomePage')
@@ -39,10 +40,7 @@ function createNewModel(modelName) {
 
 /** Delete an existent Model */
 function deleteModel(modelName) {
-  cy.server()
-  cy.route('GET', '/apps?**').as('getHomePage')
-  cy.visit('http://localhost:5050')
-  cy.wait('@getHomePage')
+  navigateTo()
 
   cy.contains(modelName)
     .parents('.ms-DetailsRow-fields')
@@ -54,4 +52,4 @@ function deleteModel(modelName) {
     .click()
 }
 
-export{navigateTo, createNewModel, deleteModel}
+export{navigateTo, createNewModel, deleteModel }
