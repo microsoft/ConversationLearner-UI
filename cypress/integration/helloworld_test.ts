@@ -108,13 +108,13 @@ function components() {
   const actions = require('../support/components/actionspage');
   const actionsModal = require('../support/components/actionsmodal');
   const convLearnerPage = require('../support/components/homepage');
-  const entity = require('../support/components/EntitiesPage');
+  const entity = require('../support/components/entitiespage');
   const entityModal = require('../support/components/entitymodal');
-  const modelpage = require('../support/components/ModelPage');
-  const logDialogPage = require('../support/components/LogDialogsPage');
-  const logDialogModal = require('../support/components/LogDialogModal');
+  const modelpage = require('../support/components/modelpage');
+  const logDialogPage = require('../support/components/logdialogspage');
+  const logDialogModal = require('../support/components/logdialogmodal');
   const scorerModal = require('../support/components/scorermodal');
-  const trainDialogPage = require('../support/components/TrainDialogsPage');
-  const trainDialogModal = require('../support/components/TrainDialogModal');
+  const trainDialogPage = require('../support/components/traindialogspage');
+  const trainDialogModal = require('../support/components/traindialogmodal');
   return { convLearnerPage, modelpage, entity, entityModal, actions, actionsModal, trainDialogPage, trainDialogModal, scorerModal, logDialogPage, logDialogModal };
 }
