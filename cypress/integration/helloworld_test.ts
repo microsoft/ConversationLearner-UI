@@ -108,7 +108,7 @@ function components() {
   const actions = require('../support/components/ActionsPage');
   const actionsModal = require('../support/components/ActionsModal');
   const convLearnerPage = require('../support/components/Homepage');
-  const entity = require('../support/components/EntitiesPage');
+  const entity = require('../support/components/entitiespage');
   const entityModal = require('../support/components/EntityModal');
   const modelpage = require('../support/components/ModelPage');
   const logDialogPage = require('../support/components/LogDialogsPage');

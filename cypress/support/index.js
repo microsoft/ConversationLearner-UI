@@ -3,8 +3,8 @@
  * Licensed under the MIT License.
  */
 
-import './components/actionspage'
 import './components/actionsmodal'
+import './components/actionspage'
 import './components/entitymodal'
 import './components/entitiespage'
 import './components/homepage'
