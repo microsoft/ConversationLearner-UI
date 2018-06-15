@@ -53,6 +53,7 @@ class SessionWindow extends React.Component<Props, ComponentState> {
                         <div className="cl-chatmodal_webchat">
                             <Webchat
                                 data-testid="chatsession-modal-webchat"
+                                isOpen={this.props.open && this.props.error == null}
                                 app={this.props.app}
                                 history={null}
                                 onPostActivity={null}

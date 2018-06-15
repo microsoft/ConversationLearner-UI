@@ -4,7 +4,7 @@
  */
 import { ActionObject, ErrorType } from '../types'
 import { AT } from '../types/ActionTypes'
-import { AppBase, EntityBase, ActionBase, TrainDialog, LogDialog, Teach, Session, TeachWithHistory, UITeachResponse, UIScoreInput, AppDefinition } from '@conversationlearner/models'
+import { AppBase, EntityBase, ActionBase, TrainDialog, LogDialog, Teach, Session, TeachWithHistory, TeachResponse, UIScoreInput, AppDefinition } from '@conversationlearner/models'
 import { Dispatch } from 'redux'
 import { setErrorDisplay } from './displayActions'
 import * as ClientFactory from '../services/clientFactory' 
@@ -235,9 +235,9 @@ export const createTeachSessionThunkAsync = (appId: string) => {
         dispatch(createTeachSessionAsync())
 
         try {
-            const uiTeachResponse = await clClient.teachSessionsCreate(appId)
-            dispatch(createTeachSessionFulfilled(uiTeachResponse))
-            return uiTeachResponse
+            const teachResponse = await clClient.teachSessionsCreate(appId)
+            dispatch(createTeachSessionFulfilled(teachResponse))
+            return teachResponse
         }
         catch (error) {
             dispatch(setErrorDisplay(ErrorType.Error, error.message, [error.response], AT.CREATE_TEACH_SESSION_ASYNC))
@@ -256,11 +256,10 @@ const createTeachSessionRejected = (): ActionObject =>
         type: AT.CREATE_TEACH_SESSION_REJECTED
     })
 
-const createTeachSessionFulfilled = (uiTeachResponse: UITeachResponse): ActionObject =>
+const createTeachSessionFulfilled = (teachResponse: TeachResponse): ActionObject =>
     ({
         type: AT.CREATE_TEACH_SESSION_FULFILLED,
-        teachSession: uiTeachResponse.teachResponse as Teach,
-        memories: uiTeachResponse.memories
+        teachSession: teachResponse as Teach
     })
 
 // --------------------------

@@ -8,7 +8,7 @@ import * as Util from '../../util'
 import TextPayloadRenderer from './TextPayloadRenderer'
 
 interface Props {
-    textAction: TextAction
+    sessionAction: TextAction
     entities: EntityBase[]
     // TODO: Find better alternative than null
     // When memories is null it's assumed parent doesn't have access to it and intends to fallback to the entity names
@@ -17,16 +17,17 @@ interface Props {
 
 export default class Component extends React.Component<Props, {}> {
     render() {
-        const { entities, memories, textAction } = this.props
+        const { entities, memories, sessionAction } = this.props
         const defaultEntityMap = Util.getDefaultEntityMap(entities)
-        const renderStringUsingEntityNames = textAction.renderValue(defaultEntityMap, { preserveOptionalNodeWrappingCharacters: true })
+        const renderStringUsingEntityNames = sessionAction.renderValue(defaultEntityMap, { preserveOptionalNodeWrappingCharacters: true })
         const renderStringUsingCurrentMemory = memories === null
             ? null
-            : textAction.renderValue(Util.createEntityMapFromMemories(entities, memories), { fallbackToOriginal: true })
+            : sessionAction.renderValue(Util.createEntityMapFromMemories(entities, memories), { fallbackToOriginal: true })
 
-        return (<TextPayloadRenderer
-            original={renderStringUsingEntityNames}
-            currentMemory={renderStringUsingCurrentMemory}
-        />)
+        return (
+            <TextPayloadRenderer
+                original={renderStringUsingEntityNames}
+                currentMemory={renderStringUsingCurrentMemory}
+            />)
     }
 }

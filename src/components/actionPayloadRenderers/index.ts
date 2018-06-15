@@ -5,9 +5,11 @@
 import TextPayloadRendererContainer from './TextPayloadRendererContainer'
 import ApiPayloadRendererContainer from './ApiPayloadRendererContainer'
 import CardPayloadRendererContainer from './CardPayloadRendererContainer'
+import SessionPayloadRendererContainer from './SessionPayloadRendererContainer'
 
 export {
     ApiPayloadRendererContainer,
     CardPayloadRendererContainer,
-    TextPayloadRendererContainer
+    TextPayloadRendererContainer,
+    SessionPayloadRendererContainer
 }

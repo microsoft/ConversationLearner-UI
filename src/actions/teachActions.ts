@@ -10,9 +10,45 @@ import { setErrorDisplay } from './displayActions'
 import { fetchApplicationTrainingStatusThunkAsync } from './fetchActions'
 import {
     UserInput, ExtractResponse, ScoreInput, UIScoreInput, UIExtractResponse,
-    UIScoreResponse, UITrainScorerStep, UITeachResponse,
-    DialogType, DialogMode
+    UIScoreResponse, UITrainScorerStep, UIPostScoreResponse,
+    DialogType, DialogMode, FilledEntityMap, Memory
 } from '@conversationlearner/models'
+
+// --------------------------
+// InitMemory
+// --------------------------
+export const initMemoryThunkAsync = (appId: string, sessionId: string, filledEntityMap: FilledEntityMap) => {
+    return async (dispatch: Dispatch<any>) => {
+        const clClient = ClientFactory.getInstance(AT.INIT_MEMORY_ASYNC)
+        dispatch(initMemoryAsync(appId, sessionId, filledEntityMap))
+
+        try {
+            let memories = await clClient.teachSessionsInitMemory(appId, sessionId, filledEntityMap)
+            dispatch(initMemoryFulfilled(memories))
+            return
+        }
+        catch (error) {
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, [error.response], AT.INIT_MEMORY_ASYNC))
+            throw error
+        }
+    }
+}
+
+const initMemoryAsync = (appId: string, sessionId: string, filledEntityMap: FilledEntityMap): ActionObject => {
+    return {
+        type: AT.INIT_MEMORY_ASYNC,
+        appId: appId,
+        sessionId: sessionId,
+        filledEntityMap: filledEntityMap
+    }
+}
+
+const initMemoryFulfilled = (memories: Memory[]): ActionObject => {
+    return {
+        type: AT.INIT_MEMORY_FULFILLED,
+        memories: memories
+    }
+}
 
 // --------------------------
 // RunExtractor
@@ -20,7 +56,7 @@ import {
 export const runExtractorThunkAsync = (key: string, appId: string, extractType: DialogType, sessionId: string, turnIndex: number, userInput: UserInput) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.RUN_EXTRACTOR_ASYNC)
-        dispatch(runExtractorAsync(key, appId, extractType, sessionId, turnIndex, userInput))
+        dispatch(runExtractorAsync(appId, extractType, sessionId, turnIndex, userInput))
 
         try {
             let uiExtractResponse: UIExtractResponse = null 
@@ -39,7 +75,7 @@ export const runExtractorThunkAsync = (key: string, appId: string, extractType: 
                   throw new Error(`Could not handle unknown extract type: ${extractType}`)
               }
 
-            dispatch(runExtractorFulfilled(key, appId, sessionId, uiExtractResponse))
+            dispatch(runExtractorFulfilled(appId, sessionId, uiExtractResponse))
             return uiExtractResponse
         }
         catch (error) {
@@ -49,10 +85,9 @@ export const runExtractorThunkAsync = (key: string, appId: string, extractType: 
     }
 }
 
-const runExtractorAsync = (key: string, appId: string, extractType: DialogType, sessionId: string, turnIndex: number, userInput: UserInput): ActionObject => {
+const runExtractorAsync = (appId: string, extractType: DialogType, sessionId: string, turnIndex: number, userInput: UserInput): ActionObject => {
     return {
         type: AT.RUN_EXTRACTOR_ASYNC,
-        key: key,
         appId: appId,
         extractType: extractType,
         sessionId: sessionId,
@@ -61,10 +96,9 @@ const runExtractorAsync = (key: string, appId: string, extractType: DialogType, 
     }
 }
 
-const runExtractorFulfilled = (key: string, appId: string, sessionId: string, uiExtractResponse: UIExtractResponse): ActionObject => {
+const runExtractorFulfilled = (appId: string, sessionId: string, uiExtractResponse: UIExtractResponse): ActionObject => {
     return {
         type: AT.RUN_EXTRACTOR_FULFILLED,
-        key: key,
         appId: appId,
         sessionId: sessionId,
         uiExtractResponse: uiExtractResponse
@@ -181,18 +215,20 @@ export const postScorerFeedbackThunkAsync = (key: string, appId: string, teachId
         dispatch(postScorerFeedbackAsync(key, appId, teachId, uiTrainScorerStep, waitForUser, uiScoreInput))
 
         try {
-            let uiTeachResponse = await clClient.teachSessionAddScorerStep(appId, teachId, uiTrainScorerStep)
+            let uiPostScoreResponse = await clClient.teachSessionAddScorerStep(appId, teachId, uiTrainScorerStep)
 
             if (!waitForUser) {
                 // Don't re-send predicted entities on subsequent score call
                 uiScoreInput.extractResponse.predictedEntities = [];
-                dispatch(postScorerFeedbackFulfilled(key, appId, teachId, DialogMode.Scorer, uiTeachResponse, uiScoreInput))     
+               //LARS todo - force end task to always be wait
+                dispatch(postScorerFeedbackFulfilled(key, appId, teachId, DialogMode.Scorer, uiPostScoreResponse, uiScoreInput))     
                 dispatch(runScorerThunkAsync(key, appId, teachId, uiScoreInput))
             }
             else {
-                dispatch(postScorerFeedbackFulfilled(key, appId, teachId, DialogMode.Wait, uiTeachResponse, null))
+                let dialogMode = uiPostScoreResponse.isEndTask ? DialogMode.EndSession : DialogMode.Wait
+                dispatch(postScorerFeedbackFulfilled(key, appId, teachId, dialogMode, uiPostScoreResponse, null))
             }
-            return uiTeachResponse
+            return uiPostScoreResponse
         }
         catch (error) {
             dispatch(setErrorDisplay(ErrorType.Error, error.message, [error.response], AT.POST_SCORE_FEEDBACK_ASYNC))
@@ -214,14 +250,14 @@ const postScorerFeedbackAsync = (key: string, appId: string, teachId: string, ui
 }
 
 // Score has been posted.  Action is Terminal
-const postScorerFeedbackFulfilled = (key: string, appId: string, teachId: string, dialogMode: DialogMode, uiTeachResponse: UITeachResponse, uiScoreInput: UIScoreInput): ActionObject => {
+const postScorerFeedbackFulfilled = (key: string, appId: string, teachId: string, dialogMode: DialogMode, uiPostScoreResponse: UIPostScoreResponse, uiScoreInput: UIScoreInput): ActionObject => {
     return {
         type: AT.POST_SCORE_FEEDBACK_FULFILLED,
         key: key,
         appId: appId,
         sessionId: teachId,
         dialogMode: dialogMode,
-        uiTeachResponse: uiTeachResponse,
+        uiPostScoreResponse: uiPostScoreResponse,
         uiScoreInput: uiScoreInput
     }
 }

@@ -31,7 +31,7 @@ const teachSessionReducer: Reducer<TeachSessionState> = (state = initialState, a
             // Start with a clean slate
             return { ...initialState, all: state.all };
         case AT.CREATE_TEACH_SESSION_FULFILLED:
-            return { ...state, all: [...state.all, action.teachSession], current: action.teachSession, mode: DialogMode.Wait, memories: action.memories }
+            return { ...state, all: [...state.all, action.teachSession], current: action.teachSession, mode: DialogMode.Wait, memories: [] }
         case AT.CREATE_TEACH_SESSION_FROMUNDOFULFILLED:
         case AT.CREATE_TEACH_SESSION_FROMHISTORYFULFILLED:
             // Only update state if there were no discrepancies
@@ -54,6 +54,8 @@ const teachSessionReducer: Reducer<TeachSessionState> = (state = initialState, a
             return { ...state, memories: [] }
         case AT.TEACH_MESSAGE_RECEIVED:
             return { ...state, input: action.message, scoreInput: null, scoreResponse: null, extractResponses: [] };
+        case AT.INIT_MEMORY_FULFILLED:
+            return { ...state, memories: action.memories }
         case AT.RUN_EXTRACTOR_FULFILLED:
             // Replace existing extract response (if any) with new one
             const extractResponses = state.extractResponses.filter(e => e.text !== action.uiExtractResponse.extractResponse.text);
@@ -82,7 +84,7 @@ const teachSessionReducer: Reducer<TeachSessionState> = (state = initialState, a
         case AT.RUN_SCORER_FULFILLED:
             return { ...state, mode: DialogMode.Scorer, memories: action.uiScoreResponse.memories, prevMemories: state.memories, scoreInput: action.uiScoreResponse.scoreInput, scoreResponse: action.uiScoreResponse.scoreResponse };
         case AT.POST_SCORE_FEEDBACK_FULFILLED:
-            return { ...state, mode: action.dialogMode, memories: action.uiTeachResponse.memories, extractResponses: []  };
+            return { ...state, mode: action.dialogMode, memories: action.uiPostScoreResponse.memories, extractResponses: []  };
         case AT.TOGGLE_AUTO_TEACH:
             return { ...state, autoTeach: action.autoTeach }
         case AT.CREATE_ACTION_FULFILLED:

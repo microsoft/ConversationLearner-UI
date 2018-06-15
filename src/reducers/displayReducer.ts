@@ -94,6 +94,7 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
         case AT.FETCH_TUTORIALS_ASYNC:
 
         case AT.COPY_APPLICATION_ASYNC:
+        case AT.INIT_MEMORY_ASYNC:
         case AT.RUN_EXTRACTOR_ASYNC:
         case AT.GET_SCORES_ASYNC:
         case AT.RUN_SCORER_ASYNC:
@@ -145,6 +146,7 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
         case AT.FETCH_TUTORIALS_FULFILLED:
     
         case AT.COPY_APPLICATION_FULFILLED:
+        case AT.INIT_MEMORY_FULFILLED:
         case AT.RUN_EXTRACTOR_FULFILLED:
         case AT.GET_SCORES_FULFILLED:
         case AT.RUN_SCORER_FULFILLED:
