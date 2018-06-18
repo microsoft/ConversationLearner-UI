@@ -1,20 +1,16 @@
-// ***********************************************************
-// This example support/index.js is processed and
-// loaded automatically before your test files.
-//
-// This is a great place to put global configuration and
-// behavior that modifies Cypress.
-//
-// You can change the location of this file or turn off
-// automatically serving support files with the
-// 'supportFile' configuration option.
-//
-// You can read more here:
-// https://on.cypress.io/configuration
-// ***********************************************************
+/**
+ * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Licensed under the MIT License.
+ */
 
-// Import commands.js using ES2015 syntax:
-import './commands'
-
-// Alternatively you can use CommonJS syntax:
-// require('./commands')
+import './components/actionsmodal.js'
+import './components/actionspage.js'
+import './components/entitiespage.js'
+import './components/entitymodal.js'
+import './components/homepage.js'
+import './components/logdialogmodal.js'
+import './components/logdialogspage.js'
+import './components/modelpage.js'
+import './components/scorermodal.js'
+import './components/traindialogmodal.js'
+import './components/traindialogspage.js'

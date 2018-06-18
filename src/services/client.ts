@@ -171,6 +171,12 @@ export default class ClClient {
             .then(response => response.data)
     }
 
+    entitiesGetById(appId: string, entityId: string): Promise<models.EntityBase> {
+        return this.send<models.EntityBase>({
+            url: `${this.baseUrl}/app/${appId}/entity/${entityId}`
+        }).then(response => response.data)
+    }
+
     entities(appId: string): Promise<models.EntityBase[]> {
         return this.send<models.EntityList>({
             url: `${this.baseUrl}/app/${appId}/entities`
@@ -178,14 +184,16 @@ export default class ClClient {
     }
 
     entitiesCreate(appId: string, entity: models.EntityBase): Promise<models.EntityBase> {
-        return this.send<string>({
+        return this.send<models.ChangeEntityResponse>({
             method: 'post',
             url: `${this.baseUrl}/app/${appId}/entity`,
             data: entity
         }).then(response => {
-                entity.entityId = response.data
-                return entity
-            })
+            const changeEntityResponse = response.data
+            entity.entityId = changeEntityResponse.entityId
+            entity.negativeId = changeEntityResponse.negativeEntityId
+            return entity
+        })
     }
 
     entitiesDelete(appId: string, entityId: string): Promise<models.DeleteEditResponse> {
@@ -414,8 +422,8 @@ export default class ClClient {
             .then(response => response.data.teaches)
     }
 
-    teachSessionsCreate(appId: string): Promise<models.UITeachResponse> {
-        return this.send<models.UITeachResponse>({
+    teachSessionsCreate(appId: string): Promise<models.TeachResponse> {
+        return this.send<models.TeachResponse>({
             method: 'post',
             url: `${this.baseUrl}/app/${appId}/teach`
         })
@@ -429,6 +437,16 @@ export default class ClClient {
             url: `${this.baseUrl}/app/${appId}/teach/${teachSession.teachId}?save=${save}`
         })
             .then(response => { })
+    }
+
+    // INIT_MEMORY_ASYNC
+    teachSessionsInitMemory(appId: string, sessionId: string, filledEntityMap: models.FilledEntityMap): Promise<models.Memory[]> {
+        return this.send({
+            method: 'put',
+            url: `${this.baseUrl}/app/${appId}/teach/${sessionId}/initmemory`,
+            data: filledEntityMap
+        })
+            .then(response => response.data)
     }
 
     teachSessionsAddExtractStep(appId: string, sessionId: string, userInput: models.UserInput): Promise<models.UIExtractResponse> {
@@ -450,8 +468,8 @@ export default class ClClient {
     }
 
     // AT.POST_SCORE_FEEDBACK_ASYNC
-    teachSessionAddScorerStep(appId: string, teachId: string, uiTrainScorerStep: models.UITrainScorerStep): Promise<models.UITeachResponse> {
-        return this.send<models.UITeachResponse>({
+    teachSessionAddScorerStep(appId: string, teachId: string, uiTrainScorerStep: models.UITrainScorerStep): Promise<models.UIPostScoreResponse> {
+        return this.send<models.UIPostScoreResponse>({
             method: 'post',
             url: `${this.baseUrl}/app/${appId}/teach/${teachId}/scorer`,
             data: uiTrainScorerStep

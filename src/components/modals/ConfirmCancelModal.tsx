@@ -2,18 +2,17 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import * as React from 'react';
-import { PrimaryButton, DefaultButton, Dialog, DialogType, DialogFooter } from 'office-ui-fabric-react';
+import * as React from 'react'
+import { PrimaryButton, DefaultButton, Dialog, DialogType, DialogFooter } from 'office-ui-fabric-react'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
-import { FontClassNames } from 'office-ui-fabric-react'
 
 interface ReceivedProps {
-    onConfirm: Function;
-    onCancel: Function;
-    open: boolean;
-    title: string;
-    warning?: string;
+    onConfirm: Function
+    onCancel: Function
+    open: boolean
+    title: string
+    message?: () => React.ReactNode
 }
 
 type Props = ReceivedProps & InjectedIntlProps
@@ -32,12 +31,7 @@ const ConfirmCancelModal: React.SFC<Props> = (props: Props) => {
                 isBlocking: false
             }}
         >
-            {props.warning && 
-                (
-                    <div className="cl-errorpanel" >
-                        <div className={FontClassNames.medium}>{props.warning}</div>
-                    </div>
-                )}
+            {typeof props.message === 'function' && props.message()}
             <DialogFooter>
                 {props.onConfirm &&
                     <PrimaryButton

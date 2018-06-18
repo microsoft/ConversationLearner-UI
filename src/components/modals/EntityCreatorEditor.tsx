@@ -23,7 +23,7 @@ import * as ToolTip from '../ToolTips'
 import { AppBase, EntityBase, EntityType, ActionBase } from '@conversationlearner/models'
 import './EntityCreatorEditor.css'
 import { FM } from '../../react-intl-messages'
-import { defineMessages, injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
+import { defineMessages, injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { withRouter } from 'react-router-dom'
 import { RouteComponentProps } from 'react-router'
 import { autobind } from 'office-ui-fabric-react/lib/Utilities';
@@ -170,6 +170,19 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
         }
     }
 
+    componentDidUpdate(prevProps: Props, prevState: ComponentState) {
+        const isProgrammaticChanged = this.props.entity && this.state.isProgrammaticVal !== (this.props.entity.entityType === EntityType.LOCAL)
+        const isMultiValueChanged = this.props.entity && this.state.isMultivalueVal !== this.props.entity.isMultivalue
+        const isNegatableChanged = this.props.entity && this.state.isNegatableVal !== this.props.entity.isNegatible
+        const hasPendingChanges = isProgrammaticChanged || isMultiValueChanged || isNegatableChanged
+
+        if (prevState.hasPendingChanges !== hasPendingChanges) {
+            this.setState({
+                hasPendingChanges
+            })
+        }
+    }
+
     convertStateToEntity(state: ComponentState): EntityBase {
         let entityName = this.state.entityNameVal
         let entityType = this.state.entityTypeVal
@@ -265,19 +278,19 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
         })
     }
     onChangeProgrammatic = () => {
-        this.setState({
-            isProgrammaticVal: !this.state.isProgrammaticVal,
-        })
+        this.setState(prevState => ({
+            isProgrammaticVal: !prevState.isProgrammaticVal
+        }))
     }
     onChangeMultivalue = () => {
-        this.setState({
-            isMultivalueVal: !this.state.isMultivalueVal,
-        })
+        this.setState(prevState => ({
+            isMultivalueVal: !prevState.isMultivalueVal,
+        }))
     }
     onChangeReversible = () => {
-        this.setState({
-            isNegatableVal: !this.state.isNegatableVal,
-        })
+        this.setState(prevState => ({
+            isNegatableVal: !prevState.isNegatableVal,
+        }))
     }
 
     onGetNameErrorMessage = (value: string): string => {
@@ -339,8 +352,12 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
         return this.isUsedByActions() || this.isUsedByTrainingDialogs()
     }
 
+    isRequiredForActions(): boolean {
+        return this.props.actions.some(a => [...a.requiredEntitiesFromPayload, ...(a.suggestedEntity ? [a.suggestedEntity] : [])].includes(this.props.entity.entityId))
+    }
+
     isUsedByActions(): boolean {
-        return this.props.actions.some(a => a.negativeEntities.includes(this.props.entity.entityId) || a.requiredEntities.includes(this.props.entity.entityId))
+        return this.props.actions.some(a => [...a.negativeEntities, ...a.requiredEntities, ...(a.suggestedEntity ? [a.suggestedEntity] : [])].includes(this.props.entity.entityId))
     }
 
     isUsedByTrainingDialogs() : boolean {
@@ -350,10 +367,8 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
 
     @autobind
     onClickDelete() {
-
         // Check if used by actions (ok if used by TrainDialogs)
-        let tiedToAction = this.isUsedByActions()
-        if (tiedToAction === true) {
+        if (this.isRequiredForActions()) {
             this.setState({
                 isDeleteErrorModalOpen: true
             })
@@ -362,14 +377,10 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
 
         ((this.props.fetchEntityDeleteValidationThunkAsync(this.props.app.appId, this.props.editingPackageId, this.props.entity.entityId) as any) as Promise<string[]>)
             .then(invalidTrainingDialogIds => {
-
-                if (invalidTrainingDialogIds) {
-                    this.setState(
-                    {
-                        isConfirmDeleteModalOpen: true,
-                        showValidationWarning: invalidTrainingDialogIds.length > 0
-                    });
-                }
+                this.setState({
+                    isConfirmDeleteModalOpen: true,
+                    showValidationWarning: invalidTrainingDialogIds.length > 0
+                });
             })
             .catch(error => {
                 console.warn(`Error when attempting to validate delete: `, error)
@@ -626,11 +637,14 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                             id: FM.ENTITYCREATOREDITOR_CONFIRM_DELETE_TITLE,
                             defaultMessage: 'Are you sure you want to delete this Entity?'
                         })}
-                    warning={this.state.showValidationWarning &&
-                        intl.formatMessage({
-                            id: FM.ENTITYCREATOREDITOR_CONFIRM_DELETE_WARNING,
-                            defaultMessage: 'This will invalidate one or more Training Dialogs'
-                        })}
+                    message={() => this.state.showValidationWarning &&
+                        <div className={`${OF.FontClassNames.medium} cl-text--warning`}>
+                            <OF.Icon iconName="Warning" className="cl-icon" /> Warning:&nbsp;
+                            <FormattedMessage
+                                id={FM.ENTITYCREATOREDITOR_CONFIRM_DELETE_WARNING}
+                                defaultMessage='This Entity is used by one or more Actions or Training Dialogs.  If you proceed it will also be removed from these Actions and Training Dialogs.'
+                            />
+                    </div>}
                 />
                 <ConfirmCancelModal
                     open={this.state.isConfirmEditModalOpen}
@@ -640,12 +654,14 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                             id: FM.ENTITYCREATOREDITOR_CONFIRM_EDIT_TITLE,
                             defaultMessage: 'Are you sure you want to edit this Entity?'
                         })}
-                    warning={this.state.showValidationWarning &&
-                        intl.formatMessage({
-                            id: FM.ENTITYCREATOREDITOR_CONFIRM_EDIT_WARNING,
-                            defaultMessage: 'This will invalidate one or more Training Dialogs'
-                        })}
-                />
+                    message={() => <div className={`${OF.FontClassNames.medium} cl-text--warning`}>
+                        <OF.Icon iconName="Warning" className="cl-icon" /> Warning:&nbsp;
+                        <FormattedMessage
+                            id={FM.ENTITYCREATOREDITOR_CONFIRM_EDIT_WARNING}
+                            defaultMessage='This edit will invalidate one or more Training Dialogs.  If you proceed they will removed from training until fixed.'
+                        />
+                    </div>}
+                    />
                 <ConfirmCancelModal
                     open={this.state.isDeleteErrorModalOpen}
                     onCancel={this.onCancelDelete} 
@@ -654,11 +670,13 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                         id: FM.ENTITYCREATOREDITOR_DELETE_ERROR_TITLE,
                         defaultMessage: 'Unable to delete'
                     })}
-                    warning={
-                        intl.formatMessage({
-                            id: FM.ENTITYCREATOREDITOR_DELETE_ERROR_WARNING,
-                            defaultMessage: 'Used by one or more Actions'
-                        })}
+                    message={() => <div className={`${OF.FontClassNames.medium} cl-text--error`}>
+                        <OF.Icon iconName="Error" className="cl-icon" /> Error:&nbsp;
+                        <FormattedMessage
+                            id={FM.ENTITYCREATOREDITOR_DELETE_ERROR_WARNING}
+                            defaultMessage='It is either referenced within the payload or used as suggested entity by one or more Actions.'
+                        />
+                    </div>}
                 />
             </Modal>
         )

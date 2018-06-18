@@ -14,6 +14,7 @@ export enum TipType {
     ACTION_API = 'actionAPI',
     ACTION_ARGUMENTS = 'actionArguments',
     ACTION_CARD = 'actionCard',
+    ACTION_END_SESSION = 'actionEndSesion',
     ACTION_ENTITIES = 'actionEntities',
     ACTION_NEGATIVE = 'negativeEntities',
     ACTION_REQUIRED = 'requiredEntities',
@@ -161,6 +162,8 @@ export function GetTip(tipType: string) {
             return render(FM.TOOLTIP_ACTION_ARGUMENTS_TITLE, [FM.TOOLTIP_ACTION_ARGUMENTS])
         case TipType.ACTION_CARD:
             return render(FM.TOOLTIP_ACTION_CARD_TITLE, [FM.TOOLTIP_ACTION_CARD])
+        case TipType.ACTION_END_SESSION:
+            return render(FM.TOOLTIP_ACTION_END_SESSION_TITLE, [FM.TOOLTIP_ACTION_END_SESSION])
         case TipType.ACTION_ENTITIES:
             return (
                 <div>
@@ -241,10 +244,10 @@ export function GetTip(tipType: string) {
                 [FM.TOOLTIP_ACTION_TYPE],
                 null,
                 [
-                    { key: 'Text:', value: FM.TOOLTIP_ACTION_TYPE_TEXT },
-                    { key: 'API_Local:', value: FM.TOOLTIP_ACTION_TYPE_APILOCAL },
-                    // { key: 'API_Azure:', value: FM.TOOLTIP_ACTION_TYPE_APIAZURE },
-                    { key: 'Card:', value: FM.TOOLTIP_ACTION_TYPE_CARD }
+                    { key: 'TEXT:', value: FM.TOOLTIP_ACTION_TYPE_TEXT },
+                    { key: 'API_LOCAL:', value: FM.TOOLTIP_ACTION_TYPE_APILOCAL },
+                    { key: 'CARD:', value: FM.TOOLTIP_ACTION_TYPE_CARD },
+                    { key: 'END_SESSION:', value: FM.TOOLTIP_ACTION_TYPE_ENDSESSION }
                 ]);
         case TipType.ACTION_WAIT:
             return render(FM.TOOLTIP_ACTION_WAIT_TITLE, [FM.TOOLTIP_ACTION_WAIT]);

@@ -8,8 +8,8 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import * as OF from 'office-ui-fabric-react';
 import { State } from '../../../types'
-import { AppBase, Teach, TrainDialog, TeachWithHistory, ActionBase, EntityBase, UITeachResponse, ReplayError, UIScoreInput } from '@conversationlearner/models'
-import { TeachSessionModal, TrainDialogModal, SessionMemoryCheck } from '../../../components/modals'
+import { AppBase, Teach, TrainDialog, TeachWithHistory, ActionBase, EntityBase, TeachResponse, ReplayError, UIScoreInput } from '@conversationlearner/models'
+import { TeachSessionModal, TrainDialogModal } from '../../../components/modals'
 import { fetchHistoryThunkAsync, fetchApplicationTrainingStatusThunkAsync } from '../../../actions/fetchActions'
 import {
     createTeachSessionThunkAsync,
@@ -178,10 +178,9 @@ interface ComponentState {
     sortColumn: IRenderableColumn
     teachSession: Teach
     history: Activity[]
-    isHistoryTerminal: boolean
+    lastAction: ActionBase
     isTeachDialogModalOpen: boolean
     isTrainDialogModalOpen: boolean
-    isSessionMemoryCheckOpen: boolean
     currentTrainDialog: TrainDialog
     searchValue: string,
     dialogKey: number,
@@ -205,10 +204,9 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             sortColumn: columns[0],
             teachSession: null,
             history: [],
-            isHistoryTerminal: false,
+            lastAction: null,
             isTeachDialogModalOpen: false,
             isTrainDialogModalOpen: false,
-            isSessionMemoryCheckOpen: false,
             currentTrainDialog: null,
             searchValue: '',
             dialogKey: 0,
@@ -342,12 +340,11 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
     onClickNewTeachSession() {
         // TODO: Find cleaner solution for the types.  Thunks return functions but when using them on props they should be returning result of the promise.
-        ((this.props.createTeachSessionThunkAsync(this.props.app.appId) as any) as Promise<UITeachResponse>)
-            .then(uiTeachResponse => {
+        ((this.props.createTeachSessionThunkAsync(this.props.app.appId) as any) as Promise<TeachResponse>)
+            .then(teachResponse => {
                 this.setState({
-                    teachSession: uiTeachResponse.teachResponse as Teach,
-                    isTeachDialogModalOpen: true,
-                    isSessionMemoryCheckOpen: uiTeachResponse.memories.length > 0
+                    teachSession: teachResponse as Teach,
+                    isTeachDialogModalOpen: true
                 })
             })
             .catch(error => {
@@ -360,7 +357,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             teachSession: null,
             isTeachDialogModalOpen: false,
             history: null,
-            isHistoryTerminal: false,
+            lastAction: null,
             currentTrainDialog: null,
             dialogKey: this.state.dialogKey + 1
         })
@@ -373,7 +370,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     this.setState({
                         teachSession: teachWithHistory.teach,
                         history: teachWithHistory.history,
-                        isHistoryTerminal: teachWithHistory.isLastActionTerminal
+                        lastAction: teachWithHistory.lastAction
                     })
                 }
                 else {
@@ -422,7 +419,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     this.setState({
                         teachSession: teachWithHistory.teach,
                         history: teachWithHistory.history,
-                        isHistoryTerminal: teachWithHistory.isLastActionTerminal,
+                        lastAction: teachWithHistory.lastAction,
                         currentTrainDialog: null,
                         isTrainDialogModalOpen: false,
                         isTeachDialogModalOpen: true
@@ -451,7 +448,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     this.setState({
                         teachSession: teachWithHistory.teach,
                         history: teachWithHistory.history,
-                        isHistoryTerminal: teachWithHistory.isLastActionTerminal,
+                        lastAction: teachWithHistory.lastAction,
                         isTrainDialogModalOpen: false,
                         isTeachDialogModalOpen: true
                     })
@@ -499,7 +496,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             .then(teachWithHistory => {
                 this.setState({
                     history: teachWithHistory.history,
-                    isHistoryTerminal: teachWithHistory.isLastActionTerminal,
+                    lastAction: teachWithHistory.lastAction,
                     currentTrainDialog: trainDialog,
                     isTrainDialogModalOpen: true
                 })
@@ -514,28 +511,9 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             isTrainDialogModalOpen: false,
             currentTrainDialog: null,
             history: null,
-            isHistoryTerminal: false,
+            lastAction: null,
             dialogKey: this.state.dialogKey + 1
         })
-    }
-
-    onCloseSessionMemoryCheck(saveMemory: boolean) {
-
-        if (saveMemory) {
-            this.setState({
-                isSessionMemoryCheckOpen: false
-            })
-        } else {
-            ((this.props.deleteMemoryThunkAsync(this.props.user.id, this.props.app.appId) as any) as Promise<void>)
-            .then(() => {
-                this.setState({
-                    isSessionMemoryCheckOpen: false
-                })
-            })
-            .catch(error => {
-                console.warn(`Error when attempting to clear memory: `, error)
-            })
-        }
     }
 
     onChangeSearchString(newValue: string) {
@@ -619,7 +597,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         let currentTrainDialog = this.state.currentTrainDialog
         return (
             <div className="cl-page">
-                <div className={`cl-dialog-title cl-dialog-title--train ${OF.FontClassNames.xxLarge}`}>
+                <div data-testid="train-dialogs-title" className={`cl-dialog-title cl-dialog-title--train ${OF.FontClassNames.xxLarge}`}>
                     <OF.Icon iconName="EditContact" />
                     <FormattedMessage
                         id={FM.TRAINDIALOGS_TITLE}
@@ -627,7 +605,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     />
                 </div>
                 {this.props.editingPackageId === this.props.app.devPackageId ?
-                    <span className={OF.FontClassNames.mediumPlus}>
+                    <span data-testid="train-dialogs-subtitle" className={OF.FontClassNames.mediumPlus}>
                         <FormattedMessage
                             id={FM.TRAINDIALOGS_SUBTITLE}
                             defaultMessage="Train Dialogs are example conversations you want your Bot to imitate"
@@ -638,6 +616,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 }
                 <div>
                     <OF.PrimaryButton
+                        data-testid="button-new-train-dialog"
                         disabled={this.props.editingPackageId !== this.props.app.devPackageId || this.props.invalidBot}
                         onClick={() => this.onClickNewTeachSession()}
                         ariaDescription={intl.formatMessage({
@@ -662,11 +641,11 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         editingPackageId={this.props.editingPackageId}
                         teach={this.props.teachSessions.current}
                         dialogMode={this.props.teachSessions.mode}
-                        open={this.state.isTeachDialogModalOpen && !this.state.isSessionMemoryCheckOpen}
+                        isOpen={this.state.isTeachDialogModalOpen}
                         onClose={() => this.onCloseTeachSession()}
                         onUndo={(popRound) => this.onUndoTeachStep(popRound)}
                         history={this.state.isTeachDialogModalOpen ? this.state.history : null}
-                        isHistoryTerminal={this.state.isHistoryTerminal}
+                        lastAction={this.state.lastAction}
                         sourceTrainDialog={this.state.currentTrainDialog}
                     />
                 </div>
@@ -675,6 +654,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         Search:
                     </OF.Label>
                     <OF.SearchBox
+                        data-testid="search-box"
                         id="search"
                         className={OF.FontClassNames.medium}
                         onChange={(newValue) => this.onChangeSearchString(newValue)}
@@ -683,6 +663,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 </div>
                 <div className="cl-list-filters">
                     <OF.Dropdown
+                        data-testid="dropdown-filter-by-entity"
                         label="Entity:"
                         selectedKey={(this.state.entityFilter ? this.state.entityFilter.key : undefined)}
                         onChanged={this.onSelectEntityFilter}
@@ -696,6 +677,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     /> 
         
                     <OF.Dropdown
+                        data-testid="dropdown-filter-by-action"
                         label="Action:"
                         selectedKey={(this.state.actionFilter ? this.state.actionFilter.key : undefined)}
                         onChanged={this.onSelectActionFilter}
@@ -707,6 +689,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     />
                 </div>
                 <OF.DetailsList
+                    data-testid="detail-list"
                     key={this.state.dialogKey}
                     className={OF.FontClassNames.mediumPlus}
                     items={trainDialogItems}
@@ -717,6 +700,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     onActiveItemChanged={trainDialog => this.onClickTrainDialogItem(trainDialog)}
                 />
                 <TrainDialogModal
+                    data-testid="train-dialog-modal"
                     app={this.props.app}
                     editingPackageId={this.props.editingPackageId}
                     canEdit={this.props.editingPackageId === this.props.app.devPackageId && !this.props.invalidBot}
@@ -728,11 +712,6 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     onReplace={(editedTrainDialog: TrainDialog) => this.onReplaceTrainDialog(editedTrainDialog)}
                     trainDialog={currentTrainDialog}
                     history={this.state.isTrainDialogModalOpen ? this.state.history : null}
-                />
-                <SessionMemoryCheck
-                    open={this.state.isSessionMemoryCheckOpen}
-                    onClose={(saveMemory: boolean) => this.onCloseSessionMemoryCheck(saveMemory)}
-                    memories={this.props.teachSessions.memories}
                 />
             </div>
         );

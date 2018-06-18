@@ -71,11 +71,13 @@ const Component: React.SFC<Props> = (props: Props) => {
         <div className={`cl-training-status ${FontClassNames.mediumPlus}`}>
             <div className={`cl-training-status__icon-row ${uiState.className} ${props.didPollingExpire ? 'cl-training-status__icon-row--expired': ''}`}>
                 <FormattedMessage
+                    data-testid="trainingstatus-status"
                     id={FM.APP_TRAINING_STATUS_STATUS}
                     defaultMessage="Status"
                 />: &nbsp;<Icon iconName={uiState.iconName} className={uiState.additionalIconClasses} />
                 &nbsp;<span className="cl-training-status__icon-label">
                     <FormattedMessage
+                    data-testid="trainingstatus-statusplaceholder"
                         id={uiState.iconLabelMessageId}
                         defaultMessage="Status Placeholder"
                     />
@@ -89,6 +91,7 @@ const Component: React.SFC<Props> = (props: Props) => {
                         tooltipProps={{
                             onRenderContent: () =>
                                 <FormattedMessage
+                                    data-testid="trainingstatus-statusexpired"
                                     id={FM.APP_TRAINING_STATUS_EXPIRED}
                                     defaultMessage="Status Placeholder"
                                 />
@@ -99,6 +102,7 @@ const Component: React.SFC<Props> = (props: Props) => {
             </div>
             <div className={`cl-training-status__text-row ${FontClassNames.small}`}>
                 <FormattedMessage
+                    data-testid="trainingstatus-last-update"
                     id={FM.APP_TRAINING_STATUS_LAST_UPDATE}
                     defaultMessage="Last Update"
                 />: &nbsp;
@@ -107,6 +111,7 @@ const Component: React.SFC<Props> = (props: Props) => {
                 </span>
                 <button className={`cl-training-status__trigger ${FontClassNames.small}`} onClick={props.onClickRefresh}>
                     <FormattedMessage
+                        data-testid="trainingstatus-refresh"
                         id={FM.APP_TRAINING_STATUS_REFRESH}
                         defaultMessage="Refresh"
                     />

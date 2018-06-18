@@ -25,7 +25,6 @@ interface ComponentState {
     isActionEditorModalOpen: boolean
     searchValue: string
     isActionEditorOpen: boolean
-    useNewActionEditor: boolean
 }
 
 class Actions extends React.Component<Props, ComponentState> {
@@ -40,7 +39,6 @@ class Actions extends React.Component<Props, ComponentState> {
             isConfirmDeleteActionModalOpen: false,
             isActionEditorModalOpen: false,
             isActionEditorOpen: false,
-            useNewActionEditor: false
         }
 
         this.onSelectAction = this.onSelectAction.bind(this)
@@ -71,58 +69,46 @@ class Actions extends React.Component<Props, ComponentState> {
         this.setState({
             isActionEditorOpen: false,
             actionSelected: null
+        }, () => {
+            setTimeout(() => this.newActionButton.focus(), 500)
         })
     }
 
     onClickDeleteActionEditor(action: ActionBase) {
-        this.setState(
-            {
+        this.setState({
             isActionEditorOpen: false,
             actionSelected: null
-            }, 
-            () => {
-                this.props.deleteActionThunkAsync(this.props.app.appId, action.actionId)
-            }
-        )
+        }, () => {
+            this.props.deleteActionThunkAsync(this.props.app.appId, action.actionId)
+            setTimeout(() => this.newActionButton.focus(), 1000)
+        })
     }
 
     onClickSubmitActionEditor(action: ActionBase) {
         const wasEditing = this.state.actionSelected
-
-        this.setState(
-            {
-                isActionEditorOpen: false,
-                actionSelected: null
-            }, 
-            () => {
-                if (wasEditing) {
-                    this.props.editActionThunkAsync(this.props.app.appId, action)
-                } else {
-                    this.props.createActionThunkAsync(this.props.app.appId, action)
-                }
-            })
+        this.setState({
+            isActionEditorOpen: false,
+            actionSelected: null
+        }, () => {
+            const apiFunc = wasEditing
+                ? () => this.props.editActionThunkAsync(this.props.app.appId, action)
+                : () => this.props.createActionThunkAsync(this.props.app.appId, action)
+            apiFunc()
+            setTimeout(() => this.newActionButton.focus(), 500)
+        })
     }
 
     getFilteredActions(): ActionBase[] {
         //runs when user changes the text 
-        let lcString = this.state.searchValue.toLowerCase();
-        let filteredActions = this.props.actions.filter(a => {
-            let nameMatch = a.payload.toLowerCase().includes(lcString);
-            let typeMatch = a.actionType ? a.actionType.toLowerCase().includes(lcString) : true;
-            let negativeEntities = a.negativeEntities.map(entityId => {
-                let found = this.props.entities.find(e => e.entityId === entityId);
-                return found.entityName;
-            })
-            let positiveEntities = a.requiredEntities.map(entityId => {
-                let found = this.props.entities.find(e => e.entityId === entityId);
-                return found.entityName;
-            })
-            let requiredEnts = positiveEntities.join('');
-            let negativeEnts = negativeEntities.join('');
-            let reqEntsMatch = requiredEnts.toLowerCase().includes(lcString);
-            let negEntsMatch = negativeEnts.toLowerCase().includes(lcString);
-            let match = nameMatch || typeMatch || reqEntsMatch || negEntsMatch
-            return match;
+        const searchStringLower = this.state.searchValue.toLowerCase()
+        const filteredActions = this.props.actions.filter(a => {
+            const nameMatch = a.payload.toLowerCase().includes(searchStringLower)
+            const typeMatch = a.actionType.toLowerCase().includes(searchStringLower)
+            const entities = this.props.entities
+                .filter(e => [...a.requiredEntities, ...a.negativeEntities, ...(a.suggestedEntity ? [a.suggestedEntity] : [])].includes(e.entityId))
+            const entityMatch = entities.some(e => e.entityName.toLowerCase().includes(searchStringLower))
+
+            return nameMatch || typeMatch || entityMatch
         })
 
         return filteredActions;
@@ -131,12 +117,6 @@ class Actions extends React.Component<Props, ComponentState> {
     onChangeSearchString(searchString: string) {
         this.setState({
             searchValue: searchString.toLowerCase()
-        })
-    }
-
-    onChangedUseNewactionEditor = (useNewActionEditor: boolean) => {
-        this.setState({
-            useNewActionEditor
         })
     }
 
@@ -151,15 +131,14 @@ class Actions extends React.Component<Props, ComponentState> {
                         defaultMessage="Actions"
                     />
                 </span>
-                {this.props.editingPackageId === this.props.app.devPackageId ?
-                    <span className={OF.FontClassNames.mediumPlus}>
+                {this.props.editingPackageId === this.props.app.devPackageId
+                    ? <span className={OF.FontClassNames.mediumPlus}>
                         <FormattedMessage
                             id={FM.ACTIONS_SUBTITLE}
                             defaultMessage="Actions are executed by the bot in response to user input"
                         />
                     </span>
-                    :
-                    <span className="cl-errorpanel">Editing is only allowed in Master Tag</span>
+                    : <span className="cl-errorpanel">Editing is only allowed in Master Tag</span>
                 }
                 <div>
                     <OF.PrimaryButton

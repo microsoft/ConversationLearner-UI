@@ -5,8 +5,8 @@
 import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
 import { connect } from 'react-redux';
-import { ActionBase, ActionTypes, Template, RenderedActionArgument, CardAction, TextAction, ApiAction } from '@conversationlearner/models'
-import { State } from '../types'
+import { ActionBase, ActionTypes, Template, RenderedActionArgument, SessionAction, CardAction, TextAction, ApiAction } from '@conversationlearner/models'
+import { State } from '../types' 
 import * as OF from 'office-ui-fabric-react';
 import { onRenderDetailsHeader } from './ToolTips'
 import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
@@ -41,6 +41,9 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
             case ActionTypes.CARD: {
                 const cardAction = new CardAction(action)
                 return (!this.props.botInfo.templates || !this.props.botInfo.templates.find(cb => cb.name === cardAction.templateName))
+            }
+            case ActionTypes.END_SESSION: {
+                return null;
             }
             default: {
                 console.warn(`Could not get validation for unknown action type: ${action.actionType}`)
@@ -165,29 +168,37 @@ export default connect<typeof stateProps, {}, ReceivedProps>(mapStateToProps, nu
 function getActionPayloadRenderer(action: ActionBase, component: ActionDetailsList, isValidationError: boolean) {
     if (action.actionType === ActionTypes.TEXT) {
         const textAction = new TextAction(action)
-        return <ActionPayloadRenderers.TextPayloadRendererContainer
+        return (<ActionPayloadRenderers.TextPayloadRendererContainer
             textAction={textAction}
             entities={component.props.entities}
             memories={null}
-        />
+        />)
     }
     else if (action.actionType === ActionTypes.API_LOCAL) {
         const apiAction = new ApiAction(action)
-        return <ActionPayloadRenderers.ApiPayloadRendererContainer
+        return (<ActionPayloadRenderers.ApiPayloadRendererContainer
             apiAction={apiAction}
             entities={component.props.entities}
             memories={null}
-        />
+        />)
     }
     else if (action.actionType === ActionTypes.CARD) {
         const cardAction = new CardAction(action)
-        return <ActionPayloadRenderers.CardPayloadRendererContainer
+        return (<ActionPayloadRenderers.CardPayloadRendererContainer
             isValidationError={isValidationError}
             cardAction={cardAction}
             entities={component.props.entities}
             memories={null}
             onClickViewCard={() => component.onClickViewCard(action)}
-        />
+        />)
+    }
+    else if (action.actionType === ActionTypes.END_SESSION) {
+        const sessionAction = new SessionAction(action)
+        return (<ActionPayloadRenderers.SessionPayloadRendererContainer
+            sessionAction={sessionAction}
+            entities={component.props.entities}
+            memories={null}
+        />)
     }
 
     return <span className={OF.FontClassNames.mediumPlus}>Unknown Action Type</span>

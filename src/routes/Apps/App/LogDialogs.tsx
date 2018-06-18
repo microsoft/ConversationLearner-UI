@@ -202,7 +202,7 @@ interface ComponentState {
     searchValue: string
     dialogKey: number,   // Allows user to re-open modal for same row ()
     history: Activity[],
-    isHistoryTerminal: boolean,
+    lastAction: ActionBase,
     teachSession: Teach,
     validationErrors: ReplayError[],
     validationErrorTitleId: string | null, 
@@ -228,7 +228,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             searchValue: '',
             dialogKey: 0,
             history: [],
-            isHistoryTerminal: false,
+            lastAction: null,
             teachSession: null,
             validationErrors: [],
             validationErrorTitleId: null,
@@ -335,7 +335,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         .then(teachWithHistory => {
             this.setState({
                 history: teachWithHistory.history,
-                isHistoryTerminal: teachWithHistory.isLastActionTerminal,
+                lastAction: teachWithHistory.lastAction,
                 currentLogDialog: logDialog,
                 isLogDialogWindowOpen: true,
                 validationErrors: teachWithHistory.replayErrors,
@@ -364,7 +364,9 @@ class LogDialogs extends React.Component<Props, ComponentState> {
 
     @autobind
     onDeleteLogDialog() {      
-        this.props.deleteLogDialogThunkAsync(this.props.user.id, this.props.app, this.state.currentLogDialog.logDialogId, this.props.editingPackageId)
+        if (this.state.currentLogDialog) {
+            this.props.deleteLogDialogThunkAsync(this.props.user.id, this.props.app, this.state.currentLogDialog.logDialogId, this.props.editingPackageId)
+        }
         this.onCloseLogDialogModal();
     }
 
@@ -378,7 +380,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 this.setState({
                     teachSession: teachWithHistory.teach, 
                     history: teachWithHistory.history,
-                    isHistoryTerminal: teachWithHistory.isLastActionTerminal,
+                    lastAction: teachWithHistory.lastAction,
                     isLogDialogWindowOpen: false,
                     isTeachDialogModalOpen: true
                 })
@@ -403,7 +405,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             teachSession: null,
             isTeachDialogModalOpen: false,
             history: null,
-            isHistoryTerminal: false,
+            lastAction: null,
             currentLogDialog: null,
             dialogKey: this.state.dialogKey + 1
         })
@@ -420,7 +422,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         // Clear history first
         this.setState({
             history: null,
-            isHistoryTerminal: false
+            lastAction: null
         });
 
         ((this.props.createTeachSessionFromUndoThunkAsync(this.props.app.appId, this.state.teachSession, popRound, this.props.user.name, this.props.user.id) as any) as Promise<TeachWithHistory>)
@@ -429,7 +431,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 this.setState({
                     teachSession: teachWithHistory.teach, 
                     history: teachWithHistory.history,
-                    isHistoryTerminal: teachWithHistory.isLastActionTerminal
+                    lastAction: teachWithHistory.lastAction
                 })
             } else {    
                 this.setState({
@@ -476,7 +478,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         const currentLogDialog = this.state.currentLogDialog;
         return (
             <div className="cl-page">
-                <div className={`cl-dialog-title cl-dialog-title--log ${OF.FontClassNames.xxLarge}`}>
+                <div data-testid= "logdialogs-title" className={`cl-dialog-title cl-dialog-title--log ${OF.FontClassNames.xxLarge}`}>
                     <OF.Icon iconName="UserFollowed" />
                     <FormattedMessage
                         id={FM.LOGDIALOGS_TITLE}
@@ -503,6 +505,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 }
                 <div>
                     <OF.PrimaryButton
+                        data-testid="logdialogs-button-create"
                         disabled={this.props.editingPackageId !== this.props.app.devPackageId || this.props.invalidBot}                      
                         onClick={this.onClickNewChatSession}
                         ariaDescription={this.props.intl.formatMessage({
@@ -523,12 +526,14 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     />
                 </div>
                 <OF.SearchBox
+                    data-testid="logdialogs-search-box"
                     className={OF.FontClassNames.mediumPlus}
                     onChange={(newValue) => this.onChange(newValue)}
                     onSearch={(newValue) => this.onChange(newValue)}
                 />
                 <div>
                     <OF.PrimaryButton
+                        data-testid="logdialogs-button-refresh"
                         onClick={() => this.onClickSync()}
                         ariaDescription="Refresh"
                         text="Refresh"
@@ -536,6 +541,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     />
                 </div>
                 <OF.DetailsList
+                    data-testid="logdialogs-details-list"
                     key={this.state.dialogKey}
                     className={OF.FontClassNames.mediumPlus}
                     items={logDialogItems}
@@ -568,11 +574,11 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                         editingPackageId={this.props.editingPackageId}
                         teach={this.props.teachSessions.current}
                         dialogMode={this.props.teachSessions.mode}
-                        open={this.state.isTeachDialogModalOpen}
+                        isOpen={this.state.isTeachDialogModalOpen}
                         onClose={this.onCloseTeachSession} 
                         onUndo={(popRound) => this.onUndoTeachStep(popRound)}
                         history={this.state.isTeachDialogModalOpen ? this.state.history : null}
-                        isHistoryTerminal={this.state.isHistoryTerminal}
+                        lastAction={this.state.lastAction}
                         sourceLogDialog={this.state.currentLogDialog}
                 />
             </div>

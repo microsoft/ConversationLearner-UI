@@ -12,7 +12,7 @@ import { getScoresThunkAsync, runScorerThunkAsync, postScorerFeedbackThunkAsync 
 import {
     AppBase, TextVariation, ExtractResponse,
     DialogType, TrainScorerStep, TrainingStatusCode,
-    UITrainScorerStep, UIScoreInput, DialogMode, UITeachResponse, ScoredAction
+    UITrainScorerStep, UIScoreInput, DialogMode, TeachResponse, ScoredAction
 } from '@conversationlearner/models'
 import ActionScorer from './ActionScorer';
 import EntityExtractor from './EntityExtractor';
@@ -66,7 +66,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
         // Pass score input (minus extractor step) for subsequent actions when this one is non-terminal
         let uiScoreInput = { ...this.props.teachSession.uiScoreInput, trainExtractorStep: null } as UIScoreInput
 
-        ((this.props.postScorerFeedbackThunkAsync(this.props.user.id, appId, teachId, uiTrainScorerStep, waitForUser, uiScoreInput) as any) as Promise<UITeachResponse>)
+        ((this.props.postScorerFeedbackThunkAsync(this.props.user.id, appId, teachId, uiTrainScorerStep, waitForUser, uiScoreInput) as any) as Promise<TeachResponse>)
             .then(result => { this.props.onScoredAction(trainScorerStep.scoredAction) }
             )
     }
@@ -102,35 +102,49 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                 <div className={`cl-dialog-title cl-dialog-title--train ${FontClassNames.xxLarge}`}>
                     <Icon iconName="EditContact" />Train Dialog
                 </div>
-                {this.props.teachSession.mode === DialogMode.Extractor ? (
+                {this.props.teachSession.mode === DialogMode.Extractor && (
                     <div className="cl-dialog-admin__content">
                         <div className="cl-wc-message cl-wc-message--user">
                             <FormattedMessage
+                                data-testid="teachsessionadmin-userinput"
                                 id={FM.TEACHSESSIONADMIN_DIALOGMODE_USER}
                                 defaultMessage="User Input"
                             />
                         </div>
-                    </div>
-                ) : (this.props.teachSession.mode === DialogMode.Scorer ? (
+                    </div>)
+                }
+                {this.props.teachSession.mode === DialogMode.Scorer && (
                     <div className="cl-dialog-admin__content">
                         <div className="cl-wc-message cl-wc-message--bot">
                             <FormattedMessage
+                                data-testid="teachsessionadmin-botresponse"
                                 id={FM.TEACHSESSIONADMIN_DIALOGMODE_BOT}
                                 defaultMessage="Bot Response"
                             />
                         </div>
-                    </div>) : null
-                    )
+                    </div>)
+                }
+                {this.props.teachSession.mode === DialogMode.EndSession && (
+                    <div className="cl-dialog-admin__content">
+                        <div className="cl-wc-message cl-wc-message--done">
+                            <FormattedMessage
+                                id={FM.TEACHSESSIONADMIN_DIALOGMODE_END_SESSION}
+                                defaultMessage="Session Has Ended"
+                            />
+                        </div>
+                    </div>)
                 }
                 <div className="cl-dialog-admin__content">
                     <div className="cl-dialog-admin-title">
                         <FormattedMessage
+                            data-testid="teachsessionadmin-entitymemory"
                             id={FM.TEACHSESSIONADMIN_MEMORY_TITLE}
                             defaultMessage="Entity Memory"
                         />
                     </div>
                     <div>
                         <MemoryTable
+                            data-testid="teachsessionadmin-memorytable"
                             memories={this.props.teachSession.memories}
                             prevMemories={this.props.teachSession.prevMemories}
                         />
@@ -140,6 +154,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                     <div className="cl-dialog-admin__content">
                         <div className="cl-dialog-admin-title">
                             <FormattedMessage
+                                data-testid="teachsessionadmin-entitydetection"
                                 id={FM.TEACHSESSIONADMIN_ENTITYDETECTION_TITLE}
                                 defaultMessage="Entity Detection"
                             />
@@ -147,6 +162,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                         <div>
                             {(mode === DialogMode.Extractor || autoTeachWithRound) &&
                                 <EntityExtractor
+                                    data-testid="teachsessionadmin-entityextractor"
                                     app={this.props.app}
                                     editingPackageId={this.props.editingPackageId}
                                     canEdit={true}
@@ -166,6 +182,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                     <div className="cl-dialog-admin__content">
                         <div className="cl-dialog-admin-title">
                             <FormattedMessage
+                                data-testid="teachsessionadmin-action"
                                 id={FM.TEACHSESSIONADMIN_ACTION_TITLE}
                                 defaultMessage="Action"
                             />
@@ -174,12 +191,14 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                                 {this.props.app.trainingStatus === TrainingStatusCode.Completed
                                     ? <span>
                                         <FormattedMessage
+                                            data-testid="teachsessionadmin-trainstatus-completed"
                                             id={FM.TEACHSESSIONADMIN_TRAINSTATUS_COMPLETED}
                                             defaultMessage="Train Status: Completed"
                                         /> &nbsp;
                                         {this.state.isScoresRefreshVisible
                                             && <span>
                                                 <FormattedMessage
+                                                    data-testid="teachsessionadmin-trainstatus-newscores"
                                                     id={FM.TEACHSESSIONADMIN_TRAINSTATUS_NEWSCORES}
                                                     defaultMessage="New Scores Available"
                                                 /> (
@@ -198,10 +217,12 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                                     </span>
                                     : (this.props.app.trainingStatus === TrainingStatusCode.Failed
                                         ? <FormattedMessage
+                                            data-testid="trainingstatus-failed"
                                             id={FM.TEACHSESSIONADMIN_TRAINSTATUS_FAILED}
                                             defaultMessage="Train Status: Failed"
                                         />
                                         : <FormattedMessage
+                                            data-testid="trainingstatus-running"
                                             id={FM.TEACHSESSIONADMIN_TRAINSTATUS_RUNNING}
                                             defaultMessage="Train Status: Runnning..."
                                         />

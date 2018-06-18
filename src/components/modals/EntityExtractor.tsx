@@ -407,6 +407,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                 {canEdit && this.props.extractType === DialogType.TEACH &&
                     <div className="cl-buttons-row">
                         <OF.PrimaryButton
+                            data-testid="button-proceedto-scoreactions"
                             disabled={!allExtractResponsesValid || this.state.pendingVariationChange}
                             onClick={this.onClickSubmitExtractions}
                             ariaDescription={'Score Actions'}
@@ -417,6 +418,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                 }
                 <div className="cl-dialog-admin__dialogs">
                     <EntityCreatorEditor
+                        data-testid="entityextractor-editor"
                         app={this.props.app}
                         editingPackageId={this.props.editingPackageId}
                         open={this.state.entityModalOpen}
@@ -426,6 +428,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                         entityTypeFilter={EntityType.LUIS}
                     />
                     <OF.Dialog
+                        data-testid="entityextractor-dialog"
                         hidden={!this.state.warningOpen}
                         dialogContentProps={{
                             type: OF.DialogType.normal,
@@ -440,6 +443,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                         </OF.DialogFooter>
                     </OF.Dialog>
                     <OF.Dialog
+                        data-testid="entityextractor-dialog-confirm"
                         hidden={this.state.savedExtractResponses.length === 0}
                         isBlocking={true}
                         dialogContentProps={{

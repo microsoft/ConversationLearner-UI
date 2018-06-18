@@ -6,7 +6,7 @@ import { AT, ActionObject, ErrorType } from '../types'
 import { Dispatch } from 'redux'
 import { AppBase, Session, Teach } from '@conversationlearner/models'
 import { setErrorDisplay } from './displayActions'
-import { fetchAllTrainDialogsAsync, fetchAllLogDialogsAsync, fetchApplicationTrainingStatusThunkAsync } from './fetchActions'
+import { fetchAllTrainDialogsAsync, fetchAllLogDialogsAsync, fetchApplicationTrainingStatusThunkAsync, fetchAllActionsAsync } from './fetchActions'
 import * as ClientFactory from '../services/clientFactory'
 
 // ---------------------
@@ -30,25 +30,22 @@ export const deleteApplicationFulfilled = (appId: string): ActionObject => {
 // ---------------------
 // Entity
 // ---------------------
-export const deleteEntityThunkAsync = (appId: string, entityId: string, reverseEntityId?: string) => {
+export const deleteEntityThunkAsync = (appId: string, entityId: string) => {
     return async (dispatch: Dispatch<any>) => {
         dispatch(deleteEntityAsync(appId, entityId))
         const clClient = ClientFactory.getInstance(AT.DELETE_ENTITY_ASYNC)
 
         try {
-            let deleteReverseResponse = null;
             const deleteEditResponse = await clClient.entitiesDelete(appId, entityId);
             dispatch(deleteEntityFulfilled(entityId));
 
-            // If it's a negatable entity
-            if (reverseEntityId) {
-                deleteReverseResponse = await clClient.entitiesDelete(appId, reverseEntityId);
-                dispatch(deleteEntityFulfilled(reverseEntityId));
+            // If any actions were modified, reload them
+            if (deleteEditResponse.actionIds && deleteEditResponse.actionIds.length > 0) {
+                dispatch(fetchAllActionsAsync(appId))
             }
 
-            // Fetch train dialogs if any train dialogs were impacted
-            if ((deleteEditResponse.trainDialogIds && deleteEditResponse.trainDialogIds.length > 0) ||
-                (deleteReverseResponse && deleteReverseResponse.trainDialogIds && deleteReverseResponse.trainDialogIds.length > 0)) {
+            // If any train dialogs were modified fetch train dialogs 
+            if (deleteEditResponse.trainDialogIds && deleteEditResponse.trainDialogIds.length > 0) {
                 dispatch(fetchAllTrainDialogsAsync(appId));
             }
 
