@@ -502,19 +502,12 @@ export const getEntitiesFromValueUsingTokenData = (change: any): models.IGeneric
         .filter(x => x)
 }
 
-export const getPreBuiltEntityDisplayName = (pe: PredictedEntity): string => {
+export const getPreBuiltEntityDisplayName = (entity: EntityBase, pe: PredictedEntity): string => {
+    if (typeof pe.builtinType !== 'string' || pe.builtinType.length === 0) {
+        return entity.entityType
+    }
+
     const names = pe.builtinType.split('.')
-    // If builtinType is only copy of entityType
-    if (names.length === 1) {
-        return pe.builtinType
-    }
-
-    // If builtinType is just basic value 'builtin.number' -> 'number'
-    if (names.length === 2) {
-        return names[1]
-    }
-
-    // If builtinType is complex value 'builtin.encyclopedia.people.person' -> 'person'
     return names[names.length - 1]
 }
 
@@ -595,7 +588,7 @@ export const convertExtractorResponseToEditorModels = (extractResponse: ExtractR
 
     const preBuiltEntities = internalPredictedEntities
         .filter(({ entity }) => entity && entity.entityType !== EntityType.LUIS && entity.entityType !== EntityType.LOCAL)
-        .map(({ entity, predictedEntity }) => convertPredictedEntityToGenericEntity(predictedEntity, entity.entityName, getPreBuiltEntityDisplayName(predictedEntity)))
+        .map(({ entity, predictedEntity }) => convertPredictedEntityToGenericEntity(predictedEntity, entity.entityName, getPreBuiltEntityDisplayName(entity, predictedEntity)))
 
     return {
         options,
