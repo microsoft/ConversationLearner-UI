@@ -176,6 +176,7 @@ class TutorialImporter extends React.Component<Props, ComponentState> {
                         </div>
 
                         <div className="cl-modal_footer cl-modal-buttons">
+                            <div className="cl-modal-buttons_secondary" />
                             <div className="cl-modal-buttons_primary">
                             {this.state.moreInfoApp === null ?
                                 <OF.PrimaryButton
@@ -204,7 +205,6 @@ class TutorialImporter extends React.Component<Props, ComponentState> {
                             }
                             </div>
                         </div> 
-                   
                 </Modal>
             );
         
