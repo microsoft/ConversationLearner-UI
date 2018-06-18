@@ -57,6 +57,7 @@
     "build": "react-scripts-ts build",
     "cibuild": "cross-env REACT_APP_AAD_APP_ID=38f847d3-2b83-43ef-b833-50573ef2eda1 CI=false react-scripts-ts build",
     "cibuildprod": "cross-env CI=false react-scripts-ts build",
+    "build:tests": "tsc -p ./cypress/tsconfig.json",
     "cypress": "cypress",
     "cypress:open": "cypress open",
     "test": "react-scripts-ts test --env=jsdom",
@@ -91,6 +92,7 @@
   "devDependencies": {
     "@commitlint/cli": "7.0.0",
     "@commitlint/config-conventional": "7.0.1",
+    "@cypress/webpack-preprocessor": "2.0.1",
     "@types/execa": "^0.8.1",
     "@types/fs-extra": "^5.0.0",
     "@types/jest": "^20.0.8",
@@ -111,6 +113,7 @@
     "mocha": "5.2.0",
     "mocha-junit-reporter": "1.17.0",
     "mocha-multi-reporters": "1.1.7",
+    "ts-loader": "4.4.1",
     "tslint": "^5.9.1",
     "tslint-config-prettier": "^1.12.0",
     "tslint-config-standard": "^7.0.0",
