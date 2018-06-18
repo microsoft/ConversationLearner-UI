@@ -4,7 +4,7 @@
  */
 
 /** Chat: Types a new user's message */
-function newUserMessage(trainmessage) {
+function newUserMessage(trainMessage: string) {
     cy.on('uncaught:exception', (err, runnable) => {
         return false
     })
@@ -13,7 +13,7 @@ function newUserMessage(trainmessage) {
     cy.server()
     cy.route('PUT', '/app/*/teach/*/extractor').as('putExtractor')
 
-    cy.get('input[class="wc-shellinput"]').type(trainmessage)
+    cy.get('input[class="wc-shellinput"]').type(trainMessage)
     cy.get('label[class="wc-send"]').click()
     cy.wait('@putExtractor')
 }
@@ -35,4 +35,4 @@ function done() {
         .click()
 }
 
-export {newUserMessage, proceedToScoreAction, done};
+export { newUserMessage, proceedToScoreAction, done };

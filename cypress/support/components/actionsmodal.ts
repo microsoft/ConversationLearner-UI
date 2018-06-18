@@ -11,7 +11,7 @@ function selectTypeText() {
   // TODO: implement a more robust way to select an specific action type.
 }
 /** Enter action response phrase */
-function setPhrase(actionPhrase) {
+function setPhrase(actionPhrase: string) {
   cy.get('div[data-slate-editor="true"]')
     .type(actionPhrase);
 }
@@ -21,4 +21,4 @@ function save() {
     .click();
 }
 
-export {selectTypeText, setPhrase, save};
+export { selectTypeText, setPhrase, save };

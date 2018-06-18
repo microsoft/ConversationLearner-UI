@@ -4,16 +4,16 @@
  */
 
 /** Chat: Types a new user's message */
-function newUserMessage(trainmessage) {
+function newUserMessage(trainMessage: string) {
   cy.on('uncaught:exception', (err, runnable) => {
-        return false
-    })
+    return false
+  })
 
   // Submit message to WebChat
   cy.server()
   cy.route('POST', '/directline/conversations/**').as('postConversations')
 
-  cy.get('input[class="wc-shellinput"]').type(trainmessage)
+  cy.get('input[class="wc-shellinput"]').type(trainMessage)
   cy.get('label[class="wc-send"]').click()
 
   cy.wait('@postConversations')

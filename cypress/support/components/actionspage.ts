@@ -9,4 +9,4 @@ function createNew() {
     .get('[data-testid="actions-button-create"]')
     .click();
 }
-export {createNew};
+export { createNew };

@@ -3,13 +3,13 @@
  * Licensed under the MIT License.
  */
 
- /** VERIFY: Model Page Title */
-function verifyPageTitle(modelName) {
-        // Verify: Ensure app page displays new application title
-        cy.get('[data-testid="app-index-title"]')
-        .should(el => {
-          expect(el).to.contain(modelName)
-        })
+/** VERIFY: Model Page Title */
+function verifyPageTitle(modelName: string) {
+  // Verify: Ensure app page displays new application title
+  cy.get('[data-testid="app-index-title"]')
+    .should(el => {
+      expect(el).to.contain(modelName)
+    })
 }
 
 /** Navigate back to the Converation Learner Home page */
@@ -22,8 +22,7 @@ function navigateToHomepage() {
 
 /** Navigate to the Entities page */
 function navigateToEntities() {
-
-    cy.get('a[href$="/entities"]').click().wait(1000)
+  cy.get('a[href$="/entities"]').click().wait(1000)
 }
 
 /** Navigate to Actions Page */
@@ -43,4 +42,5 @@ function navigateToLogDialogs() {
   cy.get('a[href$="logDialogs"]')
     .click()
 }
-export {verifyPageTitle, navigateToHomepage, navigateToEntities, navigateToActions, navigateToTrainDialogs, navigateToLogDialogs}
+
+export { verifyPageTitle, navigateToHomepage, navigateToEntities, navigateToActions, navigateToTrainDialogs, navigateToLogDialogs }

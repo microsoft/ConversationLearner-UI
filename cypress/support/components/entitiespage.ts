@@ -5,7 +5,7 @@
 
 
 /** Create a new entity */
-function createNew(entityName) {
+function createNew(entityName: string) {
     cy.get('[data-testid="entities-button-create"]').click()
         .wait(1000);
 

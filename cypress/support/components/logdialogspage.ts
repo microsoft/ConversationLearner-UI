@@ -5,7 +5,7 @@
 
 /** Verify: the Train Dialog page is rendered */
 function verifyPageTitle() {
-    cy.get('div[data-testid="logdialogs-title"]')
+  cy.get('div[data-testid="logdialogs-title"]')
     .contains('Log Dialogs')
 }
 
@@ -16,7 +16,7 @@ function createNew() {
   })
   cy.server()
   cy.route('PUT', '/state/conversationId?username=ConversationLearnerDeveloper&id=*').as('putConv')
-    cy.get('[data-testid="logdialogs-button-create"]')
+  cy.get('[data-testid="logdialogs-button-create"]')
     .click()
   cy.wait('@putConv')
 }
