@@ -14,4 +14,4 @@ function selectAnAction() {
     cy.wait('@postScore')
 }
 
-export {selectAnAction}
+export { selectAnAction }

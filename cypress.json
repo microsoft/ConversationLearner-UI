@@ -3,5 +3,6 @@
   "reporter": "mocha-multi-reporters",
   "reporterOptions": {
     "configFile": "config-mocha-reporter.json"
-  }
+  },
+  "supportFile": "cypress/support/index.ts"
 }

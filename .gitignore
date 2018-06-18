@@ -10,6 +10,7 @@ package
 
 # testing
 /coverage
+/cypress/**/*.js
 /cypress/videos
 /cypress/screenshots
 /results

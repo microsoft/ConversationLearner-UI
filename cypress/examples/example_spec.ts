@@ -697,7 +697,7 @@ describe('Kitchen Sink', function () {
         cy.get('.assertions-p').find('p')
         .should(function ($p) {
           // return an array of texts from all of the p's
-          let texts = $p.map(function (i, el) {
+          let texts: any = $p.map(function (i, el) {
             // https://on.cypress.io/$
             return Cypress.$(el).text()
           })
@@ -900,7 +900,7 @@ describe('Kitchen Sink', function () {
 
     it('cy.server() - control behavior of network requests and responses', function () {
       // https://on.cypress.io/server
-      cy.server().should(function (server) {
+      cy.server().should(function (server: any) {
         // the default options on server
         // you can override any of these options
         expect(server.delay).to.eq(0)
@@ -978,7 +978,7 @@ describe('Kitchen Sink', function () {
       cy.wait('@postComment')
 
       // get the route
-      cy.get('@postComment').then(function (xhr) {
+      cy.get('@postComment').then(function (xhr: any) {
         expect(xhr.requestBody).to.include('email')
         expect(xhr.requestHeaders).to.have.property('Content-Type')
         expect(xhr.responseBody).to.have.property('name', 'Using POST in cy.route()')
@@ -1107,7 +1107,7 @@ describe('Kitchen Sink', function () {
       })
 
       // clearLocalStorage() yields the localStorage object
-      cy.clearLocalStorage().should(function (ls) {
+      cy.clearLocalStorage().should(function (ls: any) {
         expect(ls.getItem('prop1')).to.be.null
         expect(ls.getItem('prop2')).to.be.null
         expect(ls.getItem('prop3')).to.be.null
@@ -1120,7 +1120,7 @@ describe('Kitchen Sink', function () {
         expect(localStorage.getItem('prop3')).to.eq('magenta')
       })
 
-      cy.clearLocalStorage('prop1').should(function (ls) {
+      cy.clearLocalStorage('prop1').should(function (ls: any) {
         expect(ls.getItem('prop1')).to.be.null
         expect(ls.getItem('prop2')).to.eq('blue')
         expect(ls.getItem('prop3')).to.eq('magenta')
@@ -1133,7 +1133,7 @@ describe('Kitchen Sink', function () {
         expect(localStorage.getItem('prop3')).to.eq('magenta')
       })
 
-      cy.clearLocalStorage(/prop1|2/).should(function (ls) {
+      cy.clearLocalStorage(/prop1|2/).should((ls: any) => {
         expect(ls.getItem('prop1')).to.be.null
         expect(ls.getItem('prop2')).to.be.null
         expect(ls.getItem('prop3')).to.eq('magenta')
@@ -1239,7 +1239,7 @@ describe('Kitchen Sink', function () {
       // https://on.cypress.io/stub
       cy.visit('https://example.cypress.io/commands/spies-stubs-clocks')
 
-      let obj = {
+      let obj: any = {
         foo () {},
       }
 
@@ -1320,7 +1320,7 @@ describe('Kitchen Sink', function () {
         // https://github.com/nolanlawson/blob-util#imgSrcToDataURL
         // get the dataUrl string for the javascript-logo
         return Cypress.Blob.imgSrcToDataURL('https://example.cypress.io/assets/img/javascript-logo.png', undefined, 'anonymous')
-          .then(function (dataUrl) {
+          .then(function (dataUrl: string) {
             // create an <img> element and set its src to the dataUrl
             let img = Cypress.$('<img />', { src: dataUrl })
             // need to explicitly return cy here since we are initially returning

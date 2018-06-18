@@ -15,7 +15,7 @@ function navigateTo() {
 }
 
 /** Creates a New Model */
-function createNewModel(modelName) {
+function createNewModel(modelName: string) {
   cy.on('uncaught:exception', (err, runnable) => {
     return false
   })
@@ -39,7 +39,7 @@ function createNewModel(modelName) {
 }
 
 /** Delete an existent Model */
-function deleteModel(modelName) {
+function deleteModel(modelName: string) {
   navigateTo()
 
   cy.contains(modelName)
@@ -52,4 +52,4 @@ function deleteModel(modelName) {
     .click()
 }
 
-export{navigateTo, createNewModel, deleteModel }
+export { navigateTo, createNewModel, deleteModel }
