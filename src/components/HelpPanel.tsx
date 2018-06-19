@@ -18,19 +18,18 @@ class HelpPanel extends React.Component<Props, {}> {
 
     render() {
         return (
-            <div>
-                <OF.Panel
-                    isBlocking={true}
-                    isOpen={this.props.tipType != null}
-                    isLightDismiss={true}
-                    onDismiss={() => { this.onDismiss() }}
-                    type={OF.PanelType.medium}
-                    customWidth="400px"
-                    closeButtonAriaLabel="Close"
-                >
-                    <span>{ToolTip.GetTip(this.props.tipType)}</span>
-                </OF.Panel>
-            </div>
+            <OF.Panel
+                focusTrapZoneProps={{}}
+                isBlocking={true}
+                isOpen={this.props.tipType != null}
+                isLightDismiss={true}
+                onDismiss={() => { this.onDismiss() }}
+                type={OF.PanelType.medium}
+                customWidth="400px"
+                closeButtonAriaLabel="Close"
+            >
+                <span>{ToolTip.GetTip(this.props.tipType)}</span>
+            </OF.Panel>
         )
     }
 }
