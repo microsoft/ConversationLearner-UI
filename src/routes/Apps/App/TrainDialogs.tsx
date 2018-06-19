@@ -52,14 +52,14 @@ function textClassName(trainDialog: TrainDialog): string {
     return OF.FontClassNames.mediumPlus;
 }
 
-function getFirstInput(trainDialog: TrainDialog) : string {
+function getFirstInput(trainDialog: TrainDialog): string {
     if (trainDialog.rounds && trainDialog.rounds.length > 0) {
         return trainDialog.rounds[0].extractorStep.textVariations[0].text
     }
     return null;
 }
 
-function getLastInput(trainDialog: TrainDialog) : string {
+function getLastInput(trainDialog: TrainDialog): string {
     if (trainDialog.rounds && trainDialog.rounds.length > 0) {
         return trainDialog.rounds[trainDialog.rounds.length - 1].extractorStep.textVariations[0].text;
     }
@@ -76,7 +76,7 @@ function getLastResponse(trainDialog: TrainDialog, component: TrainDialogs): str
             let action = component.props.actions.find(a => a.actionId === actionId);
             if (action) {
                 return ActionBase.GetPayload(action, getDefaultEntityMap(component.props.entities))
-            } 
+            }
         }
     }
     return null;
@@ -99,9 +99,9 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                 let firstInput = getFirstInput(trainDialog);
                 if (firstInput) {
                     return (<span className={textClassName(trainDialog)}>
-                            {trainDialog.invalid === true && <Icon className="cl-icon" iconName="IncidentTriangle" />}
-                            {firstInput}
-                        </span>)
+                        {trainDialog.invalid === true && <Icon className="cl-icon" iconName="IncidentTriangle" />}
+                        {firstInput}
+                    </span>)
                 }
                 return <OF.Icon iconName="Remove" className="notFoundIcon" />
             },
@@ -220,8 +220,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     }
 
     sortTrainDialogs(trainDialogs: TrainDialog[]): TrainDialog[] {
-
-        // If column header selected sort the items, always putting invald at the top
+        // If column header selected sort the items, always putting invalid at the top
         if (this.state.sortColumn) {
             trainDialogs
                 .sort((a, b) => {
@@ -273,14 +272,14 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     }
 
     toActionFilter(action: ActionBase, entities: EntityBase[]): OF.IDropdownOption {
-        return { 
+        return {
             key: action.actionId,
             text: ActionBase.GetPayload(action, getDefaultEntityMap(entities))
         }
     }
-     
+
     toEntityFilter(entity: EntityBase): OF.IDropdownOption {
-        return { 
+        return {
             key: entity.entityId,
             text: entity.entityName,
             data: entity.negativeId
@@ -530,10 +529,10 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         })
     }
 
-    renderTrainDialogItems(): TrainDialog[] {
-        let filteredTrainDialogs : TrainDialog[] = null;
+    getFilteredAndSortedDialogs(): TrainDialog[] {
+        let filteredTrainDialogs: TrainDialog[] = null;
 
-        if (!this.state.searchValue && ! this.state.entityFilter && !this.state.actionFilter) {
+        if (!this.state.searchValue && !this.state.entityFilter && !this.state.actionFilter) {
             filteredTrainDialogs = this.props.trainDialogs;
         } else {
             // TODO: Consider caching as not very efficient
@@ -569,8 +568,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
                 // Filter out train dialogs that don't match filters (data = negativeId for multivalue)
                 if (this.state.entityFilter && this.state.entityFilter.key
-                        && !entitiesInTD.find(en => en.entityId === this.state.entityFilter.key)
-                        && !entitiesInTD.find(en => en.entityId === this.state.entityFilter.data)) {
+                    && !entitiesInTD.find(en => en.entityId === this.state.entityFilter.key)
+                    && !entitiesInTD.find(en => en.entityId === this.state.entityFilter.data)) {
                     return false;
                 }
                 if (this.state.actionFilter && this.state.actionFilter.key
@@ -592,9 +591,9 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     }
 
     render() {
-        const { intl } = this.props
-        let trainDialogItems = this.renderTrainDialogItems()
-        let currentTrainDialog = this.state.currentTrainDialog
+        const { intl, trainDialogs } = this.props
+        const computedTrainDialogs = this.getFilteredAndSortedDialogs()
+        const currentTrainDialog = this.state.currentTrainDialog
         return (
             <div className="cl-page">
                 <div data-testid="train-dialogs-title" className={`cl-dialog-title cl-dialog-title--train ${OF.FontClassNames.xxLarge}`}>
@@ -629,75 +628,99 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         })}
                         componentRef={component => this.newTeachSessionButton = component}
                     />
-                    <ReplayErrorList  
-                        open={this.state.isValidationWarningOpen}
-                        onClose={this.onCloseValidationWarning}
-                        textItems={this.state.validationErrors}
-                        formattedTitleId={this.state.validationErrorTitleId}
-                        formattedMessageId={this.state.validationErrorMessageId}
-                    />
-                    <TeachSessionModal
-                        app={this.props.app}
-                        editingPackageId={this.props.editingPackageId}
-                        teach={this.props.teachSessions.current}
-                        dialogMode={this.props.teachSessions.mode}
-                        isOpen={this.state.isTeachDialogModalOpen}
-                        onClose={() => this.onCloseTeachSession()}
-                        onUndo={(popRound) => this.onUndoTeachStep(popRound)}
-                        history={this.state.isTeachDialogModalOpen ? this.state.history : null}
-                        lastAction={this.state.lastAction}
-                        sourceTrainDialog={this.state.currentTrainDialog}
-                    />
                 </div>
-                <div>
-                    <OF.Label htmlFor="search" className={OF.FontClassNames.medium}>
-                        Search:
-                    </OF.Label>
-                    <OF.SearchBox
-                        data-testid="search-box"
-                        id="search"
-                        className={OF.FontClassNames.medium}
-                        onChange={(newValue) => this.onChangeSearchString(newValue)}
-                        onSearch={(newValue) => this.onChangeSearchString(newValue)}
-                    />
-                </div>
-                <div className="cl-list-filters">
-                    <OF.Dropdown
-                        data-testid="dropdown-filter-by-entity"
-                        label="Entity:"
-                        selectedKey={(this.state.entityFilter ? this.state.entityFilter.key : undefined)}
-                        onChanged={this.onSelectEntityFilter}
-                        placeHolder="Filter by Entity"
-                        options={this.props.entities
-                            // Only show positive versions of negatable entities
-                            .filter(e => e.positiveId == null)
-                            .map(e => this.toEntityFilter(e))
-                            .concat({key: null, text: '---', data: null})
-                        }
-                    /> 
-        
-                    <OF.Dropdown
-                        data-testid="dropdown-filter-by-action"
-                        label="Action:"
-                        selectedKey={(this.state.actionFilter ? this.state.actionFilter.key : undefined)}
-                        onChanged={this.onSelectActionFilter}
-                        placeHolder="Filter by Action"
-                        options={this.props.actions
-                            .map(a => this.toActionFilter(a, this.props.entities))
-                            .concat({key: null, text: '---'})
-                        }
-                    />
-                </div>
-                <OF.DetailsList
-                    data-testid="detail-list"
-                    key={this.state.dialogKey}
-                    className={OF.FontClassNames.mediumPlus}
-                    items={trainDialogItems}
-                    columns={this.state.columns}
-                    checkboxVisibility={OF.CheckboxVisibility.hidden}
-                    onColumnHeaderClick={this.onClickColumnHeader}
-                    onRenderItemColumn={(trainDialog, i, column: IRenderableColumn) => returnErrorStringWhenError(() => column.render(trainDialog, this))}
-                    onActiveItemChanged={trainDialog => this.onClickTrainDialogItem(trainDialog)}
+
+                {trainDialogs.length === 0
+                    ? <div className="cl-page-placeholder">
+                        <div className="cl-page-placeholder__content">
+                            <div className={`cl-page-placeholder__description ${OF.FontClassNames.xxLarge}`}>Create a Train Dialog</div>
+                            <OF.PrimaryButton
+                                iconProps={{
+                                    iconName: "Add"
+                                }}
+                                disabled={this.props.editingPackageId !== this.props.app.devPackageId || this.props.invalidBot}
+                                onClick={() => this.onClickNewTeachSession()}
+                                ariaDescription={intl.formatMessage({
+                                    id: FM.TRAINDIALOGS_CREATEBUTTONARIALDESCRIPTION,
+                                    defaultMessage: 'Create a New Train Dialog'
+                                })}
+                                text={intl.formatMessage({
+                                    id: FM.TRAINDIALOGS_CREATEBUTTONTITLE,
+                                    defaultMessage: 'New Train Dialog'
+                                })}
+                            />
+                        </div>
+                    </div>
+                    : <React.Fragment>
+                        <div>
+                            <OF.Label htmlFor="search" className={OF.FontClassNames.medium}>
+                                Search:
+                            </OF.Label>
+                            <OF.SearchBox
+                                data-testid="search-box"
+                                id="search"
+                                className={OF.FontClassNames.medium}
+                                onChange={(newValue) => this.onChangeSearchString(newValue)}
+                                onSearch={(newValue) => this.onChangeSearchString(newValue)}
+                            />
+                        </div>
+                        <div className="cl-list-filters">
+                            <OF.Dropdown
+                                data-testid="dropdown-filter-by-entity"
+                                label="Entity:"
+                                selectedKey={(this.state.entityFilter ? this.state.entityFilter.key : undefined)}
+                                onChanged={this.onSelectEntityFilter}
+                                placeHolder="Filter by Entity"
+                                options={this.props.entities
+                                    // Only show positive versions of negatable entities
+                                    .filter(e => e.positiveId == null)
+                                    .map(e => this.toEntityFilter(e))
+                                    .concat({ key: null, text: '---', data: null })
+                                }
+                            />
+
+                            <OF.Dropdown
+                                data-testid="dropdown-filter-by-action"
+                                label="Action:"
+                                selectedKey={(this.state.actionFilter ? this.state.actionFilter.key : undefined)}
+                                onChanged={this.onSelectActionFilter}
+                                placeHolder="Filter by Action"
+                                options={this.props.actions
+                                    .map(a => this.toActionFilter(a, this.props.entities))
+                                    .concat({ key: null, text: '---' })
+                                }
+                            />
+                        </div>
+                        <OF.DetailsList
+                            data-testid="detail-list"
+                            key={this.state.dialogKey}
+                            className={OF.FontClassNames.mediumPlus}
+                            items={computedTrainDialogs}
+                            columns={this.state.columns}
+                            checkboxVisibility={OF.CheckboxVisibility.hidden}
+                            onColumnHeaderClick={this.onClickColumnHeader}
+                            onRenderItemColumn={(trainDialog, i, column: IRenderableColumn) => returnErrorStringWhenError(() => column.render(trainDialog, this))}
+                            onActiveItemChanged={trainDialog => this.onClickTrainDialogItem(trainDialog)}
+                        />
+                    </React.Fragment>}
+                <ReplayErrorList
+                    open={this.state.isValidationWarningOpen}
+                    onClose={this.onCloseValidationWarning}
+                    textItems={this.state.validationErrors}
+                    formattedTitleId={this.state.validationErrorTitleId}
+                    formattedMessageId={this.state.validationErrorMessageId}
+                />
+                <TeachSessionModal
+                    app={this.props.app}
+                    editingPackageId={this.props.editingPackageId}
+                    teach={this.props.teachSessions.current}
+                    dialogMode={this.props.teachSessions.mode}
+                    isOpen={this.state.isTeachDialogModalOpen}
+                    onClose={() => this.onCloseTeachSession()}
+                    onUndo={(popRound) => this.onUndoTeachStep(popRound)}
+                    history={this.state.isTeachDialogModalOpen ? this.state.history : null}
+                    lastAction={this.state.lastAction}
+                    sourceTrainDialog={this.state.currentTrainDialog}
                 />
                 <TrainDialogModal
                     data-testid="train-dialog-modal"
