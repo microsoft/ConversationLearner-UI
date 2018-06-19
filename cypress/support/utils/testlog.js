@@ -27,4 +27,4 @@ function now() {
     return Cypress.moment().format("MMMDD-HH:mm.ss");
 }
 
-export { now, printDoubleLine, printResult, testHeader, reportError, printStep }
+export { now, printResult, testHeader, reportError, printStep }
