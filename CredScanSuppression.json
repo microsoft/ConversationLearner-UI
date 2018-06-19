@@ -1,9 +1,0 @@
-{
-    "tool": "Credential Scanner",
-    "suppressions": [
-        {
-            "hash": "kZ+rjPLaOLBxWM2LQRjVNamHs7mSPJm29Mrxn4wsSys=",
-            "_justification": "This is secret is for the public blob storage URL for retrieving locales which contains SAS (Secure Access Signature)"
-        }
-    ]
-}
