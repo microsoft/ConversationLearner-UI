@@ -34,9 +34,9 @@ describe('Hello world e2e', function () {
 
   afterEach(function () {
     testLog.printResult(this.currentTest);
-    if (this.currentTest.state === "failed") {
-      cy.screenshot();
-    }
+    const fileName = `HelloWorld_${this.currentTest.state}-${this.currentTest.title}`;
+    cy.wait(3000)
+      .screenshot(fileName);
   })
 
   /** FEATURE: New Model */
@@ -52,7 +52,7 @@ describe('Hello world e2e', function () {
     entity.createNew(entity01);
     entityModal.clickOnMultivalue();
     entityModal.save();
-    
+
     // Verify that the entity has been added
     cy.get('.ms-DetailsRow-cell')
       .should('contain', entity01)
