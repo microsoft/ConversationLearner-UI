@@ -76,26 +76,31 @@ describe('Hello world e2e', function () {
     modelpage.navigateToTrainDialogs();
     trainDialogPage.verifyPageTitle();
     trainDialogPage.createNew();
-    trainDialogModal.newUserMessage(trainmessage01);
-    trainDialogModal.proceedToScoreAction();
-    scorerModal.selectAnAction();
+    cy.wait(1000)
+      .then(function () {
+        trainDialogModal.newUserMessage(trainmessage01);
+        trainDialogModal.proceedToScoreAction();
+        scorerModal.selectAnAction();
 
-    // Perform chat entries validation
-    cy.get('[id="botchat"]')
-      .should('contain', trainmessage01)
-      .and('contain', action01);
+        // Perform chat entries validation
+        cy.get('[id="botchat"]')
+          .should('contain', trainmessage01)
+          .and('contain', action01);
+        trainDialogModal.done();
+      })
 
-    trainDialogModal.done();
     trainDialogPage.createNew();
-    trainDialogModal.newUserMessage(trainmessage02);
-    trainDialogModal.proceedToScoreAction();
-    scorerModal.selectAnAction();
-
-    // Perform second chat entries validation
-    cy.get('[id="botchat"]')
-      .should('contain', trainmessage02)
-      .and('contain', action01);
-    trainDialogModal.done();
+    cy.wait(2000)
+      .then(function () {
+        trainDialogModal.newUserMessage(trainmessage02);
+        trainDialogModal.proceedToScoreAction();
+        scorerModal.selectAnAction();
+        // Perform second chat entries validation
+        cy.get('[id="botchat"]')
+          .should('contain', trainmessage02)
+          .and('contain', action01);
+        trainDialogModal.done();
+      })
   })
 
   /** FEATURE: New Log Dialog */
