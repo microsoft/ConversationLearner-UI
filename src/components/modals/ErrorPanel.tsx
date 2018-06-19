@@ -77,7 +77,8 @@ class ErrorPanel extends React.Component<Props, {}> {
         return (
             <div>
             {this.props.error.error != null &&
-                <Panel 
+                <Panel
+                    focusTrapZoneProps={{}}
                     isOpen={this.props.error.error != null}
                     type={PanelType.medium}
                     onDismiss={() => this.handleClose(this.props.error.actionType)}
