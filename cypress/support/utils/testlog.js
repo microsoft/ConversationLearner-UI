@@ -11,10 +11,6 @@ function printStep(description) {
     console.log(`${now()} ====>> ${description}...`);
 }
 
-function printDoubleLine(length) {
-    console.log(`${now} ${"*".repeat(length)}`);
-}
-
 function testHeader(testName) {
     console.log(`${now()} ${"*".repeat(60)}`);
     console.log(`${now()} <== ${testName} ==>`);
