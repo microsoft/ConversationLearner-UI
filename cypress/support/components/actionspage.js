@@ -9,7 +9,7 @@ function createNew() {
   cy
     .get('[data-testid="actions-button-create"]')
     .then(function (response) {
-      testLog.printStep("Create a New Action")
+      testLog.logStep("Create a New Action")
     })
     .click();
 }

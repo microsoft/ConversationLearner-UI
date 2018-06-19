@@ -16,7 +16,7 @@ function createNew() {
   cy.route('PUT', '/state/conversationId?username=ConversationLearnerDeveloper&id=*').as('putConv')
   cy.get('[data-testid="logdialogs-button-create"]')
     .then(function (response) {
-      testLog.printStep("Click button New Log Dialog ")
+      testLog.logStep("Click button New Log Dialog ")
     })
     .click()
     .wait('@putConv')

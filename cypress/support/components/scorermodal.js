@@ -10,7 +10,7 @@ function selectAnAction() {
     cy.route('POST', '/app/*/teach/*/scorer').as('postScore')
     cy.get('[data-testid="actionscorer-buttonClickable"]')
         .then(function (response) {
-            testLog.printStep("Select an action")
+            testLog.logStep("Select an action")
         })
         .click()
         .wait('@postScore')

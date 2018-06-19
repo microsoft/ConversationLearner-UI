@@ -16,7 +16,7 @@ function save() {
     cy.route('POST', '/app/*/entity').as('postEntity')
     cy.get('[data-testid="entity-creator-button-save"]')
     .then(function (response) {
-        testLog.printStep("Click create button")
+        testLog.logStep("Click create button")
     })
     .click()
     .wait('@postEntity')

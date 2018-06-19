@@ -3,23 +3,23 @@
  * Licensed under the MIT License.
  */
 
-function printResult(result) {
+function logResult(result) {
     console.log(`${now()} - Test ${result.state}...`);
 }
 
-function printStep(description) {
+function logStep(description) {
     console.log(`${now()} ====>> ${description}...`);
 }
 
-function testHeader(testName) {
+function logTestHeader(testName) {
     console.log(`${now()} ${"*".repeat(60)}`);
     console.log(`${now()} <== ${testName} ==>`);
     
 }
 
-function reportError(err) {
+function logError(err) {
     console.log(`${now()} - ${"-".repeat(30)}>`)
-    console.log(`${now()} - ${err.stack} `);
+    console.error(`${now()} - ${err.stack} `);
     console.log(`${now()} - <${"-".repeat(30)}`)
 }
 
@@ -27,4 +27,4 @@ function now() {
     return Cypress.moment().format("MMMDD-HH:mm.ss");
 }
 
-export { now, printResult, testHeader, reportError, printStep }
+export { now, logResult, logTestHeader, logError, logStep }

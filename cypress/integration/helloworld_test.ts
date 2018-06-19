@@ -24,16 +24,16 @@ describe('Hello world e2e', function () {
   const trainmessage02 = `Hi`
 
   beforeEach(function () {
-    testLog.testHeader(this.currentTest.title);
+    testLog.logTestHeader(this.currentTest.title);
     // starts the listener
     cy.on('uncaught:exception', (err, runnable) => {
-      testLog.reportError(err);
+      testLog.logError(err);
       return false;
     })
   })
 
   afterEach(function () {
-    testLog.printResult(this.currentTest);
+    testLog.logResult(this.currentTest);
     const fileName = `HelloWorld_${this.currentTest.state}-${this.currentTest.title}`;
     cy.wait(3000)
       .screenshot(fileName);

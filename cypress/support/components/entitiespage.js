@@ -8,7 +8,7 @@ const testLog = require('../utils/testlog')
 function createNew(entityName) {
     cy.get('[data-testid="entities-button-create"]')
         .then(function (response) {
-            testLog.printStep("Create a new Entity")
+            testLog.logStep("Create a new Entity")
         })
         .click()
         .wait(1000)

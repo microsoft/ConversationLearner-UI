@@ -32,7 +32,7 @@ function createNewModel(modelName) {
 
   cy.get('[data-testid="app-create-button-submit"]')
     .then(function (response) {
-      testLog.printStep("Click on Create button ")
+      testLog.logStep("Click on Create button ")
     })
     .click()
 

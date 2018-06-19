@@ -20,7 +20,7 @@ function createNew() {
 
   cy.get('[data-testid="button-new-train-dialog"]')
     .then(function (response) {
-      testLog.printStep("Click on New Train Dialog button")
+      testLog.logStep("Click on New Train Dialog button")
     })
     .click()
   .wait('@postTeach')

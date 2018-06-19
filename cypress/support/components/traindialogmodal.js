@@ -13,7 +13,7 @@ function newUserMessage(trainmessage) {
     cy.get('input[class="wc-shellinput"]').type(trainmessage)
     cy.get('label[class="wc-send"]')
         .then(function (response) {
-            testLog.printStep("type new user message")
+            testLog.logStep("type new user message")
         })
         .click()
         .wait('@putExtractor');
@@ -26,7 +26,7 @@ function proceedToScoreAction() {
     cy.route('PUT', '/app/*/teach/*/scorer').as('putScorer')
     cy.get('[data-testid="button-proceedto-scoreactions"]')
         .then(function (response) {
-            testLog.printStep("proceed to score actions")
+            testLog.logStep("proceed to score actions")
         })
         .click()
         .wait('@putScorer');
@@ -37,7 +37,7 @@ function proceedToScoreAction() {
 function done() {
     cy.get('[data-testid="teachsession-footer-button-done"]')
         .then(function (response) {
-            testLog.printStep("Click Done Teaching button")
+            testLog.logStep("Click Done Teaching button")
         })
         .click();
 }

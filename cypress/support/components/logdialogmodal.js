@@ -13,7 +13,7 @@ function newUserMessage(trainmessage) {
   cy.get('input[class="wc-shellinput"]').type(trainmessage)
   cy.get('label[class="wc-send"]')
     .then(function (response) {
-      testLog.printStep("Send a new message to WebChat")
+      testLog.logStep("Send a new message to WebChat")
     })
     .click()
     .wait('@postConversations')
