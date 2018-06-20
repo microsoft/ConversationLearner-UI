@@ -2,21 +2,21 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
+const testLog = require('../utils/testlog')
 
 /** Chat: Types a new user's message */
 function newUserMessage(trainmessage) {
-  cy.on('uncaught:exception', (err, runnable) => {
-        return false
-    })
-
   // Submit message to WebChat
   cy.server()
   cy.route('POST', '/directline/conversations/**').as('postConversations')
 
   cy.get('input[class="wc-shellinput"]').type(trainmessage)
-  cy.get('label[class="wc-send"]').click()
-
-  cy.wait('@postConversations')
+  cy.get('label[class="wc-send"]')
+    .then(function (response) {
+      testLog.logStep("Send a new message to WebChat")
+    })
+    .click()
+    .wait('@postConversations')
 }
 
 function clickDone() {
