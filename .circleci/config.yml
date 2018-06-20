@@ -45,7 +45,7 @@ jobs:
 
       # Run UI e2e tests
       - run: npm install debug
-      - run: DEBUG=cypress:server:proxy,cypress:server:reporter && npm run cypress run --browser chrome
+      - run: DEBUG=cypress:server:proxy,cypress:server:reporter && npm run cypress -- run --browser chrome --record --key $CYPRESS_RECORD_KEY
 
       - store_artifacts:
           path: results
