@@ -10,10 +10,11 @@ import * as OF from 'office-ui-fabric-react';
 import { State } from '../../../types'
 import { AppBase, LogDialog, Session, ModelUtils, Teach, TeachWithHistory, TrainDialog, ActionBase, ReplayError, UIScoreInput } from '@conversationlearner/models'
 import { ChatSessionModal, LogDialogModal, TeachSessionModal } from '../../../components/modals'
-import { 
-    createChatSessionThunkAsync, 
+import {
+    createChatSessionThunkAsync,
     createTeachSessionFromHistoryThunkAsync,
-    createTeachSessionFromUndoThunkAsync } from '../../../actions/createActions'
+    createTeachSessionFromUndoThunkAsync
+} from '../../../actions/createActions'
 import { deleteLogDialogThunkAsync } from '../../../actions/deleteActions';
 import { fetchAllLogDialogsAsync, fetchHistoryThunkAsync } from '../../../actions/fetchActions';
 import { setErrorDisplay } from '../../../actions/displayActions';
@@ -51,8 +52,7 @@ function getTagName(logDialog: LogDialog, component: LogDialogs): string {
     if (logDialog.packageId === component.props.app.devPackageId) {
         tagName = 'Master';
     }
-    else 
-    {
+    else {
         let packageVersion = component.props.app.packageVersions.find(pv => pv.packageId === logDialog.packageId);
         if (packageVersion) {
             tagName = packageVersion.packageVersion;
@@ -144,7 +144,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             render: logDialog => {
                 let lastInput = getLastInput(logDialog)
                 if (lastInput) {
-                     return <span className={OF.FontClassNames.mediumPlus}>{lastInput}</span>;
+                    return <span className={OF.FontClassNames.mediumPlus}>{lastInput}</span>;
                 }
                 return <OF.Icon iconName="Remove" className="notFoundIcon" />
             },
@@ -205,14 +205,14 @@ interface ComponentState {
     lastAction: ActionBase,
     teachSession: Teach,
     validationErrors: ReplayError[],
-    validationErrorTitleId: string | null, 
+    validationErrorTitleId: string | null,
     validationErrorMessageId: string | null,
 }
 
 class LogDialogs extends React.Component<Props, ComponentState> {
     newChatSessionButton: OF.IButton
     state: ComponentState
-    
+
     constructor(props: Props) {
         super(props)
         let columns = getColumns(this.props.intl);
@@ -244,7 +244,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     let firstValue = this.state.sortColumn.getSortValue(a, this)
                     let secondValue = this.state.sortColumn.getSortValue(b, this)
                     let compareValue = firstValue.localeCompare(secondValue)
-    
+
                     // If primary sort is the same do secondary sort on another column, to prevent sort jumping around
                     if (compareValue === 0) {
                         let sortColumn2 = ((this.state.sortColumn !== this.state.columns[1]) ? this.state.columns[1] : this.state.columns[2]) as IRenderableColumn
@@ -327,26 +327,26 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     }
 
     onClickLogDialogItem(logDialog: LogDialog) {
-        
+
         // Convert to trainDialog until schema update change, and pass in app definition too
         let trainDialog = ModelUtils.ToTrainDialog(logDialog, this.props.actions, this.props.entities);
 
         ((this.props.fetchHistoryThunkAsync(this.props.app.appId, trainDialog, this.props.user.name, this.props.user.id) as any) as Promise<TeachWithHistory>)
-        .then(teachWithHistory => {
-            this.setState({
-                history: teachWithHistory.history,
-                lastAction: teachWithHistory.lastAction,
-                currentLogDialog: logDialog,
-                isLogDialogWindowOpen: true,
-                validationErrors: teachWithHistory.replayErrors,
-                isValidationWarningOpen: teachWithHistory.replayErrors.length > 0,
-                validationErrorTitleId: FM.REPLAYERROR_LOGDIALOG_VALIDATION_TITLE,
-                validationErrorMessageId: FM.REPLAYERROR_LOGDIALOG_VALIDATION_MESSAGE
+            .then(teachWithHistory => {
+                this.setState({
+                    history: teachWithHistory.history,
+                    lastAction: teachWithHistory.lastAction,
+                    currentLogDialog: logDialog,
+                    isLogDialogWindowOpen: true,
+                    validationErrors: teachWithHistory.replayErrors,
+                    isValidationWarningOpen: teachWithHistory.replayErrors.length > 0,
+                    validationErrorTitleId: FM.REPLAYERROR_LOGDIALOG_VALIDATION_TITLE,
+                    validationErrorMessageId: FM.REPLAYERROR_LOGDIALOG_VALIDATION_MESSAGE
+                })
             })
-        })
-        .catch(error => {
-            console.warn(`Error when attempting to create history: `, error)
-        })
+            .catch(error => {
+                console.warn(`Error when attempting to create history: `, error)
+            })
     }
 
     @autobind
@@ -363,7 +363,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    onDeleteLogDialog() {      
+    onDeleteLogDialog() {
         if (this.state.currentLogDialog) {
             this.props.deleteLogDialogThunkAsync(this.props.user.id, this.props.app, this.state.currentLogDialog.logDialogId, this.props.editingPackageId)
         }
@@ -371,32 +371,32 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     }
 
     onEditLogDialog(logDialogId: string, newTrainDialog: TrainDialog, newScoreInput: UIScoreInput) {
-        
+
         // Create a new teach session from the train dialog
         ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app, newTrainDialog, this.props.user.name, this.props.user.id, newScoreInput) as any) as Promise<TeachWithHistory>)
-        .then(teachWithHistory => {
-            if (teachWithHistory.replayErrors.length === 0) {
-                // Note: Don't clear currentLogDialog so I can update it if I save my edits
-                this.setState({
-                    teachSession: teachWithHistory.teach, 
-                    history: teachWithHistory.history,
-                    lastAction: teachWithHistory.lastAction,
-                    isLogDialogWindowOpen: false,
-                    isTeachDialogModalOpen: true
-                })
-            }
-            else {
-                this.setState({
-                    validationErrors: teachWithHistory.replayErrors,
-                    isValidationWarningOpen: true,
-                    validationErrorTitleId: FM.REPLAYERROR_CONVERT_TITLE,
-                    validationErrorMessageId: FM.REPLAYERROR_FAILMESSAGE
-                })
-            }
-        })
-        .catch(error => {
-            console.warn(`Error when attempting to create teach session from log dialog: `, error)
-        })
+            .then(teachWithHistory => {
+                if (teachWithHistory.replayErrors.length === 0) {
+                    // Note: Don't clear currentLogDialog so I can update it if I save my edits
+                    this.setState({
+                        teachSession: teachWithHistory.teach,
+                        history: teachWithHistory.history,
+                        lastAction: teachWithHistory.lastAction,
+                        isLogDialogWindowOpen: false,
+                        isTeachDialogModalOpen: true
+                    })
+                }
+                else {
+                    this.setState({
+                        validationErrors: teachWithHistory.replayErrors,
+                        isValidationWarningOpen: true,
+                        validationErrorTitleId: FM.REPLAYERROR_CONVERT_TITLE,
+                        validationErrorMessageId: FM.REPLAYERROR_FAILMESSAGE
+                    })
+                }
+            })
+            .catch(error => {
+                console.warn(`Error when attempting to create teach session from log dialog: `, error)
+            })
     }
 
     @autobind
@@ -426,28 +426,28 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         });
 
         ((this.props.createTeachSessionFromUndoThunkAsync(this.props.app.appId, this.state.teachSession, popRound, this.props.user.name, this.props.user.id) as any) as Promise<TeachWithHistory>)
-        .then(teachWithHistory => {
-            if (teachWithHistory.replayErrors.length === 0) {
-                this.setState({
-                    teachSession: teachWithHistory.teach, 
-                    history: teachWithHistory.history,
-                    lastAction: teachWithHistory.lastAction
-                })
-            } else {    
-                this.setState({
-                    validationErrors: teachWithHistory.replayErrors,
-                    isValidationWarningOpen: true,
-                    validationErrorTitleId: FM.REPLAYERROR_UNDO_TITLE,
-                    validationErrorMessageId: FM.REPLAYERROR_FAILMESSAGE
-                })
-            }
-        })
-        .catch(error => {
-            console.warn(`Error when attempting to create teach session from undo: `, error)
-        })
+            .then(teachWithHistory => {
+                if (teachWithHistory.replayErrors.length === 0) {
+                    this.setState({
+                        teachSession: teachWithHistory.teach,
+                        history: teachWithHistory.history,
+                        lastAction: teachWithHistory.lastAction
+                    })
+                } else {
+                    this.setState({
+                        validationErrors: teachWithHistory.replayErrors,
+                        isValidationWarningOpen: true,
+                        validationErrorTitleId: FM.REPLAYERROR_UNDO_TITLE,
+                        validationErrorMessageId: FM.REPLAYERROR_FAILMESSAGE
+                    })
+                }
+            })
+            .catch(error => {
+                console.warn(`Error when attempting to create teach session from undo: `, error)
+            })
     }
 
-    renderLogDialogItems(): LogDialog[] {
+    getFilteredAndSortedDialogs(): LogDialog[] {
         // Don't show log dialogs that have derived TrainDialogs as they've already been edited
         let filteredLogDialogs: LogDialog[] = this.props.logDialogs.filter(l => !l.targetTrainDialogIds || l.targetTrainDialogIds.length === 0);
 
@@ -474,11 +474,12 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     }
 
     render() {
-        let logDialogItems = this.renderLogDialogItems()
+        const { logDialogs } = this.props
+        const computedLogDialogs = this.getFilteredAndSortedDialogs()
         const currentLogDialog = this.state.currentLogDialog;
         return (
             <div className="cl-page">
-                <div data-testid= "logdialogs-title" className={`cl-dialog-title cl-dialog-title--log ${OF.FontClassNames.xxLarge}`}>
+                <div data-testid="logdialogs-title" className={`cl-dialog-title cl-dialog-title--log ${OF.FontClassNames.xxLarge}`}>
                     <OF.Icon iconName="UserFollowed" />
                     <FormattedMessage
                         id={FM.LOGDIALOGS_TITLE}
@@ -495,7 +496,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     :
                     <span className="cl-errorpanel">Editing is only allowed in Master Tag</span>
                 }
-                {this.props.app.metadata.isLoggingOn === false && 
+                {this.props.app.metadata.isLoggingOn === false &&
                     <span className="ms-TextField-errorMessage label-error">
                         <FormattedMessage
                             id={FM.LOGDIALOGS_LOGDISABLED}
@@ -506,7 +507,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 <div>
                     <OF.PrimaryButton
                         data-testid="logdialogs-button-create"
-                        disabled={this.props.editingPackageId !== this.props.app.devPackageId || this.props.invalidBot}                      
+                        disabled={this.props.editingPackageId !== this.props.app.devPackageId || this.props.invalidBot}
                         onClick={this.onClickNewChatSession}
                         ariaDescription={this.props.intl.formatMessage({
                             id: FM.LOGDIALOGS_CREATEBUTTONARIALDESCRIPTION,
@@ -518,38 +519,61 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                         })}
                         componentRef={component => this.newChatSessionButton = component}
                     />
-                    <ChatSessionModal
-                        app={this.props.app}
-                        editingPackageId={this.props.editingPackageId}
-                        open={this.state.isChatSessionWindowOpen}
-                        onClose={this.onCloseChatSessionWindow}
-                    />
                 </div>
-                <OF.SearchBox
-                    data-testid="logdialogs-search-box"
-                    className={OF.FontClassNames.mediumPlus}
-                    onChange={(newValue) => this.onChange(newValue)}
-                    onSearch={(newValue) => this.onChange(newValue)}
-                />
-                <div>
-                    <OF.PrimaryButton
-                        data-testid="logdialogs-button-refresh"
-                        onClick={() => this.onClickSync()}
-                        ariaDescription="Refresh"
-                        text="Refresh"
-                        iconProps={{ iconName: 'Sync' }}
-                    />
-                </div>
-                <OF.DetailsList
-                    data-testid="logdialogs-details-list"
-                    key={this.state.dialogKey}
-                    className={OF.FontClassNames.mediumPlus}
-                    items={logDialogItems}
-                    columns={this.state.columns}
-                    checkboxVisibility={OF.CheckboxVisibility.hidden}
-                    onColumnHeaderClick={this.onClickColumnHeader}
-                    onRenderItemColumn={(logDialog, i, column: IRenderableColumn) => returnErrorStringWhenError(() => column.render(logDialog, this))}
-                    onActiveItemChanged={logDialog => this.onClickLogDialogItem(logDialog)}
+                {logDialogs.length === 0
+                    ? <div className="cl-page-placeholder">
+                        <div className="cl-page-placeholder__content">
+                            <div className={`cl-page-placeholder__description ${OF.FontClassNames.xxLarge}`}>Create a Log Dialog</div>
+                            <OF.PrimaryButton
+                                iconProps={{
+                                    iconName: "Add"
+                                }}
+                                disabled={this.props.editingPackageId !== this.props.app.devPackageId || this.props.invalidBot}
+                                onClick={this.onClickNewChatSession}
+                                ariaDescription={this.props.intl.formatMessage({
+                                    id: FM.LOGDIALOGS_CREATEBUTTONARIALDESCRIPTION,
+                                    defaultMessage: 'Create a New Log Dialog'
+                                })}
+                                text={this.props.intl.formatMessage({
+                                    id: FM.LOGDIALOGS_CREATEBUTTONTITLE,
+                                    defaultMessage: 'New Log Dialog'
+                                })}
+                            />
+                        </div>
+                    </div>
+                    : <React.Fragment>
+                        <OF.SearchBox
+                            data-testid="logdialogs-search-box"
+                            className={OF.FontClassNames.mediumPlus}
+                            onChange={(newValue) => this.onChange(newValue)}
+                            onSearch={(newValue) => this.onChange(newValue)}
+                        />
+                        <div>
+                            <OF.PrimaryButton
+                                data-testid="logdialogs-button-refresh"
+                                onClick={() => this.onClickSync()}
+                                ariaDescription="Refresh"
+                                text="Refresh"
+                                iconProps={{ iconName: 'Sync' }}
+                            />
+                        </div>
+                        <OF.DetailsList
+                            data-testid="logdialogs-details-list"
+                            key={this.state.dialogKey}
+                            className={OF.FontClassNames.mediumPlus}
+                            items={computedLogDialogs}
+                            columns={this.state.columns}
+                            checkboxVisibility={OF.CheckboxVisibility.hidden}
+                            onColumnHeaderClick={this.onClickColumnHeader}
+                            onRenderItemColumn={(logDialog, i, column: IRenderableColumn) => returnErrorStringWhenError(() => column.render(logDialog, this))}
+                            onActiveItemChanged={logDialog => this.onClickLogDialogItem(logDialog)}
+                        />
+                    </React.Fragment>}
+                <ChatSessionModal
+                    app={this.props.app}
+                    editingPackageId={this.props.editingPackageId}
+                    open={this.state.isChatSessionWindowOpen}
+                    onClose={this.onCloseChatSessionWindow}
                 />
                 <LogDialogModal
                     app={this.props.app}
@@ -562,7 +586,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     logDialog={currentLogDialog}
                     history={this.state.isLogDialogWindowOpen ? this.state.history : null}
                 />
-                <ReplayErrorList  
+                <ReplayErrorList
                     open={this.state.isValidationWarningOpen}
                     onClose={this.onCloseValidationWarning}
                     textItems={this.state.validationErrors}
@@ -570,16 +594,16 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     formattedMessageId={this.state.validationErrorMessageId}
                 />
                 <TeachSessionModal
-                        app={this.props.app}
-                        editingPackageId={this.props.editingPackageId}
-                        teach={this.props.teachSessions.current}
-                        dialogMode={this.props.teachSessions.mode}
-                        isOpen={this.state.isTeachDialogModalOpen}
-                        onClose={this.onCloseTeachSession} 
-                        onUndo={(popRound) => this.onUndoTeachStep(popRound)}
-                        history={this.state.isTeachDialogModalOpen ? this.state.history : null}
-                        lastAction={this.state.lastAction}
-                        sourceLogDialog={this.state.currentLogDialog}
+                    app={this.props.app}
+                    editingPackageId={this.props.editingPackageId}
+                    teach={this.props.teachSessions.current}
+                    dialogMode={this.props.teachSessions.mode}
+                    isOpen={this.state.isTeachDialogModalOpen}
+                    onClose={this.onCloseTeachSession}
+                    onUndo={(popRound) => this.onUndoTeachStep(popRound)}
+                    history={this.state.isTeachDialogModalOpen ? this.state.history : null}
+                    lastAction={this.state.lastAction}
+                    sourceLogDialog={this.state.currentLogDialog}
                 />
             </div>
         );

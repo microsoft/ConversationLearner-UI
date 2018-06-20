@@ -122,7 +122,8 @@ class Actions extends React.Component<Props, ComponentState> {
 
     render() {
         // TODO: Look to move this up to the set state calls instead of forcing it to be on every render
-        const actions = this.getFilteredActions();
+        const { actions } = this.props
+        const computedActions = this.getFilteredActions()
         return (
             <div className="cl-page">
                 <span className={OF.FontClassNames.xxLarge}>
@@ -156,15 +157,38 @@ class Actions extends React.Component<Props, ComponentState> {
                         componentRef={component => this.newActionButton = component}
                     />
                 </div>
-                <OF.SearchBox
-                    className={OF.FontClassNames.mediumPlus}
-                    onChange={searchString => this.onChangeSearchString(searchString)}
-                    onSearch={searchString => this.onChangeSearchString(searchString)}
-                />
-                <ActionDetailsList
-                    actions={actions}
-                    onSelectAction={this.onSelectAction}
-                />
+                {actions.length === 0
+                    ? <div className="cl-page-placeholder">
+                        <div className="cl-page-placeholder__content">
+                            <div className={`cl-page-placeholder__description ${OF.FontClassNames.xxLarge}`}>Create an Action</div>
+                            <OF.PrimaryButton
+                                iconProps={{
+                                    iconName: "Add"
+                                }}
+                                disabled={this.props.editingPackageId !== this.props.app.devPackageId}
+                                onClick={() => this.onClickOpenActionEditor()}
+                                ariaDescription={this.props.intl.formatMessage({
+                                    id: FM.ACTIONS_CREATEBUTTONARIADESCRIPTION,
+                                    defaultMessage: 'Create a New Action'
+                                })}
+                                text={this.props.intl.formatMessage({
+                                    id: FM.ACTIONS_CREATEBUTTONTITLE,
+                                    defaultMessage: 'New Action'
+                                })}
+                            />
+                        </div>
+                    </div>
+                    : <React.Fragment>
+                        <OF.SearchBox
+                            className={OF.FontClassNames.mediumPlus}
+                            onChange={searchString => this.onChangeSearchString(searchString)}
+                            onSearch={searchString => this.onChangeSearchString(searchString)}
+                        />
+                        <ActionDetailsList
+                            actions={computedActions}
+                            onSelectAction={this.onSelectAction}
+                        />
+                    </React.Fragment>}
 
                 <ActionCreatorEditor
                     app={this.props.app}
