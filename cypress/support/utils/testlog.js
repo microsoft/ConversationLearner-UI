@@ -14,6 +14,7 @@ function logStep(description) {
 function logTestHeader(testName) {
     console.log(`${now()} ${"*".repeat(60)}`);
     console.log(`${now()} <== ${testName} ==>`);
+    
 }
 
 function logError(err) {
