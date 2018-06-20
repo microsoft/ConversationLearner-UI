@@ -44,9 +44,8 @@ jobs:
           background: true
 
       # Run UI e2e tests
-      - run: 
-          set DEBUG=cypress:server:proxy,cypress:server:reporter
-          npm run cypress --run --browser chrome
+      - run: npm install debug
+      - run: DEBUG=cypress:server:proxy,cypress:server:reporter && npm run cypress --run --browser chrome
 
       - store_artifacts:
           path: results
