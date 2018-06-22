@@ -9,6 +9,7 @@ function selectAnAction() {
     cy.server()
     cy.route('POST', '/app/*/teach/*/scorer').as('postScore')
     cy.get('[data-testid="actionscorer-buttonClickable"]')
+        .should("be.visible")
         .then(function (response) {
             testLog.logStep("Select an action")
         })
@@ -21,7 +22,7 @@ function selectAnActionWithText(action) {
     cy.server()
     cy.route('POST', '/app/*/teach/*/scorer').as('postScore')
 
-    cy.get('.ms-List-page').within(() => {
+    cy.get('.ms-List-page').should("be.visible").within(() => {
         cy.contains(action)
         .parents('[class*="ms-DetailsRow-fields"]')
         .find('.ms-Button-flexContainer')

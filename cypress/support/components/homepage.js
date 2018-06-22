@@ -22,15 +22,18 @@ function createNewModel(modelName) {
 
   // Click the button to create app
   cy.get('[data-testid="apps-list-button-create-new"]')
+    .should("be.visible")
     .click()
 
   // Ensure that name input is focused
   cy.focused()
 
   cy.get('[data-testid="app-create-input-name"]')
+    .should("be.visible")
     .type(modelName)
 
   cy.get('[data-testid="app-create-button-submit"]')
+    .should("be.visible")
     .then(function (response) {
       testLog.logStep("Click on Create button ")
     })

@@ -10,8 +10,11 @@ function typeYourMessage(trainmessage) {
   cy.server()
   cy.route('POST', '/directline/conversations/**').as('postConversations')
 
-  cy.get('input[class="wc-shellinput"]').type(trainmessage)
+  cy.get('input[class="wc-shellinput"]')
+    .should("be.visible")
+    .type(trainmessage)
   cy.get('label[class="wc-send"]')
+    .should("be.visible")
     .then(function (response) {
       testLog.logStep("Send a new message to WebChat")
     })
@@ -21,6 +24,7 @@ function typeYourMessage(trainmessage) {
 
 function clickDone() {
   cy.get('[data-testid="chatsession-modal-footer-button1"]')
+    .should("be.visible")
     .click()
 }
 
