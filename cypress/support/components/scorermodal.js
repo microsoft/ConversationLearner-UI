@@ -16,4 +16,20 @@ function selectAnAction() {
         .wait('@postScore')
 }
 
-export { selectAnAction }
+/** Selects the action that matches the text passed to this function*/
+function selectAnActionWithText(action) {
+    cy.server()
+    cy.route('POST', '/app/*/teach/*/scorer').as('postScore')
+
+    cy.get('.ms-List-page').within(() => {
+        cy.contains(action)
+        .parents('[class*="ms-DetailsRow-fields"]')
+        .find('.ms-Button-flexContainer')
+        .click({ force: true })
+      })
+
+     cy.wait('@postScore')
+}
+
+
+export { selectAnAction, selectAnActionWithText }

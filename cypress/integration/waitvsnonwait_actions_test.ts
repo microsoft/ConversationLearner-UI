@@ -15,13 +15,19 @@ const { convLearnerPage,
   logDialogModal,
   testLog } = components();
 
-describe('Hello world e2e', function () {
+ /**
+ * Wait action: After the system takes a "wait" action, it will stop taking actions and wait for user input.
+ * Non-wait action: After the system takes a "non-wait" action, it will immediately choose another action (without waiting for user input)
+ */
+describe('Wait vs No Wait Action e2e test', function () {
   const postfix = Cypress.moment().format("MMMDD-HHmm")
-  const modelName = `e2e-HelloWorld-${postfix}`
-  const entity01 = `UserName-${postfix}`
-  const action01 = `Hello World`
-  const trainmessage01 = `Hello`
-  const trainmessage02 = `Hi`
+  const modelName = `e2e-waitvsnowait-${postfix}`
+  const action01 = "Which animal would you like?";
+  const action02 = "Cows say moo!!";
+  const action03 = "Ducks say quack!";
+  const trainmessage01 = "Hello";
+  const trainmessage02 = "Cow";
+  const trainmessage03 = "Duck";
 
   beforeEach(function () {
     testLog.logTestHeader(this.currentTest.title);
@@ -35,36 +41,36 @@ describe('Hello world e2e', function () {
 
   afterEach(function () {
     testLog.logResult(this.currentTest);
-    const fileName = `HelloWorld_${this.currentTest.state}-${this.currentTest.title}`;
+    const fileName = `WaitVSNoWait_${this.currentTest.state}-${this.currentTest.title}`;
     cy.wait(3000)
       .screenshot(fileName);
   })
 
   /** FEATURE: New Model */
-  it('CREATE NEW MODEL with random name and verify name on application page', function () {
+  it('create a New Model', function () {
     convLearnerPage.navigateTo();
     convLearnerPage.createNewModel(modelName);
     modelpage.verifyPageTitle(modelName);
   })
 
-  /** FEATURE:  New Identity */
-  it('should create a NEW ENTITY', () => {
-    modelpage.navigateToEntities();
-    entity.createNew(entity01);
-    entityModal.clickOnMultivalue();
-    entityModal.save();
-
-    // Verify that the entity has been added
-    cy.get('.ms-DetailsRow-cell')
-      .should('contain', entity01)
-  })
-
   /** FEATURE: New Action */
-  it('should be able to ADD AN ACTION', () => {
+  it('should create Wait and Non Wait Actions', () => {
     modelpage.navigateToActions();
+
+    // Wait Action:
     actions.createNew();
-    actionsModal.selectTypeText();
-    actionsModal.setPhrase(action01);
+    actionsModal.setPhrase(action01); //"Which animal would you like?"
+    actionsModal.clickCreateButton();
+
+    // No Wait Actions:
+    actions.createNew();
+    actionsModal.setPhrase(action02); //"Cows say moo!!"
+    actionsModal.clickWaitForResponse(); // Unselect
+    actionsModal.clickCreateButton();
+
+    actions.createNew();
+    actionsModal.setPhrase(action03); //"Ducks say quack";
+    actionsModal.clickWaitForResponse(); // Unselect
     actionsModal.clickCreateButton();
 
     // Verify that the action has been added
@@ -72,46 +78,29 @@ describe('Hello world e2e', function () {
       .should('contain', action01)
   })
 
-  /** FEATURE: New Train Dialog */
-  it('should add a new TRAIN DIALOG', () => {
+  /** FEATURE: New Train Dialog - using different types of Actions*/
+  it('should train a dialog using Wait and Non Wait actions', () => {
     modelpage.navigateToTrainDialogs();
     trainDialogPage.verifyPageTitle();
     trainDialogPage.createNew();
-    trainDialogModal.typeYourMessage(trainmessage01);
+    cy.wait(2000)
+    trainDialogModal.typeYourMessage(trainmessage01); //Hello
     trainDialogModal.clickScoreActions();
-    scorerModal.selectAnAction();
-
-    // Perform chat entries validation
-    cy.get('[id="botchat"]')
-      .should('contain', trainmessage01)
-      .and('contain', action01);
-
-    trainDialogModal.clickDoneTeaching();
-    trainDialogPage.createNew();
-    trainDialogModal.typeYourMessage(trainmessage02);
+    scorerModal.selectAnActionWithText(action01); //"Which animal would you like?"
+    cy.wait(2000)
+    trainDialogModal.typeYourMessage(trainmessage02); //Cow
     trainDialogModal.clickScoreActions();
-    scorerModal.selectAnAction();
-
-    // Perform second chat entries validation
-    cy.get('[id="botchat"]')
-      .should('contain', trainmessage02)
-      .and('contain', action01);
+    scorerModal.selectAnActionWithText(action02); //"Cows say moo!!"
+    cy.wait(2000)
+    scorerModal.selectAnActionWithText(action01); //"Which animal would you like?"
+    cy.wait(2000)
+    trainDialogModal.typeYourMessage(trainmessage03); //Duck
+    trainDialogModal.clickScoreActions();
+    scorerModal.selectAnActionWithText(action03); //"Ducks say quack";
+    cy.wait(2000)
+    scorerModal.selectAnActionWithText(action01); //"Which animal would you like?"
+    cy.wait(2000)
     trainDialogModal.clickDoneTeaching();
-  })
-
-  /** FEATURE: New Log Dialog */
-  it('should add a new Log Dialog', () => {
-    modelpage.navigateToLogDialogs();
-    logDialogPage.verifyPageTitle();
-    logDialogPage.createNew();
-    logDialogModal.typeYourMessage(trainmessage01);
-    cy.wait(3000);
-
-    // Perform chat entries validation
-    cy.get('[id="botchat"]')
-      .should('contain', trainmessage01)
-      .and('contain', action01)
-    logDialogModal.clickDone();
   })
 
   /** FEATURE: Delete a Model */

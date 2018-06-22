@@ -5,7 +5,7 @@
 const testLog = require('../utils/testlog')
 
 /** Chat: Types a new user's message */
-function newUserMessage(trainmessage) {
+function typeYourMessage(trainmessage) {
   // Submit message to WebChat
   cy.server()
   cy.route('POST', '/directline/conversations/**').as('postConversations')
@@ -24,4 +24,4 @@ function clickDone() {
     .click()
 }
 
-export { newUserMessage, clickDone };
+export { typeYourMessage, clickDone };

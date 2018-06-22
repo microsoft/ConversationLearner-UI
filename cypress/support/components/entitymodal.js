@@ -6,7 +6,7 @@ const testLog = require('../utils/testlog')
 
 /** Clicks on multivalue checkbox */
 function clickOnMultivalue() {
-    cy.get('[data-testid="entity-creator-input-multivalue"]')
+    cy.get('[data-testid="entitycreator-checkbox-multivalued"]')
         .click()
 }
 

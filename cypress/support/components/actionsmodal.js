@@ -15,10 +15,16 @@ function setPhrase(actionPhrase) {
   cy.get('div[data-slate-editor="true"]')
     .type(actionPhrase);
 }
-/** Click on create action button */
-function save() {
-  cy.get('[data-testid="actioncreator-button-create"]')
-    .click();
+
+function clickWaitForResponse() {
+  cy.get('.ms-Checkbox-text')
+    .click({force: true});
 }
 
-export {selectTypeText, setPhrase, save};
+/** Click on create action button */
+function clickCreateButton() {
+  cy.get('[data-testid="actioncreator-button-create"]')
+    .click({force: true});
+}
+
+export { clickWaitForResponse, selectTypeText, setPhrase, clickCreateButton };
