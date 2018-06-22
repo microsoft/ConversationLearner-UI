@@ -62,6 +62,9 @@ describe('Wait vs No Wait Action e2e test', function () {
     actionsModal.selectTypeText();
     actionsModal.setPhrase(action01); //"Which animal would you like?"
     actionsModal.clickCreateButton();
+    // Verify that the action has been added
+    cy.get('.ms-DetailsRow-cell')
+      .should('contain', action01)
 
     // No Wait Actions:
     actions.createNew();
@@ -69,6 +72,10 @@ describe('Wait vs No Wait Action e2e test', function () {
     actionsModal.setPhrase(action02); //"Cows say moo!!"
     actionsModal.clickWaitForResponse(); // Unselect
     actionsModal.clickCreateButton();
+
+    // Verify that the action has been added
+    cy.get('.ms-DetailsRow-cell')
+      .should('contain', action02)
 
     actions.createNew();
     actionsModal.selectTypeText();
@@ -78,7 +85,7 @@ describe('Wait vs No Wait Action e2e test', function () {
 
     // Verify that the action has been added
     cy.get('.ms-DetailsRow-cell')
-      .should('contain', action01)
+      .should('contain', action03)
   })
 
   /** FEATURE: New Train Dialog - using different types of Actions*/
