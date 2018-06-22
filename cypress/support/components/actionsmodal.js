@@ -18,13 +18,18 @@ function setPhrase(actionPhrase) {
 
 function clickWaitForResponse() {
   cy.get('.ms-Checkbox-text')
-    .click({force: true});
+    .click({ force: true });
 }
 
 /** Click on create action button */
 function clickCreateButton() {
+  //app/624ade4a-6631-4a72-95fc-06135ce2c8fa/action
+  cy.server()
+  cy.route('POST', '/app/*/action').as('postAction')
+
   cy.get('[data-testid="actioncreator-button-create"]')
-    .click({force: true});
+    .click({ force: true });
+  cy.wait('@postAction');
 }
 
 export { clickWaitForResponse, selectTypeText, setPhrase, clickCreateButton };

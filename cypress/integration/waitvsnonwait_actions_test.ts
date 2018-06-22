@@ -59,16 +59,19 @@ describe('Wait vs No Wait Action e2e test', function () {
 
     // Wait Action:
     actions.createNew();
+    actionsModal.selectTypeText();
     actionsModal.setPhrase(action01); //"Which animal would you like?"
     actionsModal.clickCreateButton();
 
     // No Wait Actions:
     actions.createNew();
+    actionsModal.selectTypeText();
     actionsModal.setPhrase(action02); //"Cows say moo!!"
     actionsModal.clickWaitForResponse(); // Unselect
     actionsModal.clickCreateButton();
 
     actions.createNew();
+    actionsModal.selectTypeText();
     actionsModal.setPhrase(action03); //"Ducks say quack";
     actionsModal.clickWaitForResponse(); // Unselect
     actionsModal.clickCreateButton();
