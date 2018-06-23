@@ -54,7 +54,7 @@ describe('Create application', function () {
       .type(newEntityName)
 
     // Select multi-value
-    cy.get('[data-testid="entity-creator-input-multivalue"]')
+    cy.get('[data-testid="entitycreator-checkbox-multivalued"]')
       .click()
 
     cy.route('POST', '/app/*/entity').as('postEntity')

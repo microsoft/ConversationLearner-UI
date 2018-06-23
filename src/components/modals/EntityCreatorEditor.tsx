@@ -465,6 +465,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                 <br />
                 <div className="cl-entity-creator-checkbox">
                     <TC.Checkbox
+                        data-testid="entitycreator-checkbox-programmaticonly"
                         label={intl.formatMessage({
                             id: FM.ENTITYCREATOREDITOR_FIELDS_PROGRAMMATICONLY_LABEL,
                             defaultMessage: 'Programmatic Only'
@@ -477,7 +478,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                 </div>
                 <div className="cl-entity-creator-checkbox">
                     <TC.Checkbox
-                        data-testid="entity-creator-input-multivalue"
+                        data-testid="entitycreator-checkbox-multivalued"
                         label={intl.formatMessage({
                             id: FM.ENTITYCREATOREDITOR_FIELDS_MULTIVALUE_LABEL,
                             defaultMessage: 'Multi-valued'
@@ -490,6 +491,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                 </div>
                 <div className="cl-entity-creator-checkbox">
                     <TC.Checkbox
+                        data-testid="entitycreator-checkbox-negatable"
                         label={intl.formatMessage({
                             id: FM.ENTITYCREATOREDITOR_FIELDS_NEGATABLE_LABEL,
                             defaultMessage: 'Negatable'
