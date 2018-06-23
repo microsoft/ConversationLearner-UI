@@ -1,7 +1,3 @@
-/**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
- * Licensed under the MIT License.
- */
 
 /** Selects Action Type = Text */
 function selectTypeText() {
@@ -22,19 +18,28 @@ function setPhrase(actionPhrase) {
 function clickWaitForResponse() {
   cy.get('.ms-Checkbox-text')
     .should("be.visible")
-    .click({ force: true });
+    .click({
+      force: true
+    });
 }
 
 /** Click on create action button */
 function clickCreateButton() {
-  //app/624ade4a-6631-4a72-95fc-06135ce2c8fa/action
-  cy.server()
-  cy.route('POST', '/app/*/action').as('postAction')
-
+  cy.server();
+  cy.route('POST', '/app/*/action').as('postAction');
+  cy.route('GET', '/app/*/trainingstatus').as('getTrainingstatus');
   cy.get('[data-testid="actioncreator-button-create"]')
     .should("be.visible")
-    .click({ force: true });
+    .click({
+      force: true
+    });
   cy.wait('@postAction');
+  cy.wait('@getTrainingstatus');
 }
 
-export { clickWaitForResponse, selectTypeText, setPhrase, clickCreateButton };
+export {
+  clickWaitForResponse,
+  selectTypeText,
+  setPhrase,
+  clickCreateButton
+};

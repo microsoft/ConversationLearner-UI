@@ -1,7 +1,7 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+* Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
- */
+*/
 const { convLearnerPage,
   modelpage,
   entity,
@@ -15,10 +15,10 @@ const { convLearnerPage,
   logDialogModal,
   testLog } = components();
 
- /**
- * Wait action: After the system takes a "wait" action, it will stop taking actions and wait for user input.
- * Non-wait action: After the system takes a "non-wait" action, it will immediately choose another action (without waiting for user input)
- */
+/**
+* Wait action: After the system takes a "wait" action, it will stop taking actions and wait for user input.
+* Non-wait action: After the system takes a "non-wait" action, it will immediately choose another action (without waiting for user input)
+*/
 describe('Wait vs No Wait Action e2e test', function () {
   const postfix = Cypress.moment().format("MMMDD-HHmm")
   const modelName = `e2e-waitvsnowait-${postfix}`
@@ -62,9 +62,6 @@ describe('Wait vs No Wait Action e2e test', function () {
     actionsModal.selectTypeText();
     actionsModal.setPhrase(action01); //"Which animal would you like?"
     actionsModal.clickCreateButton();
-    // Verify that the action has been added
-    cy.get('.ms-DetailsRow-cell')
-      .should('contain', action01)
 
     // No Wait Actions:
     actions.createNew();
@@ -72,10 +69,6 @@ describe('Wait vs No Wait Action e2e test', function () {
     actionsModal.setPhrase(action02); //"Cows say moo!!"
     actionsModal.clickWaitForResponse(); // Unselect
     actionsModal.clickCreateButton();
-
-    // Verify that the action has been added
-    cy.get('.ms-DetailsRow-cell')
-      .should('contain', action02)
 
     actions.createNew();
     actionsModal.selectTypeText();
@@ -85,7 +78,9 @@ describe('Wait vs No Wait Action e2e test', function () {
 
     // Verify that the action has been added
     cy.get('.ms-DetailsRow-cell')
-      .should('contain', action03)
+      .should('contain', action01)
+      .and('contain', action02)
+      .and('contain', action03)
   })
 
   /** FEATURE: New Train Dialog - using different types of Actions*/
