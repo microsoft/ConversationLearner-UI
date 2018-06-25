@@ -3,8 +3,9 @@
  * Licensed under the MIT License.
  */
 
-/** Navigate to the Conversation Learner Homepage */
+const testLog = require('../utils/testlog')
 
+/** Navigate to the Conversation Learner Homepage */
 function navigateTo() {
   cy.server()
   cy.route('GET', '/apps?**').as('getHomePage')
@@ -16,23 +17,26 @@ function navigateTo() {
 
 /** Creates a New Model */
 function createNewModel(modelName) {
-  cy.on('uncaught:exception', (err, runnable) => {
-    return false
-  })
   cy.server()
   cy.route('POST', '/app?userId=**').as('postcreateNew')
 
   // Click the button to create app
   cy.get('[data-testid="apps-list-button-create-new"]')
+    .should("be.visible")
     .click()
 
   // Ensure that name input is focused
   cy.focused()
 
   cy.get('[data-testid="app-create-input-name"]')
+    .should("be.visible")
     .type(modelName)
 
   cy.get('[data-testid="app-create-button-submit"]')
+    .should("be.visible")
+    .then(function (response) {
+      testLog.logStep("Click on Create button ")
+    })
     .click()
 
   cy.wait('@postcreateNew')
@@ -40,8 +44,6 @@ function createNewModel(modelName) {
 
 /** Delete an existent Model */
 function deleteModel(modelName) {
-  navigateTo()
-
   cy.contains(modelName)
     .parents('.ms-DetailsRow-fields')
     .find('i[data-icon-name="Delete"]')
@@ -52,4 +54,4 @@ function deleteModel(modelName) {
     .click()
 }
 
-export{navigateTo, createNewModel, deleteModel }
+export { navigateTo, createNewModel, deleteModel }

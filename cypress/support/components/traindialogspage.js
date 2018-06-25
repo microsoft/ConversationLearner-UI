@@ -3,6 +3,8 @@
  * Licensed under the MIT License.
  */
 
+const testLog = require('../utils/testlog')
+
 /** Verify: the Train Dialog page is rendered */
 function verifyPageTitle() {
   cy.get('div[data-testid="train-dialogs-title"]')
@@ -11,20 +13,19 @@ function verifyPageTitle() {
 
 /** starts a new train dialog */
 function createNew() {
-  cy.on('uncaught:exception', (err, runnable) => {
-    return false
-  })
   cy.server()
   cy.route('POST', '/app/*/teach').as('postTeach')
   cy.route('POST', 'directline/conversations').as('postConv')
   cy.route('PUT', '/state/conversationId?username=ConversationLearnerDeveloper&id=*').as('putConv')
 
   cy.get('[data-testid="button-new-train-dialog"]')
+    .then(function (response) {
+      testLog.logStep("Click on New Train Dialog button")
+    })
     .click()
-
-  cy.wait('@postTeach')
-  cy.wait('@postConv')
-  cy.wait('@putConv')
+  .wait('@postTeach')
+  .wait('@postConv')
+  .wait('@putConv')
 }
 
 export { verifyPageTitle, createNew }
