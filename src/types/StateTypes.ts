@@ -19,8 +19,8 @@ import { TipType } from '../components/ToolTips'
 export type ActionState = ActionBase[];
 export type EntityState = EntityBase[];
 export type ErrorState = {
-    errorType: ErrorType,
-    error: string,
+    type: ErrorType,
+    title: string,
     messages: string[],
     actionType: AT
 }

@@ -2,7 +2,7 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 import {
   AppBase
 } from '@conversationlearner/models'
@@ -196,15 +196,16 @@ export const getAllTeachSessionsForApp = (appId: string): Rx.Observable<ActionOb
     .catch(err => handleError(obs, err, AT.FETCH_TEACH_SESSIONS_ASYNC)));
 };
 
-const handleError = (obs: Rx.Observer<ActionObject>, err: any, actionType: AT) => {
+const handleError = (obs: Rx.Observer<ActionObject>, e: any, actionType: AT) => {
   if (!obs.closed) {
     // Service call failure
-    obs.next(actions.display.setErrorDisplay(ErrorType.Error, err.message, [toErrorString(err.response)], actionType));
+    const error = e as AxiosError
+    obs.next(actions.display.setErrorDisplay(ErrorType.Error, error.message, [toErrorString(error.response)], actionType));
     obs.complete();
   }
   else {
     // Means we've hit a code error not a service failure
-    throw (err);
+    throw (e);
   }
 }
 

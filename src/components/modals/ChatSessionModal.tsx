@@ -110,7 +110,7 @@ const mapStateToProps = (state: State) => {
     return {
         chatSession: state.chatSessions,
         user: state.user,
-        error: state.error.error
+        error: state.error.title
     }
 }
 
