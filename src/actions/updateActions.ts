@@ -9,6 +9,7 @@ import * as ClientFactory from '../services/clientFactory'
 import { setErrorDisplay } from './displayActions'
 import { Dispatch } from 'redux'
 import { fetchAllTrainDialogsAsync, fetchApplicationTrainingStatusThunkAsync } from './fetchActions';
+import { AxiosError } from 'axios';
 
 // ----------------------------------------
 // App
@@ -60,8 +61,9 @@ export const editEntityThunkAsync = (appId: string, entity: EntityBase) => {
             dispatch(fetchApplicationTrainingStatusThunkAsync(appId))
             return entity
         }
-        catch (error) {
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, [error.response], AT.EDIT_ENTITY_ASYNC))
+        catch (e) {
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.EDIT_ENTITY_ASYNC))
             throw error
         }
     }
@@ -102,8 +104,9 @@ export const editActionThunkAsync = (appId: string, action: ActionBase) => {
             dispatch(fetchApplicationTrainingStatusThunkAsync(appId))
             return action
         }
-        catch (error) {
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, [error.response], AT.EDIT_ACTION_ASYNC))
+        catch (e) {
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.EDIT_ACTION_ASYNC))
             throw error
         }
     }
@@ -138,8 +141,9 @@ export const editTrainDialogThunkAsync = (appId: string, trainDialog: TrainDialo
             dispatch(fetchApplicationTrainingStatusThunkAsync(appId))
             return trainDialog
         }
-        catch (error) {
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, [error.response], AT.EDIT_TRAINDIALOG_ASYNC))
+        catch (e) {
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.EDIT_TRAINDIALOG_ASYNC))
             throw error
         }
     }
@@ -186,8 +190,9 @@ export const editAppLiveTagThunkAsync = (appId: string, tagId: string) => {
             dispatch(editAppLiveTagFulfilled(updatedApp))
             return updatedApp
         }
-        catch (error) {
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, [error.response], AT.EDIT_APP_LIVE_TAG_ASYNC))
+        catch (e) {
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.EDIT_APP_LIVE_TAG_ASYNC))
             throw error
         }
     }
@@ -220,8 +225,9 @@ export const editAppEditingTagThunkAsync = (appId: string, packageId: string) =>
             dispatch(editAppEditingTagFulfilled(activeApps))
             return activeApps
         }
-        catch (error) {
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, [error.response], AT.EDIT_APP_EDITING_TAG_ASYNC))
+        catch (e) {
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.EDIT_APP_EDITING_TAG_ASYNC))
             throw error
         }
     }
@@ -253,8 +259,9 @@ export const setAppSourceThunkAsync = (appId: string, appDefinition: AppDefiniti
             dispatch(setAppSourceFulfilled())
             return true
         }
-        catch (error) {
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, [error.response], AT.CREATE_APPLICATION_ASYNC))
+        catch (e) {
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.CREATE_APPLICATION_ASYNC))
             throw error
         }
     }

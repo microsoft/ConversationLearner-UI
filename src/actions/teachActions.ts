@@ -13,6 +13,7 @@ import {
     UIScoreResponse, UITrainScorerStep, UIPostScoreResponse,
     DialogType, DialogMode, FilledEntityMap, Memory
 } from '@conversationlearner/models'
+import { AxiosError } from 'axios';
 
 // --------------------------
 // InitMemory
@@ -27,8 +28,9 @@ export const initMemoryThunkAsync = (appId: string, sessionId: string, filledEnt
             dispatch(initMemoryFulfilled(memories))
             return
         }
-        catch (error) {
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, [error.response], AT.INIT_MEMORY_ASYNC))
+        catch (e) {
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.INIT_MEMORY_ASYNC))
             throw error
         }
     }
@@ -78,8 +80,9 @@ export const runExtractorThunkAsync = (key: string, appId: string, extractType: 
             dispatch(runExtractorFulfilled(appId, sessionId, uiExtractResponse))
             return uiExtractResponse
         }
-        catch (error) {
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, [error.response], AT.RUN_EXTRACTOR_ASYNC))
+        catch (e) {
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.RUN_EXTRACTOR_ASYNC))
             throw error
         }
     }
@@ -141,8 +144,9 @@ export const getScoresThunkAsync = (key: string, appId: string, sessionId: strin
             dispatch(getScoresFulfilled(key, appId, sessionId, uiScoreResponse))
             return uiScoreResponse
         }
-        catch (error) {
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, [error.response], AT.GET_SCORES_ASYNC))
+        catch (e) {
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.GET_SCORES_ASYNC))
             throw error
         }
     }
@@ -180,8 +184,9 @@ export const runScorerThunkAsync = (key: string, appId: string, teachId: string,
             dispatch(fetchApplicationTrainingStatusThunkAsync(appId))
             return uiScoreResponse
         }
-        catch (error) {
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, [error.response], AT.RUN_SCORER_ASYNC))
+        catch (e) {
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.RUN_SCORER_ASYNC))
             throw error
         }
     }
@@ -230,8 +235,9 @@ export const postScorerFeedbackThunkAsync = (key: string, appId: string, teachId
             }
             return uiPostScoreResponse
         }
-        catch (error) {
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, [error.response], AT.POST_SCORE_FEEDBACK_ASYNC))
+        catch (e) {
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.POST_SCORE_FEEDBACK_ASYNC))
             throw error
         }
     }
