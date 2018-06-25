@@ -12,8 +12,7 @@ export interface ErrorCallback {
 }
 
 export class ErrorHandler {
-
-    static callbacks: ErrorCallback[] = [];
+    private static callbacks: ErrorCallback[] = [];
 
     public static registerCallbacks(callbacks: ErrorCallback[]): string {
         let guid = generateGUID();
