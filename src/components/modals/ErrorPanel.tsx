@@ -10,7 +10,7 @@ import { Panel, PanelType, FontClassNames, DefaultButton } from 'office-ui-fabri
 import { clearErrorDisplay } from '../../actions/displayActions'
 import { State } from '../../types'
 import { ErrorHandler } from '../../ErrorHandler'
-import { injectIntl, InjectedIntlProps, InjectedIntl } from 'react-intl'
+import { injectIntl, InjectedIntlProps, InjectedIntl, FormattedMessage } from 'react-intl'
 import { AT } from '../../types/ActionTypes'
 import { FM } from '../../react-intl-messages'
 import { GetTip, TipType } from '../ToolTips'
@@ -88,7 +88,11 @@ class ErrorPanel extends React.Component<Props, {}> {
                     customWidth='600px'
                 >
                 <div className="cl-errorpanel" >
-                    {this.props.error.actionType && <div className={FontClassNames.large}>{this.props.error.actionType} Failed</div>}
+                    {this.props.error.actionType && <div className={FontClassNames.large}>
+                    <FormattedMessage
+                        id={this.props.error.actionType || FM.ERROR_ERROR}
+                        defaultMessage='Unknown '
+                    /> Failed</div>}
                     <div className={FontClassNames.medium}>{this.props.error.error}</div>
                     {this.props.error && this.props.error.messages.map((message: any) => { 
                             if (message == null)

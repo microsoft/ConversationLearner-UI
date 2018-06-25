@@ -1,3 +1,5 @@
+import { AT } from "./types";
+
 /**
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
@@ -488,8 +490,6 @@ export default {
         [FM.BUTTON_IMPORT]: 'Import',
         [FM.BUTTON_INFO]: 'Info',
 
-        // Custom Errors
-        [FM.CUSTOMERROR_NETWORK_ERROR]: 'Is your Bot running?',
 
         // Dashboard
         [FM.DASHBOARD_TITLE]: 'Overview',
@@ -849,6 +849,40 @@ export default {
         [FM.TRAINDIALOGMODAL_PRIMARYBUTTON_ARIADESCRIPTION]: 'Done',
         [FM.TRAINDIALOGMODAL_PRIMARYBUTTON_TEXT]: 'Done',
         [FM.TRAINDIALOGMODAL_CONFIRMDELETE_TITLE]: 'Are you sure you want to delete this Training Dialog?',
+        
+        // Error Messages
+        [FM.CUSTOMERROR_NETWORK_ERROR]: 'Is your Bot running?',
+        /** 
+         * This is kind of hack which re-uses redux action types as unit strings for localized error messages
+         * 
+         * It should probably be `errors.application.create` but we're using something like: `CREATE_APPLICATION_ASYNC`
+         */
+        [AT.CREATE_APPLICATION_ASYNC]: 'Creating application',
+        [AT.COPY_APPLICATION_ASYNC]: 'Copying application ',
+        [AT.CREATE_ENTITY_ASYNC]: 'Creating entity',
+        [AT.CREATE_ACTION_ASYNC]: 'Creating action',
+        [AT.CREATE_APP_TAG_ASYNC]: 'Creating application tag',
+        [AT.CREATE_CHAT_SESSION_ASYNC]: 'Creating chat session',
+        [AT.CREATE_TEACH_SESSION_ASYNC]: 'Creating teach session',
+        [AT.CREATE_TEACH_SESSION_FROMHISTORYASYNC]: 'Creating teach session from history',
+        [AT.CREATE_TEACH_SESSION_FROMUNDOASYNC]: 'Creating teach session from undo',
+        [AT.FETCH_HISTORY_ASYNC]: 'Fetching history',
+        [AT.FETCH_TUTORIALS_ASYNC]: 'Fetching tutorials',
+        [AT.FETCH_APPSOURCE_ASYNC]: 'Fetching application source',
+        [AT.FETCH_ENTITY_DELETE_VALIDATION_ASYNC]: 'Fetching entity deletion information',
+        [AT.FETCH_ENTITY_EDIT_VALIDATION_ASYNC]: 'Fetching entity edit information',
+        [AT.FETCH_ACTION_DELETE_VALIDATION_ASYNC]: 'Fetching action delete information',
+        [AT.FETCH_ACTION_EDIT_VALIDATION_ASYNC]: 'Fetching action edit information',
+        [AT.INIT_MEMORY_ASYNC]: 'Initializing memory',
+        [AT.RUN_EXTRACTOR_ASYNC]: 'Running extractor',
+        [AT.GET_SCORES_ASYNC]: 'Fetching scores',
+        [AT.RUN_SCORER_ASYNC]: 'Running scorer',
+        [AT.POST_SCORE_FEEDBACK_ASYNC]: 'Fetching score feedback',
+        [AT.EDIT_ENTITY_ASYNC]: 'Editing entity',
+        [AT.EDIT_ACTION_ASYNC]: 'Editing action',
+        [AT.EDIT_TRAINDIALOG_ASYNC]: 'Editing train dialog',
+        [AT.EDIT_APP_LIVE_TAG_ASYNC]: 'Editing application live tag',
+        [AT.EDIT_APP_EDITING_TAG_ASYNC]: 'Editing application editing tag',
     },
     'ko': {
         [FM.ABOUT_TITLE]: '약',
