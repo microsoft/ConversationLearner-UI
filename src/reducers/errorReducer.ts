@@ -12,17 +12,27 @@ const initialState: ErrorState = {
     error: null,
     messages: null,
     actionType: AT.NO_OP
-};
+}
 
 const errorReducer: Reducer<ErrorState> = (state = initialState, action: ActionObject): ErrorState => {
     switch (action.type) {
         case AT.CLEAR_ERROR_DISPLAY:
-            return { ...initialState };
+            return { ...initialState }
         case AT.SET_ERROR_DISPLAY:
-            return { errorType: action.errorType, error: action.title, messages: action.messages, actionType: action.actionType }
+            return { 
+                errorType: action.errorType,
+                error: action.title,
+                messages: action.messages,
+                actionType: action.actionType
+            }
         case AT.FETCH_BOTINFO_FULFILLED:
             if (action.botInfo.validationErrors.length > 0) {
-                return { errorType: ErrorType.Error, error: `Configuration Error`, messages: action.botInfo.validationErrors, actionType: null }
+                return {
+                    errorType: ErrorType.Error,
+                    error: `Configuration Error`,
+                    messages: action.botInfo.validationErrors,
+                    actionType: null
+                }
             }
             return { ...state }
         default:

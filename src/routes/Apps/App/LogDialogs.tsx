@@ -598,7 +598,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     teach={this.props.teachSessions.current}
                     dialogMode={this.props.teachSessions.mode}
                     isOpen={this.state.isTeachDialogModalOpen}
-                    onClose={this.onCloseTeachSession}
+                    onClose={this.onCloseTeachSession} 
                     onUndo={(popRound) => this.onUndoTeachStep(popRound)}
                     history={this.state.isTeachDialogModalOpen ? this.state.history : null}
                     lastAction={this.state.lastAction}

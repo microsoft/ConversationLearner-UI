@@ -43,9 +43,9 @@ export const setErrorDisplay = (errorType: ErrorType, title: string, messages: s
     return {
         type: AT.SET_ERROR_DISPLAY,
         errorType,
-        title: title,
-        messages: messages,
-        actionType: actionType
+        title,
+        messages,
+        actionType
     }
 }
 
