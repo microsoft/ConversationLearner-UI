@@ -56,3 +56,6 @@ export function createEntityMapFromMemories(entities: models.EntityBase[], memor
 export function getDefaultEntityMap(entities: models.EntityBase[]): Map<string, string> {
     return entities.reduce((m, e) => m.set(e.entityId, `$${e.entityName}`), new Map<string, string>())
 }
+
+export const delay = <T>(ms: number, value: T = null): Promise<T> => new Promise<T>(resolve => setTimeout(() => resolve(value), ms))
+
