@@ -16,7 +16,6 @@ import { AppBase, AppDefinition, ActionBase, ActionTypes, ApiAction, CardAction,
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../../react-intl-messages'
 import { State } from '../../../types';
-import { setErrorDisplay } from '../../../actions/displayActions';
 import { Icon } from 'office-ui-fabric-react/lib/Icon'
 import Entities from './Entities'
 import TrainDialogs from './TrainDialogs'
@@ -245,7 +244,6 @@ class Index extends React.Component<Props, ComponentState> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        setErrorDisplay,
         setCurrentApp: actions.display.setCurrentApp,
         createApplicationThunkAsync: actions.create.createApplicationThunkAsync,
         fetchAppSource: actions.fetch.fetchAppSourceThunkAsync,

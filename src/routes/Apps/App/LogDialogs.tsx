@@ -17,7 +17,6 @@ import {
 } from '../../../actions/createActions'
 import { deleteLogDialogThunkAsync } from '../../../actions/deleteActions';
 import { fetchAllLogDialogsAsync, fetchHistoryThunkAsync } from '../../../actions/fetchActions';
-import { setErrorDisplay } from '../../../actions/displayActions';
 import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { FM } from '../../../react-intl-messages'
 import { Activity } from 'botframework-directlinejs';
@@ -618,7 +617,6 @@ const mapDispatchToProps = (dispatch: any) => {
         deleteLogDialogThunkAsync,
         fetchAllLogDialogsAsync,
         fetchHistoryThunkAsync,
-        setErrorDisplay
     }, dispatch)
 }
 const mapStateToProps = (state: State) => {
