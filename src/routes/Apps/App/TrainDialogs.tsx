@@ -21,7 +21,6 @@ import { deleteTrainDialogThunkAsync, deleteMemoryThunkAsync } from '../../../ac
 import { editTrainDialogThunkAsync } from '../../../actions/updateActions';
 import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { FM } from '../../../react-intl-messages'
-import { setErrorDisplay } from '../../../actions/displayActions';
 import { Activity } from 'botframework-directlinejs';
 import { autobind } from 'office-ui-fabric-react/lib/Utilities';
 import { getDefaultEntityMap } from '../../../util';
@@ -750,7 +749,6 @@ const mapDispatchToProps = (dispatch: any) => {
         createTeachSessionFromUndoThunkAsync,
         createTeachSessionFromHistoryThunkAsync,
         editTrainDialogThunkAsync,
-        setErrorDisplay
     }, dispatch)
 }
 const mapStateToProps = (state: State) => {

@@ -172,7 +172,8 @@ class AppCreator extends React.Component<Props, ComponentState> {
                 const appInput = this.getAppInput();
                 this.props.onSubmit(appInput, source)
             }
-            catch (error) {
+            catch (e) {
+                const error = e as Error
                 this.props.setErrorDisplay(ErrorType.Error, error.message, ["Invalid file contents"], AT.CREATE_APPLICATION_ASYNC)
             }
         }

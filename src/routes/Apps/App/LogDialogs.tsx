@@ -17,7 +17,6 @@ import {
 } from '../../../actions/createActions'
 import { deleteLogDialogThunkAsync } from '../../../actions/deleteActions';
 import { fetchAllLogDialogsAsync, fetchHistoryThunkAsync } from '../../../actions/fetchActions';
-import { setErrorDisplay } from '../../../actions/displayActions';
 import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { FM } from '../../../react-intl-messages'
 import { Activity } from 'botframework-directlinejs';
@@ -599,7 +598,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     teach={this.props.teachSessions.current}
                     dialogMode={this.props.teachSessions.mode}
                     isOpen={this.state.isTeachDialogModalOpen}
-                    onClose={this.onCloseTeachSession}
+                    onClose={this.onCloseTeachSession} 
                     onUndo={(popRound) => this.onUndoTeachStep(popRound)}
                     history={this.state.isTeachDialogModalOpen ? this.state.history : null}
                     lastAction={this.state.lastAction}
@@ -618,7 +617,6 @@ const mapDispatchToProps = (dispatch: any) => {
         deleteLogDialogThunkAsync,
         fetchAllLogDialogsAsync,
         fetchHistoryThunkAsync,
-        setErrorDisplay
     }, dispatch)
 }
 const mapStateToProps = (state: State) => {

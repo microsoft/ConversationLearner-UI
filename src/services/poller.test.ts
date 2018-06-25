@@ -26,7 +26,7 @@ describe('Poller', () => {
         await poller1.addPoll(pollConfig)
 
         expect(onExpiredMock.mock.calls.length).toBe(1)
-        expect(onUpdateMock.mock.calls.length).toBeGreaterThan(3)
+        expect(onUpdateMock.mock.calls.length).toBeGreaterThanOrEqual(3)
     }) 
 
     test('poll should invoke request, isResolved, and onUpdate for each interval', async () => {
@@ -143,6 +143,6 @@ describe('Poller', () => {
         await p1 // Will still resolve after 400 expiration
         const after = new Date().getTime()
         
-        expect(after - now).toBeGreaterThan(400)
+        expect(after - now).toBeGreaterThanOrEqual(400)
     })
 })
