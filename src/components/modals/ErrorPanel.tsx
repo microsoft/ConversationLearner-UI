@@ -94,16 +94,9 @@ class ErrorPanel extends React.Component<Props, {}> {
                         defaultMessage='Unknown '
                     /> Failed</div>}
                     <div className={FontClassNames.medium}>{this.props.error.error}</div>
-                    {this.props.error && this.props.error.messages.map((message: any) => { 
-                            if (message == null)
-                            { 
-                                message = 'Unknown';
-                            }
-                            else if (typeof message !== 'string') {
-                                message = JSON.stringify(message);
-                            }
+                    {this.props.error && this.props.error.messages.map(message => { 
                             // TODO: Need to not base this on string compare, but will greatly help end users so putting in for now
-                            if (message.indexOf("LUIS_AUTHORING_KEY") > -1) {
+                            if (message.includes("LUIS_AUTHORING_KEY")) {
                                 return (
                                     <div>
                                         <div key={key++} className={FontClassNames.medium}>{message}</div>
