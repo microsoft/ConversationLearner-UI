@@ -13,7 +13,6 @@ describe('Poller', () => {
         })
         const pollConfig: poller.IPollConfig<number> = {
             id: 'pc1',
-            interval: 100,
             maxDuration: 500,
             request: async () => {
                 return 0
@@ -23,8 +22,8 @@ describe('Poller', () => {
             onUpdate: onUpdateMock
         }
 
-        const poller1 = new poller.Poller()
-        await poller1.poll(pollConfig)
+        const poller1 = new poller.Poller({ interval: 100 })
+        await poller1.addPoll(pollConfig)
 
         expect(onExpiredMock.mock.calls.length).toBe(1)
         expect(onUpdateMock.mock.calls.length).toBeGreaterThan(3)
@@ -40,7 +39,6 @@ describe('Poller', () => {
         })
         const pollConfig: poller.IPollConfig<number> = {
             id: 'pc1',
-            interval: 100,
             maxDuration: 500,
             request: requestMock,
             isResolved: isResolvedMock,
@@ -48,8 +46,8 @@ describe('Poller', () => {
             onUpdate: onUpdateMock
         }
 
-        const poller1 = new poller.Poller()
-        await poller1.poll(pollConfig)
+        const poller1 = new poller.Poller({ interval: 100 })
+        await poller1.addPoll(pollConfig)
 
         expect(requestMock.mock.calls.length).toBe(4)
         expect(isResolvedMock.mock.calls.length).toBe(4)
@@ -62,7 +60,6 @@ describe('Poller', () => {
         })
         const pollConfig: poller.IPollConfig<number> = {
             id: 'pc1',
-            interval: 100,
             maxDuration: 500,
             request: async () => {
                 return 0
@@ -72,16 +69,15 @@ describe('Poller', () => {
             onUpdate: onUpdateMock
         }
 
-        const poller1 = new poller.Poller()
-        await poller1.poll(pollConfig)
+        const poller1 = new poller.Poller({ interval: 100 })
+        await poller1.addPoll(pollConfig)
 
         expect(onUpdateMock.mock.calls.length).toBe(1)
     })
 
-    xtest('calling poll with same id should extend existing polls', async () => {
+    test('calling poll with same id should extend existing polls', async () => {
         const pollConfig1: poller.IPollConfig<number> = {
             id: 'pc1',
-            interval: 75,
             maxDuration: 400,
             request: async () => {
                 return 0
@@ -93,7 +89,6 @@ describe('Poller', () => {
 
         const pollConfig2: poller.IPollConfig<number> = {
             id: 'pc1',
-            interval: 75,
             maxDuration: 400,
             request: async () => {
                 return 0
@@ -104,19 +99,20 @@ describe('Poller', () => {
         }
 
         const now = new Date().getTime()
-        const poller1 = new poller.Poller()
-        await poller1.poll(pollConfig1)
+        const poller1 = new poller.Poller({ interval: 100 })
+        const p1 = poller1.addPoll(pollConfig1)
         await delay(200)
-        await poller1.poll(pollConfig2)
+        poller1.addPoll(pollConfig2)
+        await p1
         const after = new Date().getTime()
 
+        // 200 + 400
         expect(after - now).toBeGreaterThanOrEqual(600)
     })
 
-    xtest('calling poll with different id should NOT extend existing polls', async () => {
+    test('calling poll with different id should NOT extend existing polls', async () => {
         const pollConfig1: poller.IPollConfig<number> = {
             id: 'pc1',
-            interval: 75,
             maxDuration: 400,
             request: async () => {
                 return 0
@@ -128,7 +124,6 @@ describe('Poller', () => {
 
         const pollConfig2: poller.IPollConfig<number> = {
             id: 'pc2',
-            interval: 75,
             maxDuration: 400,
             request: async () => {
                 return 0
@@ -138,10 +133,16 @@ describe('Poller', () => {
             onUpdate: () => {}
         }
 
-        const poller1 = new poller.Poller()
-        await poller1.poll(pollConfig1)
-        await poller1.poll(pollConfig2)
+        const poller1 = new poller.Poller({ interval: 100 })
 
-        expect(true).toBeTruthy()
+        const now = new Date().getTime()
+        const p1 = poller1.addPoll(pollConfig1)
+        await delay(200)
+        poller1.addPoll(pollConfig2)
+
+        await p1 // Will still resolve after 400 expiration
+        const after = new Date().getTime()
+        
+        expect(after - now).toBeGreaterThan(400)
     })
 })

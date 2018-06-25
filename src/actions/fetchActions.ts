@@ -177,7 +177,7 @@ const fetchTutorialsFulfilled = (tutorials: AppBase[]): ActionObject => {
 // ----------------------------------------
 // Training Status
 // ----------------------------------------
-const poller = new Poller()
+const poller = new Poller({ interval: 2000 })
 
 export const fetchApplicationTrainingStatusThunkAsync = (appId: string) => {
     return async (dispatch: Dispatch<any>) => {
@@ -188,7 +188,6 @@ export const fetchApplicationTrainingStatusThunkAsync = (appId: string) => {
         const clClient = ClientFactory.getInstance(AT.FETCH_APPLICATION_TRAININGSTATUS_ASYNC)
         const pollConfig: IPollConfig<TrainingStatus> = {
             id: appId,
-            interval: 2000,
             maxDuration: 30000,
             request: async () => {
                 const trainingStatus = await clClient.appGetTrainingStatus(appId)
@@ -203,7 +202,7 @@ export const fetchApplicationTrainingStatusThunkAsync = (appId: string) => {
             onUpdate: trainingStatus => dispatch(fetchApplicationTrainingStatusFulfilled(appId, trainingStatus)),
         }
 
-        poller.poll(pollConfig)
+        poller.addPoll(pollConfig)
     }
 }
 
