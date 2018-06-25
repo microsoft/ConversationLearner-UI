@@ -1,6 +1,7 @@
 {
   "projectId": "so64kq",
   "reporter": "mocha-multi-reporters",
+  "requestTimeout": 10000,
   "reporterOptions": {
     "configFile": "config-mocha-reporter.json"
   }
