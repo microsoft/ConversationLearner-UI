@@ -435,6 +435,10 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
         return (
             <div>
                 <OF.Dropdown
+                    ariaLabel={intl.formatMessage({
+                        id: FM.ENTITYCREATOREDITOR_FIELDS_TYPE_LABEL,
+                        defaultMessage: 'Entity Type'
+                    })}
                     label={intl.formatMessage({
                         id: FM.ENTITYCREATOREDITOR_FIELDS_TYPE_LABEL,
                         defaultMessage: 'Entity Type'

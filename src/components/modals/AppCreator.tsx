@@ -249,6 +249,10 @@ class AppCreator extends React.Component<Props, ComponentState> {
                     />
                     {this.props.creatorType === AppCreatorType.NEW &&
                         <OF.Dropdown
+                            ariaLabel={intl.formatMessage({
+                                id: FM.APPCREATOR_FIELDS_LOCALE_LABEL,
+                                defaultMessage: 'Locale'
+                            })}
                             label={intl.formatMessage({
                                 id: FM.APPCREATOR_FIELDS_LOCALE_LABEL,
                                 defaultMessage: 'Locale'

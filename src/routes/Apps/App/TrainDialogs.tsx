@@ -666,6 +666,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         <div className="cl-list-filters">
                             <OF.Dropdown
                                 data-testid="dropdown-filter-by-entity"
+                                ariaLabel="Entity:"
                                 label="Entity:"
                                 selectedKey={(this.state.entityFilter ? this.state.entityFilter.key : undefined)}
                                 onChanged={this.onSelectEntityFilter}
@@ -680,6 +681,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
                             <OF.Dropdown
                                 data-testid="dropdown-filter-by-action"
+                                ariaLabel="Action:"
                                 label="Action:"
                                 selectedKey={(this.state.actionFilter ? this.state.actionFilter.key : undefined)}
                                 onChanged={this.onSelectActionFilter}
