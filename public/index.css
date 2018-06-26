@@ -117,15 +117,6 @@ html {
   font-size: 18px
 }
 
-.cl-icon[data-icon-name="Info"] {
-  font-size: 12px;
-  margin-left: 8px;
-  color: var(--color-wc-user);
-}
-.cl-icon--pointer {
-  cursor: pointer;
-}
-
 .cl-icon[data-icon-name="ChevronUp"] {
   font-size: 12px;
   margin-right: 8px;
@@ -145,6 +136,13 @@ html {
   padding-left: 5px;
   padding-right: 5px;
   color: var(--color-red)
+}
+
+.ms-Button-icon[data-icon-name="Info"] {
+  font-size: 12px;
+  margin-bottom: 10px;
+  margin-left: -5px;
+  color: var(--color-wc-user);
 }
 
 .cl-label{
