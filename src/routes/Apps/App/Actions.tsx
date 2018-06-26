@@ -179,11 +179,18 @@ class Actions extends React.Component<Props, ComponentState> {
                         </div>
                     </div>
                     : <React.Fragment>
-                        <OF.SearchBox
-                            className={OF.FontClassNames.mediumPlus}
-                            onChange={searchString => this.onChangeSearchString(searchString)}
-                            onSearch={searchString => this.onChangeSearchString(searchString)}
-                        />
+                        <div>
+                            <OF.Label htmlFor="entities-input-search" className={OF.FontClassNames.medium}>
+                                Search:
+                            </OF.Label>
+                            <OF.SearchBox
+                                id="actions-input-search"
+                                data-testid="actions-input-search"
+                                className={OF.FontClassNames.mediumPlus}
+                                onChange={searchString => this.onChangeSearchString(searchString)}
+                                onSearch={searchString => this.onChangeSearchString(searchString)}
+                                />
+                        </div>
                         <ActionDetailsList
                             actions={computedActions}
                             onSelectAction={this.onSelectAction}

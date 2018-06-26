@@ -278,11 +278,17 @@ class Entities extends React.Component<Props, ComponentState> {
                         </div>
                     </div>
                     : <React.Fragment>
-                        <OF.SearchBox
-                            className={OF.FontClassNames.mediumPlus}
-                            onChange={(newValue) => this.onChange(newValue)}
-                            onSearch={(newValue) => this.onChange(newValue)}
-                        />
+                        <div>
+                            <OF.Label htmlFor="entities-input-search" className={OF.FontClassNames.medium}>
+                                Search:
+                            </OF.Label>
+                            <OF.SearchBox
+                                id="entities-input-search"
+                                className={OF.FontClassNames.mediumPlus}
+                                onChange={(newValue) => this.onChange(newValue)}
+                                onSearch={(newValue) => this.onChange(newValue)}
+                            />
+                        </div>
                         <OF.DetailsList
                             className={OF.FontClassNames.mediumPlus}
                             items={computedEntities}

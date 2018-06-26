@@ -652,12 +652,12 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     </div>
                     : <React.Fragment>
                         <div>
-                            <OF.Label htmlFor="search" className={OF.FontClassNames.medium}>
+                            <OF.Label htmlFor="traindialogs-input-search" className={OF.FontClassNames.medium}>
                                 Search:
                             </OF.Label>
                             <OF.SearchBox
                                 data-testid="search-box"
-                                id="search"
+                                id="traindialogs-input-search"
                                 className={OF.FontClassNames.medium}
                                 onChange={(newValue) => this.onChangeSearchString(newValue)}
                                 onSearch={(newValue) => this.onChangeSearchString(newValue)}
