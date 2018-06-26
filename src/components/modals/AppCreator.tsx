@@ -266,7 +266,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
                             <FilePicker
                                 extensions={['cl']}
                                 onChange={this.onChangeFile}
-                                onError={(err: string) => setErrorDisplay(ErrorType.Error, err, null, null)}
+                                onError={(error: string) => setErrorDisplay(ErrorType.Error, error, [], null)}
                             >
                                 <div className="cl-action-creator-file-picker">
                                     <OF.PrimaryButton

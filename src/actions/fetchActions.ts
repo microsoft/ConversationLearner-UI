@@ -24,6 +24,7 @@ import * as ClientFactory from '../services/clientFactory'
 import { setErrorDisplay } from './displayActions'
 import { Poller, IPollConfig } from '../services/poller';
 import { delay } from '../util';
+import { AxiosError } from 'axios';
 
 // ----------------------------------------
 // Train Dialogs
@@ -55,8 +56,8 @@ export const fetchHistoryThunkAsync = (appId: string, trainDialog: TrainDialog, 
             dispatch(fetchHistoryFulfilled(teachWithHistory))
             return teachWithHistory
         } catch (e) {
-            const error = e as Error
-            dispatch(setErrorDisplay(ErrorType.Error, error.name, [error.message], AT.FETCH_HISTORY_ASYNC))
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.FETCH_HISTORY_ASYNC))
             return null;
         }
     }
@@ -153,8 +154,8 @@ export const fetchTutorialsThunkAsync = (userId: string) => {
             dispatch(fetchTutorialsFulfilled(tutorials))
             return tutorials
         } catch (e) {
-            const error = e as Error
-            dispatch(setErrorDisplay(ErrorType.Error, error.name, [error.message], AT.FETCH_TUTORIALS_ASYNC))
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.FETCH_TUTORIALS_ASYNC))
             return null;
         }
     }
@@ -258,8 +259,8 @@ export const fetchAppSourceThunkAsync = (appId: string, packageId: string, updat
             dispatch(fetchAppSourceFulfilled(appDefinition))
             return appDefinition
         } catch (e) {
-            const error = e as Error
-            dispatch(setErrorDisplay(ErrorType.Error, error.name, [error.message], AT.FETCH_APPSOURCE_ASYNC))
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.FETCH_APPSOURCE_ASYNC))
             return null;
         }
     }
@@ -345,8 +346,8 @@ export const fetchEntityDeleteValidationThunkAsync = (appId: string, packageId: 
             dispatch(fetchEntityDeleteValidationFulfilled())
             return invalidTrainDialogIds
         } catch (e) {
-            const error = e as Error
-            dispatch(setErrorDisplay(ErrorType.Error, error.name, [error.message], AT.FETCH_ENTITY_DELETE_VALIDATION_ASYNC))
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.FETCH_ENTITY_DELETE_VALIDATION_ASYNC))
             return null;
         }
     }
@@ -380,8 +381,8 @@ export const fetchEntityEditValidationThunkAsync = (appId: string, packageId: st
             dispatch(fetchEntityEditValidationFulfilled())
             return invalidTrainDialogIds
         } catch (e) {
-            const error = e as Error
-            dispatch(setErrorDisplay(ErrorType.Error, error.name, [error.message], AT.FETCH_ENTITY_EDIT_VALIDATION_ASYNC))
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.FETCH_ENTITY_EDIT_VALIDATION_ASYNC))
             return null;
         }
     }
@@ -415,8 +416,8 @@ export const fetchActionDeleteValidationThunkAsync = (appId: string, packageId: 
             dispatch(fetchActionDeleteValidationFulfilled())
             return invalidTrainDialogIds
         } catch (e) {
-            const error = e as Error
-            dispatch(setErrorDisplay(ErrorType.Error, error.name, [error.message], AT.FETCH_ACTION_DELETE_VALIDATION_ASYNC))
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.FETCH_ACTION_DELETE_VALIDATION_ASYNC))
             return null;
         }
     }
@@ -450,8 +451,8 @@ export const fetchActionEditValidationThunkAsync = (appId: string, packageId: st
             dispatch(fetchActionEditValidationFulfilled())
             return invalidTrainDialogIds
         } catch (e) {
-            const error = e as Error
-            dispatch(setErrorDisplay(ErrorType.Error, error.name, [error.message], AT.FETCH_ACTION_EDIT_VALIDATION_ASYNC))
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.FETCH_ACTION_EDIT_VALIDATION_ASYNC))
             return null;
         }
     }

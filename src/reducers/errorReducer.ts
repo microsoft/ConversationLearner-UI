@@ -8,9 +8,9 @@ import { Reducer } from 'redux'
 import { AT } from '../types/ActionTypes'
 
 const initialState: ErrorState = {
-    errorType: ErrorType.Error,
-    error: null,
-    messages: null,
+    type: ErrorType.Error,
+    title: null,
+    messages: [],
     actionType: AT.NO_OP
 }
 
@@ -20,18 +20,18 @@ const errorReducer: Reducer<ErrorState> = (state = initialState, action: ActionO
             return { ...initialState }
         case AT.SET_ERROR_DISPLAY:
             return { 
-                errorType: action.errorType,
-                error: action.title,
+                type: action.errorType,
+                title: action.title,
                 messages: action.messages,
                 actionType: action.actionType
             }
         case AT.FETCH_BOTINFO_FULFILLED:
             if (action.botInfo.validationErrors.length > 0) {
                 return {
-                    errorType: ErrorType.Error,
-                    error: `Configuration Error`,
+                    type: ErrorType.Error,
+                    title: `Configuration Error`,
                     messages: action.botInfo.validationErrors,
-                    actionType: null
+                    actionType: AT.FETCH_BOTINFO_ASYNC
                 }
             }
             return { ...state }

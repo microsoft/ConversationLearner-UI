@@ -8,6 +8,7 @@ import { AppBase, Session, Teach } from '@conversationlearner/models'
 import { setErrorDisplay } from './displayActions'
 import { fetchAllTrainDialogsAsync, fetchAllLogDialogsAsync, fetchApplicationTrainingStatusThunkAsync, fetchAllActionsAsync } from './fetchActions'
 import * as ClientFactory from '../services/clientFactory'
+import { AxiosError } from 'axios';
 
 // ---------------------
 // App
@@ -52,8 +53,8 @@ export const deleteEntityThunkAsync = (appId: string, entityId: string) => {
             dispatch(fetchApplicationTrainingStatusThunkAsync(appId));
             return true;
         } catch (e) {
-            const error = e as Error
-            dispatch(setErrorDisplay(ErrorType.Error, error.name, [error.message], AT.DELETE_ENTITY_ASYNC))
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.DELETE_ENTITY_ASYNC))
             return false;
         }
     }
@@ -94,8 +95,8 @@ export const deleteActionThunkAsync = (appId: string, actionId: string) => {
             dispatch(fetchApplicationTrainingStatusThunkAsync(appId));
             return true;
         } catch (e) {
-            const error = e as Error
-            dispatch(setErrorDisplay(ErrorType.Error, error.name, [error.message], AT.DELETE_ACTION_ASYNC))
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.DELETE_ACTION_ASYNC))
             return false;
         }
     }
@@ -130,8 +131,8 @@ export const deleteChatSessionThunkAsync = (key: string, session: Session, app: 
             dispatch(fetchAllLogDialogsAsync(key, app, packageId))
             return true;
         } catch (e) {
-            const error = e as Error
-            dispatch(setErrorDisplay(ErrorType.Error, error.name, [error.message], AT.DELETE_CHAT_SESSION_ASYNC))
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.DELETE_CHAT_SESSION_ASYNC))
             return false;
         }
     }
@@ -175,8 +176,8 @@ export const deleteTeachSessionThunkAsync = (key: string, teachSession: Teach, a
             dispatch(fetchApplicationTrainingStatusThunkAsync(app.appId));
             return true;
         } catch (e) {
-            const error = e as Error
-            dispatch(setErrorDisplay(ErrorType.Error, error.name, [error.message], AT.DELETE_TRAIN_DIALOG_REJECTED))
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.DELETE_TRAIN_DIALOG_REJECTED))
             dispatch(fetchAllTrainDialogsAsync(app.appId));
             return false;
         }
@@ -217,8 +218,8 @@ export const deleteMemoryThunkAsync = (key: string, currentAppId: string) => {
             dispatch(deleteMemoryFulfilled());
             return true;
         } catch (e) {
-            const error = e as Error
-            dispatch(setErrorDisplay(ErrorType.Error, error.name, [error.message], AT.DELETE_MEMORY_ASYNC))
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.DELETE_MEMORY_ASYNC))
             return false;
         }
     }
@@ -251,8 +252,8 @@ export const deleteTrainDialogThunkAsync = (userId: string, app: AppBase, trainD
             dispatch(deleteTrainDialogFulfilled(trainDialogId))
             dispatch(fetchApplicationTrainingStatusThunkAsync(app.appId));
         } catch (e) {
-            const error = e as Error
-            dispatch(setErrorDisplay(ErrorType.Error, error.name, [error.message], AT.DELETE_TRAIN_DIALOG_REJECTED))
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.DELETE_TRAIN_DIALOG_REJECTED))
             dispatch(deleteTrainDialogRejected())
             dispatch(fetchAllTrainDialogsAsync(app.appId));
         }
@@ -292,8 +293,8 @@ export const deleteLogDialogThunkAsync = (userId: string, app: AppBase, logDialo
             dispatch(deleteLogDialogFulfilled(logDialogId))
         }
         catch (e) {
-            const error = e as Error
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, [error.message], AT.DELETE_LOG_DIALOG_ASYNC))
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.DELETE_LOG_DIALOG_ASYNC))
             dispatch(deleteLogDialogRejected())
             dispatch(fetchAllLogDialogsAsync(userId, app, packageId));
         }
