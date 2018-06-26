@@ -541,12 +541,18 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                         </div>
                     </div>
                     : <React.Fragment>
-                        <OF.SearchBox
-                            data-testid="logdialogs-search-box"
-                            className={OF.FontClassNames.mediumPlus}
-                            onChange={(newValue) => this.onChange(newValue)}
-                            onSearch={(newValue) => this.onChange(newValue)}
-                        />
+                        <div>
+                            <OF.Label htmlFor="logdialogs-input-search" className={OF.FontClassNames.medium}>
+                                Search:
+                            </OF.Label>
+                            <OF.SearchBox
+                                id="logdialogs-input-search"
+                                data-testid="logdialogs-search-box"
+                                className={OF.FontClassNames.mediumPlus}
+                                onChange={(newValue) => this.onChange(newValue)}
+                                onSearch={(newValue) => this.onChange(newValue)}
+                            />
+                        </div>
                         <div>
                             <OF.PrimaryButton
                                 data-testid="logdialogs-button-refresh"
