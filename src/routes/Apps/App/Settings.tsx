@@ -460,13 +460,14 @@ class Settings extends React.Component<Props, ComponentState> {
                     }
 
                     <div>
-                        <OF.Label className={OF.FontClassNames.mediumPlus}>
+                        <OF.Label className={OF.FontClassNames.mediumPlus} htmlFor="settings-dropdown-locale">
                             <FormattedMessage
                                 id={FM.SETTINGS_BOTFRAMEWORKLOCALELABEL}
                                 defaultMessage="Locale"
                             />
                         </OF.Label>
                         <OF.Dropdown
+                            id="settings-dropdown-locale"
                             className={OF.FontClassNames.mediumPlus}
                             options={options}
                             selectedKey={this.state.localeVal}
