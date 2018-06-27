@@ -72,7 +72,7 @@ class Dashboard extends React.Component<Props, ComponentState> {
                             iconProps={{ iconName: 'Sync' }}
                         />
                         <div role="alert" aria-live="assertive">
-                            {this.state.retrying && <span className="cl-dashboard-retry">Retrying</span>}
+                            {this.state.retrying && <span className="cl-screen-reader">Retrying</span>}
                         </div>
                     </div>
                 )}
