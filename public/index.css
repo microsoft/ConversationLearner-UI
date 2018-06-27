@@ -439,8 +439,9 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
     box-shadow: none !important;
     position: relative;
 }
-.cl-spinner-hidden {
-  opacity: 0;
+.cl-screen-reader {
+  position: absolute;
+  left: -999em;
 }
 
 .cl-chatmodal {
