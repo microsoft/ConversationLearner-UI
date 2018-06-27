@@ -443,6 +443,10 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
     box-shadow: none !important;
     position: relative;
 }
+.cl-screen-reader {
+  position: absolute;
+  left: -999em;
+}
 
 .cl-chatmodal {
   height: 100%;

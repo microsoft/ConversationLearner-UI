@@ -73,7 +73,7 @@ class App extends React.Component<Props, ComponentState> {
       <Router>
         <div className="cl-app">
           <div className="cl-app_header-placeholder"/>
-          <header className={`cl-app_header cl-header ${OF.FontClassNames.mediumPlus}`}>
+          <header className={`cl-app_header cl-header`}>
             <nav className="cl-header_links">
               <img className="cl-header-logo" src="/Microsoft-logo_rgb_c-wht.png" alt="Microsoft Logo" />
               <span className="cl-header-text">
