@@ -257,7 +257,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                                     history={this.props.history}
                                     onPostActivity={activity => this.onWebChatPostActivity(activity)}
                                     onSelectActivity={() => { }}
-                                    hideInput={false}
+                                    hideInput={this.props.dialogMode !== DialogMode.Wait}
                                     focusInput={this.props.dialogMode === DialogMode.Wait}
                                 />
                                 {chatDisable}
