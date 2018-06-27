@@ -35,7 +35,7 @@ interface State {
     preBuiltEditorValues: SlateValue[]
 }
 
-const disallowedOperations = ['insert_text', 'remove_text']
+const disallowedOperations = ['insert_text', 'remove_text', 'merge_node']
 const externalChangeOperations = ['insert_node', 'remove_node']
 
 /**
@@ -180,7 +180,10 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
     onChange = (change: any) => {
         const { value, operations } = change
         const operationsJs = operations.toJS()
+        console.log(`operationsJs: `, operationsJs)
+        console.log(`disallowedOperations: `, disallowedOperations)
         const containsDisallowedOperations = operationsJs.some((o: any) => disallowedOperations.includes(o.type))
+
         if (containsDisallowedOperations) {
             return
         }
@@ -242,6 +245,11 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
      * right most position of the input and presses the left arrow.
      */
     onKeyDown = (event: React.KeyboardEvent<HTMLInputElement>, change: any) => {
+        if (event.key === 'Enter') {
+            event.preventDefault()
+            return true
+        }
+
         const blockNode = change.value.document.getBlocks().last()
         const lastTextNode = blockNode.getLastText()
         const isAtEnd = change.value.selection.isAtEndOf(lastTextNode)
