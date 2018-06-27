@@ -110,14 +110,11 @@ class Webchat extends React.Component<Props, {}> {
                 user: { name: this.props.user.name, id: this.props.user.id },
                 bot: { name: CL_USER_NAME_ID, id: `BOT-${this.props.user.id}` },
                 resize: 'detect',
-                hideInput: this.props.hideInput,
-                focusInput: this.props.focusInput
             } as any
         }
-        else {
-            this.chatProps.hideInput = this.props.hideInput;
-            this.chatProps.focusInput = this.props.focusInput;
-        }
+
+        // Currently we don't support upload so disable button
+        this.chatProps.disableUpload = true;
         return this.chatProps;
     }
     render() {
@@ -126,6 +123,9 @@ class Webchat extends React.Component<Props, {}> {
             return null;
         }
         let chatProps = this.GetChatProps();
+
+        chatProps.hideInput = this.props.hideInput
+        chatProps.focusInput = this.props.focusInput
 
         return (
             <div id="botchat" className="webchatwindow wc-app">
