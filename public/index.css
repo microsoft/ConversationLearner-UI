@@ -145,6 +145,10 @@ html {
   color: var(--color-wc-user);
 }
 
+.ms-Button-icon[data-icon-name="Delete"] {
+  color: var(--color-red);
+}
+
 .cl-label{
   display: inline-block !important;
 }
