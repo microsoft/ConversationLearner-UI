@@ -14,8 +14,30 @@ import { FM } from '../../../react-intl-messages'
 import ReactPlayer from 'react-player'
 import { fetchBotInfoAsync } from '../../../actions/fetchActions'
 import * as ReactMarkdown from 'react-markdown'
+import './Dashboard.css'
 
-class Dashboard extends React.Component<Props, {}> {
+interface ComponentState {
+    retrying: boolean
+}
+
+class Dashboard extends React.Component<Props, ComponentState> {
+    state = {
+        retrying: false
+    }
+
+    onClickRetry = () => {
+        this.props.fetchBotInfoAsync(this.props.browserId)
+
+        this.setState({
+            retrying: true
+        }, () => {
+            setTimeout(() => {
+                this.setState({
+                    retrying: false
+                })
+            }, 1000)
+        })
+    }
 
     render() {
         // TODO: internationalize text
@@ -44,13 +66,17 @@ class Dashboard extends React.Component<Props, {}> {
                             })
                         }
                         <PrimaryButton
-                            onClick={() => this.props.fetchBotInfoAsync(this.props.browserId)}
-                            ariaDescription="Refresh"
+                            onClick={this.onClickRetry}
+                            ariaDescription="Retry"
                             text="Retry"
                             iconProps={{ iconName: 'Sync' }}
                         />
+                        <div role="alert" aria-live="assertive">
+                            {this.state.retrying && <span className="cl-dashboard-retry">Retrying</span>}
+                        </div>
                     </div>
                 )}
+                
                 {this.props.app.metadata && this.props.app.metadata.markdown &&
                     <ReactMarkdown source={this.props.app.metadata.markdown} />
                 }
