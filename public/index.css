@@ -97,6 +97,10 @@ html {
   to { transform: rotate(360deg); }
 }
 
+.cl-icon--short {
+  height: 15px !important;
+}
+
 .cl-icon[data-icon-name="Warning"] {
   color: var(--color-alert);
   vertical-align: sub;
@@ -139,8 +143,8 @@ html {
 }
 
 .ms-Button-icon[data-icon-name="Info"] {
-  font-size: 12px;
-  margin-bottom: 10px;
+  font-size: 13px;
+  margin-bottom: -6px;
   margin-left: -5px;
   color: var(--color-wc-user);
 }
@@ -475,6 +479,10 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
 /** Office UI Fabric Theme Overrides */
 .ms-List-cell {
   min-height: 0px !important;
+}
+
+.ms-Label--tight {
+  padding-bottom: 0px !important;
 }
 
 .ms-Pivot {
