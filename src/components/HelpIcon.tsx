@@ -9,14 +9,22 @@ import { connect } from 'react-redux';
 import { State } from '../types';
 import { setTipType } from '../actions/displayActions'
 import { TipType } from '../components/ToolTips';
-import { Icon } from 'office-ui-fabric-react';
+import { IconButton } from 'office-ui-fabric-react';
 
 class HelpIcon extends React.Component<Props, {}> {
     render() {
         return (
+            <IconButton
+                className="cl-icon cl-icon--pointer"
+                iconProps={{ iconName: this.props.iconName || 'Info' }}
+                onClick={() => { this.props.setTipType(this.props.tipType) }}
+                title="More Information"
+            />
+/*
             <a onClick={() => { this.props.setTipType(this.props.tipType) }}>
                 <Icon iconName={this.props.iconName || 'Info'} className="cl-icon cl-icon--pointer" />
             </a>
+*/
         )
     }
 }
