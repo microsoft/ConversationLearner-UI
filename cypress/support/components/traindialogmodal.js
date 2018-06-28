@@ -7,7 +7,7 @@ const testLog = require('../utils/testlog')
 
 /** Chat: Types a new user's message */
 function typeYourMessage(trainmessage) {
-    testLog.logStart("Submit message to WebChat");
+    // Submit message to WebChat
     cy.server()
     cy.route('PUT', '/app/*/teach/*/extractor').as('putExtractor')
     cy.get('input[class="wc-shellinput"]').type(trainmessage)
@@ -17,12 +17,11 @@ function typeYourMessage(trainmessage) {
         })
         .click()
         .wait('@putExtractor');
-    testLog.logEnd();
+
 }
 
 /** Click on 'Score Action' button */
 function clickScoreActions() {
-    testLog.logStart("Click on Score Actions");
     cy.server()
     cy.route('PUT', '/app/*/teach/*/scorer').as('putScorer')
     cy.get('[data-testid="button-proceedto-scoreactions"]')
@@ -31,7 +30,6 @@ function clickScoreActions() {
         })
         .click()
         .wait('@putScorer');
-    testLog.logEnd();
 }
 
 /** Finalize the training by clicking the Click done Teaching button*/

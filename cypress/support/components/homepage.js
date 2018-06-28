@@ -7,19 +7,16 @@ const testLog = require('../utils/testlog')
 
 /** Navigate to the Conversation Learner Homepage */
 function navigateTo() {
-  testLog.logStart("Navigate to homepage");
   cy.server()
   cy.route('GET', '/apps?**').as('getHomePage')
 
   // Open application
   cy.visit('http://localhost:5050')
   cy.wait('@getHomePage')
-  testLog.logEnd();
 }
 
 /** Creates a New Model */
 function createNewModel(modelName) {
-  testLog.logStart("Create New Model");
   cy.server()
   cy.route('POST', '/app?userId=**').as('postcreateNew')
 
@@ -43,12 +40,10 @@ function createNewModel(modelName) {
     .click()
 
   cy.wait('@postcreateNew')
-  testLog.logEnd();
 }
 
 /** Delete an existent Model */
 function deleteModel(modelName) {
-  testLog.logStart("Function Delete Model");
   cy.contains(modelName)
     .parents('.ms-DetailsRow-fields')
     .find('i[data-icon-name="Delete"]')
@@ -57,7 +52,6 @@ function deleteModel(modelName) {
   cy.get('.ms-Dialog-main')
     .contains('Confirm')
     .click()
-  testLog.logEnd();
 }
 
 export { navigateTo, createNewModel, deleteModel }
