@@ -153,6 +153,14 @@ html {
   color: var(--color-red);
 }
 
+.ms-Button-icon[data-icon-name="IncidentTriangle"] {
+  font-size: 13px;
+  margin-bottom: -3px;
+  margin-left: -5px;
+  color: var(--color-red);
+  background: transparent !important
+}
+
 .cl-label{
   display: inline-block !important;
 }
@@ -579,6 +587,11 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
 
 .ms-Button--icon {
   background-color: white !important;
+  color: var(--color-themePrimary) !important;
+}
+
+.ms-Button--transparent {
+  background-color: transparent !important;
   color: var(--color-themePrimary) !important;
 }
 
