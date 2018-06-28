@@ -24,20 +24,20 @@ describe('Hello world e2e', function () {
   const trainmessage02 = `Hi`
 
   beforeEach(function () {
+    cy.setup();
     testLog.logTestHeader(this.currentTest.title);
-    cy.viewport(1600, 900);
     // starts the listener
     cy.on('uncaught:exception', (err, runnable) => {
       testLog.logError(err);
       return false;
     })
   })
-
   afterEach(function () {
     testLog.logResult(this.currentTest);
     const fileName = `HelloWorld_${this.currentTest.state}-${this.currentTest.title}`;
     cy.wait(3000)
       .screenshot(fileName);
+    cy.teardown();
   })
 
   /** FEATURE: New Model */

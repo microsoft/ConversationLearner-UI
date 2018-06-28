@@ -10,12 +10,13 @@ function clickButtonNewEntity() {
     cy.get('.cl-page').within(() => {
 
         cy.get('[data-testid="entities-button-create"]')
-            .then(function (response) {
-                testLog.logStep("Create a new Entity")
-            })
             .click()
+            .then(()=> {
+                testLog.logStep("Create a new Entity")
+                testLog.logEnd();
+            })
     })
-    testLog.logEnd();
+
 }
 export {
     clickButtonNewEntity

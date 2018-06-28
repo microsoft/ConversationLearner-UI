@@ -15,12 +15,12 @@ const { convLearnerPage,
   logDialogModal,
   testLog } = components();
 
-describe('Entities creation test', function () {
+describe('Intro to Entities test', function () {
   const postfix = Cypress.moment().format("MMMDD-HHmm")
-  const modelName = `e2e-entities-${postfix}`
-  const customEntity01 = "programmaticonlyentity"
-  const customEntity02 = "multivaluedentity"
-  const customEntity03 = "negatable-entity"
+  const modelName = `e2e-introtoentities-${postfix}`
+  const customEntity01 = "city"
+  const action01 = "I don't know what city you want"
+  const action02 = "The weather in the $city is probably sunny"
 
   beforeEach(function () {
     cy.setup();
@@ -34,7 +34,7 @@ describe('Entities creation test', function () {
 
   afterEach(function () {
     testLog.logResult(this.currentTest);
-    const fileName = `entities_${this.currentTest.state}-${this.currentTest.title}`;
+    const fileName = `introentities_${this.currentTest.state}-${this.currentTest.title}`;
     cy.wait(3000)
       .screenshot(fileName);
     cy.teardown();
@@ -48,38 +48,58 @@ describe('Entities creation test', function () {
   })
 
   /** FEATURE: Custom entity creation */
-  it('should be able to create a custom and builtin entities', function () {
-
+  it('should create CITY entity', function () {
     modelpage.navigateToEntities();
-    // programagic only entity creation 
     entities.clickButtonNewEntity();
-    entityModal.typeEntityName(customEntity01);
-    entityModal.clickOnProgrammaticOnly();
+    entityModal.typeEntityName(customEntity01); //city
     entityModal.clickCreateButton();
-
-    //multi-value entity creation 
-    entities.clickButtonNewEntity();
-    entityModal.typeEntityName(customEntity02);
-    entityModal.clickOnMultivalue();
-    entityModal.clickCreateButton();
-
-    //negatable entity creation
-    entities.clickButtonNewEntity();
-    entityModal.typeEntityName(customEntity03);
-    entityModal.clickOnNegatable();
-    entityModal.clickCreateButton();
-
     // Verify that the entity has been added
     cy.get('.ms-DetailsRow-cell')
       .should('contain', customEntity01)
-      .and('contain', customEntity02)
-      .and('contain', customEntity03);
+  })
+
+  /** FEATURE: New Action */
+  it('should be able to ADD AN ACTION', () => {
+    modelpage.navigateToActions();
+    //Click Actions, then New Action
+    actions.createNew();
+
+    //In Response, type 'I don't know what city you want'.
+    actionsModal.selectTypeText();
+    actionsModal.typeOnResponseBox(action01); //"I don't know what city you want"
+
+    //In Disqualifying Entities, enter $city. Click Save.
+    actionsModal.typeDisqualifyingEntities('$city')
+
+    actionsModal.clickCreateButton();
+    //This means that if this entity is defined in bot's memory, then this action will not be available.
+
+    //Click Actions, then New Action to create a second action.
+    actions.createNew();
+
+    //In Response, type 'The weather in the $city is probably sunny'.
+    actionsModal.selectTypeText();
+    actionsModal.typeOnResponseBox("The weather in the "); // "The weather in the $city is probably sunny"
+    actionsModal.typeLetterOnResponseBox("$");             // TODO: entity identification is not beinf fired when typing "$"
+    actionsModal.typeOnResponseBox("city");
+    actionsModal.typeOnResponseBox(" is probably");
+    actionsModal.typeOnResponseBox("{enter}");
+    cy.wait(2000);
+
+    //STEP: In Required Entities, note that city entity has been added automatically since it was referred to. 
+    //*** TODO: this is a work around: Cypress isn't firing the event 
+    // that automatically resolves "$city" as required entity.
+    actionsModal.typeRequiredEntities('$city');
+
+    //Click Save
+    actionsModal.clickCreateButton();
   })
 
   /** FEATURE: Delete a Model */
   it('should delete an existent model', () => {
     convLearnerPage.navigateTo();
     convLearnerPage.deleteModel(modelName);
+    cy.end()
   })
 })
 

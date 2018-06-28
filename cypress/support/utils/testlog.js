@@ -32,11 +32,11 @@ cy.log(now()+ "-" + message);
 }
 
 function logStart(message){
-    cy.log(`${now()} - ${"=".repeat(10)}> ${message}`);
+    cy.log(`${"=".repeat(5)}> ${message}`);
 }
 
 function logEnd(){
-    cy.log(`<${"=".repeat(10)}`);
+    cy.log(`<${"=".repeat(5)}`);
 }
 
 export { now, logResult, logTestHeader, logError, logStep, log, logStart, logEnd }
