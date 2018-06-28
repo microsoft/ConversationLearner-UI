@@ -32,7 +32,7 @@ Cypress.Commands.add("setup", () => {
   Cypress.config("taskTimeout", 80000)
   Cypress.config("pageLoadTimeout", 80000)
   Cypress.config("requestTimeout", 15000)
-  Cypress.config("responseTimeout", 45000)
+  Cypress.config("responseTimeout", 60000)
 })
 
 Cypress.Commands.add("teardown", () => { 

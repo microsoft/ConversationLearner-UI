@@ -14,8 +14,7 @@ function createNew() {
       .then(function (response) {
         testLog.logStep("Create a New Action");
       })
-      .click()
-      .wait(4000);
+      .click();
   })
  cy.get('[data-testid="dropdown-action-type"]')
     .should("be.visible");
