@@ -97,6 +97,10 @@ html {
   to { transform: rotate(360deg); }
 }
 
+.cl-icon--short {
+  height: 15px !important;
+}
+
 .cl-icon[data-icon-name="Warning"] {
   color: var(--color-alert);
   vertical-align: sub;
@@ -139,14 +143,22 @@ html {
 }
 
 .ms-Button-icon[data-icon-name="Info"] {
-  font-size: 12px;
-  margin-bottom: 10px;
+  font-size: 13px;
+  margin-bottom: -6px;
   margin-left: -5px;
   color: var(--color-wc-user);
 }
 
 .ms-Button-icon[data-icon-name="Delete"] {
   color: var(--color-red);
+}
+
+.ms-Button-icon[data-icon-name="IncidentTriangle"] {
+  font-size: 13px;
+  margin-bottom: -3px;
+  margin-left: -5px;
+  color: var(--color-red);
+  background: transparent !important
 }
 
 .cl-label{
@@ -439,6 +451,10 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
     box-shadow: none !important;
     position: relative;
 }
+.cl-screen-reader {
+  position: absolute;
+  left: -999em;
+}
 
 .cl-chatmodal {
   height: 100%;
@@ -471,6 +487,10 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
 /** Office UI Fabric Theme Overrides */
 .ms-List-cell {
   min-height: 0px !important;
+}
+
+.ms-Label--tight {
+  padding-bottom: 0px !important;
 }
 
 .ms-Pivot {
@@ -567,6 +587,11 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
 
 .ms-Button--icon {
   background-color: white !important;
+  color: var(--color-themePrimary) !important;
+}
+
+.ms-Button--transparent {
+  background-color: transparent !important;
   color: var(--color-themePrimary) !important;
 }
 

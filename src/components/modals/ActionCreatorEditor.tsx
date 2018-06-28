@@ -904,7 +904,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                     .map(apiArgument => {
                                         return (
                                             <React.Fragment key={apiArgument}>
-                                                <OF.Label>{apiArgument} <HelpIcon tipType={ToolTip.TipType.ACTION_ARGUMENTS}></HelpIcon></OF.Label>
+                                                <OF.Label className="ms-Label--tight">{apiArgument} <HelpIcon tipType={ToolTip.TipType.ACTION_ARGUMENTS}></HelpIcon></OF.Label>
                                                 <ActionPayloadEditor.Editor
                                                     options={optionsAvailableForPayload}
                                                     value={this.state.slateValuesMap[apiArgument]}
@@ -926,7 +926,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                         {this.state.selectedActionTypeOptionKey === ActionTypes.TEXT
                             && (<div className={(this.state.isPayloadValid ? '' : 'editor--error')}>
                                 <div>
-                                    <OF.Label>Response... <HelpIcon 
+                                    <OF.Label className="ms-Label--tight">Response... <HelpIcon 
                                         tipType={this.state.selectedActionTypeOptionKey === ActionTypes.API_LOCAL ?
                                         ToolTip.TipType.ACTION_ARGUMENTS : ToolTip.TipType.ACTION_RESPONSE_TEXT} /></OF.Label>
                                     <ActionPayloadEditor.Editor
@@ -950,7 +950,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                         {this.state.selectedActionTypeOptionKey === ActionTypes.END_SESSION
                             && (<div className={(this.state.isPayloadValid ? '' : 'editor--error')}>
                                 <div>
-                                    <OF.Label>Data... <HelpIcon tipType={ToolTip.TipType.ACTION_END_SESSION}/></OF.Label>
+                                    <OF.Label className="ms-Label--tight">Data... <HelpIcon tipType={ToolTip.TipType.ACTION_END_SESSION}/></OF.Label>
                                     <ActionPayloadEditor.Editor
                                         options={optionsAvailableForPayload}
                                         value={this.state.slateValuesMap[TEXT_SLOT]}
