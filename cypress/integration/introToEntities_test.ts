@@ -1,7 +1,7 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+* Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
- */
+*/
 const { convLearnerPage,
   modelpage,
   entities,
@@ -15,13 +15,12 @@ const { convLearnerPage,
   logDialogModal,
   testLog } = components();
 
-describe('Hello world e2e', function () {
+describe('Intro to Entities test', function () {
   const postfix = Cypress.moment().format("MMMDD-HHmm")
-  const modelName = `e2e-HelloWorld-${postfix}`
-  const entity01 = `UserName-${postfix}`
-  const action01 = `Hello World`
-  const trainmessage01 = `Hello`
-  const trainmessage02 = `Hi`
+  const modelName = `e2e-introtoentities-${postfix}`
+  const customEntity01 = "city"
+  const action01 = "I don't know what city you want"
+  const action02 = "The weather in the $city is probably sunny"
 
   beforeEach(function () {
     cy.setup();
@@ -32,87 +31,68 @@ describe('Hello world e2e', function () {
       return false;
     })
   })
+
   afterEach(function () {
     testLog.logResult(this.currentTest);
-    const fileName = `HelloWorld_${this.currentTest.state}-${this.currentTest.title}`;
+    const fileName = `introentities_${this.currentTest.state}-${this.currentTest.title}`;
     cy.wait(3000)
       .screenshot(fileName);
     cy.teardown();
   })
 
   /** FEATURE: New Model */
-  it('CREATE NEW MODEL with random name and verify name on application page', function () {
+  it('create a New Model', function () {
     convLearnerPage.navigateTo();
     convLearnerPage.createNewModel(modelName);
     modelpage.verifyPageTitle(modelName);
   })
 
-  /** FEATURE:  New Identity */
-  it('should create a NEW ENTITY', () => {
+  /** FEATURE: Custom entity creation */
+  it('should create CITY entity', function () {
     modelpage.navigateToEntities();
     entities.clickButtonNewEntity();
-    entityModal.typeEntityName(entity01);
-    entityModal.clickOnMultivalue();
+    entityModal.typeEntityName(customEntity01); //city
     entityModal.clickCreateButton();
-
     // Verify that the entity has been added
     cy.get('.ms-DetailsRow-cell')
-      .should('contain', entity01)
+      .should('contain', customEntity01)
   })
 
   /** FEATURE: New Action */
   it('should be able to ADD AN ACTION', () => {
     modelpage.navigateToActions();
+    //Click Actions, then New Action
     actions.createNew();
+
+    //In Response, type 'I don't know what city you want'.
     actionsModal.selectTypeText();
-    actionsModal.typeOnResponseBox(action01);
+    actionsModal.typeOnResponseBox(action01); //"I don't know what city you want"
+
+    //In Disqualifying Entities, enter $city. Click Save.
+    actionsModal.typeDisqualifyingEntities('$city')
+
     actionsModal.clickCreateButton();
+    //This means that if this entity is defined in bot's memory, then this action will not be available.
 
-    // Verify that the action has been added
-    cy.get('.ms-DetailsRow-cell')
-      .should('contain', action01)
-  })
+    //Click Actions, then New Action to create a second action.
+    actions.createNew();
 
-  /** FEATURE: New Train Dialog */
-  it('should add a new TRAIN DIALOG', () => {
-    modelpage.navigateToTrainDialogs();
-    trainDialogPage.verifyPageTitle();
-    trainDialogPage.createNew();
-    trainDialogModal.typeYourMessage(trainmessage01);
-    trainDialogModal.clickScoreActions();
-    scorerModal.selectAnAction();
+    //In Response, type 'The weather in the $city is probably sunny'.
+    actionsModal.selectTypeText();
+    actionsModal.typeOnResponseBox("The weather in the "); // "The weather in the $city is probably sunny"
+    actionsModal.typeLetterOnResponseBox("$");             // TODO: entity identification is not beinf fired when typing "$"
+    actionsModal.typeOnResponseBox("city");
+    actionsModal.typeOnResponseBox(" is probably");
+    actionsModal.typeOnResponseBox("{enter}");
+    cy.wait(2000);
 
-    // Perform chat entries validation
-    cy.get('[id="botchat"]')
-      .should('contain', trainmessage01)
-      .and('contain', action01);
+    //STEP: In Required Entities, note that city entity has been added automatically since it was referred to. 
+    //*** TODO: this is a work around: Cypress isn't firing the event 
+    // that automatically resolves "$city" as required entity.
+    actionsModal.typeRequiredEntities('$city');
 
-    trainDialogModal.clickDoneTeaching();
-    trainDialogPage.createNew();
-    trainDialogModal.typeYourMessage(trainmessage02);
-    trainDialogModal.clickScoreActions();
-    scorerModal.selectAnAction();
-
-    // Perform second chat entries validation
-    cy.get('[id="botchat"]')
-      .should('contain', trainmessage02)
-      .and('contain', action01);
-    trainDialogModal.clickDoneTeaching();
-  })
-
-  /** FEATURE: New Log Dialog */
-  it('should add a new Log Dialog', () => {
-    modelpage.navigateToLogDialogs();
-    logDialogPage.verifyPageTitle();
-    logDialogPage.createNew();
-    logDialogModal.typeYourMessage(trainmessage01);
-    cy.wait(3000);
-
-    // Perform chat entries validation
-    cy.get('[id="botchat"]')
-      .should('contain', trainmessage01)
-      .and('contain', action01)
-    logDialogModal.clickDone();
+    //Click Save
+    actionsModal.clickCreateButton();
   })
 
   /** FEATURE: Delete a Model */

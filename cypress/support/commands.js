@@ -1,3 +1,5 @@
+import { createPartiallyEmittedExpression } from "typescript";
+
 // ***********************************************
 // This example commands.js shows you how to
 // create various custom commands and overwrite
@@ -23,3 +25,22 @@
 //
 // -- This is will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
+
+Cypress.Commands.add("setup", () => { 
+  cy.viewport(1440, 900);
+  Cypress.config("defaultCommandTimeout", 5000)
+  Cypress.config("taskTimeout", 80000)
+  Cypress.config("pageLoadTimeout", 80000)
+  Cypress.config("requestTimeout", 15000)
+  Cypress.config("responseTimeout", 60000)
+})
+
+Cypress.Commands.add("teardown", () => { 
+  //Restoring Cypress default values
+  Cypress.config("defaultCommandTimeout", 4000)
+  Cypress.config("taskTimeout", 60000)
+  Cypress.config("pageLoadTimeout", 60000)
+  Cypress.config("requestTimeout", 5000)
+  Cypress.config("responseTimeout", 30000)
+  cy.clearLocalStorage();
+})
