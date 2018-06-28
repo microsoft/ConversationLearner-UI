@@ -56,19 +56,22 @@ describe('Entities creation test', function () {
     entityModal.typeEntityName(customEntity01);
     entityModal.clickOnProgrammaticOnly();
     entityModal.clickCreateButton();
+    cy.wait(3000);
 
     //multi-value entity creation 
     entities.clickButtonNewEntity();
     entityModal.typeEntityName(customEntity02);
     entityModal.clickOnMultivalue();
     entityModal.clickCreateButton();
+    cy.wait(3000);
 
     //negatable entity creation
     entities.clickButtonNewEntity();
     entityModal.typeEntityName(customEntity03);
     entityModal.clickOnNegatable();
     entityModal.clickCreateButton();
-
+    cy.wait(3000);
+    
     // Verify that the entity has been added
     cy.get('.ms-DetailsRow-cell')
       .should('contain', customEntity01)
