@@ -4,7 +4,7 @@
  */
 const { convLearnerPage,
   modelpage,
-  entity,
+  entities,
   entityModal,
   actions,
   actionsModal,
@@ -50,9 +50,10 @@ describe('Hello world e2e', function () {
   /** FEATURE:  New Identity */
   it('should create a NEW ENTITY', () => {
     modelpage.navigateToEntities();
-    entity.createNew(entity01);
+    entities.clickButtonNewEntity();
+    entityModal.typeEntityName(entity01);
     entityModal.clickOnMultivalue();
-    entityModal.save();
+    entityModal.clickCreateButton();
 
     // Verify that the entity has been added
     cy.get('.ms-DetailsRow-cell')
@@ -64,7 +65,7 @@ describe('Hello world e2e', function () {
     modelpage.navigateToActions();
     actions.createNew();
     actionsModal.selectTypeText();
-    actionsModal.setPhrase(action01);
+    actionsModal.typeOnResponseBox(action01);
     actionsModal.clickCreateButton();
 
     // Verify that the action has been added
@@ -126,7 +127,7 @@ function components() {
   const actions = require('../support/components/actionspage');
   const actionsModal = require('../support/components/actionsmodal');
   const convLearnerPage = require('../support/components/homepage');
-  const entity = require('../support/components/entitiespage');
+  const entities = require('../support/components/entitiespage');
   const entityModal = require('../support/components/entitymodal');
   const modelpage = require('../support/components/modelpage');
   const logDialogPage = require('../support/components/logdialogspage');
@@ -135,5 +136,5 @@ function components() {
   const trainDialogPage = require('../support/components/traindialogspage');
   const trainDialogModal = require('../support/components/traindialogmodal');
   const testLog = require('../support/utils/testlog');
-  return { convLearnerPage, modelpage, entity, entityModal, actions, actionsModal, trainDialogPage, trainDialogModal, scorerModal, logDialogPage, logDialogModal, testLog };
+  return { convLearnerPage, modelpage, entities, entityModal, actions, actionsModal, trainDialogPage, trainDialogModal, scorerModal, logDialogPage, logDialogModal, testLog };
 }
