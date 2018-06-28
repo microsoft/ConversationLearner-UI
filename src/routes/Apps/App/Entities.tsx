@@ -219,7 +219,8 @@ class Entities extends React.Component<Props, ComponentState> {
         })
     }
     render() {
-        let entityItems = this.getFilteredAndSortedEntities()
+        const { entities } = this.props
+        const computedEntities = this.getFilteredAndSortedEntities()
 
         return (
             <div className="cl-page">
@@ -235,7 +236,7 @@ class Entities extends React.Component<Props, ComponentState> {
                             id={FM.ENTITIES_SUBTITLE}
                             defaultMessage="Entities hold values from the user or are set by code, and are stored in the bot's memory to track state"
                         />
-                    </span> 
+                    </span>
                     :
                     <span className="cl-errorpanel">Editing is only allowed in Master Tag</span>
                 }
@@ -254,33 +255,62 @@ class Entities extends React.Component<Props, ComponentState> {
                         })}
                         componentRef={component => this.newEntityButton = component}
                     />
-                    <EntityCreatorEditor
-                        app={this.props.app}
-                        editingPackageId={this.props.editingPackageId}
-                        open={this.state.createEditModalOpen}
-                        entity={this.state.entitySelected}
-                        handleClose={this.handleCloseCreateModal}
-                        handleDelete={this.handleDelete}
-                        entityTypeFilter={null}
-                    />
                 </div>
-                <OF.SearchBox
-                    className={OF.FontClassNames.mediumPlus}
-                    onChange={(newValue) => this.onChange(newValue)}
-                    onSearch={(newValue) => this.onChange(newValue)}
-                />
-                <OF.DetailsList
-                    className={OF.FontClassNames.mediumPlus}
-                    items={entityItems}
-                    columns={this.state.columns}
-                    checkboxVisibility={OF.CheckboxVisibility.hidden}
-                    onRenderItemColumn={(entity: EntityBase, i, column: IRenderableColumn) =>
-                        column.render(entity, this)}
-                    onRenderDetailsHeader={(detailsHeaderProps: OF.IDetailsHeaderProps,
-                        defaultRender: OF.IRenderFunction<OF.IDetailsHeaderProps>) =>
-                        onRenderDetailsHeader(detailsHeaderProps, defaultRender)}
-                    onColumnHeaderClick={this.onClickColumnHeader}
-                    onActiveItemChanged={entity => this.onSelectEntity(entity)}
+                {entities.length === 0
+                    ? <div className="cl-page-placeholder">
+                        <div className="cl-page-placeholder__content">
+                            <div className={`cl-page-placeholder__description ${OF.FontClassNames.xxLarge}`}>Create an Entity</div>
+                            <OF.PrimaryButton
+                                iconProps={{
+                                    iconName: "Add"
+                                }}
+                                disabled={this.props.editingPackageId !== this.props.app.devPackageId}
+                                onClick={this.handleOpenCreateModal}
+                                ariaDescription={this.props.intl.formatMessage({
+                                    id: FM.ENTITIES_CREATEBUTTONARIALDESCRIPTION,
+                                    defaultMessage: 'Create a New Entity'
+                                })}
+                                text={this.props.intl.formatMessage({
+                                    id: FM.ENTITIES_CREATEBUTTONTEXT,
+                                    defaultMessage: 'New Entity'
+                                })}
+                            />
+                        </div>
+                    </div>
+                    : <React.Fragment>
+                        <div>
+                            <OF.Label htmlFor="entities-input-search" className={OF.FontClassNames.medium}>
+                                Search:
+                            </OF.Label>
+                            <OF.SearchBox
+                                id="entities-input-search"
+                                className={OF.FontClassNames.mediumPlus}
+                                onChange={(newValue) => this.onChange(newValue)}
+                                onSearch={(newValue) => this.onChange(newValue)}
+                            />
+                        </div>
+                        <OF.DetailsList
+                            className={OF.FontClassNames.mediumPlus}
+                            items={computedEntities}
+                            columns={this.state.columns}
+                            checkboxVisibility={OF.CheckboxVisibility.hidden}
+                            onRenderItemColumn={(entity: EntityBase, i, column: IRenderableColumn) =>
+                                column.render(entity, this)}
+                            onRenderDetailsHeader={(detailsHeaderProps: OF.IDetailsHeaderProps,
+                                defaultRender: OF.IRenderFunction<OF.IDetailsHeaderProps>) =>
+                                onRenderDetailsHeader(detailsHeaderProps, defaultRender)}
+                            onColumnHeaderClick={this.onClickColumnHeader}
+                            onActiveItemChanged={entity => this.onSelectEntity(entity)}
+                        />
+                    </React.Fragment>}
+                <EntityCreatorEditor
+                    app={this.props.app}
+                    editingPackageId={this.props.editingPackageId}
+                    open={this.state.createEditModalOpen}
+                    entity={this.state.entitySelected}
+                    handleClose={this.handleCloseCreateModal}
+                    handleDelete={this.handleDelete}
+                    entityTypeFilter={null}
                 />
             </div>
         );

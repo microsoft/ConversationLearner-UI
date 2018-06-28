@@ -22,6 +22,9 @@ import {
 import { Dispatch } from 'redux'
 import * as ClientFactory from '../services/clientFactory'
 import { setErrorDisplay } from './displayActions'
+import { Poller, IPollConfig } from '../services/poller';
+import { delay } from '../util';
+import { AxiosError } from 'axios';
 
 // ----------------------------------------
 // Train Dialogs
@@ -53,8 +56,8 @@ export const fetchHistoryThunkAsync = (appId: string, trainDialog: TrainDialog, 
             dispatch(fetchHistoryFulfilled(teachWithHistory))
             return teachWithHistory
         } catch (e) {
-            const error = e as Error
-            dispatch(setErrorDisplay(ErrorType.Error, error.name, [error.message], AT.FETCH_HISTORY_ASYNC))
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.FETCH_HISTORY_ASYNC))
             return null;
         }
     }
@@ -151,8 +154,8 @@ export const fetchTutorialsThunkAsync = (userId: string) => {
             dispatch(fetchTutorialsFulfilled(tutorials))
             return tutorials
         } catch (e) {
-            const error = e as Error
-            dispatch(setErrorDisplay(ErrorType.Error, error.name, [error.message], AT.FETCH_TUTORIALS_ASYNC))
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.FETCH_TUTORIALS_ASYNC))
             return null;
         }
     }
@@ -175,14 +178,32 @@ const fetchTutorialsFulfilled = (tutorials: AppBase[]): ActionObject => {
 // ----------------------------------------
 // Training Status
 // ----------------------------------------
-const delay = <T>(ms: number, value: T = null): Promise<T> => new Promise<T>(resolve => setTimeout(() => resolve(value), ms))
+const poller = new Poller({ interval: 2000 })
 
 export const fetchApplicationTrainingStatusThunkAsync = (appId: string) => {
     return async (dispatch: Dispatch<any>) => {
         dispatch(fetchApplicationTrainingStatusAsync(appId))
         // Wait 1 second before polling to ensure service has time to change status from previous to queued / running
         await delay(1000)
-        pollTrainingStatusUntilResolvedOrMaxDuration(dispatch, appId, [TrainingStatusCode.Completed, TrainingStatusCode.Failed], 2000, 30000)
+
+        const clClient = ClientFactory.getInstance(AT.FETCH_APPLICATION_TRAININGSTATUS_ASYNC)
+        const pollConfig: IPollConfig<TrainingStatus> = {
+            id: appId,
+            maxDuration: 30000,
+            request: async () => {
+                const trainingStatus = await clClient.appGetTrainingStatus(appId)
+                console.log(`${new Date().getTime()} Poll app: ${appId}: `, trainingStatus.trainingStatus)
+                return trainingStatus
+            },
+            isResolved: trainingStatus => [TrainingStatusCode.Completed, TrainingStatusCode.Failed].includes(trainingStatus.trainingStatus),
+            onExpired: () => {
+                console.warn(`Polling for app ${appId} exceeded max duration. Stopping`)
+                dispatch(fetchApplicationTrainingStatusExpired(appId))
+            },
+            onUpdate: trainingStatus => dispatch(fetchApplicationTrainingStatusFulfilled(appId, trainingStatus)),
+        }
+
+        poller.addPoll(pollConfig)
     }
 }
 
@@ -206,41 +227,6 @@ const fetchApplicationTrainingStatusExpired = (appId: string): ActionObject => {
         type: AT.FETCH_APPLICATION_TRAININGSTATUS_EXPIRED,
         appId
     }
-}
-
-const pollTrainingStatusUntilResolvedOrMaxDuration = (dispatch: Dispatch<any>, appId: string, resolvedStates: TrainingStatusCode[], interval: number, maxDuration: number): Promise<void> => {
-    const start = new Date()
-    const end = start.getTime() + maxDuration
-    const clClient = ClientFactory.getInstance(null)
-    
-    return new Promise<void>((resolve) => {
-        const timerId = setInterval(async () => {
-            // If current time is after max allowed polling duration then resolve
-            const now = (new Date()).getTime()
-            if (now >= end) {
-                console.warn(`Polling exceeded max duration. Stopping`)
-                
-                if (timerId) {
-                    clearInterval(timerId)
-                }
-
-                dispatch(fetchApplicationTrainingStatusExpired(appId))
-                resolve()
-            }
-
-            // Get training status and if it's one of the resolved states resolve promise
-            const trainingStatus = await clClient.appGetTrainingStatus(appId)
-            console.log(`Poll app: ${appId} training status: `, end, now, trainingStatus.trainingStatus)
-            dispatch(fetchApplicationTrainingStatusFulfilled(appId, trainingStatus))
-
-            if (resolvedStates.includes(trainingStatus.trainingStatus)) {
-                if (timerId) {
-                    clearInterval(timerId)
-                }
-                resolve()
-            }
-        }, interval)
-    })
 }
 
 // -------------------------
@@ -273,8 +259,8 @@ export const fetchAppSourceThunkAsync = (appId: string, packageId: string, updat
             dispatch(fetchAppSourceFulfilled(appDefinition))
             return appDefinition
         } catch (e) {
-            const error = e as Error
-            dispatch(setErrorDisplay(ErrorType.Error, error.name, [error.message], AT.FETCH_APPSOURCE_ASYNC))
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.FETCH_APPSOURCE_ASYNC))
             return null;
         }
     }
@@ -360,8 +346,8 @@ export const fetchEntityDeleteValidationThunkAsync = (appId: string, packageId: 
             dispatch(fetchEntityDeleteValidationFulfilled())
             return invalidTrainDialogIds
         } catch (e) {
-            const error = e as Error
-            dispatch(setErrorDisplay(ErrorType.Error, error.name, [error.message], AT.FETCH_ENTITY_DELETE_VALIDATION_ASYNC))
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.FETCH_ENTITY_DELETE_VALIDATION_ASYNC))
             return null;
         }
     }
@@ -395,8 +381,8 @@ export const fetchEntityEditValidationThunkAsync = (appId: string, packageId: st
             dispatch(fetchEntityEditValidationFulfilled())
             return invalidTrainDialogIds
         } catch (e) {
-            const error = e as Error
-            dispatch(setErrorDisplay(ErrorType.Error, error.name, [error.message], AT.FETCH_ENTITY_EDIT_VALIDATION_ASYNC))
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.FETCH_ENTITY_EDIT_VALIDATION_ASYNC))
             return null;
         }
     }
@@ -430,8 +416,8 @@ export const fetchActionDeleteValidationThunkAsync = (appId: string, packageId: 
             dispatch(fetchActionDeleteValidationFulfilled())
             return invalidTrainDialogIds
         } catch (e) {
-            const error = e as Error
-            dispatch(setErrorDisplay(ErrorType.Error, error.name, [error.message], AT.FETCH_ACTION_DELETE_VALIDATION_ASYNC))
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.FETCH_ACTION_DELETE_VALIDATION_ASYNC))
             return null;
         }
     }
@@ -465,8 +451,8 @@ export const fetchActionEditValidationThunkAsync = (appId: string, packageId: st
             dispatch(fetchActionEditValidationFulfilled())
             return invalidTrainDialogIds
         } catch (e) {
-            const error = e as Error
-            dispatch(setErrorDisplay(ErrorType.Error, error.name, [error.message], AT.FETCH_ACTION_EDIT_VALIDATION_ASYNC))
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.FETCH_ACTION_EDIT_VALIDATION_ASYNC))
             return null;
         }
     }

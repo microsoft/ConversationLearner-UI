@@ -73,11 +73,13 @@
     font-size: 0.75rem;
     padding: 0.0em 0.3em;
     margin: 0;
-    border: none;
     cursor: pointer;
     color: white;
-    border-radius: 50%;
     font-size: 0.75rem;
+    border-top-left-radius: 50%;
+    border-top-right-radius: 50%;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
 }
 .cl-entity-node--read-only .cl-entity-node-indicator__controls button {
     cursor: default;
@@ -131,4 +133,11 @@
 }
 .cl-entity-node--prebuilt .cl-entity-node-indicator__bracket {
     border-color: var(--color-prebuilt-entity-bg);
+}
+
+.ms-Button--headstone {
+    border-top: 1px solid rgba(0,0,0,0.25);;
+    border-right: 1px solid rgba(0,0,0,0.25);;
+    border-bottom: 1px solid #ffffff;
+    border-left: 1px solid rgba(0,0,0,0.25);;
 }

@@ -45,13 +45,15 @@ interface ComponentState {
     appNameVal: string
     localeVal: string
     localeOptions: OF.IDropdownOption[]
+    file: File | null
 }
 
 class AppCreator extends React.Component<Props, ComponentState> {
     state: ComponentState = {
         appNameVal: '',
         localeVal: '',
-        localeOptions: []
+        localeOptions: [],
+        file: null,
     }
 
     constructor(p: Props) {
@@ -117,7 +119,8 @@ class AppCreator extends React.Component<Props, ComponentState> {
             }
         }
     }
-    onClickCreate() {
+
+    onClickCreate = () => {
         const appInput = this.getAppInput()
         this.props.onSubmit(appInput, null)
     }
@@ -127,7 +130,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
     onKeyDown(event: React.KeyboardEvent<HTMLElement>) {
         // On enter attempt to create the model if required fields are set
         // Not on import as explicit button press is required to pick the file
-        if (this.props.creatorType !== AppCreatorType.IMPORT && event.keyCode === 13 && this.state.appNameVal) {
+        if (this.props.creatorType !== AppCreatorType.IMPORT && event.key === 'Enter' && this.state.appNameVal) {
             this.onClickCreate();
         }
     }
@@ -155,7 +158,13 @@ class AppCreator extends React.Component<Props, ComponentState> {
         return value ? "" : this.props.intl.formatMessage(messages.fieldErrorRequired);
     }
 
-    onImport(importFile: File) {
+    onChangeFile = (file: File) => {
+        this.setState({
+            file
+        })
+    }
+
+    onClickImport = () => {
         let reader = new FileReader()
         reader.onload = (e: Event) => {
             try {
@@ -163,11 +172,12 @@ class AppCreator extends React.Component<Props, ComponentState> {
                 const appInput = this.getAppInput();
                 this.props.onSubmit(appInput, source)
             }
-            catch (error) {
+            catch (e) {
+                const error = e as Error
                 this.props.setErrorDisplay(ErrorType.Error, error.message, ["Invalid file contents"], AT.CREATE_APPLICATION_ASYNC)
             }
         }
-        reader.readAsText(importFile);
+        reader.readAsText(this.state.file)
     }
 
     getTitle(): JSX.Element {
@@ -180,10 +190,10 @@ class AppCreator extends React.Component<Props, ComponentState> {
                     />)
             case AppCreatorType.IMPORT:
                 return (
-                <FormattedMessage
-                    id={FM.APPCREATOR_IMPORT_TITLE}
-                    defaultMessage="Import a Conversation Learner Model"
-                />)
+                    <FormattedMessage
+                        id={FM.APPCREATOR_IMPORT_TITLE}
+                        defaultMessage="Import a Conversation Learner Model"
+                    />)
             case AppCreatorType.COPY:
                 return (
                     <FormattedMessage
@@ -201,7 +211,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
                 id: FM.APPCREATOR_FIELDS_IMPORT_NAME_LABEL,
                 defaultMessage: "New Model Name"
             })
-        :
+            :
             intl.formatMessage({
                 id: FM.APPCREATOR_FIELDS_NAME_LABEL,
                 defaultMessage: "Name"
@@ -211,6 +221,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
     render() {
         const { intl } = this.props
         const invalidName = this.onGetNameErrorMessage(this.state.appNameVal) !== ""
+        const invalidImport = invalidName || this.state.file === null
         return (
             <Modal
                 isOpen={this.props.open}
@@ -223,7 +234,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
                         {this.getTitle()}
                     </span>
                 </div>
-                <div>
+                <div className="cl-action-creator-fieldset">
                     <OF.TextField
                         data-testid="app-create-input-name"
                         onGetErrorMessage={value => this.onGetNameErrorMessage(value)}
@@ -238,6 +249,10 @@ class AppCreator extends React.Component<Props, ComponentState> {
                     />
                     {this.props.creatorType === AppCreatorType.NEW &&
                         <OF.Dropdown
+                            ariaLabel={intl.formatMessage({
+                                id: FM.APPCREATOR_FIELDS_LOCALE_LABEL,
+                                defaultMessage: 'Locale'
+                            })}
                             label={intl.formatMessage({
                                 id: FM.APPCREATOR_FIELDS_LOCALE_LABEL,
                                 defaultMessage: 'Locale'
@@ -246,31 +261,58 @@ class AppCreator extends React.Component<Props, ComponentState> {
                             options={this.state.localeOptions}
                             onChanged={this.localeChanged}
                             disabled={true}
-                            /* Disabled until trainer can support more than english */
+                        /* Disabled until trainer can support more than english */
                         />
+                    }
+                    {this.props.creatorType === AppCreatorType.IMPORT &&
+                        <div>
+                            <OF.Label>Import File</OF.Label>
+                            <FilePicker
+                                extensions={['cl']}
+                                onChange={this.onChangeFile}
+                                onError={(error: string) => setErrorDisplay(ErrorType.Error, error, [], null)}
+                            >
+                                <div className="cl-action-creator-file-picker">
+                                    <OF.PrimaryButton
+                                        className="cl-action-creator-file-button"
+                                        ariaDescription={this.props.intl.formatMessage({
+                                            id: FM.APPCREATOR_CHOOSE_FILE_BUTTON_ARIADESCRIPTION,
+                                            defaultMessage: 'Choose a file'
+                                        })}
+                                        text={this.props.intl.formatMessage({
+                                            id: FM.APPCREATOR_CHOOSE_FILE_BUTTON_TEXT,
+                                            defaultMessage: 'Choose'
+                                        })}
+                                    />
+                                    <OF.TextField
+                                        disabled={true}
+                                        value={this.state.file
+                                            ? this.state.file.name
+                                            : ''}
+                                    />
+                                </div>
+                            </FilePicker>
+                        </div>
                     }
                 </div>
                 <div className='cl-modal_footer'>
                     <div className="cl-modal-buttons">
+                        <div className="cl-modal-buttons_secondary" />
                         <div className="cl-modal-buttons_primary">
                             {this.props.creatorType === AppCreatorType.IMPORT &&
-                                <FilePicker
-                                    extensions={['cl']}
-                                    onChange={(fileObject: File) => this.onImport(fileObject)}
-                                    onError={(err: string) => setErrorDisplay(ErrorType.Error, err, null, null)}
-                                >
-                                    <OF.PrimaryButton
-                                        disabled={invalidName}          
-                                        ariaDescription={this.props.intl.formatMessage({
-                                            id: FM.APPCREATOR_LOCATEBUTTON_ARIADESCRIPTION,
-                                            defaultMessage: 'Import from File'
-                                        })}
-                                        text={this.props.intl.formatMessage({
-                                            id: FM.APPCREATOR_LOCATEBUTTON_TEXT,
-                                            defaultMessage: 'Import'
-                                        })}
-                                    />
-                                </FilePicker>
+                                <OF.PrimaryButton
+                                    disabled={invalidImport}
+                                    data-testid="app-create-button-submit"
+                                    onClick={this.onClickImport}
+                                    ariaDescription={this.props.intl.formatMessage({
+                                        id: FM.APPCREATOR_IMPORT_BUTTON_ARIADESCRIPTION,
+                                        defaultMessage: 'Import from File'
+                                    })}
+                                    text={this.props.intl.formatMessage({
+                                        id: FM.APPCREATOR_IMPORT_BUTTON_TEXT,
+                                        defaultMessage: 'Import'
+                                    })}
+                                />
                             }
                             {this.props.creatorType === AppCreatorType.NEW &&
                                 <OF.PrimaryButton

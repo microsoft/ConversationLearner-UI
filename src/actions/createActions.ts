@@ -9,6 +9,7 @@ import { Dispatch } from 'redux'
 import { setErrorDisplay } from './displayActions'
 import * as ClientFactory from '../services/clientFactory' 
 import { fetchApplicationsAsync, fetchApplicationTrainingStatusThunkAsync } from './fetchActions';
+import { AxiosError } from 'axios';
 
 // --------------------------
 // App
@@ -27,8 +28,9 @@ export const createApplicationThunkAsync = (userId: string, application: AppBase
             dispatch(createApplicationFulfilled(newApp))
             return newApp
         }
-        catch (error) {
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, [error.response], AT.CREATE_APPLICATION_ASYNC))
+        catch (e) {
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.CREATE_APPLICATION_ASYNC))
             throw error
         }
     }
@@ -60,8 +62,9 @@ export const copyApplicationThunkAsync = (srcUserId: string, destUserId: string,
             dispatch(fetchApplicationsAsync(destUserId))
             dispatch(copyApplicationFulfilled())
         }
-        catch (error) {
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, [error.response], AT.COPY_APPLICATION_ASYNC))
+        catch (e) {
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.COPY_APPLICATION_ASYNC))
             throw error
         }
         return;
@@ -103,8 +106,8 @@ export const createEntityThunkAsync = (appId: string, entity: EntityBase) => {
             
             dispatch(fetchApplicationTrainingStatusThunkAsync(appId));
         } catch (e) {
-            const error = e as Error
-            dispatch(setErrorDisplay(ErrorType.Error, error.name, [error.message], AT.CREATE_ENTITY_ASYNC))
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.CREATE_ENTITY_ASYNC))
         }
     }
 }
@@ -138,8 +141,8 @@ export const createActionThunkAsync = (appId: string, action: ActionBase) => {
             dispatch(fetchApplicationTrainingStatusThunkAsync(appId));
             return true;
         } catch (e) {
-            const error = e as Error
-            dispatch(setErrorDisplay(ErrorType.Error, error.name, [error.message], AT.CREATE_ACTION_ASYNC))
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.CREATE_ACTION_ASYNC))
             return false;
         }
     }
@@ -173,8 +176,9 @@ export const createAppTagThunkAsync = (appId: string, tagName: string, makeLive:
             dispatch(createAppTagFulfilled(updatedApp))
             return updatedApp
         }
-        catch (error) {
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, [error.response], AT.CREATE_APP_TAG_ASYNC))
+        catch (e) {
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.CREATE_APP_TAG_ASYNC))
             throw error
         }
     }
@@ -208,8 +212,9 @@ export const createChatSessionThunkAsync = (appId: string, packageId: string, sa
             dispatch(createChatSessionFulfilled(session))
             return session
         }
-        catch (error) {
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, [error.response], AT.CREATE_CHAT_SESSION_ASYNC))
+        catch (e) {
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.CREATE_CHAT_SESSION_ASYNC))
             throw error
         }
     }
@@ -239,8 +244,9 @@ export const createTeachSessionThunkAsync = (appId: string) => {
             dispatch(createTeachSessionFulfilled(teachResponse))
             return teachResponse
         }
-        catch (error) {
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, [error.response], AT.CREATE_TEACH_SESSION_ASYNC))
+        catch (e) {
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.CREATE_TEACH_SESSION_ASYNC))
             dispatch(createTeachSessionRejected())
             throw error
         }
@@ -276,8 +282,9 @@ export const createTeachSessionFromHistoryThunkAsync = (app: AppBase, trainDialo
             dispatch(createTeachSessionFromHistoryFulfilled(teachWithHistory))
             return teachWithHistory
         }
-        catch (error) {
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, [error.response], AT.CREATE_TEACH_SESSION_FROMHISTORYASYNC))
+        catch (e) {
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.CREATE_TEACH_SESSION_FROMHISTORYASYNC))
             dispatch(createTeachSessionRejected())
             throw error
         }
@@ -315,8 +322,9 @@ export const createTeachSessionFromUndoThunkAsync = (appId: string, teach: Teach
             dispatch(createTeachSessionFromUndoFulfilled(teachWithHistory))
             return teachWithHistory
         }
-        catch (error) {
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, [error.response], AT.CREATE_TEACH_SESSION_FROMUNDOASYNC))
+        catch (e) {
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.CREATE_TEACH_SESSION_FROMUNDOASYNC))
             dispatch(createTeachSessionRejected())
             throw error
         }

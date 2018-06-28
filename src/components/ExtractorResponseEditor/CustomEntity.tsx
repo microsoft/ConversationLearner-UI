@@ -4,6 +4,7 @@
  */
 import * as React from 'react'
 import './CustomEntity.css'
+import { IconButton } from 'office-ui-fabric-react';
 
 // Simulate entity component props which have children
 interface EntityComponentProps {
@@ -26,7 +27,14 @@ export const CustomEntity = (props: Props) => {
             <div className="cl-entity-node-indicator noselect">
                 <div className="cl-entity-node-indicator__mincontent">
                     <div className="cl-entity-node-indicator__controls">
-                        {isEditing && <button type="button" onClick={props.onClickDelete}>&#10006;</button>}
+                        {isEditing &&       
+                            <IconButton
+                                className="ms-Button--headstone"
+                                iconProps={{ iconName: 'Delete' }}
+                                onClick={props.onClickDelete}
+                                title="Unselect Entity"
+                            />
+                        }
                     </div>
                     <div className="cl-entity-node-indicator__name noselect" spellCheck={false}>
                         <button type="button" onClick={props.onClickName} tabIndex={-1}>

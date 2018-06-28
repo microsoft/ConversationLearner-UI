@@ -4,14 +4,7 @@
  */
 import { AT } from './types/ActionTypes'
 
-export interface ErrorCallback {
-    actionType: AT;
-    callback: ((actionType: AT) => void);
-    guid?: string;
-}
-
 export class ErrorInjector {
-
     private static disabledActions: string[] = [];
     
     public static SetError(actionType: string, enabled: boolean) {
@@ -26,5 +19,4 @@ export class ErrorInjector {
     public static ShouldError(actionType: AT) {
         return (ErrorInjector.disabledActions.find(s => s == AT[AT[actionType]]) != null)
     }
-    
 }

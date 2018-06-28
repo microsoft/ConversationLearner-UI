@@ -17,11 +17,12 @@ class DropdownWithTip extends OF.BaseComponent<IDropdownWithTipProps, OF.IDropdo
 
         return (
             <div>
-                <OF.Label>{label}
+                <OF.Label className="ms-Label--tight">{label}
                     <HelpIcon tipType={tipType} />
                 </OF.Label>
                 <OF.Dropdown
                     {...dropdownProps}
+                    ariaLabel={label}
                     label={null}
                 />
             </div>
