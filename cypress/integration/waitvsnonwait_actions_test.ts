@@ -30,20 +30,20 @@ describe('Wait vs No Wait Action e2e test', function () {
   const trainmessage03 = "Duck";
 
   beforeEach(function () {
+    cy.setup();
     testLog.logTestHeader(this.currentTest.title);
-    cy.viewport(1600, 900);
     // starts the listener
     cy.on('uncaught:exception', (err, runnable) => {
       testLog.logError(err);
       return false;
     })
   })
-
   afterEach(function () {
     testLog.logResult(this.currentTest);
     const fileName = `WaitVSNoWait_${this.currentTest.state}-${this.currentTest.title}`;
     cy.wait(3000)
       .screenshot(fileName);
+    cy.teardown();
   })
 
   /** FEATURE: New Model */
@@ -60,19 +60,19 @@ describe('Wait vs No Wait Action e2e test', function () {
     // Wait Action:
     actions.createNew();
     actionsModal.selectTypeText();
-    actionsModal.setPhrase(action01); //"Which animal would you like?"
+    actionsModal.typeOnResponseBox(action01); //"Which animal would you like?"
     actionsModal.clickCreateButton();
 
     // No Wait Actions:
     actions.createNew();
     actionsModal.selectTypeText();
-    actionsModal.setPhrase(action02); //"Cows say moo!!"
+    actionsModal.typeOnResponseBox(action02); //"Cows say moo!!"
     actionsModal.clickWaitForResponse(); // Unselect
     actionsModal.clickCreateButton();
 
     actions.createNew();
     actionsModal.selectTypeText();
-    actionsModal.setPhrase(action03); //"Ducks say quack";
+    actionsModal.typeOnResponseBox(action03); //"Ducks say quack";
     actionsModal.clickWaitForResponse(); // Unselect
     actionsModal.clickCreateButton();
 
