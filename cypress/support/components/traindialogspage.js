@@ -13,6 +13,7 @@ function verifyPageTitle() {
 
 /** starts a new train dialog */
 function createNew() {
+  testLog.logStart("TrainDialog: Click Create New");
   cy.server()
   cy.route('POST', '/app/*/teach').as('postTeach')
   cy.route('POST', 'directline/conversations').as('postConv')
@@ -26,6 +27,7 @@ function createNew() {
   .wait('@postTeach')
   .wait('@postConv')
   .wait('@putConv')
+  testLog.logEnd();
 }
 
 export { verifyPageTitle, createNew }
