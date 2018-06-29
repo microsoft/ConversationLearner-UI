@@ -8,12 +8,15 @@ branches:
 cache:
   directories:
     - ~/.npm
-    - node_modules
+    - ~/.cache
 notifications:
   email: false
   
 node_js:
   - node
+
+install:
+  - npm ci
 
 script:
   - npm run cibuild
