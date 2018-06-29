@@ -5,19 +5,19 @@
 const testLog = require('../utils/testlog')
 
 /** Create a new entity */
-function createNew(entityName) {
-    cy.get('[data-testid="entities-button-create"]')
-        .then(function (response) {
-            testLog.logStep("Create a new Entity")
-        })
-        .click()
-        .wait(1000)
+function clickButtonNewEntity() {
+    testLog.logStart("Entities Page: Click Create New")
+    cy.get('.cl-page').within(() => {
 
+        cy.get('[data-testid="entities-button-create"]')
+            .click()
+            .then(()=> {
+                testLog.logStep("Create a new Entity")
+                testLog.logEnd();
+            })
+    })
 
-    // Enter name for entity
-    cy.get('[data-testid="entity-creator-input-name"]')
-        .type(entityName)
-        .wait(1000);
 }
-
-export { createNew }
+export {
+    clickButtonNewEntity
+}
