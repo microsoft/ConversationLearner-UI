@@ -62,20 +62,21 @@ describe('Wait vs No Wait Action e2e test', function () {
     actionsModal.selectTypeText();
     actionsModal.typeOnResponseBox(action01); //"Which animal would you like?"
     actionsModal.clickCreateButton();
-
+     cy.wait(4000);
     // No Wait Actions:
     actions.createNew();
     actionsModal.selectTypeText();
     actionsModal.typeOnResponseBox(action02); //"Cows say moo!!"
     actionsModal.clickWaitForResponse(); // Unselect
     actionsModal.clickCreateButton();
-
+     cy.wait(4000);
     actions.createNew();
     actionsModal.selectTypeText();
     actionsModal.typeOnResponseBox(action03); //"Ducks say quack";
     actionsModal.clickWaitForResponse(); // Unselect
     actionsModal.clickCreateButton();
-
+     cy.wait(4000);
+    
     // Verify that the action has been added
     cy.get('.ms-DetailsRow-cell')
       .should('contain', action01)
