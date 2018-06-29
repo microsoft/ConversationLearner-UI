@@ -503,7 +503,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                         />
                     </span>
                 }
-                <div>
+                <div className="cl-buttons-row">
                     <OF.PrimaryButton
                         data-testid="logdialogs-button-create"
                         disabled={this.props.editingPackageId !== this.props.app.devPackageId || this.props.invalidBot}
@@ -517,6 +517,13 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                             defaultMessage: 'New Log Dialog'
                         })}
                         componentRef={component => this.newChatSessionButton = component}
+                    />
+                    <OF.DefaultButton
+                        data-testid="logdialogs-button-refresh"
+                        onClick={() => this.onClickSync()}
+                        ariaDescription="Refresh"
+                        text="Refresh"
+                        iconProps={{ iconName: 'Sync' }}
                     />
                 </div>
                 {logDialogs.length === 0
@@ -553,15 +560,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                                 onSearch={(newValue) => this.onChange(newValue)}
                             />
                         </div>
-                        <div>
-                            <OF.PrimaryButton
-                                data-testid="logdialogs-button-refresh"
-                                onClick={() => this.onClickSync()}
-                                ariaDescription="Refresh"
-                                text="Refresh"
-                                iconProps={{ iconName: 'Sync' }}
-                            />
-                        </div>
+
                         <OF.DetailsList
                             data-testid="logdialogs-details-list"
                             key={this.state.dialogKey}
@@ -604,7 +603,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     teach={this.props.teachSessions.current}
                     dialogMode={this.props.teachSessions.mode}
                     isOpen={this.state.isTeachDialogModalOpen}
-                    onClose={this.onCloseTeachSession} 
+                    onClose={this.onCloseTeachSession}
                     onUndo={(popRound) => this.onUndoTeachStep(popRound)}
                     history={this.state.isTeachDialogModalOpen ? this.state.history : null}
                     lastAction={this.state.lastAction}

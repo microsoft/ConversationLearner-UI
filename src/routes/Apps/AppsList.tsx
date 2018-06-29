@@ -283,7 +283,7 @@ class AppsList extends React.Component<Props, ComponentState> {
                         defaultMessage="Create and Manage your Conversation Learner applications..."
                     />
                 </span>
-                <div className="cl-modal-buttons_primary">
+                <div className="cl-buttons-row">
                     <OF.PrimaryButton
                         data-testid="apps-list-button-create-new"
                         onClick={this.onClickCreateNewApp}
