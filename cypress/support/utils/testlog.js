@@ -24,7 +24,19 @@ function logError(err) {
 }
 
 function now() {
-    return Cypress.moment().format("MMMDD-HH:mm.ss");
+    return Cypress.moment().format("MMMDD-HH:mm.sss");
 }
 
-export { now, logResult, logTestHeader, logError, logStep }
+function log(message){
+cy.log(now()+ "-" + message);
+}
+
+function logStart(message){
+    cy.log(`${"=".repeat(5)}> ${message}`);
+}
+
+function logEnd(){
+    cy.log(`<${"=".repeat(5)}`);
+}
+
+export { now, logResult, logTestHeader, logError, logStep, log, logStart, logEnd }
