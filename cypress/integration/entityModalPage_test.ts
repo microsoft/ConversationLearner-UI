@@ -71,7 +71,7 @@ describe('Entities creation test', function () {
     entityModal.clickOnNegatable();
     entityModal.clickCreateButton();
     cy.wait(3000);
-    
+
     // Verify that the entity has been added
     cy.get('.ms-DetailsRow-cell')
       .should('contain', customEntity01)

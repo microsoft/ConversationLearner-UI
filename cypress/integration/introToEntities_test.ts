@@ -79,18 +79,13 @@ describe('Intro to Entities test', function () {
     //In Response, type 'The weather in the $city is probably sunny'.
     actionsModal.selectTypeText();
     actionsModal.typeOnResponseBox(action02); // "The weather in the $city is probably sunny"
-    
-    //STEP: In Required Entities, note that city entity has been added automatically since it was referred to. 
-    //*** TODO: this is a work around: Cypress isn't firing the event 
-    // that automatically resolves "$city" as required entity.
     actionsModal.typeRequiredEntities('$city');
-        //Click Save
+
+    //Click Save
     actionsModal.clickCreateButton();
   })
 
   it('should be able to TRAIN THE BOT', () => {
-
-    
     modelpage.navigateToTrainDialogs();
     trainDialogPage.verifyPageTitle();
     trainDialogPage.createNew();
@@ -103,7 +98,7 @@ describe('Intro to Entities test', function () {
     //**----------------- blocked from this step------------- */
     // 4. Highlight seattle, then click city.
     // 5. Click Score Actions
-    // 6. <validate step> Note city value is now in the bot's memory.
+    // 6. <Validation step> Note city value is now in the bot's memory.
     // 7. 'Weather in $city is probably sunny' is now available as a response.
     // 8. Select 'Weather in $city is probably sunny'.
     //**----------------- TODO: to complete steps above ------------- */
