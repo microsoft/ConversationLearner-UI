@@ -3,10 +3,10 @@ skip_branch_with_pr: true
 
 cache:
   - '%AppData%\npm-cache -> appveyor.yml'
-  - node_modules -> package-lock.json
+  - '%AppData%\..\Local\Cypress\Cache' -> package-lock.json
   
 install:
-  - npm install
+  - npm ci
 
 before_build:
   # Output useful info for debugging.
