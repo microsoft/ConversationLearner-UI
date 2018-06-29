@@ -459,7 +459,7 @@ export default {
         [FM.APP_HEADER_SUPPORT]: 'Support',
 
         // TrainingStatus
-        [FM.APP_TRAINING_STATUS_STATUS]: 'Status',
+        [FM.APP_TRAINING_STATUS_STATUS]: 'Training',
         [FM.APP_TRAINING_STATUS_UNKNOWN]: 'Unknown',
         [FM.APP_TRAINING_STATUS_QUEUED]: 'Queued',
         [FM.APP_TRAINING_STATUS_RUNNING]: 'Running',
