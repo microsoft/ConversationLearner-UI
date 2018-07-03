@@ -2,15 +2,15 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import * as React from 'react';
-import { returntypeof } from 'react-redux-typescript';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
-import { State } from '../types';
+import * as React from 'react'
+import { returntypeof } from 'react-redux-typescript'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
+import { State } from '../types'
 import * as BotChat from '@conversationlearner/webchat'
 import { AppBase, CL_USER_NAME_ID } from '@conversationlearner/models'
-import { BehaviorSubject, Observable } from 'rxjs';
-import { Activity } from 'botframework-directlinejs';
+import { BehaviorSubject, Observable } from 'rxjs'
+import { Activity } from 'botframework-directlinejs'
 import actions from '../actions'
 
 class Webchat extends React.Component<Props, {}> {
@@ -68,35 +68,24 @@ class Webchat extends React.Component<Props, {}> {
     GetChatProps(): BotChat.ChatProps {
         if (!this.chatProps) {
             this.dl = new BotChat.DirectLine({
-                secret: 'secret', 
-                token: 'token', 
-                domain: 'http://localhost:3000/directline', 
+                secret: 'secret',
+                token: 'token',
+                domain: 'http://localhost:3978/directline',
                 webSocket: false // defaults to true,
-            });
+            })
 
-            let botConnection = null;
-            if (this.props.history) {
-                botConnection = {
-                    ...this.dl,
-                    activity$: Observable.from(this.props.history).concat(this.dl.activity$),
-                    postActivity: (activity: any) => {
-                        if (this.props.onPostActivity) { 
-                            this.props.onPostActivity(activity)
-                        }
-                        return this.dl.postActivity(activity)
+            const botConnection = {
+                ...this.dl,
+                postActivity: (activity: any) => {
+                    if (this.props.onPostActivity) { 
+                        this.props.onPostActivity(activity)
                     }
-                };
+                    return this.dl.postActivity(activity)
+                }
             }
-            else {
-                botConnection = {
-                    ...this.dl,
-                    postActivity: (activity: any) => {
-                        if (this.props.onPostActivity) { 
-                            this.props.onPostActivity(activity)
-                        }
-                        return this.dl.postActivity(activity)
-                    }
-                };
+
+            if (this.props.history) {
+                botConnection.activity$ = Observable.from(this.props.history).concat(this.dl.activity$)
             }
 
             this.dl.connectionStatus$.subscribe((status) => this.GetConversationId(status));

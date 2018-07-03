@@ -4,7 +4,7 @@
  */
 import * as ClientFactory from '../services/clientFactory'
 
-export const defaultPort = 5000
+export const defaultPort = 3978
 const localStorageSdkPortKey = 'conversationlearner-sdk-port'
 
 export const set = (port: number): void => {
