@@ -381,7 +381,7 @@ class Settings extends React.Component<Props, ComponentState> {
                         onGetErrorMessage={value => this.onGetNameErrorMessage(value)}
                         value={this.state.appNameVal}
                     />
-                    <div className="cl-modal-buttons_primary">
+                    <div className="cl-buttons-row">
                         <OF.PrimaryButton
                             onClick={this.onExport}
                             ariaDescription={intl.formatMessage({
@@ -520,7 +520,7 @@ class Settings extends React.Component<Props, ComponentState> {
                         </React.Fragment>
                     }
 
-                    <div className="cl-modal-buttons_primary">
+                    <div className="cl-buttons-row">
                         <OF.PrimaryButton
                             disabled={this.state.edited === false || this.onGetNameErrorMessage(this.state.appNameVal) !== ''}
                             onClick={this.onClickSave}
