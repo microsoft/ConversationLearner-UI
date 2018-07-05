@@ -27,6 +27,12 @@ const logDialogs = await clClient.apps(appId).logDialogs()
 const trainDialogs = await clClient.apps(appId).trainDialogs()
 */
 
+interface IActionCreationResponse {
+    actionId: string
+    packageId: string
+    trainingStatus: string
+}
+
 export default class ClClient {
     baseUrl: string
     defaultConfig: AxiosRequestConfig = {
@@ -252,14 +258,15 @@ export default class ClClient {
         }).then(response => response.data.actions)
     }
 
+
     actionsCreate(appId: string, action: models.ActionBase): Promise<models.ActionBase> {
-        return this.send<string>({
+        return this.send<IActionCreationResponse>({
             method: 'post',
             url: `${this.baseUrl}/app/${appId}/action`,
             data: action
         })
             .then(response => {
-                action.actionId = response.data
+                action.actionId = response.data.actionId
                 return action
             })
     }
