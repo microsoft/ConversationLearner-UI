@@ -318,7 +318,7 @@ export default class ClClient {
 
     trainDialogs(appId: string): Promise<models.TrainDialog[]> {
         return this.send<models.TrainDialogList>({
-            url: `${this.baseUrl}/app/${appId}/traindialogs`
+            url: `${this.baseUrl}/app/${appId}/traindialogs?includeDefinitions=false`
         }).then(response => response.data.trainDialogs)
     }
 
