@@ -490,19 +490,6 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
         const newOrEditedAction = new ActionBase({
             actionId: null,
-            /**
-             * Future Idea:
-             * Store compound object with both formats to get best of both
-             * {
-             *   "plainText": rawText,
-             *   "rawContent": rawContent
-             * }
-             * 
-             * This would allow backwards compatible parsing from downstream systems by updating them to look at the plainText field
-             * but this component would load from the rawContent which preserves entity relationships in native format for the editor.
-             * 
-             * Then whenever this component is used to modify content, it would update the plainText before saving to keep them in sync.
-             */
             payload,
             isTerminal: this.state.isTerminal,
             requiredEntitiesFromPayload: this.state.requiredEntityTagsFromPayload.map<string>(tag => tag.key),
@@ -518,7 +505,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         if (this.state.isEditing) {
             newOrEditedAction.actionId = this.props.action.actionId
         }
-        return newOrEditedAction;
+        return newOrEditedAction
     }
 
     @autobind
