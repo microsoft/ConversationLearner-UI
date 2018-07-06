@@ -73,11 +73,11 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
         if (this.props.history !== newProps.history) {
             webchatKey = this.state.webchatKey + 1
-            isInitAvailable = !newProps.history || newProps.history.length === 0;
         }
 
-        // Clear if new session
+        // If new session
         if (this.props.teach !== newProps.teach) {
+            isInitAvailable = !newProps.history || newProps.history.length === 0
             hasTerminalAction = false;
         }
         // Set terminal action from History but only if I just loaded it
@@ -85,7 +85,9 @@ class TeachModal extends React.Component<Props, ComponentState> {
             hasTerminalAction = newProps.lastAction.isTerminal
         }
 
-        if (webchatKey !== this.state.webchatKey || hasTerminalAction !== this.state.hasTerminalAction) {
+        if (webchatKey !== this.state.webchatKey || 
+            hasTerminalAction !== this.state.hasTerminalAction ||
+            isInitAvailable !== this.state.isInitAvailable) {
             this.setState({
                 webchatKey: webchatKey,
                 hasTerminalAction: hasTerminalAction,
