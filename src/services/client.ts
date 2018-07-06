@@ -288,7 +288,7 @@ export default class ClClient {
     }
 
     actionsUpdate(appId: string, action: models.ActionBase): Promise<models.DeleteEditResponse> {
-        const { actionId, version, packageCreationId, packageDeletionId, ...actionToSend } = action
+        const { version, packageCreationId, packageDeletionId, ...actionToSend } = action
         return this.send({
             method: 'put',
             url: `${this.baseUrl}/app/${appId}/action/${action.actionId}`,
@@ -298,7 +298,7 @@ export default class ClClient {
     }
 
     actionsUpdateValidation(appId: string, packageId: string, action: models.ActionBase): Promise<string[]> {
-        const { actionId, version, packageCreationId, packageDeletionId, ...actionToSend } = action
+        const { version, packageCreationId, packageDeletionId, ...actionToSend } = action
         return this.send({
             method: 'post',
             url: `${this.baseUrl}/app/${appId}/action/${action.actionId}/editValidation?packageId=${packageId}`,
