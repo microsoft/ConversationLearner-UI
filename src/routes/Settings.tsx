@@ -11,33 +11,33 @@ import { bindActionCreators } from 'redux'
 import { FormattedMessage } from 'react-intl'
 import { FM } from '../react-intl-messages'
 import * as OF from 'office-ui-fabric-react'
-import * as SdkPort from '../services/sdkPort'
+import * as BotPort from '../services/sdkPort'
 import './Settings.css'
 
 interface ComponentState {
-    sdkPort: number
+    botPort: number
 }
 
 const initialState: ComponentState = {
-    sdkPort: SdkPort.get()
+    botPort: BotPort.get()
 }
 
 class Settings extends React.Component<Props, ComponentState> {
     state = initialState
 
     onChangeSdkPort = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const sdkPort = parseInt(event.target.value, 10)
-        this.setSdkPort(sdkPort)        
+        const botPort = parseInt(event.target.value, 10)
+        this.setBotPort(botPort)        
     }
 
     reset = () => {
-        this.setSdkPort(SdkPort.defaultPort)
+        this.setBotPort(BotPort.defaultPort)
     }
 
-    private setSdkPort = (sdkPort: number) => {
-        SdkPort.set(sdkPort)
+    private setBotPort = (botPort: number) => {
+        BotPort.set(botPort)
         this.setState({
-            sdkPort
+            botPort
         })
     }
 
@@ -53,7 +53,7 @@ class Settings extends React.Component<Props, ComponentState> {
                 <div>
                     <OF.Label>
                         <FormattedMessage
-                            id={FM.PROFILE_SETTINGS_SDK_PORT}
+                            id={FM.PROFILE_SETTINGS_BOT_PORT}
                             defaultMessage="SDK Port"
                         />
                     </OF.Label>
@@ -62,13 +62,13 @@ class Settings extends React.Component<Props, ComponentState> {
                         type="number"
                         min={0}
                         max={99999}
-                        value={this.state.sdkPort}
+                        value={this.state.botPort}
                         onChange={this.onChangeSdkPort}
                     />
                     <div className="cl-input-warning">
                         <OF.Icon className="cl-icon" iconName="IncidentTriangle" />
                         <FormattedMessage
-                            id={FM.PROFILE_SETTINGS_SDK_PORT_WARNING}
+                            id={FM.PROFILE_SETTINGS_BOT_PORT_WARNING}
                             defaultMessage="Only change this value if you know what you are doing. This value must match the PORT that your SDK is listening on."
                         />
                     </div>
