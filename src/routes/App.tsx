@@ -20,7 +20,7 @@ import { SpinnerWindow, ErrorPanel } from '../components/modals'
 import './App.css'
 import { FormattedMessage } from 'react-intl'
 import { FM } from '../react-intl-messages'
-import { fetchBotInfoAsync } from '../actions/fetchActions'
+import { fetchBotInfoThunkAsync } from '../actions/fetchActions'
 import { clearBanner } from '../actions/displayActions'
 
 interface ComponentState {
@@ -33,13 +33,13 @@ class App extends React.Component<Props, ComponentState> {
   state = initialState
 
   componentDidMount() {
-    this.props.fetchBotInfoAsync(this.props.browserId)
+    this.props.fetchBotInfoThunkAsync(this.props.browserId)
   }
 
   dismissBanner(banner: Banner) {
     // Can't clear error banners
     if (banner.type.toLowerCase() !== "error") {
-      this.props.clearBanner(this.props.banner) 
+      this.props.clearBanner(banner)
     }
   }
 
@@ -47,11 +47,11 @@ class App extends React.Component<Props, ComponentState> {
     if (!banner || !banner.message) {
       return false;
     }
-    
+
     if (!this.props.clearedBanner) {
       return true;
     }
-      
+
     if (JSON.stringify(banner) === JSON.stringify(this.props.clearedBanner)) {
       return false;
     }
@@ -69,10 +69,11 @@ class App extends React.Component<Props, ComponentState> {
   }
 
   render() {
+    const banner = this.props.botInfo ? this.props.botInfo.banner : null
     return (
       <Router>
         <div className="cl-app">
-          <div className="cl-app_header-placeholder"/>
+          <div className="cl-app_header-placeholder" />
           <header className={`cl-app_header cl-header`}>
             <nav className="cl-header_links">
               <img className="cl-header-logo" src="/Microsoft-logo_rgb_c-wht.png" alt="Microsoft Logo" />
@@ -91,34 +92,39 @@ class App extends React.Component<Props, ComponentState> {
             </nav>
             <NavLink className="cl-header_user" to="/settings"><OF.Icon className="cl-header-office-icon" iconName="Settings" /> Settings</NavLink>
           </header>
-          
+
           <div className="cl-app_header-placeholder" />
           <div className="cl-app_content">
-            {this.shouldShowBanner(this.props.banner) &&
+            {this.shouldShowBanner(banner) &&
               <OF.MessageBar
                 className="cl-messagebar"
                 isMultiline={true}
-                onDismiss={()=>this.dismissBanner(this.props.banner) }
+                onDismiss={() => this.dismissBanner(banner)}
                 dismissButtonAriaLabel='Close'
-                messageBarType={this.getMessageBarType(this.props.banner.type)}
+                messageBarType={this.getMessageBarType(banner.type)}
               >
-                {this.props.banner.message}
-                {this.props.banner.message.link && this.props.banner.linktext &&
-                  <OF.Link href={this.props.banner.link}>{this.props.banner.linktext}</OF.Link>
+                {banner.message}
+                {banner.message.link && banner.linktext &&
+                  <OF.Link href={banner.link}>{banner.linktext}</OF.Link>
                 }
-                {this.props.banner.datestring &&
+                {banner.datestring &&
                   <div>
-                    <span className="cl-font--demphasis">{this.props.banner.datestring}</span>
+                    <span className="cl-font--demphasis">{banner.datestring}</span>
                   </div>
                 }
               </OF.MessageBar>
             }
-            <Switch>
-              <Route exact path="/" render={() => <Redirect to="/home" />} />
-              <Route path="/home" component={AppsIndex} />
-              <Route path="/settings" component={Settings} />
-              <Route component={NoMatch} />
-            </Switch>
+            <React.Fragment>
+              {this.props.botInfo === null
+                ? <div>Loading Bot Info...</div>
+                : <Switch>
+                <Route exact path="/" render={() => <Redirect to="/home" />} />
+                <Route path="/home" component={AppsIndex} />
+                <Route path="/settings" component={Settings} />
+                <Route component={NoMatch} />
+              </Switch>
+              }
+            </React.Fragment>
           </div>
           <div className="cl-app_modals">
             <ErrorPanel />
@@ -133,8 +139,8 @@ class App extends React.Component<Props, ComponentState> {
 
 const mapDispatchToProps = (dispatch: any) => {
   return bindActionCreators({
-      fetchBotInfoAsync,
-      clearBanner
+    fetchBotInfoThunkAsync,
+    clearBanner
   }, dispatch);
 }
 
@@ -142,7 +148,7 @@ const mapStateToProps = (state: State) => {
   return {
     user: state.user,
     browserId: state.bot.browserId,
-    banner: state.bot.botInfo ? state.bot.botInfo.banner : null,
+    botInfo: state.bot.botInfo,
     clearedBanner: state.display.clearedBanner
   }
 }

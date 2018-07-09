@@ -55,17 +55,6 @@ export const setConversationId = (userName: string, userId: string, conversation
 //=========================================================
 // GET ROUTES
 //=========================================================
-
-export const getBotInfo = (browserId: string): Rx.Observable<ActionObject> => {
-  const clClient = ClientFactory.getInstance(AT.FETCH_BOTINFO_ASYNC)
-  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => clClient.getBotInfo(browserId)
-    .then(botInfo => {
-      obs.next(actions.fetch.fetchBotInfoFulfilled(botInfo, browserId));
-      obs.complete();
-    })
-    .catch(err => handleError(obs, err, AT.FETCH_BOTINFO_ASYNC)));
-};
-
 export const getAllApps = (userId: string): Rx.Observable<ActionObject> => {
   const clClient = ClientFactory.getInstance(AT.FETCH_APPLICATIONS_ASYNC)
   return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => clClient.apps(userId)

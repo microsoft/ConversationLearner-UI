@@ -109,18 +109,35 @@ export const fetchAllLogDialogsFulfilled = (logDialogs: LogDialog[]): ActionObje
 // ----------------------------------------
 // Bot Info
 // ----------------------------------------
-export const fetchBotInfoAsync = (browserId: string): ActionObject => {
+const fetchBotInfoAsync = (browserId: string): ActionObject => {
     return {
         type: AT.FETCH_BOTINFO_ASYNC,
-        browserId: browserId
+        browserId
     }
 }
 
-export const fetchBotInfoFulfilled = (botInfo: BotInfo, browserId: string): ActionObject => {
+const fetchBotInfoFulfilled = (botInfo: BotInfo, browserId: string): ActionObject => {
     return {
         type: AT.FETCH_BOTINFO_FULFILLED,
-        botInfo: botInfo,
-        browserId: browserId
+        botInfo,
+        browserId
+    }
+}
+
+export const fetchBotInfoThunkAsync = (browserId: string) => {
+    return async (dispatch: Dispatch<any>) => {
+        const clClient = ClientFactory.getInstance(AT.FETCH_BOTINFO_ASYNC)
+        dispatch(fetchBotInfoAsync(browserId))
+
+        try {
+            const botInfo = await clClient.getBotInfo(browserId)
+            dispatch(fetchBotInfoFulfilled(botInfo, browserId))
+            return botInfo
+        } catch (e) {
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.FETCH_BOTINFO_ASYNC))
+            return null;
+        }
     }
 }
 
