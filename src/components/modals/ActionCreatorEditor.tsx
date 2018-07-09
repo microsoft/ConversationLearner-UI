@@ -9,7 +9,7 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import Plain from 'slate-plain-serializer'
 import { 
-    fetchBotInfoAsync,
+    fetchBotInfoThunkAsync,
     fetchActionDeleteValidationThunkAsync,
     fetchActionEditValidationThunkAsync } from '../../actions/fetchActions'
 import { Modal } from 'office-ui-fabric-react/lib/Modal'
@@ -396,7 +396,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     }
 
     onClickSyncBotInfo() {
-        this.props.fetchBotInfoAsync(this.props.browserId);
+        this.props.fetchBotInfoThunkAsync(this.props.browserId)
     }
 
     onClickViewCard() {
@@ -1161,7 +1161,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        fetchBotInfoAsync,
+        fetchBotInfoThunkAsync,
         fetchActionDeleteValidationThunkAsync,
         fetchActionEditValidationThunkAsync
     }, dispatch);

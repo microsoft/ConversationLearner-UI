@@ -43,27 +43,28 @@ class Index extends React.Component<Props, ComponentState> {
         packageId: null
     }
 
-    loadApp(app: AppBase, packageId: string): void {
-        
+    async loadApp(app: AppBase, packageId: string): Promise<void> {
+        console.log(`loadApp`, app, packageId)
         this.setState({ packageId: packageId})
+
+        await this.props.fetchBotInfoThunkAsync(this.props.browserId)
 
         this.props.setCurrentApp(this.props.user.id, app)
         this.props.fetchAllLogDialogsAsync(this.props.user.id, app, packageId) // Note: a separate call as eventually we want to page
         this.props.fetchAppSource(app.appId, packageId)
-        this.props.fetchBotInfoAsync(this.props.browserId)
         // this.props.fetchAllChatSessionsAsync(app.appId)
         // this.props.fetchAllTeachSessions(app.appId)
     }
 
     componentWillMount() {
-        // If we're loading Index due to page refresh where model is not in router state
-        // force back to /home route to mimic old behavior and allow user to login again
-        const { location, history } = this.props
+        const { match, location } = this.props
+        
+        console.table(match)
+        
         const app: AppBase | null = location.state && location.state.app
         if (!app) {
-            console.log(`${this.constructor.name} componentWillMount. location.state.app is undefined: Redirect to /home`)
-            history.push('/home')
-            return
+            console.log(`${this.constructor.name} componentWillMount. location.state.app is undefined`)
+            throw new Error(`App from state not defined. Why? When does this occurr?`)
         }
 
         let editPackageId = this.props.activeApps[app.appId] || app.devPackageId;
@@ -71,7 +72,6 @@ class Index extends React.Component<Props, ComponentState> {
     }
 
     componentWillReceiveProps(newProps: Props) {
- 
         const app: AppBase | null = newProps.location.state && newProps.location.state.app
         let editPackageId = newProps.activeApps[app.appId] || app.devPackageId;
         if (this.state.packageId !== editPackageId) {
@@ -252,7 +252,7 @@ const mapDispatchToProps = (dispatch: any) => {
         createApplicationThunkAsync: actions.create.createApplicationThunkAsync,
         fetchAppSource: actions.fetch.fetchAppSourceThunkAsync,
         fetchAllLogDialogsAsync: actions.fetch.fetchAllLogDialogsAsync,
-        fetchBotInfoAsync: actions.fetch.fetchBotInfoAsync
+        fetchBotInfoThunkAsync: actions.fetch.fetchBotInfoThunkAsync
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {

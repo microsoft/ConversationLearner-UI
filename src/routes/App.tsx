@@ -20,7 +20,7 @@ import { SpinnerWindow, ErrorPanel } from '../components/modals'
 import './App.css'
 import { FormattedMessage } from 'react-intl'
 import { FM } from '../react-intl-messages'
-import { fetchBotInfoAsync } from '../actions/fetchActions'
+import { fetchBotInfoThunkAsync } from '../actions/fetchActions'
 import { clearBanner } from '../actions/displayActions'
 
 interface ComponentState {
@@ -33,13 +33,13 @@ class App extends React.Component<Props, ComponentState> {
   state = initialState
 
   componentDidMount() {
-    this.props.fetchBotInfoAsync(this.props.browserId)
+    this.props.fetchBotInfoThunkAsync(this.props.browserId)
   }
 
   dismissBanner(banner: Banner) {
     // Can't clear error banners
     if (banner.type.toLowerCase() !== "error") {
-      this.props.clearBanner(this.props.banner) 
+      this.props.clearBanner(this.props.banner)
     }
   }
 
@@ -47,11 +47,11 @@ class App extends React.Component<Props, ComponentState> {
     if (!banner || !banner.message) {
       return false;
     }
-    
+
     if (!this.props.clearedBanner) {
       return true;
     }
-      
+
     if (JSON.stringify(banner) === JSON.stringify(this.props.clearedBanner)) {
       return false;
     }
@@ -72,7 +72,7 @@ class App extends React.Component<Props, ComponentState> {
     return (
       <Router>
         <div className="cl-app">
-          <div className="cl-app_header-placeholder"/>
+          <div className="cl-app_header-placeholder" />
           <header className={`cl-app_header cl-header`}>
             <nav className="cl-header_links">
               <img className="cl-header-logo" src="/Microsoft-logo_rgb_c-wht.png" alt="Microsoft Logo" />
@@ -91,14 +91,14 @@ class App extends React.Component<Props, ComponentState> {
             </nav>
             <NavLink className="cl-header_user" to="/settings"><OF.Icon className="cl-header-office-icon" iconName="Settings" /> Settings</NavLink>
           </header>
-          
+
           <div className="cl-app_header-placeholder" />
           <div className="cl-app_content">
             {this.shouldShowBanner(this.props.banner) &&
               <OF.MessageBar
                 className="cl-messagebar"
                 isMultiline={true}
-                onDismiss={()=>this.dismissBanner(this.props.banner) }
+                onDismiss={() => this.dismissBanner(this.props.banner)}
                 dismissButtonAriaLabel='Close'
                 messageBarType={this.getMessageBarType(this.props.banner.type)}
               >
@@ -133,8 +133,8 @@ class App extends React.Component<Props, ComponentState> {
 
 const mapDispatchToProps = (dispatch: any) => {
   return bindActionCreators({
-      fetchBotInfoAsync,
-      clearBanner
+    fetchBotInfoThunkAsync,
+    clearBanner
   }, dispatch);
 }
 

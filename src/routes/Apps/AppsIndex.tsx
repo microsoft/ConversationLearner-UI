@@ -19,54 +19,23 @@ import AppsList from './AppsList'
 import { CL_IMPORT_ID } from '../../types/const'
 
 interface ComponentState {
-    selectedApp: AppBase | null
 }
 
 class AppsIndex extends React.Component<Props, ComponentState> {
-    state: ComponentState = {
-        selectedApp: null
-    }
-
-    componentWillMount() {
-        const { history } = this.props
-        if (history.location.pathname !== '/home') {
-            // TODO: There seems to be bug where the router state is not cleared sychronously here
-            // Thus when refreshing on non home page such as entities list for an model, this will force redirect to home
-            // howver, the other component at the entities page still runs component will mount with old router state.
-            // Perhaps we need to use componentDidMount to inspect router state in children?
-            history.replace('/home', null)
-            return
-        }
-    }
-
     updateAppsAndBot() {
         if (this.props.user.id !== null && this.props.user.id.length > 0) {
             this.props.fetchApplicationsAsync(this.props.user.id)
-            this.props.fetchBotInfoAsync(this.props.browserId)
+            this.props.fetchBotInfoThunkAsync(this.props.browserId)
         }
     }
     componentDidMount() {
-        this.updateAppsAndBot();
+        this.updateAppsAndBot()
     }
 
-    componentDidUpdate(prevProps: Props, _prevState: ComponentState) {
+    componentDidUpdate(prevProps: Props, prevState: ComponentState) {
         // TODO: See if this code can be removed. It seems like componentWillMount is called every time the user navigates to /home route
         if (typeof (this.props.user.id) === 'string' && this.props.user.id !== prevProps.user.id) {
-            this.updateAppsAndBot();
-        }
-
-        const { history, location } = this.props
-        const appFromLocationState: AppBase | null = location.state && location.state.app
-        if (appFromLocationState) {
-            const app = this.props.apps.find(a => a.appId === appFromLocationState.appId)
-            if (!app) {
-                console.warn(`Attempted to find selected model in list of models: ${this.state.selectedApp.appId} but it could not be found.`)
-                return
-            }
-
-            if (appFromLocationState !== app) {
-                history.replace(location.pathname, { app })
-            }
+            this.updateAppsAndBot()
         }
     }
 
@@ -113,7 +82,7 @@ class AppsIndex extends React.Component<Props, ComponentState> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         fetchApplicationsAsync: actions.fetch.fetchApplicationsAsync,
-        fetchBotInfoAsync: actions.fetch.fetchBotInfoAsync,
+        fetchBotInfoThunkAsync: actions.fetch.fetchBotInfoThunkAsync,
         createApplicationThunkAsync: actions.create.createApplicationThunkAsync,
         deleteApplicationAsync: actions.delete.deleteApplicationAsync,
         copyApplicationThunkAsync: actions.create.copyApplicationThunkAsync
