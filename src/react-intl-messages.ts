@@ -866,6 +866,7 @@ export default {
         [AT.CREATE_TEACH_SESSION_ASYNC]: 'Creating teach session',
         [AT.CREATE_TEACH_SESSION_FROMHISTORYASYNC]: 'Creating teach session from history',
         [AT.CREATE_TEACH_SESSION_FROMUNDOASYNC]: 'Creating teach session from undo',
+        [AT.FETCH_BOTINFO_ASYNC]: 'Fetching bot information',
         [AT.FETCH_HISTORY_ASYNC]: 'Fetching history',
         [AT.FETCH_TUTORIALS_ASYNC]: 'Fetching tutorials',
         [AT.FETCH_APPSOURCE_ASYNC]: 'Fetching application source',
