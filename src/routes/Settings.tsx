@@ -6,41 +6,26 @@ import * as React from 'react'
 import { RouteComponentProps } from 'react-router'
 import { returntypeof } from 'react-redux-typescript'
 import { connect } from 'react-redux'
+import actions from '../actions'
 import { State } from '../types'
 import { bindActionCreators } from 'redux'
 import { FormattedMessage } from 'react-intl'
 import { FM } from '../react-intl-messages'
 import * as OF from 'office-ui-fabric-react'
-import * as BotPort from '../services/botPort'
 import './Settings.css'
 
-BotPort.initialize()
-
 interface ComponentState {
-    botPort: number
-}
-
-const initialState: ComponentState = {
-    botPort: BotPort.get()
 }
 
 class Settings extends React.Component<Props, ComponentState> {
-    state = initialState
 
     onChangeSdkPort = (event: React.ChangeEvent<HTMLInputElement>) => {
         const botPort = parseInt(event.target.value, 10)
-        this.setBotPort(botPort)
+        this.props.settingsUpdate(botPort)
     }
 
     reset = () => {
-        this.setBotPort(BotPort.defaultPort)
-    }
-
-    private setBotPort = (botPort: number) => {
-        BotPort.set(botPort)
-        this.setState({
-            botPort
-        })
+        this.props.settingsReset()
     }
 
     render() {
@@ -64,7 +49,7 @@ class Settings extends React.Component<Props, ComponentState> {
                         type="number"
                         min={0}
                         max={99999}
-                        value={this.state.botPort}
+                        value={this.props.settings.botPort}
                         onChange={this.onChangeSdkPort}
                     />
                     <div className="cl-input-warning">
@@ -89,11 +74,14 @@ class Settings extends React.Component<Props, ComponentState> {
 
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
+        settingsReset: actions.update.settingsReset,
+        settingsUpdate: actions.update.settingsUpdate
     }, dispatch)
 }
 
-const mapStateToProps = (_state: State) => {
+const mapStateToProps = (state: State) => {
     return {
+        settings: state.settings
     }
 }
 

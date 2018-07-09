@@ -67,6 +67,10 @@ export interface ProfileState {
     current: any
 }
 
+export interface SettingsState {
+    botPort: number
+}
+
 export type State = {
     profile: ProfileState,
     user: UserState,
@@ -79,5 +83,6 @@ export type State = {
     error: ErrorState,
     logDialogs: LogDialogState,
     teachSessions: TeachSessionState,
-    chatSessions: ChatSessionState
+    chatSessions: ChatSessionState,
+    settings: SettingsState
 }
