@@ -4,6 +4,7 @@
  */
 import * as ClientFactory from '../services/clientFactory'
 
+const previousDefault = 5000
 export const defaultPort = 3978
 const localStorageSdkPortKey = 'conversationlearner-sdk-port'
 
@@ -19,6 +20,8 @@ export const get = (): number => {
 export function initialize() {
     const existingSdkPort = get()
     if (Number.isNaN(existingSdkPort)) {
+        set(defaultPort)
+    } else if (existingSdkPort === previousDefault) {
         set(defaultPort)
     } else {
         set(existingSdkPort)

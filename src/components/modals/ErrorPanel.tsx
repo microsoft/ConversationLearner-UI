@@ -72,7 +72,7 @@ class ErrorPanel extends React.Component<Props, {}> {
                     {this.props.error.actionType && <div className={OF.FontClassNames.large}>
                         <FormattedMessage
                             id={this.props.error.actionType || FM.ERROR_ERROR}
-                            defaultMessage='Unknown '
+                            defaultMessage={this.props.error.actionType || 'Unknown'}
                         /> Failed</div>}
                     <div className={OF.FontClassNames.medium}>{this.props.error.title}</div>
                     {this.props.error && Array.isArray(this.props.error.messages) && this.props.error.messages.map((message, key) => {

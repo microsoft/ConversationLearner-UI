@@ -11,8 +11,10 @@ import { bindActionCreators } from 'redux'
 import { FormattedMessage } from 'react-intl'
 import { FM } from '../react-intl-messages'
 import * as OF from 'office-ui-fabric-react'
-import * as BotPort from '../services/sdkPort'
+import * as BotPort from '../services/botPort'
 import './Settings.css'
+
+BotPort.initialize()
 
 interface ComponentState {
     botPort: number
@@ -27,7 +29,7 @@ class Settings extends React.Component<Props, ComponentState> {
 
     onChangeSdkPort = (event: React.ChangeEvent<HTMLInputElement>) => {
         const botPort = parseInt(event.target.value, 10)
-        this.setBotPort(botPort)        
+        this.setBotPort(botPort)
     }
 
     reset = () => {

@@ -114,17 +114,17 @@ class App extends React.Component<Props, ComponentState> {
                 }
               </OF.MessageBar>
             }
-            <React.Fragment>
-              {this.props.botInfo === null
-                ? <div>Loading Bot Info...</div>
-                : <Switch>
+            <Switch>
                 <Route exact path="/" render={() => <Redirect to="/home" />} />
-                <Route path="/home" component={AppsIndex} />
+                <Route path="/home" render={props => <React.Fragment>
+                  {this.props.botInfo === null
+                    ? <div>Loading Bot Info...</div>
+                    : <AppsIndex {...props} />}
+                </React.Fragment>
+                } />
                 <Route path="/settings" component={Settings} />
                 <Route component={NoMatch} />
               </Switch>
-              }
-            </React.Fragment>
           </div>
           <div className="cl-app_modals">
             <ErrorPanel />
