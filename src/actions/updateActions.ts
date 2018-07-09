@@ -279,3 +279,15 @@ const setAppSourceFulfilled = (): ActionObject => {
         type: AT.EDIT_APPSOURCE_FULFILLED
     }
 }
+
+
+export const settingsReset = (): ActionObject =>
+    ({
+        type: AT.SETTINGS_RESET
+    })
+
+export const settingsUpdate = (botPort: number): ActionObject =>
+    ({
+        type: AT.SETTINGS_UPDATE,
+        botPort
+    })
