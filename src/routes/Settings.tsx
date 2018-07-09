@@ -14,6 +14,8 @@ import * as OF from 'office-ui-fabric-react'
 import * as BotPort from '../services/botPort'
 import './Settings.css'
 
+BotPort.initialize()
+
 interface ComponentState {
     botPort: number
 }
