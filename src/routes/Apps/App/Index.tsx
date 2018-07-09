@@ -58,17 +58,15 @@ class Index extends React.Component<Props, ComponentState> {
 
     componentWillMount() {
         const { match, location } = this.props
-        
-        console.table(match)
-        
         const app: AppBase | null = location.state && location.state.app
         if (!app) {
-            console.log(`${this.constructor.name} componentWillMount. location.state.app is undefined`)
-            throw new Error(`App from state not defined. Why? When does this occurr?`)
+            // TODO: Is there a way to recover getting appId from URL instead of router state
+            const appId = match.params.appId
+            console.error(`${this.constructor.name} componentWillMount. location.state.app is for app ${appId} undefined`)
         }
 
         let editPackageId = this.props.activeApps[app.appId] || app.devPackageId;
-        this.loadApp(app, editPackageId);
+        this.loadApp(app, editPackageId)
     }
 
     componentWillReceiveProps(newProps: Props) {
@@ -271,6 +269,10 @@ const mapStateToProps = (state: State) => {
 // Props types inferred from mapStateToProps & dispatchToProps
 const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
-type Props = typeof stateProps & typeof dispatchProps & RouteComponentProps<any> & InjectedIntlProps;
+
+interface MatchParams {
+    appId: string
+}
+type Props = typeof stateProps & typeof dispatchProps & RouteComponentProps<MatchParams> & InjectedIntlProps;
 
 export default connect<typeof stateProps, typeof dispatchProps, RouteComponentProps<any>>(mapStateToProps, mapDispatchToProps)(injectIntl(Index));

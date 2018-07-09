@@ -39,7 +39,7 @@ class App extends React.Component<Props, ComponentState> {
   dismissBanner(banner: Banner) {
     // Can't clear error banners
     if (banner.type.toLowerCase() !== "error") {
-      this.props.clearBanner(this.props.banner)
+      this.props.clearBanner(banner)
     }
   }
 
@@ -69,6 +69,7 @@ class App extends React.Component<Props, ComponentState> {
   }
 
   render() {
+    const banner = this.props.botInfo ? this.props.botInfo.banner : null
     return (
       <Router>
         <div className="cl-app">
@@ -94,31 +95,36 @@ class App extends React.Component<Props, ComponentState> {
 
           <div className="cl-app_header-placeholder" />
           <div className="cl-app_content">
-            {this.shouldShowBanner(this.props.banner) &&
+            {this.shouldShowBanner(banner) &&
               <OF.MessageBar
                 className="cl-messagebar"
                 isMultiline={true}
-                onDismiss={() => this.dismissBanner(this.props.banner)}
+                onDismiss={() => this.dismissBanner(banner)}
                 dismissButtonAriaLabel='Close'
-                messageBarType={this.getMessageBarType(this.props.banner.type)}
+                messageBarType={this.getMessageBarType(banner.type)}
               >
-                {this.props.banner.message}
-                {this.props.banner.message.link && this.props.banner.linktext &&
-                  <OF.Link href={this.props.banner.link}>{this.props.banner.linktext}</OF.Link>
+                {banner.message}
+                {banner.message.link && banner.linktext &&
+                  <OF.Link href={banner.link}>{banner.linktext}</OF.Link>
                 }
-                {this.props.banner.datestring &&
+                {banner.datestring &&
                   <div>
-                    <span className="cl-font--demphasis">{this.props.banner.datestring}</span>
+                    <span className="cl-font--demphasis">{banner.datestring}</span>
                   </div>
                 }
               </OF.MessageBar>
             }
-            <Switch>
-              <Route exact path="/" render={() => <Redirect to="/home" />} />
-              <Route path="/home" component={AppsIndex} />
-              <Route path="/settings" component={Settings} />
-              <Route component={NoMatch} />
-            </Switch>
+            <React.Fragment>
+              {this.props.botInfo === null
+                ? <div>Loading Bot Info...</div>
+                : <Switch>
+                <Route exact path="/" render={() => <Redirect to="/home" />} />
+                <Route path="/home" component={AppsIndex} />
+                <Route path="/settings" component={Settings} />
+                <Route component={NoMatch} />
+              </Switch>
+              }
+            </React.Fragment>
           </div>
           <div className="cl-app_modals">
             <ErrorPanel />
@@ -142,7 +148,7 @@ const mapStateToProps = (state: State) => {
   return {
     user: state.user,
     browserId: state.bot.browserId,
-    banner: state.bot.botInfo ? state.bot.botInfo.banner : null,
+    botInfo: state.bot.botInfo,
     clearedBanner: state.display.clearedBanner
   }
 }
