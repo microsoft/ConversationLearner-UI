@@ -44,7 +44,6 @@ class Index extends React.Component<Props, ComponentState> {
     }
 
     async loadApp(app: AppBase, packageId: string): Promise<void> {
-        console.log(`loadApp`, app, packageId)
         this.setState({ packageId: packageId})
 
         await this.props.fetchBotInfoThunkAsync(this.props.browserId)
@@ -63,6 +62,8 @@ class Index extends React.Component<Props, ComponentState> {
             // TODO: Is there a way to recover getting appId from URL instead of router state
             const appId = match.params.appId
             console.error(`${this.constructor.name} componentWillMount. location.state.app is for app ${appId} undefined`)
+
+
         }
 
         let editPackageId = this.props.activeApps[app.appId] || app.devPackageId;
