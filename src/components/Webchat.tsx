@@ -70,7 +70,7 @@ class Webchat extends React.Component<Props, {}> {
             this.dl = new BotChat.DirectLine({
                 secret: 'secret',
                 token: 'token',
-                domain: 'http://localhost:3978/directline',
+                domain: `http://localhost:${this.props.settings.botPort}/directline`,
                 webSocket: false // defaults to true,
             })
 
@@ -111,6 +111,8 @@ class Webchat extends React.Component<Props, {}> {
         if (!this.props.isOpen) {
             return null;
         }
+
+        // TODO: This call has side-affects and should be moved to componentDidMount
         let chatProps = this.GetChatProps();
 
         chatProps.hideInput = this.props.hideInput
@@ -130,6 +132,7 @@ const mapDispatchToProps = (dispatch: any) => {
 }
 const mapStateToProps = (state: State, ownProps: any) => {
     return {
+        settings: state.settings,
         user: state.user
     }
 }
