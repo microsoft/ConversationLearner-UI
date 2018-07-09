@@ -2,12 +2,12 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import { ActionObject, SettingsState } from '../types'
+import { ActionObject, SettingsState, defaultBotPort } from '../types'
 import { AT } from '../types/ActionTypes'
 import { Reducer } from 'redux'
 
 const initialState: SettingsState = {
-    botPort: 3978
+    botPort: defaultBotPort
 }
 
 const reducer: Reducer<SettingsState> = (state = initialState, action: ActionObject): SettingsState => {
