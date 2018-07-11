@@ -83,7 +83,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
         }
         // Set terminal action from History but only if I just loaded it
         if (this.props.history !== newProps.history && newProps.history && newProps.history.length > 0) {
-            hasTerminalAction = newProps.lastAction.isTerminal
+            hasTerminalAction = newProps.lastAction && newProps.lastAction.isTerminal
         }
 
         if (webchatKey !== this.state.webchatKey || 
