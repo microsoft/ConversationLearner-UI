@@ -56,14 +56,14 @@ class Index extends React.Component<Props, ComponentState> {
     }
 
     componentWillMount() {
-        const { match, location } = this.props
+        const { match, location, history } = this.props
         const app: AppBase | null = location.state && location.state.app
         if (!app) {
             // TODO: Is there a way to recover getting appId from URL instead of router state
             const appId = match.params.appId
-            console.error(`${this.constructor.name} componentWillMount. location.state.app is for app ${appId} undefined`)
-
-
+            console.warn(`${this.constructor.name} componentWillMount. location.state.app is for app ${appId}`)
+            history.push('/home')
+            return
         }
 
         let editPackageId = this.props.activeApps[app.appId] || app.devPackageId;
