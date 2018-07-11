@@ -111,11 +111,15 @@ const actionTypeOptions = Object.values(ActionTypes)
         }
     })
 
+type SlateValueMap = { [slot: string]: ActionPayloadEditor.SlateValue }
+
 interface ComponentState {
     apiOptions: OF.IDropdownOption[]
     cardOptions: OF.IDropdownOption[]
     selectedApiOptionKey: string | number | null
     selectedCardOptionKey: string | number | null
+    hasPendingChanges: boolean
+    initialEditState: ComponentState | null
     isEditing: boolean
     isEntityEditorModalOpen: boolean
     isCardViewerModalOpen: boolean
@@ -132,7 +136,7 @@ interface ComponentState {
     requiredEntityTagsFromPayload: OF.ITag[]
     requiredEntityTags: OF.ITag[]
     negativeEntityTags: OF.ITag[]
-    slateValuesMap: { [slot: string]: ActionPayloadEditor.SlateValue }
+    slateValuesMap: SlateValueMap
     isTerminal: boolean
 }
 
@@ -141,6 +145,8 @@ const initialState: ComponentState = {
     cardOptions: [],
     selectedApiOptionKey: null,
     selectedCardOptionKey: null,
+    hasPendingChanges: false,
+    initialEditState: null,
     isEditing: false,
     isEntityEditorModalOpen: false,
     isCardViewerModalOpen: false,
@@ -213,7 +219,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     }
 
     componentWillReceiveProps(nextProps: Props) {
-        let nextState = {}
+        let nextState: any = {}
 
         if (nextProps.open === true) {
 
@@ -342,10 +348,53 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     isTerminal: action.isTerminal,
                     isEditing: true
                 }
+
+                nextState.initialEditState = nextState
             }
         }
 
         this.setState(prevState => nextState)
+    }
+
+    areSlateValuesChanged(slateValuesMap: SlateValueMap, prevSlateValuesMap: SlateValueMap) {
+        const currentEntries = Object.entries(slateValuesMap)
+        const prevEntries = Object.entries(prevSlateValuesMap)
+
+        // If the objects have different amount of entries, return true
+        if (currentEntries.length !== prevEntries.length) {
+            return true
+        }
+
+        // Otherwise, go through each value and compare text
+        // 1. First pair/zip the values by key
+        const pairedValues = currentEntries.map(([k, v]) => {
+            const prevValue = prevSlateValuesMap[k]
+            return {
+                key: k,
+                current: v,
+                prev: prevValue
+            }
+        })
+
+        return pairedValues.some(pv => !pv.prev || pv.current.document.text !== pv.prev.document.text)
+    }
+
+    componentDidUpdate(prevProps: Props, prevState: ComponentState) {
+        if (!this.state.initialEditState) {
+            return
+        }
+        
+        const isAnyPayloadChanged = this.areSlateValuesChanged(this.state.slateValuesMap, this.state.initialEditState.slateValuesMap)
+        const expectedEntitiesChanged = this.state.expectedEntityTags.filter(tag => !this.state.initialEditState.expectedEntityTags.some(t => t.key === tag.key)).length > 0
+        const requiredEntitiesChanged = this.state.requiredEntityTags.filter(tag => !this.state.initialEditState.requiredEntityTags.some(t => t.key === tag.key)).length > 0
+        const disqualifyingChanged = this.state.negativeEntityTags.filter(tag => !this.state.initialEditState.negativeEntityTags.some(t => t.key === tag.key)).length > 0
+        const hasPendingChanges = isAnyPayloadChanged || expectedEntitiesChanged || requiredEntitiesChanged || disqualifyingChanged
+
+        if (prevState.hasPendingChanges !== hasPendingChanges) {
+            this.setState({
+                hasPendingChanges
+            })
+        }
     }
 
     @autobind
@@ -744,9 +793,12 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     }
 
     saveDisabled(): boolean {
-        return (this.state.selectedActionTypeOptionKey === ActionTypes.API_LOCAL
+        const areInputsInvalid = (this.state.selectedActionTypeOptionKey === ActionTypes.API_LOCAL
             ? this.state.selectedApiOptionKey === null
             : !this.state.isPayloadValid)
+
+        return areInputsInvalid
+            || (this.state.isEditing && !this.state.hasPendingChanges)
     }
 
     @autobind
