@@ -84,7 +84,7 @@ export default class ClClient {
     setConversationId(userName: string, userId: string, conversationId: string): Promise<void> {
         return this.send({
             method: 'put',
-            url: `${this.baseUrl}/state/conversationId?username=${userName}&id=${conversationId}`,
+            url: `${this.baseUrl}/state/conversationId?userName=${userName}&conversationId=${conversationId}`,
         })
             .then(response => { })
     }
