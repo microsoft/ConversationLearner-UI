@@ -36,6 +36,20 @@ class AppsIndex extends React.Component<Props, ComponentState> {
         if (typeof (this.props.user.id) === 'string' && this.props.user.id !== prevProps.user.id) {
             this.updateAppsAndBot();
         }
+
+        const { history, location } = this.props
+        const appFromLocationState: AppBase | null = location.state && location.state.app
+        if (appFromLocationState) {
+            const app = this.props.apps.find(a => a.appId === appFromLocationState.appId)
+            if (!app) {
+                console.warn(`Attempted to find selected model in list of models: ${appFromLocationState.appId} but it could not be found. This should not be possible. Contact Support.`)
+                return
+            }
+
+            if (appFromLocationState !== app) {
+                history.replace(location.pathname, { app })
+            }
+        }
     }
 
     onClickDeleteApp = (appToDelete: AppBase) => {
