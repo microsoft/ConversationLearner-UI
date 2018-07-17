@@ -13,7 +13,6 @@ export const PreBuilts = {
 	Money: "money",
 	Age: "age",
 	Geography: "geography",
-	Encyclopedia: "encyclopedia",
 	URL: "url",
 	Email: "email",
 	Phone_number: "phonenumber"
@@ -29,7 +28,7 @@ export const PreBuiltEntities: LocalePreBuilts[] = [
 		preBuiltEntities: [
 			PreBuilts.DatetimeV2, PreBuilts.Number, PreBuilts.Ordinal,
 			PreBuilts.Percentage, PreBuilts.Temperature, PreBuilts.Dimension, PreBuilts.Money, PreBuilts.Age,
-			PreBuilts.Geography, PreBuilts.Encyclopedia, PreBuilts.URL, PreBuilts.Email, PreBuilts.Phone_number
+			PreBuilts.Geography, PreBuilts.URL, PreBuilts.Email, PreBuilts.Phone_number
 		]
 	},
 	{
