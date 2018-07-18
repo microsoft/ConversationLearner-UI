@@ -436,7 +436,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
 
                 scoredAction = {
                     actionId: action.actionId,
-                    payload: action.actionId,
+                    payload: action.payload,
                     isTerminal: action.isTerminal,
                     actionType: action.actionType,
                     score: undefined
