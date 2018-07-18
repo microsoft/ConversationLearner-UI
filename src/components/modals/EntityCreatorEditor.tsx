@@ -401,7 +401,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
         this.setState(
             { isConfirmDeleteModalOpen: false },
             () => {
-                this.props.handleDelete(this.props.entity.entityId)
+                this.props.handleDelete(this.props.entity)
             })
     }
 
@@ -713,7 +713,7 @@ export interface ReceivedProps {
     entity: EntityBase | null,
     entityTypeFilter: EntityType | null
     handleClose: () => void,
-    handleDelete: (entityId: string) => void
+    handleDelete: (entity: EntityBase) => void
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps

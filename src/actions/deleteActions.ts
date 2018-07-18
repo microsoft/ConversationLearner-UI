@@ -4,7 +4,7 @@
  */
 import { AT, ActionObject, ErrorType } from '../types'
 import { Dispatch } from 'redux'
-import { AppBase, Session, Teach } from '@conversationlearner/models'
+import { AppBase, Session, Teach, EntityBase } from '@conversationlearner/models'
 import { setErrorDisplay } from './displayActions'
 import { fetchAllTrainDialogsAsync, fetchAllLogDialogsAsync, fetchApplicationTrainingStatusThunkAsync, fetchAllActionsAsync } from './fetchActions'
 import * as ClientFactory from '../services/clientFactory'
@@ -31,14 +31,19 @@ export const deleteApplicationFulfilled = (appId: string): ActionObject => {
 // ---------------------
 // Entity
 // ---------------------
-export const deleteEntityThunkAsync = (appId: string, entityId: string) => {
+export const deleteEntityThunkAsync = (appId: string, entity: EntityBase) => {
     return async (dispatch: Dispatch<any>) => {
+        const entityId = entity.entityId
         dispatch(deleteEntityAsync(appId, entityId))
         const clClient = ClientFactory.getInstance(AT.DELETE_ENTITY_ASYNC)
 
         try {
             const deleteEditResponse = await clClient.entitiesDelete(appId, entityId);
-            dispatch(deleteEntityFulfilled(entityId));
+            dispatch(deleteEntityFulfilled(entityId))
+            if (entity.isNegatible) {
+                const negativeEntityId = entity.negativeId
+                dispatch(deleteEntityFulfilled(negativeEntityId))
+            }
 
             // If any actions were modified, reload them
             if (deleteEditResponse.actionIds && deleteEditResponse.actionIds.length > 0) {
