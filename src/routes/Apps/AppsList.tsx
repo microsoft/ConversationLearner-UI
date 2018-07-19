@@ -12,7 +12,7 @@ import { fetchTutorialsThunkAsync } from '../../actions/fetchActions'
 import { AppCreator, ConfirmCancelModal } from '../../components/modals'
 import * as OF from 'office-ui-fabric-react';
 import { AppBase, AppDefinition } from '@conversationlearner/models'
-import { CL_IMPORT_ID, CL_DEMO_ID, State, AppCreatorType } from '../../types'
+import { CL_IMPORT_ID, State, AppCreatorType } from '../../types'
 import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { FM } from '../../react-intl-messages'
 import { autobind } from 'office-ui-fabric-react';
@@ -307,7 +307,7 @@ class AppsList extends React.Component<Props, ComponentState> {
                             defaultMessage: 'Import Model'
                         })}
                     />
-                    {this.props.user.id !== CL_DEMO_ID &&
+                    {!util.isDemoAccount(this.props.user.id) &&
                         <OF.DefaultButton
                             onClick={this.onClickImportDemoApps}
                             ariaDescription={this.props.intl.formatMessage({

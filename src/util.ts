@@ -52,6 +52,11 @@ export function createEntityMapFromMemories(entities: models.EntityBase[], memor
     }, new Map<string, string>())
 }
 
+export const CL_DEMO_ID = '4433d65080bc95c0f2bddd26b5a0c816d09619cd4f8be0fec99fd2944e536888'
+export function isDemoAccount(userId: string): boolean {
+    return userId.indexOf(CL_DEMO_ID) > -1
+}
+
 // TODO: Remove coupling with the start character on ActionPayloadEditor
 export function getDefaultEntityMap(entities: models.EntityBase[]): Map<string, string> {
     return entities.reduce((m, e) => m.set(e.entityId, `$${e.entityName}`), new Map<string, string>())
