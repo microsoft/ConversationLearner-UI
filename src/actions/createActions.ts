@@ -120,7 +120,7 @@ const createEntityAsync = (appId: string, entity: EntityBase): ActionObject => {
     }
 }
 
-const createEntityFulfilled = (entity: EntityBase): ActionObject => {
+export const createEntityFulfilled = (entity: EntityBase): ActionObject => {
     return {
         type: AT.CREATE_ENTITY_FULFILLED,
         entity: entity

@@ -8,8 +8,10 @@ import { AppBase, EntityBase, ActionBase, TrainDialog, AppDefinition } from '@co
 import * as ClientFactory from '../services/clientFactory'
 import { setErrorDisplay } from './displayActions'
 import { Dispatch } from 'redux'
-import { fetchAllTrainDialogsAsync, fetchApplicationTrainingStatusThunkAsync } from './fetchActions';
+import { fetchAllTrainDialogsAsync, fetchApplicationTrainingStatusThunkAsync } from './fetchActions'
+import { deleteEntityFulfilled } from './deleteActions'
 import { AxiosError } from 'axios';
+import { createEntityFulfilled } from './createActions';
 
 // ----------------------------------------
 // App
@@ -31,33 +33,29 @@ export const editApplicationFulfilled = (application: AppBase): ActionObject => 
 }
 
 // ----------------------------------------
-// Entity
+// Entity'
 // ----------------------------------------
-export const editEntityThunkAsync = (appId: string, entity: EntityBase) => {
+export const editEntityThunkAsync = (appId: string, entity: EntityBase, prevEntity: EntityBase) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.EDIT_ENTITY_ASYNC)
         dispatch(editEntityAsync(appId, entity))
 
         try {
-            let posEntity = await clClient.entitiesUpdate(appId, entity)
+            const posEntity = await clClient.entitiesUpdate(appId, entity)
+            dispatch(editEntityFulfilled(posEntity))
 
-            // If it's a negatable entity
-            if (posEntity.isNegatible) {
-                // Re-create negative entity from pos
-                let negEntity = {
-                    ...entity, 
-                    entityId: entity.negativeId,
-                    entityName: `~${entity.entityName}`,
-                    positiveId: posEntity.entityId,
-                }
-                // Clear neg ref
-                delete negEntity.negativeId;
-
-                negEntity = await clClient.entitiesUpdate(appId, negEntity);
-                dispatch(editEntityFulfilled(negEntity));
+            // If we're setting negatable flag
+            if (entity.isNegatible && !prevEntity.isNegatible) {
+                // Need to fetch negative entity in order to load it into memory
+                const negEntity = await clClient.entitiesGetById(appId, posEntity.negativeId)
+                dispatch(createEntityFulfilled(negEntity))
+            }
+            // If we're UNsetting negatable flag
+            else if (!entity.isNegatible && prevEntity.isNegatible) {
+                // Need to remove negative entity from memory
+                dispatch(deleteEntityFulfilled(prevEntity.negativeId))
             }
 
-            dispatch(editEntityFulfilled(posEntity))
             dispatch(fetchApplicationTrainingStatusThunkAsync(appId))
             return entity
         }

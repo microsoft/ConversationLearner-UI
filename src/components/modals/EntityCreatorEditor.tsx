@@ -209,46 +209,45 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
         // Set entity id if we're editing existing id.
         if (this.state.isEditing) {
             newOrEditedEntity.entityId = this.props.entity.entityId
+
+            if (newOrEditedEntity.isNegatible) {
+                newOrEditedEntity.positiveId = this.props.entity.positiveId
+                newOrEditedEntity.negativeId = this.props.entity.negativeId
+            }
         }
 
-        return newOrEditedEntity;
+        return newOrEditedEntity
     }
 
     @autobind
-    onClickSaveCreate() {
+    async onClickSaveCreate() {
         const newOrEditedEntity = this.convertStateToEntity(this.state)
+        console.log(`newOrEditedEntity: `, newOrEditedEntity)
 
-        if (this.state.isEditing) {
-            // Include non-editable fields
-            newOrEditedEntity.positiveId = this.props.entity.positiveId;
-            newOrEditedEntity.negativeId = this.props.entity.negativeId;
-        } else {
-            this.props.createEntityThunkAsync(this.props.app.appId, newOrEditedEntity)
-            this.props.handleClose();
-            return;
-        } 
+        const appId = this.props.app.appId
         
-        // Otherwise need to validate changes
-        ((this.props.fetchEntityEditValidationThunkAsync(this.props.app.appId, this.props.editingPackageId, newOrEditedEntity) as any) as Promise<string[]>)
-        .then(invalidTrainingDialogIds => {
-
-            if (invalidTrainingDialogIds) {
-                if (invalidTrainingDialogIds.length > 0) {
-                    this.setState(
-                    {
-                        isConfirmEditModalOpen: true,
-                        showValidationWarning: true,
-                        newOrEditedEntity: newOrEditedEntity
-                    });
-                } else {
-                    this.props.editEntityThunkAsync(this.props.app.appId, newOrEditedEntity);
-                    this.props.handleClose();
-                }
+        // If not editing (creating a new entity) simply create it and close
+        // Otherwise request validation of changes from server to determine if confirmation dialog should be opened
+        if (!this.state.isEditing) {
+            this.props.createEntityThunkAsync(appId, newOrEditedEntity)
+            this.props.handleClose()
+            return
+        }
+        
+        const invalidTrainingDialogIds = await (this.props.fetchEntityEditValidationThunkAsync(appId, this.props.editingPackageId, newOrEditedEntity) as any as Promise<string[]>)
+        if (invalidTrainingDialogIds) {
+            if (invalidTrainingDialogIds.length > 0) {
+                this.setState(
+                {
+                    isConfirmEditModalOpen: true,
+                    showValidationWarning: true,
+                    newOrEditedEntity: newOrEditedEntity
+                })
+            } else {
+                this.props.editEntityThunkAsync(appId, newOrEditedEntity, this.props.entity)
+                this.props.handleClose()
             }
-        })
-        .catch(error => {
-            console.warn(`Error when attempting to validate edit: `, error)
-        })
+        }
     }
 
     onClickCancel = () => {
@@ -415,7 +414,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
 
     @autobind
     onConfirmEdit() {
-        this.props.editEntityThunkAsync(this.props.app.appId, this.state.newOrEditedEntity);
+        this.props.editEntityThunkAsync(this.props.app.appId, this.state.newOrEditedEntity, this.props.entity)
 
         this.setState({
             isConfirmEditModalOpen: false,
