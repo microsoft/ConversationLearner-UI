@@ -476,7 +476,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                         })}
                         checked={this.state.isProgrammaticVal}
                         onChange={this.onChangeProgrammatic}
-                        disabled={disabled || this.state.isPrebuilt}
+                        disabled={disabled || this.state.isPrebuilt || this.state.isEditing}
                         tipType={ToolTip.TipType.ENTITY_PROGAMMATIC}
                     />
                 </div>
