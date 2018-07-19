@@ -73,7 +73,7 @@ const deleteEntityAsync = (appId: string, entityId: string): ActionObject => {
     }
 }
 
-const deleteEntityFulfilled = (entityId: string): ActionObject => {
+export const deleteEntityFulfilled = (entityId: string): ActionObject => {
     return {
         type: AT.DELETE_ENTITY_FULFILLED,
         entityId: entityId

@@ -220,12 +220,17 @@ export default class ClClient {
 
     entitiesUpdate(appId: string, entity: models.EntityBase): Promise<models.EntityBase> {
         const { version, packageCreationId, packageDeletionId, ...entityToSend } = entity;
-        return this.send({
+        return this.send<models.ChangeEntityResponse>({
             method: 'put',
             url: `${this.baseUrl}/app/${appId}/entity/${entity.entityId}`,
             data: entityToSend
         })
-            .then(response => entity)
+            .then(response => {
+                const changeEntityResponse = response.data
+                entity.entityId = changeEntityResponse.entityId
+                entity.negativeId = changeEntityResponse.negativeEntityId
+                return entity
+            })
     }
 
     entitiesUpdateValidation(appId: string, packageId: string, entity: models.EntityBase): Promise<string[]> {
