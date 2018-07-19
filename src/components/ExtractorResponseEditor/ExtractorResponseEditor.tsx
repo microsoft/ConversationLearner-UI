@@ -208,7 +208,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
             if (selectionParentElement == null) {
                 console.warn(`selectionParentElement is null or undefined. Value: ${value.document.text}`)
             }
-            else if (selectionParentElement.tagName ===  "BUTTON") {
+            else if (["BUTTON", "I"].includes(selectionParentElement.tagName)) {
                 shouldExpandSelection = false
             }
 
