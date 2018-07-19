@@ -851,7 +851,7 @@ export default {
         [FM.TRAINDIALOGMODAL_CONFIRMDELETE_TITLE]: 'Are you sure you want to delete this Training Dialog?',
         
         // Error Messages
-        [FM.CUSTOMERROR_NETWORK_ERROR]: 'Is your Bot running?',
+        [FM.CUSTOMERROR_NETWORK_ERROR]: 'Is your Bot running? Did you set NODE_ENV=development?',
         /** 
          * This is kind of hack which re-uses redux action types as unit strings for localized error messages
          * 
