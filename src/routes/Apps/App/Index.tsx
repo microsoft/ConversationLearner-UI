@@ -46,7 +46,7 @@ class Index extends React.Component<Props, ComponentState> {
     async loadApp(app: AppBase, packageId: string): Promise<void> {
         this.setState({ packageId: packageId})
 
-        await this.props.fetchBotInfoThunkAsync(this.props.browserId)
+        await this.props.fetchBotInfoThunkAsync(this.props.browserId, app.appId)
 
         this.props.setCurrentApp(this.props.user.id, app)
         this.props.fetchAllLogDialogsAsync(this.props.user.id, app, packageId) // Note: a separate call as eventually we want to page
