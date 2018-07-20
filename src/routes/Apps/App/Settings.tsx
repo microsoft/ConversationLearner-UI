@@ -8,7 +8,7 @@ import { editApplicationAsync, editAppEditingTagThunkAsync, editAppLiveTagThunkA
 import { bindActionCreators } from 'redux';
 import PackageTable from '../../../components/modals/PackageTable'
 import { connect } from 'react-redux';
-import { State, CL_DEMO_ID, AppCreatorType } from '../../../types';
+import { State, AppCreatorType } from '../../../types';
 import * as OF from 'office-ui-fabric-react';
 import { Expando, AppCreator } from '../../../components/modals'
 import { saveAs } from 'file-saver'
@@ -486,7 +486,7 @@ class Settings extends React.Component<Props, ComponentState> {
                         />
                     </div>
 
-                    {this.props.user.id === CL_DEMO_ID &&
+                    {util.isDemoAccount(this.props.user.id) &&
                         <React.Fragment>
                             <div>
                                 <OF.TextField
