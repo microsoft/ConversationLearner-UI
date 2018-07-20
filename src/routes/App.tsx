@@ -144,10 +144,10 @@ class App extends React.Component<Props, ComponentState> {
                 <Route exact path="/" render={() => <Redirect to="/home" />} />
                 <Route path="/home" render={props => <React.Fragment>
                   {this.state.loadingState === LoadingState.LOADING
-                    && <p>Loading Bot Info...</p>}
+                    && <p>Loading...</p>}
                   {this.state.loadingState === LoadingState.FAILED
                     && <div>
-                      <p>Loading Bot Info Failed.</p>
+                      <p>Loading Failed.</p>
                       <div>
                         <OF.PrimaryButton onClick={this.loadBotInfo}>Retry</OF.PrimaryButton>
                       </div>
