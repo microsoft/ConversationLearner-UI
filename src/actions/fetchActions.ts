@@ -136,7 +136,7 @@ export const fetchBotInfoThunkAsync = (browserId: string) => {
         } catch (e) {
             const error = e as AxiosError
             dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.FETCH_BOTINFO_ASYNC))
-            return null;
+            throw error
         }
     }
 }

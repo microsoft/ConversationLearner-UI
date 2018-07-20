@@ -23,17 +23,43 @@ import { FM } from '../react-intl-messages'
 import { fetchBotInfoThunkAsync } from '../actions/fetchActions'
 import { clearBanner } from '../actions/displayActions'
 
+enum LoadingState {
+  NEUTRAL,
+  LOADING,
+  SUCCEEDED,
+  FAILED
+}
+
 interface ComponentState {
+  loadingState: LoadingState
 }
 
 const initialState: ComponentState = {
+  loadingState: LoadingState.NEUTRAL
 }
 
 class App extends React.Component<Props, ComponentState> {
   state = initialState
 
   componentDidMount() {
-    this.props.fetchBotInfoThunkAsync(this.props.browserId)
+    this.loadBotInfo()
+  }
+
+  loadBotInfo = async () => {
+    try {
+      this.setState({
+        loadingState: LoadingState.LOADING
+      })
+      await this.props.fetchBotInfoThunkAsync(this.props.browserId)
+      this.setState({
+        loadingState: LoadingState.SUCCEEDED
+      })
+    }
+    catch (e) {
+      this.setState({
+        loadingState: LoadingState.FAILED
+      })
+    }
   }
 
   dismissBanner(banner: Banner) {
@@ -117,9 +143,18 @@ class App extends React.Component<Props, ComponentState> {
             <Switch>
                 <Route exact path="/" render={() => <Redirect to="/home" />} />
                 <Route path="/home" render={props => <React.Fragment>
-                  {this.props.botInfo === null
-                    ? <div>Loading Bot Info...</div>
-                    : <AppsIndex {...props} />}
+                  {this.state.loadingState === LoadingState.LOADING
+                    && <p>Loading...</p>}
+                  {this.state.loadingState === LoadingState.FAILED
+                    && <div>
+                      <p>Loading Failed.</p>
+                      <div>
+                        <OF.PrimaryButton onClick={this.loadBotInfo}>Retry</OF.PrimaryButton>
+                      </div>
+                    </div>}
+                  {this.state.loadingState === LoadingState.SUCCEEDED
+                    && this.props.botInfo !== null
+                    && <AppsIndex {...props} />}
                 </React.Fragment>
                 } />
                 <Route path="/settings" component={Settings} />
