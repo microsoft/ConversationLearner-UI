@@ -324,7 +324,6 @@ const mapDispatchToProps = (dispatch: any) => {
 }
 const mapStateToProps = (state: State) => {
     return {
-        user: state.user,
         entities: state.entities,
         actions: state.actions
     }

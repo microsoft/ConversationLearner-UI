@@ -698,7 +698,6 @@ const mapDispatchToProps = (dispatch: any) => {
 }
 const mapStateToProps = (state: State, ownProps: any) => {
     return {
-        user: state.user,
         entities: state.entities,
         actions: state.actions,
         trainDialogs: state.trainDialogs

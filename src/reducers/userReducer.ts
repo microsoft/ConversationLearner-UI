@@ -8,8 +8,7 @@ import { Reducer } from 'redux'
 import * as ClientFactory from '../services/clientFactory'
 
 const initialState: UserState = {
-    name: "Unset",
-    id: null
+    user: undefined
 }
 
 const intializeClientFactory = (id: string) => {
@@ -22,7 +21,10 @@ const userReducer: Reducer<UserState> = (state = initialState, action: ActionObj
         case AT.FETCH_BOTINFO_FULFILLED:
             const user = action.botInfo.user
             intializeClientFactory(user.id)
-            return { ...state, ...user }
+            return {
+                ...state,
+                user
+            }
         default:
             return state
     }

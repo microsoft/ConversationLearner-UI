@@ -176,7 +176,6 @@ const mapDispatchToProps = (dispatch: any) => {
 }
 const mapStateToProps = (state: State, ownProps: ReceivedProps) => {
     return {
-        user: state.user,
         actions: state.actions
     }
 }

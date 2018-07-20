@@ -473,8 +473,12 @@ const mapDispatchToProps = (dispatch: any) => {
     }, dispatch);
 }
 const mapStateToProps = (state: State, ownProps: any) => {
+    if (!state.user.user) {
+        throw new Error(`You attempted to render TeachSessionAdmin but the user was not defined. This is likely a problem with higher level component. Please open an issue.`)
+    }
+
     return {
-        user: state.user,
+        user: state.user.user,
         entities: state.entities
     }
 }

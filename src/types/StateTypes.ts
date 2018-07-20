@@ -59,9 +59,13 @@ export type DisplayState = {
     clearedBanner: Banner | null,
 }
 
+export interface User {
+    name: string
+    id: string
+}
+
 export type UserState = {
-    name: string | null,
-    id: string | null,
+    user: User | undefined
 }
 
 export interface ProfileState {

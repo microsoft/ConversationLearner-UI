@@ -103,10 +103,14 @@ const mapDispatchToProps = (dispatch: any) => {
 }
 
 const mapStateToProps = (state: State) => {
+    if (!state.user.user) {
+        throw new Error(`You attempted to render AppsIndex but the user was not defined. This is likely a problem with higher level component. Please open an issue.`)
+    }
+
     return {
         apps: state.apps.all,
         display: state.display,
-        user: state.user, 
+        user: state.user.user, 
         browserId: state.bot.browserId
     }
 }

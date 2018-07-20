@@ -181,7 +181,6 @@ const mapDispatchToProps = (dispatch: any) => {
 
 const mapStateToProps = (state: State) => {
   return {
-    user: state.user,
     browserId: state.bot.browserId,
     botInfo: state.bot.botInfo,
     clearedBanner: state.display.clearedBanner
