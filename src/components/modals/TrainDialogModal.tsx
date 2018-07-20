@@ -130,7 +130,7 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
                                 key={this.state.webchatKey}
                                 app={this.props.app}
                                 history={this.props.history}
-                                onPostActivity={null}
+                                onPostActivity={() => {}}
                                 onSelectActivity={activity => this.onWebChatSelectActivity(activity)}
                                 hideInput={true}
                                 focusInput={false}

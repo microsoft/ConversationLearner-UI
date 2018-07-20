@@ -85,10 +85,9 @@ const fetchHistoryFulfilled = (teachWithHistory: TeachWithHistory): ActionObject
 // Log Dialogs
 // ----------------------------------------
 export const fetchAllLogDialogsAsync = (key: string, app: AppBase, packageId: string): ActionObject => {
-      
     // Note: In future change fetch log dialogs to default to all package if packageId is dev
-    let allPackages = (packageId === app.devPackageId)
-            ? app.packageVersions.map(pv => pv.packageId).concat(packageId).join(',')
+    const allPackages = (packageId === app.devPackageId)
+            ? (app.packageVersions || []).map(pv => pv.packageId).concat(packageId).join(',')
             : packageId
     
     return {

@@ -131,9 +131,7 @@ export default class ClClient {
         return this.send<string>({
             method: 'post',
             url: `${this.baseUrl}/apps/copy?srcUserId=${srcUserId}&destUserId=${destUserId}&appId=${appId}`
-        }).then(response => {
-            return null;
-        })
+        }).then(response => {})
     }
 
     appsDelete(appId: string): Promise<void> {

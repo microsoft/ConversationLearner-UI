@@ -128,7 +128,7 @@ interface ComponentState {
     showValidationWarning: boolean
     isPayloadFocused: boolean
     isPayloadValid: boolean
-    newOrEditedAction: ActionBase
+    newOrEditedAction: ActionBase | null
     selectedActionTypeOptionKey: string | number
     availableExpectedEntityTags: OF.ITag[]
     entityTags: OF.ITag[]

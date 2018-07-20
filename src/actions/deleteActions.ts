@@ -41,7 +41,8 @@ export const deleteEntityThunkAsync = (appId: string, entity: EntityBase) => {
             const deleteEditResponse = await clClient.entitiesDelete(appId, entityId);
             dispatch(deleteEntityFulfilled(entityId))
             if (entity.isNegatible) {
-                const negativeEntityId = entity.negativeId
+                // If entity is negatable assume it has negativeId
+                const negativeEntityId = entity.negativeId!
                 dispatch(deleteEntityFulfilled(negativeEntityId))
             }
 
@@ -199,7 +200,7 @@ const deleteTeachSessionAsync = (key: string, teachSession: Teach, appId: string
     }
 }
 
-const deleteTeachSessionFulfilled = (key: string, teachSession: Teach, sourceLogDialogId: string, appId: string): ActionObject => {
+const deleteTeachSessionFulfilled = (key: string, teachSession: Teach, sourceLogDialogId: string | null, appId: string): ActionObject => {
     return {
         type: AT.DELETE_TEACH_SESSION_FULFILLED,
         key: key,

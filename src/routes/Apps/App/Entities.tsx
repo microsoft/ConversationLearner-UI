@@ -253,7 +253,7 @@ class Entities extends React.Component<Props, ComponentState> {
                             id: FM.ENTITIES_CREATEBUTTONTEXT,
                             defaultMessage: 'New Entity'
                         })}
-                        componentRef={component => this.newEntityButton = component}
+                        componentRef={component => this.newEntityButton = component!}
                     />
                 </div>
                 {entities.length === 0

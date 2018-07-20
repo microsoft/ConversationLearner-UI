@@ -47,13 +47,13 @@ export const editEntityThunkAsync = (appId: string, entity: EntityBase, prevEnti
             // If we're setting negatable flag
             if (entity.isNegatible && !prevEntity.isNegatible) {
                 // Need to fetch negative entity in order to load it into memory
-                const negEntity = await clClient.entitiesGetById(appId, posEntity.negativeId)
+                const negEntity = await clClient.entitiesGetById(appId, posEntity.negativeId!)
                 dispatch(createEntityFulfilled(negEntity))
             }
             // If we're UNsetting negatable flag
             else if (!entity.isNegatible && prevEntity.isNegatible) {
                 // Need to remove negative entity from memory
-                dispatch(deleteEntityFulfilled(prevEntity.negativeId))
+                dispatch(deleteEntityFulfilled(prevEntity.negativeId!))
             }
 
             dispatch(fetchApplicationTrainingStatusThunkAsync(appId))

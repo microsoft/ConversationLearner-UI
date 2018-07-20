@@ -70,7 +70,7 @@ class App extends React.Component<Props, ComponentState> {
   }
 
   shouldShowBanner(banner: Banner) {
-    if (!banner || !banner.message) {
+    if (!banner.message) {
       return false;
     }
 
@@ -121,7 +121,7 @@ class App extends React.Component<Props, ComponentState> {
 
           <div className="cl-app_header-placeholder" />
           <div className="cl-app_content">
-            {this.shouldShowBanner(banner) &&
+            {banner && this.shouldShowBanner(banner) &&
               <OF.MessageBar
                 className="cl-messagebar"
                 isMultiline={true}

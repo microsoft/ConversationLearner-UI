@@ -96,9 +96,9 @@ export type DisplayAction = {
     // used for setting whether the error popup is displayed
     type: AT.SET_ERROR_DISPLAY,
     errorType: ErrorType,
-    title: string,
+    title: string | null,
     messages: string[],
-    actionType: AT
+    actionType: AT | null
 } | {
     type: AT.CLEAR_BANNER
     clearedBanner: Banner,
@@ -369,7 +369,7 @@ export type DeleteAction = {
 } | {
     type: AT.DELETE_TEACH_SESSION_FULFILLED,
     teachSessionGUID: string,
-    sourceLogDialogId: string,
+    sourceLogDialogId: string | null,
     trainDialogId: string,
     key: string,
     appId: string,
@@ -408,7 +408,7 @@ export type TeachAction = {
     type: AT.RUN_EXTRACTOR_ASYNC,
     appId: string,
     extractType: DialogType,
-    turnIndex: number,
+    turnIndex: number | null,
     sessionId: string,
     userInput: UserInput
 } | {
@@ -463,7 +463,8 @@ export type TeachAction = {
     sessionId: string,
     dialogMode: DialogMode,
     uiPostScoreResponse: UIPostScoreResponse,
-    uiScoreInput: UIScoreInput
+    // TODO: Why allow null here? Just make different Action
+    uiScoreInput: UIScoreInput | null
 } | {
     type: AT.TEACH_MESSAGE_RECEIVED,
     message: string

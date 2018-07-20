@@ -20,7 +20,7 @@ class ErrorPanel extends React.Component<Props, {}> {
         'Network Error': FM.CUSTOMERROR_NETWORK_ERROR
     }
 
-    handleClose = (actionType: AT) => {
+    handleClose = (actionType: AT | null) => {
         this.props.clearErrorDisplay()
 
         // If error associated with an action
@@ -41,8 +41,8 @@ class ErrorPanel extends React.Component<Props, {}> {
         );
     }
 
-    getCustomError(intl: InjectedIntl, error: ErrorState): string {
-        if (!error) {
+    getCustomError(intl: InjectedIntl, error: ErrorState): string | null {
+        if (!error || !error.title) {
             return null
         }
 

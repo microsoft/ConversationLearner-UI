@@ -67,7 +67,7 @@ export const tokenizeText = (text: string, tokenRegex: RegExp): IToken[] => {
         return tokens
     }
 
-    let result: RegExpExecArray = null
+    let result: RegExpExecArray | null = null 
     let lastIndex = tokenRegex.lastIndex
     // tslint:disable-next-line:no-conditional-assignment
     while ((result = tokenRegex.exec(text)) !== null) {

@@ -48,7 +48,7 @@ function textClassName(trainDialog: TrainDialog): string {
     if (trainDialog.invalid === true) {
         return `${OF.FontClassNames.mediumPlus} cl-font--highlight`;
     }
-    return OF.FontClassNames.mediumPlus;
+    return OF.FontClassNames.mediumPlus!;
 }
 
 function getFirstInput(trainDialog: TrainDialog): string {

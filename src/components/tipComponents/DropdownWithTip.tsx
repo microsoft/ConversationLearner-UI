@@ -23,7 +23,7 @@ class DropdownWithTip extends OF.BaseComponent<IDropdownWithTipProps, OF.IDropdo
                 <OF.Dropdown
                     {...dropdownProps}
                     ariaLabel={label}
-                    label={null}
+                    label={undefined}
                 />
             </div>
         )

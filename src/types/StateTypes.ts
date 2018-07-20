@@ -20,9 +20,9 @@ export type ActionState = ActionBase[];
 export type EntityState = EntityBase[];
 export type ErrorState = {
     type: ErrorType,
-    title: string,
+    title: string | null,
     messages: string[],
-    actionType: AT
+    actionType: AT | null
 }
 export type TrainDialogState = TrainDialog[];
 
@@ -33,31 +33,32 @@ export type AppsState = {
     activeApps: { [appId: string]: string };  // appId: packageId
 }
 export type BotState = {
-    botInfo: BotInfo
+    botInfo: BotInfo | null
     browserId: string
 }
 export type TeachSessionState = {
     all: Teach[],
-    current: Teach,
+    current: Teach | undefined,
     mode: DialogMode,
     input: string,
     prevMemories: Memory[],
     memories: Memory[],
-    scoreInput: ScoreInput,
-    uiScoreInput: UIScoreInput,
+    scoreInput: ScoreInput | undefined,
+    uiScoreInput: UIScoreInput | undefined,
     extractResponses: ExtractResponse[],
-    scoreResponse: ScoreResponse,
+    scoreResponse: ScoreResponse | undefined,
     autoTeach: boolean
 }
 export type ChatSessionState = {
     all: Session[],
-    current: Session
+    current: Session | null
 }
 export type DisplayState = {
     displaySpinner: string[],
     tipType: TipType,
-    clearedBanner: Banner,
+    clearedBanner: Banner | null,
 }
+
 export type UserState = {
     name: string | null,
     id: string | null,
