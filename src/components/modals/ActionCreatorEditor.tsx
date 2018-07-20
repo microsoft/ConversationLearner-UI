@@ -445,7 +445,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     }
 
     onClickSyncBotInfo() {
-        this.props.fetchBotInfoThunkAsync(this.props.browserId)
+        this.props.fetchBotInfoThunkAsync(this.props.browserId, this.props.app.appId)
     }
 
     onClickViewCard() {
