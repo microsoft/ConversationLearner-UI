@@ -18,11 +18,11 @@ import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 
 interface ComponentState {
-    isConfirmCancelModalOpen: boolean,
-    calloutOpen: boolean,
-    selectedActivity: Activity | null,
-    webchatKey: number,
-    currentTrainDialog: TrainDialog,
+    isConfirmCancelModalOpen: boolean
+    calloutOpen: boolean
+    selectedActivity: Activity | null
+    webchatKey: number
+    currentTrainDialog: TrainDialog | null
     pendingExtractionChanges: boolean
 }
 

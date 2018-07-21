@@ -576,6 +576,10 @@ export const convertExtractorResponseToEditorModels = (extractResponse: ExtractR
     const internalPredictedEntities = extractResponse.predictedEntities
         .map<models.InternalPredictedEntity>(predictedEntity => {
             const entity = entities.find(e => e.entityId === predictedEntity.entityId)
+            if (!entity) {
+                throw new Error(`Could not find entity by id: ${predictedEntity.entityId} in list of entities`)
+            }
+
             return {
                 entity,
                 predictedEntity

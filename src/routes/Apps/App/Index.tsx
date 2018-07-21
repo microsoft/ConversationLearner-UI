@@ -33,8 +33,8 @@ import './Index.css'
 // this would eliminate the use of page title strings as navigation keys and instead use the url
 
 interface ComponentState {
-    validationErrors: string[];
-    packageId: string;
+    validationErrors: string[]
+    packageId: string | null
 }
 
 class Index extends React.Component<Props, ComponentState> {
@@ -44,7 +44,7 @@ class Index extends React.Component<Props, ComponentState> {
     }
 
     async loadApp(app: AppBase, packageId: string): Promise<void> {
-        this.setState({ packageId: packageId})
+        this.setState({ packageId })
 
         await this.props.fetchBotInfoThunkAsync(this.props.browserId)
 
@@ -66,25 +66,37 @@ class Index extends React.Component<Props, ComponentState> {
             return
         }
 
-        let editPackageId = this.props.activeApps[app.appId] || app.devPackageId;
+        const editPackageId = this.props.activeApps[app.appId] || app.devPackageId;
+        if (!editPackageId) {
+            throw new Error(`You attempted to load an app, but editPackageId is not defined. This is likely a problem with the code. Please open an issue.`)
+        }
+
         this.loadApp(app, editPackageId)
     }
 
     componentWillReceiveProps(newProps: Props) {
         const app: AppBase | null = newProps.location.state && newProps.location.state.app
-        let editPackageId = newProps.activeApps[app.appId] || app.devPackageId;
+        if (!app) {
+            throw new Error(`App/Index#componentWillReceiveProps: app could not be found in location state. This is likely a problem with the code. Please open an issue.`)
+        }
+
+        const editPackageId = newProps.activeApps[app.appId] || app.devPackageId
+        if (!editPackageId) {
+            throw new Error(`App/Index#componentWillReceiveProps: editPackageId is not defined. This is likely a problem with the code. Please open an issue.`)
+        }
+
         if (this.state.packageId !== editPackageId) {
             this.loadApp(app, editPackageId);
         }
 
-        if (newProps.actions !== this.props.actions || newProps.botInfo !== this.props.botInfo) {
+        if ((newProps.actions !== this.props.actions || newProps.botInfo !== this.props.botInfo) && newProps.botInfo) {
             let validationErrors = this.actionValidationErrors(newProps.botInfo, newProps.actions);
             this.setState({ validationErrors: validationErrors });
         }
     }
 
-    onCreateApp = async (appToCreate: AppBase, source: AppDefinition = null) => {
-        const app: AppBase = await this.props.createApplicationThunkAsync(this.props.user.id, appToCreate, source) as any
+    onCreateApp = async (appToCreate: AppBase, source: AppDefinition | null = null) => {
+        const app = await (this.props.createApplicationThunkAsync(this.props.user.id, appToCreate, source) as any as Promise<AppBase>)
         const { history } = this.props
         history.push(`/home/${app.appId}`, { app })
     }
@@ -106,7 +118,7 @@ class Index extends React.Component<Props, ComponentState> {
         // Check for bad templates
         const badTemplateErrors = botInfo.templates
             .filter(t => t.validationError !== null)
-            .map(t => t.validationError)
+            .map(t => t.validationError!)
 
         // Check for missing templates
         const actionsMissingTemplates = actions
@@ -137,10 +149,20 @@ class Index extends React.Component<Props, ComponentState> {
         if (!location.state) return null;
 
         const app: AppBase = location.state.app
-        const editPackageId = this.state.packageId
-        const tag = (editPackageId === app.devPackageId) ? 
-            'Master' :
-            app.packageVersions.find(pv => pv.packageId === editPackageId).packageVersion;
+        // TODO: There is an assumption that by the time render is called, componentWillMount has called loadApp and set the packageId
+        const editPackageId = this.state.packageId!
+
+        // TODO: Why is this hard coded to Master? If there is no packageVersions we default back to Master but this seems incorrect
+        let tag = 'Master'
+        if (editPackageId !== app.devPackageId) {
+            const packageReference = (app.packageVersions || []).find(pv => pv.packageId === editPackageId)
+            if (!packageReference) {
+                throw new Error(`editPackageId did not equal devPackageId, but could not find a packageVersion using the editPackageId: ${editPackageId}. This should not be possible. Please open an issue.`)
+            }
+
+            tag = packageReference.packageVersion
+        }
+
         const invalidTrainDialogs = this.hasInvalidTrainDialogs();
         const invalidBot = this.state.validationErrors && this.state.validationErrors.length > 0;
        

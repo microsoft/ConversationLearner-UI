@@ -67,8 +67,8 @@ interface ComponentState {
     localeVal: string
     appIdVal: string
     appNameVal: string
-    selectedEditingTagOptionKey: string | number,
-    selectedLiveTagOptionKey: string | number,
+    selectedEditingTagOptionKey: string | number | undefined,
+    selectedLiveTagOptionKey: string | number | undefined,
     markdownVal: string
     videoVal: string
     edited: boolean
@@ -78,8 +78,7 @@ interface ComponentState {
     isLoggingOnVal: boolean,
     isPackageExpandoOpen: boolean,
     isSettingsExpandoOpen: boolean,
-    isAppCopyModalOpen: boolean,
-    source: AppDefinition
+    isAppCopyModalOpen: boolean
 }
 
 class Settings extends React.Component<Props, ComponentState> {
@@ -90,8 +89,8 @@ class Settings extends React.Component<Props, ComponentState> {
             localeVal: '',
             appIdVal: '',
             appNameVal: '',
-            selectedEditingTagOptionKey: null,
-            selectedLiveTagOptionKey: null,
+            selectedEditingTagOptionKey: undefined,
+            selectedLiveTagOptionKey: undefined,
             markdownVal: '',
             videoVal: '',
             edited: false,
@@ -101,8 +100,7 @@ class Settings extends React.Component<Props, ComponentState> {
             isLoggingOnVal: true,
             isPackageExpandoOpen: false,
             isSettingsExpandoOpen: false,
-            isAppCopyModalOpen: false,
-            source: null
+            isAppCopyModalOpen: false
         }
     }
 
@@ -113,12 +111,12 @@ class Settings extends React.Component<Props, ComponentState> {
             appNameVal: app.appName,
             selectedEditingTagOptionKey: this.props.editingPackageId,
             selectedLiveTagOptionKey: app.livePackageId,
-            markdownVal: app.metadata ? app.metadata.markdown : null,
-            videoVal: app.metadata ? app.metadata.video : null,
+            markdownVal: (app.metadata && app.metadata.markdown) ? app.metadata.markdown : '',
+            videoVal: (app.metadata && app.metadata.video) ? app.metadata.video : '',
             botFrameworkAppsVal: app.metadata.botFrameworkApps,
-            isLoggingOnVal: (app.metadata.isLoggingOn !== false),   // For backward compatibility to cover undefined
-            newBotVal: '', 
-            source: null
+            // For backward compatibility to cover undefined
+            isLoggingOnVal: (app.metadata.isLoggingOn !== false),
+            newBotVal: ''
         })
     }
     componentDidMount() {
@@ -194,10 +192,11 @@ class Settings extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    onSubmitAppCopyModal(app: AppBase) {
+    async onSubmitAppCopyModal(app: AppBase) {
+        const appDefinition = await (this.props.fetchAppSourceThunkAsync(this.props.app.appId, this.props.editingPackageId, false) as any as Promise<AppDefinition>)
         this.setState({
             isAppCopyModalOpen: false
-        }, () => this.props.onCreateApp(app, this.state.source))
+        }, () => this.props.onCreateApp(app, appDefinition))
     }
 
     @autobind
@@ -224,8 +223,8 @@ class Settings extends React.Component<Props, ComponentState> {
             localeVal: app.locale,
             appIdVal: app.appId,
             appNameVal: app.appName,
-            markdownVal: app.metadata ? app.metadata.markdown : null,
-            videoVal: app.metadata ? app.metadata.video : null,
+            markdownVal: (app.metadata && app.metadata.markdown) ? app.metadata.markdown : '',
+            videoVal: (app.metadata && app.metadata.video) ? app.metadata.video : '',
             botFrameworkAppsVal: app.metadata.botFrameworkApps,
             isLoggingOnVal: app.metadata.isLoggingOn,
             edited: false,
@@ -247,7 +246,7 @@ class Settings extends React.Component<Props, ComponentState> {
             },
             // packageVersions: DON'T SEND
             // devPackageId: DON'T SEND
-            trainingFailureMessage: undefined,
+            trainingFailureMessage: null,
             trainingStatus: TrainingStatusCode.Completed,
             datetime: new Date()
         }
@@ -256,8 +255,8 @@ class Settings extends React.Component<Props, ComponentState> {
             localeVal: app.locale,
             appIdVal: app.appId,
             appNameVal: app.appName,
-            markdownVal: app.metadata ? app.metadata.markdown : null,
-            videoVal: app.metadata ? app.metadata.video : null,
+            markdownVal: (app.metadata && app.metadata.markdown) ? app.metadata.markdown : '',
+            videoVal: (app.metadata && app.metadata.video) ? app.metadata.video : '',
             botFrameworkAppsVal: app.metadata.botFrameworkApps,
             isLoggingOnVal: app.metadata.isLoggingOn,
             edited: false,
@@ -311,30 +310,17 @@ class Settings extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    onExport() {
-        ((this.props.fetchAppSourceThunkAsync(this.props.app.appId, this.props.editingPackageId, false) as any) as Promise<AppDefinition>)
-            .then(appDefinition => {
-                let appDefJSON = JSON.stringify(appDefinition)
-                let blob = new Blob([appDefJSON], {type: "text/plain;charset=utf-8"});
-                saveAs(blob, `${this.props.app.appName}.cl`);
-            })
-            .catch(error => {
-                console.warn(`Error when attempting export model `, error)
-            })
+    async onClickExport() {
+        const appDefinition = await (this.props.fetchAppSourceThunkAsync(this.props.app.appId, this.props.editingPackageId, false) as any as Promise<AppDefinition>)
+        const blob = new Blob([JSON.stringify(appDefinition)], {type: "text/plain;charset=utf-8"})
+        saveAs(blob, `${this.props.app.appName}.cl`);
     }
 
     @autobind
-    onCopy() {
-        ((this.props.fetchAppSourceThunkAsync(this.props.app.appId, this.props.editingPackageId, false) as any) as Promise<AppDefinition>)
-            .then(appDefinition => {
-                this.setState({
-                    isAppCopyModalOpen: true,
-                    source: appDefinition,
-                })
-            })
-            .catch(error => {
-                console.warn(`Error when attempting export model `, error)
-            })
+    onClickCopy() {
+        this.setState({
+            isAppCopyModalOpen: true
+        })
     }
 
     packageOptions() {
@@ -383,7 +369,7 @@ class Settings extends React.Component<Props, ComponentState> {
                     />
                     <div className="cl-buttons-row">
                         <OF.PrimaryButton
-                            onClick={this.onExport}
+                            onClick={this.onClickExport}
                             ariaDescription={intl.formatMessage({
                                 id: FM.SETTINGS_EXPORTBUTTONARIALDESCRIPTION,
                                 defaultMessage: 'Export Model to a file'
@@ -394,7 +380,7 @@ class Settings extends React.Component<Props, ComponentState> {
                             })}
                         />
                         <OF.PrimaryButton
-                            onClick={this.onCopy}
+                            onClick={this.onClickCopy}
                             ariaDescription={intl.formatMessage({
                                 id: FM.SETTINGS_COPYBUTTONARIALDESCRIPTION,
                                 defaultMessage: 'Copy Model'

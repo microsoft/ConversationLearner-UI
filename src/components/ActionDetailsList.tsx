@@ -2,12 +2,13 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import * as React from 'react';
-import { returntypeof } from 'react-redux-typescript';
-import { connect } from 'react-redux';
+import * as React from 'react'
+import { returntypeof } from 'react-redux-typescript'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
 import { ActionBase, ActionTypes, Template, RenderedActionArgument, SessionAction, CardAction, TextAction, ApiAction } from '@conversationlearner/models'
-import { State } from '../types' 
-import * as OF from 'office-ui-fabric-react';
+import { State } from '../types'
+import * as OF from 'office-ui-fabric-react'
 import { onRenderDetailsHeader } from './ToolTips'
 import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../react-intl-messages'
@@ -16,6 +17,12 @@ import AdaptiveCardViewer from './modals/AdaptiveCardViewer/AdaptiveCardViewer'
 import * as ActionPayloadRenderers from './actionPayloadRenderers'
 import { Icon } from 'office-ui-fabric-react'
 import './ActionDetailsList.css'
+
+interface ComponentState {
+    columns: IRenderableColumn[]
+    sortColumn: IRenderableColumn
+    cardViewerAction: ActionBase | null
+}
 
 class ActionDetailsList extends React.Component<Props, ComponentState> {
     constructor(p: any) {
@@ -32,7 +39,7 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
     validationError(action: ActionBase): boolean {
         switch (action.actionType) {
             case ActionTypes.TEXT: {
-                return null;
+                return false
             }
             case ActionTypes.API_LOCAL: {
                 const apiAction = new ApiAction(action)
@@ -43,11 +50,11 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
                 return (!this.props.botInfo.templates || !this.props.botInfo.templates.find(cb => cb.name === cardAction.templateName))
             }
             case ActionTypes.END_SESSION: {
-                return null;
+                return false
             }
             default: {
                 console.warn(`Could not get validation for unknown action type: ${action.actionType}`)
-                return true;
+                return true
             }
         }
     }
@@ -91,13 +98,11 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
         })
     }
 
-    onClickRow(item: any, index: number, ev: React.FocusEvent<HTMLElement>) {
+    onClickRow(item: any, index: number | undefined, event: React.FocusEvent<HTMLElement> | undefined) {
         // Don't response to row click if it's button that was clicked
-        if ((ev.target as any).type !== 'button') {
-            let action = item as ActionBase;
-            if (this.props.onSelectAction) {
-                this.props.onSelectAction(action);
-            }
+        if (event && (event.target as any).type !== 'button') {
+            const action = item as ActionBase
+            this.props.onSelectAction(action)
         }
     }
 
@@ -110,12 +115,12 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
     render() {
         let sortedActions = this.sortActions();
 
-        let template: Template = null;
-        let renderedActionArguments: RenderedActionArgument[] = [];
+        let template: Template | undefined = undefined
+        let renderedActionArguments: RenderedActionArgument[] = []
         if (this.state.cardViewerAction) {
             const cardAction = new CardAction(this.state.cardViewerAction)
             const entityMap = Util.getDefaultEntityMap(this.props.entities)
-            template = this.props.botInfo.templates.find((t) => t.name === cardAction.templateName);
+            template = this.props.botInfo.templates.find((t) => t.name === cardAction.templateName)
             // TODO: This is hack to make adaptive card viewer accept action arguments with pre-rendered values
             renderedActionArguments = cardAction.renderArguments(entityMap, { preserveOptionalNodeWrappingCharacters: true })
                 .filter(aa => !Util.isNullOrWhiteSpace(aa.value))
@@ -136,7 +141,7 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
                         onRenderDetailsHeader(detailsHeaderProps, defaultRender)}
                 />
                 <AdaptiveCardViewer
-                    open={this.state.cardViewerAction != null}
+                    open={this.state.cardViewerAction !== null}
                     onDismiss={() => this.onCloseCardViewer()}
                     template={template}
                     actionArguments={renderedActionArguments}
@@ -147,7 +152,16 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
     }
 }
 
+const mapDispatchToProps = (dispatch: any) => {
+    return bindActionCreators({
+    }, dispatch);
+}
+
 const mapStateToProps = (state: State) => {
+    if (!state.bot.botInfo) {
+        throw new Error(`You attempted to render the ActionDetailsList which requires botInfo, but botInfo was not defined. This is likely a problem with higher level component. Please open an issue.`)
+    }
+
     return {
         entities: state.entities,
         botInfo: state.bot.botInfo
@@ -163,7 +177,7 @@ export interface ReceivedProps {
 const stateProps = returntypeof(mapStateToProps);
 type Props = typeof stateProps & ReceivedProps & InjectedIntlProps
 
-export default connect<typeof stateProps, {}, ReceivedProps>(mapStateToProps, null)(injectIntl(ActionDetailsList))
+export default connect<typeof stateProps, {}, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(ActionDetailsList))
 
 function getActionPayloadRenderer(action: ActionBase, component: ActionDetailsList, isValidationError: boolean) {
     if (action.actionType === ActionTypes.TEXT) {
@@ -285,8 +299,10 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                 : action.requiredEntities.map(entityId => {
                     const entity = component.props.entities.find(e => e.entityId === entityId)
                     return (
-                        <div className='ms-ListItem is-selectable' key={entityId}>
-                            <span className='ms-ListItem-primaryText'>{entity.entityName}</span>
+                        <div className='ms-ListItem is-selectable ms-ListItem-primaryText' key={entityId}>
+                            {entity
+                                ? entity.entityName
+                                : `Error - Entity ID: ${entityId}`}
                         </div>
                     )
                 })
@@ -310,8 +326,10 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                 : action.negativeEntities.map(entityId => {
                     const entity = component.props.entities.find(e => e.entityId == entityId)
                     return (
-                        <div className='ms-ListItem is-selectable' key={entityId}>
-                            <span className='ms-ListItem-primaryText'>{entity.entityName}</span>
+                        <div className='ms-ListItem is-selectable ms-ListItem-primaryText' key={entityId}>
+                            {entity
+                                ? entity.entityName
+                                : `Error - Entity ID: ${entityId}`}
                         </div>
                     )
                 })
@@ -332,10 +350,13 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                     return <OF.Icon iconName="Remove" className="cl-icon" />
                 }
 
-                const expectedEntity = component.props.entities.find(e => e.entityId === action.suggestedEntity)
+                const entityId = action.suggestedEntity
+                const entity = component.props.entities.find(e => e.entityId === entityId)
                 return (
-                    <div className='ms-ListItem is-selectable'>
-                        <span className='ms-ListItem-primaryText'>{expectedEntity.entityName}</span>
+                    <div className='ms-ListItem is-selectable ms-ListItem-primaryText'>
+                        {entity
+                            ? entity.entityName
+                            : `Error - Entity ID: ${entityId}`}
                     </div>
                 )
             }
@@ -359,10 +380,4 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
 interface IRenderableColumn extends OF.IColumn {
     render: (action: ActionBase, component: ActionDetailsList) => JSX.Element | JSX.Element[]
     getSortValue: (action: ActionBase, component: ActionDetailsList) => string
-}
-
-interface ComponentState {
-    columns: IRenderableColumn[]
-    sortColumn: IRenderableColumn
-    cardViewerAction: ActionBase
 }

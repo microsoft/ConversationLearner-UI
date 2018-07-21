@@ -9,15 +9,15 @@ import { AT } from '../types/ActionTypes'
 
 const initialState: TeachSessionState = {
     all: [],
-    current: null,
+    current: undefined,
     mode: DialogMode.Wait,
     input: '',
     prevMemories: [],
     memories: [],
-    scoreInput: null,
-    uiScoreInput: null,
+    scoreInput: undefined,
+    uiScoreInput: undefined,
     extractResponses: [],
-    scoreResponse: null,
+    scoreResponse: undefined,
     autoTeach: false
 };
 
@@ -36,9 +36,12 @@ const teachSessionReducer: Reducer<TeachSessionState> = (state = initialState, a
         case AT.CREATE_TEACH_SESSION_FROMHISTORYFULFILLED:
             // Only update state if there were no discrepancies
             if (action.teachWithHistory.replayErrors.length === 0) {
-                return { ...initialState, 
-                    all: [...state.all, action.teachWithHistory.teach], 
-                    current: action.teachWithHistory.teach, 
+                return {
+                    ...initialState, 
+                    all: action.teachWithHistory.teach
+                        ? [...state.all, action.teachWithHistory.teach]
+                        : state.all,
+                    current: action.teachWithHistory.teach,
                     mode: action.teachWithHistory.dialogMode, 
                     memories: action.teachWithHistory.memories, 
                     prevMemories: action.teachWithHistory.prevMemories,
@@ -53,7 +56,7 @@ const teachSessionReducer: Reducer<TeachSessionState> = (state = initialState, a
         case AT.DELETE_MEMORY_FULFILLED:
             return { ...state, memories: [] }
         case AT.TEACH_MESSAGE_RECEIVED:
-            return { ...state, input: action.message, scoreInput: null, scoreResponse: null, extractResponses: [] };
+            return { ...state, input: action.message, scoreInput: undefined, scoreResponse: undefined, extractResponses: [] };
         case AT.INIT_MEMORY_FULFILLED:
             return { ...state, memories: action.memories }
         case AT.RUN_EXTRACTOR_FULFILLED:

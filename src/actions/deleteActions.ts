@@ -164,7 +164,14 @@ const deleteChatSessionFulfilled = (sessionId: string): ActionObject => {
 // ---------------------
 // TeachSession
 // ---------------------
-export const deleteTeachSessionThunkAsync = (key: string, teachSession: Teach, app: AppBase, packageId: string, save: boolean, sourceTrainDialogId: string, sourceLogDialogId: string) => {
+export const deleteTeachSessionThunkAsync = (
+    key: string,
+    teachSession: Teach,
+    app: AppBase,
+    packageId: string,
+    save: boolean,
+    sourceTrainDialogId: string | null,
+    sourceLogDialogId: string | null) => {
     return async (dispatch: Dispatch<any>) => {
         dispatch(deleteTeachSessionAsync(key, teachSession, app.appId, save))
         const clClient = ClientFactory.getInstance(AT.DELETE_TEACH_SESSION_ASYNC)

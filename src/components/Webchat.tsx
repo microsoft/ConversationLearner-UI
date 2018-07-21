@@ -14,14 +14,14 @@ import { Activity } from 'botframework-directlinejs'
 import actions from '../actions'
 
 class Webchat extends React.Component<Props, {}> {
-    private behaviorSubject: BehaviorSubject<any> = null;
-    private chatProps: BotChat.ChatProps = null;
-    private dl: BotChat.DirectLine = null;
+    private behaviorSubject: BehaviorSubject<any> | null = null;
+    private chatProps: BotChat.ChatProps | null = null;
+    private dl: BotChat.DirectLine | null = null;
 
     static defaultProps: ReceivedProps = {
         isOpen: false,
         app: null,
-        history: null,
+        history: [],
         onSelectActivity: () => { },
         onPostActivity: () => { },
         hideInput: false,
@@ -61,13 +61,19 @@ class Webchat extends React.Component<Props, {}> {
     // Get conversation Id for pro-active message during a 
     GetConversationId(status: number) {
         if (status === 2) {  // wait for connection is 'OnLine' to send data to bot
-            let conversationId = (this.dl as any).conversationId;
-            this.props.setConversationId(this.props.user.name, this.props.user.id, conversationId);
+            const conversationId = (this.dl as any).conversationId
+            const user = this.props.user
+            if (!user.name || !user.id) {
+                console.warn(`You attempted to set the conversation with out a valid user. name: ${user.name} id: ${user.id}`)
+                return
+            }
+            
+            this.props.setConversationId(user.name, user.id, conversationId)
         }
     }
     GetChatProps(): BotChat.ChatProps {
         if (!this.chatProps) {
-            this.dl = new BotChat.DirectLine({
+            const dl = new BotChat.DirectLine({
                 secret: 'secret',
                 token: 'token',
                 domain: `http://localhost:${this.props.settings.botPort}/directline`,
@@ -75,22 +81,22 @@ class Webchat extends React.Component<Props, {}> {
             })
 
             const botConnection = {
-                ...this.dl,
+                ...dl,
                 postActivity: (activity: any) => {
-                    if (this.props.onPostActivity) { 
-                        this.props.onPostActivity(activity)
-                    }
-                    return this.dl.postActivity(activity)
+                    this.props.onPostActivity(activity)
+                    return dl.postActivity(activity)
                 }
             }
 
-            if (this.props.history) {
-                botConnection.activity$ = Observable.from(this.props.history).concat(this.dl.activity$)
+            if (this.props.history.length > 0) {
+                botConnection.activity$ = Observable.from(this.props.history).concat(dl.activity$)
             }
 
-            this.dl.connectionStatus$.subscribe((status) => this.GetConversationId(status));
+            dl.connectionStatus$.subscribe((status) => this.GetConversationId(status));
 
+            this.dl = dl
             this.chatProps = {
+                disableUpload: true,
                 botConnection: botConnection,
                 selectedActivity: this.props.hideInput ? this.selectedActivity$() as any : null,
                 formatOptions: {
@@ -102,9 +108,12 @@ class Webchat extends React.Component<Props, {}> {
             } as any
         }
 
-        // Currently we don't support upload so disable button
-        this.chatProps.disableUpload = true;
-        return this.chatProps;
+        if (this.chatProps) {
+            // Currently we don't support upload so disable button
+            this.chatProps.disableUpload = true;
+        }
+
+        return this.chatProps!;
     }
     render() {
         // Prevent creation of DL client if not needed
@@ -143,7 +152,7 @@ const mapStateToProps = (state: State, ownProps: any) => {
 
 export interface ReceivedProps {
     isOpen: boolean,
-    app: AppBase,
+    app: AppBase | null,
     history: Activity[],
     hideInput: boolean,
     focusInput: boolean,

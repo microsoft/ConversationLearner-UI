@@ -165,12 +165,17 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
 
     @autobind
     onClickSubmitExtractions() {
+        if (!this.props.roundIndex) {
+            throw new Error(`You submitted extractions but there was not a valid roundIndex provided. This is likely a problem with the code. Please open an issue.`)
+        }
+
         this.setState({
             extractionChanged: false,
         });
         if (this.props.onExtractionsChanged) {
             this.props.onExtractionsChanged(false);
         }
+        
         this.submitExtractions(this.allResponses(), this.props.roundIndex);
     }
     submitExtractions(allResponses: ExtractResponse[], roundIndex: number) {
@@ -280,8 +285,13 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
     onSubmitTextVariation() {
         let text = this.state.textVariationValue.trim();
         if (text.length === 0) {
-            return;
+            return
         }
+
+        if (!this.props.roundIndex) {
+            throw new Error(`You attempted to submit text variation but roundIndex was null. This is likely a problem with the code. Please open an issue.`)
+        }
+
         const userInput: UserInput = { text: text }
         this.props.runExtractorThunkAsync(
             this.props.user.id,
@@ -445,7 +455,6 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                     <OF.Dialog
                         data-testid="entityextractor-dialog-confirm"
                         hidden={this.state.savedExtractResponses.length === 0}
-                        isBlocking={true}
                         dialogContentProps={{
                             type: OF.DialogType.normal,
                             title: 'Do you want to save your Entity Detection changes?'
@@ -489,7 +498,7 @@ export interface ReceivedProps {
     canEdit: boolean
     extractType: DialogType
     sessionId: string
-    roundIndex: number
+    roundIndex: number | null
     autoTeach: boolean
     dialogMode: DialogMode
     extractResponses: ExtractResponse[]

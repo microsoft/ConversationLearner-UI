@@ -45,7 +45,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
         hasTerminalAction: false
     }
 
-    private callbacksId: string = null;
+    private callbacksId: string | null = null;
 
     componentDidMount() {
         this.callbacksId = ErrorHandler.registerCallbacks(
@@ -57,7 +57,9 @@ class TeachModal extends React.Component<Props, ComponentState> {
     };
 
     componentWillUnmount() {
-        ErrorHandler.deleteCallbacks(this.callbacksId);
+        if (this.callbacksId) {
+            ErrorHandler.deleteCallbacks(this.callbacksId)
+        }
     }
  
     @autobind
@@ -65,6 +67,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
         this.props.deleteTeachSessionThunkAsync(this.props.user.id, this.props.teach, this.props.app, this.props.editingPackageId, false, null, null); // False = abandon
         this.props.onClose();
     }
+
     componentWillReceiveProps(newProps: Props) {
 
         let webchatKey = this.state.webchatKey
@@ -83,7 +86,9 @@ class TeachModal extends React.Component<Props, ComponentState> {
         }
         // Set terminal action from History but only if I just loaded it
         if (this.props.history !== newProps.history && newProps.history && newProps.history.length > 0) {
-            hasTerminalAction = newProps.lastAction && newProps.lastAction.isTerminal
+            hasTerminalAction = newProps.lastAction
+                ? newProps.lastAction.isTerminal
+                : false
         }
 
         if (webchatKey !== this.state.webchatKey || 
@@ -105,7 +110,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    onCloseInitState(filledEntityMap: FilledEntityMap) {
+    onCloseInitState(filledEntityMap?: FilledEntityMap) {
         if (filledEntityMap) {
             this.props.initMemoryThunkAsync(this.props.app.appId, this.props.teach.teachId, filledEntityMap)
         }
@@ -123,7 +128,6 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
     @autobind
     onClickSave() {
-
         // If source was a trainDialog, delete the original
         let sourceTrainDialogId = this.props.sourceTrainDialog ? this.props.sourceTrainDialog.trainDialogId : null;
         let sourceLogDialogId = this.props.sourceLogDialog ? this.props.sourceLogDialog.logDialogId : null;
@@ -171,11 +175,11 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
             // Check if button submit info
             if (!activity.text && activity.value && activity.value['submit']) {
-                userInput = { text: activity.value['submit'] };
+                userInput = { text: activity.value['submit'] }
             } 
             // Otherwise use text
             else {
-                userInput = { text: activity.text };
+                userInput = { text: activity.text! }
             }
 
             if (!this.props.teach) {
@@ -381,7 +385,7 @@ export interface ReceivedProps {
     sourceTrainDialog?: TrainDialog,
     sourceLogDialog?: LogDialog,
     history: Activity[],
-    lastAction: ActionBase       
+    lastAction: ActionBase | null
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
