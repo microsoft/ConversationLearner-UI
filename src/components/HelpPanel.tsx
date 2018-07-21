@@ -9,11 +9,12 @@ import { returntypeof } from 'react-redux-typescript';
 import { connect } from 'react-redux';
 import * as ToolTip from './ToolTips';
 import * as OF from 'office-ui-fabric-react';
+import { TipType } from '../components/ToolTips';
 import { setTipType } from '../actions/displayActions'
 
 class HelpPanel extends React.Component<Props, {}> {
     onDismiss(): void {
-        this.props.setTipType(null);
+        this.props.setTipType(TipType.NONE)
     }
 
     render() {
@@ -21,7 +22,7 @@ class HelpPanel extends React.Component<Props, {}> {
             <OF.Panel
                 focusTrapZoneProps={{}}
                 isBlocking={true}
-                isOpen={this.props.tipType != null}
+                isOpen={this.props.tipType !== TipType.NONE}
                 isLightDismiss={true}
                 onDismiss={() => { this.onDismiss() }}
                 type={OF.PanelType.medium}
