@@ -55,8 +55,8 @@ class SessionWindow extends React.Component<Props, ComponentState> {
                                 data-testid="chatsession-modal-webchat"
                                 isOpen={this.props.open && this.props.error == null}
                                 app={this.props.app}
-                                history={null}
-                                onPostActivity={null}
+                                history={[]}
+                                onPostActivity={() => { }}
                                 onSelectActivity={() => { }}
                                 hideInput={false}
                                 focusInput={true}

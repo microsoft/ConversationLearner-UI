@@ -23,11 +23,12 @@ import {
 } from '@conversationlearner/models'
 
 interface ComponentState {
-    senderType: SenderType
-    roundIndex: number
-    scoreIndex: number
-    newTrainDialog: TrainDialog
-    newScoreInput: UIScoreInput   // Set if extraction changed on edit
+    senderType: SenderType | null
+    roundIndex: number | null
+    scoreIndex: number | null
+    newTrainDialog: TrainDialog | null
+    // Set if extraction changed on edit
+    newScoreInput: UIScoreInput | null
 }
 
 class LogDialogAdmin extends React.Component<Props, ComponentState> {
@@ -46,7 +47,6 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
     }
 
     componentWillReceiveProps(newProps: Props) {
-
         if (newProps.selectedActivity && newProps.logDialog) {
             this.setState({
                 senderType: newProps.selectedActivity.channelData.senderType,
@@ -74,13 +74,23 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
     }
 
     onClickSaveCheckYes() {
-        let newTrainDialog: TrainDialog = {
-            trainDialogId: undefined,
-            sourceLogDialogId: this.state.newTrainDialog.sourceLogDialogId,
-            version: undefined,
-            packageCreationId: undefined,
-            packageDeletionId: undefined,
-            rounds: this.purgeMissingEntities(this.state.newTrainDialog.rounds),
+        const stateTrainDialog = this.state.newTrainDialog
+        if (!stateTrainDialog) {
+            throw new Error(`You confirmed conversion of log dialog to train dialog, but there was no log dialog to convert. This should not be possible. Contact Support`)
+        }
+
+        if (!this.state.newScoreInput) {
+            throw new Error(`You confirmed conversion of log dialog to train dialog, but there was no new score input. This should not be possible. Contact Support`)
+        }
+
+        // TODO: Update @models to allow defining TrainDialogInput without undefined properties
+        const newTrainDialog: TrainDialog = {
+            trainDialogId: undefined!,
+            sourceLogDialogId: stateTrainDialog.sourceLogDialogId,
+            version: undefined!,
+            packageCreationId: undefined!,
+            packageDeletionId: undefined!,
+            rounds: this.purgeMissingEntities(stateTrainDialog.rounds),
             definitions: {
                 entities: this.props.entities,
                 actions: this.props.actions,
@@ -88,7 +98,7 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
             }
         }
 
-        this.props.onEdit( this.props.logDialog.logDialogId, newTrainDialog, this.state.newScoreInput);
+        this.props.onEdit(this.props.logDialog.logDialogId, newTrainDialog, this.state.newScoreInput);
         this.setState({ 
             newTrainDialog: null,
             newScoreInput: null
@@ -112,11 +122,11 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
         };
 
         const newTrainDialog: TrainDialog = {
-            trainDialogId: undefined,
+            trainDialogId: undefined!,
             sourceLogDialogId: this.props.logDialog.logDialogId,
-            version: undefined,
-            packageCreationId: undefined,
-            packageDeletionId: undefined,
+            version: undefined!,
+            packageCreationId: undefined!,
+            packageDeletionId: undefined!,
             rounds: [
                 ...roundsBeforeModification,
                 modifiedRound
@@ -138,23 +148,32 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
 
     // User has submitted new entity extractions / text variations for a round
     onActionScorerSubmit(trainScorerStep: TrainScorerStep): void {
-
         // Remove scoredAction, we only need labeledAction
         delete trainScorerStep.scoredAction;
 
-        // Convert
-        const roundsBeforeModification = this.props.logDialog.rounds.slice(0, this.state.roundIndex).map(ModelUtils.ToTrainRound);
+        const roundIndex = this.state.roundIndex
+        if (!roundIndex) {
+            throw new Error(`You selected an action, but roundIndex is not known. This should not be possible. Contact Support`)
+        }
 
-        const logRound = this.props.logDialog.rounds[this.state.roundIndex];
-        const scorerStepsBeforeModification = logRound.scorerSteps.slice(0, this.state.scoreIndex).map(ModelUtils.ToTrainScorerStep);
-        const originalScorerStep = logRound.scorerSteps[this.state.scoreIndex];
+        const scoreIndex = this.state.scoreIndex
+        if (!scoreIndex) {
+            throw new Error(`You selected an action, but scoreIndex is not known. This should not be possible. Contact Support`)
+        }
+
+        // Convert
+        const roundsBeforeModification = this.props.logDialog.rounds.slice(0, roundIndex).map(ModelUtils.ToTrainRound)
+
+        const logRound = this.props.logDialog.rounds[roundIndex]
+        const scorerStepsBeforeModification = logRound.scorerSteps.slice(0, scoreIndex).map(ModelUtils.ToTrainScorerStep)
+        const originalScorerStep = logRound.scorerSteps[scoreIndex]
         const modifiedScorerStep: TrainScorerStep = {
             scoredAction: undefined,
             input: originalScorerStep.input,
             labelAction: trainScorerStep.labelAction
         }
 
-        let modifiedRound: TrainRound = {
+        const modifiedRound: TrainRound = {
             extractorStep: {
                 textVariations: [
                     {
@@ -165,12 +184,12 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
             scorerSteps: [...scorerStepsBeforeModification, modifiedScorerStep]
         }
 
-        let newTrainDialog: TrainDialog = {
-            trainDialogId: undefined,
+        const newTrainDialog: TrainDialog = {
+            trainDialogId: undefined!,
             sourceLogDialogId: this.props.logDialog.logDialogId,
-            version: undefined,
-            packageCreationId: undefined,
-            packageDeletionId: undefined,
+            version: undefined!,
+            packageCreationId: undefined!,
+            packageDeletionId: undefined!,
             definitions: undefined,
             rounds: [...roundsBeforeModification, modifiedRound]
         }
@@ -182,8 +201,13 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
     }
 
     getPrevMemories(): Memory[] {
+        const roundIndex = this.state.roundIndex
+        if (!roundIndex) {
+            throw new Error(`You attempted to get previous memories, but roundIndex is not known. This should not be possible. Contact Support`)
+        }
+
         let memories: Memory[] = [];
-        let prevIndex = this.state.roundIndex - 1;
+        let prevIndex = roundIndex - 1;
         if (prevIndex >= 0) {
             let round = this.props.logDialog.rounds[prevIndex];
             if (round.scorerSteps.length > 0) {
@@ -205,25 +229,38 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
     }
 
     render() {
-        let round: LogRound = null;
-        let action: ActionBase = null;
+        let round: LogRound | null = null;
+        let action: ActionBase | undefined = undefined;
         let memories: Memory[] = [];
         let prevMemories: Memory[] = [];
-        let scorerStep: LogScorerStep = null;
+        let scorerStep: LogScorerStep | null = null;
         let dialogMode = (this.state.senderType === SenderType.User) ? DialogMode.Extractor : DialogMode.Scorer;
 
         const { logDialog, selectedActivity } = this.props
         if (logDialog && selectedActivity) {
-
-            if (this.state.roundIndex >= logDialog.rounds.length) {
-                throw new Error(`Index out of range: You are attempting to access round by index: ${this.state.roundIndex} but there are only: ${logDialog.rounds.length} rounds.`)
+            const roundIndex = this.state.roundIndex
+            if (!roundIndex) {
+                throw new Error(`Activity is selected during rendering, but roundIndex is not known. This should not be possible. Contact Support`)
             }
-            round = logDialog.rounds[this.state.roundIndex]
 
-            if (this.state.scoreIndex < round.scorerSteps.length) {
-                scorerStep = round.scorerSteps[this.state.scoreIndex]
+            const scoreIndex = this.state.scoreIndex
+            if (!scoreIndex) {
+                throw new Error(`Activity is selected during rendering, but scoreIndex is not known. This should not be possible. Contact Support`)
+            }
+
+            if (roundIndex >= logDialog.rounds.length) {
+                throw new Error(`Index out of range: You are attempting to access round by index: ${roundIndex} but there are only: ${logDialog.rounds.length} rounds.`)
+            }
+
+            round = logDialog.rounds[roundIndex]
+
+            if (scoreIndex < round.scorerSteps.length) {
+                scorerStep = round.scorerSteps[scoreIndex]
                 if (scorerStep && scorerStep.predictedAction) {
-                    action = this.props.actions.find(a => a.actionId === scorerStep.predictedAction);
+                    action = this.props.actions.find(a => a.actionId === scorerStep!.predictedAction)
+                    if (!action) {
+                        throw new Error(`Did not find action by id: ${scorerStep.predictedAction} within list of actions. Contact Support`)
+                    }
                     memories = this.filledEntities2Memory(scorerStep.input.filledEntities);
                 }
             }
@@ -264,7 +301,7 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
                     <div className="cl-dialog-admin__content">
                         <div className="cl-dialog-admin-title">Entity Detection</div>
                         <div>
-                            {round &&
+                            {this.state.roundIndex && round &&
                                 <EntityExtractor
                                     app={this.props.app}
                                     editingPackageId={this.props.editingPackageId}
@@ -283,7 +320,7 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
                         </div>
                     </div>
                 }
-                {this.state.senderType === SenderType.Bot && this.props.logDialog &&
+                {this.state.senderType === SenderType.Bot && this.props.logDialog && scorerStep &&
                     <div className="cl-dialog-admin__content">
                         <div className="cl-dialog-admin-title">Action</div>
                         <div>
@@ -348,7 +385,7 @@ export interface ReceivedProps {
     app: AppBase
     editingPackageId: string
     logDialog: LogDialog
-    selectedActivity: Activity,
+    selectedActivity: Activity | null,
     canEdit: boolean,
     onEdit: (logDialogId: string, newTrainDialog: TrainDialog, newScoreInput: UIScoreInput) => void
     onExtractionsChanged: (changed: boolean) => void

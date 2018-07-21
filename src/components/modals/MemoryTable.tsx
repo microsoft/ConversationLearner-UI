@@ -60,8 +60,8 @@ const columns: IRenderableColumn[] = [
                     const changeClass = memoryChangeClassMap[value.changeStatus] || ''
                     let renderedValue;
 
-                    let valuesAsObject = component.valuesAsObject(value.displayText);
-                    if (valuesAsObject) {
+                    let valuesAsObject =  component.valuesAsObject(value.displayText)
+                    if (valuesAsObject && value.displayText) {
                         renderedValue = <span>{value.prefix}<span className={`${changeClass} cl-font--action`}>{value.displayText.slice(0,20)}...</span></span>
                         renderedValue = EntityObject(valuesAsObject, renderedValue)
                     }
@@ -69,7 +69,7 @@ const columns: IRenderableColumn[] = [
                         renderedValue = <span>{value.prefix}<span className={`${changeClass} ${value.isPrebuilt ? 'cl-font--action' : ''}`}>{value.displayText}</span></span>
                         
                         if (value.isPrebuilt) {
-                        renderedValue = Prebuilt(value.memoryValue, renderedValue)
+                            renderedValue = Prebuilt(value.memoryValue, renderedValue)
                         }
                     }
 
@@ -126,7 +126,7 @@ const columns: IRenderableColumn[] = [
 
 interface ComponentState {
     columns: IRenderableColumn[],
-    sortColumn: IRenderableColumn
+    sortColumn: IRenderableColumn | null
 }
 
 class MemoryTable extends React.Component<Props, ComponentState> {
@@ -190,7 +190,11 @@ class MemoryTable extends React.Component<Props, ComponentState> {
     }
 
     // If text parses as an object, return it
-    valuesAsObject(entityValues: string): Object | null {
+    valuesAsObject(entityValues: string | null): Object | null {
+        if (!entityValues) {
+            return null
+        }
+
         try {
             let obj = JSON.parse(entityValues);
             if (typeof obj !== 'number' && typeof obj !== 'boolean') {
@@ -269,19 +273,26 @@ class MemoryTable extends React.Component<Props, ComponentState> {
 
         unionMemoryNames = Array.from(new Set(unionMemoryNames));
 
-        // TODO: Refactor, this strips memorys down to a entity name string to perform union
+        // TODO: Refactor, this strips memories down to a entity name string to perform union
         // then re-merges back with original data.  This could be done in one pass only adding
-        // entity information to memorys, preserving original data, then reducing down to name on render
-
-        if (this.state.sortColumn) {
+        // entity information to memories, preserving original data, then reducing down to name on render
+        const sortColumn = this.state.sortColumn
+        if (sortColumn) {
             // Sort the items.
             unionMemoryNames = unionMemoryNames.concat([]).sort((a, b) => {
                 const aEntity = this.props.entities.find(e => e.entityName == a)
                 const bEntity = this.props.entities.find(e => e.entityName == b)
-                let firstValue = this.state.sortColumn.getSortValue(aEntity, this)
-                let secondValue = this.state.sortColumn.getSortValue(bEntity, this)
+                if (!aEntity) {
+                    throw new Error(`Could not find entity by name: ${a} in list of entities`)
+                }
+                if (!bEntity) {
+                    throw new Error(`Could not find entity by name: ${b} in list of entities`)
+                }
 
-                if (this.state.sortColumn.isSortedDescending) {
+                const firstValue = sortColumn.getSortValue(aEntity, this)
+                const secondValue = sortColumn.getSortValue(bEntity, this)
+
+                if (sortColumn.isSortedDescending) {
                     return firstValue > secondValue ? -1 : 1;
                 } else {
                     return firstValue > secondValue ? 1 : -1;

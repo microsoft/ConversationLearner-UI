@@ -48,10 +48,15 @@ function getColumns(intl: InjectedIntl): ISortableRenderableColumn[] {
             isResizable: true,
             getSortValue: app => (app.metadata.isLoggingOn !== false) ? 'a' : 'b',
             render: (app, component) => {
-                const editPackage = component.props.activeApps[app.appId];
-                const tag = (!editPackage || editPackage === app.devPackageId) ? 
-                    'Master' :
-                    app.packageVersions.find(pv => pv.packageId === editPackage).packageVersion;
+                const editPackage = component.props.activeApps[app.appId]
+                let tag = 'Master'
+                if (editPackage && editPackage !== app.devPackageId) {
+                    const packageReference = (app.packageVersions || []).find(pv => pv.packageId === editPackage)
+                    if (packageReference) {
+                        tag = packageReference.packageVersion
+                    }
+                }
+
                 return <span className={OF.FontClassNames.mediumPlus}>{tag}</span>;
             }
         },
@@ -64,8 +69,12 @@ function getColumns(intl: InjectedIntl): ISortableRenderableColumn[] {
             isResizable: true,
             getSortValue: app => (app.metadata.isLoggingOn !== false) ? 'a' : 'b',
             render: (app) => {
-                const tag = util.packageReferences(app).find(pv => pv.packageId === app.livePackageId).packageVersion;
-                return <span className={OF.FontClassNames.mediumPlus}>{tag}</span>;
+                const packageReference = util.packageReferences(app).find(pv => pv.packageId === app.livePackageId)
+                if (!packageReference) {
+                    throw new Error(`Could not find package reference by id: ${app.livePackageId}`)
+                }
+                const tag = packageReference.packageVersion
+                return <span className={OF.FontClassNames.mediumPlus}>{tag}</span>
             }
         },        
         {
@@ -115,7 +124,7 @@ interface ComponentState {
     appCreatorType: AppCreatorType
     isConfirmDeleteAppModalOpen: boolean
     isImportTutorialsOpen: boolean
-    appToDelete: AppBase
+    appToDelete: AppBase | null
     columns: ISortableRenderableColumn[]
     sortColumn: ISortableRenderableColumn
     tutorials: AppBase[]
@@ -130,7 +139,11 @@ class AppsList extends React.Component<Props, ComponentState> {
         super(props)
 
         const columns = getColumns(this.props.intl)
-        const defaultSortColumn = columns.find(c => c.key === "appName")
+        const defaultSortColumnName = "appName"
+        const defaultSortColumn = columns.find(c => c.key === defaultSortColumnName)
+        if (!defaultSortColumn) {
+            throw new Error(`Could not find column by name: ${defaultSortColumnName}`)
+        }
         defaultSortColumn.isSorted = true
 
         this.state = {
@@ -141,13 +154,14 @@ class AppsList extends React.Component<Props, ComponentState> {
             appToDelete: null,
             columns,
             sortColumn: defaultSortColumn,
-            tutorials: null
+            tutorials: []
         }
     }
 
     @autobind
     onConfirmDeleteApp() {
-        this.props.onClickDeleteApp(this.state.appToDelete)
+        // Assume appToDelete is set by the time this is called
+        this.props.onClickDeleteApp(this.state.appToDelete!)
         this.setState({
             isConfirmDeleteAppModalOpen: false,
             appToDelete: null,
@@ -241,7 +255,7 @@ class AppsList extends React.Component<Props, ComponentState> {
         });
     }
 
-    onSubmitAppCreateModal = (app: AppBase, source: AppDefinition = null) => {
+    onSubmitAppCreateModal = (app: AppBase, source: AppDefinition | null = null) => {
         this.setState({
             isAppCreateModalOpen: false
         }, () => this.props.onCreateApp(app, source))
@@ -375,7 +389,7 @@ const mapStateToProps = (state: State) => {
 
 export interface ReceivedProps {
     apps: AppBase[]
-    onCreateApp: (app: AppBase, source: AppDefinition) => void
+    onCreateApp: (app: AppBase, source: AppDefinition | null) => void
     onClickDeleteApp: (app: AppBase) => void
     onImportTutorial: (tutorial: AppBase) => void
 }

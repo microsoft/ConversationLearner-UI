@@ -116,8 +116,8 @@ type SlateValueMap = { [slot: string]: ActionPayloadEditor.SlateValue }
 interface ComponentState {
     apiOptions: OF.IDropdownOption[]
     cardOptions: OF.IDropdownOption[]
-    selectedApiOptionKey: string | number | null
-    selectedCardOptionKey: string | number | null
+    selectedApiOptionKey: string | number | undefined
+    selectedCardOptionKey: string | number | undefined
     hasPendingChanges: boolean
     initialEditState: ComponentState | null
     isEditing: boolean
@@ -143,8 +143,8 @@ interface ComponentState {
 const initialState: ComponentState = {
     apiOptions: [],
     cardOptions: [],
-    selectedApiOptionKey: null,
-    selectedCardOptionKey: null,
+    selectedApiOptionKey: undefined,
+    selectedCardOptionKey: undefined,
     hasPendingChanges: false,
     initialEditState: null,
     isEditing: false,
@@ -152,7 +152,7 @@ const initialState: ComponentState = {
     isCardViewerModalOpen: false,
     isConfirmDeleteModalOpen: false,
     isConfirmEditModalOpen: false,
-    showValidationWarning: null,
+    showValidationWarning: false,
     isPayloadFocused: false,
     isPayloadValid: false,
     newOrEditedAction: null,
@@ -385,9 +385,10 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         }
         
         const isAnyPayloadChanged = this.areSlateValuesChanged(this.state.slateValuesMap, this.state.initialEditState.slateValuesMap)
-        const expectedEntitiesChanged = this.state.expectedEntityTags.filter(tag => !this.state.initialEditState.expectedEntityTags.some(t => t.key === tag.key)).length > 0
-        const requiredEntitiesChanged = this.state.requiredEntityTags.filter(tag => !this.state.initialEditState.requiredEntityTags.some(t => t.key === tag.key)).length > 0
-        const disqualifyingChanged = this.state.negativeEntityTags.filter(tag => !this.state.initialEditState.negativeEntityTags.some(t => t.key === tag.key)).length > 0
+        // TODO: Why does TypeScript think initialEditState can be null? It's checked above
+        const expectedEntitiesChanged = this.state.expectedEntityTags.filter(tag => !this.state.initialEditState!.expectedEntityTags.some(t => t.key === tag.key)).length > 0
+        const requiredEntitiesChanged = this.state.requiredEntityTags.filter(tag => !this.state.initialEditState!.requiredEntityTags.some(t => t.key === tag.key)).length > 0
+        const disqualifyingChanged = this.state.negativeEntityTags.filter(tag => !this.state.initialEditState!.negativeEntityTags.some(t => t.key === tag.key)).length > 0
         const hasPendingChanges = isAnyPayloadChanged || expectedEntitiesChanged || requiredEntitiesChanged || disqualifyingChanged
 
         if (prevState.hasPendingChanges !== hasPendingChanges) {
@@ -485,8 +486,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             }))
     }
 
-    convertStateToEntity(): ActionBase {
-        let payload: string = null;
+    convertStateToModel(): ActionBase {
+        let payload: string | null = null
 
         /**
          * If action type if TEXT
@@ -517,13 +518,13 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             }
             case ActionTypes.CARD:
                 payload = JSON.stringify({
-                    payload: this.state.selectedCardOptionKey.toString(),
+                    payload: this.state.selectedCardOptionKey!.toString(),
                     arguments: this.getActionArguments(this.state.slateValuesMap)
                 })
                 break;
             case ActionTypes.API_LOCAL:
                 payload = JSON.stringify({
-                    payload: this.state.selectedApiOptionKey.toString(),
+                    payload: this.state.selectedApiOptionKey!.toString(),
                     arguments: this.getActionArguments(this.state.slateValuesMap)
                 })
                 break;
@@ -537,29 +538,29 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 throw new Error(`When attempting to submit action, the selected action type: ${this.state.selectedActionTypeOptionKey} did not have matching type`)
         }
 
-        const newOrEditedAction = new ActionBase({
-            actionId: null,
+        const model = new ActionBase({
+            actionId: null!,
             payload,
             isTerminal: this.state.isTerminal,
             requiredEntitiesFromPayload: this.state.requiredEntityTagsFromPayload.map<string>(tag => tag.key),
             requiredEntities: [...this.state.requiredEntityTagsFromPayload, ...this.state.requiredEntityTags].map<string>(tag => tag.key),
             negativeEntities: this.state.negativeEntityTags.map<string>(tag => tag.key),
             suggestedEntity: (this.state.expectedEntityTags.length > 0) ? this.state.expectedEntityTags[0].key : null,
-            version: null,
-            packageCreationId: null,
-            packageDeletionId: null,
+            version: 0,
+            packageCreationId: 0,
+            packageDeletionId: 0,
             actionType: this.state.selectedActionTypeOptionKey as string
         })
 
-        if (this.state.isEditing) {
-            newOrEditedAction.actionId = this.props.action.actionId
+        if (this.state.isEditing && this.props.action) {
+            model.actionId = this.props.action.actionId
         }
-        return newOrEditedAction
+        return model
     }
 
     @autobind
-    onClickSaveCreate() {
-        let newOrEditedAction = this.convertStateToEntity();
+    async onClickSaveCreate() {
+        let newOrEditedAction = this.convertStateToModel();
 
         // If a new action just create it
         if (!this.state.isEditing) {
@@ -568,23 +569,24 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         }
 
         // Otherwise need to validate changes
-        ((this.props.fetchActionEditValidationThunkAsync(this.props.app.appId, this.props.editingPackageId, newOrEditedAction) as any) as Promise<string[]>)
-            .then(invalidTrainingDialogIds => {
-                if (invalidTrainingDialogIds) {
-                    if (invalidTrainingDialogIds.length > 0) {
-                        this.setState({
-                            isConfirmEditModalOpen: true,
-                            showValidationWarning: true,
-                            newOrEditedAction: newOrEditedAction
-                        });
-                    } else {
-                        this.props.handleEdit(newOrEditedAction);
-                    }
+        try {
+            const invalidTrainingDialogIds = await ((this.props.fetchActionEditValidationThunkAsync(this.props.app.appId, this.props.editingPackageId, newOrEditedAction) as any) as Promise<string[]>)
+            if (invalidTrainingDialogIds) {
+                if (invalidTrainingDialogIds.length > 0) {
+                    this.setState({
+                        isConfirmEditModalOpen: true,
+                        showValidationWarning: true,
+                        newOrEditedAction: newOrEditedAction
+                    });
+                } else {
+                    this.props.handleEdit(newOrEditedAction);
                 }
-            })
-            .catch(error => {
-                console.warn(`Error when attempting to validate edit: `, error)
-            })
+            }
+        }
+        catch (e) {
+            const error = e as Error
+            console.warn(`Error when attempting to validate edit: `, error)
+        }
     }
 
     @autobind
@@ -594,6 +596,9 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
     @autobind
     onClickDelete() {
+        if (!this.props.action) {
+            return
+        }
 
         ((this.props.fetchActionDeleteValidationThunkAsync(this.props.app.appId, this.props.editingPackageId, this.props.action.actionId) as any) as Promise<string[]>)
             .then(invalidTrainingDialogIds => {
@@ -629,7 +634,12 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
     @autobind
     onConfirmEdit() {
-        this.props.handleEdit(this.state.newOrEditedAction);
+        if (!this.state.newOrEditedAction) {
+            console.warn(`You clicked to confirm edit, but there is no action to save`)
+            return
+        }
+
+        this.props.handleEdit(this.state.newOrEditedAction)
         this.setState({
             isConfirmEditModalOpen: false,
             newOrEditedAction: null
@@ -638,11 +648,15 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
     @autobind
     onConfirmDelete() {
-        this.setState(
-            { isConfirmDeleteModalOpen: false },
-            () => {
-                this.props.handleDelete(this.props.action)
-            })
+        if (!this.props.action) {
+            console.warn(`You clicked to confirm deletion, but there is no action to delete`)
+            return
+        }
+
+        this.props.handleDelete(this.props.action)
+        this.setState({
+            isConfirmDeleteModalOpen: false
+        })
     }
 
     @autobind
@@ -679,11 +693,11 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         })
     }
 
-    onResolveExpectedEntityTags = (filterText: string, selectedTags: OF.ITag[]): OF.ITag[] => {
+    onResolveExpectedEntityTags = (filterText: string, selectedTags: OF.ITag[] | undefined): OF.ITag[] => {
         // TODO: Look at using different control such as a dropdown which implies using single value.
         // It is not possible to have more than 1 suggested entity
         // If there is already an entity selected return empty list to prevent adding more
-        if (selectedTags.length > 0) {
+        if (!selectedTags || selectedTags.length > 0) {
             return []
         }
 
@@ -769,7 +783,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         }
     }
 
-    onChangePayloadEditor = (value: ActionPayloadEditor.SlateValue, slot: string = null) => {
+    onChangePayloadEditor = (value: ActionPayloadEditor.SlateValue, slot: string) => {
         const slateValuesMap = { ...this.state.slateValuesMap }
         slateValuesMap[slot] = value;
 
@@ -835,7 +849,6 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         const { intl } = this.props
 
         const disabled = this.state.isEditing && this.isUsedByTrainingDialogs()
-
         return (
             <Modal
                 isOpen={this.props.open}
@@ -913,7 +926,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                         {this.state.selectedActionTypeOptionKey === ActionTypes.CARD
                             && this.state.selectedCardOptionKey
                             && (this.props.botInfo.templates.find(t => t.name === this.state.selectedCardOptionKey) ?
-                                (this.props.botInfo.templates.find(t => t.name === this.state.selectedCardOptionKey).variables
+                                (this.props.botInfo.templates.find(t => t.name === this.state.selectedCardOptionKey)!.variables
                                     .map(cardTemplateVariable => {
                                         return (
                                             <React.Fragment key={cardTemplateVariable.key}>
@@ -939,7 +952,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                         {this.state.selectedActionTypeOptionKey === ActionTypes.API_LOCAL
                             && this.state.selectedApiOptionKey
                             && (this.props.botInfo.callbacks.find(t => t.name === this.state.selectedApiOptionKey) ?
-                                (this.props.botInfo.callbacks.find(t => t.name === this.state.selectedApiOptionKey).arguments
+                                (this.props.botInfo.callbacks.find(t => t.name === this.state.selectedApiOptionKey)!.arguments
                                     .map(apiArgument => {
                                         return (
                                             <React.Fragment key={apiArgument}>
@@ -1016,7 +1029,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                     onResolveSuggestions={(text, tags) => this.onResolveExpectedEntityTags(text, tags)}
                                     onRenderItem={this.onRenderExpectedTag}
                                     getTextFromItem={item => item.name}
-                                    onChange={tags => this.onChangeExpectedEntityTags(tags)}
+                                    onChange={this.onChangeExpectedEntityTags}
                                     pickerSuggestionsProps={
                                         {
                                             suggestionsHeaderText: 'Entities',
@@ -1034,10 +1047,10 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                 nonRemovableTags={this.state.requiredEntityTagsFromPayload}
                                 nonRemoveableStrikethrough={false}
                                 label="Required Entities"
-                                onResolveSuggestions={(text, tags) => this.onResolveRequiredEntityTags(text, tags)}
+                                onResolveSuggestions={this.onResolveRequiredEntityTags}
                                 onRenderItem={this.onRenderRequiredEntityTag}
                                 getTextFromItem={item => item.name}
-                                onChange={tags => this.onChangeRequiredEntityTags(tags)}
+                                onChange={this.onChangeRequiredEntityTags}
                                 pickerSuggestionsProps={
                                     {
                                         suggestionsHeaderText: 'Entities',
@@ -1052,10 +1065,10 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                         <div className="cl-action-creator--disqualifying-entities">
                             <TC.TagPicker
                                 label="Disqualifying Entities"
-                                onResolveSuggestions={(text, tags) => this.onResolveNegativeEntityTags(text, tags)}
+                                onResolveSuggestions={this.onResolveNegativeEntityTags}
                                 onRenderItem={this.onRenderNegativeEntityTag}
                                 getTextFromItem={item => item.name}
-                                onChange={tags => this.onChangeNegativeEntityTags(tags)}
+                                onChange={this.onChangeNegativeEntityTags}
                                 pickerSuggestionsProps={
                                     {
                                         suggestionsHeaderText: 'Entities',
@@ -1201,10 +1214,14 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     entityTypeFilter={null}
                 />
                 <AdaptiveCardViewer
-                    open={this.state.isCardViewerModalOpen && this.state.selectedCardOptionKey != null}
+                    open={this.state.isCardViewerModalOpen && this.state.selectedCardOptionKey !== null}
                     onDismiss={() => this.onCloseCardViewer()}
-                    template={this.state.selectedCardOptionKey && this.props.botInfo.templates.find(t => t.name === this.state.selectedCardOptionKey)}
-                    actionArguments={this.state.isCardViewerModalOpen && this.getRenderedActionArguments(this.state.slateValuesMap, this.props.entities)}
+                    template={this.state.selectedCardOptionKey !== null
+                        ? this.props.botInfo.templates.find(t => t.name === this.state.selectedCardOptionKey)
+                        : undefined}
+                    actionArguments={this.state.isCardViewerModalOpen
+                        ? this.getRenderedActionArguments(this.state.slateValuesMap, this.props.entities)
+                        : []}
                     hideUndefined={false}
                 />
             </Modal>
@@ -1219,6 +1236,10 @@ const mapDispatchToProps = (dispatch: any) => {
     }, dispatch);
 }
 const mapStateToProps = (state: State, ownProps: any) => {
+    if (!state.bot.botInfo) {
+        throw new Error(`You attempted to render the ActionCreatorEditor which requires botInfo, but botInfo was not defined. This is likely a problem with higher level component. Please open an issue.`)
+    }
+    
     return {
         entities: state.entities,
         trainDialogs: state.trainDialogs,
