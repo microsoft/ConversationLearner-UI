@@ -56,7 +56,7 @@ class AppsIndex extends React.Component<Props, ComponentState> {
         this.props.deleteApplicationAsync(appToDelete)
     }
 
-    onCreateApp = async (appToCreate: AppBase, source: AppDefinition = null) => {
+    onCreateApp = async (appToCreate: AppBase, source: AppDefinition | null = null) => {
         const app: AppBase = await this.props.createApplicationThunkAsync(this.props.user.id, appToCreate, source) as any
         const { match, history } = this.props
         history.push(`${match.url}/${app.appId}`, { app })
