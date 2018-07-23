@@ -231,8 +231,6 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
     @autobind
     async onClickSaveCreate() {
         const newOrEditedEntity = this.convertStateToEntity(this.state)
-        console.log(`newOrEditedEntity: `, newOrEditedEntity)
-
         const appId = this.props.app.appId
         
         // If not editing (creating a new entity) simply create it and close
