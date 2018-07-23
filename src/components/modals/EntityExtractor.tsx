@@ -165,10 +165,6 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
 
     @autobind
     onClickSubmitExtractions() {
-        if (!this.props.roundIndex) {
-            throw new Error(`You submitted extractions but there was not a valid roundIndex provided. This is likely a problem with the code. Please open an issue.`)
-        }
-
         this.setState({
             extractionChanged: false,
         });
@@ -178,7 +174,8 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         
         this.submitExtractions(this.allResponses(), this.props.roundIndex);
     }
-    submitExtractions(allResponses: ExtractResponse[], roundIndex: number) {
+
+    submitExtractions(allResponses: ExtractResponse[], roundIndex: number | null) {
         const primaryExtractResponse = allResponses[0]
         
         if (!this.allValid(primaryExtractResponse, allResponses)) {
@@ -503,7 +500,7 @@ export interface ReceivedProps {
     dialogMode: DialogMode
     extractResponses: ExtractResponse[]
     originalTextVariations: TextVariation[]
-    onTextVariationsExtracted: (extractResponse: ExtractResponse, textVariations: TextVariation[], roundIndex: number) => void
+    onTextVariationsExtracted: (extractResponse: ExtractResponse, textVariations: TextVariation[], roundIndex: number | null) => void
     onExtractionsChanged?: (hasChanged: boolean) => void
 }
 

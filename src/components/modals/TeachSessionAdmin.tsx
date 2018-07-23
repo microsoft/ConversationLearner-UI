@@ -37,7 +37,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
         this.onActionScorerSubmit = this.onActionScorerSubmit.bind(this);
     }
 
-    async onEntityExtractorSubmit(extractResponse: ExtractResponse, textVariations: TextVariation[], roundIndex: number): Promise<void> {
+    async onEntityExtractorSubmit(extractResponse: ExtractResponse, textVariations: TextVariation[]): Promise<void> {
         if (!this.props.teachSession.current) {
             throw new Error(`teachSession.current must be defined but it is not. This is likely a problem with higher components. Please open an issue.`)
         }
