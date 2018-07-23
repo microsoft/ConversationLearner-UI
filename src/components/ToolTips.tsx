@@ -433,8 +433,8 @@ function render(title: FM, body: FM[], example: string | null = null, tableItems
             {tableItems.length > 0 ?
                 (
                     <dl className="cl-tooltip-example">
-                        {tableItems.map(tableItem =>
-                            <React.Fragment><dt>{tableItem.key}</dt><dd>{tableItem.value && <FormattedMessage id={tableItem.value} />}</dd></React.Fragment>)}
+                        {tableItems.map((tableItem, i) =>
+                            <React.Fragment key={i}><dt>{tableItem.key}</dt><dd>{tableItem.value && <FormattedMessage id={tableItem.value} />}</dd></React.Fragment>)}
                     </dl>
                 ) : null
             }
