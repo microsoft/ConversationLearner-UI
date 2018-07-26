@@ -43,16 +43,13 @@ export function entityDisplayName(entity: models.EntityBase) {
 }
 
 export function packageReferences(app: models.AppBase): models.PackageReference[] {
-    const packageReferences = [...app.packageVersions || []]
-
-    if (app.devPackageId) {
-        packageReferences.push({
+    return [
+        ...app.packageVersions,
+        {
             packageId: app.devPackageId,
             packageVersion: 'Master'
-        })
-    }
-
-    return packageReferences
+        }
+    ]
 }
 
 export function createEntityMapFromMemories(entities: models.EntityBase[], memories: models.Memory[]): Map<string, string> {
