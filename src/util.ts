@@ -43,7 +43,7 @@ export function entityDisplayName(entity: models.EntityBase) {
 }
 
 export function packageReferences(app: models.AppBase): models.PackageReference[] {
-    const packageReferences = app.packageVersions || []
+    const packageReferences = [...app.packageVersions || []]
 
     if (app.devPackageId) {
         packageReferences.push({
