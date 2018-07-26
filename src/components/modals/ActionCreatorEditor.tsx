@@ -194,15 +194,13 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     name: e.entityName
                 }))
 
-        const callbacks = (botInfo && botInfo.callbacks || [])
-        const apiOptions = callbacks.map<OF.IDropdownOption>(v =>
+        const apiOptions = botInfo.callbacks.map<OF.IDropdownOption>(v =>
             ({
                 key: v.name,
                 text: v.name
             }))
 
-        const templates = (botInfo && botInfo.templates || [])
-        const cardOptions = templates.map<OF.IDropdownOption>(v =>
+        const cardOptions = botInfo.templates.map<OF.IDropdownOption>(v =>
             ({
                 key: v.name,
                 text: v.name
@@ -253,8 +251,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
                 if (nextProps.botInfo.callbacks !== this.props.botInfo.callbacks) {
                     const { botInfo } = nextProps
-                    const callbacks = (botInfo && botInfo.callbacks || [])
-                    const apiOptions = callbacks.map<OF.IDropdownOption>(v =>
+                    const apiOptions = botInfo.callbacks.map<OF.IDropdownOption>(v =>
                         ({
                             key: v.name,
                             text: v.name
@@ -268,8 +265,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
                 if (nextProps.botInfo.templates !== this.props.botInfo.templates) {
                     const { botInfo } = nextProps
-                    const templates = (botInfo && botInfo.templates || [])
-                    const cardOptions = templates.map<OF.IDropdownOption>(v =>
+                    const cardOptions = botInfo.templates.map<OF.IDropdownOption>(v =>
                         ({
                             key: v.name,
                             text: v.name

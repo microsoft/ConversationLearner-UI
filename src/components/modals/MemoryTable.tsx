@@ -165,7 +165,7 @@ class MemoryTable extends React.Component<Props, ComponentState> {
     }
 
     previousMemory(entityName: string) {
-        let prevMemories = this.props.prevMemories || [];
+        let prevMemories = this.props.prevMemories
         return prevMemories.find(m => m.entityName === entityName);
     }
 

@@ -104,7 +104,7 @@ class PackageTable extends React.Component<Props, ComponentState> {
                     open={this.state.isPackageCreatorOpen}
                     onSubmit={this.onSubmitPackageCreator}
                     onCancel={this.onCancelPackageCreator}
-                    packageReferences={this.props.app.packageVersions || []}
+                    packageReferences={this.props.app.packageVersions}
                 />
                 <OF.DetailsList
                     className={OF.FontClassNames.mediumPlus}

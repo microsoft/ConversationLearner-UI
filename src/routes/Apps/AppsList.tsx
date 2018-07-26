@@ -51,7 +51,7 @@ function getColumns(intl: InjectedIntl): ISortableRenderableColumn[] {
                 const editPackage = component.props.activeApps[app.appId]
                 let tag = 'Master'
                 if (editPackage && editPackage !== app.devPackageId) {
-                    const packageReference = (app.packageVersions || []).find(pv => pv.packageId === editPackage)
+                    const packageReference = app.packageVersions.find(pv => pv.packageId === editPackage)
                     if (packageReference) {
                         tag = packageReference.packageVersion
                     }

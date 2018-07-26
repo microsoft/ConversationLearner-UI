@@ -52,7 +52,7 @@ function getTagName(logDialog: LogDialog, component: LogDialogs): string {
         tagName = 'Master';
     }
     else {
-        let packageVersion = (component.props.app.packageVersions || []).find(pv => pv.packageId === logDialog.packageId);
+        let packageVersion = component.props.app.packageVersions.find(pv => pv.packageId === logDialog.packageId);
         if (packageVersion) {
             tagName = packageVersion.packageVersion;
         }

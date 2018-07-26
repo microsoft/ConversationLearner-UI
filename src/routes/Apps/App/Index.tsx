@@ -155,7 +155,7 @@ class Index extends React.Component<Props, ComponentState> {
         // TODO: Why is this hard coded to Master? If there is no packageVersions we default back to Master but this seems incorrect
         let tag = 'Master'
         if (editPackageId !== app.devPackageId) {
-            const packageReference = (app.packageVersions || []).find(pv => pv.packageId === editPackageId)
+            const packageReference = app.packageVersions.find(pv => pv.packageId === editPackageId)
             if (!packageReference) {
                 throw new Error(`editPackageId did not equal devPackageId, but could not find a packageVersion using the editPackageId: ${editPackageId}. This should not be possible. Please open an issue.`)
             }

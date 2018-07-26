@@ -43,11 +43,11 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
             }
             case ActionTypes.API_LOCAL: {
                 const apiAction = new ApiAction(action)
-                return (!this.props.botInfo.callbacks || !this.props.botInfo.callbacks.find(t => t.name === apiAction.name))
+                return this.props.botInfo.callbacks.some(t => t.name === apiAction.name)
             }
             case ActionTypes.CARD: {
                 const cardAction = new CardAction(action)
-                return (!this.props.botInfo.templates || !this.props.botInfo.templates.find(cb => cb.name === cardAction.templateName))
+                return this.props.botInfo.templates.some(cb => cb.name === cardAction.templateName)
             }
             case ActionTypes.END_SESSION: {
                 return false
