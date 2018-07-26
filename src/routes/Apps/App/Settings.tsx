@@ -128,8 +128,8 @@ class Settings extends React.Component<Props, ComponentState> {
         if (this.state.edited === false && (this.state.localeVal !== app.locale ||
             this.state.appIdVal !== app.appId ||
             this.state.appNameVal !== app.appName ||
-            this.state.markdownVal !== app.metadata.markdown ||
-            this.state.videoVal !== app.metadata.video ||
+            (app.metadata.markdown && this.state.markdownVal !== app.metadata.markdown) ||
+            (app.metadata.video && this.state.videoVal !== app.metadata.video) ||
             this.state.botFrameworkAppsVal !== app.metadata.botFrameworkApps ||
             this.state.isLoggingOnVal !== (app.metadata.isLoggingOn !== false))) {  // For backward compatibility to cover undefined
             this.updateAppState(this.props.app)
