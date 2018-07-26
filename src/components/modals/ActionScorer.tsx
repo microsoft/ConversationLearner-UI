@@ -322,19 +322,18 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         if (this.props.autoTeach && this.props.dialogMode === DialogMode.Scorer) {
             // We assume if DialogMode is Scorer, then we must have ScoreResponse
             // TODO: Fix this with better types
-            const scoreResponse = this.props.scoreResponse!
-            let actions = (scoreResponse.scoredActions as ScoredBase[])
-                .concat(scoreResponse.unscoredActions) || []
+            const scoreResponse = this.props.scoreResponse
+            const actions = [...scoreResponse.scoredActions as ScoredBase[], ...scoreResponse.unscoredActions]
             // Since actions are sorted by score descending (max first), assume first scored action is the "best" action
-            let bestAction = actions[0];
+            const bestAction = actions[0];
 
-            // Make sure there is an available aciont
+            // Make sure there is an available action
             if ((bestAction as UnscoredAction).reason === ScoreReason.NotAvailable) {
                 // If none available auto teach isn't possible.  User must create a new action
                 this.props.toggleAutoTeach(false);
                 return;
             }
-            let selectedActionId = bestAction.actionId;
+            const selectedActionId = bestAction.actionId;
             this.handleActionSelection(selectedActionId);
 
         } else if (this.state.newAction) {
@@ -633,8 +632,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             return []
         }
 
-        let scoredItems = (this.props.scoreResponse.scoredActions as ScoredBase[])
-            .concat(this.props.scoreResponse.unscoredActions) || [];
+        let scoredItems = [...this.props.scoreResponse.scoredActions as ScoredBase[], ...this.props.scoreResponse.unscoredActions]
 
         // Need to reassemble to scored item has full action info and reason
         scoredItems = scoredItems.map(e => {
