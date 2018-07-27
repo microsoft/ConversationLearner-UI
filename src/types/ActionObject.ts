@@ -462,9 +462,6 @@ export type TeachAction = {
     // TODO: Why allow null here? Just make different Action
     uiScoreInput: UIScoreInput | null
 } | {
-    type: AT.TEACH_MESSAGE_RECEIVED,
-    message: string
-} | {
     type: AT.TOGGLE_AUTO_TEACH,
     autoTeach: boolean
 }

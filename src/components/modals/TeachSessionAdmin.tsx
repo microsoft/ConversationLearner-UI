@@ -7,8 +7,7 @@ import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../../types'
-import { fetchApplicationTrainingStatusThunkAsync } from '../../actions/fetchActions'
-import { getScoresThunkAsync, runScorerThunkAsync, postScorerFeedbackThunkAsync } from '../../actions/teachActions'
+import actions from '../../actions'
 import {
     AppBase, TextVariation, ExtractResponse,
     DialogType, TrainScorerStep, TrainingStatusCode,
@@ -273,10 +272,10 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        fetchApplicationTrainingStatusThunkAsync: fetchApplicationTrainingStatusThunkAsync,
-        getScoresThunkAsync,
-        runScorerThunkAsync,
-        postScorerFeedbackThunkAsync
+        fetchApplicationTrainingStatusThunkAsync: actions.app.fetchApplicationTrainingStatusThunkAsync,
+        getScoresThunkAsync: actions.teach.getScoresThunkAsync,
+        runScorerThunkAsync: actions.teach.runScorerThunkAsync,
+        postScorerFeedbackThunkAsync: actions.teach.postScorerFeedbackThunkAsync
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {

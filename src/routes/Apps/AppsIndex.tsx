@@ -94,11 +94,11 @@ class AppsIndex extends React.Component<Props, ComponentState> {
 
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        fetchApplicationsThunkAsync: actions.fetch.fetchApplicationsThunkAsync,
-        fetchBotInfoThunkAsync: actions.fetch.fetchBotInfoThunkAsync,
-        createApplicationThunkAsync: actions.create.createApplicationThunkAsync,
-        deleteApplicationThunkAsync: actions.delete.deleteApplicationThunkAsync,
-        copyApplicationThunkAsync: actions.create.copyApplicationThunkAsync
+        fetchApplicationsThunkAsync: actions.app.fetchApplicationsThunkAsync,
+        fetchBotInfoThunkAsync: actions.bot.fetchBotInfoThunkAsync,
+        createApplicationThunkAsync: actions.app.createApplicationThunkAsync,
+        deleteApplicationThunkAsync: actions.app.deleteApplicationThunkAsync,
+        copyApplicationThunkAsync: actions.app.copyApplicationThunkAsync
     }, dispatch)
 }
 

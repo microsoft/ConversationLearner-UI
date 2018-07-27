@@ -12,7 +12,7 @@ import {
     ActionBase, ScoredAction, UnscoredAction, ScoreReason, DialogType, ActionTypes,
     Template, DialogMode, RenderedActionArgument, SessionAction, CardAction, TextAction, ApiAction
 } from '@conversationlearner/models'
-import { createActionThunkAsync } from '../../actions/createActions'
+import { createActionThunkAsync } from '../../actions/actionActions'
 import { toggleAutoTeach } from '../../actions/teachActions'
 import { PrimaryButton } from 'office-ui-fabric-react';
 import * as OF from 'office-ui-fabric-react';

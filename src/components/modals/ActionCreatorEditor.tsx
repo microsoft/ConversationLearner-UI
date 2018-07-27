@@ -8,10 +8,7 @@ import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import Plain from 'slate-plain-serializer'
-import { 
-    fetchBotInfoThunkAsync,
-    fetchActionDeleteValidationThunkAsync,
-    fetchActionEditValidationThunkAsync } from '../../actions/fetchActions'
+import actions from '../../actions'
 import { Modal } from 'office-ui-fabric-react/lib/Modal'
 import { ActionBase, ActionTypes, AppBase, EntityBase, EntityType, RenderedActionArgument, SessionAction, TextAction, ApiAction, CardAction, IActionArgument } from '@conversationlearner/models'
 import ConfirmCancelModal from './ConfirmCancelModal'
@@ -1226,9 +1223,9 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        fetchBotInfoThunkAsync,
-        fetchActionDeleteValidationThunkAsync,
-        fetchActionEditValidationThunkAsync
+        fetchBotInfoThunkAsync: actions.bot.fetchBotInfoThunkAsync,
+        fetchActionDeleteValidationThunkAsync: actions.action.fetchActionDeleteValidationThunkAsync,
+        fetchActionEditValidationThunkAsync: actions.action.fetchActionEditValidationThunkAsync
     }, dispatch);
 }
 const mapStateToProps = (state: State, ownProps: any) => {

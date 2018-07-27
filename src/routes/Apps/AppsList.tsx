@@ -8,7 +8,7 @@ import { RouteComponentProps } from 'react-router'
 import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { fetchTutorialsThunkAsync } from '../../actions/fetchActions'
+import { fetchTutorialsThunkAsync } from '../../actions/appActions'
 import { AppCreator, ConfirmCancelModal } from '../../components/modals'
 import * as OF from 'office-ui-fabric-react';
 import { AppBase, AppDefinition } from '@conversationlearner/models'

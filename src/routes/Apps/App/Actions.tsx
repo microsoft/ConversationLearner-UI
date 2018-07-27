@@ -6,10 +6,7 @@ import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { createActionThunkAsync } from '../../../actions/createActions'
-import { editActionThunkAsync } from '../../../actions/updateActions'
-import { deleteActionThunkAsync } from '../../../actions/deleteActions'
-import { fetchApplicationTrainingStatusThunkAsync } from '../../../actions/fetchActions'
+import actions from '../../../actions'
 import ActionDetailsList from '../../../components/ActionDetailsList'
 import * as OF from 'office-ui-fabric-react';
 import { AppBase, ActionBase } from '@conversationlearner/models'
@@ -213,10 +210,10 @@ class Actions extends React.Component<Props, ComponentState> {
 
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        createActionThunkAsync,
-        editActionThunkAsync,
-        deleteActionThunkAsync,
-        fetchApplicationTrainingStatusThunkAsync
+        createActionThunkAsync: actions.action.createActionThunkAsync,
+        editActionThunkAsync: actions.action.editActionThunkAsync,
+        deleteActionThunkAsync: actions.action.deleteActionThunkAsync,
+        fetchApplicationTrainingStatusThunkAsync: actions.app.fetchApplicationTrainingStatusThunkAsync
     }, dispatch)
 }
 const mapStateToProps = (state: State) => {

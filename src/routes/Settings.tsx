@@ -74,8 +74,8 @@ class Settings extends React.Component<Props, ComponentState> {
 
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        settingsReset: actions.update.settingsReset,
-        settingsUpdate: actions.update.settingsUpdate
+        settingsReset: actions.settings.settingsReset,
+        settingsUpdate: actions.settings.settingsUpdate
     }, dispatch)
 }
 

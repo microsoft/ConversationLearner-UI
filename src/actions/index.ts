@@ -2,21 +2,27 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import * as create from './createActions'
+import * as action from './actionActions'
+import * as app from './appActions'
+import * as bot from './botActions'
 // delete is a reserved word, so we must use alternative
-import * as deleteActions from './deleteActions'
+import * as chat from './chatActions'
+import * as entity from './entityActions'
 import * as display from './displayActions'
-import * as fetch from './fetchActions'
+import * as log from './logActions'
+import * as settings from './settingsActions'
 import * as teach from './teachActions'
-import * as update from './updateActions'
+import * as train from './trainActions'
 
-const actions = {
-    create,
-    delete: deleteActions,
+export default {
+    action,
+    app,
+    bot,
+    chat,
+    entity,
     display,
-    fetch,
+    log,
+    settings,
     teach,
-    update
+    train,
 }
-
-export default actions

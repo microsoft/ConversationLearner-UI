@@ -8,7 +8,7 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { State } from '../types'
 import { AppBase, TrainingStatusCode } from '@conversationlearner/models'
-import { fetchApplicationTrainingStatusThunkAsync } from '../actions/fetchActions'
+import { fetchApplicationTrainingStatusThunkAsync } from '../actions/appActions'
 import { InternalTrainingStatus, default as TrainingStatus } from './TrainingStatus'
 import { App } from '../types/models';
 
