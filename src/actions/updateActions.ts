@@ -8,7 +8,7 @@ import { AppBase, EntityBase, ActionBase, TrainDialog, AppDefinition } from '@co
 import * as ClientFactory from '../services/clientFactory'
 import { setErrorDisplay } from './displayActions'
 import { Dispatch } from 'redux'
-import { fetchAllTrainDialogsAsync, fetchApplicationTrainingStatusThunkAsync } from './fetchActions'
+import { fetchAllTrainDialogsThunkAsync, fetchApplicationTrainingStatusThunkAsync } from './fetchActions'
 import { deleteEntityFulfilled } from './deleteActions'
 import { AxiosError } from 'axios';
 import { createEntityFulfilled } from './createActions';
@@ -112,7 +112,7 @@ export const editActionThunkAsync = (appId: string, action: ActionBase) => {
 
             // Fetch train dialogs if any train dialogs were impacted
             if (deleteEditResponse.trainDialogIds && deleteEditResponse.trainDialogIds.length > 0) {
-                dispatch(fetchAllTrainDialogsAsync(appId));
+                dispatch(fetchAllTrainDialogsThunkAsync(appId))
             }
             
             dispatch(fetchApplicationTrainingStatusThunkAsync(appId))

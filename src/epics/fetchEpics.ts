@@ -6,17 +6,9 @@ import * as Rx from 'rxjs';
 import { ActionsObservable, Epic } from 'redux-observable'
 import { State, ActionObject } from '../types'
 import { AT } from '../types/ActionTypes'
-import { getAllSessionsForApp, getAllTeachSessionsForApp, getAllTrainDialogsForApp, getAllLogDialogsForApp } from "./apiHelpers";
+import { getAllSessionsForApp, getAllTeachSessionsForApp, getAllLogDialogsForApp } from "./apiHelpers";
  
 const assertNever = () => { throw Error(`Should not reach here`) }
-
-export const fetchTrainDialogsEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
-    return action$.ofType(AT.FETCH_TRAIN_DIALOGS_ASYNC)
-        .flatMap(action =>
-            (action.type === AT.FETCH_TRAIN_DIALOGS_ASYNC)
-                ? getAllTrainDialogsForApp(action.clAppID)
-                : assertNever())
-}
 
 export const fetchLogDialogsEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
     return action$.ofType(AT.FETCH_LOG_DIALOGS_ASYNC)

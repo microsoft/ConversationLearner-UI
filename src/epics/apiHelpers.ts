@@ -26,16 +26,6 @@ export interface AppForUpdate extends AppBase {
 //=========================================================
 // GET ROUTES
 //=========================================================
-export const getAllTrainDialogsForApp = (appId: string): Rx.Observable<ActionObject> => {
-  const clClient = ClientFactory.getInstance(AT.FETCH_TRAIN_DIALOGS_ASYNC);
-  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => clClient.trainDialogs(appId)
-    .then(trainDialogs => {
-      obs.next(actions.fetch.fetchAllTrainDialogsFulfilled(trainDialogs));
-      obs.complete();
-    })
-    .catch(err => handleError(obs, err, AT.FETCH_TRAIN_DIALOGS_ASYNC)));
-};
-
 export const getAllLogDialogsForApp = (appId: string, packageId: string): Rx.Observable<ActionObject> => {
   const clClient = ClientFactory.getInstance(AT.FETCH_LOG_DIALOGS_ASYNC)
   return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => clClient.logDialogs(appId, packageId)

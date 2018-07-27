@@ -29,14 +29,31 @@ import { AxiosError } from 'axios';
 // ----------------------------------------
 // Train Dialogs
 // ----------------------------------------
-export const fetchAllTrainDialogsAsync = (clAppID: string): ActionObject => {
-    return {
-        type: AT.FETCH_TRAIN_DIALOGS_ASYNC,
-        clAppID: clAppID
+export const fetchAllTrainDialogsThunkAsync = (appId: string) => {
+    return async (dispatch: Dispatch<any>) => {
+        const clClient = ClientFactory.getInstance(AT.FETCH_TRAIN_DIALOGS_ASYNC)
+        dispatch(fetchAllTrainDialogsAsync(appId))
+
+        try {
+            const trainDialogs = await clClient.trainDialogs(appId)
+            dispatch(fetchAllTrainDialogsFulfilled(trainDialogs))
+            return trainDialogs
+        } catch (e) {
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.FETCH_TRAIN_DIALOGS_ASYNC))
+            return null;
+        }
     }
 }
 
-export const fetchAllTrainDialogsFulfilled = (trainDialogs: TrainDialog[]): ActionObject => {
+const fetchAllTrainDialogsAsync = (appId: string): ActionObject => {
+    return {
+        type: AT.FETCH_TRAIN_DIALOGS_ASYNC,
+        clAppID: appId
+    }
+}
+
+const fetchAllTrainDialogsFulfilled = (trainDialogs: TrainDialog[]): ActionObject => {
     return {
         type: AT.FETCH_TRAIN_DIALOGS_FULFILLED,
         allTrainDialogs: trainDialogs
