@@ -60,13 +60,13 @@ interface StatusUI {
 export interface Props {
     didPollingExpire: boolean
     status: InternalTrainingStatus
-    failureMessage: string
+    failureMessage: string | null
     lastUpdatedDatetime: Date | null
     onClickRefresh: () => void
 }
 
 const Component: React.SFC<Props> = (props: Props) => {
-    const uiState = internalStatusToUiStateMap.get(props.status)
+    const uiState = internalStatusToUiStateMap.get(props.status)!
     return (
         <div className={`cl-training-status ${FontClassNames.mediumPlus}`}>
             <div className={`cl-training-status__icon-row ${uiState.className} ${props.didPollingExpire ? 'cl-training-status__icon-row--expired': ''}`}>
@@ -82,7 +82,7 @@ const Component: React.SFC<Props> = (props: Props) => {
                         defaultMessage="Status Placeholder"
                     />
                 </span>
-                {props.status === InternalTrainingStatus.Failed
+                {props.status === InternalTrainingStatus.Failed && props.failureMessage
                     && <TooltipHost content={props.failureMessage}>
                         <Icon iconName="Info" className="cl-icon" />
                     </TooltipHost>}

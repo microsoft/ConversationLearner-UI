@@ -64,13 +64,14 @@ class App extends React.Component<Props, ComponentState> {
 
   dismissBanner(banner: Banner) {
     // Can't clear error banners
-    if (banner.type.toLowerCase() !== "error") {
+    const bannerType = this.getMessageBarType(banner.type)
+    if (bannerType !== OF.MessageBarType.error) {
       this.props.clearBanner(banner)
     }
   }
 
   shouldShowBanner(banner: Banner) {
-    if (!banner || !banner.message) {
+    if (!banner.message) {
       return false;
     }
 
@@ -84,12 +85,14 @@ class App extends React.Component<Props, ComponentState> {
     return true;
   }
 
-  getMessageBarType(type: string) {
-    if (type.toLowerCase() === "error") {
-      return OF.MessageBarType.error
-    }
-    if (type.toLowerCase() === "warning") {
-      return OF.MessageBarType.warning
+  getMessageBarType(type: string | undefined) {
+    if (type) {
+      if (type.toLowerCase() === "error") {
+        return OF.MessageBarType.error
+      }
+      if (type.toLowerCase() === "warning") {
+        return OF.MessageBarType.warning
+      }
     }
     return OF.MessageBarType.success
   }
@@ -121,7 +124,7 @@ class App extends React.Component<Props, ComponentState> {
 
           <div className="cl-app_header-placeholder" />
           <div className="cl-app_content">
-            {this.shouldShowBanner(banner) &&
+            {banner && this.shouldShowBanner(banner) &&
               <OF.MessageBar
                 className="cl-messagebar"
                 isMultiline={true}
@@ -130,7 +133,7 @@ class App extends React.Component<Props, ComponentState> {
                 messageBarType={this.getMessageBarType(banner.type)}
               >
                 {banner.message}
-                {banner.message.link && banner.linktext &&
+                {banner.link && banner.linktext &&
                   <OF.Link href={banner.link}>{banner.linktext}</OF.Link>
                 }
                 {banner.datestring &&
@@ -181,7 +184,6 @@ const mapDispatchToProps = (dispatch: any) => {
 
 const mapStateToProps = (state: State) => {
   return {
-    user: state.user,
     browserId: state.bot.browserId,
     botInfo: state.bot.botInfo,
     clearedBanner: state.display.clearedBanner

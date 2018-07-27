@@ -13,13 +13,13 @@ import * as localStorage from './services/localStorage'
 import * as ClientFactory from './services/clientFactory'
 
 export const createReduxStore = (): Store<State> => {
-    // TODO: The return type of persisted state should include 'undefined'
     const persistedState = localStorage.load<Partial<State>>()
 
     /**
      * This is a work around to auto reset port to 3978 from 5000
      * and avoid users having to manually resetting
      */
+    // TODO: Remove after most people have upgraded
     const settings = persistedState && persistedState.settings
     if (settings) {
         if (settings.botPort === previousBotPort) {

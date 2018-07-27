@@ -20,7 +20,7 @@ import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 
 interface ComponentState {
     actionSelected: ActionBase | null
-    actionIDToDelete: string
+    actionIDToDelete: string | null
     isConfirmDeleteActionModalOpen: boolean
     isActionEditorModalOpen: boolean
     searchValue: string
@@ -154,7 +154,7 @@ class Actions extends React.Component<Props, ComponentState> {
                             id: FM.ACTIONS_CREATEBUTTONTITLE,
                             defaultMessage: 'New Action'
                         })}
-                        componentRef={component => this.newActionButton = component}
+                        componentRef={component => this.newActionButton = component!}
                     />
                 </div>
                 {actions.length === 0
@@ -221,7 +221,6 @@ const mapDispatchToProps = (dispatch: any) => {
 }
 const mapStateToProps = (state: State) => {
     return {
-        user: state.user,
         actions: state.actions,
         entities: state.entities
     }

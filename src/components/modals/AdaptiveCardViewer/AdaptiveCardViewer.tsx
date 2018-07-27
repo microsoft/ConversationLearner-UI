@@ -2,11 +2,11 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import * as React from 'react';
-import { returntypeof } from 'react-redux-typescript';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
-import { Modal } from 'office-ui-fabric-react/lib/Modal';
+import * as React from 'react'
+import { returntypeof } from 'react-redux-typescript'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
+import { Modal } from 'office-ui-fabric-react/lib/Modal'
 import { Template, RenderedActionArgument } from '@conversationlearner/models'
 import { State } from '../../../types'
 import * as AdaptiveCards from 'adaptivecards'
@@ -22,12 +22,12 @@ class AdaptiveCardViewer extends React.Component<Props, {}> {
         return new AdaptiveCards.HostConfig(adaptiveCardHostConfig)
     }
 
-    getTemplate(): any {
-        let templateString = this.props.template.body
+    getProcessedTemplate(template: Template): any {
+        let templateString = template.body || ''
 
         // Substitute argument values
         for (let actionArgument of this.props.actionArguments) {
-            if (actionArgument) {
+            if (actionArgument && actionArgument.value) {
                 templateString = templateString.replace(new RegExp(`{{${actionArgument.parameter}}}`, 'g'), actionArgument.value)
             }
         }
@@ -37,7 +37,7 @@ class AdaptiveCardViewer extends React.Component<Props, {}> {
             templateString = templateString.replace(/{{\s*[\w\.]+\s*}}/g, '');
         } else {
             // Now replace any images that haven't been substituted with a dummy image
-            for (let templateVar of this.props.template.variables) {
+            for (let templateVar of template.variables) {
                 if (templateVar.type === 'Image') {
                     templateString = templateString.replace(new RegExp(`{{${templateVar.key}}}`, 'g'), 'https://c1.staticflickr.com/9/8287/29517736620_3184b66ec8.jpg');
                 }
@@ -50,7 +50,7 @@ class AdaptiveCardViewer extends React.Component<Props, {}> {
         if (!this.props.open || !this.props.template) {
             return null;
         }
-        const template = this.getTemplate();
+        const template = this.getProcessedTemplate(this.props.template)
         const adaptiveCard = new AdaptiveCards.AdaptiveCard()
         adaptiveCard.hostConfig = this.getAdaptiveCardHostConfig()
         adaptiveCard.parse(template)
@@ -72,10 +72,10 @@ class AdaptiveCardViewer extends React.Component<Props, {}> {
 
 interface ReceivedProps {
     open: boolean;
-    template: Template;
+    template: Template | undefined
     actionArguments: RenderedActionArgument[]
-    onDismiss: () => void;
-    hideUndefined: boolean;
+    onDismiss: () => void
+    hideUndefined: boolean
 }
 
 const mapDispatchToProps = (dispatch: any) => {

@@ -14,7 +14,7 @@ import { AxiosError } from 'axios';
 // --------------------------
 // App
 // --------------------------
-export const createApplicationThunkAsync = (userId: string, application: AppBase, source: AppDefinition = null) => {
+export const createApplicationThunkAsync = (userId: string, application: AppBase, source: AppDefinition | null = null) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.CREATE_APPLICATION_ASYNC)
         try {
@@ -271,7 +271,7 @@ const createTeachSessionFulfilled = (teachResponse: TeachResponse): ActionObject
 // --------------------------
 // TeachSessionFromHistory
 // --------------------------
-export const createTeachSessionFromHistoryThunkAsync = (app: AppBase, trainDialog: TrainDialog, userName: string, userId: string, scoreInput: UIScoreInput = null) => {
+export const createTeachSessionFromHistoryThunkAsync = (app: AppBase, trainDialog: TrainDialog, userName: string, userId: string, scoreInput: UIScoreInput | null = null) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.CREATE_TEACH_SESSION_FROMHISTORYASYNC)
         dispatch(createTeachSessionFromHistoryAsync(app.appId, trainDialog, userName, userId))

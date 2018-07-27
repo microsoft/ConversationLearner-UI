@@ -2,22 +2,22 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import * as React from 'react';
-import { returntypeof } from 'react-redux-typescript';
+import * as React from 'react'
+import { returntypeof } from 'react-redux-typescript'
 import { 
     fetchApplicationTrainingStatusThunkAsync,
     fetchEntityEditValidationThunkAsync,
     fetchEntityDeleteValidationThunkAsync } from '../../actions/fetchActions'
-import { createEntityThunkAsync } from '../../actions/createActions';
-import { editEntityThunkAsync } from '../../actions/updateActions';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
-import { Modal } from 'office-ui-fabric-react/lib/Modal';
-import * as OF from 'office-ui-fabric-react';
+import { createEntityThunkAsync } from '../../actions/createActions'
+import { editEntityThunkAsync } from '../../actions/updateActions'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
+import { Modal } from 'office-ui-fabric-react/lib/Modal'
+import * as OF from 'office-ui-fabric-react'
 import * as TC from '../tipComponents'
 import ActionDetailsList from '../ActionDetailsList'
 import ConfirmCancelModal from './ConfirmCancelModal'
-import { State, PreBuiltEntities } from '../../types';
+import { State, PreBuiltEntities } from '../../types'
 import { CLDropdownOption } from './CLDropDownOption'
 import * as ToolTip from '../ToolTips'
 import { AppBase, EntityBase, EntityType, ActionBase } from '@conversationlearner/models'
@@ -26,7 +26,7 @@ import { FM } from '../../react-intl-messages'
 import { defineMessages, injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { withRouter } from 'react-router-dom'
 import { RouteComponentProps } from 'react-router'
-import { autobind } from 'office-ui-fabric-react/lib/Utilities';
+import { autobind } from 'office-ui-fabric-react/lib/Utilities'
 
 const messages = defineMessages({
     fieldErrorRequired: {
@@ -58,7 +58,7 @@ const initState: ComponentState = {
     isDeleteErrorModalOpen: false,
     showValidationWarning: false,
     newOrEditedEntity: null
-};
+}
 
 interface ComponentState {
     entityNameVal: string
@@ -74,7 +74,7 @@ interface ComponentState {
     isConfirmDeleteModalOpen: boolean,
     isDeleteErrorModalOpen: boolean,
     showValidationWarning: boolean,
-    newOrEditedEntity: EntityBase
+    newOrEditedEntity: EntityBase | null
 }
 
 class EntityCreatorEditor extends React.Component<Props, ComponentState> {
@@ -115,8 +115,12 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
         if (nextProps.open !== this.props.open) {
             // Build entity options based on current model locale
             const currentAppLocale = nextProps.app.locale
-            const localePreBuiltOptions = PreBuiltEntities
-                .find(entitiesList => entitiesList.locale === currentAppLocale).preBuiltEntities
+            const preBuiltLocale = PreBuiltEntities.find(entitiesList => entitiesList.locale === currentAppLocale)
+            if (!preBuiltLocale) {
+                throw new Error(`Could not find locale: ${currentAppLocale} within list of supported locales: ${PreBuiltEntities.map(e => e.locale).join(', ')}`)
+            }
+
+            const localePreBuiltOptions = preBuiltLocale.preBuiltEntities
                 .map<CLDropdownOption>(entityName =>
                     ({
                         key: entityName,
@@ -171,9 +175,14 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
     }
 
     componentDidUpdate(prevProps: Props, prevState: ComponentState) {
-        const isProgrammaticChanged = this.props.entity && this.state.isProgrammaticVal !== (this.props.entity.entityType === EntityType.LOCAL)
-        const isMultiValueChanged = this.props.entity && this.state.isMultivalueVal !== this.props.entity.isMultivalue
-        const isNegatableChanged = this.props.entity && this.state.isNegatableVal !== this.props.entity.isNegatible
+        const entity = this.props.entity
+        if (!entity) {
+            return
+        }
+
+        const isProgrammaticChanged = this.state.isProgrammaticVal !== (entity.entityType === EntityType.LOCAL)
+        const isMultiValueChanged = this.state.isMultivalueVal !== entity.isMultivalue
+        const isNegatableChanged = this.state.isNegatableVal !== entity.isNegatible
         const hasPendingChanges = isProgrammaticChanged || isMultiValueChanged || isNegatableChanged
 
         if (prevState.hasPendingChanges !== hasPendingChanges) {
@@ -194,7 +203,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
         }
 
         const newOrEditedEntity = {
-            entityId: undefined,
+            entityId: undefined!,
             entityName,
             isMultivalue: this.state.isMultivalueVal,
             isNegatible: this.state.isNegatableVal,
@@ -204,10 +213,10 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
             version: null,
             packageCreationId: null,
             packageDeletionId: null
-        } as EntityBase;
+        } as EntityBase
 
         // Set entity id if we're editing existing id.
-        if (this.state.isEditing) {
+        if (this.state.isEditing && this.props.entity) {
             newOrEditedEntity.entityId = this.props.entity.entityId
 
             if (newOrEditedEntity.isNegatible) {
@@ -222,8 +231,6 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
     @autobind
     async onClickSaveCreate() {
         const newOrEditedEntity = this.convertStateToEntity(this.state)
-        console.log(`newOrEditedEntity: `, newOrEditedEntity)
-
         const appId = this.props.app.appId
         
         // If not editing (creating a new entity) simply create it and close
@@ -244,7 +251,8 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                     newOrEditedEntity: newOrEditedEntity
                 })
             } else {
-                this.props.editEntityThunkAsync(appId, newOrEditedEntity, this.props.entity)
+                // We know props.entity is valid because we're not editing
+                this.props.editEntityThunkAsync(appId, newOrEditedEntity, this.props.entity!)
                 this.props.handleClose()
             }
         }
@@ -256,7 +264,10 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
 
     onChangedName = (text: string) => {
         const { entity } = this.props
-        const hasPendingChanges = entity && entity.entityName !== text
+        const hasPendingChanges = entity
+            ? entity.entityName !== text
+            : false
+
         this.setState({
             entityNameVal: text,
             hasPendingChanges
@@ -322,17 +333,17 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
     }
 
     getDisqualifiedActions(): ActionBase[] {
-        let disqualifiedActions = this.props.actions.filter(a => {
-            return a.negativeEntities.find(id => id === this.props.entity.entityId) != null;
-        });
-        return disqualifiedActions;
+        const { actions, entity } = this.props
+        return !entity
+            ? []
+            : actions.filter(a => a.negativeEntities.some(id => id === entity.entityId))
     }
 
     getRequiredActions(): ActionBase[] {
-        let requiredActions = this.props.actions.filter(a => {
-            return a.requiredEntities.find(id => id === this.props.entity.entityId) != null;
-        });
-        return requiredActions;
+        const { actions, entity } = this.props
+        return !entity
+            ? []
+            : actions.filter(a => a.requiredEntities.find(id => id === entity.entityId))
     }
 
     getPrebuiltEntityName(preBuiltType: string): string {
@@ -352,16 +363,24 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
     }
 
     isRequiredForActions(): boolean {
-        return this.props.actions.some(a => [...a.requiredEntitiesFromPayload, ...(a.suggestedEntity ? [a.suggestedEntity] : [])].includes(this.props.entity.entityId))
+        const { actions, entity } = this.props
+        return !entity
+            ? false
+            : actions.some(a => [...a.requiredEntitiesFromPayload, ...(a.suggestedEntity ? [a.suggestedEntity] : [])].includes(entity.entityId))
     }
 
     isUsedByActions(): boolean {
-        return this.props.actions.some(a => [...a.negativeEntities, ...a.requiredEntities, ...(a.suggestedEntity ? [a.suggestedEntity] : [])].includes(this.props.entity.entityId))
+        const { actions, entity } = this.props
+        return !entity
+            ? false
+            : actions.some(a => [...a.negativeEntities, ...a.requiredEntities, ...(a.suggestedEntity ? [a.suggestedEntity] : [])].includes(entity.entityId))
     }
 
     isUsedByTrainingDialogs() : boolean {
-        let tdString = JSON.stringify(this.props.trainDialogs)
-        return tdString.indexOf(this.props.entity.entityId) > -1
+        const { entity } = this.props
+        return !entity
+            ? false
+            : JSON.stringify(this.props.trainDialogs).includes(entity.entityId)
     }
 
     @autobind
@@ -371,6 +390,11 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
             this.setState({
                 isDeleteErrorModalOpen: true
             })
+            return
+        }
+
+        if (!this.props.entity) {
+            console.warn(`You attempted to delete an entity, but entity prop was not given. This should not be possible. Contact support`)
             return
         }
 
@@ -397,11 +421,17 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
 
     @autobind
     onConfirmDelete() {
-        this.setState(
-            { isConfirmDeleteModalOpen: false },
-            () => {
-                this.props.handleDelete(this.props.entity)
-            })
+        const entity = this.props.entity
+        if (!entity) {
+            console.warn(`You confirmed delete, but the entity prop was not provided. This should not be possible. Contact Support`)
+            return
+        }
+
+        this.setState({
+            isConfirmDeleteModalOpen: false
+        }, () => {
+            this.props.handleDelete(entity)
+        })
     }
 
     @autobind
@@ -414,7 +444,13 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
 
     @autobind
     onConfirmEdit() {
-        this.props.editEntityThunkAsync(this.props.app.appId, this.state.newOrEditedEntity, this.props.entity)
+        const entity = this.state.newOrEditedEntity
+        if (!entity) {
+            console.warn(`You confirmed the edit, but the newOrEditedEntity state was not available. This should not be possible. Contact Support`)
+            return
+        }
+
+        this.props.editEntityThunkAsync(this.props.app.appId, entity, this.props.entity!)
 
         this.setState({
             isConfirmEditModalOpen: false,
@@ -516,8 +552,10 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                 isBlocking={false}
                 containerClassName="cl-modal cl-modal--medium"
             >
-                <div className="cl-modal_header">
-                    <span className={OF.FontClassNames.xxLarge}>{this.state.isEditing ? this.props.entity.entityName : this.state.title}</span>
+                <div className={`cl-modal_header ${OF.FontClassNames.xxLarge}`}>
+                    {this.props.entity
+                        ? this.props.entity.entityName
+                        : this.state.title}
                 </div>
                 <div className="cl-modal_body">
                     {this.state.isEditing
@@ -542,7 +580,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                                     >
                                         <ActionDetailsList
                                             actions={this.getRequiredActions()}
-                                            onSelectAction={null}
+                                            onSelectAction={() => {}}
                                         />
                                     </OF.PivotItem>
                                     <OF.PivotItem
@@ -555,7 +593,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                                     >
                                         <ActionDetailsList
                                             actions={this.getDisqualifiedActions()}
-                                            onSelectAction={null}
+                                            onSelectAction={() => {}}
                                         />
                                     </OF.PivotItem>
                                 </OF.Pivot>
@@ -584,7 +622,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                     <div className="cl-modal-buttons_primary">
                         <OF.PrimaryButton
                             data-testid="entity-creator-button-save"
-                            disabled={(this.onGetNameErrorMessage(this.state.entityNameVal) !== '') && !this.state.isPrebuilt || (this.state.isEditing && !this.state.hasPendingChanges)}
+                            disabled={(this.onGetNameErrorMessage(this.state.entityNameVal) !== '') && !this.state.isPrebuilt || (!!this.props.entity && !this.state.hasPendingChanges)}
                             onClick={this.onClickSaveCreate}
                             ariaDescription={this.state.isEditing
                                 ? intl.formatMessage({
@@ -669,8 +707,8 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                     />
                 <ConfirmCancelModal
                     open={this.state.isDeleteErrorModalOpen}
-                    onCancel={this.onCancelDelete} 
-                    onConfirm={null}
+                    onCancel={this.onCancelDelete}
+                    onConfirm={() => {}}
                     title={intl.formatMessage({
                         id: FM.ENTITYCREATOREDITOR_DELETE_ERROR_TITLE,
                         defaultMessage: 'Unable to delete'
@@ -698,7 +736,6 @@ const mapDispatchToProps = (dispatch: any) => {
 }
 const mapStateToProps = (state: State, ownProps: any) => {
     return {
-        user: state.user,
         entities: state.entities,
         actions: state.actions,
         trainDialogs: state.trainDialogs

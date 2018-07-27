@@ -113,8 +113,8 @@ class AppCreator extends React.Component<Props, ComponentState> {
             locale: this.state.localeVal,
             metadata: {
                 botFrameworkApps: [],
-                markdown: null,
-                video: null,
+                markdown: undefined,
+                video: undefined,
                 isLoggingOn: true
             }
         }
@@ -122,7 +122,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
 
     onClickCreate = () => {
         const appInput = this.getAppInput()
-        this.props.onSubmit(appInput, null)
+        this.props.onSubmit(appInput)
     }
 
     // TODO: Refactor to use default form submission instead of manually listening for keys
@@ -165,10 +165,15 @@ class AppCreator extends React.Component<Props, ComponentState> {
     }
 
     onClickImport = () => {
-        let reader = new FileReader()
+        if (!this.state.file) {
+            console.warn(`You clicked import before a file was selected. This should not be possible. Contact support`)
+            return
+        }
+
+        const reader = new FileReader()
         reader.onload = (e: Event) => {
             try {
-                let source = JSON.parse(reader.result) as AppDefinition
+                const source = JSON.parse(reader.result) as AppDefinition
                 const appInput = this.getAppInput();
                 this.props.onSubmit(appInput, source)
             }
@@ -180,7 +185,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
         reader.readAsText(this.state.file)
     }
 
-    getTitle(): JSX.Element {
+    getTitle(): React.ReactNode {
         switch (this.props.creatorType) {
             case AppCreatorType.NEW:
                 return (
@@ -201,7 +206,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
                         defaultMessage="Copy a Conversation Learner Model"
                     />)
             default:
-                return null;
+                throw new Error(`Could not get title for unknown app creator type: ${this.props.creatorType}`)
         }
     }
 
@@ -376,7 +381,7 @@ const mapStateToProps = (state: State) => {
 export interface ReceivedProps {
     open: boolean
     creatorType: AppCreatorType
-    onSubmit: (app: AppInput, source: AppDefinition) => void
+    onSubmit: (app: AppInput, source?: AppDefinition) => void
     onCancel: () => void
 }
 

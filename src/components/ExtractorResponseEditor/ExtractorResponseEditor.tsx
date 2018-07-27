@@ -30,7 +30,7 @@ interface Props {
 interface State {
     isSelectionOverlappingOtherEntities: boolean
     isMenuVisible: boolean
-    menuPosition: IPosition
+    menuPosition: IPosition | null
     value: SlateValue
     preBuiltEditorValues: SlateValue[]
 }

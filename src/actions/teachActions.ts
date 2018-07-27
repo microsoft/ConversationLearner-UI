@@ -55,22 +55,28 @@ const initMemoryFulfilled = (memories: Memory[]): ActionObject => {
 // --------------------------
 // RunExtractor
 // --------------------------
-export const runExtractorThunkAsync = (key: string, appId: string, extractType: DialogType, sessionId: string, turnIndex: number, userInput: UserInput) => {
+export const runExtractorThunkAsync = (key: string, appId: string, extractType: DialogType, sessionId: string, turnIndex: number | null, userInput: UserInput) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.RUN_EXTRACTOR_ASYNC)
         dispatch(runExtractorAsync(appId, extractType, sessionId, turnIndex, userInput))
 
         try {
-            let uiExtractResponse: UIExtractResponse = null 
+            let uiExtractResponse: UIExtractResponse | null = null 
 
             switch (extractType) {
                 case DialogType.TEACH:
                     uiExtractResponse = await clClient.teachSessionsAddExtractStep(appId, sessionId, userInput)
                   break;
                 case DialogType.TRAINDIALOG:
+                    if (!turnIndex) {
+                        throw new Error(`Run extractor was called for a train dialog, but turnIndex was null. This should not be possible. Please open an issue.`)
+                    }
                     uiExtractResponse = await clClient.trainDialogsUpdateExtractStep(appId, sessionId, turnIndex, userInput)
                   break;
                 case DialogType.LOGDIALOG:
+                    if (!turnIndex) {
+                        throw new Error(`Run extractor was called for a log dialog, but turnIndex was null. This should not be possible. Please open an issue.`)
+                    }
                     uiExtractResponse = await clClient.logDialogsUpdateExtractStep(appId, sessionId, turnIndex, userInput)
                   break;
                 default:
@@ -88,7 +94,7 @@ export const runExtractorThunkAsync = (key: string, appId: string, extractType: 
     }
 }
 
-const runExtractorAsync = (appId: string, extractType: DialogType, sessionId: string, turnIndex: number, userInput: UserInput): ActionObject => {
+const runExtractorAsync = (appId: string, extractType: DialogType, sessionId: string, turnIndex: number | null, userInput: UserInput): ActionObject => {
     return {
         type: AT.RUN_EXTRACTOR_ASYNC,
         appId: appId,
@@ -256,7 +262,7 @@ const postScorerFeedbackAsync = (key: string, appId: string, teachId: string, ui
 }
 
 // Score has been posted.  Action is Terminal
-const postScorerFeedbackFulfilled = (key: string, appId: string, teachId: string, dialogMode: DialogMode, uiPostScoreResponse: UIPostScoreResponse, uiScoreInput: UIScoreInput): ActionObject => {
+const postScorerFeedbackFulfilled = (key: string, appId: string, teachId: string, dialogMode: DialogMode, uiPostScoreResponse: UIPostScoreResponse, uiScoreInput: UIScoreInput | null): ActionObject => {
     return {
         type: AT.POST_SCORE_FEEDBACK_FULFILLED,
         key: key,

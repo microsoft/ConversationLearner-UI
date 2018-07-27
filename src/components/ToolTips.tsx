@@ -11,6 +11,8 @@ import HelpLink from '../components/HelpLink'
 import './ToolTips.css'
 
 export enum TipType {
+    NONE = 'NONE',
+    
     ACTION_API = 'actionAPI',
     ACTION_ARGUMENTS = 'actionArguments',
     ACTION_CARD = 'actionCard',
@@ -56,7 +58,8 @@ export function onRenderDetailsHeader(detailsHeaderProps: OF.IDetailsHeaderProps
                 defaultRender({
                     ...detailsHeaderProps,
                     onRenderColumnHeaderTooltip: (tooltipHostProps: OF.ITooltipHostProps) => {
-                        let id = tooltipHostProps.id.split('-')[1];
+
+                        let id = tooltipHostProps.id ? tooltipHostProps.id.split('-')[1] : 'unknown-tip-id'
                         let tip = GetTip(id);
                         if (tip) {
                             let ttHP = {
@@ -81,15 +84,16 @@ export function onRenderDetailsHeader(detailsHeaderProps: OF.IDetailsHeaderProps
 }
 
 export function onRenderPivotItem(link: OF.IPivotItemProps, defaultRenderer: (link: OF.IPivotItemProps) => JSX.Element): JSX.Element {
+    const typType = link.ariaLabel ? link.ariaLabel : 'unknown-tip-type'
     return (
         <OF.TooltipHost
-            tooltipProps={{ onRenderContent: () => { return GetTip(link.ariaLabel) } }}
+            tooltipProps={{ onRenderContent: () => { return GetTip(typType) } }}
             delay={OF.TooltipDelay.medium}
             directionalHint={OF.DirectionalHint.bottomCenter}
         >
             {defaultRenderer(link)}
         </OF.TooltipHost>
-    );
+    )
 }
 
 export function Wrap(content: JSX.Element, tooltip: string, directionalHint: OF.DirectionalHint = OF.DirectionalHint.topCenter): JSX.Element {
@@ -414,22 +418,23 @@ export function GetTip(tipType: string) {
     }
 }
 
-function render(title: FM, body: FM[], example: string = null, tableItems: { key: string, value: FM }[] = []): JSX.Element {
-    let key = 0;
+interface ITableItem {
+    key: string
+    value: FM | null
+}
+
+function render(title: FM, body: FM[], example: string | null = null, tableItems: ITableItem[] = []): JSX.Element {
     return (
         <div>
             <div className="cl-tooltop-headerText"><FormattedMessage id={title} /></div>
-            {body.map(b => { return (<div key={key++}><FormattedMessage id={b} /><br /></div>) })}
+            {body.map((b, i) => <div key={i}><FormattedMessage id={b} /><br /></div>)}
             {example &&
                 <div className="cl-tooltop-example"><FormattedMessage id={example} /></div>}
             {tableItems.length > 0 ?
                 (
                     <dl className="cl-tooltip-example">
-                        <dt>{tableItems[0] && tableItems[0].key}</dt><dd>{tableItems[0] && tableItems[0].value && <FormattedMessage id={tableItems[0].value} />}</dd>
-                        <dt>{tableItems[1] && tableItems[1].key}</dt><dd>{tableItems[1] && tableItems[1].value && <FormattedMessage id={tableItems[1].value} />}</dd>
-                        <dt>{tableItems[2] && tableItems[2].key}</dt><dd>{tableItems[2] && tableItems[2].value && <FormattedMessage id={tableItems[2].value} />}</dd>
-                        <dt>{tableItems[3] && tableItems[3].key}</dt><dd>{tableItems[3] && tableItems[3].value && <FormattedMessage id={tableItems[3].value} />}</dd>
-                        <dt>{tableItems[4] && tableItems[4].key}</dt><dd>{tableItems[4] && tableItems[4].value && <FormattedMessage id={tableItems[4].value} />}</dd>
+                        {tableItems.map((tableItem, i) =>
+                            <React.Fragment key={i}><dt>{tableItem.key}</dt><dd>{tableItem.value && <FormattedMessage id={tableItem.value} />}</dd></React.Fragment>)}
                     </dl>
                 ) : null
             }

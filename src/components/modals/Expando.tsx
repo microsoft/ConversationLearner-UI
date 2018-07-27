@@ -3,9 +3,15 @@
  * Licensed under the MIT License.
  */
 import * as React from 'react'
-import { connect } from 'react-redux'
 import { ActionButton } from 'office-ui-fabric-react'
 import './Expando.css'
+
+interface Props {
+    isOpen: boolean,
+    text: string,
+    className: string
+    onToggle: () => void
+}
 
 class Expando extends React.Component<Props, {}> {
     render() {
@@ -22,13 +28,4 @@ class Expando extends React.Component<Props, {}> {
     }
 }
 
-export interface ReceivedProps {
-    isOpen: boolean,
-    text: string,
-    className: string
-    onToggle: () => void
-}
-
-type Props = ReceivedProps
-
-export default connect<ReceivedProps>(null, null)(Expando)
+export default Expando

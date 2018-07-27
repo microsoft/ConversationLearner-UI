@@ -171,9 +171,11 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         if (this.props.onExtractionsChanged) {
             this.props.onExtractionsChanged(false);
         }
+        
         this.submitExtractions(this.allResponses(), this.props.roundIndex);
     }
-    submitExtractions(allResponses: ExtractResponse[], roundIndex: number) {
+
+    submitExtractions(allResponses: ExtractResponse[], roundIndex: number | null) {
         const primaryExtractResponse = allResponses[0]
         
         if (!this.allValid(primaryExtractResponse, allResponses)) {
@@ -280,8 +282,13 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
     onSubmitTextVariation() {
         let text = this.state.textVariationValue.trim();
         if (text.length === 0) {
-            return;
+            return
         }
+
+        if (!this.props.roundIndex) {
+            throw new Error(`You attempted to submit text variation but roundIndex was null. This is likely a problem with the code. Please open an issue.`)
+        }
+
         const userInput: UserInput = { text: text }
         this.props.runExtractorThunkAsync(
             this.props.user.id,
@@ -445,7 +452,6 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                     <OF.Dialog
                         data-testid="entityextractor-dialog-confirm"
                         hidden={this.state.savedExtractResponses.length === 0}
-                        isBlocking={true}
                         dialogContentProps={{
                             type: OF.DialogType.normal,
                             title: 'Do you want to save your Entity Detection changes?'
@@ -473,8 +479,12 @@ const mapDispatchToProps = (dispatch: any) => {
     }, dispatch);
 }
 const mapStateToProps = (state: State, ownProps: any) => {
+    if (!state.user.user) {
+        throw new Error(`You attempted to render TeachSessionAdmin but the user was not defined. This is likely a problem with higher level component. Please open an issue.`)
+    }
+
     return {
-        user: state.user,
+        user: state.user.user,
         entities: state.entities
     }
 }
@@ -485,12 +495,12 @@ export interface ReceivedProps {
     canEdit: boolean
     extractType: DialogType
     sessionId: string
-    roundIndex: number
+    roundIndex: number | null
     autoTeach: boolean
     dialogMode: DialogMode
     extractResponses: ExtractResponse[]
     originalTextVariations: TextVariation[]
-    onTextVariationsExtracted: (extractResponse: ExtractResponse, textVariations: TextVariation[], roundIndex: number) => void
+    onTextVariationsExtracted: (extractResponse: ExtractResponse, textVariations: TextVariation[], roundIndex: number | null) => void
     onExtractionsChanged?: (hasChanged: boolean) => void
 }
 

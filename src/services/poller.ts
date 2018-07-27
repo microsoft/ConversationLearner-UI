@@ -2,6 +2,7 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
+import * as util from '../util'
 
 export interface Deferred {
     resolve: Function
@@ -89,6 +90,6 @@ export class Poller {
             }
 
             return poll
-        }))).filter(x => x)
+        }))).filter(util.notNullOrUndefined)
     }
 }

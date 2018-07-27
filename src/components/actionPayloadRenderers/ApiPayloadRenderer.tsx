@@ -40,23 +40,25 @@ export default class Component extends React.Component<Props, State> {
 
     render() {
 
-        const pairedArguments = this.props.substitutedArguments === null
+        const pairedArguments: ICombinedActionArguments = this.props.substitutedArguments === null
             ? {
                 argumentPairs: this.props.originalArguments.map(oa => ({
                     original: oa,
-                    substituted: null
+                    substituted: oa
                 })),
                 argumentsDiffer: false
             }
             : this.props.originalArguments.reduce<ICombinedActionArguments>((combined, originalArgument) => {
-                const matchingSubstitutedArgument = this.props.substitutedArguments.find(sa => sa.parameter === originalArgument.parameter)
-                combined.argumentPairs.push({
-                    original: originalArgument,
-                    substituted: matchingSubstitutedArgument
-                })
-
-                // If any of the arguments are different, set to true
-                combined.argumentsDiffer = combined.argumentsDiffer || (originalArgument.value !== matchingSubstitutedArgument.value)
+                const matchingSubstitutedArgument = this.props.substitutedArguments && this.props.substitutedArguments.find(sa => sa.parameter === originalArgument.parameter)
+                if (matchingSubstitutedArgument) {
+                    combined.argumentPairs.push({
+                        original: originalArgument,
+                        substituted: matchingSubstitutedArgument
+                    })
+                    
+                    // If any of the arguments are different, set to true
+                    combined.argumentsDiffer = combined.argumentsDiffer || (originalArgument.value !== matchingSubstitutedArgument.value)
+                }
 
                 return combined
             }, {

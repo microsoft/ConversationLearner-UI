@@ -56,7 +56,7 @@ class AppsIndex extends React.Component<Props, ComponentState> {
         this.props.deleteApplicationAsync(appToDelete)
     }
 
-    onCreateApp = async (appToCreate: AppBase, source: AppDefinition = null) => {
+    onCreateApp = async (appToCreate: AppBase, source: AppDefinition | null = null) => {
         const app: AppBase = await this.props.createApplicationThunkAsync(this.props.user.id, appToCreate, source) as any
         const { match, history } = this.props
         history.push(`${match.url}/${app.appId}`, { app })
@@ -103,10 +103,14 @@ const mapDispatchToProps = (dispatch: any) => {
 }
 
 const mapStateToProps = (state: State) => {
+    if (!state.user.user) {
+        throw new Error(`You attempted to render AppsIndex but the user was not defined. This is likely a problem with higher level component. Please open an issue.`)
+    }
+
     return {
         apps: state.apps.all,
         display: state.display,
-        user: state.user, 
+        user: state.user.user, 
         browserId: state.bot.browserId
     }
 }

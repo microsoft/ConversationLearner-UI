@@ -18,11 +18,11 @@ import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 
 interface ComponentState {
-    isConfirmCancelModalOpen: boolean,
-    calloutOpen: boolean,
-    selectedActivity: Activity | null,
-    webchatKey: number,
-    currentTrainDialog: TrainDialog,
+    isConfirmCancelModalOpen: boolean
+    calloutOpen: boolean
+    selectedActivity: Activity | null
+    webchatKey: number
+    currentTrainDialog: TrainDialog | null
     pendingExtractionChanges: boolean
 }
 
@@ -130,7 +130,7 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
                                 key={this.state.webchatKey}
                                 app={this.props.app}
                                 history={this.props.history}
-                                onPostActivity={null}
+                                onPostActivity={() => {}}
                                 onSelectActivity={activity => this.onWebChatSelectActivity(activity)}
                                 hideInput={true}
                                 focusInput={false}
@@ -248,7 +248,6 @@ const mapDispatchToProps = (dispatch: any) => {
 }
 const mapStateToProps = (state: State) => {
     return {
-        user: state.user,
         actions: state.actions
     }
 }

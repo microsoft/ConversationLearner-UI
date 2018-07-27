@@ -43,34 +43,37 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
             isResizable: true,
             getSortValue: action => action.actionId,
             render: (action, component, index) => {
-                if (component.props.canEdit) {
-                    const selected = (component.props.dialogType !== DialogType.TEACH && index === 0);
-                    let buttonText = selected ? 'Selected' : 'Select';
-                    let isAvailable = component.isUnscoredActionAvailable(action as UnscoredAction);
-                    if (!isAvailable || selected) {
-                        return (
-                            <PrimaryButton
-                                data-testid="actionscorer-buttonNoClick"
-                                disabled={true}
-                                ariaDescription={buttonText}
-                                text={buttonText}
-                            />
-                        )
-                    }
-                    else {
-                        let refFn = (index === 0) ? ((ref: any) => { component.primaryScoreButton = ref }) : null;
-                        return (
-                            <PrimaryButton
-                                data-testid="actionscorer-buttonClickable"
-                                onClick={() => component.handleActionSelection(action.actionId)}
-                                ariaDescription={buttonText}
-                                text={buttonText}
-                                componentRef={refFn}
-                            />
-                        )
-                    }
+                if (!component.props.canEdit) {
+                    return null
                 }
-                return null;
+
+                const selected = (component.props.dialogType !== DialogType.TEACH && index === 0)
+                const buttonText = selected ? 'Selected' : 'Select'
+                const isAvailable = component.isUnscoredActionAvailable(action as UnscoredAction)
+                if (!isAvailable || selected) {
+                    return (
+                        <PrimaryButton
+                            data-testid="actionscorer-buttonNoClick"
+                            disabled={true}
+                            ariaDescription={buttonText}
+                            text={buttonText}
+                        />
+                    )
+                }
+                else {
+                    const refFn = (index === 0)
+                        ? (ref: any) => { component.primaryScoreButton = ref }
+                        : undefined
+                    return (
+                        <PrimaryButton
+                            data-testid="actionscorer-buttonClickable"
+                            onClick={() => component.handleActionSelection(action.actionId)}
+                            ariaDescription={buttonText}
+                            text={buttonText}
+                            componentRef={refFn}
+                        />
+                    )
+                }
             }
         },
         {
@@ -244,8 +247,8 @@ interface ComponentState {
     columns: OF.IColumn[]
     sortColumn: IRenderableColumn
     haveEdited: boolean
-    newAction: ActionBase
-    cardViewerAction: ActionBase
+    newAction: ActionBase | null
+    cardViewerAction: ActionBase | null
     cardViewerShowOriginal: boolean
 }
 
@@ -317,19 +320,20 @@ class ActionScorer extends React.Component<Props, ComponentState> {
     autoSelect() {
         // If not in interactive mode select action automatically
         if (this.props.autoTeach && this.props.dialogMode === DialogMode.Scorer) {
-
-            let actions = (this.props.scoreResponse.scoredActions as ScoredBase[])
-                .concat(this.props.scoreResponse.unscoredActions) || [];
+            // We assume if DialogMode is Scorer, then we must have ScoreResponse
+            // TODO: Fix this with better types
+            const scoreResponse = this.props.scoreResponse
+            const actions = [...scoreResponse.scoredActions as ScoredBase[], ...scoreResponse.unscoredActions]
             // Since actions are sorted by score descending (max first), assume first scored action is the "best" action
-            let bestAction = actions[0];
+            const bestAction = actions[0];
 
-            // Make sure there is an available aciont
+            // Make sure there is an available action
             if ((bestAction as UnscoredAction).reason === ScoreReason.NotAvailable) {
                 // If none available auto teach isn't possible.  User must create a new action
                 this.props.toggleAutoTeach(false);
                 return;
             }
-            let selectedActionId = bestAction.actionId;
+            const selectedActionId = bestAction.actionId;
             this.handleActionSelection(selectedActionId);
 
         } else if (this.state.newAction) {
@@ -398,8 +402,8 @@ class ActionScorer extends React.Component<Props, ComponentState> {
 
     handleDefaultSelection() {
         // Look for a valid action
-        let actionId = null;
-        let scoreResponse = this.props.scoreResponse;
+        let actionId = null
+        const scoreResponse = this.props.scoreResponse
         if (scoreResponse.scoredActions && scoreResponse.scoredActions.length > 0) {
             actionId = scoreResponse.scoredActions[0].actionId;
         } else if (scoreResponse.unscoredActions) {
@@ -416,30 +420,34 @@ class ActionScorer extends React.Component<Props, ComponentState> {
     }
     handleActionSelection(actionId: string) {
         const { scoredActions, unscoredActions } = this.props.scoreResponse
-        let scoredAction: ScoredAction = scoredActions.find(a => a.actionId === actionId);
+        let scoredAction = scoredActions.find(a => a.actionId === actionId);
         if (!scoredAction) {
             let unscoredAction = unscoredActions.find(a => a.actionId === actionId);
             if (unscoredAction) {
                 const { reason, ...scoredBase } = unscoredAction
+                // This is hack to create scored action without a real score
                 scoredAction = {
                     ...scoredBase,
-                    score: undefined
+                    score: undefined!
                 }
             }
             // TODO: Modify handleActionSelection to be passed action instead of finding action again from list by ID
             // TODO: If score can be undefined on train dialog, what is the value in actually having the real score?
-            // if it doesn't matter, then skipp all this steps for scored, unscored, missing and just find action within props.actions
+            // if it doesn't matter, then skip all this steps for scored, unscored, missing and just find action within props.actions
             else {
                 const responseActions = [...scoredActions, ...unscoredActions]
                 const otherActions = this.props.actions.filter(a => responseActions.every(sa => sa.actionId !== a.actionId))
                 const action = otherActions.find(a => a.actionId === actionId)
+                if (!action) {
+                    throw new Error(`Could not find action with id: ${actionId} in list of actions`)
+                }
 
                 scoredAction = {
                     actionId: action.actionId,
                     payload: action.payload,
                     isTerminal: action.isTerminal,
                     actionType: action.actionType,
-                    score: undefined
+                    score: undefined!
                 }
             }
         }
@@ -567,7 +575,9 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         if (action.actionId === ACTION_BUTTON) {
             if (column.key === 'select') {
                 // Will focus on new action button if no scores
-                let ref = (index === 0) ? ((ref: any) => { this.primaryScoreButton = ref }) : null;
+                const ref = (index === 0)
+                    ? ((ref: any) => { this.primaryScoreButton = ref })
+                    : undefined;
                 return (
                     <PrimaryButton
                         onClick={this.handleOpenActionModal}
@@ -614,16 +624,15 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             score: score,
             isTerminal: false,
             actionType: ActionTypes.TEXT
-        };
+        }
     }
 
     getScoredItems(): ScoredBase[] {
         if (!this.props.scoreResponse) {
-            return null;
+            return []
         }
 
-        let scoredItems = (this.props.scoreResponse.scoredActions as ScoredBase[])
-            .concat(this.props.scoreResponse.unscoredActions) || [];
+        let scoredItems = [...this.props.scoreResponse.scoredActions as ScoredBase[], ...this.props.scoreResponse.unscoredActions]
 
         // Need to reassemble to scored item has full action info and reason
         scoredItems = scoredItems.map(e => {
@@ -691,10 +700,9 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             return null;
         }
 
-        let scores: ScoredBase[] = this.getScoredItems();
-
-        let template: Template = null;
-        let renderedActionArguments: RenderedActionArgument[] = [];
+        const scores: ScoredBase[] = this.getScoredItems()
+        let template: Template | undefined = undefined
+        let renderedActionArguments: RenderedActionArgument[] = []
         if (this.state.cardViewerAction) {
             const cardAction = new CardAction(this.state.cardViewerAction)
             const entityMap = Util.getDefaultEntityMap(this.props.entities)
@@ -763,8 +771,12 @@ const mapDispatchToProps = (dispatch: any) => {
     }, dispatch);
 }
 const mapStateToProps = (state: State, ownProps: any) => {
+    if (!state.bot.botInfo) {
+        throw new Error(`You attempted to render the ActionScorer which requires botInfo, but botInfo was not defined. This is likely a problem with higher level component. Please open an issue.`)
+    }
+
     return {
-        user: state.user,
+        user: state.user.user,
         entities: state.entities,
         actions: state.actions,
         templates: state.bot.botInfo.templates
