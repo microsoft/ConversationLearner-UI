@@ -12,7 +12,7 @@ import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { State } from '../../types'
-import { AppBase, AppDefinition } from '@conversationlearner/models'
+import { AppBase, AppDefinition, UIAppList } from '@conversationlearner/models'
 import actions from '../../actions'
 import AppIndex from './App/Index'
 import AppsList from './AppsList'
@@ -24,7 +24,7 @@ interface ComponentState {
 class AppsIndex extends React.Component<Props, ComponentState> {
     updateAppsAndBot() {
         if (this.props.user.id !== null && this.props.user.id.length > 0) {
-            this.props.fetchApplicationsAsync(this.props.user.id)
+            this.props.fetchApplicationsThunkAsync(this.props.user.id)
         }
     }
     componentDidMount() {
@@ -94,7 +94,7 @@ class AppsIndex extends React.Component<Props, ComponentState> {
 
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        fetchApplicationsAsync: actions.fetch.fetchApplicationsAsync,
+        fetchApplicationsThunkAsync: actions.fetch.fetchApplicationsThunkAsync,
         fetchBotInfoThunkAsync: actions.fetch.fetchBotInfoThunkAsync,
         createApplicationThunkAsync: actions.create.createApplicationThunkAsync,
         deleteApplicationAsync: actions.delete.deleteApplicationAsync,

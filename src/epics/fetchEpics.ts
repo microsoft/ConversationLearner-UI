@@ -10,14 +10,6 @@ import { getAllApps, getAllEntitiesForApp, getAllActionsForApp, getAllSessionsFo
  
 const assertNever = () => { throw Error(`Should not reach here`) }
 
-export const fetchApplicationsEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
-    return action$.ofType(AT.FETCH_APPLICATIONS_ASYNC)
-        .flatMap(action =>
-            (action.type === AT.FETCH_APPLICATIONS_ASYNC)
-                ? getAllApps(action.userId)
-                : assertNever())
-}
-
 export const fetchEntitiesEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
     return action$.ofType(AT.FETCH_ENTITIES_ASYNC)
         .flatMap(action =>

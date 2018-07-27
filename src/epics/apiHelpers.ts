@@ -55,18 +55,6 @@ export const setConversationId = (userName: string, userId: string, conversation
 //=========================================================
 // GET ROUTES
 //=========================================================
-export const getAllApps = (userId: string): Rx.Observable<ActionObject> => {
-  const clClient = ClientFactory.getInstance(AT.FETCH_APPLICATIONS_ASYNC)
-  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => clClient.apps(userId)
-    .then(uiAppList => {
-      // Set datetime on each app
-      uiAppList.appList.apps.forEach(app => app.datetime = new Date())
-      obs.next(actions.fetch.fetchApplicationsFulfilled(uiAppList));
-      obs.complete();
-    })
-    .catch(err => handleError(obs, err, AT.FETCH_APPLICATIONS_ASYNC)));
-};
-
 export const getAllEntitiesForApp = (appId: string): Rx.Observable<ActionObject> => {
   const clClient = ClientFactory.getInstance(AT.FETCH_ENTITIES_ASYNC)
   return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => clClient.entities(appId)

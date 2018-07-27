@@ -8,7 +8,7 @@ import { AppBase, EntityBase, ActionBase, TrainDialog, LogDialog, Teach, Session
 import { Dispatch } from 'redux'
 import { setErrorDisplay } from './displayActions'
 import * as ClientFactory from '../services/clientFactory' 
-import { fetchApplicationsAsync, fetchApplicationTrainingStatusThunkAsync } from './fetchActions';
+import { fetchApplicationsThunkAsync, fetchApplicationTrainingStatusThunkAsync } from './fetchActions'
 import { AxiosError } from 'axios';
 
 // --------------------------
@@ -59,7 +59,7 @@ export const copyApplicationThunkAsync = (srcUserId: string, destUserId: string,
         try {
             dispatch(copyApplicationAsync(srcUserId, destUserId, appId))
             await clClient.appCopy(srcUserId, destUserId, appId)
-            dispatch(fetchApplicationsAsync(destUserId))
+            dispatch(fetchApplicationsThunkAsync(destUserId))
             dispatch(copyApplicationFulfilled())
         }
         catch (e) {
