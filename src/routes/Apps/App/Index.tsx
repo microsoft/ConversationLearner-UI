@@ -52,8 +52,6 @@ class Index extends React.Component<Props, ComponentState> {
         // Note: We load log dialogs in a separate call as eventually we want to page
         this.props.fetchAllLogDialogsThunkAsync(app, packageId)
         this.props.fetchAppSource(app.appId, packageId)
-        // this.props.fetchAllChatSessionsAsync(app.appId)
-        // this.props.fetchAllTeachSessions(app.appId)
     }
 
     componentWillMount() {

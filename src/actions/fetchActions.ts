@@ -405,14 +405,31 @@ export const fetchAllActionsThunkAsync = (appId: string) => {
 // -------------------------
 //  Chat Sessions
 // -------------------------
-export const fetchAllChatSessionsAsync = (clAppID: string): ActionObject => {
+export const fetchAllChatSessionsThunkAsync = (appId: string) => {
+    return async (dispatch: Dispatch<any>) => {
+        const clClient = ClientFactory.getInstance(AT.FETCH_TEACH_SESSIONS_ASYNC)
+        dispatch(fetchAllChatSessionsAsync(appId))
+
+        try {
+            const chatSessions = await clClient.chatSessions(appId)
+            dispatch(fetchAllChatSessionsFulfilled(chatSessions))
+            return chatSessions
+        } catch (e) {
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.FETCH_TEACH_SESSIONS_ASYNC))
+            return null;
+        }
+    }
+}
+
+const fetchAllChatSessionsAsync = (clAppID: string): ActionObject => {
     return {
         type: AT.FETCH_CHAT_SESSIONS_ASYNC,
         clAppID: clAppID
     }
 }
 
-export const fetchAllChatSessionsFulfilled = (sessions: Session[]): ActionObject => {
+const fetchAllChatSessionsFulfilled = (sessions: Session[]): ActionObject => {
     return {
         type: AT.FETCH_CHAT_SESSIONS_FULFILLED,
         allSessions: sessions
