@@ -6,7 +6,7 @@ import * as Rx from 'rxjs';
 import { ActionsObservable, Epic } from 'redux-observable'
 import { State, ActionObject } from '../types'
 import { AT } from '../types/ActionTypes'
-import { setApp, setConversationId, expireChatSession } from './apiHelpers';
+import { setApp, setConversationId } from './apiHelpers'
 
 const assertNever = () => { throw Error(`Should not reach here`) }
 

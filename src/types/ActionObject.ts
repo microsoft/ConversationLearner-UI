@@ -52,7 +52,6 @@ export type UpdateAction = {
     trainDialog: TrainDialog
 } | {
     type: AT.EDIT_CHAT_SESSION_EXPIRE_ASYNC,
-    key: string,
     appId: string,
     sessionId: string,
 } | {

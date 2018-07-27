@@ -6,7 +6,7 @@ import * as Rx from 'rxjs';
 import { ActionsObservable, Epic } from 'redux-observable'
 import { State, ActionObject } from '../types'
 import { AT } from '../types/ActionTypes'
-import { getAllApps, getAllEntitiesForApp, getAllActionsForApp, getAllSessionsForApp, getAllTeachSessionsForApp, getAllTrainDialogsForApp, getAllLogDialogsForApp } from "./apiHelpers";
+import { getAllSessionsForApp, getAllTeachSessionsForApp, getAllTrainDialogsForApp, getAllLogDialogsForApp } from "./apiHelpers";
  
 const assertNever = () => { throw Error(`Should not reach here`) }
 

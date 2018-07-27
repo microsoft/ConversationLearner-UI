@@ -407,7 +407,6 @@ export default class ClClient {
             .then(response => response.data)
     }
 
-    // AT.EDIT_CHAT_SESSION_EXPIRE_ASYNC
     chatSessionsExpire(appId: string, sessionId: string): Promise<void> {
         return this.send<void>({
             method: 'put',

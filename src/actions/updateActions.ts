@@ -182,14 +182,31 @@ const editTrainDialogFulfilled = (trainDialog: TrainDialog): ActionObject => {
 // --------------------------
 // SessionExpire
 // --------------------------
-export const editChatSessionExpireAsync = (key: string, appId: string, sessionId: string): ActionObject => {
+const editChatSessionExpireAsync = (appId: string, sessionId: string): ActionObject => {
     return {
         type: AT.EDIT_CHAT_SESSION_EXPIRE_ASYNC,
-        key: key,
         appId: appId,
         sessionId: sessionId
     }
 }
+
+export const editChatSessionExpireThunkAsync = (appId: string, sessionId: string) => {
+    return async (dispatch: Dispatch<any>) => {
+        const clClient = ClientFactory.getInstance(AT.EDIT_APP_LIVE_TAG_ASYNC)
+        dispatch(editChatSessionExpireAsync(appId, sessionId))
+
+        try {
+            await clClient.chatSessionsExpire(appId, sessionId)
+        }
+        catch (e) {
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.EDIT_APP_LIVE_TAG_ASYNC))
+            throw error
+        }
+    }
+}
+
+
 
 // --------------------------
 // AppLiveTag

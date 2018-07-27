@@ -105,16 +105,6 @@ export const deleteApp = (app: AppBase): Rx.Observable<ActionObject> => {
 // ========================================================
 // SESSION ROUTES
 // ========================================================
-
-export const expireChatSession = (appId: string, sessionId: string): Rx.Observable<ActionObject> => {
-  const clClient = ClientFactory.getInstance(AT.EDIT_CHAT_SESSION_EXPIRE_ASYNC) 
-  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => clClient.chatSessionsExpire(appId, sessionId)
-    .then(() => {
-      obs.complete();
-    })
-    .catch(err => handleError(obs, err, AT.EDIT_CHAT_SESSION_EXPIRE_ASYNC))); 
-};
-
 export const getAllSessionsForApp = (appId: string): Rx.Observable<ActionObject> => {
   const clClient = ClientFactory.getInstance(AT.FETCH_CHAT_SESSIONS_ASYNC)
   return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => clClient.chatSessions(appId)
