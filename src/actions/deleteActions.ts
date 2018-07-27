@@ -6,7 +6,7 @@ import { AT, ActionObject, ErrorType } from '../types'
 import { Dispatch } from 'redux'
 import { AppBase, Session, Teach, EntityBase } from '@conversationlearner/models'
 import { setErrorDisplay } from './displayActions'
-import { fetchAllTrainDialogsAsync, fetchAllLogDialogsAsync, fetchApplicationTrainingStatusThunkAsync, fetchAllActionsAsync } from './fetchActions'
+import { fetchAllTrainDialogsAsync, fetchAllLogDialogsAsync, fetchApplicationTrainingStatusThunkAsync, fetchAllActionsThunkAsync } from './fetchActions'
 import * as ClientFactory from '../services/clientFactory'
 import { AxiosError } from 'axios';
 
@@ -48,7 +48,7 @@ export const deleteEntityThunkAsync = (appId: string, entity: EntityBase) => {
 
             // If any actions were modified, reload them
             if (deleteEditResponse.actionIds && deleteEditResponse.actionIds.length > 0) {
-                dispatch(fetchAllActionsAsync(appId))
+                dispatch(fetchAllActionsThunkAsync(appId))
             }
 
             // If any train dialogs were modified fetch train dialogs 

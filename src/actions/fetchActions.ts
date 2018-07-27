@@ -338,17 +338,34 @@ const fetchAppSourceFulfilled = (appDefinition: AppDefinition): ActionObject => 
 // -------------------------
 //  Actions
 // -------------------------
-export const fetchAllActionsAsync = (clAppID: string): ActionObject => {
+const fetchAllActionsAsync = (appId: string): ActionObject => {
     return {
         type: AT.FETCH_ACTIONS_ASYNC,
-        clAppID: clAppID
+        clAppID: appId
     }
 }
 
-export const fetchAllActionsFulfilled = (actions: ActionBase[]): ActionObject => {
+const fetchAllActionsFulfilled = (actions: ActionBase[]): ActionObject => {
     return {
         type: AT.FETCH_ACTIONS_FULFILLED,
         allActions: actions
+    }
+}
+
+export const fetchAllActionsThunkAsync = (appId: string) => {
+    return async (dispatch: Dispatch<any>) => {
+        const clClient = ClientFactory.getInstance(AT.FETCH_ACTIONS_ASYNC)
+        dispatch(fetchAllActionsAsync(appId))
+
+        try {
+            const actions = await clClient.actions(appId)
+            dispatch(fetchAllActionsFulfilled(actions))
+            return actions
+        } catch (e) {
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.FETCH_ACTIONS_ASYNC))
+            return null;
+        }
     }
 }
 

@@ -55,16 +55,6 @@ export const setConversationId = (userName: string, userId: string, conversation
 //=========================================================
 // GET ROUTES
 //=========================================================
-export const getAllActionsForApp = (appId: string): Rx.Observable<ActionObject> => {
-  const clClient = ClientFactory.getInstance(AT.FETCH_ACTIONS_ASYNC)
-  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => clClient.actions(appId)
-    .then(botActions => {
-      obs.next(actions.fetch.fetchAllActionsFulfilled(botActions));
-      obs.complete();
-    })
-    .catch(err => handleError(obs, err, AT.FETCH_ACTIONS_ASYNC)));
-};
-
 export const getAllTrainDialogsForApp = (appId: string): Rx.Observable<ActionObject> => {
   const clClient = ClientFactory.getInstance(AT.FETCH_TRAIN_DIALOGS_ASYNC);
   return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => clClient.trainDialogs(appId)
