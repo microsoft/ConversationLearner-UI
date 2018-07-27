@@ -422,15 +422,31 @@ export const fetchAllChatSessionsFulfilled = (sessions: Session[]): ActionObject
 // -------------------------
 //  Teach Sessions
 // -------------------------
-export const fetchAllTeachSessionsAsync = (key: string, clAppID: string): ActionObject => {
-    return {
-        type: AT.FETCH_TEACH_SESSIONS_ASYNC,
-        key: key,
-        clAppID: clAppID
+export const fetchAllTeachSessionsThunkAsync = (appId: string) => {
+    return async (dispatch: Dispatch<any>) => {
+        const clClient = ClientFactory.getInstance(AT.FETCH_TEACH_SESSIONS_ASYNC)
+        dispatch(fetchAllTeachSessionsAsync(appId))
+
+        try {
+            const teachSessions = await clClient.teachSessions(appId)
+            dispatch(fetchAllTeachSessionsFulfilled(teachSessions))
+            return teachSessions
+        } catch (e) {
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.FETCH_TEACH_SESSIONS_ASYNC))
+            return null;
+        }
     }
 }
 
-export const fetchAllTeachSessionsFulfilled = (teachSessions: Teach[]): ActionObject => {
+const fetchAllTeachSessionsAsync = (appId: string): ActionObject => {
+    return {
+        type: AT.FETCH_TEACH_SESSIONS_ASYNC,
+        clAppID: appId
+    }
+}
+
+const fetchAllTeachSessionsFulfilled = (teachSessions: Teach[]): ActionObject => {
     return {
         type: AT.FETCH_TEACH_SESSIONS_FULFILLED,
         allTeachSessions: teachSessions

@@ -190,7 +190,6 @@ export type FetchAction = {
     allTeachSessions: Teach[]
 } | {
     type: AT.FETCH_TEACH_SESSIONS_ASYNC,
-    key: string,
     clAppID: string
 } | {
     type: AT.FETCH_PROFILE_ASYNC

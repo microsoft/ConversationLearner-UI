@@ -37,20 +37,6 @@ export const getAllSessionsForApp = (appId: string): Rx.Observable<ActionObject>
     .catch(err => handleError(obs, err, AT.FETCH_CHAT_SESSIONS_ASYNC)));
 };
 
-// ========================================================
-// Teach
-// ========================================================
-
-export const getAllTeachSessionsForApp = (appId: string): Rx.Observable<ActionObject> => {
-  const clClient = ClientFactory.getInstance(AT.FETCH_TEACH_SESSIONS_ASYNC)
-  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => clClient.teachSessions(appId)
-    .then(teachSessions => {
-      obs.next(actions.fetch.fetchAllTeachSessionsFulfilled(teachSessions));
-      obs.complete();
-    })
-    .catch(err => handleError(obs, err, AT.FETCH_TEACH_SESSIONS_ASYNC)));
-};
-
 const handleError = (obs: Rx.Observer<ActionObject>, e: any, actionType: AT) => {
   if (!obs.closed) {
     // Service call failure
