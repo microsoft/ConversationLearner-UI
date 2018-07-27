@@ -10,8 +10,6 @@ import {
     ActionBase,
     TrainDialog,
     LogDialog,
-    Session,
-    Teach,
     TrainingStatus,
     TrainingStatusCode,
     AppDefinition, 
@@ -399,74 +397,6 @@ export const fetchAllActionsThunkAsync = (appId: string) => {
             dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.FETCH_ACTIONS_ASYNC))
             return null;
         }
-    }
-}
-
-// -------------------------
-//  Chat Sessions
-// -------------------------
-export const fetchAllChatSessionsThunkAsync = (appId: string) => {
-    return async (dispatch: Dispatch<any>) => {
-        const clClient = ClientFactory.getInstance(AT.FETCH_TEACH_SESSIONS_ASYNC)
-        dispatch(fetchAllChatSessionsAsync(appId))
-
-        try {
-            const chatSessions = await clClient.chatSessions(appId)
-            dispatch(fetchAllChatSessionsFulfilled(chatSessions))
-            return chatSessions
-        } catch (e) {
-            const error = e as AxiosError
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.FETCH_TEACH_SESSIONS_ASYNC))
-            return null;
-        }
-    }
-}
-
-const fetchAllChatSessionsAsync = (appId: string): ActionObject => {
-    return {
-        type: AT.FETCH_CHAT_SESSIONS_ASYNC,
-        appId: appId
-    }
-}
-
-const fetchAllChatSessionsFulfilled = (sessions: Session[]): ActionObject => {
-    return {
-        type: AT.FETCH_CHAT_SESSIONS_FULFILLED,
-        allSessions: sessions
-    }
-}
-
-// -------------------------
-//  Teach Sessions
-// -------------------------
-export const fetchAllTeachSessionsThunkAsync = (appId: string) => {
-    return async (dispatch: Dispatch<any>) => {
-        const clClient = ClientFactory.getInstance(AT.FETCH_TEACH_SESSIONS_ASYNC)
-        dispatch(fetchAllTeachSessionsAsync(appId))
-
-        try {
-            const teachSessions = await clClient.teachSessions(appId)
-            dispatch(fetchAllTeachSessionsFulfilled(teachSessions))
-            return teachSessions
-        } catch (e) {
-            const error = e as AxiosError
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.FETCH_TEACH_SESSIONS_ASYNC))
-            return null;
-        }
-    }
-}
-
-const fetchAllTeachSessionsAsync = (appId: string): ActionObject => {
-    return {
-        type: AT.FETCH_TEACH_SESSIONS_ASYNC,
-        appId: appId
-    }
-}
-
-const fetchAllTeachSessionsFulfilled = (teachSessions: Teach[]): ActionObject => {
-    return {
-        type: AT.FETCH_TEACH_SESSIONS_FULFILLED,
-        allTeachSessions: teachSessions
     }
 }
 
