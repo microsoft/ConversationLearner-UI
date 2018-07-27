@@ -131,7 +131,8 @@ export type FetchAction = {
     userId: string
 } | {
     type: AT.FETCH_BOTINFO_ASYNC,
-    browserId: string
+    browserId: string,
+    appId: string
 } | {
     type: AT.FETCH_BOTINFO_FULFILLED,
     botInfo: BotInfo,

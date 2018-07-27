@@ -108,10 +108,11 @@ export const fetchAllLogDialogsFulfilled = (logDialogs: LogDialog[]): ActionObje
 // ----------------------------------------
 // Bot Info
 // ----------------------------------------
-const fetchBotInfoAsync = (browserId: string): ActionObject => {
+const fetchBotInfoAsync = (browserId: string, appId: string): ActionObject => {
     return {
         type: AT.FETCH_BOTINFO_ASYNC,
-        browserId
+        browserId,
+        appId
     }
 }
 
@@ -123,13 +124,13 @@ const fetchBotInfoFulfilled = (botInfo: BotInfo, browserId: string): ActionObjec
     }
 }
 
-export const fetchBotInfoThunkAsync = (browserId: string) => {
+export const fetchBotInfoThunkAsync = (browserId: string, appId: string = null) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.FETCH_BOTINFO_ASYNC)
-        dispatch(fetchBotInfoAsync(browserId))
+        dispatch(fetchBotInfoAsync(browserId, appId))
 
         try {
-            const botInfo = await clClient.getBotInfo(browserId)
+            const botInfo = await clClient.getBotInfo(browserId, appId)
             dispatch(fetchBotInfoFulfilled(botInfo, browserId))
             return botInfo
         } catch (e) {
