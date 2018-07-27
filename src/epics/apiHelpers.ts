@@ -55,16 +55,6 @@ export const setConversationId = (userName: string, userId: string, conversation
 //=========================================================
 // GET ROUTES
 //=========================================================
-export const getAllEntitiesForApp = (appId: string): Rx.Observable<ActionObject> => {
-  const clClient = ClientFactory.getInstance(AT.FETCH_ENTITIES_ASYNC)
-  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => clClient.entities(appId)
-    .then(entities => {
-      obs.next(actions.fetch.fetchAllEntitiesFulfilled(entities));
-      obs.complete();
-    })
-    .catch(err => handleError(obs, err, AT.FETCH_ENTITIES_ASYNC)));
-};
-
 export const getAllActionsForApp = (appId: string): Rx.Observable<ActionObject> => {
   const clClient = ClientFactory.getInstance(AT.FETCH_ACTIONS_ASYNC)
   return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => clClient.actions(appId)

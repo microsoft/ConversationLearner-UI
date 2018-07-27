@@ -269,17 +269,34 @@ const fetchApplicationTrainingStatusExpired = (appId: string): ActionObject => {
 // -------------------------
 //  Entities
 // -------------------------
-export const fetchAllEntitiesAsync = (clAppID: string): ActionObject => {
+const fetchAllEntitiesAsync = (appId: string): ActionObject => {
     return {
         type: AT.FETCH_ENTITIES_ASYNC,
-        clAppID: clAppID
+        clAppID: appId
     }
 }
 
-export const fetchAllEntitiesFulfilled = (entities: EntityBase[]): ActionObject => {
+const fetchAllEntitiesFulfilled = (entities: EntityBase[]): ActionObject => {
     return {
         type: AT.FETCH_ENTITIES_FULFILLED,
         allEntities: entities
+    }
+}
+
+export const fetchAllEntitiesThunkAsync = (appId: string) => {
+    return async (dispatch: Dispatch<any>) => {
+        const clClient = ClientFactory.getInstance(AT.FETCH_ENTITIES_ASYNC)
+        dispatch(fetchAllEntitiesAsync(appId))
+
+        try {
+            const entities = await clClient.entities(appId)
+            dispatch(fetchAllEntitiesFulfilled(entities))
+            return entities
+        } catch (e) {
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.FETCH_ENTITIES_ASYNC))
+            return null;
+        }
     }
 }
 
