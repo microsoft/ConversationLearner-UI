@@ -28,19 +28,6 @@ export interface AppForUpdate extends AppBase {
 // =========================================================
 
 /**
- * Tell SDK what the currently selected AppId is
- */
-export const setApp = (app: AppBase): Rx.Observable<ActionObject> => {
-  const clClient = ClientFactory.getInstance(AT.SET_CURRENT_APP_ASYNC)
-  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => clClient.setApp(app)
-    .then(response => {
-      obs.next(actions.display.setCurrentAppFulfilled(app));
-      obs.complete();
-    })
-    .catch(err => handleError(obs, err, AT.SET_CURRENT_APP_ASYNC)));
-};
-
-/**
  * Tell SDK what conversationId webchat is using
  */
 export const setConversationId = (userName: string, userId: string, conversationId: string): Rx.Observable<ActionObject> => {

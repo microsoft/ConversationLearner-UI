@@ -77,7 +77,6 @@ export type UpdateAction = {
 
 export type DisplayAction = {
     type: AT.SET_CURRENT_APP_ASYNC,
-    key: string,
     app: AppBase,
 } | {
     type: AT.SET_CURRENT_APP_FULFILLED,

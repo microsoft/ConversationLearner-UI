@@ -70,7 +70,6 @@ export default class ClClient {
         return Axios(finalConfig) as Promise<TypedAxiosResponse<T>>
     }
 
-    // AT.SET_CURRENT_APP_ASYNC
     setApp(app: models.AppBase): Promise<void> {
         return this.send({
             method: 'put',

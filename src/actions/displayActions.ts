@@ -7,12 +7,38 @@ import { AT } from '../types/ActionTypes'
 import { ErrorType } from '../types/const'
 import { AppBase, Banner } from '@conversationlearner/models';
 import { TipType } from '../components/ToolTips'
+import * as ClientFactory from '../services/clientFactory'
+import { Dispatch } from 'redux'
+import { AxiosError } from 'axios';
 
-export const setCurrentApp = (key: string, app: AppBase): ActionObject => {
+const setCurrentApp = (key: string, app: AppBase): ActionObject => {
     return {
         type: AT.SET_CURRENT_APP_ASYNC,
-        key,
         app
+    }
+}
+
+const setCurrentAppFulfilled = (app: AppBase): ActionObject => {
+    return {
+        type: AT.SET_CURRENT_APP_FULFILLED,
+        app
+    }
+}
+
+export const setCurrentAppThunkAsync = (key: string, application: AppBase) => {
+    return async (dispatch: Dispatch<any>) => {
+        const clClient = ClientFactory.getInstance(AT.SET_CURRENT_APP_ASYNC)
+        try {
+            dispatch(setCurrentApp(key, application))
+            const newApp = await clClient.setApp(application)
+            dispatch(setCurrentAppFulfilled(application))
+            return newApp
+        }
+        catch (e) {
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.SET_CURRENT_APP_ASYNC))
+            throw error
+        }
     }
 }
 
@@ -22,13 +48,6 @@ export const setConversationId = (userName: string, userId: string, conversation
         userName,
         userId,
         conversationId
-    }
-}
-
-export const setCurrentAppFulfilled = (app: AppBase): ActionObject => {
-    return {
-        type: AT.SET_CURRENT_APP_FULFILLED,
-        app
     }
 }
 
