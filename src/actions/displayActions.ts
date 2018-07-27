@@ -51,6 +51,21 @@ export const setConversationId = (userName: string, userId: string, conversation
     }
 }
 
+export const setConversationIdThunkAsync = (userName: string, userId: string, conversationId: string) => {
+    return async (dispatch: Dispatch<any>) => {
+        const clClient = ClientFactory.getInstance(AT.SET_CONVERSATION_ID_ASYNC)
+        try {
+            dispatch(setConversationId(userName, userId, conversationId))
+            await clClient.setConversationId(userName, userId, conversationId)
+        }
+        catch (e) {
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.SET_CONVERSATION_ID_ASYNC))
+            throw error
+        }
+    }
+}
+
 export const setTipType = (tipType: TipType): ActionObject => {
     return {
         type: AT.SET_TIP_TYPE,

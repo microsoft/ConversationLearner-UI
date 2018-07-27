@@ -79,7 +79,6 @@ export default class ClClient {
             .then(response => { })
     }
 
-    // AT.SET_CONVERSATION_ID_ASYNC
     setConversationId(userName: string, userId: string, conversationId: string): Promise<void> {
         return this.send({
             method: 'put',

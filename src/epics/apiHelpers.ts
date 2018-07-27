@@ -23,22 +23,6 @@ export interface AppForUpdate extends AppBase {
   latestPackageId: number
 }
 
-// =========================================================
-// STATE ROUTES
-// =========================================================
-
-/**
- * Tell SDK what conversationId webchat is using
- */
-export const setConversationId = (userName: string, userId: string, conversationId: string): Rx.Observable<ActionObject> => {
-  const clClient = ClientFactory.getInstance(AT.SET_CONVERSATION_ID_ASYNC)
-  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => clClient.setConversationId(userName, userId, conversationId)
-    .then(response => {
-      obs.complete();
-    })
-    .catch(err => handleError(obs, err, AT.SET_CONVERSATION_ID_ASYNC)));
-};
-
 //=========================================================
 // GET ROUTES
 //=========================================================
