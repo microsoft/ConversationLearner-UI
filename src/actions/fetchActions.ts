@@ -49,7 +49,7 @@ export const fetchAllTrainDialogsThunkAsync = (appId: string) => {
 const fetchAllTrainDialogsAsync = (appId: string): ActionObject => {
     return {
         type: AT.FETCH_TRAIN_DIALOGS_ASYNC,
-        clAppID: appId
+        appId: appId
     }
 }
 
@@ -80,10 +80,10 @@ export const fetchHistoryThunkAsync = (appId: string, trainDialog: TrainDialog, 
     }
 }
 
-const fetchHistoryAsync = (clAppID: string, trainDialog: TrainDialog, userName: string, userId: string): ActionObject => {
+const fetchHistoryAsync = (appId: string, trainDialog: TrainDialog, userName: string, userId: string): ActionObject => {
     return {
         type: AT.FETCH_HISTORY_ASYNC,
-        clAppID: clAppID,
+        appId: appId,
         userName: userName,
         userId: userId,
         trainDialog: trainDialog
@@ -126,7 +126,7 @@ export const fetchAllLogDialogsThunkAsync = (app: AppBase, packageId: string) =>
 const fetchAllLogDialogsAsync = (appId: string, packageId: string): ActionObject => {
     return {
         type: AT.FETCH_LOG_DIALOGS_ASYNC,
-        clAppID: appId,
+        appId: appId,
         packageId: packageId
     }
 }
@@ -305,7 +305,7 @@ const fetchApplicationTrainingStatusExpired = (appId: string): ActionObject => {
 const fetchAllEntitiesAsync = (appId: string): ActionObject => {
     return {
         type: AT.FETCH_ENTITIES_ASYNC,
-        clAppID: appId
+        appId: appId
     }
 }
 
@@ -356,7 +356,7 @@ export const fetchAppSourceThunkAsync = (appId: string, packageId: string, updat
 const fetchAppSourceAsync = (appId: string, packageId: string): ActionObject => {
     return {
         type: AT.FETCH_APPSOURCE_ASYNC,
-        clAppID: appId,
+        appId: appId,
         packageId: packageId
     }
 }
@@ -374,7 +374,7 @@ const fetchAppSourceFulfilled = (appDefinition: AppDefinition): ActionObject => 
 const fetchAllActionsAsync = (appId: string): ActionObject => {
     return {
         type: AT.FETCH_ACTIONS_ASYNC,
-        clAppID: appId
+        appId: appId
     }
 }
 
@@ -422,10 +422,10 @@ export const fetchAllChatSessionsThunkAsync = (appId: string) => {
     }
 }
 
-const fetchAllChatSessionsAsync = (clAppID: string): ActionObject => {
+const fetchAllChatSessionsAsync = (appId: string): ActionObject => {
     return {
         type: AT.FETCH_CHAT_SESSIONS_ASYNC,
-        clAppID: clAppID
+        appId: appId
     }
 }
 
@@ -459,7 +459,7 @@ export const fetchAllTeachSessionsThunkAsync = (appId: string) => {
 const fetchAllTeachSessionsAsync = (appId: string): ActionObject => {
     return {
         type: AT.FETCH_TEACH_SESSIONS_ASYNC,
-        clAppID: appId
+        appId: appId
     }
 }
 

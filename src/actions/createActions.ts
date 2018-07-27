@@ -291,10 +291,10 @@ export const createTeachSessionFromHistoryThunkAsync = (app: AppBase, trainDialo
     }
 }
 
-const createTeachSessionFromHistoryAsync = (clAppID: string, trainDialog: TrainDialog, userName: string, userId: string): ActionObject => {
+const createTeachSessionFromHistoryAsync = (appId: string, trainDialog: TrainDialog, userName: string, userId: string): ActionObject => {
     return {
         type: AT.CREATE_TEACH_SESSION_FROMHISTORYASYNC,
-        clAppID: clAppID,
+        appId: appId,
         userName: userName,
         userId: userId,
         trainDialog: trainDialog
@@ -331,10 +331,10 @@ export const createTeachSessionFromUndoThunkAsync = (appId: string, teach: Teach
     }
 }
 
-const createTeachSessionFromUndoAsync = (clAppID: string, teach: Teach, popRound: boolean, userName: string, userId: string): ActionObject => {
+const createTeachSessionFromUndoAsync = (appId: string, teach: Teach, popRound: boolean, userName: string, userId: string): ActionObject => {
     return {
         type: AT.CREATE_TEACH_SESSION_FROMUNDOASYNC,
-        clAppID: clAppID,
+        appId: appId,
         teach: teach,
         popRound: popRound,
         userName: userName,

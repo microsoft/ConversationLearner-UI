@@ -137,26 +137,26 @@ export type FetchAction = {
     browserId: string
 } | {
     type: AT.FETCH_ENTITIES_ASYNC,
-    clAppID: string
+    appId: string
 } | {
     type: AT.FETCH_ACTIONS_ASYNC,
-    clAppID: string
+    appId: string
 } | {
     type: AT.FETCH_APPSOURCE_ASYNC,
-    clAppID: string,
+    appId: string,
     packageId: string
 } | {
     type: AT.FETCH_CHAT_SESSIONS_ASYNC,
-    clAppID: string
+    appId: string
 } | {
     type: AT.FETCH_TRAIN_DIALOGS_ASYNC,
-    clAppID: string
+    appId: string
 } | {
     type: AT.FETCH_TRAIN_DIALOGS_FULFILLED,
     allTrainDialogs: TrainDialog[],
 } | {
     type: AT.FETCH_HISTORY_ASYNC,
-    clAppID: string,
+    appId: string,
     userName: string,
     userId: string,
     trainDialog: TrainDialog
@@ -165,7 +165,7 @@ export type FetchAction = {
     teachWithHistory: TeachWithHistory,
 } | {
     type: AT.FETCH_LOG_DIALOGS_ASYNC,
-    clAppID: string,
+    appId: string,
     packageId: string
 } | {
     type: AT.FETCH_LOG_DIALOGS_FULFILLED,
@@ -190,7 +190,7 @@ export type FetchAction = {
     allTeachSessions: Teach[]
 } | {
     type: AT.FETCH_TEACH_SESSIONS_ASYNC,
-    clAppID: string
+    appId: string
 } | {
     type: AT.FETCH_PROFILE_ASYNC
 } | {
@@ -296,7 +296,7 @@ export type CreateAction = {
     teachSession: Teach
 } | {
     type: AT.CREATE_TEACH_SESSION_FROMUNDOASYNC,
-    clAppID: string,
+    appId: string,
     teach: Teach,
     popRound: boolean,
     userName: string,
@@ -306,7 +306,7 @@ export type CreateAction = {
     teachWithHistory: TeachWithHistory
 } | {
     type: AT.CREATE_TEACH_SESSION_FROMHISTORYASYNC,
-    clAppID: string,
+    appId: string,
     userName: string,
     userId: string,
     trainDialog: TrainDialog
