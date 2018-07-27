@@ -53,7 +53,7 @@ class AppsIndex extends React.Component<Props, ComponentState> {
     }
 
     onClickDeleteApp = (appToDelete: AppBase) => {
-        this.props.deleteApplicationAsync(appToDelete)
+        this.props.deleteApplicationThunkAsync(appToDelete.appId)
     }
 
     onCreateApp = async (appToCreate: AppBase, source: AppDefinition | null = null) => {
@@ -97,7 +97,7 @@ const mapDispatchToProps = (dispatch: any) => {
         fetchApplicationsThunkAsync: actions.fetch.fetchApplicationsThunkAsync,
         fetchBotInfoThunkAsync: actions.fetch.fetchBotInfoThunkAsync,
         createApplicationThunkAsync: actions.create.createApplicationThunkAsync,
-        deleteApplicationAsync: actions.delete.deleteApplicationAsync,
+        deleteApplicationThunkAsync: actions.delete.deleteApplicationThunkAsync,
         copyApplicationThunkAsync: actions.create.copyApplicationThunkAsync
     }, dispatch)
 }

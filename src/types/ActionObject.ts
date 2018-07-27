@@ -319,8 +319,7 @@ export type CreateAction = {
 
 export type DeleteAction = {
     type: AT.DELETE_APPLICATION_ASYNC,
-    appId: string,
-    app: AppBase
+    appId: string
 } | {
     type: AT.DELETE_APPLICATION_FULFILLED,
     appId: string

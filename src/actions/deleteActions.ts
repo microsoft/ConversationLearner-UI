@@ -13,18 +13,34 @@ import { AxiosError } from 'axios';
 // ---------------------
 // App
 // ---------------------
-export const deleteApplicationAsync = (app: AppBase): ActionObject => {
+const deleteApplicationAsync = (appId: string): ActionObject => {
     return {
         type: AT.DELETE_APPLICATION_ASYNC,
-        appId: app.appId,
-        app: app
+        appId: appId
     }
 }
 
-export const deleteApplicationFulfilled = (appId: string): ActionObject => {
+const deleteApplicationFulfilled = (appId: string): ActionObject => {
     return {
         type: AT.DELETE_APPLICATION_FULFILLED,
         appId: appId
+    }
+}
+
+export const deleteApplicationThunkAsync = (appId: string) => {
+    return async (dispatch: Dispatch<any>) => {
+        dispatch(deleteApplicationAsync(appId))
+        const clClient = ClientFactory.getInstance(AT.DELETE_APPLICATION_ASYNC)
+
+        try {
+            await clClient.appsDelete(appId)
+            dispatch(deleteApplicationFulfilled(appId))
+            return true;
+        } catch (e) {
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.DELETE_APPLICATION_ASYNC))
+            return false;
+        }
     }
 }
 

@@ -59,20 +59,6 @@ export const getLuisApplicationCultures = (): Promise<CultureObject[]> => {
     .then(response => response.data)
 }
 
-//=========================================================
-// DELETE ROUTES
-//=========================================================
-
-export const deleteApp = (app: AppBase): Rx.Observable<ActionObject> => {
-  const clClient = ClientFactory.getInstance(AT.DELETE_APPLICATION_ASYNC)
-  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => clClient.appsDelete(app.appId)
-    .then(response => {
-      obs.next(actions.delete.deleteApplicationFulfilled(app.appId));
-      obs.complete();
-    })
-    .catch(err => handleError(obs, err, AT.DELETE_APPLICATION_ASYNC)));
-};
-
 // ========================================================
 // SESSION ROUTES
 // ========================================================
