@@ -90,7 +90,7 @@ export default class ClClient {
     }
 
     // Each browser instance has a different browserId
-    getBotInfo(browserId: string, appId: string | null): Promise<models.BotInfo> {
+    getBotInfo(browserId: string, appId?: string): Promise<models.BotInfo> {
         return this.send<models.BotInfo>({
             url: `${this.baseUrl}/bot?browserId=${browserId}${appId ? `&appId=${appId}` : ''}`
         })
