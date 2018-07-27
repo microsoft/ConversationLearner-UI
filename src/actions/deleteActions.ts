@@ -6,7 +6,7 @@ import { AT, ActionObject, ErrorType } from '../types'
 import { Dispatch } from 'redux'
 import { AppBase, Session, Teach, EntityBase } from '@conversationlearner/models'
 import { setErrorDisplay } from './displayActions'
-import { fetchAllTrainDialogsThunkAsync, fetchAllLogDialogsAsync, fetchApplicationTrainingStatusThunkAsync, fetchAllActionsThunkAsync } from './fetchActions'
+import { fetchAllTrainDialogsThunkAsync, fetchAllLogDialogsThunkAsync, fetchApplicationTrainingStatusThunkAsync, fetchAllActionsThunkAsync } from './fetchActions'
 import * as ClientFactory from '../services/clientFactory'
 import { AxiosError } from 'axios';
 
@@ -150,7 +150,7 @@ export const deleteChatSessionThunkAsync = (key: string, session: Session, app: 
         try {
             await clClient.chatSessionsDelete(app.appId, session.sessionId);
             dispatch(deleteChatSessionFulfilled(session.sessionId));
-            dispatch(fetchAllLogDialogsAsync(key, app, packageId))
+            dispatch(fetchAllLogDialogsThunkAsync(app, packageId))
             return true;
         } catch (e) {
             const error = e as AxiosError
@@ -325,7 +325,7 @@ export const deleteLogDialogThunkAsync = (userId: string, app: AppBase, logDialo
             const error = e as AxiosError
             dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.DELETE_LOG_DIALOG_ASYNC))
             dispatch(deleteLogDialogRejected())
-            dispatch(fetchAllLogDialogsAsync(userId, app, packageId));
+            dispatch(fetchAllLogDialogsThunkAsync(app, packageId));
         }
     }
 }

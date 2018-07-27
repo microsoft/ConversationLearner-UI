@@ -101,21 +101,37 @@ const fetchHistoryFulfilled = (teachWithHistory: TeachWithHistory): ActionObject
 // ----------------------------------------
 // Log Dialogs
 // ----------------------------------------
-export const fetchAllLogDialogsAsync = (key: string, app: AppBase, packageId: string): ActionObject => {
-    // Note: In future change fetch log dialogs to default to all package if packageId is dev
-    const allPackages = (packageId === app.devPackageId)
+export const fetchAllLogDialogsThunkAsync = (app: AppBase, packageId: string) => {
+    return async (dispatch: Dispatch<any>) => {
+        // Note: In future change fetch log dialogs to default to all package if packageId is dev
+        const commaSeparatedPackageIds = (packageId === app.devPackageId)
             ? (app.packageVersions || []).map(pv => pv.packageId).concat(packageId).join(',')
             : packageId
-    
-    return {
-        type: AT.FETCH_LOG_DIALOGS_ASYNC,
-        key: key,
-        clAppID: app.appId,
-        packageId: allPackages
+
+        const clClient = ClientFactory.getInstance(AT.FETCH_LOG_DIALOGS_ASYNC)
+        dispatch(fetchAllLogDialogsAsync(app.appId, commaSeparatedPackageIds))
+
+        try {
+            const logDialogs = await clClient.logDialogs(app.appId, commaSeparatedPackageIds)
+            dispatch(fetchAllLogDialogsFulfilled(logDialogs))
+            return logDialogs
+        } catch (e) {
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.FETCH_LOG_DIALOGS_ASYNC))
+            return null;
+        }
     }
 }
 
-export const fetchAllLogDialogsFulfilled = (logDialogs: LogDialog[]): ActionObject => {
+const fetchAllLogDialogsAsync = (appId: string, packageId: string): ActionObject => {
+    return {
+        type: AT.FETCH_LOG_DIALOGS_ASYNC,
+        clAppID: appId,
+        packageId: packageId
+    }
+}
+
+const fetchAllLogDialogsFulfilled = (logDialogs: LogDialog[]): ActionObject => {
     return {
         type: AT.FETCH_LOG_DIALOGS_FULFILLED,
         allLogDialogs: logDialogs

@@ -3,38 +3,13 @@
  * Licensed under the MIT License.
  */
 import axios, { AxiosError } from 'axios'
-import {
-  AppBase
-} from '@conversationlearner/models'
-import * as Rx from 'rxjs';
+import * as Rx from 'rxjs'
 import actions from '../actions'
 import { ActionObject } from '../types'
 import { ErrorType } from '../types/const'
 import { AT } from '../types/ActionTypes'
 import ApiConfig from '../epics/config'
 import * as ClientFactory from '../services/clientFactory'
-
-// =========================================================
-// PARAMETER REQUIREMENTS
-// =========================================================
-
-export interface AppForUpdate extends AppBase {
-  trainingRequired: boolean
-  latestPackageId: number
-}
-
-//=========================================================
-// GET ROUTES
-//=========================================================
-export const getAllLogDialogsForApp = (appId: string, packageId: string): Rx.Observable<ActionObject> => {
-  const clClient = ClientFactory.getInstance(AT.FETCH_LOG_DIALOGS_ASYNC)
-  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => clClient.logDialogs(appId, packageId)
-    .then(logDialogs => {
-      obs.next(actions.fetch.fetchAllLogDialogsFulfilled(logDialogs));
-      obs.complete();
-    })
-    .catch(err => handleError(obs, err, AT.FETCH_LOG_DIALOGS_ASYNC)));
-};
 
 //=========================================================
 // CREATE ROUTES

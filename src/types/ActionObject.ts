@@ -165,7 +165,6 @@ export type FetchAction = {
     teachWithHistory: TeachWithHistory,
 } | {
     type: AT.FETCH_LOG_DIALOGS_ASYNC,
-    key: string,
     clAppID: string,
     packageId: string
 } | {
