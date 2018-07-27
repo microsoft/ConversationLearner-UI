@@ -16,7 +16,7 @@ import {
     createTeachSessionFromUndoThunkAsync
 } from '../../../actions/createActions'
 import { deleteLogDialogThunkAsync } from '../../../actions/deleteActions';
-import { fetchAllLogDialogsAsync, fetchHistoryThunkAsync } from '../../../actions/fetchActions';
+import { fetchAllLogDialogsThunkAsync, fetchHistoryThunkAsync } from '../../../actions/fetchActions';
 import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { FM } from '../../../react-intl-messages'
 import { Activity } from 'botframework-directlinejs';
@@ -358,7 +358,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     }
 
     onClickSync() {
-        this.props.fetchAllLogDialogsAsync(this.props.user.id, this.props.app, this.props.editingPackageId);
+        this.props.fetchAllLogDialogsThunkAsync(this.props.app, this.props.editingPackageId);
     }
 
     @autobind
@@ -635,7 +635,7 @@ const mapDispatchToProps = (dispatch: any) => {
         createTeachSessionFromHistoryThunkAsync,
         createTeachSessionFromUndoThunkAsync,
         deleteLogDialogThunkAsync,
-        fetchAllLogDialogsAsync,
+        fetchAllLogDialogsThunkAsync,
         fetchHistoryThunkAsync,
     }, dispatch)
 }

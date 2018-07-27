@@ -70,7 +70,6 @@ export default class ClClient {
         return Axios(finalConfig) as Promise<TypedAxiosResponse<T>>
     }
 
-    // AT.SET_CURRENT_APP_ASYNC
     setApp(app: models.AppBase): Promise<void> {
         return this.send({
             method: 'put',
@@ -80,7 +79,6 @@ export default class ClClient {
             .then(response => { })
     }
 
-    // AT.SET_CONVERSATION_ID_ASYNC
     setConversationId(userName: string, userId: string, conversationId: string): Promise<void> {
         return this.send({
             method: 'put',
@@ -407,7 +405,6 @@ export default class ClClient {
             .then(response => response.data)
     }
 
-    // AT.EDIT_CHAT_SESSION_EXPIRE_ASYNC
     chatSessionsExpire(appId: string, sessionId: string): Promise<void> {
         return this.send<void>({
             method: 'put',

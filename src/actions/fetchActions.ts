@@ -10,8 +10,6 @@ import {
     ActionBase,
     TrainDialog,
     LogDialog,
-    Session,
-    Teach,
     TrainingStatus,
     TrainingStatusCode,
     AppDefinition, 
@@ -29,14 +27,31 @@ import { AxiosError } from 'axios';
 // ----------------------------------------
 // Train Dialogs
 // ----------------------------------------
-export const fetchAllTrainDialogsAsync = (clAppID: string): ActionObject => {
-    return {
-        type: AT.FETCH_TRAIN_DIALOGS_ASYNC,
-        clAppID: clAppID
+export const fetchAllTrainDialogsThunkAsync = (appId: string) => {
+    return async (dispatch: Dispatch<any>) => {
+        const clClient = ClientFactory.getInstance(AT.FETCH_TRAIN_DIALOGS_ASYNC)
+        dispatch(fetchAllTrainDialogsAsync(appId))
+
+        try {
+            const trainDialogs = await clClient.trainDialogs(appId)
+            dispatch(fetchAllTrainDialogsFulfilled(trainDialogs))
+            return trainDialogs
+        } catch (e) {
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.FETCH_TRAIN_DIALOGS_ASYNC))
+            return null;
+        }
     }
 }
 
-export const fetchAllTrainDialogsFulfilled = (trainDialogs: TrainDialog[]): ActionObject => {
+const fetchAllTrainDialogsAsync = (appId: string): ActionObject => {
+    return {
+        type: AT.FETCH_TRAIN_DIALOGS_ASYNC,
+        appId: appId
+    }
+}
+
+const fetchAllTrainDialogsFulfilled = (trainDialogs: TrainDialog[]): ActionObject => {
     return {
         type: AT.FETCH_TRAIN_DIALOGS_FULFILLED,
         allTrainDialogs: trainDialogs
@@ -63,10 +78,10 @@ export const fetchHistoryThunkAsync = (appId: string, trainDialog: TrainDialog, 
     }
 }
 
-const fetchHistoryAsync = (clAppID: string, trainDialog: TrainDialog, userName: string, userId: string): ActionObject => {
+const fetchHistoryAsync = (appId: string, trainDialog: TrainDialog, userName: string, userId: string): ActionObject => {
     return {
         type: AT.FETCH_HISTORY_ASYNC,
-        clAppID: clAppID,
+        appId: appId,
         userName: userName,
         userId: userId,
         trainDialog: trainDialog
@@ -84,21 +99,37 @@ const fetchHistoryFulfilled = (teachWithHistory: TeachWithHistory): ActionObject
 // ----------------------------------------
 // Log Dialogs
 // ----------------------------------------
-export const fetchAllLogDialogsAsync = (key: string, app: AppBase, packageId: string): ActionObject => {
-    // Note: In future change fetch log dialogs to default to all package if packageId is dev
-    const allPackages = (packageId === app.devPackageId)
+export const fetchAllLogDialogsThunkAsync = (app: AppBase, packageId: string) => {
+    return async (dispatch: Dispatch<any>) => {
+        // Note: In future change fetch log dialogs to default to all package if packageId is dev
+        const commaSeparatedPackageIds = (packageId === app.devPackageId)
             ? (app.packageVersions || []).map(pv => pv.packageId).concat(packageId).join(',')
             : packageId
-    
-    return {
-        type: AT.FETCH_LOG_DIALOGS_ASYNC,
-        key: key,
-        clAppID: app.appId,
-        packageId: allPackages
+
+        const clClient = ClientFactory.getInstance(AT.FETCH_LOG_DIALOGS_ASYNC)
+        dispatch(fetchAllLogDialogsAsync(app.appId, commaSeparatedPackageIds))
+
+        try {
+            const logDialogs = await clClient.logDialogs(app.appId, commaSeparatedPackageIds)
+            dispatch(fetchAllLogDialogsFulfilled(logDialogs))
+            return logDialogs
+        } catch (e) {
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.FETCH_LOG_DIALOGS_ASYNC))
+            return null;
+        }
     }
 }
 
-export const fetchAllLogDialogsFulfilled = (logDialogs: LogDialog[]): ActionObject => {
+const fetchAllLogDialogsAsync = (appId: string, packageId: string): ActionObject => {
+    return {
+        type: AT.FETCH_LOG_DIALOGS_ASYNC,
+        appId: appId,
+        packageId: packageId
+    }
+}
+
+const fetchAllLogDialogsFulfilled = (logDialogs: LogDialog[]): ActionObject => {
     return {
         type: AT.FETCH_LOG_DIALOGS_FULFILLED,
         allLogDialogs: logDialogs
@@ -144,17 +175,37 @@ export const fetchBotInfoThunkAsync = (browserId: string, appId?: string) => {
 // ----------------------------------------
 // Applications
 // ----------------------------------------
-export const fetchApplicationsAsync = (userId: string): ActionObject => {
+const fetchApplicationsAsync = (userId: string): ActionObject => {
     return {
         type: AT.FETCH_APPLICATIONS_ASYNC,
         userId: userId
     }
 }
 
-export const fetchApplicationsFulfilled = (uiAppList: UIAppList): ActionObject => {
+const fetchApplicationsFulfilled = (uiAppList: UIAppList): ActionObject => {
     return {
         type: AT.FETCH_APPLICATIONS_FULFILLED,
         uiAppList: uiAppList
+    }
+}
+
+export const fetchApplicationsThunkAsync = (userId: string) => {
+    return async (dispatch: Dispatch<any>) => {
+        const clClient = ClientFactory.getInstance(AT.FETCH_APPLICATIONS_ASYNC)
+        dispatch(fetchApplicationsAsync(userId))
+
+        try {
+            const uiAppList = await clClient.apps(userId)
+
+            // Initialize datatime property since trainingStatus comes with app
+            uiAppList.appList.apps.forEach(app => app.datetime = new Date())
+            dispatch(fetchApplicationsFulfilled(uiAppList))
+            return uiAppList
+        } catch (e) {
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.FETCH_APPLICATIONS_ASYNC))
+            return null;
+        }
     }
 }
 
@@ -249,17 +300,34 @@ const fetchApplicationTrainingStatusExpired = (appId: string): ActionObject => {
 // -------------------------
 //  Entities
 // -------------------------
-export const fetchAllEntitiesAsync = (clAppID: string): ActionObject => {
+const fetchAllEntitiesAsync = (appId: string): ActionObject => {
     return {
         type: AT.FETCH_ENTITIES_ASYNC,
-        clAppID: clAppID
+        appId: appId
     }
 }
 
-export const fetchAllEntitiesFulfilled = (entities: EntityBase[]): ActionObject => {
+const fetchAllEntitiesFulfilled = (entities: EntityBase[]): ActionObject => {
     return {
         type: AT.FETCH_ENTITIES_FULFILLED,
         allEntities: entities
+    }
+}
+
+export const fetchAllEntitiesThunkAsync = (appId: string) => {
+    return async (dispatch: Dispatch<any>) => {
+        const clClient = ClientFactory.getInstance(AT.FETCH_ENTITIES_ASYNC)
+        dispatch(fetchAllEntitiesAsync(appId))
+
+        try {
+            const entities = await clClient.entities(appId)
+            dispatch(fetchAllEntitiesFulfilled(entities))
+            return entities
+        } catch (e) {
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.FETCH_ENTITIES_ASYNC))
+            return null;
+        }
     }
 }
 
@@ -286,7 +354,7 @@ export const fetchAppSourceThunkAsync = (appId: string, packageId: string, updat
 const fetchAppSourceAsync = (appId: string, packageId: string): ActionObject => {
     return {
         type: AT.FETCH_APPSOURCE_ASYNC,
-        clAppID: appId,
+        appId: appId,
         packageId: packageId
     }
 }
@@ -301,52 +369,34 @@ const fetchAppSourceFulfilled = (appDefinition: AppDefinition): ActionObject => 
 // -------------------------
 //  Actions
 // -------------------------
-export const fetchAllActionsAsync = (clAppID: string): ActionObject => {
+const fetchAllActionsAsync = (appId: string): ActionObject => {
     return {
         type: AT.FETCH_ACTIONS_ASYNC,
-        clAppID: clAppID
+        appId: appId
     }
 }
 
-export const fetchAllActionsFulfilled = (actions: ActionBase[]): ActionObject => {
+const fetchAllActionsFulfilled = (actions: ActionBase[]): ActionObject => {
     return {
         type: AT.FETCH_ACTIONS_FULFILLED,
         allActions: actions
     }
 }
 
-// -------------------------
-//  Chat Sessions
-// -------------------------
-export const fetchAllChatSessionsAsync = (clAppID: string): ActionObject => {
-    return {
-        type: AT.FETCH_CHAT_SESSIONS_ASYNC,
-        clAppID: clAppID
-    }
-}
+export const fetchAllActionsThunkAsync = (appId: string) => {
+    return async (dispatch: Dispatch<any>) => {
+        const clClient = ClientFactory.getInstance(AT.FETCH_ACTIONS_ASYNC)
+        dispatch(fetchAllActionsAsync(appId))
 
-export const fetchAllChatSessionsFulfilled = (sessions: Session[]): ActionObject => {
-    return {
-        type: AT.FETCH_CHAT_SESSIONS_FULFILLED,
-        allSessions: sessions
-    }
-}
-
-// -------------------------
-//  Teach Sessions
-// -------------------------
-export const fetchAllTeachSessionsAsync = (key: string, clAppID: string): ActionObject => {
-    return {
-        type: AT.FETCH_TEACH_SESSIONS_ASYNC,
-        key: key,
-        clAppID: clAppID
-    }
-}
-
-export const fetchAllTeachSessionsFulfilled = (teachSessions: Teach[]): ActionObject => {
-    return {
-        type: AT.FETCH_TEACH_SESSIONS_FULFILLED,
-        allTeachSessions: teachSessions
+        try {
+            const actions = await clClient.actions(appId)
+            dispatch(fetchAllActionsFulfilled(actions))
+            return actions
+        } catch (e) {
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.FETCH_ACTIONS_ASYNC))
+            return null;
+        }
     }
 }
 

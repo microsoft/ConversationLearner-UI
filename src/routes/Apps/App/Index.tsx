@@ -48,11 +48,10 @@ class Index extends React.Component<Props, ComponentState> {
 
         await this.props.fetchBotInfoThunkAsync(this.props.browserId, app.appId)
 
-        this.props.setCurrentApp(this.props.user.id, app)
-        this.props.fetchAllLogDialogsAsync(this.props.user.id, app, packageId) // Note: a separate call as eventually we want to page
+        this.props.setCurrentAppThunkAsync(this.props.user.id, app)
+        // Note: We load log dialogs in a separate call as eventually we want to page
+        this.props.fetchAllLogDialogsThunkAsync(app, packageId)
         this.props.fetchAppSource(app.appId, packageId)
-        // this.props.fetchAllChatSessionsAsync(app.appId)
-        // this.props.fetchAllTeachSessions(app.appId)
     }
 
     componentWillMount() {
@@ -269,10 +268,10 @@ class Index extends React.Component<Props, ComponentState> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        setCurrentApp: actions.display.setCurrentApp,
+        setCurrentAppThunkAsync: actions.display.setCurrentAppThunkAsync,
         createApplicationThunkAsync: actions.create.createApplicationThunkAsync,
         fetchAppSource: actions.fetch.fetchAppSourceThunkAsync,
-        fetchAllLogDialogsAsync: actions.fetch.fetchAllLogDialogsAsync,
+        fetchAllLogDialogsThunkAsync: actions.fetch.fetchAllLogDialogsThunkAsync,
         fetchBotInfoThunkAsync: actions.fetch.fetchBotInfoThunkAsync
     }, dispatch);
 }

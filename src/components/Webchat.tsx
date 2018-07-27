@@ -68,7 +68,7 @@ class Webchat extends React.Component<Props, {}> {
                 return
             }
             
-            this.props.setConversationId(user.name, user.id, conversationId)
+            this.props.setConversationIdThunkAsync(user.name, user.id, conversationId)
         }
     }
     GetChatProps(): BotChat.ChatProps {
@@ -136,7 +136,7 @@ class Webchat extends React.Component<Props, {}> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        setConversationId: actions.display.setConversationId,
+        setConversationIdThunkAsync: actions.display.setConversationIdThunkAsync,
     }, dispatch);
 }
 const mapStateToProps = (state: State, ownProps: any) => {

@@ -24,7 +24,7 @@ interface ComponentState {
 class AppsIndex extends React.Component<Props, ComponentState> {
     updateAppsAndBot() {
         if (this.props.user.id !== null && this.props.user.id.length > 0) {
-            this.props.fetchApplicationsAsync(this.props.user.id)
+            this.props.fetchApplicationsThunkAsync(this.props.user.id)
         }
     }
     componentDidMount() {
@@ -53,7 +53,7 @@ class AppsIndex extends React.Component<Props, ComponentState> {
     }
 
     onClickDeleteApp = (appToDelete: AppBase) => {
-        this.props.deleteApplicationAsync(appToDelete)
+        this.props.deleteApplicationThunkAsync(appToDelete.appId)
     }
 
     onCreateApp = async (appToCreate: AppBase, source: AppDefinition | null = null) => {
@@ -94,10 +94,10 @@ class AppsIndex extends React.Component<Props, ComponentState> {
 
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        fetchApplicationsAsync: actions.fetch.fetchApplicationsAsync,
+        fetchApplicationsThunkAsync: actions.fetch.fetchApplicationsThunkAsync,
         fetchBotInfoThunkAsync: actions.fetch.fetchBotInfoThunkAsync,
         createApplicationThunkAsync: actions.create.createApplicationThunkAsync,
-        deleteApplicationAsync: actions.delete.deleteApplicationAsync,
+        deleteApplicationThunkAsync: actions.delete.deleteApplicationThunkAsync,
         copyApplicationThunkAsync: actions.create.copyApplicationThunkAsync
     }, dispatch)
 }
