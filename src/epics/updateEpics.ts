@@ -6,25 +6,9 @@ import * as Rx from 'rxjs';
 import { ActionsObservable, Epic } from 'redux-observable'
 import { State, ActionObject } from '../types'
 import { AT } from '../types/ActionTypes'
-import { editApp, setApp, setConversationId, expireChatSession } from './apiHelpers';
+import { setApp, setConversationId, expireChatSession } from './apiHelpers';
 
 const assertNever = () => { throw Error(`Should not reach here`) }
-
-export const editApplicationEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
-    return action$.ofType(AT.EDIT_APPLICATION_ASYNC)
-        .flatMap(action =>
-            (action.type === AT.EDIT_APPLICATION_ASYNC)
-                ? editApp(action.app.appId, action.app)
-                : assertNever())
-}
-
-export const editChatSessionExpireEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
-    return action$.ofType(AT.EDIT_CHAT_SESSION_EXPIRE_ASYNC)
-        .flatMap(action =>
-            (action.type === AT.EDIT_CHAT_SESSION_EXPIRE_ASYNC)
-                ? expireChatSession(action.appId, action.sessionId)
-                : assertNever())
-}
 
 export const setApplicationEpic: Epic<ActionObject, State> = (action$: ActionsObservable<ActionObject>): Rx.Observable<ActionObject> => {
     return action$.ofType(AT.SET_CURRENT_APP_ASYNC)

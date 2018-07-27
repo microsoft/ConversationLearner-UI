@@ -16,19 +16,35 @@ import { createEntityFulfilled } from './createActions';
 // ----------------------------------------
 // App
 // ----------------------------------------
-export const editApplicationAsync = (application: AppBase): ActionObject => {
-
+const editApplicationAsync = (application: AppBase): ActionObject => {
     return {
         type: AT.EDIT_APPLICATION_ASYNC,
         app: application
     }
 }
 
-export const editApplicationFulfilled = (application: AppBase): ActionObject => {
-
+const editApplicationFulfilled = (application: AppBase): ActionObject => {
     return {
         type: AT.EDIT_APPLICATION_FULFILLED,
         app: application
+    }
+}
+
+export const editApplicationThunkAsync = (app: AppBase) => {
+    return async (dispatch: Dispatch<any>) => {
+        const clClient = ClientFactory.getInstance(AT.EDIT_APPLICATION_ASYNC)
+        dispatch(editApplicationAsync(app))
+
+        try {
+            const updatedApp = await clClient.appsUpdate(app.appId, app)
+            dispatch(editApplicationFulfilled(updatedApp))
+            return updatedApp
+        }
+        catch (e) {
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.EDIT_APPLICATION_ASYNC))
+            throw error
+        }
     }
 }
 

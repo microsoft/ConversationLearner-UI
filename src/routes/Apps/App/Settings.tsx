@@ -4,7 +4,7 @@
  */
 import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
-import { editApplicationAsync, editAppEditingTagThunkAsync, editAppLiveTagThunkAsync } from '../../../actions/updateActions';
+import { editApplicationThunkAsync, editAppEditingTagThunkAsync, editAppLiveTagThunkAsync } from '../../../actions/updateActions';
 import { bindActionCreators } from 'redux';
 import PackageTable from '../../../components/modals/PackageTable'
 import { connect } from 'react-redux';
@@ -250,7 +250,7 @@ class Settings extends React.Component<Props, ComponentState> {
             trainingStatus: TrainingStatusCode.Completed,
             datetime: new Date()
         }
-        this.props.editApplicationAsync(modifiedApp)
+        this.props.editApplicationThunkAsync(modifiedApp)
         this.setState({
             localeVal: app.locale,
             appIdVal: app.appId,
@@ -538,7 +538,7 @@ class Settings extends React.Component<Props, ComponentState> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        editApplicationAsync,
+        editApplicationThunkAsync,
         editAppEditingTagThunkAsync,
         editAppLiveTagThunkAsync,
         fetchAppSourceThunkAsync

@@ -102,20 +102,6 @@ export const deleteApp = (app: AppBase): Rx.Observable<ActionObject> => {
     .catch(err => handleError(obs, err, AT.DELETE_APPLICATION_ASYNC)));
 };
 
-//=========================================================
-// EDIT ROUTES
-//=========================================================
-
-export const editApp = (appId: string, app: AppBase): Rx.Observable<ActionObject> => {
-  const clClient = ClientFactory.getInstance(AT.EDIT_APPLICATION_ASYNC)
-  return Rx.Observable.create((obs: Rx.Observer<ActionObject>) => clClient.appsUpdate(appId, app)
-    .then(updatedApp => {
-      obs.next(actions.update.editApplicationFulfilled(updatedApp));
-      obs.complete();
-    })
-    .catch(err => handleError(obs, err, AT.EDIT_APPLICATION_ASYNC)));
-}
-
 // ========================================================
 // SESSION ROUTES
 // ========================================================
