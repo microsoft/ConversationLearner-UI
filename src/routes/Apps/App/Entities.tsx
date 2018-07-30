@@ -8,8 +8,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import * as OF from 'office-ui-fabric-react';
 import { EntityCreatorEditor } from '../../../components/modals'
-import { deleteEntityThunkAsync } from '../../../actions/deleteActions'
-import { fetchApplicationTrainingStatusThunkAsync } from '../../../actions/fetchActions'
+import actions from '../../../actions'
 import { State } from '../../../types';
 import { onRenderDetailsHeader } from '../../../components/ToolTips'
 import { AppBase, EntityBase, EntityType } from '@conversationlearner/models'
@@ -318,8 +317,8 @@ class Entities extends React.Component<Props, ComponentState> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        deleteEntityThunkAsync,
-        fetchApplicationTrainingStatusThunkAsync
+        deleteEntityThunkAsync: actions.entity.deleteEntityThunkAsync,
+        fetchApplicationTrainingStatusThunkAsync: actions.app.fetchApplicationTrainingStatusThunkAsync
     }, dispatch)
 }
 const mapStateToProps = (state: State) => {

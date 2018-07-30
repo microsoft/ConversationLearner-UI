@@ -4,7 +4,7 @@
  */
 import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
-import { editApplicationThunkAsync, editAppEditingTagThunkAsync, editAppLiveTagThunkAsync } from '../../../actions/updateActions';
+import actions from '../../../actions';
 import { bindActionCreators } from 'redux';
 import PackageTable from '../../../components/modals/PackageTable'
 import { connect } from 'react-redux';
@@ -14,7 +14,6 @@ import { Expando, AppCreator } from '../../../components/modals'
 import { saveAs } from 'file-saver'
 import { AppBase, AppDefinition, TrainingStatusCode } from '@conversationlearner/models'
 import './Settings.css'
-import { fetchAppSourceThunkAsync } from '../../../actions/fetchActions'
 import { FM } from '../../../react-intl-messages'
 import ErrorInjectionEditor from '../../../components/modals/ErrorInjectionEditor'
 import { injectIntl, InjectedIntlProps, defineMessages, FormattedMessage } from 'react-intl'
@@ -538,10 +537,10 @@ class Settings extends React.Component<Props, ComponentState> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        editApplicationThunkAsync,
-        editAppEditingTagThunkAsync,
-        editAppLiveTagThunkAsync,
-        fetchAppSourceThunkAsync
+        editApplicationThunkAsync: actions.app.editApplicationThunkAsync,
+        editAppEditingTagThunkAsync: actions.app.editAppEditingTagThunkAsync,
+        editAppLiveTagThunkAsync: actions.app.editAppLiveTagThunkAsync,
+        fetchAppSourceThunkAsync: actions.app.fetchAppSourceThunkAsync
     }, dispatch);
 
 }

@@ -17,9 +17,7 @@ import TeachSessionAdmin from './TeachSessionAdmin'
 import TeachSessionInitState from './TeachSessionInitState'
 import { AppBase, UserInput, DialogType, TrainDialog, LogDialog, Teach, DialogMode, ActionBase, FilledEntityMap } from '@conversationlearner/models'
 import { Activity } from 'botframework-directlinejs'
-import { deleteTeachSessionThunkAsync } from '../../actions/deleteActions'
-import { toggleAutoTeach, runExtractorThunkAsync, initMemoryThunkAsync } from '../../actions/teachActions'
-import { fetchApplicationTrainingStatusThunkAsync } from '../../actions/fetchActions'
+import actions from '../../actions'
 import ConfirmCancelModal from './ConfirmCancelModal'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
@@ -355,11 +353,11 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        deleteTeachSessionThunkAsync,
-        fetchApplicationTrainingStatusThunkAsync,
-        initMemoryThunkAsync,
-        runExtractorThunkAsync,
-        toggleAutoTeach
+        deleteTeachSessionThunkAsync: actions.teach.deleteTeachSessionThunkAsync,
+        fetchApplicationTrainingStatusThunkAsync: actions.app.fetchApplicationTrainingStatusThunkAsync,
+        initMemoryThunkAsync: actions.teach.initMemoryThunkAsync,
+        runExtractorThunkAsync: actions.teach.runExtractorThunkAsync,
+        toggleAutoTeach: actions.teach.toggleAutoTeach
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {

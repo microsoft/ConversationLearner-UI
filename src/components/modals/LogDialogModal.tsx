@@ -13,8 +13,7 @@ import Webchat from '../Webchat'
 import ConfirmCancelModal from './ConfirmCancelModal'
 import LogDialogAdmin from './LogDialogAdmin'
 import { Activity } from 'botframework-directlinejs'
-import { createTrainDialogAsync } from '../../actions/createActions'
-import { fetchApplicationTrainingStatusThunkAsync } from '../../actions/fetchActions'
+import actions from '../../actions'
 import { AppBase, TrainDialog, LogDialog, UIScoreInput } from '@conversationlearner/models'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
@@ -170,8 +169,8 @@ class LogDialogModal extends React.Component<Props, ComponentState> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        createTrainDialogAsync,
-        fetchApplicationTrainingStatusThunkAsync
+        createTrainDialogAsync: actions.train.createTrainDialogAsync,
+        fetchApplicationTrainingStatusThunkAsync: actions.app.fetchApplicationTrainingStatusThunkAsync
     }, dispatch);
 }
 const mapStateToProps = (state: State, ownProps: ReceivedProps) => {

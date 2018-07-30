@@ -96,9 +96,3 @@ export const clearErrorDisplay = (): ActionObject => {
     }
 }
 
-export const addMessageToTeachConversationStack = (message: string): ActionObject => {
-    return {
-        type: AT.TEACH_MESSAGE_RECEIVED,
-        message: message
-    }
-}

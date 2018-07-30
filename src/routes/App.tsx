@@ -20,7 +20,7 @@ import { SpinnerWindow, ErrorPanel } from '../components/modals'
 import './App.css'
 import { FormattedMessage } from 'react-intl'
 import { FM } from '../react-intl-messages'
-import { fetchBotInfoThunkAsync } from '../actions/fetchActions'
+import { fetchBotInfoThunkAsync } from '../actions/botActions'
 import { clearBanner } from '../actions/displayActions'
 
 enum LoadingState {

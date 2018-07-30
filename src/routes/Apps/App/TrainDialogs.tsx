@@ -10,15 +10,8 @@ import * as OF from 'office-ui-fabric-react';
 import { State } from '../../../types'
 import { AppBase, Teach, TrainDialog, TeachWithHistory, ActionBase, EntityBase, TeachResponse, ReplayError, UIScoreInput } from '@conversationlearner/models'
 import { TeachSessionModal, TrainDialogModal } from '../../../components/modals'
-import { fetchHistoryThunkAsync, fetchApplicationTrainingStatusThunkAsync } from '../../../actions/fetchActions'
-import {
-    createTeachSessionThunkAsync,
-    createTeachSessionFromUndoThunkAsync,
-    createTeachSessionFromHistoryThunkAsync
-} from '../../../actions/createActions'
+import actions from '../../../actions'
 import { Icon } from 'office-ui-fabric-react/lib/Icon'
-import { deleteTrainDialogThunkAsync, deleteMemoryThunkAsync } from '../../../actions/deleteActions';
-import { editTrainDialogThunkAsync } from '../../../actions/updateActions';
 import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { FM } from '../../../react-intl-messages'
 import { Activity } from 'botframework-directlinejs';
@@ -770,14 +763,14 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        createTeachSessionThunkAsync,
-        fetchHistoryThunkAsync,
-        fetchApplicationTrainingStatusThunkAsync,
-        deleteTrainDialogThunkAsync,
-        deleteMemoryThunkAsync,
-        createTeachSessionFromUndoThunkAsync,
-        createTeachSessionFromHistoryThunkAsync,
-        editTrainDialogThunkAsync,
+        createTeachSessionThunkAsync: actions.teach.createTeachSessionThunkAsync,
+        fetchHistoryThunkAsync: actions.train.fetchHistoryThunkAsync,
+        fetchApplicationTrainingStatusThunkAsync: actions.app.fetchApplicationTrainingStatusThunkAsync,
+        deleteTrainDialogThunkAsync: actions.train.deleteTrainDialogThunkAsync,
+        deleteMemoryThunkAsync: actions.teach.deleteMemoryThunkAsync,
+        createTeachSessionFromUndoThunkAsync: actions.teach.createTeachSessionFromUndoThunkAsync,
+        createTeachSessionFromHistoryThunkAsync: actions.teach.createTeachSessionFromHistoryThunkAsync,
+        editTrainDialogThunkAsync: actions.train.editTrainDialogThunkAsync,
     }, dispatch)
 }
 const mapStateToProps = (state: State) => {

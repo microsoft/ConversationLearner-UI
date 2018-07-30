@@ -12,7 +12,7 @@ import { bindActionCreators } from 'redux'
 import { FontClassNames, PrimaryButton } from 'office-ui-fabric-react'
 import { FM } from '../../../react-intl-messages'
 import ReactPlayer from 'react-player'
-import { fetchBotInfoThunkAsync } from '../../../actions/fetchActions'
+import { fetchBotInfoThunkAsync } from '../../../actions/botActions'
 import * as ReactMarkdown from 'react-markdown'
 import './Dashboard.css'
 

@@ -11,8 +11,7 @@ import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { State } from '../../types';
 import Webchat from '../Webchat'
 import { AppBase } from '@conversationlearner/models'
-import { deleteChatSessionThunkAsync } from '../../actions/deleteActions'
-import { editChatSessionExpireThunkAsync } from '../../actions/updateActions'
+import actions from '../../actions'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 
@@ -102,8 +101,8 @@ class SessionWindow extends React.Component<Props, ComponentState> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        deleteChatSessionThunkAsync,
-        editChatSessionExpireThunkAsync
+        deleteChatSessionThunkAsync: actions.chat.deleteChatSessionThunkAsync,
+        editChatSessionExpireThunkAsync: actions.chat.editChatSessionExpireThunkAsync
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {

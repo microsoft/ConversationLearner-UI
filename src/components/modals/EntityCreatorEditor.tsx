@@ -4,12 +4,7 @@
  */
 import * as React from 'react'
 import { returntypeof } from 'react-redux-typescript'
-import { 
-    fetchApplicationTrainingStatusThunkAsync,
-    fetchEntityEditValidationThunkAsync,
-    fetchEntityDeleteValidationThunkAsync } from '../../actions/fetchActions'
-import { createEntityThunkAsync } from '../../actions/createActions'
-import { editEntityThunkAsync } from '../../actions/updateActions'
+import actions from '../../actions'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { Modal } from 'office-ui-fabric-react/lib/Modal'
@@ -727,11 +722,11 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        createEntityThunkAsync,
-        editEntityThunkAsync,
-        fetchApplicationTrainingStatusThunkAsync,
-        fetchEntityDeleteValidationThunkAsync,
-        fetchEntityEditValidationThunkAsync
+        createEntityThunkAsync: actions.entity.createEntityThunkAsync,
+        editEntityThunkAsync: actions.entity.editEntityThunkAsync,
+        fetchApplicationTrainingStatusThunkAsync: actions.app.fetchApplicationTrainingStatusThunkAsync,
+        fetchEntityDeleteValidationThunkAsync: actions.entity.fetchEntityDeleteValidationThunkAsync,
+        fetchEntityEditValidationThunkAsync: actions.entity.fetchEntityEditValidationThunkAsync
     }, dispatch);
 }
 const mapStateToProps = (state: State, ownProps: any) => {

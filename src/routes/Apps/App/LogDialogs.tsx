@@ -10,13 +10,7 @@ import * as OF from 'office-ui-fabric-react';
 import { State } from '../../../types'
 import { AppBase, LogDialog, Session, ModelUtils, Teach, TeachWithHistory, TrainDialog, ActionBase, ReplayError, UIScoreInput } from '@conversationlearner/models'
 import { ChatSessionModal, LogDialogModal, TeachSessionModal } from '../../../components/modals'
-import {
-    createChatSessionThunkAsync,
-    createTeachSessionFromHistoryThunkAsync,
-    createTeachSessionFromUndoThunkAsync
-} from '../../../actions/createActions'
-import { deleteLogDialogThunkAsync } from '../../../actions/deleteActions';
-import { fetchAllLogDialogsThunkAsync, fetchHistoryThunkAsync } from '../../../actions/fetchActions';
+import actions from '../../../actions'
 import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { FM } from '../../../react-intl-messages'
 import { Activity } from 'botframework-directlinejs';
@@ -631,12 +625,12 @@ class LogDialogs extends React.Component<Props, ComponentState> {
 
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        createChatSessionThunkAsync,
-        createTeachSessionFromHistoryThunkAsync,
-        createTeachSessionFromUndoThunkAsync,
-        deleteLogDialogThunkAsync,
-        fetchAllLogDialogsThunkAsync,
-        fetchHistoryThunkAsync,
+        createChatSessionThunkAsync: actions.chat.createChatSessionThunkAsync,
+        createTeachSessionFromHistoryThunkAsync: actions.teach.createTeachSessionFromHistoryThunkAsync,
+        createTeachSessionFromUndoThunkAsync: actions.teach.createTeachSessionFromUndoThunkAsync,
+        deleteLogDialogThunkAsync: actions.log.deleteLogDialogThunkAsync,
+        fetchAllLogDialogsThunkAsync: actions.log.fetchAllLogDialogsThunkAsync,
+        fetchHistoryThunkAsync: actions.train.fetchHistoryThunkAsync
     }, dispatch)
 }
 const mapStateToProps = (state: State) => {

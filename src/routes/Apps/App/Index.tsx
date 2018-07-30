@@ -269,10 +269,10 @@ class Index extends React.Component<Props, ComponentState> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         setCurrentAppThunkAsync: actions.display.setCurrentAppThunkAsync,
-        createApplicationThunkAsync: actions.create.createApplicationThunkAsync,
-        fetchAppSource: actions.fetch.fetchAppSourceThunkAsync,
-        fetchAllLogDialogsThunkAsync: actions.fetch.fetchAllLogDialogsThunkAsync,
-        fetchBotInfoThunkAsync: actions.fetch.fetchBotInfoThunkAsync
+        createApplicationThunkAsync: actions.app.createApplicationThunkAsync,
+        fetchAppSource: actions.app.fetchAppSourceThunkAsync,
+        fetchAllLogDialogsThunkAsync: actions.log.fetchAllLogDialogsThunkAsync,
+        fetchBotInfoThunkAsync: actions.bot.fetchBotInfoThunkAsync
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {
