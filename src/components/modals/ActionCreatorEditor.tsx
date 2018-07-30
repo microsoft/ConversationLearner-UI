@@ -10,7 +10,7 @@ import { connect } from 'react-redux'
 import Plain from 'slate-plain-serializer'
 import actions from '../../actions'
 import { Modal } from 'office-ui-fabric-react/lib/Modal'
-import { ActionBase, ActionTypes, AppBase, EntityBase, EntityType, RenderedActionArgument, SessionAction, TextAction, ApiAction, CardAction, IActionArgument } from '@conversationlearner/models'
+import { ActionBase, ActionTypes, AppBase, EntityBase, EntityType, RenderedActionArgument, SessionAction, TextAction, ApiAction, CardAction, IActionArgument, CallbackAPI, Template } from '@conversationlearner/models'
 import ConfirmCancelModal from './ConfirmCancelModal'
 import EntityCreatorEditor from './EntityCreatorEditor'
 import AdaptiveCardViewer from './AdaptiveCardViewer/AdaptiveCardViewer'
@@ -47,6 +47,18 @@ const convertOptionToTag = (option: ActionPayloadEditor.IOption): OF.ITag =>
     ({
         key: option.id,
         name: option.name
+    })
+
+const convertCallbackToOption = (callback: CallbackAPI): OF.IDropdownOption =>
+    ({
+        key: callback.name,
+        text: callback.name
+    })
+
+const convertTemplateToOption = (template: Template): OF.IDropdownOption =>
+    ({
+        key: template.name,
+        text: template.name
     })
 
 const convertEntityIdsToTags = (ids: string[], entities: EntityBase[]): OF.ITag[] => {
@@ -185,23 +197,10 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
         const availableExpectedEntityTags = entities
             .filter(e => e.entityType === EntityType.LUIS)
-            .map<OF.ITag>(e =>
-                ({
-                    key: e.entityId,
-                    name: e.entityName
-                }))
+            .map<OF.ITag>(convertEntityToTag)
 
-        const apiOptions = botInfo.callbacks.map<OF.IDropdownOption>(v =>
-            ({
-                key: v.name,
-                text: v.name
-            }))
-
-        const cardOptions = botInfo.templates.map<OF.IDropdownOption>(v =>
-            ({
-                key: v.name,
-                text: v.name
-            }))
+        const apiOptions = botInfo.callbacks.map<OF.IDropdownOption>(convertCallbackToOption)
+        const cardOptions = botInfo.templates.map<OF.IDropdownOption>(convertTemplateToOption)
     
         return {
             ...initialState,
@@ -225,19 +224,11 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             // Otherwise reset only if props have changed
             else {
                 if (nextProps.entities !== this.props.entities) {
-                    const entityTags = nextProps.entities.map<OF.ITag>(e =>
-                        ({
-                            key: e.entityId,
-                            name: e.entityName
-                        }))
+                    const entityTags = nextProps.entities.map<OF.ITag>(convertEntityToTag)
 
                     const availableExpectedEntityTags = nextProps.entities
-                        .filter(e => e.entityType !== EntityType.LOCAL)
-                        .map<OF.ITag>(e =>
-                            ({
-                                key: e.entityId,
-                                name: e.entityName
-                            }))
+                        .filter(e => e.entityType === EntityType.LUIS)
+                        .map<OF.ITag>(convertEntityToTag)
 
                     nextState = {
                         ...nextState,
@@ -248,11 +239,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
                 if (nextProps.botInfo.callbacks !== this.props.botInfo.callbacks) {
                     const { botInfo } = nextProps
-                    const apiOptions = botInfo.callbacks.map<OF.IDropdownOption>(v =>
-                        ({
-                            key: v.name,
-                            text: v.name
-                        }))
+                    const apiOptions = botInfo.callbacks.map<OF.IDropdownOption>(convertCallbackToOption)
 
                     nextState = {
                         ...nextState,
@@ -262,11 +249,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
                 if (nextProps.botInfo.templates !== this.props.botInfo.templates) {
                     const { botInfo } = nextProps
-                    const cardOptions = botInfo.templates.map<OF.IDropdownOption>(v =>
-                        ({
-                            key: v.name,
-                            text: v.name
-                        }))
+                    const cardOptions = botInfo.templates.map<OF.IDropdownOption>(convertTemplateToOption)
 
                     nextState = {
                         ...nextState,

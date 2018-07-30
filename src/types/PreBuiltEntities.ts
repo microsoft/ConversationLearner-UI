@@ -4,7 +4,6 @@
  */
 export const PreBuilts = {
     DatetimeV2: "datetimeV2",
-    Datetime: "datetime",
     Number: "number",
     Ordinal: "ordinal",
     Percentage: "percentage",
@@ -12,7 +11,6 @@ export const PreBuilts = {
     Dimension: "dimension",
     Money: "money",
     Age: "age",
-    Geography: "geography",
     URL: "url",
     Email: "email",
     Phone_number: "phonenumber"
@@ -28,20 +26,20 @@ export const PreBuiltEntities: LocalePreBuilts[] = [
         preBuiltEntities: [
             PreBuilts.DatetimeV2, PreBuilts.Number, PreBuilts.Ordinal,
             PreBuilts.Percentage, PreBuilts.Temperature, PreBuilts.Dimension, PreBuilts.Money, PreBuilts.Age,
-            PreBuilts.Geography, PreBuilts.URL, PreBuilts.Email, PreBuilts.Phone_number
+            PreBuilts.URL, PreBuilts.Email, PreBuilts.Phone_number
         ]
     },
     {
         locale: "zh-cn",
         preBuiltEntities: [
-            PreBuilts.DatetimeV2, PreBuilts.Datetime, PreBuilts.Number, PreBuilts.Ordinal,
+            PreBuilts.DatetimeV2, PreBuilts.Number, PreBuilts.Ordinal,
             PreBuilts.Percentage, PreBuilts.Temperature, PreBuilts.Dimension, PreBuilts.Money, PreBuilts.Age
         ]
     },
     {
         locale: "fr-fr",
         preBuiltEntities: [
-            PreBuilts.Datetime, PreBuilts.Number, PreBuilts.Ordinal,
+            PreBuilts.Number, PreBuilts.Ordinal,
             PreBuilts.Percentage, PreBuilts.Temperature, PreBuilts.Dimension, PreBuilts.Money, PreBuilts.Age
         ]
     },
@@ -49,14 +47,14 @@ export const PreBuiltEntities: LocalePreBuilts[] = [
     {
         locale: "fr-ca",
         preBuiltEntities: [
-            PreBuilts.Datetime, PreBuilts.Number, PreBuilts.Ordinal,
+            PreBuilts.Number, PreBuilts.Ordinal,
             PreBuilts.Percentage, PreBuilts.Temperature, PreBuilts.Dimension, PreBuilts.Money, PreBuilts.Age
         ]
     },
     {
         locale: "es-es",
         preBuiltEntities: [
-            PreBuilts.Datetime, PreBuilts.Number, PreBuilts.Ordinal,
+            PreBuilts.Number, PreBuilts.Ordinal,
             PreBuilts.Percentage, PreBuilts.Temperature, PreBuilts.Dimension, PreBuilts.Money, PreBuilts.Age
         ]
     },
@@ -64,35 +62,35 @@ export const PreBuiltEntities: LocalePreBuilts[] = [
     {
         locale: "es-mx",
         preBuiltEntities: [
-            PreBuilts.Datetime, PreBuilts.Number, PreBuilts.Ordinal,
+            PreBuilts.Number, PreBuilts.Ordinal,
             PreBuilts.Percentage, PreBuilts.Temperature, PreBuilts.Dimension, PreBuilts.Money, PreBuilts.Age
         ]
     },
     {
         locale: "it-it",
         preBuiltEntities: [
-            PreBuilts.Datetime, PreBuilts.Number, PreBuilts.Ordinal,
+            PreBuilts.Number, PreBuilts.Ordinal,
             PreBuilts.Percentage, PreBuilts.Temperature, PreBuilts.Dimension, PreBuilts.Money, PreBuilts.Age
         ]
     },
     {
         locale: "de-de",
         preBuiltEntities: [
-            PreBuilts.Datetime, PreBuilts.Number, PreBuilts.Ordinal,
+            PreBuilts.Number, PreBuilts.Ordinal,
             PreBuilts.Percentage, PreBuilts.Temperature, PreBuilts.Dimension, PreBuilts.Money, PreBuilts.Age
         ]
     },
     {
         locale: "ja-jp",
         preBuiltEntities: [
-            PreBuilts.Datetime, PreBuilts.Number, PreBuilts.Ordinal,
+            PreBuilts.Number, PreBuilts.Ordinal,
             PreBuilts.Percentage, PreBuilts.Temperature, PreBuilts.Dimension, PreBuilts.Money, PreBuilts.Age
         ]
     },
     {
         locale: "pt-br",
         preBuiltEntities: [
-            PreBuilts.Datetime, PreBuilts.Number, PreBuilts.Ordinal,
+            PreBuilts.Number, PreBuilts.Ordinal,
             PreBuilts.Percentage, PreBuilts.Temperature, PreBuilts.Dimension, PreBuilts.Money, PreBuilts.Age
         ]
     },
