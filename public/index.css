@@ -489,10 +489,6 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
   min-height: 0px !important;
 }
 
-.ms-Label--tight {
-  padding-bottom: 0px !important;
-}
-
 .ms-Pivot {
   margin-bottom: 1.5em !important;
 }
