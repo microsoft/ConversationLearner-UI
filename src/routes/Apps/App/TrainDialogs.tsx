@@ -8,7 +8,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import * as OF from 'office-ui-fabric-react';
 import { State } from '../../../types'
-import { AppBase, Teach, TrainDialog, TeachWithHistory, ActionBase, EntityBase, TeachResponse, ReplayError, UIScoreInput } from '@conversationlearner/models'
+import { AppBase, Teach, TrainDialog, TeachWithHistory, ActionBase, EntityBase, TeachResponse, ReplayError } from '@conversationlearner/models'
 import { TeachSessionModal, TrainDialogModal } from '../../../components/modals'
 import actions from '../../../actions'
 import { Icon } from 'office-ui-fabric-react/lib/Icon'
@@ -442,9 +442,9 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             })
     }
 
-    onEditTrainDialog(newTrainDialog: TrainDialog, newScoreInput: UIScoreInput) {
+    onEditTrainDialog(newTrainDialog: TrainDialog, extractChanged: boolean) {
 
-        ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app, newTrainDialog, this.props.user.name, this.props.user.id, newScoreInput) as any) as Promise<TeachWithHistory>)
+        ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app, newTrainDialog, this.props.user.name, this.props.user.id, extractChanged) as any) as Promise<TeachWithHistory>)
             .then(teachWithHistory => {
                 if (teachWithHistory.replayErrors.length === 0) {
                     // Note: Don't clear currentTrainDialog so I can delete it if I save my edits
@@ -750,10 +750,10 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     canEdit={this.props.editingPackageId === this.props.app.devPackageId && !this.props.invalidBot}
                     open={this.state.isTrainDialogModalOpen}
                     onClose={() => this.onCloseTrainDialogModal()}
-                    onBranch={(turnIndex: number) => this.onBranchTrainDialog(turnIndex)}
+                    onBranch={(turnIndex) => this.onBranchTrainDialog(turnIndex)}
                     onDelete={() => this.onDeleteTrainDialog()}
-                    onEdit={(editedTrainDialog: TrainDialog, newScoreInput: UIScoreInput) => this.onEditTrainDialog(editedTrainDialog, newScoreInput)}
-                    onReplace={(editedTrainDialog: TrainDialog) => this.onReplaceTrainDialog(editedTrainDialog)}
+                    onEdit={(editedTrainDialog, extractChanged) => this.onEditTrainDialog(editedTrainDialog, extractChanged)}
+                    onReplace={(editedTrainDialog) => this.onReplaceTrainDialog(editedTrainDialog)}
                     trainDialog={currentTrainDialog!}
                     history={this.state.history}
                 />

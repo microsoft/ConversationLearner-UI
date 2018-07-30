@@ -79,10 +79,6 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
             throw new Error(`You confirmed conversion of log dialog to train dialog, but there was no log dialog to convert. This should not be possible. Contact Support`)
         }
 
-        if (!this.state.newScoreInput) {
-            throw new Error(`You confirmed conversion of log dialog to train dialog, but there was no new score input. This should not be possible. Contact Support`)
-        }
-
         // TODO: Update @models to allow defining TrainDialogInput without undefined properties
         const newTrainDialog: TrainDialog = {
             trainDialogId: undefined!,
@@ -98,7 +94,8 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
             }
         }
 
-        this.props.onEdit(this.props.logDialog.logDialogId, newTrainDialog, this.state.newScoreInput);
+        const extractChanged = this.state.newScoreInput !== null
+        this.props.onEdit(this.props.logDialog.logDialogId, newTrainDialog, extractChanged)
         this.setState({ 
             newTrainDialog: null,
             newScoreInput: null
@@ -387,7 +384,7 @@ export interface ReceivedProps {
     logDialog: LogDialog
     selectedActivity: Activity | null,
     canEdit: boolean,
-    onEdit: (logDialogId: string, newTrainDialog: TrainDialog, newScoreInput: UIScoreInput) => void
+    onEdit: (logDialogId: string, newTrainDialog: TrainDialog, extractChanged: boolean) => void
     onExtractionsChanged: (changed: boolean) => void
 }
 

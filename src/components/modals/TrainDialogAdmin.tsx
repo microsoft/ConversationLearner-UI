@@ -176,11 +176,8 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                 newScoreInput: null
             });
         } else {
-            if (!this.state.newScoreInput) {
-                throw new Error(`Attempted to edit a train dialog, but the newScoreInput was not defined. This is likely a problem with code. Please file an issue.`)
-            }
-            
-            this.editTrainDialog(updatedTrainDialog, roundIndex, this.state.newScoreInput);
+            const extractChanged = this.state.newScoreInput !== null
+            this.editTrainDialog(updatedTrainDialog, roundIndex, extractChanged)
         }
     }
 
@@ -188,14 +185,12 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
         if (!this.state.newTrainDialog) {
             throw new Error(`Attempted to edit a train dialog, but the newTrainDialog was not defined. This is likely a problem with code. Please file an issue.`)
         }
-        if (!this.state.newScoreInput) {
-            throw new Error(`Attempted to edit a train dialog, but the newScoreInput was not defined. This is likely a problem with code. Please file an issue.`)
-        }
 
-        this.editTrainDialog(this.state.newTrainDialog, this.state.newSliceRound, this.state.newScoreInput);
+        const extractChanged = this.state.newScoreInput !== null
+        this.editTrainDialog(this.state.newTrainDialog, this.state.newSliceRound, extractChanged)
     }
 
-    editTrainDialog(sourceDialog: TrainDialog, sliceRound: number, newScoreInput: UIScoreInput) {
+    editTrainDialog(sourceDialog: TrainDialog, sliceRound: number, extractChanged: boolean) {
         let trainDialog: TrainDialog = {
             trainDialogId: undefined!,
             sourceLogDialogId: sourceDialog.sourceLogDialogId,
@@ -210,7 +205,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
             }
         }
 
-        this.props.onEdit(sourceDialog.trainDialogId, trainDialog, newScoreInput);
+        this.props.onEdit(sourceDialog.trainDialogId, trainDialog, extractChanged);
          
         this.props.clearExtractResponses();
 
@@ -554,7 +549,7 @@ export interface ReceivedProps {
     trainDialog: TrainDialog,
     selectedActivity: Activity | null,
     canEdit: boolean,
-    onEdit: (sourceTrainDialogId: string, editedTrainDialog: TrainDialog, newScoreInput: UIScoreInput) => void
+    onEdit: (sourceTrainDialogId: string, editedTrainDialog: TrainDialog, extractChanged: boolean) => void
     onReplace: (editedTrainDialog: TrainDialog) => void
     onExtractionsChanged: (changed: boolean) => void
 }
