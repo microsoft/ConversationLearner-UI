@@ -262,7 +262,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
 
         if (this.state.roundIndex !== null && this.state.roundIndex < this.props.trainDialog.rounds.length) {
             round = this.props.trainDialog.rounds[this.state.roundIndex];
-            if (round.scorerSteps.length > 0 && this.state.scoreIndex) {
+            if (round.scorerSteps.length > 0 && typeof this.state.scoreIndex === "number") {
                 scorerStep = round.scorerSteps[this.state.scoreIndex];
                 if (!scorerStep) {
                     throw new Error(`Cannot get score step at index: ${this.state.scoreIndex} from array of length: ${round.scorerSteps.length}`)
