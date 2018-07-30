@@ -11,7 +11,7 @@ import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { State } from '../../types';
 import Webchat from '../Webchat'
 import TrainDialogAdmin from './TrainDialogAdmin'
-import { AppBase, TrainDialog, UIScoreInput, SenderType } from '@conversationlearner/models'
+import { AppBase, TrainDialog, SenderType } from '@conversationlearner/models'
 import { Activity } from 'botframework-directlinejs';
 import ConfirmCancelModal from './ConfirmCancelModal'
 import { FM } from '../../react-intl-messages'
@@ -146,7 +146,7 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
                                     canEdit={this.props.canEdit}
                                     trainDialog={this.props.trainDialog}
                                     selectedActivity={this.state.selectedActivity}
-                                    onEdit={(sourceTrainDialogId: string, editedTrainDialog: TrainDialog, newScoreInput: UIScoreInput) => this.props.onEdit(editedTrainDialog, newScoreInput)}
+                                    onEdit={(sourceTrainDialogId, editedTrainDialog, extractChanged) => this.props.onEdit(editedTrainDialog, extractChanged)}
                                     onReplace={(editedTrainDialog: TrainDialog) => this.props.onReplace(editedTrainDialog)}
                                     onExtractionsChanged={(changed: boolean) => this.onExtractionsChanged(changed)}
                                 />
@@ -258,7 +258,7 @@ export interface ReceivedProps {
     canEdit: boolean,
     onClose: () => void,
     onBranch: (turnIndex: number) => void,
-    onEdit: (newTrainDialog: TrainDialog, newScoreInput: UIScoreInput) => void,
+    onEdit: (newTrainDialog: TrainDialog, extractChanged: boolean) => void,
     onReplace: (newTrainDialog: TrainDialog) => void,
     onDelete: () => void
     open: boolean
