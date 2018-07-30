@@ -152,12 +152,12 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
         delete trainScorerStep.scoredAction;
 
         const roundIndex = this.state.roundIndex
-        if (!roundIndex) {
+        if (roundIndex === null) {
             throw new Error(`You selected an action, but roundIndex is not known. This should not be possible. Contact Support`)
         }
 
         const scoreIndex = this.state.scoreIndex
-        if (!scoreIndex) {
+        if (scoreIndex === null) {
             throw new Error(`You selected an action, but scoreIndex is not known. This should not be possible. Contact Support`)
         }
 
@@ -202,7 +202,7 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
 
     getPrevMemories(): Memory[] {
         const roundIndex = this.state.roundIndex
-        if (!roundIndex) {
+        if (roundIndex === null) {
             throw new Error(`You attempted to get previous memories, but roundIndex is not known. This should not be possible. Contact Support`)
         }
 
@@ -239,12 +239,12 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
         const { logDialog, selectedActivity } = this.props
         if (logDialog && selectedActivity) {
             const roundIndex = this.state.roundIndex
-            if (!roundIndex) {
+            if (roundIndex === null) {
                 throw new Error(`Activity is selected during rendering, but roundIndex is not known. This should not be possible. Contact Support`)
             }
 
             const scoreIndex = this.state.scoreIndex
-            if (!scoreIndex) {
+            if (scoreIndex === null) {
                 throw new Error(`Activity is selected during rendering, but scoreIndex is not known. This should not be possible. Contact Support`)
             }
 
@@ -301,7 +301,7 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
                     <div className="cl-dialog-admin__content">
                         <div className="cl-dialog-admin-title">Entity Detection</div>
                         <div>
-                            {this.state.roundIndex && round &&
+                            {this.state.roundIndex !== null && round &&
                                 <EntityExtractor
                                     app={this.props.app}
                                     editingPackageId={this.props.editingPackageId}

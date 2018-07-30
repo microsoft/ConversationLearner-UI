@@ -137,12 +137,12 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
     // User changed the selected action for a round
     onActionScorerSubmit(trainScorerStep: TrainScorerStep): void {
         const roundIndex = this.state.roundIndex
-        if (!roundIndex) {
+        if (roundIndex === null) {
             throw new Error(`Cannot construct new train dialog scorer step because roundIndex is null. This is likely a problem in the code. Please open an issue.`)
         }
 
         const scoreIndex = this.state.scoreIndex
-        if (!scoreIndex) {
+        if (scoreIndex === null) {
             throw new Error(`Cannot construct new train dialog scorer step because scoreIndex is null. This is likely a problem in the code. Please open an issue.`)
         }
 
@@ -228,7 +228,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
         this.props.clearExtractResponses();
     }
     getPrevMemories(): Memory[] {
-        if (!this.state.roundIndex) {
+        if (this.state.roundIndex === null) {
             throw new Error(`Cannot get previous memories because roundIndex is null. This is likely a problem with code. Please open an issue.`)
         }
 

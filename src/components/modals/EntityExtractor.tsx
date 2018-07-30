@@ -285,7 +285,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
             return
         }
 
-        if (!this.props.roundIndex) {
+        if (this.props.roundIndex === null) {
             throw new Error(`You attempted to submit text variation but roundIndex was null. This is likely a problem with the code. Please open an issue.`)
         }
 
