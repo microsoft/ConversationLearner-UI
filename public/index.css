@@ -243,6 +243,34 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
   color: #ffffff;
 }
 
+.cl-wc-deleteturn {
+  border: none !important;
+  position: absolute !important;
+  top: 5px;
+}
+
+.cl-wc-deleteturn--bot {
+  right: 0px;
+}
+
+.cl-wc-deleteturn--user {
+  left: 0px;
+}
+
+.cl-wc-addturn {
+  border: none !important;
+  position: absolute !important;
+  top: 30px;
+}
+
+.cl-wc-addturn--bot {
+  right: 0px;
+}
+
+.cl-wc-addturn--user {
+  left: 0px;
+}
+
 /* botframework-webchat component override */
 .wc-chatview-panel:focus {
   outline: 0;

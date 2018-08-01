@@ -3,10 +3,12 @@
  * Licensed under the MIT License.
  */
 import * as React from 'react';
+import * as ReactDOM from 'react-dom'
+import ReactHtmlParser from 'react-html-parser';
 import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { PrimaryButton, DefaultButton, Callout } from 'office-ui-fabric-react';
+import { PrimaryButton, IconButton, DefaultButton, Callout } from 'office-ui-fabric-react';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { State } from '../../types';
 import Webchat from '../Webchat'
@@ -34,6 +36,9 @@ const initialState: ComponentState = {
     currentTrainDialog: null,
     pendingExtractionChanges: false
 }
+
+let lastActivityId : string | null = null
+let lastActivityContext: any = null
 
 class TrainDialogModal extends React.Component<Props, ComponentState> {
     state = initialState
@@ -90,6 +95,39 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
     }
 
     onWebChatSelectActivity(activity: Activity) {
+        if (lastActivityId !== activity.id) {
+            if (lastActivityId) {
+                let lastElement = document.querySelector(`[data-activity-id='${lastActivityId}']`)
+                if (lastElement) {
+                    ReactDOM.render(lastActivityContext, lastElement)
+                }
+            }
+            let element = document.querySelector(`[data-activity-id='${activity.id}']`)
+            if (element && activity.id) {
+                lastActivityId = activity.id
+                lastActivityContext = ReactHtmlParser(element.innerHTML)
+                const addClass = `cl-wc-addturn ${activity.channelData.senderType === SenderType.User ? `cl-wc-addturn--user` : `cl-wc-addturn--bot`}`
+                const deleteClass = `cl-wc-deleteturn ${activity.channelData.senderType === SenderType.User ? `cl-wc-deleteturn--user` : `cl-wc-deleteturn--bot`}`
+                
+                const text = <div>
+                            {lastActivityContext}
+                            <IconButton
+                                className={addClass}
+                                // onClick={() => this.onClickAdd(entity)}
+                                ariaDescription="Add Initial Value"
+                                iconProps={{ iconName: 'CirclePlus' }}
+                            />
+                            <IconButton
+                                className={deleteClass}
+                                iconProps={{ iconName: 'Delete' }}
+                                //  onClick={props.onClickDelete}
+                                title="Unselect Entity"
+                                />
+                            </div>
+                ReactDOM.render(text, element)
+            }
+        }
+
         this.setState({
             selectedActivity: activity
         })
