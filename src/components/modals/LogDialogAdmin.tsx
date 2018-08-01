@@ -79,10 +79,6 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
             throw new Error(`You confirmed conversion of log dialog to train dialog, but there was no log dialog to convert. This should not be possible. Contact Support`)
         }
 
-        if (!this.state.newScoreInput) {
-            throw new Error(`You confirmed conversion of log dialog to train dialog, but there was no new score input. This should not be possible. Contact Support`)
-        }
-
         // TODO: Update @models to allow defining TrainDialogInput without undefined properties
         const newTrainDialog: TrainDialog = {
             trainDialogId: undefined!,
@@ -98,7 +94,8 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
             }
         }
 
-        this.props.onEdit(this.props.logDialog.logDialogId, newTrainDialog, this.state.newScoreInput);
+        const extractChanged = this.state.newScoreInput !== null
+        this.props.onEdit(this.props.logDialog.logDialogId, newTrainDialog, extractChanged)
         this.setState({ 
             newTrainDialog: null,
             newScoreInput: null
@@ -152,12 +149,12 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
         delete trainScorerStep.scoredAction;
 
         const roundIndex = this.state.roundIndex
-        if (!roundIndex) {
+        if (roundIndex === null) {
             throw new Error(`You selected an action, but roundIndex is not known. This should not be possible. Contact Support`)
         }
 
         const scoreIndex = this.state.scoreIndex
-        if (!scoreIndex) {
+        if (scoreIndex === null) {
             throw new Error(`You selected an action, but scoreIndex is not known. This should not be possible. Contact Support`)
         }
 
@@ -202,7 +199,7 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
 
     getPrevMemories(): Memory[] {
         const roundIndex = this.state.roundIndex
-        if (!roundIndex) {
+        if (roundIndex === null) {
             throw new Error(`You attempted to get previous memories, but roundIndex is not known. This should not be possible. Contact Support`)
         }
 
@@ -239,12 +236,12 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
         const { logDialog, selectedActivity } = this.props
         if (logDialog && selectedActivity) {
             const roundIndex = this.state.roundIndex
-            if (!roundIndex) {
+            if (roundIndex === null) {
                 throw new Error(`Activity is selected during rendering, but roundIndex is not known. This should not be possible. Contact Support`)
             }
 
             const scoreIndex = this.state.scoreIndex
-            if (!scoreIndex) {
+            if (scoreIndex === null) {
                 throw new Error(`Activity is selected during rendering, but scoreIndex is not known. This should not be possible. Contact Support`)
             }
 
@@ -301,7 +298,7 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
                     <div className="cl-dialog-admin__content">
                         <div className="cl-dialog-admin-title">Entity Detection</div>
                         <div>
-                            {this.state.roundIndex && round &&
+                            {this.state.roundIndex !== null && round &&
                                 <EntityExtractor
                                     app={this.props.app}
                                     editingPackageId={this.props.editingPackageId}
@@ -387,7 +384,7 @@ export interface ReceivedProps {
     logDialog: LogDialog
     selectedActivity: Activity | null,
     canEdit: boolean,
-    onEdit: (logDialogId: string, newTrainDialog: TrainDialog, newScoreInput: UIScoreInput) => void
+    onEdit: (logDialogId: string, newTrainDialog: TrainDialog, extractChanged: boolean) => void
     onExtractionsChanged: (changed: boolean) => void
 }
 

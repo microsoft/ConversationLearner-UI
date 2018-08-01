@@ -49,14 +49,13 @@ const createTeachSessionFulfilled = (teachResponse: models.TeachResponse): Actio
 // --------------------------
 // TeachSessionFromHistory
 // --------------------------
-export const createTeachSessionFromHistoryThunkAsync = (app: models.AppBase, trainDialog: models.TrainDialog, userName: string, userId: string, scoreInput: models.UIScoreInput | null = null) => {
+export const createTeachSessionFromHistoryThunkAsync = (app: models.AppBase, trainDialog: models.TrainDialog, userName: string, userId: string, extractChanged: boolean = false) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.CREATE_TEACH_SESSION_FROMHISTORYASYNC)
         dispatch(createTeachSessionFromHistoryAsync(app.appId, trainDialog, userName, userId))
 
         try {
-            const extractChanged = scoreInput !== null;
-            const teachWithHistory = await clClient.teachSessionFromHistory(app.appId, trainDialog, userName, userId, extractChanged);
+            const teachWithHistory = await clClient.teachSessionFromHistory(app.appId, trainDialog, userName, userId, extractChanged)
             dispatch(createTeachSessionFromHistoryFulfilled(teachWithHistory))
             return teachWithHistory
         }
@@ -266,13 +265,13 @@ export const runExtractorThunkAsync = (key: string, appId: string, extractType: 
                     uiExtractResponse = await clClient.teachSessionsAddExtractStep(appId, sessionId, userInput)
                   break;
                 case models.DialogType.TRAINDIALOG:
-                    if (!turnIndex) {
+                    if (turnIndex === null) {
                         throw new Error(`Run extractor was called for a train dialog, but turnIndex was null. This should not be possible. Please open an issue.`)
                     }
                     uiExtractResponse = await clClient.trainDialogsUpdateExtractStep(appId, sessionId, turnIndex, userInput)
                   break;
                 case models.DialogType.LOGDIALOG:
-                    if (!turnIndex) {
+                    if (turnIndex === null) {
                         throw new Error(`Run extractor was called for a log dialog, but turnIndex was null. This should not be possible. Please open an issue.`)
                     }
                     uiExtractResponse = await clClient.logDialogsUpdateExtractStep(appId, sessionId, turnIndex, userInput)

@@ -8,7 +8,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import * as OF from 'office-ui-fabric-react';
 import { State } from '../../../types'
-import { AppBase, LogDialog, Session, ModelUtils, Teach, TeachWithHistory, TrainDialog, ActionBase, ReplayError, UIScoreInput } from '@conversationlearner/models'
+import { AppBase, LogDialog, Session, ModelUtils, Teach, TeachWithHistory, TrainDialog, ActionBase, ReplayError } from '@conversationlearner/models'
 import { ChatSessionModal, LogDialogModal, TeachSessionModal } from '../../../components/modals'
 import actions from '../../../actions'
 import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
@@ -363,10 +363,10 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         this.onCloseLogDialogModal();
     }
 
-    onEditLogDialog(logDialogId: string, newTrainDialog: TrainDialog, newScoreInput: UIScoreInput) {
+    onEditLogDialog(logDialogId: string, newTrainDialog: TrainDialog, extractChanged: boolean) {
 
         // Create a new teach session from the train dialog
-        ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app, newTrainDialog, this.props.user.name, this.props.user.id, newScoreInput) as any) as Promise<TeachWithHistory>)
+        ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app, newTrainDialog, this.props.user.name, this.props.user.id, extractChanged) as any) as Promise<TeachWithHistory>)
             .then(teachWithHistory => {
                 if (teachWithHistory.replayErrors.length === 0) {
                     // Note: Don't clear currentLogDialog so I can update it if I save my edits
@@ -592,7 +592,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     open={this.state.isLogDialogWindowOpen}
                     canEdit={this.props.editingPackageId === this.props.app.devPackageId && !this.props.invalidBot}
                     onClose={this.onCloseLogDialogModal}
-                    onEdit={(logDialogId: string, newTrainDialog: TrainDialog, newScoreInput: UIScoreInput) => this.onEditLogDialog(logDialogId, newTrainDialog, newScoreInput)}
+                    onEdit={(logDialogId, newTrainDialog, extractChanged) => this.onEditLogDialog(logDialogId, newTrainDialog, extractChanged)}
                     onDelete={this.onDeleteLogDialog}
                     logDialog={currentLogDialog!}
                     history={this.state.history}
