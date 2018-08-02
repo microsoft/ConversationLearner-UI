@@ -3,12 +3,12 @@
  * Licensed under the MIT License.
  */
 import * as React from 'react'
-import { ApiAction, EntityBase, Memory } from '@conversationlearner/models'
+import { ApiAction, EntityBase, Memory, RenderAction } from '@conversationlearner/models'
 import * as Util from '../../util'
 import ApiPayloadRenderer from './ApiPayloadRenderer'
 
 interface Props {
-    apiAction: ApiAction
+    apiAction: ApiAction | RenderAction
     entities: EntityBase[]
     memories: Memory[] | null
 }

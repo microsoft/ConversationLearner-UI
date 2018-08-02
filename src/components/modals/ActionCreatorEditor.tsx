@@ -10,7 +10,7 @@ import { connect } from 'react-redux'
 import Plain from 'slate-plain-serializer'
 import actions from '../../actions'
 import { Modal } from 'office-ui-fabric-react/lib/Modal'
-import { ActionBase, ActionTypes, AppBase, EntityBase, EntityType, RenderedActionArgument, SessionAction, TextAction, ApiAction, CardAction, IActionArgument, CallbackAPI, Template } from '@conversationlearner/models'
+import { ActionBase, ActionTypes, AppBase, EntityBase, EntityType, RenderedActionArgument, SessionAction, TextAction, ApiAction, CardAction, IActionArgument, Callback, Template, RenderAction } from '@conversationlearner/models'
 import ConfirmCancelModal from './ConfirmCancelModal'
 import EntityCreatorEditor from './EntityCreatorEditor'
 import AdaptiveCardViewer from './AdaptiveCardViewer/AdaptiveCardViewer'
@@ -49,7 +49,7 @@ const convertOptionToTag = (option: ActionPayloadEditor.IOption): OF.ITag =>
         name: option.name
     })
 
-const convertCallbackToOption = (callback: CallbackAPI): OF.IDropdownOption =>
+const convertCallbackToOption = (callback: Callback): OF.IDropdownOption =>
     ({
         key: callback.name,
         text: callback.name
@@ -116,7 +116,7 @@ const actionTypeOptions = Object.values(ActionTypes)
     .map<OF.IDropdownOption>(actionTypeString => {
         return {
             key: actionTypeString,
-            text: `${actionTypeString}`
+            text: actionTypeString
         }
     })
 
@@ -124,8 +124,10 @@ type SlateValueMap = { [slot: string]: ActionPayloadEditor.SlateValue }
 
 interface ComponentState {
     apiOptions: OF.IDropdownOption[]
+    renderOptions: OF.IDropdownOption[]
     cardOptions: OF.IDropdownOption[]
     selectedApiOptionKey: string | number | undefined
+    selectedRenderOptionKey: string | number | undefined
     selectedCardOptionKey: string | number | undefined
     hasPendingChanges: boolean
     initialEditState: ComponentState | null
@@ -151,8 +153,10 @@ interface ComponentState {
 
 const initialState: ComponentState = {
     apiOptions: [],
+    renderOptions: [],
     cardOptions: [],
     selectedApiOptionKey: undefined,
+    selectedRenderOptionKey: undefined,
     selectedCardOptionKey: undefined,
     hasPendingChanges: false,
     initialEditState: null,
@@ -199,12 +203,14 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             .filter(e => e.entityType === EntityType.LUIS)
             .map<OF.ITag>(convertEntityToTag)
 
-        const apiOptions = botInfo.callbacks.map<OF.IDropdownOption>(convertCallbackToOption)
+        const apiOptions = botInfo.apiCallbacks.map<OF.IDropdownOption>(convertCallbackToOption)
+        const renderOptions = botInfo.renderCallbacks.map<OF.IDropdownOption>(convertCallbackToOption)
         const cardOptions = botInfo.templates.map<OF.IDropdownOption>(convertTemplateToOption)
     
         return {
             ...initialState,
             apiOptions,
+            renderOptions,
             cardOptions,
             availableExpectedEntityTags,
             entityTags,
@@ -237,13 +243,23 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     }
                 }
 
-                if (nextProps.botInfo.callbacks !== this.props.botInfo.callbacks) {
+                if (nextProps.botInfo.apiCallbacks !== this.props.botInfo.apiCallbacks) {
                     const { botInfo } = nextProps
-                    const apiOptions = botInfo.callbacks.map<OF.IDropdownOption>(convertCallbackToOption)
+                    const apiOptions = botInfo.apiCallbacks.map<OF.IDropdownOption>(convertCallbackToOption)
 
                     nextState = {
                         ...nextState,
                         apiOptions
+                    }
+                }
+
+                if (nextProps.botInfo.renderCallbacks !== this.props.botInfo.renderCallbacks) {
+                    const { botInfo } = nextProps
+                    const renderOptions = botInfo.renderCallbacks.map<OF.IDropdownOption>(convertCallbackToOption)
+
+                    nextState = {
+                        ...nextState,
+                        renderOptions
                     }
                 }
 
@@ -275,13 +291,17 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 } else if (action.actionType === ActionTypes.END_SESSION) {
                     const sessionAction = new SessionAction(action)
                     slateValuesMap[TEXT_SLOT] = tryCreateSlateValue(ActionTypes.TEXT, TEXT_SLOT, sessionAction.value, payloadOptions)
-                } else if (action.actionType === ActionTypes.API_LOCAL) {
-                    const apiAction = new ApiAction(action)
-                    selectedApiOptionKey = apiAction.name
-                    const callback = this.props.botInfo.callbacks.find(t => t.name === selectedApiOptionKey)
+                } else if ([ActionTypes.API_LOCAL, ActionTypes.RENDER].includes(action.actionType)) {
+                    // TODO: Just use single CodeAction ?
+                    const actionClass = action.actionType == ActionTypes.API_LOCAL
+                        ? new ApiAction(action)
+                        : new RenderAction(action)
+
+                    selectedApiOptionKey = actionClass.name
+                    const callback = this.props.botInfo.apiCallbacks.find(t => t.name === selectedApiOptionKey)
                     if (callback) {
                         for (let actionArgumentName of callback.arguments) {
-                            const argument = apiAction.arguments.find(a => a.parameter === actionArgumentName)
+                            const argument = actionClass.arguments.find(a => a.parameter === actionArgumentName)
                             const initialValue = argument ? argument.value : ''
                             slateValuesMap[actionArgumentName] = tryCreateSlateValue(ActionTypes.API_LOCAL, actionArgumentName, initialValue, payloadOptions)
                         }
@@ -382,7 +402,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     }
 
     onChangedApiOption = (apiOption: OF.IDropdownOption) => {
-        const apiCallback = this.props.botInfo.callbacks.find(t => t.name === apiOption.key)
+        const apiCallback = this.props.botInfo.apiCallbacks.find(t => t.name === apiOption.key)
         if (!apiCallback) {
             throw new Error(`Could not find api callback with name: ${apiOption.key}`)
         }
@@ -398,6 +418,27 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
         this.setState({
             selectedApiOptionKey: apiOption.key,
+            slateValuesMap: newSlateValues
+        })
+    }
+
+    onChangedRenderOption = (option: OF.IDropdownOption) => {
+        const callback = this.props.botInfo.renderCallbacks.find(t => t.name === option.key)
+        if (!callback) {
+            throw new Error(`Could not find render callback with name: ${option.key}`)
+        }
+
+        // Initialize a new empty slate value for each of the arguments in the callback
+        const newSlateValues = callback.arguments
+            .reduce((values, argument) => {
+                // Preserve old values if any transfer
+                const oldValue = this.state.slateValuesMap[argument]
+                values[argument] = oldValue || Plain.deserialize('')
+                return values
+            }, {})
+
+        this.setState({
+            selectedRenderOptionKey: option.key,
             slateValuesMap: newSlateValues
         })
     }
@@ -504,6 +545,12 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     arguments: this.getActionArguments(this.state.slateValuesMap)
                 })
                 break;
+            case ActionTypes.RENDER:
+                payload = JSON.stringify({
+                    payload: this.state.selectedRenderOptionKey!.toString(),
+                    arguments: this.getActionArguments(this.state.slateValuesMap)
+                })
+                break;
             case ActionTypes.END_SESSION:
                 const value = this.state.slateValuesMap[TEXT_SLOT]
                 payload = JSON.stringify({
@@ -525,7 +572,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             version: 0,
             packageCreationId: 0,
             packageDeletionId: 0,
-            actionType: this.state.selectedActionTypeOptionKey as string
+            actionType: ActionTypes[this.state.selectedActionTypeOptionKey]
         })
 
         if (this.state.isEditing && this.props.action) {
@@ -726,7 +773,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         return <CLTagItem key={props.index} {...renderProps}>{props.item.name}</CLTagItem>
     }
 
-    onResolveNegativeEntityTags(filterText: string, selectedTags: OF.ITag[]): OF.ITag[] {
+    onResolveNegativeEntityTags = (filterText: string, selectedTags: OF.ITag[]): OF.ITag[] => {
         return getSuggestedTags(
             filterText,
             this.state.entityTags,
@@ -734,7 +781,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         )
     }
 
-    onChangeNegativeEntityTags(tags: OF.ITag[]) {
+    onChangeNegativeEntityTags = (tags: OF.ITag[]) => {
         this.setState({
             negativeEntityTags: tags
         })
@@ -807,11 +854,12 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
     render() {
         // Disable payload if we're editing existing action and no API or CARD data available
-        const isPayloadDisabled =
+        const isPayloadDisabled = 
             (this.state.selectedActionTypeOptionKey === ActionTypes.API_LOCAL
                 && (this.state.apiOptions.length === 0))
-            ||
-            (this.state.selectedActionTypeOptionKey === ActionTypes.CARD
+            || (this.state.selectedActionTypeOptionKey === ActionTypes.RENDER
+                && (this.state.renderOptions.length === 0))
+            || (this.state.selectedActionTypeOptionKey === ActionTypes.CARD
                 && (this.state.cardOptions.length === 0));
 
         // Available Mentions: All entities - expected entity - required entities from payload - disqualified entities
@@ -854,10 +902,32 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                     data-testid="dropdown-api-option"
                                     label="API"
                                     options={this.state.apiOptions}
-                                    onChanged={(apiOption) => this.onChangedApiOption(apiOption)}
+                                    onChanged={this.onChangedApiOption}
                                     selectedKey={this.state.selectedApiOptionKey}
                                     disabled={this.state.apiOptions.length === 0}
                                     placeHolder={this.state.apiOptions.length === 0 ? 'NONE DEFINED' : 'API name...'}
+                                    tipType={ToolTip.TipType.ACTION_API}
+                                />
+                                <OF.PrimaryButton
+                                    className="cl-dropdownWithButton-button"
+                                    onClick={() => this.onClickSyncBotInfo()}
+                                    ariaDescription="Refresh"
+                                    text=""
+                                    iconProps={{ iconName: 'Sync' }}
+                                />
+                            </div>
+                            )}
+
+                        {this.state.selectedActionTypeOptionKey === ActionTypes.RENDER
+                            && (<div className="cl-dropdownWithButton-dropdown">
+                                <TC.Dropdown
+                                    data-testid="dropdown-render-option"
+                                    label="Render"
+                                    options={this.state.renderOptions}
+                                    onChanged={this.onChangedRenderOption}
+                                    selectedKey={this.state.selectedRenderOptionKey}
+                                    disabled={this.state.renderOptions.length === 0}
+                                    placeHolder={this.state.renderOptions.length === 0 ? 'NONE DEFINED' : 'Render name...'}
                                     tipType={ToolTip.TipType.ACTION_API}
                                 />
                                 <OF.PrimaryButton
@@ -927,8 +997,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
                         {this.state.selectedActionTypeOptionKey === ActionTypes.API_LOCAL
                             && this.state.selectedApiOptionKey
-                            && (this.props.botInfo.callbacks.find(t => t.name === this.state.selectedApiOptionKey) ?
-                                (this.props.botInfo.callbacks.find(t => t.name === this.state.selectedApiOptionKey)!.arguments
+                            && (this.props.botInfo.apiCallbacks.find(t => t.name === this.state.selectedApiOptionKey) ?
+                                (this.props.botInfo.apiCallbacks.find(t => t.name === this.state.selectedApiOptionKey)!.arguments
                                     .map(apiArgument => {
                                         return (
                                             <React.Fragment key={apiArgument}>
@@ -951,11 +1021,37 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                             )
                         }
 
-                        {this.state.selectedActionTypeOptionKey === ActionTypes.TEXT
+                        {this.state.selectedActionTypeOptionKey === ActionTypes.RENDER
+                            && this.state.selectedRenderOptionKey
+                            && (this.props.botInfo.renderCallbacks.find(t => t.name === this.state.selectedRenderOptionKey) ?
+                                (this.props.botInfo.renderCallbacks.find(t => t.name === this.state.selectedRenderOptionKey)!.arguments
+                                    .map(argument => {
+                                        return (
+                                            <React.Fragment key={argument}>
+                                                <OF.Label className="ms-Label--tight">{argument} <HelpIcon tipType={ToolTip.TipType.ACTION_ARGUMENTS}></HelpIcon></OF.Label>
+                                                <ActionPayloadEditor.Editor
+                                                    options={optionsAvailableForPayload}
+                                                    value={this.state.slateValuesMap[argument]}
+                                                    placeholder={''}
+                                                    onChange={eState => this.onChangePayloadEditor(eState, argument)}
+                                                    onSubmit={() => this.onSubmitPayloadEditor()}
+                                                    disabled={isPayloadDisabled}
+                                                />
+                                            </React.Fragment>
+                                        )
+                                    })
+                                ) :
+                                <div className="cl-errorpanel" >
+                                    <div>ERROR: Bot Missing Render: ${this.state.selectedRenderOptionKey}</div>
+                                </div>
+                            )
+                        }
+
+                        {ActionTypes[this.state.selectedActionTypeOptionKey] === ActionTypes.TEXT
                             && (<div className={(this.state.isPayloadValid ? '' : 'editor--error')}>
                                 <div>
                                     <OF.Label className="ms-Label--tight">Response... <HelpIcon 
-                                        tipType={this.state.selectedActionTypeOptionKey === ActionTypes.API_LOCAL ?
+                                        tipType={ActionTypes[this.state.selectedActionTypeOptionKey] === ActionTypes.API_LOCAL ?
                                         ToolTip.TipType.ACTION_ARGUMENTS : ToolTip.TipType.ACTION_RESPONSE_TEXT} /></OF.Label>
                                     <ActionPayloadEditor.Editor
                                         options={optionsAvailableForPayload}
