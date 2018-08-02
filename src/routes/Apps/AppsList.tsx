@@ -127,7 +127,7 @@ interface ComponentState {
     appToDelete: AppBase | null
     columns: ISortableRenderableColumn[]
     sortColumn: ISortableRenderableColumn
-    tutorials: AppBase[]
+    tutorials: AppBase[] | null
 }
 
 const ifStringReturnLowerCase = (s: string | number) => {
@@ -154,7 +154,7 @@ class AppsList extends React.Component<Props, ComponentState> {
             appToDelete: null,
             columns,
             sortColumn: defaultSortColumn,
-            tutorials: []
+            tutorials: null
         }
     }
 
@@ -193,24 +193,15 @@ class AppsList extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    onClickImportDemoApps() {
-        if (this.state.tutorials === null) {
-            ((this.props.fetchTutorialsThunkAsync(CL_IMPORT_ID) as any) as Promise<AppBase[]>)
-            .then(tutorials => {
-                this.setState({
-                    tutorials: tutorials,
-                    isImportTutorialsOpen: true
-                })
-            })
-            .catch(error => {
-                console.warn(`Error when attempting get tutorials: `, error)
-            })
-        }
-        else {
-            this.setState({
-                isImportTutorialsOpen: true
-            })
-        }
+    async onClickImportDemoApps() {
+        const tutorials = this.state.tutorials !== null
+            ? this.state.tutorials
+            : await ((this.props.fetchTutorialsThunkAsync(CL_IMPORT_ID) as any) as Promise<AppBase[]>)
+
+        this.setState({
+            tutorials: tutorials,
+            isImportTutorialsOpen: true
+        })
     }
 
     onClickDeleteApp(app: AppBase) {
@@ -363,7 +354,7 @@ class AppsList extends React.Component<Props, ComponentState> {
                 <TutorialImporter
                     open={this.state.isImportTutorialsOpen}
                     apps={this.props.apps}
-                    tutorials={this.state.tutorials}
+                    tutorials={this.state.tutorials!}
                     handleClose={this.onCloseImportNotification}
                     onTutorialSelected={(tutorial) => this.props.onImportTutorial(tutorial)}
                 />

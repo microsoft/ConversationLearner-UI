@@ -315,6 +315,8 @@ export enum FM {
     // ToolTip
     TOOLTIP_ACTION_API = 'ToolTop.ACTION_API',
     TOOLTIP_ACTION_API_TITLE = 'ToolTop.ACTION_API_TITLE',
+    TOOLTIP_ACTION_RENDER = 'ToolTop.ACTION_RENDER',
+    TOOLTIP_ACTION_RENDER_TITLE = 'ToolTop.ACTION_RENDER_TITLE',
     TOOLTIP_ACTION_ARGUMENTS = 'ToolTip.ACTION_ARGUMENTS',
     TOOLTIP_ACTION_ARGUMENTS_TITLE = 'ToolTip.ACTION_ARGUMENTS_TITLE',
     TOOLTIP_ACTION_CARD = 'ToolTip.ACTION_CARD',
@@ -565,6 +567,8 @@ export default {
         // ToolTip
         [FM.TOOLTIP_ACTION_API]: 'APIs exposed in the running Bot of the form:',
         [FM.TOOLTIP_ACTION_API_TITLE]: 'API',
+        [FM.TOOLTIP_ACTION_RENDER]: 'Render exposed in the running Bot of the form:',
+        [FM.TOOLTIP_ACTION_RENDER_TITLE]: 'RENDER',
         [FM.TOOLTIP_ACTION_ARGUMENTS]: `When Action Type is an API call, a list of comma separated arguments passed to the API. Arguments prefixed with a $ refer to Entity values.  For example: "$city"`,
         [FM.TOOLTIP_ACTION_ARGUMENTS_TITLE]: `Arguments`,
         [FM.TOOLTIP_ACTION_CARD]: `When Action Type is a card call, a list of comma separated arguments passed to the Card. Arguments prefixed with a $ refer to Entity values.  For example: "$city"`,
