@@ -116,7 +116,7 @@ html {
   color: green;
   font-size: 20px;
 }
-.cl-icon[data-icon-name="Remove"]{
+.cl-icon[data-icon-name="CommentAdd"]{
   color: lightgrey;
   font-size: 18px
 }
@@ -147,6 +147,15 @@ html {
   margin-bottom: -6px;
   margin-left: -5px;
   color: var(--color-wc-user);
+}
+
+.ms-Button-icon[data-icon-name="CommentAdd"] {
+  font-size: 18px !important;
+}
+
+.ms-Button--icon.cl-wc-addturn {
+  background-color: transparent !important;
+ 
 }
 
 .ms-Button-icon[data-icon-name="Delete"] {
@@ -246,11 +255,12 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
 .cl-wc-deleteturn {
   border: none !important;
   position: absolute !important;
+  background-color: transparent !important;
   top: 5px;
 }
 
 .cl-wc-deleteturn--bot {
-  right: 0px;
+  right: -8px;
 }
 
 .cl-wc-deleteturn--user {
@@ -260,14 +270,29 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
 .cl-wc-addturn {
   border: none !important;
   position: absolute !important;
-  top: 30px;
+  bottom: -8px;
 }
 
 .cl-wc-addturn--bot {
-  right: 0px;
+  right: 20px;
 }
 
 .cl-wc-addturn--user {
+  left: 25px;
+}
+
+.cl-wc-branchturn {
+  border: none !important;
+  position: absolute !important;
+  background-color: transparent !important;
+  bottom: -8px;
+}
+
+.cl-wc-branchturn--bot {
+  right: -9px;
+}
+
+.cl-wc-branchturn--user {
   left: 0px;
 }
 

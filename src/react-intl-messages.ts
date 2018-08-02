@@ -402,10 +402,10 @@ export enum FM {
     TRAINDIALOGMODAL_BRANCH_ARIADESCRIPTION = 'TrainDialogModal.branch.ariaDescription',
     TRAINDIALOGMODAL_BRANCH_TEXT = 'TrainDialogModal.branch.text',
     TRAINDIALOGMODAL_BRANCH_TIP = 'TrainDialogModal.branch.tip',
-    TRAINDIALOGMODAL_DEFAULTBUTTON_ARIADESCRIPTION = 'TrainDialogModal.defaultButton.ariaDescription',
-    TRAINDIALOGMODAL_DEFAULTBUTTON_TEXT = 'TrainDialogModal.defaultButton.text',
-    TRAINDIALOGMODAL_PRIMARYBUTTON_ARIADESCRIPTION = 'TrainDialogModal.primaryButton.ariaDescription',
-    TRAINDIALOGMODAL_PRIMARYBUTTON_TEXT = 'TrainDialogModal.primaryButton.text',
+    TRAINDIALOGMODAL_ABANDONEDITBUTTON_TEXT = 'TrainDialogModal.abandonEditButton.ariaDescription',
+    TRAINDIALOGMODAL_DELETEBUTTON_TEXT = 'TrainDialogModal.defaultButton.text',
+    TRAINDIALOGMODAL_SAVEEDITBUTTON_TEXT = 'TrainDialogModal.saveEditButton.ariaDescription',
+    TRAINDIALOGMODAL_DONEBUTTON_TEXT = 'TrainDialogModal.primaryButton.text',
     TRAINDIALOGMODAL_CONFIRMDELETE_TITLE = 'TrainDialogModal.confirmDelete.title',
 
     // Train Dialogs
@@ -844,10 +844,10 @@ export default {
         [FM.TRAINDIALOGMODAL_BRANCH_ARIADESCRIPTION]: 'Branch',
         [FM.TRAINDIALOGMODAL_BRANCH_TEXT]: 'Branch',
         [FM.TRAINDIALOGMODAL_BRANCH_TIP] : 'First select a round in the conversation by clicking on it.  Then click "Branch" to create a new Training Dialog starting at that round.',
-        [FM.TRAINDIALOGMODAL_DEFAULTBUTTON_ARIADESCRIPTION]: 'Delete',
-        [FM.TRAINDIALOGMODAL_DEFAULTBUTTON_TEXT]: 'Delete',
-        [FM.TRAINDIALOGMODAL_PRIMARYBUTTON_ARIADESCRIPTION]: 'Done',
-        [FM.TRAINDIALOGMODAL_PRIMARYBUTTON_TEXT]: 'Done',
+        [FM.TRAINDIALOGMODAL_ABANDONEDITBUTTON_TEXT]: 'Abandon Edit',
+        [FM.TRAINDIALOGMODAL_DELETEBUTTON_TEXT]: 'Delete',
+        [FM.TRAINDIALOGMODAL_SAVEEDITBUTTON_TEXT]: 'Save Edit',
+        [FM.TRAINDIALOGMODAL_DONEBUTTON_TEXT]: 'Done',
         [FM.TRAINDIALOGMODAL_CONFIRMDELETE_TITLE]: 'Are you sure you want to delete this Training Dialog?',
         
         // Error Messages

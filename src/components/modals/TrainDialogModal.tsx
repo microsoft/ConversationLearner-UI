@@ -2,47 +2,48 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import * as React from 'react';
+import * as React from 'react'
 import * as ReactDOM from 'react-dom'
-import ReactHtmlParser from 'react-html-parser';
-import { returntypeof } from 'react-redux-typescript';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
-import { PrimaryButton, IconButton, DefaultButton, Callout } from 'office-ui-fabric-react';
-import { Modal } from 'office-ui-fabric-react/lib/Modal';
-import { State } from '../../types';
+import ReactHtmlParser from 'react-html-parser'
+import { returntypeof } from 'react-redux-typescript'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
+import * as OF from 'office-ui-fabric-react';
+import { Modal } from 'office-ui-fabric-react/lib/Modal'
+import { State } from '../../types'
+import actions from '../../actions'
 import Webchat from '../Webchat'
 import TrainDialogAdmin from './TrainDialogAdmin'
-import { AppBase, TrainDialog, SenderType } from '@conversationlearner/models'
-import { Activity } from 'botframework-directlinejs';
+import * as CLM from '@conversationlearner/models'
+import { Activity } from 'botframework-directlinejs'
 import ConfirmCancelModal from './ConfirmCancelModal'
 import { FM } from '../../react-intl-messages'
-import { injectIntl, InjectedIntlProps } from 'react-intl'
+import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
+import { autobind } from 'office-ui-fabric-react/lib/Utilities'
 
 interface ComponentState {
     isConfirmCancelModalOpen: boolean
-    calloutOpen: boolean
     selectedActivity: Activity | null
     webchatKey: number
-    currentTrainDialog: TrainDialog | null
-    pendingExtractionChanges: boolean
+    currentTrainDialog: CLM.TrainDialog | null
+    pendingExtractionChanges: boolean,
+    // Save activity render when overwriting webchat render
+    lastActivityJSX: JSX.Element | null,
+    hasBeenEdited: boolean
 }
 
 const initialState: ComponentState = {
     isConfirmCancelModalOpen: false,
-    calloutOpen: false,
     selectedActivity: null,
     webchatKey: 0,
     currentTrainDialog: null,
-    pendingExtractionChanges: false
+    pendingExtractionChanges: false,
+    lastActivityJSX: null,
+    hasBeenEdited: false
 }
-
-let lastActivityId : string | null = null
-let lastActivityContext: any = null
 
 class TrainDialogModal extends React.Component<Props, ComponentState> {
     state = initialState
-    private _refBranchButton: HTMLElement | null;
 
     componentWillReceiveProps(nextProps: Props) {
         if (this.props.open === false && nextProps.open === true) {
@@ -57,6 +58,7 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
         }
     }
 
+    @autobind
     onClickBranch() {
         if (this.state.selectedActivity) {
             let branchRound = this.state.selectedActivity.channelData.roundIndex;
@@ -64,80 +66,195 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
                 this.props.onBranch(branchRound);
             }
         }
-        else {
-            this.setState({
-                calloutOpen: true
-              });
-        }
     }
 
+    @autobind
     onClickDone() {
         this.props.onClose()
     }
 
+    @autobind
     onClickDelete() {
         this.setState({
             isConfirmCancelModalOpen: true
         })
     }
 
-    onClickCancelDelete = () => {
+    @autobind
+    onClickCancelDelete() {
         this.setState({
             isConfirmCancelModalOpen: false
         })
     }
 
-    onClickConfirmDelete = () => {
+    @autobind
+    onClickConfirmDelete() {
         this.props.onDelete();
         this.setState(
             { isConfirmCancelModalOpen: false }
         );
     }
 
-    onWebChatSelectActivity(activity: Activity) {
-        if (lastActivityId !== activity.id) {
-            if (lastActivityId) {
-                let lastElement = document.querySelector(`[data-activity-id='${lastActivityId}']`)
-                if (lastElement) {
-                    ReactDOM.render(lastActivityContext, lastElement)
+    onInsertTurn(activity: Activity) {
+
+        if (!this.props.user) {
+            throw new Error("No Active User");
+        }
+
+        const roundIndex = activity.channelData.roundIndex
+        const scoreIndex = activity.channelData.scoreIndex
+
+        const definitions = {
+            entities: this.props.entities,
+            actions: this.props.actions,
+            trainDialogs: []
+        }
+
+        // Copy, Remove rounds / scorer steps below insert
+        let history = JSON.parse(JSON.stringify(this.props.trainDialog))
+        history.definitions = definitions
+        history.rounds = history.rounds.slice(0, roundIndex + 1)
+        history.rounds[roundIndex].scorerSteps = history.rounds[roundIndex].scorerSteps.slice(0, scoreIndex);
+
+        // Get a score for this step
+        ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app, history, this.props.user.name, this.props.user.id, false) as any) as Promise<CLM.TeachWithHistory>)
+        .then((teachWithHistory: CLM.TeachWithHistory) => {
+            // Insert top scoring activity into trainDialog
+            let insertedAction = this.getBestAction(teachWithHistory)
+
+            if (!insertedAction) {
+                throw new Error("No actions available")  // LARS todo - handle this better
+            }
+
+            let scorerStep = {
+                input: teachWithHistory.scoreInput,
+                labelAction: insertedAction.actionId,
+                scoredAction: insertedAction
+            } as CLM.TrainScorerStep
+
+            let newTrainDialog = JSON.parse(JSON.stringify(this.props.trainDialog))
+            newTrainDialog.definitions = definitions
+            let curRound = newTrainDialog.rounds[roundIndex]
+            curRound.scorerSteps.splice(scoreIndex, 0, scorerStep)
+            this.props.onUpdate(newTrainDialog)
+        })
+        .catch(error => {
+            console.warn(`Error when attempting to create teach session from history: `, error)
+        })
+    }
+
+    getBestAction(teachWithHistory: CLM.TeachWithHistory): CLM.ScoredAction | undefined {
+        if (teachWithHistory.scoreResponse) {
+
+            let scoredActions  = teachWithHistory.scoreResponse.scoredActions
+
+            // Get highest scoring Action 
+            let best
+            for (let test of scoredActions) {
+                if (!best || test.score > best.score) {
+                    best = test
                 }
             }
+            return best
+        }
+        return undefined
+    }
+
+    onDeleteTurn(activity: Activity) {
+
+        let senderType = activity.channelData.senderType
+        let roundIndex = activity.channelData.roundIndex
+        let scoreIndex = activity.channelData.scoreIndex
+        let newTrainDialog = {...this.props.trainDialog}
+        newTrainDialog.definitions = {
+            entities: this.props.entities,
+            actions: this.props.actions,
+            trainDialogs: []
+        }
+
+        let curRound = newTrainDialog.rounds[roundIndex]
+
+        if (senderType === CLM.SenderType.User) {
+            // If user input deleted, append scores to previous round
+            let previousRound = newTrainDialog.rounds[roundIndex - 1]
+            previousRound.scorerSteps = [...previousRound.scorerSteps, ...curRound.scorerSteps]
+            // Delete round 
+            newTrainDialog.rounds.splice(roundIndex, 1)
+            this.props.onUpdate(newTrainDialog)
+        }
+        else if (senderType === CLM.SenderType.Bot) {
+            // If Action deleted remove it
+            curRound.scorerSteps.splice(scoreIndex, 1)
+            this.props.onUpdate(newTrainDialog)
+        }
+
+        this.setState({
+            hasBeenEdited: true
+        })
+    }
+    
+    onWebChatSelectActivity(activity: Activity) {
+        let lastActivityJSX: JSX.Element | null = this.state.lastActivityJSX;
+
+        // If I've change the selected activity
+        if (this.state.selectedActivity !== activity) {
+            // Restore original webchat render of the previous activity
+            if (this.state.selectedActivity && this.state.lastActivityJSX) {
+                // Find the turn render by Id
+                let lastElement = document.querySelector(`[data-activity-id='${this.state.selectedActivity.id}']`)
+                if (lastElement) {
+                    ReactDOM.render(this.state.lastActivityJSX, lastElement)
+                }
+            }
+            // Find the webchat render for this activity
             let element = document.querySelector(`[data-activity-id='${activity.id}']`)
             if (element && activity.id) {
-                lastActivityId = activity.id
-                lastActivityContext = ReactHtmlParser(element.innerHTML)
-                const addClass = `cl-wc-addturn ${activity.channelData.senderType === SenderType.User ? `cl-wc-addturn--user` : `cl-wc-addturn--bot`}`
-                const deleteClass = `cl-wc-deleteturn ${activity.channelData.senderType === SenderType.User ? `cl-wc-deleteturn--user` : `cl-wc-deleteturn--bot`}`
-                
+                // Convert inner html to a JSX element
+                lastActivityJSX = ReactHtmlParser(element.innerHTML)
+
+                let canBranch = this.state.selectedActivity && this.state.selectedActivity.channelData.senderType === CLM.SenderType.User;
+        
+                // Generate new JSX with buttons
                 const text = <div>
-                            {lastActivityContext}
-                            <IconButton
-                                className={addClass}
-                                // onClick={() => this.onClickAdd(entity)}
-                                ariaDescription="Add Initial Value"
-                                iconProps={{ iconName: 'CirclePlus' }}
+                            {lastActivityJSX}
+                            <OF.IconButton
+                                className={`cl-wc-addturn ${activity.channelData.senderType === CLM.SenderType.User ? `cl-wc-addturn--user` : `cl-wc-addturn--bot`}`}
+                                onClick={() => this.onInsertTurn(activity)}
+                                ariaDescription="Insert Turn"
+                                iconProps={{ iconName: 'CommentAdd' }}
                             />
-                            <IconButton
-                                className={deleteClass}
+                            <OF.IconButton
+                                className={`cl-wc-deleteturn ${activity.channelData.senderType === CLM.SenderType.User ? `cl-wc-deleteturn--user` : `cl-wc-deleteturn--bot`}`}
                                 iconProps={{ iconName: 'Delete' }}
-                                //  onClick={props.onClickDelete}
-                                title="Unselect Entity"
-                                />
+                                onClick={() => this.onDeleteTurn(activity)}
+                                ariaDescription="Delete Turn"
+                            />
+                            <OF.IconButton
+                                disabled={!canBranch ||
+                                    this.state.pendingExtractionChanges ||
+                                    !this.props.canEdit ||
+                                    (this.props.trainDialog && this.props.trainDialog.invalid === true)}
+                                
+                                className={`cl-wc-branchturn ${activity.channelData.senderType === CLM.SenderType.User ? `cl-wc-branchturn--user` : `cl-wc-branchturn--bot`}`}
+                                iconProps={{ iconName: 'BranchMerge' }}
+                                onClick={this.onClickBranch}
+                                ariaDescription={this.props.intl.formatMessage({
+                                    id: FM.TRAINDIALOGMODAL_BRANCH_ARIADESCRIPTION,
+                                    defaultMessage: 'Branch'
+                                })}
+                            />
                             </div>
+
+                // Rerender back into element
                 ReactDOM.render(text, element)
             }
         }
 
         this.setState({
+            lastActivityJSX: lastActivityJSX,
             selectedActivity: activity
         })
     }
-
-    onCalloutDismiss() {
-        this.setState({
-          calloutOpen: false
-        });
-      }
 
     onExtractionsChanged(changed: boolean) {
         // Put mask on webchat if changing extractions
@@ -146,13 +263,113 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
         })
     }
 
+    renderAbandonText(intl: ReactIntl.InjectedIntl) {
+        if (this.state.hasBeenEdited) {
+            return intl.formatMessage({
+                id: FM.TRAINDIALOGMODAL_ABANDONEDITBUTTON_TEXT,
+                defaultMessage: 'Abandon Edit'
+            })
+        }
+        else {
+            return intl.formatMessage({
+                id: FM.TRAINDIALOGMODAL_DELETEBUTTON_TEXT,
+                defaultMessage: 'Delete'
+            })
+        }
+    }
+
+    renderDoneText(intl: ReactIntl.InjectedIntl) {
+        if (this.state.hasBeenEdited) {
+            return intl.formatMessage({
+                id: FM.TRAINDIALOGMODAL_SAVEEDITBUTTON_TEXT,
+                defaultMessage: 'Save Edit'
+            })
+        }
+        else {
+            return intl.formatMessage({
+                id: FM.TRAINDIALOGMODAL_DONEBUTTON_TEXT,
+                defaultMessage: 'Done'
+            })
+        }
+    }
+
+    renderReplayError(replayError: CLM.ReplayError): JSX.Element {
+        switch (replayError.type) {
+            case CLM.ReplayErrorType.MissingAction:
+                return (
+                    <div className={OF.FontClassNames.mediumPlus}>
+                        <FormattedMessage
+                            id={FM.REPLAYERROR_DESC_MISSING_ACTION}
+                            defaultMessage={FM.REPLAYERROR_DESC_MISSING_ACTION}
+                        />
+                        {` "${(replayError as CLM.ReplayErrorMissingAction).lastUserInput}"`}
+                    </div>
+                )
+            case CLM.ReplayErrorType.MissingEntity:
+                return (
+                    <div className={OF.FontClassNames.mediumPlus}>
+                        <FormattedMessage
+                            id={FM.REPLAYERROR_DESC_MISSING_ENTITY}
+                            defaultMessage={FM.REPLAYERROR_DESC_MISSING_ENTITY}
+                        />
+                        {` "${(replayError as CLM.ReplayErrorMissingEntity).value}"`}
+                    </div>
+                )
+            case CLM.ReplayErrorType.ActionUnavailable:
+                return (
+                    <div className={OF.FontClassNames.mediumPlus}>
+                        <FormattedMessage
+                            id={FM.REPLAYERROR_DESC_UNAVAILABLE_ACTION}
+                            defaultMessage={FM.REPLAYERROR_DESC_UNAVAILABLE_ACTION}
+                        />
+                        {` "${(replayError as CLM.ReplayErrorActionUnavailable).lastUserInput}"`}
+                    </div>
+                )
+            case CLM.ReplayErrorType.EntityDiscrepancy:
+                let entityDiscrepancy = replayError as CLM.ReplayErrorEntityDiscrepancy;
+                return (
+                        <OF.TooltipHost  
+                            id='myID' 
+                            delay={ OF.TooltipDelay.zero }
+                            calloutProps={ { gapSpace: 0 } }
+                            tooltipProps={ {
+                                onRenderContent: () => {
+                                    return (
+                                        <div className={OF.FontClassNames.mediumPlus}>
+                                            <div className="cl-font--emphasis">Original Entities:</div>
+                                            {entityDiscrepancy.originalEntities.length > 0 ?
+                                                entityDiscrepancy.originalEntities.map(e => (<div className={OF.FontClassNames.mediumPlus}>{e}</div>))
+                                                : <div className={OF.FontClassNames.mediumPlus}>-none-</div>
+                                            }
+                                            <div className="cl-font--emphasis">New Entities:</div>
+                                            {entityDiscrepancy.newEntities.length > 0 ?
+                                                entityDiscrepancy.newEntities.map(e => (<div className={OF.FontClassNames.mediumPlus}>{e}</div>))
+                                                : <div className={OF.FontClassNames.mediumPlus}>-none-</div>
+                                            }
+                                        </div>
+                                    );
+                                    }
+                              } }
+                            >
+                            <div className={OF.FontClassNames.mediumPlus}>
+                                <FormattedMessage
+                                    id={FM.REPLAYERROR_DESC_CHANGED_ENTITIES}
+                                    defaultMessage={FM.REPLAYERROR_DESC_CHANGED_ENTITIES}
+                                />
+                                {` "${entityDiscrepancy.lastUserInput}"`}
+                                <OF.Icon iconName="Info" className="cl-icon" />
+                            </div>
+                        </OF.TooltipHost>
+                )
+            default:
+                throw new Error('Unhandled ReplayErrorType case');
+        }
+    }
+
     render() {
         const { intl } = this.props
         let chatDisable = this.state.pendingExtractionChanges ? <div className="cl-overlay"/> : null;
-
-        // Can only branch on user input 
-        let canBranch = this.state.selectedActivity && this.state.selectedActivity.channelData.senderType === SenderType.User;
-            
+  
         return (
             <Modal
                 isOpen={this.props.open}
@@ -185,7 +402,7 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
                                     trainDialog={this.props.trainDialog}
                                     selectedActivity={this.state.selectedActivity}
                                     onEdit={(sourceTrainDialogId, editedTrainDialog, extractChanged) => this.props.onEdit(editedTrainDialog, extractChanged)}
-                                    onReplace={(editedTrainDialog: TrainDialog) => this.props.onReplace(editedTrainDialog)}
+                                    onReplace={(editedTrainDialog: CLM.TrainDialog) => this.props.onReplace(editedTrainDialog)}
                                     onExtractionsChanged={(changed: boolean) => this.onExtractionsChanged(changed)}
                                 />
                             </div>
@@ -196,52 +413,27 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
                 <div className="cl-modal_footer cl-modal_footer--border">
                     <div className="cl-modal-buttons">
                         <div className="cl-modal-buttons_secondary">
+                            {this.state.selectedActivity && this.state.selectedActivity.channelData.replayError && 
+                                <div className="cl-dialogwarning">
+                                    {this.renderReplayError(this.state.selectedActivity.channelData.replayError)}
+                                </div>
+                            }
                         </div>
                         <div className="cl-modal-buttons_primary">
-                            <PrimaryButton
+                            <OF.PrimaryButton
                                 data-testid="footer-button-done"
                                 disabled={this.state.pendingExtractionChanges}
-                                onClick={() => this.onClickDone()}
-                                ariaDescription={intl.formatMessage({
-                                    id: FM.TRAINDIALOGMODAL_PRIMARYBUTTON_ARIADESCRIPTION,
-                                    defaultMessage: 'Done'
-                                })}
-                                text={intl.formatMessage({
-                                    id: FM.TRAINDIALOGMODAL_PRIMARYBUTTON_TEXT,
-                                    defaultMessage: 'Done'
-                                })}
+                                onClick={this.onClickDone}
+                                ariaDescription={this.renderDoneText(intl)}
+                                text={this.renderDoneText(intl)}
                             />
-                            <div ref={(menuButton) => this._refBranchButton = menuButton}>
-                                <DefaultButton
-                                    data-testid="footer-button-branch"
-                                    disabled={!canBranch ||
-                                        this.state.pendingExtractionChanges ||
-                                        !this.props.canEdit ||
-                                        (this.props.trainDialog && this.props.trainDialog.invalid === true)}
-                                    onClick={() => this.onClickBranch()}
-                                    ariaDescription={intl.formatMessage({
-                                        id: FM.TRAINDIALOGMODAL_BRANCH_ARIADESCRIPTION,
-                                        defaultMessage: 'Branch'
-                                    })}
-                                    text={intl.formatMessage({
-                                        id: FM.TRAINDIALOGMODAL_BRANCH_TEXT,
-                                        defaultMessage: 'Branch'
-                                    })}
-                                />
-                            </div>
-                            <DefaultButton
+                            <OF.DefaultButton
                                 data-testid="footer-button-delete"
                                 className="cl-button-delete"
                                 disabled={this.state.pendingExtractionChanges || !this.props.canEdit}
-                                onClick={() => this.onClickDelete()}
-                                ariaDescription={intl.formatMessage({
-                                    id: FM.TRAINDIALOGMODAL_DEFAULTBUTTON_ARIADESCRIPTION,
-                                    defaultMessage: 'Delete'
-                                })}
-                                text={intl.formatMessage({
-                                    id: FM.TRAINDIALOGMODAL_DEFAULTBUTTON_TEXT,
-                                    defaultMessage: 'Delete'
-                                })}
+                                onClick={this.onClickDelete}
+                                ariaDescription={this.renderAbandonText(intl)}
+                                text={this.renderAbandonText(intl)}
                             />
 
                         </div>
@@ -250,57 +442,42 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
                 <ConfirmCancelModal
                     data-testid="confirm-delete-trainingdialog"
                     open={this.state.isConfirmCancelModalOpen}
-                    onCancel={() => this.onClickCancelDelete()}
-                    onConfirm={() => this.onClickConfirmDelete()}
+                    onCancel={this.onClickCancelDelete}
+                    onConfirm={this.onClickConfirmDelete}
                     title={intl.formatMessage({
                         id: FM.TRAINDIALOGMODAL_CONFIRMDELETE_TITLE,
                         defaultMessage: `Are you sure you want to delete this Training Dialog?`
                     })}
                 />
-                { this.state.calloutOpen && (
-                    <Callout
-                        data-testid="alertdialog-callout-dismiss"
-                        role={ 'alertdialog' }
-                        gapSpace={ 0 }
-                        target={ this._refBranchButton }
-                        onDismiss={ () => this.onCalloutDismiss() }
-                        setInitialFocus={ true }
-                    >
-                        <div>
-                        <p className='cl-callout'>
-                            {intl.formatMessage({
-                                id: FM.TRAINDIALOGMODAL_BRANCH_TIP,
-                                defaultMessage: `Select a round first`
-                            })}
-                        </p>
-                        </div>
-                    </Callout>
-        ) }
             </Modal>
         );
     }
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
+        createTeachSessionFromHistoryThunkAsync: actions.teach.createTeachSessionFromHistoryThunkAsync,
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {
     return {
-        actions: state.actions
+        user: state.user.user,
+        actions: state.actions,
+        entities: state.entities
     }
 }
 
 export interface ReceivedProps {
-    app: AppBase,
+    app: CLM.AppBase,
     editingPackageId: string,
     canEdit: boolean,
     onClose: () => void,
     onBranch: (turnIndex: number) => void,
-    onEdit: (newTrainDialog: TrainDialog, extractChanged: boolean) => void,
-    onReplace: (newTrainDialog: TrainDialog) => void,
+    onEdit: (newTrainDialog: CLM.TrainDialog, extractChanged: boolean) => void,
+    onReplace: (newTrainDialog: CLM.TrainDialog) => void,
+    onUpdate: (newTrainDialog: CLM.TrainDialog) => void,
     onDelete: () => void
     open: boolean
-    trainDialog: TrainDialog
+    trainDialog: CLM.TrainDialog
     history: Activity[]
 }
 

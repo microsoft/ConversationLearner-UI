@@ -363,10 +363,10 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         this.onCloseLogDialogModal();
     }
 
-    onEditLogDialog(logDialogId: string, newTrainDialog: TrainDialog, extractChanged: boolean) {
+    onEditLogDialog(logDialogId: string, newTrainDialog: TrainDialog) {
 
         // Create a new teach session from the train dialog
-        ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app, newTrainDialog, this.props.user.name, this.props.user.id, extractChanged) as any) as Promise<TeachWithHistory>)
+        ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app, newTrainDialog, this.props.user.name, this.props.user.id, false) as any) as Promise<TeachWithHistory>)
             .then(teachWithHistory => {
                 if (teachWithHistory.replayErrors.length === 0) {
                     // Note: Don't clear currentLogDialog so I can update it if I save my edits
@@ -592,7 +592,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     open={this.state.isLogDialogWindowOpen}
                     canEdit={this.props.editingPackageId === this.props.app.devPackageId && !this.props.invalidBot}
                     onClose={this.onCloseLogDialogModal}
-                    onEdit={(logDialogId, newTrainDialog, extractChanged) => this.onEditLogDialog(logDialogId, newTrainDialog, extractChanged)}
+                    onEdit={(logDialogId, newTrainDialog) => this.onEditLogDialog(logDialogId, newTrainDialog)}
                     onDelete={this.onDeleteLogDialog}
                     logDialog={currentLogDialog!}
                     history={this.state.history}

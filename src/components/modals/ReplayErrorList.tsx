@@ -13,6 +13,7 @@ import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { ReplayError, ReplayErrorType, ReplayErrorMissingAction, ReplayErrorMissingEntity, ReplayErrorActionUnavailable, ReplayErrorEntityDiscrepancy } from '@conversationlearner/models'
 
+// LARS goes away
 class ReplayErrorList extends React.Component<Props, {}> {
     onRenderCell(item: ReplayError, index: number): JSX.Element {
         switch (item.type) {

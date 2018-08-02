@@ -7,7 +7,7 @@ import './TeachSessionModal.css';
 import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { ErrorHandler } from './../../ErrorHandler'
+import { ErrorHandler } from '../../ErrorHandler'
 import { AT } from '../../types/ActionTypes'
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import * as OF from 'office-ui-fabric-react';
@@ -15,7 +15,7 @@ import { State } from '../../types';
 import Webchat from '../Webchat'
 import TeachSessionAdmin from './TeachSessionAdmin'
 import TeachSessionInitState from './TeachSessionInitState'
-import { AppBase, UserInput, DialogType, TrainDialog, LogDialog, Teach, DialogMode, ActionBase, FilledEntityMap } from '@conversationlearner/models'
+import * as CLM from '@conversationlearner/models'
 import { Activity } from 'botframework-directlinejs'
 import actions from '../../actions'
 import ConfirmCancelModal from './ConfirmCancelModal'
@@ -108,7 +108,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    onCloseInitState(filledEntityMap?: FilledEntityMap) {
+    onCloseInitState(filledEntityMap?: CLM.FilledEntityMap) {
         if (filledEntityMap) {
             this.props.initMemoryThunkAsync(this.props.app.appId, this.props.teach.teachId, filledEntityMap)
         }
@@ -158,7 +158,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
         // If on extractor step, just need to replay history (extractor step will be dropped)
         // otherwise pop the last train round
-        let popRound = this.props.dialogMode !== DialogMode.Extractor;
+        let popRound = this.props.dialogMode !== CLM.DialogMode.Extractor;
         this.props.onUndo(popRound);
     }
 
@@ -169,7 +169,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
     onWebChatPostActivity(activity: Activity) {
         if (activity.type === 'message') {
 
-            let userInput: UserInput
+            let userInput: CLM.UserInput
 
             // Check if button submit info
             if (!activity.text && activity.value && activity.value['submit']) {
@@ -187,7 +187,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
             // No initialization allowed after first input
             this.setState({ isInitAvailable: false})
 
-            this.props.runExtractorThunkAsync(this.props.user.id, this.props.app.appId, DialogType.TEACH, this.props.teach.teachId, null, userInput);
+            this.props.runExtractorThunkAsync(this.props.user.id, this.props.app.appId, CLM.DialogType.TEACH, this.props.teach.teachId, null, userInput);
         }
     }
 
@@ -240,7 +240,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
         const { intl } = this.props
 
         // Put mask of webchat if not in input mode
-        let chatDisable = (this.props.dialogMode !== DialogMode.Wait) ?
+        let chatDisable = (this.props.dialogMode !== CLM.DialogMode.Wait) ?
             <div className="cl-overlay"></div>
             : null;
 
@@ -262,8 +262,8 @@ class TeachModal extends React.Component<Props, ComponentState> {
                                     history={this.props.history}
                                     onPostActivity={activity => this.onWebChatPostActivity(activity)}
                                     onSelectActivity={() => { }}
-                                    hideInput={this.props.dialogMode !== DialogMode.Wait}
-                                    focusInput={this.props.dialogMode === DialogMode.Wait}
+                                    hideInput={this.props.dialogMode !== CLM.DialogMode.Wait}
+                                    focusInput={this.props.dialogMode === CLM.DialogMode.Wait}
                                 />
                                 {chatDisable}
                             </div>
@@ -375,15 +375,15 @@ export interface ReceivedProps {
     isOpen: boolean,
     onClose: Function,
     onUndo: (popRound: boolean) => void,
-    app: AppBase,
+    app: CLM.AppBase,
     editingPackageId: string,
-    teach: Teach,
-    dialogMode: DialogMode,
+    teach: CLM.Teach,
+    dialogMode: CLM.DialogMode,
     // When editing and existing log or train dialog
-    sourceTrainDialog?: TrainDialog,
-    sourceLogDialog?: LogDialog,
+    sourceTrainDialog?: CLM.TrainDialog,
+    sourceLogDialog?: CLM.LogDialog,
     history: Activity[],
-    lastAction: ActionBase | null
+    lastAction: CLM.ActionBase | null
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps

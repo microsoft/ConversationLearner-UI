@@ -416,7 +416,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             }
         };
 
-        ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app, newTrainDialog, this.props.user.name, this.props.user.id) as any) as Promise<TeachWithHistory>)
+        ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app, newTrainDialog, this.props.user.name, this.props.user.id, false) as any) as Promise<TeachWithHistory>)
             .then(teachWithHistory => {
                 if (teachWithHistory.replayErrors.length === 0) {
                     this.setState({
@@ -442,11 +442,25 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             })
     }
 
-    onEditTrainDialog(newTrainDialog: TrainDialog, extractChanged: boolean) {
+    onUpdateTrainDialog(newTrainDialog: TrainDialog) {
+        ((this.props.fetchHistoryThunkAsync(this.props.app.appId, newTrainDialog, this.props.user.name, this.props.user.id) as any) as Promise<TeachWithHistory>)
+        .then(teachWithHistory => {
+            this.setState({
+                history: teachWithHistory.history,
+                lastAction: teachWithHistory.lastAction,
+                currentTrainDialog: newTrainDialog,
+                isTrainDialogModalOpen: true
+            })
+        })
+        .catch(error => {
+            console.warn(`Error when attempting to create history: `, error)
+        })
+    }
+    onEditTrainDialog(newTrainDialog: TrainDialog) {
 
-        ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app, newTrainDialog, this.props.user.name, this.props.user.id, extractChanged) as any) as Promise<TeachWithHistory>)
+        ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app, newTrainDialog, this.props.user.name, this.props.user.id, false) as any) as Promise<TeachWithHistory>)
             .then(teachWithHistory => {
-                if (teachWithHistory.replayErrors.length === 0) {
+                if (teachWithHistory.replayErrors.length  === 0) {
                     // Note: Don't clear currentTrainDialog so I can delete it if I save my edits
                     this.setState({
                         teachSession: teachWithHistory.teach,
@@ -752,7 +766,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     onClose={() => this.onCloseTrainDialogModal()}
                     onBranch={(turnIndex) => this.onBranchTrainDialog(turnIndex)}
                     onDelete={() => this.onDeleteTrainDialog()}
-                    onEdit={(editedTrainDialog, extractChanged) => this.onEditTrainDialog(editedTrainDialog, extractChanged)}
+                    onUpdate={(updatedTrainDialog) => this.onUpdateTrainDialog(updatedTrainDialog)}
+                    onEdit={(editedTrainDialog, extractChanged) => this.onEditTrainDialog(editedTrainDialog)}
                     onReplace={(editedTrainDialog) => this.onReplaceTrainDialog(editedTrainDialog)}
                     trainDialog={currentTrainDialog!}
                     history={this.state.history}

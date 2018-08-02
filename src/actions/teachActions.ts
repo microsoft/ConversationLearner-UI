@@ -49,13 +49,17 @@ const createTeachSessionFulfilled = (teachResponse: models.TeachResponse): Actio
 // --------------------------
 // TeachSessionFromHistory
 // --------------------------
-export const createTeachSessionFromHistoryThunkAsync = (app: models.AppBase, trainDialog: models.TrainDialog, userName: string, userId: string, extractChanged: boolean = false) => {
+/** 
+ * @param trainDialog History used to create TeachSession
+ * @param deleteTeach If true result returned by TeachSession deletec immediately
+ */
+export const createTeachSessionFromHistoryThunkAsync = (app: models.AppBase, trainDialog: models.TrainDialog, userName: string, userId: string, deleteTeach: boolean) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.CREATE_TEACH_SESSION_FROMHISTORYASYNC)
         dispatch(createTeachSessionFromHistoryAsync(app.appId, trainDialog, userName, userId))
 
         try {
-            const teachWithHistory = await clClient.teachSessionFromHistory(app.appId, trainDialog, userName, userId, extractChanged)
+            const teachWithHistory = await clClient.teachSessionFromHistory(app.appId, trainDialog, userName, userId, deleteTeach)
             dispatch(createTeachSessionFromHistoryFulfilled(teachWithHistory))
             return teachWithHistory
         }

@@ -510,10 +510,10 @@ export default class ClClient {
     }
 
     //AT.CREATE_TEACH_SESSION_FROMHISTORYASYNC
-    teachSessionFromHistory(appId: string, trainDialog: models.TrainDialog, userName: string, userId: string, lastExtractChanged: boolean = false): Promise<models.TeachWithHistory> {
+    teachSessionFromHistory(appId: string, trainDialog: models.TrainDialog, userName: string, userId: string, deleteTeach: boolean): Promise<models.TeachWithHistory> {
         return this.send<models.TeachWithHistory>({
             method: 'post',
-            url: `${this.baseUrl}/app/${appId}/teachwithhistory?username=${userName}&userid=${userId}&ignoreLastExtract=${lastExtractChanged}`,
+            url: `${this.baseUrl}/app/${appId}/teachwithhistory?username=${userName}&userid=${userId}&deleteTeach=${deleteTeach}`,
             data: trainDialog
         }).then(response => response.data)
     }

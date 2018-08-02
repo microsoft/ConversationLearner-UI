@@ -160,6 +160,13 @@
     padding-bottom: 10px;
 }
 
+.cl-dialogwarning {
+    background-color: var(--color-error);
+    color: white;
+    border-radius: 15px;
+    padding: 10px;
+}
+
 .label-error {
     color: var(--color-red);
 }

@@ -335,6 +335,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
 
         return renderData;
     }
+    
     render() {
         const { intl } = this.props
         if (!this.props.trainDialog) {
