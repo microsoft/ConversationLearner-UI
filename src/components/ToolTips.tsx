@@ -109,7 +109,7 @@ export function Wrap(content: JSX.Element, tooltip: string, directionalHint: OF.
     );
 }
 
-let apiCodeSample =
+const apiCodeSample =
     `CL.AddAPICallback("Multiply", async (memoryManager: ClientMemoryManager, num1string: string, num2string: string) => {
 
         // convert base and exponent to ints
@@ -119,8 +119,22 @@ let apiCodeSample =
         // compute product
         var result = num1int * num2int;
     
-        // return result as message
-        return num1int.toString() + " * " + num2int.toString() + " = " + result.toString();
+        // save result in entity
+        memoryManager.RememberEntity("multiplyResult", result)
+    })`;
+
+const renderCodeSample =
+    `CL.AddRenderCallback("Multiply", async (memoryManager: ReadOnlyClientMemoryManager, num1string: string, num2string: string, result: string) => {
+
+        // convert base and exponent to ints
+        var num1int = parseInt(num1string);
+        var num2int = parseInt(num2string);
+    
+        // compute product
+        var result = num1int * num2int;
+    
+        // save result in entity
+        return \`\${num1String} + \${num2string} = \${result}\`
     })`;
 
 let memoryManagerSample =
@@ -166,10 +180,10 @@ export function GetTip(tipType: string) {
             case TipType.ACTION_RENDER:
             return (
                 <div>
-                    {render(FM.TOOLTIP_ACTION_API_TITLE, [FM.TOOLTIP_ACTION_API])}
+                    {render(FM.TOOLTIP_ACTION_RENDER_TITLE, [FM.TOOLTIP_ACTION_RENDER])}
                     <div><br />cl.AddRenderCallback("<i>[Render name]</i>", async (memoryManager, argArray) => <i>[Render body]</i>)</div>
                     <div className="cl-tooltop-example"><FormattedMessage id={FM.TOOLTIP_EXAMPLE} /></div>
-                    <pre>{apiCodeSample}</pre>
+                    <pre>{renderCodeSample}</pre>
                     <div className="cl-tooltop-example"><FormattedMessage id={FM.TOOLTIP_ACTION_ARGUMENTS_TITLE} /></div>
                     <div>$number1 $number2<br /></div>
                     <div><br />More about the <HelpLink label="Memory Manager" tipType={TipType.MEMORY_MANAGER} /></div>
