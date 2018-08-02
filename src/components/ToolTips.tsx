@@ -14,6 +14,7 @@ export enum TipType {
     NONE = 'NONE',
     
     ACTION_API = 'actionAPI',
+    ACTION_RENDER = 'actionRender',
     ACTION_ARGUMENTS = 'actionArguments',
     ACTION_CARD = 'actionCard',
     ACTION_END_SESSION = 'actionEndSesion',
@@ -154,7 +155,19 @@ export function GetTip(tipType: string) {
             return (
                 <div>
                     {render(FM.TOOLTIP_ACTION_API_TITLE, [FM.TOOLTIP_ACTION_API])}
-                    <div><br />cl.APICallback("<i>[API NAME]</i>", async (memoryManager, argArray) => <i>[API BODY]</i>)</div>
+                    <div><br />cl.AddAPICallback("<i>[API NAME]</i>", async (memoryManager, argArray) => <i>[API BODY]</i>)</div>
+                    <div className="cl-tooltop-example"><FormattedMessage id={FM.TOOLTIP_EXAMPLE} /></div>
+                    <pre>{apiCodeSample}</pre>
+                    <div className="cl-tooltop-example"><FormattedMessage id={FM.TOOLTIP_ACTION_ARGUMENTS_TITLE} /></div>
+                    <div>$number1 $number2<br /></div>
+                    <div><br />More about the <HelpLink label="Memory Manager" tipType={TipType.MEMORY_MANAGER} /></div>
+                </div>
+            )
+            case TipType.ACTION_RENDER:
+            return (
+                <div>
+                    {render(FM.TOOLTIP_ACTION_API_TITLE, [FM.TOOLTIP_ACTION_API])}
+                    <div><br />cl.AddRenderCallback("<i>[Render name]</i>", async (memoryManager, argArray) => <i>[Render body]</i>)</div>
                     <div className="cl-tooltop-example"><FormattedMessage id={FM.TOOLTIP_EXAMPLE} /></div>
                     <pre>{apiCodeSample}</pre>
                     <div className="cl-tooltop-example"><FormattedMessage id={FM.TOOLTIP_ACTION_ARGUMENTS_TITLE} /></div>
