@@ -105,7 +105,7 @@ class Index extends React.Component<Props, ComponentState> {
         const actionsMissingCallbacks = actions
             .filter(a => a.actionType === ActionTypes.API_LOCAL)
             .map(a => new ApiAction(a))
-            .filter(a => !botInfo.apiCallbacks || !botInfo.apiCallbacks.some(cb => cb.name === a.name))
+            .filter(a => !botInfo.callbacks || !botInfo.callbacks.some(cb => cb.name === a.name))
 
         // Make unique list of missing APIs
         const uniqueCallbackNames = actionsMissingCallbacks
