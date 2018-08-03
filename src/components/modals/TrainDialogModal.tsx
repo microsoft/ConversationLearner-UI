@@ -95,7 +95,72 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
         );
     }
 
-    onInsertTurn(activity: Activity) {
+    onInsertInput(activity: Activity) {
+
+        if (!this.props.user) {
+            throw new Error("No Active User");
+        }
+
+        let roundIndex = activity.channelData.roundIndex
+        const scoreIndex = activity.channelData.scoreIndex
+
+        const definitions = {
+            entities: this.props.entities,
+            actions: this.props.actions,
+            trainDialogs: []
+        }
+
+        // Copy, Remove rounds / scorer steps below insert
+        let history = JSON.parse(JSON.stringify(this.props.trainDialog))
+        history.definitions = definitions
+        history.rounds = history.rounds.slice(0, roundIndex + 1)
+
+        const userInput = { text: "blah"} as CLM.UserInput // LARS TODO
+
+        // Get a score for this step
+        ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app, history, this.props.user.name, this.props.user.id, CLM.HistoryMode.EXTRACT_ONLY, userInput) as any) as Promise<CLM.TeachWithHistory>)
+        .then((teachWithHistory: CLM.TeachWithHistory) => {
+
+            if (!teachWithHistory.extractResponse) {
+                throw new Error("No extract response")  // LARS todo - handle this better
+            }
+ 
+            let textVariations = CLM.ModelUtils.ToTextVariations([teachWithHistory.extractResponse])
+            let extractorStep = {textVariations} as CLM.TrainExtractorStep
+
+            // Copy original and insert new round for the text
+            let newTrainDialog = JSON.parse(JSON.stringify(this.props.trainDialog))
+            newTrainDialog.definitions = definitions
+
+            let scorerSteps: CLM.TrainScorerStep[]
+
+            // Copy and scorer steps below the injected input into the new Round
+            if (activity.channelData.senderType === CLM.SenderType.User) {
+                scorerSteps = this.props.trainDialog.rounds[roundIndex].scorerSteps
+                // Remove scorer steps before edit from round 
+                newTrainDialog.rounds[roundIndex].scorerSteps = []
+            }
+            else {
+                scorerSteps = this.props.trainDialog.rounds[roundIndex].scorerSteps.slice(scoreIndex + 1)
+                // Remove scorer steps before edit from round 
+                newTrainDialog.rounds[roundIndex].scorerSteps.splice(scoreIndex + 1, Infinity)
+            }
+
+            let newRound = {
+                extractorStep,
+                scorerSteps
+            }
+       
+            // Inject new Round
+            newTrainDialog.rounds.splice(roundIndex + 1, 0, newRound)
+            this.props.onUpdate(newTrainDialog)
+        })
+        .catch(error => {
+            console.warn(`Error when attempting to create teach session from history: `, error)
+        })
+    }
+
+    onInsertScore(activity: Activity) {
 
         if (!this.props.user) {
             throw new Error("No Active User");
@@ -117,7 +182,7 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
         history.rounds[roundIndex].scorerSteps = history.rounds[roundIndex].scorerSteps.slice(0, scoreIndex);
 
         // Get a score for this step
-        ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app, history, this.props.user.name, this.props.user.id, false) as any) as Promise<CLM.TeachWithHistory>)
+        ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app, history, this.props.user.name, this.props.user.id, CLM.HistoryMode.SCORE_ONLY) as any) as Promise<CLM.TeachWithHistory>)
         .then((teachWithHistory: CLM.TeachWithHistory) => {
             // Insert top scoring activity into trainDialog
             let insertedAction = this.getBestAction(teachWithHistory)
@@ -209,18 +274,25 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
             // Find the webchat render for this activity
             let element = document.querySelector(`[data-activity-id='${activity.id}']`)
             if (element && activity.id) {
+
                 // Convert inner html to a JSX element
                 lastActivityJSX = ReactHtmlParser(element.innerHTML)
 
                 let canBranch = this.state.selectedActivity && this.state.selectedActivity.channelData.senderType === CLM.SenderType.User;
         
                 // Generate new JSX with buttons
-                const text = <div>
+                const text = <div className="cl-wc-highlight">
                             {lastActivityJSX}
                             <OF.IconButton
-                                className={`cl-wc-addturn ${activity.channelData.senderType === CLM.SenderType.User ? `cl-wc-addturn--user` : `cl-wc-addturn--bot`}`}
-                                onClick={() => this.onInsertTurn(activity)}
-                                ariaDescription="Insert Turn"
+                                className={`cl-wc-addinput ${activity.channelData.senderType === CLM.SenderType.User ? `cl-wc-addinput--user` : `cl-wc-addinput--bot`}`}
+                                onClick={() => this.onInsertInput(activity)}
+                                ariaDescription="Insert Input Turn"
+                                iconProps={{ iconName: 'CommentAdd' }}
+                            />
+                            <OF.IconButton
+                                className={`cl-wc-addscore ${activity.channelData.senderType === CLM.SenderType.User ? `cl-wc-addscore--user` : `cl-wc-addscore--bot`}`}
+                                onClick={() => this.onInsertScore(activity)}
+                                ariaDescription="Insert Score Turn"
                                 iconProps={{ iconName: 'CommentAdd' }}
                             />
                             <OF.IconButton
@@ -325,6 +397,34 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
                         {` "${(replayError as CLM.ReplayErrorActionUnavailable).lastUserInput}"`}
                     </div>
                 )
+            case CLM.ReplayErrorType.ActionAfterWait:
+                return (
+                    <div className={OF.FontClassNames.mediumPlus}>
+                        <FormattedMessage
+                            id={FM.REPLAYERROR_DESC_ACTION_AFTER_WAIT}
+                            defaultMessage={FM.REPLAYERROR_DESC_ACTION_AFTER_WAIT}
+                        />
+                    </div>
+                )
+            case CLM.ReplayErrorType.TwoUserInputs:
+                return (
+                    <div className={OF.FontClassNames.mediumPlus}>
+                        <FormattedMessage
+                            id={FM.REPLAYERROR_DESC_TWO_USER_INPUTS}
+                            defaultMessage={FM.REPLAYERROR_DESC_TWO_USER_INPUTS}
+                        />
+                    </div>
+                )
+            case CLM.ReplayErrorType.InputAfterNonWait:
+                return (
+                    <div className={OF.FontClassNames.mediumPlus}>
+                        <FormattedMessage
+                            id={FM.REPLAYERROR_DESC_INPUT_AFTER_NONWAIT}
+                            defaultMessage={FM.REPLAYERROR_DESC_INPUT_AFTER_NONWAIT}
+                        />
+                    </div>
+                )
+                //LARS - think this can go away?  check
             case CLM.ReplayErrorType.EntityDiscrepancy:
                 let entityDiscrepancy = replayError as CLM.ReplayErrorEntityDiscrepancy;
                 return (
@@ -338,12 +438,12 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
                                         <div className={OF.FontClassNames.mediumPlus}>
                                             <div className="cl-font--emphasis">Original Entities:</div>
                                             {entityDiscrepancy.originalEntities.length > 0 ?
-                                                entityDiscrepancy.originalEntities.map(e => (<div className={OF.FontClassNames.mediumPlus}>{e}</div>))
+                                                entityDiscrepancy.originalEntities.map((e: any) => (<div className={OF.FontClassNames.mediumPlus}>{e}</div>))
                                                 : <div className={OF.FontClassNames.mediumPlus}>-none-</div>
                                             }
                                             <div className="cl-font--emphasis">New Entities:</div>
                                             {entityDiscrepancy.newEntities.length > 0 ?
-                                                entityDiscrepancy.newEntities.map(e => (<div className={OF.FontClassNames.mediumPlus}>{e}</div>))
+                                                entityDiscrepancy.newEntities.map((e: any) => (<div className={OF.FontClassNames.mediumPlus}>{e}</div>))
                                                 : <div className={OF.FontClassNames.mediumPlus}>-none-</div>
                                             }
                                         </div>

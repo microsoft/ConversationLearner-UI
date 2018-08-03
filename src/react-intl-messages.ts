@@ -249,7 +249,10 @@ export enum FM {
     REPLAYERROR_EDIT_TITLE = 'ReplayError.edit.title',
     REPLAYERROR_BRANCH_TITLE = 'ReplayError.branch.title',
     REPLAYERROR_DESC_MISSING_ACTION = 'ReplayError.Desc.missingAction',
+    REPLAYERROR_DESC_ACTION_AFTER_WAIT = 'ReplayError.Desc.actionAfterWait',
+    REPLAYERROR_DESC_INPUT_AFTER_NONWAIT = 'ReplayError.Desc.inputAfterNonWait',
     REPLAYERROR_DESC_MISSING_ENTITY = 'ReplayError.Desc.missingEntity',
+    REPLAYERROR_DESC_TWO_USER_INPUTS = 'ReplayError.Desc.twoUserInputs',
     REPLAYERROR_DESC_UNAVAILABLE_ACTION = 'ReplayError.Desc.unavailableAction',
     REPLAYERROR_DESC_CHANGED_ENTITIES = 'ReplayError.Desc.changedEntities',
 
@@ -531,8 +534,11 @@ export default {
         [FM.REPLAYERROR_UNDO_TITLE]: 'Unable to Undo',
         [FM.REPLAYERROR_EDIT_TITLE]: 'Unable to Edit',
         [FM.REPLAYERROR_BRANCH_TITLE]: 'Unable to Branch',
+        [FM.REPLAYERROR_DESC_ACTION_AFTER_WAIT]: 'Previous Action is a Wait action.  Change it to not Wait for a response or add a User input between the actions',
         [FM.REPLAYERROR_DESC_MISSING_ACTION]: 'Missing action in response to',
+        [FM.REPLAYERROR_DESC_INPUT_AFTER_NONWAIT]: 'Input occurs after non-wait action.  Either delete the input or change Action in the Wait action',
         [FM.REPLAYERROR_DESC_MISSING_ENTITY]: 'Missing entity for',
+        [FM.REPLAYERROR_DESC_TWO_USER_INPUTS]: 'Two consecutive User Inputs are not allowed.  Delete this User Input or add an Action between the two',
         [FM.REPLAYERROR_DESC_UNAVAILABLE_ACTION]: 'Action unavailable in reponse to',
         [FM.REPLAYERROR_DESC_CHANGED_ENTITIES]: 'Entites inconsistent after user input',
         

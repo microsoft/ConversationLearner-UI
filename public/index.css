@@ -153,9 +153,14 @@ html {
   font-size: 18px !important;
 }
 
-.ms-Button--icon.cl-wc-addturn {
+.ms-Button--icon.cl-wc-addscore {
+  color: var(--color-neutralPrimary) !important;
   background-color: transparent !important;
- 
+}
+
+.ms-Button--icon.cl-wc-addinput {
+  color: var(--color-themePrimary) !important;
+  background-color: transparent !important;
 }
 
 .ms-Button-icon[data-icon-name="Delete"] {
@@ -252,6 +257,13 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
   color: #ffffff;
 }
 
+.cl-wc-highlight {
+  margin: 0px;
+  height: 2px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  background-color: var(--color-yellowLight);
+}
 .cl-wc-deleteturn {
   border: none !important;
   position: absolute !important;
@@ -267,18 +279,32 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
   left: 0px;
 }
 
-.cl-wc-addturn {
+.cl-wc-addscore {
   border: none !important;
   position: absolute !important;
   bottom: -8px;
 }
 
-.cl-wc-addturn--bot {
+.cl-wc-addscore--bot {
   right: 20px;
 }
 
-.cl-wc-addturn--user {
+.cl-wc-addscore--user {
   left: 25px;
+}
+
+.cl-wc-addinput {
+  border: none !important;
+  position: absolute !important;
+  bottom: -8px;
+}
+
+.cl-wc-addinput--bot {
+  right: 45px;
+}
+
+.cl-wc-addinput--user {
+  left: 50px;
 }
 
 .cl-wc-branchturn {
