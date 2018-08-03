@@ -18,7 +18,7 @@ import {
     ActionBase, AppBase, TrainDialog, TrainRound, ScoreReason, ScoredAction,
     TrainScorerStep, Memory, UnscoredAction, ScoreResponse, ActionTypes,
     TextVariation, ExtractResponse, DialogType, SenderType, DialogMode, UIScoreInput
-} from '@conversationlearner/models'
+} from '@conversationlearner/models' // LARS change to CLM
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 
@@ -43,9 +43,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
             roundIndex: null,
             scoreIndex: null
         }
-        this.onEntityExtractorSubmit = this.onEntityExtractorSubmit.bind(this);
-        this.onActionScorerSubmit = this.onActionScorerSubmit.bind(this);
-    }
+     }
 
     componentWillReceiveProps(newProps: Props) {
 
@@ -67,161 +65,12 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
         }
     }
 
-    // Determine if extracted entities are different than those in given round
-    haveEntitiesChanged(extractResponse: ExtractResponse, roundIndex: number): boolean {
-        let newEntities = extractResponse.predictedEntities.map((p) => { return p.entityId });
-
-        // Get list of entities from first text variation
-        let round = this.props.trainDialog.rounds[roundIndex];
-        let oldEntities = round.extractorStep.textVariations[0].labelEntities.map((l) => { return l.entityId });
-
-        let missingnew = newEntities.filter((i) => oldEntities.indexOf(i) < 0).length;
-        let missingold = oldEntities.filter((i) => newEntities.indexOf(i) < 0).length;
-        return (missingnew + missingold > 0);
-    }
-
-    // User has submitted new entity extractions / text variations for a round
-    onEntityExtractorSubmit(extractResponse: ExtractResponse, textVariations: TextVariation[], roundIndex: number): void {
-
-        // Generate the new train dialog
-        let round = this.props.trainDialog.rounds[roundIndex];
-        let newExtractorStep = { ...round.extractorStep, textVariations: textVariations };
-        let newRound = { ...round, extractorStep: newExtractorStep };
-        let newRounds = [...this.props.trainDialog.rounds];
-        newRounds[roundIndex] = newRound;
-        let updatedTrainDialog = { ...this.props.trainDialog, rounds: newRounds };
-
-        // Determine if extracted entities have changed.  If so, save and show prompt to user
-        if (this.haveEntitiesChanged(extractResponse, roundIndex)) {
-
-            // Delete at steps after the current round and clear scorer steps
-            let rounds = updatedTrainDialog.rounds.slice(0, roundIndex + 1);
-            newRounds[roundIndex].scorerSteps = [];
-            updatedTrainDialog = { ...updatedTrainDialog, rounds: rounds };
-
-            const uiScoreInput: UIScoreInput = {
-                trainExtractorStep: {
-                    textVariations
-                },
-                extractResponse
-            }
-
-            // Save choice prompt will be shown to user
-            this.setState({
-                newTrainDialog: updatedTrainDialog,
-                newSliceRound: roundIndex,
-                newScoreInput: uiScoreInput
-            });
-        }
-        // Otherwise just save with new text variations, remaining rounds are ok
-        else {  
-            
-            let trainDialog: TrainDialog = {
-                version: undefined!,
-                packageCreationId: undefined!,
-                packageDeletionId: undefined!,
-                trainDialogId: this.props.trainDialog.trainDialogId,
-                sourceLogDialogId: this.props.trainDialog.sourceLogDialogId,
-                rounds: updatedTrainDialog.rounds,
-                definitions: {
-                    entities: this.props.entities,
-                    actions: this.props.actions,
-                    trainDialogs: []
-                }
-            }
-
-            this.props.onReplace(trainDialog)
-        }
-    }
-
-    // User changed the selected action for a round
-    onActionScorerSubmit(trainScorerStep: TrainScorerStep): void {
-        const roundIndex = this.state.roundIndex
-        if (roundIndex === null) {
-            throw new Error(`Cannot construct new train dialog scorer step because roundIndex is null. This is likely a problem in the code. Please open an issue.`)
-        }
-
-        const scoreIndex = this.state.scoreIndex
-        if (scoreIndex === null) {
-            throw new Error(`Cannot construct new train dialog scorer step because scoreIndex is null. This is likely a problem in the code. Please open an issue.`)
-        }
-
-        // Remove scoredAction, we only need labeledAction
-        delete trainScorerStep.scoredAction;
-
-        // Remove training rounds
-        const rounds = this.props.trainDialog.rounds.slice(0, roundIndex + 1);
-        let round = rounds[roundIndex];
-
-        // Remove trailing scorer steps
-        let newScorerSteps = round.scorerSteps.slice(0, scoreIndex + 1);
-        newScorerSteps[scoreIndex] = trainScorerStep;
-
-        // Create new train round
-        let newRound: TrainRound = {
-            extractorStep: round.extractorStep,
-            scorerSteps: newScorerSteps
-        }
-
-        // New rounds list with new round
-        let newRounds = [...rounds];
-        newRounds[roundIndex] = newRound;
-        let updatedTrainDialog = { ...this.props.trainDialog, rounds: newRounds };
-
-        if (this.props.trainDialog.rounds.length !== newRounds.length) {
-            // Truncation prompt will be shown to user
-            this.setState({
-                newTrainDialog: updatedTrainDialog,
-                newSliceRound: roundIndex,
-                newScoreInput: null
-            });
-        } else {
-            const extractChanged = this.state.newScoreInput !== null
-            this.editTrainDialog(updatedTrainDialog, roundIndex, extractChanged)
-        }
-    }
-
-    onClickSaveCheckYes() {
-        if (!this.state.newTrainDialog) {
-            throw new Error(`Attempted to edit a train dialog, but the newTrainDialog was not defined. This is likely a problem with code. Please file an issue.`)
-        }
-
-        const extractChanged = this.state.newScoreInput !== null
-        this.editTrainDialog(this.state.newTrainDialog, this.state.newSliceRound, extractChanged)
-    }
-
-    editTrainDialog(sourceDialog: TrainDialog, sliceRound: number, extractChanged: boolean) {
-        let trainDialog: TrainDialog = {
-            trainDialogId: undefined!,
-            sourceLogDialogId: sourceDialog.sourceLogDialogId,
-            version: undefined!,
-            packageCreationId: undefined!,
-            packageDeletionId: undefined!,
-            rounds: sourceDialog.rounds,
-            definitions: {
-                entities: this.props.entities,
-                actions: this.props.actions,
-                trainDialogs: []
-            }
-        }
-
-        this.props.onEdit(sourceDialog.trainDialogId, trainDialog, extractChanged);
-         
-        this.props.clearExtractResponses();
-
-        this.setState({
-            newTrainDialog: null,
-            newSliceRound: 0,
-            newScoreInput: null,
-            roundIndex: sliceRound
-        });
-    }
-
     onClickSaveCheckNo() {
         // Reset the entity extractor
         this.setState({ newTrainDialog: null, newSliceRound: 0 });
         this.props.clearExtractResponses();
     }
+
     getPrevMemories(): Memory[] {
         if (this.state.roundIndex === null) {
             throw new Error(`Cannot get previous memories because roundIndex is null. This is likely a problem with code. Please open an issue.`)
@@ -433,7 +282,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                                     dialogMode={renderData.dialogMode}
                                     extractResponses={this.props.extractResponses}
                                     originalTextVariations={renderData.round.extractorStep.textVariations}
-                                    onTextVariationsExtracted={this.onEntityExtractorSubmit}
+                                    onTextVariationsExtracted={this.props.onChangeExtraction}
                                     onExtractionsChanged={this.props.onExtractionsChanged}
                                 />
                                 : <span>
@@ -472,7 +321,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                                 scoreResponse={renderData.scoreResponse}
                                 scoreInput={renderData.scorerStep.input}
                                 memories={renderData.memories}
-                                onActionSelected={this.onActionScorerSubmit}
+                                onActionSelected={this.props.onChangeAction}
                             />
                         </div>
                     </div>
@@ -500,7 +349,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                         <OF.DialogFooter>
                             <OF.PrimaryButton
                                 data-testid="dialog-admin-footer-yes"
-                                onClick={() => this.onClickSaveCheckYes()}
+                             // REMOVE THIS TIEL   onClick={() => this.onClickSaveCheckYes()}
                                 text={intl.formatMessage({
                                     id: FM.TRAINDIALOGADMIN_SAVECHANGES_PRIMARYBUTTON_TEXT,
                                     defaultMessage: 'Yes'
@@ -550,7 +399,8 @@ export interface ReceivedProps {
     trainDialog: TrainDialog,
     selectedActivity: Activity | null,
     canEdit: boolean,
-    onEdit: (sourceTrainDialogId: string, editedTrainDialog: TrainDialog, extractChanged: boolean) => void
+    onChangeAction: (trainScorerStep: TrainScorerStep) => void,
+    onChangeExtraction: (extractResponse: ExtractResponse, textVariations: TextVariation[]) => void                              
     onReplace: (editedTrainDialog: TrainDialog) => void
     onExtractionsChanged: (changed: boolean) => void
 }
