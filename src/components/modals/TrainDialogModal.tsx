@@ -17,12 +17,14 @@ import TrainDialogAdmin from './TrainDialogAdmin'
 import * as CLM from '@conversationlearner/models'
 import { Activity } from 'botframework-directlinejs'
 import ConfirmCancelModal from './ConfirmCancelModal'
+import UserInputModal from './UserInputModal'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { autobind } from 'office-ui-fabric-react/lib/Utilities'
 
 interface ComponentState {
     isConfirmCancelModalOpen: boolean
+    isUserInputModalOpen: boolean
     selectedActivity: Activity | null
     webchatKey: number
     currentTrainDialog: CLM.TrainDialog | null
@@ -34,6 +36,7 @@ interface ComponentState {
 
 const initialState: ComponentState = {
     isConfirmCancelModalOpen: false,
+    isUserInputModalOpen: false,
     selectedActivity: null,
     webchatKey: 0,
     currentTrainDialog: null,
@@ -74,6 +77,28 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
     }
 
     @autobind
+    onClickAddUserInput() {
+        this.setState({
+            isUserInputModalOpen: true
+        })
+    }
+
+    @autobind
+    onCancelAddUserInput() {
+        this.setState({
+            isUserInputModalOpen: false
+        })
+    }
+
+    @autobind
+    onSubmitAddUserInput(userInput: string) {
+        this.setState({
+            isUserInputModalOpen: false
+        })
+        this.onInsertInput(userInput)
+    }
+
+    @autobind
     onClickDelete() {
         this.setState({
             isConfirmCancelModalOpen: true
@@ -95,14 +120,19 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
         );
     }
 
-    onInsertInput(activity: Activity) {
+    @autobind
+    onInsertInput(inputText: string) {
 
         if (!this.props.user) {
             throw new Error("No Active User");
         }
+        if (!this.state.selectedActivity) {
+            throw new Error("No selected activity")
+        }
 
-        let roundIndex = activity.channelData.roundIndex
-        const scoreIndex = activity.channelData.scoreIndex
+        const roundIndex = this.state.selectedActivity.channelData.roundIndex
+        const scoreIndex = this.state.selectedActivity.channelData.scoreIndex
+        const senderType = this.state.selectedActivity.channelData.senderType
 
         const definitions = {
             entities: this.props.entities,
@@ -115,7 +145,7 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
         history.definitions = definitions
         history.rounds = history.rounds.slice(0, roundIndex + 1)
 
-        const userInput = { text: "blah"} as CLM.UserInput // LARS TODO
+        const userInput = { text: inputText} as CLM.UserInput // LARS TODO
 
         // Get a score for this step
         ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app, history, this.props.user.name, this.props.user.id, CLM.HistoryMode.EXTRACT_ONLY, userInput) as any) as Promise<CLM.TeachWithHistory>)
@@ -135,7 +165,7 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
             let scorerSteps: CLM.TrainScorerStep[]
 
             // Copy and scorer steps below the injected input into the new Round
-            if (activity.channelData.senderType === CLM.SenderType.User) {
+            if (senderType === CLM.SenderType.User) {
                 scorerSteps = this.props.trainDialog.rounds[roundIndex].scorerSteps
                 // Remove scorer steps before edit from round 
                 newTrainDialog.rounds[roundIndex].scorerSteps = []
@@ -160,15 +190,19 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
         })
     }
 
-    onInsertScore(activity: Activity) {
+    @autobind
+    onInsertScore() {
 
         if (!this.props.user) {
             throw new Error("No Active User");
         }
+        if (!this.state.selectedActivity) {
+            throw new Error("No selected activity")
+        }
 
-        const roundIndex = activity.channelData.roundIndex
-        const scoreIndex = activity.channelData.scoreIndex
-
+        const roundIndex = this.state.selectedActivity.channelData.roundIndex
+        const scoreIndex = this.state.selectedActivity.channelData.scoreIndex
+        
         const definitions = {
             entities: this.props.entities,
             actions: this.props.actions,
@@ -225,11 +259,17 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
         return undefined
     }
 
-    onDeleteTurn(activity: Activity) {
+    @autobind
+    onDeleteTurn() {
 
-        let senderType = activity.channelData.senderType
-        let roundIndex = activity.channelData.roundIndex
-        let scoreIndex = activity.channelData.scoreIndex
+        if (!this.state.selectedActivity) {
+            throw new Error("No selected activity")
+        }
+
+        const senderType = this.state.selectedActivity.channelData.senderType
+        const roundIndex = this.state.selectedActivity.channelData.roundIndex
+        const scoreIndex = this.state.selectedActivity.channelData.scoreIndex
+
         let newTrainDialog = {...this.props.trainDialog}
         newTrainDialog.definitions = {
             entities: this.props.entities,
@@ -285,20 +325,20 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
                             {lastActivityJSX}
                             <OF.IconButton
                                 className={`cl-wc-addinput ${activity.channelData.senderType === CLM.SenderType.User ? `cl-wc-addinput--user` : `cl-wc-addinput--bot`}`}
-                                onClick={() => this.onInsertInput(activity)}
+                                onClick={this.onClickAddUserInput}
                                 ariaDescription="Insert Input Turn"
                                 iconProps={{ iconName: 'CommentAdd' }}
                             />
                             <OF.IconButton
                                 className={`cl-wc-addscore ${activity.channelData.senderType === CLM.SenderType.User ? `cl-wc-addscore--user` : `cl-wc-addscore--bot`}`}
-                                onClick={() => this.onInsertScore(activity)}
+                                onClick={this.onInsertScore}
                                 ariaDescription="Insert Score Turn"
                                 iconProps={{ iconName: 'CommentAdd' }}
                             />
                             <OF.IconButton
                                 className={`cl-wc-deleteturn ${activity.channelData.senderType === CLM.SenderType.User ? `cl-wc-deleteturn--user` : `cl-wc-deleteturn--bot`}`}
                                 iconProps={{ iconName: 'Delete' }}
-                                onClick={() => this.onDeleteTurn(activity)}
+                                onClick={this.onDeleteTurn}
                                 ariaDescription="Delete Turn"
                             />
                             <OF.IconButton
@@ -548,6 +588,11 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
                         id: FM.TRAINDIALOGMODAL_CONFIRMDELETE_TITLE,
                         defaultMessage: `Are you sure you want to delete this Training Dialog?`
                     })}
+                />
+                <UserInputModal
+                    open={this.state.isUserInputModalOpen}
+                    onCancel={this.onCancelAddUserInput}
+                    onSubmit={this.onSubmitAddUserInput}
                 />
             </Modal>
         );

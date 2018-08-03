@@ -119,6 +119,7 @@ export enum FM {
     BUTTON_CANCEL = 'Button.CANCEL',
     BUTTON_INFO = 'Button.INFO',
     BUTTON_IMPORT = 'Button.IMPORT',
+    BUTTON_SUBMIT = 'Button.SUMBIT',
 
     // ChatSessionModal
     CHATSESSIONMODAL_PRIMARYBUTTON_ARIADESCRIPTION = 'ChatSessionModal.primaryButton.ariaDescription',
@@ -426,6 +427,10 @@ export enum FM {
     // Tutorial Importer
     TUTORIALIMPORTER_TITLE = 'TutorialImporter.Title',
 
+    // UserInput Modal
+    USERINPUT_TITLE = 'UserInput.title',
+    USERINPUT_PLACEHOLDER = 'UserInput.placeholder',
+
     // Validations
     VALIDATE_UNABLE_TO_EDIT = 'Validate.unableToEdit',
     VALIDATE_UNABLE_TO_BRANCH = 'Validate.unableToBranch',
@@ -450,6 +455,41 @@ export default {
         [FM.NOMATCH_HOME]: 'My Models',
         [FM.PAGE_COMINGSOON]: 'Coming soon...',
 
+        // ActionCreatorEditor
+        [FM.ACTIONCREATOREDITOR_SAVEBUTTON_ARIADESCRIPTION]: 'Save',
+        [FM.ACTIONCREATOREDITOR_SAVEBUTTON_TEXT]: 'Save',
+        [FM.ACTIONCREATOREDITOR_CREATEBUTTON_ARIADESCRIPTION]: 'Create',
+        [FM.ACTIONCREATOREDITOR_CREATEBUTTON_TEXT]: 'Create',
+        [FM.ACTIONCREATOREDITOR_CANCELBUTTON_ARIADESCRIPTION]: 'Cancel',
+        [FM.ACTIONCREATOREDITOR_CANCELBUTTON_TEXT]: 'Cancel',
+        [FM.ACTIONCREATOREDITOR_DONEBUTTON_ARIADESCRIPTION]: 'Done',
+        [FM.ACTIONCREATOREDITOR_DONEBUTTON_TEXT]: 'Done',
+        [FM.ACTIONCREATOREDITOR_DELETEBUTTON_ARIADESCRIPTION]: 'Delete',
+        [FM.ACTIONCREATOREDITOR_DELETEBUTTON_TEXT]: 'Delete',
+        [FM.ACTIONCREATOREDITOR_TRAINDIALOGSBUTTON_ARIADESCRIPTION]: 'Train Dialogs',
+        [FM.ACTIONCREATOREDITOR_TRAINDIALOGSBUTTON_TEXT]: 'Train Dialogs',
+        [FM.ACTIONCREATOREDITOR_CONFIRM_DELETE_TITLE]: 'Are you sure you want to delete this action?',
+        [FM.ACTIONCREATOREDITOR_CONFIRM_DELETE_WARNING]: 'This Action is used by one or more Training Dialogs.  If you proceed they will removed from training until fixed.',
+        [FM.ACTIONCREATOREDITOR_CONFIRM_EDIT_TITLE]: 'Are you sure you want to edit this action?',
+        [FM.ACTIONCREATOREDITOR_CONFIRM_EDIT_WARNING]: 'This edit will invalidate one or more Training Dialogs.  If you proceed they will removed from training until fixed.',
+
+        // ActionScorer
+        [FM.ACTIONSCORER_COLUMNS_RESPONSE]: 'Response',
+        [FM.ACTIONSCORER_COLUMNS_ARGUMENTS]: 'Arguments',
+        [FM.ACTIONSCORER_COLUMNS_SCORE]: 'Score',
+        [FM.ACTIONSCORER_COLUMNS_ENTITIES]: 'Entities',
+        [FM.ACTIONSCORER_COLUMNS_ISTERMINAL]: 'Wait',
+        [FM.ACTIONSCORER_COLUMNS_TYPE]: 'Type',
+
+        // ActionDetailsList
+        [FM.ACTIONDETAILSLIST_COLUMNS_RESPONSE]: 'Response',
+        [FM.ACTIONDETAILSLIST_COLUMNS_ARGUMENTS]: 'Arguments',
+        [FM.ACTIONDETAILSLIST_COLUMNS_TYPE]: 'Action Type',
+        [FM.ACTIONDETAILSLIST_COLUMNS_REQUIREDENTITIES]: 'Required Entities',
+        [FM.ACTIONDETAILSLIST_COLUMNS_DISQUALIFYINGENTITIES]: 'Disqualifying Entities',
+        [FM.ACTIONDETAILSLIST_COLUMNS_SUGGESTEDENTITY]: 'Expected Entity',
+        [FM.ACTIONDETAILSLIST_COLUMNS_ISTERMINAL]: 'Wait',
+ 
         // Actions
         [FM.ACTIONS_TITLE]: 'Actions',
         [FM.ACTIONS_SUBTITLE]: `Actions are executed by the bot in response to user input`,
@@ -457,6 +497,28 @@ export default {
         [FM.ACTIONS_CREATEBUTTONTITLE]: 'New Action',
         [FM.ACTIONS_CONFIRMCANCELMODALTITLE]: 'Are you sure you want to delete this action?',
 
+        // AppCreator
+        [FM.APPCREATOR_FIELDERROR_REQUIREDVALUE]: 'Required Value',
+        [FM.APPCREATOR_FIELDERROR_ALPHANUMERIC]: 'Model name may only contain alphanumeric characters',
+        [FM.APPCREATOR_FIELDERROR_DISTINCT]: 'Name is already in use.',
+        [FM.APPCREATOR_TITLE]: 'Create a Conversation Learner Model',
+        [FM.APPCREATOR_COPY_TITLE]: 'Copy a Conversation Learner Model',
+        [FM.APPCREATOR_IMPORT_TITLE]: 'Import a Conversation Learner Model',
+        [FM.APPCREATOR_FIELDS_NAME_LABEL]: 'Name',
+        [FM.APPCREATOR_FIELDS_IMPORT_NAME_LABEL]: 'New Model Name',
+        [FM.APPCREATOR_FIELDS_NAME_PLACEHOLDER]: 'Model Name...',
+        [FM.APPCREATOR_FIELDS_LOCALE_LABEL]: 'Locale',
+        [FM.APPCREATOR_COPYBUTTON_ARIADESCRIPTION]: 'Copy',
+        [FM.APPCREATOR_COPYBUTTON_TEXT]: 'Copy',
+        [FM.APPCREATOR_CREATEBUTTON_ARIADESCRIPTION]: 'Create',
+        [FM.APPCREATOR_CREATEBUTTON_TEXT]: 'Create',
+        [FM.APPCREATOR_IMPORT_BUTTON_ARIADESCRIPTION]: 'Import application',
+        [FM.APPCREATOR_IMPORT_BUTTON_TEXT]: 'Import',
+        [FM.APPCREATOR_CHOOSE_FILE_BUTTON_ARIADESCRIPTION]: 'Locate File',
+        [FM.APPCREATOR_CHOOSE_FILE_BUTTON_TEXT]: 'Locate File',
+        [FM.APPCREATOR_CANCELBUTTON_ARIADESCRIPTION]: 'Cancel',
+        [FM.APPCREATOR_CANCELBUTTON_TEXT]: 'Cancel',
+         
         // App
         [FM.APP_HEADER_MODELS]: 'My Models',
         [FM.APP_HEADER_ABOUT]: 'About',
@@ -494,8 +556,11 @@ export default {
         [FM.BUTTON_CANCEL]: 'Cancel',
         [FM.BUTTON_IMPORT]: 'Import',
         [FM.BUTTON_INFO]: 'Info',
+        [FM.BUTTON_SUBMIT]: 'Submit',
 
-
+        // Error Messages
+        [FM.CUSTOMERROR_NETWORK_ERROR]: 'Is your Bot running? Did you set NODE_ENV=development?',
+        
         // Dashboard
         [FM.DASHBOARD_TITLE]: 'Overview',
         [FM.DASHBOARD_SUBTITLE]: `Notifications about this model`,
@@ -664,65 +729,11 @@ export default {
         [FM.VALIDATE_UNABLE_TO_UNDO]: 'Unable to Undo',
         [FM.VALIDATE_ENTITY_REASON]: 'Bot API calls are behaving differently. Entities in memory do not match.',
 
-        // ActionDetailsList
-        [FM.ACTIONDETAILSLIST_COLUMNS_RESPONSE]: 'Response',
-        [FM.ACTIONDETAILSLIST_COLUMNS_ARGUMENTS]: 'Arguments',
-        [FM.ACTIONDETAILSLIST_COLUMNS_TYPE]: 'Action Type',
-        [FM.ACTIONDETAILSLIST_COLUMNS_REQUIREDENTITIES]: 'Required Entities',
-        [FM.ACTIONDETAILSLIST_COLUMNS_DISQUALIFYINGENTITIES]: 'Disqualifying Entities',
-        [FM.ACTIONDETAILSLIST_COLUMNS_SUGGESTEDENTITY]: 'Expected Entity',
-        [FM.ACTIONDETAILSLIST_COLUMNS_ISTERMINAL]: 'Wait',
-
         // TextVariationCreator
         [FM.TEXTVARIATION_PLACEHOLDER]: 'Add alternative input...',
 
-        // ActionCreatorEditor
-        [FM.ACTIONCREATOREDITOR_SAVEBUTTON_ARIADESCRIPTION]: 'Save',
-        [FM.ACTIONCREATOREDITOR_SAVEBUTTON_TEXT]: 'Save',
-        [FM.ACTIONCREATOREDITOR_CREATEBUTTON_ARIADESCRIPTION]: 'Create',
-        [FM.ACTIONCREATOREDITOR_CREATEBUTTON_TEXT]: 'Create',
-        [FM.ACTIONCREATOREDITOR_CANCELBUTTON_ARIADESCRIPTION]: 'Cancel',
-        [FM.ACTIONCREATOREDITOR_CANCELBUTTON_TEXT]: 'Cancel',
-        [FM.ACTIONCREATOREDITOR_DONEBUTTON_ARIADESCRIPTION]: 'Done',
-        [FM.ACTIONCREATOREDITOR_DONEBUTTON_TEXT]: 'Done',
-        [FM.ACTIONCREATOREDITOR_DELETEBUTTON_ARIADESCRIPTION]: 'Delete',
-        [FM.ACTIONCREATOREDITOR_DELETEBUTTON_TEXT]: 'Delete',
-        [FM.ACTIONCREATOREDITOR_TRAINDIALOGSBUTTON_ARIADESCRIPTION]: 'Train Dialogs',
-        [FM.ACTIONCREATOREDITOR_TRAINDIALOGSBUTTON_TEXT]: 'Train Dialogs',
-        [FM.ACTIONCREATOREDITOR_CONFIRM_DELETE_TITLE]: 'Are you sure you want to delete this action?',
-        [FM.ACTIONCREATOREDITOR_CONFIRM_DELETE_WARNING]: 'This Action is used by one or more Training Dialogs.  If you proceed they will removed from training until fixed.',
-        [FM.ACTIONCREATOREDITOR_CONFIRM_EDIT_TITLE]: 'Are you sure you want to edit this action?',
-        [FM.ACTIONCREATOREDITOR_CONFIRM_EDIT_WARNING]: 'This edit will invalidate one or more Training Dialogs.  If you proceed they will removed from training until fixed.',
-   
-        // ActionScorer
-        [FM.ACTIONSCORER_COLUMNS_RESPONSE]: 'Response',
-        [FM.ACTIONSCORER_COLUMNS_ARGUMENTS]: 'Arguments',
-        [FM.ACTIONSCORER_COLUMNS_SCORE]: 'Score',
-        [FM.ACTIONSCORER_COLUMNS_ENTITIES]: 'Entities',
-        [FM.ACTIONSCORER_COLUMNS_ISTERMINAL]: 'Wait',
-        [FM.ACTIONSCORER_COLUMNS_TYPE]: 'Type',
-
-        // AppCreator
-        [FM.APPCREATOR_FIELDERROR_REQUIREDVALUE]: 'Required Value',
-        [FM.APPCREATOR_FIELDERROR_ALPHANUMERIC]: 'Model name may only contain alphanumeric characters',
-        [FM.APPCREATOR_FIELDERROR_DISTINCT]: 'Name is already in use.',
-        [FM.APPCREATOR_TITLE]: 'Create a Conversation Learner Model',
-        [FM.APPCREATOR_COPY_TITLE]: 'Copy a Conversation Learner Model',
-        [FM.APPCREATOR_IMPORT_TITLE]: 'Import a Conversation Learner Model',
-        [FM.APPCREATOR_FIELDS_NAME_LABEL]: 'Name',
-        [FM.APPCREATOR_FIELDS_IMPORT_NAME_LABEL]: 'New Model Name',
-        [FM.APPCREATOR_FIELDS_NAME_PLACEHOLDER]: 'Model Name...',
-        [FM.APPCREATOR_FIELDS_LOCALE_LABEL]: 'Locale',
-        [FM.APPCREATOR_COPYBUTTON_ARIADESCRIPTION]: 'Copy',
-        [FM.APPCREATOR_COPYBUTTON_TEXT]: 'Copy',
-        [FM.APPCREATOR_CREATEBUTTON_ARIADESCRIPTION]: 'Create',
-        [FM.APPCREATOR_CREATEBUTTON_TEXT]: 'Create',
-        [FM.APPCREATOR_IMPORT_BUTTON_ARIADESCRIPTION]: 'Import application',
-        [FM.APPCREATOR_IMPORT_BUTTON_TEXT]: 'Import',
-        [FM.APPCREATOR_CHOOSE_FILE_BUTTON_ARIADESCRIPTION]: 'Locate File',
-        [FM.APPCREATOR_CHOOSE_FILE_BUTTON_TEXT]: 'Locate File',
-        [FM.APPCREATOR_CANCELBUTTON_ARIADESCRIPTION]: 'Cancel',
-        [FM.APPCREATOR_CANCELBUTTON_TEXT]: 'Cancel',
+       
+        [FM.BUTTON_INFO]: 'Info',
 
         // DemoImporter
         [FM.DEMOIMPORT_TITLE]: 'Import Demo Models',
@@ -860,8 +871,10 @@ export default {
         [FM.TRAINDIALOGMODAL_DONEBUTTON_TEXT]: 'Done',
         [FM.TRAINDIALOGMODAL_CONFIRMDELETE_TITLE]: 'Are you sure you want to delete this Training Dialog?',
         
-        // Error Messages
-        [FM.CUSTOMERROR_NETWORK_ERROR]: 'Is your Bot running? Did you set NODE_ENV=development?',
+        // UserInput Modal
+        [FM.USERINPUT_TITLE]: 'Add User Input',
+        [FM.USERINPUT_PLACEHOLDER]: 'User Input...',
+
         /** 
          * This is kind of hack which re-uses redux action types as unit strings for localized error messages
          * 
