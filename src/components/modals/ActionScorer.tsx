@@ -10,7 +10,7 @@ import { State } from '../../types'
 import {
     AppBase, TrainScorerStep, Memory, ScoredBase, ScoreInput, ScoreResponse,
     ActionBase, ScoredAction, UnscoredAction, ScoreReason, DialogType, ActionTypes,
-    Template, DialogMode, RenderedActionArgument, SessionAction, CardAction, TextAction, ApiAction, RenderAction
+    Template, DialogMode, RenderedActionArgument, SessionAction, CardAction, TextAction, ApiAction
 } from '@conversationlearner/models'
 import { createActionThunkAsync } from '../../actions/actionActions'
 import { toggleAutoTeach } from '../../actions/teachActions'
@@ -101,15 +101,13 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
                             memories={component.props.memories}
                         />)
                 }
-                else if ([ActionTypes.API_LOCAL, ActionTypes.RENDER].includes(action.actionType)) {
+                else if (action.actionType === ActionTypes.API_LOCAL) {
                     // TODO: Find better way to handle this with CodeActionRenderer?
-                    const codeAction = action.actionType === ActionTypes.API_LOCAL
-                        ? new ApiAction(action)
-                        : new RenderAction(action)
+                    const apiAction = new ApiAction(action)
                     return (
                         <ActionPayloadRenderers.ApiPayloadRendererContainer
                             data-testid="actionscorer-apiaction"
-                            apiAction={codeAction}
+                            apiAction={apiAction}
                             entities={component.props.entities}
                             memories={component.props.memories}
                          />)

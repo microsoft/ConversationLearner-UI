@@ -19,8 +19,10 @@ interface ICombinedActionArguments {
 
 interface Props {
     name: string
-    originalArguments: RenderedActionArgument[]
-    substitutedArguments: RenderedActionArgument[] | null
+    originalLogicArguments: RenderedActionArgument[]
+    substitutedLogicArguments: RenderedActionArgument[] | null
+    originalRenderArguments: RenderedActionArgument[]
+    substitutedRenderArguments: RenderedActionArgument[] | null
 }
 
 interface State {
@@ -38,18 +40,17 @@ export default class Component extends React.Component<Props, State> {
         }))
     }
 
-    render() {
-
-        const pairedArguments: ICombinedActionArguments = this.props.substitutedArguments === null
+    private getCombinedArguments (originalArguments: RenderedActionArgument[], substitutedArguments: RenderedActionArgument[] | null): ICombinedActionArguments {
+        return substitutedArguments === null
             ? {
-                argumentPairs: this.props.originalArguments.map(oa => ({
+                argumentPairs: originalArguments.map(oa => ({
                     original: oa,
                     substituted: oa
                 })),
                 argumentsDiffer: false
             }
-            : this.props.originalArguments.reduce<ICombinedActionArguments>((combined, originalArgument) => {
-                const matchingSubstitutedArgument = this.props.substitutedArguments && this.props.substitutedArguments.find(sa => sa.parameter === originalArgument.parameter)
+            : originalArguments.reduce<ICombinedActionArguments>((combined, originalArgument) => {
+                const matchingSubstitutedArgument = substitutedArguments && substitutedArguments.find(sa => sa.parameter === originalArgument.parameter)
                 if (matchingSubstitutedArgument) {
                     combined.argumentPairs.push({
                         original: originalArgument,
@@ -65,22 +66,44 @@ export default class Component extends React.Component<Props, State> {
                     argumentPairs: [],
                     argumentsDiffer: false
                 })
+    }
 
-        const showToggle = pairedArguments.argumentsDiffer
+    render() {
+        const pairedLogicArguments = this.getCombinedArguments(this.props.originalLogicArguments, this.props.substitutedLogicArguments)
+        const pairedRenderArguments = this.getCombinedArguments(this.props.originalRenderArguments, this.props.substitutedRenderArguments)
+        const showToggle = pairedLogicArguments.argumentsDiffer
 
         return <div className="cl-api-payload">
             <div>
-                <div className={OF.FontClassNames.mediumPlus}>{this.props.name}(memoryManager{pairedArguments.argumentPairs.length !== 0 && `, ${pairedArguments.argumentPairs.map(a => a.original.parameter).join(', ')}`})</div>
-                <div className="cl-api-payload__arguments ms-ListItem-primaryText">
-                    {pairedArguments.argumentPairs.length !== 0
-                    && pairedArguments.argumentPairs.map((argument, i) =>
-                        <React.Fragment key={i}>
-                            <div>{argument.original.parameter}:</div>
-                            <div>{`${(this.props.substitutedArguments === null || this.state.isOriginalVisible)
-                                ? argument.original.value
-                                : argument.substituted.value}`
-                            }</div>
-                        </React.Fragment>)}
+                <div className={OF.FontClassNames.mediumPlus}>{this.props.name}</div>
+                <div className="cl-api-payload__fn">
+                    <div className="cl-api-payload__signature">logic(memoryManager{pairedLogicArguments.argumentPairs.length !== 0 && `, ${pairedLogicArguments.argumentPairs.map(a => a.original.parameter).join(', ')}`})</div>
+                    <div className="cl-api-payload__arguments ms-ListItem-primaryText">
+                        {pairedLogicArguments.argumentPairs.length !== 0
+                        && pairedLogicArguments.argumentPairs.map((argument, i) =>
+                            <React.Fragment key={i}>
+                                <div>{argument.original.parameter}:</div>
+                                <div>"{`${(this.props.substitutedLogicArguments === null || this.state.isOriginalVisible)
+                                    ? argument.original.value
+                                    : argument.substituted.value}`
+                                }"</div>
+                            </React.Fragment>)}
+                    </div>
+                </div>
+
+                <div className="cl-api-payload__fn">
+                    <div className="cl-api-payload__signature">render(result, memoryManager{pairedRenderArguments.argumentPairs.length !== 0 && `, ${pairedRenderArguments.argumentPairs.map(a => a.original.parameter).join(', ')}`})</div>
+                    <div className="cl-api-payload__arguments ms-ListItem-primaryText">
+                        {pairedRenderArguments.argumentPairs.length !== 0
+                        && pairedRenderArguments.argumentPairs.map((argument, i) =>
+                            <React.Fragment key={i}>
+                                <div>{argument.original.parameter}:</div>
+                                <div>"{`${(this.props.substitutedLogicArguments === null || this.state.isOriginalVisible)
+                                    ? argument.original.value
+                                    : argument.substituted.value}`
+                                }"</div>
+                            </React.Fragment>)}
+                    </div>
                 </div>
             </div>
             {showToggle
