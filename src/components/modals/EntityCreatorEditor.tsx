@@ -463,7 +463,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
         const { intl } = this.props
         const disabled = this.state.isEditing && this.isInUse()
         return (
-            <div>
+            <div className="cl-entity-creator-form">
                 <OF.Dropdown
                     ariaLabel={intl.formatMessage({
                         id: FM.ENTITYCREATOREDITOR_FIELDS_TYPE_LABEL,
@@ -496,8 +496,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                     value={this.state.isPrebuilt ? this.getPrebuiltEntityName(this.state.entityTypeVal) : this.state.entityNameVal}
                     disabled={this.state.isPrebuilt}
                 />
-                <br />
-                <div className="cl-entity-creator-checkbox">
+                <div className="cl-entity-creator-checkboxes cl-entity-creator-form">
                     <TC.Checkbox
                         data-testid="entitycreator-checkbox-programmaticonly"
                         label={intl.formatMessage({
@@ -509,8 +508,6 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                         disabled={disabled || this.state.isPrebuilt || this.state.isEditing}
                         tipType={ToolTip.TipType.ENTITY_PROGAMMATIC}
                     />
-                </div>
-                <div className="cl-entity-creator-checkbox">
                     <TC.Checkbox
                         data-testid="entitycreator-checkbox-multivalued"
                         label={intl.formatMessage({
@@ -522,8 +519,6 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                         disabled={disabled}
                         tipType={ToolTip.TipType.ENTITY_MULTIVALUE}
                     />
-                </div>
-                <div className="cl-entity-creator-checkbox">
                     <TC.Checkbox
                         data-testid="entitycreator-checkbox-negatable"
                         label={intl.formatMessage({

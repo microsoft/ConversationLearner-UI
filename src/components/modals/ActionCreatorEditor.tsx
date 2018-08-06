@@ -866,6 +866,12 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         const { intl } = this.props
 
         const disabled = this.state.isEditing && this.isUsedByTrainingDialogs()
+
+        const template = this.state.selectedActionTypeOptionKey === ActionTypes.CARD
+                            && this.state.selectedCardOptionKey
+                            ? this.props.botInfo.templates.find(t => t.name === this.state.selectedCardOptionKey)
+                            : undefined
+
         const callback = this.state.selectedActionTypeOptionKey === ActionTypes.API_LOCAL
                             && this.state.selectedApiOptionKey
                             ? this.props.botInfo.callbacks.find(t => t.name === this.state.selectedApiOptionKey)
@@ -882,7 +888,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 </div>
 
                 <div className="cl-modal_body">
-                    <div>
+                    <div className="cl-action-creator-form">
                         <TC.Dropdown
                             data-testid="dropdown-action-type"
                             label="Action Type"
@@ -894,130 +900,128 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                         />
 
                         {this.state.selectedActionTypeOptionKey === ActionTypes.API_LOCAL
-                            && (<div className="cl-dropdownWithButton-dropdown">
-                                <TC.Dropdown
-                                    data-testid="dropdown-api-option"
-                                    label="API"
-                                    options={this.state.apiOptions}
-                                    onChanged={this.onChangedApiOption}
-                                    selectedKey={this.state.selectedApiOptionKey}
-                                    disabled={this.state.apiOptions.length === 0}
-                                    placeHolder={this.state.apiOptions.length === 0 ? 'NONE DEFINED' : 'API name...'}
-                                    tipType={ToolTip.TipType.ACTION_API}
-                                />
-                                <OF.PrimaryButton
-                                    className="cl-dropdownWithButton-button"
-                                    onClick={() => this.onClickSyncBotInfo()}
-                                    ariaDescription="Refresh"
-                                    text=""
-                                    iconProps={{ iconName: 'Sync' }}
-                                />
-                            </div>
-                            )}
-
-                        {this.state.selectedActionTypeOptionKey === ActionTypes.CARD
-                            && (<div className="cl-dropdownWithButton-dropdown">
-                                <TC.Dropdown
-                                    label="Template"
-                                    options={this.state.cardOptions}
-                                    onChanged={(cardOption) => this.onChangedCardOption(cardOption)}
-                                    selectedKey={this.state.selectedCardOptionKey}
-                                    disabled={this.state.cardOptions.length === 0}
-                                    placeHolder={this.state.cardOptions.length === 0 ? 'NONE DEFINED' : 'Template name...'}
-                                    tipType={ToolTip.TipType.ACTION_CARD}
-                                />
-                                <OF.PrimaryButton
-                                    className="cl-dropdownWithButton-button"
-                                    onClick={() => this.onClickViewCard()}
-                                    ariaDescription="Refresh"
-                                    text=""
-                                    iconProps={{ iconName: 'RedEye' }}
-                                    disabled={this.state.selectedCardOptionKey == null}
-                                />
-                                <OF.PrimaryButton
-                                    className="cl-dropdownWithButton-button"
-                                    onClick={() => this.onClickSyncBotInfo()}
-                                    ariaDescription="Refresh"
-                                    text=""
-                                    iconProps={{ iconName: 'Sync' }}
-                                />
-                            </div>
-                            )}
-
-                        {this.state.selectedActionTypeOptionKey === ActionTypes.CARD
-                            && this.state.selectedCardOptionKey
-                            && (this.props.botInfo.templates.find(t => t.name === this.state.selectedCardOptionKey) ?
-                                (this.props.botInfo.templates.find(t => t.name === this.state.selectedCardOptionKey)!.variables
-                                    .map(cardTemplateVariable => {
-                                        return (
-                                            <React.Fragment key={cardTemplateVariable.key}>
-                                                <OF.Label className="cl-label">{cardTemplateVariable.key} <HelpIcon tipType={ToolTip.TipType.ACTION_ARGUMENTS}></HelpIcon></OF.Label>
-                                                <ActionPayloadEditor.Editor
-                                                    options={optionsAvailableForPayload}
-                                                    value={this.state.slateValuesMap[cardTemplateVariable.key]}
-                                                    placeholder={''}
-                                                    onChange={eState => this.onChangePayloadEditor(eState, cardTemplateVariable.key)}
-                                                    onSubmit={() => this.onSubmitPayloadEditor()}
-                                                    disabled={isPayloadDisabled}
-                                                />
-                                            </React.Fragment>
-                                        )
-                                    })
-                                ) :
-                                <div className="cl-errorpanel" >
-                                    <div>ERROR: Bot missing Template: ${this.state.selectedCardOptionKey}</div>
+                            && <div>
+                                <div className="cl-dropdownWithButton-dropdown">
+                                    <TC.Dropdown
+                                        data-testid="dropdown-api-option"
+                                        label="API"
+                                        options={this.state.apiOptions}
+                                        onChanged={this.onChangedApiOption}
+                                        selectedKey={this.state.selectedApiOptionKey}
+                                        disabled={this.state.apiOptions.length === 0}
+                                        placeHolder={this.state.apiOptions.length === 0 ? 'NONE DEFINED' : 'API name...'}
+                                        tipType={ToolTip.TipType.ACTION_API}
+                                    />
+                                    <OF.PrimaryButton
+                                        className="cl-dropdownWithButton-button"
+                                        onClick={() => this.onClickSyncBotInfo()}
+                                        ariaDescription="Refresh"
+                                        text=""
+                                        iconProps={{ iconName: 'Sync' }}
+                                    />
                                 </div>
-                            )
+                                {this.state.selectedApiOptionKey
+                                    && (callback
+                                    ? <div>
+                                        {callback.logicArguments.length > 0
+                                            && <div>
+                                            <OF.Label>Logic Arguments</OF.Label>
+                                            {callback.logicArguments
+                                                .map(apiArgument => {
+                                                    return (
+                                                        <React.Fragment key={apiArgument}>
+                                                            <OF.Label className="ms-Label--tight">{apiArgument} <HelpIcon tipType={ToolTip.TipType.ACTION_ARGUMENTS}></HelpIcon></OF.Label>
+                                                            <ActionPayloadEditor.Editor
+                                                                options={optionsAvailableForPayload}
+                                                                value={this.state.slateValuesMap[apiArgument]}
+                                                                placeholder={''}
+                                                                onChange={eState => this.onChangePayloadEditor(eState, apiArgument)}
+                                                                onSubmit={() => this.onSubmitPayloadEditor()}
+                                                                disabled={isPayloadDisabled}
+                                                            />
+                                                        </React.Fragment>
+                                                    )
+                                                })}
+                                        </div>}
+                                        {callback.renderArguments.length > 0
+                                            && <div>
+                                            <OF.Label>Render Arguments</OF.Label>
+                                            {callback.renderArguments
+                                                .map(apiArgument => {
+                                                    return (
+                                                        <React.Fragment key={apiArgument}>
+                                                            <OF.Label className="ms-Label--tight">{apiArgument} <HelpIcon tipType={ToolTip.TipType.ACTION_ARGUMENTS}></HelpIcon></OF.Label>
+                                                            <ActionPayloadEditor.Editor
+                                                                options={optionsAvailableForPayload}
+                                                                value={this.state.secondarySlateValuesMap[apiArgument]}
+                                                                placeholder={''}
+                                                                onChange={eState => this.onChangePayloadEditor(eState, apiArgument, true)}
+                                                                onSubmit={() => this.onSubmitPayloadEditor()}
+                                                                disabled={isPayloadDisabled}
+                                                            />
+                                                        </React.Fragment>
+                                                    )
+                                                })}
+                                        </div>}
+                                    </div>
+                                    : <div className="cl-errorpanel">
+                                        <div>ERROR: Bot Missing Callback: {this.state.selectedApiOptionKey}</div>
+                                    </div>)
+                                }
+                            </div>
                         }
 
-                        {this.state.selectedActionTypeOptionKey === ActionTypes.API_LOCAL
-                            && this.state.selectedApiOptionKey
-                            && (callback
-                            ? <div>
-                                {callback.logicArguments.length > 0
-                                    && <div>
-                                    <OF.Label>Logic Arguments</OF.Label>
-                                    {callback.logicArguments
-                                        .map(apiArgument => {
+                        {this.state.selectedActionTypeOptionKey === ActionTypes.CARD
+                            && <div>
+                                <div className="cl-dropdownWithButton-dropdown">
+                                    <TC.Dropdown
+                                        label="Template"
+                                        options={this.state.cardOptions}
+                                        onChanged={(cardOption) => this.onChangedCardOption(cardOption)}
+                                        selectedKey={this.state.selectedCardOptionKey}
+                                        disabled={this.state.cardOptions.length === 0}
+                                        placeHolder={this.state.cardOptions.length === 0 ? 'NONE DEFINED' : 'Template name...'}
+                                        tipType={ToolTip.TipType.ACTION_CARD}
+                                    />
+                                    <OF.PrimaryButton
+                                        className="cl-dropdownWithButton-button"
+                                        onClick={() => this.onClickViewCard()}
+                                        ariaDescription="Refresh"
+                                        text=""
+                                        iconProps={{ iconName: 'RedEye' }}
+                                        disabled={this.state.selectedCardOptionKey == null}
+                                    />
+                                    <OF.PrimaryButton
+                                        className="cl-dropdownWithButton-button"
+                                        onClick={() => this.onClickSyncBotInfo()}
+                                        ariaDescription="Refresh"
+                                        text=""
+                                        iconProps={{ iconName: 'Sync' }}
+                                    />
+                                </div>
+                                {this.state.selectedCardOptionKey
+                                    && (template
+                                    ? template.variables
+                                        .map(cardTemplateVariable => {
                                             return (
-                                                <React.Fragment key={apiArgument}>
-                                                    <OF.Label className="ms-Label--tight">{apiArgument} <HelpIcon tipType={ToolTip.TipType.ACTION_ARGUMENTS}></HelpIcon></OF.Label>
+                                                <React.Fragment key={cardTemplateVariable.key}>
+                                                    <OF.Label className="cl-label">{cardTemplateVariable.key} <HelpIcon tipType={ToolTip.TipType.ACTION_ARGUMENTS}></HelpIcon></OF.Label>
                                                     <ActionPayloadEditor.Editor
                                                         options={optionsAvailableForPayload}
-                                                        value={this.state.slateValuesMap[apiArgument]}
+                                                        value={this.state.slateValuesMap[cardTemplateVariable.key]}
                                                         placeholder={''}
-                                                        onChange={eState => this.onChangePayloadEditor(eState, apiArgument)}
+                                                        onChange={eState => this.onChangePayloadEditor(eState, cardTemplateVariable.key)}
                                                         onSubmit={() => this.onSubmitPayloadEditor()}
                                                         disabled={isPayloadDisabled}
                                                     />
                                                 </React.Fragment>
                                             )
-                                        })}
-                                </div>}
-                                {callback.renderArguments.length > 0
-                                    && <div>
-                                    <OF.Label>Render Arguments</OF.Label>
-                                    {callback.renderArguments
-                                        .map(apiArgument => {
-                                            return (
-                                                <React.Fragment key={apiArgument}>
-                                                    <OF.Label className="ms-Label--tight">{apiArgument} <HelpIcon tipType={ToolTip.TipType.ACTION_ARGUMENTS}></HelpIcon></OF.Label>
-                                                    <ActionPayloadEditor.Editor
-                                                        options={optionsAvailableForPayload}
-                                                        value={this.state.secondarySlateValuesMap[apiArgument]}
-                                                        placeholder={''}
-                                                        onChange={eState => this.onChangePayloadEditor(eState, apiArgument, true)}
-                                                        onSubmit={() => this.onSubmitPayloadEditor()}
-                                                        disabled={isPayloadDisabled}
-                                                    />
-                                                </React.Fragment>
-                                            )
-                                        })}
-                                </div>}
+                                        })
+                                    : <div className="cl-errorpanel">
+                                        <div>ERROR: Bot Missing Template: {this.state.selectedCardOptionKey}</div>
+                                    </div>)
+                                }
                             </div>
-                            : <div className="cl-errorpanel">
-                                <div>ERROR: Bot Missing Callback: ${this.state.selectedApiOptionKey}</div>
-                            </div>)
                         }
 
                         {this.state.selectedActionTypeOptionKey === ActionTypes.TEXT
@@ -1124,8 +1128,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                             />
                         </div>
 
-                        <br />
-                        <div>
+                        <div className="cl-actioncreator-form-section">
                             <TC.Checkbox
                                 data-testid="actioncreator-checkbox-wait"
                                 label="Wait for Response?"
