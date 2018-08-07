@@ -460,6 +460,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         let trainScorerStep: TrainScorerStep = {
             input: this.props.scoreInput,
             labelAction: actionId,
+            logicResult: undefined,
             scoredAction: scoredAction
         };
 
