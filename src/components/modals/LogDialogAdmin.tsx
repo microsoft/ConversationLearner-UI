@@ -167,7 +167,8 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
         const modifiedScorerStep: TrainScorerStep = {
             scoredAction: undefined,
             input: originalScorerStep.input,
-            labelAction: trainScorerStep.labelAction
+            labelAction: trainScorerStep.labelAction,
+            logicResult: trainScorerStep.logicResult
         }
 
         const modifiedRound: TrainRound = {
