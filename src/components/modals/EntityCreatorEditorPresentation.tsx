@@ -13,22 +13,7 @@ import * as ToolTip from '../ToolTips'
 import { ActionBase } from '@conversationlearner/models'
 import './EntityCreatorEditor.css'
 import { FM } from '../../react-intl-messages'
-import { defineMessages, InjectedIntlProps, FormattedMessage } from 'react-intl'
-
-const messages = defineMessages({
-    fieldErrorRequired: {
-        id: FM.ENTITYCREATOREDITOR_FIELDERROR_REQUIREDVALUE,
-        defaultMessage: 'Required Value'
-    },
-    fieldErrorAlphanumeric: {
-        id: FM.ENTITYCREATOREDITOR_FIELDERROR_ALPHANUMERIC,
-        defaultMessage: 'Entity name may only contain alphanumeric characters with no spaces.'
-    },
-    fieldErrorDistinct: {
-        id: FM.ENTITYCREATOREDITOR_FIELDERROR_DISTINCT,
-        defaultMessage: 'Name is already in use.'
-    }
-})
+import { InjectedIntlProps, FormattedMessage } from 'react-intl'
 
 interface Props extends InjectedIntlProps {
     open: boolean

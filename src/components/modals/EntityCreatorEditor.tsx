@@ -7,18 +7,15 @@ import { returntypeof } from 'react-redux-typescript'
 import actions from '../../actions'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import { Modal } from 'office-ui-fabric-react/lib/Modal'
 import * as OF from 'office-ui-fabric-react'
 import * as TC from '../tipComponents'
-import ActionDetailsList from '../ActionDetailsList'
-import ConfirmCancelModal from './ConfirmCancelModal'
 import { State, PreBuiltEntities } from '../../types'
 import { CLDropdownOption } from './CLDropDownOption'
 import * as ToolTip from '../ToolTips'
 import { AppBase, EntityBase, EntityType, ActionBase } from '@conversationlearner/models'
 import './EntityCreatorEditor.css'
 import { FM } from '../../react-intl-messages'
-import { defineMessages, injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
+import { defineMessages, injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { withRouter } from 'react-router-dom'
 import { RouteComponentProps } from 'react-router'
 import { autobind } from 'office-ui-fabric-react/lib/Utilities'
@@ -533,7 +530,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
     }
     render() {
         const { intl } = this.props
-        const disabled = this.state.isEditing && this.isInUse()
+        const isEntityInUse = this.state.isEditing && this.isInUse()
 
         const title = this.props.entity
             ? this.props.entity.entityName
@@ -548,7 +545,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
             entityOptions={this.entityOptions}
             
             selectedTypeKey={this.state.entityTypeVal}
-            isTypeDisabled={disabled || this.props.entityTypeFilter != null}
+            isTypeDisabled={isEntityInUse || this.props.entityTypeFilter != null}
             onChangedType={this.onChangedType}
 
             name={this.state.isPrebuilt ? this.getPrebuiltEntityName(this.state.entityTypeVal) : this.state.entityNameVal}
@@ -558,15 +555,15 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
             onKeyDownName={this.onKeyDownName}
 
             isProgrammatic={this.state.isProgrammaticVal}
-            isProgrammaticDisabled={disabled || this.state.isPrebuilt || this.state.isEditing}
+            isProgrammaticDisabled={isEntityInUse || this.state.isPrebuilt || this.state.isEditing}
             onChangeProgrammatic={this.onChangeProgrammatic}
 
             isMultiValue={this.state.isMultivalueVal}
-            isMultiValueDisabled={disabled}
+            isMultiValueDisabled={isEntityInUse}
             onChangeMultiValue={this.onChangeMultivalue}
 
             isNegatable={this.state.isNegatableVal}
-            isNegatableDisabled={disabled || this.state.isPrebuilt}
+            isNegatableDisabled={isEntityInUse || this.state.isPrebuilt}
             onChangeNegatable={this.onChangeReversible}
 
             isEditing={this.state.isEditing}
