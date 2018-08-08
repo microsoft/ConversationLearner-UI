@@ -175,10 +175,11 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
             return
         }
 
+        const isNameChanged = this.state.entityNameVal !== entity.entityName
         const isProgrammaticChanged = this.state.isProgrammaticVal !== (entity.entityType === EntityType.LOCAL)
         const isMultiValueChanged = this.state.isMultivalueVal !== entity.isMultivalue
         const isNegatableChanged = this.state.isNegatableVal !== entity.isNegatible
-        const hasPendingChanges = isProgrammaticChanged || isMultiValueChanged || isNegatableChanged
+        const hasPendingChanges = isNameChanged || isProgrammaticChanged || isMultiValueChanged || isNegatableChanged
 
         if (prevState.hasPendingChanges !== hasPendingChanges) {
             this.setState({
@@ -258,16 +259,11 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
     }
 
     onChangedName = (text: string) => {
-        const { entity } = this.props
-        const hasPendingChanges = entity
-            ? entity.entityName !== text
-            : false
-
         this.setState({
-            entityNameVal: text,
-            hasPendingChanges
+            entityNameVal: text
         })
     }
+    
     onChangedType = (obj: CLDropdownOption) => {
         const isPrebuilt = obj.text !== this.NEW_ENTITY
         const isNegatableVal = isPrebuilt ? false : this.state.isNegatableVal
@@ -536,6 +532,8 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
     }
     render() {
         const { intl } = this.props
+        const isSaveButtonDisabled = (this.onGetNameErrorMessage(this.state.entityNameVal) !== '') && !this.state.isPrebuilt || (!!this.props.entity && !this.state.hasPendingChanges)
+
         return (
             <Modal
                 isOpen={this.props.open}
@@ -612,7 +610,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
                     <div className="cl-modal-buttons_primary">
                         <OF.PrimaryButton
                             data-testid="entity-creator-button-save"
-                            disabled={(this.onGetNameErrorMessage(this.state.entityNameVal) !== '') && !this.state.isPrebuilt || (!!this.props.entity && !this.state.hasPendingChanges)}
+                            disabled={isSaveButtonDisabled}
                             onClick={this.onClickSaveCreate}
                             ariaDescription={this.state.isEditing
                                 ? intl.formatMessage({
