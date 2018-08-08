@@ -12,8 +12,8 @@ import {
     TrainDialog, LogDialog, Teach, Session,
     Memory, UIScoreInput, ScoreInput, ExtractResponse, ScoreResponse
 } from '@conversationlearner/models'
-import { ErrorType } from '../types/const'
-import { AT } from '../types/ActionTypes'
+import { ErrorType } from './const'
+import { AT } from './ActionTypes'
 import { TipType } from '../components/ToolTips'
 
 export type ActionState = ActionBase[];

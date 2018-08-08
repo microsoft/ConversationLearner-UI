@@ -3,7 +3,7 @@
  * Licensed under the MIT License.
  */
 import axios from 'axios'
-import ApiConfig from '../epics/config'
+import ApiConfig from './config'
 
 //=========================================================
 // CREATE ROUTES
