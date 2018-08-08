@@ -35,22 +35,20 @@ interface Props extends InjectedIntlProps {
     title: string
 
     entityOptions: OF.IDropdownOption[]
-    onChangedType: (option: OF.IDropdownOption) => void
-
+    
     selectedTypeKey: string
     isTypeDisabled: boolean
+    onChangedType: (option: OF.IDropdownOption) => void
 
     name: string
     isNameDisabled: boolean
-    onGetNameErrorMessage: () => string
+    onGetNameErrorMessage: (value: string) => string
     onChangedName: (name: string) => void
     onKeyDownName: React.KeyboardEventHandler<HTMLInputElement>
 
     isProgrammatic: boolean
     isProgrammaticDisabled: boolean
     onChangeProgrammatic: (ev?: React.FormEvent<HTMLElement | HTMLInputElement>, checked?: boolean) => void
-
-    isPrebuilt: boolean
 
     isMultiValue: boolean
     isMultiValueDisabled: boolean
