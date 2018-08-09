@@ -536,7 +536,13 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
             ? this.props.entity.entityName
             : this.state.title
 
-        const isSaveButtonDisabled = (this.onGetNameErrorMessage(this.state.entityNameVal) !== '') && !this.state.isPrebuilt || (!!this.props.entity && !this.state.hasPendingChanges)
+        const name = this.state.isPrebuilt
+            ? this.getPrebuiltEntityName(this.state.entityTypeVal)
+            : this.state.entityNameVal
+
+        const isSaveButtonDisabled = (this.onGetNameErrorMessage(this.state.entityNameVal) !== '')
+            && !this.state.isPrebuilt
+            || (!!this.props.entity && !this.state.hasPendingChanges)
 
         return <EntityCreatorEditorPresentation
             open={this.props.open}
@@ -548,7 +554,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
             isTypeDisabled={isEntityInUse || this.props.entityTypeFilter != null}
             onChangedType={this.onChangedType}
 
-            name={this.state.isPrebuilt ? this.getPrebuiltEntityName(this.state.entityTypeVal) : this.state.entityNameVal}
+            name={name}
             isNameDisabled={this.state.isPrebuilt}
             onGetNameErrorMessage={this.onGetNameErrorMessage}
             onChangedName={this.onChangedName}
