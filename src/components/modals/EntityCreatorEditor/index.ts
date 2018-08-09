@@ -1,3 +1,3 @@
-import Component from './EntityCreatorEditor'
+import Container from './Container'
 
-export default Component
+export default Container

@@ -11,7 +11,7 @@ import ConfirmCancelModal from '../ConfirmCancelModal'
 import { CLDropdownOption } from '../CLDropDownOption'
 import * as ToolTip from '../../ToolTips'
 import { ActionBase } from '@conversationlearner/models'
-import './EntityCreatorEditor.css'
+import './styles.css'
 import { FM } from '../../../react-intl-messages'
 import { InjectedIntlProps, FormattedMessage } from 'react-intl'
 

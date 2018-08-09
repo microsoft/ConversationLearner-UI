@@ -13,13 +13,12 @@ import { State, PreBuiltEntities } from '../../../types'
 import { CLDropdownOption } from '../CLDropDownOption'
 import * as ToolTip from '../../ToolTips'
 import { AppBase, EntityBase, EntityType, ActionBase } from '@conversationlearner/models'
-import './EntityCreatorEditor.css'
 import { FM } from '../../../react-intl-messages'
 import { defineMessages, injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { withRouter } from 'react-router-dom'
 import { RouteComponentProps } from 'react-router'
 import { autobind } from 'office-ui-fabric-react/lib/Utilities'
-import EntityCreatorEditorPresentation from './EntityCreatorEditorPresentation'
+import Component from './Component'
 
 const messages = defineMessages({
     fieldErrorRequired: {
@@ -70,7 +69,7 @@ interface ComponentState {
     newOrEditedEntity: EntityBase | null
 }
 
-class EntityCreatorEditor extends React.Component<Props, ComponentState> {
+class Container extends React.Component<Props, ComponentState> {
     staticEntityOptions: CLDropdownOption[]
     entityOptions: CLDropdownOption[]
 
@@ -544,7 +543,7 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
             && !this.state.isPrebuilt
             || (!!this.props.entity && !this.state.hasPendingChanges)
 
-        return <EntityCreatorEditorPresentation
+        return <Component
             open={this.props.open}
             title={title}
             intl={intl}
@@ -630,4 +629,4 @@ const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
 type Props = typeof stateProps & typeof dispatchProps & ReceivedProps & InjectedIntlProps & RouteComponentProps<any>
 
-export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(withRouter(injectIntl(EntityCreatorEditor)))
+export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(withRouter(injectIntl(Container)))
