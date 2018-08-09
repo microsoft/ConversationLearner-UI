@@ -8,7 +8,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../types';
 import { setTipType } from '../actions/displayActions'
-import { TipType } from '../components/ToolTips';
+import { TipType } from './ToolTips';
 
 class HelpLink extends React.Component<Props, {}> {
     render() {

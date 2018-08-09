@@ -5,7 +5,7 @@
 import * as React from 'react';
 import * as OF from 'office-ui-fabric-react'
 import HelpIcon from './HelpIcon'
-import { TipType } from '../components/ToolTips'
+import { TipType } from './ToolTips'
 import './CLTagPicker.css'
 
 /**

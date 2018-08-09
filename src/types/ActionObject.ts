@@ -14,8 +14,8 @@ import {
     UIPostScoreResponse, UIScoreInput, UIScoreResponse, UIAppList, TrainingStatus, FilledEntityMap
 } from '@conversationlearner/models'
 import { TipType } from '../components/ToolTips'
-import { ErrorType } from '../types/const'
-import { AT } from '../types/ActionTypes'
+import { ErrorType } from './const'
+import { AT } from './ActionTypes'
 
 export type UpdateAction = {
     type: AT.EDIT_APPLICATION_ASYNC,

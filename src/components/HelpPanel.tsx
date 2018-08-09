@@ -9,7 +9,7 @@ import { returntypeof } from 'react-redux-typescript';
 import { connect } from 'react-redux';
 import * as ToolTip from './ToolTips';
 import * as OF from 'office-ui-fabric-react';
-import { TipType } from '../components/ToolTips';
+import { TipType } from './ToolTips';
 import { setTipType } from '../actions/displayActions'
 
 class HelpPanel extends React.Component<Props, {}> {
