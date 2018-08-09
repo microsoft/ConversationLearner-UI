@@ -4,22 +4,24 @@
  */
 import * as React from 'react'
 import { returntypeof } from 'react-redux-typescript'
-import actions from '../../actions'
+import actions from '../../../actions'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
+import { Modal } from 'office-ui-fabric-react/lib/Modal'
 import * as OF from 'office-ui-fabric-react'
-import * as TC from '../tipComponents'
-import { State, PreBuiltEntities } from '../../types'
-import { CLDropdownOption } from './CLDropDownOption'
-import * as ToolTip from '../ToolTips'
+import * as TC from '../../tipComponents'
+import ActionDetailsList from '../../ActionDetailsList'
+import ConfirmCancelModal from '../ConfirmCancelModal'
+import { State, PreBuiltEntities } from '../../../types'
+import { CLDropdownOption } from '../CLDropDownOption'
+import * as ToolTip from '../../ToolTips'
 import { AppBase, EntityBase, EntityType, ActionBase } from '@conversationlearner/models'
 import './EntityCreatorEditor.css'
-import { FM } from '../../react-intl-messages'
-import { defineMessages, injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
+import { FM } from '../../../react-intl-messages'
+import { defineMessages, injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { withRouter } from 'react-router-dom'
 import { RouteComponentProps } from 'react-router'
 import { autobind } from 'office-ui-fabric-react/lib/Utilities'
-import EntityCreatorEditorPresentation from './EntityCreatorEditorPresentation'
 
 const messages = defineMessages({
     fieldErrorRequired: {
@@ -530,72 +532,185 @@ class EntityCreatorEditor extends React.Component<Props, ComponentState> {
     }
     render() {
         const { intl } = this.props
-        const isEntityInUse = this.state.isEditing && this.isInUse()
+        const isSaveButtonDisabled = (this.onGetNameErrorMessage(this.state.entityNameVal) !== '') && !this.state.isPrebuilt || (!!this.props.entity && !this.state.hasPendingChanges)
 
-        const title = this.props.entity
-            ? this.props.entity.entityName
-            : this.state.title
+        return (
+            <Modal
+                isOpen={this.props.open}
+                isBlocking={false}
+                containerClassName="cl-modal cl-modal--medium"
+            >
+                <div className={`cl-modal_header ${OF.FontClassNames.xxLarge}`}>
+                    {this.props.entity
+                        ? this.props.entity.entityName
+                        : this.state.title}
+                </div>
+                <div className="cl-modal_body">
+                    {this.state.isEditing
+                        ? (
+                            <div>
+                                <OF.Pivot linkSize={OF.PivotLinkSize.large}>
+                                    <OF.PivotItem
+                                        linkText={intl.formatMessage({
+                                            id: FM.ENTITYCREATOREDITOR_PIVOT_EDIT,
+                                            defaultMessage: 'Edit Entity'
+                                        })}
+                                    >
+                                        {this.renderEdit()}
+                                    </OF.PivotItem>
+                                    <OF.PivotItem
+                                        ariaLabel={ToolTip.TipType.ENTITY_ACTION_REQUIRED}
+                                        linkText={intl.formatMessage({ id: FM.ENTITYCREATOREDITOR_PIVOT_REQUIREDFOR, defaultMessage: 'Required For Actions' })}
+                                        onRenderItemLink={(
+                                            pivotItemProps: OF.IPivotItemProps,
+                                            defaultRender: (link: OF.IPivotItemProps) => JSX.Element) =>
+                                            ToolTip.onRenderPivotItem(pivotItemProps, defaultRender)}
+                                    >
+                                        <ActionDetailsList
+                                            actions={this.getRequiredActions()}
+                                            onSelectAction={() => {}}
+                                        />
+                                    </OF.PivotItem>
+                                    <OF.PivotItem
+                                        ariaLabel={ToolTip.TipType.ENTITY_ACTION_DISQUALIFIED}
+                                        linkText={intl.formatMessage({ id: FM.ENTITYCREATOREDITOR_PIVOT_DISQUALIFIEDACTIONS, defaultMessage: 'Disqualified Actions' })}
+                                        onRenderItemLink={(
+                                            pivotItemProps: OF.IPivotItemProps,
+                                            defaultRender: (link: OF.IPivotItemProps) => JSX.Element) =>
+                                            ToolTip.onRenderPivotItem(pivotItemProps, defaultRender)}
+                                    >
+                                        <ActionDetailsList
+                                            actions={this.getDisqualifiedActions()}
+                                            onSelectAction={() => {}}
+                                        />
+                                    </OF.PivotItem>
+                                </OF.Pivot>
+                            </div>
+                        ) : (
+                            this.renderEdit()
+                        )}
+                </div>
+                <div className="cl-modal_footer cl-modal-buttons">
+                    <div className="cl-modal-buttons_secondary">
+                        {this.state.isEditing &&
+                            <OF.DefaultButton
+                                onClick={this.onClickTrainDialogs}
+                                iconProps={{ iconName: 'QueryList' }}
+                                ariaDescription={intl.formatMessage({
+                                    id: FM.ENTITYCREATOREDITOR_TRAINDIALOGSBUTTON_ARIADESCRIPTION,
+                                    defaultMessage: 'Train Dialogs'
+                                })}
+                                text={intl.formatMessage({
+                                    id: FM.ENTITYCREATOREDITOR_TRAINDIALOGSBUTTON_TEXT,
+                                    defaultMessage: 'Trail Dialogs'
+                                })}
+                            />
+                        }
+                    </div>
+                    <div className="cl-modal-buttons_primary">
+                        <OF.PrimaryButton
+                            data-testid="entity-creator-button-save"
+                            disabled={isSaveButtonDisabled}
+                            onClick={this.onClickSaveCreate}
+                            ariaDescription={this.state.isEditing
+                                ? intl.formatMessage({
+                                    id: FM.ENTITYCREATOREDITOR_SAVEBUTTON_ARIADESCRIPTION,
+                                    defaultMessage: 'Save'
+                                })
+                                : intl.formatMessage({
+                                    id: FM.ENTITYCREATOREDITOR_CREATEBUTTON_ARIADESCRIPTION,
+                                    defaultMessage: 'Create'
+                                })}
+                            text={this.state.isEditing
+                                ? intl.formatMessage({
+                                    id: FM.ENTITYCREATOREDITOR_SAVEBUTTON_TEXT,
+                                    defaultMessage: 'Save'
+                                })
+                                : intl.formatMessage({
+                                    id: FM.ENTITYCREATOREDITOR_CREATEBUTTON_TEXT,
+                                    defaultMessage: 'Create'
+                                })}
+                        />
 
-        const name = this.state.isPrebuilt
-            ? this.getPrebuiltEntityName(this.state.entityTypeVal)
-            : this.state.entityNameVal
+                        <OF.DefaultButton
+                            onClick={this.onClickCancel}
+                            ariaDescription={intl.formatMessage({
+                                id: FM.ENTITYCREATOREDITOR_CANCELBUTTON_ARIADESCRIPTION,
+                                defaultMessage: 'Cancel'
+                            })}
+                            text={intl.formatMessage({
+                                id: FM.ENTITYCREATOREDITOR_CANCELBUTTON_TEXT,
+                                defaultMessage: 'Cancel'
+                            })}
+                        />
 
-        const isSaveButtonDisabled = (this.onGetNameErrorMessage(this.state.entityNameVal) !== '')
-            && !this.state.isPrebuilt
-            || (!!this.props.entity && !this.state.hasPendingChanges)
+                        {this.state.isEditing && this.props.handleDelete &&
+                            <OF.DefaultButton
+                                className="cl-button-delete"
+                                onClick={this.onClickDelete}
+                                ariaDescription={intl.formatMessage({
+                                    id: FM.ENTITYCREATOREDITOR_DELETEBUTTON_ARIADESCRIPTION,
+                                    defaultMessage: 'Delete'
+                                })}
+                                text={intl.formatMessage({
+                                    id: FM.ENTITYCREATOREDITOR_DELETEBUTTON_TEXT,
+                                    defaultMessage: 'Delete'
+                                })}
+                            />}
+                    </div>
 
-        return <EntityCreatorEditorPresentation
-            open={this.props.open}
-            title={title}
-            intl={intl}
-            entityOptions={this.entityOptions}
-            
-            selectedTypeKey={this.state.entityTypeVal}
-            isTypeDisabled={isEntityInUse || this.props.entityTypeFilter != null}
-            onChangedType={this.onChangedType}
-
-            name={name}
-            isNameDisabled={this.state.isPrebuilt}
-            onGetNameErrorMessage={this.onGetNameErrorMessage}
-            onChangedName={this.onChangedName}
-            onKeyDownName={this.onKeyDownName}
-
-            isProgrammatic={this.state.isProgrammaticVal}
-            isProgrammaticDisabled={isEntityInUse || this.state.isPrebuilt || this.state.isEditing}
-            onChangeProgrammatic={this.onChangeProgrammatic}
-
-            isMultiValue={this.state.isMultivalueVal}
-            isMultiValueDisabled={isEntityInUse}
-            onChangeMultiValue={this.onChangeMultivalue}
-
-            isNegatable={this.state.isNegatableVal}
-            isNegatableDisabled={isEntityInUse || this.state.isPrebuilt}
-            onChangeNegatable={this.onChangeReversible}
-
-            isEditing={this.state.isEditing}
-            requiredActions={this.getRequiredActions()}
-            disqualifiedActions={this.getDisqualifiedActions()}
-
-            onClickTrainDialogs={this.onClickTrainDialogs}
-
-            isSaveButtonDisabled={isSaveButtonDisabled}
-            onClickSaveCreate={this.onClickSaveCreate}
-        
-            onClickCancel={this.onClickCancel}
-
-            isConfirmDeleteModalOpen={this.state.isConfirmDeleteModalOpen}
-            isDeleteErrorModalOpen={this.state.isDeleteErrorModalOpen}
-            showDelete={this.state.isEditing && !!this.props.handleDelete}
-            onClickDelete={this.onClickDelete}
-            onCancelDelete={this.onCancelDelete}
-            onConfirmDelete={this.onConfirmDelete}
-
-            isConfirmEditModalOpen={this.state.isConfirmEditModalOpen}
-            onCancelEdit={this.onCancelEdit}
-            onConfirmEdit={this.onConfirmEdit}
-
-            showValidationWarning={this.state.showValidationWarning}
-        />
+                </div>
+                <ConfirmCancelModal
+                    open={this.state.isConfirmDeleteModalOpen}
+                    onCancel={this.onCancelDelete}
+                    onConfirm={this.onConfirmDelete}
+                    title={intl.formatMessage({
+                            id: FM.ENTITYCREATOREDITOR_CONFIRM_DELETE_TITLE,
+                            defaultMessage: 'Are you sure you want to delete this Entity?'
+                        })}
+                    message={() => this.state.showValidationWarning &&
+                        <div className={`${OF.FontClassNames.medium} cl-text--warning`}>
+                            <OF.Icon iconName="Warning" className="cl-icon" /> Warning:&nbsp;
+                            <FormattedMessage
+                                id={FM.ENTITYCREATOREDITOR_CONFIRM_DELETE_WARNING}
+                                defaultMessage='This Entity is used by one or more Actions or Training Dialogs.  If you proceed it will also be removed from these Actions and Training Dialogs.'
+                            />
+                    </div>}
+                />
+                <ConfirmCancelModal
+                    open={this.state.isConfirmEditModalOpen}
+                    onCancel={this.onCancelEdit} 
+                    onConfirm={this.onConfirmEdit}
+                    title={intl.formatMessage({
+                            id: FM.ENTITYCREATOREDITOR_CONFIRM_EDIT_TITLE,
+                            defaultMessage: 'Are you sure you want to edit this Entity?'
+                        })}
+                    message={() => <div className={`${OF.FontClassNames.medium} cl-text--warning`}>
+                        <OF.Icon iconName="Warning" className="cl-icon" /> Warning:&nbsp;
+                        <FormattedMessage
+                            id={FM.ENTITYCREATOREDITOR_CONFIRM_EDIT_WARNING}
+                            defaultMessage='This edit will invalidate one or more Training Dialogs.  If you proceed they will removed from training until fixed.'
+                        />
+                    </div>}
+                    />
+                <ConfirmCancelModal
+                    open={this.state.isDeleteErrorModalOpen}
+                    onCancel={this.onCancelDelete}
+                    onConfirm={() => {}}
+                    title={intl.formatMessage({
+                        id: FM.ENTITYCREATOREDITOR_DELETE_ERROR_TITLE,
+                        defaultMessage: 'Unable to delete'
+                    })}
+                    message={() => <div className={`${OF.FontClassNames.medium} cl-text--error`}>
+                        <OF.Icon iconName="Error" className="cl-icon" /> Error:&nbsp;
+                        <FormattedMessage
+                            id={FM.ENTITYCREATOREDITOR_DELETE_ERROR_WARNING}
+                            defaultMessage='It is either referenced within the payload or used as suggested entity by one or more Actions.'
+                        />
+                    </div>}
+                />
+            </Modal>
+        )
     }
 }
 const mapDispatchToProps = (dispatch: any) => {
