@@ -4,7 +4,7 @@
  */
 import ActionCreatorEditor from './ActionCreatorEditor'
 import AppCreator from './AppCreator'
-import EntityCreatorEditor from './EntityCreatorEditorBackup'
+import EntityCreatorEditor from './EntityCreatorEditor'
 import ConfirmCancelModal from './ConfirmCancelModal'
 import ChatSessionModal from './ChatSessionModal'
 import LogDialogModal from './LogDialogModal'

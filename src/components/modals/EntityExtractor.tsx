@@ -10,7 +10,7 @@ import { State } from '../../types'
 import { AppBase, ModelUtils, ExtractResponse, TextVariation, DialogType, EntityType, UserInput, DialogMode } from '@conversationlearner/models'
 import * as OF from 'office-ui-fabric-react';
 import * as ExtractorResponseEditor from '../ExtractorResponseEditor'
-import EntityCreatorEditor from './EntityCreatorEditorBackup';
+import EntityCreatorEditor from './EntityCreatorEditor';
 import { clearExtractResponses, updateExtractResponse, removeExtractResponse, runExtractorThunkAsync } from '../../actions/teachActions'
 import * as ToolTips from '../ToolTips'
 import HelpIcon from '../HelpIcon'
