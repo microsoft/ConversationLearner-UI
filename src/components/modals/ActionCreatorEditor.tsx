@@ -379,8 +379,13 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         // TODO: Why does TypeScript think initialEditState can be null? It's checked above
         const expectedEntitiesChanged = this.state.expectedEntityTags.filter(tag => !this.state.initialEditState!.expectedEntityTags.some(t => t.key === tag.key)).length > 0
         const requiredEntitiesChanged = this.state.requiredEntityTags.filter(tag => !this.state.initialEditState!.requiredEntityTags.some(t => t.key === tag.key)).length > 0
-        const disqualifyingChanged = this.state.negativeEntityTags.filter(tag => !this.state.initialEditState!.negativeEntityTags.some(t => t.key === tag.key)).length > 0
-        const hasPendingChanges = isAnyPayloadChanged || expectedEntitiesChanged || requiredEntitiesChanged || disqualifyingChanged
+        const disqualifyingEntitiesChanged = this.state.negativeEntityTags.filter(tag => !this.state.initialEditState!.negativeEntityTags.some(t => t.key === tag.key)).length > 0
+        const isTerminalChanged = this.state.initialEditState!.isTerminal !== this.state.isTerminal
+        const hasPendingChanges = isAnyPayloadChanged
+            || expectedEntitiesChanged
+            || requiredEntitiesChanged
+            || disqualifyingEntitiesChanged
+            || isTerminalChanged
 
         if (prevState.hasPendingChanges !== hasPendingChanges) {
             this.setState({
