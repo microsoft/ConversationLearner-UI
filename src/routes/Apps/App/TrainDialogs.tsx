@@ -18,6 +18,7 @@ import { Activity } from 'botframework-directlinejs';
 import { autobind } from 'office-ui-fabric-react/lib/Utilities';
 import { getDefaultEntityMap, notNullOrUndefined } from '../../../util';
 import ReplayErrorList from '../../../components/modals/ReplayErrorList';
+import * as moment from 'moment'
 
 interface IRenderableColumn extends OF.IColumn {
     render: (x: TrainDialog, component: TrainDialogs) => React.ReactNode
@@ -152,12 +153,24 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             fieldName: 'dialog',
             minWidth: 50,
             maxWidth: 50,
-            isResizable: true,
+            isResizable: false,
             render: trainDialog => {
                 let count = trainDialog.rounds ? trainDialog.rounds.length : 0
                 return <span className={textClassName(trainDialog)}>{count}</span>
             },
             getSortValue: trainDialog => (trainDialog.rounds ? trainDialog.rounds.length : 0).toString().padStart(4, '0')
+        },
+        {
+            key: 'created',
+            name: intl.formatMessage({
+                id: FM.TRAINDIALOGS_CREATED_DATE_TIME,
+                defaultMessage: 'Created'
+            }),
+            fieldName: 'created',
+            minWidth: 100,
+            isResizable: false,
+            render: trainDialog => <span className={OF.FontClassNames.mediumPlus}>{moment(trainDialog.createdDateTime).format('L')}</span>,
+            getSortValue: trainDialog => moment(trainDialog.createdDateTime).seconds().toString()
         }
     ]
 }
@@ -403,6 +416,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
         // Create new train dialog, removing turns above the branch
         const newTrainDialog: TrainDialog = {
+            createdDateTime: new Date().toJSON(),
             trainDialogId: undefined!,
             sourceLogDialogId: trainDialog.sourceLogDialogId,
             version: undefined!,
@@ -482,6 +496,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
     onClickTrainDialogItem(trainDialog: TrainDialog) {
         let trainDialogWithDefinitions: TrainDialog = {
+            createdDateTime: new Date().toJSON(),
             trainDialogId: undefined!,
             sourceLogDialogId: trainDialog.sourceLogDialogId,
             version: undefined!,

@@ -18,6 +18,7 @@ import { FM } from '../../react-intl-messages'
 import { autobind } from 'office-ui-fabric-react';
 import * as util from '../../util'
 import TutorialImporter from '../../components/modals/TutorialImporter';
+import * as moment from 'moment'
 
 interface ISortableRenderableColumn extends OF.IColumn {
     render: (app: AppBase, component: AppsList) => JSX.Element
@@ -76,7 +77,20 @@ function getColumns(intl: InjectedIntl): ISortableRenderableColumn[] {
                 const tag = packageReference.packageVersion
                 return <span className={OF.FontClassNames.mediumPlus}>{tag}</span>
             }
-        },        
+        },
+        {
+            key: 'createdDateTime',
+            name: intl.formatMessage({
+                id: FM.APPSLIST_COLUMNS_CREATED_DATE_TIME,
+                defaultMessage: 'Created'
+            }),
+            fieldName: 'createdDateTime',
+            minWidth: 100,
+            maxWidth: 100,
+            isResizable: false,
+            getSortValue: app => moment(app.createdDateTime).seconds(),
+            render: app => <span className={OF.FontClassNames.mediumPlus}>{moment(app.createdDateTime).format('L')}</span>
+        },
         {
             key: 'isLoggingOn',
             name: intl.formatMessage({

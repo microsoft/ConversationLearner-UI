@@ -114,9 +114,9 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
             });
         }
         // Otherwise just save with new text variations, remaining rounds are ok
-        else {  
-            
-            let trainDialog: TrainDialog = {
+        else {
+            const trainDialog: TrainDialog = {
+                createdDateTime: new Date().toJSON(),
                 version: undefined!,
                 packageCreationId: undefined!,
                 packageDeletionId: undefined!,
@@ -192,6 +192,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
 
     editTrainDialog(sourceDialog: TrainDialog, sliceRound: number, extractChanged: boolean) {
         let trainDialog: TrainDialog = {
+            createdDateTime: new Date().toJSON(),
             trainDialogId: undefined!,
             sourceLogDialogId: sourceDialog.sourceLogDialogId,
             version: undefined!,
@@ -269,6 +270,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                     // Action may have been deleted.  If so create dummy action to render
                     selectedAction = {
                         actionId: scorerStep.labelAction,
+                        createdDateTime: new Date().toJSON(),
                         payload: 'MISSING ACTION',
                         isTerminal: false,
                         actionType: ActionTypes.TEXT,

@@ -198,6 +198,7 @@ class Container extends React.Component<Props, ComponentState> {
         const newOrEditedEntity = {
             entityId: undefined!,
             entityName,
+            createdDateTime: new Date().toJSON(),
             isMultivalue: this.state.isMultivalueVal,
             isNegatible: this.state.isNegatableVal,
             negativeId: null,

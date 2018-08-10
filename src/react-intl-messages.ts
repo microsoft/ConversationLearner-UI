@@ -51,6 +51,7 @@ export enum FM {
     ACTIONDETAILSLIST_COLUMNS_DISQUALIFYINGENTITIES = 'ActionDetailsList.columns.disqualifyingEntities',
     ACTIONDETAILSLIST_COLUMNS_SUGGESTEDENTITY = 'ActionDetailsList.columns.suggestedEntity',
     ACTIONDETAILSLIST_COLUMNS_ISTERMINAL = 'ActionDetailsList.columns.isTerminal',
+    ACTIONDETAILSLIST_COLUMNS_CREATED_DATE_TIME = 'ActionDetailsList.columns.createdDateTime',
    
     // ActionScorer
     ACTIONSCORER_COLUMNS_RESPONSE = 'ActionScorer.columns.response',
@@ -111,6 +112,7 @@ export enum FM {
     APPSLIST_COLUMN_NAME = 'AppsList.columns.name',
     APPSLIST_COLUMNS_LOCALE = 'AppsList.columns.locale',
     APPSLIST_COLUMNS_LINKEDBOTS = 'AppsList.columns.linkedBots',
+    APPSLIST_COLUMNS_CREATED_DATE_TIME = 'AppsList.columns.createdDateTime',
     APPSLIST_COLUMNS_LOGGING = 'AppsList.columns.logging',
     APPSLIST_COLUMNS_ACTIONS = 'AppsList.columns.actions',
 
@@ -152,6 +154,7 @@ export enum FM {
     ENTITIES_COLUMNS_IS_PROGRAMMATIC = 'Entities.columns.isProgrammatic',
     ENTITIES_COLUMNS_IS_BUCKETABLE = 'Entities.columns.isBucketable',
     ENTITIES_COLUMNS_IS_NEGATABLE = 'Entities.columns.isNegatable',
+    ENTITIES_COLUMNS_CREATED_DATE_TIME = 'Entities.columns.createdDateTime',
     ENTITIES_CONFIRMCANCELMODALTITLE = 'Entities.confirmCancelModalTitle',
  
     // EntityCreatorEditor
@@ -419,6 +422,7 @@ export enum FM {
     TRAINDIALOGS_LASTINPUT = 'TrainDialogs.lastInput',
     TRAINDIALOGS_LASTRESPONSE = 'TrainDialogs.lastResponse',
     TRAINDIALOGS_TURNS = 'TrainDialogs.turns',
+    TRAINDIALOGS_CREATED_DATE_TIME = 'TrainDialogs.createdDateTime',
 
     // Tutorial Importer
     TUTORIALIMPORTER_TITLE = 'TutorialImporter.Title',
@@ -483,6 +487,7 @@ export default {
         [FM.APPSLIST_COLUMN_NAME]: 'Name',
         [FM.APPSLIST_COLUMNS_LOCALE]: 'Locale',
         [FM.APPSLIST_COLUMNS_LINKEDBOTS]: 'Linked Bots',
+        [FM.APPSLIST_COLUMNS_CREATED_DATE_TIME]: 'Created',
         [FM.APPSLIST_COLUMNS_LOGGING]: 'Logging Enabled',
         [FM.APPSLIST_COLUMNS_ACTIONS]: 'Actions',
 
@@ -507,6 +512,7 @@ export default {
         [FM.ENTITIES_COLUMNS_IS_PROGRAMMATIC]: 'Programmatic',
         [FM.ENTITIES_COLUMNS_IS_BUCKETABLE]: 'Multi-Value',
         [FM.ENTITIES_COLUMNS_IS_NEGATABLE]: 'Negatable',
+        [FM.ENTITIES_COLUMNS_CREATED_DATE_TIME]: 'Created',
         [FM.ENTITIES_CONFIRMCANCELMODALTITLE]: 'Are you sure you want to delete this entity?',
 
         // LogDialogs
@@ -648,6 +654,7 @@ export default {
         [FM.TRAINDIALOGS_LASTINPUT]: 'Last Input',
         [FM.TRAINDIALOGS_LASTRESPONSE]: 'Last Response',
         [FM.TRAINDIALOGS_TURNS]: 'Turns',
+        [FM.TRAINDIALOGS_CREATED_DATE_TIME]: 'Created',
 
         // Tutorial Importer
         [FM.TUTORIALIMPORTER_TITLE]: 'Tutorials',
@@ -666,6 +673,7 @@ export default {
         [FM.ACTIONDETAILSLIST_COLUMNS_DISQUALIFYINGENTITIES]: 'Disqualifying Entities',
         [FM.ACTIONDETAILSLIST_COLUMNS_SUGGESTEDENTITY]: 'Expected Entity',
         [FM.ACTIONDETAILSLIST_COLUMNS_ISTERMINAL]: 'Wait',
+        [FM.ACTIONDETAILSLIST_COLUMNS_CREATED_DATE_TIME]: 'Created',
 
         // TextVariationCreator
         [FM.TEXTVARIATION_PLACEHOLDER]: 'Add alternative input...',

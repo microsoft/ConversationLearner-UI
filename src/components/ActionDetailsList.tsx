@@ -17,6 +17,7 @@ import AdaptiveCardViewer from './modals/AdaptiveCardViewer/AdaptiveCardViewer'
 import * as ActionPayloadRenderers from './actionPayloadRenderers'
 import { Icon } from 'office-ui-fabric-react'
 import './ActionDetailsList.css'
+import * as moment from 'moment'
 
 interface ComponentState {
     columns: IRenderableColumn[]
@@ -369,10 +370,21 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             }),
             fieldName: 'isTerminal',
             minWidth: 50,
-            maxWidth: 50,
-            isResizable: true,
+            isResizable: false,
             getSortValue: action => action.isTerminal ? 'a' : 'b',
             render: action => <OF.Icon iconName={action.isTerminal ? 'CheckMark' : 'Remove'} className="cl-icon" />
+        },
+        {
+            key: 'createdDateTime',
+            name: intl.formatMessage({
+                id: FM.ACTIONDETAILSLIST_COLUMNS_CREATED_DATE_TIME,
+                defaultMessage: 'Created'
+            }),
+            fieldName: 'createdDateTime',
+            minWidth: 100,
+            isResizable: false,
+            getSortValue: action => moment(action.createdDateTime).seconds().toString(),
+            render: action => <span className={OF.FontClassNames.mediumPlus}>{moment(action.createdDateTime).format('L')}</span>
         }
     ]
 }
