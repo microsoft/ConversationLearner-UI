@@ -17,6 +17,7 @@ import { Activity } from 'botframework-directlinejs';
 import { getDefaultEntityMap } from '../../../util';
 import { autobind } from 'office-ui-fabric-react/lib/Utilities'
 import ReplayErrorList from '../../../components/modals/ReplayErrorList';
+import * as moment from 'moment'
 
 interface IRenderableColumn extends OF.IColumn {
     render: (x: LogDialog, component: LogDialogs) => React.ReactNode
@@ -173,10 +174,22 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                 defaultMessage: 'Turns'
             }),
             fieldName: 'dialog',
-            minWidth: 30,
-            maxWidth: 50,
+            minWidth: 50,
+            isResizable: false,
             render: logDialog => <span className={OF.FontClassNames.mediumPlus}>{logDialog.rounds.length}</span>,
             getSortValue: logDialog => logDialog.rounds.length.toString().padStart(4, '0')
+        },
+        {
+            key: 'created',
+            name: intl.formatMessage({
+                id: FM.TRAINDIALOGS_CREATED_DATE_TIME,
+                defaultMessage: 'Created'
+            }),
+            fieldName: 'created',
+            minWidth: 100,
+            isResizable: false,
+            render: trainDialog => <span className={OF.FontClassNames.mediumPlus}>{moment(trainDialog.createdDateTime).format('L')}</span>,
+            getSortValue: trainDialog => moment(trainDialog.createdDateTime).seconds().toString()
         }
     ]
 }

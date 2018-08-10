@@ -15,6 +15,7 @@ import { AppBase, EntityBase, EntityType } from '@conversationlearner/models'
 import { FM } from '../../../react-intl-messages'
 import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { autobind } from 'office-ui-fabric-react/lib/Utilities';
+import * as moment from 'moment'
 
 interface IRenderableColumn extends OF.IColumn {
     render: (entity: EntityBase, component: Entities) => JSX.Element | JSX.Element[]
@@ -65,9 +66,8 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                 defaultMessage: 'Programmatic'
             }),
             fieldName: 'programmatic',
-            minWidth: 100,
-            maxWidth: 200,
-            isResizable: true,
+            minWidth: 70,
+            isResizable: false,
             getSortValue: entity => (entity.entityType === EntityType.LOCAL) ? 'a' : 'b',
             render: entity => <OF.Icon iconName={entity.entityType === EntityType.LOCAL ? "CheckMark" : "Remove"} className="cl-icon" />
         },
@@ -77,10 +77,9 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                 id: FM.ENTITIES_COLUMNS_IS_BUCKETABLE,
                 defaultMessage: 'Multi-Value'
             }),
-            fieldName: 'metadata',
-            minWidth: 100,
-            maxWidth: 200,
-            isResizable: true,
+            fieldName: 'isMultivalue',
+            minWidth: 70,
+            isResizable: false,
             getSortValue: entity => entity.isMultivalue ? 'a' : 'b',
             render: entity => <OF.Icon iconName={entity.isMultivalue ? "CheckMark" : "Remove"} className="cl-icon" />
         },
@@ -90,12 +89,23 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                 id: FM.ENTITIES_COLUMNS_IS_NEGATABLE,
                 defaultMessage: 'Negatable'
             }),
-            fieldName: 'metadata',
-            minWidth: 100,
-            maxWidth: 200,
-            isResizable: true,
+            fieldName: 'isNegatible',
+            minWidth: 70,
+            isResizable: false,
             getSortValue: entity => entity.isNegatible ? 'a' : 'b',
             render: entity => <OF.Icon iconName={entity.isNegatible ? "CheckMark" : "Remove"} className="cl-icon" />
+        },
+        {
+            key: 'created',
+            name: intl.formatMessage({
+                id: FM.ENTITIES_COLUMNS_CREATED_DATE_TIME,
+                defaultMessage: 'Created'
+            }),
+            fieldName: 'created',
+            minWidth: 100,
+            isResizable: false,
+            getSortValue: entity => moment(entity.createdDateTime).seconds().toString(),
+            render: entity => <span className={OF.FontClassNames.mediumPlus}>{moment(entity.createdDateTime).format('L')}</span>
         }
     ]
 }
