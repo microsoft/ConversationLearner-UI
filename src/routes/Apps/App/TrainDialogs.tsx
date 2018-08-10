@@ -403,6 +403,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
         // Create new train dialog, removing turns above the branch
         const newTrainDialog: TrainDialog = {
+            createdDateTime: new Date().toJSON(),
             trainDialogId: undefined!,
             sourceLogDialogId: trainDialog.sourceLogDialogId,
             version: undefined!,
@@ -482,6 +483,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
     onClickTrainDialogItem(trainDialog: TrainDialog) {
         let trainDialogWithDefinitions: TrainDialog = {
+            createdDateTime: new Date().toJSON(),
             trainDialogId: undefined!,
             sourceLogDialogId: trainDialog.sourceLogDialogId,
             version: undefined!,

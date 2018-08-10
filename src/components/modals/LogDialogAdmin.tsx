@@ -81,6 +81,7 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
 
         // TODO: Update @models to allow defining TrainDialogInput without undefined properties
         const newTrainDialog: TrainDialog = {
+            createdDateTime: new Date().toJSON(),
             trainDialogId: undefined!,
             sourceLogDialogId: stateTrainDialog.sourceLogDialogId,
             version: undefined!,
@@ -119,6 +120,7 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
         };
 
         const newTrainDialog: TrainDialog = {
+            createdDateTime: new Date().toJSON(),
             trainDialogId: undefined!,
             sourceLogDialogId: this.props.logDialog.logDialogId,
             version: undefined!,
@@ -183,6 +185,7 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
         }
 
         const newTrainDialog: TrainDialog = {
+            createdDateTime: new Date().toJSON(),
             trainDialogId: undefined!,
             sourceLogDialogId: this.props.logDialog.logDialogId,
             version: undefined!,

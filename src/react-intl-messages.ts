@@ -111,6 +111,7 @@ export enum FM {
     APPSLIST_COLUMN_NAME = 'AppsList.columns.name',
     APPSLIST_COLUMNS_LOCALE = 'AppsList.columns.locale',
     APPSLIST_COLUMNS_LINKEDBOTS = 'AppsList.columns.linkedBots',
+    APPSLIST_COLUMNS_CREATED_DATE_TIME = 'AppsList.columns.createdDateTime',
     APPSLIST_COLUMNS_LOGGING = 'AppsList.columns.logging',
     APPSLIST_COLUMNS_ACTIONS = 'AppsList.columns.actions',
 
@@ -483,6 +484,7 @@ export default {
         [FM.APPSLIST_COLUMN_NAME]: 'Name',
         [FM.APPSLIST_COLUMNS_LOCALE]: 'Locale',
         [FM.APPSLIST_COLUMNS_LINKEDBOTS]: 'Linked Bots',
+        [FM.APPSLIST_COLUMNS_CREATED_DATE_TIME]: 'Created',
         [FM.APPSLIST_COLUMNS_LOGGING]: 'Logging Enabled',
         [FM.APPSLIST_COLUMNS_ACTIONS]: 'Actions',
 
