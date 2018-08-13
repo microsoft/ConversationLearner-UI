@@ -273,7 +273,6 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                     selectedAction = {
                         actionId: scorerStep.labelAction,
                         createdDateTime: new Date().toJSON(),
-                        lastModifiedDateTime: new Date().toJSON(),
                         payload: 'MISSING ACTION',
                         isTerminal: false,
                         actionType: ActionTypes.TEXT,
