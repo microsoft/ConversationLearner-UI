@@ -375,6 +375,18 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             render: action => <OF.Icon iconName={action.isTerminal ? 'CheckMark' : 'Remove'} className="cl-icon" />
         },
         {
+            key: 'lastModifiedDateTime',
+            name: intl.formatMessage({
+                id: FM.ACTIONDETAILSLIST_COLUMNS_LAST_MODIFIED_DATE_TIME,
+                defaultMessage: 'Last Modified'
+            }),
+            fieldName: 'lastModifiedDateTime',
+            minWidth: 100,
+            isResizable: false,
+            getSortValue: action => moment(action.lastModifiedDateTime).seconds().toString(),
+            render: action => <span className={OF.FontClassNames.mediumPlus}>{moment(action.lastModifiedDateTime).format('L')}</span>
+        },
+        {
             key: 'createdDateTime',
             name: intl.formatMessage({
                 id: FM.ACTIONDETAILSLIST_COLUMNS_CREATED_DATE_TIME,
