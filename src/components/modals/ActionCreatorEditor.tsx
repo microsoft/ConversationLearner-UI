@@ -550,6 +550,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             actionId: null!,
             payload,
             createdDateTime: new Date().toJSON(),
+            lastModifiedDateTime: new Date().toJSON(),
             isTerminal: this.state.isTerminal,
             requiredEntitiesFromPayload: this.state.requiredEntityTagsFromPayload.map<string>(tag => tag.key),
             requiredEntities: [...this.state.requiredEntityTagsFromPayload, ...this.state.requiredEntityTags].map<string>(tag => tag.key),
