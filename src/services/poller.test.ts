@@ -145,4 +145,30 @@ describe('Poller', () => {
         
         expect(after - now).toBeGreaterThanOrEqual(400)
     })
+
+    test('poll removePoll should remove from list of polls preventing further polling', async () => {
+        const requestMock = jest.fn(async () => {
+            return 0
+        })
+        const isResolvedMock = jest.fn(n => false)
+        const onExpiredMock = jest.fn()
+        const onUpdateMock = jest.fn(trainingStatus => {
+        })
+        const pollConfig: poller.IPollConfig<number> = {
+            id: 'pc1',
+            maxDuration: 500,
+            request: requestMock,
+            isResolved: isResolvedMock,
+            onExpired: onExpiredMock,
+            onUpdate: onUpdateMock
+        }
+
+        const poller1 = new poller.Poller({ interval: 100 })
+        poller1.addPoll(pollConfig)
+        poller1.removePoll(pollConfig.id)
+
+        expect(requestMock.mock.calls.length).toBe(0)
+        expect(isResolvedMock.mock.calls.length).toBe(0)
+        expect(onUpdateMock.mock.calls.length).toBe(0)
+    })
 })
