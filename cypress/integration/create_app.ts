@@ -3,24 +3,24 @@ describe('Create application', function () {
 
   it('should create new application with random name and verify name on application page', function () {
     cy.server()
-    cy.route('GET', '/apps?**').as('getApps')
+    cy.route('GET', '/sdk/apps?**').as('getApps')
 
     // Open application
     cy.visit('http://localhost:5050')
 
     cy.wait('@getApps')
+    cy.wait(1000)
+    cy.get('cl-spinner').should('not.exist')
 
     // Click the button to create app
-    cy.get('[data-testid="apps-list-button-create-new"]', { timeout: 1000 })
+    cy.get('button[data-testid="apps-list-button-create-new"]')
       .click()
 
     // Ensure that name input is focused
-    cy.focused()
-
     cy.get('[data-testid="app-create-input-name"]')
       .type(newAppName)
 
-    cy.route('POST', '/app?userId=**').as('postApp')
+    cy.route('POST', '/sdk/app?userId=**').as('postApp')
 
     // Click the submit button
     cy.get('[data-testid="app-create-button-submit"]')
@@ -37,11 +37,14 @@ describe('Create application', function () {
 
   it('given a fresh application, it should create a new entity', () => {
     cy.server()
+    cy.wait(1000)
 
     // Click entities navigation tab
     cy.get('.cl-nav-link')
       .contains('Entities') // TODO: Use better selector?
       .click()
+
+    cy.wait(1000)
 
     const newEntityName = `e2e-entity-${new Date().getTime()}`
 
@@ -57,7 +60,7 @@ describe('Create application', function () {
     cy.get('[data-testid="entitycreator-checkbox-multivalued"]')
       .click()
 
-    cy.route('POST', '/app/*/entity').as('postEntity')
+    cy.route('POST', '/sdk/app/*/entity').as('postEntity')
 
     // Select the submit button
     cy.get('[data-testid="entity-creator-button-save"]')
@@ -85,7 +88,7 @@ describe('Create application', function () {
       .click()
 
     // Select name for actions
-    cy.route('POST', '/app/*/action').as('postAction')
+    cy.route('POST', '/sdk/app/*/action').as('postAction')
 
     const samplePayload = "some payload"
     cy.get('.editor-container [contenteditable="true"]')
