@@ -370,17 +370,18 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     }
 
     componentDidUpdate(prevProps: Props, prevState: ComponentState) {
-        if (!this.state.initialEditState) {
+        const initialEditState = this.state.initialEditState
+        if (!initialEditState) {
             return
         }
         
-        const isAnyPayloadChanged = this.areSlateValuesChanged(this.state.slateValuesMap, this.state.initialEditState.slateValuesMap)
-            || this.areSlateValuesChanged(this.state.secondarySlateValuesMap, this.state.initialEditState.secondarySlateValuesMap)
-        // TODO: Why does TypeScript think initialEditState can be null? It's checked above
-        const expectedEntitiesChanged = this.state.expectedEntityTags.filter(tag => !this.state.initialEditState!.expectedEntityTags.some(t => t.key === tag.key)).length > 0
-        const requiredEntitiesChanged = this.state.requiredEntityTags.filter(tag => !this.state.initialEditState!.requiredEntityTags.some(t => t.key === tag.key)).length > 0
-        const disqualifyingEntitiesChanged = this.state.negativeEntityTags.filter(tag => !this.state.initialEditState!.negativeEntityTags.some(t => t.key === tag.key)).length > 0
-        const isTerminalChanged = this.state.initialEditState!.isTerminal !== this.state.isTerminal
+        const isAnyPayloadChanged = this.areSlateValuesChanged(this.state.slateValuesMap, initialEditState.slateValuesMap)
+            || this.areSlateValuesChanged(this.state.secondarySlateValuesMap, initialEditState.secondarySlateValuesMap)
+        
+        const expectedEntitiesChanged = this.state.expectedEntityTags.filter(tag => !initialEditState.expectedEntityTags.some(t => t.key === tag.key)).length > 0
+        const requiredEntitiesChanged = this.state.requiredEntityTags.filter(tag => !initialEditState.requiredEntityTags.some(t => t.key === tag.key)).length > 0
+        const disqualifyingEntitiesChanged = this.state.negativeEntityTags.filter(tag => !initialEditState.negativeEntityTags.some(t => t.key === tag.key)).length > 0
+        const isTerminalChanged = initialEditState!.isTerminal !== this.state.isTerminal
         const hasPendingChanges = isAnyPayloadChanged
             || expectedEntitiesChanged
             || requiredEntitiesChanged
@@ -797,20 +798,25 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         const slateValuesMap = isSecondary
             ? { ...this.state.secondarySlateValuesMap }
             : { ...this.state.slateValuesMap }
+        
+        const otherValuesMap = isSecondary
+            ? { ...this.state.slateValuesMap }
+            : { ...this.state.secondarySlateValuesMap }
         slateValuesMap[slot] = value;
 
         // Get new required entities from payloads
         // TODO: Would be more optimized to store required entities PER payload in the map instead of single value. This reduces computation for ALL
         // payloads during editing
-        const requiredEntityTagsFromPayload = [...Object.values(this.state.slateValuesMap), ...Object.values(this.state.secondarySlateValuesMap)]
+        const requiredEntityTagsFromPayload = [...Object.values(slateValuesMap), ...Object.values(otherValuesMap)]
             .map(value => ActionPayloadEditor.Utilities.getEntitiesFromValue(value).map(convertOptionToTag))
             .reduce((a, b) => a.concat(b))
             .filter((t, i, xs) => i === xs.findIndex(tag => tag.key === t.key))
+            .sort((a, b) => a.name.localeCompare(b.name))
 
         // If we added entity to a payload which was already in the list of required entities remove it to avoid duplicates.
         const requiredEntityTags = this.state.requiredEntityTags.filter(tag => !requiredEntityTagsFromPayload.some(t => t.key === tag.key))
-        const isPayloadValid = this.state.selectedActionTypeOptionKey !== ActionTypes.TEXT
-            && this.state.selectedActionTypeOptionKey !== ActionTypes.END_SESSION
+        const isPayloadValid = (this.state.selectedActionTypeOptionKey !== ActionTypes.TEXT
+            && this.state.selectedActionTypeOptionKey !== ActionTypes.END_SESSION)
                 ? true
                 : value.document.text.length !== 0
 
@@ -825,7 +831,6 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         }
         else {
             nextState.slateValuesMap = slateValuesMap
-
         }
 
         this.setState(nextState as ComponentState)
