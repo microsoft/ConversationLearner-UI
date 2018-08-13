@@ -80,12 +80,15 @@ class AppsList extends React.Component<Props, ComponentState> {
         })
     }
 
+    @autobind
     onClickDeleteApp(app: AppBase) {
         this.setState({
             isConfirmDeleteAppModalOpen: true,
             appToDelete: app
         })
     }
+
+    @autobind
     onClickApp(app: AppBase) {
         const { match, history } = this.props
         history.push(`${match.url}/${app.appId}`, { app })
@@ -98,13 +101,15 @@ class AppsList extends React.Component<Props, ComponentState> {
         })
     }
 
-    onSubmitAppCreateModal = (app: AppBase, source: AppDefinition | null = null) => {
+    @autobind
+    onSubmitAppCreateModal(app: AppBase, source: AppDefinition | null = null) {
         this.setState({
             isAppCreateModalOpen: false
         }, () => this.props.onCreateApp(app, source))
     }
 
-    onCancelAppCreateModal = () => {
+    @autobind
+    onCancelAppCreateModal() {
         this.setState({
             isAppCreateModalOpen: false
         })
