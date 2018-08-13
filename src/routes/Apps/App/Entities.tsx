@@ -104,7 +104,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             fieldName: 'created',
             minWidth: 100,
             isResizable: false,
-            getSortValue: entity => moment(entity.createdDateTime).seconds().toString(),
+            getSortValue: entity => moment(entity.createdDateTime).valueOf().toString(),
             render: entity => <span className={OF.FontClassNames.mediumPlus}>{moment(entity.createdDateTime).format('L')}</span>
         }
     ]

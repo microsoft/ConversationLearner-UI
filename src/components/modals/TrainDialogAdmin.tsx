@@ -117,6 +117,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
         else {
             const trainDialog: TrainDialog = {
                 createdDateTime: new Date().toJSON(),
+                lastModifiedDateTime: new Date().toJSON(),
                 version: undefined!,
                 packageCreationId: undefined!,
                 packageDeletionId: undefined!,
@@ -193,6 +194,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
     editTrainDialog(sourceDialog: TrainDialog, sliceRound: number, extractChanged: boolean) {
         let trainDialog: TrainDialog = {
             createdDateTime: new Date().toJSON(),
+            lastModifiedDateTime: new Date().toJSON(),
             trainDialogId: undefined!,
             sourceLogDialogId: sourceDialog.sourceLogDialogId,
             version: undefined!,
