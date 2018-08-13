@@ -114,6 +114,7 @@ export enum FM {
     APPSLIST_COLUMNS_LOCALE = 'AppsList.columns.locale',
     APPSLIST_COLUMNS_LINKEDBOTS = 'AppsList.columns.linkedBots',
     APPSLIST_COLUMNS_CREATED_DATE_TIME = 'AppsList.columns.createdDateTime',
+    APPSLIST_COLUMNS_LAST_MODIFIED_DATE_TIME = 'AppsList.columns.lastModifiedDateTime',
     APPSLIST_COLUMNS_LOGGING = 'AppsList.columns.logging',
     APPSLIST_COLUMNS_ACTIONS = 'AppsList.columns.actions',
 
@@ -220,6 +221,8 @@ export enum FM {
     LOGDIALOGS_LASTRESPONSE = 'LogDialogs.lastResponse',
     LOGDIALOGS_TURNS = 'LogDialogs.turns',
     LOGDIALOGS_LOGDISABLED = 'LogDialogs.logdisabled',
+    LOGDIALOGS_CREATED_DATE_TIME = 'LogDialogs.createdDateTime',
+    LOGDIALOGS_LAST_MODIFIED_DATE_TIME = 'LogDialogs.lastModifiedDateTime',
 
     // LogDialogAdmin
     LOGDIALOGADMIN_CONFIRMTITLE = 'LogDialogAdmin.confirmTitle',
@@ -424,6 +427,7 @@ export enum FM {
     TRAINDIALOGS_LASTRESPONSE = 'TrainDialogs.lastResponse',
     TRAINDIALOGS_TURNS = 'TrainDialogs.turns',
     TRAINDIALOGS_CREATED_DATE_TIME = 'TrainDialogs.createdDateTime',
+    TRAINDIALOGS_LAST_MODIFIED_DATE_TIME = 'TrainDialogs.lastModifiedDateTime',
 
     // Tutorial Importer
     TUTORIALIMPORTER_TITLE = 'TutorialImporter.Title',
@@ -489,6 +493,7 @@ export default {
         [FM.APPSLIST_COLUMNS_LOCALE]: 'Locale',
         [FM.APPSLIST_COLUMNS_LINKEDBOTS]: 'Linked Bots',
         [FM.APPSLIST_COLUMNS_CREATED_DATE_TIME]: 'Created',
+        [FM.APPSLIST_COLUMNS_LAST_MODIFIED_DATE_TIME]: 'Last Modified',
         [FM.APPSLIST_COLUMNS_LOGGING]: 'Logging Enabled',
         [FM.APPSLIST_COLUMNS_ACTIONS]: 'Actions',
 
@@ -526,6 +531,8 @@ export default {
         [FM.LOGDIALOGS_LASTRESPONSE]: 'Last Response',
         [FM.LOGDIALOGS_TURNS]: 'Turns',
         [FM.LOGDIALOGS_LOGDISABLED]: 'Logging is disabled',
+        [FM.LOGDIALOGS_CREATED_DATE_TIME]: 'Created',
+        [FM.LOGDIALOGS_LAST_MODIFIED_DATE_TIME]: 'Last Modified',
 
         // LogDialogAdmin
         [FM.LOGDIALOGADMIN_CONFIRMTITLE]: 'This will attempt to replay the Log Dialog against the bot and convert it into a new Train Dialog',
@@ -656,6 +663,7 @@ export default {
         [FM.TRAINDIALOGS_LASTRESPONSE]: 'Last Response',
         [FM.TRAINDIALOGS_TURNS]: 'Turns',
         [FM.TRAINDIALOGS_CREATED_DATE_TIME]: 'Created',
+        [FM.TRAINDIALOGS_LAST_MODIFIED_DATE_TIME]: 'Last Modified',
 
         // Tutorial Importer
         [FM.TUTORIALIMPORTER_TITLE]: 'Tutorials',
@@ -676,7 +684,7 @@ export default {
         [FM.ACTIONDETAILSLIST_COLUMNS_ISTERMINAL]: 'Wait',
         [FM.ACTIONDETAILSLIST_COLUMNS_CREATED_DATE_TIME]: 'Created',
         [FM.ACTIONDETAILSLIST_COLUMNS_LAST_MODIFIED_DATE_TIME]: 'Last Modified',
-        
+
         // TextVariationCreator
         [FM.TEXTVARIATION_PLACEHOLDER]: 'Add alternative input...',
 

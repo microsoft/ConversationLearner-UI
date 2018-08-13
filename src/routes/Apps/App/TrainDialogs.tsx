@@ -161,6 +161,18 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             getSortValue: trainDialog => (trainDialog.rounds ? trainDialog.rounds.length : 0).toString().padStart(4, '0')
         },
         {
+            key: 'lastModifiedDateTime',
+            name: intl.formatMessage({
+                id: FM.TRAINDIALOGS_LAST_MODIFIED_DATE_TIME,
+                defaultMessage: 'Last Modified'
+            }),
+            fieldName: 'lastModifiedDateTime',
+            minWidth: 100,
+            isResizable: false,
+            render: trainDialog => <span className={OF.FontClassNames.mediumPlus}>{moment(trainDialog.lastModifiedDateTime).format('L')}</span>,
+            getSortValue: trainDialog => moment(trainDialog.lastModifiedDateTime).valueOf().toString()
+        },
+        {
             key: 'created',
             name: intl.formatMessage({
                 id: FM.TRAINDIALOGS_CREATED_DATE_TIME,
@@ -170,7 +182,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             minWidth: 100,
             isResizable: false,
             render: trainDialog => <span className={OF.FontClassNames.mediumPlus}>{moment(trainDialog.createdDateTime).format('L')}</span>,
-            getSortValue: trainDialog => moment(trainDialog.createdDateTime).seconds().toString()
+            getSortValue: trainDialog => moment(trainDialog.createdDateTime).valueOf().toString()
         }
     ]
 }

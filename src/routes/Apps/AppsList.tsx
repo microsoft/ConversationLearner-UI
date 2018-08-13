@@ -79,6 +79,19 @@ function getColumns(intl: InjectedIntl): ISortableRenderableColumn[] {
             }
         },
         {
+            key: 'lastModifiedDateTime',
+            name: intl.formatMessage({
+                id: FM.APPSLIST_COLUMNS_LAST_MODIFIED_DATE_TIME,
+                defaultMessage: 'Last Modified'
+            }),
+            fieldName: 'lastModifiedDateTime',
+            minWidth: 100,
+            maxWidth: 100,
+            isResizable: false,
+            getSortValue: app => moment(app.lastModifiedDateTime).valueOf(),
+            render: app => <span className={OF.FontClassNames.mediumPlus}>{moment(app.lastModifiedDateTime).format('L')}</span>
+        },
+        {
             key: 'createdDateTime',
             name: intl.formatMessage({
                 id: FM.APPSLIST_COLUMNS_CREATED_DATE_TIME,
@@ -88,7 +101,7 @@ function getColumns(intl: InjectedIntl): ISortableRenderableColumn[] {
             minWidth: 100,
             maxWidth: 100,
             isResizable: false,
-            getSortValue: app => moment(app.createdDateTime).seconds(),
+            getSortValue: app => moment(app.createdDateTime).valueOf(),
             render: app => <span className={OF.FontClassNames.mediumPlus}>{moment(app.createdDateTime).format('L')}</span>
         },
         {
