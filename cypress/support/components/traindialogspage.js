@@ -2,32 +2,18 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-
-const testLog = require('../utils/testlog')
-
-/** Verify: the Train Dialog page is rendered */
-function verifyPageTitle() {
+export function verifyPageTitle() {
   cy.get('div[data-testid="train-dialogs-title"]')
     .contains('Train Dialogs')
 }
 
-/** starts a new train dialog */
-function createNew() {
-  testLog.logStart("TrainDialog: Click Create New");
+export function createNew() {
   cy.server()
-  cy.route('POST', '/sdk/app/*/teach').as('postTeach')
+  cy.route('POST', '/sdk/app/*/teach**').as('postTeach')
   cy.route('POST', '/directline/conversations').as('postConv')
-  cy.route('PUT', '/sdk/state/conversationId?username=ConversationLearnerDeveloper&id=*').as('putConv')
+  cy.route('PUT', '/sdk/state/conversationId?**').as('putConv')
 
   cy.get('[data-testid="button-new-train-dialog"]')
-    .then(function (response) {
-      testLog.logStep("Click on New Train Dialog button")
-    })
     .click()
-  .wait('@postTeach')
-  .wait('@postConv')
-  .wait('@putConv')
-  testLog.logEnd();
+    .wait(['@postTeach', '@postConv', '@putConv'])
 }
-
-export { verifyPageTitle, createNew }

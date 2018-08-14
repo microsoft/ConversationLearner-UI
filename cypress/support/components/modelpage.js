@@ -2,18 +2,15 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-
- /** VERIFY: Model Page Title */
-function verifyPageTitle(modelName) {
-        // Verify: Ensure app page displays new application title
-        cy.get('[data-testid="app-index-title"]')
-        .should(el => {
-          expect(el).to.contain(modelName)
-        })
+export function verifyPageTitle(modelName) {
+  cy.get('[data-testid="app-index-title"]')
+    .should(el => {
+      expect(el).to.contain(modelName)
+    })
 }
 
 /** Navigate back to the Converation Learner Home page */
-function navigateToHomepage() {
+export function navigateToHomepage() {
   cy.server()
   cy.route('GET', '/sdk/apps?**').as('getHomePage')
   cy.visit('http://localhost:5050')
@@ -21,26 +18,27 @@ function navigateToHomepage() {
 }
 
 /** Navigate to the Entities page */
-function navigateToEntities() {
-
-    cy.get('a[href$="/entities"]').click().wait(1000)
+export function navigateToEntities() {
+  cy.get('[data-testid="app-index-nav-link-entities"]')
+    .click()
+    .wait(1000)
 }
 
 /** Navigate to Actions Page */
-function navigateToActions() {
-  cy.get('a[href$="/actions"]')
-    .click();
+export function navigateToActions() {
+  cy.get('[data-testid="app-index-nav-link-actions"]')
+    .click()
+    .wait(1000)
 }
 
 /** Navitage to Train Dialogs Page */
-function navigateToTrainDialogs() {
-  cy.get('a[href$="/trainDialogs"]')
+export function navigateToTrainDialogs() {
+  cy.get('[data-testid="app-index-nav-link-train-dialogs"]')
     .click()
 }
 
 /** Navigate to Log Dialogs Page */
-function navigateToLogDialogs() {
-  cy.get('a[href$="logDialogs"]')
+export function navigateToLogDialogs() {
+  cy.get('[data-testid="app-index-nav-link-log-dialogs"]')
     .click()
 }
-export {verifyPageTitle, navigateToHomepage, navigateToEntities, navigateToActions, navigateToTrainDialogs, navigateToLogDialogs}

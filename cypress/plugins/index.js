@@ -14,12 +14,11 @@
 module.exports = (on, config) => {
   // `on` is used to hook into various events Cypress emits
   // `config` is the resolved Cypress config
+
   // on('before:browser:launch', (browser = {}, args) => {
   //   if (browser.name === 'chrome') {
   //     args.push('--disable-blink-features=RootLayerScrolling')
   //     return args
   //   }
   // })
-
-  on('file:preprocessor', wp(options))
 }
