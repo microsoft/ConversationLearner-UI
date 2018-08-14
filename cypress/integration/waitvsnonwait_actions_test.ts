@@ -30,7 +30,6 @@ describe('Wait vs No Wait Action e2e test', function () {
   const trainmessage03 = "Duck";
 
   beforeEach(function () {
-    cy.setup();
     testLog.logTestHeader(this.currentTest.title);
     // starts the listener
     cy.on('uncaught:exception', (err, runnable) => {
@@ -43,7 +42,6 @@ describe('Wait vs No Wait Action e2e test', function () {
     const fileName = `WaitVSNoWait_${this.currentTest.state}-${this.currentTest.title}`;
     cy.wait(3000)
       .screenshot(fileName);
-    cy.teardown();
   })
 
   /** FEATURE: New Model */
