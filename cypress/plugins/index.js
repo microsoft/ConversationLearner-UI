@@ -20,4 +20,6 @@ module.exports = (on, config) => {
   //     return args
   //   }
   // })
+
+  on('file:preprocessor', wp(options))
 }
