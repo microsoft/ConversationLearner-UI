@@ -24,7 +24,6 @@ describe('Hello world e2e', function () {
   const trainmessage02 = `Hi`
 
   beforeEach(function () {
-    cy.setup();
     testLog.logTestHeader(this.currentTest.title);
     // starts the listener
     cy.on('uncaught:exception', (err, runnable) => {
@@ -35,9 +34,8 @@ describe('Hello world e2e', function () {
   afterEach(function () {
     testLog.logResult(this.currentTest);
     const fileName = `HelloWorld_${this.currentTest.state}-${this.currentTest.title}`;
-    cy.wait(3000)
+    cy.wait(1000)
       .screenshot(fileName);
-    cy.teardown();
   })
 
   /** FEATURE: New Model */
