@@ -15,9 +15,9 @@ function verifyPageTitle() {
 function createNew() {
   testLog.logStart("TrainDialog: Click Create New");
   cy.server()
-  cy.route('POST', '/app/*/teach').as('postTeach')
-  cy.route('POST', 'directline/conversations').as('postConv')
-  cy.route('PUT', '/state/conversationId?username=ConversationLearnerDeveloper&id=*').as('putConv')
+  cy.route('POST', '/sdk/app/*/teach').as('postTeach')
+  cy.route('POST', '/directline/conversations').as('postConv')
+  cy.route('PUT', '/sdk/state/conversationId?username=ConversationLearnerDeveloper&id=*').as('putConv')
 
   cy.get('[data-testid="button-new-train-dialog"]')
     .then(function (response) {

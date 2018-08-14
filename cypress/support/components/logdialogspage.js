@@ -13,7 +13,7 @@ function verifyPageTitle() {
 /** starts a new log dialog */
 function createNew() {
   cy.server()
-  cy.route('PUT', '/state/conversationId?username=ConversationLearnerDeveloper&id=*').as('putConv')
+  cy.route('PUT', '/sdk/state/conversationId?username=ConversationLearnerDeveloper&id=*').as('putConv')
   cy.get('[data-testid="logdialogs-button-create"]')
     .should("be.visible")
     .then(function (response) {

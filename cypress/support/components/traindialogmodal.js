@@ -9,7 +9,7 @@ const testLog = require('../utils/testlog')
 function typeYourMessage(trainmessage) {
   testLog.logStart("Submit message to WebChat");
   cy.server()
-  cy.route('PUT', '/app/*/teach/*/extractor').as('putExtractor')
+  cy.route('PUT', '/sdk/app/*/teach/*/extractor').as('putExtractor')
   cy.get('input[class="wc-shellinput"]').type(trainmessage)
   cy.get('label[class="wc-send"]')
     .then(function (response) {
@@ -39,7 +39,7 @@ function verifyTokenNodeExists() {
 function clickScoreActions() {
   testLog.logStart("Click on Score Actions");
   cy.server()
-  cy.route('PUT', '/app/*/teach/*/scorer').as('putScorer')
+  cy.route('PUT', '/sdk/app/*/teach/*/scorer').as('putScorer')
   cy.get('[data-testid="button-proceedto-scoreactions"]')
     .then(function (response) {
       testLog.logStep("proceed to score actions")
