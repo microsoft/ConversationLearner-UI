@@ -263,6 +263,7 @@ export const deleteApplicationThunkAsync = (appId: string) => {
 
         try {
             await clClient.appsDelete(appId)
+            poller.removePoll(appId)
             dispatch(deleteApplicationFulfilled(appId))
             return true;
         } catch (e) {
