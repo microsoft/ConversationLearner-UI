@@ -185,7 +185,7 @@ class Index extends React.Component<Props, ComponentState> {
                     />
                     <div className={`cl-nav ${FontClassNames.mediumPlus}`}>
                         <div className="cl-nav_section">
-                            <NavLink className="cl-nav-link" exact to={{ pathname: `${match.url}`, state: { app } }}>
+                            <NavLink className="cl-nav-link" data-testid="app-index-nav-link-home" exact to={{ pathname: `${match.url}`, state: { app } }}>
                                 <Icon iconName="Home" />
                                     <span className={invalidBot ? 'cl-font--highlight' : ''}>Home
                                         {invalidBot &&
@@ -204,13 +204,13 @@ class Index extends React.Component<Props, ComponentState> {
                                             </TooltipHost>
                                         }</span>
                             </NavLink>
-                            <NavLink className="cl-nav-link" to={{ pathname: `${match.url}/entities`, state: { app } }}>
+                            <NavLink className="cl-nav-link" data-testid="app-index-nav-link-entities" to={{ pathname: `${match.url}/entities`, state: { app } }}>
                                 <Icon iconName="List" /><span>Entities</span><span className="count">{this.props.entities.filter(e => typeof e.positiveId === 'undefined' || e.positiveId === null).length}</span>
                             </NavLink>
-                            <NavLink className="cl-nav-link" to={{ pathname: `${match.url}/actions`, state: { app } }}>
+                            <NavLink className="cl-nav-link" data-testid="app-index-nav-link-actions" to={{ pathname: `${match.url}/actions`, state: { app } }}>
                                 <Icon iconName="List" /><span>Actions</span><span className="count">{this.props.actions.length}</span>
                             </NavLink>
-                            <NavLink className="cl-nav-link" to={{ pathname: `${match.url}/trainDialogs`, state: { app } }}>
+                            <NavLink className="cl-nav-link" data-testid="app-index-nav-link-train-dialogs" to={{ pathname: `${match.url}/trainDialogs`, state: { app } }}>
                                 <Icon iconName="List" />
                                     <span className={invalidTrainDialogs ? 'cl-font--highlight' : ''}>Train Dialogs
                                         {invalidTrainDialogs && 
@@ -226,10 +226,10 @@ class Index extends React.Component<Props, ComponentState> {
                                         }</span>
                                     <span className="count">{this.props.trainDialogs.length}</span>
                             </NavLink>
-                            <NavLink className="cl-nav-link" to={{ pathname: `${match.url}/logDialogs`, state: { app } }}>
+                            <NavLink className="cl-nav-link" data-testid="app-index-nav-link-log-dialogs" to={{ pathname: `${match.url}/logDialogs`, state: { app } }}>
                                 <Icon iconName="List" /><span>Log Dialogs</span>
                             </NavLink>
-                            <NavLink className="cl-nav-link" to={{ pathname: `${match.url}/settings`, state: { app } }}>
+                            <NavLink className="cl-nav-link" data-testid="app-index-nav-link-settings" to={{ pathname: `${match.url}/settings`, state: { app } }}>
                                 <Icon iconName="Settings" /><span>Settings</span>
                             </NavLink>
                         </div>
