@@ -80,27 +80,41 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
             const newOptions = nextProps.options.filter(newOption => this.props.options.every(oldOption => oldOption.id !== newOption.id))
             if (newOptions.length === 1) {
                 const newOption = newOptions[0]
-                const value = this.state.value
-                const selectedNodes: any[] = value.inlines.toJS()
-                if (selectedNodes.length > 0 && selectedNodes.every(n => n.type === NodeType.TokenNodeType)) {
-                    const startIndex = selectedNodes[0].data.startIndex
-                    const endIndex = selectedNodes[selectedNodes.length - 1].data.endIndex
 
-                    const newCustomEntity: IGenericEntity<IGenericEntityData<any>> = {
-                        startIndex,
-                        endIndex,
-                        data: {
-                            text: getSelectedText(value),
-                            displayName: newOption.name,
-                            option: newOption,
-                            // This should be the original entity, but we don't have it here
-                            // This will be re-created on next setState from parents
-                            original: null 
+                /**
+                 * This is hack to prevent bug with negative entities which as assume have '-' prefix.
+                 * When user creates a new Entity and checks negatable the options are updated twice.
+                 * Once with the positive which correctly tags the text and another time with the negative which
+                 */
+                const negativeEntityPrefix = '-'
+                if (!newOption.name.startsWith(negativeEntityPrefix)) {
+                    const value = this.state.value
+                    const selectedNodes: any[] = value.inlines.toJS()
+                    if (selectedNodes.length > 0 && selectedNodes.every(n => n.type === NodeType.TokenNodeType)) {
+                        const startIndex = selectedNodes[0].data.startIndex
+                        const endIndex = selectedNodes[selectedNodes.length - 1].data.endIndex
+                        const selectedText = getSelectedText(value)
+                        if (selectedText.length === 0) {
+                            console.warn(`Attempting to label the selected text as entity: ${newOption.name}; however, the selected text was empty. This should not be possible. Likely the first token is defaulted as selected.`)
+                        }
+                        else {
+                            const newCustomEntity: IGenericEntity<IGenericEntityData<any>> = {
+                                startIndex,
+                                endIndex,
+                                data: {
+                                    text: selectedText,
+                                    displayName: newOption.name,
+                                    option: newOption,
+                                    // This should be the original entity, but we don't have it here
+                                    // This will be re-created on next setState from parents
+                                    original: null 
+                                }
+                            }
+
+                            this.props.onChangeCustomEntities([...nextProps.customEntities, newCustomEntity])
+                            return
                         }
                     }
-
-                    this.props.onChangeCustomEntities([...nextProps.customEntities, newCustomEntity])
-                    return
                 }
             }
         }
