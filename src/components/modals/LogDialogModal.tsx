@@ -13,9 +13,8 @@ import Webchat from '../Webchat'
 import ConfirmCancelModal from './ConfirmCancelModal'
 import LogDialogAdmin from './LogDialogAdmin'
 import { Activity } from 'botframework-directlinejs'
-import { createTrainDialogAsync } from '../../actions/createActions'
-import { fetchApplicationTrainingStatusThunkAsync } from '../../actions/fetchActions'
-import { AppBase, TrainDialog, LogDialog, UIScoreInput } from '@conversationlearner/models'
+import actions from '../../actions'
+import { AppBase, TrainDialog, LogDialog } from '@conversationlearner/models'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 
@@ -111,7 +110,7 @@ class LogDialogModal extends React.Component<Props, ComponentState> {
                                         canEdit={this.props.canEdit}
                                         logDialog={this.props.logDialog}
                                         selectedActivity={this.state.selectedActivity}
-                                        onEdit={(logDialogId: string, newTrainDialog: TrainDialog, newScoreInput: UIScoreInput) => this.props.onEdit(logDialogId, newTrainDialog, newScoreInput)}
+                                        onEdit={(logDialogId, newTrainDialog, extractChanged) => this.props.onEdit(logDialogId, newTrainDialog, extractChanged)}
                                         onExtractionsChanged={(changed: boolean) => this.onExtractionsChanged(changed)}
                                     />
                                 </div>
@@ -170,13 +169,12 @@ class LogDialogModal extends React.Component<Props, ComponentState> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        createTrainDialogAsync,
-        fetchApplicationTrainingStatusThunkAsync
+        createTrainDialogAsync: actions.train.createTrainDialogAsync,
+        fetchApplicationTrainingStatusThunkAsync: actions.app.fetchApplicationTrainingStatusThunkAsync
     }, dispatch);
 }
 const mapStateToProps = (state: State, ownProps: ReceivedProps) => {
     return {
-        user: state.user,
         actions: state.actions
     }
 }
@@ -187,7 +185,7 @@ export interface ReceivedProps {
     open: boolean,
     canEdit: boolean,
     onClose: () => void,
-    onEdit: (logDialogId: string, newTrainDialog: TrainDialog, newScoreInput: UIScoreInput) => void,
+    onEdit: (logDialogId: string, newTrainDialog: TrainDialog, extractChanged: boolean) => void,
     onDelete: ()=> void,
     logDialog: LogDialog,
     history: Activity[]

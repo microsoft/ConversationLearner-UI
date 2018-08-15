@@ -12,7 +12,7 @@ import { bindActionCreators } from 'redux'
 import { FontClassNames, PrimaryButton } from 'office-ui-fabric-react'
 import { FM } from '../../../react-intl-messages'
 import ReactPlayer from 'react-player'
-import { fetchBotInfoAsync } from '../../../actions/fetchActions'
+import { fetchBotInfoThunkAsync } from '../../../actions/botActions'
 import * as ReactMarkdown from 'react-markdown'
 import './Dashboard.css'
 
@@ -26,8 +26,12 @@ class Dashboard extends React.Component<Props, ComponentState> {
     }
 
     onClickRetry = () => {
-        this.props.fetchBotInfoAsync(this.props.browserId)
+        this.props.fetchBotInfoThunkAsync(this.props.browserId, this.props.app.appId)
 
+        /**
+         * This is here to toggle visibility of text for the screen reader.
+         * Because it's meant for reading and not as a direct match of request duration it is fixed to 1000 ms
+         */
         this.setState({
             retrying: true
         }, () => {
@@ -102,7 +106,7 @@ const mapStateToProps = (state: State) => {
 
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        fetchBotInfoAsync
+        fetchBotInfoThunkAsync
     }, dispatch);
 }
 

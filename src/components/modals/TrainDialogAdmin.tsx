@@ -23,17 +23,16 @@ import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 
 interface RenderData {
-    dialogMode: DialogMode,
-    selectedAction: ActionBase,
-    scorerStep: TrainScorerStep,
-    scoreResponse: ScoreResponse,
-    round: TrainRound,
-    memories: Memory[],
-    prevMemories: Memory[],
+    dialogMode: DialogMode
+    selectedAction: ActionBase | undefined
+    scorerStep: TrainScorerStep | undefined
+    scoreResponse: ScoreResponse | undefined
+    round: TrainRound | undefined
+    memories: Memory[]
+    prevMemories: Memory[]
 };
 
 class TrainDialogAdmin extends React.Component<Props, ComponentState> {
-
     constructor(p: Props) {
         super(p);
         this.state = {
@@ -115,12 +114,13 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
             });
         }
         // Otherwise just save with new text variations, remaining rounds are ok
-        else {  
-            
-            let trainDialog: TrainDialog = {
-                version: undefined,
-                packageCreationId: undefined,
-                packageDeletionId: undefined,
+        else {
+            const trainDialog: TrainDialog = {
+                createdDateTime: new Date().toJSON(),
+                lastModifiedDateTime: new Date().toJSON(),
+                version: undefined!,
+                packageCreationId: undefined!,
+                packageDeletionId: undefined!,
                 trainDialogId: this.props.trainDialog.trainDialogId,
                 sourceLogDialogId: this.props.trainDialog.sourceLogDialogId,
                 rounds: updatedTrainDialog.rounds,
@@ -131,23 +131,32 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                 }
             }
 
-            this.props.onReplace(trainDialog);         
+            this.props.onReplace(trainDialog)
         }
     }
 
     // User changed the selected action for a round
     onActionScorerSubmit(trainScorerStep: TrainScorerStep): void {
+        const roundIndex = this.state.roundIndex
+        if (roundIndex === null) {
+            throw new Error(`Cannot construct new train dialog scorer step because roundIndex is null. This is likely a problem in the code. Please open an issue.`)
+        }
+
+        const scoreIndex = this.state.scoreIndex
+        if (scoreIndex === null) {
+            throw new Error(`Cannot construct new train dialog scorer step because scoreIndex is null. This is likely a problem in the code. Please open an issue.`)
+        }
 
         // Remove scoredAction, we only need labeledAction
         delete trainScorerStep.scoredAction;
 
         // Remove training rounds
-        const rounds = this.props.trainDialog.rounds.slice(0, this.state.roundIndex + 1);
-        let round = rounds[this.state.roundIndex];
+        const rounds = this.props.trainDialog.rounds.slice(0, roundIndex + 1);
+        let round = rounds[roundIndex];
 
         // Remove trailing scorer steps
-        let newScorerSteps = round.scorerSteps.slice(0, this.state.scoreIndex + 1);
-        newScorerSteps[this.state.scoreIndex] = trainScorerStep;
+        let newScorerSteps = round.scorerSteps.slice(0, scoreIndex + 1);
+        newScorerSteps[scoreIndex] = trainScorerStep;
 
         // Create new train round
         let newRound: TrainRound = {
@@ -157,32 +166,40 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
 
         // New rounds list with new round
         let newRounds = [...rounds];
-        newRounds[this.state.roundIndex] = newRound;
+        newRounds[roundIndex] = newRound;
         let updatedTrainDialog = { ...this.props.trainDialog, rounds: newRounds };
 
         if (this.props.trainDialog.rounds.length !== newRounds.length) {
             // Truncation prompt will be shown to user
             this.setState({
                 newTrainDialog: updatedTrainDialog,
-                newSliceRound: this.state.roundIndex,
+                newSliceRound: roundIndex,
                 newScoreInput: null
             });
         } else {
-            this.editTrainDialog(updatedTrainDialog, this.state.roundIndex, this.state.newScoreInput);
+            const extractChanged = this.state.newScoreInput !== null
+            this.editTrainDialog(updatedTrainDialog, roundIndex, extractChanged)
         }
     }
 
     onClickSaveCheckYes() {
-        this.editTrainDialog(this.state.newTrainDialog, this.state.newSliceRound, this.state.newScoreInput);
+        if (!this.state.newTrainDialog) {
+            throw new Error(`Attempted to edit a train dialog, but the newTrainDialog was not defined. This is likely a problem with code. Please file an issue.`)
+        }
+
+        const extractChanged = this.state.newScoreInput !== null
+        this.editTrainDialog(this.state.newTrainDialog, this.state.newSliceRound, extractChanged)
     }
 
-    editTrainDialog(sourceDialog: TrainDialog, sliceRound: number, newScoreInput: UIScoreInput) {
+    editTrainDialog(sourceDialog: TrainDialog, sliceRound: number, extractChanged: boolean) {
         let trainDialog: TrainDialog = {
-            trainDialogId: undefined,
+            createdDateTime: new Date().toJSON(),
+            lastModifiedDateTime: new Date().toJSON(),
+            trainDialogId: undefined!,
             sourceLogDialogId: sourceDialog.sourceLogDialogId,
-            version: undefined,
-            packageCreationId: undefined,
-            packageDeletionId: undefined,
+            version: undefined!,
+            packageCreationId: undefined!,
+            packageDeletionId: undefined!,
             rounds: sourceDialog.rounds,
             definitions: {
                 entities: this.props.entities,
@@ -191,7 +208,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
             }
         }
 
-        this.props.onEdit(sourceDialog.trainDialogId, trainDialog, newScoreInput);
+        this.props.onEdit(sourceDialog.trainDialogId, trainDialog, extractChanged);
          
         this.props.clearExtractResponses();
 
@@ -209,40 +226,53 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
         this.props.clearExtractResponses();
     }
     getPrevMemories(): Memory[] {
+        if (this.state.roundIndex === null) {
+            throw new Error(`Cannot get previous memories because roundIndex is null. This is likely a problem with code. Please open an issue.`)
+        }
+
         let memories: Memory[] = [];
         let prevIndex = this.state.roundIndex - 1;
         if (prevIndex >= 0) {
             let round = this.props.trainDialog.rounds[prevIndex];
             if (round.scorerSteps.length > 0) {
                 let scorerStep = round.scorerSteps[0];
-                memories = scorerStep.input.filledEntities.map<Memory>(fe =>
-                    ({
-                        entityName: this.props.entities.find(e => e.entityId === fe.entityId).entityName,
+                memories = scorerStep.input.filledEntities.map<Memory>(fe => {
+                    const entity = this.props.entities.find(e => e.entityId === fe.entityId)
+                    if (!entity) {
+                        throw new Error(`Could not find entity by id: ${fe.entityId} in list of entities`)
+                    }
+                    return {
+                        entityName: entity.entityName,
                         entityValues: fe.values
-                    }));
+                    }
+                })
             }
         }
         return memories;
     }
     getRenderData(): RenderData {
-        let selectedAction: ActionBase = null;
-        let scorerStep: TrainScorerStep = null;
-        let scoreResponse: ScoreResponse = null;
-        let round: TrainRound = null;
+        let selectedAction: ActionBase | undefined
+        let scorerStep: TrainScorerStep | undefined
+        let scoreResponse: ScoreResponse | undefined
+        let round: TrainRound | undefined
         let memories: Memory[] = [];
         let prevMemories: Memory[] = [];
 
         if (this.state.roundIndex !== null && this.state.roundIndex < this.props.trainDialog.rounds.length) {
             round = this.props.trainDialog.rounds[this.state.roundIndex];
-            if (round.scorerSteps.length > 0) {
+            if (round.scorerSteps.length > 0 && typeof this.state.scoreIndex === "number") {
                 scorerStep = round.scorerSteps[this.state.scoreIndex];
+                if (!scorerStep) {
+                    throw new Error(`Cannot get score step at index: ${this.state.scoreIndex} from array of length: ${round.scorerSteps.length}`)
+                }
 
-                selectedAction = this.props.actions.find(action => action.actionId === scorerStep.labelAction);
+                selectedAction = this.props.actions.find(action => action.actionId === scorerStep!.labelAction);
 
                 if (!selectedAction) {
                     // Action may have been deleted.  If so create dummy action to render
                     selectedAction = {
                         actionId: scorerStep.labelAction,
+                        createdDateTime: new Date().toJSON(),
                         payload: 'MISSING ACTION',
                         isTerminal: false,
                         actionType: ActionTypes.TEXT,
@@ -297,7 +327,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
             }
         }
 
-        let renderData: RenderData = {
+        const renderData: RenderData = {
             dialogMode: (this.state.senderType === SenderType.User) ? DialogMode.Extractor : DialogMode.Scorer,
             selectedAction: selectedAction,
             scorerStep: scorerStep,
@@ -419,8 +449,11 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                         </div>
                     </div>
                 }
-                {renderData.selectedAction && this.state.senderType === SenderType.Bot &&
-                    <div className="cl-dialog-admin__content">
+                {renderData.selectedAction
+                && renderData.scoreResponse
+                && renderData.scorerStep
+                && this.state.senderType === SenderType.Bot
+                && <div className="cl-dialog-admin__content">
                         <div className="cl-dialog-admin-title">
                             <FormattedMessage
                                 data-testid="dialog-admin-action"
@@ -498,7 +531,6 @@ const mapDispatchToProps = (dispatch: any) => {
 }
 const mapStateToProps = (state: State) => {
     return {
-        user: state.user,
         actions: state.actions,
         entities: state.entities,
         extractResponses: state.teachSessions.extractResponses
@@ -506,21 +538,22 @@ const mapStateToProps = (state: State) => {
 }
 
 interface ComponentState {
-    newTrainDialog: TrainDialog,
+    newTrainDialog: TrainDialog | null,
     newSliceRound: number,
-    newScoreInput: UIScoreInput,    // Did extraction change on edit
-    senderType: SenderType,
-    roundIndex: number,
-    scoreIndex: number
+    // Did extraction change on edit
+    newScoreInput: UIScoreInput | null,
+    senderType: SenderType | null,
+    roundIndex: number | null,
+    scoreIndex: number | null
 };
 
 export interface ReceivedProps {
     app: AppBase,
     editingPackageId: string,
     trainDialog: TrainDialog,
-    selectedActivity: Activity,
+    selectedActivity: Activity | null,
     canEdit: boolean,
-    onEdit: (sourceTrainDialogId: string, editedTrainDialog: TrainDialog, newScoreInput: UIScoreInput) => void
+    onEdit: (sourceTrainDialogId: string, editedTrainDialog: TrainDialog, extractChanged: boolean) => void
     onReplace: (editedTrainDialog: TrainDialog) => void
     onExtractionsChanged: (changed: boolean) => void
 }

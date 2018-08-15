@@ -2,6 +2,7 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
+import * as util from '../util'
 
 export interface Deferred {
     resolve: Function
@@ -63,6 +64,10 @@ export class Poller {
         return promise
     }
 
+    removePoll(pollId: string) {
+        this.polls = this.polls.filter(p => p.id !== pollId)
+    }
+
     private async poll() {
         const now = (new Date()).getTime()
         // Alternate approach is to split this into three phases: Filter those expired, await all requests, then filter all resolved.
@@ -89,6 +94,6 @@ export class Poller {
             }
 
             return poll
-        }))).filter(x => x)
+        }))).filter(util.notNullOrUndefined)
     }
 }

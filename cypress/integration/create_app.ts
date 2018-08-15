@@ -3,30 +3,34 @@ describe('Create application', function () {
 
   it('should create new application with random name and verify name on application page', function () {
     cy.server()
-    cy.route('GET', '/apps?**').as('getApps')
+    cy.route('GET', '/sdk/apps?**').as('getApps')
 
     // Open application
     cy.visit('http://localhost:5050')
 
     cy.wait('@getApps')
+    cy.wait(1000)
+    cy.get('cl-spinner').should('not.exist')
 
     // Click the button to create app
-    cy.get('[data-testid="apps-list-button-create-new"]', { timeout: 1000 })
+    cy.get('button[data-testid="apps-list-button-create-new"]')
       .click()
 
     // Ensure that name input is focused
-    cy.focused()
-
     cy.get('[data-testid="app-create-input-name"]')
       .type(newAppName)
 
-    cy.route('POST', '/app?userId=**').as('postApp')
+    cy.route('POST', '/sdk/app?userId=**').as('postApp')
+    cy.route('GET', '/sdk/app/*/source**').as('getAppSource')
+    cy.route('GET', '/sdk/app/*/logdialogs**').as('getAppLogDialogs')
 
     // Click the submit button
     cy.get('[data-testid="app-create-button-submit"]')
       .click()
 
     cy.wait('@postApp')
+    cy.wait('@getAppSource')
+    cy.wait('@getAppLogDialogs')
 
     // Ensure app page displays new application title
     cy.get('[data-testid="app-index-title"]')
@@ -37,11 +41,13 @@ describe('Create application', function () {
 
   it('given a fresh application, it should create a new entity', () => {
     cy.server()
+    cy.wait(500)
 
     // Click entities navigation tab
-    cy.get('.cl-nav-link')
-      .contains('Entities') // TODO: Use better selector?
+    cy.get('[data-testid="app-index-nav-link-entities"]')
       .click()
+
+    cy.wait(500)
 
     const newEntityName = `e2e-entity-${new Date().getTime()}`
 
@@ -57,7 +63,7 @@ describe('Create application', function () {
     cy.get('[data-testid="entitycreator-checkbox-multivalued"]')
       .click()
 
-    cy.route('POST', '/app/*/entity').as('postEntity')
+    cy.route('POST', '/sdk/app/*/entity').as('postEntity')
 
     // Select the submit button
     cy.get('[data-testid="entity-creator-button-save"]')
@@ -74,18 +80,21 @@ describe('Create application', function () {
 
   it('given application create a new action', () => {
     cy.server()
+    cy.wait(500)
 
     // Click actions navigation tab
-    cy.get('.cl-nav-link')
-      .contains('Actions') // TODO: Use better selector?
+    cy.get('[data-testid="app-index-nav-link-actions"]')
       .click()
+
+    cy.wait(200)
 
     // Click new action button
     cy.get('[data-testid="actions-button-create"]')
       .click()
-
+    cy.wait(100)
+ 
     // Select name for actions
-    cy.route('POST', '/app/*/action').as('postAction')
+    cy.route('POST', '/sdk/app/*/action').as('postAction')
 
     const samplePayload = "some payload"
     cy.get('.editor-container [contenteditable="true"]')
@@ -93,6 +102,7 @@ describe('Create application', function () {
       .type("{shift}{enter}")
 
     cy.wait('@postAction')
+    cy.wait(1000)
 
     cy.get('.ms-DetailsRow-cell')
       .should(el => {

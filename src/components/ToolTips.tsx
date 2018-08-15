@@ -7,11 +7,14 @@ import * as OF from 'office-ui-fabric-react';
 import { FormattedMessage } from 'react-intl'
 import { FM } from '../react-intl-messages'
 import { MemoryValue } from '@conversationlearner/models'
-import HelpLink from '../components/HelpLink'
+import HelpLink from './HelpLink'
 import './ToolTips.css'
 
 export enum TipType {
+    NONE = 'NONE',
+    
     ACTION_API = 'actionAPI',
+    ACTION_RENDER = 'actionRender',
     ACTION_ARGUMENTS = 'actionArguments',
     ACTION_CARD = 'actionCard',
     ACTION_END_SESSION = 'actionEndSesion',
@@ -56,7 +59,8 @@ export function onRenderDetailsHeader(detailsHeaderProps: OF.IDetailsHeaderProps
                 defaultRender({
                     ...detailsHeaderProps,
                     onRenderColumnHeaderTooltip: (tooltipHostProps: OF.ITooltipHostProps) => {
-                        let id = tooltipHostProps.id.split('-')[1];
+
+                        let id = tooltipHostProps.id ? tooltipHostProps.id.split('-')[1] : 'unknown-tip-id'
                         let tip = GetTip(id);
                         if (tip) {
                             let ttHP = {
@@ -81,15 +85,16 @@ export function onRenderDetailsHeader(detailsHeaderProps: OF.IDetailsHeaderProps
 }
 
 export function onRenderPivotItem(link: OF.IPivotItemProps, defaultRenderer: (link: OF.IPivotItemProps) => JSX.Element): JSX.Element {
+    const typType = link.ariaLabel ? link.ariaLabel : 'unknown-tip-type'
     return (
         <OF.TooltipHost
-            tooltipProps={{ onRenderContent: () => { return GetTip(link.ariaLabel) } }}
+            tooltipProps={{ onRenderContent: () => { return GetTip(typType) } }}
             delay={OF.TooltipDelay.medium}
             directionalHint={OF.DirectionalHint.bottomCenter}
         >
             {defaultRenderer(link)}
         </OF.TooltipHost>
-    );
+    )
 }
 
 export function Wrap(content: JSX.Element, tooltip: string, directionalHint: OF.DirectionalHint = OF.DirectionalHint.topCenter): JSX.Element {
@@ -104,7 +109,7 @@ export function Wrap(content: JSX.Element, tooltip: string, directionalHint: OF.
     );
 }
 
-let apiCodeSample =
+const apiCodeSample =
     `CL.AddAPICallback("Multiply", async (memoryManager: ClientMemoryManager, num1string: string, num2string: string) => {
 
         // convert base and exponent to ints
@@ -114,8 +119,22 @@ let apiCodeSample =
         // compute product
         var result = num1int * num2int;
     
-        // return result as message
-        return num1int.toString() + " * " + num2int.toString() + " = " + result.toString();
+        // save result in entity
+        memoryManager.RememberEntity("multiplyResult", result)
+    })`;
+
+const renderCodeSample =
+    `CL.AddRenderCallback("Multiply", async (memoryManager: ReadOnlyClientMemoryManager, num1string: string, num2string: string, result: string) => {
+
+        // convert base and exponent to ints
+        var num1int = parseInt(num1string);
+        var num2int = parseInt(num2string);
+    
+        // compute product
+        var result = num1int * num2int;
+    
+        // save result in entity
+        return \`\${num1String} + \${num2string} = \${result}\`
     })`;
 
 let memoryManagerSample =
@@ -150,9 +169,21 @@ export function GetTip(tipType: string) {
             return (
                 <div>
                     {render(FM.TOOLTIP_ACTION_API_TITLE, [FM.TOOLTIP_ACTION_API])}
-                    <div><br />cl.APICallback("<i>[API NAME]</i>", async (memoryManager, argArray) => <i>[API BODY]</i>)</div>
+                    <div><br />cl.AddAPICallback("<i>[API NAME]</i>", async (memoryManager, argArray) => <i>[API BODY]</i>)</div>
                     <div className="cl-tooltop-example"><FormattedMessage id={FM.TOOLTIP_EXAMPLE} /></div>
                     <pre>{apiCodeSample}</pre>
+                    <div className="cl-tooltop-example"><FormattedMessage id={FM.TOOLTIP_ACTION_ARGUMENTS_TITLE} /></div>
+                    <div>$number1 $number2<br /></div>
+                    <div><br />More about the <HelpLink label="Memory Manager" tipType={TipType.MEMORY_MANAGER} /></div>
+                </div>
+            )
+            case TipType.ACTION_RENDER:
+            return (
+                <div>
+                    {render(FM.TOOLTIP_ACTION_RENDER_TITLE, [FM.TOOLTIP_ACTION_RENDER])}
+                    <div><br />cl.AddRenderCallback("<i>[Render name]</i>", async (memoryManager, argArray) => <i>[Render body]</i>)</div>
+                    <div className="cl-tooltop-example"><FormattedMessage id={FM.TOOLTIP_EXAMPLE} /></div>
+                    <pre>{renderCodeSample}</pre>
                     <div className="cl-tooltop-example"><FormattedMessage id={FM.TOOLTIP_ACTION_ARGUMENTS_TITLE} /></div>
                     <div>$number1 $number2<br /></div>
                     <div><br />More about the <HelpLink label="Memory Manager" tipType={TipType.MEMORY_MANAGER} /></div>
@@ -414,22 +445,23 @@ export function GetTip(tipType: string) {
     }
 }
 
-function render(title: FM, body: FM[], example: string = null, tableItems: { key: string, value: FM }[] = []): JSX.Element {
-    let key = 0;
+interface ITableItem {
+    key: string
+    value: FM | null
+}
+
+function render(title: FM, body: FM[], example: string | null = null, tableItems: ITableItem[] = []): JSX.Element {
     return (
         <div>
             <div className="cl-tooltop-headerText"><FormattedMessage id={title} /></div>
-            {body.map(b => { return (<div key={key++}><FormattedMessage id={b} /><br /></div>) })}
+            {body.map((b, i) => <div key={i}><FormattedMessage id={b} /><br /></div>)}
             {example &&
                 <div className="cl-tooltop-example"><FormattedMessage id={example} /></div>}
             {tableItems.length > 0 ?
                 (
                     <dl className="cl-tooltip-example">
-                        <dt>{tableItems[0] && tableItems[0].key}</dt><dd>{tableItems[0] && tableItems[0].value && <FormattedMessage id={tableItems[0].value} />}</dd>
-                        <dt>{tableItems[1] && tableItems[1].key}</dt><dd>{tableItems[1] && tableItems[1].value && <FormattedMessage id={tableItems[1].value} />}</dd>
-                        <dt>{tableItems[2] && tableItems[2].key}</dt><dd>{tableItems[2] && tableItems[2].value && <FormattedMessage id={tableItems[2].value} />}</dd>
-                        <dt>{tableItems[3] && tableItems[3].key}</dt><dd>{tableItems[3] && tableItems[3].value && <FormattedMessage id={tableItems[3].value} />}</dd>
-                        <dt>{tableItems[4] && tableItems[4].key}</dt><dd>{tableItems[4] && tableItems[4].value && <FormattedMessage id={tableItems[4].value} />}</dd>
+                        {tableItems.map((tableItem, i) =>
+                            <React.Fragment key={i}><dt>{tableItem.key}</dt><dd>{tableItem.value && <FormattedMessage id={tableItem.value} />}</dd></React.Fragment>)}
                     </dl>
                 ) : null
             }

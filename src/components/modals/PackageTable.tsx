@@ -10,7 +10,7 @@ import { State } from '../../types'
 import * as OF from 'office-ui-fabric-react';
 import { AppBase, PackageReference } from '@conversationlearner/models'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
-import { createAppTagThunkAsync } from '../../actions/createActions'
+import { createAppTagThunkAsync } from '../../actions/appActions'
 import { autobind } from 'office-ui-fabric-react/lib/Utilities';
 import PackageCreator from './PackageCreator';
 import * as util from '../../util'
@@ -99,8 +99,8 @@ class PackageTable extends React.Component<Props, ComponentState> {
                     onClick={this.onClickNewTag}
                     ariaDescription='New Tag'
                     text='New Tag'
-                />            
-                <PackageCreator 
+                />
+                <PackageCreator
                     open={this.state.isPackageCreatorOpen}
                     onSubmit={this.onSubmitPackageCreator}
                     onCancel={this.onCancelPackageCreator}

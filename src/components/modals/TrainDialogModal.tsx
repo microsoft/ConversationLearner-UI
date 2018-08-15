@@ -11,18 +11,18 @@ import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { State } from '../../types';
 import Webchat from '../Webchat'
 import TrainDialogAdmin from './TrainDialogAdmin'
-import { AppBase, TrainDialog, UIScoreInput, SenderType } from '@conversationlearner/models'
+import { AppBase, TrainDialog, SenderType } from '@conversationlearner/models'
 import { Activity } from 'botframework-directlinejs';
 import ConfirmCancelModal from './ConfirmCancelModal'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 
 interface ComponentState {
-    isConfirmCancelModalOpen: boolean,
-    calloutOpen: boolean,
-    selectedActivity: Activity | null,
-    webchatKey: number,
-    currentTrainDialog: TrainDialog,
+    isConfirmCancelModalOpen: boolean
+    calloutOpen: boolean
+    selectedActivity: Activity | null
+    webchatKey: number
+    currentTrainDialog: TrainDialog | null
     pendingExtractionChanges: boolean
 }
 
@@ -130,7 +130,7 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
                                 key={this.state.webchatKey}
                                 app={this.props.app}
                                 history={this.props.history}
-                                onPostActivity={null}
+                                onPostActivity={() => {}}
                                 onSelectActivity={activity => this.onWebChatSelectActivity(activity)}
                                 hideInput={true}
                                 focusInput={false}
@@ -146,7 +146,7 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
                                     canEdit={this.props.canEdit}
                                     trainDialog={this.props.trainDialog}
                                     selectedActivity={this.state.selectedActivity}
-                                    onEdit={(sourceTrainDialogId: string, editedTrainDialog: TrainDialog, newScoreInput: UIScoreInput) => this.props.onEdit(editedTrainDialog, newScoreInput)}
+                                    onEdit={(sourceTrainDialogId, editedTrainDialog, extractChanged) => this.props.onEdit(editedTrainDialog, extractChanged)}
                                     onReplace={(editedTrainDialog: TrainDialog) => this.props.onReplace(editedTrainDialog)}
                                     onExtractionsChanged={(changed: boolean) => this.onExtractionsChanged(changed)}
                                 />
@@ -248,7 +248,6 @@ const mapDispatchToProps = (dispatch: any) => {
 }
 const mapStateToProps = (state: State) => {
     return {
-        user: state.user,
         actions: state.actions
     }
 }
@@ -259,7 +258,7 @@ export interface ReceivedProps {
     canEdit: boolean,
     onClose: () => void,
     onBranch: (turnIndex: number) => void,
-    onEdit: (newTrainDialog: TrainDialog, newScoreInput: UIScoreInput) => void,
+    onEdit: (newTrainDialog: TrainDialog, extractChanged: boolean) => void,
     onReplace: (newTrainDialog: TrainDialog) => void,
     onDelete: () => void
     open: boolean

@@ -11,8 +11,7 @@ import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { State } from '../../types';
 import Webchat from '../Webchat'
 import { AppBase } from '@conversationlearner/models'
-import { deleteChatSessionThunkAsync } from '../../actions/deleteActions'
-import { editChatSessionExpireAsync } from '../../actions/updateActions'
+import actions from '../../actions'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 
@@ -31,7 +30,7 @@ class SessionWindow extends React.Component<Props, ComponentState> {
     // Force timeout of the session
     onClickExpire() {
         if (this.props.chatSession.current !== null) {
-            this.props.editChatSessionExpireAsync(this.props.user.id, this.props.app.appId, this.props.chatSession.current.sessionId)
+            this.props.editChatSessionExpireThunkAsync(this.props.app.appId, this.props.chatSession.current.sessionId)
         }
     }
 
@@ -55,8 +54,8 @@ class SessionWindow extends React.Component<Props, ComponentState> {
                                 data-testid="chatsession-modal-webchat"
                                 isOpen={this.props.open && this.props.error == null}
                                 app={this.props.app}
-                                history={null}
-                                onPostActivity={null}
+                                history={[]}
+                                onPostActivity={() => { }}
                                 onSelectActivity={() => { }}
                                 hideInput={false}
                                 focusInput={true}
@@ -102,14 +101,18 @@ class SessionWindow extends React.Component<Props, ComponentState> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        deleteChatSessionThunkAsync,
-        editChatSessionExpireAsync
+        deleteChatSessionThunkAsync: actions.chat.deleteChatSessionThunkAsync,
+        editChatSessionExpireThunkAsync: actions.chat.editChatSessionExpireThunkAsync
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {
+    if (!state.user.user) {
+        throw new Error(`You attempted to render ChatSessionModal but the user was not defined. This is likely a problem with higher level component. Please open an issue.`)
+    }
+
     return {
         chatSession: state.chatSessions,
-        user: state.user,
+        user: state.user.user,
         error: state.error.title
     }
 }

@@ -27,6 +27,12 @@ const logDialogs = await clClient.apps(appId).logDialogs()
 const trainDialogs = await clClient.apps(appId).trainDialogs()
 */
 
+interface IActionCreationResponse {
+    actionId: string
+    packageId: string
+    trainingStatus: string
+}
+
 export default class ClClient {
     baseUrl: string
     defaultConfig: AxiosRequestConfig = {
@@ -64,7 +70,6 @@ export default class ClClient {
         return Axios(finalConfig) as Promise<TypedAxiosResponse<T>>
     }
 
-    // AT.SET_CURRENT_APP_ASYNC
     setApp(app: models.AppBase): Promise<void> {
         return this.send({
             method: 'put',
@@ -74,19 +79,18 @@ export default class ClClient {
             .then(response => { })
     }
 
-    // AT.SET_CONVERSATION_ID_ASYNC
     setConversationId(userName: string, userId: string, conversationId: string): Promise<void> {
         return this.send({
             method: 'put',
-            url: `${this.baseUrl}/state/conversationId?username=${userName}&id=${conversationId}`,
+            url: `${this.baseUrl}/state/conversationId?userName=${userName}&conversationId=${conversationId}`,
         })
             .then(response => { })
     }
 
     // Each browser instance has a different browserId
-    getBotInfo(browserId: string): Promise<models.BotInfo> {
+    getBotInfo(browserId: string, appId?: string): Promise<models.BotInfo> {
         return this.send<models.BotInfo>({
-            url: `${this.baseUrl}/bot?browserId=${browserId}`
+            url: `${this.baseUrl}/bot?browserId=${browserId}${appId ? `&appId=${appId}` : ''}`
         })
             .then(response => response.data)
     }
@@ -125,9 +129,7 @@ export default class ClClient {
         return this.send<string>({
             method: 'post',
             url: `${this.baseUrl}/apps/copy?srcUserId=${srcUserId}&destUserId=${destUserId}&appId=${appId}`
-        }).then(response => {
-            return null;
-        })
+        }).then(response => {})
     }
 
     appsDelete(appId: string): Promise<void> {
@@ -214,12 +216,17 @@ export default class ClClient {
 
     entitiesUpdate(appId: string, entity: models.EntityBase): Promise<models.EntityBase> {
         const { version, packageCreationId, packageDeletionId, ...entityToSend } = entity;
-        return this.send({
+        return this.send<models.ChangeEntityResponse>({
             method: 'put',
             url: `${this.baseUrl}/app/${appId}/entity/${entity.entityId}`,
             data: entityToSend
         })
-            .then(response => entity)
+            .then(response => {
+                const changeEntityResponse = response.data
+                entity.entityId = changeEntityResponse.entityId
+                entity.negativeId = changeEntityResponse.negativeEntityId
+                return entity
+            })
     }
 
     entitiesUpdateValidation(appId: string, packageId: string, entity: models.EntityBase): Promise<string[]> {
@@ -252,14 +259,15 @@ export default class ClClient {
         }).then(response => response.data.actions)
     }
 
+
     actionsCreate(appId: string, action: models.ActionBase): Promise<models.ActionBase> {
-        return this.send<string>({
+        return this.send<IActionCreationResponse>({
             method: 'post',
             url: `${this.baseUrl}/app/${appId}/action`,
             data: action
         })
             .then(response => {
-                action.actionId = response.data
+                action.actionId = response.data.actionId
                 return action
             })
     }
@@ -281,7 +289,7 @@ export default class ClClient {
     }
 
     actionsUpdate(appId: string, action: models.ActionBase): Promise<models.DeleteEditResponse> {
-        const { actionId, version, packageCreationId, packageDeletionId, ...actionToSend } = action
+        const { version, packageCreationId, packageDeletionId, ...actionToSend } = action
         return this.send({
             method: 'put',
             url: `${this.baseUrl}/app/${appId}/action/${action.actionId}`,
@@ -291,7 +299,7 @@ export default class ClClient {
     }
 
     actionsUpdateValidation(appId: string, packageId: string, action: models.ActionBase): Promise<string[]> {
-        const { actionId, version, packageCreationId, packageDeletionId, ...actionToSend } = action
+        const { version, packageCreationId, packageDeletionId, ...actionToSend } = action
         return this.send({
             method: 'post',
             url: `${this.baseUrl}/app/${appId}/action/${action.actionId}/editValidation?packageId=${packageId}`,
@@ -311,7 +319,7 @@ export default class ClClient {
 
     trainDialogs(appId: string): Promise<models.TrainDialog[]> {
         return this.send<models.TrainDialogList>({
-            url: `${this.baseUrl}/app/${appId}/traindialogs`
+            url: `${this.baseUrl}/app/${appId}/traindialogs?includeDefinitions=false`
         }).then(response => response.data.trainDialogs)
     }
 
@@ -397,7 +405,6 @@ export default class ClClient {
             .then(response => response.data)
     }
 
-    // AT.EDIT_CHAT_SESSION_EXPIRE_ASYNC
     chatSessionsExpire(appId: string, sessionId: string): Promise<void> {
         return this.send<void>({
             method: 'put',

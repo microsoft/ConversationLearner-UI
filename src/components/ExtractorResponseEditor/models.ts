@@ -19,7 +19,7 @@ export interface InternalPredictedEntity {
 export interface IEntityPickerProps {
     isOverlappingOtherEntities: boolean
     isVisible: boolean
-    position: IPosition
+    position: IPosition | null
 }
 
 export interface IPosition {

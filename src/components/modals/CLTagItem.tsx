@@ -9,6 +9,7 @@ export interface ICLPickerItemProps<T> extends IPickerItemProps<T> {
     locked: boolean;
     strike: boolean;
     highlight: boolean;
+    children: string;
 }
 export const CLTagItem = (props: ICLPickerItemProps<ITag>) => (
     <div
@@ -18,7 +19,7 @@ export const CLTagItem = (props: ICLPickerItemProps<ITag>) => (
     >
         <span
             className={`ms-TagItem-text ${props.strike ? 'ms-TagItem-text--strike' : ''}`}
-            aria-label={props.children.toString()}
+            aria-label={props.children}
         >
             {props.children}
         </span>

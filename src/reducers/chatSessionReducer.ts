@@ -23,7 +23,9 @@ const chatSessionReducer: Reducer<ChatSessionState> = (state = initialState, act
             return {
                 ...state,
                 all: state.all.filter(s => s.sessionId !== action.sessionId),
-                current: state.current.sessionId === action.sessionId ? null : state.current
+                current: (!state.current || state.current.sessionId === action.sessionId)
+                    ? null
+                    : state.current
             }
         default:
             return state;

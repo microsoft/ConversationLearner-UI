@@ -20,7 +20,7 @@ class ErrorPanel extends React.Component<Props, {}> {
         'Network Error': FM.CUSTOMERROR_NETWORK_ERROR
     }
 
-    handleClose = (actionType: AT) => {
+    handleClose = (actionType: AT | null) => {
         this.props.clearErrorDisplay()
 
         // If error associated with an action
@@ -41,8 +41,8 @@ class ErrorPanel extends React.Component<Props, {}> {
         );
     }
 
-    getCustomError(intl: InjectedIntl, error: ErrorState): string {
-        if (!error) {
+    getCustomError(intl: InjectedIntl, error: ErrorState): string | null {
+        if (!error || !error.title) {
             return null
         }
 
@@ -72,7 +72,7 @@ class ErrorPanel extends React.Component<Props, {}> {
                     {this.props.error.actionType && <div className={OF.FontClassNames.large}>
                         <FormattedMessage
                             id={this.props.error.actionType || FM.ERROR_ERROR}
-                            defaultMessage='Unknown '
+                            defaultMessage={this.props.error.actionType || 'Unknown'}
                         /> Failed</div>}
                     <div className={OF.FontClassNames.medium}>{this.props.error.title}</div>
                     {this.props.error && Array.isArray(this.props.error.messages) && this.props.error.messages.map((message, key) => {

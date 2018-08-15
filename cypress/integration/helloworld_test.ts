@@ -2,96 +2,79 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-const { convLearnerPage,
-  modelpage,
-  entities,
-  entityModal,
-  actions,
-  actionsModal,
-  trainDialogPage,
-  trainDialogModal,
-  scorerModal,
-  logDialogPage,
-  logDialogModal,
-  testLog } = components();
 
-describe('Hello world e2e', function () {
-  const postfix = Cypress.moment().format("MMMDD-HHmm")
+const actions = require('../support/components/actionspage')
+const actionsModal = require('../support/components/actionsmodal')
+const modelsListPage = require('../support/components/modelsList')
+const entities = require('../support/components/entitiespage')
+const entityModal = require('../support/components/entitymodal')
+const modelPage = require('../support/components/modelpage')
+const logDialogPage = require('../support/components/logdialogspage')
+const logDialogModal = require('../support/components/logdialogmodal')
+const scorerModal = require('../support/components/scorermodal')
+const trainDialogPage = require('../support/components/traindialogspage')
+const trainDialogModal = require('../support/components/traindialogmodal')
+
+describe('Hello-World', function () {
+  const postfix = Cypress.moment().format("MMMDD-HHmmSSS")
   const modelName = `e2e-HelloWorld-${postfix}`
   const entity01 = `UserName-${postfix}`
   const action01 = `Hello World`
   const trainmessage01 = `Hello`
   const trainmessage02 = `Hi`
 
-  beforeEach(function () {
-    cy.setup();
-    testLog.logTestHeader(this.currentTest.title);
-    // starts the listener
-    cy.on('uncaught:exception', (err, runnable) => {
-      testLog.logError(err);
-      return false;
-    })
-  })
   afterEach(function () {
-    testLog.logResult(this.currentTest);
     const fileName = `HelloWorld_${this.currentTest.state}-${this.currentTest.title}`;
-    cy.wait(3000)
-      .screenshot(fileName);
-    cy.teardown();
+    cy.wait(200)
+      .screenshot(fileName)
   })
 
-  /** FEATURE: New Model */
-  it('CREATE NEW MODEL with random name and verify name on application page', function () {
-    convLearnerPage.navigateTo();
-    convLearnerPage.createNewModel(modelName);
-    modelpage.verifyPageTitle(modelName);
+  it('should create new model with random name and verify transition to model page', function () {
+    modelsListPage.navigateTo()
+    modelsListPage.createNewModel(modelName)
+    modelPage.verifyPageTitle(modelName)
   })
 
-  /** FEATURE:  New Identity */
-  it('should create a NEW ENTITY', () => {
-    modelpage.navigateToEntities();
-    entities.clickButtonNewEntity();
-    entityModal.typeEntityName(entity01);
-    entityModal.clickOnMultivalue();
-    entityModal.clickCreateButton();
-
-    // Verify that the entity has been added
-    cy.get('.ms-DetailsRow-cell')
-      .should('contain', entity01)
+  it('should create a new entity and verify it is added to the list', () => {
+    modelPage.navigateToEntities()
+    entities.clickButtonNewEntity()
+    entityModal.typeEntityName(entity01)
+    entityModal.clickOnMultiValue()
+    entityModal.clickCreateButton()
+    entities.verifyItemInList(entity01)
   })
 
-  /** FEATURE: New Action */
-  it('should be able to ADD AN ACTION', () => {
-    modelpage.navigateToActions();
-    actions.createNew();
-    actionsModal.selectTypeText();
-    actionsModal.typeOnResponseBox(action01);
-    actionsModal.clickCreateButton();
-
-    // Verify that the action has been added
-    cy.get('.ms-DetailsRow-cell')
-      .should('contain', action01)
+  it('should add an action and verify it is added to the list', () => {
+    modelPage.navigateToActions()
+    actions.clickNewAction()
+    actionsModal.selectTypeText()
+    actionsModal.typeOnResponseBox(action01)
+    actionsModal.clickCreateButton()
+    actions.verifyItemInList(action01)
   })
 
   /** FEATURE: New Train Dialog */
-  it('should add a new TRAIN DIALOG', () => {
-    modelpage.navigateToTrainDialogs();
-    trainDialogPage.verifyPageTitle();
-    trainDialogPage.createNew();
-    trainDialogModal.typeYourMessage(trainmessage01);
-    trainDialogModal.clickScoreActions();
-    scorerModal.selectAnAction();
+  it('should add a new train dialog', () => {
+    cy.wait(1000)
+
+    modelPage.navigateToTrainDialogs()
+    trainDialogPage.verifyPageTitle()
+    trainDialogPage.createNew()
+    trainDialogModal.typeYourMessage(trainmessage01)
+    trainDialogModal.clickScoreActions()
+    scorerModal.selectAnAction()
 
     // Perform chat entries validation
     cy.get('[id="botchat"]')
       .should('contain', trainmessage01)
-      .and('contain', action01);
+      .and('contain', action01)
+      .wait(500)
 
-    trainDialogModal.clickDoneTeaching();
-    trainDialogPage.createNew();
-    trainDialogModal.typeYourMessage(trainmessage02);
-    trainDialogModal.clickScoreActions();
-    scorerModal.selectAnAction();
+    trainDialogModal.clickDoneTeaching()
+    trainDialogPage.createNew()
+    trainDialogModal.typeYourMessage(trainmessage02)
+    trainDialogModal.clickScoreActions()
+    scorerModal.selectAnAction()
 
     // Perform second chat entries validation
     cy.get('[id="botchat"]')
@@ -102,7 +85,9 @@ describe('Hello world e2e', function () {
 
   /** FEATURE: New Log Dialog */
   it('should add a new Log Dialog', () => {
-    modelpage.navigateToLogDialogs();
+    cy.wait(1000)
+
+    modelPage.navigateToLogDialogs();
     logDialogPage.verifyPageTitle();
     logDialogPage.createNew();
     logDialogModal.typeYourMessage(trainmessage01);
@@ -117,24 +102,8 @@ describe('Hello world e2e', function () {
 
   /** FEATURE: Delete a Model */
   it('should delete an existent model', () => {
-    convLearnerPage.navigateTo();
-    convLearnerPage.deleteModel(modelName);
+    modelsListPage.navigateTo();
+    modelsListPage.deleteModel(modelName);
     cy.end()
   })
 })
-
-function components() {
-  const actions = require('../support/components/actionspage');
-  const actionsModal = require('../support/components/actionsmodal');
-  const convLearnerPage = require('../support/components/homepage');
-  const entities = require('../support/components/entitiespage');
-  const entityModal = require('../support/components/entitymodal');
-  const modelpage = require('../support/components/modelpage');
-  const logDialogPage = require('../support/components/logdialogspage');
-  const logDialogModal = require('../support/components/logdialogmodal');
-  const scorerModal = require('../support/components/scorermodal');
-  const trainDialogPage = require('../support/components/traindialogspage');
-  const trainDialogModal = require('../support/components/traindialogmodal');
-  const testLog = require('../support/utils/testlog');
-  return { convLearnerPage, modelpage, entities, entityModal, actions, actionsModal, trainDialogPage, trainDialogModal, scorerModal, logDialogPage, logDialogModal, testLog };
-}

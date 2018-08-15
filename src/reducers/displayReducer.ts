@@ -5,10 +5,11 @@
 import { ActionObject, DisplayState } from '../types'
 import { AT } from '../types/ActionTypes'
 import { Reducer } from 'redux'
+import { TipType } from '../components/ToolTips'
 
 const initialState: DisplayState = {
     displaySpinner: [],
-    tipType: null,
+    tipType: TipType.NONE,
     clearedBanner: null
 };
 

@@ -17,15 +17,22 @@ export default class Component extends React.Component<Props, {}> {
     render() {
         const { apiAction, entities, memories } = this.props
         const defaultEntityMap = Util.getDefaultEntityMap(entities)
-        const argumentsUsingEntityNames = apiAction.renderArguments(defaultEntityMap, { preserveOptionalNodeWrappingCharacters: true })
-        const argumentsUsingCurrentMemory = memories === null
+        const logicArgumentsUsingEntityNames = apiAction.renderLogicArguments(defaultEntityMap, { preserveOptionalNodeWrappingCharacters: true })
+        const logicArgumentsUsingCurrentMemory = memories === null
             ? null
-            : apiAction.renderArguments(Util.createEntityMapFromMemories(entities, memories), { fallbackToOriginal: true })
+            : apiAction.renderLogicArguments(Util.createEntityMapFromMemories(entities, memories), { fallbackToOriginal: true })
+
+        const renderArgumentsUsingEntityNames = apiAction.renderRenderArguments(defaultEntityMap, { preserveOptionalNodeWrappingCharacters: true })
+        const renderArgumentsUsingCurrentMemory = memories === null
+            ? null
+            : apiAction.renderRenderArguments(Util.createEntityMapFromMemories(entities, memories), { fallbackToOriginal: true })
 
         return <ApiPayloadRenderer
             name={apiAction.name}
-            originalArguments={argumentsUsingEntityNames}
-            substitutedArguments={argumentsUsingCurrentMemory}
+            originalLogicArguments={logicArgumentsUsingEntityNames}
+            substitutedLogicArguments={logicArgumentsUsingCurrentMemory}
+            originalRenderArguments={renderArgumentsUsingEntityNames}
+            substitutedRenderArguments={renderArgumentsUsingCurrentMemory}
         />
     }
 }

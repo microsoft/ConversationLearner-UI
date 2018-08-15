@@ -14,8 +14,8 @@ import {
     UIPostScoreResponse, UIScoreInput, UIScoreResponse, UIAppList, TrainingStatus, FilledEntityMap
 } from '@conversationlearner/models'
 import { TipType } from '../components/ToolTips'
-import { ErrorType } from '../types/const'
-import { AT } from '../types/ActionTypes'
+import { ErrorType } from './const'
+import { AT } from './ActionTypes'
 
 export type UpdateAction = {
     type: AT.EDIT_APPLICATION_ASYNC,
@@ -52,7 +52,6 @@ export type UpdateAction = {
     trainDialog: TrainDialog
 } | {
     type: AT.EDIT_CHAT_SESSION_EXPIRE_ASYNC,
-    key: string,
     appId: string,
     sessionId: string,
 } | {
@@ -69,11 +68,15 @@ export type UpdateAction = {
 } | {
     type: AT.EDIT_APP_EDITING_TAG_FULFILLED,
     activeApps: { [appId: string]: string }
+} | {
+    type: AT.SETTINGS_UPDATE,
+    botPort: number
+} | {
+    type: AT.SETTINGS_RESET
 }
 
 export type DisplayAction = {
     type: AT.SET_CURRENT_APP_ASYNC,
-    key: string,
     app: AppBase,
 } | {
     type: AT.SET_CURRENT_APP_FULFILLED,
@@ -91,9 +94,9 @@ export type DisplayAction = {
     // used for setting whether the error popup is displayed
     type: AT.SET_ERROR_DISPLAY,
     errorType: ErrorType,
-    title: string,
+    title: string | null,
     messages: string[],
-    actionType: AT
+    actionType: AT | null
 } | {
     type: AT.CLEAR_BANNER
     clearedBanner: Banner,
@@ -126,33 +129,34 @@ export type FetchAction = {
     userId: string
 } | {
     type: AT.FETCH_BOTINFO_ASYNC,
-    browserId: string
+    browserId: string,
+    appId?: string
 } | {
     type: AT.FETCH_BOTINFO_FULFILLED,
     botInfo: BotInfo,
     browserId: string
 } | {
     type: AT.FETCH_ENTITIES_ASYNC,
-    clAppID: string
+    appId: string
 } | {
     type: AT.FETCH_ACTIONS_ASYNC,
-    clAppID: string
+    appId: string
 } | {
     type: AT.FETCH_APPSOURCE_ASYNC,
-    clAppID: string,
+    appId: string,
     packageId: string
 } | {
     type: AT.FETCH_CHAT_SESSIONS_ASYNC,
-    clAppID: string
+    appId: string
 } | {
     type: AT.FETCH_TRAIN_DIALOGS_ASYNC,
-    clAppID: string
+    appId: string
 } | {
     type: AT.FETCH_TRAIN_DIALOGS_FULFILLED,
     allTrainDialogs: TrainDialog[],
 } | {
     type: AT.FETCH_HISTORY_ASYNC,
-    clAppID: string,
+    appId: string,
     userName: string,
     userId: string,
     trainDialog: TrainDialog
@@ -161,8 +165,7 @@ export type FetchAction = {
     teachWithHistory: TeachWithHistory,
 } | {
     type: AT.FETCH_LOG_DIALOGS_ASYNC,
-    key: string,
-    clAppID: string,
+    appId: string,
     packageId: string
 } | {
     type: AT.FETCH_LOG_DIALOGS_FULFILLED,
@@ -187,8 +190,7 @@ export type FetchAction = {
     allTeachSessions: Teach[]
 } | {
     type: AT.FETCH_TEACH_SESSIONS_ASYNC,
-    key: string,
-    clAppID: string
+    appId: string
 } | {
     type: AT.FETCH_PROFILE_ASYNC
 } | {
@@ -294,7 +296,7 @@ export type CreateAction = {
     teachSession: Teach
 } | {
     type: AT.CREATE_TEACH_SESSION_FROMUNDOASYNC,
-    clAppID: string,
+    appId: string,
     teach: Teach,
     popRound: boolean,
     userName: string,
@@ -304,7 +306,7 @@ export type CreateAction = {
     teachWithHistory: TeachWithHistory
 } | {
     type: AT.CREATE_TEACH_SESSION_FROMHISTORYASYNC,
-    clAppID: string,
+    appId: string,
     userName: string,
     userId: string,
     trainDialog: TrainDialog
@@ -315,8 +317,7 @@ export type CreateAction = {
 
 export type DeleteAction = {
     type: AT.DELETE_APPLICATION_ASYNC,
-    appId: string,
-    app: AppBase
+    appId: string
 } | {
     type: AT.DELETE_APPLICATION_FULFILLED,
     appId: string
@@ -364,7 +365,7 @@ export type DeleteAction = {
 } | {
     type: AT.DELETE_TEACH_SESSION_FULFILLED,
     teachSessionGUID: string,
-    sourceLogDialogId: string,
+    sourceLogDialogId: string | null,
     trainDialogId: string,
     key: string,
     appId: string,
@@ -403,7 +404,7 @@ export type TeachAction = {
     type: AT.RUN_EXTRACTOR_ASYNC,
     appId: string,
     extractType: DialogType,
-    turnIndex: number,
+    turnIndex: number | null,
     sessionId: string,
     userInput: UserInput
 } | {
@@ -458,10 +459,8 @@ export type TeachAction = {
     sessionId: string,
     dialogMode: DialogMode,
     uiPostScoreResponse: UIPostScoreResponse,
-    uiScoreInput: UIScoreInput
-} | {
-    type: AT.TEACH_MESSAGE_RECEIVED,
-    message: string
+    // TODO: Why allow null here? Just make different Action
+    uiScoreInput: UIScoreInput | null
 } | {
     type: AT.TOGGLE_AUTO_TEACH,
     autoTeach: boolean

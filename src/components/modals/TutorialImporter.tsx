@@ -2,17 +2,15 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import * as React from 'react';
-import { connect } from 'react-redux';
-import * as OF from 'office-ui-fabric-react';
+import * as React from 'react'
+import * as OF from 'office-ui-fabric-react'
 import { FM } from '../../react-intl-messages'
-import { Modal } from 'office-ui-fabric-react/lib/Modal';
-import { AppBase } from '@conversationlearner/models';
+import { Modal } from 'office-ui-fabric-react/lib/Modal'
+import { AppBase } from '@conversationlearner/models'
 import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import ReactPlayer from 'react-player'
 import * as ReactMarkdown from 'react-markdown'
-
-import { autobind } from 'office-ui-fabric-react/lib/Utilities';
+import { autobind } from 'office-ui-fabric-react/lib/Utilities'
 
 interface IRenderableColumn extends OF.IColumn {
     render: (app: AppBase, component: TutorialImporter) => React.ReactNode
@@ -84,7 +82,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
 
 interface ComponentState {
     columns: IRenderableColumn[]
-    moreInfoApp: AppBase
+    moreInfoApp: AppBase | null
 }
 
 class TutorialImporter extends React.Component<Props, ComponentState> {
@@ -221,4 +219,4 @@ interface ReceivedProps {
 
 type Props = ReceivedProps & InjectedIntlProps;
 
-export default connect<{}, {}, ReceivedProps>(null, null)(injectIntl(TutorialImporter))
+export default injectIntl(TutorialImporter)
