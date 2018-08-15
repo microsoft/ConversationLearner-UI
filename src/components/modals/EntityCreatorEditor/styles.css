@@ -1,0 +1,8 @@
+.cl-entity-creator-checkboxes {
+    margin-top: 1em;
+}
+
+.cl-entity-creator-form {
+    display: grid;
+    grid-gap: 0.5em;
+}

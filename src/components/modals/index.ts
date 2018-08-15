@@ -10,6 +10,7 @@ import ChatSessionModal from './ChatSessionModal'
 import LogDialogModal from './LogDialogModal'
 import TeachSessionModal from './TeachSessionModal'
 import TrainDialogModal from './TrainDialogModal'
+import TutorialImporterModal from './TutorialImporter'
 import ErrorPanel from './ErrorPanel'
 import SpinnerWindow from './SpinnerWindow'
 import Expando from './Expando'
@@ -23,6 +24,7 @@ export {
     LogDialogModal,
     TeachSessionModal,
     TrainDialogModal,
+    TutorialImporterModal,
     ErrorPanel,
     SpinnerWindow,
     Expando

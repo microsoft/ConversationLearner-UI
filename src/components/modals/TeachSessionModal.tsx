@@ -7,7 +7,7 @@ import './TeachSessionModal.css';
 import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { ErrorHandler } from './../../ErrorHandler'
+import { ErrorHandler } from '../../ErrorHandler'
 import { AT } from '../../types/ActionTypes'
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import * as OF from 'office-ui-fabric-react';
@@ -17,9 +17,7 @@ import TeachSessionAdmin from './TeachSessionAdmin'
 import TeachSessionInitState from './TeachSessionInitState'
 import { AppBase, UserInput, DialogType, TrainDialog, LogDialog, Teach, DialogMode, ActionBase, FilledEntityMap } from '@conversationlearner/models'
 import { Activity } from 'botframework-directlinejs'
-import { deleteTeachSessionThunkAsync } from '../../actions/deleteActions'
-import { toggleAutoTeach, runExtractorThunkAsync, initMemoryThunkAsync } from '../../actions/teachActions'
-import { fetchApplicationTrainingStatusThunkAsync } from '../../actions/fetchActions'
+import actions from '../../actions'
 import ConfirmCancelModal from './ConfirmCancelModal'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
@@ -45,7 +43,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
         hasTerminalAction: false
     }
 
-    private callbacksId: string = null;
+    private callbacksId: string | null = null;
 
     componentDidMount() {
         this.callbacksId = ErrorHandler.registerCallbacks(
@@ -57,7 +55,9 @@ class TeachModal extends React.Component<Props, ComponentState> {
     };
 
     componentWillUnmount() {
-        ErrorHandler.deleteCallbacks(this.callbacksId);
+        if (this.callbacksId) {
+            ErrorHandler.deleteCallbacks(this.callbacksId)
+        }
     }
  
     @autobind
@@ -65,6 +65,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
         this.props.deleteTeachSessionThunkAsync(this.props.user.id, this.props.teach, this.props.app, this.props.editingPackageId, false, null, null); // False = abandon
         this.props.onClose();
     }
+
     componentWillReceiveProps(newProps: Props) {
 
         let webchatKey = this.state.webchatKey
@@ -73,19 +74,24 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
         if (this.props.history !== newProps.history) {
             webchatKey = this.state.webchatKey + 1
-            isInitAvailable = !newProps.history || newProps.history.length === 0;
+            isInitAvailable = !newProps.history || newProps.history.length === 0
         }
 
-        // Clear if new session
+        // If new session
         if (this.props.teach !== newProps.teach) {
-            hasTerminalAction = false;
+            isInitAvailable = true
+            hasTerminalAction = false
         }
         // Set terminal action from History but only if I just loaded it
         if (this.props.history !== newProps.history && newProps.history && newProps.history.length > 0) {
-            hasTerminalAction = newProps.lastAction.isTerminal
+            hasTerminalAction = newProps.lastAction
+                ? newProps.lastAction.isTerminal
+                : false
         }
 
-        if (webchatKey !== this.state.webchatKey || hasTerminalAction !== this.state.hasTerminalAction) {
+        if (webchatKey !== this.state.webchatKey || 
+            hasTerminalAction !== this.state.hasTerminalAction ||
+            isInitAvailable !== this.state.isInitAvailable) {
             this.setState({
                 webchatKey: webchatKey,
                 hasTerminalAction: hasTerminalAction,
@@ -102,7 +108,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    onCloseInitState(filledEntityMap: FilledEntityMap) {
+    onCloseInitState(filledEntityMap?: FilledEntityMap) {
         if (filledEntityMap) {
             this.props.initMemoryThunkAsync(this.props.app.appId, this.props.teach.teachId, filledEntityMap)
         }
@@ -120,7 +126,6 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
     @autobind
     onClickSave() {
-
         // If source was a trainDialog, delete the original
         let sourceTrainDialogId = this.props.sourceTrainDialog ? this.props.sourceTrainDialog.trainDialogId : null;
         let sourceLogDialogId = this.props.sourceLogDialog ? this.props.sourceLogDialog.logDialogId : null;
@@ -168,11 +173,11 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
             // Check if button submit info
             if (!activity.text && activity.value && activity.value['submit']) {
-                userInput = { text: activity.value['submit'] };
+                userInput = { text: activity.value['submit'] }
             } 
             // Otherwise use text
             else {
-                userInput = { text: activity.text };
+                userInput = { text: activity.text! }
             }
 
             if (!this.props.teach) {
@@ -348,16 +353,20 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        deleteTeachSessionThunkAsync,
-        fetchApplicationTrainingStatusThunkAsync,
-        initMemoryThunkAsync,
-        runExtractorThunkAsync,
-        toggleAutoTeach
+        deleteTeachSessionThunkAsync: actions.teach.deleteTeachSessionThunkAsync,
+        fetchApplicationTrainingStatusThunkAsync: actions.app.fetchApplicationTrainingStatusThunkAsync,
+        initMemoryThunkAsync: actions.teach.initMemoryThunkAsync,
+        runExtractorThunkAsync: actions.teach.runExtractorThunkAsync,
+        toggleAutoTeach: actions.teach.toggleAutoTeach
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {
+    if (!state.user.user) {
+        throw new Error(`You attempted to render TeachSessionAdmin but the user was not defined. This is likely a problem with higher level component. Please open an issue.`)
+    }
+
     return {
-        user: state.user,
+        user: state.user.user,
         teachSession: state.teachSessions
     }
 }
@@ -374,7 +383,7 @@ export interface ReceivedProps {
     sourceTrainDialog?: TrainDialog,
     sourceLogDialog?: LogDialog,
     history: Activity[],
-    lastAction: ActionBase       
+    lastAction: ActionBase | null
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps

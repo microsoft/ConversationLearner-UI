@@ -27,7 +27,7 @@ export const CustomEntity = (props: Props) => {
             <div className="cl-entity-node-indicator noselect">
                 <div className="cl-entity-node-indicator__mincontent">
                     <div className="cl-entity-node-indicator__controls">
-                        {isEditing &&       
+                        {isEditing &&
                             <IconButton
                                 className="ms-Button--headstone"
                                 iconProps={{ iconName: 'Delete' }}

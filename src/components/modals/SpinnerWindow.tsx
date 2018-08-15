@@ -42,7 +42,7 @@ const mapStateToProps = (state: State) => {
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
-const stateProps = returntypeof(mapStateToProps);
-type Props = typeof stateProps;
+const stateProps = returntypeof(mapStateToProps)
+type Props = typeof stateProps
 
-export default connect<typeof stateProps, {}, {}>(mapStateToProps, null)(SpinnerWindow);
+export default connect<typeof stateProps>(mapStateToProps)(SpinnerWindow)

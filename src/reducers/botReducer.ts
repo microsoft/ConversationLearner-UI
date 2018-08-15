@@ -18,9 +18,13 @@ const initialState: BotState = {
 const botReducer: Reducer<BotState> = (state = initialState, action: ActionObject): BotState => {
     switch (action.type) {
         case AT.FETCH_BOTINFO_FULFILLED:
-            return { ...state, botInfo: action.botInfo, browserId: action.browserId };
+            return {
+                ...state,
+                botInfo: action.botInfo,
+                browserId: action.browserId
+            }
         default:
-            return state;
+            return state
     }
 }
-export default botReducer;
+export default botReducer

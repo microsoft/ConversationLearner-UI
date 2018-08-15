@@ -1,6 +1,6 @@
 # ConversationLearner-UI
 
-This is the user interface which acts as adminstration portal for ConversationLearner where you can manage, train, and test your bots.
+This is the user interface which acts as administration portal for ConversationLearner where you can manage, train, and test your bots.
 
 [![Travis](https://travis-ci.org/Microsoft/ConversationLearner-UI.svg?branch=master)](https://travis-ci.com/Microsoft/ConversationLearner-UI)
 [![CircleCI](https://circleci.com/gh/Microsoft/ConversationLearner-UI.svg?style=shield)](https://circleci.com/gh/Microsoft/ConversationLearner-UI)

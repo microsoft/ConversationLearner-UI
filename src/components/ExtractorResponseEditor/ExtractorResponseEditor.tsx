@@ -30,12 +30,12 @@ interface Props {
 interface State {
     isSelectionOverlappingOtherEntities: boolean
     isMenuVisible: boolean
-    menuPosition: IPosition
+    menuPosition: IPosition | null
     value: SlateValue
     preBuiltEditorValues: SlateValue[]
 }
 
-const disallowedOperations = ['insert_text', 'remove_text', 'merge_node']
+const disallowedOperations = ['insert_text', 'remove_text']
 const externalChangeOperations = ['insert_node', 'remove_node']
 
 /**
@@ -180,8 +180,8 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
     onChange = (change: any) => {
         const { value, operations } = change
         const operationsJs = operations.toJS()
-        console.log(`operationsJs: `, operationsJs)
-        console.log(`disallowedOperations: `, disallowedOperations)
+        // console.log(`operationsJs: `, operationsJs)
+        // console.log(`disallowedOperations: `, disallowedOperations)
         const containsDisallowedOperations = operationsJs.some((o: any) => disallowedOperations.includes(o.type))
 
         if (containsDisallowedOperations) {
@@ -208,7 +208,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
             if (selectionParentElement == null) {
                 console.warn(`selectionParentElement is null or undefined. Value: ${value.document.text}`)
             }
-            else if (selectionParentElement.tagName ===  "BUTTON") {
+            else if (["BUTTON", "I"].includes(selectionParentElement.tagName)) {
                 shouldExpandSelection = false
             }
 
@@ -245,7 +245,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
      * right most position of the input and presses the left arrow.
      */
     onKeyDown = (event: React.KeyboardEvent<HTMLInputElement>, change: any) => {
-        if (event.key === 'Enter') {
+        if (['Enter', 'Backspace'].includes(event.key)) {
             event.preventDefault()
             return true
         }

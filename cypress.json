@@ -4,7 +4,7 @@
   "requestTimeout": 20000,
   "responseTimeout": 45000,
   "viewportHeight": 900,
-  "viewportWidht": 1600,
+  "viewportWidth": 1450,
   "reporterOptions": {
     "configFile": "config-mocha-reporter.json"
   }

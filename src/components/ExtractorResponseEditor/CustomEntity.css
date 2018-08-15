@@ -135,7 +135,7 @@
     border-color: var(--color-prebuilt-entity-bg);
 }
 
-.ms-Button--headstone {
+.ms-Button--icon.ms-Button--headstone {
     border-top: 1px solid rgba(0,0,0,0.25);;
     border-right: 1px solid rgba(0,0,0,0.25);;
     border-bottom: 1px solid #ffffff;

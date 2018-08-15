@@ -8,14 +8,14 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import * as OF from 'office-ui-fabric-react';
 import { EntityCreatorEditor } from '../../../components/modals'
-import { deleteEntityThunkAsync } from '../../../actions/deleteActions'
-import { fetchApplicationTrainingStatusThunkAsync } from '../../../actions/fetchActions'
+import actions from '../../../actions'
 import { State } from '../../../types';
 import { onRenderDetailsHeader } from '../../../components/ToolTips'
 import { AppBase, EntityBase, EntityType } from '@conversationlearner/models'
 import { FM } from '../../../react-intl-messages'
 import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { autobind } from 'office-ui-fabric-react/lib/Utilities';
+import * as moment from 'moment'
 
 interface IRenderableColumn extends OF.IColumn {
     render: (entity: EntityBase, component: Entities) => JSX.Element | JSX.Element[]
@@ -66,9 +66,8 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                 defaultMessage: 'Programmatic'
             }),
             fieldName: 'programmatic',
-            minWidth: 100,
-            maxWidth: 200,
-            isResizable: true,
+            minWidth: 70,
+            isResizable: false,
             getSortValue: entity => (entity.entityType === EntityType.LOCAL) ? 'a' : 'b',
             render: entity => <OF.Icon iconName={entity.entityType === EntityType.LOCAL ? "CheckMark" : "Remove"} className="cl-icon" />
         },
@@ -78,10 +77,9 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                 id: FM.ENTITIES_COLUMNS_IS_BUCKETABLE,
                 defaultMessage: 'Multi-Value'
             }),
-            fieldName: 'metadata',
-            minWidth: 100,
-            maxWidth: 200,
-            isResizable: true,
+            fieldName: 'isMultivalue',
+            minWidth: 70,
+            isResizable: false,
             getSortValue: entity => entity.isMultivalue ? 'a' : 'b',
             render: entity => <OF.Icon iconName={entity.isMultivalue ? "CheckMark" : "Remove"} className="cl-icon" />
         },
@@ -91,12 +89,23 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                 id: FM.ENTITIES_COLUMNS_IS_NEGATABLE,
                 defaultMessage: 'Negatable'
             }),
-            fieldName: 'metadata',
-            minWidth: 100,
-            maxWidth: 200,
-            isResizable: true,
+            fieldName: 'isNegatible',
+            minWidth: 70,
+            isResizable: false,
             getSortValue: entity => entity.isNegatible ? 'a' : 'b',
             render: entity => <OF.Icon iconName={entity.isNegatible ? "CheckMark" : "Remove"} className="cl-icon" />
+        },
+        {
+            key: 'created',
+            name: intl.formatMessage({
+                id: FM.ENTITIES_COLUMNS_CREATED_DATE_TIME,
+                defaultMessage: 'Created'
+            }),
+            fieldName: 'created',
+            minWidth: 100,
+            isResizable: false,
+            getSortValue: entity => moment(entity.createdDateTime).valueOf().toString(),
+            render: entity => <span className={OF.FontClassNames.mediumPlus}>{moment(entity.createdDateTime).format('L')}</span>
         }
     ]
 }
@@ -130,8 +139,8 @@ class Entities extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    handleDelete(entityId: string) {
-        this.props.deleteEntityThunkAsync(this.props.app.appId, entityId)
+    handleDelete(entity: EntityBase) {
+        this.props.deleteEntityThunkAsync(this.props.app.appId, entity)
         this.setState({
             createEditModalOpen: false
         })
@@ -253,7 +262,7 @@ class Entities extends React.Component<Props, ComponentState> {
                             id: FM.ENTITIES_CREATEBUTTONTEXT,
                             defaultMessage: 'New Entity'
                         })}
-                        componentRef={component => this.newEntityButton = component}
+                        componentRef={component => this.newEntityButton = component!}
                     />
                 </div>
                 {entities.length === 0
@@ -318,13 +327,12 @@ class Entities extends React.Component<Props, ComponentState> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        deleteEntityThunkAsync,
-        fetchApplicationTrainingStatusThunkAsync
+        deleteEntityThunkAsync: actions.entity.deleteEntityThunkAsync,
+        fetchApplicationTrainingStatusThunkAsync: actions.app.fetchApplicationTrainingStatusThunkAsync
     }, dispatch)
 }
 const mapStateToProps = (state: State) => {
     return {
-        user: state.user,
         entities: state.entities,
         actions: state.actions
     }

@@ -19,30 +19,12 @@ import AppsList from './AppsList'
 import { CL_IMPORT_ID } from '../../types/const'
 
 interface ComponentState {
-    selectedApp: AppBase | null
 }
 
 class AppsIndex extends React.Component<Props, ComponentState> {
-    state: ComponentState = {
-        selectedApp: null
-    }
-
-    componentWillMount() {
-        const { history } = this.props
-        if (history.location.pathname !== '/home') {
-            // TODO: There seems to be bug where the router state is not cleared sychronously here
-            // Thus when refreshing on non home page such as entities list for an model, this will force redirect to home
-            // howver, the other component at the entities page still runs component will mount with old router state.
-            // Perhaps we need to use componentDidMount to inspect router state in children?
-            history.replace('/home', null)
-            return
-        }
-    }
-
     updateAppsAndBot() {
         if (this.props.user.id !== null && this.props.user.id.length > 0) {
-            this.props.fetchApplicationsAsync(this.props.user.id)
-            this.props.fetchBotInfoAsync(this.props.browserId)
+            this.props.fetchApplicationsThunkAsync(this.props.user.id)
         }
     }
     componentDidMount() {
@@ -60,7 +42,7 @@ class AppsIndex extends React.Component<Props, ComponentState> {
         if (appFromLocationState) {
             const app = this.props.apps.find(a => a.appId === appFromLocationState.appId)
             if (!app) {
-                console.warn(`Attempted to find selected model in list of models: ${this.state.selectedApp.appId} but it could not be found.`)
+                console.warn(`Attempted to find selected model in list of models: ${appFromLocationState.appId} but it could not be found. This should not be possible. Contact Support.`)
                 return
             }
 
@@ -71,10 +53,10 @@ class AppsIndex extends React.Component<Props, ComponentState> {
     }
 
     onClickDeleteApp = (appToDelete: AppBase) => {
-        this.props.deleteApplicationAsync(appToDelete)
+        this.props.deleteApplicationThunkAsync(appToDelete.appId)
     }
 
-    onCreateApp = async (appToCreate: AppBase, source: AppDefinition = null) => {
+    onCreateApp = async (appToCreate: AppBase, source: AppDefinition | null = null) => {
         const app: AppBase = await this.props.createApplicationThunkAsync(this.props.user.id, appToCreate, source) as any
         const { match, history } = this.props
         history.push(`${match.url}/${app.appId}`, { app })
@@ -92,7 +74,7 @@ class AppsIndex extends React.Component<Props, ComponentState> {
         const { match } = this.props
         return (
             <Switch>
-                <Route path={`${match.url}/:appid`} component={AppIndex} />
+                <Route path={`${match.url}/:appId`} component={AppIndex} />
                 <Route
                     exact={true}
                     path={match.url}
@@ -112,19 +94,23 @@ class AppsIndex extends React.Component<Props, ComponentState> {
 
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        fetchApplicationsAsync: actions.fetch.fetchApplicationsAsync,
-        fetchBotInfoAsync: actions.fetch.fetchBotInfoAsync,
-        createApplicationThunkAsync: actions.create.createApplicationThunkAsync,
-        deleteApplicationAsync: actions.delete.deleteApplicationAsync,
-        copyApplicationThunkAsync: actions.create.copyApplicationThunkAsync
+        fetchApplicationsThunkAsync: actions.app.fetchApplicationsThunkAsync,
+        fetchBotInfoThunkAsync: actions.bot.fetchBotInfoThunkAsync,
+        createApplicationThunkAsync: actions.app.createApplicationThunkAsync,
+        deleteApplicationThunkAsync: actions.app.deleteApplicationThunkAsync,
+        copyApplicationThunkAsync: actions.app.copyApplicationThunkAsync
     }, dispatch)
 }
 
 const mapStateToProps = (state: State) => {
+    if (!state.user.user) {
+        throw new Error(`You attempted to render AppsIndex but the user was not defined. This is likely a problem with higher level component. Please open an issue.`)
+    }
+
     return {
         apps: state.apps.all,
         display: state.display,
-        user: state.user, 
+        user: state.user.user, 
         browserId: state.bot.browserId
     }
 }

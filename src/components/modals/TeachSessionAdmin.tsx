@@ -7,8 +7,7 @@ import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../../types'
-import { fetchApplicationTrainingStatusThunkAsync } from '../../actions/fetchActions'
-import { getScoresThunkAsync, runScorerThunkAsync, postScorerFeedbackThunkAsync } from '../../actions/teachActions'
+import actions from '../../actions'
 import {
     AppBase, TextVariation, ExtractResponse,
     DialogType, TrainScorerStep, TrainingStatusCode,
@@ -37,7 +36,11 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
         this.onActionScorerSubmit = this.onActionScorerSubmit.bind(this);
     }
 
-    async onEntityExtractorSubmit(extractResponse: ExtractResponse, textVariations: TextVariation[], roundIndex: number): Promise<void> {
+    async onEntityExtractorSubmit(extractResponse: ExtractResponse, textVariations: TextVariation[]): Promise<void> {
+        if (!this.props.teachSession.current) {
+            throw new Error(`teachSession.current must be defined but it is not. This is likely a problem with higher components. Please open an issue.`)
+        }
+
         const uiScoreInput: UIScoreInput = {
             trainExtractorStep: {
                 textVariations
@@ -54,27 +57,42 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
     }
 
     onActionScorerSubmit(trainScorerStep: TrainScorerStep): void {
-        let uiTrainScorerStep: UITrainScorerStep = {
+        const scoredAction = trainScorerStep.scoredAction
+        if (!scoredAction) {
+            throw new Error(`The provided train scorer step must have scoredAction field, but it was not provided. This should not be possible. Contact Support`)
+        }
+
+        if (!this.props.teachSession.current) {
+            throw new Error(`teachSession.current must be defined but it is not. This is likely a problem with higher components. Please open an issue.`)
+        }
+
+        const uiTrainScorerStep: UITrainScorerStep = {
             trainScorerStep,
             entities: this.props.entities
         };
 
-        let appId: string = this.props.app.appId;
-        let teachId: string = this.props.teachSession.current.teachId;
-        let waitForUser = trainScorerStep.scoredAction.isTerminal;
+        const appId = this.props.app.appId;
+        const teachId = this.props.teachSession.current.teachId;
+        const waitForUser = scoredAction.isTerminal;
 
         // Pass score input (minus extractor step) for subsequent actions when this one is non-terminal
-        let uiScoreInput = { ...this.props.teachSession.uiScoreInput, trainExtractorStep: null } as UIScoreInput
+        const uiScoreInput = {
+            ...this.props.teachSession.uiScoreInput,
+            trainExtractorStep: null
+        } as UIScoreInput
 
         ((this.props.postScorerFeedbackThunkAsync(this.props.user.id, appId, teachId, uiTrainScorerStep, waitForUser, uiScoreInput) as any) as Promise<TeachResponse>)
-            .then(result => { this.props.onScoredAction(trainScorerStep.scoredAction) }
-            )
+            .then(result => { this.props.onScoredAction(scoredAction) })
     }
 
     onClickRefreshScores = (event: React.MouseEvent<HTMLButtonElement>) => {
-        // TODO: This is coupling knowledge about reducers populating this field after runScorer fullfilled
-        if (this.props.teachSession.scoreInput === null) {
+        // TODO: This is coupling knowledge about reducers populating this field after runScorer fulfilled
+        if (!this.props.teachSession.scoreInput) {
             throw new Error(`You attempted to refresh scores but there was no previous score input to re-use.  This is likely a problem with the code. Please open an issue.`)
+        }
+        
+        if (!this.props.teachSession.current) {
+            throw new Error(`teachSession.current must be defined but it is not. This is likely a problem with higher components. Please open an issue.`)
         }
 
         this.props.getScoresThunkAsync(
@@ -240,8 +258,8 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                                 sessionId={this.props.teachSession.current.teachId}
                                 autoTeach={this.props.teachSession.autoTeach}
                                 dialogMode={this.props.teachSession.mode}
-                                scoreResponse={this.props.teachSession.scoreResponse}
-                                scoreInput={this.props.teachSession.scoreInput}
+                                scoreResponse={this.props.teachSession.scoreResponse!}
+                                scoreInput={this.props.teachSession.scoreInput!}
                                 memories={this.props.teachSession.memories}
                                 onActionSelected={this.onActionScorerSubmit}
                             />
@@ -254,15 +272,19 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        fetchApplicationTrainingStatusThunkAsync: fetchApplicationTrainingStatusThunkAsync,
-        getScoresThunkAsync,
-        runScorerThunkAsync,
-        postScorerFeedbackThunkAsync
+        fetchApplicationTrainingStatusThunkAsync: actions.app.fetchApplicationTrainingStatusThunkAsync,
+        getScoresThunkAsync: actions.teach.getScoresThunkAsync,
+        runScorerThunkAsync: actions.teach.runScorerThunkAsync,
+        postScorerFeedbackThunkAsync: actions.teach.postScorerFeedbackThunkAsync
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {
+    if (!state.user.user) {
+        throw new Error(`You attempted to render TeachSessionAdmin but the user was not defined. This is likely a problem with higher level component. Please open an issue.`)
+    }
+
     return {
-        user: state.user,
+        user: state.user.user,
         teachSession: state.teachSessions,
         entities: state.entities,
     }

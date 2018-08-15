@@ -67,7 +67,7 @@ export const tokenizeText = (text: string, tokenRegex: RegExp): IToken[] => {
         return tokens
     }
 
-    let result: RegExpExecArray = null
+    let result: RegExpExecArray | null = null 
     let lastIndex = tokenRegex.lastIndex
     // tslint:disable-next-line:no-conditional-assignment
     while ((result = tokenRegex.exec(text)) !== null) {
@@ -556,7 +556,7 @@ export const convertGenericEntityToPredictedEntity = (entities: EntityBase[]) =>
         endCharIndex: ge.endIndex - 1,
         entityText: text,
         resolution: {},
-        builtinType: undefined,
+        builtinType: entity.entityType, // undefined
         score: 0
     }
 }
@@ -576,6 +576,10 @@ export const convertExtractorResponseToEditorModels = (extractResponse: ExtractR
     const internalPredictedEntities = extractResponse.predictedEntities
         .map<models.InternalPredictedEntity>(predictedEntity => {
             const entity = entities.find(e => e.entityId === predictedEntity.entityId)
+            if (!entity) {
+                throw new Error(`Could not find entity by id: ${predictedEntity.entityId} in list of entities`)
+            }
+
             return {
                 entity,
                 predictedEntity

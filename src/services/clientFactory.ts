@@ -7,7 +7,7 @@ import { AT } from '../types/ActionTypes'
 import { ErrorInjector } from '../ErrorInjector';
 //import DebugErrors from '../components/modals/DebugErrors'
 
-let sdkPort = 5000
+let sdkPort = 3978
 let getMemoryKey = (): string => {
     console.warn(`You attempted to use the Conversation Learner Client before its getMemoryKey method was properly configured. Call setMemoryKey to configure`)
     return ''
@@ -23,7 +23,7 @@ export const getInstance = (actionType: AT): ClClient => {
     // TODO: Refactor out the force error argument and need to take in paramter. This should be implemented in another layer as extension not modification
     // TODO: Allow configuration whole URI for SDK to enable communicating with hosted version (Likely change to getter function like access token)
     
-    return new ClClient(`http://localhost:${sdkPort}`, () => getMemoryKey(), null, forceError)
+    return new ClClient(`http://localhost:${sdkPort}/sdk`, () => getMemoryKey(), {}, forceError)
 }
 
 export const setPort = (port: number) => {

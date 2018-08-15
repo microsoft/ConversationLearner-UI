@@ -35,7 +35,7 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
 
     @autobind
     onClickCancel() {
-        this.props.handleClose(null)
+        this.props.handleClose()
     }
 
     @autobind
@@ -54,7 +54,12 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
 
     @autobind
     onClickAdd(entity: EntityBase) {
-        let memoryValue = {userText: '', displayText: null, builtinType: null, resolution: null} as MemoryValue
+        let memoryValue: MemoryValue = {
+            userText: '',
+            displayText: null,
+            builtinType: null,
+            resolution: {}
+        }
         let map = this.state.filledEntityMap.map
 
         if (!map[entity.entityName]) {
@@ -94,13 +99,13 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
                 containerClassName="cl-modal cl-modal--medium"
             >
                 <div className="cl-modal_header">
-                                <span className={OF.FontClassNames.xxLarge}>
-                                    <FormattedMessage
-                                        id={FM.TEACHSESSIONINIT_TITLE}
-                                        defaultMessage="Set Initial Entity Values"
-                                    />
-                                    </span>
-                                </div>
+                    <span className={OF.FontClassNames.xxLarge}>
+                        <FormattedMessage
+                            id={FM.TEACHSESSIONINIT_TITLE}
+                            defaultMessage="Set Initial Entity Values"
+                        />
+                        </span>
+                    </div>
                 <div>
                     {
                         this.props.entities
@@ -117,41 +122,38 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
                                         />
                                         <OF.Label className="cl-label cl-font--emphasis">{entity.entityName}</OF.Label>
                                         {this.state.filledEntityMap.map[entity.entityName] &&
-                                            this.state.filledEntityMap.map[entity.entityName].values.map((memoryValue, index) => {                                    
+                                            this.state.filledEntityMap.map[entity.entityName].values.map((memoryValue, index) => {
                                                 let key = `${entity.entityId}+${index}`
                                                 return (
                                                 <div key={key}>
-                                                        <OF.IconButton
-                                                            onClick={() => this.onClickRemove(index, entity)}
-                                                            ariaDescription="Remove Value"
-                                                            iconProps={{ iconName: 'Delete' }}
-                                                        />   
-                                                        <OF.TextField
-                                                            className="cl-textfield--inline"
-                                                            key={key}
-                                                            onChanged={text => this.onChanged(index, text, entity)}                                          
-                                                            placeholder={intl.formatMessage({
-                                                                id: FM.TEACHSESSIONINIT_INPUT_PLACEHOLDER,
-                                                                defaultMessage: "Initial Value..."
-                                                            })}
-                                                            value={memoryValue.displayText}
-                                                        />
-                                                    </div>
+                                                    <OF.IconButton
+                                                        onClick={() => this.onClickRemove(index, entity)}
+                                                        ariaDescription="Remove Value"
+                                                        iconProps={{ iconName: 'Delete' }}
+                                                    />
+                                                    <OF.TextField
+                                                        className="cl-textfield--inline"
+                                                        key={key}
+                                                        onChanged={text => this.onChanged(index, text, entity)}
+                                                        placeholder={intl.formatMessage({
+                                                            id: FM.TEACHSESSIONINIT_INPUT_PLACEHOLDER,
+                                                            defaultMessage: "Initial Value..."
+                                                        })}
+                                                        value={memoryValue.displayText || ''}
+                                                    />
+                                                </div>
                                                 )
                                             })
                                         }
                                     </div>
                                 )
-
                             }
                         )
                     }
                 </div>
                 <div className="cl-modal_footer cl-modal_footer--border">
                     <div className="cl-modal-buttons">
-
                         <div className="cl-modal-buttons_primary">
-
                             <OF.PrimaryButton
                                 onClick={this.onClickSubmit}
                                 ariaDescription={intl.formatMessage({
@@ -174,7 +176,6 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
                                     defaultMessage: 'Cancel'
                                 })}
                             />
-                            
                         </div>
                     </div>
                 </div>
@@ -194,9 +195,9 @@ const mapStateToProps = (state: State) => {
     }
 }
 
-export interface ReceivedProps {  
-    isOpen: boolean,  
-    handleClose: (filledEntityMap: FilledEntityMap) => void
+export interface ReceivedProps {
+    isOpen: boolean,
+    handleClose: (filledEntityMap?: FilledEntityMap) => void
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps

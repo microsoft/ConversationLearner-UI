@@ -2,9 +2,9 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import { Provider } from 'react-redux';
+import * as React from 'react'
+import * as ReactDOM from 'react-dom'
+import { Provider } from 'react-redux'
 import { createReduxStore } from './reduxStore'
 import App from './routes/App';
 import { unregister } from './registerServiceWorker'
@@ -13,12 +13,9 @@ import { addLocaleData, IntlProvider } from 'react-intl'
 import * as en from 'react-intl/locale-data/en'
 import * as ko from 'react-intl/locale-data/ko'
 import messages from './react-intl-messages'
-import { Fabric } from 'office-ui-fabric-react'
-import { loadTheme } from 'office-ui-fabric-react'
+import { Fabric, loadTheme } from 'office-ui-fabric-react'
 import { initializeIcons } from 'office-ui-fabric-react/lib/Icons'
-import * as SdkPort from './services/sdkPort'
 
-SdkPort.initialize()
 /** Required for Office UI Fabric to load icon fonts  */
 initializeIcons()
 /** Override default colors */
