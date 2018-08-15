@@ -83,7 +83,7 @@ describe('Intro to Entities', function () {
     // trainDialogModal.clickScoreActions();
     // scorerModal.selectAnActionWithText(action01);
 
-    //** TODO: wrapt the test up after steps above */
+    //** TODO: wrap the test up after steps above */
     cy.wait(2000)
     trainDialogModal.clickDoneTeaching()
   })

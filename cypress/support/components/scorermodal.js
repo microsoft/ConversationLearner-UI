@@ -5,10 +5,12 @@
 export function selectAnAction() {
     cy.server()
     cy.route('POST', '/sdk/app/*/teach/*/scorer').as('postScore')
+
     cy.get('[data-testid="actionscorer-buttonClickable"]')
         .should("be.visible")
         .click()
-        .wait('@postScore')
+
+    cy.wait('@postScore')
         .wait(500)
 }
 
@@ -23,5 +25,6 @@ export function selectAnActionWithText(action) {
             .find('.ms-Button-flexContainer')
             .click()
     })
+    
     cy.wait('@postScore')
 }

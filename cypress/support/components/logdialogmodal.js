@@ -3,14 +3,14 @@
  * Licensed under the MIT License.
  */
 export function typeYourMessage(trainmessage) {
-  // Submit message to WebChat
   cy.server()
   cy.route('POST', '/directline/conversations/**').as('postConversations')
 
   cy.get('input[class="wc-shellinput"]')
     .should("be.visible")
     .type(`${trainmessage}{enter}`)
-    .wait('@postConversations')
+
+  cy.wait('@postConversations')
     .wait(500)
 }
 

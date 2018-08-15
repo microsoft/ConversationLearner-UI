@@ -15,5 +15,6 @@ export function createNew() {
 
   cy.get('[data-testid="button-new-train-dialog"]')
     .click()
-    .wait(['@postTeach', '@postConv', '@putConv'])
+
+  cy.wait(['@postTeach', '@postConv', '@putConv'])
 }

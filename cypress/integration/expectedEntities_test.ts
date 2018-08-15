@@ -2,74 +2,47 @@
 * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
 */
-const { convLearnerPage,
-  modelpage,
-  entities,
-  entityModal,
-  actions,
-  actionsModal,
-  trainDialogPage,
-  trainDialogModal,
-  scorerModal,
-  logDialogPage,
-  logDialogModal,
-  testLog } = components();
+const actions = require('../support/components/actionspage')
+const actionsModal = require('../support/components/actionsmodal')
+const entities = require('../support/components/entitiespage')
+const entityModal = require('../support/components/entitymodal')
+const modelsListPage = require('../support/components/modelsList')
+const modelPage = require('../support/components/modelPage')
+const logDialogPage = require('../support/components/logdialogspage')
+const logDialogModal = require('../support/components/logdialogmodal')
+const scorerModal = require('../support/components/scorermodal')
+const trainDialogPage = require('../support/components/traindialogspage')
+const trainDialogModal = require('../support/components/traindialogmodal')
+
 
 describe('ExpectedEntities test', function () {
-  const postfix = Cypress.moment().format("MMMDD-HHmm")
-  const modelName = `e2e-expecEntities-${postfix}`
-  const customEntity01 = "name"
+  const postfix = Cypress.moment().format("MMDD-HHmmSSS")
+  const modelName = `e2e-expected-${postfix}`
+  const entityName = "name"
   const actionResponse01 = "What's your name?"
-  const actionResponse02 = "Hello $name"
-
-  beforeEach(function () {
-    cy.setup();
-    testLog.logTestHeader(this.currentTest.title);
-    // starts the listener
-    cy.on('uncaught:exception', (err, runnable) => {
-      testLog.logError(err);
-      return false;
-    })
-  })
+  const actionResponse02 = "Hello $name{enter}"
 
   afterEach(function () {
-    testLog.logResult(this.currentTest);
     const fileName = `expecEntities_${this.currentTest.state}-${this.currentTest.title}`;
     cy.wait(3000)
-      .screenshot(fileName);
-    cy.clearLocalStorage();
+      .screenshot(fileName)
   })
 
-  /** FEATURE: New Model */
-  it('create a New ExpectedEntities Model', function () {
-    // 1	Create the application:
-    // 1.1	- In the Web UI, click New App
-    // 1.2	- In Name, enter ExpectedEntities. Then click Create.
-    
-    convLearnerPage.navigateTo();
-    convLearnerPage.createNewModel(modelName);
-    modelpage.verifyPageTitle(modelName);
-    })
-
-  /** FEATURE: Custom entity creation */
-  it('should add new NAME entity', function () {
-    // 2	Create an entity
-    // 2.1	Click Entities, then New Entity.
-    // 2.2	In Entity Name, enter name.
-    // 2.3	Click Create
-
-    modelpage.navigateToEntities();
-    entities.clickButtonNewEntity();
-    entityModal.typeEntityName(customEntity01); //name
-    entityModal.clickCreateButton();
-
-    // Verify that the entity has been added
-    cy.get('.ms-DetailsRow-cell')
-      .should('contain', customEntity01)
+  it('create a new model', function () {
+    modelsListPage.navigateTo()
+    modelsListPage.createNewModel(modelName)
+    modelPage.verifyPageTitle(modelName)
   })
 
-  /** FEATURE: New Action */
-  it('should add two actions using NAME entity', () => {
+  it('should add new entity', function () {
+    modelPage.navigateToEntities()
+    entities.clickButtonNewEntity()
+    entityModal.typeEntityName(entityName)
+    entityModal.clickCreateButton()
+    entities.verifyItemInList(entityName)
+  })
+
+  it('should create action using name as expected entity', () => {
     //FULL SECTION
     // 3	Create two actions
     // 3.1	Click Actions, then New Action
@@ -80,28 +53,26 @@ describe('ExpectedEntities test', function () {
     // 3.5	In Response, type 'Hello $name'.
     // 3.5.1	<Validation step> Note that the entity is automatically added as a disqualifying entity.
     // 3.6	Click Save
-    
-    modelpage.navigateToActions();
-    actions.createNew();
-    actionsModal.selectTypeText();
-    actionsModal.typeOnResponseBox(actionResponse01);    // 3.2	In Response, type 'What's your name?'.
-    actionsModal.typeExpectedEntityInResponse('$name')   // 3.3	In Expected Entities, enter $name. Click Save.
-    actionsModal.clickCreateButton();
-    cy.wait(4000);
-    //TODO:
-    // 3.3.1	<Validation step> This means that if this question is asked, 
-    //and the user response does not have any entities detected, 
-    //the bot should assume the whole of the user's response is this entity.
 
-    actions.createNew();
-    actionsModal.selectTypeText();
-    actionsModal.typeOnResponseBox(actionResponse02);     // 3.5	In Response, type 'Hello $name'.
-    actionsModal.typeDisqualifyingEntities('$city');
-    actionsModal.clickCreateButton();
-
+    modelPage.navigateToActions()
+    actions.clickNewAction()
+    actionsModal.selectTypeText()
+    actionsModal.typeOnResponseBox(actionResponse01)
+    actionsModal.typeExpectedEntityInResponse('$name')
+    actionsModal.clickCreateButton()
+    cy.wait(1000)
   })
 
-  it('should be able to TRAIN THE BOT', () => {
+  it(`should create an action using city as disqualifying entity`, () => {
+    actions.clickNewAction()
+    actionsModal.selectTypeText()
+    actionsModal.typeOnResponseBox(actionResponse02)
+    actionsModal.typeDisqualifyingEntities('$name')
+    actionsModal.clickCreateButton()
+    cy.wait(1000)
+  })
+
+  it('should be able to train the', () => {
     // 4	Train the bot
     // 4.1	Click Train Dialogs, then New Train Dialog.
     // 4.2	Type 'hello'.
@@ -125,51 +96,31 @@ describe('ExpectedEntities test', function () {
     // 4.15	Select 'Hello susan'.
     // 4.16	Click Done Teaching.
 
-    modelpage.navigateToTrainDialogs();
-    trainDialogPage.createNew();
-    trainDialogModal.typeYourMessage("hello"); // Type 'hello'.
-    trainDialogModal.clickScoreActions();
-    scorerModal.selectAnActionWithText(actionResponse01);   // 4.3	Click Score Actions, and Select 'What's your name?'
-    
+    modelPage.navigateToTrainDialogs()
+    trainDialogPage.createNew()
+    trainDialogModal.typeYourMessage("hello")
+    trainDialogModal.clickScoreActions()
+    scorerModal.selectAnActionWithText(actionResponse01)
+
     //TODO: 4.3.1	<Validation Step> Note that the response 'Hello $name' 
     // cannot be selected, because it requies the entity $name to be defined, 
     // and $name is not in bot's memory.
 
-    cy.wait(2000);
-    trainDialogModal.typeYourMessage("david");      // Type 'hello'.
+    cy.wait(2000)
+    trainDialogModal.typeYourMessage("david")
 
     //TODO:  
     // 4.4.1	<Validation Step> Note that the name is highlighted as an entity. 
     //This is because of the heuristic we set up above to select the response as the entity.
     //TODO: -- add steps from 4.4.1 through 4.15
     // Perform chat entries validation
-  
+
     cy.wait(2000)
-    trainDialogModal.clickDoneTeaching();
+    trainDialogModal.clickDoneTeaching()
   })
 
-  /** FEATURE: Delete a Model */
   it('should delete an existent model', () => {
-    convLearnerPage.navigateTo();
-    convLearnerPage.deleteModel(modelName);
-    cy.end()
+    modelsListPage.navigateTo()
+    modelsListPage.deleteModel(modelName)
   })
 })
-
-function components() {
-  const actions = require('../support/components/actionspage');
-  const actionsModal = require('../support/components/actionsmodal');
-  const convLearnerPage = require('../support/components/homepage');
-  const entities = require('../support/components/entitiespage');
-  const entityModal = require('../support/components/entitymodal');
-  const modelpage = require('../support/components/modelpage');
-  const logDialogPage = require('../support/components/logdialogspage');
-  const logDialogModal = require('../support/components/logdialogmodal');
-  const scorerModal = require('../support/components/scorermodal');
-  const trainDialogPage = require('../support/components/traindialogspage');
-  const trainDialogModal = require('../support/components/traindialogmodal');
-  const testLog = require('../support/utils/testlog');
-  return { convLearnerPage, modelpage, entities, entityModal, actions, actionsModal, trainDialogPage, trainDialogModal, scorerModal, logDialogPage, logDialogModal, testLog };
-}
-
-

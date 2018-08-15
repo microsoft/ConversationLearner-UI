@@ -10,8 +10,10 @@ export function verifyPageTitle() {
 export function createNew() {
   cy.server()
   cy.route('PUT', '/sdk/state/conversationId?**').as('putConv')
+
   cy.get('[data-testid="logdialogs-button-create"]')
     .click()
-    .wait('@putConv')
+
+  cy.wait('@putConv')
     .wait(1000)
 }
