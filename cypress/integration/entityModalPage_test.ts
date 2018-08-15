@@ -2,104 +2,70 @@
 * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
 */
-const { convLearnerPage,
-  modelpage,
-  entities,
-  entityModal,
-  actions,
-  actionsModal,
-  trainDialogPage,
-  trainDialogModal,
-  scorerModal,
-  logDialogPage,
-  logDialogModal,
-  testLog } = components();
+const actions = require('../support/components/actionspage')
+const actionsModal = require('../support/components/actionsmodal')
+const entities = require('../support/components/entitiespage')
+const entityModal = require('../support/components/entitymodal')
+const modelsListPage = require('../support/components/modelsList')
+const modelPage = require('../support/components/modelPage')
+const logDialogPage = require('../support/components/logdialogspage')
+const logDialogModal = require('../support/components/logdialogmodal')
+const scorerModal = require('../support/components/scorermodal')
+const trainDialogPage = require('../support/components/traindialogspage')
+const trainDialogModal = require('../support/components/traindialogmodal')
 
 describe('Entities creation test', function () {
-  const postfix = Cypress.moment().format("MMMDD-HHmm")
-  const modelName = `e2e-entities-${postfix}`
+  const momentSeconds = Cypress.moment().format("MMMDD-HHmmSSS")
+  const modelName = `e2e-entities-${momentSeconds}`
   const customEntity01 = "programmaticonlyentity"
   const customEntity02 = "multivaluedentity"
   const customEntity03 = "negatable-entity"
 
-  beforeEach(function () {
-    cy.setup();
-    testLog.logTestHeader(this.currentTest.title);
-    // starts the listener
-    cy.on('uncaught:exception', (err, runnable) => {
-      testLog.logError(err);
-      return false;
-    })
-  })
-
   afterEach(function () {
-    testLog.logResult(this.currentTest);
-    const fileName = `entities_${this.currentTest.state}-${this.currentTest.title}`;
+    const fileName = `entities_${this.currentTest.state}-${this.currentTest.title}`
     cy.wait(3000)
-      .screenshot(fileName);
-    cy.teardown();
+      .screenshot(fileName)
   })
 
-  /** FEATURE: New Model */
-  it('create a New Model', function () {
-    convLearnerPage.navigateTo();
-    convLearnerPage.createNewModel(modelName);
-    modelpage.verifyPageTitle(modelName);
+  it('create a new model', function () {
+    modelsListPage.navigateTo()
+    modelsListPage.createNewModel(modelName)
+    modelPage.verifyPageTitle(modelName)
   })
 
-  /** FEATURE: Custom entity creation */
   it('should be able to create a custom and builtin entities', function () {
+    modelPage.navigateToEntities()
 
-    modelpage.navigateToEntities();
-    // programagic only entity creation 
-    entities.clickButtonNewEntity();
-    entityModal.typeEntityName(customEntity01);
-    entityModal.clickOnProgrammaticOnly();
-    entityModal.clickCreateButton();
-    cy.wait(3000);
+    // Create custom programmatic entity
+    entities.clickButtonNewEntity()
+    entityModal.typeEntityName(customEntity01)
+    entityModal.clickOnProgrammaticOnly()
+    entityModal.clickCreateButton()
+    cy.wait(3000)
 
-    //multi-value entity creation 
-    entities.clickButtonNewEntity();
-    entityModal.typeEntityName(customEntity02);
-    entityModal.clickOnMultivalue();
-    entityModal.clickCreateButton();
-    cy.wait(3000);
+    // Create multi-value entity 
+    entities.clickButtonNewEntity()
+    entityModal.typeEntityName(customEntity02)
+    entityModal.clickOnMultiValue()
+    entityModal.clickCreateButton()
+    cy.wait(3000)
 
-    //negatable entity creation
-    entities.clickButtonNewEntity();
-    entityModal.typeEntityName(customEntity03);
-    entityModal.clickOnNegatable();
-    entityModal.clickCreateButton();
-    cy.wait(3000);
+    // Create negatable entity
+    entities.clickButtonNewEntity()
+    entityModal.typeEntityName(customEntity03)
+    entityModal.clickOnNegatable()
+    entityModal.clickCreateButton()
+    cy.wait(3000)
 
-    // Verify that the entity has been added
+    // Verify that the entities has been added
     cy.get('.ms-DetailsRow-cell')
       .should('contain', customEntity01)
       .and('contain', customEntity02)
-      .and('contain', customEntity03);
+      .and('contain', customEntity03)
   })
 
-  /** FEATURE: Delete a Model */
   it('should delete an existent model', () => {
-    convLearnerPage.navigateTo();
-    convLearnerPage.deleteModel(modelName);
+    modelsListPage.navigateTo();
+    modelsListPage.deleteModel(modelName);
   })
 })
-
-function components() {
-  const actions = require('../support/components/actionspage');
-  const actionsModal = require('../support/components/actionsmodal');
-  const convLearnerPage = require('../support/components/homepage');
-  const entities = require('../support/components/entitiespage');
-  const entityModal = require('../support/components/entitymodal');
-  const modelpage = require('../support/components/modelpage');
-  const logDialogPage = require('../support/components/logdialogspage');
-  const logDialogModal = require('../support/components/logdialogmodal');
-  const scorerModal = require('../support/components/scorermodal');
-  const trainDialogPage = require('../support/components/traindialogspage');
-  const trainDialogModal = require('../support/components/traindialogmodal');
-  const testLog = require('../support/utils/testlog');
-  return { convLearnerPage, modelpage, entities, entityModal, actions, actionsModal, trainDialogPage, trainDialogModal, scorerModal, logDialogPage, logDialogModal, testLog };
-}
-
-
