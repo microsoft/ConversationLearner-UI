@@ -50,20 +50,21 @@ describe('Wait vs No Wait Action e2e test', function () {
     actionsModal.selectTypeText()
     actionsModal.typeOnResponseBox(action01)
     actionsModal.clickCreateButton()
-
+     cy.wait(4000);
     // No Wait Actions:
     actions.clickNewAction()
     actionsModal.selectTypeText()
     actionsModal.typeOnResponseBox(action02)
     actionsModal.clickWaitForResponse()
     actionsModal.clickCreateButton()
-
+     cy.wait(4000);
     actions.clickNewAction()
     actionsModal.selectTypeText()
     actionsModal.typeOnResponseBox(action03)
     actionsModal.clickWaitForResponse()
     actionsModal.clickCreateButton()
-
+     cy.wait(4000);
+    
     // Verify that the action has been added
     actions.verifyItemInList(action01)
     actions.verifyItemInList(action02)

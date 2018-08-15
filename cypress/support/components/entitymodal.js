@@ -3,10 +3,9 @@
  * Licensed under the MIT License.
  */
 export function typeEntityName(entityName) {
-    // Enter name for entity
     cy.get('[data-testid="entity-creator-input-name"]')
         .type(entityName)
-        .wait(1000);
+        .wait(1000)
 }
 
 /** Clicks on Programmatic Only checkbox */
@@ -38,7 +37,9 @@ export function clickOnNegatable() {
 export function clickCreateButton() {
     cy.server()
     cy.route('POST', '/sdk/app/*/entity').as('postEntity')
+
     cy.get('[data-testid="entity-creator-button-save"]')
         .click()
-        .wait('@postEntity')
+
+    cy.wait('@postEntity')
 }
