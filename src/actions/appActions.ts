@@ -263,6 +263,7 @@ export const deleteApplicationThunkAsync = (appId: string) => {
 
         try {
             await clClient.appsDelete(appId)
+            poller.removePoll(appId)
             dispatch(deleteApplicationFulfilled(appId))
             return true;
         } catch (e) {
@@ -322,7 +323,7 @@ export const fetchApplicationTrainingStatusThunkAsync = (appId: string) => {
             maxDuration: 30000,
             request: async () => {
                 const trainingStatus = await clClient.appGetTrainingStatus(appId)
-                console.log(`${new Date().getTime()} Poll app: ${appId}: `, trainingStatus.trainingStatus)
+                console.debug(`${new Date().getTime()} Poll app: ${appId}: `, trainingStatus.trainingStatus)
                 return trainingStatus
             },
             isResolved: trainingStatus => [TrainingStatusCode.Completed, TrainingStatusCode.Failed].includes(trainingStatus.trainingStatus),

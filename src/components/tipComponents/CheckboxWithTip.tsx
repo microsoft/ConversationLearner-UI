@@ -3,7 +3,7 @@
  * Licensed under the MIT License.
  */
 import * as React from 'react'
-import { TipType } from '../../components/ToolTips'
+import { TipType } from '../ToolTips'
 import HelpIcon from '../HelpIcon'
 import * as OF from 'office-ui-fabric-react'
 import "./CheckboxWithTip.css"

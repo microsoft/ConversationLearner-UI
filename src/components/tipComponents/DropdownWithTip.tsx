@@ -3,7 +3,7 @@
  * Licensed under the MIT License.
  */
 import * as React from 'react'
-import { TipType } from '../../components/ToolTips'
+import { TipType } from '../ToolTips'
 import HelpIcon from '../HelpIcon'
 import * as OF from 'office-ui-fabric-react'
 
@@ -17,7 +17,7 @@ class DropdownWithTip extends OF.BaseComponent<IDropdownWithTipProps, OF.IDropdo
 
         return (
             <div>
-                <OF.Label className="ms-Label--tight">{label}
+                <OF.Label>{label}
                     <HelpIcon tipType={tipType} />
                 </OF.Label>
                 <OF.Dropdown

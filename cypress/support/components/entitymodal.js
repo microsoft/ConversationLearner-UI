@@ -2,17 +2,14 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-const testLog = require('../utils/testlog')
-
-function typeEntityName(entityName) {
-    // Enter name for entity
+export function typeEntityName(entityName) {
     cy.get('[data-testid="entity-creator-input-name"]')
         .type(entityName)
-        .wait(1000);
+        .wait(1000)
 }
 
 /** Clicks on Programmatic Only checkbox */
-function clickOnProgrammaticOnly() {
+export function clickOnProgrammaticOnly() {
     //cy.get('[data-testid="entitycreator-checkbox-programmaticonly"]')
     cy.get('.cl-modal_body').within(() => {
         cy.get('.ms-Checkbox-text').contains('Programmatic Only')
@@ -21,7 +18,7 @@ function clickOnProgrammaticOnly() {
 }
 
 /** Clicks on multivalue checkbox */
-function clickOnMultivalue() {
+export function clickOnMultiValue() {
     cy.get('.cl-modal_body').within(() => {
         cy.get('.ms-Checkbox-text').contains('Multi-valued')
             .click()
@@ -29,7 +26,7 @@ function clickOnMultivalue() {
 }
 
 /** Clicks on Negatable checkbox */
-function clickOnNegatable() {
+export function clickOnNegatable() {
     cy.get('.cl-modal_body').within(() => {
         cy.get('.ms-Checkbox-text').contains('Negatable')
             .click()
@@ -37,23 +34,12 @@ function clickOnNegatable() {
 }
 
 /** Select the submit button to save the new entity*/
-function clickCreateButton() {
-    testLog.logStart("Entity Modal: Click Create (save)");
+export function clickCreateButton() {
     cy.server()
-    cy.route('POST', '/app/*/entity').as('postEntity')
-    cy.get('[data-testid="entity-creator-button-save"]')
-        .then(function (response) {
-            testLog.logStep("Click create button")
-        })
-        .click()
-        .wait('@postEntity')
-    testLog.logEnd();
-}
+    cy.route('POST', '/sdk/app/*/entity').as('postEntity')
 
-export {
-    clickOnMultivalue,
-    typeEntityName,
-    clickOnProgrammaticOnly,
-    clickOnNegatable,
-    clickCreateButton
+    cy.get('[data-testid="entity-creator-button-save"]')
+        .click()
+
+    cy.wait('@postEntity')
 }

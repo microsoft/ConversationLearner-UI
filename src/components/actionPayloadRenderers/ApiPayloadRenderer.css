@@ -8,7 +8,15 @@
     grid-gap: 1em;
 }
 
+.cl-api-payload__fn {
+    margin-top: 0.5em;
+}
+.cl-api-payload__signature {
+    font-family: 'Consolas', 'Courier New', 'Tahoma', sans-serif
+}
+
 .cl-api-payload__arguments {
+    padding-left: 1em;
     display: grid;
     grid-template: auto / min-content 1fr;
     grid-gap: 0 0.5em;

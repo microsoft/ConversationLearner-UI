@@ -2,24 +2,18 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-const testLog = require('../utils/testlog')
-
-/** Verify: the log Dialog page is rendered */
-function verifyPageTitle() {
+export function verifyPageTitle() {
   cy.get('div[data-testid="logdialogs-title"]')
     .contains('Log Dialogs')
 }
 
-/** starts a new log dialog */
-function createNew() {
+export function createNew() {
   cy.server()
-  cy.route('PUT', '/state/conversationId?username=ConversationLearnerDeveloper&id=*').as('putConv')
+  cy.route('PUT', '/sdk/state/conversationId?**').as('putConv')
+
   cy.get('[data-testid="logdialogs-button-create"]')
-    .should("be.visible")
-    .then(function (response) {
-      testLog.logStep("Click button New Log Dialog ")
-    })
     .click()
-    .wait('@putConv')
+
+  cy.wait('@putConv')
+    .wait(1000)
 }
-export { verifyPageTitle, createNew };

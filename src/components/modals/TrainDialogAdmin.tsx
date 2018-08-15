@@ -118,6 +118,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                     // Action may have been deleted.  If so create dummy action to render
                     selectedAction = {
                         actionId: scorerStep.labelAction,
+                        createdDateTime: new Date().toJSON(),
                         payload: 'MISSING ACTION',
                         isTerminal: false,
                         actionType: ActionTypes.TEXT,

@@ -88,6 +88,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
             this.setState({
                 appNameVal: '',
                 localeVal: firstValue,
+                file: null
             })
         }
     }
@@ -275,7 +276,8 @@ class AppCreator extends React.Component<Props, ComponentState> {
                             <FilePicker
                                 extensions={['cl']}
                                 onChange={this.onChangeFile}
-                                onError={(error: string) => setErrorDisplay(ErrorType.Error, error, [], null)}
+                                onError={(error: string) => this.props.setErrorDisplay(ErrorType.Error, error, [], null)}
+                                maxSize={10}
                             >
                                 <div className="cl-action-creator-file-picker">
                                     <OF.PrimaryButton

@@ -6,7 +6,7 @@ import * as React from 'react'
 import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import { ActionBase, ActionTypes, Template, RenderedActionArgument, SessionAction, CardAction, TextAction, ApiAction, RenderAction } from '@conversationlearner/models'
+import { ActionBase, ActionTypes, Template, RenderedActionArgument, SessionAction, CardAction, TextAction, ApiAction } from '@conversationlearner/models'
 import { State } from '../types'
 import * as OF from 'office-ui-fabric-react'
 import { onRenderDetailsHeader } from './ToolTips'
@@ -17,6 +17,7 @@ import AdaptiveCardViewer from './modals/AdaptiveCardViewer/AdaptiveCardViewer'
 import * as ActionPayloadRenderers from './actionPayloadRenderers'
 import { Icon } from 'office-ui-fabric-react'
 import './ActionDetailsList.css'
+import * as moment from 'moment'
 
 interface ComponentState {
     columns: IRenderableColumn[]
@@ -43,11 +44,7 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
             }
             case ActionTypes.API_LOCAL: {
                 const apiAction = new ApiAction(action)
-                return !this.props.botInfo.apiCallbacks.some(t => t.name === apiAction.name)
-            }
-            case ActionTypes.RENDER: {
-                const renderAction = new RenderAction(action)
-                return !this.props.botInfo.renderCallbacks.some(t => t.name === renderAction.name)
+                return !this.props.botInfo.callbacks.some(t => t.name === apiAction.name)
             }
             case ActionTypes.CARD: {
                 const cardAction = new CardAction(action)
@@ -200,15 +197,6 @@ function getActionPayloadRenderer(action: ActionBase, component: ActionDetailsLi
             memories={null}
         />)
     }
-    // TODO: Consider consolidating to CODE ACTION
-    else if (action.actionType === ActionTypes.RENDER) {
-        const apiAction = new RenderAction(action)
-        return (<ActionPayloadRenderers.ApiPayloadRendererContainer
-            apiAction={apiAction}
-            entities={component.props.entities}
-            memories={null}
-        />)
-    }
     else if (action.actionType === ActionTypes.CARD) {
         const cardAction = new CardAction(action)
         return (<ActionPayloadRenderers.CardPayloadRendererContainer
@@ -256,10 +244,6 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                     case ActionTypes.API_LOCAL: {
                         const apiAction = new ApiAction(action)
                         return apiAction.name
-                    }
-                    case ActionTypes.RENDER: {
-                        const renderAction = new RenderAction(action)
-                        return renderAction.name
                     }
                     case ActionTypes.CARD: {
                         const cardAction = new CardAction(action)
@@ -386,10 +370,21 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             }),
             fieldName: 'isTerminal',
             minWidth: 50,
-            maxWidth: 50,
-            isResizable: true,
+            isResizable: false,
             getSortValue: action => action.isTerminal ? 'a' : 'b',
             render: action => <OF.Icon iconName={action.isTerminal ? 'CheckMark' : 'Remove'} className="cl-icon" />
+        },
+        {
+            key: 'createdDateTime',
+            name: intl.formatMessage({
+                id: FM.ACTIONDETAILSLIST_COLUMNS_CREATED_DATE_TIME,
+                defaultMessage: 'Created'
+            }),
+            fieldName: 'createdDateTime',
+            minWidth: 100,
+            isResizable: false,
+            getSortValue: action => moment(action.createdDateTime).valueOf().toString(),
+            render: action => <span className={OF.FontClassNames.mediumPlus}>{moment(action.createdDateTime).format('L')}</span>
         }
     ]
 }

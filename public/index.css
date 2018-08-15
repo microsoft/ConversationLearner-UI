@@ -382,7 +382,7 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
 
 .cl-modal.cl-modal--medium{
   width: 60%;
-  height: 70%;
+  height: 80%;
   /* TODO: Remove padding here, it should be the content inside that decides padding, otherwise all modals should have padding */
   padding: 1em;
 }
@@ -566,10 +566,6 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
 /** Office UI Fabric Theme Overrides */
 .ms-List-cell {
   min-height: 0px !important;
-}
-
-.ms-Label--tight {
-  padding-bottom: 0px !important;
 }
 
 .ms-Pivot {
