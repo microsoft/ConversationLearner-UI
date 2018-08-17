@@ -225,6 +225,28 @@ export type FetchAction = {
 } | {
     type: AT.FETCH_ACTION_EDIT_VALIDATION_FULFILLED
 } | {
+    type: AT.FETCH_SCOREFROMHISTORY_ASYNC,
+    appId: string,
+    trainDialog: TrainDialog
+} | {
+    type: AT.FETCH_SCOREFROMHISTORY_FULFILLED,
+    uiScoreResponse: UIScoreResponse
+} | {
+    type: AT.FETCH_EXTRACTFROMHISTORY_ASYNC,
+    appId: string,
+    trainDialog: TrainDialog,
+    userInput: UserInput
+} | {
+    type: AT.FETCH_EXTRACTFROMHISTORY_FULFILLED,
+    extractResponse: ExtractResponse
+} | {
+    type: AT.FETCH_TRAINDIALOGREPLAY_ASYNC,
+    appId: string,
+    trainDialog: TrainDialog
+} | {
+    type: AT.FETCH_TRAINDIALOGREPLAY_FULFILLED,
+    trainDialog: TrainDialog
+} | {
     type: AT.FETCH_TUTORIALS_ASYNC,
     userId: string
 } | {

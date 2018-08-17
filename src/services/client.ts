@@ -331,6 +331,33 @@ export default class ClClient {
             .then(response => { })
     }
 
+    //AT.FETCH_SCOREFROMHISTORY_ASYNC
+    trainDialogScoreFromHistory(appId: string, trainDialog: CLM.TrainDialog): Promise<CLM.UIScoreResponse> {
+        return this.send<CLM.UIScoreResponse>({
+            method: 'post',
+            url: `${this.baseUrl}/app/${appId}/scorefromhistory`,
+            data: trainDialog
+        }).then(response => response.data)
+    }
+
+    //AT.FETCH_EXTRACTFROMHISTORY_ASYNC
+    trainDialogExtractFromHistory(appId: string, trainDialog: CLM.TrainDialog, userInput: CLM.UserInput): Promise<CLM.ExtractResponse> {
+        return this.send<CLM.ExtractResponse>({
+            method: 'post',
+            url: `${this.baseUrl}/app/${appId}/extractfromhistory`,
+            data: {trainDialog, userInput }
+        }).then(response => response.data)
+    }
+
+    //AT.FETCH_TRAINDIALOGREPLAY_ASYNC
+    trainDialogReplay(appId: string, trainDialog: CLM.TrainDialog): Promise<CLM.TrainDialog> {
+        return this.send<CLM.TrainDialog>({
+            method: 'post',
+            url: `${this.baseUrl}/app/${appId}/traindialogreplay`,
+            data: trainDialog
+        }).then(response => response.data)
+    }
+
     trainDialogsUpdateExtractStep(appId: string, trainDialogId: string, turnIndex: number, userInput: CLM.UserInput): Promise<CLM.UIExtractResponse> {
         return this.send({
             method: 'put',
@@ -522,7 +549,7 @@ export default class ClClient {
         }).then(response => response.data)
     }
 
-    // DELETE_MEMORY_ASYNC
+    // AT.DELETE_MEMORY_ASYNC
     memoryDelete(appId: string): Promise<void> {
         return this.send({
             method: 'delete',

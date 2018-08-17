@@ -121,42 +121,42 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    onInsertInput(inputText: string) {
+    async onInsertInput(inputText: string) {
 
-        if (!this.props.user) {
-            throw new Error("No Active User");
-        }
-        if (!this.state.selectedActivity) {
-            throw new Error("No selected activity")
-        }
+        try {
+            if (!this.props.user) {
+                throw new Error("No Active User");
+            }
+            if (!this.state.selectedActivity) {
+                throw new Error("No selected activity")
+            }
 
-        const roundIndex = this.state.selectedActivity.channelData.roundIndex
-        const scoreIndex = this.state.selectedActivity.channelData.scoreIndex
-        const senderType = this.state.selectedActivity.channelData.senderType
+            const roundIndex = this.state.selectedActivity.channelData.roundIndex
+            const scoreIndex = this.state.selectedActivity.channelData.scoreIndex
+            const senderType = this.state.selectedActivity.channelData.senderType
 
-        const definitions = {
-            entities: this.props.entities,
-            actions: this.props.actions,
-            trainDialogs: []
-        }
+            const definitions = {
+                entities: this.props.entities,
+                actions: this.props.actions,
+                trainDialogs: []
+            }
 
-        // Copy, Remove rounds / scorer steps below insert
-        let history = JSON.parse(JSON.stringify(this.props.trainDialog))
-        history.definitions = definitions
-        history.rounds = history.rounds.slice(0, roundIndex + 1)
+            // Copy, Remove rounds / scorer steps below insert
+            let history = JSON.parse(JSON.stringify(this.props.trainDialog))
+            history.definitions = definitions
+            history.rounds = history.rounds.slice(0, roundIndex + 1)
 
-        const userInput = { text: inputText} as CLM.UserInput // LARS TODO
+            const userInput: CLM.UserInput = { text: inputText }
 
-        // Get a score for this step
-        ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app, history, this.props.user.name, this.props.user.id, CLM.HistoryMode.EXTRACT_ONLY, userInput) as any) as Promise<CLM.TeachWithHistory>)
-        .then((teachWithHistory: CLM.TeachWithHistory) => {
+            // Get a score for this step
+            const extractResponse = await ((this.props.extractFromHistoryThunkAsync(this.props.app.appId, history, userInput) as any) as Promise<CLM.ExtractResponse>)
 
-            if (!teachWithHistory.extractResponse) {
+            if (!extractResponse) {
                 throw new Error("No extract response")  // LARS todo - handle this better
             }
- 
-            let textVariations = CLM.ModelUtils.ToTextVariations([teachWithHistory.extractResponse])
-            let extractorStep = {textVariations} as CLM.TrainExtractorStep
+
+            let textVariations = CLM.ModelUtils.ToTextVariations([extractResponse])
+            let extractorStep: CLM.TrainExtractorStep = {textVariations}
 
             // Copy original and insert new round for the text
             let newTrainDialog = JSON.parse(JSON.stringify(this.props.trainDialog))
@@ -180,14 +180,18 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
                 extractorStep,
                 scorerSteps
             }
-       
+        
             // Inject new Round
             newTrainDialog.rounds.splice(roundIndex + 1, 0, newRound)
+            
+            // Replay logic functions on train dialog
+            newTrainDialog = await ((this.props.trainDialogReplayThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<CLM.TrainDialog>)
+
             this.props.onUpdate(newTrainDialog)
-        })
-        .catch(error => {
+        }
+        catch(error) {
             console.warn(`Error when attempting to create teach session from history: `, error)
-        })
+        }
     }
 
     @autobind
@@ -276,21 +280,23 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
         history.rounds[roundIndex].scorerSteps = history.rounds[roundIndex].scorerSteps.slice(0, scoreIndex);
 
         // Get a score for this step
-        ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app, history, this.props.user.name, this.props.user.id, CLM.HistoryMode.SCORE_ONLY) as any) as Promise<CLM.TeachWithHistory>)
-        .then((teachWithHistory: CLM.TeachWithHistory) => {
-            // Insert top scoring activity into trainDialog
-            let insertedAction = this.getBestAction(teachWithHistory)
+        ((this.props.scoreFromHistoryThunkAsync(this.props.app.appId, history) as any) as Promise<CLM.UIScoreResponse>)
+        .then((uiScoreResponse: CLM.UIScoreResponse) => {
+
+            // Find top scoring Action
+            let insertedAction = this.getBestAction(uiScoreResponse.scoreResponse)
 
             if (!insertedAction) {
                 throw new Error("No actions available")  // LARS todo - handle this better
             }
 
             let scorerStep = {
-                input: teachWithHistory.scoreInput,
+                input: uiScoreResponse.scoreInput,
                 labelAction: insertedAction.actionId,
                 scoredAction: insertedAction
-            } as CLM.TrainScorerStep
+            }
 
+            // Insert new Action into TrainDialog
             let newTrainDialog = JSON.parse(JSON.stringify(this.props.trainDialog))
             newTrainDialog.definitions = definitions
             let curRound = newTrainDialog.rounds[roundIndex]
@@ -302,21 +308,19 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
         })
     }
 
-    getBestAction(teachWithHistory: CLM.TeachWithHistory): CLM.ScoredAction | undefined {
-        if (teachWithHistory.scoreResponse) {
+    // Return best action from ScoreResponse 
+    getBestAction(scoreResponse: CLM.ScoreResponse): CLM.ScoredAction | undefined {
 
-            let scoredActions  = teachWithHistory.scoreResponse.scoredActions
+        let scoredActions  = scoreResponse.scoredActions
 
-            // Get highest scoring Action 
-            let best
-            for (let test of scoredActions) {
-                if (!best || test.score > best.score) {
-                    best = test
-                }
+        // Get highest scoring Action 
+        let best
+        for (let test of scoredActions) {
+            if (!best || test.score > best.score) {
+                best = test
             }
-            return best
         }
-        return undefined
+        return best
     }
 
     @autobind
@@ -662,6 +666,9 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         createTeachSessionFromHistoryThunkAsync: actions.teach.createTeachSessionFromHistoryThunkAsync,
+        scoreFromHistoryThunkAsync: actions.train.scoreFromHistoryThunkAsync,
+        extractFromHistoryThunkAsync: actions.train.extractFromHistoryThunkAsync,
+        trainDialogReplayThunkAsync: actions.train.trainDialogReplayThunkAsync
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {

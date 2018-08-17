@@ -14,22 +14,18 @@ import ActionScorer from './ActionScorer';
 import MemoryTable from './MemoryTable';
 import { Activity } from 'botframework-directlinejs'
 import * as OF from 'office-ui-fabric-react';
-import {
-    ActionBase, AppBase, TrainDialog, TrainRound, ScoreReason, ScoredAction,
-    TrainScorerStep, Memory, UnscoredAction, ScoreResponse, ActionTypes,
-    TextVariation, ExtractResponse, DialogType, SenderType, DialogMode, UIScoreInput
-} from '@conversationlearner/models' // LARS change to CLM
+import * as CLM from '@conversationlearner/models' 
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 
 interface RenderData {
-    dialogMode: DialogMode
-    selectedAction: ActionBase | undefined
-    scorerStep: TrainScorerStep | undefined
-    scoreResponse: ScoreResponse | undefined
-    round: TrainRound | undefined
-    memories: Memory[]
-    prevMemories: Memory[]
+    dialogMode: CLM.DialogMode
+    selectedAction: CLM.ActionBase | undefined
+    scorerStep: CLM.TrainScorerStep | undefined
+    scoreResponse: CLM.ScoreResponse | undefined
+    round: CLM.TrainRound | undefined
+    memories: CLM.Memory[]
+    prevMemories: CLM.Memory[]
 };
 
 class TrainDialogAdmin extends React.Component<Props, ComponentState> {
@@ -71,18 +67,18 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
         this.props.clearExtractResponses();
     }
 
-    getPrevMemories(): Memory[] {
+    getPrevMemories(): CLM.Memory[] {
         if (this.state.roundIndex === null) {
             throw new Error(`Cannot get previous memories because roundIndex is null. This is likely a problem with code. Please open an issue.`)
         }
 
-        let memories: Memory[] = [];
+        let memories: CLM.Memory[] = [];
         let prevIndex = this.state.roundIndex - 1;
         if (prevIndex >= 0) {
             let round = this.props.trainDialog.rounds[prevIndex];
             if (round.scorerSteps.length > 0) {
                 let scorerStep = round.scorerSteps[0];
-                memories = scorerStep.input.filledEntities.map<Memory>(fe => {
+                memories = scorerStep.input.filledEntities.map<CLM.Memory>(fe => {
                     const entity = this.props.entities.find(e => e.entityId === fe.entityId)
                     if (!entity) {
                         throw new Error(`Could not find entity by id: ${fe.entityId} in list of entities`)
@@ -96,13 +92,49 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
         }
         return memories;
     }
+
+    getMemories(): CLM.Memory[] {
+
+        if (!this.state.roundIndex) {
+            return []
+        }
+
+        // Find round with scorer step.  Usually part of current round, but 
+        // when editing, not all rounds have scorer steps, so may need to 
+        // look forward
+        let curRound = this.state.roundIndex
+        let filledEntities: CLM.FilledEntity[] | null = null
+
+        while (!filledEntities) {
+            if (this.props.trainDialog.rounds[curRound].scorerSteps.length > 0) {
+                filledEntities = this.props.trainDialog.rounds[curRound].scorerSteps[0].input.filledEntities
+            }
+            else if (curRound < this.props.trainDialog.rounds.length) {
+                curRound = curRound +1
+            }
+            else {
+                // No round with scorer step after this extraction step
+                return []
+            }
+        }
+
+        return filledEntities.map<CLM.Memory>((fe) => {
+            let entity = this.props.entities.find(e => e.entityId === fe.entityId);
+            let entityName = entity ? entity.entityName : 'UNKNOWN ENTITY';
+            return {
+                entityName: entityName,
+                entityValues: fe.values
+            }
+        })
+    }
+
     getRenderData(): RenderData {
-        let selectedAction: ActionBase | undefined
-        let scorerStep: TrainScorerStep | undefined
-        let scoreResponse: ScoreResponse | undefined
-        let round: TrainRound | undefined
-        let memories: Memory[] = [];
-        let prevMemories: Memory[] = [];
+        let selectedAction: CLM.ActionBase | undefined
+        let scorerStep: CLM.TrainScorerStep | undefined
+        let scoreResponse: CLM.ScoreResponse | undefined
+        let round: CLM.TrainRound | undefined
+        let memories: CLM.Memory[] = [];
+        let prevMemories: CLM.Memory[] = [];
 
         if (this.state.roundIndex !== null && this.state.roundIndex < this.props.trainDialog.rounds.length) {
             round = this.props.trainDialog.rounds[this.state.roundIndex];
@@ -117,11 +149,11 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                 if (!selectedAction) {
                     // Action may have been deleted.  If so create dummy action to render
                     selectedAction = {
-                        actionId: scorerStep.labelAction,
+                        actionId: scorerStep.labelAction || 'MISSING ACTION',
                         createdDateTime: new Date().toJSON(),
                         payload: 'MISSING ACTION',
                         isTerminal: false,
-                        actionType: ActionTypes.TEXT,
+                        actionType: CLM.ActionTypes.TEXT,
                         requiredEntitiesFromPayload: [],
                         requiredEntities: [],
                         negativeEntities: [],
@@ -131,7 +163,8 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                         packageDeletionId: 0
                     }
                 }
-                memories = scorerStep.input.filledEntities.map<Memory>((fe) => {
+                
+                memories = scorerStep.input.filledEntities.map<CLM.Memory>((fe) => {
                     let entity = this.props.entities.find(e => e.entityId === fe.entityId);
                     let entityName = entity ? entity.entityName : 'UNKNOWN ENTITY';
                     return {
@@ -139,11 +172,11 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                         entityValues: fe.values
                     }
                 });
-
+                
                 // Get prevmemories
                 prevMemories = this.getPrevMemories();
 
-                let scoredAction: ScoredAction = {
+                let scoredAction: CLM.ScoredAction = {
                         actionId: selectedAction.actionId,
                         payload: selectedAction.payload,
                         isTerminal: selectedAction.isTerminal,
@@ -154,12 +187,12 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                 // Generate list of all actions (apart from selected) for ScoreResponse as I have no scores
                 let unscoredActions = this.props.actions
                     .filter(a => !selectedAction || a.actionId !== selectedAction.actionId)
-                    .map<UnscoredAction>(action => 
+                    .map<CLM.UnscoredAction>(action => 
                         ({
                             actionId: action.actionId,
                             payload: action.payload,
                             isTerminal: action.isTerminal,
-                            reason: ScoreReason.NotCalculated,
+                            reason: CLM.ScoreReason.NotCalculated,
                             actionType: action.actionType
                         }));
 
@@ -173,17 +206,15 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
             }
         }
 
-        const renderData: RenderData = {
-            dialogMode: (this.state.senderType === SenderType.User) ? DialogMode.Extractor : DialogMode.Scorer,
+        return {
+            dialogMode: (this.state.senderType === CLM.SenderType.User) ? CLM.DialogMode.Extractor : CLM.DialogMode.Scorer,
             selectedAction: selectedAction,
             scorerStep: scorerStep,
             scoreResponse: scoreResponse,
             round: round,
             memories: memories,
             prevMemories: prevMemories
-        };
-
-        return renderData;
+        }
     }
     
     render() {
@@ -198,7 +229,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                 <div data-testid="traindialog-title" className={`cl-dialog-title cl-dialog-title--train ${OF.FontClassNames.xxLarge}`}>
                     <OF.Icon iconName="EditContact" />Train Dialog
                 </div>
-                {this.props.selectedActivity && (this.state.senderType === SenderType.User
+                {this.props.selectedActivity && (this.state.senderType === CLM.SenderType.User
                     ? (
                         <div className="cl-dialog-admin__content">
                             <div className="cl-wc-message cl-wc-message--user">
@@ -260,7 +291,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                         </div>
                     )
                 }
-                {this.state.senderType === SenderType.User &&
+                {this.state.senderType === CLM.SenderType.User &&
                     <div className="cl-dialog-admin__content">
                         <div className="cl-dialog-admin-title">
                             <FormattedMessage
@@ -276,7 +307,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                                     app={this.props.app}
                                     editingPackageId={this.props.editingPackageId}
                                     canEdit={this.props.canEdit} 
-                                    extractType={DialogType.TRAINDIALOG}
+                                    extractType={CLM.DialogType.TRAINDIALOG}
                                     sessionId={this.props.trainDialog.trainDialogId}
                                     roundIndex={this.state.roundIndex}
                                     autoTeach={false}
@@ -299,7 +330,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                 {renderData.selectedAction
                 && renderData.scoreResponse
                 && renderData.scorerStep
-                && this.state.senderType === SenderType.Bot
+                && this.state.senderType === CLM.SenderType.Bot
                 && <div className="cl-dialog-admin__content">
                         <div className="cl-dialog-admin-title">
                             <FormattedMessage
@@ -315,7 +346,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                                 editingPackageId={this.props.editingPackageId}
                                 canEdit={this.props.canEdit}
                                 hideScore={true}
-                                dialogType={DialogType.TRAINDIALOG}
+                                dialogType={CLM.DialogType.TRAINDIALOG}
                                 sessionId={this.props.trainDialog.trainDialogId}
                                 autoTeach={false}
                                 dialogMode={renderData.dialogMode}
@@ -385,24 +416,24 @@ const mapStateToProps = (state: State) => {
 }
 
 interface ComponentState {
-    newTrainDialog: TrainDialog | null,
+    newTrainDialog: CLM.TrainDialog | null,
     newSliceRound: number,
     // Did extraction change on edit
-    newScoreInput: UIScoreInput | null,
-    senderType: SenderType | null,
+    newScoreInput: CLM.UIScoreInput | null,
+    senderType: CLM.SenderType | null,
     roundIndex: number | null,
     scoreIndex: number | null
 };
 
 export interface ReceivedProps {
-    app: AppBase,
+    app:CLM. AppBase,
     editingPackageId: string,
-    trainDialog: TrainDialog,
+    trainDialog: CLM.TrainDialog,
     selectedActivity: Activity | null,
     canEdit: boolean,
-    onChangeAction: (trainScorerStep: TrainScorerStep) => void,
-    onChangeExtraction: (extractResponse: ExtractResponse, textVariations: TextVariation[]) => void                              
-    onReplace: (editedTrainDialog: TrainDialog) => void
+    onChangeAction: (trainScorerStep: CLM.TrainScorerStep) => void,
+    onChangeExtraction: (extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) => void                              
+    onReplace: (editedTrainDialog: CLM.TrainDialog) => void
     onExtractionsChanged: (changed: boolean) => void
 }
 
