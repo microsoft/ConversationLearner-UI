@@ -391,7 +391,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     onEditLogDialog(logDialogId: string, newTrainDialog: CLM.TrainDialog) {
 
         // Create a new teach session from the train dialog
-        ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app, newTrainDialog, this.props.user.name, this.props.user.id, CLM.HistoryMode.CONTINUE) as any) as Promise<CLM.TeachWithHistory>)
+        ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app, newTrainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)
             .then(teachWithHistory => {
                 if (teachWithHistory.replayErrors.length === 0) {
                     // Note: Don't clear currentLogDialog so I can update it if I save my edits

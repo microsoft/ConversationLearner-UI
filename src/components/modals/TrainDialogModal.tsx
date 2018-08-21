@@ -120,17 +120,32 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
         );
     }
 
+    // Return best action from ScoreResponse 
+    getBestAction(scoreResponse: CLM.ScoreResponse): CLM.ScoredAction | undefined {
+
+        let scoredActions  = scoreResponse.scoredActions
+
+        // Get highest scoring Action 
+        let best
+        for (let test of scoredActions) {
+            if (!best || test.score > best.score) {
+                best = test
+            }
+        }
+        return best
+    }
+
     @autobind
     async onInsertInput(inputText: string) {
 
+        if (!this.props.user) {
+            throw new Error("No Active User");
+        }
+        if (!this.state.selectedActivity) {
+            throw new Error("No selected activity")
+        }
+  
         try {
-            if (!this.props.user) {
-                throw new Error("No Active User");
-            }
-            if (!this.state.selectedActivity) {
-                throw new Error("No selected activity")
-            }
-
             const roundIndex = this.state.selectedActivity.channelData.roundIndex
             const scoreIndex = this.state.selectedActivity.channelData.scoreIndex
             const senderType = this.state.selectedActivity.channelData.senderType
@@ -164,18 +179,22 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
 
             let scorerSteps: CLM.TrainScorerStep[]
 
-            // Copy and scorer steps below the injected input into the new Round
             if (senderType === CLM.SenderType.User) {
+                // Copy scorer steps below the injected input for new Round
                 scorerSteps = this.props.trainDialog.rounds[roundIndex].scorerSteps
-                // Remove scorer steps before edit from round 
+
+                // Remove scorer steps above injected input from round 
                 newTrainDialog.rounds[roundIndex].scorerSteps = []
             }
             else {
+                // Copy scorer steps below the injected input for new Round
                 scorerSteps = this.props.trainDialog.rounds[roundIndex].scorerSteps.slice(scoreIndex + 1)
-                // Remove scorer steps before edit from round 
+
+                // Remove scorer steps above injected input from round 
                 newTrainDialog.rounds[roundIndex].scorerSteps.splice(scoreIndex + 1, Infinity)
             }
 
+            // Create new round
             let newRound = {
                 extractorStep,
                 scorerSteps
@@ -189,13 +208,14 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
 
             this.props.onUpdate(newTrainDialog)
         }
-        catch(error) {
+        catch (error) {
             console.warn(`Error when attempting to create teach session from history: `, error)
         }
     }
 
     @autobind
-    onChangeExtraction(extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) {
+    async onChangeExtraction(extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) {
+ 
         if (!this.state.selectedActivity) {
             throw new Error("No selected activity")
         }
@@ -203,29 +223,30 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
             throw new Error("No Active User");
         }
 
-        const roundIndex = this.state.selectedActivity.channelData.roundIndex
-        const definitions = {
-            entities: this.props.entities,
-            actions: this.props.actions,
-            trainDialogs: []
-        }
+        try {
+            const roundIndex = this.state.selectedActivity.channelData.roundIndex
+            const definitions = {
+                entities: this.props.entities,
+                actions: this.props.actions,
+                trainDialogs: []
+            }
 
-        let newTrainDialog = JSON.parse(JSON.stringify(this.props.trainDialog)) as CLM.TrainDialog
-        newTrainDialog.definitions = definitions;
-        newTrainDialog.rounds[roundIndex].extractorStep.textVariations = textVariations;
+            let newTrainDialog = JSON.parse(JSON.stringify(this.props.trainDialog)) as CLM.TrainDialog
+            newTrainDialog.definitions = definitions;
+            newTrainDialog.rounds[roundIndex].extractorStep.textVariations = textVariations;
 
-        // Get a score for this step
-        ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app, newTrainDialog, this.props.user.name, this.props.user.id, CLM.HistoryMode.SCORE_ONLY) as any) as Promise<CLM.TeachWithHistory>)
-        .then((teachWithHistory: CLM.TeachWithHistory) => {
+            // Replay logic functions on train dialog
+            newTrainDialog = await ((this.props.trainDialogReplayThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<CLM.TrainDialog>)
+
             this.props.onUpdate(newTrainDialog)
-        })
-        .catch((error: Error) => {
-            console.warn(`Error when attempting to create teach session from history: `, error)
-        })
+        }
+        catch (error) {
+                console.warn(`Error when attempting to change extraction: `, error)
+        }
     }
 
     @autobind
-    onChangeAction(trainScorerStep: CLM.TrainScorerStep) {
+    async onChangeAction(trainScorerStep: CLM.TrainScorerStep) {
         if (!this.state.selectedActivity) {
             throw new Error("No selected activity")
         }
@@ -233,26 +254,27 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
             throw new Error("No Active User");
         }
 
-        const roundIndex = this.state.selectedActivity.channelData.roundIndex
-        const scoreIndex = this.state.selectedActivity.channelData.scoreIndex
-        const definitions = {
-            entities: this.props.entities,
-            actions: this.props.actions,
-            trainDialogs: []
-        }
+        try {
+            const roundIndex = this.state.selectedActivity.channelData.roundIndex
+            const scoreIndex = this.state.selectedActivity.channelData.scoreIndex
+            const definitions = {
+                entities: this.props.entities,
+                actions: this.props.actions,
+                trainDialogs: []
+            }
 
-        let newTrainDialog = JSON.parse(JSON.stringify(this.props.trainDialog)) as CLM.TrainDialog
-        newTrainDialog.rounds[roundIndex].scorerSteps[scoreIndex] = trainScorerStep
-        newTrainDialog.definitions = definitions;
+            let newTrainDialog = JSON.parse(JSON.stringify(this.props.trainDialog)) as CLM.TrainDialog
+            newTrainDialog.rounds[roundIndex].scorerSteps[scoreIndex] = trainScorerStep
+            newTrainDialog.definitions = definitions;
 
-        // Get a score for this step
-        ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app, newTrainDialog, this.props.user.name, this.props.user.id, CLM.HistoryMode.SCORE_ONLY) as any) as Promise<CLM.TeachWithHistory>)
-        .then((teachWithHistory: CLM.TeachWithHistory) => {
+            // Replay logic functions on train dialog
+            newTrainDialog = await ((this.props.trainDialogReplayThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<CLM.TrainDialog>)
+
             this.props.onUpdate(newTrainDialog)
-        })
-        .catch((error: Error) => {
-            console.warn(`Error when attempting to create teach session from history: `, error)
-        })
+        }
+        catch (error) {
+            console.warn(`Error when attempting to change an Action: `, error)
+        }
     }
 
     @autobind
@@ -300,7 +322,7 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
             let newTrainDialog = JSON.parse(JSON.stringify(this.props.trainDialog))
             newTrainDialog.definitions = definitions
             let curRound = newTrainDialog.rounds[roundIndex]
-            curRound.scorerSteps.splice(scoreIndex, 0, scorerStep)
+            curRound.scorerSteps.splice(scoreIndex + 1, 0, scorerStep)
             this.props.onUpdate(newTrainDialog)
         })
         .catch((error: Error) => {
@@ -308,23 +330,8 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
         })
     }
 
-    // Return best action from ScoreResponse 
-    getBestAction(scoreResponse: CLM.ScoreResponse): CLM.ScoredAction | undefined {
-
-        let scoredActions  = scoreResponse.scoredActions
-
-        // Get highest scoring Action 
-        let best
-        for (let test of scoredActions) {
-            if (!best || test.score > best.score) {
-                best = test
-            }
-        }
-        return best
-    }
-
     @autobind
-    onDeleteTurn() {
+    async onDeleteTurn() {
 
         if (!this.state.selectedActivity) {
             throw new Error("No selected activity")
@@ -334,7 +341,7 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
         const roundIndex = this.state.selectedActivity.channelData.roundIndex
         const scoreIndex = this.state.selectedActivity.channelData.scoreIndex
 
-        let newTrainDialog = {...this.props.trainDialog}
+        let newTrainDialog: CLM.TrainDialog = {...this.props.trainDialog}
         newTrainDialog.definitions = {
             entities: this.props.entities,
             actions: this.props.actions,
@@ -345,15 +352,29 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
 
         if (senderType === CLM.SenderType.User) {
             // If user input deleted, append scores to previous round
-            let previousRound = newTrainDialog.rounds[roundIndex - 1]
-            previousRound.scorerSteps = [...previousRound.scorerSteps, ...curRound.scorerSteps]
+            if (roundIndex > 0) {
+                let previousRound = newTrainDialog.rounds[roundIndex - 1]
+                previousRound.scorerSteps = [...previousRound.scorerSteps, ...curRound.scorerSteps]
+
+                // Remove actionless dummy step if it exits
+                previousRound.scorerSteps = previousRound.scorerSteps.filter(ss => ss.labelAction !== undefined)
+            }
+
             // Delete round 
             newTrainDialog.rounds.splice(roundIndex, 1)
+
+            // Replay logic functions on train dialog
+            newTrainDialog = await ((this.props.trainDialogReplayThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<CLM.TrainDialog>)
+
             this.props.onUpdate(newTrainDialog)
         }
         else if (senderType === CLM.SenderType.Bot) {
             // If Action deleted remove it
             curRound.scorerSteps.splice(scoreIndex, 1)
+
+            // Replay logic functions on train dialog
+            newTrainDialog = await ((this.props.trainDialogReplayThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<CLM.TrainDialog>)
+
             this.props.onUpdate(newTrainDialog)
         }
 
@@ -367,6 +388,7 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
 
         // If I've change the selected activity
         if (this.state.selectedActivity !== activity) {
+
             // Restore original webchat render of the previous activity
             if (this.state.selectedActivity && this.state.lastActivityJSX) {
                 // Find the turn render by Id
@@ -384,6 +406,9 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
 
                 let canBranch = this.state.selectedActivity && this.state.selectedActivity.channelData.senderType === CLM.SenderType.User;
         
+                const roundIndex = activity.channelData.roundIndex
+                const senderType = activity.channelData.senderType
+            
                 // Generate new JSX with buttons
                 const text = <div className="cl-wc-highlight">
                             {lastActivityJSX}
@@ -399,12 +424,14 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
                                 ariaDescription="Insert Score Turn"
                                 iconProps={{ iconName: 'CommentAdd' }}
                             />
-                            <OF.IconButton
-                                className={`cl-wc-deleteturn ${activity.channelData.senderType === CLM.SenderType.User ? `cl-wc-deleteturn--user` : `cl-wc-deleteturn--bot`}`}
-                                iconProps={{ iconName: 'Delete' }}
-                                onClick={this.onDeleteTurn}
-                                ariaDescription="Delete Turn"
-                            />
+                            {!(roundIndex === 0 && senderType === CLM.SenderType.User) &&
+                                <OF.IconButton
+                                    className={`cl-wc-deleteturn ${activity.channelData.senderType === CLM.SenderType.User ? `cl-wc-deleteturn--user` : `cl-wc-deleteturn--bot`}`}
+                                    iconProps={{ iconName: 'Delete' }}
+                                    onClick={this.onDeleteTurn}
+                                    ariaDescription="Delete Turn"
+                                />
+                            }
                             <OF.IconButton
                                 disabled={!canBranch ||
                                     this.state.pendingExtractionChanges ||
@@ -665,7 +692,6 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        createTeachSessionFromHistoryThunkAsync: actions.teach.createTeachSessionFromHistoryThunkAsync,
         scoreFromHistoryThunkAsync: actions.train.scoreFromHistoryThunkAsync,
         extractFromHistoryThunkAsync: actions.train.extractFromHistoryThunkAsync,
         trainDialogReplayThunkAsync: actions.train.trainDialogReplayThunkAsync

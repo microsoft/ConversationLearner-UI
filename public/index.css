@@ -163,7 +163,7 @@ html {
   background-color: transparent !important;
 }
 
-.ms-Button-icon[data-icon-name="Delete"] {
+.ms-Button-icon[data-icon-name="Delete"]:not(:disabled) {
   color: var(--color-red);
 }
 

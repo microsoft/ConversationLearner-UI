@@ -443,7 +443,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             }
         };
 
-        ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app, newTrainDialog, this.props.user.name, this.props.user.id, CLM.HistoryMode.CONTINUE) as any) as Promise<CLM.TeachWithHistory>)
+        ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app, newTrainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)
             .then(teachWithHistory => {
                 if (teachWithHistory.replayErrors.length === 0) {
                     this.setState({
@@ -485,7 +485,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     }
     onEditTrainDialog(newTrainDialog: CLM.TrainDialog) {
 
-        ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app, newTrainDialog, this.props.user.name, this.props.user.id, CLM.HistoryMode.CONTINUE) as any) as Promise<CLM.TeachWithHistory>)
+        ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app, newTrainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)
             .then(teachWithHistory => {
                 if (teachWithHistory.replayErrors.length  === 0) {
                     // Note: Don't clear currentTrainDialog so I can delete it if I save my edits

@@ -51,7 +51,15 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                     roundIndex: newProps.trainDialog.rounds.length - 1,
                     scoreIndex: 0
                 })
-            } else {
+            }
+            else if (newProps.selectedActivity.channelData.scoreIndex > newProps.trainDialog.rounds[newProps.selectedActivity.channelData.roundIndex].scorerSteps.length - 1) {
+                this.setState({
+                    senderType: newProps.selectedActivity.channelData.senderType,
+                    roundIndex: newProps.selectedActivity.channelData.roundIndex,
+                    scoreIndex: newProps.selectedActivity.channelData.scoreIndex - 1
+                })
+            }
+            else {
                 this.setState({
                     senderType: newProps.selectedActivity.channelData.senderType,
                     roundIndex: newProps.selectedActivity.channelData.roundIndex,
@@ -77,7 +85,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
         if (prevIndex >= 0) {
             let round = this.props.trainDialog.rounds[prevIndex];
             if (round.scorerSteps.length > 0) {
-                let scorerStep = round.scorerSteps[0];
+                let scorerStep = round.scorerSteps[round.scorerSteps.length - 1];
                 memories = scorerStep.input.filledEntities.map<CLM.Memory>(fe => {
                     const entity = this.props.entities.find(e => e.entityId === fe.entityId)
                     if (!entity) {
@@ -381,7 +389,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                         <OF.DialogFooter>
                             <OF.PrimaryButton
                                 data-testid="dialog-admin-footer-yes"
-                             // REMOVE THIS TIEL   onClick={() => this.onClickSaveCheckYes()}
+                             // LARS REMOVE THIS TIEL   onClick={() => this.onClickSaveCheckYes()}
                                 text={intl.formatMessage({
                                     id: FM.TRAINDIALOGADMIN_SAVECHANGES_PRIMARYBUTTON_TEXT,
                                     defaultMessage: 'Yes'
@@ -423,10 +431,10 @@ interface ComponentState {
     senderType: CLM.SenderType | null,
     roundIndex: number | null,
     scoreIndex: number | null
-};
+}
 
 export interface ReceivedProps {
-    app:CLM. AppBase,
+    app: CLM. AppBase,
     editingPackageId: string,
     trainDialog: CLM.TrainDialog,
     selectedActivity: Activity | null,

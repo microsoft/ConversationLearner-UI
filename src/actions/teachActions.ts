@@ -49,13 +49,13 @@ const createTeachSessionFulfilled = (teachResponse: CLM.TeachResponse): ActionOb
 // --------------------------
 // TeachSessionFromHistory
 // --------------------------
-export const createTeachSessionFromHistoryThunkAsync = (app: CLM.AppBase, trainDialog: CLM.TrainDialog, userName: string, userId: string, historyMode: CLM.HistoryMode, userInput?: CLM.UserInput) => {
+export const createTeachSessionFromHistoryThunkAsync = (app: CLM.AppBase, trainDialog: CLM.TrainDialog, userName: string, userId: string) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.CREATE_TEACH_SESSION_FROMHISTORYASYNC)
         dispatch(createTeachSessionFromHistoryAsync(app.appId, trainDialog, userName, userId))
 
         try {
-            const teachWithHistory = await clClient.teachSessionFromHistory(app.appId, trainDialog, userName, userId, historyMode, userInput)
+            const teachWithHistory = await clClient.teachSessionFromHistory(app.appId, trainDialog, userName, userId)
             dispatch(createTeachSessionFromHistoryFulfilled(teachWithHistory))
             return teachWithHistory
         }
