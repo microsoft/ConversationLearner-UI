@@ -512,13 +512,14 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     }
 
     // Replace the current trainDialog with a new one
-    // Should only be used when replay not required (i.e. changing text variations)
     onReplaceTrainDialog(newTrainDialog: CLM.TrainDialog) {
 
         ((this.props.editTrainDialogThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<CLM.TeachWithHistory>)
             .catch(error => {
                 console.warn(`Error when attempting to edit a train dialog: `, error)
             })
+
+        this.onCloseTrainDialogModal()
     }
 
     onClickTrainDialogItem(trainDialog: CLM.TrainDialog) {

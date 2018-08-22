@@ -106,6 +106,19 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
     }
 
     @autobind
+    onClickAbandon() {
+        // LARS create seperate abandon option
+        this.setState({
+            isConfirmCancelModalOpen: true
+        })
+    }
+
+    @autobind
+    onClickSave() {
+        this.props.onReplace(this.props.trainDialog)
+    }
+
+    @autobind
     onClickCancelDelete() {
         this.setState({
             isConfirmCancelModalOpen: false
@@ -207,6 +220,10 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
             newTrainDialog = await ((this.props.trainDialogReplayThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<CLM.TrainDialog>)
 
             this.props.onUpdate(newTrainDialog)
+
+            this.setState({
+                hasBeenEdited: true
+            })
         }
         catch (error) {
             console.warn(`Error when attempting to create teach session from history: `, error)
@@ -239,6 +256,10 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
             newTrainDialog = await ((this.props.trainDialogReplayThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<CLM.TrainDialog>)
 
             this.props.onUpdate(newTrainDialog)
+
+            this.setState({
+                hasBeenEdited: true
+            })
         }
         catch (error) {
                 console.warn(`Error when attempting to change extraction: `, error)
@@ -271,6 +292,10 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
             newTrainDialog = await ((this.props.trainDialogReplayThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<CLM.TrainDialog>)
 
             this.props.onUpdate(newTrainDialog)
+
+            this.setState({
+                hasBeenEdited: true
+            })
         }
         catch (error) {
             console.warn(`Error when attempting to change an Action: `, error)
@@ -278,7 +303,7 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    onInsertAction() {
+    async onInsertAction() {
 
         if (!this.props.user) {
             throw new Error("No Active User");
@@ -287,23 +312,23 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
             throw new Error("No selected activity")
         }
 
-        const roundIndex = this.state.selectedActivity.channelData.roundIndex
-        const scoreIndex = this.state.selectedActivity.channelData.scoreIndex
-        const definitions = {
-            entities: this.props.entities,
-            actions: this.props.actions,
-            trainDialogs: []
-        }
+        try {
+            const roundIndex = this.state.selectedActivity.channelData.roundIndex
+            const scoreIndex = this.state.selectedActivity.channelData.scoreIndex
+            const definitions = {
+                entities: this.props.entities,
+                actions: this.props.actions,
+                trainDialogs: []
+            }
 
-        // Copy, Remove rounds / scorer steps below insert
-        let history = JSON.parse(JSON.stringify(this.props.trainDialog))
-        history.definitions = definitions
-        history.rounds = history.rounds.slice(0, roundIndex + 1)
-        history.rounds[roundIndex].scorerSteps = history.rounds[roundIndex].scorerSteps.slice(0, scoreIndex);
+            // Copy, Remove rounds / scorer steps below insert
+            let history = JSON.parse(JSON.stringify(this.props.trainDialog))
+            history.definitions = definitions
+            history.rounds = history.rounds.slice(0, roundIndex + 1)
+            history.rounds[roundIndex].scorerSteps = history.rounds[roundIndex].scorerSteps.slice(0, scoreIndex);
 
-        // Get a score for this step
-        ((this.props.scoreFromHistoryThunkAsync(this.props.app.appId, history) as any) as Promise<CLM.UIScoreResponse>)
-        .then((uiScoreResponse: CLM.UIScoreResponse) => {
+            // Get a score for this step
+            let uiScoreResponse = await ((this.props.scoreFromHistoryThunkAsync(this.props.app.appId, history) as any) as Promise<CLM.UIScoreResponse>)
 
             // Find top scoring Action
             let insertedAction = this.getBestAction(uiScoreResponse.scoreResponse)
@@ -324,10 +349,14 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
             let curRound = newTrainDialog.rounds[roundIndex]
             curRound.scorerSteps.splice(scoreIndex + 1, 0, scorerStep)
             this.props.onUpdate(newTrainDialog)
-        })
-        .catch((error: Error) => {
-            console.warn(`Error when attempting to create teach session from history: `, error)
-        })
+
+            this.setState({
+                hasBeenEdited: true
+            })
+        }
+        catch (error) {
+            console.warn(`Error when attempting to insert an Action `, error)
+        }
     }
 
     @autobind
@@ -404,11 +433,21 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
                 // Convert inner html to a JSX element
                 lastActivityJSX = ReactHtmlParser(element.innerHTML)
 
-                let canBranch = this.state.selectedActivity && this.state.selectedActivity.channelData.senderType === CLM.SenderType.User;
+                let canBranch = activity && activity.channelData.senderType === CLM.SenderType.User
         
                 const roundIndex = activity.channelData.roundIndex
                 const senderType = activity.channelData.senderType
-            
+                const curRound = this.props.trainDialog.rounds[roundIndex]
+                const hasNoScorerStep = curRound.scorerSteps.length === 0 || curRound.scorerSteps[0].labelAction === undefined
+
+                // Can only delete first user input if it has no scorer steps
+                // and is followed by user input
+                const canDeleteRound = 
+                    roundIndex !== 0 || 
+                    senderType !== CLM.SenderType.User ||
+                    curRound.scorerSteps.length === 0 ||
+                    (hasNoScorerStep && this.props.trainDialog.rounds.length > 1)
+
                 // Generate new JSX with buttons
                 const text = <div className="cl-wc-highlight">
                             {lastActivityJSX}
@@ -424,7 +463,7 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
                                 ariaDescription="Insert Score Turn"
                                 iconProps={{ iconName: 'CommentAdd' }}
                             />
-                            {!(roundIndex === 0 && senderType === CLM.SenderType.User) &&
+                            {canDeleteRound &&
                                 <OF.IconButton
                                     className={`cl-wc-deleteturn ${activity.channelData.senderType === CLM.SenderType.User ? `cl-wc-deleteturn--user` : `cl-wc-deleteturn--bot`}`}
                                     iconProps={{ iconName: 'Delete' }}
@@ -466,34 +505,13 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
         })
     }
 
-    renderAbandonText(intl: ReactIntl.InjectedIntl) {
-        if (this.state.hasBeenEdited) {
-            return intl.formatMessage({
-                id: FM.TRAINDIALOGMODAL_ABANDONEDITBUTTON_TEXT,
-                defaultMessage: 'Abandon Edit'
-            })
+    // Does history have any replay errors
+    hasReplayError(): boolean {
+        if (!this.props.history || this.props.history.length === 0) {
+            return false
         }
-        else {
-            return intl.formatMessage({
-                id: FM.TRAINDIALOGMODAL_DELETEBUTTON_TEXT,
-                defaultMessage: 'Delete'
-            })
-        }
-    }
 
-    renderDoneText(intl: ReactIntl.InjectedIntl) {
-        if (this.state.hasBeenEdited) {
-            return intl.formatMessage({
-                id: FM.TRAINDIALOGMODAL_SAVEEDITBUTTON_TEXT,
-                defaultMessage: 'Save Edit'
-            })
-        }
-        else {
-            return intl.formatMessage({
-                id: FM.TRAINDIALOGMODAL_DONEBUTTON_TEXT,
-                defaultMessage: 'Done'
-            })
-        }
+        return (this.props.history.filter(h => h.channelData.replayError != null).length > 0)
     }
 
     renderReplayError(replayError: CLM.ReplayError): JSX.Element {
@@ -634,7 +652,6 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
                                     selectedActivity={this.state.selectedActivity}
                                     onChangeAction={(trainScorerStep: CLM.TrainScorerStep) => this.onChangeAction(trainScorerStep)}
                                     onChangeExtraction={(extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) => this.onChangeExtraction(extractResponse, textVariations)}
-                                    onReplace={(editedTrainDialog: CLM.TrainDialog) => this.props.onReplace(editedTrainDialog)}
                                     onExtractionsChanged={(changed: boolean) => this.onExtractionsChanged(changed)}
                                 />
                             </div>
@@ -645,30 +662,87 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
                 <div className="cl-modal_footer cl-modal_footer--border">
                     <div className="cl-modal-buttons">
                         <div className="cl-modal-buttons_secondary">
-                            {this.state.selectedActivity && this.state.selectedActivity.channelData.replayError && 
-                                <div className="cl-dialogwarning">
+                            {(this.state.selectedActivity && this.state.selectedActivity.channelData.replayError) 
+                            ? 
+                                (<div className="cl-dialogwarning">
                                     {this.renderReplayError(this.state.selectedActivity.channelData.replayError)}
-                                </div>
+                                </div>)
+                            :
+                                (this.hasReplayError() &&
+                                    <div className="cl-dialogwarning">
+                                        <div className={OF.FontClassNames.mediumPlus}>
+                                            <FormattedMessage
+                                                id={FM.REPLAYERROR_EXISTS}
+                                                defaultMessage={FM.REPLAYERROR_EXISTS}
+                                            />
+                                        </div>
+                                    </div>
+                                )
                             }
                         </div>
+
+                        {this.state.hasBeenEdited 
+                        ?
+                        <div className="cl-modal-buttons_primary">
+                            <OF.PrimaryButton
+                                data-testid="footer-button-done"
+                                disabled={this.state.pendingExtractionChanges}
+                                onClick={this.onClickSave}
+                                ariaDescription={intl.formatMessage({
+                                    id: FM.TRAINDIALOGMODAL_SAVEEDITBUTTON_TEXT,
+                                    defaultMessage: 'Save Edit'})
+                                }
+                                text={intl.formatMessage({
+                                    id: FM.TRAINDIALOGMODAL_SAVEEDITBUTTON_TEXT,
+                                    defaultMessage: 'Save Edit'})
+                                }
+                            />
+                            <OF.DefaultButton
+                                data-testid="footer-button-delete"
+                                className="cl-button-delete"
+                                disabled={this.state.pendingExtractionChanges || !this.props.canEdit}
+                                onClick={this.onClickAbandon}
+                                ariaDescription={intl.formatMessage({
+                                    id: FM.TRAINDIALOGMODAL_ABANDONEDITBUTTON_TEXT,
+                                    defaultMessage: 'Abandon Edit'})
+                                }
+                                text={intl.formatMessage({
+                                    id: FM.TRAINDIALOGMODAL_ABANDONEDITBUTTON_TEXT,
+                                    defaultMessage: 'Abandon Edit'})
+                                }
+                            />
+                        </div>
+                        :
                         <div className="cl-modal-buttons_primary">
                             <OF.PrimaryButton
                                 data-testid="footer-button-done"
                                 disabled={this.state.pendingExtractionChanges}
                                 onClick={this.onClickDone}
-                                ariaDescription={this.renderDoneText(intl)}
-                                text={this.renderDoneText(intl)}
+                                ariaDescription={intl.formatMessage({
+                                    id: FM.TRAINDIALOGMODAL_DONEBUTTON_TEXT,
+                                    defaultMessage: 'Done'})
+                                }
+                                text={intl.formatMessage({
+                                    id: FM.TRAINDIALOGMODAL_DONEBUTTON_TEXT,
+                                    defaultMessage: 'Done'})
+                                }
                             />
                             <OF.DefaultButton
                                 data-testid="footer-button-delete"
                                 className="cl-button-delete"
                                 disabled={this.state.pendingExtractionChanges || !this.props.canEdit}
                                 onClick={this.onClickDelete}
-                                ariaDescription={this.renderAbandonText(intl)}
-                                text={this.renderAbandonText(intl)}
+                                ariaDescription={intl.formatMessage({
+                                    id: FM.TRAINDIALOGMODAL_DELETEBUTTON_TEXT,
+                                    defaultMessage: 'Delete'})
+                                }
+                                text={intl.formatMessage({
+                                    id: FM.TRAINDIALOGMODAL_DELETEBUTTON_TEXT,
+                                    defaultMessage: 'Delete'})
+                                }
                             />
-
                         </div>
+                        }
                     </div>
                 </div>
                 <ConfirmCancelModal

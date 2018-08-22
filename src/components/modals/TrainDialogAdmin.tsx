@@ -441,7 +441,6 @@ export interface ReceivedProps {
     canEdit: boolean,
     onChangeAction: (trainScorerStep: CLM.TrainScorerStep) => void,
     onChangeExtraction: (extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) => void                              
-    onReplace: (editedTrainDialog: CLM.TrainDialog) => void
     onExtractionsChanged: (changed: boolean) => void
 }
 

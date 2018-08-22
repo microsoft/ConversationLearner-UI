@@ -248,6 +248,7 @@ export enum FM {
     PACKAGECREATOR_CANCELBUTTON_TEXT = 'PackageCreator.cancelButton.text',
  
     // ReplayErrorList
+    REPLAYERROR_EXISTS = 'ReplayError.exists',
     REPLAYERROR_LOGDIALOG_VALIDATION_TITLE = 'ReplayError.logdialogvalidation.title',
     REPLAYERROR_LOGDIALOG_VALIDATION_MESSAGE = 'ReplayError.logdialogvalidation.message',
     REPLAYERROR_CONVERT_TITLE = 'ReplayError.logdialogvalidation.convert.title',
@@ -605,6 +606,7 @@ export default {
         [FM.LOGDIALOGADMIN_CONFIRMTITLE]: 'This will attempt to replay the Log Dialog against the bot and convert it into a new Train Dialog',
 
         // ReplayErrorList
+        [FM.REPLAYERROR_EXISTS]: 'This Train Dialog has errors',
         [FM.REPLAYERROR_LOGDIALOG_VALIDATION_TITLE]: 'Model definition has changed',
         [FM.REPLAYERROR_LOGDIALOG_VALIDATION_MESSAGE]: 'This Log Dialog was created with a earlier version of the model.  The following incomptibilities were found:',
         [FM.REPLAYERROR_CONVERT_TITLE]: 'Unable to convert to Train Dialog',
