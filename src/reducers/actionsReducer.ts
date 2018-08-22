@@ -17,6 +17,8 @@ const actionsReducer: Reducer<ActionState> = (state = initialState, actionObject
             return actionObject.allActions;
         case AT.FETCH_APPSOURCE_FULFILLED:
             return actionObject.appDefinition.actions;
+        case AT.SOURCE_PROMOTE_UPDATED_APP_DEFINITION:
+            return actionObject.updatedAppDefinition.actions
         case AT.CREATE_APPLICATION_FULFILLED:
             return [...initialState]
         case AT.CREATE_ACTION_FULFILLED:

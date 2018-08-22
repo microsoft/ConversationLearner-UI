@@ -17,6 +17,8 @@ const entitiesReducer: Reducer<EntityState> = (state = initialState, action: Act
             return action.allEntities;
         case AT.FETCH_APPSOURCE_FULFILLED:
             return action.appDefinition.entities;
+        case AT.SOURCE_PROMOTE_UPDATED_APP_DEFINITION:
+            return action.updatedAppDefinition.entities
         case AT.CREATE_APPLICATION_FULFILLED:
             return [...initialState]
         case AT.CREATE_ENTITY_FULFILLED:

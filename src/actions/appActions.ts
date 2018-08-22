@@ -7,10 +7,11 @@ import { AT } from '../types/ActionTypes'
 import { AppBase, AppDefinition, UIAppList, TrainingStatus, TrainingStatusCode } from '@conversationlearner/models'
 import { Dispatch } from 'redux'
 import { setErrorDisplay } from './displayActions'
-import * as ClientFactory from '../services/clientFactory' 
+import * as ClientFactory from '../services/clientFactory'
 import { AxiosError } from 'axios';
 import { Poller, IPollConfig } from '../services/poller';
 import { delay } from '../util';
+import { setUpdatedAppDefinition } from './sourceActions';
 
 export const createApplicationThunkAsync = (userId: string, application: AppBase, source: AppDefinition | null = null) => {
     return async (dispatch: Dispatch<any>) => {
@@ -366,9 +367,17 @@ export const fetchAppSourceThunkAsync = (appId: string, packageId: string, updat
         dispatch(fetchAppSourceAsync(appId, packageId))
 
         try {
-            const appDefinition = await clClient.source(appId, packageId)
-            dispatch(fetchAppSourceFulfilled(appDefinition))
-            return appDefinition
+            const appDefinitionChange = await clClient.source(appId, packageId)
+
+            if (appDefinitionChange.isChanged) {
+                dispatch(setUpdatedAppDefinition(appId, appDefinitionChange))
+                dispatch(fetchAppSourceFulfilled(appDefinitionChange.updatedAppDefinition))
+                return appDefinitionChange.updatedAppDefinition
+            }
+            else {
+                dispatch(fetchAppSourceFulfilled(appDefinitionChange.currentAppDefinition))
+                return appDefinitionChange.currentAppDefinition
+            }
         } catch (e) {
             const error = e as AxiosError
             dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.FETCH_APPSOURCE_ASYNC))
