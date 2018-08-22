@@ -84,7 +84,7 @@ class Dashboard extends React.Component<Props, ComponentState> {
                 </span>
                 {appDefinitionChange && appDefinitionChange.isChanged
                     && <div>
-                        <h2>Upgrade Notice:</h2>
+                        <h2 className={OF.FontClassNames.large}>Upgrade Notice:</h2>
                         <p>You are running a version of the SDK that requires a newer version of the model than the one you have attempted to load.  The local copy of the model was upgraded to allow viewing.</p>
 
                         {editPackageId === app.devPackageId
