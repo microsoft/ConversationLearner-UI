@@ -11,6 +11,7 @@ import * as entity from './entityActions'
 import * as display from './displayActions'
 import * as log from './logActions'
 import * as settings from './settingsActions'
+import * as source from './sourceActions'
 import * as teach from './teachActions'
 import * as train from './trainActions'
 
@@ -23,6 +24,7 @@ export default {
     display,
     log,
     settings,
+    source,
     teach,
     train,
 }

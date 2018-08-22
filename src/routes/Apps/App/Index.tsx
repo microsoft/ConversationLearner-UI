@@ -51,7 +51,7 @@ class Index extends React.Component<Props, ComponentState> {
         this.props.setCurrentAppThunkAsync(this.props.user.id, app)
         // Note: We load log dialogs in a separate call as eventually we want to page
         this.props.fetchAllLogDialogsThunkAsync(app, packageId)
-        this.props.fetchAppSource(app.appId, packageId)
+        this.props.fetchAppSourceThunkAsync(app.appId, packageId)
     }
 
     componentWillMount() {
@@ -112,7 +112,7 @@ class Index extends React.Component<Props, ComponentState> {
             .map(a => a.name)
             .filter((item, i, ar) => ar.indexOf(item) === i)
 
-        const apiActionErrors = uniqueCallbackNames.map(api => `Action references API "${api}" not contained by running Bot.`)
+        const apiActionErrors = uniqueCallbackNames.map(api => `Action references callback "${api}" not contained by running Bot.`)
 
         // Check for bad templates
         const badTemplateErrors = botInfo.templates
@@ -270,7 +270,7 @@ const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         setCurrentAppThunkAsync: actions.display.setCurrentAppThunkAsync,
         createApplicationThunkAsync: actions.app.createApplicationThunkAsync,
-        fetchAppSource: actions.app.fetchAppSourceThunkAsync,
+        fetchAppSourceThunkAsync: actions.app.fetchAppSourceThunkAsync,
         fetchAllLogDialogsThunkAsync: actions.log.fetchAllLogDialogsThunkAsync,
         fetchBotInfoThunkAsync: actions.bot.fetchBotInfoThunkAsync
     }, dispatch);

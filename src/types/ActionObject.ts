@@ -11,7 +11,7 @@ import {
     TrainDialog, LogDialog, Session, Teach, ScoreInput,
     UserInput, ExtractResponse, DialogType,
     UIExtractResponse, UITrainScorerStep, DialogMode,
-    UIPostScoreResponse, UIScoreInput, UIScoreResponse, UIAppList, TrainingStatus, FilledEntityMap
+    UIPostScoreResponse, UIScoreInput, UIScoreResponse, UIAppList, TrainingStatus, FilledEntityMap, AppDefinitionChange
 } from '@conversationlearner/models'
 import { TipType } from '../components/ToolTips'
 import { ErrorType } from './const'
@@ -112,6 +112,16 @@ export type DisplayAction = {
     type: AT.USER_LOGOUT
 } | {
     type: AT.NO_OP
+}
+
+export type SourceAction = {
+    type: AT.SOURCE_SET_UPDATED_APP_DEFINITION,
+    appId: string,
+    appDefinitionChange: AppDefinitionChange
+} | {
+    type: AT.SOURCE_PROMOTE_UPDATED_APP_DEFINITION,
+    appId: string,
+    updatedAppDefinition: AppDefinition
 }
 
 export type FetchAction = {
@@ -472,4 +482,5 @@ export type ActionObject =
     CreateAction |
     UpdateAction |
     DeleteAction |
-    TeachAction;
+    TeachAction |
+    SourceAction
