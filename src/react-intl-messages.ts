@@ -420,6 +420,7 @@ export enum FM {
     TRAINDIALOGMODAL_SAVEEDITBUTTON_TEXT = 'TrainDialogModal.saveEditButton.ariaDescription',
     TRAINDIALOGMODAL_DONEBUTTON_TEXT = 'TrainDialogModal.primaryButton.text',
     TRAINDIALOGMODAL_CONFIRMDELETE_TITLE = 'TrainDialogModal.confirmDelete.title',
+    TRAINDIALOGMODAL_CONFIRMABANDON_TITLE = 'TrainDialogModal.confirmAbandon.title',
 
     // Train Dialogs
     TRAINDIALOGS_TITLE = 'TrainDialogs.title',
@@ -606,7 +607,7 @@ export default {
         [FM.LOGDIALOGADMIN_CONFIRMTITLE]: 'This will attempt to replay the Log Dialog against the bot and convert it into a new Train Dialog',
 
         // ReplayErrorList
-        [FM.REPLAYERROR_EXISTS]: 'This Train Dialog has errors',
+        [FM.REPLAYERROR_EXISTS]: 'This Train Dialog has errors that must be fixed before it can be used to train your model',
         [FM.REPLAYERROR_LOGDIALOG_VALIDATION_TITLE]: 'Model definition has changed',
         [FM.REPLAYERROR_LOGDIALOG_VALIDATION_MESSAGE]: 'This Log Dialog was created with a earlier version of the model.  The following incomptibilities were found:',
         [FM.REPLAYERROR_CONVERT_TITLE]: 'Unable to convert to Train Dialog',
@@ -897,6 +898,7 @@ export default {
         [FM.TRAINDIALOGMODAL_SAVEEDITBUTTON_TEXT]: 'Save Edit',
         [FM.TRAINDIALOGMODAL_DONEBUTTON_TEXT]: 'Done',
         [FM.TRAINDIALOGMODAL_CONFIRMDELETE_TITLE]: 'Are you sure you want to delete this Training Dialog?',
+        [FM.TRAINDIALOGMODAL_CONFIRMABANDON_TITLE]: 'Are you sure you want to abandon your edits?',
         
         // UserInput Modal
         [FM.USERINPUT_TITLE]: 'Add User Input',

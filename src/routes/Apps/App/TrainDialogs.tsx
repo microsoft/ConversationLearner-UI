@@ -512,12 +512,16 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     }
 
     // Replace the current trainDialog with a new one
-    onReplaceTrainDialog(newTrainDialog: CLM.TrainDialog) {
+    async onReplaceTrainDialog(newTrainDialog: CLM.TrainDialog, isInvalid: boolean) {
 
-        ((this.props.editTrainDialogThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<CLM.TeachWithHistory>)
-            .catch(error => {
-                console.warn(`Error when attempting to edit a train dialog: `, error)
-            })
+        newTrainDialog.invalid = isInvalid
+
+        try { 
+            await ((this.props.editTrainDialogThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<CLM.TeachWithHistory>);
+        }
+        catch (error) {
+            console.warn(`Error when attempting to replace an edited train dialog: `, error)
+        }
 
         this.onCloseTrainDialogModal()
     }
@@ -798,7 +802,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     onDelete={() => this.onDeleteTrainDialog()}
                     onUpdate={(updatedTrainDialog) => this.onUpdateTrainDialog(updatedTrainDialog)}
                     onEdit={(editedTrainDialog, extractChanged) => this.onEditTrainDialog(editedTrainDialog)}
-                    onReplace={(editedTrainDialog) => this.onReplaceTrainDialog(editedTrainDialog)}
+                    onReplace={(editedTrainDialog, isInvalid) => this.onReplaceTrainDialog(editedTrainDialog, isInvalid)}
                     trainDialog={currentTrainDialog!}
                     history={this.state.history}
                 />

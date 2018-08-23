@@ -22,8 +22,14 @@ import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { autobind } from 'office-ui-fabric-react/lib/Utilities'
 
+enum ConfirmType {
+    NONE = 'NONE',
+    DELETE = 'DELETE',
+    ABANDON = 'ABANDON'
+}
+ 
 interface ComponentState {
-    isConfirmCancelModalOpen: boolean
+    confirmModalType: ConfirmType
     isUserInputModalOpen: boolean
     selectedActivity: Activity | null
     webchatKey: number
@@ -31,18 +37,19 @@ interface ComponentState {
     pendingExtractionChanges: boolean,
     // Save activity render when overwriting webchat render
     lastActivityJSX: JSX.Element | null,
-    hasBeenEdited: boolean
+    // If the train dialog was edited, the original source
+    originalTrainDialog: CLM.TrainDialog | null
 }
 
 const initialState: ComponentState = {
-    isConfirmCancelModalOpen: false,
+    confirmModalType: ConfirmType.NONE,
     isUserInputModalOpen: false,
     selectedActivity: null,
     webchatKey: 0,
     currentTrainDialog: null,
     pendingExtractionChanges: false,
     lastActivityJSX: null,
-    hasBeenEdited: false
+    originalTrainDialog: null
 }
 
 class TrainDialogModal extends React.Component<Props, ComponentState> {
@@ -101,35 +108,45 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
     @autobind
     onClickDelete() {
         this.setState({
-            isConfirmCancelModalOpen: true
+            confirmModalType: ConfirmType.DELETE
         })
     }
 
     @autobind
     onClickAbandon() {
-        // LARS create seperate abandon option
         this.setState({
-            isConfirmCancelModalOpen: true
+            confirmModalType: ConfirmType.ABANDON
         })
     }
 
     @autobind
     onClickSave() {
-        this.props.onReplace(this.props.trainDialog)
+        this.props.onReplace(this.props.trainDialog, this.hasReplayError())
     }
 
     @autobind
-    onClickCancelDelete() {
+    onClickConfirmCancel() {
         this.setState({
-            isConfirmCancelModalOpen: false
+            confirmModalType: ConfirmType.NONE
         })
     }
 
     @autobind
-    onClickConfirmDelete() {
-        this.props.onDelete();
+    onClickConfirmApprove() {
+        if (this.state.confirmModalType === ConfirmType.DELETE) {
+            this.props.onDelete();
+        }
+        else if (this.state.confirmModalType === ConfirmType.ABANDON) {
+            if (this.state.originalTrainDialog) {
+                this.props.onReplace(this.state.originalTrainDialog, this.state.originalTrainDialog.invalid || false)
+            }
+            else {
+                throw new Error("OrignialTrainDialog not defined")
+            }
+        }
+        
         this.setState(
-            { isConfirmCancelModalOpen: false }
+            { confirmModalType: ConfirmType.NONE }
         );
     }
 
@@ -219,11 +236,11 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
             // Replay logic functions on train dialog
             newTrainDialog = await ((this.props.trainDialogReplayThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<CLM.TrainDialog>)
 
-            this.props.onUpdate(newTrainDialog)
-
             this.setState({
-                hasBeenEdited: true
+                originalTrainDialog: this.state.originalTrainDialog || this.props.trainDialog
             })
+
+            this.props.onUpdate(newTrainDialog)
         }
         catch (error) {
             console.warn(`Error when attempting to create teach session from history: `, error)
@@ -255,11 +272,11 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
             // Replay logic functions on train dialog
             newTrainDialog = await ((this.props.trainDialogReplayThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<CLM.TrainDialog>)
 
-            this.props.onUpdate(newTrainDialog)
-
             this.setState({
-                hasBeenEdited: true
+                originalTrainDialog: this.state.originalTrainDialog || this.props.trainDialog
             })
+
+            this.props.onUpdate(newTrainDialog)
         }
         catch (error) {
                 console.warn(`Error when attempting to change extraction: `, error)
@@ -291,11 +308,11 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
             // Replay logic functions on train dialog
             newTrainDialog = await ((this.props.trainDialogReplayThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<CLM.TrainDialog>)
 
-            this.props.onUpdate(newTrainDialog)
-
             this.setState({
-                hasBeenEdited: true
+                originalTrainDialog: this.state.originalTrainDialog || this.props.trainDialog
             })
+
+            this.props.onUpdate(newTrainDialog)
         }
         catch (error) {
             console.warn(`Error when attempting to change an Action: `, error)
@@ -348,11 +365,12 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
             newTrainDialog.definitions = definitions
             let curRound = newTrainDialog.rounds[roundIndex]
             curRound.scorerSteps.splice(scoreIndex + 1, 0, scorerStep)
-            this.props.onUpdate(newTrainDialog)
 
             this.setState({
-                hasBeenEdited: true
+                originalTrainDialog: this.state.originalTrainDialog || this.props.trainDialog
             })
+
+            this.props.onUpdate(newTrainDialog)
         }
         catch (error) {
             console.warn(`Error when attempting to insert an Action `, error)
@@ -395,6 +413,10 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
             // Replay logic functions on train dialog
             newTrainDialog = await ((this.props.trainDialogReplayThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<CLM.TrainDialog>)
 
+            this.setState({
+                originalTrainDialog: this.state.originalTrainDialog || this.props.trainDialog
+            })
+
             this.props.onUpdate(newTrainDialog)
         }
         else if (senderType === CLM.SenderType.Bot) {
@@ -404,12 +426,12 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
             // Replay logic functions on train dialog
             newTrainDialog = await ((this.props.trainDialogReplayThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<CLM.TrainDialog>)
 
+            this.setState({
+                originalTrainDialog: this.state.originalTrainDialog || this.props.trainDialog
+            })
+
             this.props.onUpdate(newTrainDialog)
         }
-
-        this.setState({
-            hasBeenEdited: true
-        })
     }
     
     onWebChatSelectActivity(activity: Activity) {
@@ -681,7 +703,7 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
                             }
                         </div>
 
-                        {this.state.hasBeenEdited 
+                        {this.state.originalTrainDialog 
                         ?
                         <div className="cl-modal-buttons_primary">
                             <OF.PrimaryButton
@@ -747,13 +769,21 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
                 </div>
                 <ConfirmCancelModal
                     data-testid="confirm-delete-trainingdialog"
-                    open={this.state.isConfirmCancelModalOpen}
-                    onCancel={this.onClickCancelDelete}
-                    onConfirm={this.onClickConfirmDelete}
-                    title={intl.formatMessage({
-                        id: FM.TRAINDIALOGMODAL_CONFIRMDELETE_TITLE,
-                        defaultMessage: `Are you sure you want to delete this Training Dialog?`
-                    })}
+                    open={this.state.confirmModalType !== ConfirmType.NONE}
+                    onCancel={this.onClickConfirmCancel}
+                    onConfirm={this.onClickConfirmApprove}
+                    title={this.state.confirmModalType === ConfirmType.DELETE
+                        ?
+                            intl.formatMessage({
+                                id: FM.TRAINDIALOGMODAL_CONFIRMDELETE_TITLE,
+                                defaultMessage: `Are you sure you want to delete this Training Dialog?`
+                            })
+                        :
+                        intl.formatMessage({
+                            id: FM.TRAINDIALOGMODAL_CONFIRMABANDON_TITLE,
+                            defaultMessage: `Are you sure you want to abandon this Training Dialog?`
+                        })
+                    }
                 />
                 <UserInputModal
                     open={this.state.isUserInputModalOpen}
@@ -786,7 +816,7 @@ export interface ReceivedProps {
     onClose: () => void,
     onBranch: (turnIndex: number) => void,
     onEdit: (newTrainDialog: CLM.TrainDialog, extractChanged: boolean) => void,
-    onReplace: (newTrainDialog: CLM.TrainDialog) => void,
+    onReplace: (newTrainDialog: CLM.TrainDialog, isInvalid: boolean) => void,
     onUpdate: (newTrainDialog: CLM.TrainDialog) => void,
     onDelete: () => void
     open: boolean
