@@ -483,32 +483,34 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             console.warn(`Error when attempting to create history: `, error)
         })
     }
-    onEditTrainDialog(newTrainDialog: CLM.TrainDialog) {
 
-        ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app, newTrainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)
-            .then(teachWithHistory => {
-                if (teachWithHistory.replayErrors.length  === 0) {
-                    // Note: Don't clear currentTrainDialog so I can delete it if I save my edits
-                    this.setState({
-                        teachSession: teachWithHistory.teach,
-                        history: teachWithHistory.history,
-                        lastAction: teachWithHistory.lastAction,
-                        isTrainDialogModalOpen: false,
-                        isTeachDialogModalOpen: true
-                    })
-                }
-                else {
-                    this.setState({
-                        validationErrors: teachWithHistory.replayErrors,
-                        isValidationWarningOpen: true,
-                        validationErrorTitleId: FM.REPLAYERROR_EDIT_TITLE,
-                        validationErrorMessageId: FM.REPLAYERROR_FAILMESSAGE
-                    })
-                }
-            })
-            .catch(error => {
+    async onContinueTrainDialog(newTrainDialog: CLM.TrainDialog, initialUserInput: CLM.UserInput) {
+
+        try {
+            let teachWithHistory = await ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app, newTrainDialog, this.props.user.name, this.props.user.id, initialUserInput) as any) as Promise<CLM.TeachWithHistory>)
+    
+            if (teachWithHistory.replayErrors.length  === 0) {
+                // Note: Don't clear currentTrainDialog so I can delete it if I save my edits
+                this.setState({
+                    teachSession: teachWithHistory.teach,
+                    history: teachWithHistory.history,
+                    lastAction: teachWithHistory.lastAction,
+                    isTrainDialogModalOpen: false,
+                    isTeachDialogModalOpen: true
+                })
+            }
+            else {
+                this.setState({
+                    validationErrors: teachWithHistory.replayErrors,
+                    isValidationWarningOpen: true,
+                    validationErrorTitleId: FM.REPLAYERROR_EDIT_TITLE,
+                    validationErrorMessageId: FM.REPLAYERROR_FAILMESSAGE
+                })
+            }
+        }
+        catch (error) {
                 console.warn(`Error when attempting to create teach session from train dialog: `, error)
-            })
+        }
     }
 
     // Replace the current trainDialog with a new one
@@ -801,7 +803,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     onBranch={(turnIndex) => this.onBranchTrainDialog(turnIndex)}
                     onDelete={() => this.onDeleteTrainDialog()}
                     onUpdate={(updatedTrainDialog) => this.onUpdateTrainDialog(updatedTrainDialog)}
-                    onEdit={(editedTrainDialog, extractChanged) => this.onEditTrainDialog(editedTrainDialog)}
+                    onContinue={(editedTrainDialog, initialUserInput) => this.onContinueTrainDialog(editedTrainDialog, initialUserInput)}
                     onReplace={(editedTrainDialog, isInvalid) => this.onReplaceTrainDialog(editedTrainDialog, isInvalid)}
                     trainDialog={currentTrainDialog!}
                     history={this.state.history}
@@ -820,6 +822,8 @@ const mapDispatchToProps = (dispatch: any) => {
         createTeachSessionFromUndoThunkAsync: actions.teach.createTeachSessionFromUndoThunkAsync,
         createTeachSessionFromHistoryThunkAsync: actions.teach.createTeachSessionFromHistoryThunkAsync,
         editTrainDialogThunkAsync: actions.train.editTrainDialogThunkAsync,
+        runExtractorThunkAsync: actions.teach.runExtractorThunkAsync
+        
     }, dispatch)
 }
 const mapStateToProps = (state: State) => {

@@ -61,7 +61,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
     }
  
     @autobind
-    onDismissError(errorType: AT) : void {
+    onDismissError(errorType: AT): void {
         this.props.deleteTeachSessionThunkAsync(this.props.user.id, this.props.teach, this.props.app, this.props.editingPackageId, false, null, null); // False = abandon
         this.props.onClose();
     }
@@ -187,7 +187,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
             // No initialization allowed after first input
             this.setState({ isInitAvailable: false})
 
-            this.props.runExtractorThunkAsync(this.props.user.id, this.props.app.appId, CLM.DialogType.TEACH, this.props.teach.teachId, null, userInput);
+            this.props.runExtractorThunkAsync(this.props.app.appId, CLM.DialogType.TEACH, this.props.teach.teachId, null, userInput);
         }
     }
 

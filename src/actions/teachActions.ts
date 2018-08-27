@@ -49,13 +49,13 @@ const createTeachSessionFulfilled = (teachResponse: CLM.TeachResponse): ActionOb
 // --------------------------
 // TeachSessionFromHistory
 // --------------------------
-export const createTeachSessionFromHistoryThunkAsync = (app: CLM.AppBase, trainDialog: CLM.TrainDialog, userName: string, userId: string) => {
+export const createTeachSessionFromHistoryThunkAsync = (app: CLM.AppBase, trainDialog: CLM.TrainDialog, userName: string, userId: string, initialUserInput: CLM.UserInput | null = null) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.CREATE_TEACH_SESSION_FROMHISTORYASYNC)
         dispatch(createTeachSessionFromHistoryAsync(app.appId, trainDialog, userName, userId))
 
         try {
-            const teachWithHistory = await clClient.teachSessionFromHistory(app.appId, trainDialog, userName, userId)
+            const teachWithHistory = await clClient.teachSessionFromHistory(app.appId, trainDialog, initialUserInput, userName, userId)
             dispatch(createTeachSessionFromHistoryFulfilled(teachWithHistory))
             return teachWithHistory
         }
@@ -252,7 +252,7 @@ const deleteMemoryFulfilled = (): ActionObject => {
 // --------------------------
 // RunExtractor
 // --------------------------
-export const runExtractorThunkAsync = (key: string, appId: string, extractType: CLM.DialogType, sessionId: string, turnIndex: number | null, userInput: CLM.UserInput) => {
+export const runExtractorThunkAsync = (appId: string, extractType: CLM.DialogType, sessionId: string, turnIndex: number | null, userInput: CLM.UserInput) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.RUN_EXTRACTOR_ASYNC)
         dispatch(runExtractorAsync(appId, extractType, sessionId, turnIndex, userInput))

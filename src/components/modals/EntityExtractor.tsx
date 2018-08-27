@@ -291,7 +291,6 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
 
         const userInput: UserInput = { text: text }
         this.props.runExtractorThunkAsync(
-            this.props.user.id,
             this.props.app.appId,
             this.props.extractType,
             this.props.sessionId,

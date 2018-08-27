@@ -537,11 +537,14 @@ export default class ClClient {
     }
 
     //AT.CREATE_TEACH_SESSION_FROMHISTORYASYNC
-    teachSessionFromHistory(appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string): Promise<CLM.TeachWithHistory> {
+    teachSessionFromHistory(appId: string, trainDialog: CLM.TrainDialog, userInput: CLM.UserInput | null, userName: string, userId: string): Promise<CLM.TeachWithHistory> {
         return this.send<CLM.TeachWithHistory>({
             method: 'post',
             url: `${this.baseUrl}/app/${appId}/teachwithhistory?username=${userName}&userid=${userId}`,
-            data: trainDialog
+            data: {
+                trainDialog,
+                userInput 
+            }
         }).then(response => response.data)
     }
 

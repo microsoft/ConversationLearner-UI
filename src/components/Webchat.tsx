@@ -14,9 +14,7 @@ import { Activity } from 'botframework-directlinejs'
 import actions from '../actions'
 
 class Webchat extends React.Component<Props, {}> {
-    private behaviorSubject: BehaviorSubject<any> | null = null;
-    private chatProps: BotChat.ChatProps | null = null;
-    private dl: BotChat.DirectLine | null = null;
+
 
     static defaultProps: ReceivedProps = {
         isOpen: false,
@@ -27,10 +25,12 @@ class Webchat extends React.Component<Props, {}> {
         hideInput: false,
         focusInput: false
     }
+    private behaviorSubject: BehaviorSubject<any> | null = null;
+    private chatProps: BotChat.ChatProps | null = null;
+    private dl: BotChat.DirectLine | null = null;
 
     constructor(p: any) {
         super(p);
-        this.behaviorSubject = null;
         this.selectedActivity$ = this.selectedActivity$.bind(this)
     }
 
@@ -98,7 +98,7 @@ class Webchat extends React.Component<Props, {}> {
             this.chatProps = {
                 disableUpload: true,
                 botConnection: botConnection,
-                selectedActivity: this.props.hideInput ? this.selectedActivity$() as any : null,
+                selectedActivity: this.selectedActivity$(),
                 formatOptions: {
                     showHeader: false
                 },

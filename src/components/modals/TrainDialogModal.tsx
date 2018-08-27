@@ -124,6 +124,26 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
         this.props.onReplace(this.props.trainDialog, this.hasReplayError())
     }
 
+    // User is continuing the train dialog by typing something new
+    @autobind
+    async onPostNewActivity(activity: Activity) {
+
+        if (activity.type === 'message') {
+
+            let newTrainDialog = JSON.parse(JSON.stringify(this.props.trainDialog))
+            const definitions = {
+                entities: this.props.entities,
+                actions: this.props.actions,
+                trainDialogs: []
+            }
+            newTrainDialog.definitions = definitions
+
+            const initialUserInput: CLM.UserInput = { text: activity.text! }
+            this.props.onContinue(newTrainDialog, initialUserInput) 
+        }
+    }
+
+
     @autobind
     onClickConfirmCancel() {
         this.setState({
@@ -193,7 +213,7 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
 
             const userInput: CLM.UserInput = { text: inputText }
 
-            // Get a score for this step
+            // Get extraction
             const extractResponse = await ((this.props.extractFromHistoryThunkAsync(this.props.app.appId, history, userInput) as any) as Promise<CLM.ExtractResponse>)
 
             if (!extractResponse) {
@@ -656,9 +676,9 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
                                 key={this.state.webchatKey}
                                 app={this.props.app}
                                 history={this.props.history}
-                                onPostActivity={() => {}}
+                                onPostActivity={activity => this.onPostNewActivity(activity)}
                                 onSelectActivity={activity => this.onWebChatSelectActivity(activity)}
-                                hideInput={true}
+                                hideInput={false}
                                 focusInput={false}
                             />
                             {chatDisable}
@@ -815,7 +835,7 @@ export interface ReceivedProps {
     canEdit: boolean,
     onClose: () => void,
     onBranch: (turnIndex: number) => void,
-    onEdit: (newTrainDialog: CLM.TrainDialog, extractChanged: boolean) => void,
+    onContinue: (newTrainDialog: CLM.TrainDialog, initialUserInput: CLM.UserInput) => void,
     onReplace: (newTrainDialog: CLM.TrainDialog, isInvalid: boolean) => void,
     onUpdate: (newTrainDialog: CLM.TrainDialog) => void,
     onDelete: () => void

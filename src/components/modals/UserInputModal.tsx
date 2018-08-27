@@ -36,10 +36,16 @@ class UserInputModal extends React.Component<Props, ComponentState> {
     }
 
     onClickCancel() {
+        this.setState({
+            userInputVal: ""
+        })
         this.props.onCancel()
     }
 
     onClickSubmit = () => {
+        this.setState({
+            userInputVal: ""
+        })
         this.props.onSubmit(this.state.userInputVal)
     }
 
@@ -89,7 +95,6 @@ class UserInputModal extends React.Component<Props, ComponentState> {
                         data-testid="app-create-input-name"
                         onGetErrorMessage={value => this.onGetInputErrorMessage(value)}
                         onChanged={text => this.userInputChanged(text)}
-                       // label={this.getLabel(intl)}
                         placeholder={intl.formatMessage({
                             id: FM.USERINPUT_PLACEHOLDER,
                             defaultMessage: "User Input..."
