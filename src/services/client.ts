@@ -239,8 +239,8 @@ export default class ClClient {
             .then(response => response.data)
     }
 
-    source(appId: string, packageId: string): Promise<CLM.AppDefinition> {
-        return this.send<CLM.AppDefinition>({
+    source(appId: string, packageId: string): Promise<CLM.AppDefinitionChange> {
+        return this.send<CLM.AppDefinitionChange>({
             url: `${this.baseUrl}/app/${appId}/source?packageId=${packageId}`
         }).then(response => response.data)
     }

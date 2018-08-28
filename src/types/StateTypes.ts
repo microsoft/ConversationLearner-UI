@@ -10,7 +10,7 @@ import {
     EntityBase,
     ActionBase,
     TrainDialog, LogDialog, Teach, Session,
-    Memory, UIScoreInput, ScoreInput, ExtractResponse, ScoreResponse
+    Memory, UIScoreInput, ScoreInput, ExtractResponse, ScoreResponse, AppDefinitionChange
 } from '@conversationlearner/models'
 import { ErrorType } from './const'
 import { AT } from './ActionTypes'
@@ -76,6 +76,8 @@ export interface SettingsState {
     botPort: number
 }
 
+export type SourceState = { [appId: string]: AppDefinitionChange }
+
 export type State = {
     profile: ProfileState,
     user: UserState,
@@ -89,5 +91,6 @@ export type State = {
     logDialogs: LogDialogState,
     teachSessions: TeachSessionState,
     chatSessions: ChatSessionState,
-    settings: SettingsState
+    settings: SettingsState,
+    source: SourceState
 }

@@ -16,6 +16,7 @@ import errorReducer from './errorReducer'
 import teachSessionReducer from './teachSessionReducer'
 import chatSessionReducer from './chatSessionReducer'
 import settingsReducer from './settingsReducer'
+import sourceReducer from './sourceReducer'
 import { State } from '../types'
 
 const rootReducer: Reducer<State> = combineReducers<State>({
@@ -31,7 +32,8 @@ const rootReducer: Reducer<State> = combineReducers<State>({
     logDialogs: logDialogsReducer,
     teachSessions: teachSessionReducer,
     chatSessions: chatSessionReducer,
-    settings: settingsReducer
+    settings: settingsReducer,
+    source: sourceReducer
 })
 
 export default rootReducer

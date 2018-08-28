@@ -6,14 +6,15 @@ import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
 import { connect } from 'react-redux';
 import { State } from '../../../types'
-import { AppBase } from '@conversationlearner/models'
+import { AppBase, AppDefinition } from '@conversationlearner/models'
 import { FormattedMessage } from 'react-intl'
 import { bindActionCreators } from 'redux'
-import { FontClassNames, PrimaryButton } from 'office-ui-fabric-react'
+import * as OF from 'office-ui-fabric-react'
 import { FM } from '../../../react-intl-messages'
 import ReactPlayer from 'react-player'
-import { fetchBotInfoThunkAsync } from '../../../actions/botActions'
+import actions from '../../../actions'
 import * as ReactMarkdown from 'react-markdown'
+import * as moment from 'moment'
 import './Dashboard.css'
 
 interface ComponentState {
@@ -43,33 +44,81 @@ class Dashboard extends React.Component<Props, ComponentState> {
         })
     }
 
+    onClickAcceptChanges = async (updatedAppDefinition: AppDefinition) => {
+        const newTagName = `CL-${moment().format('MM-DD-SS')}`
+        const appId = this.props.app.appId
+
+        // Create a new tag for the current application and set it to live.
+        await this.props.createAppTagThunkAsync(appId, newTagName, true)
+        await this.props.promoteUpdatedAppDefinitionThunkAsync(appId, updatedAppDefinition)
+    }
+
     render() {
+        const app = this.props.app
+        const editPackageId = this.props.activeApps[app.appId] || app.devPackageId
+        const appDefinitionChange = this.props.source[app.appId]
+
+        const actionChanges = !appDefinitionChange
+            ? []
+            : !appDefinitionChange.isChanged
+            ? []
+            : appDefinitionChange.appDefinitionChanges.actions
+                .filter(cr => cr.isChanged)
+                .map(cr => cr.changes)
+                .reduce((a, b) => [...a, ...b], [])
+
         // TODO: internationalize text
         return (
             <div className="cl-page">
-                <span className={FontClassNames.xxLarge}>
+                <span className={OF.FontClassNames.xxLarge}>
                     <FormattedMessage
                         id={FM.DASHBOARD_TITLE}
                         defaultMessage="Overview"
                     />
                 </span>
-                <span className={FontClassNames.mediumPlus}>
+                <span className={OF.FontClassNames.mediumPlus}>
                     <FormattedMessage
                         id={FM.DASHBOARD_SUBTITLE}
                         defaultMessage="Notifications about this model..."
                     />
                 </span>
-                {this.props.validationErrors.length > 0 && 
+                {appDefinitionChange && appDefinitionChange.isChanged
+                    && <div>
+                        <h2 className={OF.FontClassNames.large}>Upgrade Notice:</h2>
+                        <p>You are running a version of the SDK that requires a newer version of the model than the one you have attempted to load.  The local copy of the model was upgraded to allow viewing.</p>
+
+                        {editPackageId === app.devPackageId
+                            ? <div>
+                            <p><OF.Icon iconName="Warning" className="cl-icon" /> Live package and Edit package are the same. Cannot safely auto upgrade. Please confirm changes.</p>
+
+                            <h3>Actions:</h3>
+                            <ul>
+                                {actionChanges.map((change, i) =>
+                                    <li key={i}>{change}</li>
+                                )}
+                            </ul>
+
+                            <p>By accepting changes we will automatically create a new tag for the unedited model, make it the live model, and then save the updated model. This will prevent a break in deployed models, but allow you to continue working.</p>
+                            <OF.PrimaryButton
+                                onClick={() => this.onClickAcceptChanges(appDefinitionChange.updatedAppDefinition)}
+                                text="Accept Changes"
+                            />
+                        </div>
+                        : <div>
+                            <p>You cannot save this updated model because you are currently viewing an older tag: {app.packageVersions.find(pv => pv.packageId === editPackageId)!.packageVersion}</p>
+                        </div>}
+                    </div>}
+                {this.props.validationErrors.length > 0 &&
                 (
                     <div className="cl-errorpanel" >
-                        <div className={`cl-font--emphasis ${FontClassNames.medium}`}>Please check that the correct version of your Bot is running.</div>
-                        {this.props.validationErrors.map((message: any, i) => { 
+                        <div className={`cl-font--emphasis ${OF.FontClassNames.medium}`}>Please check that the correct version of your Bot is running.</div>
+                        {this.props.validationErrors.map((message: any, i) => {
                                 return message.length === 0
                                     ? <br key={i}></br>
-                                    : <div key={i} className={FontClassNames.medium}>{message}</div>
+                                    : <div key={i} className={OF.FontClassNames.medium}>{message}</div>
                             })
                         }
-                        <PrimaryButton
+                        <OF.PrimaryButton
                             onClick={this.onClickRetry}
                             ariaDescription="Retry"
                             text="Retry"
@@ -100,14 +149,18 @@ const mapStateToProps = (state: State) => {
         entities: state.entities,
         actions: state.actions,
         trainDialogs: state.trainDialogs,
-        browserId: state.bot.browserId
+        browserId: state.bot.browserId,
+        source: state.source,
+        activeApps: state.apps.activeApps
     }
 }
 
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        fetchBotInfoThunkAsync
-    }, dispatch);
+        createAppTagThunkAsync: actions.app.createAppTagThunkAsync,
+        fetchBotInfoThunkAsync: actions.bot.fetchBotInfoThunkAsync,
+        promoteUpdatedAppDefinitionThunkAsync: actions.source.promoteUpdatedAppDefinitionThunkAsync
+    }, dispatch)
 }
 
 export interface ReceivedProps {

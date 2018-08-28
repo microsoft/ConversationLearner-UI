@@ -542,7 +542,6 @@ const mapDispatchToProps = (dispatch: any) => {
         editAppLiveTagThunkAsync: actions.app.editAppLiveTagThunkAsync,
         fetchAppSourceThunkAsync: actions.app.fetchAppSourceThunkAsync
     }, dispatch);
-
 }
 const mapStateToProps = (state: State) => {
     if (!state.user.user) {
