@@ -867,7 +867,7 @@ export default {
         [FM.TEACHSESSIONMODAL_UNDO_TEXT]: 'Undo Step',
         [FM.TEACHSESSIONMODAL_EDIT_ABANDON_BUTTON_TEXT]: 'Abandon Edit',
         [FM.TEACHSESSIONMODAL_TEACH_ABANDON_BUTTON_TEXT]: 'Abandon Teach',
-        [FM.TEACHSESSIONMODAL_EDIT_DONE_BUTTON_TEXT]: 'Done Editing',
+        [FM.TEACHSESSIONMODAL_EDIT_DONE_BUTTON_TEXT]: 'Save Edit',
         [FM.TEACHSESSIONMODAL_TEACH_DONE_BUTTON_TEXT]: 'Done Teaching',
         [FM.TEACHSESSIONMODAL_TEACH_CONFIRMDELETE_TITLE]: 'Are you sure you want to abandon this teach session?',
         [FM.TEACHSESSIONMODAL_EDIT_CONFIRMDELETE_TITLE]: 'Are you sure you want to cancel editing?',

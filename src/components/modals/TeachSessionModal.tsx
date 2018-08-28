@@ -210,7 +210,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
         if (this.props.sourceLogDialog || this.props.sourceTrainDialog) {
             return intl.formatMessage({
                 id: FM.TEACHSESSIONMODAL_EDIT_DONE_BUTTON_TEXT,
-                defaultMessage: 'Done Editing'
+                defaultMessage: 'Save Edit'
             })
         }
         else {
@@ -324,7 +324,8 @@ class TeachModal extends React.Component<Props, ComponentState> {
                                     })}
                                 />
                                 <OF.DefaultButton
-                                     data-testid="teachsession-footer-button-abandon"
+                                    data-testid="teachsession-footer-button-abandon"
+                                    className="cl-button-delete"
                                     onClick={this.onClickAbandonTeach}
                                     ariaDescription={this.renderAbandonText(intl)}
                                     text={this.renderAbandonText(intl)}
