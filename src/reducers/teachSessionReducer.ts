@@ -32,7 +32,6 @@ const teachSessionReducer: Reducer<TeachSessionState> = (state = initialState, a
             return { ...initialState, all: state.all };
         case AT.CREATE_TEACH_SESSION_FULFILLED:
             return { ...state, all: [...state.all, action.teachSession], current: action.teachSession, mode: DialogMode.Wait, memories: [] }
-        case AT.CREATE_TEACH_SESSION_FROMUNDOFULFILLED:
         case AT.CREATE_TEACH_SESSION_FROMHISTORYFULFILLED:
             // Only update state if there were no discrepancies
             if (action.teachWithHistory.replayErrors.length === 0) {

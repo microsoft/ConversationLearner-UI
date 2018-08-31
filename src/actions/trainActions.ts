@@ -64,6 +64,41 @@ const editTrainDialogFulfilled = (trainDialog: TrainDialog): ActionObject => {
     }
 }
 
+// ----------------------------------------
+// FetchTrainDialog
+// ----------------------------------------
+export const fetchTrainDialogThunkAsync = (appId: string, trainDialogId: string) => {
+    return async (dispatch: Dispatch<any>) => {
+        const clClient = ClientFactory.getInstance(AT.FETCH_TRAIN_DIALOG_ASYNC)
+        dispatch(fetchTrainDialogAsync(appId, trainDialogId))
+
+        try {
+            const trainDialog = await clClient.trainDialog(appId, trainDialogId)
+            dispatch(fetchTrainDialogFulfilled(trainDialog))
+            return trainDialog
+        } catch (e) {
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.FETCH_TRAIN_DIALOG_ASYNC))
+            return null;
+        }
+    }
+}
+
+const fetchTrainDialogAsync = (appId: string, trainDialogId: string): ActionObject => {
+    return {
+        type: AT.FETCH_TRAIN_DIALOG_ASYNC,
+        appId: appId,
+        trainDialogId: trainDialogId
+    }
+}
+
+const fetchTrainDialogFulfilled = (trainDialog: TrainDialog): ActionObject => {
+    return {
+        type: AT.FETCH_TRAIN_DIALOG_FULFILLED,
+        trainDialog
+    }
+}
+
 // --------------------------
 // ScoreFromHistory
 // --------------------------
@@ -214,6 +249,9 @@ const deleteTrainDialogFulfilled = (trainDialogId: string): ActionObject => {
     }
 }
 
+// ----------------------------------------
+// Fetch AllTrainDialogs
+// ----------------------------------------
 export const fetchAllTrainDialogsThunkAsync = (appId: string) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.FETCH_TRAIN_DIALOGS_ASYNC)

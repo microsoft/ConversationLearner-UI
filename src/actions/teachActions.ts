@@ -87,46 +87,8 @@ const createTeachSessionFromHistoryFulfilled = (teachWithHistory: CLM.TeachWithH
 }
 
 // --------------------------
-// TeachSessionFromUndo
+// DeleteTeachSession
 // --------------------------
-export const createTeachSessionFromUndoThunkAsync = (appId: string, teach: CLM.Teach, popRound: boolean, userName: string, userId: string) => {
-    return async (dispatch: Dispatch<any>) => {
-        const clClient = ClientFactory.getInstance(AT.CREATE_TEACH_SESSION_FROMUNDOASYNC)
-        dispatch(createTeachSessionFromUndoAsync(appId, teach, popRound, userName, userId))
-
-        try {
-            const teachWithHistory = await clClient.teachSessionFromUndo(appId, teach, popRound, userName, userId)
-            dispatch(createTeachSessionFromUndoFulfilled(teachWithHistory))
-            return teachWithHistory
-        }
-        catch (e) {
-            const error = e as AxiosError
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.CREATE_TEACH_SESSION_FROMUNDOASYNC))
-            dispatch(createTeachSessionRejected())
-            throw error
-        }
-    }
-}
-
-const createTeachSessionFromUndoAsync = (appId: string, teach: CLM.Teach, popRound: boolean, userName: string, userId: string): ActionObject => {
-    return {
-        type: AT.CREATE_TEACH_SESSION_FROMUNDOASYNC,
-        appId: appId,
-        teach: teach,
-        popRound: popRound,
-        userName: userName,
-        userId: userId
-    }
-}
-
-const createTeachSessionFromUndoFulfilled = (teachWithHistory: CLM.TeachWithHistory): ActionObject => {
-    // Needs a fulfilled version to handle response from Epic
-    return {
-        type: AT.CREATE_TEACH_SESSION_FROMUNDOFULFILLED,
-        teachWithHistory: teachWithHistory
-    }
-}
-
 export const deleteTeachSessionThunkAsync = (
     key: string,
     teachSession: CLM.Teach,

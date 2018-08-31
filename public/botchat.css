@@ -172,8 +172,10 @@ body .wc-app, .wc-app button, .wc-app input, .wc-app textarea {
 .wc-message-content.clickable {
   cursor: pointer; }
 
-.wc-message-content.selected {
-  box-shadow: 0px 5px 5px 5px #ffa333; }
+.wc-message-selected {
+  border: 2px solid #FFFF00;
+  background-color: #ffffcc;
+}
 
 .wc-message-content img {
   max-height: 320px;

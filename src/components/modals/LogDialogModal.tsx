@@ -98,6 +98,8 @@ class LogDialogModal extends React.Component<Props, ComponentState> {
                                     onPostActivity={activity => this.onPostWebChatActivity(activity)}
                                     hideInput={true}
                                     focusInput={true}
+                                    renderSelectedActivity={null}
+                                    selectedActivityIndex={null} 
                                 />
                                 {chatDisable}
                             </div>

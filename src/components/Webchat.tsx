@@ -15,7 +15,6 @@ import actions from '../actions'
 
 class Webchat extends React.Component<Props, {}> {
 
-
     static defaultProps: ReceivedProps = {
         isOpen: false,
         app: null,
@@ -23,8 +22,11 @@ class Webchat extends React.Component<Props, {}> {
         onSelectActivity: () => { },
         onPostActivity: () => { },
         hideInput: false,
-        focusInput: false
+        focusInput: false,
+        renderSelectedActivity: null,
+        selectedActivityIndex: null
     }
+
     private behaviorSubject: BehaviorSubject<any> | null = null;
     private chatProps: BotChat.ChatProps | null = null;
     private dl: BotChat.DirectLine | null = null;
@@ -126,6 +128,8 @@ class Webchat extends React.Component<Props, {}> {
 
         chatProps.hideInput = this.props.hideInput
         chatProps.focusInput = this.props.focusInput
+        chatProps.renderSelectedActivity = this.props.renderSelectedActivity
+        chatProps.selectedActivityIndex = this.props.selectedActivityIndex
 
         return (
             <div id="botchat" className="webchatwindow wc-app">
@@ -157,7 +161,10 @@ export interface ReceivedProps {
     hideInput: boolean,
     focusInput: boolean,
     onSelectActivity: (a: Activity) => void,
-    onPostActivity: (a: Activity) => void
+    onPostActivity: (a: Activity) => void,
+    renderSelectedActivity: ((a: Activity) => JSX.Element) | null
+    // Used to select activity from outside webchat
+    selectedActivityIndex: number | null
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps

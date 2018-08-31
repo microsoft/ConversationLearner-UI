@@ -26,7 +26,7 @@ interface RenderData {
     round: CLM.TrainRound | undefined
     memories: CLM.Memory[]
     prevMemories: CLM.Memory[]
-};
+}
 
 class TrainDialogAdmin extends React.Component<Props, ComponentState> {
     constructor(p: Props) {

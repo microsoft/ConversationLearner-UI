@@ -57,6 +57,8 @@ class SessionWindow extends React.Component<Props, ComponentState> {
                                 history={[]}
                                 onPostActivity={() => { }}
                                 onSelectActivity={() => { }}
+                                renderSelectedActivity={null} 
+                                selectedActivityIndex={null} 
                                 hideInput={false}
                                 focusInput={true}
                             />

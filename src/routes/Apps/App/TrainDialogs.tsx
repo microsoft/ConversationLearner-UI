@@ -195,6 +195,7 @@ interface ComponentState {
     lastAction: CLM.ActionBase | null
     isTeachDialogModalOpen: boolean
     isTrainDialogModalOpen: boolean
+    selectedHistoryIndex: number | null
     currentTrainDialog: CLM.TrainDialog | undefined
     searchValue: string,
     dialogKey: number,
@@ -221,6 +222,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             lastAction: null,
             isTeachDialogModalOpen: false,
             isTrainDialogModalOpen: false,
+            selectedHistoryIndex: null,
             currentTrainDialog: undefined,
             searchValue: '',
             dialogKey: 0,
@@ -376,33 +378,36 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             dialogKey: this.state.dialogKey + 1
         })
     }
+    
+    // User has clicked on Activity in a Teach Session
+    async onEditTeach(historyIndex: number) {
 
-    onUndoTeachStep(popRound: boolean) {
-        if (!this.state.teachSession) {
-            throw new Error(`You attempted to undo a round in the train dialog, but teach session was not defined. This should not be possible. Please open an issue.`)
-        }
+        try {
+            if (this.state.teachSession) {
+                let trainDialog = await ((this.props.fetchTrainDialogThunkAsync(this.props.app.appId, this.state.teachSession.trainDialogId) as any) as Promise<CLM.TrainDialog>)
+                trainDialog.definitions = {
+                    entities: this.props.entities,
+                    actions: this.props.actions,
+                    trainDialogs: []
+                }
 
-        ((this.props.createTeachSessionFromUndoThunkAsync(this.props.app.appId, this.state.teachSession, popRound, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)
-            .then(teachWithHistory => {
-                if (teachWithHistory.replayErrors.length === 0) {
+                let teachWithHistory = await ((this.props.fetchHistoryThunkAsync(this.props.app.appId, trainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)
+                
+                if (teachWithHistory) {
                     this.setState({
-                        teachSession: teachWithHistory.teach,
                         history: teachWithHistory.history,
-                        lastAction: teachWithHistory.lastAction
+                        lastAction: teachWithHistory.lastAction,
+                        currentTrainDialog: trainDialog,
+                        isTrainDialogModalOpen: true,
+                        selectedHistoryIndex: historyIndex,
+                        isTeachDialogModalOpen: false
                     })
                 }
-                else {
-                    this.setState({
-                        validationErrors: teachWithHistory.replayErrors,
-                        isValidationWarningOpen: true,
-                        validationErrorTitleId: FM.REPLAYERROR_UNDO_TITLE,
-                        validationErrorMessageId: FM.REPLAYERROR_FAILMESSAGE
-                    })
-                }
-            })
-            .catch(error => {
-                console.warn(`Error when attempting to create teach session from undo: `, error)
-            })
+            }
+        }
+        catch(error) {
+            console.warn(`Error when attempting to edit Teach session`, error)
+        }
     }
 
     onDeleteTrainDialog() {
@@ -452,6 +457,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         lastAction: teachWithHistory.lastAction,
                         currentTrainDialog: undefined,
                         isTrainDialogModalOpen: false,
+                        selectedHistoryIndex: null,
                         isTeachDialogModalOpen: true
                     })
                 }
@@ -496,6 +502,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     history: teachWithHistory.history,
                     lastAction: teachWithHistory.lastAction,
                     isTrainDialogModalOpen: false,
+                    selectedHistoryIndex: null,
                     isTeachDialogModalOpen: true
                 })
             }
@@ -551,7 +558,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     history: teachWithHistory.history,
                     lastAction: teachWithHistory.lastAction,
                     currentTrainDialog: trainDialog,
-                    isTrainDialogModalOpen: true
+                    isTrainDialogModalOpen: true,
+                    selectedHistoryIndex: null
                 })
             })
             .catch(error => {
@@ -562,6 +570,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     onCloseTrainDialogModal() {
         this.setState({
             isTrainDialogModalOpen: false,
+            selectedHistoryIndex: null,
             currentTrainDialog: undefined,
             history: [],
             lastAction: null,
@@ -788,8 +797,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     dialogMode={this.props.teachSessions.mode}
                     isOpen={this.state.isTeachDialogModalOpen}
                     onClose={() => this.onCloseTeachSession()}
-                    onUndo={(popRound) => this.onUndoTeachStep(popRound)}
-                    history={this.state.history}
+                    onEditTeach={(historyIndex) => this.onEditTeach(historyIndex)}
+                    initialHistory={this.state.history}
                     lastAction={this.state.lastAction}
                     sourceTrainDialog={this.state.currentTrainDialog}
                 />
@@ -807,6 +816,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     onReplace={(editedTrainDialog, isInvalid) => this.onReplaceTrainDialog(editedTrainDialog, isInvalid)}
                     trainDialog={currentTrainDialog!}
                     history={this.state.history}
+                    initialSelectedHistoryIndex={this.state.selectedHistoryIndex}
                 />
             </div>
         );
@@ -817,9 +827,9 @@ const mapDispatchToProps = (dispatch: any) => {
         createTeachSessionThunkAsync: actions.teach.createTeachSessionThunkAsync,
         fetchHistoryThunkAsync: actions.train.fetchHistoryThunkAsync,
         fetchApplicationTrainingStatusThunkAsync: actions.app.fetchApplicationTrainingStatusThunkAsync,
+        fetchTrainDialogThunkAsync: actions.train.fetchTrainDialogThunkAsync,
         deleteTrainDialogThunkAsync: actions.train.deleteTrainDialogThunkAsync,
         deleteMemoryThunkAsync: actions.teach.deleteMemoryThunkAsync,
-        createTeachSessionFromUndoThunkAsync: actions.teach.createTeachSessionFromUndoThunkAsync,
         createTeachSessionFromHistoryThunkAsync: actions.teach.createTeachSessionFromHistoryThunkAsync,
         editTrainDialogThunkAsync: actions.train.editTrainDialogThunkAsync,
         runExtractorThunkAsync: actions.teach.runExtractorThunkAsync

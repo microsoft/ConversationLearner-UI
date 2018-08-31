@@ -436,39 +436,6 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         })
     }
 
-    onUndoTeachStep(popRound: boolean) {
-        // Clear history first
-        this.setState({
-            history: [],
-            lastAction: null
-        });
-
-        if (!this.state.teachSession) {
-            throw new Error(`You attempted to undo a teach step, but state.teachSession is not defined. This is likely a bug. Please open an issue.`)
-        }
-
-        ((this.props.createTeachSessionFromUndoThunkAsync(this.props.app.appId, this.state.teachSession, popRound, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)
-            .then(teachWithHistory => {
-                if (teachWithHistory.replayErrors.length === 0) {
-                    this.setState({
-                        teachSession: teachWithHistory.teach,
-                        history: teachWithHistory.history,
-                        lastAction: teachWithHistory.lastAction
-                    })
-                } else {
-                    this.setState({
-                        validationErrors: teachWithHistory.replayErrors,
-                        isValidationWarningOpen: true,
-                        validationErrorTitleId: FM.REPLAYERROR_UNDO_TITLE,
-                        validationErrorMessageId: FM.REPLAYERROR_FAILMESSAGE
-                    })
-                }
-            })
-            .catch(error => {
-                console.warn(`Error when attempting to create teach session from undo: `, error)
-            })
-    }
-
     getFilteredAndSortedDialogs(): CLM.LogDialog[] {
         // Don't show log dialogs that have derived TrainDialogs as they've already been edited
         let filteredLogDialogs: CLM.LogDialog[] = this.props.logDialogs.filter(l => !l.targetTrainDialogIds || l.targetTrainDialogIds.length === 0);
@@ -638,8 +605,8 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     dialogMode={this.props.teachSessions.mode}
                     isOpen={this.state.isTeachDialogModalOpen}
                     onClose={this.onCloseTeachSession}
-                    onUndo={(popRound) => this.onUndoTeachStep(popRound)}
-                    history={this.state.history}
+                    onEditTeach={()=>{}} // LARS TEMP
+                    initialHistory={this.state.history}
                     lastAction={this.state.lastAction}
                     sourceLogDialog={this.state.currentLogDialog}
                 />
@@ -652,7 +619,6 @@ const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         createChatSessionThunkAsync: actions.chat.createChatSessionThunkAsync,
         createTeachSessionFromHistoryThunkAsync: actions.teach.createTeachSessionFromHistoryThunkAsync,
-        createTeachSessionFromUndoThunkAsync: actions.teach.createTeachSessionFromUndoThunkAsync,
         deleteLogDialogThunkAsync: actions.log.deleteLogDialogThunkAsync,
         fetchAllLogDialogsThunkAsync: actions.log.fetchAllLogDialogsThunkAsync,
         fetchHistoryThunkAsync: actions.train.fetchHistoryThunkAsync

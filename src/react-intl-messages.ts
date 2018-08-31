@@ -118,10 +118,12 @@ export enum FM {
     APPSLIST_COLUMNS_ACTIONS = 'AppsList.columns.actions',
 
     // Generic Buttons
+    BUTTON_ABANDON = 'Button.ABANDON',
     BUTTON_OK = 'Button.OK',
     BUTTON_CANCEL = 'Button.CANCEL',
     BUTTON_INFO = 'Button.INFO',
     BUTTON_IMPORT = 'Button.IMPORT',
+    BUTTON_SAVE = 'Button.SAVE',
     BUTTON_SUBMIT = 'Button.SUMBIT',
 
     // ChatSessionModal
@@ -253,7 +255,6 @@ export enum FM {
     REPLAYERROR_LOGDIALOG_VALIDATION_MESSAGE = 'ReplayError.logdialogvalidation.message',
     REPLAYERROR_CONVERT_TITLE = 'ReplayError.logdialogvalidation.convert.title',
     REPLAYERROR_FAILMESSAGE = 'ReplayError.failMessage',
-    REPLAYERROR_UNDO_TITLE = 'ReplayError.undo.title',
     REPLAYERROR_EDIT_TITLE = 'ReplayError.edit.title',
     REPLAYERROR_BRANCH_TITLE = 'ReplayError.branch.title',
     REPLAYERROR_DESC_MISSING_ACTION = 'ReplayError.Desc.missingAction',
@@ -310,12 +311,8 @@ export enum FM {
     TEACHSESSIONINIT_TITLE = 'TeachSessionInit.title',
 
     // TeachSessionModal
-    TEACHSESSIONMODAL_UNDO_ARIADESCRIPTION = 'TeachSessionModal.undo.ariaDescription',
-    TEACHSESSIONMODAL_UNDO_TEXT = 'TeachSessionModal.undo.text',
     TEACHSESSIONMODAL_EDIT_ABANDON_BUTTON_TEXT = 'TeachSessionModal.edit.abandon.buttontext',
     TEACHSESSIONMODAL_TEACH_ABANDON_BUTTON_TEXT = 'TeachSessionModal.teach.abandon.buttontext',
-    TEACHSESSIONMODAL_EDIT_DONE_BUTTON_TEXT = 'TeachSessionModal.edit.done.buttontext',
-    TEACHSESSIONMODAL_TEACH_DONE_BUTTON_TEXT = 'TeachSessionModal.teach.done.buttontext',
     TEACHSESSIONMODAL_TEACH_CONFIRMDELETE_TITLE = 'TeachSessionModal.teach.confirmDelete.title',
     TEACHSESSIONMODAL_EDIT_CONFIRMDELETE_TITLE = 'TeachSessionModal.edit.confirmDelete.title',
     TEACHSESSIONMODAL_INITSTATE_ARIADESCRIPTION = 'TeachSessionModal.initstate.ariaDescription',
@@ -444,7 +441,6 @@ export enum FM {
     // Validations
     VALIDATE_UNABLE_TO_EDIT = 'Validate.unableToEdit',
     VALIDATE_UNABLE_TO_BRANCH = 'Validate.unableToBranch',
-    VALIDATE_UNABLE_TO_UNDO = 'Validate.unableToUndo',
     VALIDATE_ENTITY_REASON = 'Validate.entityReason',
 }
 
@@ -564,10 +560,12 @@ export default {
         [FM.APPSLIST_COLUMNS_ACTIONS]: 'Actions',
 
         // Generic Buttons
+        [FM.BUTTON_ABANDON]: 'Abandon',
         [FM.BUTTON_OK]: 'OK',
         [FM.BUTTON_CANCEL]: 'Cancel',
         [FM.BUTTON_IMPORT]: 'Import',
         [FM.BUTTON_INFO]: 'Info',
+        [FM.BUTTON_SAVE]: 'Save',
         [FM.BUTTON_SUBMIT]: 'Submit',
 
         // Error Messages
@@ -612,7 +610,6 @@ export default {
         [FM.REPLAYERROR_LOGDIALOG_VALIDATION_MESSAGE]: 'This Log Dialog was created with a earlier version of the model.  The following incomptibilities were found:',
         [FM.REPLAYERROR_CONVERT_TITLE]: 'Unable to convert to Train Dialog',
         [FM.REPLAYERROR_FAILMESSAGE]: 'The following issues occurred when attempting to replay the dialog',
-        [FM.REPLAYERROR_UNDO_TITLE]: 'Unable to Undo',
         [FM.REPLAYERROR_EDIT_TITLE]: 'Unable to Edit',
         [FM.REPLAYERROR_BRANCH_TITLE]: 'Unable to Branch',
         [FM.REPLAYERROR_DESC_ACTION_AFTER_WAIT]: 'Previous Action is a Wait action.  Change it to not Wait for a response or add a User input between the actions',
@@ -744,7 +741,6 @@ export default {
         // Validation
         [FM.VALIDATE_UNABLE_TO_EDIT]: 'Unable to Edit',
         [FM.VALIDATE_UNABLE_TO_BRANCH]: 'Unable to Branch',
-        [FM.VALIDATE_UNABLE_TO_UNDO]: 'Unable to Undo',
         [FM.VALIDATE_ENTITY_REASON]: 'Bot API calls are behaving differently. Entities in memory do not match.',
 
         // ActionDetailsList
@@ -863,12 +859,8 @@ export default {
         [FM.TEACHSESSIONINIT_TITLE]: 'Set Initial Entity Values',
 
         // TeachSessionModal
-        [FM.TEACHSESSIONMODAL_UNDO_ARIADESCRIPTION]: 'Undo Step',
-        [FM.TEACHSESSIONMODAL_UNDO_TEXT]: 'Undo Step',
         [FM.TEACHSESSIONMODAL_EDIT_ABANDON_BUTTON_TEXT]: 'Abandon Edit',
         [FM.TEACHSESSIONMODAL_TEACH_ABANDON_BUTTON_TEXT]: 'Abandon Teach',
-        [FM.TEACHSESSIONMODAL_EDIT_DONE_BUTTON_TEXT]: 'Save Edit',
-        [FM.TEACHSESSIONMODAL_TEACH_DONE_BUTTON_TEXT]: 'Done Teaching',
         [FM.TEACHSESSIONMODAL_TEACH_CONFIRMDELETE_TITLE]: 'Are you sure you want to abandon this teach session?',
         [FM.TEACHSESSIONMODAL_EDIT_CONFIRMDELETE_TITLE]: 'Are you sure you want to cancel editing?',
         [FM.TEACHSESSIONMODAL_INITSTATE_ARIADESCRIPTION]: 'Set Initial State',
@@ -917,7 +909,6 @@ export default {
         [AT.CREATE_CHAT_SESSION_ASYNC]: 'Creating chat session',
         [AT.CREATE_TEACH_SESSION_ASYNC]: 'Creating teach session',
         [AT.CREATE_TEACH_SESSION_FROMHISTORYASYNC]: 'Creating teach session from history',
-        [AT.CREATE_TEACH_SESSION_FROMUNDOASYNC]: 'Creating teach session from undo',
         [AT.FETCH_BOTINFO_ASYNC]: 'Fetching bot information',
         [AT.FETCH_HISTORY_ASYNC]: 'Fetching history',
         [AT.FETCH_TUTORIALS_ASYNC]: 'Fetching tutorials',

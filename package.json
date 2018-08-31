@@ -20,7 +20,7 @@
   "private": true,
   "dependencies": {
     "@conversationlearner/models": "0.172.6",
-    "@conversationlearner/webchat": "0.106.0",
+    "@conversationlearner/webchat": "^0.116.0",
     "@types/file-saver": "^1.3.0",
     "adaptivecards": "1.0.0",
     "axios": "^0.16.2",

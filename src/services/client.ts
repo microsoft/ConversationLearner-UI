@@ -259,7 +259,6 @@ export default class ClClient {
         }).then(response => response.data.actions)
     }
 
-
     actionsCreate(appId: string, action: CLM.ActionBase): Promise<CLM.ActionBase> {
         return this.send<IActionCreationResponse>({
             method: 'post',
@@ -314,6 +313,13 @@ export default class ClClient {
             method: 'put',
             url: `${this.baseUrl}/app/${appId}/traindialog/${trainDialog.trainDialogId}`,
             data: trainDialog
+        }).then(response => response.data)
+    }
+
+    //AT.FETCH_TRAIN_DIALOG_ASYNC
+    trainDialog(appId: string, trainDialogId: string): Promise<CLM.TrainDialog> {
+        return this.send<CLM.TrainDialog>({
+            url: `${this.baseUrl}/app/${appId}/traindialog/${trainDialogId}`
         }).then(response => response.data)
     }
 
@@ -519,14 +525,6 @@ export default class ClClient {
             data: uiScoreInput
         })
             .then(response => response.data)
-    }
-
-    teachSessionFromUndo(appId: string, teach: CLM.Teach, popRound: boolean, userName: string, userId: string): Promise<CLM.TeachWithHistory> {
-        return this.send<CLM.TeachWithHistory>({
-            method: 'post',
-            url: `${this.baseUrl}/app/${appId}/teach/${teach.teachId}/undo?popround=${popRound}&username=${userName}&userid=${userId}`,
-            data: teach
-        }).then(response => response.data)
     }
 
     teachSessionFromBranch(appId: string, trainDialogId: string, userName: string, userId: string, turnIndex: number): Promise<CLM.TeachWithHistory> {

@@ -55,7 +55,6 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
         case AT.CREATE_APP_TAG_ASYNC: 
         case AT.CREATE_APPLICATION_ASYNC:
         case AT.CREATE_TEACH_SESSION_ASYNC:
-        case AT.CREATE_TEACH_SESSION_FROMUNDOASYNC:
         case AT.CREATE_TEACH_SESSION_FROMHISTORYASYNC:
         case AT.CREATE_CHAT_SESSION_ASYNC:
         case AT.CREATE_ENTITY_ASYNC:
@@ -94,6 +93,7 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
         case AT.FETCH_EXTRACTFROMHISTORY_ASYNC:
         case AT.FETCH_TRAINDIALOGREPLAY_ASYNC:
         case AT.FETCH_TEACH_SESSIONS_ASYNC:
+        case AT.FETCH_TRAIN_DIALOG_ASYNC:
         // case AT.FETCH_TRAIN_DIALOGS_ASYNC: Don't block
         case AT.FETCH_TUTORIALS_ASYNC:
 
@@ -112,7 +112,6 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
         case AT.CREATE_CHAT_SESSION_FULFILLED:
         case AT.CREATE_TEACH_SESSION_REJECTED:
         case AT.CREATE_TEACH_SESSION_FULFILLED:
-        case AT.CREATE_TEACH_SESSION_FROMUNDOFULFILLED:
         case AT.CREATE_TEACH_SESSION_FROMHISTORYFULFILLED:
         case AT.CREATE_ENTITY_FULFILLED:
 
@@ -146,6 +145,7 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
         case AT.FETCH_HISTORY_FULFILLED:
         case AT.FETCH_SCOREFROMHISTORY_FULFILLED:
         case AT.FETCH_EXTRACTFROMHISTORY_FULFILLED:
+        case AT.FETCH_TRAIN_DIALOG_FULFILLED:
         case AT.FETCH_TRAINDIALOGREPLAY_FULFILLED:
         // case AT.FETCH_LOG_DIALOGS_FULFILLED: Doeesn't block
         case AT.FETCH_TEACH_SESSIONS_FULFILLED:

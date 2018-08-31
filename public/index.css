@@ -163,6 +163,15 @@ html {
   background-color: transparent !important;
 }
 
+.ms-Button--icon.cl-wc-deleteturn {
+  color: var(--color-redDark) !important;
+  background-color: transparent !important;
+}
+
+.ms-Button--icon.cl-wc-branchturn {
+  background-color: transparent !important;
+}
+
 .ms-Button-icon[data-icon-name="Delete"]:not(:disabled) {
   color: var(--color-red);
 }
@@ -257,12 +266,8 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
   color: #ffffff;
 }
 
-.cl-wc-highlight {
-  margin: 0px;
-  height: 2px;
-  padding-top: 5px;
-  padding-bottom: 5px;
-  background-color: var(--color-yellowLight);
+.cl-wc-buttonbar {
+  background-color: transparent;
 }
 .cl-wc-deleteturn {
   border: none !important;

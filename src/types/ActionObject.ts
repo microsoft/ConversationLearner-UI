@@ -159,6 +159,13 @@ export type FetchAction = {
     type: AT.FETCH_CHAT_SESSIONS_ASYNC,
     appId: string
 } | {
+    type: AT.FETCH_TRAIN_DIALOG_ASYNC,
+    appId: string,
+    trainDialogId: string
+} | {
+    type: AT.FETCH_TRAIN_DIALOG_FULFILLED,
+    trainDialog: TrainDialog,
+} | {
     type: AT.FETCH_TRAIN_DIALOGS_ASYNC,
     appId: string
 } | {
@@ -326,16 +333,6 @@ export type CreateAction = {
 }| {
     type: AT.CREATE_TEACH_SESSION_FULFILLED,
     teachSession: Teach
-} | {
-    type: AT.CREATE_TEACH_SESSION_FROMUNDOASYNC,
-    appId: string,
-    teach: Teach,
-    popRound: boolean,
-    userName: string,
-    userId: string
-} | {
-    type: AT.CREATE_TEACH_SESSION_FROMUNDOFULFILLED,
-    teachWithHistory: TeachWithHistory
 } | {
     type: AT.CREATE_TEACH_SESSION_FROMHISTORYASYNC,
     appId: string,

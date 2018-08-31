@@ -29,7 +29,10 @@ interface ComponentState {
     isInitAvailable: boolean,
     webchatKey: number,
     editing: boolean,
-    hasTerminalAction: boolean
+    hasTerminalAction: boolean,
+    activityIndex: number,
+    /* Activity the user has clicked on (if any) */
+    selectedActivity: Activity | null
 }
 
 class TeachModal extends React.Component<Props, ComponentState> {
@@ -40,7 +43,9 @@ class TeachModal extends React.Component<Props, ComponentState> {
         isInitAvailable: true,
         webchatKey: 0,
         editing: false,
-        hasTerminalAction: false
+        hasTerminalAction: false,
+        activityIndex: 0,
+        selectedActivity: null
     }
 
     private callbacksId: string | null = null;
@@ -71,10 +76,12 @@ class TeachModal extends React.Component<Props, ComponentState> {
         let webchatKey = this.state.webchatKey
         let hasTerminalAction = this.state.hasTerminalAction
         let isInitAvailable = this.state.isInitAvailable
+        let activityIndex = this.state.activityIndex
 
-        if (this.props.history !== newProps.history) {
+        if (this.props.initialHistory !== newProps.initialHistory) {
             webchatKey = this.state.webchatKey + 1
-            isInitAvailable = !newProps.history || newProps.history.length === 0
+            isInitAvailable = !newProps.initialHistory || newProps.initialHistory.length === 0
+            activityIndex = newProps.initialHistory.length
         }
 
         // If new session
@@ -83,7 +90,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
             hasTerminalAction = false
         }
         // Set terminal action from History but only if I just loaded it
-        if (this.props.history !== newProps.history && newProps.history && newProps.history.length > 0) {
+        if (this.props.initialHistory !== newProps.initialHistory && newProps.initialHistory && newProps.initialHistory.length > 0) {
             hasTerminalAction = newProps.lastAction
                 ? newProps.lastAction.isTerminal
                 : false
@@ -95,7 +102,9 @@ class TeachModal extends React.Component<Props, ComponentState> {
             this.setState({
                 webchatKey: webchatKey,
                 hasTerminalAction: hasTerminalAction,
-                isInitAvailable: isInitAvailable
+                isInitAvailable: isInitAvailable,
+                selectedActivity: null,
+                activityIndex
             })
         }   
     }
@@ -153,15 +162,6 @@ class TeachModal extends React.Component<Props, ComponentState> {
         })
     }
 
-    @autobind
-    onClickUndo() {
-
-        // If on extractor step, just need to replay history (extractor step will be dropped)
-        // otherwise pop the last train round
-        let popRound = this.props.dialogMode !== CLM.DialogMode.Extractor;
-        this.props.onUndo(popRound);
-    }
-
     autoTeachChanged(ev: React.FormEvent<HTMLElement>, isChecked: boolean) {
         this.props.toggleAutoTeach(isChecked);
     }
@@ -184,10 +184,25 @@ class TeachModal extends React.Component<Props, ComponentState> {
                 throw new Error(`Current teach session is not defined. This may be due to race condition where you attempted to chat with the bot before the teach session has been created.`)
             }
 
-            // No initialization allowed after first input
-            this.setState({ isInitAvailable: false})
+            // Add channel data to activity so can process when clicked on later
+            activity.channelData = { 
+                activityIndex: this.state.activityIndex,
+            }
+              
+            this.setState({ 
+                 // No initialization allowed after first input
+                isInitAvailable: false, // LARS can prob go away - check history length
+                activityIndex: this.state.activityIndex + 1
+            })
 
             this.props.runExtractorThunkAsync(this.props.app.appId, CLM.DialogType.TEACH, this.props.teach.teachId, null, userInput);
+        }
+    }
+
+    onWebChatSelectActivity(activity: Activity) {
+        // LARS HACK - 
+        if (activity.channelData.activityIndex !== 0) {
+            this.props.onEditTeach(activity.channelData.activityIndex)
         }
     }
 
@@ -202,21 +217,6 @@ class TeachModal extends React.Component<Props, ComponentState> {
             return intl.formatMessage({
                 id: FM.TEACHSESSIONMODAL_TEACH_ABANDON_BUTTON_TEXT,
                 defaultMessage: 'Abandon Teach'
-            })
-        }
-    }
-
-    renderDoneText(intl: ReactIntl.InjectedIntl) {
-        if (this.props.sourceLogDialog || this.props.sourceTrainDialog) {
-            return intl.formatMessage({
-                id: FM.TEACHSESSIONMODAL_EDIT_DONE_BUTTON_TEXT,
-                defaultMessage: 'Save Edit'
-            })
-        }
-        else {
-            return intl.formatMessage({
-                id: FM.TEACHSESSIONMODAL_TEACH_DONE_BUTTON_TEXT,
-                defaultMessage: 'Done Teaching'
             })
         }
     }
@@ -239,10 +239,10 @@ class TeachModal extends React.Component<Props, ComponentState> {
     render() {
         const { intl } = this.props
 
-        // Put mask of webchat if not in input mode
-        let chatDisable = (this.props.dialogMode !== CLM.DialogMode.Wait) ?
-            <div className="cl-overlay"></div>
-            : null;
+        // Put mask of webchat if not in input mode LARS
+        let chatDisable = null// (this.props.dialogMode !== CLM.DialogMode.Wait) ?
+          //  <div className="cl-overlay"></div>
+          //  : null;
 
         return (
             <div>
@@ -259,11 +259,13 @@ class TeachModal extends React.Component<Props, ComponentState> {
                                     isOpen={this.props.isOpen}
                                     key={this.state.webchatKey}
                                     app={this.props.app}
-                                    history={this.props.history}
+                                    history={this.props.initialHistory}
                                     onPostActivity={activity => this.onWebChatPostActivity(activity)}
-                                    onSelectActivity={() => { }}
+                                    onSelectActivity={activity => this.onWebChatSelectActivity(activity)}                          
                                     hideInput={this.props.dialogMode !== CLM.DialogMode.Wait}
                                     focusInput={this.props.dialogMode === CLM.DialogMode.Wait}
+                                    renderSelectedActivity={null}// LARS make optional in webchat
+                                    selectedActivityIndex={null} // Make optional LARS
                                 />
                                 {chatDisable}
                             </div>
@@ -273,8 +275,13 @@ class TeachModal extends React.Component<Props, ComponentState> {
                                         data-testid="teachsession-admin"
                                         app={this.props.app}
                                         editingPackageId={this.props.editingPackageId}
+                                        activityIndex={this.state.activityIndex}
+                                        selectedActivity={this.state.selectedActivity}
                                         onScoredAction={(scoredAction) => {
-                                            this.setState({hasTerminalAction: scoredAction.isTerminal})
+                                                this.setState({
+                                                    hasTerminalAction: scoredAction.isTerminal,
+                                                    activityIndex: this.state.activityIndex + 1
+                                                })
                                             }
                                         }
                                     />
@@ -307,28 +314,27 @@ class TeachModal extends React.Component<Props, ComponentState> {
                                     data-testid="teachsession-footer-button-done"
                                     disabled={!this.state.hasTerminalAction}
                                     onClick={this.onClickSave}
-                                    ariaDescription={this.renderDoneText(intl)}
-                                    text={this.renderDoneText(intl)}
-                                />
-                                <OF.DefaultButton
-                                    data-testid="teachsession-footer-button-undo"
-                                    disabled={!this.state.hasTerminalAction}
-                                    onClick={this.onClickUndo}
                                     ariaDescription={intl.formatMessage({
-                                        id: FM.TEACHSESSIONMODAL_UNDO_ARIADESCRIPTION,
-                                        defaultMessage: "Undo Step"
+                                        id: FM.BUTTON_SAVE,
+                                        defaultMessage: 'Save'
                                     })}
                                     text={intl.formatMessage({
-                                        id: FM.TEACHSESSIONMODAL_UNDO_TEXT,
-                                        defaultMessage: "Undo Step"
+                                        id: FM.BUTTON_SAVE,
+                                        defaultMessage: 'Save'
                                     })}
                                 />
                                 <OF.DefaultButton
                                     data-testid="teachsession-footer-button-abandon"
                                     className="cl-button-delete"
                                     onClick={this.onClickAbandonTeach}
-                                    ariaDescription={this.renderAbandonText(intl)}
-                                    text={this.renderAbandonText(intl)}
+                                    ariaDescription={intl.formatMessage({
+                                        id: FM.BUTTON_ABANDON,
+                                        defaultMessage: 'Abandon'
+                                    })}
+                                    text={intl.formatMessage({
+                                        id: FM.BUTTON_ABANDON,
+                                        defaultMessage: 'Abandon'
+                                    })}
                                 />
                                 
                             </div>
@@ -373,17 +379,18 @@ const mapStateToProps = (state: State) => {
 }
 
 export interface ReceivedProps {
-    isOpen: boolean,
-    onClose: Function,
-    onUndo: (popRound: boolean) => void,
-    app: CLM.AppBase,
-    editingPackageId: string,
-    teach: CLM.Teach,
-    dialogMode: CLM.DialogMode,
+    isOpen: boolean
+    onClose: Function
+    onEditTeach: (historyIndex: number) => void
+    app: CLM.AppBase
+    editingPackageId: string
+    teach: CLM.Teach
+    dialogMode: CLM.DialogMode
     // When editing and existing log or train dialog
-    sourceTrainDialog?: CLM.TrainDialog,
-    sourceLogDialog?: CLM.LogDialog,
-    history: Activity[],
+    sourceTrainDialog?: CLM.TrainDialog
+    sourceLogDialog?: CLM.LogDialog
+    // When editing, the intial history before teach starts
+    initialHistory: Activity[]
     lastAction: CLM.ActionBase | null
 }
 
