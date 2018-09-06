@@ -306,10 +306,8 @@ export type CreateAction = {
     app: AppBase
 } | {
     type: AT.CREATE_TRAIN_DIALOG_ASYNC,
-    key: string,
-    logDialogId: string,
-    trainDialog: TrainDialog,
-    appId: string
+    appId: string,
+    trainDialog: TrainDialog  
 } | {
     type: AT.CREATE_TRAIN_DIALOG_FULFILLED,
     trainDialog: TrainDialog,

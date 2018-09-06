@@ -191,7 +191,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
               
             this.setState({ 
                  // No initialization allowed after first input
-                isInitAvailable: false, // LARS can prob go away - check history length
+                isInitAvailable: false, 
                 activityIndex: this.state.activityIndex + 1
             })
 
@@ -200,32 +200,69 @@ class TeachModal extends React.Component<Props, ComponentState> {
     }
 
     onWebChatSelectActivity(activity: Activity) {
-        // LARS HACK - 
+        // LARS HACK - explain this if need to keep
         if (activity.channelData.activityIndex !== 0) {
             this.props.onEditTeach(activity.channelData.activityIndex)
         }
     }
 
     renderAbandonText(intl: ReactIntl.InjectedIntl) {
-        if (this.props.sourceLogDialog || this.props.sourceTrainDialog) {
+        // Editing a new Teach Session
+        if (this.props.isNewDialog) {
             return intl.formatMessage({
-                id: FM.TEACHSESSIONMODAL_EDIT_ABANDON_BUTTON_TEXT,
+                id: FM.BUTTON_ABANDON,
+                defaultMessage: 'Abandon'
+            })
+        }
+        // Editing an existing dialog
+        else if (this.props.sourceLogDialog || this.props.sourceTrainDialog) {
+            return intl.formatMessage({
+                id: FM.BUTTON_ABANDON_EDIT,
                 defaultMessage: 'Abandon Edit'
             })
         }
         else {
             return intl.formatMessage({
-                id: FM.TEACHSESSIONMODAL_TEACH_ABANDON_BUTTON_TEXT,
-                defaultMessage: 'Abandon Teach'
+                id: FM.BUTTON_ABANDON,
+                defaultMessage: 'Abandon'
+            })
+        }
+    }
+
+    renderSaveText(intl: ReactIntl.InjectedIntl) {
+        // Editing a new Teach Session
+        if (this.props.isNewDialog) {
+            return intl.formatMessage({
+                id: FM.BUTTON_SAVE,
+                defaultMessage: 'Save'
+            })
+        }
+        else if (this.props.sourceLogDialog || this.props.sourceTrainDialog) {
+            return intl.formatMessage({
+                id: FM.BUTTON_SAVE_EDIT,
+                defaultMessage: 'Save Edit'
+            })
+        }
+        else {
+            return intl.formatMessage({
+                id: FM.BUTTON_SAVE,
+                defaultMessage: 'Save'
             })
         }
     }
 
     renderConfirmText(intl: ReactIntl.InjectedIntl) {
-        if (this.props.sourceLogDialog || this.props.sourceTrainDialog) {
+        // Editing a new Teach Session
+        if (this.props.isNewDialog) {
+            return intl.formatMessage({
+                id: FM.TEACHSESSIONMODAL_TEACH_CONFIRMDELETE_TITLE,
+                defaultMessage: 'Are you sure you want to abandon this teach session?'
+            })
+        }
+        else if (this.props.sourceLogDialog || this.props.sourceTrainDialog) {
             return intl.formatMessage({
                 id: FM.TEACHSESSIONMODAL_EDIT_CONFIRMDELETE_TITLE,
-                defaultMessage: 'Are you sure you want to abandon editing?'
+                defaultMessage: 'Are you sure you want to abandon edit?'
             })
         }
         else {
@@ -264,8 +301,6 @@ class TeachModal extends React.Component<Props, ComponentState> {
                                     onSelectActivity={activity => this.onWebChatSelectActivity(activity)}                          
                                     hideInput={this.props.dialogMode !== CLM.DialogMode.Wait}
                                     focusInput={this.props.dialogMode === CLM.DialogMode.Wait}
-                                    renderSelectedActivity={null}// LARS make optional in webchat
-                                    selectedActivityIndex={null} // Make optional LARS
                                 />
                                 {chatDisable}
                             </div>
@@ -314,27 +349,15 @@ class TeachModal extends React.Component<Props, ComponentState> {
                                     data-testid="teachsession-footer-button-done"
                                     disabled={!this.state.hasTerminalAction}
                                     onClick={this.onClickSave}
-                                    ariaDescription={intl.formatMessage({
-                                        id: FM.BUTTON_SAVE,
-                                        defaultMessage: 'Save'
-                                    })}
-                                    text={intl.formatMessage({
-                                        id: FM.BUTTON_SAVE,
-                                        defaultMessage: 'Save'
-                                    })}
+                                    ariaDescription={this.renderSaveText(intl)}
+                                    text={this.renderSaveText(intl)}
                                 />
                                 <OF.DefaultButton
                                     data-testid="teachsession-footer-button-abandon"
                                     className="cl-button-delete"
                                     onClick={this.onClickAbandonTeach}
-                                    ariaDescription={intl.formatMessage({
-                                        id: FM.BUTTON_ABANDON,
-                                        defaultMessage: 'Abandon'
-                                    })}
-                                    text={intl.formatMessage({
-                                        id: FM.BUTTON_ABANDON,
-                                        defaultMessage: 'Abandon'
-                                    })}
+                                    ariaDescription={this.renderAbandonText(intl)}
+                                    text={this.renderAbandonText(intl)}
                                 />
                                 
                             </div>
@@ -386,6 +409,8 @@ export interface ReceivedProps {
     editingPackageId: string
     teach: CLM.Teach
     dialogMode: CLM.DialogMode
+    // Is a new training dialog (i.e. from editing a new Teach Session)
+    isNewDialog: boolean,
     // When editing and existing log or train dialog
     sourceTrainDialog?: CLM.TrainDialog
     sourceLogDialog?: CLM.LogDialog

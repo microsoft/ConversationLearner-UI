@@ -606,6 +606,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     isOpen={this.state.isTeachDialogModalOpen}
                     onClose={this.onCloseTeachSession}
                     onEditTeach={()=>{}} // LARS TEMP
+                    isNewDialog={false} // LARS TEMP
                     initialHistory={this.state.history}
                     lastAction={this.state.lastAction}
                     sourceLogDialog={this.state.currentLogDialog}

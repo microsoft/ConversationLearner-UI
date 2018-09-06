@@ -32,9 +32,6 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
     constructor(p: Props) {
         super(p);
         this.state = {
-            newTrainDialog: null,
-            newSliceRound: 0,
-            newScoreInput: null,
             senderType: null,
             roundIndex: null,
             scoreIndex: null
@@ -67,12 +64,6 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                 })
             }
         }
-    }
-
-    onClickSaveCheckNo() {
-        // Reset the entity extractor
-        this.setState({ newTrainDialog: null, newSliceRound: 0 });
-        this.props.clearExtractResponses();
     }
 
     getPrevMemories(): CLM.Memory[] {
@@ -226,7 +217,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
     }
     
     render() {
-        const { intl } = this.props
+
         if (!this.props.trainDialog) {
             return null;
         }
@@ -366,46 +357,6 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                         </div>
                     </div>
                 }
-                <div className="cl-dialog-admin__dialogs">
-                    <OF.Dialog
-                        data-testid="dialog-admin-dialog"
-                        hidden={this.state.newTrainDialog === null}
-                        onDismiss={() => this.onClickSaveCheckNo()}
-                        dialogContentProps={{
-                            type: OF.DialogType.normal,
-                            subText: intl.formatMessage({
-                                id: FM.TRAINDIALOGADMIN_SAVECHANGES_TITLE,
-                                defaultMessage: 'Your changes will invalidate the subsequent steps in the Train Dialog'
-                            }),
-                            title: intl.formatMessage({
-                                id: FM.TRAINDIALOGADMIN_SAVECHANGES_DESCRIPTION,
-                                defaultMessage: 'Truncate the Train Dialog at this step?'
-                            })
-                        }}
-                        modalProps={{
-                            isBlocking: true
-                        }}
-                    >
-                        <OF.DialogFooter>
-                            <OF.PrimaryButton
-                                data-testid="dialog-admin-footer-yes"
-                             // LARS REMOVE THIS TIEL   onClick={() => this.onClickSaveCheckYes()}
-                                text={intl.formatMessage({
-                                    id: FM.TRAINDIALOGADMIN_SAVECHANGES_PRIMARYBUTTON_TEXT,
-                                    defaultMessage: 'Yes'
-                                })}
-                            />
-                            <OF.DefaultButton
-                                data-testid="dialog-admin-footer-no"
-                                onClick={() => this.onClickSaveCheckNo()}
-                                text={intl.formatMessage({
-                                    id: FM.TRAINDIALOGADMIN_SAVECHANGES_DEFAULTBUTTON_TEXT,
-                                    defaultMessage: 'No'
-                                })}
-                            />
-                        </OF.DialogFooter>
-                    </OF.Dialog>
-                </div>
             </div>
         );
     }
@@ -424,10 +375,7 @@ const mapStateToProps = (state: State) => {
 }
 
 interface ComponentState {
-    newTrainDialog: CLM.TrainDialog | null,
-    newSliceRound: number,
     // Did extraction change on edit
-    newScoreInput: CLM.UIScoreInput | null,
     senderType: CLM.SenderType | null,
     roundIndex: number | null,
     scoreIndex: number | null

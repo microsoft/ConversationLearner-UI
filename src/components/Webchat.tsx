@@ -22,9 +22,7 @@ class Webchat extends React.Component<Props, {}> {
         onSelectActivity: () => { },
         onPostActivity: () => { },
         hideInput: false,
-        focusInput: false,
-        renderSelectedActivity: null,
-        selectedActivityIndex: null
+        focusInput: false
     }
 
     private behaviorSubject: BehaviorSubject<any> | null = null;
@@ -82,11 +80,11 @@ class Webchat extends React.Component<Props, {}> {
                 webSocket: false // defaults to true,
             })
 
-            const botConnection = {
+            const botConnection = {         
                 ...dl,
                 postActivity: (activity: any) => {
                     this.props.onPostActivity(activity)
-                    return dl.postActivity(activity)
+                    return this.props.disableDL ? null : dl.postActivity(activity)
                 }
             }
 
@@ -130,6 +128,7 @@ class Webchat extends React.Component<Props, {}> {
         chatProps.focusInput = this.props.focusInput
         chatProps.renderSelectedActivity = this.props.renderSelectedActivity
         chatProps.selectedActivityIndex = this.props.selectedActivityIndex
+        chatProps.highlightClassName = this.props.highlightClassName
 
         return (
             <div id="botchat" className="webchatwindow wc-app">
@@ -160,11 +159,15 @@ export interface ReceivedProps {
     history: Activity[],
     hideInput: boolean,
     focusInput: boolean,
+    // Disable message sent via direct line
+    disableDL?: boolean,
     onSelectActivity: (a: Activity) => void,
     onPostActivity: (a: Activity) => void,
-    renderSelectedActivity: ((a: Activity) => JSX.Element) | null
+    renderSelectedActivity?: (a: Activity) => (JSX.Element | null)
+    highlightClassName?: string
     // Used to select activity from outside webchat
-    selectedActivityIndex: number | null
+    selectedActivityIndex?: number | null
+
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps

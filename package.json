@@ -20,8 +20,9 @@
   "private": true,
   "dependencies": {
     "@conversationlearner/models": "0.172.6",
-    "@conversationlearner/webchat": "^0.116.0",
+    "@conversationlearner/webchat": "^0.119.0",
     "@types/file-saver": "^1.3.0",
+    "@types/uuid": "^3.4.4",
     "adaptivecards": "1.0.0",
     "axios": "^0.16.2",
     "botframework-directlinejs": "^0.9.12",
@@ -50,7 +51,8 @@
     "rxjs": "^5.4.3",
     "slate": "0.31.3",
     "slate-plain-serializer": "0.4.16",
-    "slate-react": "0.10.17"
+    "slate-react": "0.10.17",
+    "uuid": "^3.3.2"
   },
   "scripts": {
     "lint": "tslint -t codeFrame 'src/**/*.ts' 'test/**/*.ts'",

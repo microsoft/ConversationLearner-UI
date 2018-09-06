@@ -195,8 +195,12 @@ interface ComponentState {
     lastAction: CLM.ActionBase | null
     isTeachDialogModalOpen: boolean
     isTrainDialogModalOpen: boolean
+    // Item selected in webchat window
     selectedHistoryIndex: number | null
+    // Current train dialogs being edited
     currentTrainDialog: CLM.TrainDialog | undefined
+    // Is Dialog being edited a new onw
+    isNewDialog: boolean
     searchValue: string,
     dialogKey: number,
     entityFilter: OF.IDropdownOption | null
@@ -224,6 +228,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             isTrainDialogModalOpen: false,
             selectedHistoryIndex: null,
             currentTrainDialog: undefined,
+            isNewDialog: false,
             searchValue: '',
             dialogKey: 0,
             entityFilter: null,
@@ -331,10 +336,18 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         if (this.props.trainDialogs !== newProps.trainDialogs) {
             const trainDialog = this.state.currentTrainDialog
             if (trainDialog) {
-                let newTrainDialog = newProps.trainDialogs.find(t => t.trainDialogId === trainDialog.trainDialogId);
-                this.setState({
-                    currentTrainDialog: newTrainDialog
-                })
+                let existingTrainDialog = newProps.trainDialogs.find(t => t.trainDialogId === trainDialog.trainDialogId);
+                // If it exists update (may not if is new one being edited)
+                if (existingTrainDialog) {
+                    this.setState({
+                        currentTrainDialog: existingTrainDialog,
+                        isNewDialog: false
+                    })
+                } else {
+                    this.setState({
+                        isNewDialog: true
+                    })
+                }
             }
             this.newTeachSessionButton.focus();
         }
@@ -360,7 +373,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             .then(teachResponse => {
                 this.setState({
                     teachSession: teachResponse as CLM.Teach,
-                    isTeachDialogModalOpen: true
+                    isTeachDialogModalOpen: true,
+                    isNewDialog: true
                 })
             })
             .catch(error => {
@@ -384,6 +398,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
         try {
             if (this.state.teachSession) {
+                // Get train dialog associated with the teach session
                 let trainDialog = await ((this.props.fetchTrainDialogThunkAsync(this.props.app.appId, this.state.teachSession.trainDialogId) as any) as Promise<CLM.TrainDialog>)
                 trainDialog.definitions = {
                     entities: this.props.entities,
@@ -391,6 +406,10 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     trainDialogs: []
                 }
 
+                // Delete the teach session w/o saving
+                await this.props.deleteTeachSessionThunkAsync(this.props.user.id, this.state.teachSession, this.props.app, this.props.editingPackageId, false, null, null)
+
+                // Generate history
                 let teachWithHistory = await ((this.props.fetchHistoryThunkAsync(this.props.app.appId, trainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)
                 
                 if (teachWithHistory) {
@@ -456,6 +475,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         history: teachWithHistory.history,
                         lastAction: teachWithHistory.lastAction,
                         currentTrainDialog: undefined,
+                        isNewDialog: true,
                         isTrainDialogModalOpen: false,
                         selectedHistoryIndex: null,
                         isTeachDialogModalOpen: true
@@ -535,6 +555,21 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         this.onCloseTrainDialogModal()
     }
 
+    // Create a new trainDialog 
+    async onCreateTrainDialog(newTrainDialog: CLM.TrainDialog, isInvalid: boolean) {
+
+        newTrainDialog.invalid = isInvalid
+
+        try { 
+            await ((this.props.createTrainDialogThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<CLM.TrainDialog>);
+        }
+        catch (error) {
+            console.warn(`Error when attempting to create a train dialog: `, error)
+        }
+
+        this.onCloseTrainDialogModal()
+    }
+
     onClickTrainDialogItem(trainDialog: CLM.TrainDialog) {
         let trainDialogWithDefinitions: CLM.TrainDialog = {
             createdDateTime: new Date().toJSON(),
@@ -558,6 +593,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     history: teachWithHistory.history,
                     lastAction: teachWithHistory.lastAction,
                     currentTrainDialog: trainDialog,
+                    isNewDialog: false,
                     isTrainDialogModalOpen: true,
                     selectedHistoryIndex: null
                 })
@@ -671,7 +707,6 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     render() {
         const { intl, trainDialogs } = this.props
         const computedTrainDialogs = this.getFilteredAndSortedDialogs()
-        const currentTrainDialog = this.state.currentTrainDialog
         return (
             <div className="cl-page">
                 <div data-testid="train-dialogs-title" className={`cl-dialog-title cl-dialog-title--train ${OF.FontClassNames.xxLarge}`}>
@@ -799,6 +834,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     onClose={() => this.onCloseTeachSession()}
                     onEditTeach={(historyIndex) => this.onEditTeach(historyIndex)}
                     initialHistory={this.state.history}
+                    isNewDialog={this.state.isNewDialog}
                     lastAction={this.state.lastAction}
                     sourceTrainDialog={this.state.currentTrainDialog}
                 />
@@ -808,15 +844,17 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     editingPackageId={this.props.editingPackageId}
                     canEdit={this.props.editingPackageId === this.props.app.devPackageId && !this.props.invalidBot}
                     open={this.state.isTrainDialogModalOpen}
+                    trainDialog={this.state.currentTrainDialog!}
+                    history={this.state.history}
+                    initialSelectedHistoryIndex={this.state.selectedHistoryIndex}
+                    isNewDialog={this.state.isNewDialog}
                     onClose={() => this.onCloseTrainDialogModal()}
                     onBranch={(turnIndex) => this.onBranchTrainDialog(turnIndex)}
                     onDelete={() => this.onDeleteTrainDialog()}
                     onUpdate={(updatedTrainDialog) => this.onUpdateTrainDialog(updatedTrainDialog)}
                     onContinue={(editedTrainDialog, initialUserInput) => this.onContinueTrainDialog(editedTrainDialog, initialUserInput)}
                     onReplace={(editedTrainDialog, isInvalid) => this.onReplaceTrainDialog(editedTrainDialog, isInvalid)}
-                    trainDialog={currentTrainDialog!}
-                    history={this.state.history}
-                    initialSelectedHistoryIndex={this.state.selectedHistoryIndex}
+                    onCreate={(newTrainDialog, isInvalid) => this.onCreateTrainDialog(newTrainDialog, isInvalid)}
                 />
             </div>
         );
@@ -825,13 +863,15 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         createTeachSessionThunkAsync: actions.teach.createTeachSessionThunkAsync,
+        createTeachSessionFromHistoryThunkAsync: actions.teach.createTeachSessionFromHistoryThunkAsync,
+        createTrainDialogThunkAsync: actions.train.createTrainDialogThunkAsync,
+        deleteTrainDialogThunkAsync: actions.train.deleteTrainDialogThunkAsync,
+        deleteTeachSessionThunkAsync: actions.teach.deleteTeachSessionThunkAsync,
+        deleteMemoryThunkAsync: actions.teach.deleteMemoryThunkAsync,
+        editTrainDialogThunkAsync: actions.train.editTrainDialogThunkAsync,
         fetchHistoryThunkAsync: actions.train.fetchHistoryThunkAsync,
         fetchApplicationTrainingStatusThunkAsync: actions.app.fetchApplicationTrainingStatusThunkAsync,
         fetchTrainDialogThunkAsync: actions.train.fetchTrainDialogThunkAsync,
-        deleteTrainDialogThunkAsync: actions.train.deleteTrainDialogThunkAsync,
-        deleteMemoryThunkAsync: actions.teach.deleteMemoryThunkAsync,
-        createTeachSessionFromHistoryThunkAsync: actions.teach.createTeachSessionFromHistoryThunkAsync,
-        editTrainDialogThunkAsync: actions.train.editTrainDialogThunkAsync,
         runExtractorThunkAsync: actions.teach.runExtractorThunkAsync
         
     }, dispatch)

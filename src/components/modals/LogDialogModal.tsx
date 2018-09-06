@@ -98,8 +98,6 @@ class LogDialogModal extends React.Component<Props, ComponentState> {
                                     onPostActivity={activity => this.onPostWebChatActivity(activity)}
                                     hideInput={true}
                                     focusInput={true}
-                                    renderSelectedActivity={null}
-                                    selectedActivityIndex={null} 
                                 />
                                 {chatDisable}
                             </div>
@@ -171,7 +169,6 @@ class LogDialogModal extends React.Component<Props, ComponentState> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        createTrainDialogAsync: actions.train.createTrainDialogAsync,
         fetchApplicationTrainingStatusThunkAsync: actions.app.fetchApplicationTrainingStatusThunkAsync
     }, dispatch);
 }

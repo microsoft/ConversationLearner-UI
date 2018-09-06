@@ -11,6 +11,9 @@ import * as ClientFactory from '../services/clientFactory'
 import { AxiosError } from 'axios'
 import { fetchAllLogDialogsThunkAsync } from './logActions'
 
+// --------------------------
+// CreateChatSession
+// --------------------------
 export const createChatSessionThunkAsync = (appId: string, packageId: string, saveToLog: boolean) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.CREATE_CHAT_SESSION_ASYNC)
@@ -40,7 +43,9 @@ const createChatSessionFulfilled = (session: Session): ActionObject =>
         session: session
     })
 
-
+// --------------------------
+// DeleteChatSession
+// --------------------------
 export const deleteChatSessionThunkAsync = (key: string, session: Session, app: AppBase, packageId: string) => {
     return async (dispatch: Dispatch<any>) => {
         dispatch(deleteChatSessionAsync(key, session, app.appId, packageId))

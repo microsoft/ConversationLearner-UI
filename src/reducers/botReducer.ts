@@ -5,14 +5,14 @@
 import { ActionObject, BotState } from '../types'
 import { AT } from '../types/ActionTypes'
 import { Reducer } from 'redux'
-import * as CLM from '@conversationlearner/models'
+import * as uuid from 'uuid'
 
 const initialState: BotState = {
     botInfo: null,
 
     // Each instance of UI opened has a different key used for the bot's state storage
     // This allow multiple version of the UI to be open simultaneously
-    browserId: CLM.ModelUtils.generateGUID()
+    browserId: uuid.v4()
 };
 
 const botReducer: Reducer<BotState> = (state = initialState, action: ActionObject): BotState => {

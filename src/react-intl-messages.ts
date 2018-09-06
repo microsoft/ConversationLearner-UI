@@ -119,11 +119,15 @@ export enum FM {
 
     // Generic Buttons
     BUTTON_ABANDON = 'Button.ABANDON',
-    BUTTON_OK = 'Button.OK',
+    BUTTON_ABANDON_EDIT = 'Button.ABANDON_EDIT',
     BUTTON_CANCEL = 'Button.CANCEL',
+    BUTTON_DELETE = 'Button.DELETE',
+    BUTTON_DONE = 'Button.DONE',
     BUTTON_INFO = 'Button.INFO',
     BUTTON_IMPORT = 'Button.IMPORT',
+    BUTTON_OK = 'Button.OK',
     BUTTON_SAVE = 'Button.SAVE',
+    BUTTON_SAVE_EDIT = 'Button.SAVE_EDIT',
     BUTTON_SUBMIT = 'Button.SUMBIT',
 
     // ChatSessionModal
@@ -311,8 +315,6 @@ export enum FM {
     TEACHSESSIONINIT_TITLE = 'TeachSessionInit.title',
 
     // TeachSessionModal
-    TEACHSESSIONMODAL_EDIT_ABANDON_BUTTON_TEXT = 'TeachSessionModal.edit.abandon.buttontext',
-    TEACHSESSIONMODAL_TEACH_ABANDON_BUTTON_TEXT = 'TeachSessionModal.teach.abandon.buttontext',
     TEACHSESSIONMODAL_TEACH_CONFIRMDELETE_TITLE = 'TeachSessionModal.teach.confirmDelete.title',
     TEACHSESSIONMODAL_EDIT_CONFIRMDELETE_TITLE = 'TeachSessionModal.edit.confirmDelete.title',
     TEACHSESSIONMODAL_INITSTATE_ARIADESCRIPTION = 'TeachSessionModal.initstate.ariaDescription',
@@ -403,19 +405,11 @@ export enum FM {
     TRAINDIALOGADMIN_ENTITYDETECTION_TITLE = 'TrainDialogAdmin.entityDetection.title',
     TRAINDIALOGADMIN_ENTITYDETECTION_HELPTEXT = 'TrainDialogAdmin.entityDetection.helpText',
     TRAINDIALOGADMIN_ACTION_TITLE = 'TrainDialogAdmin.action.title',
-    TRAINDIALOGADMIN_SAVECHANGES_TITLE = 'TrainDialogAdmin.saveChanges.title',
-    TRAINDIALOGADMIN_SAVECHANGES_DESCRIPTION = 'TrainDialogAdmin.saveChanges.description',
-    TRAINDIALOGADMIN_SAVECHANGES_PRIMARYBUTTON_TEXT = 'TrainDialogAdmin.saveChanges.primaryButton.text',
-    TRAINDIALOGADMIN_SAVECHANGES_DEFAULTBUTTON_TEXT = 'TrainDialogAdmin.saveChanges.defaultButton.text',
 
     // TrainDialogModal
     TRAINDIALOGMODAL_BRANCH_ARIADESCRIPTION = 'TrainDialogModal.branch.ariaDescription',
     TRAINDIALOGMODAL_BRANCH_TEXT = 'TrainDialogModal.branch.text',
     TRAINDIALOGMODAL_BRANCH_TIP = 'TrainDialogModal.branch.tip',
-    TRAINDIALOGMODAL_ABANDONEDITBUTTON_TEXT = 'TrainDialogModal.abandonEditButton.ariaDescription',
-    TRAINDIALOGMODAL_DELETEBUTTON_TEXT = 'TrainDialogModal.defaultButton.text',
-    TRAINDIALOGMODAL_SAVEEDITBUTTON_TEXT = 'TrainDialogModal.saveEditButton.ariaDescription',
-    TRAINDIALOGMODAL_DONEBUTTON_TEXT = 'TrainDialogModal.primaryButton.text',
     TRAINDIALOGMODAL_CONFIRMDELETE_TITLE = 'TrainDialogModal.confirmDelete.title',
     TRAINDIALOGMODAL_CONFIRMABANDON_TITLE = 'TrainDialogModal.confirmAbandon.title',
 
@@ -561,11 +555,15 @@ export default {
 
         // Generic Buttons
         [FM.BUTTON_ABANDON]: 'Abandon',
-        [FM.BUTTON_OK]: 'OK',
+        [FM.BUTTON_ABANDON_EDIT]: 'Abandon Edit',
         [FM.BUTTON_CANCEL]: 'Cancel',
+        [FM.BUTTON_DONE]: 'Done',
+        [FM.BUTTON_DELETE]: 'Delete',
         [FM.BUTTON_IMPORT]: 'Import',
         [FM.BUTTON_INFO]: 'Info',
+        [FM.BUTTON_OK]: 'OK',
         [FM.BUTTON_SAVE]: 'Save',
+        [FM.BUTTON_SAVE_EDIT]: 'Save Edit',
         [FM.BUTTON_SUBMIT]: 'Submit',
 
         // Error Messages
@@ -859,8 +857,6 @@ export default {
         [FM.TEACHSESSIONINIT_TITLE]: 'Set Initial Entity Values',
 
         // TeachSessionModal
-        [FM.TEACHSESSIONMODAL_EDIT_ABANDON_BUTTON_TEXT]: 'Abandon Edit',
-        [FM.TEACHSESSIONMODAL_TEACH_ABANDON_BUTTON_TEXT]: 'Abandon Teach',
         [FM.TEACHSESSIONMODAL_TEACH_CONFIRMDELETE_TITLE]: 'Are you sure you want to abandon this teach session?',
         [FM.TEACHSESSIONMODAL_EDIT_CONFIRMDELETE_TITLE]: 'Are you sure you want to cancel editing?',
         [FM.TEACHSESSIONMODAL_INITSTATE_ARIADESCRIPTION]: 'Set Initial State',
@@ -876,19 +872,11 @@ export default {
         [FM.TRAINDIALOGADMIN_ENTITYDETECTION_TITLE]: 'Entity Detection',
         [FM.TRAINDIALOGADMIN_ENTITYDETECTION_HELPTEXT]: 'Click on text from the dialog to the left.',
         [FM.TRAINDIALOGADMIN_ACTION_TITLE]: 'Action',
-        [FM.TRAINDIALOGADMIN_SAVECHANGES_TITLE]: 'Your changes will invalidate the subsequent steps in the Train Dialog',
-        [FM.TRAINDIALOGADMIN_SAVECHANGES_DESCRIPTION]: 'Truncate and edit the Train Dialog at this step?',
-        [FM.TRAINDIALOGADMIN_SAVECHANGES_PRIMARYBUTTON_TEXT]: 'Yes',
-        [FM.TRAINDIALOGADMIN_SAVECHANGES_DEFAULTBUTTON_TEXT]: 'No',
 
         // TrainDialogModal
         [FM.TRAINDIALOGMODAL_BRANCH_ARIADESCRIPTION]: 'Branch',
         [FM.TRAINDIALOGMODAL_BRANCH_TEXT]: 'Branch',
         [FM.TRAINDIALOGMODAL_BRANCH_TIP] : 'First select a round in the conversation by clicking on it.  Then click "Branch" to create a new Training Dialog starting at that round.',
-        [FM.TRAINDIALOGMODAL_ABANDONEDITBUTTON_TEXT]: 'Abandon Edit',
-        [FM.TRAINDIALOGMODAL_DELETEBUTTON_TEXT]: 'Delete',
-        [FM.TRAINDIALOGMODAL_SAVEEDITBUTTON_TEXT]: 'Save Edit',
-        [FM.TRAINDIALOGMODAL_DONEBUTTON_TEXT]: 'Done',
         [FM.TRAINDIALOGMODAL_CONFIRMDELETE_TITLE]: 'Are you sure you want to delete this Training Dialog?',
         [FM.TRAINDIALOGMODAL_CONFIRMABANDON_TITLE]: 'Are you sure you want to abandon your edits?',
         

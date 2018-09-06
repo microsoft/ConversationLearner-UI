@@ -11,19 +11,38 @@ import { fetchApplicationTrainingStatusThunkAsync } from './appActions';
 import { AxiosError } from 'axios';
 import { setErrorDisplay } from './displayActions';
 
-export const createTrainDialogAsync = (key: string, appId: string, trainDialog: TrainDialog, logDialogId: string): ActionObject =>
+// --------------------------
+// CreateTrainDialog
+// --------------------------
+export const createTrainDialogThunkAsync = (appId: string, trainDialog: TrainDialog) => {
+    return async (dispatch: Dispatch<any>) => {
+        const clClient = ClientFactory.getInstance(AT.CREATE_TRAIN_DIALOG_ASYNC)
+        dispatch(createTrainDialogAsync(appId, trainDialog))
+
+        try {
+            let createdTrainDialog = await clClient.trainDialogsCreate(appId, trainDialog)
+            dispatch(createTrainDialogFulfilled(createdTrainDialog))
+            return createdTrainDialog
+        }
+        catch (e) {
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.CREATE_TRAIN_DIALOG_ASYNC))
+            throw error
+        }
+    }
+}
+
+const createTrainDialogAsync = (appId: string, trainDialog: TrainDialog): ActionObject =>
     ({
         type: AT.CREATE_TRAIN_DIALOG_ASYNC,
-        key,
         appId,
-        trainDialog,
-        logDialogId
+        trainDialog
     })
 
-export const createTrainDialogFulfilled = (trainDialog: TrainDialog): ActionObject =>
+const createTrainDialogFulfilled = (trainDialog: TrainDialog): ActionObject =>
     ({
         type: AT.CREATE_TRAIN_DIALOG_FULFILLED,
-        trainDialog
+        trainDialog: trainDialog
     })
 
 // --------------------------

@@ -329,6 +329,18 @@ export default class ClClient {
         }).then(response => response.data.trainDialogs)
     }
 
+    trainDialogsCreate(appId: string, trainDialog: CLM.TrainDialog): Promise<CLM.TrainDialog> {
+        return this.send({
+            method: 'post',
+            url: `${this.baseUrl}/app/${appId}/traindialog`,
+            data: trainDialog
+        })
+        .then(response => {
+            trainDialog.trainDialogId = response.data
+            return trainDialog
+        })
+    }
+
     trainDialogsDelete(appId: string, trainDialogId: string): Promise<void> {
         return this.send({
             method: 'delete',
