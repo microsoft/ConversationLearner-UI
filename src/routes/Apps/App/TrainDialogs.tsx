@@ -367,9 +367,21 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         })
     }
 
-    onClickNewTeachSession() {
+    @autobind
+    async onSetInitialEntities(initialFilledEntities: CLM.FilledEntity[]) {
+
+        if (this.state.teachSession) {
+            // Delete existing teach session
+            await this.props.deleteTeachSessionThunkAsync(this.props.user.id, this.state.teachSession, this.props.app, this.props.editingPackageId, false, null, null); // False = abandon
+                
+            // Create new one with initial entities
+            await this.onClickNewTeachSession(initialFilledEntities)
+        }
+    }
+
+    onClickNewTeachSession(initialFilledEntities: CLM.FilledEntity[] = []) {
         // TODO: Find cleaner solution for the types.  Thunks return functions but when using them on props they should be returning result of the promise.
-        ((this.props.createTeachSessionThunkAsync(this.props.app.appId) as any) as Promise<CLM.TeachResponse>)
+        ((this.props.createTeachSessionThunkAsync(this.props.app.appId, initialFilledEntities) as any) as Promise<CLM.TeachResponse>)
             .then(teachResponse => {
                 this.setState({
                     teachSession: teachResponse as CLM.Teach,
@@ -459,6 +471,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             version: undefined!,
             packageCreationId: undefined!,
             packageDeletionId: undefined!,
+            initialFilledEntities: trainDialog.initialFilledEntities,
             rounds: trainDialog.rounds.slice(0, turnIndex),
             definitions: {
                 entities: this.props.entities,
@@ -580,6 +593,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             packageCreationId: undefined!,
             packageDeletionId: undefined!,
             rounds: trainDialog.rounds,
+            initialFilledEntities: trainDialog.initialFilledEntities,
             definitions: {
                 actions: this.props.actions,
                 entities: this.props.entities,
@@ -833,6 +847,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     isOpen={this.state.isTeachDialogModalOpen}
                     onClose={() => this.onCloseTeachSession()}
                     onEditTeach={(historyIndex) => this.onEditTeach(historyIndex)}
+                    onSetInitialEntities={this.onSetInitialEntities}
                     initialHistory={this.state.history}
                     isNewDialog={this.state.isNewDialog}
                     lastAction={this.state.lastAction}

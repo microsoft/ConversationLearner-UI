@@ -905,7 +905,6 @@ export default {
         [AT.FETCH_ENTITY_EDIT_VALIDATION_ASYNC]: 'Fetching entity edit information',
         [AT.FETCH_ACTION_DELETE_VALIDATION_ASYNC]: 'Fetching action delete information',
         [AT.FETCH_ACTION_EDIT_VALIDATION_ASYNC]: 'Fetching action edit information',
-        [AT.INIT_MEMORY_ASYNC]: 'Initializing memory',
         [AT.RUN_EXTRACTOR_ASYNC]: 'Running extractor',
         [AT.GET_SCORES_ASYNC]: 'Fetching scores',
         [AT.RUN_SCORER_ASYNC]: 'Running scorer',

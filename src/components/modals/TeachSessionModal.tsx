@@ -117,9 +117,9 @@ class TeachModal extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    onCloseInitState(filledEntityMap?: CLM.FilledEntityMap) {
+    async onCloseInitState(filledEntityMap?: CLM.FilledEntityMap) {
         if (filledEntityMap) {
-            this.props.initMemoryThunkAsync(this.props.app.appId, this.props.teach.teachId, filledEntityMap)
+            await this.props.onSetInitialEntities(filledEntityMap.FilledEntities())          
         }
         this.setState({
             isInitStateOpen: false
@@ -385,7 +385,6 @@ const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         deleteTeachSessionThunkAsync: actions.teach.deleteTeachSessionThunkAsync,
         fetchApplicationTrainingStatusThunkAsync: actions.app.fetchApplicationTrainingStatusThunkAsync,
-        initMemoryThunkAsync: actions.teach.initMemoryThunkAsync,
         runExtractorThunkAsync: actions.teach.runExtractorThunkAsync,
         toggleAutoTeach: actions.teach.toggleAutoTeach
     }, dispatch);
@@ -405,6 +404,7 @@ export interface ReceivedProps {
     isOpen: boolean
     onClose: Function
     onEditTeach: (historyIndex: number) => void
+    onSetInitialEntities: (initialFilledEntities: CLM.FilledEntity[]) => void
     app: CLM.AppBase
     editingPackageId: string
     teach: CLM.Teach

@@ -3,7 +3,7 @@
  * Licensed under the MIT License.
  */
 import { AT } from './types/ActionTypes'
-import * as uuid from 'uuid'
+import * as CLM from '@conversationlearner/models'
 
 export interface ErrorCallback {
     actionType: AT;
@@ -15,11 +15,11 @@ export class ErrorHandler {
     private static callbacks: ErrorCallback[] = [];
 
     public static registerCallbacks(callbacks: ErrorCallback[]): string {
-        let guid = uuid.v4()
+        let guid = CLM.ModelUtils.generateGUID();
 
         callbacks.forEach(cb => {
-            cb.guid = guid
-            this.callbacks.push(cb)
+            cb.guid = guid;
+            this.callbacks.push(cb);
         });
 
         return guid;

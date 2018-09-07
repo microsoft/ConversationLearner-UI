@@ -4,7 +4,7 @@
  */
 import { ActionObject, ErrorType } from '../types'
 import { AT } from '../types/ActionTypes'
-import { Session, AppBase } from '@conversationlearner/models'
+import { Session, AppBase, FilledEntity } from '@conversationlearner/models'
 import { Dispatch } from 'redux'
 import { setErrorDisplay } from './displayActions'
 import * as ClientFactory from '../services/clientFactory' 
@@ -14,13 +14,13 @@ import { fetchAllLogDialogsThunkAsync } from './logActions'
 // --------------------------
 // CreateChatSession
 // --------------------------
-export const createChatSessionThunkAsync = (appId: string, packageId: string, saveToLog: boolean) => {
+export const createChatSessionThunkAsync = (appId: string, packageId: string, saveToLog: boolean, initialFilledEntities: FilledEntity[] = []) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.CREATE_CHAT_SESSION_ASYNC)
         dispatch(createChatSessionAsync())
 
         try {
-            const session = await clClient.chatSessionsCreate(appId, { saveToLog, packageId })
+            const session = await clClient.chatSessionsCreate(appId, { saveToLog, packageId, initialFilledEntities })
             dispatch(createChatSessionFulfilled(session))
             return session
         }

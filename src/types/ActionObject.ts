@@ -4,14 +4,14 @@
  */
 import {
     AppBase, Banner,
-    BotInfo, Memory,
+    BotInfo, 
     AppDefinition,
     EntityBase,
     ActionBase, TeachWithHistory,
     TrainDialog, LogDialog, Session, Teach, ScoreInput,
     UserInput, ExtractResponse, DialogType,
     UIExtractResponse, UITrainScorerStep, DialogMode,
-    UIPostScoreResponse, UIScoreInput, UIScoreResponse, UIAppList, TrainingStatus, FilledEntityMap, AppDefinitionChange
+    UIPostScoreResponse, UIScoreInput, UIScoreResponse, UIAppList, TrainingStatus, AppDefinitionChange
 } from '@conversationlearner/models'
 import { TipType } from '../components/ToolTips'
 import { ErrorType } from './const'
@@ -420,14 +420,6 @@ export type DeleteLogDialogRejectedAction = {
 }
 
 export type TeachAction = {
-    type: AT.INIT_MEMORY_ASYNC,
-    appId: string,
-    sessionId: string,
-    filledEntityMap: FilledEntityMap
-} | {
-    type: AT.INIT_MEMORY_FULFILLED,
-    memories: Memory[]
-} | {
     type: AT.RUN_EXTRACTOR_ASYNC,
     appId: string,
     extractType: DialogType,

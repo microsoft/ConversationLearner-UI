@@ -55,8 +55,6 @@ const teachSessionReducer: Reducer<TeachSessionState> = (state = initialState, a
             return { ...initialState, all: state.all.filter(t => t.teachId !== action.teachSessionGUID) }
         case AT.DELETE_MEMORY_FULFILLED:
             return { ...state, memories: [] }
-        case AT.INIT_MEMORY_FULFILLED:
-            return { ...state, memories: action.memories }
         case AT.RUN_EXTRACTOR_FULFILLED:
             // Replace existing extract response (if any) with new one
             const extractResponses = state.extractResponses.filter(e => e.text !== action.uiExtractResponse.extractResponse.text);

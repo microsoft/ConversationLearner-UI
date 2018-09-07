@@ -12,13 +12,13 @@ import { AxiosError } from 'axios';
 import { deleteTrainDialogThunkAsync, fetchAllTrainDialogsThunkAsync } from './trainActions'
 import { fetchApplicationTrainingStatusThunkAsync } from './appActions';
 
-export const createTeachSessionThunkAsync = (appId: string) => {
+export const createTeachSessionThunkAsync = (appId: string, initialFilledEntities: CLM.FilledEntity[] = []) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.CREATE_TEACH_SESSION_ASYNC)
         dispatch(createTeachSessionAsync())
 
         try {
-            const teachResponse = await clClient.teachSessionsCreate(appId)
+            const teachResponse = await clClient.teachSessionsCreate(appId, initialFilledEntities)
             dispatch(createTeachSessionFulfilled(teachResponse))
             return teachResponse
         }
@@ -140,43 +140,6 @@ const deleteTeachSessionFulfilled = (key: string, teachSession: CLM.Teach, sourc
         teachSessionGUID: teachSession.teachId,
         trainDialogId: teachSession.trainDialogId,
         sourceLogDialogId: sourceLogDialogId
-    }
-}
-
-// --------------------------
-// InitMemory
-// --------------------------
-export const initMemoryThunkAsync = (appId: string, sessionId: string, filledEntityMap: CLM.FilledEntityMap) => {
-    return async (dispatch: Dispatch<any>) => {
-        const clClient = ClientFactory.getInstance(AT.INIT_MEMORY_ASYNC)
-        dispatch(initMemoryAsync(appId, sessionId, filledEntityMap))
-
-        try {
-            let memories = await clClient.teachSessionsInitMemory(appId, sessionId, filledEntityMap)
-            dispatch(initMemoryFulfilled(memories))
-            return
-        }
-        catch (e) {
-            const error = e as AxiosError
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.INIT_MEMORY_ASYNC))
-            throw error
-        }
-    }
-}
-
-const initMemoryAsync = (appId: string, sessionId: string, filledEntityMap: CLM.FilledEntityMap): ActionObject => {
-    return {
-        type: AT.INIT_MEMORY_ASYNC,
-        appId: appId,
-        sessionId: sessionId,
-        filledEntityMap: filledEntityMap
-    }
-}
-
-const initMemoryFulfilled = (memories: CLM.Memory[]): ActionObject => {
-    return {
-        type: AT.INIT_MEMORY_FULFILLED,
-        memories: memories
     }
 }
 

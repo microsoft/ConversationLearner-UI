@@ -474,10 +474,11 @@ export default class ClClient {
             .then(response => response.data.teaches)
     }
 
-    teachSessionsCreate(appId: string): Promise<CLM.TeachResponse> {
+    teachSessionsCreate(appId: string, initialFilledEntities: CLM.FilledEntity[] = []): Promise<CLM.TeachResponse> {
         return this.send<CLM.TeachResponse>({
             method: 'post',
-            url: `${this.baseUrl}/app/${appId}/teach`
+            url: `${this.baseUrl}/app/${appId}/teach`,
+            data: initialFilledEntities
         })
             .then(response => response.data)
     }
@@ -489,16 +490,6 @@ export default class ClClient {
             url: `${this.baseUrl}/app/${appId}/teach/${teachSession.teachId}?save=${save}`
         })
             .then(response => { })
-    }
-
-    // INIT_MEMORY_ASYNC
-    teachSessionsInitMemory(appId: string, sessionId: string, filledEntityMap: CLM.FilledEntityMap): Promise<CLM.Memory[]> {
-        return this.send({
-            method: 'put',
-            url: `${this.baseUrl}/app/${appId}/teach/${sessionId}/initmemory`,
-            data: filledEntityMap
-        })
-            .then(response => response.data)
     }
 
     teachSessionsAddExtractStep(appId: string, sessionId: string, userInput: CLM.UserInput): Promise<CLM.UIExtractResponse> {
