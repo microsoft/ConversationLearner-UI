@@ -165,6 +165,7 @@ export type FetchAction = {
 } | {
     type: AT.FETCH_TRAIN_DIALOG_FULFILLED,
     trainDialog: TrainDialog,
+    replaceLocal: boolean
 } | {
     type: AT.FETCH_TRAIN_DIALOGS_ASYNC,
     appId: string

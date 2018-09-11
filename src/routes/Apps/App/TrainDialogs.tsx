@@ -411,7 +411,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         try {
             if (this.state.teachSession) {
                 // Get train dialog associated with the teach session
-                let trainDialog = await ((this.props.fetchTrainDialogThunkAsync(this.props.app.appId, this.state.teachSession.trainDialogId) as any) as Promise<CLM.TrainDialog>)
+                let trainDialog = await ((this.props.fetchTrainDialogThunkAsync(this.props.app.appId, this.state.teachSession.trainDialogId, false) as any) as Promise<CLM.TrainDialog>)
                 trainDialog.definitions = {
                     entities: this.props.entities,
                     actions: this.props.actions,
@@ -617,7 +617,12 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             })
     }
 
-    onCloseTrainDialogModal() {
+    async onCloseTrainDialogModal(reload: boolean = false) {
+
+        if (reload && this.state.currentTrainDialog) {
+            // Reload local copy
+            await ((this.props.fetchTrainDialogThunkAsync(this.props.app.appId, this.state.currentTrainDialog.trainDialogId, true) as any) as Promise<CLM.TrainDialog>)
+        }
         this.setState({
             isTrainDialogModalOpen: false,
             selectedHistoryIndex: null,
@@ -863,7 +868,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     history={this.state.history}
                     initialSelectedHistoryIndex={this.state.selectedHistoryIndex}
                     isNewDialog={this.state.isNewDialog}
-                    onClose={() => this.onCloseTrainDialogModal()}
+                    onClose={(reload) => this.onCloseTrainDialogModal(reload)}
                     onBranch={(turnIndex) => this.onBranchTrainDialog(turnIndex)}
                     onDelete={() => this.onDeleteTrainDialog()}
                     onUpdate={(updatedTrainDialog) => this.onUpdateTrainDialog(updatedTrainDialog)}

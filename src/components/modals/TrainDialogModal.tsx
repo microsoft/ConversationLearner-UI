@@ -56,6 +56,13 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
             this.setState(initialState);
         }
         if (this.state.currentTrainDialog !== nextProps.trainDialog) {
+            // Make sure selected activity is still valid (could have been deleted)
+            if (!nextProps.history.find(a => this.state.selectedActivity !== null && a.id === this.state.selectedActivity.id)) {
+                this.setState({
+                    selectedActivity: null
+                })
+            }
+
             // Force webchat to re-mount as history prop can't be updated
             this.setState({
                 currentTrainDialog: nextProps.trainDialog,
@@ -138,7 +145,7 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
         }
         // Viewing an un-edited Train Dialog
         else {
-            this.props.onClose()
+            this.props.onClose(false)
         }
     }
 
@@ -176,7 +183,8 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
         }
         else if (this.state.confirmModalType === ConfirmType.ABANDON) {
             if (this.state.originalTrainDialog) {
-                this.props.onReplace(this.state.originalTrainDialog, this.state.originalTrainDialog.invalid || false)
+                this.props.onClose(true)
+            //LARS test    this.props.onReplace(this.state.originalTrainDialog, this.state.originalTrainDialog.invalid || false)
             }
             else {
                 throw new Error("OrignialTrainDialog not defined")
@@ -452,7 +460,8 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
             newTrainDialog = await ((this.props.trainDialogReplayThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<CLM.TrainDialog>)
 
             this.setState({
-                originalTrainDialog: this.state.originalTrainDialog || this.props.trainDialog
+                originalTrainDialog: this.state.originalTrainDialog || this.props.trainDialog,
+                selectedActivity: null
             })
 
             this.props.onUpdate(newTrainDialog)
@@ -765,7 +774,7 @@ export interface ReceivedProps {
     isNewDialog: boolean,
     // If starting with activity selected
     initialSelectedHistoryIndex: number | null
-    onClose: () => void,
+    onClose: (reload: boolean) => void,
     onBranch: (turnIndex: number) => void,
     onContinue: (newTrainDialog: CLM.TrainDialog, initialUserInput: CLM.UserInput) => void,
     onReplace: (newTrainDialog: CLM.TrainDialog, isInvalid: boolean) => void,

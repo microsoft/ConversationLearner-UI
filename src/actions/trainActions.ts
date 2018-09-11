@@ -86,14 +86,14 @@ const editTrainDialogFulfilled = (trainDialog: TrainDialog): ActionObject => {
 // ----------------------------------------
 // FetchTrainDialog
 // ----------------------------------------
-export const fetchTrainDialogThunkAsync = (appId: string, trainDialogId: string) => {
+export const fetchTrainDialogThunkAsync = (appId: string, trainDialogId: string, replaceLocal: boolean) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.FETCH_TRAIN_DIALOG_ASYNC)
         dispatch(fetchTrainDialogAsync(appId, trainDialogId))
 
         try {
             const trainDialog = await clClient.trainDialog(appId, trainDialogId)
-            dispatch(fetchTrainDialogFulfilled(trainDialog))
+            dispatch(fetchTrainDialogFulfilled(trainDialog, replaceLocal))
             return trainDialog
         } catch (e) {
             const error = e as AxiosError
@@ -111,10 +111,11 @@ const fetchTrainDialogAsync = (appId: string, trainDialogId: string): ActionObje
     }
 }
 
-const fetchTrainDialogFulfilled = (trainDialog: TrainDialog): ActionObject => {
+const fetchTrainDialogFulfilled = (trainDialog: TrainDialog, replaceLocal: boolean): ActionObject => {
     return {
         type: AT.FETCH_TRAIN_DIALOG_FULFILLED,
-        trainDialog
+        trainDialog,
+        replaceLocal
     }
 }
 
