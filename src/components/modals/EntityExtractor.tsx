@@ -35,7 +35,7 @@ interface ComponentState {
     savedRoundIndex: number
     textVariationValue: string
     newTextVariations: CLM.TextVariation[]
-};
+}
 
 // TODO: Need to re-define TextVariation / ExtractResponse class defs so we don't need
 // to do all the messy conversion back and forth
