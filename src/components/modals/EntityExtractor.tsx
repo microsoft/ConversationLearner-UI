@@ -2,20 +2,20 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import * as React from 'react';
-import { returntypeof } from 'react-redux-typescript';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
+import * as React from 'react'
+import { returntypeof } from 'react-redux-typescript'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
 import { State } from '../../types'
 import * as CLM from '@conversationlearner/models'
-import * as OF from 'office-ui-fabric-react';
+import * as OF from 'office-ui-fabric-react'
 import * as ExtractorResponseEditor from '../ExtractorResponseEditor'
-import EntityCreatorEditor from './EntityCreatorEditor';
+import EntityCreatorEditor from './EntityCreatorEditor'
 import { clearExtractResponses, updateExtractResponse, removeExtractResponse, runExtractorThunkAsync } from '../../actions/teachActions'
 import * as ToolTips from '../ToolTips'
 import HelpIcon from '../HelpIcon'
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
-import { autobind } from 'office-ui-fabric-react';
+import { autobind } from 'office-ui-fabric-react'
 import { FM } from '../../react-intl-messages'
 import './EntityExtractor.css'
 
