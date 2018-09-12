@@ -325,7 +325,7 @@ export interface ReceivedProps {
     onScoredAction: (scoredAction: CLM.ScoredAction) => void;
     app: CLM.AppBase
     editingPackageId: string
-    // Indexe to attach to channel data
+    // Index to attach to channel data
     activityIndex: number
     // If user clicked on an Activity
     selectedActivity: Activity | null
