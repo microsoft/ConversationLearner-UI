@@ -4,20 +4,23 @@
  */
 import { ActionObject, ErrorType } from '../types'
 import { AT } from '../types/ActionTypes'
-import { Session, AppBase } from '@conversationlearner/models'
+import { Session, AppBase, FilledEntity } from '@conversationlearner/models'
 import { Dispatch } from 'redux'
 import { setErrorDisplay } from './displayActions'
 import * as ClientFactory from '../services/clientFactory' 
 import { AxiosError } from 'axios'
 import { fetchAllLogDialogsThunkAsync } from './logActions'
 
-export const createChatSessionThunkAsync = (appId: string, packageId: string, saveToLog: boolean) => {
+// --------------------------
+// CreateChatSession
+// --------------------------
+export const createChatSessionThunkAsync = (appId: string, packageId: string, saveToLog: boolean, initialFilledEntities: FilledEntity[] = []) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.CREATE_CHAT_SESSION_ASYNC)
         dispatch(createChatSessionAsync())
 
         try {
-            const session = await clClient.chatSessionsCreate(appId, { saveToLog, packageId })
+            const session = await clClient.chatSessionsCreate(appId, { saveToLog, packageId, initialFilledEntities })
             dispatch(createChatSessionFulfilled(session))
             return session
         }
@@ -40,7 +43,9 @@ const createChatSessionFulfilled = (session: Session): ActionObject =>
         session: session
     })
 
-
+// --------------------------
+// DeleteChatSession
+// --------------------------
 export const deleteChatSessionThunkAsync = (key: string, session: Session, app: AppBase, packageId: string) => {
     return async (dispatch: Dispatch<any>) => {
         dispatch(deleteChatSessionAsync(key, session, app.appId, packageId))

@@ -57,7 +57,7 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
     }
 
     // Wipe out any missing entities resulting from change in model since log dialog was created
-    purgeMissingEntities(rounds: TrainRound[]) : TrainRound[] {
+    purgeMissingEntities(rounds: TrainRound[]): TrainRound[] {
         for (let round of rounds) {
             for (let textVariation of round.extractorStep.textVariations) {
                 textVariation.labelEntities = textVariation.labelEntities.filter(
@@ -89,6 +89,7 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
             packageCreationId: undefined!,
             packageDeletionId: undefined!,
             rounds: this.purgeMissingEntities(stateTrainDialog.rounds),
+            initialFilledEntities: stateTrainDialog.initialFilledEntities,
             definitions: {
                 entities: this.props.entities,
                 actions: this.props.actions,
@@ -128,6 +129,7 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
             version: undefined!,
             packageCreationId: undefined!,
             packageDeletionId: undefined!,
+            initialFilledEntities: this.props.logDialog.initialFilledEntities,
             rounds: [
                 ...roundsBeforeModification,
                 modifiedRound
@@ -194,6 +196,7 @@ class LogDialogAdmin extends React.Component<Props, ComponentState> {
             version: undefined!,
             packageCreationId: undefined!,
             packageDeletionId: undefined!,
+            initialFilledEntities: this.props.logDialog.initialFilledEntities,
             definitions: undefined,
             rounds: [...roundsBeforeModification, modifiedRound]
         }

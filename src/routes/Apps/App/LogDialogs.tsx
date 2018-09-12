@@ -8,7 +8,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import * as OF from 'office-ui-fabric-react';
 import { State } from '../../../types'
-import { AppBase, LogDialog, Session, ModelUtils, Teach, TeachWithHistory, TrainDialog, ActionBase, ReplayError } from '@conversationlearner/models'
+import * as CLM from '@conversationlearner/models'
 import { ChatSessionModal, LogDialogModal, TeachSessionModal } from '../../../components/modals'
 import actions from '../../../actions'
 import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
@@ -20,8 +20,8 @@ import ReplayErrorList from '../../../components/modals/ReplayErrorList';
 import * as moment from 'moment'
 
 interface IRenderableColumn extends OF.IColumn {
-    render: (x: LogDialog, component: LogDialogs) => React.ReactNode
-    getSortValue: (logDialog: LogDialog, component: LogDialogs) => string
+    render: (x: CLM.LogDialog, component: LogDialogs) => React.ReactNode
+    getSortValue: (logDialog: CLM.LogDialog, component: LogDialogs) => string
 }
 
 const returnStringWhenError = (s: string) => {
@@ -37,7 +37,7 @@ const returnStringWhenError = (s: string) => {
 
 const returnErrorStringWhenError = returnStringWhenError("ERR")
 
-function getTagName(logDialog: LogDialog, component: LogDialogs): string {
+function getTagName(logDialog: CLM.LogDialog, component: LogDialogs): string {
     // Only show tag column on Master branch it's the only one containing multiple tag types
     if (component.props.editingPackageId !== component.props.app.devPackageId) {
         return '';
@@ -47,7 +47,7 @@ function getTagName(logDialog: LogDialog, component: LogDialogs): string {
         tagName = 'Master';
     }
     else {
-        let packageVersion = component.props.app.packageVersions.find(pv => pv.packageId === logDialog.packageId);
+        let packageVersion = component.props.app.packageVersions.find((pv: any) => pv.packageId === logDialog.packageId);
         if (packageVersion) {
             tagName = packageVersion.packageVersion;
         }
@@ -55,19 +55,19 @@ function getTagName(logDialog: LogDialog, component: LogDialogs): string {
     return tagName;
 }
 
-function getFirstInput(logDialog: LogDialog): string | void {
+function getFirstInput(logDialog: CLM.LogDialog): string | void {
     if (logDialog.rounds && logDialog.rounds.length > 0) {
         return logDialog.rounds[0].extractorStep.text
     }
 }
 
-function getLastInput(logDialog: LogDialog): string | void {
+function getLastInput(logDialog: CLM.LogDialog): string | void {
     if (logDialog.rounds && logDialog.rounds.length > 0) {
         return logDialog.rounds[logDialog.rounds.length - 1].extractorStep.text;
     }
 }
 
-function getLastResponse(logDialog: LogDialog, component: LogDialogs): string | void {
+function getLastResponse(logDialog: CLM.LogDialog, component: LogDialogs): string | void {
     // Find last action of last scorer step of last round
     // If found, return payload, otherwise return not found icon
     if (logDialog.rounds && logDialog.rounds.length > 0) {
@@ -76,7 +76,7 @@ function getLastResponse(logDialog: LogDialog, component: LogDialogs): string | 
             let actionId = scorerSteps[scorerSteps.length - 1].predictedAction;
             let action = component.props.actions.find(a => a.actionId == actionId);
             if (action) {
-                return ActionBase.GetPayload(action, getDefaultEntityMap(component.props.entities))
+                return CLM.ActionBase.GetPayload(action, getDefaultEntityMap(component.props.entities))
             }
         }
     }
@@ -209,19 +209,19 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
 interface ComponentState {
     columns: IRenderableColumn[]
     sortColumn: IRenderableColumn
-    chatSession: Session | null
+    chatSession: CLM.Session | null
     isChatSessionWindowOpen: boolean
     isLogDialogWindowOpen: boolean
     isTeachDialogModalOpen: boolean
     isValidationWarningOpen: boolean
-    currentLogDialog: LogDialog | undefined
+    currentLogDialog: CLM.LogDialog | undefined
     searchValue: string
     // Allows user to re-open modal for same row ()
     dialogKey: number
     history: Activity[]
-    lastAction: ActionBase | null
-    teachSession: Teach | undefined
-    validationErrors: ReplayError[]
+    lastAction: CLM.ActionBase | null
+    teachSession: CLM.Teach | undefined
+    validationErrors: CLM.ReplayError[]
     validationErrorTitleId: string | null
     validationErrorMessageId: string | null
 }
@@ -253,7 +253,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         }
     }
 
-    sortLogDialogs(logDialogs: LogDialog[]): LogDialog[] {
+    sortLogDialogs(logDialogs: CLM.LogDialog[]): CLM.LogDialog[] {
         // If column header selected sort the items
         if (this.state.sortColumn) {
             logDialogs
@@ -316,7 +316,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     @autobind
     onClickNewChatSession() {
         // TODO: Find cleaner solution for the types.  Thunks return functions but when using them on props they should be returning result of the promise.
-        ((this.props.createChatSessionThunkAsync(this.props.app.appId, this.props.editingPackageId, this.props.app.metadata.isLoggingOn !== false) as any) as Promise<Session>)
+        ((this.props.createChatSessionThunkAsync(this.props.app.appId, this.props.editingPackageId, this.props.app.metadata.isLoggingOn !== false) as any) as Promise<CLM.Session>)
             .then(chatSession => {
                 this.setState({
                     chatSession,
@@ -344,12 +344,12 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         })
     }
 
-    onClickLogDialogItem(logDialog: LogDialog) {
+    onClickLogDialogItem(logDialog: CLM.LogDialog) {
 
         // Convert to trainDialog until schema update change, and pass in app definition too
-        let trainDialog = ModelUtils.ToTrainDialog(logDialog, this.props.actions, this.props.entities);
+        let trainDialog = CLM.ModelUtils.ToTrainDialog(logDialog, this.props.actions, this.props.entities);
 
-        ((this.props.fetchHistoryThunkAsync(this.props.app.appId, trainDialog, this.props.user.name, this.props.user.id) as any) as Promise<TeachWithHistory>)
+        ((this.props.fetchHistoryThunkAsync(this.props.app.appId, trainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)
             .then(teachWithHistory => {
                 this.setState({
                     history: teachWithHistory.history,
@@ -388,10 +388,10 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         this.onCloseLogDialogModal();
     }
 
-    onEditLogDialog(logDialogId: string, newTrainDialog: TrainDialog, extractChanged: boolean) {
+    onEditLogDialog(logDialogId: string, newTrainDialog: CLM.TrainDialog) {
 
         // Create a new teach session from the train dialog
-        ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app, newTrainDialog, this.props.user.name, this.props.user.id, extractChanged) as any) as Promise<TeachWithHistory>)
+        ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app, newTrainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)
             .then(teachWithHistory => {
                 if (teachWithHistory.replayErrors.length === 0) {
                     // Note: Don't clear currentLogDialog so I can update it if I save my edits
@@ -436,46 +436,13 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         })
     }
 
-    onUndoTeachStep(popRound: boolean) {
-        // Clear history first
-        this.setState({
-            history: [],
-            lastAction: null
-        });
-
-        if (!this.state.teachSession) {
-            throw new Error(`You attempted to undo a teach step, but state.teachSession is not defined. This is likely a bug. Please open an issue.`)
-        }
-
-        ((this.props.createTeachSessionFromUndoThunkAsync(this.props.app.appId, this.state.teachSession, popRound, this.props.user.name, this.props.user.id) as any) as Promise<TeachWithHistory>)
-            .then(teachWithHistory => {
-                if (teachWithHistory.replayErrors.length === 0) {
-                    this.setState({
-                        teachSession: teachWithHistory.teach,
-                        history: teachWithHistory.history,
-                        lastAction: teachWithHistory.lastAction
-                    })
-                } else {
-                    this.setState({
-                        validationErrors: teachWithHistory.replayErrors,
-                        isValidationWarningOpen: true,
-                        validationErrorTitleId: FM.REPLAYERROR_UNDO_TITLE,
-                        validationErrorMessageId: FM.REPLAYERROR_FAILMESSAGE
-                    })
-                }
-            })
-            .catch(error => {
-                console.warn(`Error when attempting to create teach session from undo: `, error)
-            })
-    }
-
-    getFilteredAndSortedDialogs(): LogDialog[] {
+    getFilteredAndSortedDialogs(): CLM.LogDialog[] {
         // Don't show log dialogs that have derived TrainDialogs as they've already been edited
-        let filteredLogDialogs: LogDialog[] = this.props.logDialogs.filter(l => !l.targetTrainDialogIds || l.targetTrainDialogIds.length === 0);
+        let filteredLogDialogs: CLM.LogDialog[] = this.props.logDialogs.filter(l => !l.targetTrainDialogIds || l.targetTrainDialogIds.length === 0);
 
         if (this.state.searchValue) {
             // TODO: Consider caching as not very efficient
-            filteredLogDialogs = filteredLogDialogs.filter((l: LogDialog) => {
+            filteredLogDialogs = filteredLogDialogs.filter((l: CLM.LogDialog) => {
                 let keys = [];
                 for (let round of l.rounds) {
                     keys.push(round.extractorStep.text);
@@ -617,7 +584,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     open={this.state.isLogDialogWindowOpen}
                     canEdit={this.props.editingPackageId === this.props.app.devPackageId && !this.props.invalidBot}
                     onClose={this.onCloseLogDialogModal}
-                    onEdit={(logDialogId, newTrainDialog, extractChanged) => this.onEditLogDialog(logDialogId, newTrainDialog, extractChanged)}
+                    onEdit={(logDialogId, newTrainDialog) => this.onEditLogDialog(logDialogId, newTrainDialog)}
                     onDelete={this.onDeleteLogDialog}
                     logDialog={currentLogDialog!}
                     history={this.state.history}
@@ -638,8 +605,10 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     dialogMode={this.props.teachSessions.mode}
                     isOpen={this.state.isTeachDialogModalOpen}
                     onClose={this.onCloseTeachSession}
-                    onUndo={(popRound) => this.onUndoTeachStep(popRound)}
-                    history={this.state.history}
+                    onSetInitialEntities={()=>{}} //  LARS TEMP
+                    onEditTeach={()=>{}} // LARS TEMP
+                    isNewDialog={false} // LARS TEMP
+                    initialHistory={this.state.history}
                     lastAction={this.state.lastAction}
                     sourceLogDialog={this.state.currentLogDialog}
                 />
@@ -652,7 +621,6 @@ const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         createChatSessionThunkAsync: actions.chat.createChatSessionThunkAsync,
         createTeachSessionFromHistoryThunkAsync: actions.teach.createTeachSessionFromHistoryThunkAsync,
-        createTeachSessionFromUndoThunkAsync: actions.teach.createTeachSessionFromUndoThunkAsync,
         deleteLogDialogThunkAsync: actions.log.deleteLogDialogThunkAsync,
         fetchAllLogDialogsThunkAsync: actions.log.fetchAllLogDialogsThunkAsync,
         fetchHistoryThunkAsync: actions.train.fetchHistoryThunkAsync
@@ -673,7 +641,7 @@ const mapStateToProps = (state: State) => {
 }
 
 export interface ReceivedProps {
-    app: AppBase,
+    app: CLM.AppBase,
     invalidBot: boolean,
     editingPackageId: string
 }

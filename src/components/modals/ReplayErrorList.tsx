@@ -13,80 +13,108 @@ import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { ReplayError, ReplayErrorType, ReplayErrorMissingAction, ReplayErrorMissingEntity, ReplayErrorActionUnavailable, ReplayErrorEntityDiscrepancy } from '@conversationlearner/models'
 
-class ReplayErrorList extends React.Component<Props, {}> {
-    onRenderCell(item: ReplayError, index: number): JSX.Element {
-        switch (item.type) {
-            case ReplayErrorType.MissingAction:
-                return (
-                    <div className={OF.FontClassNames.mediumPlus}>
-                        <FormattedMessage
-                            id={FM.REPLAYERROR_DESC_MISSING_ACTION}
-                            defaultMessage={FM.REPLAYERROR_DESC_MISSING_ACTION}
-                        />
-                        {` "${(item as ReplayErrorMissingAction).lastUserInput}"`}
-                    </div>
-                )
-            case ReplayErrorType.MissingEntity:
-                return (
-                    <div className={OF.FontClassNames.mediumPlus}>
-                        <FormattedMessage
-                            id={FM.REPLAYERROR_DESC_MISSING_ENTITY}
-                            defaultMessage={FM.REPLAYERROR_DESC_MISSING_ENTITY}
-                        />
-                        {` "${(item as ReplayErrorMissingEntity).value}"`}
-                    </div>
-                )
-            case ReplayErrorType.ActionUnavailable:
-                return (
-                    <div className={OF.FontClassNames.mediumPlus}>
-                        <FormattedMessage
-                            id={FM.REPLAYERROR_DESC_UNAVAILABLE_ACTION}
-                            defaultMessage={FM.REPLAYERROR_DESC_UNAVAILABLE_ACTION}
-                        />
-                        {` "${(item as ReplayErrorActionUnavailable).lastUserInput}"`}
-                    </div>
-                )
-            case ReplayErrorType.EntityDiscrepancy:
-                let entityDiscrepancy = item as ReplayErrorEntityDiscrepancy;
-                return (
-                        <OF.TooltipHost  
-                            id='myID' 
-                            delay={ OF.TooltipDelay.zero }
-                            calloutProps={ { gapSpace: 0 } }
-                            tooltipProps={ {
-                                onRenderContent: () => {
-                                    return (
-                                        <div className={OF.FontClassNames.mediumPlus}>
-                                            <div className="cl-font--emphasis">Original Entities:</div>
-                                            {entityDiscrepancy.originalEntities.length > 0 ?
-                                                entityDiscrepancy.originalEntities.map(e => (<div className={OF.FontClassNames.mediumPlus}>{e}</div>))
-                                                : <div className={OF.FontClassNames.mediumPlus}>-none-</div>
-                                            }
-                                            <div className="cl-font--emphasis">New Entities:</div>
-                                            {entityDiscrepancy.newEntities.length > 0 ?
-                                                entityDiscrepancy.newEntities.map(e => (<div className={OF.FontClassNames.mediumPlus}>{e}</div>))
-                                                : <div className={OF.FontClassNames.mediumPlus}>-none-</div>
-                                            }
-                                        </div>
-                                    );
-                                    }
-                              } }
-                            >
-                            <div className={OF.FontClassNames.mediumPlus}>
-                                <FormattedMessage
-                                    id={FM.REPLAYERROR_DESC_CHANGED_ENTITIES}
-                                    defaultMessage={FM.REPLAYERROR_DESC_CHANGED_ENTITIES}
-                                />
-                                {` "${entityDiscrepancy.lastUserInput}"`}
-                                <OF.Icon iconName="Info" className="cl-icon" />
-                            </div>
-                        </OF.TooltipHost>
-                )
-            default:
-                throw new Error('Unhandled ReplayErrorType case');
-        }
+export function renderReplayError(replayError: ReplayError): JSX.Element {
+    switch (replayError.type) {
+        case ReplayErrorType.MissingAction:
+            return (
+                <div className={OF.FontClassNames.mediumPlus}>
+                    <FormattedMessage
+                        id={FM.REPLAYERROR_DESC_MISSING_ACTION}
+                        defaultMessage={FM.REPLAYERROR_DESC_MISSING_ACTION}
+                    />
+                    {` "${(replayError as ReplayErrorMissingAction).lastUserInput}"`}
+                </div>
+            )
+        case ReplayErrorType.MissingEntity:
+            return (
+                <div className={OF.FontClassNames.mediumPlus}>
+                    <FormattedMessage
+                        id={FM.REPLAYERROR_DESC_MISSING_ENTITY}
+                        defaultMessage={FM.REPLAYERROR_DESC_MISSING_ENTITY}
+                    />
+                    {` "${(replayError as ReplayErrorMissingEntity).value}"`}
+                </div>
+            )
+        case ReplayErrorType.ActionUnavailable:
+            return (
+                <div className={OF.FontClassNames.mediumPlus}>
+                    <FormattedMessage
+                        id={FM.REPLAYERROR_DESC_UNAVAILABLE_ACTION}
+                        defaultMessage={FM.REPLAYERROR_DESC_UNAVAILABLE_ACTION}
+                    />
+                    {` "${(replayError as ReplayErrorActionUnavailable).lastUserInput}"`}
+                </div>
+            )
+        case ReplayErrorType.ActionAfterWait:
+            return (
+                <div className={OF.FontClassNames.mediumPlus}>
+                    <FormattedMessage
+                        id={FM.REPLAYERROR_DESC_ACTION_AFTER_WAIT}
+                        defaultMessage={FM.REPLAYERROR_DESC_ACTION_AFTER_WAIT}
+                    />
+                </div>
+            )
+        case ReplayErrorType.TwoUserInputs:
+            return (
+                <div className={OF.FontClassNames.mediumPlus}>
+                    <FormattedMessage
+                        id={FM.REPLAYERROR_DESC_TWO_USER_INPUTS}
+                        defaultMessage={FM.REPLAYERROR_DESC_TWO_USER_INPUTS}
+                    />
+                </div>
+            )
+        case ReplayErrorType.InputAfterNonWait:
+            return (
+                <div className={OF.FontClassNames.mediumPlus}>
+                    <FormattedMessage
+                        id={FM.REPLAYERROR_DESC_INPUT_AFTER_NONWAIT}
+                        defaultMessage={FM.REPLAYERROR_DESC_INPUT_AFTER_NONWAIT}
+                    />
+                </div>
+            )
+            //LARS - think this can go away?  check
+        case ReplayErrorType.EntityDiscrepancy:
+            let entityDiscrepancy = replayError as ReplayErrorEntityDiscrepancy;
+            return (
+                    <OF.TooltipHost  
+                        id='myID' 
+                        delay={ OF.TooltipDelay.zero }
+                        calloutProps={ { gapSpace: 0 } }
+                        tooltipProps={ {
+                            onRenderContent: () => {
+                                return (
+                                    <div className={OF.FontClassNames.mediumPlus}>
+                                        <div className="cl-font--emphasis">Original Entities:</div>
+                                        {entityDiscrepancy.originalEntities.length > 0 ?
+                                            entityDiscrepancy.originalEntities.map((e: any) => (<div className={OF.FontClassNames.mediumPlus}>{e}</div>))
+                                            : <div className={OF.FontClassNames.mediumPlus}>-none-</div>
+                                        }
+                                        <div className="cl-font--emphasis">New Entities:</div>
+                                        {entityDiscrepancy.newEntities.length > 0 ?
+                                            entityDiscrepancy.newEntities.map((e: any) => (<div className={OF.FontClassNames.mediumPlus}>{e}</div>))
+                                            : <div className={OF.FontClassNames.mediumPlus}>-none-</div>
+                                        }
+                                    </div>
+                                );
+                                }
+                          } }
+                        >
+                        <div className={OF.FontClassNames.mediumPlus}>
+                            <FormattedMessage
+                                id={FM.REPLAYERROR_DESC_CHANGED_ENTITIES}
+                                defaultMessage={FM.REPLAYERROR_DESC_CHANGED_ENTITIES}
+                            />
+                            {` "${entityDiscrepancy.lastUserInput}"`}
+                            <OF.Icon iconName="Info" className="cl-icon" />
+                        </div>
+                    </OF.TooltipHost>
+            )
+        default:
+            throw new Error('Unhandled ReplayErrorType case');
     }
+}
 
+class ReplayErrorList extends React.Component<Props, {}> {
     render() {
         const { intl, formattedTitleId, formattedMessageId } = this.props
         return (
@@ -115,7 +143,7 @@ class ReplayErrorList extends React.Component<Props, {}> {
                 <OF.List
                     className={OF.FontClassNames.medium}
                     items={this.props.textItems}
-                    onRenderCell={this.onRenderCell}
+                    onRenderCell={renderReplayError}
                 />
                 <div className="cl-modal_footer">
                     <div className="cl-modal-buttons">

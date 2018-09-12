@@ -12,7 +12,6 @@ import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { autobind } from 'office-ui-fabric-react/lib/Utilities'
 import * as OF from 'office-ui-fabric-react';
 import { FM } from '../../react-intl-messages'
-import { initMemoryThunkAsync } from '../../actions/teachActions'
 import { FilledEntityMap, EntityBase, MemoryValue } from '@conversationlearner/models'
 import './TeachSessionInitState.css';
 
@@ -84,7 +83,7 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
         this.setState({filledEntityMap: this.state.filledEntityMap})
     }
 
-    onChanged(index: number, text: string, entity: EntityBase) {
+    onChanged(index: number, text: string, entity: EntityBase) {  
         this.state.filledEntityMap.map[entity.entityName].values[index].userText = text
         this.setState({filledEntityMap: this.state.filledEntityMap})
     }
@@ -139,7 +138,7 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
                                                             id: FM.TEACHSESSIONINIT_INPUT_PLACEHOLDER,
                                                             defaultMessage: "Initial Value..."
                                                         })}
-                                                        value={memoryValue.displayText || ''}
+                                                        value={memoryValue.userText || ''}
                                                     />
                                                 </div>
                                                 )
@@ -186,7 +185,6 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
 
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        initMemoryThunkAsync
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {

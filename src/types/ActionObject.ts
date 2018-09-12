@@ -4,14 +4,14 @@
  */
 import {
     AppBase, Banner,
-    BotInfo, Memory,
+    BotInfo, 
     AppDefinition,
     EntityBase,
     ActionBase, TeachWithHistory,
     TrainDialog, LogDialog, Session, Teach, ScoreInput,
     UserInput, ExtractResponse, DialogType,
     UIExtractResponse, UITrainScorerStep, DialogMode,
-    UIPostScoreResponse, UIScoreInput, UIScoreResponse, UIAppList, TrainingStatus, FilledEntityMap, AppDefinitionChange
+    UIPostScoreResponse, UIScoreInput, UIScoreResponse, UIAppList, TrainingStatus, AppDefinitionChange
 } from '@conversationlearner/models'
 import { TipType } from '../components/ToolTips'
 import { ErrorType } from './const'
@@ -159,6 +159,14 @@ export type FetchAction = {
     type: AT.FETCH_CHAT_SESSIONS_ASYNC,
     appId: string
 } | {
+    type: AT.FETCH_TRAIN_DIALOG_ASYNC,
+    appId: string,
+    trainDialogId: string
+} | {
+    type: AT.FETCH_TRAIN_DIALOG_FULFILLED,
+    trainDialog: TrainDialog,
+    replaceLocal: boolean
+} | {
     type: AT.FETCH_TRAIN_DIALOGS_ASYNC,
     appId: string
 } | {
@@ -235,6 +243,28 @@ export type FetchAction = {
 } | {
     type: AT.FETCH_ACTION_EDIT_VALIDATION_FULFILLED
 } | {
+    type: AT.FETCH_SCOREFROMHISTORY_ASYNC,
+    appId: string,
+    trainDialog: TrainDialog
+} | {
+    type: AT.FETCH_SCOREFROMHISTORY_FULFILLED,
+    uiScoreResponse: UIScoreResponse
+} | {
+    type: AT.FETCH_EXTRACTFROMHISTORY_ASYNC,
+    appId: string,
+    trainDialog: TrainDialog,
+    userInput: UserInput
+} | {
+    type: AT.FETCH_EXTRACTFROMHISTORY_FULFILLED,
+    extractResponse: ExtractResponse
+} | {
+    type: AT.FETCH_TRAINDIALOGREPLAY_ASYNC,
+    appId: string,
+    trainDialog: TrainDialog
+} | {
+    type: AT.FETCH_TRAINDIALOGREPLAY_FULFILLED,
+    trainDialog: TrainDialog
+} | {
     type: AT.FETCH_TUTORIALS_ASYNC,
     userId: string
 } | {
@@ -277,10 +307,8 @@ export type CreateAction = {
     app: AppBase
 } | {
     type: AT.CREATE_TRAIN_DIALOG_ASYNC,
-    key: string,
-    logDialogId: string,
-    trainDialog: TrainDialog,
-    appId: string
+    appId: string,
+    trainDialog: TrainDialog  
 } | {
     type: AT.CREATE_TRAIN_DIALOG_FULFILLED,
     trainDialog: TrainDialog,
@@ -304,16 +332,6 @@ export type CreateAction = {
 }| {
     type: AT.CREATE_TEACH_SESSION_FULFILLED,
     teachSession: Teach
-} | {
-    type: AT.CREATE_TEACH_SESSION_FROMUNDOASYNC,
-    appId: string,
-    teach: Teach,
-    popRound: boolean,
-    userName: string,
-    userId: string
-} | {
-    type: AT.CREATE_TEACH_SESSION_FROMUNDOFULFILLED,
-    teachWithHistory: TeachWithHistory
 } | {
     type: AT.CREATE_TEACH_SESSION_FROMHISTORYASYNC,
     appId: string,
@@ -403,14 +421,6 @@ export type DeleteLogDialogRejectedAction = {
 }
 
 export type TeachAction = {
-    type: AT.INIT_MEMORY_ASYNC,
-    appId: string,
-    sessionId: string,
-    filledEntityMap: FilledEntityMap
-} | {
-    type: AT.INIT_MEMORY_FULFILLED,
-    memories: Memory[]
-} | {
     type: AT.RUN_EXTRACTOR_ASYNC,
     appId: string,
     extractType: DialogType,

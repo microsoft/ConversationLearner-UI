@@ -2,7 +2,7 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import * as models from '@conversationlearner/models'
+import * as CLM from '@conversationlearner/models'
 import Axios, { AxiosRequestConfig, AxiosResponse } from 'axios'
 import { AppInput } from '../types/models';
 
@@ -65,12 +65,12 @@ export default class ClClient {
             ...config
         }
 
-        finalConfig.headers[models.MEMORY_KEY_HEADER_NAME] = memoryKey
+        finalConfig.headers[CLM.MEMORY_KEY_HEADER_NAME] = memoryKey
         
         return Axios(finalConfig) as Promise<TypedAxiosResponse<T>>
     }
 
-    setApp(app: models.AppBase): Promise<void> {
+    setApp(app: CLM.AppBase): Promise<void> {
         return this.send({
             method: 'put',
             url: `${this.baseUrl}/state/app`,
@@ -88,36 +88,36 @@ export default class ClClient {
     }
 
     // Each browser instance has a different browserId
-    getBotInfo(browserId: string, appId?: string): Promise<models.BotInfo> {
-        return this.send<models.BotInfo>({
+    getBotInfo(browserId: string, appId?: string): Promise<CLM.BotInfo> {
+        return this.send<CLM.BotInfo>({
             url: `${this.baseUrl}/bot?browserId=${browserId}${appId ? `&appId=${appId}` : ''}`
         })
             .then(response => response.data)
     }
 
-    apps(userId: string): Promise<models.UIAppList> {
-        return this.send<models.UIAppList>({
+    apps(userId: string): Promise<CLM.UIAppList> {
+        return this.send<CLM.UIAppList>({
             url: `${this.baseUrl}/apps?userId=${userId}`
         }).then(response => response.data)
     }
 
-    appGet(appId: string): Promise<models.AppBase> {
-        return this.send<models.AppBase>({
+    appGet(appId: string): Promise<CLM.AppBase> {
+        return this.send<CLM.AppBase>({
             url: `${this.baseUrl}/app/${appId}`
         })
             .then(response => response.data)
     }
 
-    appGetTrainingStatus(appId: string): Promise<models.TrainingStatus> {
-        return this.send<models.TrainingStatus>({
+    appGetTrainingStatus(appId: string): Promise<CLM.TrainingStatus> {
+        return this.send<CLM.TrainingStatus>({
             url: `${this.baseUrl}/app/${appId}/trainingstatus`
         })
             .then(response => response.data)
     }
 
     // AT.CREATE_APPLICATION_ASYNC
-    appsCreate(userId: string, appInput: AppInput): Promise<models.AppBase> {
-        return this.send<models.AppBase>({
+    appsCreate(userId: string, appInput: AppInput): Promise<CLM.AppBase> {
+        return this.send<CLM.AppBase>({
             method: 'post',
             url: `${this.baseUrl}/app?userId=${userId}`,
             data: appInput
@@ -140,7 +140,7 @@ export default class ClClient {
             .then(response => { })
     }
 
-    appsUpdate(appId: string, app: models.AppBase): Promise<models.AppBase> {
+    appsUpdate(appId: string, app: CLM.AppBase): Promise<CLM.AppBase> {
         return this.send({
             method: 'put',
             url: `${this.baseUrl}/app/${appId}`,
@@ -149,16 +149,16 @@ export default class ClClient {
             .then(response => app)
     }
 
-    appCreateTag(appId: string, tagName: string, makeLive: boolean): Promise<models.AppBase> {
-        return this.send<models.AppBase>({
+    appCreateTag(appId: string, tagName: string, makeLive: boolean): Promise<CLM.AppBase> {
+        return this.send<CLM.AppBase>({
             method: 'put',
             url: `${this.baseUrl}/app/${appId}/publish?version=${tagName}&makeLive=${makeLive}`
         })
             .then(response => response.data)
     }
 
-    appSetLiveTag(appId: string, tagName: string): Promise<models.AppBase> {
-        return this.send<models.AppBase>({
+    appSetLiveTag(appId: string, tagName: string): Promise<CLM.AppBase> {
+        return this.send<CLM.AppBase>({
             method: 'post',
             url: `${this.baseUrl}/app/${appId}/publish/${tagName}`
         })
@@ -173,20 +173,20 @@ export default class ClClient {
             .then(response => response.data)
     }
 
-    entitiesGetById(appId: string, entityId: string): Promise<models.EntityBase> {
-        return this.send<models.EntityBase>({
+    entitiesGetById(appId: string, entityId: string): Promise<CLM.EntityBase> {
+        return this.send<CLM.EntityBase>({
             url: `${this.baseUrl}/app/${appId}/entity/${entityId}`
         }).then(response => response.data)
     }
 
-    entities(appId: string): Promise<models.EntityBase[]> {
-        return this.send<models.EntityList>({
+    entities(appId: string): Promise<CLM.EntityBase[]> {
+        return this.send<CLM.EntityList>({
             url: `${this.baseUrl}/app/${appId}/entities`
         }).then(response => response.data.entities)
     }
 
-    entitiesCreate(appId: string, entity: models.EntityBase): Promise<models.EntityBase> {
-        return this.send<models.ChangeEntityResponse>({
+    entitiesCreate(appId: string, entity: CLM.EntityBase): Promise<CLM.EntityBase> {
+        return this.send<CLM.ChangeEntityResponse>({
             method: 'post',
             url: `${this.baseUrl}/app/${appId}/entity`,
             data: entity
@@ -198,7 +198,7 @@ export default class ClClient {
         })
     }
 
-    entitiesDelete(appId: string, entityId: string): Promise<models.DeleteEditResponse> {
+    entitiesDelete(appId: string, entityId: string): Promise<CLM.DeleteEditResponse> {
         return this.send({
             method: 'delete',
             url: `${this.baseUrl}/app/${appId}/entity/${entityId}`
@@ -214,9 +214,9 @@ export default class ClClient {
             .then(response => response.data)
     }
 
-    entitiesUpdate(appId: string, entity: models.EntityBase): Promise<models.EntityBase> {
+    entitiesUpdate(appId: string, entity: CLM.EntityBase): Promise<CLM.EntityBase> {
         const { version, packageCreationId, packageDeletionId, ...entityToSend } = entity;
-        return this.send<models.ChangeEntityResponse>({
+        return this.send<CLM.ChangeEntityResponse>({
             method: 'put',
             url: `${this.baseUrl}/app/${appId}/entity/${entity.entityId}`,
             data: entityToSend
@@ -229,7 +229,7 @@ export default class ClClient {
             })
     }
 
-    entitiesUpdateValidation(appId: string, packageId: string, entity: models.EntityBase): Promise<string[]> {
+    entitiesUpdateValidation(appId: string, packageId: string, entity: CLM.EntityBase): Promise<string[]> {
         const { version, packageCreationId, packageDeletionId, ...entityToSend } = entity;
         return this.send({
             method: 'post',
@@ -239,13 +239,13 @@ export default class ClClient {
             .then(response => response.data)
     }
 
-    source(appId: string, packageId: string): Promise<models.AppDefinitionChange> {
-        return this.send<models.AppDefinitionChange>({
+    source(appId: string, packageId: string): Promise<CLM.AppDefinitionChange> {
+        return this.send<CLM.AppDefinitionChange>({
             url: `${this.baseUrl}/app/${appId}/source?packageId=${packageId}`
         }).then(response => response.data)
     }
 
-    sourcepost(appId: string, source: models.AppDefinition): Promise<any> {
+    sourcepost(appId: string, source: CLM.AppDefinition): Promise<any> {
         return this.send({
             method: 'post',
             url: `${this.baseUrl}/app/${appId}/source`,
@@ -253,14 +253,13 @@ export default class ClClient {
         }).then(response => response.data)
     }
 
-    actions(appId: string): Promise<models.ActionBase[]> {
-        return this.send<models.ActionList>({
+    actions(appId: string): Promise<CLM.ActionBase[]> {
+        return this.send<CLM.ActionList>({
             url: `${this.baseUrl}/app/${appId}/actions`
         }).then(response => response.data.actions)
     }
 
-
-    actionsCreate(appId: string, action: models.ActionBase): Promise<models.ActionBase> {
+    actionsCreate(appId: string, action: CLM.ActionBase): Promise<CLM.ActionBase> {
         return this.send<IActionCreationResponse>({
             method: 'post',
             url: `${this.baseUrl}/app/${appId}/action`,
@@ -272,7 +271,7 @@ export default class ClClient {
             })
     }
 
-    actionsDelete(appId: string, actionId: string): Promise<models.DeleteEditResponse> {
+    actionsDelete(appId: string, actionId: string): Promise<CLM.DeleteEditResponse> {
         return this.send({
             method: 'delete',
             url: `${this.baseUrl}/app/${appId}/action/${actionId}`
@@ -288,7 +287,7 @@ export default class ClClient {
             .then(response => response.data)
     }
 
-    actionsUpdate(appId: string, action: models.ActionBase): Promise<models.DeleteEditResponse> {
+    actionsUpdate(appId: string, action: CLM.ActionBase): Promise<CLM.DeleteEditResponse> {
         const { version, packageCreationId, packageDeletionId, ...actionToSend } = action
         return this.send({
             method: 'put',
@@ -298,7 +297,7 @@ export default class ClClient {
             .then(response => response.data)
     }
 
-    actionsUpdateValidation(appId: string, packageId: string, action: models.ActionBase): Promise<string[]> {
+    actionsUpdateValidation(appId: string, packageId: string, action: CLM.ActionBase): Promise<string[]> {
         const { version, packageCreationId, packageDeletionId, ...actionToSend } = action
         return this.send({
             method: 'post',
@@ -309,18 +308,37 @@ export default class ClClient {
     }
       
     //AT.EDIT_TRAINDIALOG_ASYNC
-    trainDialogEdit(appId: string, trainDialog: models.TrainDialog): Promise<models.TrainResponse> {
-        return this.send<models.TrainResponse>({
+    trainDialogEdit(appId: string, trainDialog: CLM.TrainDialog): Promise<CLM.TrainResponse> {
+        return this.send<CLM.TrainResponse>({
             method: 'put',
             url: `${this.baseUrl}/app/${appId}/traindialog/${trainDialog.trainDialogId}`,
             data: trainDialog
         }).then(response => response.data)
     }
 
-    trainDialogs(appId: string): Promise<models.TrainDialog[]> {
-        return this.send<models.TrainDialogList>({
+    //AT.FETCH_TRAIN_DIALOG_ASYNC
+    trainDialog(appId: string, trainDialogId: string): Promise<CLM.TrainDialog> {
+        return this.send<CLM.TrainDialog>({
+            url: `${this.baseUrl}/app/${appId}/traindialog/${trainDialogId}`
+        }).then(response => response.data)
+    }
+
+    trainDialogs(appId: string): Promise<CLM.TrainDialog[]> {
+        return this.send<CLM.TrainDialogList>({
             url: `${this.baseUrl}/app/${appId}/traindialogs?includeDefinitions=false`
         }).then(response => response.data.trainDialogs)
+    }
+
+    trainDialogsCreate(appId: string, trainDialog: CLM.TrainDialog): Promise<CLM.TrainDialog> {
+        return this.send({
+            method: 'post',
+            url: `${this.baseUrl}/app/${appId}/traindialog`,
+            data: trainDialog
+        })
+        .then(response => {
+            trainDialog.trainDialogId = response.data
+            return trainDialog
+        })
     }
 
     trainDialogsDelete(appId: string, trainDialogId: string): Promise<void> {
@@ -331,7 +349,34 @@ export default class ClClient {
             .then(response => { })
     }
 
-    trainDialogsUpdateExtractStep(appId: string, trainDialogId: string, turnIndex: number, userInput: models.UserInput): Promise<models.UIExtractResponse> {
+    //AT.FETCH_SCOREFROMHISTORY_ASYNC
+    trainDialogScoreFromHistory(appId: string, trainDialog: CLM.TrainDialog): Promise<CLM.UIScoreResponse> {
+        return this.send<CLM.UIScoreResponse>({
+            method: 'post',
+            url: `${this.baseUrl}/app/${appId}/scorefromhistory`,
+            data: trainDialog
+        }).then(response => response.data)
+    }
+
+    //AT.FETCH_EXTRACTFROMHISTORY_ASYNC
+    trainDialogExtractFromHistory(appId: string, trainDialog: CLM.TrainDialog, userInput: CLM.UserInput): Promise<CLM.ExtractResponse> {
+        return this.send<CLM.ExtractResponse>({
+            method: 'post',
+            url: `${this.baseUrl}/app/${appId}/extractfromhistory`,
+            data: {trainDialog, userInput }
+        }).then(response => response.data)
+    }
+
+    //AT.FETCH_TRAINDIALOGREPLAY_ASYNC
+    trainDialogReplay(appId: string, trainDialog: CLM.TrainDialog): Promise<CLM.TrainDialog> {
+        return this.send<CLM.TrainDialog>({
+            method: 'post',
+            url: `${this.baseUrl}/app/${appId}/traindialogreplay`,
+            data: trainDialog
+        }).then(response => response.data)
+    }
+
+    trainDialogsUpdateExtractStep(appId: string, trainDialogId: string, turnIndex: number, userInput: CLM.UserInput): Promise<CLM.UIExtractResponse> {
         return this.send({
             method: 'put',
             url: `${this.baseUrl}/app/${appId}/traindialog/${trainDialogId}/extractor/${turnIndex}?includeDefinitions=true`,
@@ -340,27 +385,27 @@ export default class ClClient {
             .then(response => response.data)
     }
 
-    tutorials(userId: string): Promise<models.AppBase[]> {
-        return this.send<models.UIAppList>({
+    tutorials(userId: string): Promise<CLM.AppBase[]> {
+        return this.send<CLM.UIAppList>({
             url: `${this.baseUrl}/apps?userId=${userId}`
         }).then(response => response.data.appList.apps)
     }
 
-    history(appId: string, trainDialog: models.TrainDialog, userName: string, userId: string): Promise<models.TeachWithHistory> {
-        return this.send<models.TeachWithHistory>({
+    history(appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string): Promise<CLM.TeachWithHistory> {
+        return this.send<CLM.TeachWithHistory>({
             method: 'post',
             url: `${this.baseUrl}/app/${appId}/history?username=${userName}&userid=${userId}`,
             data: trainDialog
         }).then(response => response.data)
     }
 
-    logDialogs(appId: string, packageId: string): Promise<models.LogDialog[]> {
-        return this.send<models.LogDialogList>({
+    logDialogs(appId: string, packageId: string): Promise<CLM.LogDialog[]> {
+        return this.send<CLM.LogDialogList>({
             url: `${this.baseUrl}/app/${appId}/logdialogs?packageId=${packageId}`
         }).then(response => response.data.logDialogs)
     }
 
-    logDialogsCreate(appId: string, logDialog: models.LogDialog): Promise<models.LogDialog> {
+    logDialogsCreate(appId: string, logDialog: CLM.LogDialog): Promise<CLM.LogDialog> {
         return this.send<string>({
             method: 'post',
             url: `${this.baseUrl}/app/${appId}/logdialog`,
@@ -380,7 +425,7 @@ export default class ClClient {
             .then(response => { })
     }
 
-    logDialogsUpdateExtractStep(appId: string, logDialogId: string, turnIndex: number, userInput: models.UserInput): Promise<models.UIExtractResponse> {
+    logDialogsUpdateExtractStep(appId: string, logDialogId: string, turnIndex: number, userInput: CLM.UserInput): Promise<CLM.UIExtractResponse> {
         return this.send({
             method: 'put',
             url: `${this.baseUrl}/app/${appId}/logdialog/${logDialogId}/extractor/${turnIndex}`,
@@ -389,15 +434,15 @@ export default class ClClient {
             .then(response => response.data)
     }
 
-    chatSessions(appId: string): Promise<models.Session[]> {
-        return this.send<models.SessionList>({
+    chatSessions(appId: string): Promise<CLM.Session[]> {
+        return this.send<CLM.SessionList>({
             url: `${this.baseUrl}/app/${appId}/sessions`
         })
             .then(response => response.data.sessions)
     }
 
-    chatSessionsCreate(appId: string, sessionCreateParams: models.SessionCreateParams): Promise<models.Session> {
-        return this.send<models.Session>({
+    chatSessionsCreate(appId: string, sessionCreateParams: CLM.SessionCreateParams): Promise<CLM.Session> {
+        return this.send<CLM.Session>({
             method: 'post',
             url: `${this.baseUrl}/app/${appId}/session`,
             data: sessionCreateParams
@@ -422,23 +467,24 @@ export default class ClClient {
             .then(rsponse => { })
     }
 
-    teachSessions(appId: string): Promise<models.Teach[]> {
-        return this.send<models.TeachList>({
+    teachSessions(appId: string): Promise<CLM.Teach[]> {
+        return this.send<CLM.TeachList>({
             url: `${this.baseUrl}/app/${appId}/teaches`
         })
             .then(response => response.data.teaches)
     }
 
-    teachSessionsCreate(appId: string): Promise<models.TeachResponse> {
-        return this.send<models.TeachResponse>({
+    teachSessionsCreate(appId: string, initialFilledEntities: CLM.FilledEntity[] = []): Promise<CLM.TeachResponse> {
+        return this.send<CLM.TeachResponse>({
             method: 'post',
-            url: `${this.baseUrl}/app/${appId}/teach`
+            url: `${this.baseUrl}/app/${appId}/teach`,
+            data: initialFilledEntities
         })
             .then(response => response.data)
     }
 
     // DELETE_TEACH_SESSION_ASYNC
-    teachSessionsDelete(appId: string, teachSession: models.Teach, save: boolean): Promise<void> {
+    teachSessionsDelete(appId: string, teachSession: CLM.Teach, save: boolean): Promise<void> {
         return this.send({
             method: 'delete',
             url: `${this.baseUrl}/app/${appId}/teach/${teachSession.teachId}?save=${save}`
@@ -446,17 +492,7 @@ export default class ClClient {
             .then(response => { })
     }
 
-    // INIT_MEMORY_ASYNC
-    teachSessionsInitMemory(appId: string, sessionId: string, filledEntityMap: models.FilledEntityMap): Promise<models.Memory[]> {
-        return this.send({
-            method: 'put',
-            url: `${this.baseUrl}/app/${appId}/teach/${sessionId}/initmemory`,
-            data: filledEntityMap
-        })
-            .then(response => response.data)
-    }
-
-    teachSessionsAddExtractStep(appId: string, sessionId: string, userInput: models.UserInput): Promise<models.UIExtractResponse> {
+    teachSessionsAddExtractStep(appId: string, sessionId: string, userInput: CLM.UserInput): Promise<CLM.UIExtractResponse> {
         return this.send({
             method: 'put',
             url: `${this.baseUrl}/app/${appId}/teach/${sessionId}/extractor`,
@@ -465,8 +501,8 @@ export default class ClClient {
             .then(response => response.data)
     }
 
-    teachSessionRescore(appId: string, teachId: string, scoreInput: models.ScoreInput): Promise<models.UIScoreResponse> {
-        return this.send<models.UIScoreResponse>({
+    teachSessionRescore(appId: string, teachId: string, scoreInput: CLM.ScoreInput): Promise<CLM.UIScoreResponse> {
+        return this.send<CLM.UIScoreResponse>({
             method: 'put',
             url: `${this.baseUrl}/app/${appId}/teach/${teachId}/rescore`,
             data: scoreInput
@@ -475,8 +511,8 @@ export default class ClClient {
     }
 
     // AT.POST_SCORE_FEEDBACK_ASYNC
-    teachSessionAddScorerStep(appId: string, teachId: string, uiTrainScorerStep: models.UITrainScorerStep): Promise<models.UIPostScoreResponse> {
-        return this.send<models.UIPostScoreResponse>({
+    teachSessionAddScorerStep(appId: string, teachId: string, uiTrainScorerStep: CLM.UITrainScorerStep): Promise<CLM.UIPostScoreResponse> {
+        return this.send<CLM.UIPostScoreResponse>({
             method: 'post',
             url: `${this.baseUrl}/app/${appId}/teach/${teachId}/scorer`,
             data: uiTrainScorerStep
@@ -485,8 +521,8 @@ export default class ClClient {
     }
 
     // AT.RUN_SCORER_ASYNC
-    teachSessionUpdateScorerStep(appId: string, teachId: string, uiScoreInput: models.UIScoreInput): Promise<models.UIScoreResponse> {
-        return this.send<models.UIScoreResponse>({
+    teachSessionUpdateScorerStep(appId: string, teachId: string, uiScoreInput: CLM.UIScoreInput): Promise<CLM.UIScoreResponse> {
+        return this.send<CLM.UIScoreResponse>({
             method: 'put',
             url: `${this.baseUrl}/app/${appId}/teach/${teachId}/scorer`,
             data: uiScoreInput
@@ -494,31 +530,26 @@ export default class ClClient {
             .then(response => response.data)
     }
 
-    teachSessionFromUndo(appId: string, teach: models.Teach, popRound: boolean, userName: string, userId: string): Promise<models.TeachWithHistory> {
-        return this.send<models.TeachWithHistory>({
-            method: 'post',
-            url: `${this.baseUrl}/app/${appId}/teach/${teach.teachId}/undo?popround=${popRound}&username=${userName}&userid=${userId}`,
-            data: teach
-        }).then(response => response.data)
-    }
-
-    teachSessionFromBranch(appId: string, trainDialogId: string, userName: string, userId: string, turnIndex: number): Promise<models.TeachWithHistory> {
-        return this.send<models.TeachWithHistory>({
+    teachSessionFromBranch(appId: string, trainDialogId: string, userName: string, userId: string, turnIndex: number): Promise<CLM.TeachWithHistory> {
+        return this.send<CLM.TeachWithHistory>({
             method: 'post',
             url: `${this.baseUrl}/app/${appId}/traindialog/${trainDialogId}/branch/${turnIndex}?username=${userName}&userid=${userId}`
         }).then(response => response.data)
     }
 
     //AT.CREATE_TEACH_SESSION_FROMHISTORYASYNC
-    teachSessionFromHistory(appId: string, trainDialog: models.TrainDialog, userName: string, userId: string, lastExtractChanged: boolean = false): Promise<models.TeachWithHistory> {
-        return this.send<models.TeachWithHistory>({
+    teachSessionFromHistory(appId: string, trainDialog: CLM.TrainDialog, userInput: CLM.UserInput | null, userName: string, userId: string): Promise<CLM.TeachWithHistory> {
+        return this.send<CLM.TeachWithHistory>({
             method: 'post',
-            url: `${this.baseUrl}/app/${appId}/teachwithhistory?username=${userName}&userid=${userId}&ignoreLastExtract=${lastExtractChanged}`,
-            data: trainDialog
+            url: `${this.baseUrl}/app/${appId}/teachwithhistory?username=${userName}&userid=${userId}`,
+            data: {
+                trainDialog,
+                userInput 
+            }
         }).then(response => response.data)
     }
 
-    // DELETE_MEMORY_ASYNC
+    // AT.DELETE_MEMORY_ASYNC
     memoryDelete(appId: string): Promise<void> {
         return this.send({
             method: 'delete',

@@ -118,10 +118,17 @@ export enum FM {
     APPSLIST_COLUMNS_ACTIONS = 'AppsList.columns.actions',
 
     // Generic Buttons
-    BUTTON_OK = 'Button.OK',
+    BUTTON_ABANDON = 'Button.ABANDON',
+    BUTTON_ABANDON_EDIT = 'Button.ABANDON_EDIT',
     BUTTON_CANCEL = 'Button.CANCEL',
+    BUTTON_DELETE = 'Button.DELETE',
+    BUTTON_DONE = 'Button.DONE',
     BUTTON_INFO = 'Button.INFO',
     BUTTON_IMPORT = 'Button.IMPORT',
+    BUTTON_OK = 'Button.OK',
+    BUTTON_SAVE = 'Button.SAVE',
+    BUTTON_SAVE_EDIT = 'Button.SAVE_EDIT',
+    BUTTON_SUBMIT = 'Button.SUMBIT',
 
     // ChatSessionModal
     CHATSESSIONMODAL_PRIMARYBUTTON_ARIADESCRIPTION = 'ChatSessionModal.primaryButton.ariaDescription',
@@ -247,15 +254,18 @@ export enum FM {
     PACKAGECREATOR_CANCELBUTTON_TEXT = 'PackageCreator.cancelButton.text',
  
     // ReplayErrorList
+    REPLAYERROR_EXISTS = 'ReplayError.exists',
     REPLAYERROR_LOGDIALOG_VALIDATION_TITLE = 'ReplayError.logdialogvalidation.title',
     REPLAYERROR_LOGDIALOG_VALIDATION_MESSAGE = 'ReplayError.logdialogvalidation.message',
     REPLAYERROR_CONVERT_TITLE = 'ReplayError.logdialogvalidation.convert.title',
     REPLAYERROR_FAILMESSAGE = 'ReplayError.failMessage',
-    REPLAYERROR_UNDO_TITLE = 'ReplayError.undo.title',
     REPLAYERROR_EDIT_TITLE = 'ReplayError.edit.title',
     REPLAYERROR_BRANCH_TITLE = 'ReplayError.branch.title',
     REPLAYERROR_DESC_MISSING_ACTION = 'ReplayError.Desc.missingAction',
+    REPLAYERROR_DESC_ACTION_AFTER_WAIT = 'ReplayError.Desc.actionAfterWait',
+    REPLAYERROR_DESC_INPUT_AFTER_NONWAIT = 'ReplayError.Desc.inputAfterNonWait',
     REPLAYERROR_DESC_MISSING_ENTITY = 'ReplayError.Desc.missingEntity',
+    REPLAYERROR_DESC_TWO_USER_INPUTS = 'ReplayError.Desc.twoUserInputs',
     REPLAYERROR_DESC_UNAVAILABLE_ACTION = 'ReplayError.Desc.unavailableAction',
     REPLAYERROR_DESC_CHANGED_ENTITIES = 'ReplayError.Desc.changedEntities',
 
@@ -305,12 +315,6 @@ export enum FM {
     TEACHSESSIONINIT_TITLE = 'TeachSessionInit.title',
 
     // TeachSessionModal
-    TEACHSESSIONMODAL_UNDO_ARIADESCRIPTION = 'TeachSessionModal.undo.ariaDescription',
-    TEACHSESSIONMODAL_UNDO_TEXT = 'TeachSessionModal.undo.text',
-    TEACHSESSIONMODAL_EDIT_ABANDON_BUTTON_TEXT = 'TeachSessionModal.edit.abandon.buttontext',
-    TEACHSESSIONMODAL_TEACH_ABANDON_BUTTON_TEXT = 'TeachSessionModal.teach.abandon.buttontext',
-    TEACHSESSIONMODAL_EDIT_DONE_BUTTON_TEXT = 'TeachSessionModal.edit.done.buttontext',
-    TEACHSESSIONMODAL_TEACH_DONE_BUTTON_TEXT = 'TeachSessionModal.teach.done.buttontext',
     TEACHSESSIONMODAL_TEACH_CONFIRMDELETE_TITLE = 'TeachSessionModal.teach.confirmDelete.title',
     TEACHSESSIONMODAL_EDIT_CONFIRMDELETE_TITLE = 'TeachSessionModal.edit.confirmDelete.title',
     TEACHSESSIONMODAL_INITSTATE_ARIADESCRIPTION = 'TeachSessionModal.initstate.ariaDescription',
@@ -401,20 +405,13 @@ export enum FM {
     TRAINDIALOGADMIN_ENTITYDETECTION_TITLE = 'TrainDialogAdmin.entityDetection.title',
     TRAINDIALOGADMIN_ENTITYDETECTION_HELPTEXT = 'TrainDialogAdmin.entityDetection.helpText',
     TRAINDIALOGADMIN_ACTION_TITLE = 'TrainDialogAdmin.action.title',
-    TRAINDIALOGADMIN_SAVECHANGES_TITLE = 'TrainDialogAdmin.saveChanges.title',
-    TRAINDIALOGADMIN_SAVECHANGES_DESCRIPTION = 'TrainDialogAdmin.saveChanges.description',
-    TRAINDIALOGADMIN_SAVECHANGES_PRIMARYBUTTON_TEXT = 'TrainDialogAdmin.saveChanges.primaryButton.text',
-    TRAINDIALOGADMIN_SAVECHANGES_DEFAULTBUTTON_TEXT = 'TrainDialogAdmin.saveChanges.defaultButton.text',
 
     // TrainDialogModal
     TRAINDIALOGMODAL_BRANCH_ARIADESCRIPTION = 'TrainDialogModal.branch.ariaDescription',
     TRAINDIALOGMODAL_BRANCH_TEXT = 'TrainDialogModal.branch.text',
     TRAINDIALOGMODAL_BRANCH_TIP = 'TrainDialogModal.branch.tip',
-    TRAINDIALOGMODAL_DEFAULTBUTTON_ARIADESCRIPTION = 'TrainDialogModal.defaultButton.ariaDescription',
-    TRAINDIALOGMODAL_DEFAULTBUTTON_TEXT = 'TrainDialogModal.defaultButton.text',
-    TRAINDIALOGMODAL_PRIMARYBUTTON_ARIADESCRIPTION = 'TrainDialogModal.primaryButton.ariaDescription',
-    TRAINDIALOGMODAL_PRIMARYBUTTON_TEXT = 'TrainDialogModal.primaryButton.text',
     TRAINDIALOGMODAL_CONFIRMDELETE_TITLE = 'TrainDialogModal.confirmDelete.title',
+    TRAINDIALOGMODAL_CONFIRMABANDON_TITLE = 'TrainDialogModal.confirmAbandon.title',
 
     // Train Dialogs
     TRAINDIALOGS_TITLE = 'TrainDialogs.title',
@@ -431,10 +428,13 @@ export enum FM {
     // Tutorial Importer
     TUTORIALIMPORTER_TITLE = 'TutorialImporter.Title',
 
+    // UserInput Modal
+    USERINPUT_TITLE = 'UserInput.title',
+    USERINPUT_PLACEHOLDER = 'UserInput.placeholder',
+
     // Validations
     VALIDATE_UNABLE_TO_EDIT = 'Validate.unableToEdit',
     VALIDATE_UNABLE_TO_BRANCH = 'Validate.unableToBranch',
-    VALIDATE_UNABLE_TO_UNDO = 'Validate.unableToUndo',
     VALIDATE_ENTITY_REASON = 'Validate.entityReason',
 }
 
@@ -455,6 +455,41 @@ export default {
         [FM.NOMATCH_HOME]: 'My Models',
         [FM.PAGE_COMINGSOON]: 'Coming soon...',
 
+        // ActionCreatorEditor
+        [FM.ACTIONCREATOREDITOR_SAVEBUTTON_ARIADESCRIPTION]: 'Save',
+        [FM.ACTIONCREATOREDITOR_SAVEBUTTON_TEXT]: 'Save',
+        [FM.ACTIONCREATOREDITOR_CREATEBUTTON_ARIADESCRIPTION]: 'Create',
+        [FM.ACTIONCREATOREDITOR_CREATEBUTTON_TEXT]: 'Create',
+        [FM.ACTIONCREATOREDITOR_CANCELBUTTON_ARIADESCRIPTION]: 'Cancel',
+        [FM.ACTIONCREATOREDITOR_CANCELBUTTON_TEXT]: 'Cancel',
+        [FM.ACTIONCREATOREDITOR_DONEBUTTON_ARIADESCRIPTION]: 'Done',
+        [FM.ACTIONCREATOREDITOR_DONEBUTTON_TEXT]: 'Done',
+        [FM.ACTIONCREATOREDITOR_DELETEBUTTON_ARIADESCRIPTION]: 'Delete',
+        [FM.ACTIONCREATOREDITOR_DELETEBUTTON_TEXT]: 'Delete',
+        [FM.ACTIONCREATOREDITOR_TRAINDIALOGSBUTTON_ARIADESCRIPTION]: 'Train Dialogs',
+        [FM.ACTIONCREATOREDITOR_TRAINDIALOGSBUTTON_TEXT]: 'Train Dialogs',
+        [FM.ACTIONCREATOREDITOR_CONFIRM_DELETE_TITLE]: 'Are you sure you want to delete this action?',
+        [FM.ACTIONCREATOREDITOR_CONFIRM_DELETE_WARNING]: 'This Action is used by one or more Training Dialogs.  If you proceed they will removed from training until fixed.',
+        [FM.ACTIONCREATOREDITOR_CONFIRM_EDIT_TITLE]: 'Are you sure you want to edit this action?',
+        [FM.ACTIONCREATOREDITOR_CONFIRM_EDIT_WARNING]: 'This edit will invalidate one or more Training Dialogs.  If you proceed they will removed from training until fixed.',
+
+        // ActionScorer
+        [FM.ACTIONSCORER_COLUMNS_RESPONSE]: 'Response',
+        [FM.ACTIONSCORER_COLUMNS_ARGUMENTS]: 'Arguments',
+        [FM.ACTIONSCORER_COLUMNS_SCORE]: 'Score',
+        [FM.ACTIONSCORER_COLUMNS_ENTITIES]: 'Entities',
+        [FM.ACTIONSCORER_COLUMNS_ISTERMINAL]: 'Wait',
+        [FM.ACTIONSCORER_COLUMNS_TYPE]: 'Type',
+
+        // ActionDetailsList
+        [FM.ACTIONDETAILSLIST_COLUMNS_RESPONSE]: 'Response',
+        [FM.ACTIONDETAILSLIST_COLUMNS_ARGUMENTS]: 'Arguments',
+        [FM.ACTIONDETAILSLIST_COLUMNS_TYPE]: 'Action Type',
+        [FM.ACTIONDETAILSLIST_COLUMNS_REQUIREDENTITIES]: 'Required Entities',
+        [FM.ACTIONDETAILSLIST_COLUMNS_DISQUALIFYINGENTITIES]: 'Disqualifying Entities',
+        [FM.ACTIONDETAILSLIST_COLUMNS_SUGGESTEDENTITY]: 'Expected Entity',
+        [FM.ACTIONDETAILSLIST_COLUMNS_ISTERMINAL]: 'Wait',
+ 
         // Actions
         [FM.ACTIONS_TITLE]: 'Actions',
         [FM.ACTIONS_SUBTITLE]: `Actions are executed by the bot in response to user input`,
@@ -462,6 +497,28 @@ export default {
         [FM.ACTIONS_CREATEBUTTONTITLE]: 'New Action',
         [FM.ACTIONS_CONFIRMCANCELMODALTITLE]: 'Are you sure you want to delete this action?',
 
+        // AppCreator
+        [FM.APPCREATOR_FIELDERROR_REQUIREDVALUE]: 'Required Value',
+        [FM.APPCREATOR_FIELDERROR_ALPHANUMERIC]: 'Model name may only contain alphanumeric characters',
+        [FM.APPCREATOR_FIELDERROR_DISTINCT]: 'Name is already in use.',
+        [FM.APPCREATOR_TITLE]: 'Create a Conversation Learner Model',
+        [FM.APPCREATOR_COPY_TITLE]: 'Copy a Conversation Learner Model',
+        [FM.APPCREATOR_IMPORT_TITLE]: 'Import a Conversation Learner Model',
+        [FM.APPCREATOR_FIELDS_NAME_LABEL]: 'Name',
+        [FM.APPCREATOR_FIELDS_IMPORT_NAME_LABEL]: 'New Model Name',
+        [FM.APPCREATOR_FIELDS_NAME_PLACEHOLDER]: 'Model Name...',
+        [FM.APPCREATOR_FIELDS_LOCALE_LABEL]: 'Locale',
+        [FM.APPCREATOR_COPYBUTTON_ARIADESCRIPTION]: 'Copy',
+        [FM.APPCREATOR_COPYBUTTON_TEXT]: 'Copy',
+        [FM.APPCREATOR_CREATEBUTTON_ARIADESCRIPTION]: 'Create',
+        [FM.APPCREATOR_CREATEBUTTON_TEXT]: 'Create',
+        [FM.APPCREATOR_IMPORT_BUTTON_ARIADESCRIPTION]: 'Import application',
+        [FM.APPCREATOR_IMPORT_BUTTON_TEXT]: 'Import',
+        [FM.APPCREATOR_CHOOSE_FILE_BUTTON_ARIADESCRIPTION]: 'Locate File',
+        [FM.APPCREATOR_CHOOSE_FILE_BUTTON_TEXT]: 'Locate File',
+        [FM.APPCREATOR_CANCELBUTTON_ARIADESCRIPTION]: 'Cancel',
+        [FM.APPCREATOR_CANCELBUTTON_TEXT]: 'Cancel',
+         
         // App
         [FM.APP_HEADER_MODELS]: 'My Models',
         [FM.APP_HEADER_ABOUT]: 'About',
@@ -497,12 +554,21 @@ export default {
         [FM.APPSLIST_COLUMNS_ACTIONS]: 'Actions',
 
         // Generic Buttons
-        [FM.BUTTON_OK]: 'OK',
+        [FM.BUTTON_ABANDON]: 'Abandon',
+        [FM.BUTTON_ABANDON_EDIT]: 'Abandon Edit',
         [FM.BUTTON_CANCEL]: 'Cancel',
+        [FM.BUTTON_DONE]: 'Done',
+        [FM.BUTTON_DELETE]: 'Delete',
         [FM.BUTTON_IMPORT]: 'Import',
         [FM.BUTTON_INFO]: 'Info',
+        [FM.BUTTON_OK]: 'OK',
+        [FM.BUTTON_SAVE]: 'Save',
+        [FM.BUTTON_SAVE_EDIT]: 'Save Edit',
+        [FM.BUTTON_SUBMIT]: 'Submit',
 
-
+        // Error Messages
+        [FM.CUSTOMERROR_NETWORK_ERROR]: 'Is your Bot running? Did you set NODE_ENV=development?',
+        
         // Dashboard
         [FM.DASHBOARD_TITLE]: 'Overview',
         [FM.DASHBOARD_SUBTITLE]: `Notifications about this model`,
@@ -537,15 +603,18 @@ export default {
         [FM.LOGDIALOGADMIN_CONFIRMTITLE]: 'This will attempt to replay the Log Dialog against the bot and convert it into a new Train Dialog',
 
         // ReplayErrorList
+        [FM.REPLAYERROR_EXISTS]: 'This Train Dialog has errors that must be fixed before it can be used to train your model',
         [FM.REPLAYERROR_LOGDIALOG_VALIDATION_TITLE]: 'Model definition has changed',
         [FM.REPLAYERROR_LOGDIALOG_VALIDATION_MESSAGE]: 'This Log Dialog was created with a earlier version of the model.  The following incomptibilities were found:',
         [FM.REPLAYERROR_CONVERT_TITLE]: 'Unable to convert to Train Dialog',
         [FM.REPLAYERROR_FAILMESSAGE]: 'The following issues occurred when attempting to replay the dialog',
-        [FM.REPLAYERROR_UNDO_TITLE]: 'Unable to Undo',
         [FM.REPLAYERROR_EDIT_TITLE]: 'Unable to Edit',
         [FM.REPLAYERROR_BRANCH_TITLE]: 'Unable to Branch',
+        [FM.REPLAYERROR_DESC_ACTION_AFTER_WAIT]: 'Previous Action is a Wait action.  Change it to not Wait for a response or add a User input between the actions',
         [FM.REPLAYERROR_DESC_MISSING_ACTION]: 'Missing action in response to',
+        [FM.REPLAYERROR_DESC_INPUT_AFTER_NONWAIT]: 'Input occurs after non-wait action.  Either delete the input or change Action in the Wait action',
         [FM.REPLAYERROR_DESC_MISSING_ENTITY]: 'Missing entity for',
+        [FM.REPLAYERROR_DESC_TWO_USER_INPUTS]: 'Two consecutive User Inputs are not allowed.  Delete this User Input or add an Action between the two',
         [FM.REPLAYERROR_DESC_UNAVAILABLE_ACTION]: 'Action unavailable in reponse to',
         [FM.REPLAYERROR_DESC_CHANGED_ENTITIES]: 'Entites inconsistent after user input',
         
@@ -670,7 +739,6 @@ export default {
         // Validation
         [FM.VALIDATE_UNABLE_TO_EDIT]: 'Unable to Edit',
         [FM.VALIDATE_UNABLE_TO_BRANCH]: 'Unable to Branch',
-        [FM.VALIDATE_UNABLE_TO_UNDO]: 'Unable to Undo',
         [FM.VALIDATE_ENTITY_REASON]: 'Bot API calls are behaving differently. Entities in memory do not match.',
 
         // ActionDetailsList
@@ -686,53 +754,8 @@ export default {
         // TextVariationCreator
         [FM.TEXTVARIATION_PLACEHOLDER]: 'Add alternative input...',
 
-        // ActionCreatorEditor
-        [FM.ACTIONCREATOREDITOR_SAVEBUTTON_ARIADESCRIPTION]: 'Save',
-        [FM.ACTIONCREATOREDITOR_SAVEBUTTON_TEXT]: 'Save',
-        [FM.ACTIONCREATOREDITOR_CREATEBUTTON_ARIADESCRIPTION]: 'Create',
-        [FM.ACTIONCREATOREDITOR_CREATEBUTTON_TEXT]: 'Create',
-        [FM.ACTIONCREATOREDITOR_CANCELBUTTON_ARIADESCRIPTION]: 'Cancel',
-        [FM.ACTIONCREATOREDITOR_CANCELBUTTON_TEXT]: 'Cancel',
-        [FM.ACTIONCREATOREDITOR_DONEBUTTON_ARIADESCRIPTION]: 'Done',
-        [FM.ACTIONCREATOREDITOR_DONEBUTTON_TEXT]: 'Done',
-        [FM.ACTIONCREATOREDITOR_DELETEBUTTON_ARIADESCRIPTION]: 'Delete',
-        [FM.ACTIONCREATOREDITOR_DELETEBUTTON_TEXT]: 'Delete',
-        [FM.ACTIONCREATOREDITOR_TRAINDIALOGSBUTTON_ARIADESCRIPTION]: 'Train Dialogs',
-        [FM.ACTIONCREATOREDITOR_TRAINDIALOGSBUTTON_TEXT]: 'Train Dialogs',
-        [FM.ACTIONCREATOREDITOR_CONFIRM_DELETE_TITLE]: 'Are you sure you want to delete this action?',
-        [FM.ACTIONCREATOREDITOR_CONFIRM_DELETE_WARNING]: 'This Action is used by one or more Training Dialogs.  If you proceed they will removed from training until fixed.',
-        [FM.ACTIONCREATOREDITOR_CONFIRM_EDIT_TITLE]: 'Are you sure you want to edit this action?',
-        [FM.ACTIONCREATOREDITOR_CONFIRM_EDIT_WARNING]: 'This edit will invalidate one or more Training Dialogs.  If you proceed they will removed from training until fixed.',
-   
-        // ActionScorer
-        [FM.ACTIONSCORER_COLUMNS_RESPONSE]: 'Response',
-        [FM.ACTIONSCORER_COLUMNS_ARGUMENTS]: 'Arguments',
-        [FM.ACTIONSCORER_COLUMNS_SCORE]: 'Score',
-        [FM.ACTIONSCORER_COLUMNS_ENTITIES]: 'Entities',
-        [FM.ACTIONSCORER_COLUMNS_ISTERMINAL]: 'Wait',
-        [FM.ACTIONSCORER_COLUMNS_TYPE]: 'Type',
-
-        // AppCreator
-        [FM.APPCREATOR_FIELDERROR_REQUIREDVALUE]: 'Required Value',
-        [FM.APPCREATOR_FIELDERROR_ALPHANUMERIC]: 'Model name may only contain alphanumeric characters',
-        [FM.APPCREATOR_FIELDERROR_DISTINCT]: 'Name is already in use.',
-        [FM.APPCREATOR_TITLE]: 'Create a Conversation Learner Model',
-        [FM.APPCREATOR_COPY_TITLE]: 'Copy a Conversation Learner Model',
-        [FM.APPCREATOR_IMPORT_TITLE]: 'Import a Conversation Learner Model',
-        [FM.APPCREATOR_FIELDS_NAME_LABEL]: 'Name',
-        [FM.APPCREATOR_FIELDS_IMPORT_NAME_LABEL]: 'New Model Name',
-        [FM.APPCREATOR_FIELDS_NAME_PLACEHOLDER]: 'Model Name...',
-        [FM.APPCREATOR_FIELDS_LOCALE_LABEL]: 'Locale',
-        [FM.APPCREATOR_COPYBUTTON_ARIADESCRIPTION]: 'Copy',
-        [FM.APPCREATOR_COPYBUTTON_TEXT]: 'Copy',
-        [FM.APPCREATOR_CREATEBUTTON_ARIADESCRIPTION]: 'Create',
-        [FM.APPCREATOR_CREATEBUTTON_TEXT]: 'Create',
-        [FM.APPCREATOR_IMPORT_BUTTON_ARIADESCRIPTION]: 'Import application',
-        [FM.APPCREATOR_IMPORT_BUTTON_TEXT]: 'Import',
-        [FM.APPCREATOR_CHOOSE_FILE_BUTTON_ARIADESCRIPTION]: 'Locate File',
-        [FM.APPCREATOR_CHOOSE_FILE_BUTTON_TEXT]: 'Locate File',
-        [FM.APPCREATOR_CANCELBUTTON_ARIADESCRIPTION]: 'Cancel',
-        [FM.APPCREATOR_CANCELBUTTON_TEXT]: 'Cancel',
+       
+        [FM.BUTTON_INFO]: 'Info',
 
         // DemoImporter
         [FM.DEMOIMPORT_TITLE]: 'Import Demo Models',
@@ -834,12 +857,6 @@ export default {
         [FM.TEACHSESSIONINIT_TITLE]: 'Set Initial Entity Values',
 
         // TeachSessionModal
-        [FM.TEACHSESSIONMODAL_UNDO_ARIADESCRIPTION]: 'Undo Step',
-        [FM.TEACHSESSIONMODAL_UNDO_TEXT]: 'Undo Step',
-        [FM.TEACHSESSIONMODAL_EDIT_ABANDON_BUTTON_TEXT]: 'Abandon Edit',
-        [FM.TEACHSESSIONMODAL_TEACH_ABANDON_BUTTON_TEXT]: 'Abandon Teach',
-        [FM.TEACHSESSIONMODAL_EDIT_DONE_BUTTON_TEXT]: 'Done Editing',
-        [FM.TEACHSESSIONMODAL_TEACH_DONE_BUTTON_TEXT]: 'Done Teaching',
         [FM.TEACHSESSIONMODAL_TEACH_CONFIRMDELETE_TITLE]: 'Are you sure you want to abandon this teach session?',
         [FM.TEACHSESSIONMODAL_EDIT_CONFIRMDELETE_TITLE]: 'Are you sure you want to cancel editing?',
         [FM.TEACHSESSIONMODAL_INITSTATE_ARIADESCRIPTION]: 'Set Initial State',
@@ -855,23 +872,18 @@ export default {
         [FM.TRAINDIALOGADMIN_ENTITYDETECTION_TITLE]: 'Entity Detection',
         [FM.TRAINDIALOGADMIN_ENTITYDETECTION_HELPTEXT]: 'Click on text from the dialog to the left.',
         [FM.TRAINDIALOGADMIN_ACTION_TITLE]: 'Action',
-        [FM.TRAINDIALOGADMIN_SAVECHANGES_TITLE]: 'Your changes will invalidate the subsequent steps in the Train Dialog',
-        [FM.TRAINDIALOGADMIN_SAVECHANGES_DESCRIPTION]: 'Truncate and edit the Train Dialog at this step?',
-        [FM.TRAINDIALOGADMIN_SAVECHANGES_PRIMARYBUTTON_TEXT]: 'Yes',
-        [FM.TRAINDIALOGADMIN_SAVECHANGES_DEFAULTBUTTON_TEXT]: 'No',
 
         // TrainDialogModal
         [FM.TRAINDIALOGMODAL_BRANCH_ARIADESCRIPTION]: 'Branch',
         [FM.TRAINDIALOGMODAL_BRANCH_TEXT]: 'Branch',
         [FM.TRAINDIALOGMODAL_BRANCH_TIP] : 'First select a round in the conversation by clicking on it.  Then click "Branch" to create a new Training Dialog starting at that round.',
-        [FM.TRAINDIALOGMODAL_DEFAULTBUTTON_ARIADESCRIPTION]: 'Delete',
-        [FM.TRAINDIALOGMODAL_DEFAULTBUTTON_TEXT]: 'Delete',
-        [FM.TRAINDIALOGMODAL_PRIMARYBUTTON_ARIADESCRIPTION]: 'Done',
-        [FM.TRAINDIALOGMODAL_PRIMARYBUTTON_TEXT]: 'Done',
         [FM.TRAINDIALOGMODAL_CONFIRMDELETE_TITLE]: 'Are you sure you want to delete this Training Dialog?',
+        [FM.TRAINDIALOGMODAL_CONFIRMABANDON_TITLE]: 'Are you sure you want to abandon your edits?',
         
-        // Error Messages
-        [FM.CUSTOMERROR_NETWORK_ERROR]: 'Is your Bot running? Did you set NODE_ENV=development?',
+        // UserInput Modal
+        [FM.USERINPUT_TITLE]: 'Add User Input',
+        [FM.USERINPUT_PLACEHOLDER]: 'User Input...',
+
         /** 
          * This is kind of hack which re-uses redux action types as unit strings for localized error messages
          * 
@@ -885,7 +897,6 @@ export default {
         [AT.CREATE_CHAT_SESSION_ASYNC]: 'Creating chat session',
         [AT.CREATE_TEACH_SESSION_ASYNC]: 'Creating teach session',
         [AT.CREATE_TEACH_SESSION_FROMHISTORYASYNC]: 'Creating teach session from history',
-        [AT.CREATE_TEACH_SESSION_FROMUNDOASYNC]: 'Creating teach session from undo',
         [AT.FETCH_BOTINFO_ASYNC]: 'Fetching bot information',
         [AT.FETCH_HISTORY_ASYNC]: 'Fetching history',
         [AT.FETCH_TUTORIALS_ASYNC]: 'Fetching tutorials',
@@ -894,7 +905,6 @@ export default {
         [AT.FETCH_ENTITY_EDIT_VALIDATION_ASYNC]: 'Fetching entity edit information',
         [AT.FETCH_ACTION_DELETE_VALIDATION_ASYNC]: 'Fetching action delete information',
         [AT.FETCH_ACTION_EDIT_VALIDATION_ASYNC]: 'Fetching action edit information',
-        [AT.INIT_MEMORY_ASYNC]: 'Initializing memory',
         [AT.RUN_EXTRACTOR_ASYNC]: 'Running extractor',
         [AT.GET_SCORES_ASYNC]: 'Fetching scores',
         [AT.RUN_SCORER_ASYNC]: 'Running scorer',

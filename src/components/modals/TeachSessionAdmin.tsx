@@ -8,18 +8,22 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../../types'
 import actions from '../../actions'
-import {
-    AppBase, TextVariation, ExtractResponse,
-    DialogType, TrainScorerStep, TrainingStatusCode,
-    UITrainScorerStep, UIScoreInput, DialogMode, TeachResponse, ScoredAction
-} from '@conversationlearner/models'
+import * as CLM from '@conversationlearner/models'
 import ActionScorer from './ActionScorer';
+import { Activity } from 'botframework-directlinejs'
 import EntityExtractor from './EntityExtractor';
 import MemoryTable from './MemoryTable';
 import { FM } from '../../react-intl-messages'
 import { Icon, FontClassNames } from 'office-ui-fabric-react'
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import './TeachSessionAdmin.css'
+
+interface RenderData {
+    dialogMode: CLM.DialogMode
+    scoreInput: CLM.ScoreInput | undefined
+    scoreResponse: CLM.ScoreResponse | undefined
+    memories: CLM.Memory[]
+}
 
 interface ComponentState {
     isScoresRefreshVisible: boolean
@@ -36,12 +40,12 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
         this.onActionScorerSubmit = this.onActionScorerSubmit.bind(this);
     }
 
-    async onEntityExtractorSubmit(extractResponse: ExtractResponse, textVariations: TextVariation[]): Promise<void> {
+    async onEntityExtractorSubmit(extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]): Promise<void> {
         if (!this.props.teachSession.current) {
             throw new Error(`teachSession.current must be defined but it is not. This is likely a problem with higher components. Please open an issue.`)
         }
 
-        const uiScoreInput: UIScoreInput = {
+        const uiScoreInput: CLM.UIScoreInput = {
             trainExtractorStep: {
                 textVariations
             },
@@ -56,7 +60,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
         })
     }
 
-    onActionScorerSubmit(trainScorerStep: TrainScorerStep): void {
+    async onActionScorerSubmit(trainScorerStep: CLM.TrainScorerStep): Promise<void> {
         const scoredAction = trainScorerStep.scoredAction
         if (!scoredAction) {
             throw new Error(`The provided train scorer step must have scoredAction field, but it was not provided. This should not be possible. Contact Support`)
@@ -66,10 +70,16 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
             throw new Error(`teachSession.current must be defined but it is not. This is likely a problem with higher components. Please open an issue.`)
         }
 
-        const uiTrainScorerStep: UITrainScorerStep = {
+        // Send channel data to add to activity so can process when clicked on later
+        const channelData = { 
+            activityIndex: this.props.activityIndex
+        }
+
+        const uiTrainScorerStep = {
             trainScorerStep,
+            channelData,
             entities: this.props.entities
-        };
+        } as CLM.UITrainScorerStep 
 
         const appId = this.props.app.appId;
         const teachId = this.props.teachSession.current.teachId;
@@ -79,10 +89,11 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
         const uiScoreInput = {
             ...this.props.teachSession.uiScoreInput,
             trainExtractorStep: null
-        } as UIScoreInput
+        } as CLM.UIScoreInput
 
-        ((this.props.postScorerFeedbackThunkAsync(this.props.user.id, appId, teachId, uiTrainScorerStep, waitForUser, uiScoreInput) as any) as Promise<TeachResponse>)
-            .then(result => { this.props.onScoredAction(scoredAction) })
+        await this.props.postScorerFeedbackThunkAsync(this.props.user.id, appId, teachId, uiTrainScorerStep, waitForUser, uiScoreInput)
+         
+        this.props.onScoredAction(scoredAction)
     }
 
     onClickRefreshScores = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -106,12 +117,32 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
         })
     }
 
+    getRenderData(): RenderData {
+        if (this.props.selectedActivity) {
+            return {
+                dialogMode: (this.props.selectedActivity.channelData.senderType === CLM.SenderType.User) ? CLM.DialogMode.Extractor : CLM.DialogMode.Scorer,
+                scoreInput: this.props.selectedActivity.channelData.scoreInput,
+                scoreResponse: this.props.selectedActivity.channelData.scoreResponse,
+                memories: this.props.selectedActivity.channelData.memories,
+            }
+        }
+        else {
+            return {
+                dialogMode: this.props.teachSession.mode,
+                scoreInput: this.props.teachSession.scoreInput!,
+                scoreResponse: this.props.teachSession.scoreResponse!,
+                memories: this.props.teachSession.memories
+            }
+        }
+    }
+
     render() {
         // Don't render if not in a teach session
         if (!this.props.teachSession.current) {
             return null;
         }
 
+        const renderData = this.getRenderData()
         const mode = this.props.teachSession.mode
         const autoTeachWithRound = this.props.teachSession.autoTeach 
 
@@ -120,7 +151,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                 <div className={`cl-dialog-title cl-dialog-title--train ${FontClassNames.xxLarge}`}>
                     <Icon iconName="EditContact" />Train Dialog
                 </div>
-                {this.props.teachSession.mode === DialogMode.Extractor && (
+                {this.props.teachSession.mode === CLM.DialogMode.Extractor && (
                     <div className="cl-dialog-admin__content">
                         <div className="cl-wc-message cl-wc-message--user">
                             <FormattedMessage
@@ -131,7 +162,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                         </div>
                     </div>)
                 }
-                {this.props.teachSession.mode === DialogMode.Scorer && (
+                {this.props.teachSession.mode === CLM.DialogMode.Scorer && (
                     <div className="cl-dialog-admin__content">
                         <div className="cl-wc-message cl-wc-message--bot">
                             <FormattedMessage
@@ -142,7 +173,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                         </div>
                     </div>)
                 }
-                {this.props.teachSession.mode === DialogMode.EndSession && (
+                {this.props.teachSession.mode === CLM.DialogMode.EndSession && (
                     <div className="cl-dialog-admin__content">
                         <div className="cl-wc-message cl-wc-message--done">
                             <FormattedMessage
@@ -168,7 +199,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                         />
                     </div>
                 </div>
-                {this.props.teachSession.mode === DialogMode.Extractor &&
+                {this.props.teachSession.mode === CLM.DialogMode.Extractor &&
                     <div className="cl-dialog-admin__content">
                         <div className="cl-dialog-admin-title">
                             <FormattedMessage
@@ -178,13 +209,13 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                             />
                         </div>
                         <div>
-                            {(mode === DialogMode.Extractor || autoTeachWithRound) &&
+                            {(mode === CLM.DialogMode.Extractor || autoTeachWithRound) &&
                                 <EntityExtractor
                                     data-testid="teachsessionadmin-entityextractor"
                                     app={this.props.app}
                                     editingPackageId={this.props.editingPackageId}
                                     canEdit={true}
-                                    extractType={DialogType.TEACH}
+                                    extractType={CLM.DialogType.TEACH}
                                     sessionId={this.props.teachSession.current.teachId}
                                     roundIndex={null}
                                     autoTeach={this.props.teachSession.autoTeach}
@@ -196,7 +227,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                         </div>
                     </div>
                 }
-                {this.props.teachSession.mode === DialogMode.Scorer &&
+                {this.props.teachSession.mode === CLM.DialogMode.Scorer &&
                     <div className="cl-dialog-admin__content">
                         <div className="cl-dialog-admin-title">
                             <FormattedMessage
@@ -206,7 +237,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                             />
                             {/* Consider making this a component although it's display is very custom to the location it's used in the header */}
                             <span className="cl-training-status-inline">
-                                {this.props.app.trainingStatus === TrainingStatusCode.Completed
+                                {this.props.app.trainingStatus === CLM.TrainingStatusCode.Completed
                                     ? <span>
                                         <FormattedMessage
                                             data-testid="teachsessionadmin-trainstatus-completed"
@@ -233,7 +264,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                                                 )
                                             </span>}
                                     </span>
-                                    : (this.props.app.trainingStatus === TrainingStatusCode.Failed
+                                    : (this.props.app.trainingStatus === CLM.TrainingStatusCode.Failed
                                         ? <FormattedMessage
                                             data-testid="trainingstatus-failed"
                                             id={FM.TEACHSESSIONADMIN_TRAINSTATUS_FAILED}
@@ -248,19 +279,19 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                             </span>
                         </div>
 
-                        {(mode === DialogMode.Scorer || autoTeachWithRound)
+                        {renderData.scoreResponse && renderData.scoreInput && (mode === CLM.DialogMode.Scorer || autoTeachWithRound)
                             && <ActionScorer
                                 app={this.props.app}
                                 editingPackageId={this.props.editingPackageId}
                                 canEdit={true}
                                 hideScore={false}
-                                dialogType={DialogType.TEACH}
+                                dialogType={CLM.DialogType.TEACH}
                                 sessionId={this.props.teachSession.current.teachId}
                                 autoTeach={this.props.teachSession.autoTeach}
                                 dialogMode={this.props.teachSession.mode}
-                                scoreResponse={this.props.teachSession.scoreResponse!}
-                                scoreInput={this.props.teachSession.scoreInput!}
-                                memories={this.props.teachSession.memories}
+                                scoreResponse={renderData.scoreResponse}
+                                scoreInput={renderData.scoreInput}
+                                memories={renderData.memories}
                                 onActionSelected={this.onActionScorerSubmit}
                             />
                         }
@@ -291,9 +322,13 @@ const mapStateToProps = (state: State) => {
 }
 
 export interface ReceivedProps {
-    onScoredAction: (scoredAction: ScoredAction) => void;
-    app: AppBase
+    onScoredAction: (scoredAction: CLM.ScoredAction) => void;
+    app: CLM.AppBase
     editingPackageId: string
+    // Index to attach to channel data
+    activityIndex: number
+    // If user clicked on an Activity
+    selectedActivity: Activity | null
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps

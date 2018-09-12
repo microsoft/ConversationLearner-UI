@@ -14,9 +14,6 @@ import { Activity } from 'botframework-directlinejs'
 import actions from '../actions'
 
 class Webchat extends React.Component<Props, {}> {
-    private behaviorSubject: BehaviorSubject<any> | null = null;
-    private chatProps: BotChat.ChatProps | null = null;
-    private dl: BotChat.DirectLine | null = null;
 
     static defaultProps: ReceivedProps = {
         isOpen: false,
@@ -28,9 +25,12 @@ class Webchat extends React.Component<Props, {}> {
         focusInput: false
     }
 
+    private behaviorSubject: BehaviorSubject<any> | null = null;
+    private chatProps: BotChat.ChatProps | null = null;
+    private dl: BotChat.DirectLine | null = null;
+
     constructor(p: any) {
         super(p);
-        this.behaviorSubject = null;
         this.selectedActivity$ = this.selectedActivity$.bind(this)
     }
 
@@ -80,11 +80,11 @@ class Webchat extends React.Component<Props, {}> {
                 webSocket: false // defaults to true,
             })
 
-            const botConnection = {
+            const botConnection = {         
                 ...dl,
                 postActivity: (activity: any) => {
                     this.props.onPostActivity(activity)
-                    return dl.postActivity(activity)
+                    return this.props.disableDL ? null : dl.postActivity(activity)
                 }
             }
 
@@ -98,7 +98,7 @@ class Webchat extends React.Component<Props, {}> {
             this.chatProps = {
                 disableUpload: true,
                 botConnection: botConnection,
-                selectedActivity: this.props.hideInput ? this.selectedActivity$() as any : null,
+                selectedActivity: this.selectedActivity$(),
                 formatOptions: {
                     showHeader: false
                 },
@@ -126,6 +126,9 @@ class Webchat extends React.Component<Props, {}> {
 
         chatProps.hideInput = this.props.hideInput
         chatProps.focusInput = this.props.focusInput
+        chatProps.renderSelectedActivity = this.props.renderSelectedActivity
+        chatProps.selectedActivityIndex = this.props.selectedActivityIndex
+        chatProps.highlightClassName = this.props.highlightClassName
 
         return (
             <div id="botchat" className="webchatwindow wc-app">
@@ -156,8 +159,15 @@ export interface ReceivedProps {
     history: Activity[],
     hideInput: boolean,
     focusInput: boolean,
+    // Disable message sent via direct line
+    disableDL?: boolean,
     onSelectActivity: (a: Activity) => void,
-    onPostActivity: (a: Activity) => void
+    onPostActivity: (a: Activity) => void,
+    renderSelectedActivity?: (a: Activity) => (JSX.Element | null)
+    highlightClassName?: string
+    // Used to select activity from outside webchat
+    selectedActivityIndex?: number | null
+
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps

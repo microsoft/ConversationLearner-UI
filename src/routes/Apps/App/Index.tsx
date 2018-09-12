@@ -145,7 +145,9 @@ class Index extends React.Component<Props, ComponentState> {
     render() {
         const { match, location, intl } = this.props
 
-        if (!location.state) return null;
+        if (!location.state) {
+            return null
+        }
 
         const app: AppBase = location.state.app
         // TODO: There is an assumption that by the time render is called, componentWillMount has called loadApp and set the packageId

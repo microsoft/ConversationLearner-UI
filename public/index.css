@@ -116,7 +116,7 @@ html {
   color: green;
   font-size: 20px;
 }
-.cl-icon[data-icon-name="Remove"]{
+.cl-icon[data-icon-name="CommentAdd"]{
   color: lightgrey;
   font-size: 18px
 }
@@ -149,7 +149,30 @@ html {
   color: var(--color-wc-user);
 }
 
-.ms-Button-icon[data-icon-name="Delete"] {
+.ms-Button-icon[data-icon-name="CommentAdd"] {
+  font-size: 18px !important;
+}
+
+.ms-Button--icon.cl-wc-addscore {
+  color: var(--color-neutralPrimary) !important;
+  background-color: transparent !important;
+}
+
+.ms-Button--icon.cl-wc-addinput {
+  color: var(--color-themePrimary) !important;
+  background-color: transparent !important;
+}
+
+.ms-Button--icon.cl-wc-deleteturn {
+  color: var(--color-redDark) !important;
+  background-color: transparent !important;
+}
+
+.ms-Button--icon.cl-wc-branchturn {
+  background-color: transparent !important;
+}
+
+.ms-Button-icon[data-icon-name="Delete"]:not(:disabled) {
   color: var(--color-red);
 }
 
@@ -241,6 +264,67 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
 .cl-wc-message--done {
   background-color: var(--color-yellow-darkest);
   color: #ffffff;
+}
+
+.cl-wc-buttonbar {
+  background-color: transparent;
+}
+.cl-wc-deleteturn {
+  border: none !important;
+  position: absolute !important;
+  background-color: transparent !important;
+  top: 5px;
+}
+
+.cl-wc-deleteturn--bot {
+  right: -8px;
+}
+
+.cl-wc-deleteturn--user {
+  left: 0px;
+}
+
+.cl-wc-addscore {
+  border: none !important;
+  position: absolute !important;
+  bottom: -8px;
+}
+
+.cl-wc-addscore--bot {
+  right: 20px;
+}
+
+.cl-wc-addscore--user {
+  left: 25px;
+}
+
+.cl-wc-addinput {
+  border: none !important;
+  position: absolute !important;
+  bottom: -8px;
+}
+
+.cl-wc-addinput--bot {
+  right: 45px;
+}
+
+.cl-wc-addinput--user {
+  left: 50px;
+}
+
+.cl-wc-branchturn {
+  border: none !important;
+  position: absolute !important;
+  background-color: transparent !important;
+  bottom: -8px;
+}
+
+.cl-wc-branchturn--bot {
+  right: -9px;
+}
+
+.cl-wc-branchturn--user {
+  left: 0px;
 }
 
 /* botframework-webchat component override */

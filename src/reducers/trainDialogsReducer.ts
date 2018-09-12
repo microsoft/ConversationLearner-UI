@@ -28,6 +28,13 @@ const trainDialogsReducer: Reducer<TrainDialogState> = (state = initialState, ac
             return state.filter(dialog => dialog.trainDialogId !== action.trainDialogId);
         case AT.EDIT_TRAINDIALOG_FULFILLED:
             return replace(state, action.trainDialog, a => a.trainDialogId);
+        case AT.FETCH_TRAIN_DIALOG_FULFILLED:
+            if (action.replaceLocal) {
+                return replace(state, action.trainDialog, a => a.trainDialogId);
+            }
+            else {
+                return state
+            }
         default:
             return state;
     }
