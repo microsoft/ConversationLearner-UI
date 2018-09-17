@@ -12,7 +12,7 @@ const logDialogPage = require('../support/components/logdialogspage')
 const logDialogModal = require('../support/components/logdialogmodal')
 const scorerModal = require('../support/components/scorermodal')
 const trainDialogPage = require('../support/components/traindialogspage')
-const trainDialogModal = require('../support/components/traindialogmodal')
+const editDialogModal = require('../support/components/editdialogmodal')
 
 
 describe('ExpectedEntities test', function () {
@@ -98,8 +98,8 @@ describe('ExpectedEntities test', function () {
 
     modelPage.navigateToTrainDialogs()
     trainDialogPage.createNew()
-    trainDialogModal.typeYourMessage("hello")
-    trainDialogModal.clickScoreActions()
+    editDialogModal.typeYourMessage("hello")
+    editDialogModal.clickScoreActions()
     scorerModal.selectAnActionWithText(actionResponse01)
 
     //TODO: 4.3.1	<Validation Step> Note that the response 'Hello $name' 
@@ -107,7 +107,7 @@ describe('ExpectedEntities test', function () {
     // and $name is not in bot's memory.
 
     cy.wait(2000)
-    trainDialogModal.typeYourMessage("david")
+    editDialogModal.typeYourMessage("david")
 
     //TODO:  
     // 4.4.1	<Validation Step> Note that the name is highlighted as an entity. 
@@ -116,7 +116,7 @@ describe('ExpectedEntities test', function () {
     // Perform chat entries validation
 
     cy.wait(2000)
-    trainDialogModal.clickDoneTeaching()
+    editDialogModal.clickDoneTeaching()
   })
 
   it('should delete an existent model', () => {

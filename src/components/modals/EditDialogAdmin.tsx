@@ -16,6 +16,7 @@ import { Activity } from 'botframework-directlinejs'
 import * as OF from 'office-ui-fabric-react';
 import * as CLM from '@conversationlearner/models' 
 import { FM } from '../../react-intl-messages'
+import { EditDialogType } from '.'
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 
 interface RenderData {
@@ -28,7 +29,7 @@ interface RenderData {
     prevMemories: CLM.Memory[]
 }
 
-class TrainDialogAdmin extends React.Component<Props, ComponentState> {
+class EditDialogAdmin extends React.Component<Props, ComponentState> {
     constructor(p: Props) {
         super(p);
         this.state = {
@@ -46,6 +47,13 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                 this.setState({
                     senderType: newProps.selectedActivity.channelData.senderType,
                     roundIndex: newProps.trainDialog.rounds.length - 1,
+                    scoreIndex: 0
+                })
+            }
+            else if (newProps.selectedActivity.channelData.scoreIndex === 0) {
+                this.setState({
+                    senderType: newProps.selectedActivity.channelData.senderType,
+                    roundIndex: newProps.selectedActivity.channelData.roundIndex,
                     scoreIndex: 0
                 })
             }
@@ -222,11 +230,15 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
             return null;
         }
 
+        const editTypeClass = this.props.editType === EditDialogType.LOG ? 'log' : 'train'
         let renderData = this.getRenderData();
         return (
             <div className={`cl-dialog-admin ${OF.FontClassNames.large}`}>
-                <div data-testid="traindialog-title" className={`cl-dialog-title cl-dialog-title--train ${OF.FontClassNames.xxLarge}`}>
-                    <OF.Icon iconName="EditContact" />Train Dialog
+                <div data-testid="traindialog-title" className={`cl-dialog-title cl-dialog-title--${editTypeClass} ${OF.FontClassNames.xxLarge}`}>
+                    <OF.Icon 
+                        iconName={this.props.editType === EditDialogType.LOG ? 'UserFollowed' : 'EditContact'}
+                    />
+                    {this.props.editType === EditDialogType.LOG ? 'Log Dialog' : 'Train Dialog'}
                 </div>
                 {this.props.selectedActivity && (this.state.senderType === CLM.SenderType.User
                     ? (
@@ -234,7 +246,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                             <div className="cl-wc-message cl-wc-message--user">
                                 <FormattedMessage
                                     data-testid="modal-user-input"
-                                    id={FM.TRAINDIALOGADMIN_DIALOGMODE_USER}
+                                    id={FM.EDITDIALOGADMIN_DIALOGMODE_USER}
                                     defaultMessage="User Input"
                                 />
                             </div>
@@ -244,7 +256,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                             <div className="cl-wc-message cl-wc-message--bot">
                                 <FormattedMessage
                                     data-testid="modal-bot-response"
-                                    id={FM.TRAINDIALOGADMIN_DIALOGMODE_TEXT}
+                                    id={FM.EDITDIALOGADMIN_DIALOGMODE_TEXT}
                                     defaultMessage="Bot Response"
                                 />
                             </div>
@@ -256,7 +268,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                         <div className="cl-dialog-admin-title">
                             <FormattedMessage
                                 data-testid="modal-memory-title"
-                                id={FM.TRAINDIALOGADMIN_MEMORY_TITLE}
+                                id={FM.EDITDIALOGADMIN_MEMORY_TITLE}
                                 defaultMessage="Memory"
                             />
                         </div>
@@ -271,19 +283,19 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                             <div className="cl-dialog-admin-title">
                                 <FormattedMessage
                                     data-testid="dialog-admin-title-traindialog"
-                                    id={FM.TRAINDIALOGADMIN_HELPTEXT_TITLE}
+                                    id={FM.EDITDIALOGADMIN_HELPTEXT_TITLE}
                                     defaultMessage="Train Dialog"
                                 />
                             </div>
                             <div>
                                 <FormattedMessage
-                                    id={FM.TRAINDIALOGADMIN_HELPTEXT_DESCRIPTION}
+                                    id={FM.EDITDIALOGADMIN_HELPTEXT_DESCRIPTION}
                                     defaultMessage="Click on User or Bot dialogs to the left to view steps in the Train Dialog."
                                 />
                             </div>
                             <div>
                                 <FormattedMessage
-                                    id={FM.TRAINDIALOGADMIN_HELPTEXT_DESCRIPTION2}
+                                    id={FM.EDITDIALOGADMIN_HELPTEXT_DESCRIPTION2}
                                     defaultMessage="You can then make changes to the Train Dialog."
                                 />
                             </div>
@@ -295,7 +307,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                         <div className="cl-dialog-admin-title">
                             <FormattedMessage
                                 data-testid="dialog-admin-entity-detection"
-                                id={FM.TRAINDIALOGADMIN_ENTITYDETECTION_TITLE}
+                                id={FM.EDITDIALOGADMIN_ENTITYDETECTION_TITLE}
                                 defaultMessage="Entity Detection"
                             />
                         </div>
@@ -318,7 +330,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                                 />
                                 : <span>
                                     <FormattedMessage
-                                        id={FM.TRAINDIALOGADMIN_ENTITYDETECTION_HELPTEXT}
+                                        id={FM.EDITDIALOGADMIN_ENTITYDETECTION_HELPTEXT}
                                         defaultMessage="Click on text from the dialog to the left."
                                     />
                                 </span>
@@ -334,7 +346,7 @@ class TrainDialogAdmin extends React.Component<Props, ComponentState> {
                         <div className="cl-dialog-admin-title">
                             <FormattedMessage
                                 data-testid="dialog-admin-action"
-                                id={FM.TRAINDIALOGADMIN_ACTION_TITLE}
+                                id={FM.EDITDIALOGADMIN_ACTION_TITLE}
                                 defaultMessage="Action"
                             />
                         </div>
@@ -387,6 +399,7 @@ export interface ReceivedProps {
     trainDialog: CLM.TrainDialog,
     selectedActivity: Activity | null,
     canEdit: boolean,
+    editType: EditDialogType,
     onChangeAction: (trainScorerStep: CLM.TrainScorerStep) => void,
     onChangeExtraction: (extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) => void                              
     onExtractionsChanged: (changed: boolean) => void
@@ -397,4 +410,4 @@ const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
 type Props = typeof stateProps & typeof dispatchProps & ReceivedProps & InjectedIntlProps
 
-export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(TrainDialogAdmin))
+export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(EditDialogAdmin))

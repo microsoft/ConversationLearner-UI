@@ -12,7 +12,7 @@ const logDialogPage = require('../support/components/logdialogspage')
 const logDialogModal = require('../support/components/logdialogmodal')
 const scorerModal = require('../support/components/scorermodal')
 const trainDialogPage = require('../support/components/traindialogspage')
-const trainDialogModal = require('../support/components/traindialogmodal')
+const editDialogModal = require('../support/components/editdialogmodal')
 
 describe('Intro to Entities', function () {
   const momentSeconds = Cypress.moment().format("MMDD-HHmmSSS")
@@ -64,11 +64,11 @@ describe('Intro to Entities', function () {
     modelPage.navigateToTrainDialogs()
     trainDialogPage.verifyPageTitle()
     trainDialogPage.createNew()
-    trainDialogModal.typeYourMessage("Hello")
-    trainDialogModal.clickScoreActions()
+    editDialogModal.typeYourMessage("Hello")
+    editDialogModal.clickScoreActions()
     scorerModal.selectAnActionWithText(action01)
     cy.wait(2000)
-    trainDialogModal.typeYourMessage("Seattle")
+    editDialogModal.typeYourMessage("Seattle")
 
     //**----------------- blocked from this step------------- */
     // 4. Highlight seattle, then click city.
@@ -78,14 +78,14 @@ describe('Intro to Entities', function () {
     // 8. Select 'Weather in $city is probably sunny'.
     //**----------------- TODO: to complete steps above ------------- */
 
-    // trainDialogModal.highlightWord("Seattle");        // <<<=== BLOCKED.
-    // trainDialogModal.verifyTokenNodeExists();
-    // trainDialogModal.clickScoreActions();
+    // editDialogModal.highlightWord("Seattle");        // <<<=== BLOCKED.
+    // editDialogModal.verifyTokenNodeExists();
+    // editDialogModal.clickScoreActions();
     // scorerModal.selectAnActionWithText(action01);
 
     //** TODO: wrap the test up after steps above */
     cy.wait(2000)
-    trainDialogModal.clickDoneTeaching()
+    editDialogModal.clickDoneTeaching()
   })
 
   /** FEATURE: Delete a Model */

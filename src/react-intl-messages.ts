@@ -127,6 +127,7 @@ export enum FM {
     BUTTON_IMPORT = 'Button.IMPORT',
     BUTTON_OK = 'Button.OK',
     BUTTON_SAVE = 'Button.SAVE',
+    BUTTON_SAVE_AS_TRAIN_DIALOG = 'Button.SAVE_AS_TD',
     BUTTON_SAVE_EDIT = 'Button.SAVE_EDIT',
     BUTTON_SUBMIT = 'Button.SUMBIT',
 
@@ -261,12 +262,13 @@ export enum FM {
     REPLAYERROR_FAILMESSAGE = 'ReplayError.failMessage',
     REPLAYERROR_EDIT_TITLE = 'ReplayError.edit.title',
     REPLAYERROR_BRANCH_TITLE = 'ReplayError.branch.title',
-    REPLAYERROR_DESC_MISSING_ACTION = 'ReplayError.Desc.missingAction',
+    REPLAYERROR_DESC_ACTION_UNDEFINED = 'ReplayError.Desc.actionUndefined',
     REPLAYERROR_DESC_ACTION_AFTER_WAIT = 'ReplayError.Desc.actionAfterWait',
     REPLAYERROR_DESC_INPUT_AFTER_NONWAIT = 'ReplayError.Desc.inputAfterNonWait',
-    REPLAYERROR_DESC_MISSING_ENTITY = 'ReplayError.Desc.missingEntity',
+    REPLAYERROR_DESC_ENTITY_UNDEFINED = 'ReplayError.Desc.entityUndefined',
+    REPLAYERROR_DESC_ENTITY_EMPTY = 'ReplayError.Desc.entityEmpty',
     REPLAYERROR_DESC_TWO_USER_INPUTS = 'ReplayError.Desc.twoUserInputs',
-    REPLAYERROR_DESC_UNAVAILABLE_ACTION = 'ReplayError.Desc.unavailableAction',
+    REPLAYERROR_DESC_ACTION_UNAVAILABLE = 'ReplayError.Desc.actionUnavailable',
     REPLAYERROR_DESC_CHANGED_ENTITIES = 'ReplayError.Desc.changedEntities',
 
     // Settings
@@ -395,23 +397,23 @@ export enum FM {
     TOOLTIP_TAG_LIVE = 'ToolTip.TAG_LIVE',
     TOOLTIP_TRAINDIALOG_INVALID = 'ToolTip.TRAINDIALOG_INVALID',
 
-    // TrainDialogAdmin
-    TRAINDIALOGADMIN_DIALOGMODE_USER = 'TrainDialogAdmin.dialogMode.user',
-    TRAINDIALOGADMIN_DIALOGMODE_TEXT = 'TrainDialogAdmin.dialogMode.text',
-    TRAINDIALOGADMIN_MEMORY_TITLE = 'TrainDialogAdmin.memory.title',
-    TRAINDIALOGADMIN_HELPTEXT_TITLE = 'TrainDialogAdmin.helpText.title',
-    TRAINDIALOGADMIN_HELPTEXT_DESCRIPTION = 'TrainDialogAdmin.helpText.description',
-    TRAINDIALOGADMIN_HELPTEXT_DESCRIPTION2 = 'TrainDialogAdmin.helpText.description2',
-    TRAINDIALOGADMIN_ENTITYDETECTION_TITLE = 'TrainDialogAdmin.entityDetection.title',
-    TRAINDIALOGADMIN_ENTITYDETECTION_HELPTEXT = 'TrainDialogAdmin.entityDetection.helpText',
-    TRAINDIALOGADMIN_ACTION_TITLE = 'TrainDialogAdmin.action.title',
+    // EditDialogAdmin
+    EDITDIALOGADMIN_DIALOGMODE_USER = 'EditDialogAdmin.dialogMode.user',
+    EDITDIALOGADMIN_DIALOGMODE_TEXT = 'EditDialogAdmin.dialogMode.text',
+    EDITDIALOGADMIN_MEMORY_TITLE = 'EditDialogAdmin.memory.title',
+    EDITDIALOGADMIN_HELPTEXT_TITLE = 'EditDialogAdmin.helpText.title',
+    EDITDIALOGADMIN_HELPTEXT_DESCRIPTION = 'EditDialogAdmin.helpText.description',
+    EDITDIALOGADMIN_HELPTEXT_DESCRIPTION2 = 'EditDialogAdmin.helpText.description2',
+    EDITDIALOGADMIN_ENTITYDETECTION_TITLE = 'EditDialogAdmin.entityDetection.title',
+    EDITDIALOGADMIN_ENTITYDETECTION_HELPTEXT = 'EditDialogAdmin.entityDetection.helpText',
+    EDITDIALOGADMIN_ACTION_TITLE = 'EditDialogAdmin.action.title',
 
-    // TrainDialogModal
-    TRAINDIALOGMODAL_BRANCH_ARIADESCRIPTION = 'TrainDialogModal.branch.ariaDescription',
-    TRAINDIALOGMODAL_BRANCH_TEXT = 'TrainDialogModal.branch.text',
-    TRAINDIALOGMODAL_BRANCH_TIP = 'TrainDialogModal.branch.tip',
-    TRAINDIALOGMODAL_CONFIRMDELETE_TITLE = 'TrainDialogModal.confirmDelete.title',
-    TRAINDIALOGMODAL_CONFIRMABANDON_TITLE = 'TrainDialogModal.confirmAbandon.title',
+    // EditDialogModal
+    EDITDIALOGMODAL_BRANCH_ARIADESCRIPTION = 'EditDialogModal.branch.ariaDescription',
+    EDITDIALOGMODAL_BRANCH_TEXT = 'EditDialogModal.branch.text',
+    EDITDIALOGMODAL_BRANCH_TIP = 'EditDialogModal.branch.tip',
+    EDITDIALOGMODAL_CONFIRMDELETE_TITLE = 'EditDialogModal.confirmDelete.title',
+    EDITDIALOGMODAL_CONFIRMABANDON_TITLE = 'EditDialogModal.confirmAbandon.title',
 
     // Train Dialogs
     TRAINDIALOGS_TITLE = 'TrainDialogs.title',
@@ -563,6 +565,7 @@ export default {
         [FM.BUTTON_INFO]: 'Info',
         [FM.BUTTON_OK]: 'OK',
         [FM.BUTTON_SAVE]: 'Save',
+        [FM.BUTTON_SAVE_AS_TRAIN_DIALOG]: 'Save As Train Dialog',
         [FM.BUTTON_SAVE_EDIT]: 'Save Edit',
         [FM.BUTTON_SUBMIT]: 'Submit',
 
@@ -610,12 +613,13 @@ export default {
         [FM.REPLAYERROR_FAILMESSAGE]: 'The following issues occurred when attempting to replay the dialog',
         [FM.REPLAYERROR_EDIT_TITLE]: 'Unable to Edit',
         [FM.REPLAYERROR_BRANCH_TITLE]: 'Unable to Branch',
-        [FM.REPLAYERROR_DESC_ACTION_AFTER_WAIT]: 'Previous Action is a Wait action.  Change it to not Wait for a response or add a User input between the actions',
-        [FM.REPLAYERROR_DESC_MISSING_ACTION]: 'Missing action in response to',
-        [FM.REPLAYERROR_DESC_INPUT_AFTER_NONWAIT]: 'Input occurs after non-wait action.  Either delete the input or change Action in the Wait action',
-        [FM.REPLAYERROR_DESC_MISSING_ENTITY]: 'Missing entity for',
+        [FM.REPLAYERROR_DESC_ACTION_AFTER_WAIT]: 'Previous Action is a Wait action.  Change it to not Wait for a response or add a User input between the Actions',
+        [FM.REPLAYERROR_DESC_ACTION_UNDEFINED]: 'Missing action in response to',
+        [FM.REPLAYERROR_DESC_INPUT_AFTER_NONWAIT]: 'Input occurs after non-wait action.  Either delete the extra input or change Action to be a Wait action',
+        [FM.REPLAYERROR_DESC_ENTITY_UNDEFINED]: 'Missing entity for',
+        [FM.REPLAYERROR_DESC_ENTITY_EMPTY]: 'Action missing a value for',
         [FM.REPLAYERROR_DESC_TWO_USER_INPUTS]: 'Two consecutive User Inputs are not allowed.  Delete this User Input or add an Action between the two',
-        [FM.REPLAYERROR_DESC_UNAVAILABLE_ACTION]: 'Action unavailable in reponse to',
+        [FM.REPLAYERROR_DESC_ACTION_UNAVAILABLE]: 'Action unavailable in reponse to',
         [FM.REPLAYERROR_DESC_CHANGED_ENTITIES]: 'Entites inconsistent after user input',
         
         // Settings
@@ -862,23 +866,23 @@ export default {
         [FM.TEACHSESSIONMODAL_INITSTATE_ARIADESCRIPTION]: 'Set Initial State',
         [FM.TEACHSESSIONMODAL_INITSTATE_TEXT]: 'Set Initial State',
 
-        // TrainDialogAdmin
-        [FM.TRAINDIALOGADMIN_DIALOGMODE_USER]: 'User Input',
-        [FM.TRAINDIALOGADMIN_DIALOGMODE_TEXT]: 'Bot Response',
-        [FM.TRAINDIALOGADMIN_MEMORY_TITLE]: 'Memory',
-        [FM.TRAINDIALOGADMIN_HELPTEXT_TITLE]: 'Train Dialog',
-        [FM.TRAINDIALOGADMIN_HELPTEXT_DESCRIPTION]: 'Click on User or Bot dialogs to the left to view steps in the Train Dialog.',
-        [FM.TRAINDIALOGADMIN_HELPTEXT_DESCRIPTION2]: 'You can then make changes to the Train Dialog.',
-        [FM.TRAINDIALOGADMIN_ENTITYDETECTION_TITLE]: 'Entity Detection',
-        [FM.TRAINDIALOGADMIN_ENTITYDETECTION_HELPTEXT]: 'Click on text from the dialog to the left.',
-        [FM.TRAINDIALOGADMIN_ACTION_TITLE]: 'Action',
+        // EditDialogAdmin
+        [FM.EDITDIALOGADMIN_DIALOGMODE_USER]: 'User Input',
+        [FM.EDITDIALOGADMIN_DIALOGMODE_TEXT]: 'Bot Response',
+        [FM.EDITDIALOGADMIN_MEMORY_TITLE]: 'Memory',
+        [FM.EDITDIALOGADMIN_HELPTEXT_TITLE]: 'Train Dialog',
+        [FM.EDITDIALOGADMIN_HELPTEXT_DESCRIPTION]: 'Click on User or Bot dialogs to the left to view steps in the Train Dialog.',
+        [FM.EDITDIALOGADMIN_HELPTEXT_DESCRIPTION2]: 'You can then make changes to the Train Dialog.',
+        [FM.EDITDIALOGADMIN_ENTITYDETECTION_TITLE]: 'Entity Detection',
+        [FM.EDITDIALOGADMIN_ENTITYDETECTION_HELPTEXT]: 'Click on text from the dialog to the left.',
+        [FM.EDITDIALOGADMIN_ACTION_TITLE]: 'Action',
 
-        // TrainDialogModal
-        [FM.TRAINDIALOGMODAL_BRANCH_ARIADESCRIPTION]: 'Branch',
-        [FM.TRAINDIALOGMODAL_BRANCH_TEXT]: 'Branch',
-        [FM.TRAINDIALOGMODAL_BRANCH_TIP] : 'First select a round in the conversation by clicking on it.  Then click "Branch" to create a new Training Dialog starting at that round.',
-        [FM.TRAINDIALOGMODAL_CONFIRMDELETE_TITLE]: 'Are you sure you want to delete this Training Dialog?',
-        [FM.TRAINDIALOGMODAL_CONFIRMABANDON_TITLE]: 'Are you sure you want to abandon your edits?',
+        // EditDialogModal
+        [FM.EDITDIALOGMODAL_BRANCH_ARIADESCRIPTION]: 'Branch',
+        [FM.EDITDIALOGMODAL_BRANCH_TEXT]: 'Branch',
+        [FM.EDITDIALOGMODAL_BRANCH_TIP] : 'First select a round in the conversation by clicking on it.  Then click "Branch" to create a new Training Dialog starting at that round.',
+        [FM.EDITDIALOGMODAL_CONFIRMDELETE_TITLE]: 'Are you sure you want to delete this Training Dialog?',
+        [FM.EDITDIALOGMODAL_CONFIRMABANDON_TITLE]: 'Are you sure you want to abandon your edits?',
         
         // UserInput Modal
         [FM.USERINPUT_TITLE]: 'Add User Input',

@@ -12,7 +12,7 @@ const logDialogPage = require('../support/components/logdialogspage')
 const logDialogModal = require('../support/components/logdialogmodal')
 const scorerModal = require('../support/components/scorermodal')
 const trainDialogPage = require('../support/components/traindialogspage')
-const trainDialogModal = require('../support/components/traindialogmodal')
+const editDialogModal = require('../support/components/editdialogmodal')
 
 describe('Entities creation test', function () {
   const momentSeconds = Cypress.moment().format("MMMDD-HHmmSSS")

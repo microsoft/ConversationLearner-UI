@@ -11,41 +11,51 @@ import * as OF from 'office-ui-fabric-react'
 import { State } from '../../types'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
-import { ReplayError, ReplayErrorType, ReplayErrorMissingAction, ReplayErrorMissingEntity, ReplayErrorActionUnavailable, ReplayErrorEntityDiscrepancy } from '@conversationlearner/models'
+import * as CLM from '@conversationlearner/models'
 
-export function renderReplayError(replayError: ReplayError): JSX.Element {
+export function renderReplayError(replayError: CLM.ReplayError): JSX.Element {
     switch (replayError.type) {
-        case ReplayErrorType.MissingAction:
+        case CLM.ReplayErrorType.ActionUndefined:
             return (
                 <div className={OF.FontClassNames.mediumPlus}>
                     <FormattedMessage
-                        id={FM.REPLAYERROR_DESC_MISSING_ACTION}
-                        defaultMessage={FM.REPLAYERROR_DESC_MISSING_ACTION}
+                        id={FM.REPLAYERROR_DESC_ACTION_UNDEFINED}
+                        defaultMessage={FM.REPLAYERROR_DESC_ACTION_UNDEFINED}
                     />
-                    {` "${(replayError as ReplayErrorMissingAction).lastUserInput}"`}
+                    {` "${(replayError as CLM.ReplayErrorActionUnavailable).lastUserInput}"`}
                 </div>
             )
-        case ReplayErrorType.MissingEntity:
+        case CLM.ReplayErrorType.EntityEmpty:
             return (
                 <div className={OF.FontClassNames.mediumPlus}>
                     <FormattedMessage
-                        id={FM.REPLAYERROR_DESC_MISSING_ENTITY}
-                        defaultMessage={FM.REPLAYERROR_DESC_MISSING_ENTITY}
+                        id={FM.REPLAYERROR_DESC_ENTITY_EMPTY}
+                        defaultMessage={FM.REPLAYERROR_DESC_ENTITY_EMPTY}
                     />
-                    {` "${(replayError as ReplayErrorMissingEntity).value}"`}
+                    {` "${(replayError as CLM.ReplayErrorEntityEmpty).values.join(", ")}"`}
                 </div>
             )
-        case ReplayErrorType.ActionUnavailable:
+        case CLM.ReplayErrorType.EntityUndefined:
             return (
                 <div className={OF.FontClassNames.mediumPlus}>
                     <FormattedMessage
-                        id={FM.REPLAYERROR_DESC_UNAVAILABLE_ACTION}
-                        defaultMessage={FM.REPLAYERROR_DESC_UNAVAILABLE_ACTION}
+                        id={FM.REPLAYERROR_DESC_ENTITY_UNDEFINED}
+                        defaultMessage={FM.REPLAYERROR_DESC_ENTITY_UNDEFINED}
                     />
-                    {` "${(replayError as ReplayErrorActionUnavailable).lastUserInput}"`}
+                    {` "${(replayError as CLM.ReplayErrorEntityUndefined).value}"`}
                 </div>
             )
-        case ReplayErrorType.ActionAfterWait:
+        case CLM. ReplayErrorType.ActionUnavailable:
+            return (
+                <div className={OF.FontClassNames.mediumPlus}>
+                    <FormattedMessage
+                        id={FM.REPLAYERROR_DESC_ACTION_UNAVAILABLE}
+                        defaultMessage={FM.REPLAYERROR_DESC_ACTION_UNAVAILABLE}
+                    />
+                    {` "${(replayError as CLM.ReplayErrorActionUnavailable).lastUserInput}"`}
+                </div>
+            )
+        case CLM.ReplayErrorType.ActionAfterWait:
             return (
                 <div className={OF.FontClassNames.mediumPlus}>
                     <FormattedMessage
@@ -54,7 +64,7 @@ export function renderReplayError(replayError: ReplayError): JSX.Element {
                     />
                 </div>
             )
-        case ReplayErrorType.TwoUserInputs:
+        case CLM.ReplayErrorType.TwoUserInputs:
             return (
                 <div className={OF.FontClassNames.mediumPlus}>
                     <FormattedMessage
@@ -63,7 +73,7 @@ export function renderReplayError(replayError: ReplayError): JSX.Element {
                     />
                 </div>
             )
-        case ReplayErrorType.InputAfterNonWait:
+        case CLM.ReplayErrorType.InputAfterNonWait:
             return (
                 <div className={OF.FontClassNames.mediumPlus}>
                     <FormattedMessage
@@ -73,8 +83,8 @@ export function renderReplayError(replayError: ReplayError): JSX.Element {
                 </div>
             )
             //LARS - think this can go away?  check
-        case ReplayErrorType.EntityDiscrepancy:
-            let entityDiscrepancy = replayError as ReplayErrorEntityDiscrepancy;
+        case CLM.ReplayErrorType.EntityDiscrepancy:
+            let entityDiscrepancy = replayError as CLM.ReplayErrorEntityDiscrepancy;
             return (
                     <OF.TooltipHost  
                         id='myID' 
@@ -110,7 +120,7 @@ export function renderReplayError(replayError: ReplayError): JSX.Element {
                     </OF.TooltipHost>
             )
         default:
-            throw new Error('Unhandled ReplayErrorType case');
+            throw new Error(`Unhandled ReplayErrorType case: ${replayError.type}`);
     }
 }
 
@@ -180,7 +190,7 @@ export interface ReceivedProps {
     open: boolean
     formattedTitleId: string
     formattedMessageId: string
-    textItems: ReplayError[]
+    textItems: CLM.ReplayError[]
     onClose: () => void
 }
 

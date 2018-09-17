@@ -11,7 +11,7 @@ import { Modal } from 'office-ui-fabric-react/lib/Modal'
 import { State } from '../../types'
 import actions from '../../actions'
 import Webchat from '../Webchat'
-import TrainDialogAdmin from './TrainDialogAdmin'
+import { EditDialogAdmin, EditDialogType } from '.'
 import * as CLM from '@conversationlearner/models'
 import { Activity } from 'botframework-directlinejs'
 import ConfirmCancelModal from './ConfirmCancelModal'
@@ -48,7 +48,7 @@ const initialState: ComponentState = {
     originalTrainDialog: null
 }
 
-class TrainDialogModal extends React.Component<Props, ComponentState> {
+class EditDialogModal extends React.Component<Props, ComponentState> {
     state = initialState
 
     componentWillReceiveProps(nextProps: Props) {
@@ -79,7 +79,7 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
 
     @autobind
     onClickBranch() {
-        if (this.state.selectedActivity) {
+        if (this.state.selectedActivity && this.props.onBranch) {
             let branchRound = this.state.selectedActivity.channelData.roundIndex;
             if (branchRound > 0) {
                 this.props.onBranch(branchRound);
@@ -113,7 +113,7 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
     onClickAbandon() {
 
         // Editing a new from Teach Session
-        if (this.props.isNewDialog) {
+        if (this.props.editType === EditDialogType.NEW) {
             this.setState({
                 confirmModalType: ConfirmType.ABANDON
             })
@@ -136,12 +136,16 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
     onClickSave() {
 
         // Editing a new from Teach Session
-        if (this.props.isNewDialog) {
+        if (this.props.editType === EditDialogType.NEW && this.props.onCreate) {
             this.props.onCreate(this.props.trainDialog, this.hasReplayError())
+        }
+        // Editing an existing Log Dialog
+        else if (this.props.editType === EditDialogType.LOG) {
+            this.props.onSave(this.props.trainDialog, this.hasReplayError())
         }
         // Editing an existing Train Dialog
         else if (this.state.originalTrainDialog) {
-            this.props.onReplace(this.props.trainDialog, this.hasReplayError())
+            this.props.onSave(this.props.trainDialog, this.hasReplayError())
         }
         // Viewing an un-edited Train Dialog
         else {
@@ -182,15 +186,8 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
             this.props.onDelete();
         }
         else if (this.state.confirmModalType === ConfirmType.ABANDON) {
-            if (this.state.originalTrainDialog) {
-                this.props.onClose(true)
-            //LARS test    this.props.onReplace(this.state.originalTrainDialog, this.state.originalTrainDialog.invalid || false)
-            }
-            else {
-                throw new Error("OrignialTrainDialog not defined")
-            }
+            this.props.onClose(true)
         }
-        
         this.setState(
             { confirmModalType: ConfirmType.NONE }
         );
@@ -286,7 +283,7 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
                 originalTrainDialog: this.state.originalTrainDialog || this.props.trainDialog
             })
 
-            this.props.onUpdate(newTrainDialog)
+            this.props.onUpdateHistory(newTrainDialog)
         }
         catch (error) {
             console.warn(`Error when attempting to create teach session from history: `, error)
@@ -322,7 +319,7 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
                 originalTrainDialog: this.state.originalTrainDialog || this.props.trainDialog
             })
 
-            this.props.onUpdate(newTrainDialog)
+            this.props.onUpdateHistory(newTrainDialog)
         }
         catch (error) {
                 console.warn(`Error when attempting to change extraction: `, error)
@@ -358,7 +355,7 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
                 originalTrainDialog: this.state.originalTrainDialog || this.props.trainDialog
             })
 
-            this.props.onUpdate(newTrainDialog)
+            this.props.onUpdateHistory(newTrainDialog)
         }
         catch (error) {
             console.warn(`Error when attempting to change an Action: `, error)
@@ -416,7 +413,7 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
                 originalTrainDialog: this.state.originalTrainDialog || this.props.trainDialog
             })
 
-            this.props.onUpdate(newTrainDialog)
+            this.props.onUpdateHistory(newTrainDialog)
         }
         catch (error) {
             console.warn(`Error when attempting to insert an Action `, error)
@@ -464,7 +461,7 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
                 selectedActivity: null
             })
 
-            this.props.onUpdate(newTrainDialog)
+            this.props.onUpdateHistory(newTrainDialog)
         }
         else if (senderType === CLM.SenderType.Bot) {
             // If Action deleted remove it
@@ -477,7 +474,7 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
                 originalTrainDialog: this.state.originalTrainDialog || this.props.trainDialog
             })
 
-            this.props.onUpdate(newTrainDialog)
+            this.props.onUpdateHistory(newTrainDialog)
         }
     }
     
@@ -547,20 +544,22 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
                         ariaDescription="Delete Turn"
                     />
                 }
-                <OF.IconButton
-                    disabled={!canBranch ||
-                        this.state.pendingExtractionChanges ||
-                        !this.props.canEdit ||
-                        (this.props.trainDialog && this.props.trainDialog.invalid === true)}
-                    
-                    className={`cl-wc-branchturn ${activity.channelData.senderType === CLM.SenderType.User ? `cl-wc-branchturn--user` : `cl-wc-branchturn--bot`}`}
-                    iconProps={{ iconName: 'BranchMerge' }}
-                    onClick={this.onClickBranch}
-                    ariaDescription={this.props.intl.formatMessage({
-                        id: FM.TRAINDIALOGMODAL_BRANCH_ARIADESCRIPTION,
-                        defaultMessage: 'Branch'
-                    })}
-                />
+                {this.props.onBranch &&
+                    <OF.IconButton
+                        disabled={!canBranch ||
+                            this.state.pendingExtractionChanges ||
+                            !this.props.canEdit ||
+                            (this.props.trainDialog && this.props.trainDialog.invalid === true)}
+                        
+                        className={`cl-wc-branchturn ${activity.channelData.senderType === CLM.SenderType.User ? `cl-wc-branchturn--user` : `cl-wc-branchturn--bot`}`}
+                        iconProps={{ iconName: 'BranchMerge' }}
+                        onClick={this.onClickBranch}
+                        ariaDescription={this.props.intl.formatMessage({
+                            id: FM.EDITDIALOGMODAL_BRANCH_ARIADESCRIPTION,
+                            defaultMessage: 'Branch'
+                        })}
+                    />
+                }
                 </div>
         )
     }
@@ -585,7 +584,7 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
     renderAbandonText(intl: ReactIntl.InjectedIntl) {
 
         // Editing a new Teach Session
-        if (this.props.isNewDialog) {
+        if (this.props.editType === EditDialogType.NEW) {
             return intl.formatMessage({
                 id: FM.BUTTON_ABANDON,
                 defaultMessage: 'Abandon'
@@ -609,10 +608,17 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
 
     renderSaveText(intl: ReactIntl.InjectedIntl) {
         // Editing a new Teach Session
-        if (this.props.isNewDialog) {
+        if (this.props.editType === EditDialogType.NEW) {
             return intl.formatMessage({
                 id: FM.BUTTON_SAVE,
                 defaultMessage: 'Save'
+            })
+        }
+        // Editing a Log Dialog
+        else if (this.props.editType === EditDialogType.LOG) {
+            return intl.formatMessage({
+                id: FM.BUTTON_SAVE_AS_TRAIN_DIALOG,
+                defaultMessage: 'Save as Train Dialog'
             })
         }
         // Editing an existing Train Dialog
@@ -635,12 +641,12 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
         const { intl } = this.props
         const chatDisable = this.state.pendingExtractionChanges ? <div className="cl-overlay"/> : null;
         const disableUserInput = this.shouldDisableUserInput()
-  
+        const containerClassName = `cl-modal cl-modal--large cl-modal--${this.props.editType === EditDialogType.LOG ? "teach" : "log"}`
         return (
             <Modal
                 isOpen={this.props.open}
                 isBlocking={true}
-                containerClassName="cl-modal cl-modal--large cl-modal--teach"
+                containerClassName={containerClassName}
             >
                 <div className="cl-modal_body">  
                     <div className="cl-chatmodal">
@@ -664,10 +670,11 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
                         </div>
                         <div className="cl-chatmodal_controls"> 
                             <div className="cl-chatmodal_admin-controls">
-                                <TrainDialogAdmin
-                                    data-testid="chatmodal-traindialogadmin"
+                                <EditDialogAdmin
+                                    data-testid="chatmodal-editdialogadmin"
                                     app={this.props.app}
                                     editingPackageId={this.props.editingPackageId}
+                                    editType={this.props.editType}
                                     canEdit={this.props.canEdit}
                                     trainDialog={this.props.trainDialog}
                                     selectedActivity={this.state.selectedActivity}
@@ -729,12 +736,12 @@ class TrainDialogModal extends React.Component<Props, ComponentState> {
                     title={this.state.confirmModalType === ConfirmType.DELETE
                         ?
                             intl.formatMessage({
-                                id: FM.TRAINDIALOGMODAL_CONFIRMDELETE_TITLE,
+                                id: FM.EDITDIALOGMODAL_CONFIRMDELETE_TITLE,
                                 defaultMessage: `Are you sure you want to delete this Training Dialog?`
                             })
                         :
                         intl.formatMessage({
-                            id: FM.TRAINDIALOGMODAL_CONFIRMABANDON_TITLE,
+                            id: FM.EDITDIALOGMODAL_CONFIRMABANDON_TITLE,
                             defaultMessage: `Are you sure you want to abandon this Training Dialog?`
                         })
                     }
@@ -770,16 +777,17 @@ export interface ReceivedProps {
     open: boolean
     trainDialog: CLM.TrainDialog
     history: Activity[],
-    // Is a new dialog (i.e. from editing a new Teach Session)
-    isNewDialog: boolean,
+    // Is it a new dialog, a TrainDialog or LogDialog
+    editType: EditDialogType,
     // If starting with activity selected
     initialSelectedHistoryIndex: number | null
     onClose: (reload: boolean) => void,
-    onBranch: (turnIndex: number) => void,
+    onBranch: ((turnIndex: number) => void) | null,
     onContinue: (newTrainDialog: CLM.TrainDialog, initialUserInput: CLM.UserInput) => void,
-    onReplace: (newTrainDialog: CLM.TrainDialog, isInvalid: boolean) => void,
-    onCreate: (newTrainDialog: CLM.TrainDialog, isInvalid: boolean) => void,
-    onUpdate: (newTrainDialog: CLM.TrainDialog) => void,
+    onSave: (newTrainDialog: CLM.TrainDialog, isInvalid: boolean) => void,
+    // Add a new train dialog to the Model (when EditDialogType === NEW)
+    onCreate: ((newTrainDialog: CLM.TrainDialog, isInvalid: boolean) => void) | null,
+    onUpdateHistory: (newTrainDialog: CLM.TrainDialog) => void,
     onDelete: () => void
 }
 
@@ -788,4 +796,4 @@ const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
 type Props = typeof stateProps & typeof dispatchProps & ReceivedProps & InjectedIntlProps
 
-export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(TrainDialogModal))
+export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(EditDialogModal))
