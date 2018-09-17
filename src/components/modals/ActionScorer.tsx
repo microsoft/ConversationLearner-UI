@@ -754,7 +754,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
 export interface ReceivedProps {
     app: AppBase
     editingPackageId: string,
-    dialogType: DialogType,
+    dialogType: DialogType,  // LARS = make this not train dialog specific
     sessionId: string,
     autoTeach: boolean,
     dialogMode: DialogMode,

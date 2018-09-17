@@ -9,6 +9,7 @@ import { connect } from 'react-redux';
 import { State } from '../../types'
 import actions from '../../actions'
 import * as CLM from '@conversationlearner/models'
+import { EditDialogType } from '../../components/modals'
 import ActionScorer from './ActionScorer';
 import { Activity } from 'botframework-directlinejs'
 import EntityExtractor from './EntityExtractor';
@@ -145,11 +146,15 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
         const renderData = this.getRenderData()
         const mode = this.props.teachSession.mode
         const autoTeachWithRound = this.props.teachSession.autoTeach 
-
+        const editTypeClass = this.props.editType === EditDialogType.LOG ? 'log' : 'train'
+        
         return (
             <div className={`cl-dialog-admin ${FontClassNames.large}`}>
-                <div className={`cl-dialog-title cl-dialog-title--train ${FontClassNames.xxLarge}`}>
-                    <Icon iconName="EditContact" />Train Dialog
+                <div className={`cl-dialog-title cl-dialog-title--${editTypeClass} ${FontClassNames.xxLarge}`}>
+                    <Icon 
+                        iconName={this.props.editType === EditDialogType.LOG ? 'UserFollowed' : 'EditContact'}
+                    />
+                    {this.props.editType === EditDialogType.LOG ? 'Log Dialog' : 'Train Dialog'}
                 </div>
                 {this.props.teachSession.mode === CLM.DialogMode.Extractor && (
                     <div className="cl-dialog-admin__content">
@@ -325,6 +330,7 @@ export interface ReceivedProps {
     onScoredAction: (scoredAction: CLM.ScoredAction) => void;
     app: CLM.AppBase
     editingPackageId: string
+    editType: EditDialogType,
     // Index to attach to channel data
     activityIndex: number
     // If user clicked on an Activity

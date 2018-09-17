@@ -13,7 +13,7 @@ const logDialogPage = require('../support/components/logdialogspage')
 const logDialogModal = require('../support/components/logdialogmodal')
 const scorerModal = require('../support/components/scorermodal')
 const trainDialogPage = require('../support/components/traindialogspage')
-const trainDialogModal = require('../support/components/traindialogmodal')
+const editDialogModal = require('../support/components/editdialogmodal')
 
 /**
 * Wait action: After the system takes a "wait" action, it will stop taking actions and wait for user input.
@@ -77,28 +77,28 @@ describe('Wait vs No Wait Action e2e test', function () {
     trainDialogPage.createNew()
     cy.wait(2000)
 
-    trainDialogModal.typeYourMessage(trainMessage01)
-    trainDialogModal.clickScoreActions()
+    editDialogModal.typeYourMessage(trainMessage01)
+    editDialogModal.clickScoreActions()
     scorerModal.selectAnActionWithText(action01)
     cy.wait(2000)
 
-    trainDialogModal.typeYourMessage(trainMessage02)
-    trainDialogModal.clickScoreActions()
+    editDialogModal.typeYourMessage(trainMessage02)
+    editDialogModal.clickScoreActions()
     scorerModal.selectAnActionWithText(action02)
     cy.wait(2000)
 
     scorerModal.selectAnActionWithText(action01)
     cy.wait(2000)
 
-    trainDialogModal.typeYourMessage(trainMessage03)
-    trainDialogModal.clickScoreActions()
+    editDialogModal.typeYourMessage(trainMessage03)
+    editDialogModal.clickScoreActions()
     scorerModal.selectAnActionWithText(action03)
     cy.wait(2000)
 
     scorerModal.selectAnActionWithText(action01)
     cy.wait(2000)
     
-    trainDialogModal.clickDoneTeaching()
+    editDialogModal.clickDoneTeaching()
   })
 
   /** FEATURE: Delete a Model */

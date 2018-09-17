@@ -22,6 +22,7 @@ import ConfirmCancelModal from './ConfirmCancelModal'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { autobind } from 'office-ui-fabric-react/lib/Utilities';
+import { EditDialogType } from '.';
 
 interface ComponentState {
     isConfirmDeleteOpen: boolean,
@@ -118,7 +119,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
     @autobind
     async onCloseInitState(filledEntityMap?: CLM.FilledEntityMap) {
-        if (filledEntityMap) {
+        if (filledEntityMap && this.props.onSetInitialEntities) {
             await this.props.onSetInitialEntities(filledEntityMap.FilledEntities())          
         }
         this.setState({
@@ -208,7 +209,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
     renderAbandonText(intl: ReactIntl.InjectedIntl) {
         // Editing a new Teach Session
-        if (this.props.isNewDialog) {
+        if (this.props.editType === EditDialogType.NEW) {
             return intl.formatMessage({
                 id: FM.BUTTON_ABANDON,
                 defaultMessage: 'Abandon'
@@ -231,10 +232,17 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
     renderSaveText(intl: ReactIntl.InjectedIntl) {
         // Editing a new Teach Session
-        if (this.props.isNewDialog) {
+        if (this.props.editType === EditDialogType.NEW) {
             return intl.formatMessage({
                 id: FM.BUTTON_SAVE,
                 defaultMessage: 'Save'
+            })
+        }
+        // Editing a Log Dialog
+        else if (this.props.editType === EditDialogType.LOG) {
+            return intl.formatMessage({
+                id: FM.BUTTON_SAVE_AS_TRAIN_DIALOG,
+                defaultMessage: 'Save as Train Dialog'
             })
         }
         else if (this.props.sourceLogDialog || this.props.sourceTrainDialog) {
@@ -253,7 +261,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
     renderConfirmText(intl: ReactIntl.InjectedIntl) {
         // Editing a new Teach Session
-        if (this.props.isNewDialog) {
+        if (this.props.editType === EditDialogType.NEW) {
             return intl.formatMessage({
                 id: FM.TEACHSESSIONMODAL_TEACH_CONFIRMDELETE_TITLE,
                 defaultMessage: 'Are you sure you want to abandon this teach session?'
@@ -310,6 +318,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                                         data-testid="teachsession-admin"
                                         app={this.props.app}
                                         editingPackageId={this.props.editingPackageId}
+                                        editType={this.props.editType}
                                         activityIndex={this.state.activityIndex}
                                         selectedActivity={this.state.selectedActivity}
                                         onScoredAction={(scoredAction) => {
@@ -404,13 +413,13 @@ export interface ReceivedProps {
     isOpen: boolean
     onClose: Function
     onEditTeach: (historyIndex: number) => void
-    onSetInitialEntities: (initialFilledEntities: CLM.FilledEntity[]) => void
+    onSetInitialEntities: ((initialFilledEntities: CLM.FilledEntity[]) => void) | null
     app: CLM.AppBase
     editingPackageId: string
     teach: CLM.Teach
     dialogMode: CLM.DialogMode
-    // Is a new training dialog (i.e. from editing a new Teach Session)
-    isNewDialog: boolean,
+    // Is it new, from a TrainDialog or LogDialog
+    editType: EditDialogType,
     // When editing and existing log or train dialog
     sourceTrainDialog?: CLM.TrainDialog
     sourceLogDialog?: CLM.LogDialog

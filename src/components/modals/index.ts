@@ -7,13 +7,19 @@ import AppCreator from './AppCreator'
 import EntityCreatorEditor from './EntityCreatorEditor'
 import ConfirmCancelModal from './ConfirmCancelModal'
 import ChatSessionModal from './ChatSessionModal'
-import LogDialogModal from './LogDialogModal'
 import TeachSessionModal from './TeachSessionModal'
-import TrainDialogModal from './TrainDialogModal'
+import EditDialogModal from './EditDialogModal'
+import EditDialogAdmin from './EditDialogAdmin'
 import TutorialImporterModal from './TutorialImporter'
 import ErrorPanel from './ErrorPanel'
 import SpinnerWindow from './SpinnerWindow'
 import Expando from './Expando'
+
+export enum EditDialogType {
+    NEW = 'NEW',
+    TRAIN = 'TRAIN',
+    LOG = 'LOG'
+}
 
 export {
     ActionCreatorEditor,
@@ -21,9 +27,9 @@ export {
     EntityCreatorEditor,
     ConfirmCancelModal,
     ChatSessionModal,
-    LogDialogModal,
     TeachSessionModal,
-    TrainDialogModal,
+    EditDialogAdmin,
+    EditDialogModal,
     TutorialImporterModal,
     ErrorPanel,
     SpinnerWindow,

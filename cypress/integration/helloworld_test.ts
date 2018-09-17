@@ -13,7 +13,7 @@ const logDialogPage = require('../support/components/logdialogspage')
 const logDialogModal = require('../support/components/logdialogmodal')
 const scorerModal = require('../support/components/scorermodal')
 const trainDialogPage = require('../support/components/traindialogspage')
-const trainDialogModal = require('../support/components/traindialogmodal')
+const editDialogModal = require('../support/components/editdialogmodal')
 
 describe('Hello-World', function () {
   const postfix = Cypress.moment().format("MMMDD-HHmmSSS")
@@ -60,8 +60,8 @@ describe('Hello-World', function () {
     modelPage.navigateToTrainDialogs()
     trainDialogPage.verifyPageTitle()
     trainDialogPage.createNew()
-    trainDialogModal.typeYourMessage(trainmessage01)
-    trainDialogModal.clickScoreActions()
+    editDialogModal.typeYourMessage(trainmessage01)
+    editDialogModal.clickScoreActions()
     scorerModal.selectAnAction()
 
     // Perform chat entries validation
@@ -70,17 +70,17 @@ describe('Hello-World', function () {
       .and('contain', action01)
       .wait(500)
 
-    trainDialogModal.clickDoneTeaching()
+    editDialogModal.clickDoneTeaching()
     trainDialogPage.createNew()
-    trainDialogModal.typeYourMessage(trainmessage02)
-    trainDialogModal.clickScoreActions()
+    editDialogModal.typeYourMessage(trainmessage02)
+    editDialogModal.clickScoreActions()
     scorerModal.selectAnAction()
 
     // Perform second chat entries validation
     cy.get('[id="botchat"]')
       .should('contain', trainmessage02)
       .and('contain', action01);
-    trainDialogModal.clickDoneTeaching();
+    editDialogModal.clickDoneTeaching();
   })
 
   /** FEATURE: New Log Dialog */
