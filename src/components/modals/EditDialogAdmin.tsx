@@ -72,6 +72,13 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                 })
             }
         }
+        else {
+            this.setState({
+                senderType: null,
+                roundIndex: null,
+                scoreIndex: null
+            })
+        }
     }
 
     getPrevMemories(): CLM.Memory[] {

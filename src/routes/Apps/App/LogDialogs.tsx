@@ -376,14 +376,14 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             })
     }
 
-    onClickSync() {
-        this.props.fetchAllLogDialogsThunkAsync(this.props.app, this.props.editingPackageId);
+    async onClickSync() {
+        await this.props.fetchAllLogDialogsThunkAsync(this.props.app, this.props.editingPackageId);
     }
 
     @autobind
-    onDeleteLogDialog() {
+    async onDeleteLogDialog() {
         if (this.state.currentLogDialog) {
-            this.props.deleteLogDialogThunkAsync(this.props.user.id, this.props.app, this.state.currentLogDialog.logDialogId, this.props.editingPackageId)
+            await this.props.deleteLogDialogThunkAsync(this.props.user.id, this.props.app, this.state.currentLogDialog.logDialogId, this.props.editingPackageId)
         }
         this.onCloseEditDialogModal();
     }
@@ -391,6 +391,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     // User has clicked on Activity in a Teach Session
     async onEditTeach(historyIndex: number) {
 
+        console.log("Lars - onEditTeach")
         try {
             if (this.state.teachSession) {
                 // Get train dialog associated with the teach session
@@ -460,7 +461,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             this.setState({
                 history: teachWithHistory.history,
                 lastAction: teachWithHistory.lastAction,
-                currentTrainDialog: newTrainDialog, // LARS - note - what about LogDialog?  Anything?
+                currentTrainDialog: newTrainDialog, 
                 isEditDialogModalOpen: true
             })
         })

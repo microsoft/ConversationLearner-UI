@@ -17,7 +17,8 @@ import Expando from './Expando'
 
 export enum EditDialogType {
     NEW = 'NEW',
-    TRAIN = 'TRAIN',
+    TRAIN_EDITED = 'TRAIN_EDITED',
+    TRAIN_ORIGINAL = 'TRAIN_ORIGINAL',
     LOG = 'LOG'
 }
 

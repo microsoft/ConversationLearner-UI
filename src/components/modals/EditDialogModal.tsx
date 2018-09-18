@@ -21,31 +21,22 @@ import { renderReplayError } from './ReplayErrorList'
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { autobind } from 'office-ui-fabric-react/lib/Utilities'
 
-enum ConfirmType {
-    NONE = 'NONE',
-    DELETE = 'DELETE',
-    ABANDON = 'ABANDON'
-}
- 
 interface ComponentState {
-    confirmModalType: ConfirmType
+    isConfirmModalOpen: boolean
     isUserInputModalOpen: boolean
     selectedActivity: Activity | null
     webchatKey: number
     currentTrainDialog: CLM.TrainDialog | null
     pendingExtractionChanges: boolean,
-    // If the train dialog was edited, the original source
-    originalTrainDialog: CLM.TrainDialog | null
 }
 
 const initialState: ComponentState = {
-    confirmModalType: ConfirmType.NONE,
+    isConfirmModalOpen: false,
     isUserInputModalOpen: false,
     selectedActivity: null,
     webchatKey: 0,
     currentTrainDialog: null,
-    pendingExtractionChanges: false,
-    originalTrainDialog: null
+    pendingExtractionChanges: false
 }
 
 class EditDialogModal extends React.Component<Props, ComponentState> {
@@ -56,24 +47,22 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             this.setState(initialState);
         }
         if (this.state.currentTrainDialog !== nextProps.trainDialog) {
-            // Make sure selected activity is still valid (could have been deleted)
-            if (!nextProps.history.find(a => this.state.selectedActivity !== null && a.id === this.state.selectedActivity.id)) {
-                this.setState({
-                    selectedActivity: null
-                })
+
+            let selectedActivity = this.state.selectedActivity
+            if (nextProps.initialSelectedHistoryIndex) {
+                const initialSelectedActivity = nextProps.history[nextProps.initialSelectedHistoryIndex]
+                if (initialSelectedActivity !== this.state.selectedActivity) {
+                    selectedActivity = initialSelectedActivity
+                }
             }
 
             // Force webchat to re-mount as history prop can't be updated
             this.setState({
                 currentTrainDialog: nextProps.trainDialog,
-                webchatKey: this.state.webchatKey + 1
+                webchatKey: this.state.webchatKey + 1,
+                selectedActivity
             })
-        }
-        if (nextProps.initialSelectedHistoryIndex) {
-            const initialSelectedActivity = nextProps.history[nextProps.initialSelectedHistoryIndex]
-            if (initialSelectedActivity !== this.state.selectedActivity) {
-                this.state.selectedActivity = initialSelectedActivity
-            }
+
         }
     }
 
@@ -111,25 +100,10 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
 
     @autobind
     onClickAbandon() {
+        this.setState({
+            isConfirmModalOpen: true
+        })
 
-        // Editing a new from Teach Session
-        if (this.props.editType === EditDialogType.NEW) {
-            this.setState({
-                confirmModalType: ConfirmType.ABANDON
-            })
-        }
-        // Editing an existing Train Dialog
-        else if (this.state.originalTrainDialog) {
-            this.setState({
-                confirmModalType: ConfirmType.ABANDON
-            })
-        }
-        // Viewing an un-edited Train Dialog
-        else {
-            this.setState({
-                confirmModalType: ConfirmType.DELETE
-            })
-        }
     }
 
     @autobind
@@ -143,13 +117,13 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         else if (this.props.editType === EditDialogType.LOG) {
             this.props.onSave(this.props.trainDialog, this.hasReplayError())
         }
-        // Editing an existing Train Dialog
-        else if (this.state.originalTrainDialog) {
-            this.props.onSave(this.props.trainDialog, this.hasReplayError())
-        }
         // Viewing an un-edited Train Dialog
-        else {
+        else if (this.props.editType === EditDialogType.TRAIN_ORIGINAL) {
             this.props.onClose(false)
+        }
+        // Editing an existing Train Dialog
+        else {
+            this.props.onSave(this.props.trainDialog, this.hasReplayError())
         }
     }
 
@@ -170,27 +144,6 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             const initialUserInput: CLM.UserInput = { text: activity.text! }
             this.props.onContinue(newTrainDialog, initialUserInput) 
         }
-    }
-
-
-    @autobind
-    onClickConfirmCancel() {
-        this.setState({
-            confirmModalType: ConfirmType.NONE
-        })
-    }
-
-    @autobind
-    onClickConfirmApprove() {
-        if (this.state.confirmModalType === ConfirmType.DELETE) {
-            this.props.onDelete();
-        }
-        else if (this.state.confirmModalType === ConfirmType.ABANDON) {
-            this.props.onClose(true)
-        }
-        this.setState(
-            { confirmModalType: ConfirmType.NONE }
-        );
     }
 
     // Return best action from ScoreResponse 
@@ -279,10 +232,6 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             // Replay logic functions on train dialog
             newTrainDialog = await ((this.props.trainDialogReplayThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<CLM.TrainDialog>)
 
-            this.setState({
-                originalTrainDialog: this.state.originalTrainDialog || this.props.trainDialog
-            })
-
             this.props.onUpdateHistory(newTrainDialog)
         }
         catch (error) {
@@ -315,10 +264,6 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             // Replay logic functions on train dialog
             newTrainDialog = await ((this.props.trainDialogReplayThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<CLM.TrainDialog>)
 
-            this.setState({
-                originalTrainDialog: this.state.originalTrainDialog || this.props.trainDialog
-            })
-
             this.props.onUpdateHistory(newTrainDialog)
         }
         catch (error) {
@@ -350,10 +295,6 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
 
             // Replay logic functions on train dialog
             newTrainDialog = await ((this.props.trainDialogReplayThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<CLM.TrainDialog>)
-
-            this.setState({
-                originalTrainDialog: this.state.originalTrainDialog || this.props.trainDialog
-            })
 
             this.props.onUpdateHistory(newTrainDialog)
         }
@@ -409,10 +350,6 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             let curRound = newTrainDialog.rounds[roundIndex]
             curRound.scorerSteps.splice(scoreIndex + 1, 0, scorerStep)
 
-            this.setState({
-                originalTrainDialog: this.state.originalTrainDialog || this.props.trainDialog
-            })
-
             this.props.onUpdateHistory(newTrainDialog)
         }
         catch (error) {
@@ -422,6 +359,8 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
 
     @autobind
     async onDeleteTurn() {
+
+        console.log('LARS - on delete turn')
 
         if (!this.state.selectedActivity) {
             throw new Error("No selected activity")
@@ -457,7 +396,6 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             newTrainDialog = await ((this.props.trainDialogReplayThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<CLM.TrainDialog>)
 
             this.setState({
-                originalTrainDialog: this.state.originalTrainDialog || this.props.trainDialog,
                 selectedActivity: null
             })
 
@@ -471,7 +409,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             newTrainDialog = await ((this.props.trainDialogReplayThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<CLM.TrainDialog>)
 
             this.setState({
-                originalTrainDialog: this.state.originalTrainDialog || this.props.trainDialog
+                selectedActivity: null
             })
 
             this.props.onUpdateHistory(newTrainDialog)
@@ -581,6 +519,31 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         return !lastAction || !lastAction.isTerminal
     }
 
+    
+
+    @autobind
+    onClickConfirmCancel() {
+        this.setState({
+            isConfirmModalOpen: false
+        })
+    }
+
+    @autobind
+    onClickConfirmApprove() {
+        // Editing a new Teach Session
+        if (this.props.editType === EditDialogType.NEW) {
+            this.props.onDelete()
+        }
+        // Viewing an un-edited Train Dialog
+        else if (this.props.editType === EditDialogType.TRAIN_ORIGINAL) {
+            this.props.onDelete()
+        }
+        // Editing an existing Train Dialog
+        else {
+            this.props.onClose(true) // Reload original
+        }
+    }
+
     renderAbandonText(intl: ReactIntl.InjectedIntl) {
 
         // Editing a new Teach Session
@@ -590,18 +553,18 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                 defaultMessage: 'Abandon'
             })
         }
-        // Editing an existing Train Dialog
-        else if (this.state.originalTrainDialog) {
-            return intl.formatMessage({
-                id: FM.BUTTON_ABANDON_EDIT,
-                defaultMessage: 'Abandon Edit'
-            })
-        }
         // Viewing an un-edited Train Dialog
-        else {
+        else if (this.props.editType === EditDialogType.TRAIN_ORIGINAL) {
             return intl.formatMessage({
                 id: FM.BUTTON_DELETE,
                 defaultMessage: 'Delete'
+            })
+        }
+        // Editing an existing Train Dialog
+        else {
+            return intl.formatMessage({
+                id: FM.BUTTON_ABANDON_EDIT,
+                defaultMessage: 'Abandon Edit'
             })
         }
     }
@@ -621,20 +584,47 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                 defaultMessage: 'Save as Train Dialog'
             })
         }
-        // Editing an existing Train Dialog
-        else if (this.state.originalTrainDialog) {
-            return intl.formatMessage({
-                id: FM.BUTTON_SAVE_EDIT,
-                defaultMessage: 'Save Edit'
-            })
-        }
         // Viewing an un-editing Train Dialog
-        else {
+        else if (this.props.editType === EditDialogType.TRAIN_ORIGINAL) {
             return intl.formatMessage({
                 id: FM.BUTTON_DONE,
                 defaultMessage: 'Done'
             })
         }
+        // Editing an existing Train Dialog
+        else {
+            return intl.formatMessage({
+                id: FM.BUTTON_SAVE_EDIT,
+                defaultMessage: 'Save Edit'
+            })
+        }
+
+    }
+
+    renderConfirmText(intl: ReactIntl.InjectedIntl) {
+
+        // Editing a new Teach Session
+        if (this.props.editType === EditDialogType.NEW) {
+            return intl.formatMessage({
+                id: FM.EDITDIALOGMODAL_CONFIRMABANDON_NEW_TITLE,
+                defaultMessage: `Are you sure you want to abandon this Training Dialog?`
+            })
+        }
+        // Viewing an un-editing Train Dialog
+        else if (this.props.editType === EditDialogType.TRAIN_ORIGINAL) {
+            return intl.formatMessage({
+                id: FM.EDITDIALOGMODAL_CONFIRMDELETE_TITLE,
+                defaultMessage: `Are you sure you want to delete this Training Dialog?`
+            })
+        }
+        // Editing an existing Train Dialog
+        else {
+            return intl.formatMessage({
+                id: FM.EDITDIALOGMODAL_CONFIRMABANDON_EDIT_TITLE,
+                defaultMessage: `Are you sure you want to abandon your edits?`
+            })
+        }
+
     }
 
     render() {
@@ -730,21 +720,10 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                 </div>
                 <ConfirmCancelModal
                     data-testid="confirm-delete-trainingdialog"
-                    open={this.state.confirmModalType !== ConfirmType.NONE}
+                    open={this.state.isConfirmModalOpen}
                     onCancel={this.onClickConfirmCancel}
                     onConfirm={this.onClickConfirmApprove}
-                    title={this.state.confirmModalType === ConfirmType.DELETE
-                        ?
-                            intl.formatMessage({
-                                id: FM.EDITDIALOGMODAL_CONFIRMDELETE_TITLE,
-                                defaultMessage: `Are you sure you want to delete this Training Dialog?`
-                            })
-                        :
-                        intl.formatMessage({
-                            id: FM.EDITDIALOGMODAL_CONFIRMABANDON_TITLE,
-                            defaultMessage: `Are you sure you want to abandon this Training Dialog?`
-                        })
-                    }
+                    title={this.renderConfirmText(intl)}
                 />
                 <UserInputModal
                     open={this.state.isUserInputModalOpen}
