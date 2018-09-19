@@ -413,7 +413,8 @@ export enum FM {
     EDITDIALOGMODAL_BRANCH_TEXT = 'EditDialogModal.branch.text',
     EDITDIALOGMODAL_BRANCH_TIP = 'EditDialogModal.branch.tip',
     EDITDIALOGMODAL_CONFIRMDELETE_TITLE = 'EditDialogModal.confirmDelete.title',
-    EDITDIALOGMODAL_CONFIRMABANDON_TITLE = 'EditDialogModal.confirmAbandon.title',
+    EDITDIALOGMODAL_CONFIRMABANDON_NEW_TITLE = 'EditDialogModal.confirmAbandonNew.title',
+    EDITDIALOGMODAL_CONFIRMABANDON_EDIT_TITLE = 'EditDialogModal.confirmAbandonEdit.title',
 
     // Train Dialogs
     TRAINDIALOGS_TITLE = 'TrainDialogs.title',
@@ -882,7 +883,8 @@ export default {
         [FM.EDITDIALOGMODAL_BRANCH_TEXT]: 'Branch',
         [FM.EDITDIALOGMODAL_BRANCH_TIP] : 'First select a round in the conversation by clicking on it.  Then click "Branch" to create a new Training Dialog starting at that round.',
         [FM.EDITDIALOGMODAL_CONFIRMDELETE_TITLE]: 'Are you sure you want to delete this Training Dialog?',
-        [FM.EDITDIALOGMODAL_CONFIRMABANDON_TITLE]: 'Are you sure you want to abandon your edits?',
+        [FM.EDITDIALOGMODAL_CONFIRMABANDON_NEW_TITLE]: 'Are you sure you want to abandon this Training Dialog?',
+        [FM.EDITDIALOGMODAL_CONFIRMABANDON_EDIT_TITLE]: 'Are you sure you want to abandon your edits?',
         
         // UserInput Modal
         [FM.USERINPUT_TITLE]: 'Add User Input',

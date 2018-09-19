@@ -284,11 +284,8 @@ class TeachModal extends React.Component<Props, ComponentState> {
     render() {
         const { intl } = this.props
 
-        // Put mask of webchat if not in input mode LARS
-        let chatDisable = null// (this.props.dialogMode !== CLM.DialogMode.Wait) ?
-          //  <div className="cl-overlay"></div>
-          //  : null;
-
+        // Put mask of webchat if waiting for extraction labelling
+        let chatDisable = this.props.teachSession.mode === CLM.DialogMode.Extractor ? <div className="cl-overlay"/> : null;
         return (
             <div>
                 <Modal
@@ -356,13 +353,14 @@ class TeachModal extends React.Component<Props, ComponentState> {
                             <div className="cl-modal-buttons_primary">
                                 <OF.PrimaryButton
                                     data-testid="teachsession-footer-button-done"
-                                    disabled={!this.state.hasTerminalAction}
+                                    disabled={!this.state.hasTerminalAction || this.props.teachSession.mode === CLM.DialogMode.Extractor}
                                     onClick={this.onClickSave}
                                     ariaDescription={this.renderSaveText(intl)}
                                     text={this.renderSaveText(intl)}
                                 />
                                 <OF.DefaultButton
                                     data-testid="teachsession-footer-button-abandon"
+                                    disabled={this.props.teachSession.mode === CLM.DialogMode.Extractor}
                                     className="cl-button-delete"
                                     onClick={this.onClickAbandonTeach}
                                     ariaDescription={this.renderAbandonText(intl)}
@@ -421,8 +419,8 @@ export interface ReceivedProps {
     // Is it new, from a TrainDialog or LogDialog
     editType: EditDialogType,
     // When editing and existing log or train dialog
-    sourceTrainDialog?: CLM.TrainDialog
-    sourceLogDialog?: CLM.LogDialog
+    sourceTrainDialog: CLM.TrainDialog | null
+    sourceLogDialog: CLM.LogDialog | null
     // When editing, the intial history before teach starts
     initialHistory: Activity[]
     lastAction: CLM.ActionBase | null
