@@ -124,7 +124,7 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                 filledEntities = this.props.trainDialog.rounds[curRound].scorerSteps[0].input.filledEntities
             }
             else if (curRound < this.props.trainDialog.rounds.length) {
-                curRound = curRound +1
+                curRound = curRound + 1
             }
             else {
                 // No round with scorer step after this extraction step
@@ -325,8 +325,12 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                                     app={this.props.app}
                                     editingPackageId={this.props.editingPackageId}
                                     canEdit={this.props.canEdit} 
-                                    extractType={CLM.DialogType.TRAINDIALOG}
-                                    sessionId={this.props.trainDialog.trainDialogId}
+                                    extractType={this.props.editType === EditDialogType.LOG
+                                        ? CLM.DialogType.LOGDIALOG
+                                        : CLM.DialogType.TRAINDIALOG}
+                                    sessionId={this.props.editingLogDialog
+                                        ? this.props.editingLogDialog.logDialogId
+                                        : this.props.trainDialog.trainDialogId}
                                     roundIndex={this.state.roundIndex}
                                     autoTeach={false}
                                     dialogMode={renderData.dialogMode}
@@ -404,6 +408,8 @@ export interface ReceivedProps {
     app: CLM. AppBase,
     editingPackageId: string,
     trainDialog: CLM.TrainDialog,
+    // If editing a log dialog, this was the source
+    editingLogDialog: CLM.LogDialog | null
     selectedActivity: Activity | null,
     canEdit: boolean,
     editType: EditDialogType,

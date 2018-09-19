@@ -11,7 +11,7 @@ import * as CLM from '@conversationlearner/models'
 import * as OF from 'office-ui-fabric-react'
 import * as ExtractorResponseEditor from '../ExtractorResponseEditor'
 import EntityCreatorEditor from './EntityCreatorEditor'
-import { clearExtractResponses, updateExtractResponse, removeExtractResponse, runExtractorThunkAsync } from '../../actions/teachActions'
+import actions from '../../actions'
 import * as ToolTips from '../ToolTips'
 import HelpIcon from '../HelpIcon'
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
@@ -279,7 +279,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    onSubmitTextVariation() {
+    async onSubmitTextVariation() {
         let text = this.state.textVariationValue.trim();
         if (text.length === 0) {
             return
@@ -290,7 +290,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         }
 
         const userInput: CLM.UserInput = { text: text }
-        this.props.runExtractorThunkAsync(
+        await this.props.runExtractorThunkAsync(
             this.props.app.appId,
             this.props.extractType,
             this.props.sessionId,
@@ -368,7 +368,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                         </div>}
                     </div>
                 })}
-                {canEdit && this.props.extractType !== CLM.DialogType.LOGDIALOG && 
+                {canEdit &&
                     <div className='cl-textfield--withButton editor-alt-offset'>
                         <OF.TextField
                             value={this.state.textVariationValue}
@@ -471,10 +471,10 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        updateExtractResponse,
-        removeExtractResponse,
-        runExtractorThunkAsync,
-        clearExtractResponses
+        updateExtractResponse : actions.teach.updateExtractResponse,
+        removeExtractResponse : actions.teach.removeExtractResponse,
+        runExtractorThunkAsync : actions.teach.runExtractorThunkAsync,
+        clearExtractResponses : actions.teach.clearExtractResponses
     }, dispatch);
 }
 const mapStateToProps = (state: State, ownProps: any) => {

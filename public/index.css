@@ -633,7 +633,8 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
 }
 */
 .ms-Button--primary.is-disabled, .ms-Button--primary:disabled {
-  background-color: var(--color-themeDarker) !important;
+  background-color: var(--color-neutralTertiary) !important;
+  color: var(--color-neutralSecondary) !important;
 }
 
 /** TODO: Remove usage of !important */
@@ -690,6 +691,7 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
   border: 1px solid var(--color-themeDark) !important;
   color: white !important;
 }
+
 .ms-Button--default:not(.cl-button-delete):not(:disabled):focus:not(:active)::after {
   content: "";
   position: absolute;
@@ -726,6 +728,10 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
   color: white !important;
 }
 
+.cl-button-delete:disabled {
+  border: 1px solid var(--color-neutralQuaternary) !important;
+  color: 1px solid var(--color-neutralQuaternary) !important;
+}
 
 /** Log Dialog Admin */
 .cl-dialog-admin {

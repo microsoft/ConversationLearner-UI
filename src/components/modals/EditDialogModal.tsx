@@ -119,7 +119,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         }
         // Viewing an un-edited Train Dialog
         else if (this.props.editType === EditDialogType.TRAIN_ORIGINAL) {
-            this.props.onClose(false)
+            this.props.onClose(false)  // false - No need to reload original
         }
         // Editing an existing Train Dialog
         else {
@@ -540,7 +540,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         }
         // Editing an existing Train Dialog
         else {
-            this.props.onClose(true) // Reload original
+            this.props.onClose(true) // true -> Reload original TrainDialog
         }
     }
 
@@ -629,6 +629,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
 
     render() {
         const { intl } = this.props
+        // Put mask of webchat if waiting for extraction labelling
         const chatDisable = this.state.pendingExtractionChanges ? <div className="cl-overlay"/> : null;
         const disableUserInput = this.shouldDisableUserInput()
         const containerClassName = `cl-modal cl-modal--large cl-modal--${this.props.editType === EditDialogType.LOG ? "teach" : "log"}`
@@ -664,6 +665,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                                     data-testid="chatmodal-editdialogadmin"
                                     app={this.props.app}
                                     editingPackageId={this.props.editingPackageId}
+                                    editingLogDialog={this.props.editingLogDialog}
                                     editType={this.props.editType}
                                     canEdit={this.props.canEdit}
                                     trainDialog={this.props.trainDialog}
@@ -754,9 +756,12 @@ export interface ReceivedProps {
     editingPackageId: string,
     canEdit: boolean,
     open: boolean
+    // Current train dialog being edited
     trainDialog: CLM.TrainDialog
+    // If editing a log dialog, this was the source
+    editingLogDialog: CLM.LogDialog | null
     history: Activity[],
-    // Is it a new dialog, a TrainDialog or LogDialog
+    // Is it a new dialog, a TrainDialog or LogDialog 
     editType: EditDialogType,
     // If starting with activity selected
     initialSelectedHistoryIndex: number | null

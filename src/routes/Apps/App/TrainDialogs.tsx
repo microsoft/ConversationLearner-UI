@@ -198,7 +198,7 @@ interface ComponentState {
     // Item selected in webchat window
     selectedHistoryIndex: number | null
     // Current train dialogs being edited
-    currentTrainDialog: CLM.TrainDialog | undefined
+    currentTrainDialog: CLM.TrainDialog | null
     // If Train Dialog was edited, the original one
     originalTrainDialogId: string | null,
     // Is Dialog being edited a new one, a TrainDialog or a LogDialog
@@ -229,7 +229,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             isTeachDialogModalOpen: false,
             isEditDialogModalOpen: false,
             selectedHistoryIndex: null,
-            currentTrainDialog: undefined,
+            currentTrainDialog: null,
             originalTrainDialogId: null,
             editType: EditDialogType.TRAIN_ORIGINAL,
             searchValue: '',
@@ -399,7 +399,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             isTeachDialogModalOpen: false,
             history: [],
             lastAction: null,
-            currentTrainDialog: undefined,
+            currentTrainDialog: null,
             // originalTrainDialogId - do not clear. Need for later 
             dialogKey: this.state.dialogKey + 1
         })
@@ -488,7 +488,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         teachSession: teachWithHistory.teach,
                         history: teachWithHistory.history,
                         lastAction: teachWithHistory.lastAction,
-                        currentTrainDialog: undefined,
+                        currentTrainDialog: null,
                         originalTrainDialogId: null,
                         editType: EditDialogType.NEW,
                         isEditDialogModalOpen: false,
@@ -634,7 +634,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         this.setState({
             isEditDialogModalOpen: false,
             selectedHistoryIndex: null,
-            currentTrainDialog: undefined,
+            currentTrainDialog: null,
             // originalTrainDialogId: Do not clear.  Save for later 
             history: [],
             lastAction: null,
@@ -866,6 +866,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     editType={this.state.editType}
                     lastAction={this.state.lastAction}
                     sourceTrainDialog={this.state.currentTrainDialog}
+                    sourceLogDialog={null}
                 />
                 <EditDialogModal
                     data-testid="train-dialog-modal"
@@ -874,6 +875,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     canEdit={this.props.editingPackageId === this.props.app.devPackageId && !this.props.invalidBot}
                     open={this.state.isEditDialogModalOpen}
                     trainDialog={this.state.currentTrainDialog!}
+                    editingLogDialog={null}
                     history={this.state.history}
                     initialSelectedHistoryIndex={this.state.selectedHistoryIndex}
                     editType={this.state.editType}
