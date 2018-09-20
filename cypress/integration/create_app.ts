@@ -125,6 +125,8 @@ describe('Create application', function () {
       .find('i[data-icon-name="Delete"]')
       .click()
 
+    cy.wait(2000)
+    
     cy.get('.ms-Dialog-main')
       .contains('Confirm')
       .click()
