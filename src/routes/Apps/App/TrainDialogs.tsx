@@ -542,7 +542,9 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     isEditDialogModalOpen: false,
                     selectedHistoryIndex: null,
                     isTeachDialogModalOpen: true,
-                    editType: EditDialogType.TRAIN_EDITED
+                    editType: this.state.editType === EditDialogType.NEW 
+                        ? EditDialogType.NEW
+                        : EditDialogType.TRAIN_EDITED
                 })
             }
             else {

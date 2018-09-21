@@ -10,7 +10,8 @@ import { TipType } from '../components/ToolTips'
 const initialState: DisplayState = {
     displaySpinner: [],
     tipType: TipType.NONE,
-    clearedBanner: null
+    clearedBanner: null,
+    webchatScrollPosition: undefined
 };
 
 const spinnerName = (spinner: string): string => {
@@ -49,6 +50,8 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
                 default:
                     return { ...state, displaySpinner: [] }
             }
+        case AT.SET_WEBCHAT_SCROLL_POSITION:
+            return {...state, webchatScrollPosition: action.position}
         case AT.SET_CURRENT_APP_ASYNC:
 
         case AT.CREATE_ACTION_ASYNC:

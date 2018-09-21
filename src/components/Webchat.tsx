@@ -38,12 +38,18 @@ class Webchat extends React.Component<Props, {}> {
         if (this.dl) {
             this.dl.end();
         }
+        if (this.behaviorSubject) {
+            this.behaviorSubject.unsubscribe()
+        }
     }
 
     componentWillReceiveProps(nextProps: Props) {
         if (this.props.history !== nextProps.history) {
             this.chatProps = null;
-        }
+            if (this.behaviorSubject) {
+                this.behaviorSubject.unsubscribe()
+            }
+        } 
     }
 
     selectedActivity$(): BehaviorSubject<any> {
@@ -59,7 +65,7 @@ class Webchat extends React.Component<Props, {}> {
     }
 
     // Get conversation Id for pro-active message during a 
-    GetConversationId(status: number) {
+    getConversationId(status: number) {
         if (status === 2) {  // wait for connection is 'OnLine' to send data to bot
             const conversationId = (this.dl as any).conversationId
             const user = this.props.user
@@ -71,7 +77,7 @@ class Webchat extends React.Component<Props, {}> {
             this.props.setConversationIdThunkAsync(user.name, user.id, conversationId)
         }
     }
-    GetChatProps(): BotChat.ChatProps {
+    getChatProps(): BotChat.ChatProps {
         if (!this.chatProps) {
             const dl = new BotChat.DirectLine({
                 secret: 'secret',
@@ -92,7 +98,7 @@ class Webchat extends React.Component<Props, {}> {
                 botConnection.activity$ = Observable.from(this.props.history).concat(dl.activity$)
             }
 
-            dl.connectionStatus$.subscribe((status) => this.GetConversationId(status));
+            dl.connectionStatus$.subscribe((status) => this.getConversationId(status));
 
             this.dl = dl
             this.chatProps = {
@@ -122,10 +128,12 @@ class Webchat extends React.Component<Props, {}> {
         }
 
         // TODO: This call has side-affects and should be moved to componentDidMount
-        let chatProps = this.GetChatProps();
+        let chatProps = this.getChatProps();
 
         chatProps.hideInput = this.props.hideInput
         chatProps.focusInput = this.props.focusInput
+        chatProps.onScrollChange = this.props.onScrollChange
+        chatProps.initialScrollPosition = this.props.initialScrollPosition
         chatProps.renderSelectedActivity = this.props.renderSelectedActivity
         chatProps.selectedActivityIndex = this.props.selectedActivityIndex
         chatProps.highlightClassName = this.props.highlightClassName
@@ -149,7 +157,8 @@ const mapStateToProps = (state: State, ownProps: any) => {
 
     return {
         settings: state.settings,
-        user: state.user.user
+        user: state.user.user,
+        initialScrollPosition: state.display.webchatScrollPosition
     }
 }
 
@@ -163,6 +172,7 @@ export interface ReceivedProps {
     disableDL?: boolean,
     onSelectActivity: (a: Activity) => void,
     onPostActivity: (a: Activity) => void,
+    onScrollChange?: (position: number) => void,
     renderSelectedActivity?: (a: Activity) => (JSX.Element | null)
     highlightClassName?: string
     // Used to select activity from outside webchat

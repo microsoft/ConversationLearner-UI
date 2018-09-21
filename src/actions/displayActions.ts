@@ -83,6 +83,13 @@ export const setErrorDisplay = (errorType: ErrorType, title: string, messages: s
     }
 }
 
+export const setWebchatScrollPosition = (position: number): ActionObject => {
+    return {
+        type: AT.SET_WEBCHAT_SCROLL_POSITION,
+        position
+    }
+}
+
 export const clearBanner = (clearedBanner: Banner): ActionObject => {
     return {
         type: AT.CLEAR_BANNER,

@@ -715,7 +715,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     dialogMode={this.props.teachSessions.mode}
                     isOpen={this.state.isTeachDialogModalOpen}
                     onClose={this.onCloseTeachSession}
-                    onSetInitialEntities={null} //  LARS - check disabled
+                    onSetInitialEntities={null} 
                     onEditTeach={(historyIndex) => this.onEditTeach(historyIndex)}
                     editType={EditDialogType.LOG} 
                     initialHistory={this.state.history}

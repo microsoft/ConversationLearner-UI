@@ -49,7 +49,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         if (this.state.currentTrainDialog !== nextProps.trainDialog) {
 
             let selectedActivity = this.state.selectedActivity
-            if (nextProps.initialSelectedHistoryIndex) {
+            if (nextProps.initialSelectedHistoryIndex !== null) {
                 const initialSelectedActivity = nextProps.history[nextProps.initialSelectedHistoryIndex]
                 if (initialSelectedActivity !== this.state.selectedActivity) {
                     selectedActivity = initialSelectedActivity
@@ -129,7 +129,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
 
     // User is continuing the train dialog by typing something new
     @autobind
-    async onPostNewActivity(activity: Activity) {
+    onPostNewActivity(activity: Activity) {
 
         if (activity.type === 'message') {
 
@@ -627,6 +627,11 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
 
     }
 
+    onScrollChange(position: number) {
+        this.props.setWebchatScrollPosition(position)
+        console.log(`${position}`)//LARS
+    }
+
     render() {
         const { intl } = this.props
         // Put mask of webchat if waiting for extraction labelling
@@ -650,6 +655,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                                 history={this.props.history}
                                 onPostActivity={activity => this.onPostNewActivity(activity)}
                                 onSelectActivity={activity => this.onWebChatSelectActivity(activity)}
+                                onScrollChange={position => this.onScrollChange(position)} 
                                 hideInput={disableUserInput}
                                 focusInput={false}
                                 disableDL={true} // Prevents ProcessActivity from being called
@@ -740,7 +746,8 @@ const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         scoreFromHistoryThunkAsync: actions.train.scoreFromHistoryThunkAsync,
         extractFromHistoryThunkAsync: actions.train.extractFromHistoryThunkAsync,
-        trainDialogReplayThunkAsync: actions.train.trainDialogReplayThunkAsync
+        trainDialogReplayThunkAsync: actions.train.trainDialogReplayThunkAsync,
+        setWebchatScrollPosition: actions.display.setWebchatScrollPosition
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {

@@ -97,6 +97,9 @@ export type DisplayAction = {
     title: string | null,
     messages: string[],
     actionType: AT | null
+}| {
+    type: AT.SET_WEBCHAT_SCROLL_POSITION,
+    position: number
 } | {
     type: AT.CLEAR_BANNER
     clearedBanner: Banner,
