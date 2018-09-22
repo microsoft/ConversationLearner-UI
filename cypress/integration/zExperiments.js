@@ -6,11 +6,10 @@
 const helpers = require('../support/helpers.js')
 const document = require('../support/document.js')
 
-Cypress.Commands.add("WaitForStableDomP", (millisecondsWithoutChange) => {document.WaitForStableDomP(millisecondsWithoutChange)})
+Cypress.Commands.add("WaitForStableDomP", (millisecondsWithoutChange) => {return document.WaitForStableDomP(millisecondsWithoutChange)})//.then((retVal) => {return retVal})})
 
 function endlessLoop() {while(true);}
 Cypress.Commands.add("endlessLoop", endlessLoop)
-
 
 var promiseCountDTR = 0;
 function DeleteTopRow()
@@ -37,9 +36,10 @@ function DeleteTopRow()
             {
                 console.log(`${helpers.NowAsString()} - DONE DeleteTopRow (nothing to delete): ${thisPromiseCount}`)
                 resolve()
+                return
             }
 
-            document.WaitForStableDomP(1000).then(() =>
+            cy.WaitForStableDomP(1000).then(() =>
             {
                 console.log(`${helpers.NowAsString()} - DeleteTopRow - WaitForStableDomP has completed: ${thisPromiseCount}`)
 
@@ -75,6 +75,7 @@ describe('zExperiment', function ()
     it('Delete All Applications', () => 
     {
         cy.server()
+        // TODO: cy.route({method:'GET', url:'/sdk/apps?**', status: 500, response: {statusText: '500 NOT ok'}, onResponse: (xhr) => {if (xhr.status != 200) throw(`${xhr.statusText}`)}}).as('getApps')
         cy.route('GET', '/sdk/apps?**').as('getApps')
         cy.visit('http://localhost:5050')
         cy.wait('@getApps')

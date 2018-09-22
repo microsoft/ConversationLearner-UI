@@ -87,13 +87,15 @@ export function WaitForStableDomP(millisecondsWithoutChangeParam)
     endTime = lastChangeTime + millisecondsWithoutChange * 2
     lastHtml = Cypress.$('html')[0].outerHTML
 
-    return new Cypress.Promise((resolve) =>
+    return new Cypress.Promise((resolve, reject) =>
     {
         compareDocument().then(() =>
         {
             console.log(`${helpers.NowAsString()} - DONE WaitForStableDomP: ${thisPromiseCount}`)
             resolve()
+            return null;
         })
         console.log(`${helpers.NowAsString()} - Return Promise WaitForStableDomP: ${thisPromiseCount}`)
+        return null;
     })
 }
