@@ -2,10 +2,9 @@
 * Copyright (c) Microsoft Corporation. All rights reserved.  
 * Licensed under the MIT License.
 */
+
 //import * as document from '../support/document'
 const document = require('../support/document.js')
-
-//'../support/document'
 
 describe('zTools', function () 
 {
