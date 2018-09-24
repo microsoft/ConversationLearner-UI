@@ -90,6 +90,12 @@ export const setWebchatScrollPosition = (position: number): ActionObject => {
     }
 }
 
+export const clearWebchatScrollPosition = (): ActionObject => {
+    return {
+        type: AT.CLEAR_WEBCHAT_SCROLL_POSITION
+    }
+}
+
 export const clearBanner = (clearedBanner: Banner): ActionObject => {
     return {
         type: AT.CLEAR_BANNER,

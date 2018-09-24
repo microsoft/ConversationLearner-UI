@@ -148,6 +148,8 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             newTrainDialog.definitions = definitions
 
             const initialUserInput: CLM.UserInput = { text: activity.text! }
+            // Allow webchat to scroll to bottom 
+            this.props.clearWebchatScrollPosition()
             this.props.onContinue(newTrainDialog, initialUserInput) 
         }
     }
@@ -237,6 +239,11 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             
             // Replay logic functions on train dialog
             newTrainDialog = await ((this.props.trainDialogReplayThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<CLM.TrainDialog>)
+
+            // If inserted at end of conversation, allow to scroll to bottom
+            if (roundIndex === this.props.trainDialog.rounds.length - 1) {
+                this.props.clearWebchatScrollPosition()
+            }
 
             this.props.onUpdateHistory(newTrainDialog, this.selectedActivityIndex())
         }
@@ -372,6 +379,12 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             else {
                 curRound.scorerSteps.splice(scoreIndex + 1, 0, scorerStep)
             }
+
+            // If inserted at end of conversation, allow to scroll to bottom
+            if (roundIndex === this.props.trainDialog.rounds.length - 1 && scoreIndex === curRound.scorerSteps.length - 1) {
+                this.props.clearWebchatScrollPosition()
+            }
+
             this.props.onUpdateHistory(newTrainDialog, this.selectedActivityIndex())
         }
         catch (error) {
@@ -641,7 +654,6 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
 
     onScrollChange(position: number) {
         this.props.setWebchatScrollPosition(position)
-        console.log(`${position}`)//LARS
     }
 
     render() {
@@ -759,7 +771,8 @@ const mapDispatchToProps = (dispatch: any) => {
         scoreFromHistoryThunkAsync: actions.train.scoreFromHistoryThunkAsync,
         extractFromHistoryThunkAsync: actions.train.extractFromHistoryThunkAsync,
         trainDialogReplayThunkAsync: actions.train.trainDialogReplayThunkAsync,
-        setWebchatScrollPosition: actions.display.setWebchatScrollPosition
+        setWebchatScrollPosition: actions.display.setWebchatScrollPosition,
+        clearWebchatScrollPosition: actions.display.clearWebchatScrollPosition
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {

@@ -289,7 +289,6 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
     onScrollChange(position: number) {
         this.props.setWebchatScrollPosition(position)
-        console.log(`${position}`)//LARS
     }
 
     render() {

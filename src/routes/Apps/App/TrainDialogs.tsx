@@ -521,7 +521,10 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 currentTrainDialog: newTrainDialog,
                 originalTrainDialogId: originalId,
                 selectedHistoryIndex: activityIndex,
-                isEditDialogModalOpen: true
+                isEditDialogModalOpen: true,
+                editType: this.state.editType === EditDialogType.NEW 
+                        ? EditDialogType.NEW
+                        : EditDialogType.TRAIN_EDITED
             })
         })
         .catch(error => {
@@ -593,6 +596,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     }
 
     onClickTrainDialogItem(trainDialog: CLM.TrainDialog) {
+        this.props.clearWebchatScrollPosition()
         let trainDialogWithDefinitions: CLM.TrainDialog = {
             createdDateTime: new Date().toJSON(),
             lastModifiedDateTime: new Date().toJSON(),
@@ -896,6 +900,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
+        clearWebchatScrollPosition: actions.display.clearWebchatScrollPosition,
         createTeachSessionThunkAsync: actions.teach.createTeachSessionThunkAsync,
         createTeachSessionFromHistoryThunkAsync: actions.teach.createTeachSessionFromHistoryThunkAsync,
         createTrainDialogThunkAsync: actions.train.createTrainDialogThunkAsync,

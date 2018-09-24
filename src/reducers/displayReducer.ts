@@ -52,6 +52,8 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
             }
         case AT.SET_WEBCHAT_SCROLL_POSITION:
             return {...state, webchatScrollPosition: action.position}
+        case AT.CLEAR_WEBCHAT_SCROLL_POSITION:
+            return {...state, webchatScrollPosition: undefined}
         case AT.SET_CURRENT_APP_ASYNC:
 
         case AT.CREATE_ACTION_ASYNC:

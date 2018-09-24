@@ -353,6 +353,8 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     }
 
     onClickLogDialogItem(logDialog: CLM.LogDialog) {
+        // Reset WebChat scroll position
+        this.props.clearWebchatScrollPosition()
 
         // Convert to trainDialog until schema update change, and pass in app definition too
         let trainDialog = CLM.ModelUtils.ToTrainDialog(logDialog, this.props.actions, this.props.entities);
@@ -391,7 +393,6 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     // User has clicked on Activity in a Teach Session
     async onEditTeach(historyIndex: number) {
 
-        console.log("Lars - onEditTeach")
         try {
             if (this.state.teachSession) {
                 // Get train dialog associated with the teach session
@@ -722,7 +723,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     initialHistory={this.state.history}
                     lastAction={this.state.lastAction}
                     sourceTrainDialog={null}
-                    sourceLogDialog={this.state.currentLogDialog} //LARS - goes away or used?
+                    sourceLogDialog={this.state.currentLogDialog}
                 />
                 <EditDialogModal
                     data-testid="train-dialog-modal"
@@ -750,6 +751,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
 
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
+        clearWebchatScrollPosition: actions.display.clearWebchatScrollPosition,
         createChatSessionThunkAsync: actions.chat.createChatSessionThunkAsync,
         createTeachSessionFromHistoryThunkAsync: actions.teach.createTeachSessionFromHistoryThunkAsync,
         createTrainDialogThunkAsync: actions.train.createTrainDialogThunkAsync,
