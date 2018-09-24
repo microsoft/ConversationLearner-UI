@@ -510,7 +510,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             })
     }
 
-    onUpdateHistory(newTrainDialog: CLM.TrainDialog) {
+    onUpdateHistory(newTrainDialog: CLM.TrainDialog, activityIndex: number | null) {
         ((this.props.fetchHistoryThunkAsync(this.props.app.appId, newTrainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)
         .then(teachWithHistory => {
 
@@ -520,6 +520,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 lastAction: teachWithHistory.lastAction,
                 currentTrainDialog: newTrainDialog,
                 originalTrainDialogId: originalId,
+                selectedHistoryIndex: activityIndex,
                 isEditDialogModalOpen: true
             })
         })
@@ -884,7 +885,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     onClose={(reload) => this.onCloseEditDialogModal(reload)}
                     onBranch={(turnIndex) => this.onBranchTrainDialog(turnIndex)}
                     onDelete={() => this.onDeleteTrainDialog()}
-                    onUpdateHistory={(updatedTrainDialog) => this.onUpdateHistory(updatedTrainDialog)}
+                    onUpdateHistory={(updatedTrainDialog, selectedActivityIndex) => this.onUpdateHistory(updatedTrainDialog, selectedActivityIndex)}
                     onContinue={(editedTrainDialog, initialUserInput) => this.onContinueTrainDialog(editedTrainDialog, initialUserInput)}
                     onSave={(editedTrainDialog, isInvalid) => this.onReplaceTrainDialog(editedTrainDialog, isInvalid)}
                     onCreate={(newTrainDialog, isInvalid) => this.onCreateTrainDialog(newTrainDialog, isInvalid)}

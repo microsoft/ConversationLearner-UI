@@ -455,14 +455,15 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         }
     }
 
-    onUpdateHistory(newTrainDialog: CLM.TrainDialog) {
+    onUpdateHistory(newTrainDialog: CLM.TrainDialog, activityIndex: number | null) {
         ((this.props.fetchHistoryThunkAsync(this.props.app.appId, newTrainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)
         .then(teachWithHistory => {
             this.setState({
                 history: teachWithHistory.history,
                 lastAction: teachWithHistory.lastAction,
                 currentTrainDialog: newTrainDialog, 
-                isEditDialogModalOpen: true
+                isEditDialogModalOpen: true,
+                selectedHistoryIndex: activityIndex
             })
         })
         .catch(error => {
@@ -737,7 +738,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     onClose={(reload) => this.onCloseEditDialogModal(reload)}
                     onBranch={null} // Never branch on LogDialogs
                     onDelete={this.onDeleteLogDialog}
-                    onUpdateHistory={(updatedTrainDialog) => this.onUpdateHistory(updatedTrainDialog)}
+                    onUpdateHistory={(updatedTrainDialog, selectedActivityIndex) => this.onUpdateHistory(updatedTrainDialog, selectedActivityIndex)}
                     onContinue={(editedTrainDialog, initialUserInput) => this.onContinueTrainDialog(editedTrainDialog, initialUserInput)}
                     onSave={(editedTrainDialog, isInvalid) => this.onSaveTrainDialog(editedTrainDialog, isInvalid)}
                     onCreate={null} // Never creating a new TrainDialog

@@ -48,12 +48,9 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         }
         if (this.state.currentTrainDialog !== nextProps.trainDialog) {
 
-            let selectedActivity = this.state.selectedActivity
+            let selectedActivity = null
             if (nextProps.initialSelectedHistoryIndex !== null) {
-                const initialSelectedActivity = nextProps.history[nextProps.initialSelectedHistoryIndex]
-                if (initialSelectedActivity !== this.state.selectedActivity) {
-                    selectedActivity = initialSelectedActivity
-                }
+                selectedActivity = nextProps.history[nextProps.initialSelectedHistoryIndex]
             }
 
             // Force webchat to re-mount as history prop can't be updated
@@ -63,6 +60,15 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                 selectedActivity
             })
 
+        }
+    }
+
+    selectedActivityIndex(): number | null {
+        if (!this.state.selectedActivity || this.props.history.length === 0) {
+            return null
+        }
+        else {
+            return this.props.history.findIndex(a => a === this.state.selectedActivity) 
         }
     }
 
@@ -232,7 +238,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             // Replay logic functions on train dialog
             newTrainDialog = await ((this.props.trainDialogReplayThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<CLM.TrainDialog>)
 
-            this.props.onUpdateHistory(newTrainDialog)
+            this.props.onUpdateHistory(newTrainDialog, this.selectedActivityIndex())
         }
         catch (error) {
             console.warn(`Error when attempting to create teach session from history: `, error)
@@ -264,7 +270,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             // Replay logic functions on train dialog
             newTrainDialog = await ((this.props.trainDialogReplayThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<CLM.TrainDialog>)
 
-            this.props.onUpdateHistory(newTrainDialog)
+            this.props.onUpdateHistory(newTrainDialog, this.selectedActivityIndex())
         }
         catch (error) {
                 console.warn(`Error when attempting to change extraction: `, error)
@@ -296,7 +302,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             // Replay logic functions on train dialog
             newTrainDialog = await ((this.props.trainDialogReplayThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<CLM.TrainDialog>)
 
-            this.props.onUpdateHistory(newTrainDialog)
+            this.props.onUpdateHistory(newTrainDialog, this.selectedActivityIndex())
         }
         catch (error) {
             console.warn(`Error when attempting to change an Action: `, error)
@@ -315,18 +321,27 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
 
         try {
             const roundIndex = this.state.selectedActivity.channelData.roundIndex
-            const scoreIndex = this.state.selectedActivity.channelData.scoreIndex
+            let scoreIndex = this.state.selectedActivity.channelData.scoreIndex
             const definitions = {
                 entities: this.props.entities,
                 actions: this.props.actions,
                 trainDialogs: []
             }
 
+            // Created shorted verion of TrainDialog at insert point
             // Copy, Remove rounds / scorer steps below insert
             let history = JSON.parse(JSON.stringify(this.props.trainDialog))
             history.definitions = definitions
             history.rounds = history.rounds.slice(0, roundIndex + 1)
-            history.rounds[roundIndex].scorerSteps = history.rounds[roundIndex].scorerSteps.slice(0, scoreIndex);
+
+            // Remove actionless dummy step (used for rendering) if it exits
+            if (history.rounds[roundIndex].scorerSteps[0].labelAction === undefined) {
+                history.rounds[roundIndex].scorerSteps = []
+            }
+            // Or remove following scorer steps 
+            else {
+                history.rounds[roundIndex].scorerSteps = history.rounds[roundIndex].scorerSteps.slice(0, scoreIndex);
+            }
 
             // Get a score for this step
             let uiScoreResponse = await ((this.props.scoreFromHistoryThunkAsync(this.props.app.appId, history) as any) as Promise<CLM.UIScoreResponse>)
@@ -344,13 +359,20 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                 scoredAction: insertedAction
             }
 
-            // Insert new Action into TrainDialog
+            // Insert new Action into Full TrainDialog
             let newTrainDialog = JSON.parse(JSON.stringify(this.props.trainDialog))
             newTrainDialog.definitions = definitions
             let curRound = newTrainDialog.rounds[roundIndex]
-            curRound.scorerSteps.splice(scoreIndex + 1, 0, scorerStep)
 
-            this.props.onUpdateHistory(newTrainDialog)
+            // Replace actionless dummy step (used for rendering) if it exits
+            if (curRound.scorerSteps[0].labelAction === undefined) {
+                curRound.scorerSteps = [scorerStep]
+            }
+            // Or insert 
+            else {
+                curRound.scorerSteps.splice(scoreIndex + 1, 0, scorerStep)
+            }
+            this.props.onUpdateHistory(newTrainDialog, this.selectedActivityIndex())
         }
         catch (error) {
             console.warn(`Error when attempting to insert an Action `, error)
@@ -359,8 +381,6 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
 
     @autobind
     async onDeleteTurn() {
-
-        console.log('LARS - on delete turn')
 
         if (!this.state.selectedActivity) {
             throw new Error("No selected activity")
@@ -395,11 +415,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             // Replay logic functions on train dialog
             newTrainDialog = await ((this.props.trainDialogReplayThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<CLM.TrainDialog>)
 
-            this.setState({
-                selectedActivity: null
-            })
-
-            this.props.onUpdateHistory(newTrainDialog)
+            this.props.onUpdateHistory(newTrainDialog, null)
         }
         else if (senderType === CLM.SenderType.Bot) {
             // If Action deleted remove it
@@ -408,11 +424,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             // Replay logic functions on train dialog
             newTrainDialog = await ((this.props.trainDialogReplayThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<CLM.TrainDialog>)
 
-            this.setState({
-                selectedActivity: null
-            })
-
-            this.props.onUpdateHistory(newTrainDialog)
+            this.props.onUpdateHistory(newTrainDialog, null)
         }
     }
     
@@ -778,7 +790,7 @@ export interface ReceivedProps {
     onSave: (newTrainDialog: CLM.TrainDialog, isInvalid: boolean) => void,
     // Add a new train dialog to the Model (when EditDialogType === NEW)
     onCreate: ((newTrainDialog: CLM.TrainDialog, isInvalid: boolean) => void) | null,
-    onUpdateHistory: (newTrainDialog: CLM.TrainDialog) => void,
+    onUpdateHistory: (newTrainDialog: CLM.TrainDialog, selectedActivityIndex: number | null) => void,
     onDelete: () => void
 }
 
