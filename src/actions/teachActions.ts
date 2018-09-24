@@ -353,7 +353,7 @@ export const postScorerFeedbackThunkAsync = (key: string, appId: string, teachId
             if (!waitForUser) {
                 // Don't re-send predicted entities on subsequent score call
                 uiScoreInput.extractResponse.predictedEntities = [];
-               //LARS todo - force end task to always be wait
+               //LARS todo -  force end task to always be wait
                 dispatch(postScorerFeedbackFulfilled(key, appId, teachId, CLM.DialogMode.Scorer, uiPostScoreResponse, uiScoreInput))     
                 dispatch(runScorerThunkAsync(key, appId, teachId, uiScoreInput))
             }
