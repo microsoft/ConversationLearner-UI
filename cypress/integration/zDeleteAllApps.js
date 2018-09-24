@@ -4,9 +4,9 @@
 */
 
 const helpers = require('../support/helpers.js')
-const document = require('../support/document.js')
+//const document = require('../support/document.js')
 
-Cypress.Commands.add("WaitForStableDom", (millisecondsWithoutChange) => {return document.WaitForStableDom(millisecondsWithoutChange)})//.then((retVal) => {return retVal})})
+//Cypress.Commands.add("WaitForStableDom", (millisecondsWithoutChange) => {return document.WaitForStableDom(millisecondsWithoutChange)})
 
 var promiseCountDTR = 0;
 function DeleteTopRow()

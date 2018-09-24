@@ -28,4 +28,4 @@ import { createPartiallyEmittedExpression } from "typescript";
 
 import './document.js'
 const document = require('../support/document.js')
-Cypress.Commands.add("waitForStableDom", (millisecondsWithoutChange) => {document.waitForStableDom(millisecondsWithoutChange)})
+Cypress.Commands.add("WaitForStableDom", (millisecondsWithoutChange) => {return document.WaitForStableDom(millisecondsWithoutChange)})

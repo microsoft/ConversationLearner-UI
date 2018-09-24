@@ -3,6 +3,7 @@
  * Licensed under the MIT License.
  */
 
+import './commands.js'
 import './components/actionsmodal.js'
 import './components/actionspage.js'
 import './components/entitiespage.js'
@@ -14,6 +15,5 @@ import './components/modelpage.js'
 import './components/scorermodal.js'
 import './components/editdialogmodal.js'
 import './components/traindialogspage.js'
-import './commands.js'
 import './document.js'
 import './helpers.js'
