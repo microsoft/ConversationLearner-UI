@@ -31,9 +31,7 @@ interface ComponentState {
     webchatKey: number,
     editing: boolean,
     hasTerminalAction: boolean,
-    activityIndex: number,
-    /* Activity the user has clicked on (if any) */
-    selectedActivity: Activity | null
+    activityIndex: number
 }
 
 class TeachModal extends React.Component<Props, ComponentState> {
@@ -45,8 +43,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
         webchatKey: 0,
         editing: false,
         hasTerminalAction: false,
-        activityIndex: 0,
-        selectedActivity: null
+        activityIndex: 0
     }
 
     private callbacksId: string | null = null;
@@ -104,7 +101,6 @@ class TeachModal extends React.Component<Props, ComponentState> {
                 webchatKey: webchatKey,
                 hasTerminalAction: hasTerminalAction,
                 isInitAvailable: isInitAvailable,
-                selectedActivity: null,
                 activityIndex
             })
         }   
@@ -201,8 +197,18 @@ class TeachModal extends React.Component<Props, ComponentState> {
     }
 
     onWebChatSelectActivity(activity: Activity) {
-        // LARS HACK - explain this if need to keep
-        if (activity.channelData.activityIndex !== 0) {
+       
+        
+
+        // Activities from history can be looked up
+        if (this.props.initialHistory.length > 0) {
+            const foundIndex = this.props.initialHistory.findIndex(a => a.id === activity.id)
+            if (foundIndex > -1) {
+                this.props.onEditTeach(foundIndex)  
+            }
+        }
+        // Otherwise newly create activities with have index in channelData
+        else { 
             this.props.onEditTeach(activity.channelData.activityIndex)
         }
     }
@@ -281,14 +287,15 @@ class TeachModal extends React.Component<Props, ComponentState> {
         }
     }
 
+    onScrollChange(position: number) {
+        this.props.setWebchatScrollPosition(position)
+    }
+
     render() {
         const { intl } = this.props
 
-        // Put mask of webchat if not in input mode LARS
-        let chatDisable = null// (this.props.dialogMode !== CLM.DialogMode.Wait) ?
-          //  <div className="cl-overlay"></div>
-          //  : null;
-
+        // Put mask of webchat if waiting for extraction labelling
+        let chatDisable = this.props.teachSession.mode === CLM.DialogMode.Extractor ? <div className="cl-overlay"/> : null;
         return (
             <div>
                 <Modal
@@ -306,9 +313,11 @@ class TeachModal extends React.Component<Props, ComponentState> {
                                     app={this.props.app}
                                     history={this.props.initialHistory}
                                     onPostActivity={activity => this.onWebChatPostActivity(activity)}
-                                    onSelectActivity={activity => this.onWebChatSelectActivity(activity)}                          
+                                    onSelectActivity={activity => this.onWebChatSelectActivity(activity)} 
+                                    onScrollChange={position => this.onScrollChange(position)}                      
                                     hideInput={this.props.dialogMode !== CLM.DialogMode.Wait}
                                     focusInput={this.props.dialogMode === CLM.DialogMode.Wait}
+                                    highlightClassName={'wc-message-selected'}
                                 />
                                 {chatDisable}
                             </div>
@@ -320,7 +329,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                                         editingPackageId={this.props.editingPackageId}
                                         editType={this.props.editType}
                                         activityIndex={this.state.activityIndex}
-                                        selectedActivity={this.state.selectedActivity}
+                                        selectedActivity={null}
                                         onScoredAction={(scoredAction) => {
                                                 this.setState({
                                                     hasTerminalAction: scoredAction.isTerminal,
@@ -356,13 +365,14 @@ class TeachModal extends React.Component<Props, ComponentState> {
                             <div className="cl-modal-buttons_primary">
                                 <OF.PrimaryButton
                                     data-testid="teachsession-footer-button-done"
-                                    disabled={!this.state.hasTerminalAction}
+                                    disabled={!this.state.hasTerminalAction || this.props.teachSession.mode === CLM.DialogMode.Extractor}
                                     onClick={this.onClickSave}
                                     ariaDescription={this.renderSaveText(intl)}
                                     text={this.renderSaveText(intl)}
                                 />
                                 <OF.DefaultButton
                                     data-testid="teachsession-footer-button-abandon"
+                                    disabled={this.props.teachSession.mode === CLM.DialogMode.Extractor}
                                     className="cl-button-delete"
                                     onClick={this.onClickAbandonTeach}
                                     ariaDescription={this.renderAbandonText(intl)}
@@ -395,7 +405,8 @@ const mapDispatchToProps = (dispatch: any) => {
         deleteTeachSessionThunkAsync: actions.teach.deleteTeachSessionThunkAsync,
         fetchApplicationTrainingStatusThunkAsync: actions.app.fetchApplicationTrainingStatusThunkAsync,
         runExtractorThunkAsync: actions.teach.runExtractorThunkAsync,
-        toggleAutoTeach: actions.teach.toggleAutoTeach
+        toggleAutoTeach: actions.teach.toggleAutoTeach,
+        setWebchatScrollPosition: actions.display.setWebchatScrollPosition
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {
@@ -421,8 +432,8 @@ export interface ReceivedProps {
     // Is it new, from a TrainDialog or LogDialog
     editType: EditDialogType,
     // When editing and existing log or train dialog
-    sourceTrainDialog?: CLM.TrainDialog
-    sourceLogDialog?: CLM.LogDialog
+    sourceTrainDialog: CLM.TrainDialog | null
+    sourceLogDialog: CLM.LogDialog | null
     // When editing, the intial history before teach starts
     initialHistory: Activity[]
     lastAction: CLM.ActionBase | null

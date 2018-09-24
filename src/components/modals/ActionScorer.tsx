@@ -110,7 +110,7 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
                             apiAction={apiAction}
                             entities={component.props.entities}
                             memories={component.props.memories}
-                         />)
+                        />)
                 }
                 else if (action.actionType === ActionTypes.CARD) {
                     const cardAction = new CardAction(action)
