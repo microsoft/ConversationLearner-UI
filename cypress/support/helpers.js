@@ -13,13 +13,8 @@ export function ZeroPad(int, pad)
 export function TimeToString(time) {return `${ZeroPad(time.getHours(), 2)}:${ZeroPad(time.getMinutes(), 2)}:${ZeroPad(time.getSeconds(), 2)}..${ZeroPad(time.getMilliseconds(), 3)}`}
 export function NowAsString() {return TimeToString(new Date())}
 
-function myTimeout(func, time) 
-{
-    console.log(`myTimeout called: ${TimeToString(new Date())}`)
-    setTimeout(func, time)
-}
+export function sleep(time) { return new Promise((resolve, reject) => setTimeout(resolve, time))}
 
-export function sleep(time) { new Promise((resolve, reject) => myTimeout(resolve, time)).then(() => {console.log(`Sleep Finished: ${new Date().getMilliseconds()}`)}) }
+export function ConLog(funcName, message) { console.log(`${NowAsString()} - ${funcName} - ${message}`) }
 
-//export function sleep(time) { new Promise((resolve, reject) => setTimeout(resolve, time)).then(() => {console.log(`Sleep Finished: ${new Date().getMilliseconds()}`)}) }
-//export function sleep(time) { return new Promise((resolve, reject) => setTimeout(resolve, time))}
+//export function Caller() { return arguments.callee.caller.toString() }
