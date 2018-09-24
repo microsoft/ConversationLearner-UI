@@ -510,7 +510,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             })
     }
 
-    onUpdateHistory(newTrainDialog: CLM.TrainDialog) {
+    onUpdateHistory(newTrainDialog: CLM.TrainDialog, activityIndex: number | null) {
         ((this.props.fetchHistoryThunkAsync(this.props.app.appId, newTrainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)
         .then(teachWithHistory => {
 
@@ -520,7 +520,11 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 lastAction: teachWithHistory.lastAction,
                 currentTrainDialog: newTrainDialog,
                 originalTrainDialogId: originalId,
-                isEditDialogModalOpen: true
+                selectedHistoryIndex: activityIndex,
+                isEditDialogModalOpen: true,
+                editType: this.state.editType === EditDialogType.NEW 
+                        ? EditDialogType.NEW
+                        : EditDialogType.TRAIN_EDITED
             })
         })
         .catch(error => {
@@ -542,7 +546,9 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     isEditDialogModalOpen: false,
                     selectedHistoryIndex: null,
                     isTeachDialogModalOpen: true,
-                    editType: EditDialogType.TRAIN_EDITED
+                    editType: this.state.editType === EditDialogType.NEW 
+                        ? EditDialogType.NEW
+                        : EditDialogType.TRAIN_EDITED
                 })
             }
             else {
@@ -590,6 +596,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     }
 
     onClickTrainDialogItem(trainDialog: CLM.TrainDialog) {
+        this.props.clearWebchatScrollPosition()
         let trainDialogWithDefinitions: CLM.TrainDialog = {
             createdDateTime: new Date().toJSON(),
             lastModifiedDateTime: new Date().toJSON(),
@@ -882,7 +889,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     onClose={(reload) => this.onCloseEditDialogModal(reload)}
                     onBranch={(turnIndex) => this.onBranchTrainDialog(turnIndex)}
                     onDelete={() => this.onDeleteTrainDialog()}
-                    onUpdateHistory={(updatedTrainDialog) => this.onUpdateHistory(updatedTrainDialog)}
+                    onUpdateHistory={(updatedTrainDialog, selectedActivityIndex) => this.onUpdateHistory(updatedTrainDialog, selectedActivityIndex)}
                     onContinue={(editedTrainDialog, initialUserInput) => this.onContinueTrainDialog(editedTrainDialog, initialUserInput)}
                     onSave={(editedTrainDialog, isInvalid) => this.onReplaceTrainDialog(editedTrainDialog, isInvalid)}
                     onCreate={(newTrainDialog, isInvalid) => this.onCreateTrainDialog(newTrainDialog, isInvalid)}
@@ -893,6 +900,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
+        clearWebchatScrollPosition: actions.display.clearWebchatScrollPosition,
         createTeachSessionThunkAsync: actions.teach.createTeachSessionThunkAsync,
         createTeachSessionFromHistoryThunkAsync: actions.teach.createTeachSessionFromHistoryThunkAsync,
         createTrainDialogThunkAsync: actions.train.createTrainDialogThunkAsync,

@@ -31,9 +31,7 @@ interface ComponentState {
     webchatKey: number,
     editing: boolean,
     hasTerminalAction: boolean,
-    activityIndex: number,
-    /* Activity the user has clicked on (if any) */
-    selectedActivity: Activity | null
+    activityIndex: number
 }
 
 class TeachModal extends React.Component<Props, ComponentState> {
@@ -45,8 +43,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
         webchatKey: 0,
         editing: false,
         hasTerminalAction: false,
-        activityIndex: 0,
-        selectedActivity: null
+        activityIndex: 0
     }
 
     private callbacksId: string | null = null;
@@ -104,7 +101,6 @@ class TeachModal extends React.Component<Props, ComponentState> {
                 webchatKey: webchatKey,
                 hasTerminalAction: hasTerminalAction,
                 isInitAvailable: isInitAvailable,
-                selectedActivity: null,
                 activityIndex
             })
         }   
@@ -201,8 +197,18 @@ class TeachModal extends React.Component<Props, ComponentState> {
     }
 
     onWebChatSelectActivity(activity: Activity) {
-        // LARS HACK - explain this if need to keep
-        if (activity.channelData.activityIndex !== 0) {
+       
+        
+
+        // Activities from history can be looked up
+        if (this.props.initialHistory.length > 0) {
+            const foundIndex = this.props.initialHistory.findIndex(a => a.id === activity.id)
+            if (foundIndex > -1) {
+                this.props.onEditTeach(foundIndex)  
+            }
+        }
+        // Otherwise newly create activities with have index in channelData
+        else { 
             this.props.onEditTeach(activity.channelData.activityIndex)
         }
     }
@@ -281,6 +287,10 @@ class TeachModal extends React.Component<Props, ComponentState> {
         }
     }
 
+    onScrollChange(position: number) {
+        this.props.setWebchatScrollPosition(position)
+    }
+
     render() {
         const { intl } = this.props
 
@@ -303,9 +313,11 @@ class TeachModal extends React.Component<Props, ComponentState> {
                                     app={this.props.app}
                                     history={this.props.initialHistory}
                                     onPostActivity={activity => this.onWebChatPostActivity(activity)}
-                                    onSelectActivity={activity => this.onWebChatSelectActivity(activity)}                          
+                                    onSelectActivity={activity => this.onWebChatSelectActivity(activity)} 
+                                    onScrollChange={position => this.onScrollChange(position)}                      
                                     hideInput={this.props.dialogMode !== CLM.DialogMode.Wait}
                                     focusInput={this.props.dialogMode === CLM.DialogMode.Wait}
+                                    highlightClassName={'wc-message-selected'}
                                 />
                                 {chatDisable}
                             </div>
@@ -317,7 +329,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                                         editingPackageId={this.props.editingPackageId}
                                         editType={this.props.editType}
                                         activityIndex={this.state.activityIndex}
-                                        selectedActivity={this.state.selectedActivity}
+                                        selectedActivity={null}
                                         onScoredAction={(scoredAction) => {
                                                 this.setState({
                                                     hasTerminalAction: scoredAction.isTerminal,
@@ -393,7 +405,8 @@ const mapDispatchToProps = (dispatch: any) => {
         deleteTeachSessionThunkAsync: actions.teach.deleteTeachSessionThunkAsync,
         fetchApplicationTrainingStatusThunkAsync: actions.app.fetchApplicationTrainingStatusThunkAsync,
         runExtractorThunkAsync: actions.teach.runExtractorThunkAsync,
-        toggleAutoTeach: actions.teach.toggleAutoTeach
+        toggleAutoTeach: actions.teach.toggleAutoTeach,
+        setWebchatScrollPosition: actions.display.setWebchatScrollPosition
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {
