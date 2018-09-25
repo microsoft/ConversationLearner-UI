@@ -66,7 +66,7 @@ html {
 }
 
 .cl-errorpanel {
-  background-color: #FDE7E9;
+  background-color: var(--color-errorBackground);
   padding: 5px
 }
 
