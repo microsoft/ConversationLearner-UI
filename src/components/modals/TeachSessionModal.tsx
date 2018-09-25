@@ -245,7 +245,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
             })
         }
         // Editing a Log Dialog
-        else if (this.props.editType === EditDialogType.LOG) {
+        else if (this.props.editType === EditDialogType.LOG_EDITED) {
             return intl.formatMessage({
                 id: FM.BUTTON_SAVE_AS_TRAIN_DIALOG,
                 defaultMessage: 'Save as Train Dialog'

@@ -160,9 +160,16 @@
     padding-bottom: 10px;
 }
 
-.cl-dialogwarning {
+.cl-editdialog-error {
     background-color: var(--color-error);
     color: white;
+    border-radius: 15px;
+    padding: 10px;
+}
+
+.cl-editdialog-warning {
+    background-color: var(--color-errorBackground);
+    color: black;
     border-radius: 15px;
     padding: 10px;
 }

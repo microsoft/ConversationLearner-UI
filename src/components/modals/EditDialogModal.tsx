@@ -11,7 +11,7 @@ import { Modal } from 'office-ui-fabric-react/lib/Modal'
 import { State } from '../../types'
 import actions from '../../actions'
 import Webchat from '../Webchat'
-import { EditDialogAdmin, EditDialogType } from '.'
+import { EditDialogAdmin, EditDialogType, EditState } from '.'
 import * as CLM from '@conversationlearner/models'
 import { Activity } from 'botframework-directlinejs'
 import ConfirmCancelModal from './ConfirmCancelModal'
@@ -22,7 +22,7 @@ import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { autobind } from 'office-ui-fabric-react/lib/Utilities'
 
 interface ComponentState {
-    isConfirmModalOpen: boolean
+    isConfirmAbandonOpen: boolean
     isUserInputModalOpen: boolean
     selectedActivity: Activity | null
     webchatKey: number
@@ -31,7 +31,7 @@ interface ComponentState {
 }
 
 const initialState: ComponentState = {
-    isConfirmModalOpen: false,
+    isConfirmAbandonOpen: false,
     isUserInputModalOpen: false,
     selectedActivity: null,
     webchatKey: 0,
@@ -107,30 +107,9 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
     @autobind
     onClickAbandon() {
         this.setState({
-            isConfirmModalOpen: true
+            isConfirmAbandonOpen: true
         })
 
-    }
-
-    @autobind
-    onClickSave() {
-
-        // Editing a new from Teach Session
-        if (this.props.editType === EditDialogType.NEW && this.props.onCreate) {
-            this.props.onCreate(this.props.trainDialog, this.hasReplayError())
-        }
-        // Editing an existing Log Dialog
-        else if (this.props.editType === EditDialogType.LOG) {
-            this.props.onSave(this.props.trainDialog, this.hasReplayError())
-        }
-        // Viewing an un-edited Train Dialog
-        else if (this.props.editType === EditDialogType.TRAIN_ORIGINAL) {
-            this.props.onClose(false)  // false - No need to reload original
-        }
-        // Editing an existing Train Dialog
-        else {
-            this.props.onSave(this.props.trainDialog, this.hasReplayError())
-        }
     }
 
     // User is continuing the train dialog by typing something new
@@ -342,7 +321,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             history.rounds = history.rounds.slice(0, roundIndex + 1)
 
             // Remove actionless dummy step (used for rendering) if it exits
-            if (history.rounds[roundIndex].scorerSteps[0].labelAction === undefined) {
+            if (history.rounds[roundIndex].scorerSteps.length > 0 && history.rounds[roundIndex].scorerSteps[0].labelAction === undefined) {
                 history.rounds[roundIndex].scorerSteps = []
             }
             // Or remove following scorer steps 
@@ -372,7 +351,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             let curRound = newTrainDialog.rounds[roundIndex]
 
             // Replace actionless dummy step (used for rendering) if it exits
-            if (curRound.scorerSteps[0].labelAction === undefined) {
+            if (curRound.scorerSteps.length === 0 || curRound.scorerSteps[0].labelAction === undefined) {
                 curRound.scorerSteps = [scorerStep]
             }
             // Or insert 
@@ -464,6 +443,10 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
     }
 
     renderSelectedActivity(activity: Activity): (JSX.Element | null) {
+
+        if (this.props.editState !== EditState.CAN_EDIT) {
+            return null
+        }
         
         const canBranch = activity && activity.channelData.senderType === CLM.SenderType.User
         const roundIndex = activity.channelData.roundIndex
@@ -511,7 +494,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                     <OF.IconButton
                         disabled={!canBranch ||
                             this.state.pendingExtractionChanges ||
-                            !this.props.canEdit ||
+                            this.props.editState !== EditState.CAN_EDIT ||
                             (this.props.trainDialog && this.props.trainDialog.invalid === true)}
                         
                         className={`cl-wc-branchturn ${activity.channelData.senderType === CLM.SenderType.User ? `cl-wc-branchturn--user` : `cl-wc-branchturn--bot`}`}
@@ -547,113 +530,213 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
     
 
     @autobind
-    onClickConfirmCancel() {
+    onClickAbandonCancel() {
         this.setState({
-            isConfirmModalOpen: false
+            isConfirmAbandonOpen: false
         })
     }
 
     @autobind
-    onClickConfirmApprove() {
-        // Editing a new Teach Session
-        if (this.props.editType === EditDialogType.NEW) {
-            this.props.onDelete()
-        }
-        // Viewing an un-edited Train Dialog
-        else if (this.props.editType === EditDialogType.TRAIN_ORIGINAL) {
-            this.props.onDelete()
-        }
-        // Editing an existing Train Dialog
-        else {
-            this.props.onClose(true) // true -> Reload original TrainDialog
+    onClickAbandonApprove() {
+        switch (this.props.editType) {
+            case EditDialogType.NEW:
+                this.props.onDelete()
+                break;
+            case EditDialogType.LOG_EDITED:
+                this.props.onClose(false) // false -> no need to reload original
+                break;
+            case EditDialogType.LOG_ORIGINAL:
+                this.props.onDelete()
+                break;
+            case EditDialogType.TRAIN_EDITED:
+                this.props.onClose(true) // true -> Reload original TrainDialog
+                break;
+            case EditDialogType.TRAIN_ORIGINAL:
+                this.props.onDelete()
+                break;
+            default:
         }
     }
 
     renderAbandonText(intl: ReactIntl.InjectedIntl) {
+        switch (this.props.editType) {
+            case EditDialogType.NEW:
+                return intl.formatMessage({
+                    id: FM.BUTTON_ABANDON,
+                    defaultMessage: 'Abandon'
+                })
+            case EditDialogType.LOG_EDITED:
+                return intl.formatMessage({
+                    id: FM.BUTTON_ABANDON_EDIT,
+                    defaultMessage: 'Abandon Edit'
+                })
+            case EditDialogType.LOG_ORIGINAL:
+                return intl.formatMessage({
+                    id: FM.BUTTON_DELETE,
+                    defaultMessage: 'Delete'
+                })
+            case EditDialogType.TRAIN_EDITED:
+                return intl.formatMessage({
+                    id: FM.BUTTON_ABANDON_EDIT,
+                    defaultMessage: 'Abandon Edit'
+                })
+            case EditDialogType.TRAIN_ORIGINAL:
+                return intl.formatMessage({
+                    id: FM.BUTTON_DELETE,
+                    defaultMessage: 'Delete'
+                })
+            default:
+                return ""
+        }
+    }
 
-        // Editing a new Teach Session
-        if (this.props.editType === EditDialogType.NEW) {
-            return intl.formatMessage({
-                id: FM.BUTTON_ABANDON,
-                defaultMessage: 'Abandon'
-            })
+    @autobind
+    onClickConvert() {
+        if (this.props.editType !== EditDialogType.LOG_ORIGINAL) {
+            throw Error("Invoalid Edit Type for onClickConvert")
         }
-        // Viewing an un-edited Train Dialog
-        else if (this.props.editType === EditDialogType.TRAIN_ORIGINAL) {
-            return intl.formatMessage({
-                id: FM.BUTTON_DELETE,
-                defaultMessage: 'Delete'
-            })
-        }
-        // Editing an existing Train Dialog
-        else {
-            return intl.formatMessage({
-                id: FM.BUTTON_ABANDON_EDIT,
-                defaultMessage: 'Abandon Edit'
-            })
+        this.props.onSave(this.props.trainDialog, this.hasReplayError())
+    }
+
+    @autobind
+    onClickSave() {
+        switch (this.props.editType) {
+            case EditDialogType.NEW:
+                this.props.onCreate(this.props.trainDialog, this.hasReplayError())
+                break;
+            case EditDialogType.LOG_EDITED:
+                this.props.onSave(this.props.trainDialog, this.hasReplayError())
+                break;
+            case EditDialogType.LOG_ORIGINAL:
+                this.props.onClose(false)  // false - No need to reload original
+                break;
+            case EditDialogType.TRAIN_EDITED:
+                this.props.onSave(this.props.trainDialog, this.hasReplayError())
+                break;
+            case EditDialogType.TRAIN_ORIGINAL:
+                this.props.onClose(false)  // false - No need to reload original
+                break;
+            default:
         }
     }
 
     renderSaveText(intl: ReactIntl.InjectedIntl) {
-        // Editing a new Teach Session
-        if (this.props.editType === EditDialogType.NEW) {
-            return intl.formatMessage({
-                id: FM.BUTTON_SAVE,
-                defaultMessage: 'Save'
-            })
+        switch (this.props.editType) {
+            case EditDialogType.NEW:
+                return intl.formatMessage({
+                    id: FM.BUTTON_SAVE,
+                    defaultMessage: 'Save'
+                })  
+            case EditDialogType.LOG_EDITED:
+                return intl.formatMessage({
+                    id: FM.BUTTON_SAVE_AS_TRAIN_DIALOG,
+                    defaultMessage: 'Save as Train Dialog'
+                })
+            case EditDialogType.LOG_ORIGINAL:
+                return intl.formatMessage({
+                    id: FM.BUTTON_CLOSE,
+                    defaultMessage: 'Close'
+                })
+            case EditDialogType.TRAIN_EDITED:
+                return intl.formatMessage({
+                    id: FM.BUTTON_SAVE_EDIT,
+                    defaultMessage: 'Save Edit'
+                })
+            case EditDialogType.TRAIN_ORIGINAL:
+                return intl.formatMessage({
+                    id: FM.BUTTON_CLOSE,
+                    defaultMessage: 'Close'
+                })
+            default:
+                return ""
         }
-        // Editing a Log Dialog
-        else if (this.props.editType === EditDialogType.LOG) {
-            return intl.formatMessage({
-                id: FM.BUTTON_SAVE_AS_TRAIN_DIALOG,
-                defaultMessage: 'Save as Train Dialog'
-            })
-        }
-        // Viewing an un-editing Train Dialog
-        else if (this.props.editType === EditDialogType.TRAIN_ORIGINAL) {
-            return intl.formatMessage({
-                id: FM.BUTTON_DONE,
-                defaultMessage: 'Done'
-            })
-        }
-        // Editing an existing Train Dialog
-        else {
-            return intl.formatMessage({
-                id: FM.BUTTON_SAVE_EDIT,
-                defaultMessage: 'Save Edit'
-            })
-        }
-
     }
 
     renderConfirmText(intl: ReactIntl.InjectedIntl) {
-
-        // Editing a new Teach Session
-        if (this.props.editType === EditDialogType.NEW) {
-            return intl.formatMessage({
-                id: FM.EDITDIALOGMODAL_CONFIRMABANDON_NEW_TITLE,
-                defaultMessage: `Are you sure you want to abandon this Training Dialog?`
-            })
+        switch (this.props.editType) {
+            case EditDialogType.NEW:
+                return intl.formatMessage({
+                    id: FM.EDITDIALOGMODAL_CONFIRMABANDON_NEW_TITLE,
+                    defaultMessage: `Are you sure you want to abandon this Training Dialog?`
+                })
+            case EditDialogType.LOG_EDITED:
+                return intl.formatMessage({
+                    id: FM.EDITDIALOGMODAL_CONFIRMABANDON_EDIT_TITLE,
+                    defaultMessage: `Are you sure you want to abandon your edits?`
+                })
+            case EditDialogType.LOG_ORIGINAL:
+                return intl.formatMessage({
+                    id: FM.EDITDIALOGMODAL_CONFIRMDELETELOG_TITLE,
+                    defaultMessage: `Are you sure you want to delete this Log Dialog?`
+                })
+            case EditDialogType.TRAIN_EDITED:
+                return intl.formatMessage({
+                    id: FM.EDITDIALOGMODAL_CONFIRMABANDON_EDIT_TITLE,
+                    defaultMessage: `Are you sure you want to abandon your edits?`
+                })
+            case EditDialogType.TRAIN_ORIGINAL:
+                return intl.formatMessage({
+                    id: FM.EDITDIALOGMODAL_CONFIRMDELETETRAIN_TITLE,
+                    defaultMessage: `Are you sure you want to delete this Training Dialog?`
+                })
+            default:
+                return ""
         }
-        // Viewing an un-editing Train Dialog
-        else if (this.props.editType === EditDialogType.TRAIN_ORIGINAL) {
-            return intl.formatMessage({
-                id: FM.EDITDIALOGMODAL_CONFIRMDELETE_TITLE,
-                defaultMessage: `Are you sure you want to delete this Training Dialog?`
-            })
-        }
-        // Editing an existing Train Dialog
-        else {
-            return intl.formatMessage({
-                id: FM.EDITDIALOGMODAL_CONFIRMABANDON_EDIT_TITLE,
-                defaultMessage: `Are you sure you want to abandon your edits?`
-            })
-        }
-
     }
 
     onScrollChange(position: number) {
         this.props.setWebchatScrollPosition(position)
+    }
+
+    renderWarning() {
+
+        if (this.props.editState === EditState.INVALID_BOT) {
+            return (
+                <div className="cl-editdialog-warning">
+                    <div className={OF.FontClassNames.mediumPlus}>
+                        <FormattedMessage
+                            id={FM.EDITDIALOGMODAL_WARNING_INVALID_BOT}
+                            defaultMessage={FM.EDITDIALOGMODAL_WARNING_INVALID_BOT}
+                        />
+                    </div>
+                </div>
+            )
+        }
+        else if (this.props.editState === EditState.INVALID_PACKAGE) {
+            return (
+                <div className="cl-editdialog-warning">
+                    <div className={OF.FontClassNames.mediumPlus}>
+                        <FormattedMessage
+                            id={FM.EDITDIALOGMODAL_WARNING_INVALID_PACKAGE}
+                            defaultMessage={FM.EDITDIALOGMODAL_WARNING_INVALID_PACKAGE}
+                        />
+                    </div>
+                </div>
+            )
+        }
+        else if (this.state.selectedActivity && this.state.selectedActivity.channelData.replayError) {
+            return (
+                <div className="cl-editdialog-error">
+                    {renderReplayError(this.state.selectedActivity.channelData.replayError)}
+                </div>
+            )
+        }
+        else if (this.hasReplayError()) {
+            // Replay error, but not activity selected
+            return (
+                <div className="cl-editdialog-error">
+                    <div className={OF.FontClassNames.mediumPlus}>
+                        <FormattedMessage
+                            id={FM.REPLAYERROR_EXISTS}
+                            defaultMessage={FM.REPLAYERROR_EXISTS}
+                        />
+                    </div>
+                </div>
+            )
+        }
+        else {
+            return null
+        }
     }
 
     render() {
@@ -661,7 +744,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         // Put mask of webchat if waiting for extraction labelling
         const chatDisable = this.state.pendingExtractionChanges ? <div className="cl-overlay"/> : null;
         const disableUserInput = this.shouldDisableUserInput()
-        const containerClassName = `cl-modal cl-modal--large cl-modal--${this.props.editType === EditDialogType.LOG ? "teach" : "log"}`
+        const containerClassName = `cl-modal cl-modal--large cl-modal--${this.props.editType === EditDialogType.LOG_EDITED ? "teach" : "log"}`
         return (
             <Modal
                 isOpen={this.props.open}
@@ -697,7 +780,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                                     editingPackageId={this.props.editingPackageId}
                                     editingLogDialog={this.props.editingLogDialog}
                                     editType={this.props.editType}
-                                    canEdit={this.props.canEdit}
+                                    editState={this.props.editState}
                                     trainDialog={this.props.trainDialog}
                                     selectedActivity={this.state.selectedActivity}
                                     onChangeAction={(trainScorerStep: CLM.TrainScorerStep) => this.onChangeAction(trainScorerStep)}
@@ -705,33 +788,32 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                                     onExtractionsChanged={(changed: boolean) => this.onExtractionsChanged(changed)}
                                 />
                             </div>
-                            {!this.props.canEdit && <div className="cl-overlay"/>} 
+                            {this.props.editState !== EditState.CAN_EDIT && <div className="cl-overlay"/>} 
                         </div>
                     </div>
                 </div>
                 <div className="cl-modal_footer cl-modal_footer--border">
                     <div className="cl-modal-buttons">
                         <div className="cl-modal-buttons_secondary">
-                            {(this.state.selectedActivity && this.state.selectedActivity.channelData.replayError) 
-                            ? 
-                                (<div className="cl-dialogwarning">
-                                    {renderReplayError(this.state.selectedActivity.channelData.replayError)}
-                                </div>)
-                            :
-                                (this.hasReplayError() &&
-                                    <div className="cl-dialogwarning">
-                                        <div className={OF.FontClassNames.mediumPlus}>
-                                            <FormattedMessage
-                                                id={FM.REPLAYERROR_EXISTS}
-                                                defaultMessage={FM.REPLAYERROR_EXISTS}
-                                            />
-                                        </div>
-                                    </div>
-                                )
-                            }
+                            {this.renderWarning()}
                         </div>
 
                         <div className="cl-modal-buttons_primary">
+                            {this.props.editType === EditDialogType.LOG_ORIGINAL && 
+                                <OF.PrimaryButton
+                                    data-testid="footer-button-done"
+                                    disabled={this.state.pendingExtractionChanges || this.props.editState !== EditState.CAN_EDIT}
+                                    onClick={this.onClickConvert}
+                                    ariaDescription={intl.formatMessage({
+                                        id: FM.BUTTON_SAVE_AS_TRAIN_DIALOG,
+                                        defaultMessage: 'Save as Train Dialog'
+                                    })}
+                                    text={intl.formatMessage({
+                                        id: FM.BUTTON_SAVE_AS_TRAIN_DIALOG,
+                                        defaultMessage: 'Save as Train Dialog'
+                                    })}
+                                />
+                            }
                             <OF.PrimaryButton
                                 data-testid="footer-button-done"
                                 disabled={this.state.pendingExtractionChanges}
@@ -742,7 +824,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                             <OF.DefaultButton
                                 data-testid="footer-button-delete"
                                 className="cl-button-delete"
-                                disabled={this.state.pendingExtractionChanges || !this.props.canEdit}
+                                disabled={this.state.pendingExtractionChanges || this.props.editState !== EditState.CAN_EDIT}
                                 onClick={this.onClickAbandon}
                                 ariaDescription={this.renderAbandonText(intl)}
                                 text={this.renderAbandonText(intl)}
@@ -752,9 +834,9 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                 </div>
                 <ConfirmCancelModal
                     data-testid="confirm-delete-trainingdialog"
-                    open={this.state.isConfirmModalOpen}
-                    onCancel={this.onClickConfirmCancel}
-                    onConfirm={this.onClickConfirmApprove}
+                    open={this.state.isConfirmAbandonOpen}
+                    onCancel={this.onClickAbandonCancel}
+                    onConfirm={this.onClickAbandonApprove}
                     title={this.renderConfirmText(intl)}
                 />
                 <UserInputModal
@@ -786,7 +868,7 @@ const mapStateToProps = (state: State) => {
 export interface ReceivedProps {
     app: CLM.AppBase,
     editingPackageId: string,
-    canEdit: boolean,
+    editState: EditState,
     open: boolean
     // Current train dialog being edited
     trainDialog: CLM.TrainDialog
@@ -802,7 +884,7 @@ export interface ReceivedProps {
     onContinue: (newTrainDialog: CLM.TrainDialog, initialUserInput: CLM.UserInput) => void,
     onSave: (newTrainDialog: CLM.TrainDialog, isInvalid: boolean) => void,
     // Add a new train dialog to the Model (when EditDialogType === NEW)
-    onCreate: ((newTrainDialog: CLM.TrainDialog, isInvalid: boolean) => void) | null,
+    onCreate: (newTrainDialog: CLM.TrainDialog, isInvalid: boolean) => void,
     onUpdateHistory: (newTrainDialog: CLM.TrainDialog, selectedActivityIndex: number | null) => void,
     onDelete: () => void
 }

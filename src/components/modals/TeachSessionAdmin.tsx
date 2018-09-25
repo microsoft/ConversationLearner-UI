@@ -145,16 +145,17 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
 
         const renderData = this.getRenderData()
         const mode = this.props.teachSession.mode
-        const autoTeachWithRound = this.props.teachSession.autoTeach 
-        const editTypeClass = this.props.editType === EditDialogType.LOG ? 'log' : 'train'
+        const autoTeachWithRound = this.props.teachSession.autoTeach
+        const isLogDialog = (this.props.editType === EditDialogType.LOG_EDITED || this.props.editType === EditDialogType.LOG_ORIGINAL) 
+        const editTypeClass = isLogDialog ? 'log' : 'train'
         
         return (
             <div className={`cl-dialog-admin ${FontClassNames.large}`}>
                 <div className={`cl-dialog-title cl-dialog-title--${editTypeClass} ${FontClassNames.xxLarge}`}>
                     <Icon 
-                        iconName={this.props.editType === EditDialogType.LOG ? 'UserFollowed' : 'EditContact'}
+                        iconName={isLogDialog ? 'UserFollowed' : 'EditContact'}
                     />
-                    {this.props.editType === EditDialogType.LOG ? 'Log Dialog' : 'Train Dialog'}
+                    {isLogDialog ? 'Log Dialog' : 'Train Dialog'}
                 </div>
                 {this.props.teachSession.mode === CLM.DialogMode.Extractor && (
                     <div className="cl-dialog-admin__content">
