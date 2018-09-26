@@ -29,3 +29,7 @@ import { createPartiallyEmittedExpression } from "typescript";
 import './document.js'
 const document = require('../support/document.js')
 Cypress.Commands.add("WaitForStableDom", (millisecondsWithoutChange) => {return document.WaitForStableDom(millisecondsWithoutChange)})
+
+import './helpers'
+const helpers = require('../support/helpers.js')
+Cypress.Commands.add("ConLog", (funcName, message) => {helpers.ConLog(funcName, message)})

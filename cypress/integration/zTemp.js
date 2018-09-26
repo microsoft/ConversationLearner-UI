@@ -15,64 +15,14 @@ const trainDialogPage = require('../support/components/traindialogspage')
 const editDialogModal = require('../support/components/editdialogmodal')
 const helpers = require('../support/helpers.js')
 
-describe('ExpectedEntities test', function () {
-  const postfix = Cypress.moment().format("MMDD-HHmmSSS")
+describe('Temp test', function () {
+  const postfix = "0925-1838298" //Cypress.moment().format("MMDD-HHmmSSS")
   const modelName = `e2e-expected-${postfix}`
   const entityName = "name"
   const actionResponse01 = "What's your name?"
   const actionResponse02 = "Hello $name{enter}"
 
-  afterEach(function () {
-    const fileName = `expecEntities_${this.currentTest.state}-${this.currentTest.title}`;
-    cy.wait(3000)
-      .screenshot(fileName)
-  })
-
-  it('create a new model', function () {
-    modelsListPage.navigateTo()
-    modelsListPage.createNewModel(modelName)
-    modelPage.verifyPageTitle(modelName)
-  })
-
-  it('should add new entity', function () {
-    modelPage.navigateToEntities()
-    entities.clickButtonNewEntity()
-    entityModal.typeEntityName(entityName)
-    entityModal.clickCreateButton()
-    entities.verifyItemInList(entityName)
-  })
-
-  it('should create action using name as expected entity', () => {
-    //FULL SECTION
-    // 3	Create two actions
-    // 3.1	Click Actions, then New Action
-    // 3.2	In Response, type 'What's your name?'.
-    // 3.3	In Expected Entities, enter $name. Click Save.
-    // 3.3.1	<Validation step> This means that if this question is asked, and the user response does not have any entities detected, the bot should assume the whole of the user's response is this entity.
-    // 3.4	Click Actions, then New Action to create a second action.
-    // 3.5	In Response, type 'Hello $name'.
-    // 3.5.1	<Validation step> Note that the entity is automatically added as a disqualifying entity.
-    // 3.6	Click Save
-
-    modelPage.navigateToActions()
-    actions.clickNewAction()
-    actionsModal.selectTypeText()
-    actionsModal.typeOnResponseBox(actionResponse01)
-    actionsModal.typeExpectedEntityInResponse('$name')
-    actionsModal.clickCreateButton()
-    cy.wait(1000)
-  })
-
-  it(`should create an action using city as disqualifying entity`, () => {
-    actions.clickNewAction()
-    actionsModal.selectTypeText()
-    actionsModal.typeOnResponseBox(actionResponse02)
-    actionsModal.typeDisqualifyingEntities('$name')
-    actionsModal.clickCreateButton()
-    cy.wait(1000)
-  })
-
-  it('should be able to train the', () => {
+  it('should be able to train', () => {
     // 4	Train the bot
     // 4.1	Click Train Dialogs, then New Train Dialog.
     // 4.2	Type 'hello'.
@@ -95,6 +45,20 @@ describe('ExpectedEntities test', function () {
     // 4.14	Click Score Actions.
     // 4.15	Select 'Hello susan'.
     // 4.16	Click Done Teaching.
+    
+    cy.visit('http://localhost:5050')
+    cy.WaitForStableDom(1000).then(() => {
+    
+    //cy.get('[data-list-index="16"] > .ms-FocusZone > .ms-DetailsRow-fields > [aria-colindex="0"]')
+    cy.get(`:contains('e2e-expected-0925-1838298')`)
+      .each(element => 
+        {
+          helpers.ConLog('Test Case: should be able to train', element.toString())
+        })
+      .pause()
+
+    //cy.get('button').contains(modelName).click() //(`:contains(${modelName})`).click()
+    cy.WaitForStableDom(1000).then(() => {
 
     modelPage.navigateToTrainDialogs()
     trainDialogPage.createNew()
@@ -123,7 +87,7 @@ describe('ExpectedEntities test', function () {
 
     // cy.pause()//.wait(2000)
     // editDialogModal.clickDoneTeaching()
-    })})})})
+    })})})})})})
   })
 
   // it('should delete an existent model', () => {
