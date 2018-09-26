@@ -43,12 +43,20 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
             isResizable: true,
             getSortValue: action => action.actionId,
             render: (action, component, index) => {
-                if (!component.props.canEdit) {
-                    return null
-                }
 
                 const selected = (component.props.dialogType !== DialogType.TEACH && index === 0)
                 const buttonText = selected ? 'Selected' : 'Select'
+                if (!component.props.canEdit) {
+                    return (
+                        <PrimaryButton
+                            data-testid="actionscorer-buttonNoClick"
+                            disabled={true}
+                            ariaDescription={buttonText}
+                            text={buttonText}
+                        />
+                    )
+                }
+
                 const isAvailable = component.isUnscoredActionAvailable(action as UnscoredAction)
                 if (!isAvailable || selected) {
                     return (
@@ -110,7 +118,7 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
                             apiAction={apiAction}
                             entities={component.props.entities}
                             memories={component.props.memories}
-                         />)
+                        />)
                 }
                 else if (action.actionType === ActionTypes.CARD) {
                     const cardAction = new CardAction(action)

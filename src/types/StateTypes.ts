@@ -57,6 +57,7 @@ export type DisplayState = {
     displaySpinner: string[],
     tipType: TipType,
     clearedBanner: Banner | null,
+    webchatScrollPosition: number | undefined
 }
 
 export interface User {

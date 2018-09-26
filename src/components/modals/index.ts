@@ -15,10 +15,22 @@ import ErrorPanel from './ErrorPanel'
 import SpinnerWindow from './SpinnerWindow'
 import Expando from './Expando'
 
+// What is being edited
 export enum EditDialogType {
     NEW = 'NEW',
-    TRAIN = 'TRAIN',
-    LOG = 'LOG'
+    TRAIN_EDITED = 'TRAIN_EDITED',
+    TRAIN_ORIGINAL = 'TRAIN_ORIGINAL',
+    LOG_EDITED = 'LOG_EDITED',
+    LOG_ORIGINAL = 'LOG_ORIGINAL',
+}
+
+// What is being edited
+export enum EditState {
+    CAN_EDIT = 'CAN_EDIT',
+    // Runing bot not compatible with Model
+    INVALID_BOT = 'INVALID_BOT',
+    // Attemping to edit older package id
+    INVALID_PACKAGE = 'INVALID_PACKAGE'
 }
 
 export {

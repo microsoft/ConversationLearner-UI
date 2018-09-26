@@ -16,7 +16,7 @@ import { Activity } from 'botframework-directlinejs'
 import * as OF from 'office-ui-fabric-react';
 import * as CLM from '@conversationlearner/models' 
 import { FM } from '../../react-intl-messages'
-import { EditDialogType } from '.'
+import { EditDialogType, EditState } from '.'
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 
 interface RenderData {
@@ -72,6 +72,13 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                 })
             }
         }
+        else {
+            this.setState({
+                senderType: null,
+                roundIndex: null,
+                scoreIndex: null
+            })
+        }
     }
 
     getPrevMemories(): CLM.Memory[] {
@@ -117,7 +124,7 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                 filledEntities = this.props.trainDialog.rounds[curRound].scorerSteps[0].input.filledEntities
             }
             else if (curRound < this.props.trainDialog.rounds.length) {
-                curRound = curRound +1
+                curRound = curRound + 1
             }
             else {
                 // No round with scorer step after this extraction step
@@ -229,16 +236,17 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
         if (!this.props.trainDialog) {
             return null;
         }
+        const isLogDialog = (this.props.editType === EditDialogType.LOG_EDITED || this.props.editType === EditDialogType.LOG_ORIGINAL)
+        const editTypeClass = isLogDialog ? 'log' : 'train'
 
-        const editTypeClass = this.props.editType === EditDialogType.LOG ? 'log' : 'train'
         let renderData = this.getRenderData();
         return (
             <div className={`cl-dialog-admin ${OF.FontClassNames.large}`}>
                 <div data-testid="traindialog-title" className={`cl-dialog-title cl-dialog-title--${editTypeClass} ${OF.FontClassNames.xxLarge}`}>
                     <OF.Icon 
-                        iconName={this.props.editType === EditDialogType.LOG ? 'UserFollowed' : 'EditContact'}
+                        iconName={isLogDialog ? 'UserFollowed' : 'EditContact'}
                     />
-                    {this.props.editType === EditDialogType.LOG ? 'Log Dialog' : 'Train Dialog'}
+                    {isLogDialog ? 'Log Dialog' : 'Train Dialog'}
                 </div>
                 {this.props.selectedActivity && (this.state.senderType === CLM.SenderType.User
                     ? (
@@ -317,9 +325,13 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                                     data-testid="dialog-admin-entity-extractor"
                                     app={this.props.app}
                                     editingPackageId={this.props.editingPackageId}
-                                    canEdit={this.props.canEdit} 
-                                    extractType={CLM.DialogType.TRAINDIALOG}
-                                    sessionId={this.props.trainDialog.trainDialogId}
+                                    canEdit={this.props.editState === EditState.CAN_EDIT} 
+                                    extractType={isLogDialog
+                                        ? CLM.DialogType.LOGDIALOG
+                                        : CLM.DialogType.TRAINDIALOG}
+                                    sessionId={this.props.editingLogDialog
+                                        ? this.props.editingLogDialog.logDialogId
+                                        : this.props.trainDialog.trainDialogId}
                                     roundIndex={this.state.roundIndex}
                                     autoTeach={false}
                                     dialogMode={renderData.dialogMode}
@@ -355,8 +367,8 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                                 data-testid="dialog-admin-scorer"
                                 app={this.props.app}
                                 editingPackageId={this.props.editingPackageId}
-                                canEdit={this.props.canEdit}
-                                hideScore={true}
+                                canEdit={this.props.editState === EditState.CAN_EDIT}
+                                hideScore={false}  // LARS
                                 dialogType={CLM.DialogType.TRAINDIALOG}
                                 sessionId={this.props.trainDialog.trainDialogId}
                                 autoTeach={false}
@@ -397,8 +409,10 @@ export interface ReceivedProps {
     app: CLM. AppBase,
     editingPackageId: string,
     trainDialog: CLM.TrainDialog,
+    // If editing a log dialog, this was the source
+    editingLogDialog: CLM.LogDialog | null
     selectedActivity: Activity | null,
-    canEdit: boolean,
+    editState: EditState,
     editType: EditDialogType,
     onChangeAction: (trainScorerStep: CLM.TrainScorerStep) => void,
     onChangeExtraction: (extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) => void                              

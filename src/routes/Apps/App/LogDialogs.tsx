@@ -9,7 +9,7 @@ import { connect } from 'react-redux';
 import * as OF from 'office-ui-fabric-react';
 import { State } from '../../../types'
 import * as CLM from '@conversationlearner/models'
-import { ChatSessionModal, EditDialogModal, TeachSessionModal, EditDialogType } from '../../../components/modals'
+import { ChatSessionModal, EditDialogModal, TeachSessionModal, EditDialogType, EditState } from '../../../components/modals'
 import actions from '../../../actions'
 import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { FM } from '../../../react-intl-messages'
@@ -217,9 +217,11 @@ interface ComponentState {
     selectedHistoryIndex: number | null
 
     isValidationWarningOpen: boolean // goes away
-    currentLogDialog: CLM.LogDialog | undefined
+    currentLogDialog: CLM.LogDialog | null
     // The trainDialog created out of the selected LogDialog
-    currentTrainDialog: CLM.TrainDialog | undefined
+    currentTrainDialog: CLM.TrainDialog | null
+    // Is Dialog being edited a new one, a TrainDialog or a LogDialog
+    editType: EditDialogType
     searchValue: string
     // Allows user to re-open modal for same row ()
     dialogKey: number
@@ -247,8 +249,9 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             isTeachDialogModalOpen: false,
             selectedHistoryIndex: null,
             isValidationWarningOpen: false,
-            currentLogDialog: undefined,
-            currentTrainDialog: undefined,
+            currentLogDialog: null,
+            currentTrainDialog: null,
+            editType: EditDialogType.LOG_ORIGINAL,
             searchValue: '',
             dialogKey: 0,
             history: [],
@@ -314,8 +317,8 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             if (logDialog) {
                 let newLogDialog = newProps.logDialogs.find(t => t.logDialogId === logDialog.logDialogId)
                 this.setState({
-                    currentLogDialog: newLogDialog,
-                    currentTrainDialog: newLogDialog ? CLM.ModelUtils.ToTrainDialog(newLogDialog) : undefined
+                    currentLogDialog: newLogDialog || null,
+                    currentTrainDialog: newLogDialog ? CLM.ModelUtils.ToTrainDialog(newLogDialog) : null
                 })
             }
         }
@@ -329,6 +332,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 this.setState({
                     chatSession,
                     isChatSessionWindowOpen: true
+                    // LARS - edit type here?  In TD is new
                 })
             })
             .catch(error => {
@@ -353,6 +357,8 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     }
 
     onClickLogDialogItem(logDialog: CLM.LogDialog) {
+        // Reset WebChat scroll position
+        this.props.clearWebchatScrollPosition()
 
         // Convert to trainDialog until schema update change, and pass in app definition too
         let trainDialog = CLM.ModelUtils.ToTrainDialog(logDialog, this.props.actions, this.props.entities);
@@ -363,8 +369,9 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     history: teachWithHistory.history,
                     lastAction: teachWithHistory.lastAction,
                     currentLogDialog: logDialog,
-                    currentTrainDialog: logDialog ? CLM.ModelUtils.ToTrainDialog(logDialog) : undefined,
+                    currentTrainDialog: logDialog ? CLM.ModelUtils.ToTrainDialog(logDialog) : null,
                     isEditDialogModalOpen: true,
+                    editType: EditDialogType.LOG_ORIGINAL,
                     validationErrors: teachWithHistory.replayErrors,
                     isValidationWarningOpen: teachWithHistory.replayErrors.length > 0,
                     validationErrorTitleId: FM.REPLAYERROR_LOGDIALOG_VALIDATION_TITLE,
@@ -376,14 +383,14 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             })
     }
 
-    onClickSync() {
-        this.props.fetchAllLogDialogsThunkAsync(this.props.app, this.props.editingPackageId);
+    async onClickSync() {
+        await this.props.fetchAllLogDialogsThunkAsync(this.props.app, this.props.editingPackageId);
     }
 
     @autobind
-    onDeleteLogDialog() {
+    async onDeleteLogDialog() {
         if (this.state.currentLogDialog) {
-            this.props.deleteLogDialogThunkAsync(this.props.user.id, this.props.app, this.state.currentLogDialog.logDialogId, this.props.editingPackageId)
+            await this.props.deleteLogDialogThunkAsync(this.props.user.id, this.props.app, this.state.currentLogDialog.logDialogId, this.props.editingPackageId)
         }
         this.onCloseEditDialogModal();
     }
@@ -437,7 +444,8 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     lastAction: teachWithHistory.lastAction,
                     isEditDialogModalOpen: false,
                     selectedHistoryIndex: null,
-                    isTeachDialogModalOpen: true
+                    isTeachDialogModalOpen: true,
+                    editType: EditDialogType.LOG_EDITED
                 })
             }
             else {
@@ -454,14 +462,16 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         }
     }
 
-    onUpdateHistory(newTrainDialog: CLM.TrainDialog) {
+    onUpdateHistory(newTrainDialog: CLM.TrainDialog, activityIndex: number | null) {
         ((this.props.fetchHistoryThunkAsync(this.props.app.appId, newTrainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)
         .then(teachWithHistory => {
             this.setState({
                 history: teachWithHistory.history,
                 lastAction: teachWithHistory.lastAction,
-                currentTrainDialog: newTrainDialog, // LARS - note - what about LogDialog?  Anything?
-                isEditDialogModalOpen: true
+                currentTrainDialog: newTrainDialog, 
+                isEditDialogModalOpen: true,
+                selectedHistoryIndex: activityIndex,
+                editType: EditDialogType.LOG_EDITED
             })
         })
         .catch(error => {
@@ -494,7 +504,8 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     lastAction: teachWithHistory.lastAction,
                     currentTrainDialog: trainDialog,
                     isEditDialogModalOpen: true,
-                    selectedHistoryIndex: null
+                    selectedHistoryIndex: null,
+                    editType: EditDialogType.LOG_ORIGINAL
                 })
             })
             .catch(error => {
@@ -507,8 +518,8 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         this.setState({
             isEditDialogModalOpen: false,
             selectedHistoryIndex: null,
-            currentTrainDialog: undefined,
-            currentLogDialog: undefined,
+            currentTrainDialog: null,
+            currentLogDialog: null,
             history: [],
             lastAction: null,
             dialogKey: this.state.dialogKey + 1
@@ -519,7 +530,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     async onSaveTrainDialog(newTrainDialog: CLM.TrainDialog, isInvalid: boolean) {
 
         newTrainDialog.invalid = isInvalid
-
+        newTrainDialog.definitions = null
         try { 
             await this.props.createTrainDialogThunkAsync(this.props.app.appId, newTrainDialog)
             if (this.state.currentLogDialog) {
@@ -543,8 +554,8 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             isTeachDialogModalOpen: false,
             history: [],
             lastAction: null,
-            currentLogDialog: undefined,
-            currentTrainDialog: undefined,
+            currentLogDialog: null,
+            currentTrainDialog: null,
             dialogKey: this.state.dialogKey + 1
         })
     }
@@ -594,6 +605,11 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     render() {
         const { logDialogs } = this.props
         const computedLogDialogs = this.getFilteredAndSortedDialogs()
+        const editState = (this.props.editingPackageId !== this.props.app.devPackageId) 
+            ? EditState.INVALID_PACKAGE 
+            : this.props.invalidBot
+            ? EditState.INVALID_BOT
+            : EditState.CAN_EDIT
 
         return (
             <div className="cl-page">
@@ -714,30 +730,32 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     dialogMode={this.props.teachSessions.mode}
                     isOpen={this.state.isTeachDialogModalOpen}
                     onClose={this.onCloseTeachSession}
-                    onSetInitialEntities={null} //  LARS - check disabled
+                    onSetInitialEntities={null} 
                     onEditTeach={(historyIndex) => this.onEditTeach(historyIndex)}
-                    editType={EditDialogType.LOG} 
+                    editType={this.state.editType} 
                     initialHistory={this.state.history}
                     lastAction={this.state.lastAction}
-                    sourceLogDialog={this.state.currentLogDialog} //LARS - goes away or used?
+                    sourceTrainDialog={null}
+                    sourceLogDialog={this.state.currentLogDialog}
                 />
                 <EditDialogModal
                     data-testid="train-dialog-modal"
                     app={this.props.app}
                     editingPackageId={this.props.editingPackageId}
-                    canEdit={this.props.editingPackageId === this.props.app.devPackageId && !this.props.invalidBot}
+                    editState={editState}
                     open={this.state.isEditDialogModalOpen}
                     trainDialog={this.state.currentTrainDialog!}
+                    editingLogDialog={this.state.currentLogDialog}
                     history={this.state.history}
                     initialSelectedHistoryIndex={this.state.selectedHistoryIndex}
-                    editType={EditDialogType.LOG}
+                    editType={this.state.editType}
                     onClose={(reload) => this.onCloseEditDialogModal(reload)}
                     onBranch={null} // Never branch on LogDialogs
                     onDelete={this.onDeleteLogDialog}
-                    onUpdateHistory={(updatedTrainDialog) => this.onUpdateHistory(updatedTrainDialog)}
+                    onUpdateHistory={(updatedTrainDialog, selectedActivityIndex) => this.onUpdateHistory(updatedTrainDialog, selectedActivityIndex)}
                     onContinue={(editedTrainDialog, initialUserInput) => this.onContinueTrainDialog(editedTrainDialog, initialUserInput)}
                     onSave={(editedTrainDialog, isInvalid) => this.onSaveTrainDialog(editedTrainDialog, isInvalid)}
-                    onCreate={null} // Never creating a new TrainDialog
+                    onCreate={() =>  { }}
                 />
             </div>
         );
@@ -746,6 +764,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
 
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
+        clearWebchatScrollPosition: actions.display.clearWebchatScrollPosition,
         createChatSessionThunkAsync: actions.chat.createChatSessionThunkAsync,
         createTeachSessionFromHistoryThunkAsync: actions.teach.createTeachSessionFromHistoryThunkAsync,
         createTrainDialogThunkAsync: actions.train.createTrainDialogThunkAsync,

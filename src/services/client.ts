@@ -336,7 +336,7 @@ export default class ClClient {
             data: trainDialog
         })
         .then(response => {
-            trainDialog.trainDialogId = response.data
+            trainDialog.trainDialogId = response.data.trainDialogId 
             return trainDialog
         })
     }
