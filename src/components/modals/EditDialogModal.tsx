@@ -63,7 +63,6 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         }
     }
 
-    // LARS can go away - moved to TD
     selectedActivityIndex(): number | null {
         if (!this.state.selectedActivity || this.props.history.length === 0) {
             return null
@@ -153,90 +152,6 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         return best
     }
 
-    /* lars remove
-    @autobind
-    async onInsertInput(inputText: string) {
-
-        if (!this.props.user) {
-            throw new Error("No Active User");
-        }
-        if (!this.state.selectedActivity) {
-            throw new Error("No selected activity")
-        }
-  
-        try {
-            const roundIndex = this.state.selectedActivity.channelData.roundIndex
-            const scoreIndex = this.state.selectedActivity.channelData.scoreIndex
-            const senderType = this.state.selectedActivity.channelData.senderType
-
-            const definitions = {
-                entities: this.props.entities,
-                actions: this.props.actions,
-                trainDialogs: []
-            }
-
-            // Copy, Remove rounds / scorer steps below insert
-            let history = JSON.parse(JSON.stringify(this.props.trainDialog))
-            history.definitions = definitions
-            history.rounds = history.rounds.slice(0, roundIndex + 1)
-
-            const userInput: CLM.UserInput = { text: inputText }
-
-            // Get extraction
-            const extractResponse = await ((this.props.extractFromHistoryThunkAsync(this.props.app.appId, history, userInput) as any) as Promise<CLM.ExtractResponse>)
-
-            if (!extractResponse) {
-                throw new Error("No extract response")  // LARS todo - handle this better
-            }
-
-            let textVariations = CLM.ModelUtils.ToTextVariations([extractResponse])
-            let extractorStep: CLM.TrainExtractorStep = {textVariations}
-
-            // Copy original and insert new round for the text
-            let newTrainDialog = JSON.parse(JSON.stringify(this.props.trainDialog))
-            newTrainDialog.definitions = definitions
-
-            let scorerSteps: CLM.TrainScorerStep[]
-
-            if (senderType === CLM.SenderType.User) {
-                // Copy scorer steps below the injected input for new Round
-                scorerSteps = this.props.trainDialog.rounds[roundIndex].scorerSteps
-
-                // Remove scorer steps above injected input from round 
-                newTrainDialog.rounds[roundIndex].scorerSteps = []
-            }
-            else {
-                // Copy scorer steps below the injected input for new Round
-                scorerSteps = this.props.trainDialog.rounds[roundIndex].scorerSteps.slice(scoreIndex + 1)
-
-                // Remove scorer steps above injected input from round 
-                newTrainDialog.rounds[roundIndex].scorerSteps.splice(scoreIndex + 1, Infinity)
-            }
-
-            // Create new round
-            let newRound = {
-                extractorStep,
-                scorerSteps
-            }
-        
-            // Inject new Round
-            newTrainDialog.rounds.splice(roundIndex + 1, 0, newRound)
-            
-            // Replay logic functions on train dialog
-            newTrainDialog = await ((this.props.trainDialogReplayThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<CLM.TrainDialog>)
-
-            // If inserted at end of conversation, allow to scroll to bottom
-            if (roundIndex === this.props.trainDialog.rounds.length - 1) {
-                this.props.clearWebchatScrollPosition()
-            }
-
-            this.props.onUpdateHistory(newTrainDialog, this.selectedActivityIndex())
-        }
-        catch (error) {
-            console.warn(`Error when attempting to create teach session from history: `, error)
-        }
-    }
-*/
     @autobind
     async onChangeExtraction(extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) {
  
@@ -301,132 +216,6 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         }
     }
  
-    /* lars
-    @autobind
-    async onInsertAction() {
-
-        if (!this.props.user) {
-            throw new Error("No Active User");
-        }
-        if (!this.state.selectedActivity) {
-            throw new Error("No selected activity")
-        }
-
-        try {
-            const roundIndex = this.state.selectedActivity.channelData.roundIndex
-            let scoreIndex = this.state.selectedActivity.channelData.scoreIndex
-            const definitions = {
-                entities: this.props.entities,
-                actions: this.props.actions,
-                trainDialogs: []
-            }
-
-            // Created shorted verion of TrainDialog at insert point
-            // Copy, Remove rounds / scorer steps below insert
-            let history = JSON.parse(JSON.stringify(this.props.trainDialog))
-            history.definitions = definitions
-            history.rounds = history.rounds.slice(0, roundIndex + 1)
-
-            // Remove actionless dummy step (used for rendering) if it exits
-            if (history.rounds[roundIndex].scorerSteps.length > 0 && history.rounds[roundIndex].scorerSteps[0].labelAction === undefined) {
-                history.rounds[roundIndex].scorerSteps = []
-            }
-            // Or remove following scorer steps 
-            else {
-                history.rounds[roundIndex].scorerSteps = history.rounds[roundIndex].scorerSteps.slice(0, scoreIndex);
-            }
-
-            // Get a score for this step
-            let uiScoreResponse = await ((this.props.scoreFromHistoryThunkAsync(this.props.app.appId, history) as any) as Promise<CLM.UIScoreResponse>)
-
-            // Find top scoring Action
-            let insertedAction = this.getBestAction(uiScoreResponse.scoreResponse)
-
-            if (!insertedAction) {
-                throw new Error("No actions available")  // LARS todo - handle this better
-            }
-
-            let scorerStep = {
-                input: uiScoreResponse.scoreInput,
-                labelAction: insertedAction.actionId,
-                scoredAction: insertedAction
-            }
-
-            // Insert new Action into Full TrainDialog
-            let newTrainDialog = JSON.parse(JSON.stringify(this.props.trainDialog))
-            newTrainDialog.definitions = definitions
-            let curRound = newTrainDialog.rounds[roundIndex]
-
-            // Replace actionless dummy step (used for rendering) if it exits
-            if (curRound.scorerSteps.length === 0 || curRound.scorerSteps[0].labelAction === undefined) {
-                curRound.scorerSteps = [scorerStep]
-            }
-            // Or insert 
-            else {
-                curRound.scorerSteps.splice(scoreIndex + 1, 0, scorerStep)
-            }
-
-            // If inserted at end of conversation, allow to scroll to bottom
-            if (roundIndex === this.props.trainDialog.rounds.length - 1 && scoreIndex === curRound.scorerSteps.length - 1) {
-                this.props.clearWebchatScrollPosition()
-            }
-
-            this.props.onUpdateHistory(newTrainDialog, this.selectedActivityIndex())
-        }
-        catch (error) {
-            console.warn(`Error when attempting to insert an Action `, error)
-        }
-    }*/
-/*LARS goes away
-    @autobind
-    async onDeleteTurn() {
-
-        if (!this.state.selectedActivity) {
-            throw new Error("No selected activity")
-        }
-
-        const senderType = this.state.selectedActivity.channelData.senderType
-        const roundIndex = this.state.selectedActivity.channelData.roundIndex
-        const scoreIndex = this.state.selectedActivity.channelData.scoreIndex
-
-        let newTrainDialog: CLM.TrainDialog = {...this.props.trainDialog}
-        newTrainDialog.definitions = {
-            entities: this.props.entities,
-            actions: this.props.actions,
-            trainDialogs: []
-        }
-
-        let curRound = newTrainDialog.rounds[roundIndex]
-
-        if (senderType === CLM.SenderType.User) {
-            // If user input deleted, append scores to previous round
-            if (roundIndex > 0) {
-                let previousRound = newTrainDialog.rounds[roundIndex - 1]
-                previousRound.scorerSteps = [...previousRound.scorerSteps, ...curRound.scorerSteps]
-
-                // Remove actionless dummy step if it exits
-                previousRound.scorerSteps = previousRound.scorerSteps.filter(ss => ss.labelAction !== undefined)
-            }
-
-            // Delete round 
-            newTrainDialog.rounds.splice(roundIndex, 1)
-
-            // Replay logic functions on train dialog
-            newTrainDialog = await ((this.props.trainDialogReplayThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<CLM.TrainDialog>)
-
-            this.props.onUpdateHistory(newTrainDialog, null)
-        }
-        else if (senderType === CLM.SenderType.Bot) {
-            // If Action deleted remove it
-            curRound.scorerSteps.splice(scoreIndex, 1)
-
-            // Replay logic functions on train dialog
-            newTrainDialog = await ((this.props.trainDialogReplayThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<CLM.TrainDialog>)
-
-            this.props.onUpdateHistory(newTrainDialog, null)
-        }
-    }
-*/
     onWebChatSelectActivity(activity: Activity) {
          this.setState({
             selectedActivity: activity
@@ -867,8 +656,6 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        scoreFromHistoryThunkAsync: actions.train.scoreFromHistoryThunkAsync,//LARS still used?
-        extractFromHistoryThunkAsync: actions.train.extractFromHistoryThunkAsync,// Lars still used?
         trainDialogReplayThunkAsync: actions.train.trainDialogReplayThunkAsync,// Lars still used?
         setWebchatScrollPosition: actions.display.setWebchatScrollPosition,
         clearWebchatScrollPosition: actions.display.clearWebchatScrollPosition

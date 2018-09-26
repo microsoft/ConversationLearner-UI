@@ -2,23 +2,22 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import * as React from 'react';
-import { returntypeof } from 'react-redux-typescript';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
-import * as OF from 'office-ui-fabric-react';
+import * as React from 'react'
+import { returntypeof } from 'react-redux-typescript'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
+import * as OF from 'office-ui-fabric-react'
 import { State } from '../../../types'
 import * as CLM from '@conversationlearner/models'
 import { TeachSessionModal, EditDialogModal, EditDialogType, EditState } from '../../../components/modals'
 import actions from '../../../actions'
-import BaseDialogs from './BaseDialogs'
 import { Icon } from 'office-ui-fabric-react/lib/Icon'
 import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { FM } from '../../../react-intl-messages'
-import { Activity } from 'botframework-directlinejs';
-import { autobind } from 'office-ui-fabric-react/lib/Utilities';
-import { getDefaultEntityMap, notNullOrUndefined } from '../../../util';
-import ReplayErrorList from '../../../components/modals/ReplayErrorList';
+import { Activity } from 'botframework-directlinejs'
+import { autobind } from 'office-ui-fabric-react/lib/Utilities'
+import { getDefaultEntityMap, notNullOrUndefined } from '../../../util'
+import ReplayErrorList from '../../../components/modals/ReplayErrorList'
 import * as moment from 'moment'
 
 interface IRenderableColumn extends OF.IColumn {
@@ -214,7 +213,7 @@ interface ComponentState {
     validationErrorMessageId: string | null
 }
 
-class TrainDialogs extends BaseDialogs<Props, ComponentState> {
+class TrainDialogs extends React.Component<Props, ComponentState> {
     newTeachSessionButton: OF.IButton
     state: ComponentState
 
@@ -407,7 +406,7 @@ class TrainDialogs extends BaseDialogs<Props, ComponentState> {
     }
     
     // User has clicked on Activity in a Teach Session
-    async onEditTeach(historyIndex: number, userInput: string|null = null, editHandler: (activity: Activity, data?: any) => any ) {
+    async onEditTeach(historyIndex: number, userInput: string|null = null, editHandler: (activity: Activity, data?: any) => any) {
 
         try {
             if (this.state.teachSession) {
@@ -426,6 +425,15 @@ class TrainDialogs extends BaseDialogs<Props, ComponentState> {
                 let teachWithHistory = await ((this.props.fetchHistoryThunkAsync(this.props.app.appId, trainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)
                 const originalId = this.state.currentTrainDialog ? this.state.currentTrainDialog.trainDialogId : null
                 if (teachWithHistory) {
+
+                    let selectedActivity = teachWithHistory.history[historyIndex]
+                    if (userInput) {
+                        await editHandler(selectedActivity, userInput)
+                    }
+                    else {
+                        await editHandler(selectedActivity)
+                    }
+
                     this.setState({
                         history: teachWithHistory.history,
                         lastAction: teachWithHistory.lastAction,
@@ -434,16 +442,7 @@ class TrainDialogs extends BaseDialogs<Props, ComponentState> {
                         isEditDialogModalOpen: true,
                         selectedHistoryIndex: historyIndex,
                         isTeachDialogModalOpen: false
-                    }, () => {
-                            let selectedActivity = this.state.history[historyIndex]
-                            if (userInput) {
-                                editHandler(selectedActivity, userInput)
-                            }
-                            else {
-                                editHandler(selectedActivity)
-                            }
-                        }
-                    )
+                    })
                 }
             }
         }
