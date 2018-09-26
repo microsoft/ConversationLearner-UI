@@ -96,7 +96,7 @@ describe('Hello-World', function () {
     cy.get('[id="botchat"]')
       .should('contain', trainmessage01)
       .and('contain', action01)
-      editDialogModal.clickDone();
+      editDialogModal.clickDoneTeaching();
   })
 
   /** FEATURE: Delete a Model */
