@@ -10,7 +10,6 @@ const entities = require('../support/components/entitiespage')
 const entityModal = require('../support/components/entitymodal')
 const modelPage = require('../support/components/modelpage')
 const logDialogPage = require('../support/components/logdialogspage')
-const logDialogModal = require('../support/components/logdialogmodal')
 const scorerModal = require('../support/components/scorermodal')
 const trainDialogPage = require('../support/components/traindialogspage')
 const editDialogModal = require('../support/components/editdialogmodal')
@@ -90,14 +89,14 @@ describe('Hello-World', function () {
     modelPage.navigateToLogDialogs();
     logDialogPage.verifyPageTitle();
     logDialogPage.createNew();
-    logDialogModal.typeYourMessage(trainmessage01);
+    editDialogModal.typeYourMessage(trainmessage01);
     cy.wait(3000);
 
     // Perform chat entries validation
     cy.get('[id="botchat"]')
       .should('contain', trainmessage01)
       .and('contain', action01)
-    logDialogModal.clickDone();
+      editDialogModal.clickDoneTeaching();
   })
 
   /** FEATURE: Delete a Model */
