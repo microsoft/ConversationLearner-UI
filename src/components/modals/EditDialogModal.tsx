@@ -63,6 +63,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         }
     }
 
+    // LARS can go away - moved to TD
     selectedActivityIndex(): number | null {
         if (!this.state.selectedActivity || this.props.history.length === 0) {
             return null
@@ -101,7 +102,10 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         this.setState({
             isUserInputModalOpen: false
         })
-        this.onInsertInput(userInput)
+        
+        if (this.state.selectedActivity) {
+            this.props.onInsertInput(this.state.selectedActivity, userInput)
+        }
     }
 
     @autobind
@@ -133,6 +137,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         }
     }
 
+    // LARS - no longer used?
     // Return best action from ScoreResponse 
     getBestAction(scoreResponse: CLM.ScoreResponse): CLM.ScoredAction | undefined {
 
@@ -148,6 +153,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         return best
     }
 
+    /* lars remove
     @autobind
     async onInsertInput(inputText: string) {
 
@@ -230,7 +236,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             console.warn(`Error when attempting to create teach session from history: `, error)
         }
     }
-
+*/
     @autobind
     async onChangeExtraction(extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) {
  
@@ -294,7 +300,8 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             console.warn(`Error when attempting to change an Action: `, error)
         }
     }
-
+ 
+    /* lars
     @autobind
     async onInsertAction() {
 
@@ -369,8 +376,8 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         catch (error) {
             console.warn(`Error when attempting to insert an Action `, error)
         }
-    }
-
+    }*/
+/*LARS goes away
     @autobind
     async onDeleteTurn() {
 
@@ -419,7 +426,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             this.props.onUpdateHistory(newTrainDialog, null)
         }
     }
-    
+*/
     onWebChatSelectActivity(activity: Activity) {
          this.setState({
             selectedActivity: activity
@@ -476,17 +483,27 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                     ariaDescription="Insert Input Turn"
                     iconProps={{ iconName: 'CommentAdd' }}
                 />
-                <OF.IconButton
-                    className={`cl-wc-addscore ${activity.channelData.senderType === CLM.SenderType.User ? `cl-wc-addscore--user` : `cl-wc-addscore--bot`}`}
-                    onClick={this.onInsertAction}
-                    ariaDescription="Insert Score Turn"
-                    iconProps={{ iconName: 'CommentAdd' }}
-                />
+                {this.state.selectedActivity &&
+                    <OF.IconButton
+                        className={`cl-wc-addscore ${activity.channelData.senderType === CLM.SenderType.User ? `cl-wc-addscore--user` : `cl-wc-addscore--bot`}`}
+                        onClick={() => {
+                            if (this.state.selectedActivity) {
+                                this.props.onInsertAction(this.state.selectedActivity)
+                            }
+                        }}
+                        ariaDescription="Insert Score Turn"
+                        iconProps={{ iconName: 'CommentAdd' }}
+                    />
+                }
                 {canDeleteRound &&
                     <OF.IconButton
                         className={`cl-wc-deleteturn ${activity.channelData.senderType === CLM.SenderType.User ? `cl-wc-deleteturn--user` : `cl-wc-deleteturn--bot`}`}
                         iconProps={{ iconName: 'Delete' }}
-                        onClick={this.onDeleteTurn}
+                        onClick={() => {
+                            if (this.state.selectedActivity) {
+                                this.props.onDeleteTurn(this.state.selectedActivity)
+                            }
+                        }}
                         ariaDescription="Delete Turn"
                     />
                 }
@@ -850,9 +867,9 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        scoreFromHistoryThunkAsync: actions.train.scoreFromHistoryThunkAsync,
-        extractFromHistoryThunkAsync: actions.train.extractFromHistoryThunkAsync,
-        trainDialogReplayThunkAsync: actions.train.trainDialogReplayThunkAsync,
+        scoreFromHistoryThunkAsync: actions.train.scoreFromHistoryThunkAsync,//LARS still used?
+        extractFromHistoryThunkAsync: actions.train.extractFromHistoryThunkAsync,// Lars still used?
+        trainDialogReplayThunkAsync: actions.train.trainDialogReplayThunkAsync,// Lars still used?
         setWebchatScrollPosition: actions.display.setWebchatScrollPosition,
         clearWebchatScrollPosition: actions.display.clearWebchatScrollPosition
     }, dispatch);
@@ -867,25 +884,28 @@ const mapStateToProps = (state: State) => {
 
 export interface ReceivedProps {
     app: CLM.AppBase,
-    editingPackageId: string,
-    editState: EditState,
+    editingPackageId: string
+    editState: EditState
     open: boolean
     // Current train dialog being edited
     trainDialog: CLM.TrainDialog
     // If editing a log dialog, this was the source
     editingLogDialog: CLM.LogDialog | null
-    history: Activity[],
+    history: Activity[]
     // Is it a new dialog, a TrainDialog or LogDialog 
-    editType: EditDialogType,
+    editType: EditDialogType
     // If starting with activity selected
     initialSelectedHistoryIndex: number | null
-    onClose: (reload: boolean) => void,
+    onInsertAction: (activity: Activity) => any
+    onInsertInput: (activity: Activity, userText: string) => any
+    onDeleteTurn: (activity: Activity) => any
+    onClose: (reload: boolean) => void
     onBranch: ((turnIndex: number) => void) | null,
-    onContinue: (newTrainDialog: CLM.TrainDialog, initialUserInput: CLM.UserInput) => void,
-    onSave: (newTrainDialog: CLM.TrainDialog, isInvalid: boolean) => void,
+    onContinue: (newTrainDialog: CLM.TrainDialog, initialUserInput: CLM.UserInput) => void
+    onSave: (newTrainDialog: CLM.TrainDialog, isInvalid: boolean) => void
     // Add a new train dialog to the Model (when EditDialogType === NEW)
-    onCreate: (newTrainDialog: CLM.TrainDialog, isInvalid: boolean) => void,
-    onUpdateHistory: (newTrainDialog: CLM.TrainDialog, selectedActivityIndex: number | null) => void,
+    onCreate: (newTrainDialog: CLM.TrainDialog, isInvalid: boolean) => void
+    onUpdateHistory: (newTrainDialog: CLM.TrainDialog, selectedActivityIndex: number | null) => void
     onDelete: () => void
 }
 

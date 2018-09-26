@@ -19,6 +19,7 @@ import * as CLM from '@conversationlearner/models'
 import { Activity } from 'botframework-directlinejs'
 import actions from '../../actions'
 import ConfirmCancelModal from './ConfirmCancelModal'
+import UserInputModal from './UserInputModal'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { autobind } from 'office-ui-fabric-react/lib/Utilities';
@@ -26,24 +27,28 @@ import { EditDialogType } from '.';
 
 interface ComponentState {
     isConfirmDeleteOpen: boolean,
+    isUserInputModalOpen: boolean,
     isInitStateOpen: boolean,
     isInitAvailable: boolean,
     webchatKey: number,
     editing: boolean,
     hasTerminalAction: boolean,
-    activityIndex: number
+    nextActivityIndex: number,
+    selectedActivityIndex: number | null
 }
 
 class TeachModal extends React.Component<Props, ComponentState> {
 
     state: ComponentState = {
         isConfirmDeleteOpen: false,
+        isUserInputModalOpen: false,
         isInitStateOpen: false,
         isInitAvailable: true,
         webchatKey: 0,
         editing: false,
         hasTerminalAction: false,
-        activityIndex: 0
+        nextActivityIndex: 0,
+        selectedActivityIndex: null
     }
 
     private callbacksId: string | null = null;
@@ -74,12 +79,12 @@ class TeachModal extends React.Component<Props, ComponentState> {
         let webchatKey = this.state.webchatKey
         let hasTerminalAction = this.state.hasTerminalAction
         let isInitAvailable = this.state.isInitAvailable
-        let activityIndex = this.state.activityIndex
+        let nextActivityIndex = this.state.nextActivityIndex
 
         if (this.props.initialHistory !== newProps.initialHistory) {
             webchatKey = this.state.webchatKey + 1
             isInitAvailable = !newProps.initialHistory || newProps.initialHistory.length === 0
-            activityIndex = newProps.initialHistory.length
+            nextActivityIndex = newProps.initialHistory.length
         }
 
         // If new session
@@ -101,7 +106,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                 webchatKey: webchatKey,
                 hasTerminalAction: hasTerminalAction,
                 isInitAvailable: isInitAvailable,
-                activityIndex
+                nextActivityIndex
             })
         }   
     }
@@ -183,31 +188,130 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
             // Add channel data to activity so can process when clicked on later
             activity.channelData = { 
-                activityIndex: this.state.activityIndex,
+                activityIndex: this.state.nextActivityIndex,
             }
               
             this.setState({ 
                  // No initialization allowed after first input
                 isInitAvailable: false, 
-                activityIndex: this.state.activityIndex + 1
+                nextActivityIndex: this.state.nextActivityIndex + 1
             })
 
             this.props.runExtractorThunkAsync(this.props.app.appId, CLM.DialogType.TEACH, this.props.teach.teachId, null, userInput);
         }
     }
 
+    @autobind
+    onClickAddUserInput() {
+        this.setState({
+            isUserInputModalOpen: true
+        })
+    }
+
+    @autobind
+    onCancelAddUserInput() {
+        this.setState({
+            isUserInputModalOpen: false
+        })
+    }
+
+    @autobind
+    onSubmitAddUserInput(userInput: string) {
+        this.setState({
+            isUserInputModalOpen: false
+        })
+        if (this.state.selectedActivityIndex != null) { 
+            this.props.onEditTeach(this.state.selectedActivityIndex, userInput, this.props.onInsertInput) 
+        }
+    }
+
+    @autobind
+    onInsertAction() {
+        if (this.state.selectedActivityIndex != null) { 
+            this.props.onEditTeach(this.state.selectedActivityIndex, null, this.props.onInsertAction) 
+        }
+    }
+
+    @autobind
+    onDeleteTurn() {
+        if (this.state.selectedActivityIndex != null) { 
+            this.props.onEditTeach(this.state.selectedActivityIndex, null, this.props.onDeleteTurn) 
+        }
+    }
+
+    renderSelectedActivity(activity: Activity): (JSX.Element | null) {
+/*
+        if (this.props.editState !== EditState.CAN_EDIT) {
+            return null
+        }
+        
+        const canBranch = activity && activity.channelData.senderType === CLM.SenderType.User
+        const roundIndex = activity.channelData.roundIndex
+        const senderType = activity.channelData.senderType
+
+
+        // Round could have been deleted
+        if (!curRound) {
+            return null
+        }
+
+     //LARS   const hasNoScorerStep = curRound.scorerSteps.length === 0 || curRound.scorerSteps[0].labelAction === undefined
+*/
+
+        if (this.state.selectedActivityIndex === null) {
+            return null
+        }
+        
+        const isUser = activity.from.name !== 'Bot'
+
+        // Can only delete first user input if it has no scorer steps
+        // and is followed by user input
+        const canDeleteRound = 
+            this.state.selectedActivityIndex !== 0 /*|| 
+            senderType !== CLM.SenderType.User ||
+            curRound.scorerSteps.length === 0/* ||LARS
+            (hasNoScorerStep && this.props.trainDialog.rounds.length > 1)*/
+
+        return (
+            <div className="cl-wc-buttonbar">
+                <OF.IconButton
+                    className={`cl-wc-addinput ${isUser ? `cl-wc-addinput--user` : `cl-wc-addinput--bot`}`}
+                    onClick={this.onClickAddUserInput}
+                    ariaDescription="Insert Input Turn"
+                    iconProps={{ iconName: 'CommentAdd' }}
+                />
+                <OF.IconButton
+                    className={`cl-wc-addscore ${isUser ? `cl-wc-addscore--user` : `cl-wc-addscore--bot`}`}
+                    onClick={this.onInsertAction}
+                    ariaDescription="Insert Score Turn"
+                    iconProps={{ iconName: 'CommentAdd' }}
+                />
+                {canDeleteRound &&
+                    <OF.IconButton
+                        className={`cl-wc-deleteturn ${isUser ? `cl-wc-deleteturn--user` : `cl-wc-deleteturn--bot`}`}
+                        iconProps={{ iconName: 'Delete' }}
+                        onClick={this.onDeleteTurn}
+                        ariaDescription="Delete Turn"
+                    />
+                }
+                </div>
+        )
+    }
+
     onWebChatSelectActivity(activity: Activity) {
        
         // Activities from history can be looked up
         if (this.props.initialHistory.length > 0) {
-            const foundIndex = this.props.initialHistory.findIndex(a => a.id === activity.id)
-            if (foundIndex > -1) {
-                this.props.onEditTeach(foundIndex)  
+            const selectedActivityIndex = this.props.initialHistory.findIndex(a => a.id === activity.id)
+            if (selectedActivityIndex > -1) {
+                this.setState({selectedActivityIndex})
+               // this.props.onEditTeach(foundIndex)   LARS
             }
         }
         // Otherwise newly create activities with have index in channelData
         else { 
-            this.props.onEditTeach(activity.channelData.activityIndex)
+            this.setState({selectedActivityIndex: activity.channelData.activityIndex})
+            //LARS this.props.onEditTeach(activity.channelData.activityIndex)
         }
     }
 
@@ -338,6 +442,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                                     hideInput={this.props.dialogMode !== CLM.DialogMode.Wait}
                                     focusInput={this.props.dialogMode === CLM.DialogMode.Wait}
                                     highlightClassName={'wc-message-selected'}
+                                    renderSelectedActivity={activity => this.renderSelectedActivity(activity)}
                                 />
                                 {chatDisable}
                             </div>
@@ -348,12 +453,12 @@ class TeachModal extends React.Component<Props, ComponentState> {
                                         app={this.props.app}
                                         editingPackageId={this.props.editingPackageId}
                                         editType={this.props.editType}
-                                        activityIndex={this.state.activityIndex}
+                                        activityIndex={this.state.nextActivityIndex}
                                         selectedActivity={null}
                                         onScoredAction={(scoredAction) => {
                                                 this.setState({
                                                     hasTerminalAction: scoredAction.isTerminal,
-                                                    activityIndex: this.state.activityIndex + 1
+                                                    nextActivityIndex: this.state.nextActivityIndex + 1
                                                 })
                                             }
                                         }
@@ -415,6 +520,11 @@ class TeachModal extends React.Component<Props, ComponentState> {
                     isOpen={this.state.isInitStateOpen}
                     handleClose={this.onCloseInitState}
                 />
+                <UserInputModal
+                    open={this.state.isUserInputModalOpen}
+                    onCancel={this.onCancelAddUserInput}
+                    onSubmit={this.onSubmitAddUserInput}
+                />
             </div>
         );
     }
@@ -443,7 +553,10 @@ const mapStateToProps = (state: State) => {
 export interface ReceivedProps {
     isOpen: boolean
     onClose: Function
-    onEditTeach: (historyIndex: number) => void
+    onEditTeach: (historyIndex: number, userInput: string|null, editHandler: (activity: Activity, userInput: string) => any) => void
+    onInsertAction: (activity: Activity) => any
+    onInsertInput: (activity: Activity, userText: string) => any
+    onDeleteTurn: (activity: Activity) => any
     onSetInitialEntities: ((initialFilledEntities: CLM.FilledEntity[]) => void) | null
     app: CLM.AppBase
     editingPackageId: string

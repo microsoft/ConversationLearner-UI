@@ -396,7 +396,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     }
 
     // User has clicked on Activity in a Teach Session
-    async onEditTeach(historyIndex: number) {
+    async onEditTeach(historyIndex: number, userInput: string|null, /*LARS TODO*/ editHandler: (activity: Activity, data?: any) => any) {
 
         try {
             if (this.state.teachSession) {
@@ -731,7 +731,10 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     isOpen={this.state.isTeachDialogModalOpen}
                     onClose={this.onCloseTeachSession}
                     onSetInitialEntities={null} 
-                    onEditTeach={(historyIndex) => this.onEditTeach(historyIndex)}
+                    onEditTeach={(historyIndex, userInput, editHandler) => this.onEditTeach(historyIndex, userInput, editHandler)}
+                    onInsertAction={(activity) => {}} // LARS TODO
+                    onInsertInput={(activity) => {}} // LARS TODO
+                    onDeleteTurn={(activity) => {}} // LARS TODO
                     editType={this.state.editType} 
                     initialHistory={this.state.history}
                     lastAction={this.state.lastAction}
@@ -749,8 +752,11 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     history={this.state.history}
                     initialSelectedHistoryIndex={this.state.selectedHistoryIndex}
                     editType={this.state.editType}
-                    onClose={(reload) => this.onCloseEditDialogModal(reload)}
+                    onInsertAction={(activity) => {}} // LARS TODO
+                    onInsertInput={(activity) => {}} // LARS TODO
+                    onDeleteTurn={(activity) => {}} // LARS TODO
                     onBranch={null} // Never branch on LogDialogs
+                    onClose={(reload) => this.onCloseEditDialogModal(reload)}
                     onDelete={this.onDeleteLogDialog}
                     onUpdateHistory={(updatedTrainDialog, selectedActivityIndex) => this.onUpdateHistory(updatedTrainDialog, selectedActivityIndex)}
                     onContinue={(editedTrainDialog, initialUserInput) => this.onContinueTrainDialog(editedTrainDialog, initialUserInput)}
