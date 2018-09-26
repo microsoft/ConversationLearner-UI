@@ -824,7 +824,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                             <OF.DefaultButton
                                 data-testid="footer-button-delete"
                                 className="cl-button-delete"
-                                disabled={this.state.pendingExtractionChanges || this.props.editState !== EditState.CAN_EDIT}
+                                disabled={this.props.editState !== EditState.CAN_EDIT}
                                 onClick={this.onClickAbandon}
                                 ariaDescription={this.renderAbandonText(intl)}
                                 text={this.renderAbandonText(intl)}

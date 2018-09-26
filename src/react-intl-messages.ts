@@ -866,7 +866,7 @@ export default {
 
         // TeachSessionModal
         [FM.TEACHSESSIONMODAL_TEACH_CONFIRMDELETE_TITLE]: 'Are you sure you want to abandon this teach session?',
-        [FM.TEACHSESSIONMODAL_EDIT_CONFIRMDELETE_TITLE]: 'Are you sure you want to cancel editing?',
+        [FM.TEACHSESSIONMODAL_EDIT_CONFIRMDELETE_TITLE]: 'Are you sure you want to abandon your edits?',
         [FM.TEACHSESSIONMODAL_INITSTATE_ARIADESCRIPTION]: 'Set Initial State',
         [FM.TEACHSESSIONMODAL_INITSTATE_TEXT]: 'Set Initial State',
 

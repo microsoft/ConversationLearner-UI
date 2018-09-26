@@ -198,8 +198,6 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
     onWebChatSelectActivity(activity: Activity) {
        
-        
-
         // Activities from history can be looked up
         if (this.props.initialHistory.length > 0) {
             const foundIndex = this.props.initialHistory.findIndex(a => a.id === activity.id)
@@ -214,76 +212,98 @@ class TeachModal extends React.Component<Props, ComponentState> {
     }
 
     renderAbandonText(intl: ReactIntl.InjectedIntl) {
-        // Editing a new Teach Session
-        if (this.props.editType === EditDialogType.NEW) {
-            return intl.formatMessage({
-                id: FM.BUTTON_ABANDON,
-                defaultMessage: 'Abandon'
-            })
-        }
-        // Editing an existing dialog
-        else if (this.props.sourceLogDialog || this.props.sourceTrainDialog) {
-            return intl.formatMessage({
-                id: FM.BUTTON_ABANDON_EDIT,
-                defaultMessage: 'Abandon Edit'
-            })
-        }
-        else {
-            return intl.formatMessage({
-                id: FM.BUTTON_ABANDON,
-                defaultMessage: 'Abandon'
-            })
+        switch (this.props.editType) {
+            case EditDialogType.NEW:
+                return intl.formatMessage({
+                    id: FM.BUTTON_ABANDON,
+                    defaultMessage: 'Abandon'
+                }) 
+            case EditDialogType.LOG_EDITED:
+                return intl.formatMessage({
+                    id: FM.BUTTON_ABANDON_EDIT,
+                    defaultMessage: 'Abandon Edit'
+                })
+            case EditDialogType.LOG_ORIGINAL:
+                return intl.formatMessage({
+                    id: FM.BUTTON_ABANDON,
+                    defaultMessage: 'Abandon'
+                }) 
+            case EditDialogType.TRAIN_EDITED:
+                return intl.formatMessage({
+                    id: FM.BUTTON_ABANDON_EDIT,
+                    defaultMessage: 'Abandon Edit'
+                })
+            case EditDialogType.TRAIN_ORIGINAL:
+                return intl.formatMessage({
+                    id: FM.BUTTON_ABANDON,
+                    defaultMessage: 'Abandon'
+                })
+            default:
+                return ""
         }
     }
 
     renderSaveText(intl: ReactIntl.InjectedIntl) {
-        // Editing a new Teach Session
-        if (this.props.editType === EditDialogType.NEW) {
-            return intl.formatMessage({
-                id: FM.BUTTON_SAVE,
-                defaultMessage: 'Save'
-            })
-        }
-        // Editing a Log Dialog
-        else if (this.props.editType === EditDialogType.LOG_EDITED) {
-            return intl.formatMessage({
-                id: FM.BUTTON_SAVE_AS_TRAIN_DIALOG,
-                defaultMessage: 'Save as Train Dialog'
-            })
-        }
-        else if (this.props.sourceLogDialog || this.props.sourceTrainDialog) {
-            return intl.formatMessage({
-                id: FM.BUTTON_SAVE_EDIT,
-                defaultMessage: 'Save Edit'
-            })
-        }
-        else {
-            return intl.formatMessage({
-                id: FM.BUTTON_SAVE,
-                defaultMessage: 'Save'
-            })
+        switch (this.props.editType) {
+            case EditDialogType.NEW:
+                return intl.formatMessage({
+                    id: FM.BUTTON_SAVE,
+                    defaultMessage: 'Save'
+                })
+            case EditDialogType.LOG_EDITED:
+                return intl.formatMessage({
+                    id: FM.BUTTON_SAVE_AS_TRAIN_DIALOG,
+                    defaultMessage: 'Save as Train Dialog'
+                })
+            case EditDialogType.LOG_ORIGINAL:
+                return intl.formatMessage({
+                    id: FM.BUTTON_SAVE_AS_TRAIN_DIALOG,
+                    defaultMessage: 'Save as Train Dialog'
+                })
+            case EditDialogType.TRAIN_EDITED:
+                return intl.formatMessage({
+                    id: FM.BUTTON_SAVE_EDIT,
+                    defaultMessage: 'Save Edit'
+                })
+            case EditDialogType.TRAIN_ORIGINAL:
+                return intl.formatMessage({
+                    id: FM.BUTTON_SAVE,
+                    defaultMessage: 'Save'
+                })
+            default:
+                return ""
         }
     }
 
     renderConfirmText(intl: ReactIntl.InjectedIntl) {
-        // Editing a new Teach Session
-        if (this.props.editType === EditDialogType.NEW) {
-            return intl.formatMessage({
-                id: FM.TEACHSESSIONMODAL_TEACH_CONFIRMDELETE_TITLE,
-                defaultMessage: 'Are you sure you want to abandon this teach session?'
-            })
-        }
-        else if (this.props.sourceLogDialog || this.props.sourceTrainDialog) {
-            return intl.formatMessage({
-                id: FM.TEACHSESSIONMODAL_EDIT_CONFIRMDELETE_TITLE,
-                defaultMessage: 'Are you sure you want to abandon edit?'
-            })
-        }
-        else {
-            return intl.formatMessage({
-                id: FM.TEACHSESSIONMODAL_TEACH_CONFIRMDELETE_TITLE,
-                defaultMessage: 'Are you sure you want to abandon this teach session?'
-            })
+        switch (this.props.editType) {
+            case EditDialogType.NEW:
+                return intl.formatMessage({
+                    id: FM.TEACHSESSIONMODAL_TEACH_CONFIRMDELETE_TITLE,
+                    defaultMessage: 'Are you sure you want to abandon this teach session?'
+                }) 
+            case EditDialogType.LOG_EDITED:
+                return intl.formatMessage({
+                    id: FM.TEACHSESSIONMODAL_EDIT_CONFIRMDELETE_TITLE,
+                    defaultMessage: 'Are you sure you want to abondon your edits?'
+                })
+            case EditDialogType.LOG_ORIGINAL:
+                return intl.formatMessage({
+                    id: FM.TEACHSESSIONMODAL_EDIT_CONFIRMDELETE_TITLE,
+                    defaultMessage: 'Are you sure you want to abondon your edits?'
+                })
+            case EditDialogType.TRAIN_EDITED:
+                return intl.formatMessage({
+                    id: FM.TEACHSESSIONMODAL_EDIT_CONFIRMDELETE_TITLE,
+                    defaultMessage: 'Are you sure you want to abondon your edits?'
+                })
+            case EditDialogType.TRAIN_ORIGINAL:
+                return intl.formatMessage({
+                    id: FM.TEACHSESSIONMODAL_TEACH_CONFIRMDELETE_TITLE,
+                    defaultMessage: 'Are you sure you want to abandon this teach session?'
+                })
+            default:
+                return ""
         }
     }
 
@@ -372,7 +392,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                                 />
                                 <OF.DefaultButton
                                     data-testid="teachsession-footer-button-abandon"
-                                    disabled={this.props.teachSession.mode === CLM.DialogMode.Extractor}
+                                    disabled={false}
                                     className="cl-button-delete"
                                     onClick={this.onClickAbandonTeach}
                                     ariaDescription={this.renderAbandonText(intl)}
