@@ -33,3 +33,14 @@ Cypress.Commands.add("WaitForStableDom", (millisecondsWithoutChange) => {return 
 import './helpers'
 const helpers = require('../support/helpers.js')
 Cypress.Commands.add("ConLog", (funcName, message) => {helpers.ConLog(funcName, message)})
+
+import './MonitorDocumentChanges'
+const MonitorDocumentChanges = require('../support/MonitorDocumentChanges.js')
+Cypress.Commands.add('Get', (selector) => 
+{ 
+  helpers.ConLog(`cy.Get()`, `Start - Last DOM change was ${MonitorDocumentChanges.MillisecondsSinceLastChange()} milliseconds ago`)
+  cy.wrap({ 'millisecondsSinceLastChange': MonitorDocumentChanges.MillisecondsSinceLastChange}).invoke('millisecondsSinceLastChange').should('gte', 700).then(() => {
+  helpers.ConLog(`cy.Get()`, `DOM Is Stable`)
+  cy.get(selector)
+})})
+
