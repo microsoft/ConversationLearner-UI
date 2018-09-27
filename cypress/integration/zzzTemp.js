@@ -75,17 +75,9 @@ describe('Temp test', function () {
   var MillisecondsSinceLastChange = MonitorDocumentChanges()
   Cypress.Commands.add('Get', (selector) => 
   { 
-<<<<<<< HEAD
-    //return new Promise((resolve, reject) => {
-    helpers.ConLog(`cy.Get()`, `Start - Last change was ${MillisecondsSinceLastChange()} milliseconds ago`)
-    cy.wrap({ 'millisecondsSinceLastChange': MillisecondsSinceLastChange}).invoke('millisecondsSinceLastChange').should('gte', 700).then(() => {
-    helpers.ConLog(`cy.Get()`, `DOM Is Stable`)
-    //resolve(cy.get(selector))
-=======
     helpers.ConLog(`cy.Get()`, `Start - Last DOM change was ${MillisecondsSinceLastChange()} milliseconds ago`)
     cy.wrap({ 'millisecondsSinceLastChange': MillisecondsSinceLastChange}).invoke('millisecondsSinceLastChange').should('gte', 700).then(() => {
     helpers.ConLog(`cy.Get()`, `DOM Is Stable`)
->>>>>>> v-miskow-Train-to-Edit
     cy.get(selector)
   })})
 
