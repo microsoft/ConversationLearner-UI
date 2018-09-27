@@ -9,7 +9,6 @@ const entityModal = require('../support/components/entitymodal')
 const modelsListPage = require('../support/components/modelsList')
 const modelPage = require('../support/components/modelPage')
 const logDialogPage = require('../support/components/logdialogspage')
-const logDialogModal = require('../support/components/logdialogmodal')
 const scorerModal = require('../support/components/scorermodal')
 const trainDialogPage = require('../support/components/traindialogspage')
 const editDialogModal = require('../support/components/editdialogmodal')
@@ -76,11 +75,17 @@ describe('Temp test', function () {
   var MillisecondsSinceLastChange = MonitorDocumentChanges()
   Cypress.Commands.add('Get', (selector) => 
   { 
+<<<<<<< HEAD
     //return new Promise((resolve, reject) => {
     helpers.ConLog(`cy.Get()`, `Start - Last change was ${MillisecondsSinceLastChange()} milliseconds ago`)
     cy.wrap({ 'millisecondsSinceLastChange': MillisecondsSinceLastChange}).invoke('millisecondsSinceLastChange').should('gte', 700).then(() => {
     helpers.ConLog(`cy.Get()`, `DOM Is Stable`)
     //resolve(cy.get(selector))
+=======
+    helpers.ConLog(`cy.Get()`, `Start - Last DOM change was ${MillisecondsSinceLastChange()} milliseconds ago`)
+    cy.wrap({ 'millisecondsSinceLastChange': MillisecondsSinceLastChange}).invoke('millisecondsSinceLastChange').should('gte', 700).then(() => {
+    helpers.ConLog(`cy.Get()`, `DOM Is Stable`)
+>>>>>>> v-miskow-Train-to-Edit
     cy.get(selector)
   })})
 

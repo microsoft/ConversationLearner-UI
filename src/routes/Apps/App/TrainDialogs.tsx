@@ -9,7 +9,7 @@ import { connect } from 'react-redux';
 import * as OF from 'office-ui-fabric-react';
 import { State } from '../../../types'
 import * as CLM from '@conversationlearner/models'
-import { TeachSessionModal, EditDialogModal, EditDialogType } from '../../../components/modals'
+import { TeachSessionModal, EditDialogModal, EditDialogType, EditState } from '../../../components/modals'
 import actions from '../../../actions'
 import { Icon } from 'office-ui-fabric-react/lib/Icon'
 import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
@@ -569,7 +569,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     async onReplaceTrainDialog(newTrainDialog: CLM.TrainDialog, isInvalid: boolean) {
 
         newTrainDialog.invalid = isInvalid
-
+        newTrainDialog.definitions = null
         try { 
             await ((this.props.editTrainDialogThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<CLM.TeachWithHistory>);
         }
@@ -742,6 +742,12 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     render() {
         const { intl, trainDialogs } = this.props
         const computedTrainDialogs = this.getFilteredAndSortedDialogs()
+        const editState = (this.props.editingPackageId !== this.props.app.devPackageId) 
+            ? EditState.INVALID_PACKAGE 
+            : this.props.invalidBot
+            ? EditState.INVALID_BOT
+            : EditState.CAN_EDIT
+
         return (
             <div className="cl-page">
                 <div data-testid="train-dialogs-title" className={`cl-dialog-title cl-dialog-title--train ${OF.FontClassNames.xxLarge}`}>
@@ -879,7 +885,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     data-testid="train-dialog-modal"
                     app={this.props.app}
                     editingPackageId={this.props.editingPackageId}
-                    canEdit={this.props.editingPackageId === this.props.app.devPackageId && !this.props.invalidBot}
+                    editState={editState}
                     open={this.state.isEditDialogModalOpen}
                     trainDialog={this.state.currentTrainDialog!}
                     editingLogDialog={null}
