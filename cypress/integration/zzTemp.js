@@ -12,9 +12,8 @@ const logDialogPage = require('../support/components/logdialogspage')
 const scorerModal = require('../support/components/scorermodal')
 const trainDialogPage = require('../support/components/traindialogspage')
 const editDialogModal = require('../support/components/editdialogmodal')
-const helpers = require('../support/helpers.js')
-const MonitorDocumentChanges = require('../support/MonitorDocumentChanges.js')
-
+const helpers = require('../support/helpers')
+const monitorDocumentChanges = require('../support/MonitorDocumentChanges')
 
 describe('zzTemp test', function () {
   const postfix = "0925-1838298" //Cypress.moment().format("MMDD-HHmmSSS")
@@ -23,8 +22,8 @@ describe('zzTemp test', function () {
   const actionResponse01 = "What's your name?"
   const actionResponse02 = "Hello $name{enter}"
 
-  beforeEach(() => { MonitorDocumentChanges.Start() })
-  afterEach(() =>  { MonitorDocumentChanges.Stop() })
+  beforeEach(() => { monitorDocumentChanges.Start() })
+  afterEach(() =>  { monitorDocumentChanges.Stop() })
 
   it('should be able to train', () => {
     // 4	Train the bot

@@ -34,13 +34,20 @@ import './helpers'
 const helpers = require('../support/helpers.js')
 Cypress.Commands.add("ConLog", (funcName, message) => {helpers.ConLog(funcName, message)})
 
-import './MonitorDocumentChanges'
-const MonitorDocumentChanges = require('../support/MonitorDocumentChanges.js')
-Cypress.Commands.add('Get', (selector) => 
-{ 
-  helpers.ConLog(`cy.Get()`, `Start - Last DOM change was ${MonitorDocumentChanges.MillisecondsSinceLastChange()} milliseconds ago`)
-  cy.wrap({ 'millisecondsSinceLastChange': MonitorDocumentChanges.MillisecondsSinceLastChange}).invoke('millisecondsSinceLastChange').should('gte', 700).then(() => {
-  helpers.ConLog(`cy.Get()`, `DOM Is Stable`)
-  cy.get(selector)
-})})
+// import './MonitorDocumentChanges'
+// const monitorDocumentChanges = require('../support/MonitorDocumentChanges.js')
+// Cypress.Commands.add('Get', (selector) => 
+// { 
+//   helpers.ConLog(`cy.Get()`, `Start - Last DOM change was ${monitorDocumentChanges.MillisecondsSinceLastChange()} milliseconds ago - Selector: \n${selector}`)
+//   cy.wrap({ 'millisecondsSinceLastChange': monitorDocumentChanges.MillisecondsSinceLastChange}).invoke('millisecondsSinceLastChange').should('gte', 1200).then(() => {
+//   helpers.ConLog(`cy.Get()`, `DOM Is Stable`)
+//   cy.get(selector)
+// })})
 
+// Cypress.Commands.add(`Click`, (selector) =>
+// {
+//     //var selector = 'XYZ'
+//     helpers.ConLog(`cy.Click()`, `Start - ${selector}`)
+//     cy.pause()
+//     cy.wrap(selector).click()
+// })
