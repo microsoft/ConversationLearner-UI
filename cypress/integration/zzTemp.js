@@ -23,7 +23,7 @@ describe('zzTemp test', function () {
   const actionResponse02 = "Hello $name{enter}"
 
   beforeEach(() => { monitorDocumentChanges.Start() })
-  afterEach(() =>  { monitorDocumentChanges.Stop() })
+  afterEach(() =>  { monitorDocumentChanges.Stop(); cy.pause() })
 
   it('should be able to train', () => {
     // 4	Train the bot
@@ -61,10 +61,10 @@ describe('zzTemp test', function () {
 
     //cy.get('button').contains(modelName).click() //(`:contains(${modelName})`).click()
     //modelPage.navigateToTrainDialogs()
-    cy.Get('[data-testid="app-index-nav-link-train-dialogs"]').click()
+    cy.Get('[data-testid="app-index-nav-link-train-dialogs"]').Click()
 
     //trainDialogPage.createNew()
-    cy.Get('[data-testid="button-new-train-dialog"]').click()
+    cy.Get('[data-testid="button-new-train-dialog"]').Click()
 
     //editDialogModal.typeYourMessage("hello")
     cy.Get('input[class="wc-shellinput"]').type(`hello{enter}`)
@@ -99,6 +99,58 @@ describe('zzTemp test', function () {
     // cy.pause()//.wait(2000)
     // editDialogModal.clickDoneTeaching()
   })
+
+//   it('Train v2', () => {
+//     cy.visit('http://localhost:5050')
+    
+//     //cy.get('[data-list-index="16"] > .ms-FocusZone > .ms-DetailsRow-fields > [aria-colindex="0"]')
+//     cy.Get(`:contains('e2e-expected-0925-1838298')`)
+//       .each(element => 
+//         {
+//           helpers.ConLog('Test Case: should be able to train', element)
+//         })
+//       .pause()
+
+//     //cy.get('button').contains(modelName).click() //(`:contains(${modelName})`).click()
+//     //modelPage.navigateToTrainDialogs()
+//     cy.Get('[data-testid="app-index-nav-link-train-dialogs"]').click()
+
+//     //trainDialogPage.createNew()
+//     cy.Get('[data-testid="button-new-train-dialog"]').click()
+
+//     //editDialogModal.typeYourMessage("hello")
+//     cy.Get('input[class="wc-shellinput"]').type(`hello{enter}`)
+    
+//     //editDialogModal.clickScoreActions()
+//     cy.Get('[data-testid="button-proceedto-scoreactions"]').click()
+// +
+//     //scorerModal.selectAnActionWithText(actionResponse01)
+//     cy.Get('.ms-List-page').should("be.visible").within(() => {
+//         cy.contains(actionResponse01)
+//             .parents('[class*="ms-DetailsRow-fields"]')
+//             //.find('.ms-Button-label')
+//             //<button type="button" data-testid="actionscorer-buttonClickable" class="ms-Button ms-Button--primary root-54" aria-labelledby="id__128" aria-describedby="id__130" data-is-focusable="true" tabindex="-1"><div class="ms-Button-flexContainer flexContainer-55"><div class="ms-Button-textContainer textContainer-56"><div class="ms-Button-label label-58" id="id__128" data-cypress-el="true">Select</div></div><span class="ms-Button-screenReaderText screenReaderText-52" id="id__130">Select</span></div></button>
+//             .find('[data-testid="actionscorer-buttonClickable"]')
+//             .should("be.visible")
+//             .click()
+//     })
+
+//     //TODO: 4.3.1	<Validation Step> Note that the response 'Hello $name' 
+//     // cannot be selected, because it requies the entity $name to be defined, 
+//     // and $name is not in bot's memory.
+
+//     //editDialogModal.typeYourMessage("david")
+//     cy.Get('input[class="wc-shellinput"]').type(`david{enter}`)
+
+//     //TODO:  
+//     // 4.4.1	<Validation Step> Note that the name is highlighted as an entity. 
+//     //This is because of the heuristic we set up above to select the response as the entity.
+//     //TODO: -- add steps from 4.4.1 through 4.15
+//     // Perform chat entries validation
+
+//     // cy.pause()//.wait(2000)
+//     // editDialogModal.clickDoneTeaching()
+//   })
 
   // it('should delete an existent model', () => {
   //   modelsListPage.navigateTo()
