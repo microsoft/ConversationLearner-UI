@@ -12,7 +12,6 @@ import { fetchApplicationTrainingStatusThunkAsync } from './appActions'
 import { fetchAllTrainDialogsThunkAsync } from './trainActions'
 import { AxiosError } from 'axios';
 
-
 export const createActionThunkAsync = (appId: string, action: ActionBase) => {
     return async (dispatch: Dispatch<any>) => {
         dispatch(createActionAsync(appId, action))
@@ -46,6 +45,21 @@ const createActionFulfilled = (action: ActionBase): ActionObject => {
     }
 }
 
+const editActionAsync = (appId: string, action: ActionBase): ActionObject => {
+    return {
+        type: AT.EDIT_ACTION_ASYNC,
+        action: action,
+        appId: appId
+    }
+}
+
+const editActionFulfilled = (action: ActionBase): ActionObject => {
+    return {
+        type: AT.EDIT_ACTION_FULFILLED,
+        action: action,
+    }
+}
+
 export const editActionThunkAsync = (appId: string, action: ActionBase) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.EDIT_ACTION_ASYNC)
@@ -68,21 +82,6 @@ export const editActionThunkAsync = (appId: string, action: ActionBase) => {
             dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.EDIT_ACTION_ASYNC))
             throw error
         }
-    }
-}
-
-const editActionAsync = (appId: string, action: ActionBase): ActionObject => {
-    return {
-        type: AT.EDIT_ACTION_ASYNC,
-        action: action,
-        appId: appId
-    }
-}
-
-const editActionFulfilled = (action: ActionBase): ActionObject => {
-    return {
-        type: AT.EDIT_ACTION_FULFILLED,
-        action: action,
     }
 }
 
@@ -124,7 +123,6 @@ const deleteActionFulfilled = (actionId: string): ActionObject => {
         actionId: actionId
     }
 }
-
 
 const fetchAllActionsAsync = (appId: string): ActionObject => {
     return {
