@@ -3,6 +3,7 @@
  * Licensed under the MIT License.
  */
 import * as CLM from '@conversationlearner/models'
+import { Activity } from 'botframework-directlinejs'
 
 export function notNullOrUndefined<TValue>(value: TValue | null | undefined): value is TValue {
     return value !== null && value !== undefined;
@@ -28,6 +29,24 @@ export function entityDisplayName(entity: CLM.EntityBase) {
         return `+${entity.entityName}`;
     } else {
         return entity.entityName;
+    }
+}
+
+export function matchedActivityIndex(selectedActivity: Activity, activities: Activity[]): number | null {
+    if (!selectedActivity || activities.length === 0) {
+        return null
+    }
+    else {
+        let index = activities.findIndex(a => 
+            a.channelData.senderType === selectedActivity.channelData.senderType &&
+            a.channelData.roundIndex === selectedActivity.channelData.roundIndex &&
+            a.channelData.scoreIndex === selectedActivity.channelData.scoreIndex
+        )
+        if (index < 0) {
+            console.log('Failed to find selected activity')
+            return null
+        }
+        return index
     }
 }
 

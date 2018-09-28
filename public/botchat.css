@@ -379,7 +379,7 @@ body .wc-app, .wc-app button, .wc-app input, .wc-app textarea {
 }
 
 .wc-message-warning-from-me {
-    border-right: 8px solid #DFDF1B;
+  border-right: 8px solid #DFDF1B;
 }
 
 .wc-message-from-me.wc-message-from {
@@ -423,6 +423,20 @@ body .wc-app, .wc-app button, .wc-app input, .wc-app textarea {
 
 .wc-message-from-bot svg.wc-message-callout {
   left: -6px; }
+
+.wc-message-wrapper svg.wc-message-downarrow {
+  height: 20px;
+  position: relative;
+  stroke: none;
+  left: 11px;
+}
+.wc-message-downarrow-points {
+  fill: #DCDFE0;
+}
+
+.wc-message-downarrow-points-red {
+  fill: #ce2e2e;
+}
 
 /* console */
 .wc-console {

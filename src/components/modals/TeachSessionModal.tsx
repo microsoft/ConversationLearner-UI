@@ -240,34 +240,16 @@ class TeachModal extends React.Component<Props, ComponentState> {
     }
 
     renderSelectedActivity(activity: Activity): (JSX.Element | null) {
-/*
-        if (this.props.editState !== EditState.CAN_EDIT) {
-            return null
-        }
-        
-        const canBranch = activity && activity.channelData.senderType === CLM.SenderType.User
-        const roundIndex = activity.channelData.roundIndex
-        const senderType = activity.channelData.senderType
-
-
-        // Round could have been deleted
-        if (!curRound) {
-            return null
-        }
-
-     //LARS   const hasNoScorerStep = curRound.scorerSteps.length === 0 || curRound.scorerSteps[0].labelAction === undefined
-*/
 
         if (this.state.selectedActivityIndex === null) {
             return null
         }
         
-        const isUser = activity.from.name !== 'Bot'
+        const isUser = activity.from.name === 'ConversationLearnerDeveloper'
 
         // Can only delete first user input if it has no scorer steps
         // and is followed by user input
-        const canDeleteRound = 
-            this.state.selectedActivityIndex !== 0 /*|| 
+        const canDeleteRound = this.state.selectedActivityIndex !== 0 /*|| 
             senderType !== CLM.SenderType.User ||
             curRound.scorerSteps.length === 0/* ||LARS
             (hasNoScorerStep && this.props.trainDialog.rounds.length > 1)*/
@@ -305,14 +287,11 @@ class TeachModal extends React.Component<Props, ComponentState> {
             const selectedActivityIndex = this.props.initialHistory.findIndex(a => a.id === activity.id)
             if (selectedActivityIndex > -1) {
                 this.setState({selectedActivityIndex})
-               // this.props.onEditTeach(foundIndex)   LARS
+                return
             }
         }
         // Otherwise newly create activities with have index in channelData
-        else { 
-            this.setState({selectedActivityIndex: activity.channelData.activityIndex})
-            //LARS this.props.onEditTeach(activity.channelData.activityIndex)
-        }
+        this.setState({selectedActivityIndex: activity.channelData.activityIndex})
     }
 
     renderAbandonText(intl: ReactIntl.InjectedIntl) {
@@ -514,16 +493,15 @@ class TeachModal extends React.Component<Props, ComponentState> {
                         onConfirm={this.onClickConfirmDelete}
                         title={this.renderConfirmText(intl)}
                     />
-
+                    <UserInputModal
+                        open={this.state.isUserInputModalOpen}
+                        onCancel={() => {this.onCancelAddUserInput()}}
+                        onSubmit={this.onSubmitAddUserInput}
+                    />
                 </Modal>
                 <TeachSessionInitState
                     isOpen={this.state.isInitStateOpen}
                     handleClose={this.onCloseInitState}
-                />
-                <UserInputModal
-                    open={this.state.isUserInputModalOpen}
-                    onCancel={this.onCancelAddUserInput}
-                    onSubmit={this.onSubmitAddUserInput}
                 />
             </div>
         );
@@ -553,10 +531,10 @@ const mapStateToProps = (state: State) => {
 export interface ReceivedProps {
     isOpen: boolean
     onClose: Function
-    onEditTeach: (historyIndex: number, userInput: string|null, editHandler: (activity: Activity, userInput: string) => any) => void
-    onInsertAction: (activity: Activity) => any
-    onInsertInput: (activity: Activity, userText: string) => any
-    onDeleteTurn: (activity: Activity) => any
+    onEditTeach: (historyIndex: number, userInput: string|null, editHandler: (trainDialog: CLM.TrainDialog, activity: Activity, userInput: string) => any) => void
+    onInsertAction: (trainDialog: CLM.TrainDialog, activity: Activity) => any
+    onInsertInput: (trainDialog: CLM.TrainDialog, activity: Activity, userText: string) => any
+    onDeleteTurn: (trainDialog: CLM.TrainDialog, activity: Activity) => any
     onSetInitialEntities: ((initialFilledEntities: CLM.FilledEntity[]) => void) | null
     app: CLM.AppBase
     editingPackageId: string
