@@ -23,7 +23,7 @@ describe('zzTemp test', function () {
   const actionResponse02 = "Hello $name{enter}"
 
   beforeEach(() => { monitorDocumentChanges.Start() })
-  afterEach(() =>  { monitorDocumentChanges.Stop(); cy.pause() })
+  afterEach(() =>  { cy.pause(); monitorDocumentChanges.Stop() })
 
   it('should be able to train', () => {
     // 4	Train the bot
@@ -52,12 +52,16 @@ describe('zzTemp test', function () {
     cy.visit('http://localhost:5050')
     
     //cy.get('[data-list-index="16"] > .ms-FocusZone > .ms-DetailsRow-fields > [aria-colindex="0"]')
-    cy.Get(`:contains('e2e-expected-0925-1838298')`)
-      .each(element => 
-        {
-          helpers.ConLog('Test Case: should be able to train', element)
-        })
-      .pause()
+    cy.Get('button.root-65')//`:contains('e2e-expected-0925-1838298')`)
+      .contains('e2e-expected-0925-1838298')
+      .Click()
+    // .each(element => 
+    //     {
+    //         var propertyList = ''
+    //         for(var property in element) propertyList += `${(propertyList.length == 0 ? '' : ', ')}${property}: ${element[property]}`
+    //         helpers.ConLog('Test Case: should be able to train', propertyList)
+    //     })
+    //   .pause()
 
     //cy.get('button').contains(modelName).click() //(`:contains(${modelName})`).click()
     //modelPage.navigateToTrainDialogs()
