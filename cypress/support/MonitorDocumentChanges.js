@@ -17,10 +17,23 @@ export function Start()
     if(!cyCommandsAdded)
     {
         cyCommandsAdded = true;
+
+        // This 'should' command overwrite is a hack around this issue: 
+        // https://github.com/cypress-io/cypress/issues/1221
+        Cypress.Commands.overwrite('should', (originalFn, subject, chainers, value) => 
+        {
+            if (value == 'MillisecondsSinceLastChange')
+            {
+                helpers.ConLog(`cy.should())`, `Waiting for Stable DOM - Last DOM change was ${MillisecondsSinceLastChange()} milliseconds ago - subject: ${subject} - chainers: ${chainers} - value: ${value}`)
+                return originalFn(subject, chainers, MillisecondsSinceLastChange())
+            }
+            return originalFn(subject, chainers, value)
+        })
+
         Cypress.Commands.add('Get', (selector) => 
-        { 
+        {   
             helpers.ConLog(`cy.Get()`, `Start - Last DOM change was ${MillisecondsSinceLastChange()} milliseconds ago - Selector: \n${selector}`)
-            cy.wrap({ 'millisecondsSinceLastChange': MillisecondsSinceLastChange}).invoke('millisecondsSinceLastChange').should('gte', 700).then(() => {
+            cy.wrap(700, {timeout: 60000}).should('lte', 'MillisecondsSinceLastChange').then(() => {
             helpers.ConLog(`cy.Get()`, `DOM Is Stable`)
             cy.get(selector)
         })})
@@ -85,7 +98,7 @@ export function LookForChange()
     {
         helpers.ConLog(thisFuncName, `Change Found - Milliseconds since last change: ${(currentTime - lastChangeTime)}`)
         //cy.writeFile(currentHtml, `c:\\temp\\dom.${helpers.NowAsString()}.txt`)
-        helpers.ConLog(thisFuncName, `Current HTML:\n${currentHtml}`)
+        //helpers.ConLog(thisFuncName, `Current HTML:\n${currentHtml}`)
 
         lastChangeTime = currentTime
         lastHtml = currentHtml

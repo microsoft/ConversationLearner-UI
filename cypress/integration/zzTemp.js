@@ -22,7 +22,9 @@ describe('zzTemp test', function () {
   const actionResponse01 = "What's your name?"
   const actionResponse02 = "Hello $name{enter}"
 
-  beforeEach(() => { monitorDocumentChanges.Start() })
+  beforeEach(() => { monitorDocumentChanges.Start();/*             var defaultCommandTimeout = Cypress.config('defaultCommandTimeout');
+  Cypress.config('defaultCommandTimeout', 60 * 1000);*/
+})
   afterEach(() =>  { cy.pause(); monitorDocumentChanges.Stop() })
 
   it('should be able to train', () => {
@@ -53,15 +55,8 @@ describe('zzTemp test', function () {
     
     //cy.get('[data-list-index="16"] > .ms-FocusZone > .ms-DetailsRow-fields > [aria-colindex="0"]')
     cy.Get('button.root-65')//`:contains('e2e-expected-0925-1838298')`)
-      .contains('e2e-expected-0925-1838298')
+      .contains(`${modelName}`)
       .Click()
-    // .each(element => 
-    //     {
-    //         var propertyList = ''
-    //         for(var property in element) propertyList += `${(propertyList.length == 0 ? '' : ', ')}${property}: ${element[property]}`
-    //         helpers.ConLog('Test Case: should be able to train', propertyList)
-    //     })
-    //   .pause()
 
     //cy.get('button').contains(modelName).click() //(`:contains(${modelName})`).click()
     //modelPage.navigateToTrainDialogs()
