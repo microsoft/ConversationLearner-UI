@@ -37,7 +37,7 @@ export const CustomEntity = (props: Props) => {
                         }
                     </div>
                     <div className="cl-entity-node-indicator__name noselect" spellCheck={false}>
-                        <button type="button" onClick={props.onClickName} tabIndex={-1}>
+                        <button type="button" data-testid="button-entity-indicatorName" onClick={props.onClickName} tabIndex={-1}>
                             {name}
                         </button>
                     </div>

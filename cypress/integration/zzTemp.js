@@ -20,11 +20,12 @@ describe('zzTemp test', function () {
   const modelName = `e2e-expected-${postfix}`
   const entityName = "name"
   const actionResponse01 = "What's your name?"
-  const actionResponse02 = "Hello $name{enter}"
+  const actionResponse02 = "Hello $name"
+  const usersName = "David"
 
   beforeEach(() => { monitorDocumentChanges.Start();/*             var defaultCommandTimeout = Cypress.config('defaultCommandTimeout');
   Cypress.config('defaultCommandTimeout', 60 * 1000);*/
-})
+  })
   afterEach(() =>  { cy.pause(); monitorDocumentChanges.Stop() })
 
   it('should be able to train', () => {
@@ -70,28 +71,32 @@ describe('zzTemp test', function () {
     
     //editDialogModal.clickScoreActions()
     cy.Get('[data-testid="button-proceedto-scoreactions"]').click()
-+
-    //scorerModal.selectAnActionWithText(actionResponse01)
-    cy.Get('.ms-List-page').should("be.visible").within(() => {
-        cy.contains(actionResponse01)
-            .parents('[class*="ms-DetailsRow-fields"]')
-            //.find('.ms-Button-label')
-            //<button type="button" data-testid="actionscorer-buttonClickable" class="ms-Button ms-Button--primary root-54" aria-labelledby="id__128" aria-describedby="id__130" data-is-focusable="true" tabindex="-1"><div class="ms-Button-flexContainer flexContainer-55"><div class="ms-Button-textContainer textContainer-56"><div class="ms-Button-label label-58" id="id__128" data-cypress-el="true">Select</div></div><span class="ms-Button-screenReaderText screenReaderText-52" id="id__130">Select</span></div></button>
-            .find('[data-testid="actionscorer-buttonClickable"]')
-            .should("be.visible")
-            .click()
-    })
 
-    //TODO: 4.3.1	<Validation Step> Note that the response 'Hello $name' 
+    // 4.3.1	<Validation Step> Note that the response 'Hello $name' 
     // cannot be selected, because it requies the entity $name to be defined, 
     // and $name is not in bot's memory.
+    cy.Get('[data-testid="actionscorer-responseText"]').contains(actionResponse02)
+      .parents('div.ms-DetailsRow-fields').find('[data-testid="actionscorer-buttonNoClick"]')
+      .should('be.disabled')
++
+    //scorerModal.selectAnActionWithText(actionResponse01)
+    cy.Get('[data-testid="actionscorer-responseText"]').contains(actionResponse01)
+      .parents('div.ms-DetailsRow-fields').find('[data-testid="actionscorer-buttonClickable"]')
+      .click()
+
 
     //editDialogModal.typeYourMessage("david")
-    cy.Get('input[class="wc-shellinput"]').type(`david{enter}`)
+    cy.Get('input[class="wc-shellinput"]').type(`${usersName}{enter}`)
 
-    //TODO:  
     // 4.4.1	<Validation Step> Note that the name is highlighted as an entity. 
-    //This is because of the heuristic we set up above to select the response as the entity.
+
+    // <div class="cl-entity-node-indicator__name noselect" spellcheck="false"><button type="button" tabindex="-1">name</button></div>
+    // <button type="button" tabindex="-1">name</button>
+    // <span class="cl-entity-node__text"><span data-key="21"><span data-offset-key="21:0"><span data-slate-zero-width="true">​</span></span></span><span class="cl-token-node" data-key="19"><span data-key="20"><span data-offset-key="20:0">david</span></span></span><span data-key="22"><span data-offset-key="22:0"><span data-slate-zero-width="true">​</span></span></span></span>
+    // <span data-offset-key="20:0">david</span>
+    cy.Get('[data-testid="button-entity-indicatorName"]').contains(entityName)
+    cy.Get('[data-testid="text-entity-value"]').contains(usersName)
+
     //TODO: -- add steps from 4.4.1 through 4.15
     // Perform chat entries validation
 
