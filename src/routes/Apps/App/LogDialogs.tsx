@@ -738,6 +738,12 @@ class LogDialogs extends React.Component<Props, ComponentState> {
 
     async onSaveTrainDialog(newTrainDialog: CLM.TrainDialog, isInvalid: boolean) {
 
+        // Remove actionless dummy step (used for rendering) if it exits
+        let lastRound = newTrainDialog.rounds[newTrainDialog.rounds.length - 1] 
+        if (lastRound.scorerSteps.length > 0 && lastRound.scorerSteps[0].labelAction === undefined) {
+            lastRound.scorerSteps = []
+        }
+        
         newTrainDialog.invalid = isInvalid
         newTrainDialog.definitions = null
         try { 

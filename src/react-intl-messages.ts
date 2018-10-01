@@ -380,6 +380,11 @@ export enum FM {
     TOOLTIP_ACTION_TYPE_CARD = 'ToolTip.ACTION_TYPE.Card',
     TOOLTIP_ACTION_WAIT = 'ToolTip.ACTION_WAIT',
     TOOLTIP_ACTION_WAIT_TITLE = 'ToolTip.ACTION_WAIT_TITLE',
+
+    TOOLTIP_ADD_USER_INPUT_BUTTON = 'ToolTip.ADD_USER_INPUT_BUTTON',
+    TOOLTIP_ADD_BOT_RESONSE_BUTTON = 'ToolTip.ADD_BOT_RESPONSE_BUTTON',
+    TOOLTIP_BRANCH_BUTTON = 'ToolTip.BRANCH_BUTTON',
+
     TOOLTIP_BOTINFO_INVALID = 'ToolTip.BOTINFO_INVALID',
     TOOLTIP_ENTITY_ACTION_REQUIRED = 'ToolTip.ENTITY_ACTION_REQUIRED',
     TOOLTIP_ENTITY_ACTION_DISQUALIFIED = 'ToolTip.ENTITY_ACTION_BLOCKED',
@@ -712,6 +717,11 @@ export default {
         [FM.TOOLTIP_ACTION_TYPE_CARD]: 'Renders an Adaptive Card template',
         [FM.TOOLTIP_ACTION_WAIT]: 'When selected, Bot will wait for more user input before taking another action',
         [FM.TOOLTIP_ACTION_WAIT_TITLE]: 'Wait For Response',
+
+        [FM.TOOLTIP_ADD_USER_INPUT_BUTTON]: 'Add a new user input',
+        [FM.TOOLTIP_ADD_BOT_RESONSE_BUTTON]: 'Add a new bot response',
+        [FM.TOOLTIP_BRANCH_BUTTON]: 'Create a new Train Dialog by branching at this step',
+
         [FM.TOOLTIP_BOTINFO_INVALID]: 'This model contains Card or API references that do not exist in the running Bot',
         [FM.TOOLTIP_ENTITY_ACTION_DISQUALIFIED]: `Actions that are blocked from use if this Entity is set`,
         [FM.TOOLTIP_ENTITY_ACTION_REQUIRED]: `Actions that are only employed when this Entity is set`,

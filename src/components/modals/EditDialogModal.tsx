@@ -11,6 +11,7 @@ import { Modal } from 'office-ui-fabric-react/lib/Modal'
 import { State } from '../../types'
 import actions from '../../actions'
 import Webchat, { renderActivity } from '../Webchat'
+import { TooltipHost, DirectionalHint } from 'office-ui-fabric-react/lib/Tooltip';
 import * as BotChat from '@conversationlearner/webchat'
 import { EditDialogAdmin, EditDialogType, EditState } from '.'
 import * as CLM from '@conversationlearner/models'
@@ -224,7 +225,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
     @autobind
     renderSelectedActivity(activity: Activity, isLastActivity: boolean): (JSX.Element | null) {
 
-        if (this.props.editState !== EditState.CAN_EDIT) {
+        if (this.props.editState !== EditState.CAN_EDIT || !this.props.trainDialog) {
             return null
         }
         
@@ -248,6 +249,11 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             curRound.scorerSteps.length === 0 ||
             (hasNoScorerStep && this.props.trainDialog.rounds.length > 1)
 
+        const hideBranch =  !canBranch || !this.props.onBranchDialog
+                this.state.pendingExtractionChanges ||
+                this.props.editState !== EditState.CAN_EDIT ||
+                (this.props.trainDialog && this.props.trainDialog.invalid === true)
+        
         return (
             <div className="cl-wc-buttonbar">
                 <AddButtonInput 
@@ -272,21 +278,27 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                         ariaDescription="Delete Turn"
                     />
                 }
-                {this.props.onBranchDialog &&
-                    <OF.IconButton
-                        disabled={!canBranch ||
-                            this.state.pendingExtractionChanges ||
-                            this.props.editState !== EditState.CAN_EDIT ||
-                            (this.props.trainDialog && this.props.trainDialog.invalid === true)}
-                        
-                        className={`cl-wc-branchturn`}
-                        iconProps={{ iconName: 'BranchMerge' }}
-                        onClick={this.onClickBranch}
-                        ariaDescription={this.props.intl.formatMessage({
-                            id: FM.EDITDIALOGMODAL_BRANCH_ARIADESCRIPTION,
-                            defaultMessage: 'Branch'
-                        })}
+                {!hideBranch &&
+                    <TooltipHost 
+                        directionalHint={DirectionalHint.topCenter}
+                        tooltipProps={{
+                            onRenderContent: () =>
+                                <FormattedMessage
+                                    id={FM.TOOLTIP_BRANCH_BUTTON}
+                                    defaultMessage="Create a new Train Dialog by branching at this step"
+                                />
+                        }}
+                    >
+                        <OF.IconButton
+                            className={`cl-wc-branchturn`}
+                            iconProps={{ iconName: 'BranchMerge' }}
+                            onClick={this.onClickBranch}
+                            ariaDescription={this.props.intl.formatMessage({
+                                id: FM.EDITDIALOGMODAL_BRANCH_ARIADESCRIPTION,
+                                defaultMessage: 'Branch'
+                            })}
                     />
+                    </TooltipHost>
                 }
                 </div>
         )
