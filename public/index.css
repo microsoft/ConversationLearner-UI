@@ -269,47 +269,21 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
 .cl-wc-buttonbar {
   background-color: transparent;
 }
+
 .cl-wc-deleteturn {
   border: none !important;
   position: absolute !important;
   background-color: transparent !important;
   top: 5px;
+  z-index: 1000;
 }
 
 .cl-wc-deleteturn--bot {
-  right: -8px;
+  right: -4px;
 }
 
 .cl-wc-deleteturn--user {
   left: 0px;
-}
-
-.cl-wc-addscore {
-  border: none !important;
-  position: absolute !important;
-  bottom: -8px;
-}
-
-.cl-wc-addscore--bot {
-  right: 20px;
-}
-
-.cl-wc-addscore--user {
-  left: 25px;
-}
-
-.cl-wc-addinput {
-  border: none !important;
-  position: absolute !important;
-  bottom: -8px;
-}
-
-.cl-wc-addinput--bot {
-  right: 45px;
-}
-
-.cl-wc-addinput--user {
-  left: 50px;
 }
 
 .cl-wc-branchturn {
@@ -317,14 +291,12 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
   position: absolute !important;
   background-color: transparent !important;
   bottom: -8px;
+  z-index: 1000;
+  right: 166px;
 }
 
-.cl-wc-branchturn--bot {
-  right: -9px;
-}
-
-.cl-wc-branchturn--user {
-  left: 0px;
+.cl-wc-branchturn:not(:disabled):hover {
+  fill: var(--color-themeDark) !important;
 }
 
 /* botframework-webchat component override */

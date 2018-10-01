@@ -445,6 +445,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     async onInsertAction(trainDialog: CLM.TrainDialog, selectedActivity: Activity) {
 
         try {
+            const senderType = selectedActivity.channelData.senderType
             const roundIndex = selectedActivity.channelData.roundIndex
             let scoreIndex = selectedActivity.channelData.scoreIndex
             const definitions = {
@@ -493,6 +494,9 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             if (curRound.scorerSteps.length === 0 || curRound.scorerSteps[0].labelAction === undefined) {
                 curRound.scorerSteps = [scorerStep]
             }
+            else if (senderType === CLM.SenderType.User) {
+                curRound.scorerSteps = [scorerStep, ...curRound.scorerSteps]
+            } 
             // Or insert 
             else {
                 curRound.scorerSteps.splice(scoreIndex + 1, 0, scorerStep)

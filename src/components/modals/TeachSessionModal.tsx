@@ -10,13 +10,16 @@ import { connect } from 'react-redux';
 import { ErrorHandler } from '../../ErrorHandler'
 import { AT } from '../../types/ActionTypes'
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
+import * as BotChat from '@conversationlearner/webchat'
 import * as OF from 'office-ui-fabric-react';
 import { State } from '../../types';
-import Webchat from '../Webchat'
+import Webchat, { renderActivity } from '../Webchat'
 import TeachSessionAdmin from './TeachSessionAdmin'
 import TeachSessionInitState from './TeachSessionInitState'
 import * as CLM from '@conversationlearner/models'
 import { Activity } from 'botframework-directlinejs'
+import AddButtonInput from './AddButtonInput'
+import AddScoreButton from './AddButtonScore'
 import actions from '../../actions'
 import ConfirmCancelModal from './ConfirmCancelModal'
 import UserInputModal from './UserInputModal'
@@ -239,6 +242,11 @@ class TeachModal extends React.Component<Props, ComponentState> {
         }
     }
 
+    renderActivity(activityProps: BotChat.WrappedActivityProps, children: React.ReactNode, setRef: (div: HTMLDivElement | null) => void): JSX.Element {
+       return renderActivity(activityProps, children, setRef, this.renderSelectedActivity)
+    }
+
+    @autobind
     renderSelectedActivity(activity: Activity): (JSX.Element | null) {
 
         if (this.state.selectedActivityIndex === null) {
@@ -256,17 +264,11 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
         return (
             <div className="cl-wc-buttonbar">
-                <OF.IconButton
-                    className={`cl-wc-addinput ${isUser ? `cl-wc-addinput--user` : `cl-wc-addinput--bot`}`}
+                <AddButtonInput 
                     onClick={this.onClickAddUserInput}
-                    ariaDescription="Insert Input Turn"
-                    iconProps={{ iconName: 'CommentAdd' }}
                 />
-                <OF.IconButton
-                    className={`cl-wc-addscore ${isUser ? `cl-wc-addscore--user` : `cl-wc-addscore--bot`}`}
+                <AddScoreButton 
                     onClick={this.onInsertAction}
-                    ariaDescription="Insert Score Turn"
-                    iconProps={{ iconName: 'CommentAdd' }}
                 />
                 {canDeleteRound &&
                     <OF.IconButton
@@ -421,7 +423,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                                     hideInput={this.props.dialogMode !== CLM.DialogMode.Wait}
                                     focusInput={this.props.dialogMode === CLM.DialogMode.Wait}
                                     highlightClassName={'wc-message-selected'}
-                                    renderSelectedActivity={activity => this.renderSelectedActivity(activity)}
+                                    renderActivity={(props, children, setRef) => this.renderActivity(props, children, setRef)}
                                 />
                                 {chatDisable}
                             </div>
