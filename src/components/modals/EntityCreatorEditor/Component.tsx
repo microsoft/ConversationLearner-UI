@@ -299,11 +299,11 @@ const Component: React.SFC<Props> = (props) => {
                     defaultMessage='This edit will invalidate one or more Training Dialogs.  If you proceed they will removed from training until fixed.'
                 />
             </div>}
-            />
+        />
         <ConfirmCancelModal
             open={props.isDeleteErrorModalOpen}
             onCancel={props.onCancelDelete}
-            onConfirm={() => {}}
+            onConfirm={null}
             title={props.intl.formatMessage({
                 id: FM.ENTITYCREATOREDITOR_DELETE_ERROR_TITLE,
                 defaultMessage: 'Unable to delete'

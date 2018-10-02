@@ -13,9 +13,10 @@ import { IconButton } from 'office-ui-fabric-react';
 
 class HelpIcon extends React.Component<Props, {}> {
     render() {
+        let className = `cl-icon cl-icon--short ${this.props.customStyle || null}`
         return (
             <IconButton
-                className="cl-icon cl-icon--short"
+                className={className}
                 iconProps={{ iconName: this.props.iconName || 'Info' }}
                 onClick={() => { this.props.setTipType(this.props.tipType) }}
                 title="More Information"
@@ -36,6 +37,7 @@ const mapStateToProps = (state: State, ownProps: any) => {
 export interface ReceivedProps {
     tipType: TipType,
     iconName?: string
+    customStyle?: string
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps

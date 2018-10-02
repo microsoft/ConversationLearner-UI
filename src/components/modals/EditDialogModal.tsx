@@ -21,6 +21,8 @@ import AddScoreButton from './AddButtonScore'
 import ConfirmCancelModal from './ConfirmCancelModal'
 import UserInputModal from './UserInputModal'
 import { FM } from '../../react-intl-messages'
+import HelpIcon from '../HelpIcon'
+import { TipType } from '../ToolTips';
 import { renderReplayError } from './ReplayErrorList'
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { autobind } from 'office-ui-fabric-react/lib/Utilities'
@@ -249,7 +251,9 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             curRound.scorerSteps.length === 0 ||
             (hasNoScorerStep && this.props.trainDialog.rounds.length > 1)
 
-        const hideBranch =  !canBranch || !this.props.onBranchDialog
+        const hideBranch =  
+                !canBranch || 
+                !this.props.onBranchDialog ||
                 this.state.pendingExtractionChanges ||
                 this.props.editState !== EditState.CAN_EDIT ||
                 (this.props.trainDialog && this.props.trainDialog.invalid === true)
@@ -297,7 +301,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                                 id: FM.EDITDIALOGMODAL_BRANCH_ARIADESCRIPTION,
                                 defaultMessage: 'Branch'
                             })}
-                    />
+                        />
                     </TooltipHost>
                 }
                 </div>
@@ -510,6 +514,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                             id={FM.EDITDIALOGMODAL_WARNING_INVALID_BOT}
                             defaultMessage={FM.EDITDIALOGMODAL_WARNING_INVALID_BOT}
                         />
+                        <HelpIcon tipType={TipType.ACTION_ARGUMENTS} />
                     </div>
                 </div>
             )

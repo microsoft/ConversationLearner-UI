@@ -73,7 +73,8 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
 
         // Send channel data to add to activity so can process when clicked on later
         const channelData = { 
-            activityIndex: this.props.activityIndex
+            activityIndex: this.props.activityIndex,
+            validWaitAction: !scoredAction.isTerminal || undefined  // Draws carrot under card if a wait action
         }
 
         const uiTrainScorerStep = {

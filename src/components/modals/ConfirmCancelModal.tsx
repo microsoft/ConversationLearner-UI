@@ -8,7 +8,7 @@ import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 
 interface ReceivedProps {
-    onConfirm: Function
+    onConfirm: Function | null
     onCancel: Function
     open: boolean
     title: string
@@ -35,7 +35,11 @@ const ConfirmCancelModal: React.SFC<Props> = (props: Props) => {
             <DialogFooter>
                 {props.onConfirm &&
                     <PrimaryButton
-                        onClick={() => props.onConfirm()}
+                        onClick={() => {
+                            if (props.onConfirm) {
+                                props.onConfirm()
+                            }
+                        }}
                         text={intl.formatMessage({
                             id: FM.CONFIRMCANCELMODAL_PRIMARYBUTTON_TEXT,
                             defaultMessage: 'Confirm'
