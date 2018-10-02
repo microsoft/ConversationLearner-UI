@@ -445,6 +445,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     async onInsertAction(trainDialog: CLM.TrainDialog, selectedActivity: Activity) {
 
         try {
+            const senderType = selectedActivity.channelData.senderType
             const roundIndex = selectedActivity.channelData.roundIndex
             let scoreIndex = selectedActivity.channelData.scoreIndex
             const definitions = {
@@ -493,6 +494,9 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             if (curRound.scorerSteps.length === 0 || curRound.scorerSteps[0].labelAction === undefined) {
                 curRound.scorerSteps = [scorerStep]
             }
+            else if (senderType === CLM.SenderType.User) {
+                curRound.scorerSteps = [scorerStep, ...curRound.scorerSteps]
+            } 
             // Or insert 
             else {
                 curRound.scorerSteps.splice(scoreIndex + 1, 0, scorerStep)
@@ -728,6 +732,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 originalTrainDialogId: originalId,
                 selectedHistoryIndex: activityIndex,
                 isEditDialogModalOpen: true,
+                isTeachDialogModalOpen: false,
                 editType: this.state.editType === EditDialogType.NEW 
                         ? EditDialogType.NEW
                         : EditDialogType.TRAIN_EDITED
@@ -773,6 +778,12 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
     // Replace the current trainDialog with a new one
     async onReplaceTrainDialog(newTrainDialog: CLM.TrainDialog, isInvalid: boolean) {
+
+        // Remove actionless dummy step (used for rendering) if it exits
+        let lastRound = newTrainDialog.rounds[newTrainDialog.rounds.length - 1] 
+        if (lastRound.scorerSteps.length > 0 && lastRound.scorerSteps[0].labelAction === undefined) {
+            lastRound.scorerSteps = []
+        }
 
         newTrainDialog.invalid = isInvalid
         newTrainDialog.definitions = null

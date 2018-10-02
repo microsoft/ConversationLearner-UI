@@ -173,8 +173,9 @@ body .wc-app, .wc-app button, .wc-app input, .wc-app textarea {
   cursor: pointer; }
 
 .wc-message-selected {
-  border: 2px solid #FFFF00;
-  background-color: #ffffcc;
+  background-color: #ffeeee;
+  outline: 1px solid #ffaaaa;
+  outline-offset: 2px;
 }
 
 .wc-message-content img {
@@ -435,7 +436,7 @@ body .wc-app, .wc-app button, .wc-app input, .wc-app textarea {
 }
 
 .wc-message-downarrow-points-red {
-  fill: #ce2e2e;
+  fill: #ffd2d2;
 }
 
 /* console */
