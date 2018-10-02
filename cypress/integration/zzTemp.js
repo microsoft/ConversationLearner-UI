@@ -21,9 +21,10 @@ describe('zzTemp test', function () {
   const modelName = `e2e-expected-${postfix}`
   
   beforeEach(() => { cy.DumpHtmlOnDomChange(false) })
-  afterEach(() =>  { cy.DumpHtmlOnDomChange(true); helpers.ConLog(`afterEach`, `Current HTML:\n${Cypress.$('html')[0].outerHTML}`)})
+  afterEach(() =>  { cy.DumpHtmlOnDomChange(false); helpers.ConLog(`afterEach`, `Current HTML:\n${Cypress.$('html')[0].outerHTML}`)})
 
   it('should be able to train', () => {
+    // TODO: FIX THESE COMMENTS
     // 4	Train the bot
     // 4.1	Click Train Dialogs, then New Train Dialog.
     // 4.2	Type 'hello'.
@@ -93,18 +94,25 @@ describe('zzTemp test', function () {
     // 4.9	Click New Train Dialog.
     trainDialogPage.createNew()
 
-    // 4.2	Type 'hello'.
+    // 4.10	Enter 'my name is david'.
     editDialogModal.typeYourMessage("My name is David.") // TODO: Add edge cases; 'david', with & without 'period'
     
-    // 4.3	Click Score Actions...
-    //editDialogModal.clickScoreActions()
-
-    // 4.10	Enter 'my name is david'.
     // 4.10.1	<Validation Step> Note that it does identify david as the name entity because it has seen this word before.
     // 4.11	Click Score Actions
+    editDialogModal.clickScoreActions()
+    scorerModal.verifyEntityInMemory("name", "David")
+    scorerModal.verifyContainsDisabledAction("What's your name?")
+
     // 4.12	Select 'Hello $name'.
+    scorerModal.clickAction("Hello David")
+
+
     // 4.13	Enter 'my name is susan'.
+    editDialogModal.typeYourMessage("My name is Susan.")
+
     // 4.13.1	<Validation Step> Note that it identifies susan as the name since it has seen this pattern already.
+    scorerModal.clickEntityDetectionToken("Susan")
+
     // 4.14	Click Score Actions.
     // 4.15	Select 'Hello susan'.
     // 4.16	Click Done Teaching.
