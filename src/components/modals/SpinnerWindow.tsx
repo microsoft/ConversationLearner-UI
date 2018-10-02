@@ -28,7 +28,7 @@ class SpinnerWindow extends React.Component<Props, {}> {
                     }
                 </Modal>
                 <div role="alert" aria-live="assertive" className="cl-spinner-aria">
-                    {this.props.displaySpinner.length > 0 && <span className="cl-screen-reader">Loading</span>}
+                    {this.props.displaySpinner.length > 0 && <span className="cl-screen-reader" data-testid="spinner">Loading</span>}
                 </div>
             </React.Fragment>
         );

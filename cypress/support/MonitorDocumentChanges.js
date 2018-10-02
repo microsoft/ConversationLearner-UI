@@ -78,8 +78,7 @@ var MonitorDocumentChanges = (function()
         helpers.ConLog(`MonitorDocumentChanges.initialize()`, `Running`)
     }
 
-    var dumpSpinner1 = false
-    var dumpSpinner2 = false
+    var dumpSpinner = false
     function LookForChange()
     {
         var thisFuncName = `MonitorDocumentChanges.LookForChange()`
@@ -95,23 +94,17 @@ var MonitorDocumentChanges = (function()
         if(currentHtml == lastHtml)
         {
             //helpers.ConLog(thisFuncName, `No change`)
-            //<div class="ms-Spinner-circle ms-Spinner--large circle-50"></div>
-            if (currentHtml.includes('<span class="cl-screen-reader">Loading</span>'))
+            if (currentHtml.includes('data-testid="spinner"'))//'<span class="cl-screen-reader">Loading</span>'))
             {
-                helpers.ConLog(thisFuncName, `SPINNING1 `)
-                if (!dumpSpinner1)
-                {
-                    dumpSpinner1 = true
-                    helpers.ConLog(thisFuncName, `HTML:::::::::::::::::::::::::::::::::::::::::::::::::\n${currentHtml}`)
-                }
+                //helpers.ConLog(thisFuncName, `SPINNING1 `)
                 lastChangeTime = currentTime
             }
             else if (currentHtml.includes('<div class="ms-Spinner-circle ms-Spinner--large circle-50">'))
             {
                 helpers.ConLog(thisFuncName, `SPINNING2 `)
-                if (!dumpSpinner2)
+                if (!dumpSpinner)
                 {
-                    dumpSpinner2 = true
+                    dumpSpinner = true
                     helpers.ConLog(thisFuncName, `HTML:::::::::::::::::::::::::::::::::::::::::::::::::\n${currentHtml}`)
                 }
                 lastChangeTime = currentTime
