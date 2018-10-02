@@ -10,10 +10,12 @@ var MonitorDocumentChanges = (function()
     var lastChangeTime = 0
     var lastHtml
     var StopLookingForChanges = false
-
+    var dumpHtml = false;
+    
     // Initialize this only once.
     //   It gets called the first time it is imported, which should be at or near the top of the index.js file
     //   Then it potentially could get called additional times when the require statement is used.
+    //   BUGBUG: this initialize once logic does not work because lastChangeTime gets zeroed everytime this is imported or required.
     if (lastChangeTime == 0) initialize();
 
     function MillisecondsSinceLastChange() { return (new Date().getTime() - lastChangeTime) }
@@ -53,6 +55,8 @@ var MonitorDocumentChanges = (function()
             lastChangeTime = new Date().getTime()})
         })
 
+        Cypress.Commands.add('DumpHtmlOnDomChange', (boolValue) => {dumpHtml = boolValue})
+
         Cypress.on('window:before:load', () => 
         { 
             helpers.ConLog(`window:before:load`, `MillisecondsSinceLastChange: ${MillisecondsSinceLastChange()}`) 
@@ -70,6 +74,14 @@ var MonitorDocumentChanges = (function()
             helpers.ConLog(`url:changed`, `New URL ${newUrl} - MillisecondsSinceLastChange: ${MillisecondsSinceLastChange()}`) 
             lastChangeTime = new Date().getTime()
         })
+
+        // Cypress.on('uncaught:exception', (error, runnable) => 
+        // {
+        //     helpers.ConLog(`uncaught:exception`, `Error: ${error} - Runnable: ${runnable} - html:\n${Cypress.$('html')[0].outerHTML}`)
+        //     cy.wait(5000).then(() => helpers.ConLog(`uncaught:exception`, `A bit later...html:\n${Cypress.$('html')[0].outerHTML}`))
+        //     done()
+        //     return false
+        // })
 
         lastChangeTime = new Date().getTime()
         lastHtml = Cypress.$('html')[0].outerHTML
@@ -102,11 +114,11 @@ var MonitorDocumentChanges = (function()
             else if (currentHtml.includes('<div class="ms-Spinner-circle ms-Spinner--large circle-50">'))
             {
                 helpers.ConLog(thisFuncName, `SPINNING2 `)
-                if (!dumpSpinner)
-                {
-                    dumpSpinner = true
-                    helpers.ConLog(thisFuncName, `HTML:::::::::::::::::::::::::::::::::::::::::::::::::\n${currentHtml}`)
-                }
+                // if (!dumpSpinner)
+                // {
+                //     dumpSpinner = true
+                //     helpers.ConLog(thisFuncName, `HTML:::::::::::::::::::::::::::::::::::::::::::::::::\n${currentHtml}`)
+                // }
                 lastChangeTime = currentTime
             }
         }
@@ -115,6 +127,7 @@ var MonitorDocumentChanges = (function()
             helpers.ConLog(thisFuncName, `Change Found - Milliseconds since last change: ${(currentTime - lastChangeTime)}`)
             //cy.writeFile(currentHtml, `c:\\temp\\dom.${helpers.NowAsString()}.txt`)
             //helpers.ConLog(thisFuncName, `Current HTML:\n${currentHtml}`)
+            if (dumpHtml) helpers.ConLog(thisFuncName, `Current HTML:\n${currentHtml}`)
 
             lastChangeTime = currentTime
             lastHtml = currentHtml

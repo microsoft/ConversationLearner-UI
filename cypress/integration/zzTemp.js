@@ -15,31 +15,25 @@ const scorerModal = require('../support/components/scorermodal')
 const trainDialogPage = require('../support/components/traindialogspage')
 const editDialogModal = require('../support/components/editdialogmodal')
 const helpers = require('../support/helpers')
-//const monitorDocumentChanges = require('../support/MonitorDocumentChanges')
 
 describe('zzTemp test', function () {
-  const postfix = "0925-0936040"//"0925-1838298" //Cypress.moment().format("MMDD-HHmmSSS")
+  const postfix = "0925-1838298" //Cypress.moment().format("MMDD-HHmmSSS")
   const modelName = `e2e-expected-${postfix}`
-  const entityName = "name"
-  const actionResponse01 = "What's your name?"
-  const actionResponse02 = "Hello $name"
-  const usersName = "David"
+  beforeEach(() => { cy.DumpHtmlOnDomChange(false) })
+  afterEach(() =>  { cy.DumpHtmlOnDomChange(true); helpers.ConLog(`afterEach`, `Current HTML:\n${Cypress.$('html')[0].outerHTML}`)})//; cy.wait(5000).then(() => {helpers.ConLog(`afterEach`, `a bit later...HTML:\n${Cypress.$('html')[0].outerHTML}`)})})
 
-  // beforeEach(() => { monitorDocumentChanges.Start() })
-  // afterEach(() =>  { helpers.ConLog(`afterEach`, `Current HTML:\n${Cypress.$('html')[0].outerHTML}`); monitorDocumentChanges.Stop() })
-
-  it('2 should be able to train', () => 
-  {
-    homePage.visit()
+  // it('2 should be able to train', () => 
+  // {
+  //   homePage.visit()
     
-    homePage.navigateToModelPage(modelName)
+  //   homePage.navigateToModelPage(modelName)
 
-    // 4.1	Click Train Dialogs..., then New Train Dialog.
-    modelPage.navigateToTrainDialogs()
+  //   // 4.1	Click Train Dialogs..., then New Train Dialog.
+  //   modelPage.navigateToTrainDialogs()
 
-    // 4.1	...then New Train Dialog.
-    trainDialogPage.createNew()
-  })
+  //   // 4.1	...then New Train Dialog.
+  //   trainDialogPage.createNew()
+  // })
 
   it('should be able to train', () => {
     // 4	Train the bot
@@ -64,10 +58,8 @@ describe('zzTemp test', function () {
     // 4.14	Click Score Actions.
     // 4.15	Select 'Hello susan'.
     // 4.16	Click Done Teaching.
-
-    //monitorDocumentChanges.Start()
+    helpers.ConLog(`test`, `start`)
     homePage.visit()
-    
     homePage.navigateToModelPage(modelName)
 
     // 4.1	Click Train Dialogs..., then New Train Dialog.
@@ -77,39 +69,32 @@ describe('zzTemp test', function () {
     trainDialogPage.createNew()
 
     // 4.2	Type 'hello'.
-    //editDialogModal.typeYourMessage("hello")
-    cy.Get('input[class="wc-shellinput"]').type(`hello{enter}`)
+    editDialogModal.typeYourMessage("hello")
     
     // 4.3	Click Score Actions...
-    //editDialogModal.clickScoreActions()
-    cy.Get('[data-testid="button-proceedto-scoreactions"]').click()
+    editDialogModal.clickScoreActions()
 
     // 4.3.1	<Validation Step> Note that the response 'Hello $name' 
     // cannot be selected, because it requies the entity $name to be defined, 
     // and $name is not in bot's memory.
-    cy.Get('[data-testid="actionscorer-responseText"]').contains(actionResponse02)
-      .parents('div.ms-DetailsRow-fields').find('[data-testid="actionscorer-buttonNoClick"]')
-      .should('be.disabled')
+    scorerModal.verifyContainsDisabledAction("Hello $name")
 
     // 4.3	...and Select 'What's your name?'
-    //scorerModal.selectAnActionWithText(actionResponse01)
-    cy.Get('[data-testid="actionscorer-responseText"]').contains(actionResponse01)
-      .parents('div.ms-DetailsRow-fields').find('[data-testid="actionscorer-buttonClickable"]')
-      .click()
+    scorerModal.clickAction("What's your name?")
 
     // 4.4	Enter 'david'.
-    //editDialogModal.typeYourMessage("david")
-    cy.Get('input[class="wc-shellinput"]').type(`${usersName}{enter}`)
+    editDialogModal.typeYourMessage("david")
 
     // 4.4.1	<Validation Step> Note that the name is highlighted as an entity. 
-    cy.Get('[data-testid="button-entity-indicatorName"]').contains(entityName)
-    cy.Get('[data-testid="text-entity-value"]').contains(usersName)
-
+    editDialogModal.verifyDetectedEntity("name", "david")
+    
     // 4.5	Click Score Actions
-    //editDialogModal.clickScoreActions()
-    cy.Get('[data-testid="button-proceedto-scoreactions"]').click()
+    editDialogModal.clickScoreActions()
 
+    cy.wait(5000)
     // 4.5.1	<Validation Step> Note name value is now in the bot's memory.
+    scorerModal.verifyEntityInMemory("name", "david")
+
     // 4.6	'Hello $name' is now available as a response.
     // 4.7	Select 'Hello $name'.
     // 4.8	Click Done Teaching.
@@ -127,5 +112,6 @@ describe('zzTemp test', function () {
     // cy.pause()//.wait(2000)
     // editDialogModal.clickDoneTeaching()
     //monitorDocumentChanges.Stop()
+    helpers.ConLog(`test`, `end`)
   })
 })

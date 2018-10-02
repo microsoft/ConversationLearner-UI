@@ -15,6 +15,5 @@ export function NowAsString() {return TimeToString(new Date())}
 
 export function sleep(time) { return new Promise((resolve, reject) => setTimeout(resolve, time))}
 
-export function ConLog(funcName, message) { console.log(`${NowAsString()} - ${funcName} - ${message}`) }
-
-//export function Caller() { return arguments.callee.caller.toString() }
+// NOTE: the '-+-' is a signature for filtering console output
+export function ConLog(funcName, message) { console.log(`-+- ${NowAsString()} - ${funcName} - ${message}`) }

@@ -2,17 +2,9 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-export function typeYourMessage(trainmessage) {
-  cy.server()
-  cy.route('PUT', '/sdk/app/*/teach/*/extractor').as('putExtractor')
-  cy.route('GET', '/sdk/app/*/trainingstatus').as('getAppTrainingStatus')
-
-  cy.get('input[class="wc-shellinput"]')
-    .type(`${trainmessage}{enter}`)
-
-  cy.wait('@putExtractor')
-    .wait(500)
-}
+export function typeYourMessage(trainmessage) { cy.Get('input[class="wc-shellinput"]').type(`${trainmessage}{enter}`) }  // data-testid NOT possible
+export function clickScoreActions()           { cy.Get('[data-testid="button-proceedto-scoreactions"]').Click() }
+export function clickDoneTeaching()           { cy.Get('[data-testid="teachsession-footer-button-done"]').Click() }
 
 export function highlightWord(word) {
   cy.get('span[class="cl-token-node"]')
@@ -30,21 +22,8 @@ export function verifyTokenNodeExists() {
     .should('exists')
 }
 
-/** Click on 'Score Action' button */
-export function clickScoreActions() {
-  cy.server()
-  cy.route('PUT', '/sdk/app/*/teach/*/scorer').as('putScorer')
-
-  cy.get('[data-testid="button-proceedto-scoreactions"]')
-    .click()
-
-  cy.wait(1000)
-    .wait('@putScorer')
-}
-
-/** Finalize the training by clicking the Click done Teaching button*/
-export function clickDoneTeaching() {
-  cy.get('[data-testid="teachsession-footer-button-done"]')
-    .click()
-    .wait(1000)
+export function verifyDetectedEntity(entityName, entityValue)
+{
+  cy.Get('[data-testid="button-entity-indicatorName"]').contains(entityName)
+  cy.Get('[data-testid="text-entity-value"]').contains(entityValue)
 }

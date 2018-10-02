@@ -41,7 +41,7 @@ const columns: IRenderableColumn[] = [
             const changeStatus = component.getMemoryChangeStatus(entity.entityName)
             const changeClass = memoryChangeClassMap[changeStatus] || ''
 
-            return <span className={`${OF.FontClassNames.mediumPlus} ${changeClass}`}>{entity.entityName}</span>
+            return <span className={`${OF.FontClassNames.mediumPlus} ${changeClass}`} data-testid="entity-memory-name">{entity.entityName}</span>
         },
         getSortValue: entity => entity.entityName.toUpperCase()
     },
@@ -60,13 +60,13 @@ const columns: IRenderableColumn[] = [
                     const changeClass = memoryChangeClassMap[value.changeStatus] || ''
                     let renderedValue;
 
-                    let valuesAsObject =  component.valuesAsObject(value.displayText)
+                    let valuesAsObject = component.valuesAsObject(value.displayText)
                     if (valuesAsObject && value.displayText) {
-                        renderedValue = <span>{value.prefix}<span className={`${changeClass} cl-font--action`}>{value.displayText.slice(0,20)}...</span></span>
+                        renderedValue = <span>{value.prefix}<span className={`${changeClass} cl-font--action`} data-testid="entity-memory-value">{value.displayText.slice(0,20)}...</span></span>
                         renderedValue = EntityObject(valuesAsObject, renderedValue)
                     }
                     else {
-                        renderedValue = <span>{value.prefix}<span className={`${changeClass} ${value.isPrebuilt ? 'cl-font--action' : ''}`}>{value.displayText}</span></span>
+                        renderedValue = <span>{value.prefix}<span className={`${changeClass} ${value.isPrebuilt ? 'cl-font--action' : ''}`} data-testid="entity-memory-value">{value.displayText}</span></span>
                         
                         if (value.isPrebuilt) {
                             renderedValue = Prebuilt(value.memoryValue, renderedValue)
@@ -88,7 +88,7 @@ const columns: IRenderableColumn[] = [
         isResizable: true,
         render: entity => {
             const type = (entity.entityType === EntityType.LOCAL || entity.entityType === EntityType.LUIS) ? "CUSTOM" : entity.entityType
-            return <span className={OF.FontClassNames.mediumPlus}>{type}</span>
+            return <span className={OF.FontClassNames.mediumPlus} data-testid="entity-memory-type">{type}</span>
         },
         getSortValue: entity => entity.entityType.toUpperCase()
     },
@@ -99,7 +99,7 @@ const columns: IRenderableColumn[] = [
         minWidth: 100,
         maxWidth: 100,
         isResizable: true,
-        render: entity => <OF.Icon iconName={entity.entityType === EntityType.LOCAL ? "CheckMark" : "Remove"} className="cl-icon" />,
+        render: entity => <OF.Icon iconName={entity.entityType === EntityType.LOCAL ? "CheckMark" : "Remove"} className="cl-icon" data-testid="entity-memory-programatic"/>,
         getSortValue: entity => entity.entityType === EntityType.LOCAL ? 'a' : 'b'
     },
     {
@@ -109,7 +109,7 @@ const columns: IRenderableColumn[] = [
         minWidth: 80,
         maxWidth: 100,
         isResizable: true,
-        render: entity => <OF.Icon iconName={entity.isMultivalue ? "CheckMark" : "Remove"} className="cl-icon" />,
+        render: entity => <OF.Icon iconName={entity.isMultivalue ? "CheckMark" : "Remove"} className="cl-icon" data-testid="entity-memory-multi-value"/>,
         getSortValue: entity => entity.isMultivalue ? 'a' : 'b'
     },
     {
@@ -119,7 +119,7 @@ const columns: IRenderableColumn[] = [
         minWidth: 80,
         maxWidth: 100,
         isResizable: true,
-        render: entity => <OF.Icon iconName={entity.isNegatible ? "CheckMark" : "Remove"} className="cl-icon" />,
+        render: entity => <OF.Icon iconName={entity.isNegatible ? "CheckMark" : "Remove"} className="cl-icon" data-testid="entity-memory-negatable"/>,
         getSortValue: entity => entity.isNegatible ? 'a' : 'b'
     }
 ]
