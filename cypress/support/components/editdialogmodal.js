@@ -4,7 +4,7 @@
  */
 export function typeYourMessage(trainmessage) { cy.Get('input[class="wc-shellinput"]').type(`${trainmessage}{enter}`) }  // data-testid NOT possible
 export function clickScoreActions()           { cy.Get('[data-testid="button-proceedto-scoreactions"]').Click() }
-export function clickDoneTeaching()           { cy.Get('[data-testid="teachsession-footer-button-done"]').Click() }
+export function clickSave()                   { cy.Get('[data-testid="teachsession-footer-button-save"]').Click() }
 
 export function highlightWord(word) {
   cy.get('span[class="cl-token-node"]')

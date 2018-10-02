@@ -364,7 +364,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
                             <div className="cl-modal-buttons_primary">
                                 <OF.PrimaryButton
-                                    data-testid="teachsession-footer-button-done"
+                                    data-testid="teachsession-footer-button-save"
                                     disabled={!this.state.hasTerminalAction || this.props.teachSession.mode === CLM.DialogMode.Extractor}
                                     onClick={this.onClickSave}
                                     ariaDescription={this.renderSaveText(intl)}

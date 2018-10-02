@@ -17,23 +17,11 @@ const editDialogModal = require('../support/components/editdialogmodal')
 const helpers = require('../support/helpers')
 
 describe('zzTemp test', function () {
-  const postfix = "0925-1838298" //Cypress.moment().format("MMDD-HHmmSSS")
+  const postfix = "0925-0933409" //"0925-1838298" //Cypress.moment().format("MMDD-HHmmSSS")
   const modelName = `e2e-expected-${postfix}`
+  
   beforeEach(() => { cy.DumpHtmlOnDomChange(false) })
-  afterEach(() =>  { cy.DumpHtmlOnDomChange(true); helpers.ConLog(`afterEach`, `Current HTML:\n${Cypress.$('html')[0].outerHTML}`)})//; cy.wait(5000).then(() => {helpers.ConLog(`afterEach`, `a bit later...HTML:\n${Cypress.$('html')[0].outerHTML}`)})})
-
-  // it('2 should be able to train', () => 
-  // {
-  //   homePage.visit()
-    
-  //   homePage.navigateToModelPage(modelName)
-
-  //   // 4.1	Click Train Dialogs..., then New Train Dialog.
-  //   modelPage.navigateToTrainDialogs()
-
-  //   // 4.1	...then New Train Dialog.
-  //   trainDialogPage.createNew()
-  // })
+  afterEach(() =>  { cy.DumpHtmlOnDomChange(true); helpers.ConLog(`afterEach`, `Current HTML:\n${Cypress.$('html')[0].outerHTML}`)})
 
   it('should be able to train', () => {
     // 4	Train the bot
@@ -69,7 +57,7 @@ describe('zzTemp test', function () {
     trainDialogPage.createNew()
 
     // 4.2	Type 'hello'.
-    editDialogModal.typeYourMessage("hello")
+    editDialogModal.typeYourMessage("Hello")
     
     // 4.3	Click Score Actions...
     editDialogModal.clickScoreActions()
@@ -83,22 +71,34 @@ describe('zzTemp test', function () {
     scorerModal.clickAction("What's your name?")
 
     // 4.4	Enter 'david'.
-    editDialogModal.typeYourMessage("david")
+    editDialogModal.typeYourMessage("David")
 
     // 4.4.1	<Validation Step> Note that the name is highlighted as an entity. 
-    editDialogModal.verifyDetectedEntity("name", "david")
+    editDialogModal.verifyDetectedEntity("name", "David")
     
     // 4.5	Click Score Actions
     editDialogModal.clickScoreActions()
 
-    cy.wait(5000)
     // 4.5.1	<Validation Step> Note name value is now in the bot's memory.
-    scorerModal.verifyEntityInMemory("name", "david")
+    scorerModal.verifyEntityInMemory("name", "David")
 
     // 4.6	'Hello $name' is now available as a response.
     // 4.7	Select 'Hello $name'.
+    scorerModal.clickAction("Hello David")
+
     // 4.8	Click Done Teaching.
+    editDialogModal.clickSave()
+    
+    // --------------- New Training Begins ---------------
     // 4.9	Click New Train Dialog.
+    trainDialogPage.createNew()
+
+    // 4.2	Type 'hello'.
+    editDialogModal.typeYourMessage("My name is David.") // TODO: Add edge cases; 'david', with & without 'period'
+    
+    // 4.3	Click Score Actions...
+    //editDialogModal.clickScoreActions()
+
     // 4.10	Enter 'my name is david'.
     // 4.10.1	<Validation Step> Note that it does identify david as the name entity because it has seen this word before.
     // 4.11	Click Score Actions
