@@ -24,7 +24,7 @@ export enum EditDialogType {
     LOG_ORIGINAL = 'LOG_ORIGINAL',
 }
 
-// What is being edited
+// State of current edited dialog
 export enum EditState {
     CAN_EDIT = 'CAN_EDIT',
     // Runing bot not compatible with Model
@@ -32,6 +32,7 @@ export enum EditState {
     // Attemping to edit older package id
     INVALID_PACKAGE = 'INVALID_PACKAGE'
 }
+
 
 export {
     ActionCreatorEditor,

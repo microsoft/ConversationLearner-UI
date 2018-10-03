@@ -11,6 +11,7 @@ import * as OF from 'office-ui-fabric-react'
 import { State } from '../../types'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
+import { autobind } from 'office-ui-fabric-react/lib/Utilities'
 
 interface ComponentState {
     userInputVal: string
@@ -21,20 +22,13 @@ class UserInputModal extends React.Component<Props, ComponentState> {
         userInputVal: '',
     }
 
-    constructor(p: Props) {
-        super(p)
-
-        this.onKeyDown = this.onKeyDown.bind(this)
-        this.onClickSubmit = this.onClickSubmit.bind(this)
-        this.onClickCancel = this.onClickCancel.bind(this)
-    }
-
     userInputChanged(text: string) {
         this.setState({
             userInputVal: text
         })
     }
 
+    @autobind
     onClickCancel() {
         this.setState({
             userInputVal: ""
@@ -42,7 +36,8 @@ class UserInputModal extends React.Component<Props, ComponentState> {
         this.props.onCancel()
     }
 
-    onClickSubmit = () => {
+    @autobind
+    onClickSubmit() {
         this.setState({
             userInputVal: ""
         })
@@ -51,6 +46,7 @@ class UserInputModal extends React.Component<Props, ComponentState> {
 
     // TODO: Refactor to use default form submission instead of manually listening for keys
     // Also has benefit of native browser validation for required fields
+    @autobind
     onKeyDown(event: React.KeyboardEvent<HTMLElement>) {
         // On enter attempt to create the model if required fields are set
         // Not on import as explicit button press is required to pick the file

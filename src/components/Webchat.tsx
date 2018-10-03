@@ -10,8 +10,74 @@ import { State } from '../types'
 import * as BotChat from '@conversationlearner/webchat'
 import { AppBase, CL_USER_NAME_ID } from '@conversationlearner/models'
 import { BehaviorSubject, Observable } from 'rxjs'
-import { Activity } from 'botframework-directlinejs'
+import { Activity, Message } from 'botframework-directlinejs'
 import actions from '../actions'
+
+export function renderActivity(
+    activityProps: BotChat.WrappedActivityProps, 
+    children: React.ReactNode, 
+    setRef: (div: HTMLDivElement | null) => void,
+    renderSelected: (activity: Activity, isLastActivity: boolean) => JSX.Element | null,
+    isLastActivity?: boolean
+    ): JSX.Element {
+        
+    let timeLine = <span> { activityProps.fromMe ? "User" : "Bot" }</span>;
+
+    const who = activityProps.fromMe ? 'me' : 'bot';
+
+    let wrapperClassName = 
+        ['wc-message-wrapper',
+        (activityProps.activity as Message).attachmentLayout || 'list',
+        activityProps.onClickActivity && 'clickable'].filter(Boolean).join(' ')
+
+    let contentClassName = 'wc-message-content'
+
+    if (activityProps.activity.channelData) {
+        if (activityProps.activity.channelData.highlight === "warning") {
+            wrapperClassName += ' wc-message-warning-from-' + who;
+        } 
+        else if (activityProps.activity.channelData.highlight === "error") {
+            wrapperClassName += ' wc-message-error-from-' + who;
+        }
+        if (activityProps.selected) {
+            wrapperClassName += ` wc-message-selected`
+        }
+    }
+
+    return (
+        <div 
+            data-activity-id={ activityProps.activity.id } 
+            className={wrapperClassName} 
+            onClick={activityProps.onClickActivity}
+            role="button"
+        > 
+            <div className={'wc-message wc-message-from-' + who} ref={ div => setRef(div) }>
+                <div className={contentClassName}>
+                    <svg className="wc-message-callout">
+                        <path className="point-left" d="m0,6 l6 6 v-12 z" />
+                        <path className="point-right" d="m6,6 l-6 6 v-12 z" />
+                    </svg>
+                    { children }
+                </div>
+            </div>
+            {activityProps.selected && renderSelected(activityProps.activity, false)}
+            {!activityProps.selected && isLastActivity && renderSelected(activityProps.activity, isLastActivity)}
+            {activityProps.activity.channelData && activityProps.activity.channelData.downarrow ? 
+                (
+                    <svg className="wc-message-downarrow">
+                        <polygon 
+                            className={activityProps.activity.channelData.downarrow}
+                            points="0,0 50,0 25,15"
+                        />
+                    </svg>
+                ) :
+                (
+                    <div className={'wc-message-from wc-message-from-' + who}>{timeLine}</div>
+                )
+            }
+        </div>
+    )
+}
 
 class Webchat extends React.Component<Props, {}> {
 
@@ -134,7 +200,7 @@ class Webchat extends React.Component<Props, {}> {
         chatProps.focusInput = this.props.focusInput
         chatProps.onScrollChange = this.props.onScrollChange
         chatProps.initialScrollPosition = this.props.initialScrollPosition
-        chatProps.renderSelectedActivity = this.props.renderSelectedActivity
+        chatProps.renderActivity = this.props.renderActivity
         chatProps.selectedActivityIndex = this.props.selectedActivityIndex
         chatProps.highlightClassName = this.props.highlightClassName
 
@@ -173,7 +239,7 @@ export interface ReceivedProps {
     onSelectActivity: (a: Activity) => void,
     onPostActivity: (a: Activity) => void,
     onScrollChange?: (position: number) => void,
-    renderSelectedActivity?: (a: Activity) => (JSX.Element | null)
+    renderActivity?: (props: BotChat.WrappedActivityProps, children: React.ReactNode, setRef: (div: HTMLDivElement | null) => void) => (JSX.Element | null)
     highlightClassName?: string
     // Used to select activity from outside webchat
     selectedActivityIndex?: number | null
