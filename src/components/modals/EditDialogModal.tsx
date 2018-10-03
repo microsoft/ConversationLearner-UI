@@ -30,6 +30,7 @@ import { autobind } from 'office-ui-fabric-react/lib/Utilities'
 interface ComponentState {
     isConfirmAbandonOpen: boolean
     isUserInputModalOpen: boolean
+    isUserBranchModalOpen: boolean
     selectedActivity: Activity | null
     webchatKey: number
     currentTrainDialog: CLM.TrainDialog | null
@@ -39,6 +40,7 @@ interface ComponentState {
 const initialState: ComponentState = {
     isConfirmAbandonOpen: false,
     isUserInputModalOpen: false,
+    isUserBranchModalOpen: false,
     selectedActivity: null,
     webchatKey: 0,
     currentTrainDialog: null,
@@ -69,15 +71,6 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         }
     }
 
-    @autobind
-    onClickBranch() {
-        if (this.state.selectedActivity && this.props.onBranchDialog) {
-            let branchRound = this.state.selectedActivity.channelData.roundIndex;
-            if (branchRound > 0) {
-                this.props.onBranchDialog(branchRound);
-            }
-        }
-    }
 
     @autobind
     onClickAddUserInput() {
@@ -101,6 +94,31 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         
         if (this.state.selectedActivity && this.state.currentTrainDialog) {
             this.props.onInsertInput(this.state.currentTrainDialog, this.state.selectedActivity, userInput)
+        }
+    }
+
+    @autobind
+    onClickBranch() {
+        this.setState({
+            isUserBranchModalOpen: true
+        })
+    }
+
+    @autobind
+    onCancelBranch() {
+        this.setState({
+            isUserBranchModalOpen: false
+        })
+    }
+
+    @autobind
+    onSubmitBranch(userInput: string) {
+        this.setState({
+            isUserBranchModalOpen: false
+        })
+        
+        if (this.state.selectedActivity && this.state.currentTrainDialog && this.props.onBranchDialog) {
+            this.props.onBranchDialog(this.state.currentTrainDialog, this.state.selectedActivity, userInput)
         }
     }
 
@@ -231,7 +249,13 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             return null
         }
         
-        const canBranch = activity && activity.channelData.senderType === CLM.SenderType.User
+        const canBranch = 
+            activity && 
+            // Can only branch on user turns
+            activity.channelData.senderType === CLM.SenderType.User &&
+            // Can only branch on un-edited dialogs
+            (this.props.editType === EditDialogType.LOG_ORIGINAL || this.props.editType === EditDialogType.TRAIN_ORIGINAL)
+
         const roundIndex = activity.channelData.roundIndex
         const senderType = activity.channelData.senderType
         const curRound = this.props.trainDialog.rounds[roundIndex]
@@ -658,8 +682,15 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                 />
                 <UserInputModal
                     open={this.state.isUserInputModalOpen}
+                    titleFM={FM.USERINPUT_ADD_TITLE}
                     onCancel={this.onCancelAddUserInput}
                     onSubmit={this.onSubmitAddUserInput}
+                />
+                <UserInputModal
+                    titleFM={FM.USERINPUT_BRANCH_TITLE}
+                    open={this.state.isUserBranchModalOpen}
+                    onCancel={this.onCancelBranch}
+                    onSubmit={this.onSubmitBranch}
                 />
             </Modal>
         );
@@ -698,7 +729,7 @@ export interface ReceivedProps {
     onInsertInput: (trainDialog: CLM.TrainDialog, activity: Activity, userText: string) => any
     onDeleteTurn: (trainDialog: CLM.TrainDialog, activity: Activity) => any
     onCloseModal: (reload: boolean) => void
-    onBranchDialog: ((turnIndex: number) => void) | null,
+    onBranchDialog: ((trainDialog: CLM.TrainDialog, activity: Activity, userText: string) => void) | null,
     onContinueDialog: (newTrainDialog: CLM.TrainDialog, initialUserInput: CLM.UserInput) => void
     onSaveDialog: (newTrainDialog: CLM.TrainDialog, isInvalid: boolean) => void
     // Add a new train dialog to the Model (when EditDialogType === NEW)

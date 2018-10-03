@@ -195,6 +195,10 @@ html {
   color: var(--color-red);
 }
 
+.ms-Button-icon[data-icon-name="EditSolidMirrored12"] {
+  color: var(--color-red);
+}
+
 .ms-Button-icon[data-icon-name="IncidentTriangle"] {
   font-size: 13px;
   margin-bottom: -3px;

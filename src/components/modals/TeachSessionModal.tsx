@@ -242,6 +242,13 @@ class TeachModal extends React.Component<Props, ComponentState> {
         }
     }
 
+    @autobind
+    onEditTurn() {
+        if (this.state.selectedActivityIndex != null) { 
+            this.props.onEditTeach(this.state.selectedActivityIndex, null, this.props.onEditTurn) 
+        }
+    }
+
     renderActivity(activityProps: BotChat.WrappedActivityProps, children: React.ReactNode, setRef: (div: HTMLDivElement | null) => void): JSX.Element {
        return renderActivity(activityProps, children, setRef, this.renderSelectedActivity)
     }
@@ -269,6 +276,15 @@ class TeachModal extends React.Component<Props, ComponentState> {
                 />
                 <AddScoreButton 
                     onClick={this.onInsertAction}
+                />
+                <OF.IconButton
+                    className={`cl-wc-branchturn`}
+                    iconProps={{ iconName: 'EditSolidMirrored12' }}
+                    onClick={this.onEditTurn}
+                    ariaDescription={this.props.intl.formatMessage({
+                        id: FM.EDITDIALOGMODAL_BRANCH_ARIADESCRIPTION,
+                        defaultMessage: 'Branch'
+                    })}
                 />
                 {canDeleteRound &&
                     <OF.IconButton
@@ -496,6 +512,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                         title={this.renderConfirmText(intl)}
                     />
                     <UserInputModal
+                        titleFM={FM.USERINPUT_ADD_TITLE}
                         open={this.state.isUserInputModalOpen}
                         onCancel={() => {this.onCancelAddUserInput()}}
                         onSubmit={this.onSubmitAddUserInput}
@@ -537,6 +554,7 @@ export interface ReceivedProps {
     onInsertAction: (trainDialog: CLM.TrainDialog, activity: Activity) => any
     onInsertInput: (trainDialog: CLM.TrainDialog, activity: Activity, userText: string) => any
     onDeleteTurn: (trainDialog: CLM.TrainDialog, activity: Activity) => any
+    onEditTurn: (trainDialog: CLM.TrainDialog, activity: Activity) => any
     onSetInitialEntities: ((initialFilledEntities: CLM.FilledEntity[]) => void) | null
     app: CLM.AppBase
     editingPackageId: string

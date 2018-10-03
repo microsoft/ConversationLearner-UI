@@ -442,6 +442,29 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     }
 
     @autobind
+    async onEditTurn(trainDialog: CLM.TrainDialog, selectedActivity: Activity) {
+
+        try {
+            const roundIndex = selectedActivity.channelData.roundIndex
+            let scoreIndex = selectedActivity.channelData.scoreIndex
+
+            // Copy TrainDialog
+            let newTrainDialog = JSON.parse(JSON.stringify(trainDialog))
+            let curRound = newTrainDialog.rounds[roundIndex]
+
+            // If inserted at end of conversation, allow to scroll to bottom
+            if (roundIndex === trainDialog.rounds.length - 1 && scoreIndex === curRound.scorerSteps.length - 1) {
+                this.props.clearWebchatScrollPosition()
+            }
+
+            await this.onUpdateHistory(newTrainDialog, selectedActivity)
+        }
+        catch (error) {
+            console.warn(`Error when attempting to insert an Action `, error)
+        }
+    }
+
+    @autobind
     async onInsertAction(trainDialog: CLM.TrainDialog, selectedActivity: Activity) {
 
         try {
@@ -560,6 +583,56 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     }
 
     @autobind
+    async onBranchTrainDialog(trainDialog: CLM.TrainDialog, selectedActivity: Activity, inputText: string) {
+
+        try {
+            const roundIndex = selectedActivity.channelData.roundIndex
+            const definitions = {
+                entities: this.props.entities,
+                actions: this.props.actions,
+                trainDialogs: []
+            }
+
+            // Copy, Remove rounds / scorer steps below branch
+            let newTrainDialog = JSON.parse(JSON.stringify(trainDialog))
+            newTrainDialog.definitions = definitions
+            newTrainDialog.rounds = newTrainDialog.rounds.slice(0, roundIndex)
+
+            const userInput: CLM.UserInput = { text: inputText }
+
+            // Get extraction
+            const extractResponse = await ((this.props.extractFromHistoryThunkAsync(this.props.app.appId, newTrainDialog, userInput) as any) as Promise<CLM.ExtractResponse>)
+
+            if (!extractResponse) {
+                throw new Error("No extract response")  // LARS todo - handle this better
+            }
+
+            let textVariations = CLM.ModelUtils.ToTextVariations([extractResponse])
+            let extractorStep: CLM.TrainExtractorStep = {textVariations}
+
+            // Create new round
+            let newRound = {
+                extractorStep,
+                scorerSteps: []
+            }
+        
+            // Append new Round
+            newTrainDialog.rounds.push(newRound)
+            
+            // Replay logic functions on train dialog
+            newTrainDialog = await ((this.props.trainDialogReplayThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<CLM.TrainDialog>)
+
+            // Allow to scroll to bottom
+            this.props.clearWebchatScrollPosition()
+
+            await this.onUpdateHistory(newTrainDialog, selectedActivity)
+        }
+        catch (error) {
+            console.warn(`Error when attempting to create teach session from history: `, error)
+        }
+    }
+
+    @autobind
     async onInsertInput(trainDialog: CLM.TrainDialog, selectedActivity: Activity, inputText: string) {
 
         try {
@@ -660,7 +733,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         this.props.fetchApplicationTrainingStatusThunkAsync(this.props.app.appId)
         this.onCloseEditDialogModal();
     }
-
+/* lars remove
     onBranchTrainDialog(turnIndex: number) {
         if (!this.state.currentTrainDialog) {
             throw new Error(`You attempted to branch from a turn in train dialog, but currentTrainDialog is not defined. Please open an issue.`)
@@ -718,13 +791,13 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 console.warn(`Error when attempting to create teach session from branch: `, error)
             })
     }
-
+*/
     async onUpdateHistory(newTrainDialog: CLM.TrainDialog, selectedActivity: Activity | null) {
         const originalId = this.state.originalTrainDialogId || (this.state.currentTrainDialog ? this.state.currentTrainDialog.trainDialogId : null);
 
         try {
             const teachWithHistory = await ((this.props.fetchHistoryThunkAsync(this.props.app.appId, newTrainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)
-            const activityIndex = selectedActivity ? Util.matchedActivityIndex(selectedActivity, this.state.history) : null
+            const activityIndex = selectedActivity ? Util.matchedActivityIndex(selectedActivity, teachWithHistory.history) : null
             this.setState({
                 history: teachWithHistory.history,
                 lastAction: teachWithHistory.lastAction,
@@ -1094,6 +1167,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     onInsertAction={(trainDialog, activity) => this.onInsertAction(trainDialog, activity)}
                     onInsertInput={(trainDialog, activity, userInput) => this.onInsertInput(trainDialog, activity, userInput)} 
                     onDeleteTurn={(trainDialog, activity) => this.onDeleteTurn(trainDialog, activity)}
+                    onEditTurn={(trainDialog, activity) => this.onEditTurn(trainDialog, activity)}
                     onSetInitialEntities={this.onSetInitialEntities}
                     initialHistory={this.state.history}
                     editType={this.state.editType}
@@ -1116,7 +1190,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     onInsertAction={(trainDialog, activity) => this.onInsertAction(trainDialog, activity)}
                     onInsertInput={(trainDialog, activity, userInput) => this.onInsertInput(trainDialog, activity, userInput)} 
                     onDeleteTurn={(trainDialog, activity) => this.onDeleteTurn(trainDialog, activity)}
-                    onBranchDialog={(turnIndex) => this.onBranchTrainDialog(turnIndex)}
+                    onBranchDialog={(trainDialog, activity, userInput) => this.onBranchTrainDialog(trainDialog, activity, userInput)}
                     onDeleteDialog={() => this.onDeleteTrainDialog()}
                     onUpdateHistory={(updatedTrainDialog, selectedActivity) => this.onUpdateHistory(updatedTrainDialog, selectedActivity)}
                     onContinueDialog={(editedTrainDialog, initialUserInput) => this.onContinueTrainDialog(editedTrainDialog, initialUserInput)}

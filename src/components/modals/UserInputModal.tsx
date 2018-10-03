@@ -81,7 +81,7 @@ class UserInputModal extends React.Component<Props, ComponentState> {
                     <span className={OF.FontClassNames.xxLarge}>
                         {                    
                         <FormattedMessage
-                            id={FM.USERINPUT_TITLE}
+                            id={this.props.titleFM}
                             defaultMessage="Add User Input"
                         />}
                     </span>
@@ -148,6 +148,7 @@ const mapStateToProps = (state: State) => {
 
 export interface ReceivedProps {
     open: boolean
+    titleFM: FM
     onSubmit: (userInput: string) => void
     onCancel: () => void
 }

@@ -440,7 +440,8 @@ export enum FM {
     TUTORIALIMPORTER_TITLE = 'TutorialImporter.Title',
 
     // UserInput Modal
-    USERINPUT_TITLE = 'UserInput.title',
+    USERINPUT_ADD_TITLE = 'UserInput.addtitle',
+    USERINPUT_BRANCH_TITLE = 'UserInput.branchtitle',
     USERINPUT_PLACEHOLDER = 'UserInput.placeholder',
 
     // Validations
@@ -619,8 +620,8 @@ export default {
         [FM.REPLAYERROR_LOGDIALOG_VALIDATION_TITLE]: 'Model definition has changed',
         [FM.REPLAYERROR_LOGDIALOG_VALIDATION_MESSAGE]: 'This Log Dialog was created with a earlier version of the model.  The following incomptibilities were found:',
         [FM.REPLAYERROR_CONVERT_TITLE]: 'Unable to convert to Train Dialog',
-        [FM.REPLAYERROR_FAILMESSAGE]: 'The following issues occurred when attempting to replay the dialog',
-        [FM.REPLAYERROR_EDIT_TITLE]: 'Unable to Edit',
+        [FM.REPLAYERROR_FAILMESSAGE]: 'The following issues need to be corrected first',
+        [FM.REPLAYERROR_EDIT_TITLE]: 'Unable to continue Dialog',
         [FM.REPLAYERROR_BRANCH_TITLE]: 'Unable to Branch',
         [FM.REPLAYERROR_DESC_ACTION_AFTER_WAIT]: 'Action following and Wait Action',
         [FM.REPLAYERROR_DESC_ACTION_UNDEFINED]: 'Action does not exist',
@@ -903,7 +904,8 @@ export default {
         [FM.EDITDIALOGMODAL_WARNING_INVALID_PACKAGE]: 'Editing only permitted on the Master tag',
              
         // UserInput Modal
-        [FM.USERINPUT_TITLE]: 'Add User Input',
+        [FM.USERINPUT_ADD_TITLE]: 'Add User Input',
+        [FM.USERINPUT_BRANCH_TITLE]: 'Add Different User Input',
         [FM.USERINPUT_PLACEHOLDER]: 'User Input...',
 
         /** 

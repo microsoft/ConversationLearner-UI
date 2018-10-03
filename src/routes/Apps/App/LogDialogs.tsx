@@ -950,6 +950,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     onInsertAction={(trainDialog, activity) => this.onInsertAction(trainDialog, activity)}
                     onInsertInput={(trainDialog, activity, userInput) => this.onInsertInput(trainDialog, activity, userInput)} 
                     onDeleteTurn={(trainDialog, activity) => this.onDeleteTurn(trainDialog, activity)}
+                    onEditTurn={() => {}}
                     editType={this.state.editType} 
                     initialHistory={this.state.history}
                     lastAction={this.state.lastAction}
