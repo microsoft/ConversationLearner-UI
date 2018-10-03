@@ -298,7 +298,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
         )
     }
 
-    onWebChatSelectActivity(activity: Activity) {
+    async onWebChatSelectActivity(activity: Activity) {
        
         // Activities from history can be looked up
         if (this.props.initialHistory.length > 0) {
@@ -309,7 +309,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
             }
         }
         // Otherwise newly create activities with have index in channelData
-        this.setState({selectedActivityIndex: activity.channelData.activityIndex})
+        this.setState({selectedActivityIndex: activity.channelData.activityIndex})        
     }
 
     renderAbandonText(intl: ReactIntl.InjectedIntl) {
@@ -451,7 +451,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                                         editingPackageId={this.props.editingPackageId}
                                         editType={this.props.editType}
                                         activityIndex={this.state.nextActivityIndex}
-                                        selectedActivity={null}
+                                        selectedActivityIndex={this.state.selectedActivityIndex}
                                         onScoredAction={(scoredAction) => {
                                                 this.setState({
                                                     hasTerminalAction: scoredAction.isTerminal,
@@ -531,6 +531,7 @@ const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         deleteTeachSessionThunkAsync: actions.teach.deleteTeachSessionThunkAsync,
         fetchApplicationTrainingStatusThunkAsync: actions.app.fetchApplicationTrainingStatusThunkAsync,
+        fetchTrainDialogThunkAsync: actions.train.fetchTrainDialogThunkAsync,
         runExtractorThunkAsync: actions.teach.runExtractorThunkAsync,
         toggleAutoTeach: actions.teach.toggleAutoTeach,
         setWebchatScrollPosition: actions.display.setWebchatScrollPosition

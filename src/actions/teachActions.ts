@@ -355,7 +355,7 @@ export const postScorerFeedbackThunkAsync = (key: string, appId: string, teachId
                 uiScoreInput.extractResponse.predictedEntities = [];
                //LARS todo -  force end task to always be wait
                 dispatch(postScorerFeedbackFulfilled(key, appId, teachId, CLM.DialogMode.Scorer, uiPostScoreResponse, uiScoreInput))     
-                dispatch(runScorerThunkAsync(key, appId, teachId, uiScoreInput))
+   //LARS             dispatch(runScorerThunkAsync(key, appId, teachId, uiScoreInput))
             }
             else {
                 let dialogMode = uiPostScoreResponse.isEndTask ? CLM.DialogMode.EndSession : CLM.DialogMode.Wait
