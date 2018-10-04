@@ -590,6 +590,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                     : undefined;
                 return (
                     <PrimaryButton
+                        data-testid="action-scorer-add-action-button"
                         onClick={this.handleOpenActionModal}
                         ariaDescription='Cancel'
                         text='Action'

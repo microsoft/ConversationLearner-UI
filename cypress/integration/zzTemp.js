@@ -11,7 +11,8 @@ const entityModal = require('../support/components/entitymodal')
 const modelsListPage = require('../support/components/modelsList')
 const modelPage = require('../support/components/modelPage')
 const logDialogPage = require('../support/components/logdialogspage')
-const scorerModal = require('../support/components/scorermodal')
+const scorerModal = require('../support/components/MemoryTableComponent')
+const memoryTableComponent = require('../support/components/scorermodal')
 const trainDialogPage = require('../support/components/traindialogspage')
 const editDialogModal = require('../support/components/editdialogmodal')
 const helpers = require('../support/helpers')
@@ -47,21 +48,22 @@ describe('zzTemp test', function () {
     // 4.14	Click Score Actions.
     // 4.15	Select 'Hello susan'.
     // 4.16	Click Done Teaching.
-    helpers.ConLog(`test`, `start`)
     homePage.visit()
     homePage.navigateToModelPage(modelName)
 
     // 4.1	Click Train Dialogs..., then New Train Dialog.
     modelPage.navigateToTrainDialogs()
+    
+    trainDialogPage.verifyPageTitle()
 
     // 4.1	...then New Train Dialog.
-    trainDialogPage.createNew()
+    trainDialogPage.createNewTrainDialog()
 
     // 4.2	Type 'hello'.
     editDialogModal.typeYourMessage("Hello")
     
     // 4.3	Click Score Actions...
-    editDialogModal.clickScoreActions()
+    editDialogModal.clickScoreActionsButton()
 
     // 4.3.1	<Validation Step> Note that the response 'Hello $name' 
     // cannot be selected, because it requies the entity $name to be defined, 
@@ -78,40 +80,39 @@ describe('zzTemp test', function () {
     editDialogModal.verifyDetectedEntity("name", "David")
     
     // 4.5	Click Score Actions
-    editDialogModal.clickScoreActions()
+    editDialogModal.clickScoreActionsButton()
 
     // 4.5.1	<Validation Step> Note name value is now in the bot's memory.
-    scorerModal.verifyEntityInMemory("name", "David")
+    memoryTableComponent.verifyEntityInMemory("name", "David")
 
     // 4.6	'Hello $name' is now available as a response.
     // 4.7	Select 'Hello $name'.
     scorerModal.clickAction("Hello David")
 
     // 4.8	Click Done Teaching.
-    editDialogModal.clickSave()
+    editDialogModal.clickSaveButton()
     
     // --------------- New Training Begins ---------------
     // 4.9	Click New Train Dialog.
-    trainDialogPage.createNew()
+    trainDialogPage.createNewTrainDialog()
 
     // 4.10	Enter 'my name is david'.
     editDialogModal.typeYourMessage("My name is David.") // TODO: Add edge cases; 'david', with & without 'period'
     
     // 4.10.1	<Validation Step> Note that it does identify david as the name entity because it has seen this word before.
     // 4.11	Click Score Actions
-    editDialogModal.clickScoreActions()
-    scorerModal.verifyEntityInMemory("name", "David")
+    editDialogModal.clickScoreActionsButton()
+    memoryTableComponent.verifyEntityInMemory("name", "David")
     scorerModal.verifyContainsDisabledAction("What's your name?")
 
     // 4.12	Select 'Hello $name'.
     scorerModal.clickAction("Hello David")
 
-
     // 4.13	Enter 'my name is susan'.
     editDialogModal.typeYourMessage("My name is Susan.")
 
     // 4.13.1	<Validation Step> Note that it identifies susan as the name since it has seen this pattern already.
-    scorerModal.clickEntityDetectionToken("Susan")
+    editDialogModal.clickEntityDetectionToken("Susan")
 
     // 4.14	Click Score Actions.
     // 4.15	Select 'Hello susan'.
@@ -120,6 +121,5 @@ describe('zzTemp test', function () {
     // cy.pause()//.wait(2000)
     // editDialogModal.clickDoneTeaching()
     //monitorDocumentChanges.Stop()
-    helpers.ConLog(`test`, `end`)
   })
 })

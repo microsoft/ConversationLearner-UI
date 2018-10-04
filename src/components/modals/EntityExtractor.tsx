@@ -371,6 +371,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                 {canEdit &&
                     <div className='cl-textfield--withButton editor-alt-offset'>
                         <OF.TextField
+                            data-testid="entity-extractor-alternative-input-text"
                             value={this.state.textVariationValue}
                             onChanged={this.onChangeTextVariation}
                             placeholder={this.props.intl.formatMessage({
@@ -385,6 +386,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                             }}
                         />
                         <OF.PrimaryButton
+                            data-testid="entity-extractor-add-alternative-input-button"
                             className='cl-button--inline'
                             disabled={this.state.textVariationValue.trim().length === 0}
                             onClick={this.onSubmitTextVariation}
@@ -413,7 +415,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                 {canEdit && this.props.extractType === CLM.DialogType.TEACH &&
                     <div className="cl-buttons-row">
                         <OF.PrimaryButton
-                            data-testid="button-proceedto-scoreactions"
+                            data-testid="entity-extractor-score-actions-button"
                             disabled={!allExtractResponsesValid || this.state.pendingVariationChange}
                             onClick={this.onClickSubmitExtractions}
                             ariaDescription={'Score Actions'}
@@ -424,7 +426,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                 }
                 <div className="cl-dialog-admin__dialogs">
                     <EntityCreatorEditor
-                        data-testid="entityextractor-editor"
+                        data-testid="entity-extractor-editor"
                         app={this.props.app}
                         editingPackageId={this.props.editingPackageId}
                         open={this.state.entityModalOpen}
@@ -434,7 +436,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                         entityTypeFilter={CLM.EntityType.LUIS}
                     />
                     <OF.Dialog
-                        data-testid="entityextractor-dialog"
+                        data-testid="entity-extractor-dialog"
                         hidden={!this.state.warningOpen}
                         dialogContentProps={{
                             type: OF.DialogType.normal,
@@ -449,7 +451,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                         </OF.DialogFooter>
                     </OF.Dialog>
                     <OF.Dialog
-                        data-testid="entityextractor-dialog-confirm"
+                        data-testid="entity-extractor-dialog-confirm"
                         hidden={this.state.savedExtractResponses.length === 0}
                         dialogContentProps={{
                             type: OF.DialogType.normal,

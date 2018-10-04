@@ -161,7 +161,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                     <div className="cl-dialog-admin__content">
                         <div className="cl-wc-message cl-wc-message--user">
                             <FormattedMessage
-                                data-testid="teachsessionadmin-userinput"
+                                data-testid="teach-session-admin-userinput"
                                 id={FM.TEACHSESSIONADMIN_DIALOGMODE_USER}
                                 defaultMessage="User Input"
                             />
@@ -172,7 +172,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                     <div className="cl-dialog-admin__content">
                         <div className="cl-wc-message cl-wc-message--bot">
                             <FormattedMessage
-                                data-testid="teachsessionadmin-botresponse"
+                                data-testid="teach-session-admin-botresponse"
                                 id={FM.TEACHSESSIONADMIN_DIALOGMODE_BOT}
                                 defaultMessage="Bot Response"
                             />
@@ -192,14 +192,14 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                 <div className="cl-dialog-admin__content">
                     <div className="cl-dialog-admin-title">
                         <FormattedMessage
-                            data-testid="teachsessionadmin-entitymemory"
+                            data-testid="teach-session-admin-entitymemory"
                             id={FM.TEACHSESSIONADMIN_MEMORY_TITLE}
                             defaultMessage="Entity Memory"
                         />
                     </div>
                     <div>
                         <MemoryTable
-                            data-testid="teachsessionadmin-memorytable"
+                            data-testid="teach-session-admin-memorytable"
                             memories={this.props.teachSession.memories}
                             prevMemories={this.props.teachSession.prevMemories}
                         />
@@ -209,7 +209,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                     <div className="cl-dialog-admin__content">
                         <div className="cl-dialog-admin-title">
                             <FormattedMessage
-                                data-testid="teachsessionadmin-entitydetection"
+                                data-testid="teach-session-admin-entitydetection"
                                 id={FM.TEACHSESSIONADMIN_ENTITYDETECTION_TITLE}
                                 defaultMessage="Entity Detection"
                             />
@@ -217,7 +217,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                         <div>
                             {(mode === CLM.DialogMode.Extractor || autoTeachWithRound) &&
                                 <EntityExtractor
-                                    data-testid="teachsessionadmin-entityextractor"
+                                    data-testid="teach-session-admin-entityextractor"
                                     app={this.props.app}
                                     editingPackageId={this.props.editingPackageId}
                                     canEdit={true}
@@ -237,28 +237,27 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                     <div className="cl-dialog-admin__content">
                         <div className="cl-dialog-admin-title">
                             <FormattedMessage
-                                data-testid="teachsessionadmin-action"
+                                data-testid="teach-session-admin-action"
                                 id={FM.TEACHSESSIONADMIN_ACTION_TITLE}
                                 defaultMessage="Action"
                             />
                             {/* Consider making this a component although it's display is very custom to the location it's used in the header */}
                             <span className="cl-training-status-inline">
                                 {this.props.app.trainingStatus === CLM.TrainingStatusCode.Completed
-                                    ? <span>
+                                    ? <span data-testid="teach-session-admin-train-status">
                                         <FormattedMessage
-                                            data-testid="teachsessionadmin-trainstatus-completed"
                                             id={FM.TEACHSESSIONADMIN_TRAINSTATUS_COMPLETED}
                                             defaultMessage="Train Status: Completed"
                                         /> &nbsp;
                                         {this.state.isScoresRefreshVisible
-                                            && <span>
+                                            && <span data-testid="teach-session-admin-train-status-new-scores">
                                                 <FormattedMessage
-                                                    data-testid="teachsessionadmin-trainstatus-newscores"
                                                     id={FM.TEACHSESSIONADMIN_TRAINSTATUS_NEWSCORES}
                                                     defaultMessage="New Scores Available"
                                                 /> (
                                                 <button
                                                     type="button"
+                                                    data-testid="teach-session-admin-refresh-score-button"
                                                     className={`cl-training-status-inline__button ${FontClassNames.large}`}
                                                     onClick={this.onClickRefreshScores}
                                                 >
@@ -271,16 +270,18 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                                             </span>}
                                     </span>
                                     : (this.props.app.trainingStatus === CLM.TrainingStatusCode.Failed
-                                        ? <FormattedMessage
-                                            data-testid="trainingstatus-failed"
-                                            id={FM.TEACHSESSIONADMIN_TRAINSTATUS_FAILED}
-                                            defaultMessage="Train Status: Failed"
-                                        />
-                                        : <FormattedMessage
-                                            data-testid="trainingstatus-running"
-                                            id={FM.TEACHSESSIONADMIN_TRAINSTATUS_RUNNING}
-                                            defaultMessage="Train Status: Runnning..."
-                                        />
+                                            ? <span data-testid="teach-session-admin-train-status">    
+                                            <FormattedMessage
+                                                id={FM.TEACHSESSIONADMIN_TRAINSTATUS_FAILED}
+                                                defaultMessage="Train Status: Failed"
+                                            />
+                                            </span>
+                                            : <span data-testid="teach-session-admin-train-status">    
+                                            <FormattedMessage
+                                                id={FM.TEACHSESSIONADMIN_TRAINSTATUS_RUNNING}
+                                                defaultMessage="Train Status: Runnning..."
+                                            />
+                                            </span>
                                     )}
                             </span>
                         </div>

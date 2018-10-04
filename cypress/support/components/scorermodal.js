@@ -2,14 +2,17 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-export function selectAnAction()                        { cy.get('[data-testid="actionscorer-buttonClickable"]').should("be.visible").click() }
-export function clickEntityDetectionToken(tokenValue)   { cy.Get('[data-testid="text-entity-value"]').contains(tokenValue).Click() }
+
+// data-testid="teach-session-admin-train-status" (Running, Completed, Failed)
+export function clickRefreshScoreButton()       { cy.Get('[data-testid="teach-session-admin-refresh-score-button"]').Click() }
+export function selectAnAction()                { cy.Get('[data-testid="actionscorer-buttonClickable"]').should("be.visible").Click() }
+export function clickAddActionButton()          { cy.Get('[data-testid="action-scorer-add-action-button"]').Click() }
 
 export function clickAction(expectedActionResponse)
 {
   cy.Get('[data-testid="actionscorer-responseText"]').contains(expectedActionResponse)
     .parents('div.ms-DetailsRow-fields').find('[data-testid="actionscorer-buttonClickable"]')
-    .click()
+    .Click()
 }
 
 export function verifyContainsDisabledAction(expectedActionResponse)

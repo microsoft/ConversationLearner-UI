@@ -307,7 +307,7 @@ class MemoryTable extends React.Component<Props, ComponentState> {
         return (
             <div>
                 {memoryNames.length === 0
-                    ? <div className={`${OF.FontClassNames.large} teachEmptyMemory`}>
+                    ? <div className={`${OF.FontClassNames.large} teachEmptyMemory`} data-testid="memory-table-empty">
                         <FormattedMessage
                             id={FM.MEMORYTABLE_EMPTY}
                             defaultMessage='Empty'

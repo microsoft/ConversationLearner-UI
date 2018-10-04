@@ -89,7 +89,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             render: trainDialog => {
                 let firstInput = getFirstInput(trainDialog);
                 if (firstInput) {
-                    return (<span className={textClassName(trainDialog)}>
+                    return (<span className={textClassName(trainDialog)} data-testid="train-dialogs-first-input">
                         {trainDialog.invalid === true && <Icon className="cl-icon" iconName="IncidentTriangle" />}
                         {firstInput}
                     </span>)
@@ -114,7 +114,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             render: trainDialog => {
                 let lastInput = getLastInput(trainDialog)
                 if (lastInput) {
-                    return <span className={textClassName(trainDialog)}>{lastInput}</span>
+                    return <span className={textClassName(trainDialog)} data-testid="train-dialogs-last-input">{lastInput}</span>
                 }
                 return <OF.Icon iconName="Remove" className="notFoundIcon" />
             },
@@ -136,7 +136,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             render: (trainDialog, component) => {
                 let lastResponse = getLastResponse(trainDialog, component);
                 if (lastResponse) {
-                    return <span className={textClassName(trainDialog)}>{lastResponse}</span>;
+                    return <span className={textClassName(trainDialog)} data-testid="train-dialogs-last-response">{lastResponse}</span>;
                 }
                 return <OF.Icon iconName="Remove" className="notFoundIcon" />;
             },
@@ -157,7 +157,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             isResizable: false,
             render: trainDialog => {
                 let count = trainDialog.rounds ? trainDialog.rounds.length : 0
-                return <span className={textClassName(trainDialog)}>{count}</span>
+                return <span className={textClassName(trainDialog)} data-testid="train-dialogs-turns">{count}</span>
             },
             getSortValue: trainDialog => (trainDialog.rounds ? trainDialog.rounds.length : 0).toString().padStart(4, '0')
         },
@@ -170,7 +170,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             fieldName: 'lastModifiedDateTime',
             minWidth: 100,
             isResizable: false,
-            render: trainDialog => <span className={OF.FontClassNames.mediumPlus}>{moment(trainDialog.lastModifiedDateTime).format('L')}</span>,
+            render: trainDialog => <span className={OF.FontClassNames.mediumPlus} data-testid="train-dialogs-last-modified">{moment(trainDialog.lastModifiedDateTime).format('L')}</span>,
             getSortValue: trainDialog => moment(trainDialog.lastModifiedDateTime).valueOf().toString()
         },
         {
@@ -182,7 +182,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             fieldName: 'created',
             minWidth: 100,
             isResizable: false,
-            render: trainDialog => <span className={OF.FontClassNames.mediumPlus}>{moment(trainDialog.createdDateTime).format('L')}</span>,
+            render: trainDialog => <span className={OF.FontClassNames.mediumPlus} data-testid="train-dialogs-created">{moment(trainDialog.createdDateTime).format('L')}</span>,
             getSortValue: trainDialog => moment(trainDialog.createdDateTime).valueOf().toString()
         }
     ]
@@ -1024,12 +1024,13 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     </div>
                     : <React.Fragment>
                         <div>
-                            <OF.Label htmlFor="traindialogs-input-search" className={OF.FontClassNames.medium}>
+                            <OF.Label htmlFor="train-dialogs-input-search" className={OF.FontClassNames.medium}>
                                 Search:
                             </OF.Label>
                             <OF.SearchBox
-                                data-testid="search-box"
-                                id="traindialogs-input-search"
+                                // TODO: This next line has no visible affect on the DOM, but test automation needs it!
+                                data-testid="train-dialogs-input-search"
+                                id="train-dialogs-input-search"
                                 className={OF.FontClassNames.medium}
                                 onChange={(newValue) => this.onChangeSearchString(newValue)}
                                 onSearch={(newValue) => this.onChangeSearchString(newValue)}
