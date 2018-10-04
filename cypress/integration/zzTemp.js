@@ -2,14 +2,12 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
 */
-
-const homePage = require('../support/components/homePage')
+const homePage = require('../support/components/HomePage')
+const modelPage = require('../support/components/ModelPage')
 const actions = require('../support/components/actionspage')
-const actionsModal = require('../support/components/actionsmodal')
+const actionsModal = require('../support/components/ActionsModal')
 const entities = require('../support/components/entitiespage')
 const entityModal = require('../support/components/entitymodal')
-const modelsListPage = require('../support/components/modelsList')
-const modelPage = require('../support/components/modelPage')
 const logDialogPage = require('../support/components/logdialogspage')
 const scorerModal = require('../support/components/MemoryTableComponent')
 const memoryTableComponent = require('../support/components/scorermodal')

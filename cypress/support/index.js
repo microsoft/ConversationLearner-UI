@@ -5,11 +5,11 @@
 
 import './MonitorDocumentChanges.js'
 import './commands.js'
-import './components/actionsmodal.js'
+import './components/ActionsModal.js'
 import './components/actionspage.js'
 import './components/entitiespage.js'
 import './components/entitymodal.js'
-import './components/modelsList.js'
+import './components/HomePage.js'
 import './components/logdialogspage.js'
 import './components/modelpage.js'
 import './components/scorermodal.js'

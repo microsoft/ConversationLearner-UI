@@ -3,11 +3,11 @@
  * Licensed under the MIT License.
 */
 const actions = require('../support/components/actionspage')
-const actionsModal = require('../support/components/actionsmodal')
-const modelsListPage = require('../support/components/modelsList')
+const actionsModal = require('../support/components/ActionsModal')
+const homePage = require('../support/components/HomePage')
 const entities = require('../support/components/entitiespage')
 const entityModal = require('../support/components/entitymodal')
-const modelPage = require('../support/components/modelPage')
+const modelPage = require('../support/components/ModelPage')
 const logDialogPage = require('../support/components/logdialogspage')
 const scorerModal = require('../support/components/scorermodal')
 const trainDialogPage = require('../support/components/traindialogspage')
@@ -27,8 +27,8 @@ describe('Intro to Entities', function () {
   })
 
   it('create a new model', function () {
-    modelsListPage.navigateTo()
-    modelsListPage.createNewModel(modelName)
+    homePage.navigateTo()
+    homePage.createNewModel(modelName)
     modelPage.verifyPageTitle(modelName)
   })
 
@@ -89,7 +89,7 @@ describe('Intro to Entities', function () {
 
   /** FEATURE: Delete a Model */
   it('should delete an existent model', () => {
-    modelsListPage.navigateTo()
-    modelsListPage.deleteModel(modelName)
+    homePage.navigateTo()
+    homePage.deleteModel(modelName)
   })
 })

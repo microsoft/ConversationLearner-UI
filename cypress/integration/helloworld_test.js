@@ -4,8 +4,8 @@
  */
 
 const actions = require('../support/components/actionspage')
-const actionsModal = require('../support/components/actionsmodal')
-const modelsListPage = require('../support/components/modelsList')
+const actionsModal = require('../support/components/ActionsModal')
+const homePage = require('../support/components/HomePage')
 const entities = require('../support/components/entitiespage')
 const entityModal = require('../support/components/entitymodal')
 const modelPage = require('../support/components/modelpage')
@@ -29,8 +29,8 @@ describe('Hello-World', function () {
   })
 
   it('should create new model with random name and verify transition to model page', function () {
-    modelsListPage.navigateTo()
-    modelsListPage.createNewModel(modelName)
+    homePage.navigateTo()
+    homePage.createNewModel(modelName)
     modelPage.verifyPageTitle(modelName)
   })
 
@@ -102,8 +102,8 @@ describe('Hello-World', function () {
 
   /** FEATURE: Delete a Model */
   it('should delete an existent model', () => {
-    modelsListPage.navigateTo();
-    modelsListPage.deleteModel(modelName);
+    homePage.navigateTo();
+    homePage.deleteModel(modelName);
     cy.end()
   })
 })

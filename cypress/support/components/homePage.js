@@ -3,26 +3,26 @@
  * Licensed under the MIT License.
  */
 
- export function visit()                        { cy.visit('http://localhost:5050') }
- export function navigateToModelPage(modelName) { cy.Get('button.root-65').contains(`${modelName}`).Click() }
+export function Visit()                   { cy.visit('http://localhost:5050') }
+export function NavigateToModelPage(name) { cy.Get('button.root-65').contains(`${name}`).Click() }
 
- export function createNewModel(modelName) 
- {
+export function CreateNewModel(name) 
+{
   // Click the button to create app
   cy.Get('[data-testid="apps-list-button-create-new"]')
     .should('be.visible')
     .Click()
 
   cy.Get('[data-testid="app-create-input-name"]')
-    .type(modelName)
+    .type(name)
 
   cy.Get('[data-testid="app-create-button-submit"]')
     .Click()
 }
 
-export function deleteModel(modelName) 
+export function DeleteModel(name) 
 {
-  cy.contains(modelName)
+  cy.contains(name)
     .parents('.ms-DetailsRow-fields')
     .find('i[data-icon-name="Delete"]')
     .Click()

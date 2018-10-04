@@ -2,12 +2,12 @@
 * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
 */
-const actions = require('../support/components/actionspage')
-const actionsModal = require('../support/components/actionsmodal')
+const homePage = require('../support/components/HomePage')
+const modelPage = require('../support/components/ModelPage')
 const entities = require('../support/components/entitiespage')
 const entityModal = require('../support/components/entitymodal')
-const modelsListPage = require('../support/components/modelsList')
-const modelPage = require('../support/components/modelPage')
+const actions = require('../support/components/actionspage')
+const actionsModal = require('../support/components/ActionsModal')
 const logDialogPage = require('../support/components/logdialogspage')
 const scorerModal = require('../support/components/scorermodal')
 const trainDialogPage = require('../support/components/traindialogspage')
@@ -28,8 +28,8 @@ describe('ExpectedEntities test', function () {
   })
 
   it('create a new model', function () {
-    modelsListPage.navigateTo()
-    modelsListPage.createNewModel(modelName)
+    homePage.navigateTo()
+    homePage.CreateNewModel(modelName)
     modelPage.verifyPageTitle(modelName)
   })
 
@@ -54,19 +54,19 @@ describe('ExpectedEntities test', function () {
     // 3.6	Click Save
 
     modelPage.navigateToActions()
-    actions.clickNewAction()
-    actionsModal.selectTypeText()
-    actionsModal.typeOnResponseBox(actionResponse01)
-    actionsModal.typeExpectedEntityInResponse('$name')
+    actions.ClickNewAction()
+    actionsModal.SelectTypeText()
+    actionsModal.TypeResponse(actionResponse01)
+    actionsModal.TypeExpectedEntity('$name')
     actionsModal.clickCreateButton()
     cy.wait(1000)
   })
 
   it(`should create an action using city as disqualifying entity`, () => {
-    actions.clickNewAction()
-    actionsModal.selectTypeText()
-    actionsModal.typeOnResponseBox(actionResponse02)
-    actionsModal.typeDisqualifyingEntities('$name')
+    actions.ClickNewAction()
+    actionsModal.SelectTypeText()
+    actionsModal.TypeResponse(actionResponse02)
+    actionsModal.TypeDisqualifyingEntities('$name')
     actionsModal.clickCreateButton()
     cy.wait(1000)
   })
@@ -124,9 +124,4 @@ describe('ExpectedEntities test', function () {
     // editDialogModal.clickDoneTeaching()
     })})})})
   })
-
-  // it('should delete an existent model', () => {
-  //   modelsListPage.navigateTo()
-  //   modelsListPage.deleteModel(modelName)
-  // })
 })
