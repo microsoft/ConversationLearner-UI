@@ -2,11 +2,11 @@
 * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
 */
-const actions = require('../support/components/actionspage')
+const actions = require('../support/components/ActionsPage')
 const actionsModal = require('../support/components/ActionsModal')
 const homePage = require('../support/components/HomePage')
-const entities = require('../support/components/entitiespage')
-const entityModal = require('../support/components/entitymodal')
+const entities = require('../support/components/EntitiesPage')
+const entityModal = require('../support/components/EntityModal')
 const modelPage = require('../support/components/ModelPage')
 const logDialogPage = require('../support/components/logdialogspage')
 const scorerModal = require('../support/components/scorermodal')
@@ -35,9 +35,9 @@ describe('Intro to Entities', function () {
   it('should create a cit entity', function () {
     modelPage.navigateToEntities()
     entities.clickButtonNewEntity()
-    entityModal.typeEntityName(entityName)
-    entityModal.clickCreateButton()
-    entities.verifyItemInList(entityName)
+    entityModal.TypeEntityName(entityName)
+    entityModal.ClickCreateButton()
+    entities.VerifyItemInList(entityName)
   })
 
   it('should be able to add text action with disqualifying entity', () => {

@@ -30,7 +30,7 @@ function getColumns(intl: InjectedIntl): ISortableRenderableColumn[] {
             maxWidth: 200,
             isResizable: true,
             getSortValue: app => app.appName,
-            render: (app, props) => <span className={OF.FontClassNames.mediumPlus}><OF.Link onClick={() => props.onClickApp(app)}>{app.appName}</OF.Link></span>
+            render: (app, props) => <span className={OF.FontClassNames.mediumPlus}><OF.Link onClick={() => props.onClickApp(app)} data-testid="model-list-model-name">{app.appName}</OF.Link></span>
         },
         {
             key: 'isEditing',
@@ -50,7 +50,7 @@ function getColumns(intl: InjectedIntl): ISortableRenderableColumn[] {
                     }
                 }
 
-                return <span className={OF.FontClassNames.mediumPlus}>{tag}</span>;
+                return <span className={OF.FontClassNames.mediumPlus} data-testid="model-list-is-editing">{tag}</span>;
             }
         },
         {
@@ -67,7 +67,7 @@ function getColumns(intl: InjectedIntl): ISortableRenderableColumn[] {
                     throw new Error(`Could not find package reference by id: ${app.livePackageId}`)
                 }
                 const tag = packageReference.packageVersion
-                return <span className={OF.FontClassNames.mediumPlus}>{tag}</span>
+                return <span className={OF.FontClassNames.mediumPlus} data-testid="model-list-is-live">{tag}</span>
             }
         },
         {
@@ -81,7 +81,7 @@ function getColumns(intl: InjectedIntl): ISortableRenderableColumn[] {
             maxWidth: 200,
             isResizable: true,
             getSortValue: app => (app.metadata.isLoggingOn !== false) ? 'a' : 'b',
-            render: (app) => <OF.Icon iconName={(app.metadata.isLoggingOn !== false) ? "CheckMark" : "Remove"} className="cl-icon" />
+            render: (app) => <OF.Icon iconName={(app.metadata.isLoggingOn !== false) ? "CheckMark" : "Remove"} className="cl-icon" data-testid="model-list-is-logging-on"/>
         },
         {
             key: 'lastModifiedDateTime',
@@ -94,7 +94,7 @@ function getColumns(intl: InjectedIntl): ISortableRenderableColumn[] {
             maxWidth: 100,
             isResizable: false,
             getSortValue: app => moment(app.lastModifiedDateTime).valueOf(),
-            render: app => <span className={OF.FontClassNames.mediumPlus}>{moment(app.lastModifiedDateTime).format('L')}</span>
+            render: app => <span className={OF.FontClassNames.mediumPlus} data-testid="model-list-last-modified-time">{moment(app.lastModifiedDateTime).format('L')}</span>
         },
         {
             key: 'createdDateTime',
@@ -107,7 +107,7 @@ function getColumns(intl: InjectedIntl): ISortableRenderableColumn[] {
             maxWidth: 100,
             isResizable: false,
             getSortValue: app => moment(app.createdDateTime).seconds(),
-            render: app => <span className={OF.FontClassNames.mediumPlus}>{moment(app.createdDateTime).format('L')}</span>
+            render: app => <span className={OF.FontClassNames.mediumPlus} data-testid="model-list-created-date-time">{moment(app.createdDateTime).format('L')}</span>
         },
         {
             key: 'locale',
@@ -120,7 +120,7 @@ function getColumns(intl: InjectedIntl): ISortableRenderableColumn[] {
             maxWidth: 100,
             isResizable: false,
             getSortValue: app => app.locale,
-            render: app => <span className={OF.FontClassNames.mediumPlus}>{app.locale}</span>
+            render: app => <span className={OF.FontClassNames.mediumPlus} data-testid="model-list-locale">{app.locale}</span>
         },
         {
             key: 'actions',
@@ -133,7 +133,7 @@ function getColumns(intl: InjectedIntl): ISortableRenderableColumn[] {
             maxWidth: 100,
             isResizable: false,
             getSortValue: app => 0,
-            render: (app, props) => <a onClick={() => props.onClickDeleteApp(app)}><OF.Icon iconName="Delete" className="cl-icon" />&nbsp;&nbsp;</a>
+            render: (app, props) => <a onClick={() => props.onClickDeleteApp(app)} data-testid="model-list-delete-button"><OF.Icon iconName="Delete" className="cl-icon" />&nbsp;&nbsp;</a>
         }
     ]
 }
@@ -248,7 +248,7 @@ export class Comopnent extends React.Component<Props, ComponentState> {
             </span>
             <div className="cl-buttons-row">
                 <OF.PrimaryButton
-                    data-testid="apps-list-button-create-new"
+                    data-testid="model-list-create-new-button"
                     onClick={props.onClickCreateNewApp}
                     ariaDescription={props.intl.formatMessage({
                         id: FM.APPSLIST_CREATEBUTTONARIADESCRIPTION,

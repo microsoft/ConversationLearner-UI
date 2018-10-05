@@ -4,9 +4,9 @@
 */
 const homePage = require('../support/components/HomePage')
 const modelPage = require('../support/components/ModelPage')
-const entities = require('../support/components/entitiespage')
-const entityModal = require('../support/components/entitymodal')
-const actions = require('../support/components/actionspage')
+const entities = require('../support/components/EntitiesPage')
+const entityModal = require('../support/components/EntityModal')
+const actions = require('../support/components/ActionsPage')
 const actionsModal = require('../support/components/ActionsModal')
 const logDialogPage = require('../support/components/logdialogspage')
 const scorerModal = require('../support/components/scorermodal')
@@ -36,9 +36,9 @@ describe('ExpectedEntities test', function () {
   it('should add new entity', function () {
     modelPage.navigateToEntities()
     entities.clickButtonNewEntity()
-    entityModal.typeEntityName(entityName)
-    entityModal.clickCreateButton()
-    entities.verifyItemInList(entityName)
+    entityModal.TypeEntityName(entityName)
+    entityModal.ClickCreateButton()
+    entities.VerifyItemInList(entityName)
   })
 
   it('should create action using name as expected entity', () => {

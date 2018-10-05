@@ -2,10 +2,10 @@
 * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
 */
-const actions = require('../support/components/actionspage')
+const actions = require('../support/components/ActionsPage')
 const actionsModal = require('../support/components/ActionsModal')
-const entities = require('../support/components/entitiespage')
-const entityModal = require('../support/components/entitymodal')
+const entities = require('../support/components/EntitiesPage')
+const entityModal = require('../support/components/EntityModal')
 const homePage = require('../support/components/HomePage')
 const modelPage = require('../support/components/ModelPage')
 const logDialogPage = require('../support/components/logdialogspage')

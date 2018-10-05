@@ -3,11 +3,11 @@
  * Licensed under the MIT License.
  */
 
-const actions = require('../support/components/actionspage')
+const actions = require('../support/components/ActionsPage')
 const actionsModal = require('../support/components/ActionsModal')
 const homePage = require('../support/components/HomePage')
-const entities = require('../support/components/entitiespage')
-const entityModal = require('../support/components/entitymodal')
+const entities = require('../support/components/EntitiesPage')
+const entityModal = require('../support/components/EntityModal')
 const modelPage = require('../support/components/modelpage')
 const logDialogPage = require('../support/components/logdialogspage')
 const scorerModal = require('../support/components/scorermodal')

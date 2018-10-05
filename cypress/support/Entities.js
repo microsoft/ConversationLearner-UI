@@ -4,14 +4,14 @@
  */
 
 const modelPage = require('../support/components/ModelPage')
-const entitiesPage = require('../support/components/entitiespage')
-const entityModal = require('../support/components/entitymodal')
+const entitiesPage = require('./components/EntitiesPage')
+const entityModal = require('../support/components/EntityModal')
 
 export function CreateNewEntity(entityName)
 {
-  modelPage.navigateToEntities()
-  entitiesPage.clickButtonNewEntity()
-  entityModal.typeEntityName(entityName)
-  entityModal.clickCreateButton()
-  entitiesPage.verifyItemInList(entityName)
+  modelPage.NavigateToEntities()
+  entitiesPage.ClickButtonNewEntity()
+  entityModal.TypeEntityName(entityName)
+  entityModal.ClickCreateButton()
+  entitiesPage.VerifyItemInList(entityName)
 }

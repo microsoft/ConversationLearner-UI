@@ -242,7 +242,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
                 </div>
                 <div className="cl-action-creator-fieldset">
                     <OF.TextField
-                        data-testid="app-create-input-name"
+                        data-testid="model-creator-input-name"
                         onGetErrorMessage={value => this.onGetNameErrorMessage(value)}
                         onChanged={text => this.nameChanged(text)}
                         label={this.getLabel(intl)}
@@ -309,7 +309,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
                             {this.props.creatorType === AppCreatorType.IMPORT &&
                                 <OF.PrimaryButton
                                     disabled={invalidImport}
-                                    data-testid="app-create-button-submit"
+                                    data-testid="model-creator-submit-button"
                                     onClick={this.onClickImport}
                                     ariaDescription={this.props.intl.formatMessage({
                                         id: FM.APPCREATOR_IMPORT_BUTTON_ARIADESCRIPTION,
@@ -324,7 +324,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
                             {this.props.creatorType === AppCreatorType.NEW &&
                                 <OF.PrimaryButton
                                     disabled={invalidName}
-                                    data-testid="app-create-button-submit"
+                                    data-testid="model-creator-submit-button"
                                     onClick={this.onClickCreate}
                                     ariaDescription={intl.formatMessage({
                                         id: FM.APPCREATOR_CREATEBUTTON_ARIADESCRIPTION,
@@ -339,6 +339,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
                             {this.props.creatorType === AppCreatorType.COPY &&
                                 <OF.PrimaryButton
                                     disabled={invalidName}
+                                    data-testid="model-creator-submit-button"
                                     onClick={this.onClickCreate}
                                     ariaDescription={intl.formatMessage({
                                         id: FM.APPCREATOR_COPYBUTTON_ARIADESCRIPTION,
@@ -351,6 +352,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
                                 />
                             }
                             <OF.DefaultButton
+                                data-testid="model-creator-cancel-button"
                                 onClick={this.onClickCancel}
                                 ariaDescription={intl.formatMessage({
                                     id: FM.APPCREATOR_CANCELBUTTON_ARIADESCRIPTION,

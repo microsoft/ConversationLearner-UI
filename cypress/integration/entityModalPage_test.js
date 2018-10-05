@@ -2,10 +2,10 @@
 * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
 */
-const actions = require('../support/components/actionspage')
+const actions = require('../support/components/ActionsPage')
 const actionsModal = require('../support/components/ActionsModal')
-const entities = require('../support/components/entitiespage')
-const entityModal = require('../support/components/entitymodal')
+const entities = require('../support/components/EntitiesPage')
+const entityModal = require('../support/components/EntityModal')
 const homePage = require('../support/components/HomePage')
 const modelPage = require('../support/components/ModelPage')
 const logDialogPage = require('../support/components/logdialogspage')
@@ -37,23 +37,23 @@ describe('Entities creation test', function () {
 
     // Create custom programmatic entity
     entities.clickButtonNewEntity()
-    entityModal.typeEntityName(customEntity01)
+    entityModal.TypeEntityName(customEntity01)
     entityModal.clickOnProgrammaticOnly()
-    entityModal.clickCreateButton()
+    entityModal.ClickCreateButton()
     cy.wait(3000)
 
     // Create multi-value entity 
     entities.clickButtonNewEntity()
-    entityModal.typeEntityName(customEntity02)
+    entityModal.TypeEntityName(customEntity02)
     entityModal.clickOnMultiValue()
-    entityModal.clickCreateButton()
+    entityModal.ClickCreateButton()
     cy.wait(3000)
 
     // Create negatable entity
     entities.clickButtonNewEntity()
-    entityModal.typeEntityName(customEntity03)
+    entityModal.TypeEntityName(customEntity03)
     entityModal.clickOnNegatable()
-    entityModal.clickCreateButton()
+    entityModal.ClickCreateButton()
     cy.wait(3000)
 
     // Verify that the entities has been added
