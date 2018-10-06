@@ -13,8 +13,8 @@ export function CreateNewAction({response, expectedEntity, requiredEntities, dis
   actionsPage.ClickNewAction()
   // TODO: this is the default but we need to get this working... actionsModal.selectTypeText()
   actionsModal.TypeResponse(response)
-  if (expectedEntity !== undefined) actionsModal.TypeExpectedEntity(expectedEntity)
-  if (requiredEntities !== undefined) actionsModal.TypeRequiredEntities(requiredEntities)
-  if (disqualifyingEntities !== undefined) actionsModal.TypeDisqualifyingEntities(disqualifyingEntities)
+  if (expectedEntity) actionsModal.TypeExpectedEntity(expectedEntity)
+  if (requiredEntities) actionsModal.TypeRequiredEntities(requiredEntities)
+  if (disqualifyingEntities) actionsModal.TypeDisqualifyingEntities(disqualifyingEntities)
   actionsModal.ClickCreateButton()
 }

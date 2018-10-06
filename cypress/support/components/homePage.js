@@ -23,8 +23,8 @@ export function NavigateToModelPage(name) { cy.Get('button.root-65').contains(`$
 export function CreateNewModel(name) 
 {
   cy.Get('[data-testid="model-list-create-new-button"]').Click()
-  cy.Get('[data-testid="model-create-input-name"]').type(name)
-  cy.Get('[data-testid="model-create-submit-button"]').Click()
+  cy.Get('[data-testid="model-creator-input-name"]').type(name)
+  cy.Get('[data-testid="model-creator-submit-button"]').Click()
 }
 
 export function DeleteModel(name) 
@@ -38,18 +38,15 @@ export function DeleteModel(name)
 
 export function GetModelList()
 {
-  return new Promise(() =>
+  return new Promise((resolve) =>
   {
-    Cypress.$('[data-testid="model-list-model-name"]').then((elements) => 
+    var elements = Cypress.$('[data-testid="model-list-model-name"]').toArray()
+    var modelList = new Array();
+    elements.forEach(element => 
     {
-      elements.array.forEach(element => 
-      {
-        var propertyList = ''
-        for(var property in element) propertyList += `${(propertyList.length == 0 ? '' : ', ')}${property}: ${element[property]}`
-        console.log(propertyList)
-
-        //console.log(element.val())
-      })
+      var propertyList = ''
+      modelList.push(element['innerHTML'])
+      resolve(modelList)
     })
   })
 }
