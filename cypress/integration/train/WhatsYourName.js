@@ -94,6 +94,9 @@ describe("What's your name", () =>
     
     // --------------- New Training Begins ---------------
     // 4.9	Click New Train Dialog.
+    
+    trainDialogPage.WaitForTrainingStatusCompleted()
+    
     trainDialogPage.CreateNewTrainDialog()
 
     // 4.10	Enter 'my name is david'.
