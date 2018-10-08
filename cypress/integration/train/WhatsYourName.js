@@ -3,27 +3,25 @@
  * Licensed under the MIT License.
 */
 
-const supportFolder = "../../support/"
-const homePage = require('../../support/components/HomePage') WHAT's UP WITH THESE NOT FINDING FILES SINCE CHANGING QUOTES
-//const homePage = require(supportFolder + "components/HomePage.js")
-const models = require(supportFolder + "components/Models")
-const modelPage = require(supportFolder + "components/ModelPage")
-const actions = require(supportFolder + "components/ActionsPage")
-const actionsModal = require(supportFolder + "components/ActionsModal")
-const entities = require(supportFolder + "components/EntitiesPage")
-const entityModal = require(supportFolder + "components/EntityModal")
-const logDialogPage = require(supportFolder + "components/logdialogspage")
-const scorerModal = require(supportFolder + "components/MemoryTableComponent")
-const memoryTableComponent = require(supportFolder + "components/scorermodal")
-const trainDialogPage = require(supportFolder + "components/traindialogspage")
-const editDialogModal = require(supportFolder + "components/editdialogmodal")
-const helpers = require(supportFolder + "helpers")
+const homePage = require('../../support/components/HomePage')
+const models = require('../../support/Models')
+const modelPage = require('../../support/components/ModelPage')
+const actions = require('../../support/components/ActionsPage')
+const actionsModal = require('../../support/components/ActionsModal')
+const entities = require('../../support/components/EntitiesPage')
+const entityModal = require('../../support/components/EntityModal')
+const logDialogPage = require('../../support/components/logdialogspage')
+const memoryTableComponent = require('../../support/components/MemoryTableComponent')
+const scorerModal = require('../../support/components/ScorerModal')
+const trainDialogPage = require('../../support/components/TrainDialogsPage')
+const editDialogModal = require('../../support/components/EditDialogModal')
+const helpers = require('../../support/helpers')
 
 describe("What's your name", () =>
 {
-  var modelName = model.CreateModel1()
+  var modelName // = models.CreateModel1()
   
-  // beforeEach(() => { modelName = model.CreateModel1() })
+  beforeEach(() => { modelName = models.CreateModel1() })
   // afterEach(() =>  { cy.DumpHtmlOnDomChange(false); helpers.ConLog(`afterEach`, `Current HTML:\n${Cypress.$('html')[0].outerHTML}`)})
 
   it('should be able to train', () => {
@@ -50,71 +48,71 @@ describe("What's your name", () =>
     // 4.14	Click Score Actions.
     // 4.15	Select 'Hello susan'.
     // 4.16	Click Done Teaching.
-    homePage.visit()
-    homePage.navigateToModelPage(modelName)
+    homePage.Visit()
+    homePage.NavigateToModelPage(modelName)
 
     // 4.1	Click Train Dialogs..., then New Train Dialog.
-    modelPage.navigateToTrainDialogs()
+    modelPage.NavigateToTrainDialogs()
     
-    trainDialogPage.verifyPageTitle()
+    trainDialogPage.VerifyPageTitle()
 
     // 4.1	...then New Train Dialog.
-    trainDialogPage.createNewTrainDialog()
+    trainDialogPage.CreateNewTrainDialog()
 
     // 4.2	Type 'hello'.
-    editDialogModal.typeYourMessage("Hello")
+    editDialogModal.TypeYourMessage("Hello")
     
     // 4.3	Click Score Actions...
-    editDialogModal.clickScoreActionsButton()
+    editDialogModal.ClickScoreActionsButton()
 
     // 4.3.1	<Validation Step> Note that the response 'Hello $name' 
     // cannot be selected, because it requies the entity $name to be defined, 
     // and $name is not in bot's memory.
-    scorerModal.verifyContainsDisabledAction("Hello $name")
+    scorerModal.VerifyContainsDisabledAction("Hello $name")
 
     // 4.3	...and Select 'What's your name?'
-    scorerModal.clickAction("What's your name?")
+    scorerModal.ClickAction("What's your name?")
 
     // 4.4	Enter 'david'.
-    editDialogModal.typeYourMessage("David")
+    editDialogModal.TypeYourMessage("David")
 
     // 4.4.1	<Validation Step> Note that the name is highlighted as an entity. 
-    editDialogModal.verifyDetectedEntity("name", "David")
+    editDialogModal.VerifyDetectedEntity("name", "David")
     
     // 4.5	Click Score Actions
-    editDialogModal.clickScoreActionsButton()
+    editDialogModal.ClickScoreActionsButton()
 
     // 4.5.1	<Validation Step> Note name value is now in the bot's memory.
-    memoryTableComponent.verifyEntityInMemory("name", "David")
+    memoryTableComponent.VerifyEntityInMemory("name", "David")
 
     // 4.6	'Hello $name' is now available as a response.
     // 4.7	Select 'Hello $name'.
-    scorerModal.clickAction("Hello David")
+    scorerModal.ClickAction("Hello $name")
 
     // 4.8	Click Done Teaching.
-    editDialogModal.clickSaveButton()
+    editDialogModal.ClickSaveButton()
     
     // --------------- New Training Begins ---------------
     // 4.9	Click New Train Dialog.
-    trainDialogPage.createNewTrainDialog()
+    trainDialogPage.CreateNewTrainDialog()
 
     // 4.10	Enter 'my name is david'.
-    editDialogModal.typeYourMessage("My name is David.") // TODO: Add edge cases; 'david', with & without 'period'
+    editDialogModal.TypeYourMessage("My name is David.") // TODO: Add edge cases; 'david', with & without 'period'
     
     // 4.10.1	<Validation Step> Note that it does identify david as the name entity because it has seen this word before.
     // 4.11	Click Score Actions
-    editDialogModal.clickScoreActionsButton()
-    memoryTableComponent.verifyEntityInMemory("name", "David")
-    scorerModal.verifyContainsDisabledAction("What's your name?")
+    editDialogModal.ClickScoreActionsButton()
+    memoryTableComponent.VerifyEntityInMemory("name", "David")
+    scorerModal.VerifyContainsDisabledAction("What's your name?")
 
     // 4.12	Select 'Hello $name'.
-    scorerModal.clickAction("Hello David")
+    scorerModal.ClickAction("Hello $name")
 
     // 4.13	Enter 'my name is susan'.
-    editDialogModal.typeYourMessage("My name is Susan.")
+    editDialogModal.TypeYourMessage("My name is Susan.")
 
     // 4.13.1	<Validation Step> Note that it identifies susan as the name since it has seen this pattern already.
-    editDialogModal.clickEntityDetectionToken("Susan")
+    editDialogModal.ClickEntityDetectionToken("Susan")
 
     // 4.14	Click Score Actions.
     // 4.15	Select 'Hello susan'.

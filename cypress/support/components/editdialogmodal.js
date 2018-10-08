@@ -3,25 +3,25 @@
  * Licensed under the MIT License.
  */
 
-export function typeYourMessage(trainmessage)         { cy.Get('input[class="wc-shellinput"]').type(`${trainmessage}{enter}`) }  // data-testid NOT possible
-export function clickSetInitialStateButton()          { cy.Get('[data-testid="teach-session-set-initial-state"]').Click() }
-export function clickScoreActionsButton()             { cy.Get('[data-testid="entity-extractor-score-actions-button"]').Click() }
-export function clickSaveButton()                     { cy.Get('[data-testid="teach-session-footer-button-save"]').Click() }
+export function TypeYourMessage(trainmessage)         { cy.Get('input[class="wc-shellinput"]').type(`${trainmessage}{enter}`) }  // data-testid NOT possible
+export function ClickSetInitialStateButton()          { cy.Get('[data-testid="teach-session-set-initial-state"]').Click() }
+export function ClickScoreActionsButton()             { cy.Get('[data-testid="entity-extractor-score-actions-button"]').Click() }
+export function ClickSaveButton()                     { cy.Get('[data-testid="teach-session-footer-button-save"]').Click() }
 export function clickAbandonButton()                  { cy.Get('[data-testid="teach-session-footer-button-abandon"]').Click() }
-export function verifyEntityMemoryIsEmpty()           { cy.Get('[data-testid="memory-table-empty"]').contains('Empty') }
-export function entitySearch()                        { cy.Get('[data-testid="entity-picker-entity-search"]') }
-export function alternativeInputText()                { cy.Get('[data-testid="entity-extractor-alternative-input-text"]') }
-export function clickAddAlternativeInputButton()      { cy.Get('[data-testid="entity-extractor-add-alternative-input-button"]').Click() }
-export function clickEntityDetectionToken(tokenValue) { cy.Get('[data-testid="text-entity-value"]').contains(tokenValue).Click() }
+export function VerifyEntityMemoryIsEmpty()           { cy.Get('[data-testid="memory-table-empty"]').contains('Empty') }
+export function EntitySearch()                        { cy.Get('[data-testid="entity-picker-entity-search"]') }
+export function AlternativeInputText()                { cy.Get('[data-testid="entity-extractor-alternative-input-text"]') }
+export function ClickAddAlternativeInputButton()      { cy.Get('[data-testid="entity-extractor-add-alternative-input-button"]').Click() }
+export function ClickEntityDetectionToken(tokenValue) { cy.Get('[data-testid="text-entity-value"]').contains(tokenValue).Click() }
 
-export function verifyDetectedEntity(entityName, entityValue)
+export function VerifyDetectedEntity(entityName, entityValue)
 {
   cy.Get('[data-testid="button-entity-indicatorName"]').contains(entityName)
   cy.Get('[data-testid="text-entity-value"]').contains(entityValue)
 }
 
 
-export function highlightWord(word) {
+export function HighlightWord(word) {
   cy.get('span[class="cl-token-node"]')
     .trigger('keydown')
     .click(10, 10)
@@ -32,7 +32,7 @@ export function highlightWord(word) {
     .wait()
 }
 
-export function verifyTokenNodeExists() {
+export function VerifyTokenNodeExists() {
   cy.get('.cl-token-node')
     .should('exists')
 }

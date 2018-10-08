@@ -3,9 +3,11 @@
  * Licensed under the MIT License.
  */
 
-const homePage = require('../support/components/HomePage')
-const modelPage = require('../support/components/ModelPage')
-const helpers = require('../support/helpers.js')
+const helpers = require('./helpers.js')
+const homePage = require('./components/HomePage')
+const modelPage = require('./components/ModelPage')
+const entities = require('./Entities')
+const actions = require('./Actions')
 
 export function CreateNewModel(name)
 {
@@ -16,11 +18,13 @@ export function CreateNewModel(name)
 
 export function CreateModel1()
 {
-  models.CreateNewModel(modelName)
+  const name = `Model1-${Cypress.moment().format("YY-MMM-DD-HH-mm-ss-SSS")}`
+  
+  CreateNewModel(name)
   entities.CreateNewEntity({name: "name"})
   actions.CreateNewAction({response: "What's your name?", expectedEntity: "name"})
-  actions.CreateNewAction({response: "Hello $name", disqualifyingEntities: "name"})
-  return modelName
+  actions.CreateNewAction({response: "Hello $name", requiredEntities: "name"})
+  return name
 }
 
 export function DeleteModel(name)

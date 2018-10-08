@@ -13,7 +13,7 @@
 // export function TimeToString(time) {return `${ZeroPad(time.getHours(), 2)}:${ZeroPad(time.getMinutes(), 2)}:${ZeroPad(time.getSeconds(), 2)}..${ZeroPad(time.getMilliseconds(), 3)}`}
 // export function NowAsString() {return TimeToString(new Date())}
 
-export function sleep(time) { return new Promise((resolve, reject) => setTimeout(resolve, time))}
+export function Sleep(time) { return new Promise((resolve, reject) => setTimeout(resolve, time))}
 
 // NOTE: the '-+-' is a signature for filtering console output
 export function ConLog(funcName, message) { console.log(`-+- ${Cypress.moment().format("HH:mm:ss..SSS")} - ${funcName} - ${message}`) }

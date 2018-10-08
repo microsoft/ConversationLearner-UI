@@ -3,7 +3,7 @@
  * Licensed under the MIT License.
  */
 
-export function verifyEntityInMemory(entityName, entityValue)
+export function VerifyEntityInMemory(entityName, entityValue)
 {
   cy.Get('[data-testid="entity-memory-name"]').contains(entityName)
   cy.Get('[data-testid="entity-memory-value"]').contains(entityValue)
