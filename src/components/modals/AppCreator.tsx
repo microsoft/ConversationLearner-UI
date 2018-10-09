@@ -271,7 +271,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
                         />
                     }
                     {this.props.creatorType === AppCreatorType.IMPORT &&
-                        <div>
+                        <div data-testid="model-creator-import-file-picker">
                             <OF.Label>Import File</OF.Label>
                             <FilePicker
                                 extensions={['cl']}
@@ -281,6 +281,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
                             >
                                 <div className="cl-action-creator-file-picker">
                                     <OF.PrimaryButton
+                                        data-testid="model-creator-locate-file-button"
                                         className="cl-action-creator-file-button"
                                         ariaDescription={this.props.intl.formatMessage({
                                             id: FM.APPCREATOR_CHOOSE_FILE_BUTTON_ARIADESCRIPTION,

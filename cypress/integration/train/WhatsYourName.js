@@ -19,9 +19,6 @@ const helpers = require('../../support/helpers')
 
 describe("What's your name", () =>
 {
-  var modelName // = models.CreateModel1()
-  
-  beforeEach(() => { modelName = models.CreateModel1() })
   // afterEach(() =>  { cy.DumpHtmlOnDomChange(false); helpers.ConLog(`afterEach`, `Current HTML:\n${Cypress.$('html')[0].outerHTML}`)})
 
   it('should be able to train', () => {
@@ -48,8 +45,9 @@ describe("What's your name", () =>
     // 4.14	Click Score Actions.
     // 4.15	Select 'Hello susan'.
     // 4.16	Click Done Teaching.
-    homePage.Visit()
-    homePage.NavigateToModelPage(modelName)
+    var modelName = models.ImportModel('Model1-wyn', 'Model1.cl')
+    // homePage.Visit()
+    // homePage.NavigateToModelPage(modelName)
 
     // 4.1	Click Train Dialogs..., then New Train Dialog.
     modelPage.NavigateToTrainDialogs()
@@ -87,42 +85,9 @@ describe("What's your name", () =>
 
     // 4.6	'Hello $name' is now available as a response.
     // 4.7	Select 'Hello $name'.
-    scorerModal.ClickAction("Hello $name")
+    scorerModal.ClickAction("Hello David")
 
     // 4.8	Click Done Teaching.
     editDialogModal.ClickSaveButton()
-    
-    // --------------- New Training Begins ---------------
-    // 4.9	Click New Train Dialog.
-    
-    trainDialogPage.WaitForTrainingStatusCompleted()
-    
-    trainDialogPage.CreateNewTrainDialog()
-
-    // 4.10	Enter 'my name is david'.
-    editDialogModal.TypeYourMessage("My name is David.") // TODO: Add edge cases; 'david', with & without 'period'
-    
-    // 4.10.1	<Validation Step> Note that it does identify david as the name entity because it has seen this word before.
-    // 4.11	Click Score Actions
-    editDialogModal.ClickScoreActionsButton()
-    memoryTableComponent.VerifyEntityInMemory("name", "David")
-    scorerModal.VerifyContainsDisabledAction("What's your name?")
-
-    // 4.12	Select 'Hello $name'.
-    scorerModal.ClickAction("Hello $name")
-
-    // 4.13	Enter 'my name is susan'.
-    editDialogModal.TypeYourMessage("My name is Susan.")
-
-    // 4.13.1	<Validation Step> Note that it identifies susan as the name since it has seen this pattern already.
-    editDialogModal.ClickEntityDetectionToken("Susan")
-
-    // 4.14	Click Score Actions.
-    // 4.15	Select 'Hello susan'.
-    // 4.16	Click Done Teaching.
-
-    // cy.pause()//.wait(2000)
-    // editDialogModal.clickDoneTeaching()
-    //monitorDocumentChanges.Stop()
   })
 })

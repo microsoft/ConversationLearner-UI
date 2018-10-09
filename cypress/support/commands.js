@@ -29,3 +29,20 @@ import { createPartiallyEmittedExpression } from "typescript";
 import './helpers'
 const helpers = require('../support/helpers.js')
 Cypress.Commands.add("ConLog", (funcName, message) => {helpers.ConLog(funcName, message)})
+
+// fileName must exist with cypress\fixtures folder
+Cypress.Commands.add('UploadFile', (fileName, selector) => 
+{
+  cy.get(selector).then(elements => 
+  {
+      cy.fixture(fileName).then((content) => 
+      {
+          const element = elements[0]
+          const testFile = new File([content], fileName)
+          const dataTransfer = new DataTransfer()
+
+          dataTransfer.items.add(testFile)
+          element.files = dataTransfer.files
+      })
+  })
+})

@@ -260,6 +260,7 @@ export class Comopnent extends React.Component<Props, ComponentState> {
                     })}
                 />
                 <OF.DefaultButton
+                    data-testid="model-list-import-model-button"
                     onClick={props.onClickImportApp}
                     ariaDescription={props.intl.formatMessage({
                         id: FM.APPSLIST_IMPORTAPP_BUTTONARIADESCRIPTION,
@@ -272,6 +273,7 @@ export class Comopnent extends React.Component<Props, ComponentState> {
                 />
                 {!util.isDemoAccount(props.user.id) &&
                     <OF.DefaultButton
+                        data-testid="model-list-import-tutorials-button"
                         onClick={props.onClickImportDemoApps}
                         ariaDescription={props.intl.formatMessage({
                             id: FM.APPSLIST_IMPORTTUTORIALS_BUTTONARIADESCRIPTION,

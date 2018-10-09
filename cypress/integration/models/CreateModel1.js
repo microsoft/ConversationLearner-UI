@@ -6,7 +6,7 @@
 const models = require('../../support/Models')
 const entities = require('../../support/Entities')
 const actions = require('../../support/Actions')
-const helpers = require('../../support/helpers.js')
+const helpers = require('../../support/helpers')
 
 describe("ExpectedEntities test", () =>
 {
