@@ -6,6 +6,7 @@ import { Value } from 'slate'
 import * as models from './models'
 import * as util from '../../util'
 import { EntityBase, PredictedEntity, ExtractResponse, EntityType } from '@conversationlearner/models'
+import {getPrebuiltEntityName} from '../modals/EntityCreatorEditor/Container'
 
 /**
  * Recursively walk up DOM tree until root or parent with non-static position is found.
@@ -563,7 +564,7 @@ export const convertGenericEntityToPredictedEntity = (entities: EntityBase[]) =>
 
 export const convertExtractorResponseToEditorModels = (extractResponse: ExtractResponse, entities: EntityBase[]): models.IEditorProps => {
     const options = entities
-        .filter(e => e.entityType === EntityType.LUIS)
+        .filter(e => e.entityType !== EntityType.LOCAL && e.entityName !== getPrebuiltEntityName(e.entityType))
         .map<models.IOption>(e =>
             ({
                 id: e.entityId,
@@ -587,11 +588,11 @@ export const convertExtractorResponseToEditorModels = (extractResponse: ExtractR
         })
 
     const customEntities = internalPredictedEntities
-        .filter(({ entity }) => entity && entity.entityType === EntityType.LUIS)
+        .filter(({ entity }) => entity && entity.entityType !== EntityType.LOCAL && entity.entityName !== getPrebuiltEntityName(entity.entityType))
         .map(({ entity, predictedEntity }) => convertPredictedEntityToGenericEntity(predictedEntity, entity.entityName, util.entityDisplayName(entity)))
 
     const preBuiltEntities = internalPredictedEntities
-        .filter(({ entity }) => entity && entity.entityType !== EntityType.LUIS && entity.entityType !== EntityType.LOCAL)
+        .filter(({ entity }) => entity && entity.entityType !== EntityType.LUIS && entity.entityType !== EntityType.LOCAL && entity.entityName === getPrebuiltEntityName(entity.entityType))
         .map(({ entity, predictedEntity }) => convertPredictedEntityToGenericEntity(predictedEntity, entity.entityName, getPreBuiltEntityDisplayName(entity, predictedEntity)))
 
     return {
