@@ -22,13 +22,15 @@ interface RenderData {
     dialogMode: CLM.DialogMode
     scoreInput?: CLM.ScoreInput 
     scoreResponse?: CLM.ScoreResponse 
+    roundIndex: number | null
     memories: CLM.Memory[]
     prevMemories: CLM.Memory[]
     extractResponses: CLM.ExtractResponse[]
+    textVariations: CLM.TextVariation[]
 }
 
 interface RoundLookup {
-    extractResponse?: CLM.ExtractResponse | null
+    textVariation?: CLM.TextVariation | null
     uiScoreResponse?: CLM.UIScoreResponse | null
 }
 interface ComponentState {
@@ -49,6 +51,14 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
     }
 
     async onEntityExtractorSubmit(extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]): Promise<void> {
+        
+        // If I'm editing an existing round
+        if (this.props.selectedActivityIndex) {
+            this.props.onEditExtraction(extractResponse, textVariations)
+            return
+        }
+        
+        // Otherwise update teach session
         if (!this.props.teachSession.current) {
             throw new Error(`teachSession.current must be defined but it is not. This is likely a problem with higher components. Please open an issue.`)
         }
@@ -63,8 +73,11 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
         const appId = this.props.app.appId
         const teachId = this.props.teachSession.current.teachId
         const uiScoreResponse = await ((this.props.runScorerThunkAsync(this.props.user.id, appId, teachId, uiScoreInput) as any) as Promise<CLM.UIScoreResponse>)
+        const textVariation = CLM.ModelUtils.ToTextVariation(extractResponse)
+        
         let turnLookup = [...this.state.turnLookup]
-        turnLookup.push({extractResponse})
+                
+        turnLookup.push({textVariation})
         turnLookup.push({uiScoreResponse})
         this.setState({
             isScoresRefreshVisible: true,
@@ -73,6 +86,13 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
     }
 
     async onActionScorerSubmit(trainScorerStep: CLM.TrainScorerStep): Promise<void> {
+
+        // If I'm editing an existing round
+        if (this.props.selectedActivityIndex) {
+            this.props.onEditAction(trainScorerStep)
+            return
+        }
+
         const scoredAction = trainScorerStep.scoredAction
         if (!scoredAction) {
             throw new Error(`The provided train scorer step must have scoredAction field, but it was not provided. This should not be possible. Contact Support`)
@@ -141,10 +161,10 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
     }
 
     getRenderData(): RenderData {
-        if (this.props.selectedActivityIndex) {
+        if (this.props.selectedActivityIndex != null && this.props.selectedActivityIndex < this.state.turnLookup.length) {
             let turnData = this.state.turnLookup[this.props.selectedActivityIndex]
  
-            const prevTurn = this.state.turnLookup[this.props.selectedActivityIndex-1]
+            const prevTurn = this.state.turnLookup[this.props.selectedActivityIndex - 1]
             const prevMemories = (prevTurn && prevTurn.uiScoreResponse) ? prevTurn.uiScoreResponse.memories : []
             if (turnData.uiScoreResponse) {
                 return {
@@ -153,18 +173,21 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                         scoreResponse: turnData.uiScoreResponse.scoreResponse,
                         memories: turnData.uiScoreResponse.memories,
                         prevMemories,
-                        extractResponses: []
+                        extractResponses: [],
+                        textVariations: [],
+                        roundIndex: this.props.selectedActivityIndex
                     }
                 }
-            else if (turnData.extractResponse) {
-                const prevTurn = this.state.turnLookup[this.props.selectedActivityIndex-1]
+            else if (turnData.textVariation) {
                 const memories = (prevTurn && prevTurn.uiScoreResponse) ? prevTurn.uiScoreResponse.memories : []
                 return {
+                    // LARS handle alternative text, need multi textvariations
                     dialogMode: CLM.DialogMode.Extractor,
-                    // LARS check - can be array
-                    extractResponses: [turnData.extractResponse],  
+                    extractResponses: [],
+                    textVariations: [turnData.textVariation],  
                     memories,
-                    prevMemories
+                    prevMemories,
+                    roundIndex: this.props.selectedActivityIndex
                 }
             }
             else {
@@ -178,7 +201,9 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                 scoreResponse: this.props.teachSession.scoreResponse!,
                 memories: this.props.teachSession.memories,
                 prevMemories: this.props.teachSession.prevMemories,
-                extractResponses: this.props.teachSession.extractResponses
+                extractResponses: this.props.teachSession.extractResponses,
+                textVariations: [],
+                roundIndex: null
             }
         }
     }
@@ -268,11 +293,11 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                                     canEdit={true}
                                     extractType={CLM.DialogType.TEACH}
                                     sessionId={this.props.teachSession.current.teachId}
-                                    roundIndex={null}
+                                    roundIndex={renderData.roundIndex}
                                     autoTeach={this.props.teachSession.autoTeach}
                                     dialogMode={renderData.dialogMode}
                                     extractResponses={renderData.extractResponses}
-                                    originalTextVariations={[]}
+                                    originalTextVariations={renderData.textVariations}
                                     onTextVariationsExtracted={this.onEntityExtractorSubmit}
                                 />}
                         </div>
@@ -374,6 +399,8 @@ const mapStateToProps = (state: State) => {
 
 export interface ReceivedProps {
     onScoredAction: (scoredAction: CLM.ScoredAction) => void;
+    onEditExtraction: (extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) => any
+    onEditAction: (trainScorerStep: CLM.TrainScorerStep) => any
     app: CLM.AppBase
     editingPackageId: string
     editType: EditDialogType,

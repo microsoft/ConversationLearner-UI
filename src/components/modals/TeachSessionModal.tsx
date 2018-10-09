@@ -27,6 +27,7 @@ import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { autobind } from 'office-ui-fabric-react/lib/Utilities';
 import { EditDialogType } from '.';
+import { EditHandlerArgs } from '../../routes/Apps/App/TrainDialogs';
 
 interface ComponentState {
     isConfirmDeleteOpen: boolean,
@@ -83,6 +84,11 @@ class TeachModal extends React.Component<Props, ComponentState> {
         let hasTerminalAction = this.state.hasTerminalAction
         let isInitAvailable = this.state.isInitAvailable
         let nextActivityIndex = this.state.nextActivityIndex
+        let selectedActivityIndex = this.state.selectedActivityIndex
+
+        if (!newProps.isOpen) {
+            selectedActivityIndex = null
+        }
 
         if (this.props.initialHistory !== newProps.initialHistory) {
             webchatKey = this.state.webchatKey + 1
@@ -106,10 +112,11 @@ class TeachModal extends React.Component<Props, ComponentState> {
             hasTerminalAction !== this.state.hasTerminalAction ||
             isInitAvailable !== this.state.isInitAvailable) {
             this.setState({
-                webchatKey: webchatKey,
-                hasTerminalAction: hasTerminalAction,
-                isInitAvailable: isInitAvailable,
-                nextActivityIndex
+                webchatKey,
+                hasTerminalAction,
+                isInitAvailable,
+                nextActivityIndex,
+                selectedActivityIndex
             })
         }   
     }
@@ -171,6 +178,21 @@ class TeachModal extends React.Component<Props, ComponentState> {
         this.props.toggleAutoTeach(isChecked);
     }
 
+
+    async onWebChatSelectActivity(activity: Activity) {
+
+        // Activities from history can be looked up
+        if (this.props.initialHistory.length > 0) {
+            const selectedActivityIndex = this.props.initialHistory.findIndex(a => a.id === activity.id)
+            if (selectedActivityIndex > -1) {
+                this.setState({selectedActivityIndex})
+                return
+            }
+        }
+        // Otherwise newly create activities with have index in channelData
+        this.setState({selectedActivityIndex: activity.channelData.activityIndex})        
+    }
+
     onWebChatPostActivity(activity: Activity) {
         if (activity.type === 'message') {
 
@@ -197,7 +219,8 @@ class TeachModal extends React.Component<Props, ComponentState> {
             this.setState({ 
                  // No initialization allowed after first input
                 isInitAvailable: false, 
-                nextActivityIndex: this.state.nextActivityIndex + 1
+                nextActivityIndex: this.state.nextActivityIndex + 1,
+                selectedActivityIndex: null,
             })
 
             this.props.runExtractorThunkAsync(this.props.app.appId, CLM.DialogType.TEACH, this.props.teach.teachId, null, userInput);
@@ -224,7 +247,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
             isUserInputModalOpen: false
         })
         if (this.state.selectedActivityIndex != null) { 
-            this.props.onEditTeach(this.state.selectedActivityIndex, userInput, this.props.onInsertInput) 
+            this.props.onEditTeach(this.state.selectedActivityIndex, {userInput}, this.props.onInsertInput) 
         }
     }
 
@@ -242,6 +265,21 @@ class TeachModal extends React.Component<Props, ComponentState> {
         }
     }
 
+    @autobind
+    onEditExtraction(extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) {
+        if (this.state.selectedActivityIndex != null) { 
+            this.props.onEditTeach(this.state.selectedActivityIndex, {extractResponse, textVariations}, this.props.onChangeExtraction) 
+        }
+    }
+
+    @autobind
+    onEditScore(trainScorerStep: CLM.TrainScorerStep) {
+        if (this.state.selectedActivityIndex != null) { 
+            this.props.onEditTeach(this.state.selectedActivityIndex, {trainScorerStep}, this.props.onChangeAction) 
+        }
+    }
+
+    // LARS can go away?  handles edit crayon
     @autobind
     onEditTurn() {
         if (this.state.selectedActivityIndex != null) { 
@@ -296,20 +334,6 @@ class TeachModal extends React.Component<Props, ComponentState> {
                 }
                 </div>
         )
-    }
-
-    async onWebChatSelectActivity(activity: Activity) {
-       
-        // Activities from history can be looked up
-        if (this.props.initialHistory.length > 0) {
-            const selectedActivityIndex = this.props.initialHistory.findIndex(a => a.id === activity.id)
-            if (selectedActivityIndex > -1) {
-                this.setState({selectedActivityIndex})
-                return
-            }
-        }
-        // Otherwise newly create activities with have index in channelData
-        this.setState({selectedActivityIndex: activity.channelData.activityIndex})        
     }
 
     renderAbandonText(intl: ReactIntl.InjectedIntl) {
@@ -440,6 +464,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                                     focusInput={this.props.dialogMode === CLM.DialogMode.Wait}
                                     highlightClassName={'wc-message-selected'}
                                     renderActivity={(props, children, setRef) => this.renderActivity(props, children, setRef)}
+                                    selectedActivityIndex={this.state.selectedActivityIndex}
                                 />
                                 {chatDisable}
                             </div>
@@ -459,6 +484,8 @@ class TeachModal extends React.Component<Props, ComponentState> {
                                                 })
                                             }
                                         }
+                                        onEditExtraction={this.onEditExtraction} 
+                                        onEditAction={this.onEditScore}
                                     />
                                 </div>
                             </div>
@@ -551,9 +578,11 @@ const mapStateToProps = (state: State) => {
 export interface ReceivedProps {
     isOpen: boolean
     onClose: Function
-    onEditTeach: (historyIndex: number, userInput: string|null, editHandler: (trainDialog: CLM.TrainDialog, activity: Activity, userInput: string) => any) => void
+    onEditTeach: (historyIndex: number, args: EditHandlerArgs|null, editHandler: (trainDialog: CLM.TrainDialog, activity: Activity, args: EditHandlerArgs) => any) => void
     onInsertAction: (trainDialog: CLM.TrainDialog, activity: Activity) => any
-    onInsertInput: (trainDialog: CLM.TrainDialog, activity: Activity, userText: string) => any
+    onInsertInput: (trainDialog: CLM.TrainDialog, activity: Activity, args: EditHandlerArgs) => any
+    onChangeExtraction: (trainDialog: CLM.TrainDialog, activity: Activity, args: EditHandlerArgs) => any
+    onChangeAction: (trainDialog: CLM.TrainDialog, activity: Activity, args: EditHandlerArgs) => any
     onDeleteTurn: (trainDialog: CLM.TrainDialog, activity: Activity) => any
     onEditTurn: (trainDialog: CLM.TrainDialog, activity: Activity) => any
     onSetInitialEntities: ((initialFilledEntities: CLM.FilledEntity[]) => void) | null

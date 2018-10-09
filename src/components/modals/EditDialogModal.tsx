@@ -98,6 +98,20 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
     }
 
     @autobind
+    onChangeExtraction(extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) {
+        if (this.state.selectedActivity && this.state.currentTrainDialog) {
+            this.props.onChangeExtraction(this.state.currentTrainDialog, this.state.selectedActivity, extractResponse, textVariations)
+        }
+    }
+
+    @autobind
+    onChangeAction(trainScorerStep: CLM.TrainScorerStep) {
+        if (this.state.selectedActivity && this.state.currentTrainDialog) {
+            this.props.onChangeAction(this.state.currentTrainDialog, this.state.selectedActivity, trainScorerStep)
+        }
+    }
+
+    @autobind
     onClickBranch() {
         this.setState({
             isUserBranchModalOpen: true
@@ -150,7 +164,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             this.props.onContinueDialog(newTrainDialog, initialUserInput) 
         }
     }
-
+/* lars moved to traindialogs
     @autobind
     async onChangeExtraction(extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) {
  
@@ -182,7 +196,8 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                 console.warn(`Error when attempting to change extraction: `, error)
         }
     }
-
+*/
+/* Lars
     @autobind
     async onChangeAction(trainScorerStep: CLM.TrainScorerStep) {
         if (!this.state.selectedActivity) {
@@ -214,7 +229,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             console.warn(`Error when attempting to change an Action: `, error)
         }
     }
- 
+ */
     onWebChatSelectActivity(activity: Activity) {
          this.setState({
             selectedActivity: activity
@@ -727,6 +742,8 @@ export interface ReceivedProps {
     initialSelectedHistoryIndex: number | null
     onInsertAction: (trainDialog: CLM.TrainDialog, activity: Activity) => any
     onInsertInput: (trainDialog: CLM.TrainDialog, activity: Activity, userText: string) => any
+    onChangeExtraction: (trainDialog: CLM.TrainDialog, activity: Activity, extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) => any
+    onChangeAction: (trainDialog: CLM.TrainDialog, activity: Activity, trainScorerStep: CLM.TrainScorerStep) => any
     onDeleteTurn: (trainDialog: CLM.TrainDialog, activity: Activity) => any
     onCloseModal: (reload: boolean) => void
     onBranchDialog: ((trainDialog: CLM.TrainDialog, activity: Activity, userText: string) => void) | null,

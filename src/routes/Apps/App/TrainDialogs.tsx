@@ -21,6 +21,13 @@ import { getDefaultEntityMap, notNullOrUndefined } from '../../../util'
 import ReplayErrorList from '../../../components/modals/ReplayErrorList'
 import * as moment from 'moment'
 
+export interface EditHandlerArgs {
+    userInput?: string,
+    extractResponse?: CLM.ExtractResponse, 
+    textVariations?: CLM.TextVariation[],
+    trainScorerStep?: CLM.TrainScorerStep
+}
+
 interface IRenderableColumn extends OF.IColumn {
     render: (x: CLM.TrainDialog, component: TrainDialogs) => React.ReactNode
     getSortValue: (trainDialog: CLM.TrainDialog, component: TrainDialogs) => string
@@ -406,8 +413,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         })
     }
     
-    // User has clicked on Activity in a Teach Session
-    async onEditTeach(historyIndex: number, userInput: string|null = null, editHandler: (trainDialog: CLM.TrainDialog, activity: Activity, data?: any) => any) {
+    // User has edited an Activity in a TeachSession
+    async onEditTeach(historyIndex: number, args: EditHandlerArgs|null = null, editHandler: (trainDialog: CLM.TrainDialog, activity: Activity, args?: EditHandlerArgs) => any) {
 
         try {
             if (this.state.teachSession) {
@@ -427,8 +434,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 if (teachWithHistory) {
 
                     let selectedActivity = teachWithHistory.history[historyIndex]
-                    if (userInput) {
-                        await editHandler(trainDialog, selectedActivity, userInput)
+                    if (args) {
+                        await editHandler(trainDialog, selectedActivity, args)
                     }
                     else {
                         await editHandler(trainDialog, selectedActivity)
@@ -538,6 +545,63 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     }
 
     @autobind
+    async onChangeAction(trainDialog: CLM.TrainDialog, selectedActivity: Activity, trainScorerStep: CLM.TrainScorerStep|undefined) {
+ 
+        if (!trainScorerStep) {
+            throw new Error("missing args")
+        }
+        try {
+            const roundIndex = selectedActivity.channelData.roundIndex
+            const scoreIndex = selectedActivity.channelData.scoreIndex
+            const definitions = {
+                entities: this.props.entities,
+                actions: this.props.actions,
+                trainDialogs: []
+            }
+
+            let newTrainDialog = JSON.parse(JSON.stringify(trainDialog)) as CLM.TrainDialog
+            newTrainDialog.rounds[roundIndex].scorerSteps[scoreIndex] = trainScorerStep
+            newTrainDialog.definitions = definitions;
+
+            // Replay logic functions on train dialog
+            newTrainDialog = await ((this.props.trainDialogReplayThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<CLM.TrainDialog>)
+
+            this.onUpdateHistory(newTrainDialog, selectedActivity)
+        }
+        catch (error) {
+            console.warn(`Error when attempting to change an Action: `, error)
+        }
+    }
+
+    @autobind
+    async onChangeExtraction(trainDialog: CLM.TrainDialog, selectedActivity: Activity, extractResponse: CLM.ExtractResponse|undefined, textVariations: CLM.TextVariation[]|undefined) {
+ 
+        if (!extractResponse || !textVariations) {
+            throw new Error("missing args")
+        }
+        try {
+            const roundIndex = selectedActivity.channelData.roundIndex
+            const definitions = {
+                entities: this.props.entities,
+                actions: this.props.actions,
+                trainDialogs: []
+            }
+
+            let newTrainDialog = JSON.parse(JSON.stringify(trainDialog)) as CLM.TrainDialog
+            newTrainDialog.definitions = definitions;
+            newTrainDialog.rounds[roundIndex].extractorStep.textVariations = textVariations;
+
+            // Replay logic functions on train dialog
+            newTrainDialog = await ((this.props.trainDialogReplayThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<CLM.TrainDialog>)
+
+            this.onUpdateHistory(newTrainDialog, selectedActivity)
+        }
+        catch (error) {
+                console.warn(`Error when attempting to change extraction: `, error)
+        }
+    }
+
+    @autobind
     async onDeleteTurn(trainDialog: CLM.TrainDialog, selectedActivity: Activity) {
 
         const senderType = selectedActivity.channelData.senderType
@@ -633,7 +697,11 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    async onInsertInput(trainDialog: CLM.TrainDialog, selectedActivity: Activity, inputText: string) {
+    async onInsertInput(trainDialog: CLM.TrainDialog, selectedActivity: Activity, inputText: string | undefined) {
+
+        if (!inputText) {
+            throw new Error("inputText is null")
+        }
 
         try {
             const roundIndex = selectedActivity.channelData.roundIndex
@@ -1165,8 +1233,10 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     onClose={() => this.onCloseTeachSession()}
                     onEditTeach={(historyIndex, userInput, editHandler) => this.onEditTeach(historyIndex, userInput, editHandler)}
                     onInsertAction={(trainDialog, activity) => this.onInsertAction(trainDialog, activity)}
-                    onInsertInput={(trainDialog, activity, userInput) => this.onInsertInput(trainDialog, activity, userInput)} 
+                    onInsertInput={(trainDialog, activity, editHandlerArgs) => this.onInsertInput(trainDialog, activity, editHandlerArgs.userInput)} 
                     onDeleteTurn={(trainDialog, activity) => this.onDeleteTurn(trainDialog, activity)}
+                    onChangeExtraction={(trainDialog, activity, editHandlerArgs) => this.onChangeExtraction(trainDialog, activity, editHandlerArgs.extractResponse, editHandlerArgs.textVariations)} 
+                    onChangeAction={(trainDialog, activity, editHandlerArgs) => this.onChangeAction(trainDialog, activity, editHandlerArgs.trainScorerStep)} 
                     onEditTurn={(trainDialog, activity) => this.onEditTurn(trainDialog, activity)}
                     onSetInitialEntities={this.onSetInitialEntities}
                     initialHistory={this.state.history}
@@ -1190,6 +1260,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     onInsertAction={(trainDialog, activity) => this.onInsertAction(trainDialog, activity)}
                     onInsertInput={(trainDialog, activity, userInput) => this.onInsertInput(trainDialog, activity, userInput)} 
                     onDeleteTurn={(trainDialog, activity) => this.onDeleteTurn(trainDialog, activity)}
+                    onChangeExtraction={(trainDialog, activity, extractResponse, textVariations) => this.onChangeExtraction(trainDialog, activity, extractResponse, textVariations)}
+                    onChangeAction={(trainDialog: CLM.TrainDialog, activity: Activity, trainScorerStep: CLM.TrainScorerStep) => this.onChangeAction(trainDialog, activity, trainScorerStep)}
                     onBranchDialog={(trainDialog, activity, userInput) => this.onBranchTrainDialog(trainDialog, activity, userInput)}
                     onDeleteDialog={() => this.onDeleteTrainDialog()}
                     onUpdateHistory={(updatedTrainDialog, selectedActivity) => this.onUpdateHistory(updatedTrainDialog, selectedActivity)}
