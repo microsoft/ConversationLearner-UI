@@ -86,11 +86,24 @@ class Container extends React.Component<Props, ComponentState> {
         });
     }
 
+    get PROGRAMMATIC_ENTITY() : string {
+        return this.props.intl.formatMessage({
+            id: FM.ENTITYCREATOREDITOR_ENTITYOPTION_PROG, 
+            defaultMessage: 'programmatic'
+        })
+    }
+
     getStaticEntityOptions(intl: InjectedIntl): CLDropdownOption[] {
         return [
             {
                 key: this.NEW_ENTITY,
                 text: this.NEW_ENTITY,
+                itemType: OF.DropdownMenuItemType.Normal,
+                style: 'clDropdown--command'
+            },
+            {
+                key: this.PROGRAMMATIC_ENTITY,
+                text: this.PROGRAMMATIC_ENTITY,
                 itemType: OF.DropdownMenuItemType.Normal,
                 style: 'clDropdown--command'
             },
@@ -122,11 +135,8 @@ class Container extends React.Component<Props, ComponentState> {
                     }))
 
             if (nextProps.entity === null) {
-                // Filter out one that have already been used so user can't create two of same type.
-                const filteredPrebuilts = localePreBuiltOptions
-                    .filter(entityOption => !nextProps.entities.some(e => e.entityType === entityOption.key))
-
-                this.entityOptions = [...this.staticEntityOptions, ...filteredPrebuilts]
+                // User can create multiple built-in entities with different names
+                this.entityOptions = [...this.staticEntityOptions, ...localePreBuiltOptions]
 
                 this.setState({
                     ...initState,
@@ -134,21 +144,28 @@ class Container extends React.Component<Props, ComponentState> {
                         id: FM.ENTITYCREATOREDITOR_TITLE_CREATE,
                         defaultMessage: 'Create an Entity'
                     }),
-                    entityTypeVal: nextProps.entityTypeFilter ? nextProps.entityTypeFilter : this.NEW_ENTITY
+                    entityTypeVal: nextProps.entityTypeFilter && nextProps.entityTypeFilter != EntityType.LUIS ? nextProps.entityTypeFilter : this.NEW_ENTITY
                 });
             } else {
                 this.entityOptions = [...this.staticEntityOptions, ...localePreBuiltOptions]
                 let entityType = nextProps.entity.entityType;
                 let isProgrammatic = false;
-                let isPrebuilt = true;
+                let isPrebuilt = false;
+                
+                if(entityType !== EntityType.LUIS 
+                    && entityType !== EntityType.LOCAL 
+                    && nextProps.entity.entityName === Container.getPrebuiltEntityName(entityType))
+                {
+                    isPrebuilt = true;
+                }
+
                 if (entityType === EntityType.LUIS) {
                     entityType = this.NEW_ENTITY;
-                    isPrebuilt = false;
                 } else if (entityType === EntityType.LOCAL) {
-                    entityType = this.NEW_ENTITY;
+                    entityType = this.PROGRAMMATIC_ENTITY;
                     isProgrammatic = true;
-                    isPrebuilt = false;
                 }
+
                 this.setState({
                     entityNameVal: nextProps.entity.entityName,
                     entityTypeVal: entityType,
@@ -189,12 +206,15 @@ class Container extends React.Component<Props, ComponentState> {
         let entityName = this.state.entityNameVal
         let entityType = this.state.entityTypeVal
         if (this.state.isPrebuilt) {
-            entityName = this.getPrebuiltEntityName(entityType)
-        }
-        else {
-            entityType = this.state.isProgrammaticVal ? EntityType.LOCAL : EntityType.LUIS
+            entityName = Container.getPrebuiltEntityName(entityType)
         }
 
+        if(this.state.isProgrammaticVal || this.state.entityTypeVal === this.PROGRAMMATIC_ENTITY) {
+            entityType = EntityType.LOCAL
+        } else if(this.state.entityTypeVal === this.NEW_ENTITY) {
+            entityType = EntityType.LUIS
+        }
+        
         const newOrEditedEntity = {
             entityId: undefined!,
             entityName,
@@ -264,9 +284,9 @@ class Container extends React.Component<Props, ComponentState> {
     }
     
     onChangedType = (obj: CLDropdownOption) => {
-        const isPrebuilt = obj.text !== this.NEW_ENTITY
+        const isPrebuilt = obj.text !== this.NEW_ENTITY && this.state.entityNameVal === Container.getPrebuiltEntityName(obj.text)        
         const isNegatableVal = isPrebuilt ? false : this.state.isNegatableVal
-        const isProgrammaticVal = isPrebuilt ? false : this.state.isProgrammaticVal
+        const isProgrammaticVal = isPrebuilt ? false : obj.text === this.PROGRAMMATIC_ENTITY
         const isMultivalueVal = isPrebuilt ? true : this.state.isMultivalueVal
 
         this.setState({
@@ -276,11 +296,6 @@ class Container extends React.Component<Props, ComponentState> {
             isProgrammaticVal,
             entityTypeVal: obj.text
         })
-    }
-    onChangeProgrammatic = () => {
-        this.setState(prevState => ({
-            isProgrammaticVal: !prevState.isProgrammaticVal
-        }))
     }
     onChangeMultivalue = () => {
         this.setState(prevState => ({
@@ -336,7 +351,7 @@ class Container extends React.Component<Props, ComponentState> {
             : actions.filter(a => a.requiredEntities.find(id => id === entity.entityId))
     }
 
-    getPrebuiltEntityName(preBuiltType: string): string {
+    static getPrebuiltEntityName(preBuiltType: string): string {
         return `builtin-${preBuiltType.toLowerCase()}`
     }
 
@@ -457,6 +472,7 @@ class Container extends React.Component<Props, ComponentState> {
     renderEdit() {
         const { intl } = this.props
         const disabled = this.state.isEditing && this.isInUse()
+        const typeEditingDisabled = this.state.isEditing
         return (
             <div className="cl-entity-creator-form">
                 <OF.Dropdown
@@ -472,7 +488,7 @@ class Container extends React.Component<Props, ComponentState> {
                     onChanged={this.onChangedType}
                     onRenderOption={(option) => this.onRenderOption(option as CLDropdownOption)}
                     selectedKey={this.state.entityTypeVal}
-                    disabled={disabled || this.props.entityTypeFilter != null}
+                    disabled={typeEditingDisabled || this.props.entityTypeFilter != null}
                 />
                 <OF.TextField
                     data-testid="entity-creator-input-name"
@@ -488,21 +504,10 @@ class Container extends React.Component<Props, ComponentState> {
                         defaultMessage: 'Name...'
                     })}
                     required={true}
-                    value={this.state.isPrebuilt ? this.getPrebuiltEntityName(this.state.entityTypeVal) : this.state.entityNameVal}
+                    value={this.state.isPrebuilt ? Container.getPrebuiltEntityName(this.state.entityTypeVal) : this.state.entityNameVal}
                     disabled={this.state.isPrebuilt}
                 />
                 <div className="cl-entity-creator-checkboxes cl-entity-creator-form">
-                    <TC.Checkbox
-                        data-testid="entitycreator-checkbox-programmaticonly"
-                        label={intl.formatMessage({
-                            id: FM.ENTITYCREATOREDITOR_FIELDS_PROGRAMMATICONLY_LABEL,
-                            defaultMessage: 'Programmatic Only'
-                        })}
-                        checked={this.state.isProgrammaticVal}
-                        onChange={this.onChangeProgrammatic}
-                        disabled={disabled || this.state.isPrebuilt || this.state.isEditing}
-                        tipType={ToolTip.TipType.ENTITY_PROGAMMATIC}
-                    />
                     <TC.Checkbox
                         data-testid="entitycreator-checkbox-multivalued"
                         label={intl.formatMessage({
@@ -532,13 +537,14 @@ class Container extends React.Component<Props, ComponentState> {
     render() {
         const { intl } = this.props
         const isEntityInUse = this.state.isEditing && this.isInUse()
+        const isTypeDisabled = this.state.isEditing
 
         const title = this.props.entity
             ? this.props.entity.entityName
             : this.state.title
 
         const name = this.state.isPrebuilt
-            ? this.getPrebuiltEntityName(this.state.entityTypeVal)
+            ? Container.getPrebuiltEntityName(this.state.entityTypeVal)
             : this.state.entityNameVal
 
         const isSaveButtonDisabled = (this.onGetNameErrorMessage(this.state.entityNameVal) !== '')
@@ -552,7 +558,7 @@ class Container extends React.Component<Props, ComponentState> {
             entityOptions={this.entityOptions}
             
             selectedTypeKey={this.state.entityTypeVal}
-            isTypeDisabled={isEntityInUse || this.props.entityTypeFilter != null}
+            isTypeDisabled={isTypeDisabled || this.props.entityTypeFilter != null}
             onChangedType={this.onChangedType}
 
             name={name}
@@ -562,9 +568,6 @@ class Container extends React.Component<Props, ComponentState> {
             onKeyDownName={this.onKeyDownName}
 
             isProgrammatic={this.state.isProgrammaticVal}
-            isProgrammaticDisabled={isEntityInUse || this.state.isPrebuilt || this.state.isEditing}
-            onChangeProgrammatic={this.onChangeProgrammatic}
-
             isMultiValue={this.state.isMultivalueVal}
             isMultiValueDisabled={isEntityInUse}
             onChangeMultiValue={this.onChangeMultivalue}
@@ -632,3 +635,6 @@ const dispatchProps = returntypeof(mapDispatchToProps);
 type Props = typeof stateProps & typeof dispatchProps & ReceivedProps & InjectedIntlProps & RouteComponentProps<any>
 
 export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(withRouter(injectIntl(Container)))
+export const getPrebuiltEntityName = (entityType: string) : string => {
+    return Container.getPrebuiltEntityName(entityType)
+}

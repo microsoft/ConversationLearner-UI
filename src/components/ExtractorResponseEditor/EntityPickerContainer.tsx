@@ -36,9 +36,11 @@ interface Props {
     menuRef: any
     position: IPosition
     value: any
+    entityTypeFilter: string
 
-    onClickNewEntity: () => void
+    onClickNewEntity: (entityTypeFiler: string) => void
     onSelectOption: (o: IOption) => void
+
 }
 
 interface State {
@@ -205,6 +207,7 @@ export default class EntityPickerContainer extends React.Component<Props, State>
                 onClickOption={this.onClickResult}
                 onClickNewEntity={this.props.onClickNewEntity}
                 onKeyDown={this.onKeyDown}
+                entityTypeFilter={this.props.entityTypeFilter}
             />
         )
     }
