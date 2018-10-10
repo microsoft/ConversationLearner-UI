@@ -441,7 +441,8 @@ export enum FM {
     TUTORIALIMPORTER_TITLE = 'TutorialImporter.Title',
 
     // UserInput Modal
-    USERINPUT_TITLE = 'UserInput.title',
+    USERINPUT_ADD_TITLE = 'UserInput.addtitle',
+    USERINPUT_BRANCH_TITLE = 'UserInput.branchtitle',
     USERINPUT_PLACEHOLDER = 'UserInput.placeholder',
 
     // Validations
@@ -620,16 +621,16 @@ export default {
         [FM.REPLAYERROR_LOGDIALOG_VALIDATION_TITLE]: 'Model definition has changed',
         [FM.REPLAYERROR_LOGDIALOG_VALIDATION_MESSAGE]: 'This Log Dialog was created with a earlier version of the model.  The following incomptibilities were found:',
         [FM.REPLAYERROR_CONVERT_TITLE]: 'Unable to convert to Train Dialog',
-        [FM.REPLAYERROR_FAILMESSAGE]: 'The following issues occurred when attempting to replay the dialog',
-        [FM.REPLAYERROR_EDIT_TITLE]: 'Unable to Edit',
+        [FM.REPLAYERROR_FAILMESSAGE]: 'The following issues need to be corrected first',
+        [FM.REPLAYERROR_EDIT_TITLE]: 'Unable to continue Dialog',
         [FM.REPLAYERROR_BRANCH_TITLE]: 'Unable to Branch',
-        [FM.REPLAYERROR_DESC_ACTION_AFTER_WAIT]: 'Previous Action is a Wait action.  Change it to not Wait for a response or add a User input between the Actions',
-        [FM.REPLAYERROR_DESC_ACTION_UNDEFINED]: 'Missing action in response to',
-        [FM.REPLAYERROR_DESC_INPUT_AFTER_NONWAIT]: 'Input occurs after non-wait action.  Either delete the extra input or change Action to be a Wait action',
-        [FM.REPLAYERROR_DESC_ENTITY_UNDEFINED]: 'Missing entity for',
+        [FM.REPLAYERROR_DESC_ACTION_AFTER_WAIT]: 'Action following and Wait Action',
+        [FM.REPLAYERROR_DESC_ACTION_UNDEFINED]: 'Action does not exist',
+        [FM.REPLAYERROR_DESC_INPUT_AFTER_NONWAIT]: 'User Input following a non-Wait Action',
+        [FM.REPLAYERROR_DESC_ENTITY_UNDEFINED]: 'Entity does not exist',
         [FM.REPLAYERROR_DESC_ENTITY_EMPTY]: 'Action missing a value for',
-        [FM.REPLAYERROR_DESC_TWO_USER_INPUTS]: 'Two consecutive User Inputs are not allowed.  Delete this User Input or add an Action between the two',
-        [FM.REPLAYERROR_DESC_ACTION_UNAVAILABLE]: 'Action unavailable in reponse to',
+        [FM.REPLAYERROR_DESC_TWO_USER_INPUTS]: 'Two consecutive User Inputs',
+        [FM.REPLAYERROR_DESC_ACTION_UNAVAILABLE]: 'Action is unavailable',
         [FM.REPLAYERROR_DESC_CHANGED_ENTITIES]: 'Entites inconsistent after user input',
         
         // Settings
@@ -905,7 +906,8 @@ export default {
         [FM.EDITDIALOGMODAL_WARNING_INVALID_PACKAGE]: 'Editing only permitted on the Master tag',
              
         // UserInput Modal
-        [FM.USERINPUT_TITLE]: 'Add User Input',
+        [FM.USERINPUT_ADD_TITLE]: 'Add User Input',
+        [FM.USERINPUT_BRANCH_TITLE]: 'Add Different User Input',
         [FM.USERINPUT_PLACEHOLDER]: 'User Input...',
 
         /** 

@@ -60,6 +60,14 @@ export function packageReferences(app: CLM.AppBase): CLM.PackageReference[] {
     ]
 }
 
+// SDK add dummy values when memory items are missing.  This filters them out
+export function filterDummyEntities(memories: CLM.Memory[]): CLM.Memory[] {
+    return memories.filter(m => {
+        let userText = m.entityValues[0].userText
+        return (!userText || !userText.startsWith(CLM.DUMMY_ENTITY_PREFIX))
+    })
+}
+
 export function createEntityMapFromMemories(entities: CLM.EntityBase[], memories: CLM.Memory[]): Map<string, string> {
     return memories.reduce((map, m) => {
         const entity = entities.find(e => e.entityName === m.entityName)

@@ -62,11 +62,13 @@ export function renderActivity(
             </div>
             {activityProps.selected && renderSelected(activityProps.activity, false)}
             {!activityProps.selected && isLastActivity && renderSelected(activityProps.activity, isLastActivity)}
-            {activityProps.activity.channelData && activityProps.activity.channelData.downarrow ? 
+            {activityProps.activity.channelData && activityProps.activity.channelData.validWaitAction !== undefined ? 
                 (
                     <svg className="wc-message-downarrow">
                         <polygon 
-                            className={activityProps.activity.channelData.downarrow}
+                            className={activityProps.activity.channelData.validWaitAction 
+                                ? "wc-message-downarrow-points" 
+                                : "wc-message-downarrow-points-red"}
                             points="0,0 50,0 25,15"
                         />
                     </svg>

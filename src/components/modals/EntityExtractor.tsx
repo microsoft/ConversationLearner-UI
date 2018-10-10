@@ -61,13 +61,16 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
     
     componentDidMount() {
         this.setState({ newTextVariations: this.props.originalTextVariations })
-        setTimeout(this.focusPrimaryButton, 500);
+        setTimeout(this.focusPrimaryButton, 100)
     }
 
     @autobind
     focusPrimaryButton(): void {
         if (this.doneExtractingButton) {
             this.doneExtractingButton.focus();
+        }
+        else {
+            setTimeout(this.focusPrimaryButton, 100)
         }
     }
     componentWillReceiveProps(newProps: Props) {
@@ -90,7 +93,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
             }
 
             this.setState(nextState)
-            this.props.clearExtractResponses();
+            //LARS this.props.clearExtractResponses();
         }
     }
 
@@ -323,6 +326,9 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         // Don't show edit components when in auto TEACH or on score step
         const canEdit = (!this.props.autoTeach && this.props.dialogMode === CLM.DialogMode.Extractor && this.props.canEdit) 
         
+        // I'm editing an existing round if I'm not in Teach or have selected a round
+        const editingRound = canEdit && (this.props.extractType !== CLM.DialogType.TEACH || this.props.roundIndex !== null)
+
         // If editing is not allowed, only show the primary response which is the first response
         const extractResponsesToRender = canEdit ? allResponses : [primaryExtractResponse]
         const extractResponsesForDisplay = extractResponsesToRender
@@ -398,7 +404,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                             componentRef={(ref: any) => { this.doneExtractingButton = ref }}
                         />
                 </div>}
-                {canEdit && this.props.extractType !== CLM.DialogType.TEACH &&
+                {editingRound &&
                     <div className="cl-buttons-row">
                         <OF.PrimaryButton
                             disabled={!this.state.extractionChanged || !allExtractResponsesValid || this.state.pendingVariationChange}
@@ -415,7 +421,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                         />
                     </div>
                 }
-                {canEdit && this.props.extractType === CLM.DialogType.TEACH &&
+                {!editingRound &&
                     <div className="cl-buttons-row">
                         <OF.PrimaryButton
                             data-testid="button-proceedto-scoreactions"
