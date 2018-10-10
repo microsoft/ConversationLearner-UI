@@ -54,20 +54,27 @@ describe("My name is", () =>
     scorerModal.VerifyContainsDisabledAction("What's your name?")
 
     // 4.12	Select 'Hello $name'.
-    scorerModal.ClickAction("Hello $name")
+    scorerModal.ClickAction("Hello David")
+
+    // Wait for the training to complete.
+    // At the time this was added, there is no UI elements to let us know it is complete.
+    cy.wait(20000)
 
     // 4.13	Enter 'my name is susan'.
     editDialogModal.TypeYourMessage("My name is Susan.")
 
     // 4.13.1	<Validation Step> Note that it identifies susan as the name since it has seen this pattern already.
-    editDialogModal.ClickEntityDetectionToken("Susan")
+    editDialogModal.VerifyDetectedEntity("name", "Susan")
 
     // 4.14	Click Score Actions.
-    // 4.15	Select 'Hello susan'.
-    // 4.16	Click Done Teaching.
+    editDialogModal.ClickScoreActionsButton()
+    memoryTableComponent.VerifyEntityInMemory("name", "Susan", "David")
+    scorerModal.VerifyContainsDisabledAction("What's your name?")
 
-    // cy.pause()//.wait(2000)
-    // editDialogModal.clickDoneTeaching()
-    //monitorDocumentChanges.Stop()
+    // 4.15	Select 'Hello susan'.
+    scorerModal.ClickAction("Hello Susan")
+
+    // 4.16	Click Done Teaching.
+    editDialogModal.ClickSaveButton()
   })
 })

@@ -3,10 +3,11 @@
  * Licensed under the MIT License.
  */
 
-export function VerifyEntityInMemory(entityName, entityValue)
+export function VerifyEntityInMemory(entityName, entityValue, displacedValue)
 {
   cy.Get('[data-testid="entity-memory-name"]').contains(entityName)
-  cy.Get('[data-testid="entity-memory-value"]').contains(entityValue)
+  cy.Get('.cl-font--emphasis,[data-testid="entity-memory-value"]').contains(entityValue)
+  if (displacedValue) cy.Get('.cl-font--deleted,[data-testid="entity-memory-value"]').contains(displacedValue)
 }
 
 // Other 'data-testid's in this component:

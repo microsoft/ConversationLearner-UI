@@ -14,10 +14,10 @@ export function ClickAction(expectedActionResponse)
     .parents('div.ms-DetailsRow-fields').find('[data-testid="actionscorer-buttonClickable"]')
     .Click()
 
-  var utterance = expectedActionResponse.replace(/'/g, "’")
+  var expectedUtterance = expectedActionResponse.replace(/'/g, "’")
   cy.Get('[data-testid="web-chat-utterances"]').then(elements => {
     cy.wrap(elements[elements.length - 1]).within(e => {
-      cy.get('div.format-markdown > p').should('have.text', utterance)
+      cy.get('div.format-markdown > p').should('have.text', expectedUtterance)
     })})
 }
 
