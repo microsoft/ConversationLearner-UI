@@ -48,6 +48,14 @@ export enum TipType {
 
     PACKAGECREATOR_LIVE_TOGGLE = 'packageCreatorLiveToggle',
 
+    REPLAYERROR_DESC_ACTION_AFTER_WAIT = "REPLAYERROR_DESC_ACTION_AFTER_WAIT",
+    REPLAYERROR_DESC_TWO_USER_INPUTS = "REPLAYERROR_DESC_TWO_USER_INPUTS",
+    REPLAYERROR_DESC_INPUT_AFTER_NONWAIT = "REPLAYERROR_DESC_INPUT_AFTER_NONWAIT",
+    REPLAYERROR_DESC_ACTION_UNAVAILABLE = "REPLAYERROR_DESC_ACTION_UNAVAILABLE",
+    REPLAYERROR_DESC_ENTITY_UNDEFINED = "REPLAYERROR_DESC_ENTITY_UNDEFINED",
+    REPLAYERROR_DESC_ENTITY_EMPTY = "REPLAYERROR_DESC_ENTITY_EMPTY",
+    REPLAYERROR_DESC_ACTION_UNDEFINED = "REPLAYERROR_DESC_ACTION_UNDEFINED",
+
     TAG_EDITING = 'tagEditing',
     TAG_LIVE = 'tagLIve'
 }
@@ -433,6 +441,102 @@ export function GetTip(tipType: string) {
             )
         case TipType.PACKAGECREATOR_LIVE_TOGGLE:
             return (<FormattedMessage id={FM.TOOLTIP_PACKAGECREATOR_LIVE_TOGGLE} defaultMessage="Make new Tag the live version" />);
+
+        case TipType.REPLAYERROR_DESC_ACTION_AFTER_WAIT:
+            return (
+                <div>
+                    <h2>Error: Action following a Wait Action</h2>
+                    <p>Wait Actions must be immediately followed by User Input</p>
+                    <p>Ways to fix:</p>
+                    <ol>
+                        <li>Add User Input before the selected Action</li>
+                        <li>Change the preceding Action to be a non-Wait Action</li>
+                        <li>Delete the selected Action</li>
+                    </ol>
+                </div>
+            )
+
+        case TipType.REPLAYERROR_DESC_TWO_USER_INPUTS:
+            return (
+                <div>
+                    <h2>Error: Two consecutive User Inputs</h2>
+                    <p>Each User Input must be immediately followed by an Action</p>
+                    <p>Ways to fix:</p>
+                    <ol>
+                        <li>Add an Action after the seledted User Input</li>
+                        <li>Delete the selected User Input</li>
+                    </ol>
+                </div>
+            )
+
+        case TipType.REPLAYERROR_DESC_INPUT_AFTER_NONWAIT:
+            return (
+                <div>
+                    <h2>Error: User Input following a non-Wait Action</h2>
+                    <p>Non-Wait Actions must be immediately followed by another Action</p>
+                    <p>Ways to fix:</p>
+                    <ol>
+                        <li>Add a Wait Action before the seledted User Input</li>
+                        <li>Change the preceding Action to be a Wait Action</li>
+                        <li>Delete the selected User Input</li>
+                    </ol>
+                </div>
+            )
+
+        case TipType.REPLAYERROR_DESC_ACTION_UNAVAILABLE:
+            return (
+                <div>
+                    <h2>Error: Action is unvailable</h2>
+                    <p>Selected Action is blocked by one or more Required or Disqualifying Entities.</p>
+                    <p>Ways to fix:</p>
+                    <ol>
+                        <li>Replace selected Action with a different Action</li>
+                        <li>Tag / Untag Entitities in preceding User Inputs</li>
+                        <li>Edit Action to change the Required / Disqualifying Entities</li>
+                    </ol>
+                </div>
+            )
+
+        case TipType.REPLAYERROR_DESC_ENTITY_UNDEFINED:
+            return (
+                <div>
+                    <h2>Error: Entity does not exist</h2>
+                    <p>Entity no longer exists on this Model</p>
+                    <p>Ways to fix:</p>
+                    <ol>
+                        <li>Replace selected Entity with a different Entity</li>
+                        <li>Create a new Entity</li>
+                    </ol>
+                </div>
+            )
+
+        case TipType.REPLAYERROR_DESC_ENTITY_EMPTY:
+            return (
+                <div>
+                    <h2>Error: Entity missing value</h2>
+                    <p>Selected Action refers to an Entity whose value has not been set</p>
+                    <p>Ways to fix:</p>
+                    <ol>
+                        <li>Replace selected Action with a different Action</li>
+                        <li>Tag the missing Entity in a preceding User Input</li>
+                        <li>If a Programmatic Entity, set it in code callbacks</li>
+                        <li>Edit Action to not require the missing Entity</li>
+                    </ol>
+                </div>
+            )
+
+        case TipType.REPLAYERROR_DESC_ACTION_UNDEFINED:
+            return (
+                <div>
+                    <h2>Error: Action does not exist</h2>
+                    <p>Action no longer exists on this Model</p>
+                    <p>Ways to fix:</p>
+                    <ol>
+                        <li>Replace selected Action with a different Action</li>
+                        <li>Create a new Action</li>
+                    </ol>
+                </div>
+            )
 
         case TipType.TAG_EDITING:
             return (<FormattedMessage id={FM.TOOLTIP_TAG_EDITING} defaultMessage="Tag editing in the UI" />);

@@ -16,6 +16,7 @@ import { Activity } from 'botframework-directlinejs'
 import * as OF from 'office-ui-fabric-react';
 import * as CLM from '@conversationlearner/models' 
 import { FM } from '../../react-intl-messages'
+import { filterDummyEntities } from '../../util'
 import { EditDialogType, EditState } from '.'
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 
@@ -282,8 +283,8 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                         </div>
                         <MemoryTable
                             data-testid="modal-memory-table"
-                            memories={renderData.memories}
-                            prevMemories={renderData.prevMemories}
+                            memories={filterDummyEntities(renderData.memories)}
+                            prevMemories={filterDummyEntities(renderData.prevMemories)}
                         />
                     </div>
                     ) : (
