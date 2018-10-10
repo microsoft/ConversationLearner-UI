@@ -32,9 +32,7 @@ interface Props extends InjectedIntlProps {
     onKeyDownName: React.KeyboardEventHandler<HTMLInputElement>
 
     isProgrammatic: boolean
-    isProgrammaticDisabled: boolean
-    onChangeProgrammatic: (ev?: React.FormEvent<HTMLElement | HTMLInputElement>, checked?: boolean) => void
-
+    
     isMultiValue: boolean
     isMultiValueDisabled: boolean
     onChangeMultiValue: (ev?: React.FormEvent<HTMLElement | HTMLInputElement>, checked?: boolean) => void
@@ -107,17 +105,6 @@ const EditComponent: React.SFC<Props> = (props: Props) => {
             disabled={props.isNameDisabled}
         />
         <div className="cl-entity-creator-checkboxes cl-entity-creator-form">
-            <TC.Checkbox
-                data-testid="entitycreator-checkbox-programmaticonly"
-                label={props.intl.formatMessage({
-                    id: FM.ENTITYCREATOREDITOR_FIELDS_PROGRAMMATICONLY_LABEL,
-                    defaultMessage: 'Programmatic Only'
-                })}
-                checked={props.isProgrammatic}
-                onChange={props.onChangeProgrammatic}
-                disabled={props.isProgrammaticDisabled}
-                tipType={ToolTip.TipType.ENTITY_PROGAMMATIC}
-            />
             <TC.Checkbox
                 data-testid="entitycreator-checkbox-multivalued"
                 label={props.intl.formatMessage({

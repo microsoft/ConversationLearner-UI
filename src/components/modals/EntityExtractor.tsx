@@ -18,6 +18,7 @@ import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { autobind } from 'office-ui-fabric-react'
 import { FM } from '../../react-intl-messages'
 import './EntityExtractor.css'
+import { EntityType } from '@conversationlearner/models';
 
 interface ExtractResponseForDisplay {
     extractResponse: CLM.ExtractResponse
@@ -29,6 +30,7 @@ interface ComponentState {
     extractionChanged: boolean
     pendingVariationChange: boolean
     entityModalOpen: boolean
+    entityTypeFilter: string
     warningOpen: boolean
     // Handle saves after round change
     savedExtractResponses: CLM.ExtractResponse[]
@@ -52,7 +54,8 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
             savedExtractResponses: [],
             savedRoundIndex: 0,
             textVariationValue: '',
-            newTextVariations: []
+            newTextVariations: [], 
+            entityTypeFilter: EntityType.LUIS
         }
     }
     
@@ -102,9 +105,10 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    onNewEntity() {
+    onNewEntity(entityTypeFilter: string) {
         this.setState({
-            entityModalOpen: true
+            entityModalOpen: true,
+            entityTypeFilter: entityTypeFilter
         })
     }
     handleCloseWarning() {
@@ -351,6 +355,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                                 <ExtractorResponseEditor.Editor
                                     readOnly={!canEdit}
                                     isValid={isValid}
+                                    entities={this.props.entities}
                                     {...editorProps}
 
                                     onChangeCustomEntities={onChangeCustomEntities}
@@ -437,7 +442,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                         entity={null}
                         handleClose={this.entityEditorHandleClose}
                         handleDelete={() => {}}
-                        entityTypeFilter={CLM.EntityType.LUIS}
+                        entityTypeFilter={this.state.entityTypeFilter as any}
                     />
                     <OF.Dialog
                         data-testid="entityextractor-dialog"

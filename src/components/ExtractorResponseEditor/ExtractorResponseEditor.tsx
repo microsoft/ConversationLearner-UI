@@ -12,6 +12,7 @@ import PreBuiltEntityNode from './PreBuiltEntityNode'
 import EntityPicker from './EntityPickerContainer'
 import './ExtractorResponseEditor.css'
 import TokenNode from './TokenNode'
+import { EntityType, EntityBase } from '@conversationlearner/models';
 
 // Slate doesn't have type definitions but we still want type consistency and references so we make custom type
 export type SlateValue = any
@@ -21,10 +22,11 @@ interface Props {
     isValid: boolean
     options: IOption[]
     text: string
+    entities: EntityBase[]
     customEntities: IGenericEntity<any>[]
-    onChangeCustomEntities: (customEntities: IGenericEntity<any>[]) => void
+    onChangeCustomEntities: (customEntities: IGenericEntity<any>[], entities: EntityBase[]) => void
     preBuiltEntities: IGenericEntity<any>[]
-    onClickNewEntity: () => void
+    onClickNewEntity: (entityTypeFilter: string) => void
 }
 
 interface State {
@@ -32,7 +34,8 @@ interface State {
     isMenuVisible: boolean
     menuPosition: IPosition | null
     value: SlateValue
-    preBuiltEditorValues: SlateValue[]
+    preBuiltEditorValues: SlateValue[], 
+    builtInTypeFilter: string | null
 }
 
 const disallowedOperations = ['insert_text', 'remove_text']
@@ -60,7 +63,8 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
             bottom: 0
         },
         value: Plain.deserialize(''),
-        preBuiltEditorValues: [{}]
+        preBuiltEditorValues: [{}], 
+        builtInTypeFilter: null
     }
 
     constructor(props: Props) {
@@ -111,7 +115,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
                                 }
                             }
 
-                            this.props.onChangeCustomEntities([...nextProps.customEntities, newCustomEntity])
+                            this.props.onChangeCustomEntities([...nextProps.customEntities, newCustomEntity], this.props.entities)
                             return
                         }
                     }
@@ -136,7 +140,8 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
         const hideMenu: IEntityPickerProps = {
             isOverlappingOtherEntities: false,
             isVisible: false,
-            position: null
+            position: null, 
+            builtInTypeFilter: null
         }
 
         const selectionDoesNotContainTokens = value.isEmpty || value.selection.isCollapsed || (value.inlines.size === 0)
@@ -184,10 +189,26 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
             }
         }
 
+        let builtInTypeFilter = null
+        const selectedNodes: any[] = value.inlines.toJS()                    
+        if (selectedNodes.length > 0 && selectedNodes.every(n => n.type === NodeType.TokenNodeType)) {
+            const startIndex = selectedNodes[0].data.startIndex
+            const endIndex = selectedNodes[selectedNodes.length - 1].data.endIndex
+            const builtInEntity = this.props.preBuiltEntities.find(entity => entity.startIndex == startIndex && entity.endIndex == endIndex)
+            if(builtInEntity) {
+                const builtInType = builtInEntity.data.option.type
+                if(typeof builtInType === 'string') {
+                    const split = builtInType.split('.')
+                    builtInTypeFilter = split[split.length -1]
+                }
+            }
+        }
+
         return {
             isOverlappingOtherEntities,
             isVisible: true,
-            position: menuPosition
+            position: menuPosition, 
+            builtInTypeFilter: builtInTypeFilter
         }
     }
 
@@ -240,7 +261,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
         const containsExternalChangeOperation = operationsJs.some((o: any) => externalChangeOperations.includes(o.type))
         if (containsExternalChangeOperation) {
             const customEntities = getEntitiesFromValueUsingTokenData(change)
-            this.props.onChangeCustomEntities(customEntities)
+            this.props.onChangeCustomEntities(customEntities, this.props.entities)
         }
 
         const pickerProps = this.getNextPickerProps(change.value, this.menu)
@@ -248,7 +269,8 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
             this.setState({
                 isSelectionOverlappingOtherEntities: pickerProps.isOverlappingOtherEntities,
                 isMenuVisible: pickerProps.isVisible,
-                menuPosition: pickerProps.position
+                menuPosition: pickerProps.position, 
+                builtInTypeFilter: pickerProps.builtInTypeFilter
             })
         }
     }
@@ -330,7 +352,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
                             data-testid="extractorresponseeditor-entitypicker"
                             isOverlappingOtherEntities={this.state.isSelectionOverlappingOtherEntities}
                             isVisible={this.state.isMenuVisible}
-                            options={this.props.options}
+                            options={this.state.builtInTypeFilter !== null ? this.props.options.filter(option => option.type === this.state.builtInTypeFilter) : this.props.options.filter(option => option.type === EntityType.LUIS)}
                             maxDisplayedOptions={4}
                             menuRef={this.menuRef}
                             position={this.state.menuPosition}
@@ -338,6 +360,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
 
                             onClickNewEntity={this.props.onClickNewEntity}
                             onSelectOption={o => this.onSelectOption(o, this.state.value, this.onChange)}
+                            entityTypeFilter={this.state.builtInTypeFilter !== null ? this.state.builtInTypeFilter as any : EntityType.LUIS}
                         />
                     </div>
                 </div>
