@@ -13,6 +13,12 @@ export function ClickAction(expectedActionResponse)
   cy.Get('[data-testid="actionscorer-responseText"]').contains(expectedActionResponse)
     .parents('div.ms-DetailsRow-fields').find('[data-testid="actionscorer-buttonClickable"]')
     .Click()
+
+  var utterance = expectedActionResponse.replace(/'/g, "’")
+  cy.Get('[data-testid="web-chat-utterances"]').then(elements => {
+    cy.wrap(elements[elements.length - 1]).within(e => {
+      cy.get('div.format-markdown > p').should('have.text', utterance)
+    })})
 }
 
 export function VerifyContainsDisabledAction(expectedActionResponse)
