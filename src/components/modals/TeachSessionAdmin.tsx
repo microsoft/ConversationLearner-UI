@@ -14,11 +14,12 @@ import ActionScorer from './ActionScorer';
 import EntityExtractor from './EntityExtractor';
 import MemoryTable from './MemoryTable';
 import { FM } from '../../react-intl-messages'
-import { Icon, FontClassNames } from 'office-ui-fabric-react'
+import { filterDummyEntities } from '../../util'
+import { Icon, FontClassNames, autobind } from 'office-ui-fabric-react'
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import './TeachSessionAdmin.css'
 
-interface RenderData {
+export interface RenderData {
     dialogMode: CLM.DialogMode
     scoreInput?: CLM.ScoreInput 
     scoreResponse?: CLM.ScoreResponse 
@@ -36,20 +37,17 @@ interface RoundLookup {
 interface ComponentState {
     isScoresRefreshVisible: boolean
     turnLookup: RoundLookup[]
+    turnLookupOffset: number
 }
 
 class TeachSessionAdmin extends React.Component<Props, ComponentState> {
     state: ComponentState = {
         isScoresRefreshVisible: false,
-        turnLookup: []
+        turnLookup: [],
+        turnLookupOffset: 0
     }
 
-    constructor(p: Props) {
-        super(p);
-        this.onEntityExtractorSubmit = this.onEntityExtractorSubmit.bind(this);
-        this.onActionScorerSubmit = this.onActionScorerSubmit.bind(this);
-    }
-
+    @autobind
     async onEntityExtractorSubmit(extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]): Promise<void> {
         
         // If I'm editing an existing round
@@ -76,15 +74,19 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
         const textVariation = CLM.ModelUtils.ToTextVariation(extractResponse)
         
         let turnLookup = [...this.state.turnLookup]
+        // If first turn, set offset based on existing activities
+        let turnLookupOffset = this.state.turnLookup.length === 0 ? this.props.activityIndex - 1 : this.state.turnLookupOffset
                 
         turnLookup.push({textVariation})
         turnLookup.push({uiScoreResponse})
         this.setState({
             isScoresRefreshVisible: true,
-            turnLookup
+            turnLookup,
+            turnLookupOffset
         })
     }
 
+    @autobind
     async onActionScorerSubmit(trainScorerStep: CLM.TrainScorerStep): Promise<void> {
 
         // If I'm editing an existing round
@@ -131,7 +133,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
         if (!waitForUser) {
             const uiScoreResponse = await ((this.props.runScorerThunkAsync(this.props.user.id, appId, teachId, uiScoreInput) as any) as Promise<CLM.UIScoreResponse>)
             let turnLookup = [...this.state.turnLookup]
-            turnLookup.push({uiScoreResponse})// lars
+            turnLookup.push({uiScoreResponse})// lars test non-waits
             this.setState({
                 isScoresRefreshVisible: true,
                 turnLookup
@@ -161,38 +163,49 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
     }
 
     getRenderData(): RenderData {
-        if (this.props.selectedActivityIndex != null && this.props.selectedActivityIndex < this.state.turnLookup.length) {
-            let turnData = this.state.turnLookup[this.props.selectedActivityIndex]
+
+        // If user click on and activity
+        if (this.props.selectedActivityIndex != null) {
+
+            // Offset lookup index based on pre-existing activities
+            let lookupIndex = this.props.selectedActivityIndex - this.state.turnLookupOffset
  
-            const prevTurn = this.state.turnLookup[this.props.selectedActivityIndex - 1]
-            const prevMemories = (prevTurn && prevTurn.uiScoreResponse) ? prevTurn.uiScoreResponse.memories : []
-            if (turnData.uiScoreResponse) {
-                return {
-                        dialogMode: CLM.DialogMode.Scorer,
-                        scoreInput: turnData.uiScoreResponse.scoreInput,
-                        scoreResponse: turnData.uiScoreResponse.scoreResponse,
-                        memories: turnData.uiScoreResponse.memories,
-                        prevMemories,
+            if (lookupIndex >= 0) {
+
+                let turnData = this.state.turnLookup[lookupIndex]
+    
+                const prevTurn = this.state.turnLookup[lookupIndex - 1]
+                const prevMemories = (prevTurn && prevTurn.uiScoreResponse) ? prevTurn.uiScoreResponse.memories : []
+                if (turnData.uiScoreResponse) {
+                    return {
+                            dialogMode: CLM.DialogMode.Scorer,
+                            scoreInput: turnData.uiScoreResponse.scoreInput,
+                            scoreResponse: turnData.uiScoreResponse.scoreResponse,
+                            memories: turnData.uiScoreResponse.memories,
+                            prevMemories,
+                            extractResponses: [],
+                            textVariations: [],
+                            roundIndex: this.props.selectedActivityIndex
+                        }
+                    }
+                else if (turnData.textVariation) {
+                    const memories = (prevTurn && prevTurn.uiScoreResponse) ? prevTurn.uiScoreResponse.memories : []
+                    return {
+                        // LARS handle alternative text, need multi textvariations
+                        dialogMode: CLM.DialogMode.Extractor,
                         extractResponses: [],
-                        textVariations: [],
+                        textVariations: [turnData.textVariation],  
+                        memories,
+                        prevMemories,
                         roundIndex: this.props.selectedActivityIndex
                     }
                 }
-            else if (turnData.textVariation) {
-                const memories = (prevTurn && prevTurn.uiScoreResponse) ? prevTurn.uiScoreResponse.memories : []
-                return {
-                    // LARS handle alternative text, need multi textvariations
-                    dialogMode: CLM.DialogMode.Extractor,
-                    extractResponses: [],
-                    textVariations: [turnData.textVariation],  
-                    memories,
-                    prevMemories,
-                    roundIndex: this.props.selectedActivityIndex
-                }
+            }   
+            // Handle rendering of pre-existing activity    
+            else if (this.props.historyRenderData) {
+                return this.props.historyRenderData()
             }
-            else {
-                throw new Error("Bad TurnData")
-            }
+            throw new Error("Bad TurnData")
         }
         else {
             return {
@@ -270,8 +283,8 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                     <div>
                         <MemoryTable
                             data-testid="teachsessionadmin-memorytable"
-                            memories={renderData.memories}
-                            prevMemories={renderData.prevMemories}
+                            memories={filterDummyEntities(renderData.memories)}
+                            prevMemories={filterDummyEntities(renderData.prevMemories)}
                         />
                     </div>
                 </div>
@@ -393,7 +406,7 @@ const mapStateToProps = (state: State) => {
     return {
         user: state.user.user,
         teachSession: state.teachSessions,
-        entities: state.entities,
+        entities: state.entities
     }
 }
 
@@ -408,6 +421,7 @@ export interface ReceivedProps {
     activityIndex: number
     // If user clicked on an Activity
     selectedActivityIndex: number | null
+    historyRenderData: (() => RenderData) | null
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps

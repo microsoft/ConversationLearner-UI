@@ -350,16 +350,19 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             let isAvailable = this.isAvailable(this.state.newAction);
             if (isAvailable) {
                 this.handleActionSelection(this.state.newAction.actionId);
-                this.setState({ newAction: null });
+                this.setState({ newAction: null })
             }
 
         } else if (!this.state.actionModalOpen) {
-            setTimeout(this.focusPrimaryButton, 500);
+            setTimeout(this.focusPrimaryButton, 100)
         }
     }
     focusPrimaryButton(): void {
         if (this.primaryScoreButton) {
             this.primaryScoreButton.focus();
+        }
+        else {
+            setTimeout(this.focusPrimaryButton, 100)
         }
     }
 

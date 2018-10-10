@@ -280,8 +280,8 @@ class MemoryTable extends React.Component<Props, ComponentState> {
         if (sortColumn) {
             // Sort the items.
             unionMemoryNames = unionMemoryNames.concat([]).sort((a, b) => {
-                const aEntity = this.props.entities.find(e => e.entityName == a)
-                const bEntity = this.props.entities.find(e => e.entityName == b)
+                const aEntity = this.props.entities.find(e => e.entityName === a)
+                const bEntity = this.props.entities.find(e => e.entityName === b)
                 if (!aEntity) {
                     throw new Error(`Could not find entity by name: ${a} in list of entities`)
                 }

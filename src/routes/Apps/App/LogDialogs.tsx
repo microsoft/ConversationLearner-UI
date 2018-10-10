@@ -796,7 +796,6 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         })
     }
 
-
     async onSaveTrainDialog(newTrainDialog: CLM.TrainDialog, isInvalid: boolean) {
 
         // Remove actionless dummy step (used for rendering) if it exits
@@ -1013,7 +1012,6 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     onDeleteTurn={(trainDialog, activity) => this.onDeleteTurn(trainDialog, activity)}
                     onChangeExtraction={(trainDialog, activity, editHandlerArgs) => this.onChangeExtraction(trainDialog, activity, editHandlerArgs.extractResponse, editHandlerArgs.textVariations)} 
                     onChangeAction={(trainDialog, activity, editHandlerArgs) => this.onChangeAction(trainDialog, activity, editHandlerArgs.trainScorerStep)} 
-                    onEditTurn={() => {}}
                     editType={this.state.editType} 
                     initialHistory={this.state.history}
                     lastAction={this.state.lastAction}
@@ -1039,7 +1037,6 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     onBranchDialog={null} // Never branch on LogDialogs
                     onCloseModal={(reload) => this.onCloseEditDialogModal(reload)}
                     onDeleteDialog={this.onDeleteLogDialog}
-                    onUpdateHistory={(updatedTrainDialog, selectedActivityIndex) => this.onUpdateHistory(updatedTrainDialog, selectedActivityIndex)}
                     onContinueDialog={(editedTrainDialog, initialUserInput) => this.onContinueTrainDialog(editedTrainDialog, initialUserInput)}
                     onSaveDialog={(editedTrainDialog, isInvalid) => this.onSaveTrainDialog(editedTrainDialog, isInvalid)}
                     onCreateDialog={() =>  { }}

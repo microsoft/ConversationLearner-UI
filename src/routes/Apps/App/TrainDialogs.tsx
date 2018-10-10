@@ -449,29 +449,6 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    async onEditTurn(trainDialog: CLM.TrainDialog, selectedActivity: Activity) {
-
-        try {
-            const roundIndex = selectedActivity.channelData.roundIndex
-            let scoreIndex = selectedActivity.channelData.scoreIndex
-
-            // Copy TrainDialog
-            let newTrainDialog = JSON.parse(JSON.stringify(trainDialog))
-            let curRound = newTrainDialog.rounds[roundIndex]
-
-            // If inserted at end of conversation, allow to scroll to bottom
-            if (roundIndex === trainDialog.rounds.length - 1 && scoreIndex === curRound.scorerSteps.length - 1) {
-                this.props.clearWebchatScrollPosition()
-            }
-
-            await this.onUpdateHistory(newTrainDialog, selectedActivity)
-        }
-        catch (error) {
-            console.warn(`Error when attempting to insert an Action `, error)
-        }
-    }
-
-    @autobind
     async onInsertAction(trainDialog: CLM.TrainDialog, selectedActivity: Activity) {
 
         try {
@@ -1237,7 +1214,6 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     onDeleteTurn={(trainDialog, activity) => this.onDeleteTurn(trainDialog, activity)}
                     onChangeExtraction={(trainDialog, activity, editHandlerArgs) => this.onChangeExtraction(trainDialog, activity, editHandlerArgs.extractResponse, editHandlerArgs.textVariations)} 
                     onChangeAction={(trainDialog, activity, editHandlerArgs) => this.onChangeAction(trainDialog, activity, editHandlerArgs.trainScorerStep)} 
-                    onEditTurn={(trainDialog, activity) => this.onEditTurn(trainDialog, activity)}
                     onSetInitialEntities={this.onSetInitialEntities}
                     initialHistory={this.state.history}
                     editType={this.state.editType}
@@ -1264,7 +1240,6 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     onChangeAction={(trainDialog: CLM.TrainDialog, activity: Activity, trainScorerStep: CLM.TrainScorerStep) => this.onChangeAction(trainDialog, activity, trainScorerStep)}
                     onBranchDialog={(trainDialog, activity, userInput) => this.onBranchTrainDialog(trainDialog, activity, userInput)}
                     onDeleteDialog={() => this.onDeleteTrainDialog()}
-                    onUpdateHistory={(updatedTrainDialog, selectedActivity) => this.onUpdateHistory(updatedTrainDialog, selectedActivity)}
                     onContinueDialog={(editedTrainDialog, initialUserInput) => this.onContinueTrainDialog(editedTrainDialog, initialUserInput)}
                     onSaveDialog={(editedTrainDialog, isInvalid) => this.onReplaceTrainDialog(editedTrainDialog, isInvalid)}
                     onCreateDialog={(newTrainDialog, isInvalid) => this.onCreateTrainDialog(newTrainDialog, isInvalid)}

@@ -164,72 +164,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             this.props.onContinueDialog(newTrainDialog, initialUserInput) 
         }
     }
-/* lars moved to traindialogs
-    @autobind
-    async onChangeExtraction(extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) {
- 
-        if (!this.state.selectedActivity) {
-            throw new Error("No selected activity")
-        }
-        if (!this.props.user) {
-            throw new Error("No Active User");
-        }
 
-        try {
-            const roundIndex = this.state.selectedActivity.channelData.roundIndex
-            const definitions = {
-                entities: this.props.entities,
-                actions: this.props.actions,
-                trainDialogs: []
-            }
-
-            let newTrainDialog = JSON.parse(JSON.stringify(this.props.trainDialog)) as CLM.TrainDialog
-            newTrainDialog.definitions = definitions;
-            newTrainDialog.rounds[roundIndex].extractorStep.textVariations = textVariations;
-
-            // Replay logic functions on train dialog
-            newTrainDialog = await ((this.props.trainDialogReplayThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<CLM.TrainDialog>)
-
-            this.props.onUpdateHistory(newTrainDialog, this.state.selectedActivity)
-        }
-        catch (error) {
-                console.warn(`Error when attempting to change extraction: `, error)
-        }
-    }
-*/
-/* Lars
-    @autobind
-    async onChangeAction(trainScorerStep: CLM.TrainScorerStep) {
-        if (!this.state.selectedActivity) {
-            throw new Error("No selected activity")
-        }
-        if (!this.props.user) {
-            throw new Error("No Active User");
-        }
-
-        try {
-            const roundIndex = this.state.selectedActivity.channelData.roundIndex
-            const scoreIndex = this.state.selectedActivity.channelData.scoreIndex
-            const definitions = {
-                entities: this.props.entities,
-                actions: this.props.actions,
-                trainDialogs: []
-            }
-
-            let newTrainDialog = JSON.parse(JSON.stringify(this.props.trainDialog)) as CLM.TrainDialog
-            newTrainDialog.rounds[roundIndex].scorerSteps[scoreIndex] = trainScorerStep
-            newTrainDialog.definitions = definitions;
-
-            // Replay logic functions on train dialog
-            newTrainDialog = await ((this.props.trainDialogReplayThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<CLM.TrainDialog>)
-
-            this.props.onUpdateHistory(newTrainDialog, this.state.selectedActivity)
-        }
-        catch (error) {
-            console.warn(`Error when attempting to change an Action: `, error)
-        }
-    }
- */
     onWebChatSelectActivity(activity: Activity) {
          this.setState({
             selectedActivity: activity
@@ -751,7 +686,6 @@ export interface ReceivedProps {
     onSaveDialog: (newTrainDialog: CLM.TrainDialog, isInvalid: boolean) => void
     // Add a new train dialog to the Model (when EditDialogType === NEW)
     onCreateDialog: (newTrainDialog: CLM.TrainDialog, isInvalid: boolean) => void
-    onUpdateHistory: (newTrainDialog: CLM.TrainDialog, selectedActivity: Activity | null) => void
     onDeleteDialog: () => void
 }
 
