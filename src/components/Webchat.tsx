@@ -52,7 +52,7 @@ export function renderActivity(
             role="button"
         > 
             <div className={'wc-message wc-message-from-' + who} ref={ div => setRef(div) }>
-                <div className={contentClassName}>
+                <div className={contentClassName} data-testid="web-chat-utterances">
                     <svg className="wc-message-callout">
                         <path className="point-left" d="m0,6 l6 6 v-12 z" />
                         <path className="point-right" d="m6,6 l-6 6 v-12 z" />

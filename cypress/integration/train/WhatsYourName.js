@@ -70,6 +70,8 @@ describe("What's your name", () =>
 
     // 4.3	...and Select 'What's your name?'
     scorerModal.ClickAction("What's your name?")
+    
+    LogLastBotUtterance("What's your name?")
 
     // 4.4	Enter 'david'.
     editDialogModal.TypeYourMessage("David")
@@ -86,8 +88,35 @@ describe("What's your name", () =>
     // 4.6	'Hello $name' is now available as a response.
     // 4.7	Select 'Hello $name'.
     scorerModal.ClickAction("Hello David")
+    
+    LogLastBotUtterance("Hello David")
 
     // 4.8	Click Done Teaching.
     editDialogModal.ClickSaveButton()
   })
 })
+
+function LogLastBotUtterance(utterance)
+{
+  cy.Get('[data-testid="web-chat-utterances"]').then(elements =>
+  {
+    helpers.ConLog(`LogLastUtterance.1`, `elements.length: ${elements.length}`)
+    var element = elements[elements.length - 1]
+    helpers.ConLog(`LogLastUtterance.1.1`, element.innerHTML)
+    cy.wrap(element).within(e =>
+    {
+      helpers.ConLog(`LogLastUtterance.2.1`, `utterance: ${utterance}`)
+      helpers.ConLog(`LogLastUtterance.2.2`, `e[0].innerText: ${e[0].innerText}`)
+      cy.get('div.format-markdown > p').should('have.text', utterance)
+      // .then(e2 =>
+      // {
+      //   helpers.ConLog(`LogLastUtterance.3`, e2[0].innerHTML)
+
+      //   var propertyList = ''
+      //   for(var property in e2[0]) propertyList += `${(propertyList.length == 0 ? '' : ', ')}${property}: ${element[property]}`
+
+      //   helpers.ConLog(`LogLastUtterance.4`, propertyList)
+      // })
+    })
+  })
+}
