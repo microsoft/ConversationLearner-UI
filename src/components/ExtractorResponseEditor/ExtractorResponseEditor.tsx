@@ -196,10 +196,10 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
             const endIndex = selectedNodes[selectedNodes.length - 1].data.endIndex
             const builtInEntity = this.props.preBuiltEntities.find(entity => entity.startIndex == startIndex && entity.endIndex == endIndex)
             if(builtInEntity) {
-                const builtInType = builtInEntity.data.option.type
-                if(typeof builtInType === 'string') {
-                    const split = builtInType.split('.')
-                    builtInTypeFilter = split[split.length -1]
+                const builtInEntityId = builtInEntity.data.option.id
+                const builtInEntityDef = this.props.entities.find(e => e.entityId === builtInEntityId)
+                if(builtInEntityDef) {
+                    builtInTypeFilter = builtInEntityDef.entityType
                 }
             }
         }

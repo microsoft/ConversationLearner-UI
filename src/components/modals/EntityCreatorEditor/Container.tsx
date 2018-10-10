@@ -589,7 +589,7 @@ class Container extends React.Component<Props, ComponentState> {
 
             isConfirmDeleteModalOpen={this.state.isConfirmDeleteModalOpen}
             isDeleteErrorModalOpen={this.state.isDeleteErrorModalOpen}
-            showDelete={this.state.isEditing && !!this.props.handleDelete}
+            showDelete={this.state.isEditing && !!this.props.handleDelete && !this.state.isPrebuilt}
             onClickDelete={this.onClickDelete}
             onCancelDelete={this.onCancelDelete}
             onConfirmDelete={this.onConfirmDelete}
