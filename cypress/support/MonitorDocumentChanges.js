@@ -145,35 +145,33 @@ var MonitorDocumentChanges = (function()
             '<div class="ms-Spinner-circle ms-Spinner--large circle-50">',    
         ]
         
-        var isSpinning = false
         for(var i = 0; i < spinnerTexts.length; i++)
         {
             if (lastHtml.includes(spinnerTexts[i]))
             {   // We found a spinner on the page.
-                isSpinning = true
                 lastChangeTime = new Date().getTime()
                 SetExpectingSpinner(false)
                 
-                if (spinnerTexts[i] == currentSpinnerText) return
-
-                helpers.ConLog(thisFuncName, `Start - ${spinnerTexts[i]}`)
-                currentSpinnerText = spinnerTexts[i]
+                if (spinnerTexts[i] != currentSpinnerText)
+                {
+                    helpers.ConLog(thisFuncName, `Start - ${spinnerTexts[i]} - current HTML:\n${lastHtml}`)
+                    currentSpinnerText = spinnerTexts[i]
+                }
+                return
             }
         }
         
-        if (!isSpinning)
+        // Spinner NOT found on the page.
+        if (currentSpinnerText != '')
         {
-            if (currentSpinnerText != '')
-            {
-                helpers.ConLog(thisFuncName, `Stop - ${currentSpinnerText}`)
-                currentSpinnerText = ''
-            }
-            
-            if (expectingSpinner) 
-            {
-                helpers.ConLog(thisFuncName, `Expecting Spinner to show up`)
-                lastChangeTime = new Date().getTime()
-            }
+            helpers.ConLog(thisFuncName, `Stop - ${currentSpinnerText}`)
+            currentSpinnerText = ''
+        }
+        
+        if (expectingSpinner) 
+        {
+            helpers.ConLog(thisFuncName, `Expecting Spinner to show up`)
+            lastChangeTime = new Date().getTime()
         }
     }
 
@@ -186,6 +184,7 @@ var MonitorDocumentChanges = (function()
 
     function UrlNeedsSpinner(url)
     {
+        // If a URL ends with one of these we do not expect a spinner.
         var urlEndings =
         [
             '/trainDialogs',
@@ -195,24 +194,7 @@ var MonitorDocumentChanges = (function()
             '/settings'
         ]
         
-        var returnValue = true
-
-        //urlEndings.forEach(urlEnding => { if (url.endsWith(urlEnding)) return false })
-        // urlEndings.forEach(urlEnding => 
-        // { 
-        //     helpers.ConLog(`UrlNeedsSpinner`, `url: ${url} - urlEnding: ${urlEnding} - urlEndsWith: ${url.endsWith(urlEnding)}`)
-        //     if (url.endsWith(urlEnding)) 
-        //     {
-        //         returnValue = false
-        //         break
-        //     }
-        // })
-
-        for(var i = 0; i < urlEndings.length; i++)
-        { 
-            helpers.ConLog(`UrlNeedsSpinner`, `url: ${url} - urlEnding: ${urlEndings[i]} - urlEndsWith: ${url.endsWith(urlEndings[i])}`)
-            if (url.endsWith(urlEndings[i])) return false
-        }
+        for(var i = 0; i < urlEndings.length; i++) { if (url.endsWith(urlEndings[i])) return false }
         return true
     }
 }())
