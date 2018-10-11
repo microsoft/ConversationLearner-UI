@@ -12,12 +12,12 @@ export function VerifyEntityMemoryIsEmpty()           { cy.Get('[data-testid="me
 export function EntitySearch()                        { cy.Get('[data-testid="entity-picker-entity-search"]') }
 export function AlternativeInputText()                { cy.Get('[data-testid="entity-extractor-alternative-input-text"]') }
 export function ClickAddAlternativeInputButton()      { cy.Get('[data-testid="entity-extractor-add-alternative-input-button"]').Click() }
-export function ClickEntityDetectionToken(tokenValue) { cy.Get('[data-testid="text-entity-value"]').contains(tokenValue).Click() }
+export function ClickEntityDetectionToken(tokenValue) { cy.Get('[data-testid="token-node-entity-value"]').contains(tokenValue).Click() }
 
 export function VerifyDetectedEntity(entityName, entityValue)
 {
-  cy.Get('[data-testid="button-entity-indicatorName"]').contains(entityName)
-  cy.Get('[data-testid="text-entity-value"]').contains(entityValue)
+  cy.Get('[data-testid="custom-entity-name-button"]').contains(entityName)
+  cy.Get('[data-testid="token-node-entity-value"]').contains(entityValue)
 }
 
 

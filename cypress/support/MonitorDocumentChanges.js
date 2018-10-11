@@ -7,18 +7,26 @@ const helpers = require('../support/helpers.js')
 
 var MonitorDocumentChanges = (function()
 {
+    var lastMonitorTime = 0
     var lastChangeTime = 0
     var lastHtml
     var StopLookingForChanges = false
     var dumpHtml = false;
     
+    var expectingSpinner
+    var currentSpinnerText = ''
+
     // Initialize this only once.
     //   It gets called the first time it is imported, which should be at or near the top of the index.js file
     //   Then it potentially could get called additional times when the require statement is used.
     //   BUGBUG: this initialize once logic does not work because lastChangeTime gets zeroed everytime this is imported or required.
     if (lastChangeTime == 0) initialize();
 
-    function MillisecondsSinceLastChange() { return (new Date().getTime() - lastChangeTime) }
+    function MillisecondsSinceLastChange() 
+    { 
+        if (new Date().getTime() > lastMonitorTime + 50) LookForChange()
+        return (new Date().getTime() - lastChangeTime) 
+    }
 
     function Stop() {StopLookingForChanges = true}
 
@@ -81,6 +89,7 @@ var MonitorDocumentChanges = (function()
         {
             helpers.ConLog(`url:changed`, `New URL ${newUrl} - MillisecondsSinceLastChange: ${MillisecondsSinceLastChange()}`) 
             lastChangeTime = new Date().getTime()
+            if(UrlNeedsSpinner(newUrl)) SetExpectingSpinner(true)
         })
 
         // Cypress.on('uncaught:exception', (error, runnable) => 
@@ -93,13 +102,13 @@ var MonitorDocumentChanges = (function()
 
         lastChangeTime = new Date().getTime()
         lastHtml = Cypress.$('html')[0].outerHTML
-        setTimeout(() => { LookForChange() }, 50)   // This will repeat until Stop is called.
+        setTimeout(() => { LookForChange(true) }, 50)   // This will repeat until Stop is called.
 
         helpers.ConLog(`MonitorDocumentChanges.initialize()`, `Running`)
     }
 
     var dumpSpinner = false
-    function LookForChange()
+    function LookForChange(loop)
     {
         var thisFuncName = `MonitorDocumentChanges.LookForChange()`
 
@@ -109,39 +118,102 @@ var MonitorDocumentChanges = (function()
             return
         }
 
-        var currentTime = new Date().getTime()
+        var currentTime = lastMonitorTime = new Date().getTime()
         var currentHtml = Cypress.$('html')[0].outerHTML
-        if(currentHtml == lastHtml)
-        {
-            //helpers.ConLog(thisFuncName, `No change`)
-            if (currentHtml.includes('data-testid="spinner"'))//'<span class="cl-screen-reader">Loading</span>'))
-            {
-                //helpers.ConLog(thisFuncName, `SPINNING1 `)
-                lastChangeTime = currentTime
-            }
-            else if (currentHtml.includes('<div class="ms-Spinner-circle ms-Spinner--large circle-50">'))
-            {
-                helpers.ConLog(thisFuncName, `SPINNING2 `)
-                // if (!dumpSpinner)
-                // {
-                //     dumpSpinner = true
-                //     helpers.ConLog(thisFuncName, `HTML:::::::::::::::::::::::::::::::::::::::::::::::::\n${currentHtml}`)
-                // }
-                lastChangeTime = currentTime
-            }
-        }
-        else
+        if(currentHtml != lastHtml)
         {
             helpers.ConLog(thisFuncName, `Change Found - Milliseconds since last change: ${(currentTime - lastChangeTime)}`)
             //cy.writeFile(currentHtml, `c:\\temp\\dom.${helpers.NowAsString()}.txt`)
-            //helpers.ConLog(thisFuncName, `Current HTML:\n${currentHtml}`)
-            if (dumpHtml) helpers.ConLog(thisFuncName, `Current HTML:\n${currentHtml}`)
+            if (dumpHtml || expectingSpinner) helpers.ConLog(thisFuncName, `Current HTML:\n${currentHtml}`)
 
             lastChangeTime = currentTime
             lastHtml = currentHtml
         }
         
-        setTimeout(() => { LookForChange() }, 50)   // Repeat this same function 50ms later
+        MonitorSpinner()
+
+        if(loop) setTimeout(() => { LookForChange(true) }, 50)   // Repeat this same function 50ms later
+    }
+
+    function MonitorSpinner()
+    {
+        var thisFuncName = `MonitorDocumentChanges.MonitorSpinner()`
+
+        var spinnerTexts =
+        [
+            'data-testid="spinner"',
+            '<div class="ms-Spinner-circle ms-Spinner--large circle-50">',    
+        ]
+        
+        var isSpinning = false
+        for(var i = 0; i < spinnerTexts.length; i++)
+        {
+            if (lastHtml.includes(spinnerTexts[i]))
+            {   // We found a spinner on the page.
+                isSpinning = true
+                lastChangeTime = new Date().getTime()
+                SetExpectingSpinner(false)
+                
+                if (spinnerTexts[i] == currentSpinnerText) return
+
+                helpers.ConLog(thisFuncName, `Start - ${spinnerTexts[i]}`)
+                currentSpinnerText = spinnerTexts[i]
+            }
+        }
+        
+        if (!isSpinning)
+        {
+            if (currentSpinnerText != '')
+            {
+                helpers.ConLog(thisFuncName, `Stop - ${currentSpinnerText}`)
+                currentSpinnerText = ''
+            }
+            
+            if (expectingSpinner) 
+            {
+                helpers.ConLog(thisFuncName, `Expecting Spinner to show up`)
+                lastChangeTime = new Date().getTime()
+            }
+        }
+    }
+
+    function SetExpectingSpinner(value)
+    {
+        if (expectingSpinner == value) return;
+        helpers.ConLog(`MonitorDocumentChanges.SetExpectingSpinner()`, `Value Changed from ${expectingSpinner} to ${value}`)
+        expectingSpinner = value
+    }
+
+    function UrlNeedsSpinner(url)
+    {
+        var urlEndings =
+        [
+            '/trainDialogs',
+            '/entities',
+            '/actions',
+            '/logDialogs',
+            '/settings'
+        ]
+        
+        var returnValue = true
+
+        //urlEndings.forEach(urlEnding => { if (url.endsWith(urlEnding)) return false })
+        // urlEndings.forEach(urlEnding => 
+        // { 
+        //     helpers.ConLog(`UrlNeedsSpinner`, `url: ${url} - urlEnding: ${urlEnding} - urlEndsWith: ${url.endsWith(urlEnding)}`)
+        //     if (url.endsWith(urlEnding)) 
+        //     {
+        //         returnValue = false
+        //         break
+        //     }
+        // })
+
+        for(var i = 0; i < urlEndings.length; i++)
+        { 
+            helpers.ConLog(`UrlNeedsSpinner`, `url: ${url} - urlEnding: ${urlEndings[i]} - urlEndsWith: ${url.endsWith(urlEndings[i])}`)
+            if (url.endsWith(urlEndings[i])) return false
+        }
+        return true
     }
 }())
 

@@ -32,7 +32,7 @@ class TokenNode extends React.Component<Props, {}> {
 
     render() {
         return (
-            <span className="cl-token-node" data-testid="text-entity-value" {...this.props.attributes} onMouseDown={this.onMouseDown}>
+            <span className="cl-token-node" data-testid="token-node-entity-value" {...this.props.attributes} onMouseDown={this.onMouseDown}>
                 {...this.props.children}
             </span>
         )
