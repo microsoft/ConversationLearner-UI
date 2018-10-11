@@ -22,12 +22,13 @@ const appsReducer: Reducer<AppsState> = (state = initialState, action: ActionObj
             return { ...state, all: action.uiAppList.appList.apps, activeApps: action.uiAppList.activeApps } 
         case AT.FETCH_APPLICATION_TRAININGSTATUS_ASYNC: {
             const app = state.all.find(a => a.appId === action.appId)
-            // User may have delete the app
+            // User may have deleted the app
             if (!app) {
                 return state;
             }
             const newApp: App = {
                 ...app,
+                trainingStatus: TrainingStatusCode.Running,
                 didPollingExpire: false
             }
 

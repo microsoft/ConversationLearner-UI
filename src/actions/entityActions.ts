@@ -30,7 +30,7 @@ export const createEntityThunkAsync = (appId: string, entity: EntityBase) => {
 
             // If created entity is prebuilt entity, we fetch all entities to make sure 
             // that definition of reserved prebuilt entity is in the memory
-            if(posEntity.entityType !== EntityType.LOCAL && posEntity.entityType !== EntityType.LUIS)
+            if (posEntity.entityType !== EntityType.LOCAL && posEntity.entityType !== EntityType.LUIS)
             {
                 dispatch(fetchAllEntitiesThunkAsync(appId));
             }

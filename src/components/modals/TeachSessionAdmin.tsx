@@ -33,6 +33,7 @@ export interface RenderData {
 interface RoundLookup {
     textVariations?: CLM.TextVariation[] | null
     uiScoreResponse?: CLM.UIScoreResponse | null
+    memories?: CLM.Memory[]
 }
 interface ComponentState {
     isScoresRefreshVisible: boolean
@@ -76,7 +77,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
         // If first turn, set offset based on existing activities
         let turnLookupOffset = this.state.turnLookup.length === 0 ? this.props.activityIndex - 1 : this.state.turnLookupOffset
                 
-        turnLookup.push({textVariations})
+        turnLookup.push({textVariations, memories: [...this.props.teachSession.memories]})
         turnLookup.push({uiScoreResponse})
         this.setState({
             isScoresRefreshVisible: true,
@@ -201,12 +202,12 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                         }
                     }
                 else if (turnData.textVariations) {
-                    const memories = (prevTurn && prevTurn.uiScoreResponse) ? prevTurn.uiScoreResponse.memories : []
+                    //LARSconst memories = (prevTurn && prevTurn.uiScoreResponse) ? prevTurn.uiScoreResponse.memories : []
                     return {
                         dialogMode: CLM.DialogMode.Extractor,
                         extractResponses: this.props.teachSession.extractResponses,
                         textVariations: turnData.textVariations,  
-                        memories,
+                        memories: turnData.memories || [],
                         prevMemories,
                         roundIndex: this.roundIndex(lookupIndex)
                     }
@@ -219,11 +220,15 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
             throw new Error("Bad TurnData")
         }
         else {
+            const memories = this.props.initialEntities
+                ? this.props.initialEntities.ToMemory()
+                : this.props.teachSession.memories
+
             return {
                 dialogMode: this.props.teachSession.mode,
                 scoreInput: this.props.teachSession.scoreInput!,
                 scoreResponse: this.props.teachSession.scoreResponse!,
-                memories: this.props.teachSession.memories,
+                memories: memories,
                 prevMemories: this.props.teachSession.prevMemories,
                 extractResponses: this.props.teachSession.extractResponses,
                 textVariations: [],
@@ -429,6 +434,7 @@ export interface ReceivedProps {
     app: CLM.AppBase
     editingPackageId: string
     editType: EditDialogType,
+    initialEntities: CLM.FilledEntityMap | null,
     // Index to attach to channel data
     activityIndex: number
     // If user clicked on an Activity

@@ -34,6 +34,7 @@ interface ComponentState {
     isUserInputModalOpen: boolean,
     isInitStateOpen: boolean,
     isInitAvailable: boolean,
+    initialEntities: CLM.FilledEntityMap | null,
     webchatKey: number,
     editing: boolean,
     hasTerminalAction: boolean,
@@ -51,6 +52,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
         isUserInputModalOpen: false,
         isInitStateOpen: false,
         isInitAvailable: true,
+        initialEntities: null,
         webchatKey: 0,
         editing: false,
         hasTerminalAction: false,
@@ -90,10 +92,12 @@ class TeachModal extends React.Component<Props, ComponentState> {
         let nextActivityIndex = this.state.nextActivityIndex
         let selectedActivityIndex = this.state.selectedActivityIndex
         let selectedHistoryActivity = this.state.selectedHistoryActivity
+        let initialEntities = this.state.initialEntities
 
         if (!newProps.isOpen) {
             selectedActivityIndex = null
             selectedHistoryActivity = null
+            initialEntities = null
         }
 
         if (this.props.initialHistory !== newProps.initialHistory) {
@@ -106,6 +110,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
         if (this.props.teach !== newProps.teach) {
             isInitAvailable = true
             hasTerminalAction = false
+            initialEntities = null
         }
         // Set terminal action from History but only if I just loaded it
         if (this.props.initialHistory !== newProps.initialHistory && newProps.initialHistory && newProps.initialHistory.length > 0) {
@@ -121,6 +126,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                 webchatKey,
                 hasTerminalAction,
                 isInitAvailable,
+                initialEntities,
                 nextActivityIndex,
                 selectedActivityIndex,
                 selectedHistoryActivity
@@ -138,10 +144,11 @@ class TeachModal extends React.Component<Props, ComponentState> {
     @autobind
     async onCloseInitState(filledEntityMap?: CLM.FilledEntityMap) {
         if (filledEntityMap && this.props.onSetInitialEntities) {
-            await this.props.onSetInitialEntities(filledEntityMap.FilledEntities())          
+            await this.props.onSetInitialEntities(filledEntityMap.FilledEntities())              
         }
         this.setState({
-            isInitStateOpen: false
+            isInitStateOpen: false,
+            initialEntities: filledEntityMap || null
         })
     }
 
@@ -230,6 +237,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
             this.setState({ 
                  // No initialization allowed after first input
                 isInitAvailable: false, 
+                initialEntities: null,
                 nextActivityIndex: this.state.nextActivityIndex + 1,
                 selectedActivityIndex: null,
                 selectedHistoryActivity: null
@@ -612,6 +620,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                                         app={this.props.app}
                                         editingPackageId={this.props.editingPackageId}
                                         editType={this.props.editType}
+                                        initialEntities={this.state.initialEntities}
                                         activityIndex={this.state.nextActivityIndex}
                                         selectedActivityIndex={this.state.selectedActivityIndex}
                                         historyRenderData={this.state.selectedHistoryActivity ? this.historyRender : null}
