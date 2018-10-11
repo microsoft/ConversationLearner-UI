@@ -76,7 +76,7 @@ const teachSessionReducer: Reducer<TeachSessionState> = (state = initialState, a
             return { ...state, mode: DialogMode.Extractor, extractResponses: remainingResponses };
         case AT.CLEAR_EXTRACT_RESPONSES:
             // Remove existing extract responses
-            return { ...state, mode: DialogMode.Extractor, extractResponses: [] };
+            return { ...state, extractResponses: [] };
         case AT.RUN_SCORER_ASYNC:
             return { ...state, uiScoreInput: action.uiScoreInput }
         case AT.GET_SCORES_FULFILLED:

@@ -330,7 +330,8 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                                     extractType={isLogDialog
                                         ? CLM.DialogType.LOGDIALOG
                                         : CLM.DialogType.TRAINDIALOG}
-                                    sessionId={this.props.editingLogDialog
+                                    teachId={null}
+                                    dialogId={this.props.editingLogDialog
                                         ? this.props.editingLogDialog.logDialogId
                                         : this.props.trainDialog.trainDialogId}
                                     roundIndex={this.state.roundIndex}

@@ -88,7 +88,7 @@ export function renderReplayError(replayError: CLM.ReplayError): JSX.Element {
                     <HelpIcon tipType={TipType.REPLAYERROR_DESC_INPUT_AFTER_NONWAIT} customStyle="cl-icon--transparent" />
                 </div>
             )
-            //LARS - think this can go away?  check
+        /* Currently not used, but may when check for API changes
         case CLM.ReplayErrorType.EntityDiscrepancy:
             let entityDiscrepancy = replayError as CLM.ReplayErrorEntityDiscrepancy;
             return (
@@ -125,6 +125,7 @@ export function renderReplayError(replayError: CLM.ReplayError): JSX.Element {
                         </div>
                     </OF.TooltipHost>
             )
+        */
         default:
             throw new Error(`Unhandled ReplayErrorType case: ${replayError.type}`);
     }
