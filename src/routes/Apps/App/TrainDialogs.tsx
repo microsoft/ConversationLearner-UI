@@ -345,17 +345,6 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         }
         // If train dialogs have been updated, update selected trainDialog too
         if (this.props.trainDialogs !== newProps.trainDialogs) {
-         /*   const trainDialog = this.state.currentTrainDialog  //LARS removing break anything
-            if (trainDialog) {
-                let existingTrainDialog = newProps.trainDialogs.find(t => t.trainDialogId === trainDialog.trainDialogId);
-                // If it exists update (may not if is new one being edited)
-                if (existingTrainDialog) {
-                    this.setState({
-                        currentTrainDialog: existingTrainDialog,
-                        originalTrainDialogId: existingTrainDialog.trainDialogId
-                    })
-                }
-        }*/
             this.newTeachSessionButton.focus();
         }
     }
@@ -778,65 +767,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         this.props.fetchApplicationTrainingStatusThunkAsync(this.props.app.appId)
         this.onCloseEditDialogModal();
     }
-/* lars remove
-    onBranchTrainDialog(turnIndex: number) {
-        if (!this.state.currentTrainDialog) {
-            throw new Error(`You attempted to branch from a turn in train dialog, but currentTrainDialog is not defined. Please open an issue.`)
-        }
 
-        // TODO: Why do we need to re-find the trainDialog, if we already have it as currentTrainDialog?
-        const trainDialog = this.props.trainDialogs.find(td => td.trainDialogId === this.state.currentTrainDialog!.trainDialogId)
-        if (!trainDialog) {
-            throw new Error(`You attempted to branch from a turn in train dialog, but that train dialog could not be found in list of train dialogs. Please open an issue.`)
-        }
-
-        // Create new train dialog, removing turns above the branch
-        const newTrainDialog: CLM.TrainDialog = {
-            createdDateTime: new Date().toJSON(),
-            lastModifiedDateTime: new Date().toJSON(),
-            trainDialogId: undefined!,
-            sourceLogDialogId: trainDialog.sourceLogDialogId,
-            version: undefined!,
-            packageCreationId: undefined!,
-            packageDeletionId: undefined!,
-            initialFilledEntities: trainDialog.initialFilledEntities,
-            rounds: trainDialog.rounds.slice(0, turnIndex),
-            definitions: {
-                entities: this.props.entities,
-                actions: this.props.actions,
-                trainDialogs: []
-            }
-        };
-
-        ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app, newTrainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)
-            .then(teachWithHistory => {
-                if (teachWithHistory.replayErrors.length === 0) {
-                    this.setState({
-                        teachSession: teachWithHistory.teach,
-                        history: teachWithHistory.history,
-                        lastAction: teachWithHistory.lastAction,
-                        currentTrainDialog: null,
-                        originalTrainDialogId: null,
-                        editType: EditDialogType.NEW,
-                        isEditDialogModalOpen: false,
-                        selectedHistoryIndex: null,
-                        isTeachDialogModalOpen: true
-                    })
-                }
-                else {
-                    this.setState({
-                        validationErrors: teachWithHistory.replayErrors,
-                        isValidationWarningOpen: true,
-                        validationErrorTitleId: FM.REPLAYERROR_BRANCH_TITLE,
-                        validationErrorMessageId: FM.REPLAYERROR_FAILMESSAGE
-                    })
-                }
-            })
-            .catch(error => {
-                console.warn(`Error when attempting to create teach session from branch: `, error)
-            })
-    }
-*/
     async onUpdateHistory(newTrainDialog: CLM.TrainDialog, selectedActivity: Activity | null) {
         const originalId = this.state.originalTrainDialogId || (this.state.currentTrainDialog ? this.state.currentTrainDialog.trainDialogId : null);
 
@@ -1262,7 +1193,6 @@ const mapDispatchToProps = (dispatch: any) => {
         fetchHistoryThunkAsync: actions.train.fetchHistoryThunkAsync,
         fetchApplicationTrainingStatusThunkAsync: actions.app.fetchApplicationTrainingStatusThunkAsync,
         fetchTrainDialogThunkAsync: actions.train.fetchTrainDialogThunkAsync,
-        runExtractorThunkAsync: actions.teach.runExtractorThunkAsync,
         scoreFromHistoryThunkAsync: actions.train.scoreFromHistoryThunkAsync,
         trainDialogReplayThunkAsync: actions.train.trainDialogReplayThunkAsync,
     }, dispatch)

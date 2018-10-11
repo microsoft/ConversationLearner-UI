@@ -31,7 +31,7 @@ export interface RenderData {
 }
 
 interface RoundLookup {
-    textVariation?: CLM.TextVariation | null
+    textVariations?: CLM.TextVariation[] | null
     uiScoreResponse?: CLM.UIScoreResponse | null
 }
 interface ComponentState {
@@ -71,13 +71,12 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
         const appId = this.props.app.appId
         const teachId = this.props.teachSession.current.teachId
         const uiScoreResponse = await ((this.props.runScorerThunkAsync(this.props.user.id, appId, teachId, uiScoreInput) as any) as Promise<CLM.UIScoreResponse>)
-        const textVariation = CLM.ModelUtils.ToTextVariation(extractResponse)
         
         let turnLookup = [...this.state.turnLookup]
         // If first turn, set offset based on existing activities
         let turnLookupOffset = this.state.turnLookup.length === 0 ? this.props.activityIndex - 1 : this.state.turnLookupOffset
                 
-        turnLookup.push({textVariation})
+        turnLookup.push({textVariations})
         turnLookup.push({uiScoreResponse})
         this.setState({
             isScoresRefreshVisible: true,
@@ -133,7 +132,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
         if (!waitForUser) {
             const uiScoreResponse = await ((this.props.runScorerThunkAsync(this.props.user.id, appId, teachId, uiScoreInput) as any) as Promise<CLM.UIScoreResponse>)
             let turnLookup = [...this.state.turnLookup]
-            turnLookup.push({uiScoreResponse})// lars test non-waits
+            turnLookup.push({uiScoreResponse})
             this.setState({
                 isScoresRefreshVisible: true,
                 turnLookup
@@ -162,6 +161,19 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
         })
     }
 
+    // Calculate round index from selectedActivityIndedx
+    roundIndex(activityIndex: number): number {
+        let roundIndex = -1
+        let activityLeft = activityIndex
+        while (activityLeft >= 0) {
+            if (this.state.turnLookup[activityLeft].textVariations) {
+                roundIndex = roundIndex + 1
+            }
+            activityLeft = activityLeft - 1
+        }
+        return roundIndex
+    }
+
     getRenderData(): RenderData {
 
         // If user click on and activity
@@ -183,21 +195,20 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                             scoreResponse: turnData.uiScoreResponse.scoreResponse,
                             memories: turnData.uiScoreResponse.memories,
                             prevMemories,
-                            extractResponses: [],
+                            extractResponses: this.props.teachSession.extractResponses,
                             textVariations: [],
-                            roundIndex: this.props.selectedActivityIndex
+                            roundIndex: this.roundIndex(lookupIndex)
                         }
                     }
-                else if (turnData.textVariation) {
+                else if (turnData.textVariations) {
                     const memories = (prevTurn && prevTurn.uiScoreResponse) ? prevTurn.uiScoreResponse.memories : []
                     return {
-                        // LARS handle alternative text, need multi textvariations
                         dialogMode: CLM.DialogMode.Extractor,
-                        extractResponses: [],
-                        textVariations: [turnData.textVariation],  
+                        extractResponses: this.props.teachSession.extractResponses,
+                        textVariations: turnData.textVariations,  
                         memories,
                         prevMemories,
-                        roundIndex: this.props.selectedActivityIndex
+                        roundIndex: this.roundIndex(lookupIndex)
                     }
                 }
             }   
@@ -305,7 +316,8 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                                     editingPackageId={this.props.editingPackageId}
                                     canEdit={true}
                                     extractType={CLM.DialogType.TEACH}
-                                    sessionId={this.props.teachSession.current.teachId}
+                                    teachId={this.props.teachSession.current.teachId}
+                                    dialogId={this.props.teachSession.current.trainDialogId}
                                     roundIndex={renderData.roundIndex}
                                     autoTeach={this.props.teachSession.autoTeach}
                                     dialogMode={renderData.dialogMode}

@@ -450,12 +450,8 @@ class TeachModal extends React.Component<Props, ComponentState> {
         
         const isUser = activity.from.name === 'ConversationLearnerDeveloper'
 
-        // Can only delete first user input if it has no scorer steps
-        // and is followed by user input
-        const canDeleteRound = this.state.selectedActivityIndex !== 0 /*|| 
-            senderType !== CLM.SenderType.User ||
-            curRound.scorerSteps.length === 0/* ||LARS
-            (hasNoScorerStep && this.props.trainDialog.rounds.length > 1)*/
+        // Can't delete first user input
+        const canDeleteRound = this.state.selectedActivityIndex !== 0
 
         return (
             <div className="cl-wc-buttonbar">
