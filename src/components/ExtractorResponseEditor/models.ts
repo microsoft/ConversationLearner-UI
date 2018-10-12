@@ -19,7 +19,8 @@ export interface InternalPredictedEntity {
 export interface IEntityPickerProps {
     isOverlappingOtherEntities: boolean
     isVisible: boolean
-    position: IPosition | null
+    position: IPosition | null, 
+    builtInTypeFilter: string | null
 }
 
 export interface IPosition {

@@ -14,7 +14,7 @@ import * as BotChat from '@conversationlearner/webchat'
 import * as OF from 'office-ui-fabric-react';
 import { State } from '../../types';
 import Webchat, { renderActivity } from '../Webchat'
-import TeachSessionAdmin from './TeachSessionAdmin'
+import TeachSessionAdmin, { RenderData } from './TeachSessionAdmin'
 import TeachSessionInitState from './TeachSessionInitState'
 import * as CLM from '@conversationlearner/models'
 import { Activity } from 'botframework-directlinejs'
@@ -27,17 +27,22 @@ import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { autobind } from 'office-ui-fabric-react/lib/Utilities';
 import { EditDialogType } from '.';
+import { EditHandlerArgs } from '../../routes/Apps/App/TrainDialogs';
 
 interface ComponentState {
     isConfirmDeleteOpen: boolean,
     isUserInputModalOpen: boolean,
     isInitStateOpen: boolean,
     isInitAvailable: boolean,
+    initialEntities: CLM.FilledEntityMap | null,
     webchatKey: number,
     editing: boolean,
     hasTerminalAction: boolean,
     nextActivityIndex: number,
-    selectedActivityIndex: number | null
+    // If activity selected its index
+    selectedActivityIndex: number | null,
+    // If activity was part of existing history, the actual item
+    selectedHistoryActivity: Activity | null
 }
 
 class TeachModal extends React.Component<Props, ComponentState> {
@@ -47,11 +52,13 @@ class TeachModal extends React.Component<Props, ComponentState> {
         isUserInputModalOpen: false,
         isInitStateOpen: false,
         isInitAvailable: true,
+        initialEntities: null,
         webchatKey: 0,
         editing: false,
         hasTerminalAction: false,
         nextActivityIndex: 0,
-        selectedActivityIndex: null
+        selectedActivityIndex: null,
+        selectedHistoryActivity: null
     }
 
     private callbacksId: string | null = null;
@@ -83,6 +90,15 @@ class TeachModal extends React.Component<Props, ComponentState> {
         let hasTerminalAction = this.state.hasTerminalAction
         let isInitAvailable = this.state.isInitAvailable
         let nextActivityIndex = this.state.nextActivityIndex
+        let selectedActivityIndex = this.state.selectedActivityIndex
+        let selectedHistoryActivity = this.state.selectedHistoryActivity
+        let initialEntities = this.state.initialEntities
+
+        if (!newProps.isOpen) {
+            selectedActivityIndex = null
+            selectedHistoryActivity = null
+            initialEntities = null
+        }
 
         if (this.props.initialHistory !== newProps.initialHistory) {
             webchatKey = this.state.webchatKey + 1
@@ -94,6 +110,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
         if (this.props.teach !== newProps.teach) {
             isInitAvailable = true
             hasTerminalAction = false
+            initialEntities = null
         }
         // Set terminal action from History but only if I just loaded it
         if (this.props.initialHistory !== newProps.initialHistory && newProps.initialHistory && newProps.initialHistory.length > 0) {
@@ -106,10 +123,13 @@ class TeachModal extends React.Component<Props, ComponentState> {
             hasTerminalAction !== this.state.hasTerminalAction ||
             isInitAvailable !== this.state.isInitAvailable) {
             this.setState({
-                webchatKey: webchatKey,
-                hasTerminalAction: hasTerminalAction,
-                isInitAvailable: isInitAvailable,
-                nextActivityIndex
+                webchatKey,
+                hasTerminalAction,
+                isInitAvailable,
+                initialEntities,
+                nextActivityIndex,
+                selectedActivityIndex,
+                selectedHistoryActivity
             })
         }   
     }
@@ -124,10 +144,11 @@ class TeachModal extends React.Component<Props, ComponentState> {
     @autobind
     async onCloseInitState(filledEntityMap?: CLM.FilledEntityMap) {
         if (filledEntityMap && this.props.onSetInitialEntities) {
-            await this.props.onSetInitialEntities(filledEntityMap.FilledEntities())          
+            await this.props.onSetInitialEntities(filledEntityMap.FilledEntities())              
         }
         this.setState({
-            isInitStateOpen: false
+            isInitStateOpen: false,
+            initialEntities: filledEntityMap || null
         })
     }
 
@@ -171,6 +192,25 @@ class TeachModal extends React.Component<Props, ComponentState> {
         this.props.toggleAutoTeach(isChecked);
     }
 
+    async onWebChatSelectActivity(activity: Activity) {
+
+        // Activities from history can be looked up
+        if (this.props.initialHistory.length > 0) {
+            const selectedActivityIndex = this.props.initialHistory.findIndex(a => a.id === activity.id)
+            if (selectedActivityIndex > -1) {
+                this.setState({
+                    selectedActivityIndex,
+                    selectedHistoryActivity: activity})
+                return
+            }
+        }
+        // Otherwise newly create activities with have index in channelData
+        this.setState({
+            selectedActivityIndex: activity.channelData.activityIndex,
+            selectedHistoryActivity: null
+        })        
+    }
+
     onWebChatPostActivity(activity: Activity) {
         if (activity.type === 'message') {
 
@@ -197,11 +237,160 @@ class TeachModal extends React.Component<Props, ComponentState> {
             this.setState({ 
                  // No initialization allowed after first input
                 isInitAvailable: false, 
-                nextActivityIndex: this.state.nextActivityIndex + 1
+                initialEntities: null,
+                nextActivityIndex: this.state.nextActivityIndex + 1,
+                selectedActivityIndex: null,
+                selectedHistoryActivity: null
             })
 
             this.props.runExtractorThunkAsync(this.props.app.appId, CLM.DialogType.TEACH, this.props.teach.teachId, null, userInput);
         }
+    }
+
+    // TODO: this is redundant with EditDialogAdmin
+    @OF.autobind
+    getPrevMemories(): CLM.Memory[] {
+
+        let sourceDialog = this.props.sourceTrainDialog || this.props.sourceLogDialog
+
+        if (!this.state.selectedHistoryActivity || !sourceDialog) {
+            throw new Error("historyRender missing data")
+        }
+
+        let roundIndex = this.state.selectedHistoryActivity.channelData.roundIndex
+
+        if (roundIndex === null) {
+            throw new Error(`Cannot get previous memories because roundIndex is null. This is likely a problem with code. Please open an issue.`)
+        }
+
+        let memories: CLM.Memory[] = [];
+        let prevIndex = roundIndex - 1;
+        if (prevIndex >= 0) {
+            let round = sourceDialog.rounds[prevIndex];
+            if (round.scorerSteps.length > 0) {
+                let scorerStep = round.scorerSteps[round.scorerSteps.length - 1];
+                memories = scorerStep.input.filledEntities.map<CLM.Memory>(fe => {
+                    const entity = this.props.entities.find(e => e.entityId === fe.entityId)
+                    if (!entity) {
+                        throw new Error(`Could not find entity by id: ${fe.entityId} in list of entities`)
+                    }
+                    return {
+                        entityName: entity.entityName,
+                        entityValues: fe.values
+                    }
+                })
+            }
+        }
+        return memories;
+    }
+
+    // TODO: this is redundant with EditDialogAdmin
+    @OF.autobind
+    historyRender(): RenderData {
+        let selectedAction: CLM.ActionBase | undefined
+        let scorerStep: CLM.TrainScorerStep | CLM.LogScorerStep | undefined
+        let scoreResponse: CLM.ScoreResponse | undefined
+        let round: CLM.TrainRound | CLM.LogRound | undefined
+        let memories: CLM.Memory[] = [];
+        let prevMemories: CLM.Memory[] = [];
+
+        let sourceDialog = this.props.sourceTrainDialog || this.props.sourceLogDialog
+        if (!this.state.selectedHistoryActivity || !sourceDialog) {
+            throw new Error("historyRender missing data")
+        }
+
+        let roundIndex = this.state.selectedHistoryActivity.channelData.roundIndex
+        let scoreIndex = this.state.selectedHistoryActivity.channelData.scoreIndex
+        let senderType = this.state.selectedHistoryActivity.channelData.senderType
+
+        if (roundIndex !== null && roundIndex < sourceDialog.rounds.length) {
+            round = sourceDialog.rounds[roundIndex];
+            if (round.scorerSteps.length > 0 && typeof scoreIndex === "number") {
+                scorerStep = round.scorerSteps[scoreIndex];
+                if (!scorerStep) {
+                    throw new Error(`Cannot get score step at index: ${scoreIndex} from array of length: ${round.scorerSteps.length}`)
+                }
+
+                let actionId = this.props.sourceTrainDialog 
+                    ? (scorerStep as CLM.TrainScorerStep)!.labelAction 
+                    : (scorerStep as CLM.LogScorerStep)!.predictedAction
+                selectedAction = this.props.actions.find(action => action.actionId === actionId);
+
+                if (!selectedAction) {
+                    // Action may have been deleted.  If so create dummy action to render
+                    selectedAction = {
+                        actionId: actionId || 'MISSING ACTION',
+                        createdDateTime: new Date().toJSON(),
+                        payload: 'MISSING ACTION',
+                        isTerminal: false,
+                        actionType: CLM.ActionTypes.TEXT,
+                        requiredEntitiesFromPayload: [],
+                        requiredEntities: [],
+                        negativeEntities: [],
+                        suggestedEntity: null,
+                        version: 0,
+                        packageCreationId: 0,
+                        packageDeletionId: 0
+                    }
+                }
+               
+                memories = scorerStep.input.filledEntities.map<CLM.Memory>((fe) => {
+                    let entity = this.props.entities.find(e => e.entityId === fe.entityId);
+                    let entityName = entity ? entity.entityName : 'UNKNOWN ENTITY';
+                    return {
+                        entityName: entityName,
+                        entityValues: fe.values
+                    }
+                });
+                
+                // Get prevmemories
+                prevMemories = this.getPrevMemories();
+
+                let scoredAction: CLM.ScoredAction = {
+                        actionId: selectedAction.actionId,
+                        payload: selectedAction.payload,
+                        isTerminal: selectedAction.isTerminal,
+                        score: 1.0,
+                        actionType: selectedAction.actionType
+                    }
+
+                // Generate list of all actions (apart from selected) for ScoreResponse as I have no scores
+                let unscoredActions = this.props.actions
+                    .filter(a => !selectedAction || a.actionId !== selectedAction.actionId)
+                    .map<CLM.UnscoredAction>(action => 
+                        ({
+                            actionId: action.actionId,
+                            payload: action.payload,
+                            isTerminal: action.isTerminal,
+                            reason: CLM.ScoreReason.NotCalculated,
+                            actionType: action.actionType
+                        }));
+
+                scoreResponse = {
+                    metrics: {
+                        wallTime: 0
+                    },
+                    scoredActions: [scoredAction],
+                    unscoredActions: unscoredActions
+                }
+            }
+
+            let textVariations = this.props.sourceTrainDialog 
+                ? (round as CLM.TrainRound).extractorStep.textVariations
+                : CLM.ModelUtils.ToTextVariations([(round as CLM.LogRound).extractorStep])
+
+            return {
+                dialogMode: (senderType === CLM.SenderType.User) ? CLM.DialogMode.Extractor : CLM.DialogMode.Scorer,
+                scoreInput: scorerStep ? scorerStep.input : undefined,
+                scoreResponse: scoreResponse,
+                roundIndex,
+                memories: memories,
+                prevMemories: prevMemories,
+                extractResponses: [],
+                textVariations: textVariations
+            }       
+        }
+        throw new Error("Fail to render")
     }
 
     @autobind
@@ -224,7 +413,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
             isUserInputModalOpen: false
         })
         if (this.state.selectedActivityIndex != null) { 
-            this.props.onEditTeach(this.state.selectedActivityIndex, userInput, this.props.onInsertInput) 
+            this.props.onEditTeach(this.state.selectedActivityIndex, {userInput}, this.props.onInsertInput) 
         }
     }
 
@@ -242,6 +431,20 @@ class TeachModal extends React.Component<Props, ComponentState> {
         }
     }
 
+    @autobind
+    onEditExtraction(extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) {
+        if (this.state.selectedActivityIndex != null) { 
+            this.props.onEditTeach(this.state.selectedActivityIndex, {extractResponse, textVariations}, this.props.onChangeExtraction) 
+        }
+    }
+
+    @autobind
+    onEditScore(trainScorerStep: CLM.TrainScorerStep) {
+        if (this.state.selectedActivityIndex != null) { 
+            this.props.onEditTeach(this.state.selectedActivityIndex, {trainScorerStep}, this.props.onChangeAction) 
+        }
+    }
+
     renderActivity(activityProps: BotChat.WrappedActivityProps, children: React.ReactNode, setRef: (div: HTMLDivElement | null) => void): JSX.Element {
        return renderActivity(activityProps, children, setRef, this.renderSelectedActivity)
     }
@@ -255,12 +458,8 @@ class TeachModal extends React.Component<Props, ComponentState> {
         
         const isUser = activity.from.name === 'ConversationLearnerDeveloper'
 
-        // Can only delete first user input if it has no scorer steps
-        // and is followed by user input
-        const canDeleteRound = this.state.selectedActivityIndex !== 0 /*|| 
-            senderType !== CLM.SenderType.User ||
-            curRound.scorerSteps.length === 0/* ||LARS
-            (hasNoScorerStep && this.props.trainDialog.rounds.length > 1)*/
+        // Can't delete first user input
+        const canDeleteRound = this.state.selectedActivityIndex !== 0
 
         return (
             <div className="cl-wc-buttonbar">
@@ -280,20 +479,6 @@ class TeachModal extends React.Component<Props, ComponentState> {
                 }
                 </div>
         )
-    }
-
-    onWebChatSelectActivity(activity: Activity) {
-       
-        // Activities from history can be looked up
-        if (this.props.initialHistory.length > 0) {
-            const selectedActivityIndex = this.props.initialHistory.findIndex(a => a.id === activity.id)
-            if (selectedActivityIndex > -1) {
-                this.setState({selectedActivityIndex})
-                return
-            }
-        }
-        // Otherwise newly create activities with have index in channelData
-        this.setState({selectedActivityIndex: activity.channelData.activityIndex})
     }
 
     renderAbandonText(intl: ReactIntl.InjectedIntl) {
@@ -424,6 +609,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                                     focusInput={this.props.dialogMode === CLM.DialogMode.Wait}
                                     highlightClassName={'wc-message-selected'}
                                     renderActivity={(props, children, setRef) => this.renderActivity(props, children, setRef)}
+                                    selectedActivityIndex={this.state.selectedActivityIndex}
                                 />
                                 {chatDisable}
                             </div>
@@ -434,8 +620,10 @@ class TeachModal extends React.Component<Props, ComponentState> {
                                         app={this.props.app}
                                         editingPackageId={this.props.editingPackageId}
                                         editType={this.props.editType}
+                                        initialEntities={this.state.initialEntities}
                                         activityIndex={this.state.nextActivityIndex}
-                                        selectedActivity={null}
+                                        selectedActivityIndex={this.state.selectedActivityIndex}
+                                        historyRenderData={this.state.selectedHistoryActivity ? this.historyRender : null}
                                         onScoredAction={(scoredAction) => {
                                                 this.setState({
                                                     hasTerminalAction: scoredAction.isTerminal,
@@ -443,6 +631,8 @@ class TeachModal extends React.Component<Props, ComponentState> {
                                                 })
                                             }
                                         }
+                                        onEditExtraction={this.onEditExtraction} 
+                                        onEditAction={this.onEditScore}
                                     />
                                 </div>
                             </div>
@@ -496,6 +686,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                         title={this.renderConfirmText(intl)}
                     />
                     <UserInputModal
+                        titleFM={FM.USERINPUT_ADD_TITLE}
                         open={this.state.isUserInputModalOpen}
                         onCancel={() => {this.onCancelAddUserInput()}}
                         onSubmit={this.onSubmitAddUserInput}
@@ -514,6 +705,7 @@ const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         deleteTeachSessionThunkAsync: actions.teach.deleteTeachSessionThunkAsync,
         fetchApplicationTrainingStatusThunkAsync: actions.app.fetchApplicationTrainingStatusThunkAsync,
+        fetchTrainDialogThunkAsync: actions.train.fetchTrainDialogThunkAsync,
         runExtractorThunkAsync: actions.teach.runExtractorThunkAsync,
         toggleAutoTeach: actions.teach.toggleAutoTeach,
         setWebchatScrollPosition: actions.display.setWebchatScrollPosition
@@ -526,16 +718,20 @@ const mapStateToProps = (state: State) => {
 
     return {
         user: state.user.user,
-        teachSession: state.teachSessions
+        teachSession: state.teachSessions,
+        entities: state.entities,
+        actions: state.actions
     }
 }
 
 export interface ReceivedProps {
     isOpen: boolean
     onClose: Function
-    onEditTeach: (historyIndex: number, userInput: string|null, editHandler: (trainDialog: CLM.TrainDialog, activity: Activity, userInput: string) => any) => void
+    onEditTeach: (historyIndex: number, args: EditHandlerArgs|null, editHandler: (trainDialog: CLM.TrainDialog, activity: Activity, args: EditHandlerArgs) => any) => void
     onInsertAction: (trainDialog: CLM.TrainDialog, activity: Activity) => any
-    onInsertInput: (trainDialog: CLM.TrainDialog, activity: Activity, userText: string) => any
+    onInsertInput: (trainDialog: CLM.TrainDialog, activity: Activity, args: EditHandlerArgs) => any
+    onChangeExtraction: (trainDialog: CLM.TrainDialog, activity: Activity, args: EditHandlerArgs) => any
+    onChangeAction: (trainDialog: CLM.TrainDialog, activity: Activity, args: EditHandlerArgs) => any
     onDeleteTurn: (trainDialog: CLM.TrainDialog, activity: Activity) => any
     onSetInitialEntities: ((initialFilledEntities: CLM.FilledEntity[]) => void) | null
     app: CLM.AppBase

@@ -16,11 +16,12 @@ interface MenuProps {
     onKeyDown: (event: React.KeyboardEvent<HTMLElement>) => void
     onChangeSearchText: (value: string) => void
     onClickOption: (o: IOption) => void
-    onClickNewEntity: () => void
+    onClickNewEntity: (entityTypeFilter: string) => void
     position: IPosition
     menuRef: any
     searchText: string
-    value: any
+    value: any, 
+    entityTypeFilter: string
 }
 
 export default class EntityPicker extends React.Component<MenuProps> {
@@ -55,7 +56,7 @@ export default class EntityPicker extends React.Component<MenuProps> {
                         <button
                             type="button"
                             tabIndex={-1}
-                            onClick={this.props.onClickNewEntity}
+                            onClick={() => this.props.onClickNewEntity(this.props.entityTypeFilter)}
                             className="custom-toolbar__new-entity-button"
                         >
                             New Entity

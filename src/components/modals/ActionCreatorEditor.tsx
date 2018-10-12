@@ -682,11 +682,6 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         })
     }
 
-    @autobind
-    onDismissModal() {
-        this.props.handleClose()
-    }
-
     onChangedActionType = (actionTypeOption: OF.IDropdownOption) => {
         const textPayload = this.state.slateValuesMap[TEXT_SLOT]
         const isPayloadValid = actionTypeOption.key !== ActionTypes.TEXT && actionTypeOption.key !== ActionTypes.END_SESSION
@@ -891,7 +886,6 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         return (
             <Modal
                 isOpen={this.props.open}
-                onDismiss={this.onDismissModal}
                 isBlocking={false}
                 containerClassName="cl-modal cl-modal--medium"
             >

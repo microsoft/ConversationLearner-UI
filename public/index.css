@@ -86,6 +86,19 @@ html {
   cursor: pointer;
 }
 
+.cl-icon {
+  color: var(--color-themePrimary) !important;
+}
+
+.cl-icon--transparent {
+  background-color:transparent !important;
+  color: #ffffff !important;
+}
+
+.cl-icon--short {
+  height: 15px !important;
+}
+
 .cl-icon--spin {
   animation-name: cl-icon-spin;
   animation-duration: 2000ms;
@@ -95,10 +108,6 @@ html {
 @keyframes cl-icon-spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
-}
-
-.cl-icon--short {
-  height: 15px !important;
 }
 
 .cl-icon[data-icon-name="Warning"] {
@@ -121,32 +130,41 @@ html {
   font-size: 18px
 }
 
-.cl-icon[data-icon-name="ChevronUp"] {
-  font-size: 12px;
-  margin-right: 8px;
-  color: var(--color-wc-user);
-}
-
-.cl-icon[data-icon-name="ChevronDown"] {
-  font-size: 12px;
-  margin-right: 8px;
-  color: var(--color-wc-user);
-}
 .cl-icon[data-icon-name="Delete"] {
   font-size: 16px;
   vertical-align: middle;
+  color: var(--color-red) !important;
 }
 .cl-icon[data-icon-name="IncidentTriangle"] {
   padding-left: 5px;
   padding-right: 5px;
-  color: var(--color-red)
+  color: var(--color-red) !important;
 }
 
 .ms-Button-icon[data-icon-name="Info"] {
   font-size: 13px;
   margin-bottom: -6px;
   margin-left: -5px;
-  color: var(--color-wc-user);
+}
+
+.ms-Button-icon[data-icon-name="ChevronUpSmall"] {
+  font-size: 12px;
+  margin-right: 8px;
+  color: var(--color-wc-user) !important
+}
+
+.ms-Button-icon[data-icon-name="BranchMerge"] {
+  color: var(--color-wc-user) !important
+}
+
+.ms-Button-icon[data-icon-name="ChevronDownSmall"] {
+  font-size: 12px;
+  margin-right: 8px;
+  color: var(--color-wc-user) !important;
+}
+
+.ms-Button-icon:not(:disabled):hover {
+  color: var(--color-themeDark) !important;
 }
 
 .ms-Button-icon[data-icon-name="CommentAdd"] {
@@ -172,7 +190,13 @@ html {
   background-color: transparent !important;
 }
 
+
+
 .ms-Button-icon[data-icon-name="Delete"]:not(:disabled) {
+  color: var(--color-red);
+}
+
+.ms-Button-icon[data-icon-name="EditSolidMirrored12"] {
   color: var(--color-red);
 }
 
@@ -199,6 +223,10 @@ html {
 
 .cl-messagebar {
     margin-bottom: 15px;
+}
+
+i[data-icon-name="Delete"] {
+  color: var(--color-red) !important;
 }
 
 i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
@@ -293,10 +321,6 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
   bottom: -8px;
   z-index: 1000;
   right: 166px;
-}
-
-.cl-wc-branchturn:not(:disabled):hover {
-  fill: var(--color-themeDark) !important;
 }
 
 /* botframework-webchat component override */
@@ -636,11 +660,6 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
   border-color: rgb(255, 255, 255);
   border-image: initial;
   outline: rgb(102, 102, 102) solid 1px;
-}
-
-.ms-Button--icon {
-  background-color: white !important;
-  color: var(--color-themePrimary) !important;
 }
 
 .ms-Button--transparent {

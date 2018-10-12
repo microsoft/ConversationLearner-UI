@@ -32,9 +32,7 @@ interface Props extends InjectedIntlProps {
     onKeyDownName: React.KeyboardEventHandler<HTMLInputElement>
 
     isProgrammatic: boolean
-    isProgrammaticDisabled: boolean
-    onChangeProgrammatic: (ev?: React.FormEvent<HTMLElement | HTMLInputElement>, checked?: boolean) => void
-
+    
     isMultiValue: boolean
     isMultiValueDisabled: boolean
     onChangeMultiValue: (ev?: React.FormEvent<HTMLElement | HTMLInputElement>, checked?: boolean) => void
@@ -108,17 +106,6 @@ const EditComponent: React.SFC<Props> = (props: Props) => {
             disabled={props.isNameDisabled}
         />
         <div className="cl-entity-creator-checkboxes cl-entity-creator-form">
-            <TC.Checkbox
-                data-testid="entity-creator-programmatic-only-checkbox"
-                label={props.intl.formatMessage({
-                    id: FM.ENTITYCREATOREDITOR_FIELDS_PROGRAMMATICONLY_LABEL,
-                    defaultMessage: 'Programmatic Only'
-                })}
-                checked={props.isProgrammatic}
-                onChange={props.onChangeProgrammatic}
-                disabled={props.isProgrammaticDisabled}
-                tipType={ToolTip.TipType.ENTITY_PROGAMMATIC}
-            />
             <TC.Checkbox
                 data-testid="entity-creator-multi-valued-checkbox"
                 label={props.intl.formatMessage({
@@ -300,11 +287,11 @@ const Component: React.SFC<Props> = (props) => {
                     defaultMessage='This edit will invalidate one or more Training Dialogs.  If you proceed they will removed from training until fixed.'
                 />
             </div>}
-            />
+        />
         <ConfirmCancelModal
             open={props.isDeleteErrorModalOpen}
             onCancel={props.onCancelDelete}
-            onConfirm={() => {}}
+            onConfirm={null}
             title={props.intl.formatMessage({
                 id: FM.ENTITYCREATOREDITOR_DELETE_ERROR_TITLE,
                 defaultMessage: 'Unable to delete'

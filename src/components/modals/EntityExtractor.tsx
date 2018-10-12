@@ -18,6 +18,7 @@ import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { autobind } from 'office-ui-fabric-react'
 import { FM } from '../../react-intl-messages'
 import './EntityExtractor.css'
+import { EntityType } from '@conversationlearner/models';
 
 interface ExtractResponseForDisplay {
     extractResponse: CLM.ExtractResponse
@@ -29,6 +30,7 @@ interface ComponentState {
     extractionChanged: boolean
     pendingVariationChange: boolean
     entityModalOpen: boolean
+    entityTypeFilter: string
     warningOpen: boolean
     // Handle saves after round change
     savedExtractResponses: CLM.ExtractResponse[]
@@ -52,13 +54,14 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
             savedExtractResponses: [],
             savedRoundIndex: 0,
             textVariationValue: '',
-            newTextVariations: []
+            newTextVariations: [], 
+            entityTypeFilter: EntityType.LUIS
         }
     }
     
     componentDidMount() {
         this.setState({ newTextVariations: this.props.originalTextVariations })
-        setTimeout(this.focusPrimaryButton, 500);
+        setTimeout(this.focusPrimaryButton, 100)
     }
 
     @autobind
@@ -66,10 +69,13 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         if (this.doneExtractingButton) {
             this.doneExtractingButton.focus();
         }
+        else {
+            setTimeout(this.focusPrimaryButton, 100)
+        }
     }
     componentWillReceiveProps(newProps: Props) {
         // If I'm switching my round or have added/removed text variations
-        if (this.props.sessionId !== newProps.sessionId ||
+        if (this.props.teachId !== newProps.teachId ||
             this.props.roundIndex !== newProps.roundIndex ||
             this.props.originalTextVariations.length !== newProps.originalTextVariations.length) {
 
@@ -87,7 +93,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
             }
 
             this.setState(nextState)
-            this.props.clearExtractResponses();
+            this.props.clearExtractResponses();  
         }
     }
 
@@ -99,9 +105,10 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    onNewEntity() {
+    onNewEntity(entityTypeFilter: string) {
         this.setState({
-            entityModalOpen: true
+            entityModalOpen: true,
+            entityTypeFilter: entityTypeFilter
         })
     }
     handleCloseWarning() {
@@ -159,7 +166,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
             extractionChanged: false,
         });
         if (this.props.onExtractionsChanged) {
-            this.props.onExtractionsChanged(false);
+            this.props.onExtractionsChanged(false)
         }
     }
 
@@ -169,18 +176,19 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
             extractionChanged: false,
         });
         if (this.props.onExtractionsChanged) {
-            this.props.onExtractionsChanged(false);
+            this.props.onExtractionsChanged(false)
         }
         
-        this.submitExtractions(this.allResponses(), this.props.roundIndex);
+        this.submitExtractions(this.allResponses(), this.props.roundIndex)
+        this.props.clearExtractResponses()
     }
 
     submitExtractions(allResponses: CLM.ExtractResponse[], roundIndex: number | null) {
         const primaryExtractResponse = allResponses[0]
         
         if (!this.allValid(primaryExtractResponse, allResponses)) {
-            this.handleOpenWarning();
-            return;
+            this.handleOpenWarning()
+            return
         }
 
         const textVariations = allResponses.map<CLM.TextVariation>(extractResponse => ({
@@ -288,12 +296,20 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         if (this.props.extractType !== CLM.DialogType.TEACH && this.props.roundIndex === null) {
             throw new Error(`You attempted to submit text variation but roundIndex was null. This is likely a problem with the code. Please open an issue.`)
         }
+        // Can't extract on running teach session for existing round
+        const extractType = this.props.roundIndex ? CLM.DialogType.TRAINDIALOG : this.props.extractType
+
+        // Use teach session Id when in teach, otherwise use dialog Id
+        const extractId = extractType === CLM.DialogType.TEACH ? this.props.teachId : this.props.dialogId
+        if (extractId === null) {
+            throw new Error('Invalid extract Id')
+        }
 
         const userInput: CLM.UserInput = { text: text }
         await this.props.runExtractorThunkAsync(
             this.props.app.appId,
-            this.props.extractType,
-            this.props.sessionId,
+            extractType,
+            extractId,
             this.props.roundIndex,
             userInput
         )
@@ -319,6 +335,9 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         // Don't show edit components when in auto TEACH or on score step
         const canEdit = (!this.props.autoTeach && this.props.dialogMode === CLM.DialogMode.Extractor && this.props.canEdit) 
         
+        // I'm editing an existing round if I'm not in Teach or have selected a round
+        const editingRound = canEdit && (this.props.extractType !== CLM.DialogType.TEACH || this.props.roundIndex !== null)
+
         // If editing is not allowed, only show the primary response which is the first response
         const extractResponsesToRender = canEdit ? allResponses : [primaryExtractResponse]
         const extractResponsesForDisplay = extractResponsesToRender
@@ -345,6 +364,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                                 <ExtractorResponseEditor.Editor
                                     readOnly={!canEdit}
                                     isValid={isValid}
+                                    entities={this.props.entities}
                                     {...editorProps}
 
                                     onChangeCustomEntities={onChangeCustomEntities}
@@ -395,7 +415,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                             componentRef={(ref: any) => { this.doneExtractingButton = ref }}
                         />
                 </div>}
-                {canEdit && this.props.extractType !== CLM.DialogType.TEACH &&
+                {editingRound &&
                     <div className="cl-buttons-row">
                         <OF.PrimaryButton
                             disabled={!this.state.extractionChanged || !allExtractResponsesValid || this.state.pendingVariationChange}
@@ -412,7 +432,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                         />
                     </div>
                 }
-                {canEdit && this.props.extractType === CLM.DialogType.TEACH &&
+                {!editingRound &&
                     <div className="cl-buttons-row">
                         <OF.PrimaryButton
                             data-testid="entity-extractor-score-actions-button"
@@ -433,7 +453,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                         entity={null}
                         handleClose={this.entityEditorHandleClose}
                         handleDelete={() => {}}
-                        entityTypeFilter={CLM.EntityType.LUIS}
+                        entityTypeFilter={this.state.entityTypeFilter as any}
                     />
                     <OF.Dialog
                         data-testid="entity-extractor-dialog"
@@ -495,7 +515,10 @@ export interface ReceivedProps {
     editingPackageId: string
     canEdit: boolean
     extractType: CLM.DialogType
-    sessionId: string
+    // ID of running teach session
+    teachId: string | null
+    // ID of related trainDialog
+    dialogId: string | null
     roundIndex: number | null
     autoTeach: boolean
     dialogMode: CLM.DialogMode

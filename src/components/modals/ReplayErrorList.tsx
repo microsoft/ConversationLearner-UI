@@ -10,6 +10,8 @@ import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import * as OF from 'office-ui-fabric-react'
 import { State } from '../../types'
 import { FM } from '../../react-intl-messages'
+import HelpIcon from '../HelpIcon'
+import { TipType } from '../ToolTips';
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import * as CLM from '@conversationlearner/models'
 
@@ -22,7 +24,7 @@ export function renderReplayError(replayError: CLM.ReplayError): JSX.Element {
                         id={FM.REPLAYERROR_DESC_ACTION_UNDEFINED}
                         defaultMessage={FM.REPLAYERROR_DESC_ACTION_UNDEFINED}
                     />
-                    {` "${(replayError as CLM.ReplayErrorActionUnavailable).lastUserInput}"`}
+                    <HelpIcon tipType={TipType.REPLAYERROR_DESC_ACTION_UNDEFINED} customStyle="cl-icon--transparent" />
                 </div>
             )
         case CLM.ReplayErrorType.EntityEmpty:
@@ -33,6 +35,7 @@ export function renderReplayError(replayError: CLM.ReplayError): JSX.Element {
                         defaultMessage={FM.REPLAYERROR_DESC_ENTITY_EMPTY}
                     />
                     {` "${(replayError as CLM.ReplayErrorEntityEmpty).values.join(", ")}"`}
+                    <HelpIcon tipType={TipType.REPLAYERROR_DESC_ENTITY_EMPTY} customStyle="cl-icon--transparent" />
                 </div>
             )
         case CLM.ReplayErrorType.EntityUndefined:
@@ -42,7 +45,7 @@ export function renderReplayError(replayError: CLM.ReplayError): JSX.Element {
                         id={FM.REPLAYERROR_DESC_ENTITY_UNDEFINED}
                         defaultMessage={FM.REPLAYERROR_DESC_ENTITY_UNDEFINED}
                     />
-                    {` "${(replayError as CLM.ReplayErrorEntityUndefined).value}"`}
+                    <HelpIcon tipType={TipType.REPLAYERROR_DESC_ENTITY_UNDEFINED} customStyle="cl-icon--transparent" />
                 </div>
             )
         case CLM. ReplayErrorType.ActionUnavailable:
@@ -52,7 +55,7 @@ export function renderReplayError(replayError: CLM.ReplayError): JSX.Element {
                         id={FM.REPLAYERROR_DESC_ACTION_UNAVAILABLE}
                         defaultMessage={FM.REPLAYERROR_DESC_ACTION_UNAVAILABLE}
                     />
-                    {` "${(replayError as CLM.ReplayErrorActionUnavailable).lastUserInput}"`}
+                    <HelpIcon tipType={TipType.REPLAYERROR_DESC_ACTION_UNAVAILABLE} customStyle="cl-icon--transparent" />
                 </div>
             )
         case CLM.ReplayErrorType.ActionAfterWait:
@@ -62,6 +65,7 @@ export function renderReplayError(replayError: CLM.ReplayError): JSX.Element {
                         id={FM.REPLAYERROR_DESC_ACTION_AFTER_WAIT}
                         defaultMessage={FM.REPLAYERROR_DESC_ACTION_AFTER_WAIT}
                     />
+                    <HelpIcon tipType={TipType.REPLAYERROR_DESC_ACTION_AFTER_WAIT} customStyle="cl-icon--transparent" />
                 </div>
             )
         case CLM.ReplayErrorType.TwoUserInputs:
@@ -71,6 +75,7 @@ export function renderReplayError(replayError: CLM.ReplayError): JSX.Element {
                         id={FM.REPLAYERROR_DESC_TWO_USER_INPUTS}
                         defaultMessage={FM.REPLAYERROR_DESC_TWO_USER_INPUTS}
                     />
+                    <HelpIcon tipType={TipType.REPLAYERROR_DESC_TWO_USER_INPUTS} customStyle="cl-icon--transparent" />
                 </div>
             )
         case CLM.ReplayErrorType.InputAfterNonWait:
@@ -80,9 +85,10 @@ export function renderReplayError(replayError: CLM.ReplayError): JSX.Element {
                         id={FM.REPLAYERROR_DESC_INPUT_AFTER_NONWAIT}
                         defaultMessage={FM.REPLAYERROR_DESC_INPUT_AFTER_NONWAIT}
                     />
+                    <HelpIcon tipType={TipType.REPLAYERROR_DESC_INPUT_AFTER_NONWAIT} customStyle="cl-icon--transparent" />
                 </div>
             )
-            //LARS - think this can go away?  check
+        /* Currently not used, but may when check for API changes
         case CLM.ReplayErrorType.EntityDiscrepancy:
             let entityDiscrepancy = replayError as CLM.ReplayErrorEntityDiscrepancy;
             return (
@@ -119,6 +125,7 @@ export function renderReplayError(replayError: CLM.ReplayError): JSX.Element {
                         </div>
                     </OF.TooltipHost>
             )
+        */
         default:
             throw new Error(`Unhandled ReplayErrorType case: ${replayError.type}`);
     }

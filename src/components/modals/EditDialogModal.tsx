@@ -21,6 +21,8 @@ import AddScoreButton from './AddButtonScore'
 import ConfirmCancelModal from './ConfirmCancelModal'
 import UserInputModal from './UserInputModal'
 import { FM } from '../../react-intl-messages'
+import HelpIcon from '../HelpIcon'
+import { TipType } from '../ToolTips';
 import { renderReplayError } from './ReplayErrorList'
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { autobind } from 'office-ui-fabric-react/lib/Utilities'
@@ -28,6 +30,7 @@ import { autobind } from 'office-ui-fabric-react/lib/Utilities'
 interface ComponentState {
     isConfirmAbandonOpen: boolean
     isUserInputModalOpen: boolean
+    isUserBranchModalOpen: boolean
     selectedActivity: Activity | null
     webchatKey: number
     currentTrainDialog: CLM.TrainDialog | null
@@ -37,6 +40,7 @@ interface ComponentState {
 const initialState: ComponentState = {
     isConfirmAbandonOpen: false,
     isUserInputModalOpen: false,
+    isUserBranchModalOpen: false,
     selectedActivity: null,
     webchatKey: 0,
     currentTrainDialog: null,
@@ -67,15 +71,6 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         }
     }
 
-    @autobind
-    onClickBranch() {
-        if (this.state.selectedActivity && this.props.onBranchDialog) {
-            let branchRound = this.state.selectedActivity.channelData.roundIndex;
-            if (branchRound > 0) {
-                this.props.onBranchDialog(branchRound);
-            }
-        }
-    }
 
     @autobind
     onClickAddUserInput() {
@@ -99,6 +94,45 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         
         if (this.state.selectedActivity && this.state.currentTrainDialog) {
             this.props.onInsertInput(this.state.currentTrainDialog, this.state.selectedActivity, userInput)
+        }
+    }
+
+    @autobind
+    onChangeExtraction(extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) {
+        if (this.state.selectedActivity && this.state.currentTrainDialog) {
+            this.props.onChangeExtraction(this.state.currentTrainDialog, this.state.selectedActivity, extractResponse, textVariations)
+        }
+    }
+
+    @autobind
+    onChangeAction(trainScorerStep: CLM.TrainScorerStep) {
+        if (this.state.selectedActivity && this.state.currentTrainDialog) {
+            this.props.onChangeAction(this.state.currentTrainDialog, this.state.selectedActivity, trainScorerStep)
+        }
+    }
+
+    @autobind
+    onClickBranch() {
+        this.setState({
+            isUserBranchModalOpen: true
+        })
+    }
+
+    @autobind
+    onCancelBranch() {
+        this.setState({
+            isUserBranchModalOpen: false
+        })
+    }
+
+    @autobind
+    onSubmitBranch(userInput: string) {
+        this.setState({
+            isUserBranchModalOpen: false
+        })
+        
+        if (this.state.selectedActivity && this.state.currentTrainDialog && this.props.onBranchDialog) {
+            this.props.onBranchDialog(this.state.currentTrainDialog, this.state.selectedActivity, userInput)
         }
     }
 
@@ -131,70 +165,6 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         }
     }
 
-    @autobind
-    async onChangeExtraction(extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) {
- 
-        if (!this.state.selectedActivity) {
-            throw new Error("No selected activity")
-        }
-        if (!this.props.user) {
-            throw new Error("No Active User");
-        }
-
-        try {
-            const roundIndex = this.state.selectedActivity.channelData.roundIndex
-            const definitions = {
-                entities: this.props.entities,
-                actions: this.props.actions,
-                trainDialogs: []
-            }
-
-            let newTrainDialog = JSON.parse(JSON.stringify(this.props.trainDialog)) as CLM.TrainDialog
-            newTrainDialog.definitions = definitions;
-            newTrainDialog.rounds[roundIndex].extractorStep.textVariations = textVariations;
-
-            // Replay logic functions on train dialog
-            newTrainDialog = await ((this.props.trainDialogReplayThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<CLM.TrainDialog>)
-
-            this.props.onUpdateHistory(newTrainDialog, this.state.selectedActivity)
-        }
-        catch (error) {
-                console.warn(`Error when attempting to change extraction: `, error)
-        }
-    }
-
-    @autobind
-    async onChangeAction(trainScorerStep: CLM.TrainScorerStep) {
-        if (!this.state.selectedActivity) {
-            throw new Error("No selected activity")
-        }
-        if (!this.props.user) {
-            throw new Error("No Active User");
-        }
-
-        try {
-            const roundIndex = this.state.selectedActivity.channelData.roundIndex
-            const scoreIndex = this.state.selectedActivity.channelData.scoreIndex
-            const definitions = {
-                entities: this.props.entities,
-                actions: this.props.actions,
-                trainDialogs: []
-            }
-
-            let newTrainDialog = JSON.parse(JSON.stringify(this.props.trainDialog)) as CLM.TrainDialog
-            newTrainDialog.rounds[roundIndex].scorerSteps[scoreIndex] = trainScorerStep
-            newTrainDialog.definitions = definitions;
-
-            // Replay logic functions on train dialog
-            newTrainDialog = await ((this.props.trainDialogReplayThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<CLM.TrainDialog>)
-
-            this.props.onUpdateHistory(newTrainDialog, this.state.selectedActivity)
-        }
-        catch (error) {
-            console.warn(`Error when attempting to change an Action: `, error)
-        }
-    }
- 
     onWebChatSelectActivity(activity: Activity) {
          this.setState({
             selectedActivity: activity
@@ -229,7 +199,13 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             return null
         }
         
-        const canBranch = activity && activity.channelData.senderType === CLM.SenderType.User
+        const canBranch = 
+            activity && 
+            // Can only branch on user turns
+            activity.channelData.senderType === CLM.SenderType.User &&
+            // Can only branch on un-edited dialogs
+            (this.props.editType === EditDialogType.LOG_ORIGINAL || this.props.editType === EditDialogType.TRAIN_ORIGINAL)
+
         const roundIndex = activity.channelData.roundIndex
         const senderType = activity.channelData.senderType
         const curRound = this.props.trainDialog.rounds[roundIndex]
@@ -249,7 +225,9 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             curRound.scorerSteps.length === 0 ||
             (hasNoScorerStep && this.props.trainDialog.rounds.length > 1)
 
-        const hideBranch =  !canBranch || !this.props.onBranchDialog
+        const hideBranch =  
+                !canBranch || 
+                !this.props.onBranchDialog ||
                 this.state.pendingExtractionChanges ||
                 this.props.editState !== EditState.CAN_EDIT ||
                 (this.props.trainDialog && this.props.trainDialog.invalid === true)
@@ -297,7 +275,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                                 id: FM.EDITDIALOGMODAL_BRANCH_ARIADESCRIPTION,
                                 defaultMessage: 'Branch'
                             })}
-                    />
+                        />
                     </TooltipHost>
                 }
                 </div>
@@ -510,6 +488,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                             id={FM.EDITDIALOGMODAL_WARNING_INVALID_BOT}
                             defaultMessage={FM.EDITDIALOGMODAL_WARNING_INVALID_BOT}
                         />
+                        <HelpIcon tipType={TipType.ACTION_ARGUMENTS} />
                     </div>
                 </div>
             )
@@ -653,8 +632,15 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                 />
                 <UserInputModal
                     open={this.state.isUserInputModalOpen}
+                    titleFM={FM.USERINPUT_ADD_TITLE}
                     onCancel={this.onCancelAddUserInput}
                     onSubmit={this.onSubmitAddUserInput}
+                />
+                <UserInputModal
+                    titleFM={FM.USERINPUT_BRANCH_TITLE}
+                    open={this.state.isUserBranchModalOpen}
+                    onCancel={this.onCancelBranch}
+                    onSubmit={this.onSubmitBranch}
                 />
             </Modal>
         );
@@ -691,14 +677,15 @@ export interface ReceivedProps {
     initialSelectedHistoryIndex: number | null
     onInsertAction: (trainDialog: CLM.TrainDialog, activity: Activity) => any
     onInsertInput: (trainDialog: CLM.TrainDialog, activity: Activity, userText: string) => any
+    onChangeExtraction: (trainDialog: CLM.TrainDialog, activity: Activity, extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) => any
+    onChangeAction: (trainDialog: CLM.TrainDialog, activity: Activity, trainScorerStep: CLM.TrainScorerStep) => any
     onDeleteTurn: (trainDialog: CLM.TrainDialog, activity: Activity) => any
     onCloseModal: (reload: boolean) => void
-    onBranchDialog: ((turnIndex: number) => void) | null,
+    onBranchDialog: ((trainDialog: CLM.TrainDialog, activity: Activity, userText: string) => void) | null,
     onContinueDialog: (newTrainDialog: CLM.TrainDialog, initialUserInput: CLM.UserInput) => void
     onSaveDialog: (newTrainDialog: CLM.TrainDialog, isInvalid: boolean) => void
     // Add a new train dialog to the Model (when EditDialogType === NEW)
     onCreateDialog: (newTrainDialog: CLM.TrainDialog, isInvalid: boolean) => void
-    onUpdateHistory: (newTrainDialog: CLM.TrainDialog, selectedActivity: Activity | null) => void
     onDeleteDialog: () => void
 }
 

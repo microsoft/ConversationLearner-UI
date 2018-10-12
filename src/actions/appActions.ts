@@ -25,6 +25,7 @@ export const createApplicationThunkAsync = (userId: string, application: AppBase
                 await clClient.sourcepost(newApp.appId, source)
             }
             dispatch(createApplicationFulfilled(newApp))
+            dispatch(fetchApplicationTrainingStatusThunkAsync(newApp.appId));
             return newApp
         }
         catch (e) {

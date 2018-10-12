@@ -4,7 +4,7 @@
  */
 import { ActionObject, ErrorType } from '../types'
 import { AT } from '../types/ActionTypes'
-import { EntityBase } from '@conversationlearner/models'
+import { EntityBase, EntityType } from '@conversationlearner/models'
 import { Dispatch } from 'redux'
 import { setErrorDisplay } from './displayActions'
 import * as ClientFactory from '../services/clientFactory' 
@@ -26,6 +26,13 @@ export const createEntityThunkAsync = (appId: string, entity: EntityBase) => {
                 // Need to load negative entity in order to load it into memory
                 const negEntity = await clClient.entitiesGetById(appId, posEntity.negativeId)
                 dispatch(createEntityFulfilled(negEntity));
+            }
+
+            // If created entity is prebuilt entity, we fetch all entities to make sure 
+            // that definition of reserved prebuilt entity is in the memory
+            if (posEntity.entityType !== EntityType.LOCAL && posEntity.entityType !== EntityType.LUIS)
+            {
+                dispatch(fetchAllEntitiesThunkAsync(appId));
             }
             
             dispatch(fetchApplicationTrainingStatusThunkAsync(appId));
@@ -112,6 +119,14 @@ export const deleteEntityThunkAsync = (appId: string, entity: EntityBase) => {
                 const negativeEntityId = entity.negativeId!
                 dispatch(deleteEntityFulfilled(negativeEntityId))
             }
+            
+            // If deleted entity is prebuilt entity, we fetch all entities to make sure 
+            // that entities in the memory are all up to date
+            if(entity.entityType !== EntityType.LOCAL && entity.entityType !== EntityType.LUIS)
+            {
+                dispatch(fetchAllEntitiesThunkAsync(appId));
+            }
+            
 
             // If any actions were modified, reload them
             if (deleteEditResponse.actionIds && deleteEditResponse.actionIds.length > 0) {

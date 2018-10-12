@@ -15,6 +15,7 @@ import actions from '../../../actions'
 import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { FM } from '../../../react-intl-messages'
 import { Activity } from 'botframework-directlinejs';
+import { EditHandlerArgs } from './TrainDialogs'
 import { getDefaultEntityMap } from '../../../util';
 import { autobind } from 'office-ui-fabric-react/lib/Utilities'
 import ReplayErrorList from '../../../components/modals/ReplayErrorList';
@@ -397,8 +398,8 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         this.onCloseEditDialogModal();
     }
 
-    // User has clicked on Activity in a Teach Session
-    async onEditTeach(historyIndex: number, userInput: string|null = null, editHandler: (trainDialog: CLM.TrainDialog, activity: Activity, data?: any) => any) {
+    // User has edited an Activity in a TeachSession
+    async onEditTeach(historyIndex: number, args: EditHandlerArgs|null = null, editHandler: (trainDialog: CLM.TrainDialog, activity: Activity, args?: EditHandlerArgs) => any) {
 
         try {
             if (this.state.teachSession) {
@@ -415,19 +416,19 @@ class LogDialogs extends React.Component<Props, ComponentState> {
 
                 // Generate history
                 let teachWithHistory = await ((this.props.fetchHistoryThunkAsync(this.props.app.appId, trainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)
-                
                 if (teachWithHistory) {
+
                     let selectedActivity = teachWithHistory.history[historyIndex]
-                    if (userInput) {
-                        editHandler(trainDialog, selectedActivity, userInput)
+                    if (args) {
+                        await editHandler(trainDialog, selectedActivity, args)
                     }
                     else {
-                        editHandler(trainDialog, selectedActivity)
+                        await editHandler(trainDialog, selectedActivity)
                     }
                 }
             }
         }
-        catch(error) {
+        catch (error) {
             console.warn(`Error when attempting to edit Teach session`, error)
         }
     }
@@ -500,6 +501,63 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             console.warn(`Error when attempting to insert an Action `, error)
         }
     }
+ 
+    @autobind
+    async onChangeAction(trainDialog: CLM.TrainDialog, selectedActivity: Activity, trainScorerStep: CLM.TrainScorerStep|undefined) {
+ 
+        if (!trainScorerStep) {
+            throw new Error("missing args")
+        }
+        try {
+            const roundIndex = selectedActivity.channelData.roundIndex
+            const scoreIndex = selectedActivity.channelData.scoreIndex
+            const definitions = {
+                entities: this.props.entities,
+                actions: this.props.actions,
+                trainDialogs: []
+            }
+
+            let newTrainDialog = JSON.parse(JSON.stringify(trainDialog)) as CLM.TrainDialog
+            newTrainDialog.rounds[roundIndex].scorerSteps[scoreIndex] = trainScorerStep
+            newTrainDialog.definitions = definitions;
+
+            // Replay logic functions on train dialog
+            newTrainDialog = await ((this.props.trainDialogReplayThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<CLM.TrainDialog>)
+
+            this.onUpdateHistory(newTrainDialog, selectedActivity)
+        }
+        catch (error) {
+            console.warn(`Error when attempting to change an Action: `, error)
+        }
+    }
+
+    @autobind
+    async onChangeExtraction(trainDialog: CLM.TrainDialog, selectedActivity: Activity, extractResponse: CLM.ExtractResponse|undefined, textVariations: CLM.TextVariation[]|undefined) {
+ 
+        if (!extractResponse || !textVariations) {
+            throw new Error("missing args")
+        }
+        try {
+            const roundIndex = selectedActivity.channelData.roundIndex
+            const definitions = {
+                entities: this.props.entities,
+                actions: this.props.actions,
+                trainDialogs: []
+            }
+
+            let newTrainDialog = JSON.parse(JSON.stringify(trainDialog)) as CLM.TrainDialog
+            newTrainDialog.definitions = definitions;
+            newTrainDialog.rounds[roundIndex].extractorStep.textVariations = textVariations;
+
+            // Replay logic functions on train dialog
+            newTrainDialog = await ((this.props.trainDialogReplayThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<CLM.TrainDialog>)
+
+            this.onUpdateHistory(newTrainDialog, selectedActivity)
+        }
+        catch (error) {
+                console.warn(`Error when attempting to change extraction: `, error)
+        }
+    }
 
     @autobind
     async onDeleteTurn(trainDialog: CLM.TrainDialog, selectedActivity: Activity) {
@@ -547,8 +605,11 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    async onInsertInput(trainDialog: CLM.TrainDialog, selectedActivity: Activity, inputText: string) {
+    async onInsertInput(trainDialog: CLM.TrainDialog, selectedActivity: Activity, inputText: string | undefined) {
 
+        if (!inputText) {
+            throw new Error("inputText is null")
+        }
         try {
             const roundIndex = selectedActivity.channelData.roundIndex
             const scoreIndex = selectedActivity.channelData.scoreIndex
@@ -734,7 +795,6 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             dialogKey: this.state.dialogKey + 1
         })
     }
-
 
     async onSaveTrainDialog(newTrainDialog: CLM.TrainDialog, isInvalid: boolean) {
 
@@ -948,8 +1008,10 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     onSetInitialEntities={null} 
                     onEditTeach={(historyIndex, userInput, editHandler) => this.onEditTeach(historyIndex, userInput, editHandler)}
                     onInsertAction={(trainDialog, activity) => this.onInsertAction(trainDialog, activity)}
-                    onInsertInput={(trainDialog, activity, userInput) => this.onInsertInput(trainDialog, activity, userInput)} 
+                    onInsertInput={(trainDialog, activity, editHandlerArgs) => this.onInsertInput(trainDialog, activity, editHandlerArgs.userInput)} 
                     onDeleteTurn={(trainDialog, activity) => this.onDeleteTurn(trainDialog, activity)}
+                    onChangeExtraction={(trainDialog, activity, editHandlerArgs) => this.onChangeExtraction(trainDialog, activity, editHandlerArgs.extractResponse, editHandlerArgs.textVariations)} 
+                    onChangeAction={(trainDialog, activity, editHandlerArgs) => this.onChangeAction(trainDialog, activity, editHandlerArgs.trainScorerStep)} 
                     editType={this.state.editType} 
                     initialHistory={this.state.history}
                     lastAction={this.state.lastAction}
@@ -970,10 +1032,11 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     onInsertAction={(trainDialog, activity) => this.onInsertAction(trainDialog, activity)}
                     onInsertInput={(trainDialog, activity, userInput) => this.onInsertInput(trainDialog, activity, userInput)} 
                     onDeleteTurn={(trainDialog, activity) => this.onDeleteTurn(trainDialog, activity)}
+                    onChangeExtraction={(trainDialog, activity, extractResponse, textVariations) => this.onChangeExtraction(trainDialog, activity, extractResponse, textVariations)}
+                    onChangeAction={(trainDialog: CLM.TrainDialog, activity: Activity, trainScorerStep: CLM.TrainScorerStep) => this.onChangeAction(trainDialog, activity, trainScorerStep)}
                     onBranchDialog={null} // Never branch on LogDialogs
                     onCloseModal={(reload) => this.onCloseEditDialogModal(reload)}
                     onDeleteDialog={this.onDeleteLogDialog}
-                    onUpdateHistory={(updatedTrainDialog, selectedActivityIndex) => this.onUpdateHistory(updatedTrainDialog, selectedActivityIndex)}
                     onContinueDialog={(editedTrainDialog, initialUserInput) => this.onContinueTrainDialog(editedTrainDialog, initialUserInput)}
                     onSaveDialog={(editedTrainDialog, isInvalid) => this.onSaveTrainDialog(editedTrainDialog, isInvalid)}
                     onCreateDialog={() =>  { }}
