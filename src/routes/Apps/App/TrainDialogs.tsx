@@ -851,6 +851,11 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
         newTrainDialog.invalid = isInvalid
 
+        // Remove dummy scorer rounds used for rendering
+        newTrainDialog.rounds.forEach(r => r.scorerSteps = r.scorerSteps.filter(ss => {
+            return ss.labelAction !== undefined
+        }))
+
         try { 
             await ((this.props.createTrainDialogThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<CLM.TrainDialog>);
         }
