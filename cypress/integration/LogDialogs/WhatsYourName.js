@@ -19,31 +19,17 @@ const helpers = require('../../support/helpers')
 
 describe("What's your name", () =>
 {
-  // afterEach(() =>  { cy.DumpHtmlOnDomChange(false); helpers.ConLog(`afterEach`, `Current HTML:\n${Cypress.$('html')[0].outerHTML}`)})
-
   it('Chat up the bot', () => {
     var modelName = models.ImportModel('Model1-chat', 'Model1-mni.cl')
-    // homePage.Visit()
-    // homePage.NavigateToModelPage(modelName)
 
-    // 4.1	Click Train Dialogs..., then New Train Dialog.
     modelPage.NavigateToLogDialogs()
 
-    // 4.1	...then New Train Dialog.
-    trainDialogPage.CreateNewTrainDialog()
+    logDialogPage.CreateNewLogDialog()
 
-    // 4.2	Type 'hello'.
     editDialogModal.TypeYourMessage("Hello")
     
-    // 4.3	Click Score Actions...
     editDialogModal.ClickScoreActionsButton()
 
-    // 4.3.1	<Validation Step> Note that the response 'Hello $name' 
-    // cannot be selected, because it requies the entity $name to be defined, 
-    // and $name is not in bot's memory.
-    scorerModal.VerifyContainsDisabledAction("Hello $name")
-
-    // 4.3	...and Select 'What's your name?'
     scorerModal.ClickAction("What's your name?")
     
     // 4.4	Enter 'david'.
