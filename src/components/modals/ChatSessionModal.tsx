@@ -68,7 +68,7 @@ class SessionWindow extends React.Component<Props, ComponentState> {
                         </div>
                         <div className="cl-modal-buttons_primary">
                             <PrimaryButton
-                                data-testid="chat-session-modal-footer-button1"
+                                data-testid="chat-session-modal-done-testing-button"
                                 onClick={() => this.onClickDone()}
                                 ariaDescription={intl.formatMessage({
                                     id: FM.CHATSESSIONMODAL_PRIMARYBUTTON_ARIADESCRIPTION,
@@ -80,7 +80,7 @@ class SessionWindow extends React.Component<Props, ComponentState> {
                                 })}
                             />
                             <DefaultButton
-                            data-testid="chat-session-modal-footer-button2"
+                            data-testid="chat-session-modal-session-timeout-button"
                                 onClick={() => this.onClickExpire()}
                                 ariaDescription={intl.formatMessage({
                                     id: FM.CHATSESSIONMODAL_EXPIREBUTTON_ARIADESCRIPTION,

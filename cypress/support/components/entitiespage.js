@@ -4,3 +4,4 @@
  */
 export function ClickButtonNewEntity() { cy.Get('[data-testid="entities-button-create"]').Click() }
 export function VerifyItemInList(name) { cy.Get('.ms-DetailsRow-cell').should('contain', name) }
+export function VerifyPageTitle() {}

@@ -21,8 +21,15 @@ describe('zzTemp test', () =>
   it('zzTemp test', () => 
   {
     homePage.Visit()
-    // homePage.NavigateToModelPage('000-Playground')
-    // entityType = 'phonenumber'
-    // entities.CreateNewEntity({name: `my-${entityType}`, type: entityType})
+    homePage.NavigateToModelPage('000-Playground')
+
+    modelPage.NavigateToLogDialogs()
+    modelPage.WaitForTrainingStatusCompleted()
+    
+    logDialogPage.CreateNewLogDialogButton()
+
+    logDialogPage.TypeYourMessage("Hello", "What's your name?")
+
+    logDialogPage.ClickDoneTestingButton()
   })
 })

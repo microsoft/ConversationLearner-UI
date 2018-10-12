@@ -3,18 +3,28 @@
  * Licensed under the MIT License.
  */
 
-export function VerifyPageTitle()     { cy.Get('div[data-testid="log-dialogs-title"]').contains('Log Dialogs') }
-export function CreateNewLogDialog()  { cy.Get('[data-testid="log-dialogs-new-button"]').Click() }
+export function VerifyPageTitle()           { cy.Get('div[data-testid="log-dialogs-title"]').contains('Log Dialogs') }
+export function CreateNewLogDialogButton()  { cy.Get('[data-testid="log-dialogs-new-button"]').Click() }
+export function ClickDoneTestingButton()    { cy.Get('[data-testid="chat-session-modal-done-testing-button"]').Click() }
+export function ClickSessionTimeoutButton() { cy.Get('[data-testid="chat-session-modal-session-timeout-button"]').Click() }
 
-export function TypeYourMessage(expectedActionResponse)
+export function TypeYourMessage(message, expectedResponse)
 {
-  cy.Get('[data-testid="actionscorer-responseText"]').contains(expectedActionResponse)
-    .parents('div.ms-DetailsRow-fields').find('[data-testid="actionscorer-buttonClickable"]')
-    .Click()
+  cy.Get('input[placeholder="Type your message..."]').type(`${message}{enter}`)  // data-testid NOT possible
 
-  var expectedUtterance = expectedActionResponse.replace(/'/g, "’")
-  cy.Get('[data-testid="web-chat-utterances"]').then(elements => {
-    cy.wrap(elements[elements.length - 1]).within(e => {
-      cy.get('div.format-markdown > p').should('have.text', expectedUtterance)
-    })})
+  // Verify both the input message is reflected back and the response is what we are expecting.
+  // This also has the useful side effect of blocking this function from returning until after
+  // the response has been returned.
+  var messageCount = 0
+  var expectedUtterance = message.replace(/'/g, "’")
+  cy.Get('.wc-message-content').then(elements => {
+    messageCount = elements.length;
+    cy.wrap(elements[elements.length - 1]).contains(expectedUtterance)
+    }).then(() =>
+    {
+      expectedUtterance = expectedResponse.replace(/'/g, "’")
+      cy.Get('.wc-message-content').then(elements => {
+        cy.wrap(elements[messageCount]).contains(expectedUtterance)
+        })
+    })
 }

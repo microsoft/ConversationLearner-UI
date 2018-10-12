@@ -23,32 +23,12 @@ describe("What's your name", () =>
     var modelName = models.ImportModel('Model1-chat', 'Model1-mni.cl')
 
     modelPage.NavigateToLogDialogs()
+    modelPage.WaitForTrainingStatusCompleted()
 
-    logDialogPage.CreateNewLogDialog()
+    logDialogPage.CreateNewLogDialogButton()
 
-    editDialogModal.TypeYourMessage("Hello")
-    
-    editDialogModal.ClickScoreActionsButton()
+    logDialogPage.TypeYourMessage("Hello", "What's your name?")
 
-    scorerModal.ClickAction("What's your name?")
-    
-    // 4.4	Enter 'david'.
-    editDialogModal.TypeYourMessage("David")
-
-    // 4.4.1	<Validation Step> Note that the name is highlighted as an entity. 
-    editDialogModal.VerifyDetectedEntity("name", "David")
-    
-    // 4.5	Click Score Actions
-    editDialogModal.ClickScoreActionsButton()
-
-    // 4.5.1	<Validation Step> Note name value is now in the bot's memory.
-    memoryTableComponent.VerifyEntityInMemory("name", "David")
-
-    // 4.6	'Hello $name' is now available as a response.
-    // 4.7	Select 'Hello $name'.
-    scorerModal.ClickAction("Hello David")
-
-    // 4.8	Click Done Teaching.
-    editDialogModal.ClickSaveButton()
+    logDialogPage.ClickDoneTestingButton()
   })
 })

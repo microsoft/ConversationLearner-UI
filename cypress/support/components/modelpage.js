@@ -8,6 +8,8 @@ const actionsPage = require('../../support/components/ActionsPage')
 const trainDialogPage = require('../../support/components/TrainDialogsPage')
 const logDialogPage = require('../../support/components/logdialogspage')
  
+export function WaitForTrainingStatusCompleted()  { cy.Contains('.cl-training-status__icon-row--success', 'Completed', {timeout: 120000})}
+
 export function VerifyModelName(name)     { cy.Get('[data-testid="app-index-model-name"]').should(el => { expect(el).to.contain(name) })}
 export function VerifyPageTitle()         { cy.Get('[data-testid="dashboard-title"]').contains('Log Dialogs') }
 

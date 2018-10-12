@@ -19,62 +19,32 @@ const helpers = require('../../support/helpers')
 
 describe("My name is", () =>
 {
-  // afterEach(() =>  { cy.DumpHtmlOnDomChange(false); helpers.ConLog(`afterEach`, `Current HTML:\n${Cypress.$('html')[0].outerHTML}`)})
-
-  it('should be able to train', () => {
-    // TODO: FIX THESE COMMENTS
-    // 4.9	Click New Train Dialog.
-    // 4.10	Enter 'my name is david'.
-    // 4.10.1	<Validation Step> Note that it does identify david as the name entity because it has seen this word before.
-    // 4.11	Click Score Actions
-    // 4.12	Select 'Hello $name'.
-    // 4.13	Enter 'my name is susan'.
-    // 4.13.1	<Validation Step> Note that it identifies susan as the name since it has seen this pattern already.
-    // 4.14	Click Score Actions.
-    // 4.15	Select 'Hello susan'.
-    // 4.16	Click Done Teaching.
-
+  it('should be able to train', () => 
+  {
     var modelName = models.ImportModel('Model1-mni', 'Model1-wyn.cl')
     modelPage.NavigateToTrainDialogs()
-    
-    // Wait for the training to complete.
-    // At the time this was added, there is no UI elements to let us know it is complete.
-    cy.wait(20000)
+    modelPage.WaitForTrainingStatusCompleted()
 
-    // 4.9	Click New Train Dialog.
     trainDialogPage.CreateNewTrainDialog()
 
-    // 4.10	Enter 'my name is david'.
     editDialogModal.TypeYourMessage("My name is David.") // TODO: Add edge cases; 'david', with & without 'period'
-    
-    // 4.10.1	<Validation Step> Note that it does identify david as the name entity because it has seen this word before.
-    // 4.11	Click Score Actions
+    editDialogModal.VerifyDetectedEntity("name", "David")
     editDialogModal.ClickScoreActionsButton()
     memoryTableComponent.VerifyEntityInMemory("name", "David")
     scorerModal.VerifyContainsDisabledAction("What's your name?")
-
-    // 4.12	Select 'Hello $name'.
     scorerModal.ClickAction("Hello David")
 
     // Wait for the training to complete.
     // At the time this was added, there is no UI elements to let us know it is complete.
     cy.wait(20000)
 
-    // 4.13	Enter 'my name is susan'.
     editDialogModal.TypeYourMessage("My name is Susan.")
-
-    // 4.13.1	<Validation Step> Note that it identifies susan as the name since it has seen this pattern already.
     editDialogModal.VerifyDetectedEntity("name", "Susan")
-
-    // 4.14	Click Score Actions.
     editDialogModal.ClickScoreActionsButton()
     memoryTableComponent.VerifyEntityInMemory("name", "Susan", "David")
     scorerModal.VerifyContainsDisabledAction("What's your name?")
-
-    // 4.15	Select 'Hello susan'.
     scorerModal.ClickAction("Hello Susan")
 
-    // 4.16	Click Done Teaching.
     editDialogModal.ClickSaveButton()
   })
 })
