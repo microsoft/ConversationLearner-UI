@@ -330,6 +330,7 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                                     extractType={isLogDialog
                                         ? CLM.DialogType.LOGDIALOG
                                         : CLM.DialogType.TRAINDIALOG}
+                                    editType={this.props.editType}
                                     teachId={null}
                                     dialogId={this.props.editingLogDialog
                                         ? this.props.editingLogDialog.logDialogId
