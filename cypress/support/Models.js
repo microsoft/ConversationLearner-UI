@@ -18,23 +18,10 @@ export function CreateNewModel(name)
   modelPage.VerifyPageTitle(name)
 }
 
-export function CreateModel1()
-{
-  const name = `Model1-${Cypress.moment().format("YY-MMM-DD-HH-mm-ss-SSS")}`
-  
-  CreateNewModel(name)
-  entities.CreateNewEntity({name: "name"})
-  actions.CreateNewAction({response: "What's your name?", expectedEntity: "name"})
-  
-  // NOTE: the {enter} in this call is necessary to triger the entity detection.
-  actions.CreateNewAction({response: "Hello $name{enter}"}) //, requiredEntities: "name"})
-  return name
-}
-
 export function ImportModel(modelNamePrefix, fileName)
 {
   // Maximum Name Length is 30 Characters
-  const name = `${modelNamePrefix}-${Cypress.moment().format("MMMDD-HHmmss-SSS")}`
+  const name = `${modelNamePrefix}-${helpers.ModelNameTime()}`
 
   homePage.Visit()
   homePage.ClickImportModelButton()

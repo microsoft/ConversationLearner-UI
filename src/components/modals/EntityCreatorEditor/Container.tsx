@@ -460,6 +460,7 @@ class Container extends React.Component<Props, ComponentState> {
         return (
             <div className="cl-entity-creator-form">
                 <OF.Dropdown
+                    data-testid="entity-creator-entity-type-dropdown--isThisUsed"
                     ariaLabel={intl.formatMessage({
                         id: FM.ENTITYCREATOREDITOR_FIELDS_TYPE_LABEL,
                         defaultMessage: 'Entity Type'
@@ -475,7 +476,7 @@ class Container extends React.Component<Props, ComponentState> {
                     disabled={disabled || this.props.entityTypeFilter != null}
                 />
                 <OF.TextField
-                    data-testid="entity-creator-input-name"
+                    data-testid="entity-creator-entity-name-text--isThisUsed"
                     onGetErrorMessage={this.onGetNameErrorMessage}
                     onChanged={this.onChangedName}
                     onKeyDown={this.onKeyDownName}
