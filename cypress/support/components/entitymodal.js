@@ -8,7 +8,6 @@ export function ClickEntityType(type)           { cy.Get(`[aria-label="${type}"]
 export function TypeEntityName(entityName)      { cy.Get('[data-testid="entity-creator-entity-name-text"]').type(entityName) } 
 export function ClickCreateButton()             { cy.Get('[data-testid="entity-creator-button-save"]').Click() }
 
-export function ClickProgrammaticOnlyCheckbox() { cy.Get('[data-testid="entity-creator-programmatic-only-checkbox"] > button.cl-checkbox').Click() }
 export function ClickMultiValueCheckbox()       { cy.Get('[data-testid="entity-creator-multi-valued-checkbox"] > button.cl-checkbox').Click() }
 export function ClickNegatableCheckbox()        { cy.Get('[data-testid="entity-creator-negatable-checkbox"] > button.cl-checkbox').Click() }
 

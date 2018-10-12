@@ -28,10 +28,9 @@ describe('Create All Entity Types', () =>
   {
     models.CreateNewModel(`Model-aet-${helpers.ModelNameTime()}`)
 
-    entities.CreateNewEntity({name: 'programmaticOnlyEntity', programmaticOnly: true})
     entities.CreateNewEntity({name: 'multiValuedEntity', multiValued: true})
     entities.CreateNewEntity({name: 'negatableEntity', negatable: true})
     
-    entities.entityTypes.forEach(entityType => { entities.CreateNewEntity({type: entityType}) })
+    entities.entityTypes.forEach(entityType => { entities.CreateNewEntity({name: `my-${entityType}`, type: entityType}) })
   })
 })
