@@ -16,9 +16,9 @@ import * as ToolTips from '../ToolTips'
 import HelpIcon from '../HelpIcon'
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { autobind } from 'office-ui-fabric-react'
+import { EditDialogType } from '.'
 import { FM } from '../../react-intl-messages'
 import './EntityExtractor.css'
-import { EntityType } from '@conversationlearner/models';
 
 interface ExtractResponseForDisplay {
     extractResponse: CLM.ExtractResponse
@@ -55,7 +55,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
             savedRoundIndex: 0,
             textVariationValue: '',
             newTextVariations: [], 
-            entityTypeFilter: EntityType.LUIS
+            entityTypeFilter: CLM.EntityType.LUIS
         }
     }
     
@@ -296,8 +296,17 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         if (this.props.extractType !== CLM.DialogType.TEACH && this.props.roundIndex === null) {
             throw new Error(`You attempted to submit text variation but roundIndex was null. This is likely a problem with the code. Please open an issue.`)
         }
+        
+        let extractType = this.props.extractType
         // Can't extract on running teach session for existing round
-        const extractType = this.props.roundIndex ? CLM.DialogType.TRAINDIALOG : this.props.extractType
+        if (this.props.roundIndex) { 
+            if (this.props.editType === EditDialogType.LOG_ORIGINAL || this.props.editType === EditDialogType.LOG_EDITED) {
+                extractType = CLM.DialogType.LOGDIALOG
+            }
+            else if (this.props.editType === EditDialogType.TRAIN_ORIGINAL || this.props.editType === EditDialogType.TRAIN_EDITED) {
+                extractType = CLM.DialogType.TRAINDIALOG
+            }
+        }
 
         // Use teach session Id when in teach, otherwise use dialog Id
         const extractId = extractType === CLM.DialogType.TEACH ? this.props.teachId : this.props.dialogId
@@ -513,6 +522,7 @@ export interface ReceivedProps {
     editingPackageId: string
     canEdit: boolean
     extractType: CLM.DialogType
+    editType: EditDialogType
     // ID of running teach session
     teachId: string | null
     // ID of related trainDialog
