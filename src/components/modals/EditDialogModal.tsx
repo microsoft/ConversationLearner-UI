@@ -57,8 +57,8 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         if (this.state.currentTrainDialog !== nextProps.trainDialog) {
 
             let selectedActivity = null
-            if (nextProps.initialSelectedHistoryIndex !== null) {
-                selectedActivity = nextProps.history[nextProps.initialSelectedHistoryIndex]
+            if (nextProps.initialSelectedActivityIndex !== null) {
+                selectedActivity = nextProps.history[nextProps.initialSelectedActivityIndex]
             }
 
             // Force webchat to re-mount as history prop can't be updated
@@ -559,7 +559,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                                 disableDL={true} // Prevents ProcessActivity from being called
                                 renderActivity={(props, children, setRef) => this.renderActivity(props, children, setRef)}
                                 highlightClassName={'wc-message-selected'}
-                                selectedActivityIndex={this.props.initialSelectedHistoryIndex}
+                                selectedActivityIndex={this.props.initialSelectedActivityIndex}
                             />
                             {chatDisable}
                         </div>
@@ -674,7 +674,7 @@ export interface ReceivedProps {
     // Is it a new dialog, a TrainDialog or LogDialog 
     editType: EditDialogType
     // If starting with activity selected
-    initialSelectedHistoryIndex: number | null
+    initialSelectedActivityIndex: number | null
     onInsertAction: (trainDialog: CLM.TrainDialog, activity: Activity) => any
     onInsertInput: (trainDialog: CLM.TrainDialog, activity: Activity, userText: string) => any
     onChangeExtraction: (trainDialog: CLM.TrainDialog, activity: Activity, extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) => any
