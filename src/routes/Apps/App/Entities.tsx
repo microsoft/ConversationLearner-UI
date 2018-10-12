@@ -198,7 +198,7 @@ class Entities extends React.Component<Props, ComponentState> {
             let nameMatch = e.entityName.toLowerCase().includes(lcString);
             let typeMatch = e.entityType.toLowerCase().includes(lcString);
             let match = nameMatch || typeMatch
-            return match && !e.positiveId;
+            return match && !e.positiveId && !e.doNotMemorize;
         })
 
         if (!this.state.sortColumn) {

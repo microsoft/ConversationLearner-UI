@@ -12,7 +12,7 @@ import './ToolTips.css'
 
 export enum TipType {
     NONE = 'NONE',
-    
+
     ACTION_API = 'actionAPI',
     ACTION_RENDER = 'actionRender',
     ACTION_ARGUMENTS = 'actionArguments',
@@ -36,6 +36,7 @@ export enum TipType {
     ENTITY_NAME = 'entityName',
     ENTITY_NEGATABLE = 'isNegatable',
     ENTITY_PROGAMMATIC = 'isProgrammatic',
+    ENTITY_ALWAYS_EXTRACT = 'alwaysExtract',
     ENTITY_TYPE = 'entityType',
     ENTITY_VALUE = 'entityValues',
 
@@ -146,7 +147,7 @@ const renderCodeSample =
     })`;
 
 let memoryManagerSample =
-`// Values in bot memory
+    `// Values in bot memory
 memoryManager.EntityValue(entityName: string): (string | null)
 memoryManager.EntityValueAsPrebuilt(entityName: string): MemoryValue[]
 memoryManager.EntityValueAsList(entityName: string): string[]
@@ -185,7 +186,7 @@ export function GetTip(tipType: string) {
                     <div><br />More about the <HelpLink label="Memory Manager" tipType={TipType.MEMORY_MANAGER} /></div>
                 </div>
             )
-            case TipType.ACTION_RENDER:
+        case TipType.ACTION_RENDER:
             return (
                 <div>
                     {render(FM.TOOLTIP_ACTION_RENDER_TITLE, [FM.TOOLTIP_ACTION_RENDER])}
@@ -325,6 +326,12 @@ export function GetTip(tipType: string) {
                     </dl>
                 </div>
             )
+        case TipType.ENTITY_ALWAYS_EXTRACT:
+            return (
+                <div>
+                    When checked Pre-built entity is extracted from the user utterance and its value is accessible in memory.<br /><br />
+                </div>
+            )
         case TipType.ENTITY_PROGAMMATIC:
             return (
                 <div>
@@ -377,7 +384,7 @@ export function GetTip(tipType: string) {
                 <div>
                     <h1>LUIS Keys:</h1>
                     <p>There are two different keys for LUIS. The <b>Authoring</b> key and the <b>Subscription</b> key.</p>
-                    
+
                     <h4>Why does Conversation Learner need my Authoring key?</h4>
                     <p>When building and training your bot, the LUIS_AUTHORING_KEY is by Conversation Learner to manage your LUIS account on your behalf.  As you make changes to your Conversation Learner model such as adding entities and labeling entities during training the Conversation Learner service creates the associated LUIS apps with matching entities and utterance phrases.</p>
 
@@ -398,19 +405,19 @@ export function GetTip(tipType: string) {
                         <li>Copy the "Authoring Key" and use it as the LUIS_AUTHORING_KEY value for your model</li>
                     </ol>
 
-                    <img src="https://blisstorage.blob.core.windows.net/uiimages/authoringkey.gif"/>
+                    <img src="https://blisstorage.blob.core.windows.net/uiimages/authoringkey.gif" />
 
                     <div><br /><div>
-                    <h2>LUIS Keys:</h2>
-                    <p>There are two different keys for LUIS. The <b>Authoring</b> key and the <b>Subscription</b> key.</p>
-                    
-                    <h4>Why does Conversation Learner need my Authoring key?</h4>
-                    <p>When building and training your bot, the LUIS_AUTHORING_KEY is by Conversation Learner to manage your LUIS account on your behalf.  As you make changes to your Conversation Learner model such as adding entities and labeling entities during training the Conversation Learner service creates the associated LUIS apps with matching entities and utterance phrases.</p>
+                        <h2>LUIS Keys:</h2>
+                        <p>There are two different keys for LUIS. The <b>Authoring</b> key and the <b>Subscription</b> key.</p>
 
-                    <h4>What does Conversation Learner need my Subscription key?</h4>
-                    <p>When you publish your bot, you want to set the LUIS_SUBSCRIPTION_KEY.  When set, the Subscription Key (rather than the Authoring Key) is used by Conversation Learner to get predictions from LUIS.  Using the Subscription Key avoids using up the quota for your Authoring key (which would block further usage of Conversation Learner).</p>
-                    <p>You can also increase the pricing teir of your subscription key to 50 calls per second instead of 5</p>
-                </div></div>
+                        <h4>Why does Conversation Learner need my Authoring key?</h4>
+                        <p>When building and training your bot, the LUIS_AUTHORING_KEY is by Conversation Learner to manage your LUIS account on your behalf.  As you make changes to your Conversation Learner model such as adding entities and labeling entities during training the Conversation Learner service creates the associated LUIS apps with matching entities and utterance phrases.</p>
+
+                        <h4>What does Conversation Learner need my Subscription key?</h4>
+                        <p>When you publish your bot, you want to set the LUIS_SUBSCRIPTION_KEY.  When set, the Subscription Key (rather than the Authoring Key) is used by Conversation Learner to get predictions from LUIS.  Using the Subscription Key avoids using up the quota for your Authoring key (which would block further usage of Conversation Learner).</p>
+                        <p>You can also increase the pricing teir of your subscription key to 50 calls per second instead of 5</p>
+                    </div></div>
                 </div>
             )
         case TipType.LUIS_SUBSCRIPTION_KEY:
@@ -427,17 +434,17 @@ export function GetTip(tipType: string) {
                     <ol>
                         <li>Click on the "Go to LUIS" button in the Conversation Learner UI.  This will take you to the LUIS application associated with your model.</li>
                         <li>In your LUIS' apps "Publish Tab", click on "Add Key"
-                            <img src="https://blisstorage.blob.core.windows.net/uiimages/addkey.PNG" width="50%"  />
+                            <img src="https://blisstorage.blob.core.windows.net/uiimages/addkey.PNG" width="50%" />
                         </li>
                         <li>If you don't yet have an Azure Suscription key you'll need to <a href="https://docs.microsoft.com/en-us/azure/cognitive-services/luis/azureibizasubscription" target="_blank">Create One</a></li>
                         <li>Then select the subscription and add the key to your LUIS model</li>
-                            <img src="https://blisstorage.blob.core.windows.net/uiimages/assignkey.PNG" width="50%"/>
+                        <img src="https://blisstorage.blob.core.windows.net/uiimages/assignkey.PNG" width="50%" />
                         <li>Click the Key String to copy the key value and use it as the LUIS_SUBSCRIPTION_KEY value for your model
-                            <br/>
-                            <img src="https://blisstorage.blob.core.windows.net/uiimages/getkey.PNG" width="75%"/>
+                            <br />
+                            <img src="https://blisstorage.blob.core.windows.net/uiimages/getkey.PNG" width="75%" />
                         </li>
                     </ol>
-               </div>
+                </div>
             )
         case TipType.PACKAGECREATOR_LIVE_TOGGLE:
             return (<FormattedMessage id={FM.TOOLTIP_PACKAGECREATOR_LIVE_TOGGLE} defaultMessage="Make new Tag the live version" />);

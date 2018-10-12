@@ -64,6 +64,10 @@ interface Props extends InjectedIntlProps {
     onConfirmEdit: () => void
 
     showValidationWarning: boolean
+
+    isAlwaysTagged: boolean
+    onAlwaysTagChange: () => void
+    isAlwaysTagDisabled: boolean
 }
 
 const EditComponent: React.SFC<Props> = (props: Props) => {
@@ -126,6 +130,18 @@ const EditComponent: React.SFC<Props> = (props: Props) => {
                 onChange={props.onChangeNegatable}
                 disabled={props.isNegatableDisabled}
                 tipType={ToolTip.TipType.ENTITY_NEGATABLE}
+            />
+            <TC.Checkbox	
+                data-testid="entitycreator-checkbox-alwaystag"	
+                label={props.intl.formatMessage({	
+                    id: FM.ENTITYCREATOREDITOR_FIELDS_ALWAYSTAG_LABEL,	
+                    defaultMessage: 'Always Extract'	
+                })}	
+                
+                checked={props.isAlwaysTagged}	
+                onChange={props.onAlwaysTagChange}
+                disabled={props.isAlwaysTagDisabled}	
+                tipType={ToolTip.TipType.ENTITY_ALWAYS_EXTRACT}	
             />
         </div>
     </div>
