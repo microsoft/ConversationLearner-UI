@@ -202,7 +202,6 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                         }
                     }
                 else if (turnData.textVariations) {
-                    //LARSconst memories = (prevTurn && prevTurn.uiScoreResponse) ? prevTurn.uiScoreResponse.memories : []
                     return {
                         dialogMode: CLM.DialogMode.Extractor,
                         extractResponses: this.props.teachSession.extractResponses,
@@ -321,6 +320,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                                     editingPackageId={this.props.editingPackageId}
                                     canEdit={true}
                                     extractType={CLM.DialogType.TEACH}
+                                    editType={this.props.editType}
                                     teachId={this.props.teachSession.current.teachId}
                                     dialogId={this.props.teachSession.current.trainDialogId}
                                     roundIndex={renderData.roundIndex}

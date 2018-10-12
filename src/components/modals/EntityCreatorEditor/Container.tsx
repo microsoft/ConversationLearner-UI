@@ -43,6 +43,7 @@ const initState: ComponentState = {
     isNegatableVal: false,
     isProgrammaticVal: false,
     isEditing: false,
+    isAlwaysTag: false,
     title: '',
     hasPendingChanges: false,
     isConfirmEditModalOpen: false,
@@ -60,6 +61,7 @@ interface ComponentState {
     isNegatableVal: boolean
     isProgrammaticVal: boolean
     isEditing: boolean
+    isAlwaysTag: boolean
     title: string
     hasPendingChanges: boolean
     isConfirmEditModalOpen: boolean,
@@ -166,6 +168,8 @@ class Container extends React.Component<Props, ComponentState> {
                     isProgrammatic = true;
                 }
 
+                let isMemorizable = !nextProps.entity.doNotMemorize;
+
                 this.setState({
                     entityNameVal: nextProps.entity.entityName,
                     entityTypeVal: entityType,
@@ -177,7 +181,8 @@ class Container extends React.Component<Props, ComponentState> {
                     title: nextProps.intl.formatMessage({
                         id: FM.ENTITYCREATOREDITOR_TITLE_EDIT,
                         defaultMessage: 'Edit Entity'
-                    })
+                    }),
+                    isAlwaysTag: isPrebuilt && isMemorizable
                 })
             }
         }
@@ -227,7 +232,8 @@ class Container extends React.Component<Props, ComponentState> {
             entityType,
             version: null,
             packageCreationId: null,
-            packageDeletionId: null
+            packageDeletionId: null,
+            doNotMemorize: this.state.isPrebuilt ? !this.state.isAlwaysTag : null
         } as EntityBase
 
         // Set entity id if we're editing existing id.
@@ -284,18 +290,21 @@ class Container extends React.Component<Props, ComponentState> {
     }
     
     onChangedType = (obj: CLDropdownOption) => {
-        const isPrebuilt = obj.text !== this.NEW_ENTITY && this.state.entityNameVal === Container.getPrebuiltEntityName(obj.text)        
+        const isBuiltInType = obj.text !== this.NEW_ENTITY && obj.text !== this.PROGRAMMATIC_ENTITY 
+        const isProgrammaticVal = obj.text === this.PROGRAMMATIC_ENTITY
+        const isPrebuilt = this.state.entityNameVal === Container.getPrebuiltEntityName(this.state.entityTypeVal) && isBuiltInType        
         const isNegatableVal = isPrebuilt ? false : this.state.isNegatableVal
-        const isProgrammaticVal = isPrebuilt ? false : obj.text === this.PROGRAMMATIC_ENTITY
-        const isMultivalueVal = isPrebuilt ? true : this.state.isMultivalueVal
+        const isMultivalueVal = isBuiltInType ? true : this.state.isMultivalueVal
 
-        this.setState({
+        this.setState(prevState =>( {
             isPrebuilt,
             isMultivalueVal,
             isNegatableVal,
             isProgrammaticVal,
-            entityTypeVal: obj.text
-        })
+            entityTypeVal: obj.text,
+            entityNameVal: isPrebuilt ? Container.getPrebuiltEntityName(obj.text) : prevState.entityNameVal, 
+            
+        }))
     }
     onChangeMultivalue = () => {
         this.setState(prevState => ({
@@ -305,6 +314,14 @@ class Container extends React.Component<Props, ComponentState> {
     onChangeReversible = () => {
         this.setState(prevState => ({
             isNegatableVal: !prevState.isNegatableVal,
+        }))
+    }
+
+    onChangeAlwaysTag = () => {
+        this.setState(prevState => ({
+            entityNameVal: prevState.isPrebuilt ? "" : Container.getPrebuiltEntityName(prevState.entityTypeVal), 
+            isPrebuilt: !prevState.isPrebuilt, 
+            isAlwaysTag: !prevState.isAlwaysTag
         }))
     }
 
@@ -323,10 +340,17 @@ class Container extends React.Component<Props, ComponentState> {
         if (!this.state.isEditing) {
             let foundEntity = this.props.entities.find(e => e.entityName === this.state.entityNameVal);
             if (foundEntity) {
+                if(foundEntity.entityType !== EntityType.LOCAL 
+                    && foundEntity.entityType !== EntityType.LUIS 
+                    && foundEntity.entityName === Container.getPrebuiltEntityName(foundEntity.entityType)
+                    && typeof foundEntity.doNotMemorize !== 'undefined' 
+                    && foundEntity.doNotMemorize)
+                    {
+                        return ''
+                    }
                 return intl.formatMessage(messages.fieldErrorDistinct)
             }
         }
-
         return '';
     }
 
@@ -549,9 +573,8 @@ class Container extends React.Component<Props, ComponentState> {
             : this.state.entityNameVal
 
         const isSaveButtonDisabled = (this.onGetNameErrorMessage(this.state.entityNameVal) !== '')
-            && !this.state.isPrebuilt
             || (!!this.props.entity && !this.state.hasPendingChanges)
-
+        
         return <Component
             open={this.props.open}
             title={title}
@@ -590,7 +613,7 @@ class Container extends React.Component<Props, ComponentState> {
 
             isConfirmDeleteModalOpen={this.state.isConfirmDeleteModalOpen}
             isDeleteErrorModalOpen={this.state.isDeleteErrorModalOpen}
-            showDelete={this.state.isEditing && !!this.props.handleDelete && !this.state.isPrebuilt}
+            showDelete={this.state.isEditing && !!this.props.handleDelete}
             onClickDelete={this.onClickDelete}
             onCancelDelete={this.onCancelDelete}
             onConfirmDelete={this.onConfirmDelete}
@@ -600,6 +623,10 @@ class Container extends React.Component<Props, ComponentState> {
             onConfirmEdit={this.onConfirmEdit}
 
             showValidationWarning={this.state.showValidationWarning}
+
+            isAlwaysTagged={this.state.isPrebuilt && this.state.isAlwaysTag}
+            isAlwaysTagDisabled={this.state.entityTypeVal === this.PROGRAMMATIC_ENTITY || this.state.entityTypeVal === this.NEW_ENTITY || this.state.isEditing}
+            onAlwaysTagChange={this.onChangeAlwaysTag}
         />
     }
 }
