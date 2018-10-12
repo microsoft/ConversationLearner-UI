@@ -70,7 +70,7 @@ class Dashboard extends React.Component<Props, ComponentState> {
         // TODO: internationalize text
         return (
             <div className="cl-page">
-                <span className={OF.FontClassNames.xxLarge}>
+                <span className={OF.FontClassNames.xxLarge} data-testid="dashboard-title">
                     <FormattedMessage
                         id={FM.DASHBOARD_TITLE}
                         defaultMessage="Overview"

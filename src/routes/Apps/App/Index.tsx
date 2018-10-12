@@ -172,7 +172,7 @@ class Index extends React.Component<Props, ComponentState> {
                 <div>
                     <div className="cl-app-title">
                         <div
-                            data-testid="app-index-title" 
+                            data-testid="app-index-model-name" 
                             className={FontClassNames.xxLarge}
                         >{app.appName}</div>
                     </div>

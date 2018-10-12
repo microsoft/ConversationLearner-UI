@@ -888,7 +888,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
 
         return (
             <div className="cl-page">
-                <div data-testid="logdialogs-title" className={`cl-dialog-title cl-dialog-title--log ${OF.FontClassNames.xxLarge}`}>
+                <div data-testid="log-dialogs-title" className={`cl-dialog-title cl-dialog-title--log ${OF.FontClassNames.xxLarge}`}>
                     <OF.Icon iconName="UserFollowed" />
                     <FormattedMessage
                         id={FM.LOGDIALOGS_TITLE}
@@ -915,7 +915,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 }
                 <div className="cl-buttons-row">
                     <OF.PrimaryButton
-                        data-testid="logdialogs-button-create"
+                        data-testid="log-dialogs-new-button"
                         disabled={this.props.editingPackageId !== this.props.app.devPackageId || this.props.invalidBot}
                         onClick={this.onClickNewChatSession}
                         ariaDescription={this.props.intl.formatMessage({

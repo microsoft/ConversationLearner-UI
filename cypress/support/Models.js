@@ -15,7 +15,7 @@ export function CreateNewModel(name)
   homePage.ClickNewModelButton()
   homePage.TypeModelName(name)
   homePage.ClickSubmitButton()
-  modelPage.VerifyPageTitle(name)
+  modelPage.VerifyModelName(name)
 }
 
 export function ImportModel(modelNamePrefix, fileName)

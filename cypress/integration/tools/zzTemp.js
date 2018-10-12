@@ -22,6 +22,7 @@ describe('zzTemp test', () =>
   {
     homePage.Visit()
     homePage.NavigateToModelPage('000-Playground')
-    entities.CreateNewEntity({name: 'programmaticOnlyEntity', programmaticOnly: true})
+    entityType = 'phonenumber'
+    entities.CreateNewEntity({name: `my-${entityType}`, type: entityType})
   })
 })
