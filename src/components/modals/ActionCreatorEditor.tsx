@@ -368,6 +368,13 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         return pairedValues.some(pv => !pv.prev || pv.current.document.text !== pv.prev.document.text)
     }
 
+    areTagsIdentical(tags1: OF.ITag[], tags2: OF.ITag[]): boolean {
+        if (tags1.length !== tags2.length) {
+            return false
+        }
+        return tags1.reduce((acc, x, i) => { return acc && tags1[i].key === tags2[i].key }, true);
+
+    }
     componentDidUpdate(prevProps: Props, prevState: ComponentState) {
         const initialEditState = this.state.initialEditState
         if (!initialEditState) {
@@ -377,9 +384,11 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         const isAnyPayloadChanged = this.areSlateValuesChanged(this.state.slateValuesMap, initialEditState.slateValuesMap)
             || this.areSlateValuesChanged(this.state.secondarySlateValuesMap, initialEditState.secondarySlateValuesMap)
         
-        const expectedEntitiesChanged = this.state.expectedEntityTags.filter(tag => !initialEditState.expectedEntityTags.some(t => t.key === tag.key)).length > 0
-        const requiredEntitiesChanged = this.state.requiredEntityTags.filter(tag => !initialEditState.requiredEntityTags.some(t => t.key === tag.key)).length > 0
-        const disqualifyingEntitiesChanged = this.state.negativeEntityTags.filter(tag => !initialEditState.negativeEntityTags.some(t => t.key === tag.key)).length > 0
+        const expectedEntitiesChanged = !initialEditState || !this.areTagsIdentical(this.state.expectedEntityTags, initialEditState.expectedEntityTags)
+        const requiredEntitiesChanged = !initialEditState || !this.areTagsIdentical(this.state.requiredEntityTags, initialEditState.requiredEntityTags)
+        const disqualifyingEntitiesChanged = !initialEditState || !this.areTagsIdentical(this.state.negativeEntityTags, initialEditState.negativeEntityTags)
+
+
         const isTerminalChanged = initialEditState!.isTerminal !== this.state.isTerminal
         const hasPendingChanges = isAnyPayloadChanged
             || expectedEntitiesChanged
