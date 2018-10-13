@@ -329,7 +329,9 @@ export function GetTip(tipType: string) {
         case TipType.ENTITY_ALWAYS_EXTRACT:
             return (
                 <div>
-                    When checked Pre-built entity is extracted from the user utterance and its value is accessible in memory.<br /><br />
+                    When checked a default pre-built entity extractor of the selected entity type will be added to the model. This pre-built entity extractor is a 
+                    pre-trained extractor. Once added to the model it will try to extract entities from each user utterance. The extracted entity values from 
+                    user utterance are always remembered in memory. <br /><br />
                 </div>
             )
         case TipType.ENTITY_PROGAMMATIC:
