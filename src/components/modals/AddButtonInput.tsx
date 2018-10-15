@@ -6,14 +6,19 @@ import * as React from 'react'
 import { TooltipHost, DirectionalHint } from 'office-ui-fabric-react/lib/Tooltip';
 import { FM } from '../../react-intl-messages'
 import { FormattedMessage } from 'react-intl'
+import { EditDialogType } from '.'
 import './AddButton.css'
 
 interface Props {
     onClick: () => void,
+    editType: EditDialogType
 }
 
 class AddButtonInput extends React.Component<Props, {}> {
     render() {
+        const fillType = (this.props.editType === EditDialogType.LOG_ORIGINAL || this.props.editType === EditDialogType.LOG_EDITED)
+        ? "log" : "train"
+
         return (
                 <div
                     role="button"
@@ -30,7 +35,9 @@ class AddButtonInput extends React.Component<Props, {}> {
                                 />
                         }}
                     >
-                        <svg className="cl-addbutton-svg cl-addbutton-svg-input">
+                        <svg 
+                            className={`cl-addbutton-svg cl-addbutton-svg-input wc-message-fillcolor-${fillType}`}
+                        >
                             <polygon 
                                 points="0,2 19,2 19,6 24,10 19,13 19,17 0,17"
                             />

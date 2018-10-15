@@ -242,8 +242,8 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
 
         let renderData = this.getRenderData();
         return (
-            <div className={`cl-dialog-admin ${OF.FontClassNames.large}`}>
-                <div data-testid="traindialog-title" className={`cl-dialog-title cl-dialog-title--${editTypeClass} ${OF.FontClassNames.xxLarge}`}>
+            <div className={`cl-dialog-admin ${OF.FontClassNames.small}`}>
+                <div data-testid="traindialog-title" className={`cl-dialog-title cl-dialog-title--${editTypeClass} ${OF.FontClassNames.large}`}>
                     <OF.Icon 
                         iconName={isLogDialog ? 'UserFollowed' : 'EditContact'}
                     />
@@ -252,7 +252,9 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                 {this.props.selectedActivity && (this.state.senderType === CLM.SenderType.User
                     ? (
                         <div className="cl-dialog-admin__content">
-                            <div className="cl-wc-message cl-wc-message--user">
+                            <div 
+                                className={`cl-wc-message cl-wc-message--user cl-wc-message--${isLogDialog ? 'log' : 'train'}`}
+                            >
                                 <FormattedMessage
                                     data-testid="modal-user-input"
                                     id={FM.EDITDIALOGADMIN_DIALOGMODE_USER}

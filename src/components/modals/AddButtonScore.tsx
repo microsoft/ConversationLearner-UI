@@ -30,7 +30,9 @@ class AddButtonScore extends React.Component<Props, {}> {
                                 />
                         }}
                     >
-                    <svg className="cl-addbutton-svg cl-addbutton-svg-score">
+                    <svg 
+                        className="cl-addbutton-svg cl-addbutton-svg-score"
+                    >
                         <polygon 
                             points="0,2 19,2 19,6 24,10 19,13 19,17 0,17"
                             transform="rotate(180) translate(-24, -19)"

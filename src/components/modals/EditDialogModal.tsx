@@ -188,8 +188,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
     }
 
     renderActivity(activityProps: BotChat.WrappedActivityProps, children: React.ReactNode, setRef: (div: HTMLDivElement | null) => void): JSX.Element {
-        const isLastActivity = activityProps.activity.id === this.props.history[this.props.history.length - 1].id
-        return renderActivity(activityProps, children, setRef, this.renderSelectedActivity, isLastActivity)
+        return renderActivity(activityProps, children, setRef, this.renderSelectedActivity, this.props.editType)
     }
 
     @autobind
@@ -236,6 +235,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             <div className="cl-wc-buttonbar">
                 <AddButtonInput 
                     onClick={this.onClickAddUserInput}
+                    editType={this.props.editType}
                 />
                 <AddScoreButton 
                     onClick={() => {
@@ -281,24 +281,6 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                 </div>
         )
     }
-
-    @autobind
-    renderLastActivity(activity: Activity): (JSX.Element | null) {
-
-        if (this.props.editState !== EditState.CAN_EDIT) {
-            return null
-        }
-
-        return (
-            <AddScoreButton 
-                onClick={() => {
-                    if (activity && this.state.currentTrainDialog) {
-                        this.props.onInsertAction(this.state.currentTrainDialog, activity)
-                    }
-                }}
-            />     
-        )
-    }
     
     shouldDisableUserInput(): boolean {
 
@@ -317,7 +299,13 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         return !lastAction || !lastAction.isTerminal
     }
 
-    
+    shouldShowScoreButton(): boolean {
+        if (!this.props.trainDialog || this.props.trainDialog.rounds.length === 0) {
+            return false
+        }
+        const lastRound = this.props.trainDialog.rounds[this.props.trainDialog.rounds.length - 1]
+        return (lastRound.scorerSteps.length === 0 || !lastRound.scorerSteps[0].labelAction)
+    }
 
     @autobind
     onClickAbandonCancel() {
@@ -584,6 +572,18 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                     </div>
                 </div>
                 <div className="cl-modal_footer cl-modal_footer--border">
+                    {this.shouldShowScoreButton() && this.state.currentTrainDialog &&
+                        <OF.PrimaryButton
+                            className="cl-button-scorewebchat"
+                            onClick={() => {
+                                if (this.state.currentTrainDialog) {
+                                    this.props.onInsertAction(this.state.currentTrainDialog, this.props.history[this.props.history.length - 1])}
+                                }
+                            }
+                            ariaDescription={'Score Actions'}
+                            text={'Score Actions'}
+                        />
+                    }
                     <div className="cl-modal-buttons">
                         <div className="cl-modal-buttons_secondary">
                             {this.renderWarning()}

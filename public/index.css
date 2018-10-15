@@ -41,6 +41,10 @@ html {
   min-width: 32px !important;
 }
 
+.cl-button-scorewebchat {
+  top: -60px;
+}
+
 .cl-textfield--withButton {
   display: grid;
   grid-template: auto / 1fr auto auto;
@@ -150,17 +154,17 @@ html {
 .ms-Button-icon[data-icon-name="ChevronUpSmall"] {
   font-size: 12px;
   margin-right: 8px;
-  color: var(--color-wc-user) !important
+  color: var(--color-themePrimary) !important
 }
 
 .ms-Button-icon[data-icon-name="BranchMerge"] {
-  color: var(--color-wc-user) !important
+  color: var(--color-themePrimary) !important
 }
 
 .ms-Button-icon[data-icon-name="ChevronDownSmall"] {
   font-size: 12px;
   margin-right: 8px;
-  color: var(--color-wc-user) !important;
+  color: var(--color-themePrimary) !important;
 }
 
 .ms-Button-icon:not(:disabled):hover {
@@ -218,7 +222,7 @@ html {
 }
 
 .cl-link {
-  color: var(--color-wc-user);
+  color: var(--color-themePrimary);
 }
 
 .cl-messagebar {
@@ -282,11 +286,25 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
 .cl-wc-message--user {
   background-color: var(--color-wc-user);
   color: #ffffff;
+  margin-top: 5px;
+  padding: 5px;
+  font-weight: bold;
+}
+
+.cl-wc-message--train {
+  background-color: var(--color-wc-user-train);
+}
+
+.cl-wc-message--log {
+  background-color: var(--color-wc-user-log);
 }
 
 .cl-wc-message--bot {
   background-color: var(--color-wc-bot);
   color: #000000;
+  margin-top: 5px;
+  padding: 5px;
+  font-weight: bold;
 }
 
 .cl-wc-message--done {
