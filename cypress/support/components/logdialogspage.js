@@ -3,7 +3,7 @@
  * Licensed under the MIT License.
  */
 
-export function VerifyPageTitle()           { cy.Get('div[data-testid="log-dialogs-title"]').contains('Log Dialogs') }
+export function VerifyPageTitle()           { cy.Get('[data-testid="log-dialogs-title"]').contains('Log Dialogs') }
 export function CreateNewLogDialogButton()  { cy.Get('[data-testid="log-dialogs-new-button"]').Click() }
 export function ClickDoneTestingButton()    { cy.Get('[data-testid="chat-session-modal-done-testing-button"]').Click() }
 export function ClickSessionTimeoutButton() { cy.Get('[data-testid="chat-session-modal-session-timeout-button"]').Click() }

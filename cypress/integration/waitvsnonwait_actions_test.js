@@ -4,12 +4,9 @@
 */
 
 const actions = require('../support/components/ActionsPage')
-const actionsModal = require('../support/components/ActionsModal')
+const actions = require('../../support/Actions')
 const homePage = require('../support/components/HomePage')
-const entity = require('../support/components/EntitiesPage')
-const entityModal = require('../support/components/EntityModal')
 const modelPage = require('../support/components/modelpage')
-const logDialogPage = require('../support/components/logdialogspage')
 const scorerModal = require('../support/components/scorermodal')
 const trainDialogPage = require('../support/components/traindialogspage')
 const editDialogModal = require('../support/components/editdialogmodal')
@@ -46,22 +43,22 @@ describe('Wait vs No Wait Action e2e test', function () {
 
     // Wait Action:
     actions.clickNewAction()
-    actionsModal.selectTypeText()
-    actionsModal.typeOnResponseBox(action01)
-    actionsModal.clickCreateButton()
+    actions.selectTypeText()
+    actions.typeOnResponseBox(action01)
+    actions.clickCreateButton()
      cy.wait(4000);
     // No Wait Actions:
     actions.clickNewAction()
-    actionsModal.selectTypeText()
-    actionsModal.typeOnResponseBox(action02)
-    actionsModal.clickWaitForResponse()
-    actionsModal.clickCreateButton()
+    actions.selectTypeText()
+    actions.typeOnResponseBox(action02)
+    actions.clickWaitForResponse()
+    actions.clickCreateButton()
      cy.wait(4000);
     actions.clickNewAction()
-    actionsModal.selectTypeText()
-    actionsModal.typeOnResponseBox(action03)
-    actionsModal.clickWaitForResponse()
-    actionsModal.clickCreateButton()
+    actions.selectTypeText()
+    actions.typeOnResponseBox(action03)
+    actions.clickWaitForResponse()
+    actions.clickCreateButton()
      cy.wait(4000);
     
     // Verify that the action has been added

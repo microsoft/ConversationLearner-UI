@@ -123,7 +123,7 @@ class Actions extends React.Component<Props, ComponentState> {
         const computedActions = this.getFilteredActions()
         return (
             <div className="cl-page">
-                <span className={OF.FontClassNames.xxLarge}>
+                <span data-testid="actions-title" className={OF.FontClassNames.xxLarge}>
                     <FormattedMessage
                         id={FM.ACTIONS_TITLE}
                         defaultMessage="Actions"

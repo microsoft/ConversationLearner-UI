@@ -3,19 +3,9 @@
  * Licensed under the MIT License.
 */
 
-const homePage = require('../../support/components/HomePage')
 const models = require('../../support/Models')
 const modelPage = require('../../support/components/ModelPage')
-const actionsPage = require('../../support/components/ActionsPage')
-const actionsModal = require('../../support/components/ActionsModal')
-const entities = require('../../support/components/EntitiesPage')
-const entityModal = require('../../support/components/EntityModal')
 const logDialogPage = require('../../support/components/logdialogspage')
-const memoryTableComponent = require('../../support/components/MemoryTableComponent')
-const scorerModal = require('../../support/components/ScorerModal')
-const trainDialogPage = require('../../support/components/TrainDialogsPage')
-const editDialogModal = require('../../support/components/EditDialogModal')
-const helpers = require('../../support/helpers')
 
 describe("What's your name", () =>
 {

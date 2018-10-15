@@ -3,33 +3,14 @@
  * Licensed under the MIT License.
 */
 const homePage = require('../../support/components/HomePage')
-const modelPage = require('../../support/components/ModelPage')
-const actions = require('../../support/components/ActionsPage')
-const actionsModal = require('../../support/components/ActionsModal')
-const entitiesPage = require('../../support/components/EntitiesPage')
-const entityModal = require('../../support/components/EntityModal')
-const logDialogPage = require('../../support/components/logdialogspage')
-const scorerModal = require('../../support/components/MemoryTableComponent')
-const memoryTableComponent = require('../../support/components/scorermodal')
-const trainDialogPage = require('../../support/components/traindialogspage')
-const editDialogModal = require('../../support/components/editdialogmodal')
-const helpers = require('../../support/helpers')
-const entities = require('../../support/Entities')
+const actions = require('../../support/Actions')
 
 describe('zzTemp test', () =>
 {
   it('zzTemp test', () => 
   {
     homePage.Visit()
-    homePage.NavigateToModelPage('000-Playground')
-
-    modelPage.NavigateToLogDialogs()
-    modelPage.WaitForTrainingStatusCompleted()
-    
-    logDialogPage.CreateNewLogDialogButton()
-
-    logDialogPage.TypeYourMessage("Hello", "What's your name?")
-
-    logDialogPage.ClickDoneTestingButton()
+    cy.pause()
+    actions.CreateNewAction({response: 'Hey $name{enter}, what do you really want?', disqualifyingEntities: ['name', 'want']})
   })
 })

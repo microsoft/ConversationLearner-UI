@@ -4,7 +4,7 @@
  */
 
 // Path to product code: ConversationLearner-UI\src\routes\Apps\App\TrainDialogs.tsx
-export function VerifyPageTitle()                 { cy.Get('div[data-testid="train-dialogs-title"]').contains('Train Dialogs') }
+export function VerifyPageTitle()                 { cy.Get('[data-testid="train-dialogs-title"]').contains('Train Dialogs') }
 export function CreateNewTrainDialog()            { cy.Get('[data-testid="button-new-train-dialog"]').Click() }
 export function FirstInput()                      { cy.Get('[data-testid="train-dialogs-first-input"]')}
 export function LastInput()                       { cy.Get('[data-testid="train-dialogs-last-input"]')}

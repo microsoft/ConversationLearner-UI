@@ -3,19 +3,12 @@
  * Licensed under the MIT License.
 */
 
-const homePage = require('../../support/components/HomePage')
 const models = require('../../support/Models')
 const modelPage = require('../../support/components/ModelPage')
-const actions = require('../../support/components/ActionsPage')
-const actionsModal = require('../../support/components/ActionsModal')
-const entities = require('../../support/components/EntitiesPage')
-const entityModal = require('../../support/components/EntityModal')
-const logDialogPage = require('../../support/components/logdialogspage')
 const memoryTableComponent = require('../../support/components/MemoryTableComponent')
 const scorerModal = require('../../support/components/ScorerModal')
 const trainDialogPage = require('../../support/components/TrainDialogsPage')
 const editDialogModal = require('../../support/components/EditDialogModal')
-const helpers = require('../../support/helpers')
 
 describe("My name is", () =>
 {
@@ -27,23 +20,23 @@ describe("My name is", () =>
 
     trainDialogPage.CreateNewTrainDialog()
 
-    editDialogModal.TypeYourMessage("My name is David.") // TODO: Add edge cases; 'david', with & without 'period'
-    editDialogModal.VerifyDetectedEntity("name", "David")
+    editDialogModal.TypeYourMessage('My name is David.') // TODO: Add edge cases; 'david', with & without 'period'
+    editDialogModal.VerifyDetectedEntity('name', 'David')
     editDialogModal.ClickScoreActionsButton()
-    memoryTableComponent.VerifyEntityInMemory("name", "David")
+    memoryTableComponent.VerifyEntityInMemory('name', 'David')
     scorerModal.VerifyContainsDisabledAction("What's your name?")
-    scorerModal.ClickAction("Hello David")
+    scorerModal.ClickAction('Hello David')
 
     // Wait for the training to complete.
     // At the time this was added, there is no UI elements to let us know it is complete.
     cy.wait(20000)
 
-    editDialogModal.TypeYourMessage("My name is Susan.")
-    editDialogModal.VerifyDetectedEntity("name", "Susan")
+    editDialogModal.TypeYourMessage('My name is Susan.')
+    editDialogModal.VerifyDetectedEntity('name', 'Susan')
     editDialogModal.ClickScoreActionsButton()
-    memoryTableComponent.VerifyEntityInMemory("name", "Susan", "David")
+    memoryTableComponent.VerifyEntityInMemory('name', 'Susan', 'David')
     scorerModal.VerifyContainsDisabledAction("What's your name?")
-    scorerModal.ClickAction("Hello Susan")
+    scorerModal.ClickAction('Hello Susan')
 
     editDialogModal.ClickSaveButton()
   })

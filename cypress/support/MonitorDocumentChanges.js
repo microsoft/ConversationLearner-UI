@@ -89,7 +89,7 @@ var MonitorDocumentChanges = (function()
         {
             helpers.ConLog(`url:changed`, `New URL ${newUrl} - MillisecondsSinceLastChange: ${MillisecondsSinceLastChange()}`) 
             lastChangeTime = new Date().getTime()
-            if(UrlNeedsSpinner(newUrl)) SetExpectingSpinner(true)
+            //if(UrlNeedsSpinner(newUrl)) SetExpectingSpinner(true)
         })
 
         // Cypress.on('uncaught:exception', (error, runnable) => 
