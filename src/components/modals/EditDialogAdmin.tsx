@@ -372,8 +372,8 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                                     dialogMode={renderData.dialogMode}
                                     extractResponses={this.props.extractResponses}
                                     originalTextVariations={renderData.round.extractorStep.textVariations}
-                                    onTextVariationsExtracted={this.props.onChangeExtraction}
-                                    onExtractionsChanged={this.props.onExtractionsChanged}
+                                    onSumbitExtractions={this.props.onSubmitExtraction}
+                                    onPendingStatusChanged={this.props.onPendingStatusChanged}
                                 />
                                 : <span>
                                     <FormattedMessage
@@ -450,8 +450,8 @@ export interface ReceivedProps {
     editState: EditState,
     editType: EditDialogType,
     onChangeAction: (trainScorerStep: CLM.TrainScorerStep) => void,
-    onChangeExtraction: (extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) => void                              
-    onExtractionsChanged: (changed: boolean) => void
+    onSubmitExtraction: (extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) => void                              
+    onPendingStatusChanged: (changed: boolean) => void
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps

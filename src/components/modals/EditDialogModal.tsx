@@ -171,7 +171,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         })
     }
 
-    onExtractionsChanged(changed: boolean) {
+    onPendingStatusChanged(changed: boolean) {
         // Put mask on webchat if changing extractions
         this.setState({
             pendingExtractionChanges: changed
@@ -563,8 +563,8 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                                     trainDialog={this.props.trainDialog}
                                     selectedActivity={this.state.selectedActivity}
                                     onChangeAction={(trainScorerStep: CLM.TrainScorerStep) => this.onChangeAction(trainScorerStep)}
-                                    onChangeExtraction={(extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) => this.onChangeExtraction(extractResponse, textVariations)}
-                                    onExtractionsChanged={(changed: boolean) => this.onExtractionsChanged(changed)}
+                                    onSubmitExtraction={(extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) => this.onChangeExtraction(extractResponse, textVariations)}
+                                    onPendingStatusChanged={(changed: boolean) => this.onPendingStatusChanged(changed)}
                                 />
                             </div>
                             {this.props.editState !== EditState.CAN_EDIT && <div className="cl-overlay"/>} 

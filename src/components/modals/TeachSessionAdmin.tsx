@@ -52,7 +52,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
     async onEntityExtractorSubmit(extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]): Promise<void> {
         
         // If I'm editing an existing round
-        if (this.props.selectedActivityIndex) {
+        if (this.props.selectedActivityIndex !== null) {
             this.props.onEditExtraction(extractResponse, textVariations)
             return
         }
@@ -332,7 +332,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                                     dialogMode={renderData.dialogMode}
                                     extractResponses={renderData.extractResponses}
                                     originalTextVariations={renderData.textVariations}
-                                    onTextVariationsExtracted={this.onEntityExtractorSubmit}
+                                    onSumbitExtractions={this.onEntityExtractorSubmit}
                                 />}
                         </div>
                     </div>
