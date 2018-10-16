@@ -10,12 +10,18 @@ describe('zzTemp test', () =>
 {
   it('zzTemp test', () => 
   {
+    var response = "Sorry $name{enter} I can't help you $want{enter}"
+    response = response.replace(/{enter}/g, '')
+    console.log(response)
+
     homePage.Visit()
 
     cy.pause()
-    
-    actionsGrid.SetResponseDetailsRowAlias("Sorry $name I can't help you $want")
-    actionsGrid.ValidateRequiredEntities(['name', 'want', 'newbe'])
+    actions.CreateNewAction({response: 'Hey $name{enter}, what do you really want?', disqualifyingEntities: ['garbage', 'want']})
+    actions.CreateNewAction({response: "Sorry $name{enter} I can't help you $want{enter}"})
+
+    // actionsGrid.SetResponseDetailsRowAlias("Sorry $name I can't help you $want")
+    // actionsGrid.ValidateRequiredEntities(['name', 'want', 'newbe'])
   })
 })
 

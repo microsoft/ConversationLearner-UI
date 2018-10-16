@@ -36,7 +36,7 @@ function TypeMultipleEntities(selector, entityNames)
       cy.Get('.ms-BasePicker-input')
         .then((element) =>
         {
-          for(var i = 0; i < entityNames.length; i++) { cy.wrap(element).type(entityNames[i]).type('{enter}') }
+          for(var i = 0; i < entityNames.length; i++) { cy.wrap(element).type(`$${entityNames[i]}`).wait(1000).type('{enter}') }
         })
     })
   })

@@ -18,9 +18,12 @@ export function CreateNewAction({response, expectedEntities, requiredEntities, d
   if(disqualifyingEntities) actionsModal.TypeDisqualifyingEntities(disqualifyingEntities)
   actionsModal.ClickCreateButton()
 
+  var requiredEntitiesFromResponse = response.match(/(?<=\$)[^ ]+?(?={enter})/g)
+  response = response.replace(/{enter}/g, '')
+  
+  // Set the pre-requisit for all validations for the row.
   actionsGrid.SetResponseDetailsRowAlias(response)
 
-  var requiredEntitiesFromResponse = response.match(/(?<=\$)[^ ]+?(?={enter})/g)
   if(!requiredEntities && !requiredEntitiesFromResponse) actionsGrid.ValidateRequiredEntitiesIsEmpty()
   else
   {
@@ -30,8 +33,12 @@ export function CreateNewAction({response, expectedEntities, requiredEntities, d
       if(!Array.isArray(requiredEntities)) requiredEntities = [requiredEntities]
       if(requiredEntitiesFromResponse) requiredEntities.concat(requiredEntitiesFromResponse)
     }
+    actionsGrid.ValidateRequiredEntities(requiredEntities)
   }
   
+  if(disqualifyingEntities) actionsGrid.ValidateDisqualifyingEntities(disqualifyingEntities)
+  else actionsGrid.ValidateDisqualifyingEntitiesIsEmpty()
 
-  // TODO: Validate the above in the grid
+  if(expectedEntities) actionsGrid.ValidateExpectedEntities(expectedEntities)
+  else actionsGrid.ValidateExpectedEntitiesIsEmpty()
 }
