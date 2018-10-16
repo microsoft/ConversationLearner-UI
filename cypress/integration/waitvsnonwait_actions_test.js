@@ -3,11 +3,11 @@
  * Licensed under the MIT License.
 */
 
-const actions = require('../support/components/ActionsPage')
+const actionsModal = require('../support/components/ActionsModal')
 const actions = require('../../support/Actions')
 const homePage = require('../support/components/HomePage')
 const modelPage = require('../support/components/modelpage')
-const scorerModal = require('../support/components/scorermodal')
+const scorerModal = require('../support/components/ScorerModal')
 const trainDialogPage = require('../support/components/traindialogspage')
 const editDialogModal = require('../support/components/editdialogmodal')
 

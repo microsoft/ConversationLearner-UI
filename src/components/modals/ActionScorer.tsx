@@ -49,7 +49,7 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
                 if (!component.props.canEdit) {
                     return (
                         <PrimaryButton
-                            data-testid="actionscorer-buttonNoClick"
+                            data-testid="action-scorer-button-no-click"
                             disabled={true}
                             ariaDescription={buttonText}
                             text={buttonText}
@@ -61,7 +61,7 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
                 if (!isAvailable || selected) {
                     return (
                         <PrimaryButton
-                            data-testid="actionscorer-buttonNoClick"
+                            data-testid="action-scorer-button-no-click"
                             disabled={true}
                             ariaDescription={buttonText}
                             text={buttonText}
@@ -74,7 +74,7 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
                         : undefined
                     return (
                         <PrimaryButton
-                            data-testid="actionscorer-buttonClickable"
+                            data-testid="action-scorer-button-clickable"
                             onClick={() => component.handleActionSelection(action.actionId)}
                             ariaDescription={buttonText}
                             text={buttonText}
@@ -103,7 +103,7 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
                     const textAction = new TextAction(action)
                     return (
                         <ActionPayloadRenderers.TextPayloadRendererContainer
-                            data-testid="actionscorer-textaction"
+                            data-testid="action-scorer-action-text"
                             textAction={textAction}
                             entities={component.props.entities}
                             memories={component.props.memories}
@@ -114,7 +114,7 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
                     const apiAction = new ApiAction(action)
                     return (
                         <ActionPayloadRenderers.ApiPayloadRendererContainer
-                            data-testid="actionscorer-apiaction"
+                            data-testid="action-scorer-action-api"
                             apiAction={apiAction}
                             entities={component.props.entities}
                             memories={component.props.memories}
@@ -124,7 +124,7 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
                     const cardAction = new CardAction(action)
                     return (
                         <ActionPayloadRenderers.CardPayloadRendererContainer
-                            data-testid="actionscorer-cardaction"
+                            data-testid="action-scorer-action-card"
                             isValidationError={false}
                             cardAction={cardAction}
                             entities={component.props.entities}
@@ -136,7 +136,7 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
                     const sessionAction = new SessionAction(action)
                     return (
                         <ActionPayloadRenderers.SessionPayloadRendererContainer
-                            data-testid="actionscorer-sessionaction"
+                            data-testid="action-scorer-action-session"
                             sessionAction={sessionAction}
                             entities={component.props.entities}
                             memories={component.props.memories}
