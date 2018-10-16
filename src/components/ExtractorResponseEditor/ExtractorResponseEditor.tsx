@@ -13,6 +13,7 @@ import EntityPicker from './EntityPickerContainer'
 import './ExtractorResponseEditor.css'
 import TokenNode from './TokenNode'
 import { EntityType, EntityBase } from '@conversationlearner/models';
+import {Expando} from '../modals'
 
 // Slate doesn't have type definitions but we still want type consistency and references so we make custom type
 export type SlateValue = any
@@ -32,6 +33,7 @@ interface Props {
 interface State {
     isSelectionOverlappingOtherEntities: boolean
     isMenuVisible: boolean
+    isPreBuiltExpandoOpen: boolean
     menuPosition: IPosition | null
     value: SlateValue
     preBuiltEditorValues: SlateValue[], 
@@ -57,6 +59,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
     state = {
         isSelectionOverlappingOtherEntities: false,
         isMenuVisible: false,
+        isPreBuiltExpandoOpen: true,
         menuPosition: {
             top: 0,
             left: 0,
@@ -72,6 +75,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
 
         this.state.value = convertEntitiesAndTextToTokenizedEditorValue(props.text, props.customEntities, NodeType.CustomEntityNodeType)
         this.state.preBuiltEditorValues = props.preBuiltEntities.map<any[]>(preBuiltEntity => convertEntitiesAndTextToEditorValue(props.text, [preBuiltEntity], NodeType.PreBuiltEntityNodeType))
+        this.state.isPreBuiltExpandoOpen = this.state.preBuiltEditorValues.length <= 4
     }
 
     componentWillReceiveProps(nextProps: Props) {
@@ -366,7 +370,14 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
                 </div>
                 {this.state.preBuiltEditorValues.length > 0
                     && <div className="entity-labeler__prebuilt-editors">
-                        <div className="entity-labeler__title">Pre-Built Entities:</div>
+                        <Expando 
+                            className={'entity-labeler__title'}
+                            isOpen={this.state.isPreBuiltExpandoOpen}
+                            text="Extracted Pre-Built Entities:"
+                            onToggle={() => this.setState({ isPreBuiltExpandoOpen: !this.state.isPreBuiltExpandoOpen })}
+                        />
+                        
+                        {this.state.isPreBuiltExpandoOpen &&
                         <div className="entity-labeler__editor entity-labeler__editor--prebuilt">
                             {this.state.preBuiltEditorValues.map((preBuiltEditorValue, i) =>
                                 <Editor
@@ -378,7 +389,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
                                     renderNode={this.renderNode}
                                     readOnly={true}
                                 />)}
-                        </div>
+                        </div>}
                     </div>}
             </div>
         )

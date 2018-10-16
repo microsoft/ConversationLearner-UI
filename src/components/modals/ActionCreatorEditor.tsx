@@ -194,8 +194,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
     initProps(): ComponentState {
         const { entities, botInfo } = this.props
-
-        const entityTags = entities.map<OF.ITag>(e =>
+        const entityTags = entities.filter(e => !e.doNotMemorize).map<OF.ITag>(e =>
             ({
                 key: e.entityId,
                 name: e.entityName
@@ -230,7 +229,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             // Otherwise reset only if props have changed
             else {
                 if (nextProps.entities !== this.props.entities) {
-                    const entityTags = nextProps.entities.map<OF.ITag>(convertEntityToTag)
+                    const entityTags = nextProps.entities.filter(e => !e.doNotMemorize).map<OF.ITag>(convertEntityToTag)
 
                     const availableExpectedEntityTags = nextProps.entities
                         .filter(e => e.entityType === EntityType.LUIS)
@@ -877,6 +876,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             .filter(e => !unavailableTags.some(t => t.key === e.entityId))
             // Remove negative entities (Those which have a positiveId)
             .filter(e => typeof e.positiveId !== "string")
+            // Remove do not memorizable entities (Those prebuilt entity types with no default extractor)
+            .filter(e => !e.doNotMemorize)
             .map(convertEntityToOption)
 
         const { intl } = this.props

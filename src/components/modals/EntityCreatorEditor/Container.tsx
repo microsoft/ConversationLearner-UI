@@ -624,7 +624,11 @@ class Container extends React.Component<Props, ComponentState> {
             showValidationWarning={this.state.showValidationWarning}
 
             isAlwaysTagged={this.state.isPrebuilt && this.state.isAlwaysTag}
-            isAlwaysTagDisabled={this.state.entityTypeVal === this.PROGRAMMATIC_ENTITY || this.state.entityTypeVal === this.NEW_ENTITY || this.state.isEditing}
+            isAlwaysTagDisabled={this.state.entityTypeVal === this.PROGRAMMATIC_ENTITY 
+                || this.state.entityTypeVal === this.NEW_ENTITY 
+                || this.state.isEditing 
+                // disable always extract check box if built-in entity with doNotMemorize == false exist
+                || typeof this.props.entities.find(e => e.entityType !== EntityType.LOCAL && e.entityType !== EntityType.LUIS && !e.doNotMemorize && e.entityName == Container.getPrebuiltEntityName(this.state.entityTypeVal)) !== 'undefined'}
             onAlwaysTagChange={this.onChangeAlwaysTag}
         />
     }

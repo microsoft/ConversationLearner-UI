@@ -131,6 +131,7 @@ const EditComponent: React.SFC<Props> = (props: Props) => {
                 disabled={props.isNegatableDisabled}
                 tipType={ToolTip.TipType.ENTITY_NEGATABLE}
             />
+            {!props.isAlwaysTagDisabled &&
             <TC.Checkbox	
                 data-testid="entitycreator-checkbox-alwaystag"	
                 label={props.intl.formatMessage({	
@@ -142,7 +143,7 @@ const EditComponent: React.SFC<Props> = (props: Props) => {
                 onChange={props.onAlwaysTagChange}
                 disabled={props.isAlwaysTagDisabled}	
                 tipType={ToolTip.TipType.ENTITY_ALWAYS_EXTRACT}	
-            />
+            />}
         </div>
     </div>
 }
