@@ -19,7 +19,7 @@ import ErrorInjectionEditor from '../../../components/modals/ErrorInjectionEdito
 import { injectIntl, InjectedIntlProps, defineMessages, FormattedMessage } from 'react-intl'
 import { autobind } from 'office-ui-fabric-react/lib/Utilities';
 import * as TC from '../../../components/tipComponents'
-import * as ToolTip from '../../../components/ToolTips'
+import * as ToolTip from '../../../components/ToolTips/ToolTips'
 import * as util from '../../../util'
 import HelpIcon from '../../../components/HelpIcon'
 

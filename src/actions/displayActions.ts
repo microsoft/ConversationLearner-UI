@@ -6,7 +6,7 @@ import { ActionObject } from '../types'
 import { AT } from '../types/ActionTypes'
 import { ErrorType } from '../types/const'
 import { AppBase, Banner } from '@conversationlearner/models';
-import { TipType } from '../components/ToolTips'
+import { TipType } from '../components/ToolTips/ToolTips'
 import * as ClientFactory from '../services/clientFactory'
 import { Dispatch } from 'redux'
 import { AxiosError } from 'axios';

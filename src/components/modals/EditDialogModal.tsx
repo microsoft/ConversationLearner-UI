@@ -22,7 +22,7 @@ import ConfirmCancelModal from './ConfirmCancelModal'
 import UserInputModal from './UserInputModal'
 import { FM } from '../../react-intl-messages'
 import HelpIcon from '../HelpIcon'
-import { TipType } from '../ToolTips';
+import { TipType } from '../ToolTips/ToolTips';
 import { renderReplayError } from './ReplayErrorList'
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { autobind } from 'office-ui-fabric-react/lib/Utilities'

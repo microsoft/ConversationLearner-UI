@@ -10,7 +10,7 @@ import * as OF from 'office-ui-fabric-react';
 import { EntityCreatorEditor } from '../../../components/modals'
 import actions from '../../../actions'
 import { State } from '../../../types';
-import { onRenderDetailsHeader } from '../../../components/ToolTips'
+import { onRenderDetailsHeader } from '../../../components/ToolTips/ToolTips'
 import { AppBase, EntityBase, EntityType } from '@conversationlearner/models'
 import { FM } from '../../../react-intl-messages'
 import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'

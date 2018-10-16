@@ -11,7 +11,7 @@ import * as OF from 'office-ui-fabric-react'
 import { State } from '../../types'
 import { FM } from '../../react-intl-messages'
 import HelpIcon from '../HelpIcon'
-import { TipType } from '../ToolTips';
+import { TipType } from '../ToolTips/ToolTips';
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import * as CLM from '@conversationlearner/models'
 
