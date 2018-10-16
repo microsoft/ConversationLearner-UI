@@ -9,7 +9,7 @@ import { connect } from 'react-redux'
 import { ActionBase, ActionTypes, Template, RenderedActionArgument, SessionAction, CardAction, TextAction, ApiAction } from '@conversationlearner/models'
 import { State } from '../types'
 import * as OF from 'office-ui-fabric-react'
-import { onRenderDetailsHeader } from './ToolTips'
+import { onRenderDetailsHeader } from './ToolTips/ToolTips'
 import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../react-intl-messages'
 import * as Util from '../util'
@@ -279,7 +279,10 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             maxWidth: 100,
             isResizable: true,
             getSortValue: action => action.actionType.toLowerCase(),
-            render: action => <span className={OF.FontClassNames.mediumPlus}>{action.actionType}</span>
+            render: action => {
+                const actionType = action.actionType === ActionTypes.API_LOCAL ? "API" : action.actionType
+                return <span className={OF.FontClassNames.mediumPlus}>{actionType}</span>
+            }
         },
         {
             key: 'requiredEntities',
@@ -325,7 +328,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             render: (action, component) => action.negativeEntities.length === 0
                 ? <OF.Icon iconName="Remove" className="cl-icon" />
                 : action.negativeEntities.map(entityId => {
-                    const entity = component.props.entities.find(e => e.entityId == entityId)
+                    const entity = component.props.entities.find(e => e.entityId === entityId)
                     return (
                         <div className='ms-ListItem is-selectable ms-ListItem-primaryText' key={entityId}>
                             {entity

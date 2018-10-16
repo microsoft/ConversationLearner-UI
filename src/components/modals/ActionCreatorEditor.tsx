@@ -16,7 +16,7 @@ import EntityCreatorEditor from './EntityCreatorEditor'
 import AdaptiveCardViewer from './AdaptiveCardViewer/AdaptiveCardViewer'
 import * as ActionPayloadEditor from './ActionPayloadEditor'
 import { State } from '../../types'
-import * as ToolTip from '../ToolTips'
+import * as ToolTip from '../ToolTips/ToolTips'
 import * as TC from '../tipComponents'
 import * as OF from 'office-ui-fabric-react';
 import { CLTagItem, ICLPickerItemProps } from './CLTagItem'
@@ -116,7 +116,7 @@ const actionTypeOptions = Object.values(ActionTypes)
     .map<OF.IDropdownOption>(actionTypeString => {
         return {
             key: actionTypeString,
-            text: actionTypeString
+            text: actionTypeString === 'API_LOCAL' ? "API" : actionTypeString
         }
     })
 
@@ -926,7 +926,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                         selectedKey={this.state.selectedApiOptionKey}
                                         disabled={this.state.apiOptions.length === 0}
                                         placeHolder={this.state.apiOptions.length === 0 ? 'NONE DEFINED' : 'API name...'}
-                                        tipType={ToolTip.TipType.ACTION_API}
+                                        tipType={ToolTip.TipType.ACTION_API1}
                                     />
                                     <OF.PrimaryButton
                                         className="cl-dropdownWithButton-button"

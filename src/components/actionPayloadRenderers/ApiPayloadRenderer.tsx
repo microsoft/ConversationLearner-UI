@@ -40,34 +40,6 @@ export default class Component extends React.Component<Props, State> {
         }))
     }
 
-    private getCombinedArguments (originalArguments: RenderedActionArgument[], substitutedArguments: RenderedActionArgument[] | null): ICombinedActionArguments {
-        return substitutedArguments === null
-            ? {
-                argumentPairs: originalArguments.map(oa => ({
-                    original: oa,
-                    substituted: oa
-                })),
-                argumentsDiffer: false
-            }
-            : originalArguments.reduce<ICombinedActionArguments>((combined, originalArgument) => {
-                const matchingSubstitutedArgument = substitutedArguments && substitutedArguments.find(sa => sa.parameter === originalArgument.parameter)
-                if (matchingSubstitutedArgument) {
-                    combined.argumentPairs.push({
-                        original: originalArgument,
-                        substituted: matchingSubstitutedArgument
-                    })
-                    
-                    // If any of the arguments are different, set to true
-                    combined.argumentsDiffer = combined.argumentsDiffer || (originalArgument.value !== matchingSubstitutedArgument.value)
-                }
-
-                return combined
-            }, {
-                    argumentPairs: [],
-                    argumentsDiffer: false
-                })
-    }
-
     render() {
         const pairedLogicArguments = this.getCombinedArguments(this.props.originalLogicArguments, this.props.substitutedLogicArguments)
         const pairedRenderArguments = this.getCombinedArguments(this.props.originalRenderArguments, this.props.substitutedRenderArguments)
@@ -114,5 +86,33 @@ export default class Component extends React.Component<Props, State> {
                     />
                 </div>}
         </div>
+    }
+
+    private getCombinedArguments (originalArguments: RenderedActionArgument[], substitutedArguments: RenderedActionArgument[] | null): ICombinedActionArguments {
+        return substitutedArguments === null
+            ? {
+                argumentPairs: originalArguments.map(oa => ({
+                    original: oa,
+                    substituted: oa
+                })),
+                argumentsDiffer: false
+            }
+            : originalArguments.reduce<ICombinedActionArguments>((combined, originalArgument) => {
+                const matchingSubstitutedArgument = substitutedArguments && substitutedArguments.find(sa => sa.parameter === originalArgument.parameter)
+                if (matchingSubstitutedArgument) {
+                    combined.argumentPairs.push({
+                        original: originalArgument,
+                        substituted: matchingSubstitutedArgument
+                    })
+                    
+                    // If any of the arguments are different, set to true
+                    combined.argumentsDiffer = combined.argumentsDiffer || (originalArgument.value !== matchingSubstitutedArgument.value)
+                }
+
+                return combined
+            }, {
+                    argumentPairs: [],
+                    argumentsDiffer: false
+                })
     }
 }

@@ -13,7 +13,7 @@ import { ErrorHandler } from '../../ErrorHandler'
 import { injectIntl, InjectedIntlProps, InjectedIntl, FormattedMessage } from 'react-intl'
 import { AT } from '../../types/ActionTypes'
 import { FM } from '../../react-intl-messages'
-import { GetTip, TipType } from '../ToolTips'
+import { GetTip, TipType } from '../ToolTips/ToolTips'
 
 class ErrorPanel extends React.Component<Props, {}> {
     static customErrors = {

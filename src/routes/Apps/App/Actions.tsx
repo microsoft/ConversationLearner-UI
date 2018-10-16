@@ -98,7 +98,7 @@ class Actions extends React.Component<Props, ComponentState> {
     getFilteredActions(): ActionBase[] {
         //runs when user changes the text 
         const searchStringLower = this.state.searchValue.toLowerCase()
-        const filteredActions = this.props.actions.filter(a => {
+        return this.props.actions.filter(a => {
             const nameMatch = a.payload.toLowerCase().includes(searchStringLower)
             const typeMatch = a.actionType.toLowerCase().includes(searchStringLower)
             const entities = this.props.entities
@@ -107,8 +107,6 @@ class Actions extends React.Component<Props, ComponentState> {
 
             return nameMatch || typeMatch || entityMatch
         })
-
-        return filteredActions;
     }
 
     onChangeSearchString(searchString: string) {
@@ -186,7 +184,7 @@ class Actions extends React.Component<Props, ComponentState> {
                                 className={OF.FontClassNames.mediumPlus}
                                 onChange={searchString => this.onChangeSearchString(searchString)}
                                 onSearch={searchString => this.onChangeSearchString(searchString)}
-                                />
+                            />
                         </div>
                         <ActionDetailsList
                             actions={computedActions}

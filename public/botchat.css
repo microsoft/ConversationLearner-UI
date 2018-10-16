@@ -387,11 +387,32 @@ body .wc-app, .wc-app button, .wc-app input, .wc-app textarea {
   text-align: right; }
 
 .wc-message-from-me .wc-message-content {
-  background-color: #0078d7;
-  color: #ffffff; }
+   color: #ffffff; }
 
-.wc-message-from-me svg.wc-message-callout path {
-  fill: #0078d7; }
+
+.wc-message-color-bot {
+  background-color: var(--color-wc-bot); 
+}
+
+.wc-message-color-train {
+  background-color: var(--color-wc-user-train); 
+}
+
+.wc-message-color-log {
+  background-color: var(--color-wc-user-log); 
+}
+
+.wc-message-fillcolor-bot {
+  fill: var(--color-wc-bot); 
+}
+
+.wc-message-fillcolor-train {
+  fill: var(--color-wc-user-train) !important; 
+}
+
+.wc-message-fillcolor-log {
+  fill: var(--color-wc-user-log) !important; 
+}
 
 .wc-message-from-me svg.wc-message-callout path.point-left {
   display: none; }

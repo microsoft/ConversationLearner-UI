@@ -61,7 +61,8 @@
     --color-yellow-darkest: #9E7203;
     --color-yellow-lighter: #FFE7A4;
     --color-botchat-grey: #dbdee1;
-    --color-wc-user: #3a96dd;
+    --color-wc-user-train: #5c005c;
+    --color-wc-user-log: #107c10;
     --color-wc-bot: #eceff1;
     --gutter-width: 100px;
     --nav-link-padding: 1em 2em;

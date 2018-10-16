@@ -6,19 +6,18 @@ import * as React from 'react';
 import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import { EditDialogType } from '.'
 import { FontClassNames, Icon, PrimaryButton, DefaultButton } from 'office-ui-fabric-react';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { State } from '../../types';
-import Webchat from '../Webchat'
+import Webchat, { renderActivity } from '../Webchat'
 import { AppBase } from '@conversationlearner/models'
 import actions from '../../actions'
 import { FM } from '../../react-intl-messages'
+import * as BotChat from '@conversationlearner/webchat'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 
-interface ComponentState {
-}
-
-class SessionWindow extends React.Component<Props, ComponentState> {
+class SessionWindow extends React.Component<Props, {}> {
     onClickDone() {
         if (this.props.chatSession.current !== null) {
             this.props.deleteChatSessionThunkAsync(this.props.user.id, this.props.chatSession.current, this.props.app, this.props.editingPackageId)
@@ -32,6 +31,10 @@ class SessionWindow extends React.Component<Props, ComponentState> {
         if (this.props.chatSession.current !== null) {
             this.props.editChatSessionExpireThunkAsync(this.props.app.appId, this.props.chatSession.current.sessionId)
         }
+    }
+
+    renderActivity(activityProps: BotChat.WrappedActivityProps, children: React.ReactNode, setRef: (div: HTMLDivElement | null) => void): JSX.Element {
+        return renderActivity(activityProps, children, setRef, null, EditDialogType.LOG_ORIGINAL)
     }
 
     render() {
@@ -59,14 +62,14 @@ class SessionWindow extends React.Component<Props, ComponentState> {
                                 onSelectActivity={() => { }}
                                 hideInput={false}
                                 focusInput={true}
+                                renderActivity={(props, children, setRef) => this.renderActivity(props, children, setRef)}
                             />
                         </div>
                     </div>
                 </div>
                 <div className="cl-modal_footer cl-modal_footer--border">
                     <div className="cl-modal-buttons">
-                        <div className="cl-modal-buttons_secondary">
-                        </div>
+                        <div className="cl-modal-buttons_secondary"/>
                         <div className="cl-modal-buttons_primary">
                             <PrimaryButton
                                 data-testid="chatsession-modal-footer-button1"
@@ -81,7 +84,7 @@ class SessionWindow extends React.Component<Props, ComponentState> {
                                 })}
                             />
                             <DefaultButton
-                            data-testid="chatsession-modal-footer-button2"
+                                data-testid="chatsession-modal-footer-button2"
                                 onClick={() => this.onClickExpire()}
                                 ariaDescription={intl.formatMessage({
                                     id: FM.CHATSESSIONMODAL_EXPIREBUTTON_ARIADESCRIPTION,

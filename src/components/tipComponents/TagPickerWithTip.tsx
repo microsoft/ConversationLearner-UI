@@ -3,7 +3,7 @@
  * Licensed under the MIT License.
  */
 import * as React from 'react'
-import { TipType } from '../ToolTips'
+import { TipType } from '../ToolTips/ToolTips'
 import HelpIcon from '../HelpIcon'
 import * as OF from 'office-ui-fabric-react'
 
