@@ -47,7 +47,7 @@ const returnStringWhenError = (s: string) => {
 const returnErrorStringWhenError = returnStringWhenError("ERR")
 
 function textClassName(trainDialog: CLM.TrainDialog): string {
-    if (trainDialog.invalid === true) {
+    if (trainDialog.validity === CLM.Validity.INVALID) {
         return `${OF.FontClassNames.mediumPlus} cl-font--highlight`;
     }
     return OF.FontClassNames.mediumPlus!;
@@ -97,7 +97,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                 let firstInput = getFirstInput(trainDialog);
                 if (firstInput) {
                     return (<span className={textClassName(trainDialog)}>
-                        {trainDialog.invalid === true && <Icon className="cl-icon" iconName="IncidentTriangle" />}
+                        {trainDialog.validity === CLM.Validity.INVALID && <Icon className="cl-icon" iconName="IncidentTriangle" />}
                         {firstInput}
                     </span>)
                 }
@@ -258,10 +258,10 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 .sort((a, b) => {
 
                     // Always put invalid at top (values can also be undefined)
-                    if (a.invalid === true && b.invalid !== true) {
+                    if (a.validity === CLM.Validity.INVALID && b.validity !== CLM.Validity.INVALID) {
                         return -1;
                     }
-                    if (b.invalid === true && a.invalid !== true) {
+                    if (b.validity === CLM.Validity.INVALID && a.validity !== CLM.Validity.INVALID) {
                         return 1;
                     }
 
@@ -847,7 +847,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             lastRound.scorerSteps = []
         }
 
-        newTrainDialog.invalid = isInvalid
+        newTrainDialog.validity = isInvalid ? CLM.Validity.INVALID : CLM.Validity.VALID
         newTrainDialog.definitions = null
         try { 
             await ((this.props.editTrainDialogThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<CLM.TeachWithHistory>);
@@ -862,7 +862,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     // Create a new trainDialog 
     async onCreateTrainDialog(newTrainDialog: CLM.TrainDialog, isInvalid: boolean) {
 
-        newTrainDialog.invalid = isInvalid
+        newTrainDialog.validity = isInvalid ? CLM.Validity.INVALID : CLM.Validity.VALID
 
         // Remove dummy scorer rounds used for rendering
         newTrainDialog.rounds.forEach(r => r.scorerSteps = r.scorerSteps.filter(ss => {

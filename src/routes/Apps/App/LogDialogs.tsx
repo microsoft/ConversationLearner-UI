@@ -815,7 +815,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             lastRound.scorerSteps = []
         }
         
-        newTrainDialog.invalid = isInvalid
+        newTrainDialog.validity = isInvalid ? CLM.Validity.INVALID : CLM.Validity.VALID
         newTrainDialog.definitions = null
         try { 
             await this.props.createTrainDialogThunkAsync(this.props.app.appId, newTrainDialog)
