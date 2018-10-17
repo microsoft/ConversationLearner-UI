@@ -22,10 +22,11 @@ export function ValidateDisqualifyingEntities(entities) { ValidateEntities('[dat
 export function ValidateExpectedEntities(entities)      { ValidateEntities('[data-testid="action-details-expected-entity"]', entities)}
 
 
-function ValidateEntitiesIsEmpty(selector)              { cy.Get('@responseDetailsRow').contains(selector) }
+function ValidateEntitiesIsEmpty(selector)              { cy.Get('@responseDetailsRow').find(selector) }
 
 function ValidateEntities(selector, entities) 
 { 
+  if(!Array.isArray(entities)) entities = [entities]
   cy.Get('@responseDetailsRow').find(selector).as('entitiesList')
   entities.forEach(entity => { cy.Get('@entitiesList').contains(entity) })
   cy.Get('@entitiesList').should('have.length', entities.length)

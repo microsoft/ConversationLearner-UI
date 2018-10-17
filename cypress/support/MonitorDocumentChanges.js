@@ -54,6 +54,7 @@ var MonitorDocumentChanges = (function()
             cy.get(selector)
         })})
 
+        // Special case version that allows a 1 minute time out.
         Cypress.Commands.add('Contains', (selector, content, options) => 
         {   
             helpers.ConLog(`cy.Contains()`, `Start - Last DOM change was ${MillisecondsSinceLastChange()} milliseconds ago - Selector -- Content: \n${selector} -- ${content}`)
@@ -128,6 +129,10 @@ var MonitorDocumentChanges = (function()
 
             lastChangeTime = currentTime
             lastHtml = currentHtml
+
+            // TODO: Remove this code AFTER we get a good idea of how to capture the best selector for this "Training Status Polling Stopped" icon
+            if (currentHtml.includes('<i data-icon-name="Warning" class="cl-icon root-77" role="presentation" aria-hidden="true"></i>')) 
+                helpers.ConLog(thisFuncName, `HTML has WARNING ICON:\n${currentHtml}`)
         }
         
         MonitorSpinner()

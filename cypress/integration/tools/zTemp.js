@@ -3,30 +3,58 @@
  * Licensed under the MIT License.
 */
 const homePage = require('../../support/components/HomePage')
+const scorerModal = require('../../support/components/ScorerModal')
 const actions = require('../../support/Actions')
 const actionsGrid = require('../../support/components/ActionsGrid')
+const memoryTableComponent = require('../../support/components/MemoryTableComponent')
+const trainDialogPage = require('../../support/components/TrainDialogsPage')
+const editDialogModal = require('../../support/components/EditDialogModal')
+
+Cypress.Commands.add('ExactContent', (elements, content) => 
+{   
+  for(var i = 0; i < elements.length; i++)
+  {
+    if(elements[i].innerHtml == content) 
+    {
+      cy.wrap(elements[i])
+      return
+    }
+  }
+  cy.contains(`Exact Content '${content}' NOT Found`)
+})
 
 describe('zzTemp test', () =>
 {
   it('zzTemp test', () => 
   {
-    var response = "Sorry $name{enter} I can't help you $want{enter}"
-    response = response.replace(/{enter}/g, '')
-    console.log(response)
-
     homePage.Visit()
 
     cy.pause()
-    actions.CreateNewAction({response: 'Hey $name{enter}, what do you really want?', disqualifyingEntities: ['garbage', 'want']})
-    actions.CreateNewAction({response: "Sorry $name{enter} I can't help you $want{enter}"})
 
-    // actionsGrid.SetResponseDetailsRowAlias("Sorry $name I can't help you $want")
-    // actionsGrid.ValidateRequiredEntities(['name', 'want', 'newbe'])
+    trainDialogPage.CreateNewTrainDialog()
+
+    editDialogModal.TypeYourMessage('Hey')
+    editDialogModal.ClickScoreActionsButton()
+    ClickAction("What's your name?")
+
+    editDialogModal.TypeYourMessage('Sam')
+    editDialogModal.VerifyDetectedEntity('name', 'Sam')
+    editDialogModal.ClickScoreActionsButton()
+    memoryTableComponent.VerifyEntityInMemory('name', 'Sam')
+    ClickAction('Hey Sam')
   })
 })
 
-// var response = "Sorry $name{enter} I can't help you $want{enter}"
-// var requiredEntitiesFromResponse = response.match(/(?<=\$)[^ ]+?(?={enter})/g)
-// console.log(requiredEntitiesFromResponse)
-// if (requiredEntitiesFromResponse == undefined) console.log('Undefined')
-// if (requiredEntitiesFromResponse.length == 0) console.log('Zero Length')
+function ClickAction(expectedResponse)
+{
+  //var expectedResponseRegex = new RegExp(`>${expectedResponse}<`) // Need to make sure it is an exact match.
+  cy.Get('[data-testid="action-scorer-text-response"]').ExactContent(expectedResponse)
+    .parents('div.ms-DetailsRow-fields').find('[data-testid="action-scorer-button-clickable"]')
+    .Click()
+
+  var expectedUtterance = expectedResponse.replace(/'/g, "’")
+  cy.Get('[data-testid="web-chat-utterances"]').then(elements => {
+    cy.wrap(elements[elements.length - 1]).within(e => {
+      cy.get('div.format-markdown > p').should('have.text', expectedUtterance)
+    })})
+}
