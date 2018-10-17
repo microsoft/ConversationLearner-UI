@@ -560,7 +560,7 @@ class Container extends React.Component<Props, ComponentState> {
     }
     render() {
         const { intl } = this.props
-        const isEntityInUse = this.state.isEditing && this.isInUse()
+        // const isEntityInUse = this.state.isEditing && this.isInUse()
         const isTypeDisabled = this.state.isEditing
 
         const title = this.props.entity
@@ -592,11 +592,11 @@ class Container extends React.Component<Props, ComponentState> {
 
             isProgrammatic={this.state.isProgrammaticVal}
             isMultiValue={this.state.isMultivalueVal}
-            isMultiValueDisabled={isEntityInUse}
+            isMultiValueDisabled={false}
             onChangeMultiValue={this.onChangeMultivalue}
 
             isNegatable={this.state.isNegatableVal}
-            isNegatableDisabled={isEntityInUse || this.state.isPrebuilt}
+            isNegatableDisabled={this.state.isPrebuilt}
             onChangeNegatable={this.onChangeReversible}
 
             isEditing={this.state.isEditing}
