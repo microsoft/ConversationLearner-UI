@@ -229,7 +229,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                 !this.props.onBranchDialog ||
                 this.state.pendingExtractionChanges ||
                 this.props.editState !== EditState.CAN_EDIT ||
-                (this.props.trainDialog && this.props.trainDialog.invalid === true)
+                (this.props.trainDialog && this.props.trainDialog.validity !== undefined && this.props.trainDialog.validity !== CLM.Validity.VALID)
         
         return (
             <div className="cl-wc-buttonbar">
